@@ -37,6 +37,9 @@ TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
   // Clear output bus to verify changes.
   output_bus->Zero();
 
+  // Skip the first ProcessAudio call to take into account the extra delay in
+  // the internal STFT.
+  voice_isolation->ProcessAudio(*input_bus, *output_bus);
   voice_isolation->ProcessAudio(*input_bus, *output_bus);
 
   // Expected results:

@@ -11,6 +11,8 @@ source_set("voice_isolation") {
   sources = [
     "passthrough_voice_isolation.cc",
     "passthrough_voice_isolation.h",
+    "stft_voice_isolation.cc",
+    "stft_voice_isolation.h",
     "voice_isolation.cc",
     "voice_isolation.h",
     "voice_isolation_component.cc",
@@ -24,6 +26,7 @@ source_set("voice_isolation") {
   public_deps = [
     "//base",
     "//media",
+    "//third_party/pffft",
     "//third_party/tflite",
   ]
 }
@@ -38,6 +41,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "passthrough_voice_isolation_unittest.cc",
+    "stft_voice_isolation_unittest.cc",
     "voice_isolation_unittest.cc",
   ]
 }

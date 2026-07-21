@@ -1,4 +1,5 @@
 include_rules = [
+   "+third_party/pffft",
    "+third_party/tflite",
    "+third_party/webrtc/api",
    "+third_party/webrtc/modules/audio_processing",

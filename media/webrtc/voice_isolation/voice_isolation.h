@@ -33,9 +33,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
       const tflite::FlatBufferModel* model,
       const media::AudioParameters& audio_params);
 
-  static std::unique_ptr<VoiceIsolation> CreateForTesting(
-      const media::AudioParameters& audio_params);
-
  private:
   VoiceIsolation(
       std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation,
