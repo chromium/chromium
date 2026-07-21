@@ -23,6 +23,10 @@ source_set("impl") {
     ":tab_group_store",
     "//base",
   ]
+
+  deps = [
+    "//chrome/browser/context_hub:features",
+  ]
 }
 
 source_set("unit_tests") {

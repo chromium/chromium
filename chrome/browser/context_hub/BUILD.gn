@@ -27,6 +27,8 @@ source_set("context_hub") {
     "//chrome/browser/context_hub/memory_bank",
     "//chrome/browser/context_hub/memory_bank:impl",
     "//chrome/browser/context_hub/storage",
+    "//chrome/browser/context_hub/tab_group_store",
+    "//chrome/browser/context_hub/tab_group_store:impl",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/personal_context",
     "//chrome/browser/profiles:profile",
@@ -36,7 +38,10 @@ source_set("context_hub") {
     "//components/personal_context/proto:personal_context_proto",
   ]
 
-  deps = [ "//sql" ]
+  deps = [
+    "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared",
+    "//sql",
+  ]
 }
 
 source_set("unit_tests") {

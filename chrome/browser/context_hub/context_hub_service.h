@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
+#include "chrome/browser/context_hub/tab_group_store/tab_group_entry.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
@@ -31,6 +32,7 @@ class PersonalContextService;
 
 namespace context_hub {
 
+class TabGroupStore;
 class ContextHubBackend;
 
 struct TabData {
@@ -44,25 +46,20 @@ struct TabGroupData {
   std::vector<TabData> tabs;
 };
 
-struct TabGroupMinimalData {
-  std::string label;
-  std::vector<int32_t> tab_ids;
-  std::string group_id;
-};
-
 class ContextHubService : public KeyedService {
  public:
   ContextHubService(
       personal_context::PersonalContextService* personal_context_service,
       optimization_guide::RemoteModelExecutor*
           optimization_guide_remote_model_executor,
-      std::unique_ptr<MemoryBank> memory_bank);
-
+      std::unique_ptr<MemoryBank> memory_bank,
+      std::unique_ptr<TabGroupStore> tab_group_store);
   ContextHubService(
       personal_context::PersonalContextService* personal_context_service,
       optimization_guide::RemoteModelExecutor*
           optimization_guide_remote_model_executor,
       std::unique_ptr<MemoryBank> memory_bank,
+      std::unique_ptr<TabGroupStore> tab_group_store,
       std::unique_ptr<ContextHubBackend> context_hub_backend);
 
   ContextHubService(const ContextHubService&) = delete;
@@ -102,6 +99,11 @@ class ContextHubService : public KeyedService {
   // Returns all entries from the memory bank.
   void GetAllEntries(MemoryBank::GetAllEntriesCallback callback) const;
 
+  using GetTabGroupsCallback =
+      base::OnceCallback<void(std::vector<TabGroupEntry>)>;
+  // Returns all stored tab groups.
+  void GetTabGroups(GetTabGroupsCallback callback) const;
+
   base::WeakPtr<ContextHubService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -136,6 +138,8 @@ class ContextHubService : public KeyedService {
   // Guaranteed to be non-null. If features::kMemoryBanks is disabled, this
   // will be a NoOpMemoryBank.
   std::unique_ptr<MemoryBank> memory_bank_;
+
+  std::unique_ptr<TabGroupStore> tab_group_store_;
 
   base::WeakPtrFactory<ContextHubService> weak_factory_{this};
 };

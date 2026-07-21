@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/noop_memory_bank.h"
+#include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
@@ -29,13 +30,16 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::FieldsAre;
 
 class ContextHubServiceTest : public testing::Test {
  public:
   ContextHubServiceTest()
       : service_(&mock_personal_context_service_,
                  &mock_remote_model_executor_,
-                 std::make_unique<InMemoryMemoryBank>()) {
+                 std::make_unique<InMemoryMemoryBank>(),
+                 std::make_unique<InMemoryTabGroupStore>()) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {
@@ -249,6 +253,14 @@ TEST_F(ContextHubServiceTest, GroupTabs_WithTabs) {
 
   ASSERT_EQ(ungrouped_tabs.size(), 1u);
   EXPECT_EQ(ungrouped_tabs[0].id, 5);
+
+  base::test::TestFuture<std::vector<TabGroupEntry>> stored_groups_future;
+  service_.GetTabGroups(
+      stored_groups_future.GetCallback());
+  EXPECT_THAT(
+      stored_groups_future.Get(),
+      ElementsAre(FieldsAre("group_1", "Group 1", ElementsAre(1, 2)),
+                  FieldsAre("group_2", "Group 2", ElementsAre(3, 4))));
 }
 
 TEST_F(ContextHubServiceTest, GroupTabs_MESError) {
