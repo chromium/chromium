@@ -13,9 +13,10 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container_observer.h"
-#include "components/browser_apis/ui_controllers/toolbar/extensions_bar.mojom.h"
-#include "components/browser_apis/ui_controllers/toolbar/extensions_bar_data_model.mojom.h"
+#include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_tracker.h"
 
 class BrowserWindowInterface;
@@ -24,6 +25,7 @@ class WebUIToolbarControlDelegate;
 class WebUIToolbarExtensionsContainer;
 
 namespace content {
+class Page;
 class WebContents;
 }
 
@@ -37,7 +39,8 @@ class ScopedUnownedUserData;
 // and initialization. It implements WebUIToolbarExtensionsContainer::Observer
 // to cache extensions state and notify the delegate.
 class WebUIToolbarExtensionsContainerWrapper
-    : public WebUIToolbarExtensionsContainerObserver {
+    : public WebUIToolbarExtensionsContainerObserver,
+      public content::WebContentsObserver {
  public:
   explicit WebUIToolbarExtensionsContainerWrapper(
       WebUIToolbarControlDelegate* delegate);
@@ -69,6 +72,9 @@ class WebUIToolbarExtensionsContainerWrapper
                        const std::string& id) override;
   void OnActionPoppedOut(base::OnceClosure callback) override;
 
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+
  private:
   struct PendingAnchorRequest;
 
@@ -83,6 +89,8 @@ class WebUIToolbarExtensionsContainerWrapper
   bool AnyActionHasCurrentSiteAccess(content::WebContents& web_contents);
   // Compute WebUI state for extensions button.
   extensions_bar::mojom::ExtensionActionInfoPtr GetExtensionsButton();
+  // Update `extensions_button_state`.  Returns true if state changed.
+  bool UpdateExtensionsButtonState();
 
   // Handles notifications when an extension button element is shown in the UI.
   void OnElementShown(ui::TrackedElement* element);
@@ -99,6 +107,14 @@ class WebUIToolbarExtensionsContainerWrapper
       cached_actions_;
 
   std::list<PendingAnchorRequest> pending_anchor_requests_;
+
+  // Only for use by GetExtensionsButton(). Update by calling
+  // UpdateExtensionsButtonState().
+  ExtensionsToolbarViewModel::ExtensionsToolbarButtonState
+      extensions_button_state_ =
+          ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault;
+  // Only for use by GetExtensionsButton().
+  toolbar_ui_api::IconHandle extensions_button_icon_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_WRAPPER_H_

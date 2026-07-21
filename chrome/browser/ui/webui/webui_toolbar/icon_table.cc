@@ -29,6 +29,8 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
 
@@ -300,6 +302,51 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
   return *table;
 }
 
+// Return true if `a` and `b` would appear identical at `scale_factor` scale
+// factor. Attempts to use cheaper comparison methods first, but will fall back
+// to building representations at `scale_factor` scale factor and doing
+// byte-by-byte comparisons of underlying memory, so only use if failing to
+// compare would result in building representations at `scale_factor` scale
+// factor.
+bool AreImageModelsEqual(const ui::ImageModel& a,
+                         const ui::ImageModel& b,
+                         float scale_factor) {
+  if (a == b) {
+    return true;
+  }
+  if (a.IsImage() && b.IsImage()) {
+    gfx::Image img_a = a.GetImage();
+    gfx::Image img_b = b.GetImage();
+    if (img_a == img_b) {
+      return true;
+    }
+    if (img_a.IsEmpty() || img_b.IsEmpty()) {
+      return img_a.IsEmpty() == img_b.IsEmpty();
+    }
+    if (img_a.HasRepresentation(gfx::Image::kImageRepSkia) &&
+        img_b.HasRepresentation(gfx::Image::kImageRepSkia)) {
+      const gfx::ImageSkia* skia_a = img_a.ToImageSkia();
+      const gfx::ImageSkia* skia_b = img_b.ToImageSkia();
+      if (!skia_a || !skia_b) {
+        return !skia_a && !skia_b;
+      }
+      if (skia_a->BackedBySameObjectAs(*skia_b)) {
+        return true;
+      }
+      if (skia_a->isNull() || skia_b->isNull()) {
+        return skia_a->isNull() == skia_b->isNull();
+      }
+      const gfx::ImageSkiaRep& rep_a = skia_a->GetRepresentation(scale_factor);
+      const gfx::ImageSkiaRep& rep_b = skia_b->GetRepresentation(scale_factor);
+      if (rep_a.is_null() || rep_b.is_null()) {
+        return rep_a.is_null() == rep_b.is_null();
+      }
+      return gfx::BitmapsAreEqual(rep_a.GetBitmap(), rep_b.GetBitmap());
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 class IconTable::ProviderImpl : public toolbar_ui_api::IconHandle::Provider {
@@ -462,7 +509,9 @@ toolbar_ui_api::IconHandle IconTable::RegisterImageModelTryReuse(
     if (auto it = registered_icons_.find(handle_id);
         it != registered_icons_.end()) {
       const auto& maybe_existing = it->second->MaybeImageModel();
-      if (maybe_existing == icon) {
+      if (maybe_existing.has_value() &&
+          AreImageModelsEqual(*maybe_existing, icon,
+                              delegate_->GetScaleFactor())) {
         return previous_handle;
       }
     }

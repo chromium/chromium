@@ -5,13 +5,13 @@
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_extensions_container_wrapper.h"
 
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
-#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/equals_traits.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 WebUIToolbarExtensionsContainerWrapper::WebUIToolbarExtensionsContainerWrapper(
@@ -61,6 +62,7 @@ void WebUIToolbarExtensionsContainerWrapper::Init(
       browser->RegisterActiveTabDidChange(base::BindRepeating(
           &WebUIToolbarExtensionsContainerWrapper::OnActiveTabChanged,
           base::Unretained(this)));
+  OnActiveTabChanged(browser);
 }
 
 void WebUIToolbarExtensionsContainerWrapper::OnThemeChanged() {
@@ -70,9 +72,8 @@ void WebUIToolbarExtensionsContainerWrapper::OnThemeChanged() {
   }
 }
 
-extensions_bar::mojom::ExtensionActionInfoPtr
-WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
-  ExtensionsToolbarViewModel::ExtensionsToolbarButtonState state =
+bool WebUIToolbarExtensionsContainerWrapper::UpdateExtensionsButtonState() {
+  ExtensionsToolbarViewModel::ExtensionsToolbarButtonState new_state =
       ExtensionsToolbarViewModel::ExtensionsToolbarButtonState::kDefault;
 
   if (base::FeatureList::IsEnabled(
@@ -82,7 +83,7 @@ WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
         delegate_->GetBrowser()->GetTabStripModel()->GetActiveWebContents();
     Profile* profile = delegate_->GetBrowser()->GetProfile();
     if (web_contents && extensions_container_ && profile) {
-      state = ExtensionsToolbarViewModel::GetButtonState(
+      new_state = ExtensionsToolbarViewModel::GetButtonState(
           delegate_->GetBrowser(), *web_contents,
           ToolbarActionsModel::Get(profile),
           base::BindOnce(&WebUIToolbarExtensionsContainerWrapper::
@@ -91,21 +92,33 @@ WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
     }
   }
 
+  if (new_state != extensions_button_state_) {
+    extensions_button_state_ = new_state;
+    return true;
+  }
+  return false;
+}
+
+extensions_bar::mojom::ExtensionActionInfoPtr
+WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
   extensions_bar::mojom::ExtensionActionInfoPtr button =
       extensions_bar::mojom::ExtensionActionInfo::New();
 
   button->id = kExtensionsButtonId;
   button->is_visible = true;
 
-  // Fill in the rest of the fields based on `state`.
-  auto icon_handle = delegate_->GetIconTable().RegisterVectorIcon(
-      ExtensionsToolbarViewModel::GetToolbarButtonIcon(state));
-  CHECK(icon_handle.has_value());
-  button->icon = icon_handle.value();
+  // Fill in the rest of the fields based on `extensions_button_state_`.
+  button->icon = extensions_button_icon_ =
+      delegate_->GetIconTable().RegisterImageModelTryReuse(
+          ui::ImageModel::FromVectorIcon(
+              ExtensionsToolbarViewModel::GetToolbarButtonIcon(
+                  extensions_button_state_)),
+          extensions_button_icon_);
   button->accessible_name =
-      ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(state);
-  button->tooltip =
-      ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(state);
+      ExtensionsToolbarViewModel::GetToolbarButtonAccessibleText(
+          extensions_button_state_);
+  button->tooltip = ExtensionsToolbarViewModel::GetToolbarButtonTooltipText(
+      extensions_button_state_);
 
   return button;
 }
@@ -126,9 +139,20 @@ bool WebUIToolbarExtensionsContainerWrapper::AnyActionHasCurrentSiteAccess(
 
 void WebUIToolbarExtensionsContainerWrapper::OnActiveTabChanged(
     BrowserWindowInterface* browser_interface) {
+  if (browser_interface && browser_interface->GetTabStripModel()) {
+    content::WebContentsObserver::Observe(
+        browser_interface->GetTabStripModel()->GetActiveWebContents());
+  }
   if (extensions_container_) {
     // State of extensions depends on what's active --- e.g. some may be
     // disabled on some URLs.
+    extensions_container_->NotifyOfAllActions();
+  }
+}
+
+void WebUIToolbarExtensionsContainerWrapper::PrimaryPageChanged(
+    content::Page& page) {
+  if (extensions_container_) {
     extensions_container_->NotifyOfAllActions();
   }
 }
@@ -144,7 +168,7 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionsAddedOrUpdated(
       changed = true;
     }
   }
-  if (changed) {
+  if (changed || UpdateExtensionsButtonState()) {
     SendExtensionsState();
   }
 }
@@ -152,7 +176,7 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionsAddedOrUpdated(
 void WebUIToolbarExtensionsContainerWrapper::OnActionRemoved(
     std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,
     const std::string& id) {
-  if (cached_actions_.erase(id) > 0) {
+  if (cached_actions_.erase(id) > 0 || UpdateExtensionsButtonState()) {
     SendExtensionsState();
   }
 }
