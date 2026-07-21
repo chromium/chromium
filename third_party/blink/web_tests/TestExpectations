@@ -72,6 +72,9 @@ crbug.com/457388389 http/tests/devtools/sources/debugger-pause/set-return-value.
 http/tests/devtools/security/origin-view-ct-compliance.js [ Failure Pass ]
 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
 
+# Disabled to land https://crrev.com/c/8117529
+crbug.com/407751377 http/tests/devtools/a11y-axe-core/settings/locations-a11y-test.js [ Failure Pass Timeout ]
+
 # Reftest failure related to off-main-thread interaction (imperceptible AA differences)
 crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/paint2d-zoom.html [ Failure ]  # Reftest image failure
 crbug.com/395909730 virtual/off-main-thread-css-paint/http/tests/csspaint/transform-with-page-zoom-003.html [ Failure ]  # Reftest image failure
