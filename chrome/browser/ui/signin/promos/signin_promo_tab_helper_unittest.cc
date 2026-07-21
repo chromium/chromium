@@ -51,8 +51,8 @@ class SigninPromoTabHelperTest : public ChromeRenderViewHostTestHarness {
     AccountInfo info = MakePrimaryAccountWithAccessPoint(email, access_point);
     signin::UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_manager(), info.account_id,
-        GoogleServiceAuthError(
-            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
     EXPECT_TRUE(signin_util::IsSigninPending(identity_manager()));
     return info;
   }
