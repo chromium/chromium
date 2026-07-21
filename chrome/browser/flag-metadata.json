@@ -779,6 +779,11 @@
     "expiry_milestone": 153
   },
   {
+    "name": "atmemory-context-menu-entry-point",
+    "owners": [ "novakovica@google.com", "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "audio-flexible-loopback-for-system-loopback",
     "owners": ["aaronyu@google.com", "chromeos-audio@google.com" ],
     "expiry_milestone": 200

@@ -127,6 +127,11 @@ inline constexpr char kAssistantSidePanelName[] = "AssistantSidePanel";
 inline constexpr char kAssistantSidePanelDescription[] =
     "Enables the AssistantSidePanel feature.";
 
+inline constexpr char kAtMemoryContextMenuEntryPointName[] =
+    "AtMemory context menu entry point";
+inline constexpr char kAtMemoryContextMenuEntryPointDescription[] =
+    "Enables an entry point in the edit context menu for the AtMemory feature.";
+
 inline constexpr char kAutofillAcrossIframesName[] =
     "Enables Autofill across iframes";
 inline constexpr char kAutofillAcrossIframesDescription[] =
