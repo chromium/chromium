@@ -8192,12 +8192,6 @@ static_library("test_support_unit") {
 
   if (enable_bound_session_credentials) {
     sources += [
-      "../browser/signin/bound_session_credentials/fake_bound_session_cookie_refresh_service.cc",
-      "../browser/signin/bound_session_credentials/fake_bound_session_cookie_refresh_service.h",
-      "../browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.cc",
-      "../browser/signin/bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h",
-      "../browser/signin/bound_session_credentials/mock_bound_session_cookie_refresh_service.cc",
-      "../browser/signin/bound_session_credentials/mock_bound_session_cookie_refresh_service.h",
     ]
     public_deps += [ "//components/unexportable_keys" ]
   }

@@ -488,6 +488,23 @@ source_set("test_support") {
       "//content/test:test_support",
     ]
   }
+
+  if (enable_bound_session_credentials) {
+    public += [
+      "bound_session_credentials/fake_bound_session_cookie_refresh_service.h",
+      "bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.h",
+      "bound_session_credentials/mock_bound_session_cookie_refresh_service.h",
+    ]
+    sources += [
+      "bound_session_credentials/fake_bound_session_cookie_refresh_service.cc",
+      "bound_session_credentials/fake_bound_session_refresh_cookie_fetcher.cc",
+      "bound_session_credentials/mock_bound_session_cookie_refresh_service.cc",
+    ]
+    deps += [
+      "//chrome/common",
+      "//testing/gmock",
+    ]
+  }
 }
 
 if (enable_bound_session_credentials) {
