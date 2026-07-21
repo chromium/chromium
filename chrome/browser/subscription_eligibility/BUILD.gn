@@ -24,6 +24,14 @@ source_set("subscription_eligibility") {
     "//components/prefs",
     "//third_party/metrics_proto:metrics_proto_gen",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/subscription_eligibility_service_bridge.cc",
+      "android/subscription_eligibility_service_bridge.h",
+    ]
+    deps += [ ":jni_headers" ]
+  }
 }
 
 source_set("impl") {
@@ -73,3 +81,24 @@ if (!is_android) {
   }
 }
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/subscription_eligibility/SubscriptionEligibilityService.java" ]
+  }
+
+  android_library("java") {
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/subscription_eligibility/SubscriptionEligibilityService.java",
+      "android/java/src/org/chromium/chrome/browser/subscription_eligibility/SubscriptionEligibilityServiceFactory.java",
+    ]
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/profiles/android:java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    srcjar_deps = [ ":jni_headers" ]
+  }
+}

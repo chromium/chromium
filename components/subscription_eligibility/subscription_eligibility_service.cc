@@ -50,6 +50,11 @@ void SubscriptionEligibilityService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+base::WeakPtr<SubscriptionEligibilityService>
+SubscriptionEligibilityService::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void SubscriptionEligibilityService::OnAiSubscriptionTierUpdated() {
   for (Observer& observer : observers_) {
     observer.OnAiSubscriptionTierUpdated(GetAiSubscriptionTier());

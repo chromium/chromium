@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -41,6 +42,8 @@ class SubscriptionEligibilityService : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  base::WeakPtr<SubscriptionEligibilityService> GetWeakPtr();
+
  private:
   // Invoked when underlying pref for ai subscription tier changes.
   void OnAiSubscriptionTierUpdated();
@@ -52,6 +55,8 @@ class SubscriptionEligibilityService : public KeyedService {
   base::ObserverList<Observer> observers_;
 
   std::optional<int32_t> forced_tier_;
+
+  base::WeakPtrFactory<SubscriptionEligibilityService> weak_ptr_factory_{this};
 };
 
 }  // namespace subscription_eligibility

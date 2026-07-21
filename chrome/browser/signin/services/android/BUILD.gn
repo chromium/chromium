@@ -40,6 +40,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/subscription_eligibility:java",
     "//chrome/browser/sync/android:java",
     "//components/browser_ui/util/android:java",
     "//components/externalauth/android:java",
