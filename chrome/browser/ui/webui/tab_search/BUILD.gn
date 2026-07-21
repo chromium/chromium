@@ -79,43 +79,31 @@ source_set("tab_search") {
   ]
 }
 
-source_set("unit_tests") {
+source_set("browser_tests") {
   testonly = true
-  sources = [ "tab_search_page_handler_unittest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "tab_search_page_handler_browsertest.cc",
+    "tab_search_ui_browsertest.cc",
+  ]
   deps = [
     ":tab_search",
-    "//base",
-    "//base/test:test_support",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui",
     "//chrome/browser/ui:recently_audible_helper",
-    "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/tabs:test_support",
-    "//chrome/browser/ui/tabs/alert:tab_alert",
     "//chrome/browser/ui/tabs/saved_tab_groups:test_support",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/metrics_reporter:test_support",
     "//chrome/browser/vr",
     "//chrome/test:test_support",
-    "//content/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "tab_search_ui_browsertest.cc" ]
-  deps = [
-    ":tab_search",
-    "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
     "//components/metrics:content",
     "//components/metrics/mapping",
     "//components/metrics/mapping:metrics_name_mapping_proto",
+    "//components/os_crypt/async/browser:test_support",
     "//components/variations:test_support",
     "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/webui:buildflags",
   ]

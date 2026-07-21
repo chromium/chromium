@@ -998,8 +998,7 @@ static_library("test_support") {
   }
 
   if (is_win || is_mac || is_linux) {
-    sources += [
-    ]
+    sources += []
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
@@ -6889,7 +6888,6 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:mojo_bindings",
       "//chrome/browser/ui/webui/signin",
-      "//chrome/browser/ui/webui/tab_search:unit_tests",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/ui/window_sizer:unit_tests",
@@ -8165,8 +8163,7 @@ static_library("test_support_unit") {
   }
 
   if (enable_bound_session_credentials) {
-    sources += [
-    ]
+    sources += []
     public_deps += [ "//components/unexportable_keys" ]
   }
 }
