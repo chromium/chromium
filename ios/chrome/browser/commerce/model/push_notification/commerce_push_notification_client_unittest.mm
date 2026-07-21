@@ -25,7 +25,6 @@
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "components/session_proto_db/session_proto_db.h"
 #import "components/sync_bookmarks/bookmark_sync_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
@@ -182,13 +181,12 @@ class CommercePushNotificationClientTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
-    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
-    scene_state_foreground_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_foreground_ = [[SceneState alloc] init];
     scene_state_foreground_.activationLevel =
         SceneActivationLevelForegroundActive;
     browser_ =
         std::make_unique<TestBrowser>(profile_.get(), scene_state_foreground_);
-    scene_state_background_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_background_ = [[SceneState alloc] init];
     scene_state_background_.activationLevel = SceneActivationLevelBackground;
     background_browser_ =
         std::make_unique<TestBrowser>(profile_.get(), scene_state_background_);
@@ -262,7 +260,6 @@ class CommercePushNotificationClientTest : public PlatformTest {
   SceneState* scene_state_foreground_;
   SceneState* scene_state_background_;
   id<SceneCommands> application_handler_;
-  AppState* app_state_;
 };
 
 TEST_F(CommercePushNotificationClientTest, TestParsing) {

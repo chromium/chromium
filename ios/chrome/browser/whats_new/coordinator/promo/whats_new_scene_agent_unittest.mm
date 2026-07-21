@@ -6,14 +6,10 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/commerce_feature_list.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -22,18 +18,10 @@
 class WhatsNewSceneAgentTest : public PlatformTest {
  public:
   WhatsNewSceneAgentTest() : PlatformTest() {
-    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_ = [[SceneState alloc] init];
     scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
     scene_state_.scene = static_cast<UIWindowScene*>(
         [[[UIApplication sharedApplication] connectedScenes] anyObject]);
-    std::unique_ptr<TestProfileIOS> profile_ =
-        TestProfileIOS::Builder().Build();
-    std::unique_ptr<Browser> browser_ =
-        std::make_unique<TestBrowser>(profile_.get(), scene_state_);
-    FakeStartupInformation* startup_information_ =
-        [[FakeStartupInformation alloc] init];
-    app_state_ =
-        [[AppState alloc] initWithStartupInformation:startup_information_];
     promos_manager_ = std::make_unique<MockPromosManager>();
     agent_ = [[WhatsNewSceneAgent alloc]
         initWithPromosManager:promos_manager_.get()];
@@ -43,8 +31,6 @@ class WhatsNewSceneAgentTest : public PlatformTest {
 
  protected:
   WhatsNewSceneAgent* agent_;
-  // SceneState only weakly holds AppState, so keep it alive here.
-  AppState* app_state_;
   base::test::ScopedFeatureList feature_list_;
   SceneState* scene_state_;
   web::WebTaskEnvironment task_environment_;

@@ -7,7 +7,6 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
@@ -47,8 +46,7 @@ class PopupMenuHelpCoordinatorTest : public PlatformTest {
 
     profile_ = std::move(builder).Build();
 
-    AppState* app_state = [[AppState alloc] initWithStartupInformation:nil];
-    scene_state_ = [[SceneState alloc] initWithAppState:app_state];
+    scene_state_ = [[SceneState alloc] init];
     LayoutGuideSceneAgent* layout_guide_scene_agent =
         [[LayoutGuideSceneAgent alloc] init];
     [scene_state_ addAgent:layout_guide_scene_agent];

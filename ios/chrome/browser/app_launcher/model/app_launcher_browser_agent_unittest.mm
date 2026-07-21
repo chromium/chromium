@@ -10,7 +10,6 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_launcher/model/fake_app_launcher_abuse_detector.h"
@@ -71,8 +70,7 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
  protected:
   AppLauncherBrowserAgentTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
-    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_ = [[SceneState alloc] init];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     browser_->GetSceneState().activationLevel =
@@ -165,7 +163,6 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
-  AppState* app_state_;
   SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::map<web::WebState*, FakeAppLauncherAbuseDetector*> abuse_detectors_;
