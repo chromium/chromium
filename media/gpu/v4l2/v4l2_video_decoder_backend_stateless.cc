@@ -657,7 +657,8 @@ void V4L2StatelessVideoDecoderBackend::ClearPendingRequests(
   if (decoder_) {
     // If we reset during resolution change, re-create AVD. Then the new AVD
     // will trigger resolution change again after reset.
-    if (pic_size_ != decoder_->GetPicSize()) {
+    if (pic_size_ != decoder_->GetPicSize() ||
+        bit_depth_ != decoder_->GetBitDepth()) {
       CreateDecoder();
     } else {
       decoder_->Reset();
