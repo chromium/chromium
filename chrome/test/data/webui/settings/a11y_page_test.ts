@@ -9,12 +9,10 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {SettingsAxAnnotationsSectionElement} from 'chrome://settings/lazy_load.js';
 import { assertFalse, assertTrue, assertEquals } from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // </if>
 // clang-format on
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {AccessibilityBrowserProxy, SettingsA11yPageElement} from 'chrome://settings/lazy_load.js';
 import {AccessibilityBrowserProxyImpl, ToastAlertLevel} from 'chrome://settings/lazy_load.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
@@ -158,17 +156,15 @@ suite('A11yPage', () => {
 
     a11yPage = document.createElement('settings-a11y-page');
     document.body.appendChild(a11yPage);
-    flush();
   });
 
   test('ax tree fixing toggle and pref', async () => {
     assertTrue(loadTimeData.getBoolean('axTreeFixingEnabled'));
 
     const toggle =
-        a11yPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        a11yPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#axTreeFixing');
     assertTrue(!!toggle);
-    await flushTasks();
 
     // The AX Tree Fixing pref is off by default, so the button should be
     // toggled off.
@@ -179,7 +175,6 @@ suite('A11yPage', () => {
 
     toggle.click();
     await microtasksFinished();
-    await flushTasks();
     assertTrue(
         prefService.getPref<boolean>('settings.a11y.enable_ax_tree_fixing')
             .value);
@@ -194,9 +189,9 @@ suite('A11yPage', () => {
     // in a DOM.
     webUIListenerCallback('screen-reader-state-changed', false);
 
-    await flushTasks();
+    await microtasksFinished();
     let axAnnotationsSection =
-        a11yPage.shadowRoot!.querySelector<SettingsAxAnnotationsSectionElement>(
+        a11yPage.shadowRoot.querySelector<SettingsAxAnnotationsSectionElement>(
             '#AxAnnotationsSection');
     assertFalse(!!axAnnotationsSection);
 
@@ -204,9 +199,9 @@ suite('A11yPage', () => {
     // in a DOM.
     webUIListenerCallback('screen-reader-state-changed', true);
 
-    await flushTasks();
+    await microtasksFinished();
     axAnnotationsSection =
-        a11yPage.shadowRoot!.querySelector<SettingsAxAnnotationsSectionElement>(
+        a11yPage.shadowRoot.querySelector<SettingsAxAnnotationsSectionElement>(
             '#AxAnnotationsSection');
     assertTrue(!!axAnnotationsSection);
     assertTrue(isVisible(axAnnotationsSection));
@@ -214,7 +209,7 @@ suite('A11yPage', () => {
 
   test('toast toggle mapping from enum', async () => {
     const toastToggle =
-        a11yPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        a11yPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#toastToggle');
     assertTrue(!!toastToggle);
 

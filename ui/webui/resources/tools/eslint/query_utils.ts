@@ -216,6 +216,23 @@ export function extractPropertiesFromClass(
     ...parserOptions,
     filePath: file.fileName,
   }) as TSESTree.Program;
+
+  // Handle case where `className` points to a TSTypeAliasDeclaration in the
+  // same file. For example className='FooBarElement' and the code is as follows
+  //
+  // export class SettingsFooBarElement extends CrLitElement {}
+  // export type FooBarElement = SettingsFooBarElement;
+  //
+  // This pattern is temporarily used when migrating Polymer to Lit to minimize
+  // the diff during the migration.
+  const typeAliasQuery = esquery.parse(`TSTypeAliasDeclaration[id.name="${
+      className}"] > TSTypeReference > Identifier`);
+  const typeAliasMatches =
+      esquery.match(ast, typeAliasQuery) as TSESTree.Identifier[];
+  if (typeAliasMatches.length > 0) {
+    className = typeAliasMatches[0]!.name;
+  }
+
   // Match on class name suffix as well because some UIs use aliasing.
   const propertiesQuery = esquery.parse(`ClassDeclaration[id.name=/${
       className}/] > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property`);

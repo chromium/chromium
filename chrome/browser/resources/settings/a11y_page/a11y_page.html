@@ -1,23 +1,26 @@
-    <style include="settings-shared"></style>
+
+<!-- #html_wrapper_imports_start
+import {ToastAlertLevel} from './a11y_page.js';
+#html_wrapper_imports_end -->
     <settings-section page-title="$i18n{a11yPageTitle}">
       <div route-path="default">
 <if expr="is_chromeos">
         <cr-link-row
             label="$i18n{manageAccessibilityFeatures}"
-            on-click="onManageSystemAccessibilityFeaturesClick_"
+            @click="${this.onManageSystemAccessibilityFeaturesClick_}"
             sub-label="$i18n{moreFeaturesLinkDescription}" external>
         </cr-link-row>
 </if>
 
 <if expr="is_macosx or is_win">
-        <template is="dom-if" if="[[enableLiveCaption_]]">
+        ${this.enableLiveCaption_ ? html`
           <settings-live-caption></settings-live-caption>
-        </template>
+        ` : ''}
         <cr-link-row id="captions"
             class="hr"
             label="$i18n{captionsPreferencesTitle}"
             sub-label="$i18n{captionsPreferencesSubtitle}"
-            on-click="onCaptionsClick_"
+            @click="${this.onCaptionsClick_}"
             button-aria-description="$i18n{opensInNewTab}"
             external>
         </cr-link-row>
@@ -27,7 +30,7 @@
           <cr-link-row id="captions"
               class="hr"
               label="$i18n{captionsTitle}"
-              on-click="onCaptionsClick_"
+              @click="${this.onCaptionsClick_}"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
 </if>
@@ -36,45 +39,46 @@
         <settings-toggle-button
             class="hr"
             pref-key="settings.a11y.focus_highlight"
-            on-setting-boolean-control-change="onFocusHighlightChange_"
+            @setting-boolean-control-change="${
+                this.onFocusHighlightSettingBooleanControlChange_}"
             label="$i18n{focusHighlightLabel}">
         </settings-toggle-button>
         <settings-toggle-button
             class="hr"
             pref-key="settings.a11y.caretbrowsing.enabled"
-            on-change="onA11yCaretBrowsingChange_"
+            @change="${this.onA11yCaretBrowsingChange_}"
             label="$i18n{caretBrowsingTitle}"
             sub-label="$i18n{caretBrowsingSubtitle}">
         </settings-toggle-button>
 </if>
         <settings-toggle-button
             class="hr"
-            hidden$="[[!hasScreenReader_]]"
+            ?hidden="${!this.hasScreenReader_}"
             pref-key="settings.a11y.enable_accessibility_image_labels"
-            on-change="onA11yImageLabelsChange_"
+            @change="${this.onA11yImageLabelsChange_}"
             label="$i18n{accessibleImageLabelsTitle}"
             sub-label="$i18n{accessibleImageLabelsSubtitle}">
         </settings-toggle-button>
-        <template is="dom-if" if="[[showAxTreeFixingSection_]]">
+        ${this.showAxTreeFixingSection_ ? html`
           <settings-toggle-button id="axTreeFixing"
               class="hr"
               pref-key="settings.a11y.enable_ax_tree_fixing"
               label="$i18n{axTreeFixingTitle}"
               sub-label="$i18n{axTreeFixingSubtitle}">
           </settings-toggle-button>
-        </template>
+        ` : ''}
 <if expr="is_win or is_linux or is_macosx">
-        <template is="dom-if" if="[[showAxAnnotationsSection_]]">
+        ${this.showAxAnnotationsSection_ ? html`
           <settings-ax-annotations-section
               id="AxAnnotationsSection">
           </settings-ax-annotations-section>
-        </template>
+        ` : ''}
 </if>
 <if expr="is_win or is_linux">
         <settings-toggle-button
             class="hr"
             pref-key="settings.a11y.overscroll_history_navigation"
-            on-change="onOverscrollHistoryNavigationChange_"
+            @change="${this.onOverscrollHistoryNavigationChange_}"
             label="$i18n{overscrollHistoryNavigationTitle}"
             sub-label="$i18n{overscrollHistoryNavigationSubtitle}">
         </settings-toggle-button>
@@ -82,7 +86,7 @@
 <if expr="is_macosx">
         <cr-link-row
             class="hr"
-            on-click="onMacTrackpadGesturesLinkClick_"
+            @click="${this.onMacTrackpadGesturesLinkClick_}"
             button-aria-description="$i18n{opensInNewTab}"
             label="$i18n{overscrollHistoryNavigationTitle}"
             sub-label="$i18n{overscrollHistoryNavigationSubtitle}"
@@ -92,14 +96,16 @@
 <if expr="not is_chromeos">
         <settings-toggle-button class="hr" id="toastToggle"
             pref-key="settings.toast.alert_level"
-            numeric-unchecked-values="[[numericUncheckedToastAlertValues_]]"
-            numeric-checked-value="[[toastAlertLevelEnum_.ALL]]"
-            on-change="onToastAlertLevelChange_" label="$i18n{toastAlertLevelTitle}"
+            .numericUncheckedValues="${this.numericUncheckedToastAlertValues_}"
+            .numericCheckedValue="${ToastAlertLevel.ALL}"
+            @change="${this.onToastAlertLevelChange_}"
+            label="$i18n{toastAlertLevelTitle}"
             sub-label="$i18n{toastAlertLevelDescription}">
         </settings-toggle-button>
 </if>
         <cr-link-row class="hr" label="$i18n{moreFeaturesLink}"
-            on-click="onMoreFeaturesLinkClick_" sub-label="$i18n{a11yWebStore}"
+            @click="${this.onMoreFeaturesLinkClick_}"
+            sub-label="$i18n{a11yWebStore}"
             button-aria-description="$i18n{opensInNewTab}"
             external>
         </cr-link-row>
