@@ -29,13 +29,14 @@ class PanelFocusDependentHotkeyManagerBrowserTest : public GlicBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(b/531825599): Fix and re-enable.
 IN_PROC_BROWSER_TEST_F(PanelFocusDependentHotkeyManagerBrowserTest,
-                       DISABLED_CloseHotkeyEscKey) {
+                       CloseHotkeyEscKey) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  // Wait for the webview client to load to verify that hotkeys work with the
+  // webview.
+  ASSERT_OK(WaitForGlicClient(instance));
+  ASSERT_OK(FocusGlic(instance));
 
-  // When Glic has focus, Escape closes it.
-  EXPECT_TRUE(instance->GetActiveEmbedder()->HasFocus());
   ASSERT_TRUE(TriggerHotkey(LocalHotkeyManager::Command::kClose));
 
   // Verify Glic is closed.
@@ -45,6 +46,8 @@ IN_PROC_BROWSER_TEST_F(PanelFocusDependentHotkeyManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PanelFocusDependentHotkeyManagerBrowserTest,
                        ZoomHotkeys) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  // Wait for the webview client to load to verify that hotkeys work with the
+  // webview.
   ASSERT_OK(WaitForGlicClient(instance));
   ASSERT_OK(FocusGlic(instance));
 
@@ -88,7 +91,10 @@ class PanelFocusDependentHotkeyManagerZoomDisabledBrowserTest
 IN_PROC_BROWSER_TEST_F(PanelFocusDependentHotkeyManagerZoomDisabledBrowserTest,
                        ZoomHotkeysDisabledByFlag) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
-  ASSERT_TRUE(WaitForGlicClient(instance));
+  // Wait for the webview client to load to verify that hotkeys work with the
+  // webview.
+  ASSERT_OK(WaitForGlicClient(instance));
+  ASSERT_OK(FocusGlic(instance));
 
   EXPECT_DOUBLE_EQ(GetZoomLevel(instance), 1.0);
 
