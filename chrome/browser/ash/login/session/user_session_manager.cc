@@ -354,6 +354,20 @@ void InitLocaleAndInputMethodsForNewUser(
   manager->GetInputMethodUtil()->GetFirstLoginInputMethodIds(
       locale, preferred_input_method, &input_method_ids);
 
+  // Ensure that kLanguageCurrentInputMethod is explicitly populated here so
+  // that the pref matches the currently active IME state. Managed Guest
+  // Sessions enroll via asynchronous Ozone IPC layout application, which can
+  // cause a race condition if it finishes late and triggers a back-sync to
+  // preferences. If these prefs are empty, the asynchronous return could
+  // erroneously reset the layout to the hardware default. Set
+  // kLanguagePreviousInputMethod as well for consistency.
+  const std::string current_input_method_id_on_pref =
+      prefs->GetString(ash::prefs::kLanguageCurrentInputMethod);
+  prefs->SetString(ash::prefs::kLanguagePreviousInputMethod,
+                   current_input_method_id_on_pref);
+  prefs->SetString(ash::prefs::kLanguageCurrentInputMethod,
+                   preferred_input_method.id());
+
   // Save the input methods in the user's preferences.
   StringPrefMember language_preload_engines;
   language_preload_engines.Init(ash::prefs::kLanguagePreloadEngines, prefs);

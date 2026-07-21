@@ -2918,6 +2918,44 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountUkmTest, ReportUkmOnShutdown) {
   EXPECT_EQ(ukm::SourceType::APP_ID, report->sources().Get(0).type());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    DeviceLocalAccountTest,
+    ManagedGuestSession_AllowedInputMethods_PreservesActive) {
+  em::StringListPolicyProto* allowed_input_methods =
+      device_local_account_policy_.payload().mutable_allowedinputmethods();
+  allowed_input_methods->mutable_value()->add_entries("xkb:fr::fra");
+  allowed_input_methods->mutable_value()->add_entries("xkb:us::eng");
+
+  UploadAndInstallDeviceLocalAccountPolicy();
+  AddPublicSessionToDevicePolicy(kAccountId1);
+
+  WaitForPolicy();
+
+  ash::input_method::InputMethodManager::Get()
+      ->GetActiveIMEState()
+      ->EnableInputMethod(
+          ash::extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra"));
+  ash::input_method::InputMethodManager::Get()
+      ->GetActiveIMEState()
+      ->ChangeInputMethod(
+          ash::extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra"),
+          false /* show_message */);
+
+  ASSERT_NO_FATAL_FAILURE(StartLogin(
+      std::string(),
+      ash::extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng")));
+  WaitForSessionStart();
+
+  Profile* profile = GetProfileForTest();
+  ASSERT_TRUE(profile);
+  PrefService* prefs = profile->GetPrefs();
+
+  EXPECT_EQ(ash::extension_ime_util::GetInputMethodIDByEngineID("xkb:us::eng"),
+            prefs->GetString(ash::prefs::kLanguageCurrentInputMethod));
+  EXPECT_EQ(ash::extension_ime_util::GetInputMethodIDByEngineID("xkb:fr::fra"),
+            prefs->GetString(ash::prefs::kLanguagePreviousInputMethod));
+}
+
 class AmbientAuthenticationManagedGuestSessionTest
     : public DeviceLocalAccountTest,
       public testing::WithParamInterface<net::AmbientAuthAllowedProfileTypes> {
