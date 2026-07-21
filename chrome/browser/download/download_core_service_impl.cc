@@ -109,6 +109,8 @@ void DownloadCoreServiceImpl::InitializeHistory() {
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);
   if (!history) {
+    manager->PostInitialization(
+        DownloadManager::DOWNLOAD_INITIALIZATION_DEPENDENCY_HISTORY_DB);
     return;
   }
   download_history_ = std::make_unique<DownloadHistory>(
