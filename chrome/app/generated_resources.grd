@@ -8576,6 +8576,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPOSE_SHARING_TABS_WITH_GOOGLE" desc="Text for the tooltip above the favicons that show a user is sharing tabs as context.">
         Sharing tabs with Google
       </message>
+      <message name="IDS_COMPOSE_ADD_OPEN_TABS_TO_ASK_ANYTHING" desc="Label for the action to add open tabs to ask anything in composebox.">
+        Add open tabs to ask anything
+      </message>
       <message name="IDS_COMPOSE_ADD_TABS" desc="Label for the row in the Composebox context menu that opens a flyout listing all open tabs to share.">
         Add tabs
       </message>
