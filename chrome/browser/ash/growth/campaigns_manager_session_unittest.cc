@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"

@@ -26,3 +26,9 @@ include_rules = [
   "+chrome/common/chrome_features.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "borealis_features_unittest\\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
+  ],
+}

@@ -35,4 +35,7 @@ specific_include_rules = {
   "bruschetta_service_factory\\.cc": [
     "+chrome/browser/browser_process.h",
   ],
+  "bruschetta_service_unittest\\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
+  ],
 }

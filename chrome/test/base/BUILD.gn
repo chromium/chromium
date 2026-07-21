@@ -55,12 +55,10 @@ source_set("test_launcher_utils") {
   public_deps = [ "//base" ]
 }
 
-# Thin header-only target exposing testing_profile.h and friends. No extensions
-# deps, those live in testing_profile_impl. On ChromeOS, ash/settings is still
-# required because testing_profile.h directly includes
-# scoped_cros_settings_test_helper.h (see TODO inside the is_chromeos block).
-# This split allows extensions:test_support to dep on this target directly
-# without creating a dep-graph cycle.
+# Thin header-only target exposing testing_profile.h and friends. No ash or
+# extensions deps — those live in testing_profile_impl. This allows
+# ash/settings:test_support and extensions:test_support to dep on this target
+# directly without creating a dep-graph cycle.
 source_set("testing_profile") {
   testonly = true
   sources = [
@@ -85,21 +83,8 @@ source_set("testing_profile") {
   if (is_chromeos) {
     public_deps += [
       "//chrome/browser/ash/policy/core",
-
-      # testing_profile.h directly includes scoped_cros_settings_test_helper.h.
-      # TODO(crbug.com/353332589): Forward-declare ScopedCrosSettingsTestHelper
-      # so this header dep can move to testing_profile_impl.
-      "//chrome/browser/ash/settings:test_support",
       "//components/user_manager",
     ]
-
-    # device_settings_test_helper.cc (in ash/settings:test_support) includes
-    # testing_profile.h. Since testing_profile already deps on
-    # ash/settings:test_support (above), ash/settings:test_support cannot dep
-    # back on testing_profile — allow_circular_includes_from covers the
-    # reverse include without adding a dep-graph edge.
-    allow_circular_includes_from =
-        [ "//chrome/browser/ash/settings:test_support" ]
   }
 }
 
@@ -180,6 +165,7 @@ source_set("testing_profile_impl") {
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/net",
       "//chrome/browser/ash/profiles",
+      "//chrome/browser/ash/settings:test_support",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chromeos/ash/components/account_manager",

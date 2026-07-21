@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"

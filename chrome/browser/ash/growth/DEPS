@@ -39,6 +39,7 @@ specific_include_rules = {
   ],
 
   ".*_unittest\\.cc": [
+    "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/global_features.h",
   ],

@@ -11,6 +11,7 @@
 #include "ash/system/extended_updates/extended_updates_metrics.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"

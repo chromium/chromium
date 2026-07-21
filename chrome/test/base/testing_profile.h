@@ -31,8 +31,11 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
+
+namespace ash {
+class ScopedCrosSettingsTestHelper;
+}  // namespace ash
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -67,6 +67,7 @@
 #include "chrome/browser/ash/policy/status_collector/enterprise_activity_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"

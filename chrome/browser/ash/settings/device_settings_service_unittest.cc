@@ -20,6 +20,7 @@
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"

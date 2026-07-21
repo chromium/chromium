@@ -19,6 +19,7 @@
 #include "chrome/browser/net/fake_nss_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/ownership/owner_key_util_impl.h"

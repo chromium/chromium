@@ -95,6 +95,7 @@ static_library("test_support") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/net:test_support",
     "//chrome/browser/profiles:profile",
+    "//chrome/test/base:testing_profile",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/concierge",
