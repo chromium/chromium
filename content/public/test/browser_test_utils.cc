@@ -1800,7 +1800,9 @@ std::string AnnotateAndAdjustJsStackTraces(std::string_view js_error,
         std::string source_line(source_lines[line_number - 1]);
 
         int max_column_number = 60 - indent.length();
-        if (column_number > max_column_number) {
+        if (column_number > max_column_number &&
+            static_cast<size_t>(column_number - max_column_number) <
+                source_line.size()) {
           source_line = source_line.substr(column_number - max_column_number);
           column_number = max_column_number;
           source_line.replace(0, elision_mark.length(), elision_mark.data(),
