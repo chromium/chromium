@@ -338,9 +338,9 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   const bool is_same_origin_initiator =
       request_info.begin_params->initiator_frame_token ==
           frame_tree_node->current_frame_host()->GetFrameToken() &&
-      request_info.common_params->initiator_origin &&
-      request_info.common_params->initiator_origin->IsSameOriginWith(
-          request_info.common_params->url);
+      frame_tree_node->current_frame_host()
+          ->GetLastCommittedOrigin()
+          .IsSameOriginWith(request_info.common_params->url);
 
   new_request->storage_access_api_status =
       is_storage_access_grant_eligible && is_same_origin_initiator

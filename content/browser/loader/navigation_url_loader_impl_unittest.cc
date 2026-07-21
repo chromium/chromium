@@ -1587,6 +1587,7 @@ TEST_F(NavigationURLLoaderImplTest, StorageAccessApiStatus_AccessViaAPI) {
 
   TestRenderFrameHost* rfh =
       static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame());
+  rfh->SetLastCommittedOriginForTesting(url::Origin::Create(url));
   rfh->document_associated_data().PutCookieSettingOverride(
       net::CookieSettingOverride::kStorageAccessGrantEligible);
 
@@ -1610,6 +1611,7 @@ TEST_F(NavigationURLLoaderImplTest,
 
   TestRenderFrameHost* rfh =
       static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame());
+  rfh->SetLastCommittedOriginForTesting(url::Origin::Create(url));
   rfh->document_associated_data().PutCookieSettingOverride(
       net::CookieSettingOverride::kStorageAccessGrantEligible);
 
@@ -1632,6 +1634,8 @@ TEST_F(NavigationURLLoaderImplTest, StorageAccessApiStatus_None_CrossOrigin) {
 
   TestRenderFrameHost* rfh =
       static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame());
+  rfh->SetLastCommittedOriginForTesting(
+      url::Origin::Create(GURL("http://a.com")));
   rfh->document_associated_data().PutCookieSettingOverride(
       net::CookieSettingOverride::kStorageAccessGrantEligible);
 
