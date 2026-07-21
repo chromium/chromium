@@ -1117,6 +1117,10 @@ def main():
   if lit_excludes:
     test_env['LIT_FILTER_OUT'] = '|'.join(lit_excludes)
 
+  crash_diagnostics_dir = os.path.join(CHROMIUM_DIR, 'out', 'clang-crashreports')
+  cflags.append('-fcrash-diagnostics-dir=' + crash_diagnostics_dir)
+  cxxflags.append('-fcrash-diagnostics-dir=' + crash_diagnostics_dir)
+
   if args.bootstrap:
     print('Building bootstrap compiler')
     if os.path.exists(LLVM_BOOTSTRAP_DIR):
