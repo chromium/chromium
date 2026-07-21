@@ -216,7 +216,6 @@ export class HelpBubbleController {
       return false;
     }
 
-
     this.anchor_ = anchor;
     this.options_ = options;
     return true;

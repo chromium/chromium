@@ -86,11 +86,11 @@ export class HelpBubbleMixinCommon {
 
   registerHelpBubble(
       nativeId: string, trackable: Trackable,
-      options: HelpBubbleOptions = {}): HelpBubbleController|null {
+      options: HelpBubbleOptions = {}): boolean {
     if (this.helpBubbleControllerById_.has(nativeId)) {
       const ctrl = this.helpBubbleControllerById_.get(nativeId);
       if (ctrl && ctrl.isBubbleShowing()) {
-        return null;
+        return false;
       }
       this.unregisterHelpBubble(nativeId);
     }
@@ -104,7 +104,7 @@ export class HelpBubbleMixinCommon {
     if (this.isConnected_) {
       this.observeControllerAnchor_(controller, options);
     }
-    return controller;
+    return true;
   }
 
   unregisterHelpBubble(nativeId: string): void {
@@ -134,22 +134,34 @@ export class HelpBubbleMixinCommon {
     return this.controllers.some(ctrl => ctrl.isBubbleShowing());
   }
 
-  isHelpBubbleShowingForTesting(id: string): boolean {
+  isHelpBubbleShowingForTesting(target: string|HTMLElement): boolean {
     const controllers =
-        this.controllers.filter(this.filterMatchingIdForTesting_(id));
+        this.controllers.filter(this.filterControllersForTesting_(target));
     return !!controllers[0];
   }
 
-  getHelpBubbleForTesting(id: string): HelpBubbleElement|null {
+  getHelpBubbleForTesting(target: string|HTMLElement): HelpBubbleElement|null {
     const controllers =
-        this.controllers.filter(this.filterMatchingIdForTesting_(id));
+        this.controllers.filter(this.filterControllersForTesting_(target));
     return controllers[0] ? controllers[0].getBubble() : null;
   }
 
-  private filterMatchingIdForTesting_(anchorId: string):
+  private static matchesAnchor_(
+      ctrl: HelpBubbleController, target: string|HTMLElement): boolean {
+    const anchor = ctrl.getAnchor();
+    if (!anchor) {
+      return false;
+    }
+    if (target instanceof HTMLElement) {
+      return anchor === target;
+    }
+    return anchor.id === target || ctrl.getNativeId() === target;
+  }
+
+  private filterControllersForTesting_(target: string|HTMLElement):
       (ctrl: HelpBubbleController) => boolean {
-    return ctrl => ctrl.isBubbleShowing() && ctrl.getAnchor() !== null &&
-        ctrl.getAnchor()!.id === anchorId;
+    return ctrl => ctrl.isBubbleShowing() &&
+        HelpBubbleMixinCommon.matchesAnchor_(ctrl, target);
   }
 
   getSortedAnchorStatusesForTesting(): Array<[string, boolean]> {
@@ -158,8 +170,9 @@ export class HelpBubbleMixinCommon {
         .map(ctrl => ([ctrl.getNativeId(), ctrl.hasAnchor()]));
   }
 
-  canShowHelpBubble(controller: HelpBubbleController): boolean {
-    if (!this.helpBubbleControllerById_.has(controller.getNativeId())) {
+  canShowHelpBubble(anchorId: string): boolean {
+    const controller = this.helpBubbleControllerById_.get(anchorId);
+    if (!controller) {
       return false;
     }
     if (!controller.canShowBubble()) {
@@ -173,11 +186,13 @@ export class HelpBubbleMixinCommon {
     return !anchorIsUsed;
   }
 
-  showHelpBubble(controller: HelpBubbleController, params: HelpBubbleParams):
-      void {
-    assert(this.canShowHelpBubble(controller), 'Can\'t show help bubble');
+  showHelpBubble(params: HelpBubbleParams): void {
+    assert(
+        this.canShowHelpBubble(params.nativeIdentifier),
+        'Can\'t show help bubble');
+    const controller =
+        this.helpBubbleControllerById_.get(params.nativeIdentifier)!;
     const bubble = controller.createBubble(params);
-
     this.helpBubbleDismissedEventTracker_.add(
         bubble, HELP_BUBBLE_DISMISSED_EVENT,
         this.onHelpBubbleDismissed_.bind(this));
@@ -256,8 +271,7 @@ export class HelpBubbleMixinCommon {
       // Identifier not handled by this mixin.
       return;
     }
-    const ctrl = this.helpBubbleControllerById_.get(params.nativeIdentifier)!;
-    this.showHelpBubble(ctrl, params);
+    this.showHelpBubble(params);
   }
 
   /**

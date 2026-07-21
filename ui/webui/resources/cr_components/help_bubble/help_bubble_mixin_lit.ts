@@ -23,7 +23,7 @@ import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {HelpBubbleElement} from './help_bubble.js';
 import type {BrowserProxy, HelpBubbleParams} from './help_bubble.mojom-webui.js';
 import {browserProxyFactory} from './help_bubble.mojom-webui.js';
-import type {HelpBubbleController, HelpBubbleOptions, Trackable} from './help_bubble_controller.js';
+import type {HelpBubbleOptions, Trackable} from './help_bubble_controller.js';
 import {HelpBubbleMixinCommon} from './help_bubble_mixin_common.js';
 import type {HelpBubbleMixinInterface} from './help_bubble_mixin_interface.js';
 
@@ -60,7 +60,7 @@ export const HelpBubbleMixinLit = <T extends Constructor<CrLitElement>>(
 
     registerHelpBubble(
         nativeId: string, trackable: Trackable,
-        options: HelpBubbleOptions = {}): HelpBubbleController|null {
+        options: HelpBubbleOptions = {}): boolean {
       return this.impl_.registerHelpBubble(nativeId, trackable, options);
     }
 
@@ -72,25 +72,25 @@ export const HelpBubbleMixinLit = <T extends Constructor<CrLitElement>>(
       return this.impl_.isHelpBubbleShowing();
     }
 
-    isHelpBubbleShowingForTesting(id: string): boolean {
-      return this.impl_.isHelpBubbleShowingForTesting(id);  // IN-TEST
+    isHelpBubbleShowingForTesting(target: string|HTMLElement): boolean {
+      return this.impl_.isHelpBubbleShowingForTesting(target);  // IN-TEST
     }
 
-    getHelpBubbleForTesting(id: string): HelpBubbleElement|null {
-      return this.impl_.getHelpBubbleForTesting(id);  // IN-TEST
+    getHelpBubbleForTesting(target: string|HTMLElement): HelpBubbleElement
+        |null {
+      return this.impl_.getHelpBubbleForTesting(target);  // IN-TEST
     }
 
     getSortedAnchorStatusesForTesting(): Array<[string, boolean]> {
       return this.impl_.getSortedAnchorStatusesForTesting();  // IN-TEST
     }
 
-    canShowHelpBubble(controller: HelpBubbleController): boolean {
-      return this.impl_.canShowHelpBubble(controller);
+    canShowHelpBubble(anchorId: string): boolean {
+      return this.impl_.canShowHelpBubble(anchorId);
     }
 
-    showHelpBubble(controller: HelpBubbleController, params: HelpBubbleParams):
-        void {
-      this.impl_.showHelpBubble(controller, params);
+    showHelpBubble(params: HelpBubbleParams): void {
+      this.impl_.showHelpBubble(params);
     }
 
     hideHelpBubble(nativeId: string): boolean {

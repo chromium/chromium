@@ -11,7 +11,7 @@
 
 import type {HelpBubbleElement} from './help_bubble.js';
 import type {BrowserProxy, HelpBubbleParams} from './help_bubble.mojom-webui.js';
-import type {HelpBubbleController, HelpBubbleOptions, Trackable} from './help_bubble_controller.js';
+import type {HelpBubbleOptions, Trackable} from './help_bubble_controller.js';
 
 export interface HelpBubbleMixinInterface {
   createHelpBubbleProxy(): BrowserProxy;
@@ -69,7 +69,7 @@ export interface HelpBubbleMixinInterface {
    */
   registerHelpBubble(
       nativeId: string, trackable: Trackable,
-      options?: HelpBubbleOptions): HelpBubbleController|null;
+      options?: HelpBubbleOptions): boolean;
 
 
   /**
@@ -86,14 +86,17 @@ export interface HelpBubbleMixinInterface {
   isHelpBubbleShowing(): boolean;
 
   /**
-   * Returns whether any help bubble is currently showing on a tag with this id.
+   * Returns whether any help bubble is currently showing on `target`, which
+   * can be the native id, the HTML id, or the anchor element.
    */
-  isHelpBubbleShowingForTesting(id: string): boolean;
+  isHelpBubbleShowingForTesting(target: string|HTMLElement): boolean;
 
   /**
-   * Returns the help bubble currently showing on a tag with this id.
+   * Returns the help bubble currently showing on `target`, which can be
+   * expressed as an HTML id, a native id, or an element. Returns null if no
+   * help bubble exists.
    */
-  getHelpBubbleForTesting(id: string): HelpBubbleElement|null;
+  getHelpBubbleForTesting(target: string|HTMLElement): HelpBubbleElement|null;
 
   /**
    * Testing method to validate that anchors will be properly located at runtime
@@ -106,20 +109,15 @@ export interface HelpBubbleMixinInterface {
   /**
    * Returns whether a help bubble can be shown
    * This requires:
-   * - the mixin is tracking this controller
-   * - the controller is in a state to be shown, e.g.
-   *   `.canShowBubble()`
+   * - the controller is in a state to be shown, e.g. `.canShowBubble()`
    * - no other showing bubbles are anchored to the same element
    */
-  canShowHelpBubble(controller: HelpBubbleController): boolean;
+  canShowHelpBubble(anchorId: string): boolean;
 
   /**
-   * Displays a help bubble with `params` anchored to the HTML element with id
-   * `anchorId`. Note that `params.nativeIdentifier` is ignored by this method,
-   * since the anchor is already specified.
+   * Displays a help bubble with `params` anchored to the HTML element.
    */
-  showHelpBubble(controller: HelpBubbleController, params: HelpBubbleParams):
-      void;
+  showHelpBubble(params: HelpBubbleParams): void;
 
   /**
    * Hides a help bubble anchored to element with id `anchorId` if there is one.
