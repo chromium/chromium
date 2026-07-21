@@ -4,6 +4,7 @@
 
 #include "ui/base/x/x11_desktop_window_move_client.h"
 
+#include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/events/event.h"
@@ -14,23 +15,17 @@ namespace ui {
 X11DesktopWindowMoveClient::Delegate::~Delegate() = default;
 
 X11DesktopWindowMoveClient::X11DesktopWindowMoveClient(Delegate* window)
-    : window_(window ? window->AsWeakPtr() : nullptr) {}
+    : window_(window) {
+  CHECK(window_);
+}
 
 X11DesktopWindowMoveClient::~X11DesktopWindowMoveClient() = default;
 
 void X11DesktopWindowMoveClient::OnMouseMovement(const gfx::Point& screen_point,
                                                  int flags,
                                                  base::TimeTicks event_time) {
-  if (!window_) {
-    return;
-  }
   gfx::Point system_loc = screen_point - window_offset_;
-  base::WeakPtr<X11DesktopWindowMoveClient> alive(weak_factory_.GetWeakPtr());
-  const gfx::Size size = window_->GetSize();
-  if (!alive || !window_) {
-    return;
-  }
-  window_->SetBoundsOnMove(gfx::Rect(system_loc, size));
+  window_->SetBoundsOnMove(gfx::Rect(system_loc, window_->GetSize()));
 }
 
 void X11DesktopWindowMoveClient::OnMouseReleased() {

@@ -229,7 +229,6 @@ class X11Window : public PlatformWindow,
   void SetBoundsOnMove(const gfx::Rect& requested_bounds) override;
   scoped_refptr<X11Cursor> GetLastCursor() override;
   gfx::Size GetSize() override;
-  base::WeakPtr<X11DesktopWindowMoveClient::Delegate> AsWeakPtr() override;
 
   void QuitDragLoop();
 
@@ -519,7 +518,7 @@ class X11Window : public PlatformWindow,
 
   base::CancelableOnceCallback<void(x11::Cursor)> on_cursor_loaded_;
 
-  mutable base::WeakPtrFactory<X11Window> weak_ptr_factory_{this};
+  base::WeakPtrFactory<X11Window> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

@@ -165,7 +165,6 @@ source_set("unittests") {
     "selection_utils_unittest.cc",
     "x11_cursor_factory_unittest.cc",
     "x11_cursor_loader_unittest.cc",
-    "x11_desktop_window_move_client_unittest.cc",
     "x11_display_util_unittest.cc",
     "x11_whole_screen_move_loop_unittest.cc",
   ]

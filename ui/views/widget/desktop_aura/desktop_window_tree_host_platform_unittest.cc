@@ -23,7 +23,6 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_switches.h"
-#include "ui/display/test/test_screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
@@ -857,53 +856,6 @@ TEST_F(DesktopWindowTreeHostPlatformTest,
 
   // This should not crash or trigger UAF.
   host_platform->Restore();
-}
-
-class CenterWindowCloseWidgetScreen : public display::test::TestScreen {
- public:
-  explicit CenterWindowCloseWidgetScreen(Widget* widget)
-      : display::test::TestScreen(/*create_display=*/false,
-                                  /*register_screen=*/false),
-        widget_(widget) {
-    display_list().AddDisplay({0, gfx::Rect(0, 0, 800, 600)},
-                              display::DisplayList::Type::PRIMARY);
-    old_screen_ = display::Screen::SetScreenInstance(nullptr);
-    display::Screen::SetScreenInstance(this);
-  }
-
-  ~CenterWindowCloseWidgetScreen() override {
-    display::Screen::SetScreenInstance(nullptr);
-    display::Screen::SetScreenInstance(old_screen_);
-  }
-
-  display::Display GetDisplayNearestWindow(
-      gfx::NativeWindow window) const override {
-    if (widget_ && !widget_closed_) {
-      widget_closed_ = true;
-      widget_->CloseNow();
-    }
-    return display::test::TestScreen::GetDisplayNearestWindow(window);
-  }
-
- private:
-  raw_ptr<Widget> widget_;
-  raw_ptr<display::Screen> old_screen_ = nullptr;
-  mutable bool widget_closed_ = false;
-};
-
-TEST_F(DesktopWindowTreeHostPlatformTest,
-       CenterWindowSurvivesSynchronousClose) {
-  std::unique_ptr<Widget> widget = CreateWidgetWithNativeWidget();
-  widget->Show();
-
-  auto* host_platform = DesktopWindowTreeHostPlatform::GetHostForWidget(
-      widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  ASSERT_TRUE(host_platform);
-
-  CenterWindowCloseWidgetScreen test_screen(widget.get());
-
-  // This should not crash or trigger UAF.
-  host_platform->CenterWindow(gfx::Size(100, 100));
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
