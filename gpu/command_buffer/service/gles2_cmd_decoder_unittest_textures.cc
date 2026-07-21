@@ -594,6 +594,62 @@ TEST_P(GLES2DecoderTest, TexImage2DGLError) {
       texture->GetLevelSize(GL_TEXTURE_2D, level, &width, &height, nullptr));
 }
 
+TEST_P(GLES2DecoderTest, TexSubImage2DGLErrorDoesNotMarkLevelAsCleared) {
+  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+               0);
+
+  TextureManager* manager = group().texture_manager();
+  TextureRef* texture_ref = manager->GetTexture(client_texture_id_);
+  ASSERT_TRUE(texture_ref != nullptr);
+  Texture* texture = texture_ref->texture();
+  EXPECT_FALSE(texture->SafeToRenderFrom());
+
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_OUT_OF_MEMORY))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_, TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA,
+                               GL_UNSIGNED_BYTE, shared_memory_address_.get()))
+      .Times(1)
+      .RetiresOnSaturation();
+  cmds::TexSubImage2D cmd;
+  cmd.Init(GL_TEXTURE_2D, 0, 0, 0, 2, 2, GL_RGBA, GL_UNSIGNED_BYTE,
+           shared_memory_id_, kSharedMemoryOffset, GL_FALSE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
+  EXPECT_FALSE(texture->SafeToRenderFrom());
+}
+
+TEST_P(GLES2DecoderTest, TexSubImage2DGLErrorDoesNotExpandClearedRect) {
+  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0,
+               0);
+
+  TextureManager* manager = group().texture_manager();
+  TextureRef* texture_ref = manager->GetTexture(client_texture_id_);
+  ASSERT_TRUE(texture_ref != nullptr);
+  Texture* texture = texture_ref->texture();
+  EXPECT_EQ(gfx::Rect(), texture->GetLevelClearedRect(GL_TEXTURE_2D, 0));
+
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_OUT_OF_MEMORY))
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl_,
+              TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 2, 1, GL_RGBA,
+                            GL_UNSIGNED_BYTE, shared_memory_address_.get()))
+      .Times(1)
+      .RetiresOnSaturation();
+  cmds::TexSubImage2D cmd;
+  cmd.Init(GL_TEXTURE_2D, 0, 0, 0, 2, 1, GL_RGBA, GL_UNSIGNED_BYTE,
+           shared_memory_id_, kSharedMemoryOffset, GL_FALSE);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_OUT_OF_MEMORY, GetGLError());
+  EXPECT_EQ(gfx::Rect(), texture->GetLevelClearedRect(GL_TEXTURE_2D, 0));
+  EXPECT_FALSE(texture->SafeToRenderFrom());
+}
+
 TEST_P(GLES2DecoderTest, CopyTexImage2DGLError) {
   GLenum target = GL_TEXTURE_2D;
   GLint level = 0;
@@ -2634,6 +2690,10 @@ TEST_P(GLES2DecoderTest, TexSubImage2DClearsAfterTexImage2DNULL) {
   SetupClearTextureExpectations(kServiceTextureId, kServiceTextureId,
                                 GL_TEXTURE_2D, GL_TEXTURE_2D, 0, GL_RGBA,
                                 GL_UNSIGNED_BYTE, 0, 1, 2, 1, 0);
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
   EXPECT_CALL(*gl_,
               TexSubImage2D(GL_TEXTURE_2D, 0, 0, _, _, 1, GL_RGBA,
                             GL_UNSIGNED_BYTE, shared_memory_address_.get()))
@@ -2694,6 +2754,10 @@ TEST_P(GLES2DecoderTest, TexSubImage2DClearsAfterTexImage2DWithDataThenNULL) {
   SetupClearTextureExpectations(kServiceTextureId, kServiceTextureId,
                                 GL_TEXTURE_2D, GL_TEXTURE_2D, 0, GL_RGBA,
                                 GL_UNSIGNED_BYTE, 0, 1, 2, 1, 0);
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
   EXPECT_CALL(*gl_,
               TexSubImage2D(GL_TEXTURE_2D, 0, 0, _, _, 1, GL_RGBA,
                             GL_UNSIGNED_BYTE, shared_memory_address_.get()))
@@ -2722,6 +2786,10 @@ TEST_P(GLES3DecoderTest, ClearLevelWithBoundUnpackBuffer) {
   DoBindBuffer(GL_PIXEL_UNPACK_BUFFER, client_buffer_id_, kServiceBufferId);
   DoBufferData(GL_PIXEL_UNPACK_BUFFER, 8);
 
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
   EXPECT_CALL(*gl_, TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 2, 1, GL_RGBA,
                                   GL_UNSIGNED_BYTE, 0))
       .Times(1)
@@ -3478,6 +3546,10 @@ TEST_P(GLES2DecoderManualInitTest, TexSubImage2DFloatOnGLES3) {
                GL_FLOAT,
                0,
                0);
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
   EXPECT_CALL(*gl_, TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, kWidth, kHeight, 0,
                                GL_RGBA, GL_FLOAT, shared_memory_address_.get()))
       .Times(1)
@@ -3510,6 +3582,10 @@ TEST_P(GLES2DecoderManualInitTest, TexSubImage2DFloatDoesClearOnGLES3) {
   SetupClearTextureExpectations(kServiceTextureId, kServiceTextureId,
                                 GL_TEXTURE_2D, GL_TEXTURE_2D, 0, GL_RGBA,
                                 GL_FLOAT, 0, kHeight - 1, kWidth, 1, 0);
+  EXPECT_CALL(*gl_, GetError())
+      .WillOnce(Return(GL_NO_ERROR))
+      .WillOnce(Return(GL_NO_ERROR))
+      .RetiresOnSaturation();
   EXPECT_CALL(*gl_, TexSubImage2D(GL_TEXTURE_2D, 0, 0, _, _, _, GL_RGBA,
                                   GL_FLOAT, shared_memory_address_.get()))
       .Times(2)

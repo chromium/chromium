@@ -2876,6 +2876,9 @@ void TextureManager::ValidateAndDoTexSubImage(
                                   &tex_height, &tex_depth);
   DCHECK(ok);
   bool full_image;
+  bool set_cleared = false;
+  bool set_cleared_rect = false;
+  gfx::Rect cleared_rect_to_set;
   if (args.xoffset != 0 || args.yoffset != 0 || args.zoffset != 0 ||
       args.width != tex_width || args.height != tex_height ||
       args.depth != tex_depth) {
@@ -2890,7 +2893,8 @@ void TextureManager::ValidateAndDoTexSubImage(
                 texture->GetLevelClearedRect(args.target, args.level)
                     .size()
                     .GetArea());
-      SetLevelClearedRect(texture_ref, args.target, args.level, cleared_rect);
+      cleared_rect_to_set = cleared_rect;
+      set_cleared_rect = !texture->IsLevelCleared(args.target, args.level);
     } else {
       // Otherwise clear part of texture level that is not already cleared.
       if (!ClearTextureLevel(decoder, texture_ref, args.target, args.level)) {
@@ -2901,11 +2905,19 @@ void TextureManager::ValidateAndDoTexSubImage(
     }
     full_image = false;
   } else {
-    SetLevelCleared(texture_ref, args.target, args.level, true);
+    set_cleared = !texture->IsLevelCleared(args.target, args.level);
     full_image = true;
   }
 
+  // Defer committing the cleared state until the driver upload succeeds.
+  // See https://crbug.com/516864349
+  const bool update_cleared_state = set_cleared || set_cleared_rect;
+  if (update_cleared_state) {
+    ERRORSTATE_COPY_REAL_GL_ERRORS_TO_WRAPPER(error_state, function_name);
+  }
+
   Buffer* buffer = state->bound_pixel_unpack_buffer.get();
+  bool uploaded = false;
 
   if (texture_state->unpack_overlapping_rows_separately_unpack_buffer &&
       buffer) {
@@ -2922,31 +2934,34 @@ void TextureManager::ValidateAndDoTexSubImage(
       // work around driver bug.
       DoTexSubImageRowByRowWorkaround(texture_state, state, args,
                                       unpack_params);
-      return;
+      uploaded = true;
     }
   }
 
-  if (texture_state->unpack_alignment_workaround_with_unpack_buffer && buffer &&
+  if (!uploaded &&
+      texture_state->unpack_alignment_workaround_with_unpack_buffer && buffer &&
       args.width && args.height && args.depth) {
     uint32_t buffer_size = static_cast<uint32_t>(buffer->size());
     if (buffer_size - args.pixels_size - ToGLuint(args.pixels) < args.padding) {
       TRACE_EVENT0("gpu", "WithAlignmentWorkaround");
       DoTexSubImageWithAlignmentWorkaround(texture_state, state, args);
-      return;
+      uploaded = true;
     }
   }
 
-  if (texture_state->split_level_0_pbo_full_sub_image_2d && args.level == 0 &&
-      buffer &&
+  if (!uploaded && texture_state->split_level_0_pbo_full_sub_image_2d &&
+      args.level == 0 && buffer &&
       args.command_type ==
           DoTexSubImageArguments::CommandType::kTexSubImage2D &&
       full_image && args.width > 0 && args.height > 0) {
     TRACE_EVENT0("gpu", "SplitLevel0PboFullSubImage2dWorkaround");
     DoTexSubImageSplitLevel0PboWorkaround(texture_state, state, args);
-    return;
+    uploaded = true;
   }
 
-  if (full_image && !texture->IsImmutable()) {
+  if (uploaded) {
+    // Upload was performed by one of the workarounds above.
+  } else if (full_image && !texture->IsImmutable()) {
     TRACE_EVENT0("gpu", "FullImage");
     GLenum internal_format;
     GLenum tex_type;
@@ -2982,6 +2997,16 @@ void TextureManager::ValidateAndDoTexSubImage(
                       args.width, args.height,
                       AdjustTexFormat(feature_info_.get(), args.format),
                       args.type, args.pixels);
+    }
+  }
+
+  if (update_cleared_state &&
+      ERRORSTATE_PEEK_GL_ERROR(error_state, function_name) == GL_NO_ERROR) {
+    if (set_cleared) {
+      SetLevelCleared(texture_ref, args.target, args.level, true);
+    } else if (set_cleared_rect) {
+      SetLevelClearedRect(texture_ref, args.target, args.level,
+                          cleared_rect_to_set);
     }
   }
 }
