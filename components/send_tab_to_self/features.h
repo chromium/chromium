@@ -40,6 +40,12 @@ BASE_DECLARE_FEATURE(kSendTabToSelfPropagateNavigationHistory);
 // in the foreground if Chrome is currently being used.
 BASE_DECLARE_FEATURE(kSendTabToSelfAutoOpen);
 
+#if BUILDFLAG(IS_IOS)
+// If this feature is enabled along with kSendTabToSelfAutoOpen, received tabs
+// will be automatically opened in the background even while in the Tab Grid.
+BASE_DECLARE_FEATURE(kSendTabToSelfSupportAutoOpenInTabGrid);
+#endif  // BUILDFLAG(IS_IOS)
+
 // If this feature is enabled, several UIs on desktop are enhanced, like showing
 // a list of devices directly in the context menu, the new Desktop device picker
 // flow, and the visually enhanced STTS target device picker bubble.
