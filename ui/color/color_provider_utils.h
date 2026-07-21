@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(COLOR) ColorProviderUtilsCallbacks {
  public:
   virtual ~ColorProviderUtilsCallbacks();
   virtual bool ColorIdName(ColorId color_id, std::string_view* color_name) = 0;
+  virtual bool NameToColorId(std::string_view color_name, ColorId* color_id);
 };
 
 // The following functions convert various values to strings intended for
@@ -35,6 +36,10 @@ class COMPONENT_EXPORT(COLOR) ColorProviderUtilsCallbacks {
 
 // Converts ColorId.
 std::string COMPONENT_EXPORT(COLOR) ColorIdName(ColorId color_id);
+
+// Converts string representation of ColorId to its enum value.
+std::optional<ColorId> COMPONENT_EXPORT(COLOR)
+    NameToColorId(std::string_view color_id_name);
 
 // Converts SkColor to string. Check if color matches a standard color palette
 // value and return it as a string. Otherwise return as an rgba(xx, xxx, xxx,

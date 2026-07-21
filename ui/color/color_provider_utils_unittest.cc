@@ -21,6 +21,12 @@ TEST_F(ColorProviderUtilsTest, ConvertColorProviderColorIdToCSSColorId) {
                 ui::ColorIdName(ui::kColorPrimaryBackground)));
 }
 
+TEST_F(ColorProviderUtilsTest, NameToColorId) {
+  EXPECT_EQ(ui::kColorPrimaryBackground,
+            ui::NameToColorId("kColorPrimaryBackground"));
+  EXPECT_EQ(std::nullopt, ui::NameToColorId("kInvalidColorName"));
+}
+
 TEST_F(ColorProviderUtilsTest, ConvertSkColorToCSSColor) {
   SkColor test_color = SkColorSetRGB(0xF2, 0x99, 0x00);
   // This will fail if we don't make sure to show two hex digits per color.

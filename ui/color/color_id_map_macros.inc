@@ -10,12 +10,17 @@
 #if !defined(COLOR_ID_FLAT_MAP_MACROS_DEFINED)
 #define COLOR_ID_FLAT_MAP_MACROS_DEFINED
 
+#if !defined(COLOR_ID_MAP_ENTRY)
+#define COLOR_ID_MAP_ENTRY(enum_name, string_name) \
+  { enum_name, string_name }
+#endif
+
 #define E1(enum_name) \
-  { enum_name, #enum_name }
+  COLOR_ID_MAP_ENTRY(enum_name, #enum_name)
 #define E2(enum_name, old_enum_name) \
-  { enum_name, #enum_name }
+  COLOR_ID_MAP_ENTRY(enum_name, #enum_name)
 #define E3(enum_name, old_enum_name, enum_value) \
-  { enum_name, #enum_name }
+  COLOR_ID_MAP_ENTRY(enum_name, #enum_name)
 #define E_CPONLY(...) E(__VA_ARGS__)
 #define GET_E(_1, _2, _3, macro_name, ...) macro_name
 #define E(...) GET_E(__VA_ARGS__, E3, E2, E1)(__VA_ARGS__),
@@ -27,4 +32,6 @@
 #undef E_CPONLY
 #undef GET_E
 #undef E
+#undef COLOR_ID_MAP_ENTRY
+#undef COLOR_ID_FLAT_MAP_MACROS_DEFINED
 #endif
