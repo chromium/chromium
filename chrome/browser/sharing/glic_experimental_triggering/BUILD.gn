@@ -3,10 +3,14 @@
 # found in the LICENSE file.
 
 source_set("glic_experimental_triggering") {
-  public = [ "glic_experimental_triggering_message_handler.h" ]
+  public = [
+    "glic_experimental_triggering_converters.h",
+    "glic_experimental_triggering_message_handler.h",
+  ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//components/sharing_message",
     "//components/sharing_message/proto",
@@ -18,6 +22,7 @@ source_set("impl") {
   sources = [
     "actor_log.cc",
     "actor_log.h",
+    "glic_experimental_triggering_converters.cc",
     "glic_experimental_triggering_message_handler.cc",
   ]
 
@@ -29,6 +34,16 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:chrome_features",
     "//components/actor/core:journal",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_experimental_triggering_converters_unittest.cc" ]
+  deps = [
+    ":glic_experimental_triggering",
+    ":impl",
+    "//testing/gtest",
   ]
 }
 

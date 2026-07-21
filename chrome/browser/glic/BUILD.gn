@@ -17,6 +17,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 source_set("glic") {
   sources = [
     "common/local_hotkey_manager.h",
+    "experimental_triggering/glic_experimental_triggering_types.h",
     "gemini_act_on_web_settings_policy_handler.h",
     "glic_hotkey.h",
     "glic_metrics.h",
