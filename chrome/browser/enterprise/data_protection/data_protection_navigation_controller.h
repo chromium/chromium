@@ -64,6 +64,12 @@ class DataProtectionNavigationController
   using ScreenshotAllowedUpdatedCallback = base::RepeatingCallback<void(bool)>;
   base::CallbackListSubscription RegisterScreenshotAllowedUpdatedCallback(
       ScreenshotAllowedUpdatedCallback callback);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Avoid storing the CallbackListSubscription in the java screenshot
+  // protection controller.
+  base::CallbackListSubscription current_callback_subscription_;
+#endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 
   // Callback is invoked by ApplyDataProtectionSettingsOrDelayIfEmpty.

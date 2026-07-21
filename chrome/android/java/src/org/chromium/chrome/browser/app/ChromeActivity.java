@@ -2221,7 +2221,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mScreenshotProtectionControllerSupplier.set(
                     new ScreenshotProtectionController(
                             this,
-                            getLifecycleDispatcher(),
+                            mActivityTabProvider.asObservable(),
                             getTabModelSelector(),
                             isCustomTab(),
                             SupplierUtils.upcast(

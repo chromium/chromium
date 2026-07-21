@@ -146,6 +146,36 @@ static bool JNI_DataProtectionBridge_IsScreenshotAllowed(JNIEnv* env,
 
   return controller->screenshot_allowed();
 }
+
+static void JNI_DataProtectionBridge_RegisterScreenshotSubscriptionCallback(
+    TabAndroid* tab,
+    base::RepeatingCallback<void(bool)> callback) {
+  if (!tab) {
+    return;
+  }
+  enterprise_data_protection::DataProtectionNavigationController* controller =
+      tab->GetTabFeatures()->data_protection_controller();
+  if (!controller) {
+    return;
+  }
+  controller->current_callback_subscription_ =
+      controller->RegisterScreenshotAllowedUpdatedCallback(callback);
+}
+
+static void JNI_DataProtectionBridge_ClearScreenshotSubscriptionCallback(
+    TabAndroid* tab) {
+  if (!tab) {
+    return;
+  }
+  enterprise_data_protection::DataProtectionNavigationController* controller =
+      tab->GetTabFeatures()->data_protection_controller();
+
+  if (!controller) {
+    return;
+  }
+  controller->current_callback_subscription_ = base::CallbackListSubscription();
+}
+
 // TODO(crbug.com/387484337) Add instrumentation tests
 static void JNI_DataProtectionBridge_VerifyCopyTextIsAllowedByPolicy(
     JNIEnv* env,

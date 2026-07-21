@@ -214,6 +214,15 @@ public class DataProtectionBridge {
         return getJni().isScreenshotAllowed(tab);
     }
 
+    /** Registers a callback to be notified when the screenshot allowed state changes for the tab */
+    public static void registerScreenshotSubscriptionCallback(Tab tab, Callback<Boolean> callback) {
+        getJni().registerScreenshotSubscriptionCallback(tab, callback);
+    }
+
+    public static void clearScreenshotSubscriptionCallback(Tab tab) {
+        getJni().clearScreenshotSubscriptionCallback(tab);
+    }
+
     public static void setInstanceForTesting(DataProtectionBridge.Natives instance) {
         sNativesForTesting = instance;
     }
@@ -273,5 +282,11 @@ public class DataProtectionBridge {
         boolean hasBlockingScreenshotRule(@JniType("Profile*") Profile profile);
 
         boolean isScreenshotAllowed(@JniType("TabAndroid*") Tab tab);
+
+        void registerScreenshotSubscriptionCallback(
+                @JniType("TabAndroid*") Tab tab,
+                @JniType("base::RepeatingCallback<void(bool)>") Callback<Boolean> callback);
+
+        void clearScreenshotSubscriptionCallback(@JniType("TabAndroid*") Tab tab);
     }
 }

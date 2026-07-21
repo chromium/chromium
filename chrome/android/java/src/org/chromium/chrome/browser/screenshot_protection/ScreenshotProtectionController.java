@@ -15,36 +15,99 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
+import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.DestroyObserver;
+import org.chromium.chrome.browser.policy.PolicyServiceFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.components.policy.PolicyMap;
+import org.chromium.components.policy.PolicyService;
 
-/** A class to provide common functionalities related to allowing/blocking screenshots. */
+/**
+ * A class providing a complete implementation of using {@link
+ * WindowManager.LayoutParams.FLAG_SECURE} to control screenshot protection.
+ *
+ * <p>For non-managed browsers, this class enables screenshot protection only when the incognito
+ * TabModel is active, by observing TabModelSelector. This can be overridden with the {@link
+ * IncognitoScreenshot} feature.
+ *
+ * <p>For enterprise managed browsers, {@link IncognitoScreenshot} is ignored if the page is
+ * protected by policy. Certain {@link LayoutState} will also always enable protection. If
+ * available, the non-incognito active Tab's {@link DataProtectionNavigationController} determines
+ * whether screenshot protection should be enabled based on the Tab's page.
+ *
+ * <p>In all cases, this class observes updates to {@link PolicyService} on all profiles so that
+ * screenshot protection applies when the profile is updated.
+ */
 @NullMarked
-public class ScreenshotProtectionController implements DestroyObserver {
+public class ScreenshotProtectionController
+        implements PolicyService.Observer, TabModelSelectorObserver {
     private final Activity mActivity;
     private final Window mWindow;
-    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final NullableObservableSupplier<Tab> mActivityTabProvider;
     private final TabModelSelector mTabModelSelector;
     private final MonotonicObservableSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    private final Callback<@Nullable Tab> mCurrentTabObserver = this::onTabChanged;
     private final Callback<LayoutStateProvider> mOnLayoutStateProviderAvailableCallback =
             this::onLayoutStateProviderAvailable;
+    private final boolean mIsCustomTab;
+    private final IncognitoTabModelObserver mIncognitoObserver =
+            new IncognitoTabModelObserver() {
+                @Override
+                public void wasFirstTabCreated() {
+                    Profile profile = mTabModelSelector.getModel(true).getProfile();
+                    if (profile != null && !profile.shutdownStarted()) {
+                        PolicyServiceFactory.getProfilePolicyService(profile)
+                                .addObserver(ScreenshotProtectionController.this);
+                    }
+                    initialize();
+                }
+
+                @Override
+                public void didBecomeEmpty() {
+                    Profile profile = mTabModelSelector.getModel(true).getProfile();
+                    if (profile != null
+                            && !profile.shutdownStarted()
+                            && ScreenshotProtectionController.this != null) {
+                        PolicyServiceFactory.getProfilePolicyService(profile)
+                                .removeObserver(ScreenshotProtectionController.this);
+                    }
+                }
+            };
+    private final TabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onDestroyed(Tab tab) {
+                    DataProtectionBridge.clearScreenshotSubscriptionCallback(tab);
+                }
+            };
+
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable LayoutStateObserver mLayoutStateObserver;
     private @Nullable Callback<TabModel> mCurrentTabModelObserver;
+    private boolean mHasEnterpriseScreenshotRules;
+    private boolean mActiveTabBlocked;
+    private int mActiveScreenshotCallbackTabId = Tab.INVALID_TAB_ID;
 
     /**
      * @param activity The {@link Activity} on which the snapshot capability needs to be controlled.
-     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} `this` will use to
-     *     unregister observers during destruction.
+     * @param activityTabProvider The {@link NullableObservableSupplier} of the active tab.
      * @param tabModelSelector The {@link TabModelSelector} to receive onChange events from and
      *     trigger protection updates.
      * @param isCustomTab If false, this class will not observe TabModelSelector or LayoutState.
@@ -54,19 +117,90 @@ public class ScreenshotProtectionController implements DestroyObserver {
     @VisibleForTesting
     public ScreenshotProtectionController(
             Activity activity,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            NullableObservableSupplier<Tab> activityTabProvider,
             TabModelSelector tabModelSelector,
             boolean isCustomTab,
             MonotonicObservableSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mActivity = activity;
         mWindow = activity.getWindow();
-
-        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityTabProvider = activityTabProvider;
         mTabModelSelector = tabModelSelector;
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
-        if (!isCustomTab) {
-            // Custom tabs cannot switch between TabModelSelectors or layouts, so they skip
-            // observing. Their screenshot protection state is updated once below.
+        mIsCustomTab = isCustomTab;
+
+        for (TabModel model : tabModelSelector.getModels()) {
+            Profile profile = model.getProfile();
+            if (profile != null && !profile.shutdownStarted()) {
+                PolicyServiceFactory.getProfilePolicyService(profile).addObserver(this);
+            }
+        }
+        // Incognito tabs don't have a profile until tab is opened, and have a different profile
+        // each time they are fully opened/closed.
+        tabModelSelector.addIncognitoTabModelObserver(mIncognitoObserver);
+
+        initialize();
+        mTabModelSelector.addObserver(this);
+    }
+
+    /** Returns true iff screenshots are blocked by the controller. Public for testing. */
+    public boolean isScreenshotBlocked() {
+        TabModel currentModel = mTabModelSelector.getCurrentModel();
+        if (currentModel.isIncognito() && !ChromeFeatureList.sIncognitoScreenshot.isEnabled()) {
+            return true;
+        }
+        return mHasEnterpriseScreenshotRules ? mActiveTabBlocked : false;
+    }
+
+    private void maybeClearActiveTabCallback() {
+        if (mActiveScreenshotCallbackTabId != Tab.INVALID_TAB_ID) {
+            Tab previousTab = mTabModelSelector.getTabById(mActiveScreenshotCallbackTabId);
+            if (previousTab != null) {
+                DataProtectionBridge.clearScreenshotSubscriptionCallback(previousTab);
+                previousTab.removeObserver(mTabObserver);
+            }
+            mActiveScreenshotCallbackTabId = Tab.INVALID_TAB_ID;
+        }
+        mActiveTabBlocked = false;
+    }
+
+    private void resetStateAndObservers() {
+        maybeClearActiveTabCallback();
+        mHasEnterpriseScreenshotRules = false;
+        mActivityTabProvider.removeObserver(mCurrentTabObserver);
+
+        mLayoutStateProviderSupplier.removeObserver(mOnLayoutStateProviderAvailableCallback);
+        if (mLayoutStateProvider != null && mLayoutStateObserver != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+            mLayoutStateObserver = null;
+        }
+
+        if (mCurrentTabModelObserver != null) {
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
+        }
+    }
+
+    private void initialize() {
+        resetStateAndObservers();
+
+        for (TabModel model : mTabModelSelector.getModels()) {
+            Profile profile = model.getProfile();
+            if (profile != null && !profile.shutdownStarted()) {
+                mHasEnterpriseScreenshotRules |=
+                        DataProtectionBridge.hasBlockingScreenshotRule(profile)
+                                || ManagedBrowserUtils.isEnterpriseRealTimeUrlCheckModeEnabled(
+                                        profile);
+            }
+        }
+
+        if (mHasEnterpriseScreenshotRules) {
+            mActivityTabProvider.addSyncObserverAndCallIfNonNull(mCurrentTabObserver);
+        }
+
+        /**
+         * Custom tabs cannot switch between TabModelSelectors or layouts, so they skip observing.
+         * Their screenshot protection state is updated once below.
+         */
+        if (!mIsCustomTab) {
             mCurrentTabModelObserver = tabModel -> updateScreenshotProtectionState();
             mTabModelSelector
                     .getCurrentTabModelSupplier()
@@ -77,12 +211,6 @@ public class ScreenshotProtectionController implements DestroyObserver {
         }
 
         updateScreenshotProtectionState();
-
-        mActivityLifecycleDispatcher.register(this);
-    }
-
-    public final boolean isScreenshotBlocked() {
-        return mTabModelSelector != null && mTabModelSelector.getCurrentModel().isIncognito();
     }
 
     private void onLayoutStateProviderAvailable(LayoutStateProvider layoutStateProvider) {
@@ -108,22 +236,37 @@ public class ScreenshotProtectionController implements DestroyObserver {
         mLayoutStateProviderSupplier.removeObserver(mOnLayoutStateProviderAvailableCallback);
     }
 
+    private void onTabChanged(@Nullable Tab tab) {
+        maybeClearActiveTabCallback();
+        if (tab != null && tab == mTabModelSelector.getCurrentTab()) {
+            mActiveTabBlocked = !DataProtectionBridge.isScreenshotAllowed(tab);
+            mActiveScreenshotCallbackTabId = tab.getId();
+            DataProtectionBridge.registerScreenshotSubscriptionCallback(
+                    tab, this::setCurrentTabState);
+            tab.addObserver(mTabObserver);
+        }
+        updateScreenshotProtectionState();
+    }
+
+    private void setCurrentTabState(Boolean allowed) {
+        mActiveTabBlocked = !allowed;
+        updateScreenshotProtectionState();
+    }
+
     /** Sets the attributes flags to secure if screenshots should be blocked */
-    protected void updateScreenshotProtectionState() {
+    private void updateScreenshotProtectionState() {
         WindowManager.LayoutParams attributes = mWindow.getAttributes();
         boolean currentSecureState =
                 (attributes.flags & WindowManager.LayoutParams.FLAG_SECURE)
                         == WindowManager.LayoutParams.FLAG_SECURE;
 
         boolean expectedSecureState = isScreenshotBlocked();
-        if (ChromeFeatureList.sIncognitoScreenshot.isEnabled()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                mActivity.setRecentsScreenshotEnabled(!expectedSecureState);
-            }
-            expectedSecureState = false;
-        }
+
         if (currentSecureState == expectedSecureState) return;
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            mActivity.setRecentsScreenshotEnabled(!expectedSecureState);
+        }
         if (expectedSecureState) {
             mWindow.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         } else {
@@ -131,17 +274,26 @@ public class ScreenshotProtectionController implements DestroyObserver {
         }
     }
 
-    // ActivityLifecycleDispatcher override
+    // PolicyService.Observer override
     @Override
-    public void onDestroy() {
-        mLayoutStateProviderSupplier.removeObserver(mOnLayoutStateProviderAvailableCallback);
-        if (mLayoutStateProvider != null && mLayoutStateObserver != null) {
-            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
-        }
-        if (mCurrentTabModelObserver != null) {
-            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
+    public void onPolicyUpdated(PolicyMap previous, PolicyMap current) {
+        // Post a task to sequence Initialize() calls and avoid re-entry.
+        PostTask.postTask(TaskTraits.UI_BEST_EFFORT, this::initialize);
+    }
+
+    // TabModelSelectorObserver override
+    @Override
+    public void onDestroyed() {
+        resetStateAndObservers();
+
+        for (TabModel model : mTabModelSelector.getModels()) {
+            Profile profile = model.getProfile();
+            if (profile != null && !profile.shutdownStarted()) {
+                PolicyServiceFactory.getProfilePolicyService(profile).removeObserver(this);
+            }
         }
 
-        mActivityLifecycleDispatcher.unregister(this);
+        mTabModelSelector.removeIncognitoTabModelObserver(mIncognitoObserver);
+        mTabModelSelector.removeObserver(this);
     }
 }
