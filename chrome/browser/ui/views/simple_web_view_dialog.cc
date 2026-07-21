@@ -143,56 +143,52 @@ SimpleWebViewDialog::~SimpleWebViewDialog() {
   }
 
   if (web_view_ && web_view_->web_contents()) {
-    web_view_->web_contents()->SetDelegate(nullptr);
-    web_modal::WebContentsModalDialogManager::FromWebContents(
-        web_view_->web_contents())
-        ->SetDelegate(nullptr);
+    if (web_view_->web_contents()->GetDelegate() == this) {
+      web_view_->web_contents()->SetDelegate(nullptr);
+    }
+    if (auto* manager =
+            web_modal::WebContentsModalDialogManager::FromWebContents(
+                web_view_->web_contents())) {
+      if (manager->delegate() == this) {
+        manager->SetDelegate(nullptr);
+      }
+    }
   }
 }
 
+// views::View:
+void SimpleWebViewDialog::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  views::View::OnBoundsChanged(previous_bounds);
+  NotifyPositionRequiresUpdate();
+}
+
+// views::SimpleWebView:
 views::View* SimpleWebViewDialog::GetView() {
   return this;
 }
 
-std::unique_ptr<views::View> SimpleWebViewDialog::TakeView(
-    std::unique_ptr<views::SimpleWebView> self) {
-  DCHECK_EQ(this, self.get());
-  self.release();
-  return base::WrapUnique<views::View>(this);
-}
-
-void SimpleWebViewDialog::StartLoad(const GURL& url) {
-  if (!web_view_container_) {
-    web_view_container_ = std::make_unique<views::WebView>(profile_);
+content::WebContents* SimpleWebViewDialog::GetWebViewWebContents() {
+  if (!web_view_) {
+    if (!web_view_container_) {
+      web_view_container_ = std::make_unique<views::WebView>(profile_);
+    }
+    web_view_ = web_view_container_.get();
+    if (content::WebContents* web_contents = web_view_->GetWebContents()) {
+      web_contents->SetDelegate(this);
+      web_modal::WebContentsModalDialogManager::CreateForWebContents(
+          web_contents);
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
+          ->SetDelegate(this);
+    }
   }
-  web_view_ = web_view_container_.get();
-  web_view_->GetWebContents()->SetDelegate(this);
-  web_view_->LoadInitialURL(url,
-                            views::WebView::HttpsUpgradePolicy::kNoUpgrade);
-
-  WebContents* web_contents = web_view_->GetWebContents();
-  DCHECK(web_contents);
-
-  // Create the password manager and autofill client that are needed.
-  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
-  ChromePasswordManagerClient::CreateForWebContents(web_contents);
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  // Create the password reuse detection manager for simple web view dialog.
-  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
-#endif
-
-  // Set this as the web modal delegate so that web dialog can appear.
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
-  web_modal::WebContentsModalDialogManager::FromWebContents(web_contents)
-      ->SetDelegate(this);
+  return web_view_->GetWebContents();
 }
 
 void SimpleWebViewDialog::Init() {
   // Create the security state model that the location bar model needs.
-  if (web_view_->GetWebContents()) {
-    ChromeSecurityStateTabHelper::CreateForWebContents(
-        web_view_->GetWebContents());
+  content::WebContents* web_contents = GetWebViewWebContents();
+  if (web_contents) {
+    ChromeSecurityStateTabHelper::CreateForWebContents(web_contents);
   }
   location_bar_model_ = std::make_unique<LocationBarModelImpl>(
       this, content::kMaxURLDisplayChars);
@@ -267,12 +263,46 @@ void SimpleWebViewDialog::Init() {
   LoadImages();
 
   location_bar_->Init();
-  UpdateReload(web_view_->web_contents()->IsLoading(), true);
+  UpdateReload(GetWebViewWebContents()->IsLoading(), true);
 
   gfx::Rect screen_bounds =
       display::Screen::Get()->GetPrimaryDisplay().bounds();
   screen_bounds.Inset(kExternalMargin);
   SetPreferredSize(screen_bounds.size());
+}
+
+std::unique_ptr<views::WidgetDelegate>
+SimpleWebViewDialog::MakeWidgetDelegate() {
+  auto delegate = std::make_unique<views::WidgetDelegate>();
+  delegate->SetInitiallyFocusedView(web_view_);
+  if (delegate_) {
+    delegate = delegate_->MakeWidgetDelegate(std::move(delegate));
+  }
+  return delegate;
+}
+
+void SimpleWebViewDialog::StartLoad(const GURL& url) {
+  WebContents* web_contents = GetWebViewWebContents();
+  DCHECK(web_contents);
+
+  // Create the password manager and autofill client that are needed.
+  autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
+  ChromePasswordManagerClient::CreateForWebContents(web_contents);
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  // Create the password reuse detection manager for simple web view dialog.
+  ChromePasswordReuseDetectionManagerClient::CreateForWebContents(web_contents);
+#endif
+
+  web_view_->LoadInitialURL(url,
+                            views::WebView::HttpsUpgradePolicy::kNoUpgrade);
+}
+
+std::unique_ptr<views::View> SimpleWebViewDialog::TakeView(
+    std::unique_ptr<views::SimpleWebView> self) {
+  DCHECK_EQ(this, self.get());
+  self.release();
+  return base::WrapUnique<views::View>(this);
 }
 
 content::WebContents* SimpleWebViewDialog::OpenURL(
@@ -307,7 +337,10 @@ void SimpleWebViewDialog::LoadingStateChanged(WebContents* source,
   }
 }
 
-WebContents* SimpleWebViewDialog::GetWebContents() {
+// LocationBarView::Delegate:
+// Return nullptr to prevent LocationBarView from querying non-existent tab
+// helpers on captive portal and OOBE web contents.
+content::WebContents* SimpleWebViewDialog::GetWebContents() {
   return nullptr;
 }
 
@@ -361,16 +394,6 @@ void SimpleWebViewDialog::HandleCommandWithDisposition(int id,
   }
 }
 
-std::unique_ptr<views::WidgetDelegate>
-SimpleWebViewDialog::MakeWidgetDelegate() {
-  auto delegate = std::make_unique<views::WidgetDelegate>();
-  delegate->SetInitiallyFocusedView(web_view_);
-  if (delegate_) {
-    delegate = delegate_->MakeWidgetDelegate(std::move(delegate));
-  }
-  return delegate;
-}
-
 void SimpleWebViewDialog::LoadImages() {
   const ui::ThemeProvider* tp = GetThemeProvider();
 
@@ -418,13 +441,16 @@ gfx::NativeView SimpleWebViewDialog::GetHostView() const {
 }
 
 gfx::Point SimpleWebViewDialog::GetDialogPosition(const gfx::Size& size) {
-  const gfx::Size& host_size = this->size();
-  return gfx::Point(host_size.width() / 2 - size.width() / 2,
-                    host_size.height() / 2 - size.height() / 2);
+  views::View* host = web_view_ ? static_cast<views::View*>(web_view_) : this;
+  const gfx::Size& host_size = host->size();
+  gfx::Point position(host_size.width() / 2 - size.width() / 2,
+                      host_size.height() / 2 - size.height() / 2);
+  views::View::ConvertPointToWidget(host, &position);
+  return position;
 }
 
 gfx::Size SimpleWebViewDialog::GetMaximumDialogSize() {
-  return size();
+  return web_view_ ? web_view_->size() : size();
 }
 
 void SimpleWebViewDialog::AddObserver(
@@ -435,6 +461,12 @@ void SimpleWebViewDialog::AddObserver(
 void SimpleWebViewDialog::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void SimpleWebViewDialog::NotifyPositionRequiresUpdate() {
+  for (auto& observer : observers_) {
+    observer.OnPositionRequiresUpdate();
+  }
 }
 
 BEGIN_METADATA(SimpleWebViewDialog)

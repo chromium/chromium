@@ -11,6 +11,10 @@
 
 class GURL;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace views {
 
 class View;
@@ -28,6 +32,9 @@ class WEBVIEW_EXPORT SimpleWebView {
 
   // Returns the underlying view.
   virtual View* GetView() = 0;
+
+  // Returns the WebContents associated with this view.
+  virtual content::WebContents* GetWebViewWebContents() = 0;
 
   // Initializes the view. Should be attached to a Widget before call.
   virtual void Init() = 0;

@@ -16,17 +16,32 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "components/web_modal/modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace {
+
+class FakeModalDialogHostObserver : public web_modal::ModalDialogHostObserver {
+ public:
+  FakeModalDialogHostObserver() = default;
+  ~FakeModalDialogHostObserver() override = default;
+
+  void OnPositionRequiresUpdate() override { position_update_count_++; }
+  void OnHostDestroying() override { host_destroying_count_++; }
+
+  int position_update_count_ = 0;
+  int host_destroying_count_ = 0;
+};
 
 using security_interstitials::https_only_mode::Event;
 using security_interstitials::https_only_mode::kEventHistogram;
@@ -133,4 +148,50 @@ IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, NoHttpsUpgradeOnInitialLoad) {
   histograms.ExpectTotalCount(kEventHistogram, 2);
   histograms.ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
   histograms.ExpectBucketCount(kEventHistogram, Event::kUpgradeSucceeded, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, PositionNotifications) {
+  auto dialog_ptr =
+      std::make_unique<SimpleWebViewDialog>(browser()->GetProfile());
+  auto delegate = dialog_ptr->MakeWidgetDelegate();
+  auto* dialog = delegate->SetContentsView(std::move(dialog_ptr));
+
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  params.delegate = delegate.get();
+
+  auto widget = std::make_unique<ChromeTestWidget>();
+  widget->Init(std::move(params));
+
+  web_modal::WebContentsModalDialogHost* host = dialog;
+  FakeModalDialogHostObserver observer;
+  host->AddObserver(&observer);
+
+  EXPECT_EQ(observer.position_update_count_, 0);
+  dialog->SetBoundsRect(gfx::Rect(10, 10, 500, 500));
+  EXPECT_GT(observer.position_update_count_, 0);
+
+  host->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(SimpleWebViewDialogTest, HostDestroyingNotification) {
+  auto dialog_ptr =
+      std::make_unique<SimpleWebViewDialog>(browser()->GetProfile());
+  auto delegate = dialog_ptr->MakeWidgetDelegate();
+  auto* dialog = delegate->SetContentsView(std::move(dialog_ptr));
+
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  params.delegate = delegate.get();
+
+  auto widget = std::make_unique<ChromeTestWidget>();
+  widget->Init(std::move(params));
+
+  web_modal::WebContentsModalDialogHost* host = dialog;
+  FakeModalDialogHostObserver observer;
+  host->AddObserver(&observer);
+
+  EXPECT_EQ(observer.host_destroying_count_, 0);
+  widget.reset();
+  EXPECT_EQ(observer.host_destroying_count_, 1);
 }

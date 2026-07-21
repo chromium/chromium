@@ -13,13 +13,18 @@
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/toolbar/chrome_location_bar_model_delegate.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/webview/simple_web_view.h"
 #include "ui/views/controls/webview/simple_web_view_dialog_delegate.h"
+#include "ui/views/view.h"
 #include "url/gurl.h"
 
 class CommandUpdaterImpl;
@@ -62,8 +67,12 @@ class SimpleWebViewDialog : public views::View,
   SimpleWebViewDialog& operator=(const SimpleWebViewDialog&) = delete;
   ~SimpleWebViewDialog() override;
 
+  // views::View:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
   // views::SimpleWebView:
   views::View* GetView() override;
+  content::WebContents* GetWebViewWebContents() override;
   void Init() override;
   std::unique_ptr<views::WidgetDelegate> MakeWidgetDelegate() override;
   void StartLoad(const GURL& url) override;
@@ -82,7 +91,7 @@ class SimpleWebViewDialog : public views::View,
   void LoadingStateChanged(content::WebContents* source,
                            bool should_show_loading_ui) override;
 
-  // Implements LocationBarView::Delegate:
+  // LocationBarView::Delegate:
   content::WebContents* GetWebContents() override;
   LocationBarModel* GetLocationBarModel() override;
   const LocationBarModel* GetLocationBarModel() const override;
@@ -112,6 +121,7 @@ class SimpleWebViewDialog : public views::View,
   gfx::Size GetMaximumDialogSize() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
+  void NotifyPositionRequiresUpdate() override;
 
   raw_ptr<Profile> profile_;
   raw_ptr<views::SimpleWebViewDialogDelegate> delegate_ = nullptr;

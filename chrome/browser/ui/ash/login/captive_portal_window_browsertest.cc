@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ui/ash/login/captive_portal_view.h"
 #include "chrome/browser/ui/ash/login/captive_portal_window_proxy.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -22,10 +23,43 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
+#include "components/web_modal/single_web_contents_dialog_manager.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/views/controls/webview/simple_web_view.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
+
+class FakeSingleWebContentsDialogManager
+    : public web_modal::SingleWebContentsDialogManager {
+ public:
+  FakeSingleWebContentsDialogManager(
+      gfx::NativeWindow dialog,
+      web_modal::SingleWebContentsDialogManagerDelegate* delegate)
+      : dialog_(dialog), delegate_(delegate) {}
+  void Show() override { is_active_ = true; }
+  void Hide() override { is_active_ = false; }
+  void Close() override {
+    is_active_ = false;
+    delegate_->WillClose(dialog_);
+  }
+  void Focus() override {}
+  void Pulse() override {}
+  void HostChanged(web_modal::WebContentsModalDialogHost* new_host) override {}
+  gfx::NativeWindow dialog() override { return dialog_; }
+  bool IsActive() const override { return is_active_; }
+
+ private:
+  gfx::NativeWindow dialog_;
+  raw_ptr<web_modal::SingleWebContentsDialogManagerDelegate> delegate_;
+  bool is_active_ = false;
+};
 
 constexpr char kWifiServicePath[] = "/service/wifi1";
 const test::UIPath kCaptivePortalLink = {"error-message",
@@ -59,6 +93,14 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
     ASSERT_EQ(is_shown, actual_is_shown);
   }
 
+  CaptivePortalView* GetCaptivePortalView() {
+    if (captive_portal_window_proxy_->delegate_) {
+      return static_cast<CaptivePortalView*>(
+          captive_portal_window_proxy_->delegate_->GetContentsView());
+    }
+    return captive_portal_window_proxy_->captive_portal_view_.get();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kForceLoginManagerInTests);
     command_line->AppendSwitch(switches::kLoginManager);
@@ -80,6 +122,58 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, Show) {
   Show(kWifiServicePath);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest,
+                       WebContentsModalDialogManagerWired) {
+  Show(kWifiServicePath);
+  CaptivePortalView* portal_view = GetCaptivePortalView();
+  ASSERT_TRUE(portal_view);
+
+  views::SimpleWebView* simple_web_view = portal_view->simple_web_view();
+  ASSERT_TRUE(simple_web_view);
+  content::WebContents* web_contents = simple_web_view->GetWebViewWebContents();
+  ASSERT_TRUE(web_contents);
+
+  auto* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  ASSERT_TRUE(manager);
+  ASSERT_NE(manager->delegate(), nullptr);
+  auto* host = manager->delegate()->GetWebContentsModalDialogHost(web_contents);
+  ASSERT_TRUE(host);
+  EXPECT_EQ(host->GetHostView(),
+            simple_web_view->GetView()->GetWidget()->GetNativeView());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, ModalDialogTeardown) {
+  Show(kWifiServicePath);
+  CaptivePortalView* portal_view = GetCaptivePortalView();
+  ASSERT_TRUE(portal_view);
+
+  content::WebContents* web_contents =
+      portal_view->simple_web_view()->GetWebViewWebContents();
+  ASSERT_TRUE(web_contents);
+
+  auto* manager =
+      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
+  ASSERT_TRUE(manager);
+
+  std::unique_ptr<views::Widget> dialog_widget =
+      std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  params.parent = portal_view->GetWidget()->GetNativeView();
+  dialog_widget->Init(std::move(params));
+
+  manager->ShowDialogWithManager(
+      dialog_widget->GetNativeWindow(),
+      std::make_unique<FakeSingleWebContentsDialogManager>(
+          dialog_widget->GetNativeWindow(), manager));
+  EXPECT_TRUE(manager->IsDialogActive());
+
+  views::test::WidgetDestroyedWaiter waiter(portal_view->GetWidget());
+  Close();
+  waiter.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, ShowClose) {
