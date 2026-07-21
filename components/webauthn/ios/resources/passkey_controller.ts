@@ -1211,7 +1211,8 @@ function resolveAssertionRequest(
     authenticatorData: decodeBase64URLToArrayBuffer(authenticatorData64),
     clientDataJSON: stringToArrayBuffer(clientDataJson),
     signature: decodeBase64URLToArrayBuffer(signature64),
-    userHandle: decodeBase64URLToArrayBuffer(userHandle64),
+    userHandle: userHandle64 ? decodeBase64URLToArrayBuffer(userHandle64) :
+                               null,
   };
 
   resolveCredentialPromise(requestId, id64, response, extensions);

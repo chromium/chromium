@@ -43,6 +43,8 @@ const char kNavigatorCredentialsConditionalGetUrl[] =
     "/credentialsConditionalGet";
 const char kNavigatorCredentialsCreateMissingRpIdUrl[] =
     "/credentialsCreateMissingRpId";
+const char kNavigatorCredentialsGetWithUserHandleUrl[] =
+    "/credentialsGetWithUserHandle";
 const char kAnotherPageUrl[] = "/anotherPage";
 
 const char kNavigatorCredentialsCreatePageHtml[] =
@@ -71,6 +73,19 @@ const char kNavigatorCredentialsCreateMissingRpIdPageHtml[] =
     "rp: { name: 'My Website' },"
     "user: { id: new ArrayBuffer(0), name: '', displayName: '' } } });"
     "</script></body></html>";
+const char kNavigatorCredentialsGetWithUserHandlePageHtml[] =
+    "<html><body><script>"
+    "window.onload = () => {"
+    "  window.getPromise = navigator.credentials.get({ "
+    "    mediation: 'conditional', "
+    "    publicKey: { challenge: new ArrayBuffer(0) } "
+    "  }).then(cred => { "
+    "    window.credentialResult = cred; "
+    "  }).catch(err => { "
+    "    window.credentialError = err; "
+    "  });"
+    "};"
+    "</script></body></html>";
 const char kAnotherPageHtml[] = "<html><body>Another Page</body></html>";
 
 // Provides responses for initial page and destination URLs.
@@ -89,6 +104,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     http_response->set_content(kNavigatorCredentialsGetPageHtml);
   } else if (request.relative_url == kNavigatorCredentialsConditionalGetUrl) {
     http_response->set_content(kNavigatorCredentialsConditionalGetPageHtml);
+  } else if (request.relative_url ==
+             kNavigatorCredentialsGetWithUserHandleUrl) {
+    http_response->set_content(kNavigatorCredentialsGetWithUserHandlePageHtml);
   } else if (request.relative_url == kAnotherPageUrl) {
     http_response->set_content(kAnotherPageHtml);
   } else {
@@ -499,6 +517,93 @@ TEST_F(PasskeyControllerJavaScriptTest,
   // Since it finished (rejected), it should NOT reload.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   EXPECT_TRUE(message_handler().lastReceivedMessage == nil);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsConditionalGetWithEmptyUserHandleReturnsNull) {
+  GURL get_url = server().GetURL(kNavigatorCredentialsGetWithUserHandleUrl);
+
+  ASSERT_TRUE(LoadUrl(get_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(@"handleGetRequest", body[@"event"]);
+
+  NSString* requestId = body[@"requestId"];
+  ASSERT_TRUE(requestId != nil);
+
+  // Resolve the request with userHandle64 as empty string "".
+  NSString* resolveJs = [NSString
+      stringWithFormat:
+          @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
+          @"resolveAssertionRequest')('%@', 'AQ', '', '', '', '', {})",
+          requestId];
+  web::test::ExecuteJavaScriptInWebView(web_view(), resolveJs);
+
+  // Wait until window.credentialResult is set.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        id result = web::test::ExecuteJavaScript(
+            web_view(), @"window.credentialResult !== undefined");
+        return [result boolValue];
+      }));
+
+  // Verify that window.credentialResult.response.userHandle is null.
+  id isNull = web::test::ExecuteJavaScript(
+      web_view(), @"window.credentialResult.response.userHandle === null");
+  EXPECT_TRUE([isNull boolValue]);
+}
+
+TEST_F(
+    PasskeyControllerJavaScriptTest,
+    NavigatorCredentialsConditionalGetWithNonEmptyUserHandleReturnsArrayBuffer) {
+  GURL get_url = server().GetURL(kNavigatorCredentialsGetWithUserHandleUrl);
+
+  ASSERT_TRUE(LoadUrl(get_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(@"handleGetRequest", body[@"event"]);
+
+  NSString* requestId = body[@"requestId"];
+  ASSERT_TRUE(requestId != nil);
+
+  // Resolve the request with userHandle64 as "AQ==" (which is base64 of 0x01).
+  NSString* resolveJs = [NSString
+      stringWithFormat:
+          @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
+          @"resolveAssertionRequest')('%@', 'AQ', '', '', 'AQ==', '', {})",
+          requestId];
+  web::test::ExecuteJavaScriptInWebView(web_view(), resolveJs);
+
+  // Wait until window.credentialResult is set.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        id result = web::test::ExecuteJavaScript(
+            web_view(), @"window.credentialResult !== undefined");
+        return [result boolValue];
+      }));
+
+  // Verify that window.credentialResult.response.userHandle is not null and has
+  // length 1.
+  id isNull = web::test::ExecuteJavaScript(
+      web_view(), @"window.credentialResult.response.userHandle === null");
+  EXPECT_FALSE([isNull boolValue]);
+
+  id byteLength = web::test::ExecuteJavaScript(
+      web_view(), @"window.credentialResult.response.userHandle.byteLength");
+  EXPECT_NSEQ(@1, byteLength);
+
+  id firstByte = web::test::ExecuteJavaScript(
+      web_view(),
+      @"new Uint8Array(window.credentialResult.response.userHandle)[0]");
+  EXPECT_NSEQ(@1, firstByte);
 }
 
 }  // namespace webauthn
