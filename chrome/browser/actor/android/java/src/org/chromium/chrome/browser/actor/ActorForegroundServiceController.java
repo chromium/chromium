@@ -77,6 +77,9 @@ public interface ActorForegroundServiceController {
      */
     boolean isActivityVisibleForTabs(Set<Integer> tabIds);
 
+    /** Returns true if a tabbed activity is currently visible. */
+    boolean isTabbedActivityVisible();
+
     /** Returns the singleton instance. */
     static ActorForegroundServiceController get() {
         if (Holder.sInstanceForTesting != null) return Holder.sInstanceForTesting;

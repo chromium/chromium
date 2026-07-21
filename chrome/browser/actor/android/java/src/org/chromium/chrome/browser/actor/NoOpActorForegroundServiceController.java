@@ -59,4 +59,9 @@ public class NoOpActorForegroundServiceController implements ActorForegroundServ
     public boolean isActivityVisibleForTabs(Set<Integer> tabIds) {
         return false;
     }
+
+    @Override
+    public boolean isTabbedActivityVisible() {
+        return false;
+    }
 }

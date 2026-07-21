@@ -151,8 +151,10 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
                 Log.w(TAG, "START_ACTOR_FOREGROUND_SERVICE intent was not trusted.");
                 return Service.START_NOT_STICKY;
             }
-            // TODO(crbug.com/534401462): Do not start background actuation if Chrome is in the
-            // foreground.
+            if (ActorForegroundServiceController.get().isTabbedActivityVisible()) {
+                Log.d(TAG, "Tabbed activity is visible, not starting background actuation.");
+                return Service.START_NOT_STICKY;
+            }
 
             String contextId = intent.getStringExtra(EXTRA_CONTEXT_ID);
             Log.d(TAG, "Received start Intent for contextId=" + contextId);
@@ -224,6 +226,10 @@ public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
     /** Methods for testing. */
     void setServiceForTesting(SplitCompatService service) {
         setService(service);
+    }
+
+    void setBackgroundManagerForTesting(ActorBackgroundActuationManager backgroundManager) {
+        mBackgroundManager = backgroundManager;
     }
 
     @VisibleForTesting
