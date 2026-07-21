@@ -14,7 +14,9 @@
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -25,13 +27,26 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/test/test_network_context.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/mojom/timing/declarative_performance_observer.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
 namespace {
+
+class MockDPOContentBrowserClient : public ContentBrowserClient {
+ public:
+  MockDPOContentBrowserClient() = default;
+  ~MockDPOContentBrowserClient() override = default;
+
+  MOCK_METHOD(void,
+              LogWebFeatureForCurrentPage,
+              (RenderFrameHost*, blink::mojom::WebFeature),
+              (override));
+};
 
 class TestNetworkContext : public network::TestNetworkContext {
  public:
@@ -1227,6 +1242,37 @@ TEST_F(DeclarativePerformanceObserverTest,
   ASSERT_TRUE(entries_list);
 
   EXPECT_EQ(entries_list->size(), 5u);
+}
+
+TEST_F(DeclarativePerformanceObserverTest, RecordsUseCounter) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  MockDPOContentBrowserClient mock_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
+
+  EXPECT_CALL(mock_client,
+              LogWebFeatureForCurrentPage(
+                  main_rfh(),
+                  blink::mojom::WebFeature::kDeclarativePerformanceObserver))
+      .Times(1);
+
+  CreateObserver(&navigation_handle);
+
+  SetBrowserClientForTesting(old_client);
 }
 
 }  // namespace
