@@ -443,34 +443,6 @@ bool AutofillProfile::IsEmpty(std::string_view app_locale) const {
   return types.empty();
 }
 
-bool AutofillProfile::IsPresentButInvalid(FieldType type) const {
-  std::string country = base::UTF16ToUTF8(GetRawInfo(ADDRESS_HOME_COUNTRY));
-  std::u16string data = GetRawInfo(type);
-  if (data.empty()) {
-    return false;
-  }
-
-  switch (type) {
-    case ADDRESS_HOME_STATE:
-      return country == "US" && !IsValidState(data);
-
-    case ADDRESS_HOME_ZIP:
-      return !IsValidZip(data, AddressCountryCode(country),
-                         base::FeatureList::IsEnabled(
-                             features::kAutofillExtendZipCodeValidation));
-
-    case PHONE_HOME_WHOLE_NUMBER:
-      return !i18n::PhoneObject(data, country, /*infer_country_code=*/false)
-                  .IsValidNumber();
-
-    case EMAIL_ADDRESS:
-      return !IsValidEmailAddress(data);
-
-    default:
-      NOTREACHED();
-  }
-}
-
 int AutofillProfile::Compare(const AutofillProfile& profile) const {
   static constexpr auto kTypes =
       std::to_array<FieldType>({NAME_FULL,

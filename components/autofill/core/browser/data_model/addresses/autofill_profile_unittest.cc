@@ -1820,40 +1820,6 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
   }
 }
 
-TEST_F(AutofillProfileTest, IsPresentButInvalid) {
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_ZIP));
-  EXPECT_FALSE(profile.IsPresentButInvalid(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_LANDMARK));
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_BETWEEN_STREETS));
-
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_ZIP));
-  EXPECT_FALSE(profile.IsPresentButInvalid(PHONE_HOME_WHOLE_NUMBER));
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_LANDMARK));
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_BETWEEN_STREETS));
-
-  profile.SetRawInfo(ADDRESS_HOME_STATE, u"C");
-  EXPECT_TRUE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
-
-  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
-
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90");
-  EXPECT_TRUE(profile.IsPresentButInvalid(ADDRESS_HOME_ZIP));
-
-  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90210");
-  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_ZIP));
-
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"310");
-  EXPECT_TRUE(profile.IsPresentButInvalid(PHONE_HOME_WHOLE_NUMBER));
-
-  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"(310) 310-6000");
-  EXPECT_FALSE(profile.IsPresentButInvalid(PHONE_HOME_WHOLE_NUMBER));
-}
-
 TEST_F(AutofillProfileTest, SetRawInfoPreservesLineBreaks) {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,

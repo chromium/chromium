@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +21,56 @@ TEST(ProfileRequirementUtilsTest, IncompleteAddress) {
   AutofillProfile profile = test::GetFullProfile();
   profile.ClearFields({ADDRESS_HOME_ZIP});
   EXPECT_FALSE(IsMinimumAddress(profile));
+}
+
+TEST(ProfileRequirementUtilsTest, IsValuePresentButInvalidForImportedProfile) {
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  EXPECT_FALSE(
+      IsValuePresentButInvalidForImportedProfile(profile, ADDRESS_HOME_STATE));
+  EXPECT_FALSE(
+      IsValuePresentButInvalidForImportedProfile(profile, ADDRESS_HOME_ZIP));
+  EXPECT_FALSE(IsValuePresentButInvalidForImportedProfile(
+      profile, PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_FALSE(IsValuePresentButInvalidForImportedProfile(
+      profile, ADDRESS_HOME_LANDMARK));
+  EXPECT_FALSE(IsValuePresentButInvalidForImportedProfile(
+      profile, ADDRESS_HOME_BETWEEN_STREETS));
+
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
+  EXPECT_FALSE(
+      IsValuePresentButInvalidForImportedProfile(profile, ADDRESS_HOME_STATE));
+  EXPECT_FALSE(
+      IsValuePresentButInvalidForImportedProfile(profile, ADDRESS_HOME_ZIP));
+  EXPECT_FALSE(IsValuePresentButInvalidForImportedProfile(
+      profile, PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_FALSE(IsValuePresentButInvalidForImportedProfile(
+      profile, ADDRESS_HOME_LANDMARK));
+  EXPECT_FALSE(IsValuePresentButInvalidForImportedProfile(
+      profile, ADDRESS_HOME_BETWEEN_STREETS));
+
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"C");
+  EXPECT_TRUE(
+      IsValuePresentButInvalidForImportedProfile(profile, ADDRESS_HOME_STATE));
+
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  EXPECT_FALSE(
+      IsValuePresentButInvalidForImportedProfile(profile, ADDRESS_HOME_STATE));
+
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90");
+  EXPECT_TRUE(
+      IsValuePresentButInvalidForImportedProfile(profile, ADDRESS_HOME_ZIP));
+
+  profile.SetRawInfo(ADDRESS_HOME_ZIP, u"90210");
+  EXPECT_FALSE(
+      IsValuePresentButInvalidForImportedProfile(profile, ADDRESS_HOME_ZIP));
+
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"310");
+  EXPECT_TRUE(IsValuePresentButInvalidForImportedProfile(
+      profile, PHONE_HOME_WHOLE_NUMBER));
+
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"(310) 310-6000");
+  EXPECT_FALSE(IsValuePresentButInvalidForImportedProfile(
+      profile, PHONE_HOME_WHOLE_NUMBER));
 }
 
 // Mexico is special in that it has cities and municipios/demarcaciones

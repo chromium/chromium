@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -121,9 +122,40 @@ ValidateProfileImportRequirements(const AutofillProfile& profile,
   return address_import_requirements;
 }
 
-void RemoveInvalidValues(AutofillProfile& profile,
-                         LogBuffer* log_buffer,
-                         const ProfileImportMetadata& import_metadata) {
+bool IsValuePresentButInvalidForImportedProfile(const AutofillProfile& profile,
+                                                FieldType type) {
+  const std::string country =
+      base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
+  const std::u16string data = profile.GetRawInfo(type);
+  if (data.empty()) {
+    return false;
+  }
+
+  switch (type) {
+    case ADDRESS_HOME_STATE:
+      return country == "US" && !IsValidState(data);
+
+    case ADDRESS_HOME_ZIP:
+      return !IsValidZip(data, AddressCountryCode(country),
+                         base::FeatureList::IsEnabled(
+                             features::kAutofillExtendZipCodeValidation));
+
+    case PHONE_HOME_WHOLE_NUMBER:
+      return !i18n::PhoneObject(data, country, /*infer_country_code=*/false)
+                  .IsValidNumber();
+
+    case EMAIL_ADDRESS:
+      return !IsValidEmailAddress(data);
+
+    default:
+      NOTREACHED();
+  }
+}
+
+void RemoveInvalidValuesForImportedProfile(
+    AutofillProfile& profile,
+    LogBuffer* log_buffer,
+    const ProfileImportMetadata& import_metadata) {
   auto remove_and_log_message = [&](FieldType type) {
     profile.ClearFields({type});
     LOG_AF(log_buffer)
@@ -133,7 +165,7 @@ void RemoveInvalidValues(AutofillProfile& profile,
   auto remove_if_invalid_and_log = [&](FieldType type,
                                        AddressImportRequirement valid,
                                        AddressImportRequirement invalid) {
-    if (profile.IsPresentButInvalid(type)) {
+    if (IsValuePresentButInvalidForImportedProfile(profile, type)) {
       autofill_metrics::LogAddressFormImportRequirementMetric(invalid);
       remove_and_log_message(type);
     } else {
@@ -154,12 +186,12 @@ void RemoveInvalidValues(AutofillProfile& profile,
   }
 }
 
-bool ValidateNonEmptyValues(const AutofillProfile& profile,
-                            LogBuffer* log_buffer) {
+bool ValidateNonEmptyValuesForImportedProfile(const AutofillProfile& profile,
+                                              LogBuffer* log_buffer) {
   // Returns false if `profile` has invalid information for `type`.
   auto ValidateAndLog = [&](FieldType type, AddressImportRequirement valid,
                             AddressImportRequirement invalid) {
-    if (profile.IsPresentButInvalid(type)) {
+    if (IsValuePresentButInvalidForImportedProfile(profile, type)) {
       autofill_metrics::LogAddressFormImportRequirementMetric(invalid);
       LOG_AF(log_buffer) << LogMessage::kImportAddressProfileFromFormFailed
                          << "Invalid " << FieldTypeToStringView(type) << "."

@@ -566,14 +566,16 @@ AddressFormDataImporter::ExtractAddressProfileFromSection(
   // Remove invalid values of types that are optional in some countries.
   // This is done after `FinalizeAfterImport()` to ensure that formatted
   // invalid values are also removed.
-  RemoveInvalidValues(candidate_profile, &import_log_buffer, import_metadata);
+  RemoveInvalidValuesForImportedProfile(candidate_profile, &import_log_buffer,
+                                        import_metadata);
 
   // Reject the profile if the validation requirements are not met.
-  // `ValidateNonEmptyValues()` goes first to collect metrics.
-  bool has_invalid_information =
-      !ValidateNonEmptyValues(candidate_profile, &import_log_buffer) ||
-      has_multiple_distinct_email_addresses || has_invalid_field_types ||
-      has_synthesized_types;
+  // `ValidateNonEmptyProfileValues()` goes first to collect metrics.
+  bool has_invalid_information = !ValidateNonEmptyValuesForImportedProfile(
+                                     candidate_profile, &import_log_buffer) ||
+                                 has_multiple_distinct_email_addresses ||
+                                 has_invalid_field_types ||
+                                 has_synthesized_types;
 
   // TODO(crbug.com/414842437) Remove debug data.
   SCOPED_CRASH_KEY_BOOL("Autofill", "has_observed_country",

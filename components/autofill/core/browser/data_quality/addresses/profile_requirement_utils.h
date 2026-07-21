@@ -29,21 +29,30 @@ std::vector<autofill_metrics::AddressProfileImportRequirementMetric>
 ValidateProfileImportRequirements(const AutofillProfile& profile,
                                   LogBuffer* log_buffer = nullptr);
 
+// Returns true if the `type` of data in given `profile` is present, but
+// invalid. Otherwise returns false. Requires that the country is already set in
+// `profile`.
+bool IsValuePresentButInvalidForImportedProfile(const AutofillProfile& profile,
+                                                FieldType type);
+
 // Removes invalid values of certain types. This is for types validated
 // in multiple countries, including those where they are optional parts of an
 // address. For example, if a zip code is optional in Country X and the user
 // enters an invalid value, we remove it instead of rejecting the entire
-// profile. Emits type validation violation metrics.
-void RemoveInvalidValues(AutofillProfile& profile,
-                         LogBuffer* log_buffer,
-                         const ProfileImportMetadata& import_metadata);
+// profile. Emits type validation violation metrics. Requires that the country
+// is already set in `profile`.
+void RemoveInvalidValuesForImportedProfile(
+    AutofillProfile& profile,
+    LogBuffer* log_buffer,
+    const ProfileImportMetadata& import_metadata);
 
 // Validates non-empty values for certain types (e.g. is the email address
 // an actual email address). Emits metrics for all violate (= non-empty and
 // invalid) types.
-// Returns true if all non-empty values are valid.
-bool ValidateNonEmptyValues(const AutofillProfile& profile,
-                            LogBuffer* log_buffer);
+// Returns true if all non-empty values are valid. Requires that the country is
+// already set in `profile`.
+bool ValidateNonEmptyValuesForImportedProfile(const AutofillProfile& profile,
+                                              LogBuffer* log_buffer);
 
 // Returns true if the minimum requirements to import the `profile` are met.
 // If `log_buffer` is present, validation results are logged there.
@@ -62,6 +71,7 @@ bool IsEligibleForMigrationToAccount(
 bool IsProfileEligibleForMigrationToAccount(
     const AddressDataManager& address_data_manager,
     const AutofillProfile& profile);
+
 }  //  namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_ADDRESSES_PROFILE_REQUIREMENT_UTILS_H_
