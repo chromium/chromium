@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -134,6 +135,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingMigrationSuccessTest,
   EXPECT_EQ(static_cast<MigrationState>(prefs->GetInteger(
                 prefs::kLastNavigationCapturingMigrationState)),
             MigrationState::kDefaultOff);
+  // TODO(crbug.com/537369804): Replace with a targeted waiter for disk writes.
+  content::RunAllTasksUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingMigrationSuccessTest,
@@ -278,6 +281,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingMigrationRollbackTest,
   EXPECT_EQ(static_cast<MigrationState>(prefs->GetInteger(
                 prefs::kLastNavigationCapturingMigrationState)),
             MigrationState::kDefaultOff);
+  // TODO(crbug.com/537369804): Replace with a targeted waiter for disk writes.
+  content::RunAllTasksUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingMigrationRollbackTest,
@@ -317,6 +322,8 @@ IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingMigrationRollbackTest,
       prefs->GetList(prefs::kWebAppsPreviouslyAppSupportedLinks);
   EXPECT_EQ(backup.size(), 1u);
   EXPECT_EQ(backup[0].GetString(), app_b);
+  // TODO(crbug.com/537369804): Replace with a targeted waiter for disk writes.
+  content::RunAllTasksUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppNavigationCapturingMigrationRollbackTest,
@@ -436,6 +443,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingMigrationSwaConflictTest,
       proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_a));
   EXPECT_TRUE(
       proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_e));
+  // TODO(crbug.com/537369804): Replace with a targeted waiter for disk writes.
+  content::RunAllTasksUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingMigrationSwaConflictTest,
