@@ -140,15 +140,15 @@ public final class PolicyCacheTest {
         cachePolicies(
                 Map.of(
                         POLICY_NAME,
-                        Pair.create(PolicyCache.Type.Integer, 1),
+                        Pair.create(PolicyCache.Type.INTEGER, 1),
                         POLICY_NAME_2,
-                        Pair.create(PolicyCache.Type.Boolean, true),
+                        Pair.create(PolicyCache.Type.BOOLEAN, true),
                         POLICY_NAME_3,
-                        Pair.create(PolicyCache.Type.String, "2"),
+                        Pair.create(PolicyCache.Type.STRING, "2"),
                         POLICY_NAME_4,
-                        Pair.create(PolicyCache.Type.List, "[1]"),
+                        Pair.create(PolicyCache.Type.LIST, "[1]"),
                         POLICY_NAME_5,
-                        Pair.create(PolicyCache.Type.Dict, "{1:2}")));
+                        Pair.create(PolicyCache.Type.DICT, "{1:2}")));
 
         Assert.assertEquals(1, mSharedPreferences.getInt(POLICY_NAME, 0));
         Assert.assertEquals(true, mSharedPreferences.getBoolean(POLICY_NAME_2, false));
@@ -159,8 +159,8 @@ public final class PolicyCacheTest {
 
     @Test
     public void testCacheUpdated() {
-        cachePolicies(Map.of(POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1)));
-        cachePolicies(Map.of(POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true)));
+        cachePolicies(Map.of(POLICY_NAME, Pair.create(PolicyCache.Type.INTEGER, 1)));
+        cachePolicies(Map.of(POLICY_NAME_2, Pair.create(PolicyCache.Type.BOOLEAN, true)));
 
         Assert.assertFalse(mSharedPreferences.contains(POLICY_NAME));
         Assert.assertEquals(true, mSharedPreferences.getBoolean(POLICY_NAME_2, false));
@@ -172,7 +172,7 @@ public final class PolicyCacheTest {
         when(mPolicyMap.getBooleanValue(eq(POLICY_NAME_2))).thenReturn(true);
 
         mPolicyCache.cachePolicies(
-                mPolicyMap, Arrays.asList(Pair.create(POLICY_NAME_2, PolicyCache.Type.Boolean)));
+                mPolicyMap, Arrays.asList(Pair.create(POLICY_NAME_2, PolicyCache.Type.BOOLEAN)));
 
         Assert.assertFalse(mSharedPreferences.contains(POLICY_NAME));
         Assert.assertEquals(true, mSharedPreferences.getBoolean(POLICY_NAME_2, false));
@@ -185,8 +185,8 @@ public final class PolicyCacheTest {
         mPolicyCache.cachePolicies(
                 mPolicyMap,
                 Arrays.asList(
-                        Pair.create(POLICY_NAME, PolicyCache.Type.Integer),
-                        Pair.create(POLICY_NAME_2, PolicyCache.Type.Boolean)));
+                        Pair.create(POLICY_NAME, PolicyCache.Type.INTEGER),
+                        Pair.create(POLICY_NAME_2, PolicyCache.Type.BOOLEAN)));
 
         Assert.assertFalse(mSharedPreferences.contains(POLICY_NAME));
         Assert.assertEquals(true, mSharedPreferences.getBoolean(POLICY_NAME_2, false));
@@ -206,11 +206,11 @@ public final class PolicyCacheTest {
 
         cachePolicies(
                 Map.of(
-                        POLICY_NAME, Pair.create(PolicyCache.Type.Integer, 1),
-                        POLICY_NAME_2, Pair.create(PolicyCache.Type.Boolean, true),
-                        POLICY_NAME_3, Pair.create(PolicyCache.Type.String, "2"),
-                        POLICY_NAME_4, Pair.create(PolicyCache.Type.List, "[1]"),
-                        POLICY_NAME_5, Pair.create(PolicyCache.Type.Dict, "{1:2}")));
+                        POLICY_NAME, Pair.create(PolicyCache.Type.INTEGER, 1),
+                        POLICY_NAME_2, Pair.create(PolicyCache.Type.BOOLEAN, true),
+                        POLICY_NAME_3, Pair.create(PolicyCache.Type.STRING, "2"),
+                        POLICY_NAME_4, Pair.create(PolicyCache.Type.LIST, "[1]"),
+                        POLICY_NAME_5, Pair.create(PolicyCache.Type.DICT, "{1:2}")));
 
         Assert.assertFalse(mPolicyCache.isReadable());
         if (BuildConfig.ENABLE_ASSERTS) {
@@ -227,29 +227,29 @@ public final class PolicyCacheTest {
      *     pair of policy type and policy value. Setting up {@link #mPolicyCache} mock and call
      *     {@link PolicyCache#cachePolicies}.
      */
-    private void cachePolicies(Map<String, Pair<PolicyCache.Type, Object>> policies) {
-        List<Pair<String, PolicyCache.Type>> cachedPolicies = new ArrayList<>();
+    private void cachePolicies(Map<String, Pair<@PolicyCache.Type Integer, Object>> policies) {
+        List<Pair<String, @PolicyCache.Type Integer>> cachedPolicies = new ArrayList<>();
         for (var entry : policies.entrySet()) {
             String policyName = entry.getKey();
-            PolicyCache.Type policyType = entry.getValue().first;
+            @PolicyCache.Type int policyType = entry.getValue().first;
             Object policyValue = entry.getValue().second;
             switch (policyType) {
-                case Integer:
+                case PolicyCache.Type.INTEGER:
                     when(mPolicyMap.getIntValue(eq(policyName))).thenReturn((Integer) policyValue);
                     break;
-                case Boolean:
+                case PolicyCache.Type.BOOLEAN:
                     when(mPolicyMap.getBooleanValue(eq(policyName)))
                             .thenReturn((Boolean) policyValue);
                     break;
-                case String:
+                case PolicyCache.Type.STRING:
                     when(mPolicyMap.getStringValue(eq(policyName)))
                             .thenReturn((String) policyValue);
                     break;
-                case List:
+                case PolicyCache.Type.LIST:
                     when(mPolicyMap.getListValueAsString(eq(policyName)))
                             .thenReturn((String) policyValue);
                     break;
-                case Dict:
+                case PolicyCache.Type.DICT:
                     when(mPolicyMap.getDictValueAsString(eq(policyName)))
                             .thenReturn((String) policyValue);
                     break;

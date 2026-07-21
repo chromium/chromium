@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Pair;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.json.JSONArray;
@@ -21,6 +22,11 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Map;
 
@@ -36,12 +42,16 @@ public class PolicyCache {
 
     private static @Nullable PolicyCache sInstance;
 
-    public enum Type {
-        Integer,
-        Boolean,
-        String,
-        List,
-        Dict,
+    @IntDef({Type.INTEGER, Type.BOOLEAN, Type.STRING, Type.LIST, Type.DICT})
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
+    @Documented
+    public @interface Type {
+        int INTEGER = 0;
+        int BOOLEAN = 1;
+        int STRING = 2;
+        int LIST = 3;
+        int DICT = 4;
     }
 
     private boolean mReadable = true;
@@ -184,20 +194,20 @@ public class PolicyCache {
 
     /**
      * @param policyMap The latest policy value bundle.
-     * @param policyNames The list of policies that needs to be cached if available.
-     * Caches the policies that are available in both |policyNames| and
-     * |policyMap|. It also disables {@link PolicyCache} reading.
+     * @param policyNames The list of policies that needs to be cached if available. Caches the
+     *     policies that are available in both |policyNames| and |policyMap|. It also disables
+     *     {@link PolicyCache} reading.
      */
-    public void cachePolicies(PolicyMap policyMap, List<Pair<String, Type>> policyNames) {
+    public void cachePolicies(PolicyMap policyMap, List<Pair<String, @Type Integer>> policyNames) {
         // TODO(zmin): support policy level while caching policy.
         SharedPreferences.Editor sharedPreferencesEditor = getSharedPreferencesEditor();
 
         sharedPreferencesEditor.clear();
 
-        for (Pair<String, Type> policy : policyNames) {
+        for (Pair<String, @Type Integer> policy : policyNames) {
             String policyName = policy.first;
             switch (policy.second) {
-                case Integer:
+                case Type.INTEGER:
                     {
                         Integer value = policyMap.getIntValue(policyName);
                         if (value != null) {
@@ -205,7 +215,7 @@ public class PolicyCache {
                         }
                         break;
                     }
-                case Boolean:
+                case Type.BOOLEAN:
                     {
                         Boolean value = policyMap.getBooleanValue(policyName);
                         if (value != null) {
@@ -213,7 +223,7 @@ public class PolicyCache {
                         }
                         break;
                     }
-                case String:
+                case Type.STRING:
                     {
                         String value = policyMap.getStringValue(policyName);
                         if (value != null) {
@@ -221,11 +231,11 @@ public class PolicyCache {
                         }
                         break;
                     }
-                    // List and Dict policy values are stored in the native library
-                    // as base::Value and converted to JSON string to passed through
-                    // the JNI. It's stored to the SharedPreferences as String and
-                    // will be converted to JSON object when being read.
-                case List:
+                // List and Dict policy values are stored in the native library
+                // as base::Value and converted to JSON string to passed through
+                // the JNI. It's stored to the SharedPreferences as String and
+                // will be converted to JSON object when being read.
+                case Type.LIST:
                     {
                         String value = policyMap.getListValueAsString(policyName);
                         if (value != null) {
@@ -233,7 +243,7 @@ public class PolicyCache {
                         }
                         break;
                     }
-                case Dict:
+                case Type.DICT:
                     {
                         String value = policyMap.getDictValueAsString(policyName);
                         if (value != null) {
