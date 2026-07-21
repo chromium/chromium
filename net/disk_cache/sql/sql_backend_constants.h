@@ -34,6 +34,8 @@ inline constexpr std::string_view kSqlBackendMetaTableKeyEntryCount =
     "EntryCount";
 inline constexpr std::string_view kSqlBackendMetaTableKeyTotalSize =
     "TotalSize";
+inline constexpr std::string_view kSqlBackendMetaTableKeySharedCacheEnabled =
+    "SharedCacheEnabled";
 
 // The file name prefix of the SQL backend database shards.
 inline constexpr std::string_view kSqlBackendDatabaseFileNamePrefix = "sqldb";

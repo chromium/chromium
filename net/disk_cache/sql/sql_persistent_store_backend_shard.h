@@ -43,6 +43,7 @@ class SqlPersistentStore::BackendShard {
       ShardId shard_id,
       const base::FilePath& path,
       net::CacheType type,
+      bool shared_cache_enabled,
       scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       SqlAsyncTaskManager& async_task_manager,

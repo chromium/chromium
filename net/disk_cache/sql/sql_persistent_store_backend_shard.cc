@@ -33,6 +33,7 @@ SqlPersistentStore::BackendShard::BackendShard(
     ShardId shard_id,
     const base::FilePath& path,
     net::CacheType type,
+    bool shared_cache_enabled,
     scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     SqlAsyncTaskManager& async_task_manager,
@@ -43,6 +44,7 @@ SqlPersistentStore::BackendShard::BackendShard(
                shard_id,
                path,
                type,
+               shared_cache_enabled,
                std::move(read_cache_memory_monitor)),
       cleanup_tracker_(std::move(cleanup_tracker)) {}
 

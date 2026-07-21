@@ -301,10 +301,12 @@ SqlPersistentStore::Backend::Backend(
     ShardId shard_id,
     const base::FilePath& path,
     net::CacheType type,
+    bool shared_cache_enabled,
     scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor)
     : shard_id_(shard_id),
       path_(path),
       type_(type),
+      shared_cache_enabled_(shared_cache_enabled),
       read_cache_memory_monitor_(std::move(read_cache_memory_monitor)),
       reduce_uma_(net::features::kSqlDiskCacheReduceUma.Get()),
       db_(sql::DatabaseOptions()
@@ -339,6 +341,45 @@ Error SqlPersistentStore::Backend::CheckDatabaseStatus() {
     // The database have been closed when a catastrophic error occurred and
     // RazeAndPoison() was called.
     return Error::kDatabaseClosed;
+  }
+  return Error::kOk;
+}
+
+SqlPersistentStore::Error
+SqlPersistentStore::Backend::CheckOrInitializeSharedCacheEnabledMetadata(
+    bool is_new_db) {
+  // Ensure that the database's recorded `shared_cache_enabled` setting matches
+  // the current `shared_cache_enabled_` setting.
+  if (is_new_db) {
+    // For newly created databases, record the current `shared_cache_enabled_`
+    // state.
+    if (!meta_table_.SetValue(kSqlBackendMetaTableKeySharedCacheEnabled,
+                              shared_cache_enabled_ ? 1 : 0)) {
+      return Error::kFailedToSetSharedCacheEnabledMetadata;
+    }
+  } else {
+    // For existing databases, check if the recorded state matches current
+    // settings.
+    int64_t recorded_shared_cache_enabled = 0;
+    const bool has_shared_cache_key =
+        meta_table_.GetValue(kSqlBackendMetaTableKeySharedCacheEnabled,
+                             &recorded_shared_cache_enabled);
+
+    // Legacy databases without the key are assumed to have shared cache
+    // disabled (0).
+    const bool was_shared_cache_enabled =
+        has_shared_cache_key && (recorded_shared_cache_enabled != 0);
+
+    if (was_shared_cache_enabled != shared_cache_enabled_) {
+      return Error::kSharedCacheEnabledMismatch;
+    }
+
+    // Populate the missing metadata key in legacy databases for future lookups.
+    if (!has_shared_cache_key) {
+      if (!meta_table_.SetValue(kSqlBackendMetaTableKeySharedCacheEnabled, 0)) {
+        return Error::kFailedToSetSharedCacheEnabledMetadata;
+      }
+    }
   }
   return Error::kOk;
 }
@@ -450,6 +491,11 @@ Error SqlPersistentStore::Backend::InitializeInternal(
   if (!meta_table_.Init(&db_, kSqlBackendCurrentDatabaseVersion,
                         kSqlBackendCompatibleDatabaseVersion)) {
     return Error::kFailedToInitializeMetaTable;
+  }
+
+  if (Error error = CheckOrInitializeSharedCacheEnabledMetadata(is_new_db);
+      error != Error::kOk) {
+    return error;
   }
 
   int64_t tmp_entry_count = 0;

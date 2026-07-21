@@ -107,6 +107,7 @@ std::vector<std::unique_ptr<SqlPersistentStore::BackendShard>>
 SqlPersistentStore::CreateBackendShards(
     const base::FilePath& path,
     net::CacheType type,
+    bool shared_cache_enabled,
     std::vector<scoped_refptr<base::SequencedTaskRunner>>
         background_task_runners,
     SqlAsyncTaskManager& async_task_manager,
@@ -120,7 +121,7 @@ SqlPersistentStore::CreateBackendShards(
           net::features::kSqlDiskCacheMaxReadBufferTotalSize.Get());
   for (size_t i = 0; i < num_shards; ++i) {
     backend_shards.emplace_back(std::make_unique<BackendShard>(
-        ShardId(i), path, type, read_cache_memory_monitor,
+        ShardId(i), path, type, shared_cache_enabled, read_cache_memory_monitor,
         background_task_runners[i], async_task_manager, cleanup_tracker));
   }
   return backend_shards;
@@ -143,11 +144,13 @@ SqlPersistentStore::SqlPersistentStore(
                                                         path,
                                                         cleanup_tracker)
               : nullptr),
-      backend_shards_(CreateBackendShards(path,
-                                          type,
-                                          background_task_runners_,
-                                          async_task_manager,
-                                          std::move(cleanup_tracker))),
+      backend_shards_(
+          CreateBackendShards(path,
+                              type,
+                              /*shared_cache_enabled=*/!!shared_cache_manager_,
+                              background_task_runners_,
+                              async_task_manager,
+                              std::move(cleanup_tracker))),
       user_max_bytes_(max_bytes),
       reduce_uma_(net::features::kSqlDiskCacheReduceUma.Get()) {}
 SqlPersistentStore::~SqlPersistentStore() = default;

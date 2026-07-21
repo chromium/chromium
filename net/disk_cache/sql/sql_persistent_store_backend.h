@@ -9,6 +9,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/eviction_candidate_aggregator.h"
 #include "net/disk_cache/sql/sql_persistent_store.h"
@@ -27,11 +28,12 @@ class SqlReadCacheMemoryMonitor;
 // The `Backend` class encapsulates all direct interaction with the SQLite
 // database. It is designed to be owned by a `base::SequenceBound` and run on a
 // dedicated background sequence to avoid blocking the network IO thread.
-class SqlPersistentStore::Backend {
+class NET_EXPORT_PRIVATE SqlPersistentStore::Backend {
  public:
   Backend(ShardId shard_id,
           const base::FilePath& path,
           net::CacheType type,
+          bool shared_cache_enabled,
           scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor);
 
   Backend(const Backend&) = delete;
@@ -449,6 +451,13 @@ class SqlPersistentStore::Backend {
   // code if something is wrong.
   Error CheckDatabaseStatus();
 
+  // Checks or initializes the `shared_cache_enabled` metadata entry in the
+  // meta table. For new databases, writes the current `shared_cache_enabled_`
+  // value. For existing databases, verifies that the recorded value matches
+  // `shared_cache_enabled_` (returning Error::kSharedCacheEnabledMismatch on
+  // mismatch). Legacy databases without the key are treated as disabled.
+  Error CheckOrInitializeSharedCacheEnabledMetadata(bool is_new_db);
+
   void MaybeCrashIfCorrupted(bool corruption_detected);
   void OnCommitCallback(int pages);
   int GetFreelistCount();
@@ -461,6 +470,7 @@ class SqlPersistentStore::Backend {
   const ShardId shard_id_;
   const base::FilePath path_;
   const net::CacheType type_;
+  const bool shared_cache_enabled_;
   const scoped_refptr<SqlReadCacheMemoryMonitor> read_cache_memory_monitor_;
   // Cached value of `net::features::kSqlDiskCacheReduceUma`.
   const bool reduce_uma_;

@@ -42,6 +42,7 @@
 #include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/sql_async_task_manager.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
+#include "net/disk_cache/sql/sql_persistent_store_backend.h"
 #include "net/disk_cache/sql/sql_persistent_store_backend_shard.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -887,6 +888,88 @@ TEST_P(SqlPersistentStoreTest, InitFailsWithUnwritableFile) {
 
   CreateStore();
   ASSERT_EQ(Init(), SqlPersistentStore::Error::kFailedToOpenDatabase);
+}
+
+// Tests that SqlPersistentStore::Backend::Initialize fails if the database was
+// created with a different shared_cache_enabled setting.
+TEST_P(SqlPersistentStoreTest, SharedCacheEnabledMismatch) {
+  const base::FilePath db_path = GetTempPath();
+
+  // Initialize backend with shared_cache_enabled = true.
+  {
+    SqlPersistentStore::Backend backend(SqlPersistentStore::ShardId(0), db_path,
+                                        net::CacheType::DISK_CACHE,
+                                        /*shared_cache_enabled=*/true,
+                                        /*read_cache_memory_monitor=*/nullptr);
+    auto init_result =
+        backend.Initialize(kDefaultMaxBytes, base::TimeTicks::Now());
+    ASSERT_TRUE(init_result.has_value());
+  }
+
+  // Initializing backend with shared_cache_enabled = false on the same database
+  // should fail with kSharedCacheEnabledMismatch.
+  {
+    SqlPersistentStore::Backend backend(SqlPersistentStore::ShardId(0), db_path,
+                                        net::CacheType::DISK_CACHE,
+                                        /*shared_cache_enabled=*/false,
+                                        /*read_cache_memory_monitor=*/nullptr);
+    auto init_result =
+        backend.Initialize(kDefaultMaxBytes, base::TimeTicks::Now());
+    ASSERT_FALSE(init_result.has_value());
+    EXPECT_EQ(init_result.error(),
+              SqlPersistentStore::Error::kSharedCacheEnabledMismatch);
+  }
+}
+
+// Tests that initializing an existing database that lacks the
+// kSqlBackendMetaTableKeySharedCacheEnabled metadata key fails if
+// shared_cache_enabled is true, and succeeds if shared_cache_enabled is false.
+TEST_P(SqlPersistentStoreTest, SharedCacheEnabledAbsentInOldDatabase) {
+  const base::FilePath db_path = GetTempPath();
+
+  // Create an existing database and meta table without setting
+  // kSqlBackendMetaTableKeySharedCacheEnabled.
+  {
+    auto db = std::make_unique<sql::Database>(
+        sql::DatabaseOptions()
+#if BUILDFLAG(IS_WIN)
+            .set_exclusive_database_file_lock(true)
+#endif
+            .set_wal_mode(IsWalModeEnabled()),
+        sql::Database::Tag("HttpCacheDiskCache"));
+    ASSERT_TRUE(db->Open(GetDatabaseFilePath()));
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(db.get(), kSqlBackendCurrentDatabaseVersion,
+                                kSqlBackendCompatibleDatabaseVersion));
+    ASSERT_TRUE(meta_table.SetValue(kSqlBackendMetaTableKeyEntryCount, 0));
+    ASSERT_TRUE(meta_table.SetValue(kSqlBackendMetaTableKeyTotalSize, 0));
+  }
+
+  // Initializing backend with shared_cache_enabled = true on an old DB without
+  // the shared cache metadata key should fail with kSharedCacheEnabledMismatch.
+  {
+    SqlPersistentStore::Backend backend(SqlPersistentStore::ShardId(0), db_path,
+                                        net::CacheType::DISK_CACHE,
+                                        /*shared_cache_enabled=*/true,
+                                        /*read_cache_memory_monitor=*/nullptr);
+    auto init_result =
+        backend.Initialize(kDefaultMaxBytes, base::TimeTicks::Now());
+    ASSERT_FALSE(init_result.has_value());
+    EXPECT_EQ(init_result.error(),
+              SqlPersistentStore::Error::kSharedCacheEnabledMismatch);
+  }
+
+  // Initializing backend with shared_cache_enabled = false on the old DB should
+  // succeed.
+  {
+    SqlPersistentStore::Backend backend(SqlPersistentStore::ShardId(0), db_path,
+                                        net::CacheType::DISK_CACHE,
+                                        /*shared_cache_enabled=*/false,
+                                        /*read_cache_memory_monitor=*/nullptr);
+    auto init_result =
+        backend.Initialize(kDefaultMaxBytes, base::TimeTicks::Now());
+    EXPECT_TRUE(init_result.has_value());
+  }
 }
 
 // Tests the recovery mechanism when the database file is corrupted.

@@ -95,7 +95,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kFailedToSetAutoVacuum = 22,
     kIncrementalVacuumDisabled = 23,
     kFailedToInitializeSharedCacheIndexDatabase = 24,
-    kMaxValue = kFailedToInitializeSharedCacheIndexDatabase
+    kFailedToSetSharedCacheEnabledMetadata = 25,
+    kSharedCacheEnabledMismatch = 26,
+    kMaxValue = kSharedCacheEnabledMismatch
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 
@@ -680,7 +682,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
  private:
   // The result of a successful initialization.
-  struct InitResult {
+  struct NET_EXPORT_PRIVATE InitResult {
     InitResult(std::optional<int64_t> max_bytes,
                const StoreStatus& store_status,
                int64_t database_size,
@@ -710,6 +712,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   static std::vector<std::unique_ptr<BackendShard>> CreateBackendShards(
       const base::FilePath& path,
       net::CacheType type,
+      bool shared_cache_enabled,
       std::vector<scoped_refptr<base::SequencedTaskRunner>>
           background_task_runners,
       SqlAsyncTaskManager& async_task_manager,
