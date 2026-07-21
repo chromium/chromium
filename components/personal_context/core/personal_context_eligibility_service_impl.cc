@@ -103,10 +103,10 @@ SatisfiesAccountRequirements(const signin::IdentityManager* identity_manager,
   return std::pair{true, std::nullopt};
 }
 
-// Checks whether all opt-in for `AccountSettingService` state are met.
+// Checks whether all requirements for `AccountSettingService` state are met.
 [[nodiscard]] std::pair<bool,
                         std::optional<PersonalContextNonEligibilityReason>>
-SatisfiesOptInRequirements(
+SatisfiesAccountSettingRequirements(
     account_settings::AccountSettingService* account_settings,
     std::string* debug_message = nullptr) {
   if (!account_settings) {
@@ -251,7 +251,7 @@ PersonalContextEligibilityServiceImpl::ComputeEligibilityState() {
   }
 
   if (auto [satisfied, reason] =
-          SatisfiesOptInRequirements(account_settings_service_.get());
+          SatisfiesAccountSettingRequirements(account_settings_service_.get());
       !satisfied) {
     return std::pair{kDisabledNotEligible, reason};
   }
