@@ -8356,9 +8356,11 @@ void Element::Focus(const FocusParams& params) {
     if (Element* new_focus_target = GetFocusableArea()) {
       // Unlike the specification, we re-run focus() for new_focus_target
       // because we can't change |this| in a member function.
-      new_focus_target->Focus(FocusParams(
-          SelectionBehaviorOnFocus::kReset, mojom::blink::FocusType::kForward,
-          /*capabilities=*/nullptr, params_to_use.options));
+      // Forward the caller's FocusType so we don't set
+      // WasLastFocusFromUserGesture incorrectly.
+      new_focus_target->Focus(
+          FocusParams(SelectionBehaviorOnFocus::kReset, params_to_use.type,
+                      /*capabilities=*/nullptr, params_to_use.options));
     }
     // 2. If new focus target is null, then:
     //  2.1. If no fallback target was specified, then return.
