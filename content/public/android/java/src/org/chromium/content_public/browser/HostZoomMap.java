@@ -24,6 +24,20 @@ public class HostZoomMap {
                 6.03
             };
 
+    /**
+     * Scaling factor for the web contents on Desktop Android primary displays: 1.09f (109%
+     * scaling). This adjusts the content to be slightly larger on desktop environments where the
+     * screen is typically further away than a non-Desktop form factor.
+     */
+    public static final float DESKTOP_ZOOM_SCALING_FACTOR = 1.09f;
+
+    /**
+     * Scaling factor for the web contents on external monitors: 1.20f (120% scaling). This adjusts
+     * the content to be slightly larger on external monitors where the screen is typically further
+     * away than the primary device. This applies to all builds.
+     */
+    public static final float MONITOR_ZOOM_SCALING_FACTOR = 1.20f;
+
     // The value of the base for zoom factor, should match |kTextSizeMultiplierRatio|.
     public static final float TEXT_SIZE_MULTIPLIER_RATIO = 1.2f;
 

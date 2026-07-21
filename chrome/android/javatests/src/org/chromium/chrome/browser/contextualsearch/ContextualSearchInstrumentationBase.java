@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -375,6 +376,11 @@ public class ContextualSearchInstrumentationBase {
                                             return false;
                                         }
                                     });
+
+                    // DOMUtils click injection relies on exact CSS-to-Pixel coordinate mapping.
+                    // When running on Desktop bots, ChromeActivity inherently applies a 1.09x zoom
+                    // which breaks the gesture injection. Bypass zoom for these tests.
+                    HostZoomMap.setTransparentZoomAdjustment(1.0f);
                 });
 
         mTestServer = mActivityTestRule.getTestServer();

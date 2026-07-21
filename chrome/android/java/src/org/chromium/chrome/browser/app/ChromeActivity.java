@@ -261,7 +261,6 @@ import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.webxr.XrDelegateProvider;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -2257,24 +2256,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 };
         display.addObserver(mDisplayAndroidObserver);
 
-        // Set a scaling factor in HostZoomMap to account for pixel density of display.
-        // TODO(crbug.com/450281745): Move feature flag and params to //chrome layer.
-        if (ContentFeatureList.sAndroidDesktopZoomScaling.isEnabled()) {
-            // When an external monitor is attached, use a specific scaling, regardless of
-            // platform/device (e.g. Desktop, tablet, mobile, etc). On Desktop, we adjust
-            // regardless of whether or not there is an external monitor. We use an int for
-            // the scaling factor FeatureParam, e.g. 109 = 109% scaling, but the underlying
-            // code expects a float of 1.09f in that case.
-            if (!DisplayUtil.isContextInDefaultDisplay(this)
-                    && DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
-                HostZoomMap.setTransparentZoomAdjustment(
-                        (float) ContentFeatureList.sAndroidMonitorZoomScalingFactor.getValue()
-                                / 100.0f);
-            } else if (DeviceInfo.isDesktop()) {
-                HostZoomMap.setTransparentZoomAdjustment(
-                        (float) ContentFeatureList.sAndroidDesktopZoomScalingFactor.getValue()
-                                / 100.0f);
-            }
+        // Adjust scaling for external monitors or Desktop environments.
+        if (!DisplayUtil.isContextInDefaultDisplay(this)
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
+            HostZoomMap.setTransparentZoomAdjustment(HostZoomMap.MONITOR_ZOOM_SCALING_FACTOR);
+        } else if (DeviceInfo.isDesktop()) {
+            HostZoomMap.setTransparentZoomAdjustment(HostZoomMap.DESKTOP_ZOOM_SCALING_FACTOR);
         }
     }
 

@@ -55,7 +55,6 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ContentFeatureMapJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
-import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.Arrays;
@@ -64,11 +63,7 @@ import java.util.List;
 /** Unit tests for the PageZoom view and view binder. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
-@DisableFeatures({
-    ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
-    ContentFeatureList.SMART_ZOOM,
-    ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING
-})
+@DisableFeatures({ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2, ContentFeatureList.SMART_ZOOM})
 @Batch(Batch.PER_CLASS)
 public class PageZoomBarViewTest {
     @ParameterAnnotations.ClassParameter

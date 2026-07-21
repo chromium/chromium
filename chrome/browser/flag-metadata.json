@@ -330,11 +330,6 @@
     "expiry_milestone": 152
   },
   {
-    "name": "android-desktop-zoom-scaling",
-    "owners": [ "mschillaci@google.com", "clank-app-team@google.com"],
-    "expiry_milestone": 154
-  },
-  {
     "name": "android-device-signals-disclaimer",
     "owners": [ "ssolarewicz@google.com", "cec-growth@google.com" ],
     "expiry_milestone": 160

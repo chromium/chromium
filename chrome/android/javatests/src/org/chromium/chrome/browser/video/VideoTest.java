@@ -14,10 +14,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -26,15 +26,14 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.content_public.common.ContentFeatures;
 
 import java.util.concurrent.TimeoutException;
 
 /** Simple tests of html5 video. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 public class VideoTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -45,6 +44,13 @@ public class VideoTest {
     @Before
     public void setUp() throws InterruptedException {
         mPage = mActivityTestRule.startOnBlankPage();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // DOMUtils click injection relies on exact CSS-to-Pixel coordinate mapping.
+                    // When running on Desktop bots, ChromeActivity inherently applies a 1.09x zoom
+                    // which breaks the gesture injection. Bypass zoom for these tests.
+                    HostZoomMap.setTransparentZoomAdjustment(1.0f);
+                });
     }
 
     @Test
