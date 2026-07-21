@@ -679,6 +679,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_NICKNAME" desc="Label for text input field containing the nickname on a credit card. [CHAR_LIMIT=25]">
         Card nickname
       </message>
+      <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_NICKNAME_CONTENT_DESCRIPTION" desc="Accessible content description and label for text input field containing a credit card nickname, mentioning the character limit. [CHAR_LIMIT=64]">
+        Card nickname, maximum 25 characters
+      </message>
       <message name="IDS_AUTOFILL_CREDIT_CARD_EDITOR_EXPIRATION_DATE_HINT" desc="Hint for text input field containing the expiration date on a credit card. [CHAR_LIMIT=25]">
         MM / YY
       </message>

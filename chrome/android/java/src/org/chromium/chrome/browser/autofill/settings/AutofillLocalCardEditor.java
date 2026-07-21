@@ -211,6 +211,9 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                 mContext.getString(
                         R.string.autofill_credit_card_editor_expiration_date_content_description);
         mExpirationLabel.setText(expirationLabelText);
+        mNicknameLabel.setHint(
+                mContext.getString(
+                        R.string.autofill_credit_card_editor_nickname_content_description));
     }
 
     @Override
