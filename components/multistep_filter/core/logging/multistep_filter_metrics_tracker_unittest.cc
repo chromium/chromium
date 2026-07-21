@@ -812,7 +812,8 @@ TEST_F(MultistepFilterMetricsTrackerTest,
                                       SuggestionUserDecision::kIgnored, 1);
 }
 
-// Tests that same page navigations do not flush the active UI session.
+// Tests that same page navigations do not flush the active UI session, and that
+// suggestion acceptance latency is calculated from the triggering navigation.
 TEST_F(MultistepFilterMetricsTrackerTest,
        SamePageNavigationsDoNotFlushUiSession) {
   base::HistogramTester histogram_tester;
@@ -823,12 +824,14 @@ TEST_F(MultistepFilterMetricsTrackerTest,
     TriggerInitialNavigation(tracker);
     tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
 
+    task_environment_.FastForwardBy(base::Milliseconds(100));
     FilterNavigationMetadata same_doc_metadata = CreateDefaultMetadata();
     same_doc_metadata.url = GURL("https://example.com/landing#hash");
     same_doc_metadata.prev_url = GURL("https://example.com/landing");
     same_doc_metadata.is_same_document_navigation = true;
     tracker.OnNavigationFinished(same_doc_metadata);
 
+    task_environment_.FastForwardBy(base::Milliseconds(300));
     tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
   }
 
@@ -837,16 +840,25 @@ TEST_F(MultistepFilterMetricsTrackerTest,
     TriggerInitialNavigation(tracker);
     tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
 
+    task_environment_.FastForwardBy(base::Milliseconds(100));
     FilterNavigationMetadata reload_metadata = CreateDefaultMetadata();
     reload_metadata.url = GURL("https://example.com");
     reload_metadata.prev_url = GURL("https://example.com");
     tracker.OnNavigationFinished(reload_metadata);
 
+    task_environment_.FastForwardBy(base::Milliseconds(300));
     tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
   }
 
   histogram_tester.ExpectUniqueSample(kMultistepFilterAcceptanceHistogram,
                                       SuggestionUserDecision::kAccepted, 2);
+  histogram_tester.ExpectUniqueTimeSample(
+      kMultistepFilterTimeNavigationToSuggestionAcceptedHistogram,
+      base::Milliseconds(400), 2);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      kMultistepFilterTimeSuggestionShownToAcceptedHistogram,
+      base::Milliseconds(400), 2);
 }
 
 // Tests that back navigations after the session window are logged correctly.
