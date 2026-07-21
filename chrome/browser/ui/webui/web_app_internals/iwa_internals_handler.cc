@@ -259,40 +259,27 @@ class IwaInternalsHandler::IwaManifestInstallUpdateHandler
 
 IwaInternalsHandler::IwaInternalsHandler(content::WebUI& web_ui,
                                          Profile& profile)
-    : web_ui_(web_ui), profile_(profile) {
-  if (auto* provider = WebAppProvider::GetForWebApps(&profile)) {
-    update_handler_ =
-        std::make_unique<IwaManifestInstallUpdateHandler>(*provider);
-  }
-}
+    : web_ui_(web_ui),
+      profile_(profile),
+      provider_(*WebAppProvider::GetForWebApps(&profile)),
+      update_handler_(
+          std::make_unique<IwaManifestInstallUpdateHandler>(*provider_)) {}
 
 IwaInternalsHandler::~IwaInternalsHandler() = default;
 
 void IwaInternalsHandler::InstallIsolatedWebAppFromDevProxy(
     const GURL& url,
     Handler::InstallIsolatedWebAppFromDevProxyCallback callback) {
-  auto* provider = WebAppProvider::GetForWebApps(profile());
-  if (!provider) {
-    SendError(std::move(callback), "could not get web app provider");
-    return;
-  }
-
-  auto& manager = provider->isolated_web_app_dev_install_manager();
-  manager.InstallIsolatedWebAppFromDevModeProxy(
-      url, IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
-      base::BindOnce(&IwaInternalsHandler::OnInstallIsolatedWebAppInDevMode,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  provider_->isolated_web_app_dev_install_manager()
+      .InstallIsolatedWebAppFromDevModeProxy(
+          url, IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
+          base::BindOnce(&IwaInternalsHandler::OnInstallIsolatedWebAppInDevMode,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void IwaInternalsHandler::ParseUpdateManifestFromUrl(
     const GURL& update_manifest_url,
     Handler::ParseUpdateManifestFromUrlCallback callback) {
-  if (!WebAppProvider::GetForWebApps(profile())) {
-    std::move(callback).Run(::mojom::ParseUpdateManifestFromUrlResult::NewError(
-        "Couldn't get the WebAppProvider."));
-    return;
-  }
-
   auto fetcher = std::make_unique<UpdateManifestFetcher>(
       update_manifest_url, kUpdateManifestFetchAnnotation,
       profile()->GetURLLoaderFactory(),
@@ -332,11 +319,6 @@ void IwaInternalsHandler::ParseUpdateManifestFromUrl(
 void IwaInternalsHandler::InstallIsolatedWebAppFromBundleUrl(
     ::mojom::InstallFromBundleUrlParamsPtr params,
     Handler::InstallIsolatedWebAppFromBundleUrlCallback callback) {
-  if (!WebAppProvider::GetForWebApps(profile())) {
-    SendError(std::move(callback),
-              "WebAppProvider not supported for current profile.");
-    return;
-  }
   if (!params->update_info) {
     SendError(std::move(callback),
               "Update info is required for this operation.");
@@ -352,8 +334,7 @@ void IwaInternalsHandler::InstallIsolatedWebAppFromBundleUrl(
     return;
   }
 
-  WebAppProvider::GetForWebApps(profile())
-      ->isolated_web_app_dev_install_manager()
+  provider_->isolated_web_app_dev_install_manager()
       .DownloadAndInstallIsolatedWebAppFromDevModeBundle(
           params->web_bundle_url,
           IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
@@ -386,17 +367,11 @@ void IwaInternalsHandler::OnIsolatedWebAppDevModeBundleSelected(
     return;
   }
 
-  auto* provider = WebAppProvider::GetForWebApps(profile());
-  if (!provider) {
-    SendError(std::move(callback), "could not get web app provider");
-    return;
-  }
-
-  auto& manager = provider->isolated_web_app_dev_install_manager();
-  manager.InstallIsolatedWebAppFromDevModeBundle(
-      *path, IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
-      base::BindOnce(&IwaInternalsHandler::OnInstallIsolatedWebAppInDevMode,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  provider_->isolated_web_app_dev_install_manager()
+      .InstallIsolatedWebAppFromDevModeBundle(
+          *path, IsolatedWebAppDevInstallManager::InstallSurface::kDevUi,
+          base::BindOnce(&IwaInternalsHandler::OnInstallIsolatedWebAppInDevMode,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void IwaInternalsHandler::SelectFileAndUpdateIsolatedWebAppFromDevBundle(
@@ -446,13 +421,7 @@ void IwaInternalsHandler::OnInstallIsolatedWebAppInDevMode(
 
 void IwaInternalsHandler::SearchForIsolatedWebAppUpdates(
     Handler::SearchForIsolatedWebAppUpdatesCallback callback) {
-  auto* provider = WebAppProvider::GetForWebApps(profile());
-  if (!provider) {
-    std::move(callback).Run("could not get web app provider");
-    return;
-  }
-
-  size_t queued_task_count = provider->isolated_web_app_update_manager()
+  size_t queued_task_count = provider_->isolated_web_app_update_manager()
                                  .DiscoverAndPrepareUpdatesNow();
   std::move(callback).Run(base::StringPrintf(
       "queued %zu update discovery tasks", queued_task_count));
@@ -465,14 +434,8 @@ void IwaInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
     return;
   }
 
-  auto* provider = WebAppProvider::GetForWebApps(profile());
-  if (!provider) {
-    std::move(callback).Run({});
-    return;
-  }
-
   std::vector<::mojom::IwaDevModeAppInfoPtr> dev_mode_apps;
-  for (const WebApp& app : provider->registrar_unsafe().GetApps(
+  for (const WebApp& app : provider_->registrar_unsafe().GetApps(
            WebAppFilter::IsDevModeIsolatedApp())) {
     ASSIGN_OR_RETURN(
         auto source,
@@ -545,13 +508,7 @@ void IwaInternalsHandler::ApplyDevModeUpdate(
     return;
   }
 
-  auto* provider = WebAppProvider::GetForWebApps(profile());
-  if (!provider) {
-    std::move(callback).Run("could not get web app provider");
-    return;
-  }
-
-  auto* iwa = provider->registrar_unsafe().GetAppById(
+  auto* iwa = provider_->registrar_unsafe().GetAppById(
       app_id, WebAppFilter::IsDevModeIsolatedApp());
   if (!iwa) {
     std::move(callback).Run("could not find installed IWA");
@@ -568,30 +525,25 @@ void IwaInternalsHandler::ApplyDevModeUpdate(
     return;
   }
 
-  auto& manager = provider->isolated_web_app_update_manager();
-  manager.DiscoverApplyAndPrioritizeLocalDevModeUpdate(
-      location.has_value() ? *location
-                           : IwaSourceDevModeWithFileOp(source.WithFileOp(
-                                 IwaSourceBundleDevFileOp::kCopy)),
-      *url_info,
-      base::BindOnce([](base::expected<IwaVersion, std::string> result) {
-        if (result.has_value()) {
-          return base::StrCat(
-              {"Update to version ", result->GetString(),
-               " successful (refresh this page to reflect the update)."});
-        }
-        return "Update failed: " + result.error();
-      }).Then(std::move(callback)));
+  provider_->isolated_web_app_update_manager()
+      .DiscoverApplyAndPrioritizeLocalDevModeUpdate(
+          location.has_value() ? *location
+                               : IwaSourceDevModeWithFileOp(source.WithFileOp(
+                                     IwaSourceBundleDevFileOp::kCopy)),
+          *url_info,
+          base::BindOnce([](base::expected<IwaVersion, std::string> result) {
+            if (result.has_value()) {
+              return base::StrCat(
+                  {"Update to version ", result->GetString(),
+                   " successful (refresh this page to reflect the update)."});
+            }
+            return "Update failed: " + result.error();
+          }).Then(std::move(callback)));
 }
 
 void IwaInternalsHandler::UpdateManifestInstalledIsolatedWebApp(
     const webapps::AppId& app_id,
     Handler::UpdateManifestInstalledIsolatedWebAppCallback callback) {
-  if (!update_handler_) {
-    std::move(callback).Run(
-        "WebAppProvider is not available for the current profile.");
-    return;
-  }
   std::optional<IwaVersion> pinned_version =
       base::OptionalFromPtr(base::FindOrNull(pinned_versions_, app_id));
   bool allow_downgrades = app_ids_allowing_downgrades_.contains(app_id);
@@ -604,12 +556,7 @@ void IwaInternalsHandler::SetUpdateChannelForIsolatedWebApp(
     const webapps::AppId& app_id,
     const std::string& update_channel,
     Handler::SetUpdateChannelForIsolatedWebAppCallback callback) {
-  auto* provider = WebAppProvider::GetForWebApps(profile());
-  if (!provider) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-  provider->scheduler().ScheduleCallbackWithResult(
+  provider_->scheduler().ScheduleCallbackWithResult(
       "WebAppInternalsHandler::SetUpdateChannel",
       web_app::AppLockDescription(app_id),
       base::BindOnce(
@@ -641,13 +588,7 @@ void IwaInternalsHandler::SetPinnedVersionForIsolatedWebApp(
     const webapps::AppId& app_id,
     const std::string pinned_version,
     Handler::SetPinnedVersionForIsolatedWebAppCallback callback) {
-  auto* provider = WebAppProvider::GetForWebApps(profile());
-  if (!provider) {
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  if (!provider->registrar_unsafe().AppMatches(
+  if (!provider_->registrar_unsafe().AppMatches(
           app_id, WebAppFilter::IsDevModeIsolatedApp())) {
     std::move(callback).Run(/*success=*/false);
     return;
@@ -671,9 +612,8 @@ void IwaInternalsHandler::ResetPinnedVersionForIsolatedWebApp(
 void IwaInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
     bool allow_downgrades,
     const webapps::AppId& app_id) {
-  auto* provider = WebAppProvider::GetForWebApps(profile());
-  if (!provider || provider->registrar_unsafe().GetInstallState(app_id) !=
-                       proto::INSTALLED_WITH_OS_INTEGRATION) {
+  if (!provider_->registrar_unsafe().AppMatches(
+          app_id, WebAppFilter::IsDevModeIsolatedApp())) {
     return;
   }
 
@@ -688,12 +628,10 @@ void IwaInternalsHandler::SetAllowDowngradesForIsolatedWebApp(
 void IwaInternalsHandler::DeleteIsolatedWebApp(
     const webapps::AppId& app_id,
     Handler::DeleteIsolatedWebAppCallback callback) {
-  auto* provider = WebAppProvider::GetForWebApps(profile());
-
   // Native Window required for the dialog box
   gfx::NativeWindow native_window = GetHostingNativeWindow();
 
-  provider->ui_manager().PresentUserUninstallDialog(
+  provider_->ui_manager().PresentUserUninstallDialog(
       app_id, webapps::WebappUninstallSource::kAppsPage, native_window,
       base::BindOnce([](webapps::UninstallResultCode code) {
         return webapps::UninstallSucceeded(code);
@@ -730,8 +668,7 @@ void IwaInternalsHandler::OnInstalledIsolatedWebAppInDevModeFromWebBundle(
                          ::mojom::InstallIsolatedWebAppResult::NewError(error));
                    });
 
-  web_app::WebAppProvider::GetForWebApps(&profile_.get())
-      ->scheduler()
+  provider_->scheduler()
       .ScheduleCallbackWithResult(
           "WebAppInternalsHandler::SetUpdateInfo",
           web_app::AppLockDescription(install_info.url_info.app_id()),
