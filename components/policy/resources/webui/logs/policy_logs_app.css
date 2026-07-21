@@ -1,0 +1,180 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+h2,
+ul,
+.version-info-table-data {
+  word-break: break-word;
+}
+
+.buttons-row {
+  align-items: center;
+  display: flex;
+  height: 56px;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+.filter-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 16px;
+  margin-bottom: 8px;
+}
+
+#severity-filters {
+  display: flex;
+  gap: 8px;
+}
+
+#severity-filters label {
+  align-items: center;
+  display: flex;
+  font-size: 0.9em;
+}
+
+#filter {
+  padding: 0 8px;
+  width: 50ch;
+}
+
+button {
+  align-items: center;
+  border-radius: 4px;
+  border: 1px solid var(--action-row-button-border);
+  background: var(--action-row-button-background);
+  color: var(--action-row-button-color);
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 32px;
+  justify-content: center;
+  padding: 8px 16px;
+  user-select: none;
+}
+
+button:hover {
+  filter: brightness(var(--action-row-button-hover-brightness));
+}
+
+button:active {
+  filter: brightness(var(--action-row-button-active-brightness));
+}
+
+.label {
+  font-weight: bold;
+  padding-inline-end: 5px;
+  vertical-align: top;
+}
+
+.label::after {
+  content: ':';
+}
+
+ul {
+  list-style-type: none;
+}
+
+li {
+  margin-bottom: 5px;
+}
+
+/* Lay out #logs-container is a <table> element. */
+#logs-container {
+  display: table;
+}
+
+#logs-container a {
+  text-decoration: none;
+  color: inherit;
+}
+
+#logs-container a:hover {
+  text-decoration: underline;
+}
+
+.log-line {
+  display: table-row;
+  font-family: monospace;
+  margin-bottom: 5px;
+}
+
+.log-column {
+  display: table-cell;
+  vertical-align: top;
+}
+
+.timestamp,
+.severity,
+.file-and-line {
+  color: var(--google-grey-700);
+  padding-right: 1ch;
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .timestamp,
+  .severity,
+  .file-and-line {
+    color: var(--google-grey-500);
+    text-align: right;
+  }
+}
+
+.file {
+  display: inline-block;
+  max-width: 35ch;
+  overflow-x: hidden;
+  text-decoration: inherit;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+}
+
+@media (max-width: 1000px) {
+  .file {
+    max-width: 26ch;
+  }
+}
+
+@media (max-width: 800px) {
+  /* On mobile, don't lay out #logs-container as a <table>. Instead,
+     show the timestamp, severity, and file/line right above the
+     message. */
+  #logs-container {
+    display: block;
+  }
+
+  .log-line {
+    display: block;
+  }
+
+  .log-column {
+    display: inline-block;
+  }
+
+  .message {
+    display: block;
+  }
+}
+
+.message {
+  text-align: left;
+}
+
+.highlight {
+  background-color: var(--logs-highlight);
+}
