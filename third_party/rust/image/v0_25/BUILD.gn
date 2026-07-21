@@ -106,8 +106,13 @@ cargo_crate("lib") {
     "//third_party/rust/byteorder_lite/v0_1:lib",
     "//third_party/rust/moxcms/v0_8:lib",
     "//third_party/rust/num_traits/v0_2:lib",
+    "//third_party/rust/png/v0_18:lib",
   ]
-  features = [ "bmp" ]
+  features = [
+    "bmp",
+    "ico",
+    "png",
+  ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
