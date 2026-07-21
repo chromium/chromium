@@ -21,27 +21,25 @@ enum class MultistepFilterApplicationOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterApplicationOutcome)
 
-// LINT.IfChange(MultistepFilterPostSuggestionApplicationFirstNavigation)
-// Records navigation behavior after accepting a Multistep Filter suggestion,
-// distinguishing behavior within a session window.
-enum class MultistepFilterPostSuggestionApplicationFirstNavigation {
-  kBackNavigationWithinSessionWindow = 0,
-  kBackNavigationAfterSessionWindow = 1,
-  kForwardOrOtherNavigation = 2,
-  kMaxValue = kForwardOrOtherNavigation,
+// LINT.IfChange(MultistepFilterPostSuggestionApplicationUserEngagement)
+// Records post-acceptance behavior (tab close, navigation away from the
+// suggestion-applied page (e.g. via Omnibox or bookmark), back
+// navigation, or further on-page navigation) after accepting a Multistep Filter
+// suggestion, distinguishing behavior within a session window.
+enum class MultistepFilterPostSuggestionApplicationUserEngagement {
+  kEngagedWithFurtherNavigationWithinSessionWindow = 0,
+  kEngagedWithFurtherNavigationAfterSessionWindow = 1,
+  kAbandonedWithinSessionWindowTabClosed = 2,
+  kAbandonedAfterSessionWindowTabClosed = 3,
+  kAbandonedWithinSessionWindowOmniboxOrBookmark = 4,
+  kAbandonedAfterSessionWindowOmniboxOrBookmark = 5,
+  kAbandonedWithinSessionWindowBackNavigation = 6,
+  kAbandonedAfterSessionWindowBackNavigation = 7,
+  kAbandonedWithinSessionWindowSessionOverride = 8,
+  kAbandonedAfterSessionWindowSessionOverride = 9,
+  kMaxValue = kAbandonedAfterSessionWindowSessionOverride,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterPostSuggestionApplicationFirstNavigation)
-
-// LINT.IfChange(MultistepFilterPostSuggestionApplicationTabClose)
-// Records tab closure behavior after accepting a Multistep Filter suggestion,
-// distinguishing behavior within a session window.
-enum class MultistepFilterPostSuggestionApplicationTabClose {
-  kTabClosedWithinSessionWindow = 0,
-  kTabClosedWithFurtherNavigation = 1,
-  kTabClosedAfterSessionWindow = 2,
-  kMaxValue = kTabClosedAfterSessionWindow,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterPostSuggestionApplicationTabClose)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterPostSuggestionApplicationUserEngagement)
 
 // Suffix for histograms that are broken down by task type.
 inline constexpr char kMultistepFilterByTaskHistogramPrefix[] = ".ByTask.";
@@ -107,11 +105,8 @@ inline constexpr char
 inline constexpr char kMultistepFilterTimeSuggestionShownToAcceptedHistogram[] =
     "MultistepFilter.Time.SuggestionShownToAccepted";
 inline constexpr char
-    kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram[] =
-        "MultistepFilter.PostSuggestionApplication.FirstNavigation";
-inline constexpr char
-    kMultistepFilterPostSuggestionApplicationTabCloseHistogram[] =
-        "MultistepFilter.PostSuggestionApplication.TabClose";
+    kMultistepFilterPostSuggestionApplicationUserEngagementHistogram[] =
+        "MultistepFilter.PostSuggestionApplication.UserEngagement";
 }  // namespace multistep_filter
 
 #endif  // COMPONENTS_MULTISTEP_FILTER_CORE_LOGGING_MULTISTEP_FILTER_METRICS_H_

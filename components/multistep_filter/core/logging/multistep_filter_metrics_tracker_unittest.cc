@@ -888,28 +888,34 @@ TEST_F(MultistepFilterMetricsTrackerTest, PostAcceptanceNavigations) {
     tracker.OnNavigationFinished(metadata);
   }
 
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Minutes(3));
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://example.com/other");
+    metadata.prev_url = GURL("https://example.com/landing");
+    tracker.OnNavigationFinished(metadata);
+  }
+
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram),
-      BucketsAre(
-          Bucket(MultistepFilterPostSuggestionApplicationFirstNavigation::
-                     kBackNavigationWithinSessionWindow,
-                 1),
-          Bucket(MultistepFilterPostSuggestionApplicationFirstNavigation::
-                     kBackNavigationAfterSessionWindow,
-                 1),
-          Bucket(MultistepFilterPostSuggestionApplicationFirstNavigation::
-                     kForwardOrOtherNavigation,
-                 1)));
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(
-          kMultistepFilterPostSuggestionApplicationTabCloseHistogram),
-      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationTabClose::
-                            kTabClosedWithFurtherNavigation,
-                        3)));
+          kMultistepFilterPostSuggestionApplicationUserEngagementHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedWithinSessionWindowBackNavigation,
+                        1),
+                 Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedAfterSessionWindowBackNavigation,
+                        1),
+                 Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kEngagedWithFurtherNavigationWithinSessionWindow,
+                        1),
+                 Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kEngagedWithFurtherNavigationAfterSessionWindow,
+                        1)));
 }
 
-// Tests that tab closure is logged correctly.
+// Tests that tab abandonment (via tab close) is logged correctly.
 TEST_F(MultistepFilterMetricsTrackerTest, PostAcceptanceTabCloses) {
   base::HistogramTester histogram_tester;
   UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
@@ -939,15 +945,74 @@ TEST_F(MultistepFilterMetricsTrackerTest, PostAcceptanceTabCloses) {
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          kMultistepFilterPostSuggestionApplicationTabCloseHistogram),
-      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationTabClose::
-                            kTabClosedWithinSessionWindow,
+          kMultistepFilterPostSuggestionApplicationUserEngagementHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedWithinSessionWindowTabClosed,
                         1),
-                 Bucket(MultistepFilterPostSuggestionApplicationTabClose::
-                            kTabClosedAfterSessionWindow,
+                 Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedAfterSessionWindowTabClosed,
                         1),
-                 Bucket(MultistepFilterPostSuggestionApplicationTabClose::
-                            kTabClosedWithFurtherNavigation,
+                 Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kEngagedWithFurtherNavigationWithinSessionWindow,
+                        1)));
+}
+
+// Tests that tab abandonment via navigation from omnibox or bookmarks is logged
+// correctly.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       PostAcceptanceNavigationFromOmniboxOrBookmark) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  // Navigating away within window, no prior navigation.
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Seconds(10));
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://google.com");
+    metadata.is_navigation_from_omnibox_or_bookmarks = true;
+    tracker.OnNavigationFinished(metadata);
+  }
+
+  // Navigating away after window, no prior navigation.
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Minutes(3));
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://google.com");
+    metadata.is_navigation_from_omnibox_or_bookmarks = true;
+    tracker.OnNavigationFinished(metadata);
+  }
+
+  // Navigating away within window, with prior navigation.
+  {
+    MultistepFilterMetricsTracker tracker;
+    SetupPostSuggestionApplicationSession(tracker, suggestion);
+    task_environment_.FastForwardBy(base::Seconds(10));
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.url = GURL("https://example.com/other");
+    metadata.prev_url = GURL("https://example.com/landing");
+    tracker.OnNavigationFinished(metadata);
+    task_environment_.FastForwardBy(base::Seconds(10));
+    FilterNavigationMetadata away_metadata = CreateDefaultMetadata();
+    away_metadata.url = GURL("https://google.com");
+    away_metadata.is_navigation_from_omnibox_or_bookmarks = true;
+    tracker.OnNavigationFinished(away_metadata);
+  }
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterPostSuggestionApplicationUserEngagementHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedWithinSessionWindowOmniboxOrBookmark,
+                        1),
+                 Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedAfterSessionWindowOmniboxOrBookmark,
+                        1),
+                 Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kEngagedWithFurtherNavigationWithinSessionWindow,
                         1)));
 }
 
@@ -1000,11 +1065,15 @@ TEST_F(MultistepFilterMetricsTrackerTest,
     tracker.OnNavigationFinished(back_metadata);
   }
 
-  histogram_tester.ExpectUniqueSample(
-      kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram,
-      MultistepFilterPostSuggestionApplicationFirstNavigation::
-          kBackNavigationWithinSessionWindow,
-      1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterPostSuggestionApplicationUserEngagementHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedWithinSessionWindowBackNavigation,
+                        1),
+                 Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedWithinSessionWindowTabClosed,
+                        1)));
 }
 
 // Tests that showing a suggestion while a post-application session is active
@@ -1028,9 +1097,9 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   tracker.OnNavigationFinished(metadata);
 
   histogram_tester.ExpectUniqueSample(
-      kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram,
-      MultistepFilterPostSuggestionApplicationFirstNavigation::
-          kBackNavigationWithinSessionWindow,
+      kMultistepFilterPostSuggestionApplicationUserEngagementHistogram,
+      MultistepFilterPostSuggestionApplicationUserEngagement::
+          kAbandonedWithinSessionWindowBackNavigation,
       1);
 }
 
@@ -1054,32 +1123,27 @@ TEST_F(MultistepFilterMetricsTrackerTest,
     landing_metadata2.url = GURL("https://example.com/landing2");
     landing_metadata2.prev_url = GURL("https://example.com/landing");
     landing_metadata2.applied_suggestion = suggestion2;
+    landing_metadata2.was_filter_initiated_navigation = true;
     tracker.OnNavigationFinished(landing_metadata2);
-
-    histogram_tester.ExpectUniqueSample(
-        kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram,
-        MultistepFilterPostSuggestionApplicationFirstNavigation::
-            kForwardOrOtherNavigation,
-        1);
 
     tracker.OnSuggestionApplicationAnnotationExtractionFinished(
         /*was_applied_successfully=*/true);
 
     histogram_tester.ExpectUniqueSample(
-        kMultistepFilterPostSuggestionApplicationTabCloseHistogram,
-        MultistepFilterPostSuggestionApplicationTabClose::
-            kTabClosedWithFurtherNavigation,
+        kMultistepFilterPostSuggestionApplicationUserEngagementHistogram,
+        MultistepFilterPostSuggestionApplicationUserEngagement::
+            kAbandonedWithinSessionWindowSessionOverride,
         1);
   }
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          kMultistepFilterPostSuggestionApplicationTabCloseHistogram),
-      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationTabClose::
-                            kTabClosedWithinSessionWindow,
+          kMultistepFilterPostSuggestionApplicationUserEngagementHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedWithinSessionWindowTabClosed,
                         1),
-                 Bucket(MultistepFilterPostSuggestionApplicationTabClose::
-                            kTabClosedWithFurtherNavigation,
+                 Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedWithinSessionWindowSessionOverride,
                         1)));
 }
 

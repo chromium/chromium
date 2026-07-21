@@ -213,34 +213,16 @@ void LogSuggestionAcceptanceLatencyAndAgeMetrics(
   }
 }
 
-MultistepFilterPostSuggestionApplicationFirstNavigation
-CalculatePostSuggestionApplicationFirstNavigationAction(
-    const MultistepFilterMetricsTracker::PostSuggestionApplicationSession&
-        session,
-    const FilterNavigationMetadata& metadata) {
-  if (metadata.is_back_navigation) {
-    // Use the navigation start time (when the user initiated the back action)
-    // rather than the current time (when the navigation finished) to measure
-    // the user's actual dwell time on the page, excluding loading latency.
-    base::TimeDelta time_since_landing =
-        metadata.navigation_start_time -
-        session.post_suggestion_window_start_time;
-    bool within_window = time_since_landing <
-                         kMultistepFilterPostApplicationSessionDuration.Get();
-    return within_window
-               ? MultistepFilterPostSuggestionApplicationFirstNavigation::
-                     kBackNavigationWithinSessionWindow
-               : MultistepFilterPostSuggestionApplicationFirstNavigation::
-                     kBackNavigationAfterSessionWindow;
-  }
-  return MultistepFilterPostSuggestionApplicationFirstNavigation::
-      kForwardOrOtherNavigation;
-}
-
 // Helper to determine if a navigation should be ignored for post-application
 // metrics.
 bool ShouldIgnoreNavigationForPostApplicationMetrics(
     const FilterNavigationMetadata& metadata) {
+  // Ignore filter-initiated navigations (they are handled as overrides if a new
+  // suggestion is applied, and shouldn't count as engagement for the current
+  // session).
+  if (metadata.was_filter_initiated_navigation) {
+    return true;
+  }
   // Ignore same-document navigations unless they are back navigations or have
   // user gesture.
   if (metadata.is_same_document_navigation && !metadata.is_back_navigation &&
@@ -267,7 +249,8 @@ MultistepFilterMetricsTracker::~MultistepFilterMetricsTracker() {
     FlushSuggestionApplicationSession(/*was_applied_successfully=*/false);
   }
   if (current_post_suggestion_application_session_.has_value()) {
-    FlushPostSuggestionApplicationSession();
+    FlushPostSuggestionApplicationSession(SessionOutcomeTrigger::kTabClosed,
+                                          base::TimeTicks::Now());
   }
 }
 
@@ -286,8 +269,21 @@ void MultistepFilterMetricsTracker::OnNavigationFinished(
   }
 
   // If a post-acceptance session is active, track this navigation.
-  if (current_post_suggestion_application_session_.has_value()) {
-    TrackPostSuggestionApplicationNavigation(metadata);
+  if (current_post_suggestion_application_session_.has_value() &&
+      !ShouldIgnoreNavigationForPostApplicationMetrics(metadata)) {
+    if (metadata.is_navigation_from_omnibox_or_bookmarks) {
+      FlushPostSuggestionApplicationSession(
+          SessionOutcomeTrigger::kNavigationFromBrowserContext,
+          metadata.navigation_start_time);
+    } else if (metadata.is_back_navigation) {
+      FlushPostSuggestionApplicationSession(
+          SessionOutcomeTrigger::kNavigationBack,
+          metadata.navigation_start_time);
+    } else {
+      FlushPostSuggestionApplicationSession(
+          SessionOutcomeTrigger::kNavigationFromPageContext,
+          metadata.navigation_start_time);
+    }
   }
 
   // If this navigation is applying the suggestion, start the application
@@ -375,7 +371,8 @@ void MultistepFilterMetricsTracker::
   if (was_applied_successfully &&
       !current_suggestion_application_session_->is_error_page) {
     if (current_post_suggestion_application_session_.has_value()) {
-      FlushPostSuggestionApplicationSession();
+      FlushPostSuggestionApplicationSession(
+          SessionOutcomeTrigger::kSessionOverride, base::TimeTicks::Now());
     }
     current_post_suggestion_application_session_ =
         PostSuggestionApplicationSession{
@@ -426,44 +423,50 @@ void MultistepFilterMetricsTracker::FlushSuggestionApplicationSession(
   current_suggestion_application_session_ = std::nullopt;
 }
 
-void MultistepFilterMetricsTracker::TrackPostSuggestionApplicationNavigation(
-    const FilterNavigationMetadata& metadata) {
+void MultistepFilterMetricsTracker::FlushPostSuggestionApplicationSession(
+    SessionOutcomeTrigger trigger,
+    base::TimeTicks event_time) {
   CHECK(current_post_suggestion_application_session_.has_value());
-  if (ShouldIgnoreNavigationForPostApplicationMetrics(metadata) ||
-      current_post_suggestion_application_session_
-          ->has_logged_first_navigation) {
-    return;
+  MultistepFilterPostSuggestionApplicationUserEngagement user_engagement_action;
+
+  const base::TimeDelta time_since_suggestion_application_finish =
+      event_time - current_post_suggestion_application_session_
+                       ->post_suggestion_window_start_time;
+  const bool within_window =
+      time_since_suggestion_application_finish <
+      kMultistepFilterPostApplicationSessionDuration.Get();
+  using enum MultistepFilterPostSuggestionApplicationUserEngagement;
+  switch (trigger) {
+    case SessionOutcomeTrigger::kTabClosed:
+      user_engagement_action = within_window
+                                   ? kAbandonedWithinSessionWindowTabClosed
+                                   : kAbandonedAfterSessionWindowTabClosed;
+      break;
+    case SessionOutcomeTrigger::kNavigationFromBrowserContext:
+      user_engagement_action =
+          within_window ? kAbandonedWithinSessionWindowOmniboxOrBookmark
+                        : kAbandonedAfterSessionWindowOmniboxOrBookmark;
+      break;
+    case SessionOutcomeTrigger::kNavigationBack:
+      user_engagement_action = within_window
+                                   ? kAbandonedWithinSessionWindowBackNavigation
+                                   : kAbandonedAfterSessionWindowBackNavigation;
+      break;
+    case SessionOutcomeTrigger::kSessionOverride:
+      // Overridden by a new suggestion before any navigation.
+      user_engagement_action =
+          within_window ? kAbandonedWithinSessionWindowSessionOverride
+                        : kAbandonedAfterSessionWindowSessionOverride;
+      break;
+    case SessionOutcomeTrigger::kNavigationFromPageContext:
+      user_engagement_action =
+          within_window ? kEngagedWithFurtherNavigationWithinSessionWindow
+                        : kEngagedWithFurtherNavigationAfterSessionWindow;
+      break;
   }
   base::UmaHistogramEnumeration(
-      kMultistepFilterPostSuggestionApplicationFirstNavigationHistogram,
-      CalculatePostSuggestionApplicationFirstNavigationAction(
-          *current_post_suggestion_application_session_, metadata));
-  current_post_suggestion_application_session_->has_logged_first_navigation =
-      true;
-}
-
-void MultistepFilterMetricsTracker::FlushPostSuggestionApplicationSession() {
-  CHECK(current_post_suggestion_application_session_.has_value());
-  MultistepFilterPostSuggestionApplicationTabClose close_action;
-
-  if (current_post_suggestion_application_session_
-          ->has_logged_first_navigation) {
-    close_action = MultistepFilterPostSuggestionApplicationTabClose::
-        kTabClosedWithFurtherNavigation;
-  } else {
-    base::TimeDelta time_since_suggestion_application_finish =
-        base::TimeTicks::Now() - current_post_suggestion_application_session_
-                                     ->post_suggestion_window_start_time;
-    bool within_window = time_since_suggestion_application_finish <
-                         kMultistepFilterPostApplicationSessionDuration.Get();
-    close_action = within_window
-                       ? MultistepFilterPostSuggestionApplicationTabClose::
-                             kTabClosedWithinSessionWindow
-                       : MultistepFilterPostSuggestionApplicationTabClose::
-                             kTabClosedAfterSessionWindow;
-  }
-  base::UmaHistogramEnumeration(
-      kMultistepFilterPostSuggestionApplicationTabCloseHistogram, close_action);
+      kMultistepFilterPostSuggestionApplicationUserEngagementHistogram,
+      user_engagement_action);
   current_post_suggestion_application_session_ = std::nullopt;
 }
 

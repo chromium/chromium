@@ -185,13 +185,19 @@ found in the LICENSE file.
     completed, the landing page's URL was successfully parsed, and the extracted
     filter attributes exactly matched the suggested filters (same keys and
     values). &quot;Not successfully applied&quot; (kNotAllFiltersApplied) covers
-    cases where: - The navigation failed (error page) or was to an unsupported
-    scheme. - The extraction process was interrupted by a new navigation or page
-    reload before it could finish. - No filter attributes could be extracted
-    from the landing page. - The number of extracted attributes did not match
-    the suggested count. - There was a mismatch in the keys or values of the
-    filters (e.g. a different brand or price range was applied than what was
-    suggested).
+    cases where:
+
+    - The navigation failed (error page) or was to an unsupported scheme.
+
+    - The extraction process was interrupted by a new navigation or page reload
+    before it could finish.
+
+    - No filter attributes could be extracted from the landing page.
+
+    - The number of extracted attributes did not match the suggested count.
+
+    - There was a mismatch in the keys or values of the filters (e.g. a
+    different brand or price range was applied than what was suggested).
   </summary>
 </histogram>
 
@@ -207,12 +213,18 @@ found in the LICENSE file.
     (kAllFiltersApplied) means that after the navigation completed, the landing
     page's URL was successfully parsed, and the extracted filter attributes
     exactly matched the suggested filters (same keys and values). &quot;Not
-    successfully applied&quot; (kNotAllFiltersApplied) covers cases where: - The
-    navigation failed (error page) or was to an unsupported scheme. - The
-    extraction process was interrupted by a new navigation or page reload before
-    it could finish. - No filter attributes could be extracted from the landing
-    page. - The number of extracted attributes did not match the suggested
-    count. - There was a mismatch in the keys or values of the filters (e.g. a
+    successfully applied&quot; (kNotAllFiltersApplied) covers cases where:
+
+    - The navigation failed (error page) or was to an unsupported scheme.
+
+    - The extraction process was interrupted by a new navigation or page reload
+    before it could finish.
+
+    - No filter attributes could be extracted from the landing page.
+
+    - The number of extracted attributes did not match the suggested count.
+
+    - There was a mismatch in the keys or values of the filters (e.g. a
     different brand or price range was applied than what was suggested).
   </summary>
   <token key="RetentionSlice" variants="MultistepFilterRetentionSlice"/>
@@ -229,13 +241,19 @@ found in the LICENSE file.
     after the navigation completed, the landing page's URL was successfully
     parsed, and the extracted filter attributes exactly matched the suggested
     filters (same keys and values). &quot;Not successfully applied&quot;
-    (kNotAllFiltersApplied) covers cases where: - The navigation failed (error
-    page) or was to an unsupported scheme. - The extraction process was
-    interrupted by a new navigation or page reload before it could finish. - No
-    filter attributes could be extracted from the landing page. - The number of
-    extracted attributes did not match the suggested count. - There was a
-    mismatch in the keys or values of the filters (e.g. a different brand or
-    price range was applied than what was suggested).
+    (kNotAllFiltersApplied) covers cases where:
+
+    - The navigation failed (error page) or was to an unsupported scheme.
+
+    - The extraction process was interrupted by a new navigation or page reload
+    before it could finish.
+
+    - No filter attributes could be extracted from the landing page.
+
+    - The number of extracted attributes did not match the suggested count.
+
+    - There was a mismatch in the keys or values of the filters (e.g. a
+    different brand or price range was applied than what was suggested).
   </summary>
   <token key="TaskType" variants="MultistepFilterTaskType"/>
 </histogram>
@@ -321,43 +339,35 @@ found in the LICENSE file.
   <token key="TaskType" variants="MultistepFilterTaskType"/>
 </histogram>
 
-<histogram name="MultistepFilter.PostSuggestionApplication.FirstNavigation"
-    enum="MultistepFilterPostSuggestionApplicationFirstNavigation"
+<histogram name="MultistepFilter.PostSuggestionApplication.UserEngagement"
+    enum="MultistepFilterPostSuggestionApplicationUserEngagement"
     expires_after="2026-12-15">
   <owner>adigupt@google.com</owner>
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
-    Records the user's first navigation behavior after a Multistep Filter
-    suggestion is successfully applied.
+    Records the user's post-acceptance engagement behavior (tab close,
+    navigation via omnibox/bookmark, back navigation, or forward navigation)
+    after a Multistep Filter suggestion is successfully applied.
 
-    Categorizes the first navigation into: - Back navigation within the
-    post-acceptance session window (default 2 minutes). - Back navigation after
-    this window. - Any other navigation (e.g. forward, new URL).
+    Categorizes the behavior into:
 
-    This helps measure if the user immediately reverted the suggestion (went
-    back) which might indicate it was not useful. Recorded on the first
-    non-ignored navigation after the suggestion is applied.
-  </summary>
-</histogram>
+    - Engaged (within / after) the session window by performing further on-page
+    navigation.
 
-<histogram name="MultistepFilter.PostSuggestionApplication.TabClose"
-    enum="MultistepFilterPostSuggestionApplicationTabClose"
-    expires_after="2026-12-15">
-  <owner>adigupt@google.com</owner>
-  <owner>chrome-multistep-filter-eng@google.com</owner>
-  <summary>
-    Records the user's tab closure behavior after a Multistep Filter suggestion
-    is successfully applied.
+    - Abandoned (within / after) the session window by:
 
-    Categorizes the tab closure into: - Tab closed within the post-acceptance
-    session window (default 2 minutes) without any further navigation. - Tab
-    closed after the session window, without any further navigation. - Tab
-    closed after performing further navigations.
+    a) Tab closure (default 2 minutes for within).
 
-    This helps measure user engagement after applying a suggestion (e.g. did
-    they immediately close the tab because it was not what they wanted, or did
-    they stay/navigate further). Recorded when the tab is closed or when a new
-    suggestion application overrides the active session.
+    b) Navigating via omnibox/bookmark.
+
+    c) Navigating via pressing the back button.
+
+    d) A new suggestion overriding the active session.
+
+    This helps measure user engagement after applying a suggestion. Recorded
+    when the tab is closed, when the user navigates via omnibox/bookmark, when
+    the user navigates back, when the user performs a forward navigation on the
+    page, or when a new suggestion application overrides the active session.
   </summary>
 </histogram>
 

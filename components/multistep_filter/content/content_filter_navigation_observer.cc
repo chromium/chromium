@@ -17,6 +17,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -58,6 +59,12 @@ FilterNavigationMetadata CreateFilterNavigationMetadata(
   metadata.is_same_document_navigation = handle->IsSameDocument();
   metadata.is_back_navigation =
       handle->IsHistory() && handle->GetNavigationEntryOffset() < 0;
+  ui::PageTransition transition = handle->GetPageTransition();
+  metadata.is_navigation_from_omnibox_or_bookmarks =
+      ((transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) != 0) ||
+      ui::PageTransitionCoreTypeIs(transition,
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+
   return metadata;
 }
 

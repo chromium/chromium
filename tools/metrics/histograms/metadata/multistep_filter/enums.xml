@@ -19,37 +19,44 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterApplicationOutcome) -->
 
-<!-- LINT.IfChange(MultistepFilterPostSuggestionApplicationFirstNavigation) -->
+<!-- LINT.IfChange(MultistepFilterPostSuggestionApplicationUserEngagement) -->
 
-<enum name="MultistepFilterPostSuggestionApplicationFirstNavigation">
-  <int value="0" label="kBackNavigationWithinSessionWindow">
-    Back navigation within session window
+<enum name="MultistepFilterPostSuggestionApplicationUserEngagement">
+  <int value="0" label="kEngagedWithFurtherNavigationWithinSessionWindow">
+    Engaged with further on-page navigation within session window
   </int>
-  <int value="1" label="kBackNavigationAfterSessionWindow">
-    Back navigation after session window
+  <int value="1" label="kEngagedWithFurtherNavigationAfterSessionWindow">
+    Engaged with further on-page navigation after session window
   </int>
-  <int value="2" label="kForwardOrOtherNavigation">
-    Forward or other navigation
+  <int value="2" label="kAbandonedWithinSessionWindowTabClosed">
+    Abandoned within session window by tab closure
+  </int>
+  <int value="3" label="kAbandonedAfterSessionWindowTabClosed">
+    Abandoned after session window by tab closure
+  </int>
+  <int value="4" label="kAbandonedWithinSessionWindowOmniboxOrBookmark">
+    Abandoned within session window by navigating via omnibox/bookmark
+  </int>
+  <int value="5" label="kAbandonedAfterSessionWindowOmniboxOrBookmark">
+    Abandoned after session window by navigating via omnibox/bookmark
+  </int>
+  <int value="6" label="kAbandonedWithinSessionWindowBackNavigation">
+    Abandoned within session window by navigating back
+  </int>
+  <int value="7" label="kAbandonedAfterSessionWindowBackNavigation">
+    Abandoned after session window by navigating back
+  </int>
+  <int value="8" label="kAbandonedWithinSessionWindowSessionOverride">
+    Abandoned within session window by a new suggestion application overriding
+    the active session
+  </int>
+  <int value="9" label="kAbandonedAfterSessionWindowSessionOverride">
+    Abandoned after session window by a new suggestion application overriding
+    the active session
   </int>
 </enum>
 
-<!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterPostSuggestionApplicationFirstNavigation) -->
-
-<!-- LINT.IfChange(MultistepFilterPostSuggestionApplicationTabClose) -->
-
-<enum name="MultistepFilterPostSuggestionApplicationTabClose">
-  <int value="0" label="kTabClosedWithinSessionWindow">
-    Tab closed within session window
-  </int>
-  <int value="1" label="kTabClosedWithFurtherNavigation">
-    Tab closed after further navigation
-  </int>
-  <int value="2" label="kTabClosedAfterSessionWindow">
-    Tab closed after session window
-  </int>
-</enum>
-
-<!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterPostSuggestionApplicationTabClose) -->
+<!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterPostSuggestionApplicationUserEngagement) -->
 
 <!-- LINT.IfChange(SuggestionUserDecision) -->
 

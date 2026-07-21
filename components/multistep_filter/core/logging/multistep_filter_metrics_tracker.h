@@ -24,7 +24,6 @@ class MultistepFilterMetricsTracker {
  public:
   struct NavigationSession {
     base::TimeTicks navigation_finish_time;
-    bool is_back_navigation = false;
   };
 
   // Tracks the UI lifecycle of a multistep filter suggestion.
@@ -71,10 +70,6 @@ class MultistepFilterMetricsTracker {
     // The time when the navigation triggered by the accepted suggestion
     // finished. This marks the start of the post-application session window.
     base::TimeTicks post_suggestion_window_start_time;
-    // Whether the first navigation after the suggestion application has been
-    // logged. If true, any subsequent navigations within the session window
-    // will be ignored.
-    bool has_logged_first_navigation = false;
   };
 
   MultistepFilterMetricsTracker();
@@ -119,6 +114,28 @@ class MultistepFilterMetricsTracker {
       bool was_applied_successfully);
 
  private:
+  // Internal trigger representing the reason why a post-suggestion application
+  // session is being flushed. This is mapped to the final metric values
+  // (which also depend on whether the event occurred within the session
+  // window).
+  enum class SessionOutcomeTrigger {
+    // The user engaged with the page, which is implied by clicking on links or
+    // submitting forms (both from the page context). The destination (to the
+    // same domain or to a different domain) is not considered. This is recorded
+    // even if the navigation failed and resulted in an error page.
+    kNavigationFromPageContext,
+    // The tab containing the suggestion page was closed.
+    kTabClosed,
+    // The user navigated by typing in the Omnibox or clicking on a bookmark,
+    // which implies starting from a fresh state rather than continuing the
+    // active session with a suggestion.
+    kNavigationFromBrowserContext,
+    // The user navigated back by pressing the browser's back button.
+    kNavigationBack,
+    // A new suggestion application overrode the active session.
+    kSessionOverride,
+  };
+
   // Internal helper to calculate and flush UMA for pending suggestion UI
   // sessions.
   void FlushSuggestionUiSession(SuggestionUserDecision final_decision);
@@ -127,17 +144,17 @@ class MultistepFilterMetricsTracker {
   // application sessions.
   void FlushSuggestionApplicationSession(bool was_applied_successfully);
 
-  // Internal helper to track navigation after a suggestion was successfully
-  // applied. Only tracks the first non-ignored navigation within the session
-  // window (controlled by `kMultistepFilterPostApplicationSessionDuration`).
-  void TrackPostSuggestionApplicationNavigation(
-      const FilterNavigationMetadata& metadata);
-
   // Internal helper to flush UMA for the post-suggestion application session
   // (e.g. on tab close or when a new session starts). Only applicable for
   // successful suggestion applications. The window duration is controlled by
   // `kMultistepFilterPostApplicationSessionDuration`.
-  void FlushPostSuggestionApplicationSession();
+  //
+  // `event_time` must be the timestamp when the user action was *initiated*
+  // (e.g., `metadata.navigation_start_time` for navigations, or
+  // `base::TimeTicks::Now()` for tab close). We pass this explicitly to prevent
+  // slow-loading destination pages from inflating the calculated dwell time.
+  void FlushPostSuggestionApplicationSession(SessionOutcomeTrigger trigger,
+                                             base::TimeTicks event_time);
 
   // The current navigation session.
   NavigationSession current_navigation_;
