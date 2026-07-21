@@ -706,60 +706,67 @@ class CORE_EXPORT StyleRuleResult : public StyleRuleGroup {
   void TraceAfterDispatch(blink::Visitor*) const;
 };
 
-// An @apply rule, representing applying a mixin.
-class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleBase {
+// An @apply rule, representing applying a mixin. Its declaration block, if
+// present, is substituted for the mixin's @contents rule.
+class CORE_EXPORT StyleRuleApplyMixin : public StyleRuleGroup {
  public:
+  // @apply with a declaration block (possibly empty).
   StyleRuleApplyMixin(AtomicString name,
                       HeapVector<Member<CSSVariableData>> arguments,
-                      StyleRule* fake_parent_rule_for_declarations)
-      : StyleRuleBase(kApplyMixin),
+                      HeapVector<Member<StyleRuleBase>> child_rules)
+      : StyleRuleGroup(kApplyMixin, std::move(child_rules)),
         name_(std::move(name)),
         arguments_(std::move(arguments)),
-        fake_parent_rule_for_declarations_(fake_parent_rule_for_declarations) {}
-  StyleRuleApplyMixin(const StyleRuleMixin&) = delete;
+        has_contents_block_(true) {}
+
+  // @apply without a declaration block.
+  StyleRuleApplyMixin(AtomicString name,
+                      HeapVector<Member<CSSVariableData>> arguments)
+      : StyleRuleGroup(kApplyMixin, HeapVector<Member<StyleRuleBase>>{}),
+        name_(std::move(name)),
+        arguments_(std::move(arguments)),
+        has_contents_block_(false) {}
+  StyleRuleApplyMixin(const StyleRuleApplyMixin&) = delete;
+  StyleRuleApplyMixin(const StyleRuleApplyMixin&,
+                      HeapVector<Member<StyleRuleBase>> child_rules);
 
   const AtomicString& GetName() const { return name_; }
   const HeapVector<Member<CSSVariableData>>& GetArguments() const {
     return arguments_;
   }
 
-  // Declarations argument (for @contents). May be nullptr.
-  StyleRule* FakeParentRuleForDeclarations() const {
-    return fake_parent_rule_for_declarations_;
-  }
+  // Whether @apply carried a declaration block, including an empty one. This
+  // distinguishes `@apply --foo {}` (empty block, which suppresses the mixin's
+  // @contents fallback) from `@apply --foo;` (no block, which leaves the
+  // fallback in place). The block's rules are this group's child rules.
+  bool HasContentsBlock() const { return has_contents_block_; }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   AtomicString name_;
   HeapVector<Member<CSSVariableData>> arguments_;
-  Member<StyleRule> fake_parent_rule_for_declarations_;
+  bool has_contents_block_;
 };
 
 // A @contents rule, representing a placeholder within a mixin
 // for rules sent in through a parameter to @apply. The @contents
 // rule may have a declaration block, which is used as a fallback
 // if no @contents is given. We store that declaration block
-// as a dummy rule, similar to how StyleRuleMixin works.
+// as child rules, similar to how StyleRuleMixin works.
 //
 // This class is named “…Statement” to avoid confusion with
 // the more general concept of contents of a style rule.
-class CORE_EXPORT StyleRuleContentsStatement : public StyleRuleBase {
+class CORE_EXPORT StyleRuleContentsStatement : public StyleRuleGroup {
  public:
-  explicit StyleRuleContentsStatement(StyleRule* fake_parent_rule_for_fallback)
-      : StyleRuleBase(kContents),
-        fake_parent_rule_for_fallback_(fake_parent_rule_for_fallback) {}
-  StyleRuleContentsStatement(const StyleRuleMixin&) = delete;
-
-  // May be nullptr.
-  StyleRule* FakeParentRuleForFallback() const {
-    return fake_parent_rule_for_fallback_;
-  }
+  explicit StyleRuleContentsStatement(
+      HeapVector<Member<StyleRuleBase>> child_rules)
+      : StyleRuleGroup(kContents, std::move(child_rules)) {}
+  StyleRuleContentsStatement(const StyleRuleContentsStatement&) = delete;
+  StyleRuleContentsStatement(const StyleRuleContentsStatement&,
+                             HeapVector<Member<StyleRuleBase>> child_rules);
 
   void TraceAfterDispatch(blink::Visitor*) const;
-
- private:
-  Member<StyleRule> fake_parent_rule_for_fallback_;
 };
 
 // https://drafts.csswg.org/mediaqueries-5/#at-ruledef-custom-media
@@ -871,7 +878,9 @@ struct DowncastTraits<StyleRuleGroup> {
            rule.IsContainerRule() || rule.IsLayerBlockRule() ||
            rule.IsScopeRule() || rule.IsStartingStyleRule() ||
            rule.IsFunctionRule() || rule.IsPageRule() ||
-           rule.IsNavigationRule() || rule.IsMixinRule() || rule.IsResultRule();
+           rule.IsNavigationRule() || rule.IsMixinRule() ||
+           rule.IsResultRule() || rule.IsApplyMixinRule() ||
+           rule.IsContentsRule();
   }
 };
 

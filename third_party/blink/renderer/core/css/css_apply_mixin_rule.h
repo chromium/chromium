@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class CSSStyleRule;
 class StyleRuleApplyMixin;
 
 // CSSOM wrapper for @apply (activating a mixin defined with @mixin).
@@ -32,7 +31,7 @@ class CORE_EXPORT CSSApplyMixinRule final : public CSSRule {
  private:
   CSSRule::Type GetType() const override { return kApplyMixinRule; }
   Member<StyleRuleApplyMixin> apply_mixin_rule_;
-  mutable Member<CSSStyleRule> fake_parent_cssom_;
+  mutable HeapVector<Member<CSSRule>> child_rule_cssom_wrappers_;
 };
 
 template <>

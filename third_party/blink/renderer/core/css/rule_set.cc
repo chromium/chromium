@@ -1081,20 +1081,16 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
 
       // Try first the parameter from @apply, then the fallback block given in
       // @contents, and if neither exists, nothing happens.
-      StyleRule* rules_to_add = nullptr;
-      if (apply->FakeParentRuleForDeclarations()) {
+      const StyleRuleGroup* rules_to_add = nullptr;
+      if (apply->HasContentsBlock()) {
         rules_to_add = To<StyleRuleApplyMixin>(
-                           apply->Clone(parent_rule, mixin_parameter_bindings))
-                           ->FakeParentRuleForDeclarations();
-      } else if (contents_rule->FakeParentRuleForFallback() &&
-                 contents_rule->FakeParentRuleForFallback()->ChildRules()) {
-        rules_to_add =
-            To<StyleRuleContentsStatement>(
-                contents_rule->Clone(parent_rule, mixin_parameter_bindings))
-                ->FakeParentRuleForFallback();
+            apply->Clone(parent_rule, mixin_parameter_bindings));
+      } else if (!contents_rule->ChildRules().empty()) {
+        rules_to_add = To<StyleRuleContentsStatement>(
+            contents_rule->Clone(parent_rule, mixin_parameter_bindings));
       }
-      if (rules_to_add && rules_to_add->ChildRules()) {
-        AddChildRules(parent_rule, *rules_to_add->ChildRules(), medium, mixins,
+      if (rules_to_add) {
+        AddChildRules(parent_rule, rules_to_add->ChildRules(), medium, mixins,
                       add_rule_flags, container_queries, cascade_layer,
                       style_scope, apply_mixins_stack);
       }

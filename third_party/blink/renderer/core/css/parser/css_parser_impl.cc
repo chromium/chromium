@@ -2675,8 +2675,8 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
       observer_->StartRuleBody(stream.Offset());
       observer_->EndRuleBody(stream.Offset());
     }
-    return MakeGarbageCollected<StyleRuleApplyMixin>(name, std::move(arguments),
-                                                     nullptr);
+    return MakeGarbageCollected<StyleRuleApplyMixin>(name,
+                                                     std::move(arguments));
   }
 
   if (stream.UncheckedPeek().GetType() != kLeftBraceToken) {
@@ -2685,10 +2685,11 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
   }
 
   // Parse the @contents block.
-  StyleRule* fake_parent_rule_for_contents =
-      ConsumeDeclarationListForMixins(stream);
+  StyleRule* fake_parent_rule = ConsumeDeclarationListForMixins(stream);
+  fake_parent_rule->EnsureChildRules();
   return MakeGarbageCollected<StyleRuleApplyMixin>(
-      name, std::move(arguments), fake_parent_rule_for_contents);
+      name, std::move(arguments),
+      HeapVector{std::move(*fake_parent_rule->ChildRules())});
 }
 
 StyleRuleContentsStatement* CSSParserImpl::ConsumeContentsRule(
@@ -2706,7 +2707,8 @@ StyleRuleContentsStatement* CSSParserImpl::ConsumeContentsRule(
     if (!stream.AtEnd()) {
       stream.UncheckedConsume();  // kSemicolonToken
     }
-    return MakeGarbageCollected<StyleRuleContentsStatement>(nullptr);
+    return MakeGarbageCollected<StyleRuleContentsStatement>(
+        HeapVector<Member<StyleRuleBase>>{});
   }
 
   if (stream.UncheckedPeek().GetType() != kLeftBraceToken) {
@@ -2722,7 +2724,9 @@ StyleRuleContentsStatement* CSSParserImpl::ConsumeContentsRule(
 
   // Parse the actual block.
   StyleRule* fake_parent_rule = ConsumeDeclarationListForMixins(stream);
-  return MakeGarbageCollected<StyleRuleContentsStatement>(fake_parent_rule);
+  fake_parent_rule->EnsureChildRules();
+  return MakeGarbageCollected<StyleRuleContentsStatement>(
+      HeapVector{std::move(*fake_parent_rule->ChildRules())});
 }
 
 // Parse the parameters of a CSS function: Zero or more comma-separated

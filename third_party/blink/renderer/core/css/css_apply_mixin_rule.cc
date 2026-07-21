@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
-#include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -27,20 +26,20 @@ String CSSApplyMixinRule::cssText() const {
   StringBuilder result;
   result.Append("@apply ");
   SerializeIdentifier(name(), result);
-  if (apply_mixin_rule_->FakeParentRuleForDeclarations()) {
+  if (apply_mixin_rule_->HasContentsBlock()) {
     // Mostly follows CSSGroupingRule::AppendCSSTextForItems().
     result.Append(" {");
-    StyleRule* fake_parent = apply_mixin_rule_->FakeParentRuleForDeclarations();
-    if (!fake_parent_cssom_) {
-      fake_parent_cssom_ = To<CSSStyleRule>(fake_parent->CreateCSSOMWrapper(
-          /*position_hint=*/0,
-          /*parent_rule=*/const_cast<CSSApplyMixinRule*>(this)));
+    const HeapVector<Member<StyleRuleBase>>& rules =
+        apply_mixin_rule_->ChildRules();
+    if (child_rule_cssom_wrappers_.size() != rules.size()) {
+      child_rule_cssom_wrappers_.resize(rules.size());
     }
-    const GCedHeapVector<Member<StyleRuleBase>>* rules =
-        fake_parent->ChildRules();
-    for (unsigned i = 0; i < rules->size(); ++i) {
-      CSSRule* rule = fake_parent_cssom_->ItemInternal(i);
-      String rule_text = rule->cssText();
+    for (unsigned i = 0; i < rules.size(); ++i) {
+      if (!child_rule_cssom_wrappers_[i]) {
+        child_rule_cssom_wrappers_[i] = rules[i]->CreateCSSOMWrapper(
+            i, const_cast<CSSApplyMixinRule*>(this));
+      }
+      String rule_text = child_rule_cssom_wrappers_[i]->cssText();
       if (!rule_text.empty()) {
         result.Append(" ");
         result.Append(rule_text);
@@ -64,7 +63,7 @@ String CSSApplyMixinRule::name() const {
 
 void CSSApplyMixinRule::Trace(Visitor* visitor) const {
   visitor->Trace(apply_mixin_rule_);
-  visitor->Trace(fake_parent_cssom_);
+  visitor->Trace(child_rule_cssom_wrappers_);
   CSSRule::Trace(visitor);
 }
 

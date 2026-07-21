@@ -618,33 +618,6 @@ HeapVector<CSSSelector> CloneSelectorListWithDummyFallback(
   return selectors;
 }
 
-// Make sure that the FakeParentRuleForDeclarations, if any,
-// gets our parent as parent. In particular, we'd like any
-// StyleRuleNestedDeclarations in there to get our selector
-// (it copies the parent selector during clone), not the
-// dummy parent selector that's there from parsing and which
-// may have the wrong specificity.
-StyleRule* CloneFakeParentRule(
-    StyleRule* old_inner_rule,
-    StyleRule* new_parent,
-    const MixinParameterBindings* mixin_parameter_bindings) {
-  if (!old_inner_rule) {
-    return nullptr;
-  }
-  HeapVector<CSSSelector> selectors =
-      CloneSelectorListWithDummyFallback(new_parent);
-  auto* new_rule = StyleRule::Create(
-      selectors, old_inner_rule->Properties().ImmutableCopyIfNeeded(),
-      mixin_parameter_bindings);
-  if (old_inner_rule->ChildRules()) {
-    for (StyleRuleBase* child_rule : *old_inner_rule->ChildRules()) {
-      new_rule->AddChildRule(
-          child_rule->Clone(new_rule, mixin_parameter_bindings));
-    }
-  }
-  return new_rule;
-}
-
 }  // namespace
 
 StyleRuleBase* StyleRuleBase::Clone(
@@ -716,21 +689,12 @@ StyleRuleBase* StyleRuleBase::Clone(
     case kResult:
       return CloneGroupRule(To<StyleRuleResult>(this), new_parent,
                             mixin_parameter_bindings);
-    case kApplyMixin: {
-      auto* apply_rule = To<StyleRuleApplyMixin>(this);
-      StyleRule* old_inner_rule = apply_rule->FakeParentRuleForDeclarations();
-      return MakeGarbageCollected<StyleRuleApplyMixin>(
-          apply_rule->GetName(), apply_rule->GetArguments(),
-          CloneFakeParentRule(old_inner_rule, new_parent,
-                              mixin_parameter_bindings));
-    }
-    case kContents: {
-      auto* contents_rule = To<StyleRuleContentsStatement>(this);
-      StyleRule* old_inner_rule = contents_rule->FakeParentRuleForFallback();
-      return MakeGarbageCollected<StyleRuleContentsStatement>(
-          CloneFakeParentRule(old_inner_rule, new_parent,
-                              mixin_parameter_bindings));
-    }
+    case kApplyMixin:
+      return CloneGroupRule(To<StyleRuleApplyMixin>(this), new_parent,
+                            mixin_parameter_bindings);
+    case kContents:
+      return CloneGroupRule(To<StyleRuleContentsStatement>(this), new_parent,
+                            mixin_parameter_bindings);
     case kNestedDeclarations: {
       auto* nested_declarations_rule = To<StyleRuleNestedDeclarations>(this);
       HeapVector<CSSSelector> selectors;
@@ -1227,16 +1191,27 @@ void StyleRuleResult::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
 }
 
+StyleRuleApplyMixin::StyleRuleApplyMixin(
+    const StyleRuleApplyMixin& other,
+    HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleGroup(kApplyMixin, child_rules),
+      name_(other.name_),
+      arguments_(other.arguments_),
+      has_contents_block_(other.has_contents_block_) {}
+
 void StyleRuleApplyMixin::TraceAfterDispatch(blink::Visitor* visitor) const {
-  StyleRuleBase::TraceAfterDispatch(visitor);
-  visitor->Trace(fake_parent_rule_for_declarations_);
+  StyleRuleGroup::TraceAfterDispatch(visitor);
   visitor->Trace(arguments_);
 }
 
+StyleRuleContentsStatement::StyleRuleContentsStatement(
+    const StyleRuleContentsStatement& other,
+    HeapVector<Member<StyleRuleBase>> child_rules)
+    : StyleRuleGroup(kContents, child_rules) {}
+
 void StyleRuleContentsStatement::TraceAfterDispatch(
     blink::Visitor* visitor) const {
-  StyleRuleBase::TraceAfterDispatch(visitor);
-  visitor->Trace(fake_parent_rule_for_fallback_);
+  StyleRuleGroup::TraceAfterDispatch(visitor);
 }
 
 StyleRuleCustomMedia::StyleRuleCustomMedia(AtomicString name,
