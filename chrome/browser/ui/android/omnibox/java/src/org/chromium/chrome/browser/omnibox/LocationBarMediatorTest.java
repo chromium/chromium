@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -29,6 +28,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -247,6 +248,7 @@ public class LocationBarMediatorTest {
     @Mock private View mMicButton;
     @Mock private View mNavigateButton;
     @Mock private View mPlusButton;
+    @Mock private Callback<Integer> mAutocompleteStateObserverMock;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -524,6 +526,21 @@ public class LocationBarMediatorTest {
         mMediator.destroy();
         assertFalse(mSessionState.isSessionActive());
         assertFalse(input.getRequestTypeSupplier().hasObservers());
+    }
+
+    @Test
+    public void testSuspendInput_stopObservingAutocompleteStates() {
+        mMediator.setAutocompleteStateObserverForTesting(mAutocompleteStateObserverMock);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        mMediator.beginInput(input);
+        verify(mAutocompleteStateObserverMock, atLeastOnce()).onResult(any());
+
+        mMediator.suspendInput();
+        clearInvocations(mAutocompleteStateObserverMock);
+
+        input.setAutocompleteState(AutocompleteState.ENABLED);
+        verify(mAutocompleteStateObserverMock, never()).onResult(any());
     }
 
     @Test

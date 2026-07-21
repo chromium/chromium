@@ -252,7 +252,7 @@ class LocationBarMediator
     private final FuseboxCoordinator mFuseboxCoordinator;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
             this::onAutocompleteRequestTypeChanged;
-    private final Callback<@AutocompleteState Integer> mAutocompleteStateObserver =
+    private Callback<@AutocompleteState Integer> mAutocompleteStateObserver =
             this::onAutocompleteStateChanged;
     private final SettableMonotonicObservableSupplier<SearchEngineService>
             mSearchEngineServiceSupplier = ObservableSuppliers.createMonotonic();
@@ -2920,6 +2920,7 @@ class LocationBarMediator
 
     private void disconnectObservers(AutocompleteInput input) {
         input.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
+        input.getAutocompleteStateSupplier().removeObserver(mAutocompleteStateObserver);
     }
 
     @Override
@@ -3371,5 +3372,10 @@ class LocationBarMediator
     @Override
     public @Nullable AutocompleteInput getAutocompleteInputForTesting() {
         return mCurrentInput;
+    }
+
+    /* package */ void setAutocompleteStateObserverForTesting(
+            Callback<@AutocompleteState Integer> observer) {
+        mAutocompleteStateObserver = observer;
     }
 }
