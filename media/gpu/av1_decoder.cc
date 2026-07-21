@@ -354,7 +354,16 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
         gfx::Rect new_visible_rect(
             base::strict_cast<int>(current_frame_header_->width),
             base::strict_cast<int>(current_frame_header_->height));
+
         DCHECK(!new_frame_size.IsEmpty());
+        if (new_frame_size.width() > limits::kMaxDimension ||
+            new_frame_size.height() > limits::kMaxDimension ||
+            new_frame_size.GetCheckedArea().ValueOrDefault(
+                std::numeric_limits<int>::max()) > limits::kMaxCanvas) {
+          DVLOG(1) << "AV1 max_frame_size " << new_frame_size.ToString()
+                   << " exceeds media::limits";
+          return kDecodeError;
+        }
         if (!gfx::Rect(new_frame_size).Contains(new_visible_rect)) {
           DVLOG(1) << "Render size exceeds picture size. render size: "
                    << new_visible_rect.ToString()
