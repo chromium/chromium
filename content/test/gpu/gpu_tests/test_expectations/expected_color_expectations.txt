@@ -124,9 +124,6 @@ crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-astro ] ExpectedCol
 crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-sherlock ] ExpectedColor_maps [ Slow ]
 crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-nelson ] ExpectedColor_maps [ Slow ]
 
-crbug.com/535697669 [ macos26 apple-angle-metal-renderer:-apple-m2 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Slow ]
-crbug.com/535697669 [ macos26 apple-angle-metal-renderer:-apple-m2 ] ExpectedColor_MediaRecorderFromVideoElement [ Slow ]
-
 ###################
 # Failures/Flakes #
 ###################
@@ -136,6 +133,10 @@ crbug.com/535697669 [ macos26 apple-angle-metal-renderer:-apple-m2 ] ExpectedCol
 # Flakes on Android and Windows DEMUXER_ERROR_COULD_NOT_OPEN
 crbug.com/426594100 [ win ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/509789253 [ mac intel ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+
+# Flakily timeout even when marked as slow.
+crbug.com/535697669 [ macos26 apple-angle-metal-renderer:-apple-m2 ] ExpectedColor_MediaRecorderFrom2DCanvas [ Failure ]
+crbug.com/535697669 [ macos26 apple-angle-metal-renderer:-apple-m2 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
 
 #######################################################################
