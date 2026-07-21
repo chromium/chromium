@@ -16,6 +16,7 @@ import gpu_path_util
 from gpu_tests import common_typing as ct
 from gpu_tests import skia_gold_integration_test_base as sgitb
 from gpu_tests import webgl_test_util
+from gpu_tests.util import host_information
 from gpu_tests.util import websocket_server as wss
 from gpu_tests.util import websocket_utils
 
@@ -23,6 +24,8 @@ TEST_PAGE_RELPATH = os.path.join(webgl_test_util.extensions_relpath,
                                  'pixel_test_page.html')
 
 DEFAULT_HEARTBEAT_TIMEOUT = 15
+ASAN_HEARTBEAT_MULTIPLIER = 4
+ASAN_METAL_ADDITIONAL_HEARTBEAT_MULTIPLIER = 4
 SLOW_HEARTBEAT_MULTIPLIER = 8
 DEFAULT_CONTROLLER_MESSAGE_TIMEOUT = 5
 SLOW_CONTROLLER_MESSAGE_MULTIPLIER = 5
@@ -307,7 +310,16 @@ class SkiaGoldHeartbeatIntegrationTestBase(sgitb.SkiaGoldIntegrationTestBase):
   def _GetHeartbeatTimeout(self) -> int:
     multiplier = 1
     if self._IsSlowTest():
-      multiplier = SLOW_HEARTBEAT_MULTIPLIER
+      multiplier *= SLOW_HEARTBEAT_MULTIPLIER
+    if self._is_asan:
+      multiplier *= ASAN_HEARTBEAT_MULTIPLIER
+      # Use host_information instead of typ tags so that we don't have to
+      # re-calculate them every time. Since we only test Apple Silicon with
+      # Metal at this point, this is functionally equivalent to a Metal check.
+      # See crbug.com/536977902 for more information on why this additional
+      # multiplier is necessary.
+      if host_information.IsAppleGpu():
+        multiplier *= ASAN_METAL_ADDITIONAL_HEARTBEAT_MULTIPLIER
     return DEFAULT_HEARTBEAT_TIMEOUT * multiplier
 
   def _GetControllerMessageTimeout(self) -> int:

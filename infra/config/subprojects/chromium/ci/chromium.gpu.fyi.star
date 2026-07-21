@@ -2298,7 +2298,7 @@ ci.thin_tester(
             "pixel_skia_gold_metal_passthrough_graphite_test": targets.per_test_modification(
                 mixins = targets.mixin(
                     swarming = targets.swarming(
-                        shards = 2,
+                        shards = 4,
                     ),
                 ),
             ),
