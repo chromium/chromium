@@ -32,6 +32,16 @@ dictionary RegisteredTool {
   // `title` can be exposed as a `DOMString` since it was taken in by a
   // `USVString`, meaning all unmatched surrogate processing has already been
   // done, and there's no need to do it again on tool exposure.
+  //
+  // This member is always provided when this dictionary is the result of
+  // `getTools()`. It is not marked as `required` though, because when used as
+  // an input to used to `executeTool()`, it's not necessary for the developer
+  // to provide a title. See https://crbug.com/536063275 which should let us
+  // stop using this dictionary as an input to `executeTool()`.
+  //
+  // Also see https://github.com/webmachinelearning/webmcp/issues/224 for
+  // discussion about how the browser should expose this member if no title was
+  // provided at registration time.
   DOMString title;
   required Window window;
   required USVString origin;
