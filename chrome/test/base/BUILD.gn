@@ -302,6 +302,20 @@ source_set("testing_browser_process") {
   }
 }
 
+source_set("browser_window_waiters") {
+  testonly = true
+  sources = [
+    "browser_closed_waiter.cc",
+    "browser_closed_waiter.h",
+    "browser_created_waiter.cc",
+    "browser_created_waiter.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+  ]
+}
+
 source_set("profile_lifecycle_test_utils") {
   testonly = true
   sources = [
