@@ -1187,11 +1187,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Deprecated enum name"/>
 </enum>
 
-<enum name="BooleanDestroyed">
-  <int value="0" label="Not destroyed"/>
-  <int value="1" label="Destroyed"/>
-</enum>
-
 <enum name="BooleanDetected">
   <int value="0" label="Not detected"/>
   <int value="1" label="Detected"/>
@@ -1280,11 +1275,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="BooleanInForeground">
   <int value="0" label="Background"/>
   <int value="1" label="Foreground"/>
-</enum>
-
-<enum name="BooleanIsFileBacked">
-  <int value="0" label="Not file backed"/>
-  <int value="1" label="File backed"/>
 </enum>
 
 <enum name="BooleanKnown">
