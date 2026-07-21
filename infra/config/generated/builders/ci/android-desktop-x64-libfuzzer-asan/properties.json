@@ -27,7 +27,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android"
+                  "android",
+                  "checkout_mesa"
                 ],
                 "config": "chromium"
               }

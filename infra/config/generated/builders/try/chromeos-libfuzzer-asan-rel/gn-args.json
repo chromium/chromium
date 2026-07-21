@@ -13,6 +13,8 @@
     "symbol_level": 0,
     "target_cpu": "x64",
     "target_os": "chromeos",
+    "tint_build_fuzzer_vulkan_support": true,
+    "tint_build_mesa": true,
     "use_libfuzzer": true,
     "use_reclient": false,
     "use_remoteexec": true,
