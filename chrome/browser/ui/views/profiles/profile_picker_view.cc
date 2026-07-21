@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_glic_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_toolbar.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_widget.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -507,6 +508,25 @@ bool ProfilePickerView::HandleContextMenu(
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
+}
+
+content::WebContents* ProfilePickerView::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture,
+    bool* was_blocked) {
+  if (params_.entry_point() != ProfilePicker::EntryPoint::kFirstRun) {
+    return content::WebContentsDelegate::AddNewContents(
+        source, std::move(new_contents), target_url, disposition,
+        window_features, user_gesture, was_blocked);
+  }
+  CHECK(source);
+  OpenLearnMorePopup(Profile::FromBrowserContext(source->GetBrowserContext()),
+                     std::move(new_contents), target_url, window_features);
+  return nullptr;
 }
 
 gfx::NativeView ProfilePickerView::GetHostView() const {

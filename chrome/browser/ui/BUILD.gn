@@ -3396,6 +3396,8 @@ static_library("ui") {
         "views/profiles/profile_picker_sign_in_provider.h",
         "views/profiles/profile_picker_toolbar.cc",
         "views/profiles/profile_picker_toolbar.h",
+        "views/profiles/profile_picker_utils.cc",
+        "views/profiles/profile_picker_utils.h",
       ]
 
       deps += [

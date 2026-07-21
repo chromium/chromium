@@ -1,0 +1,40 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/profiles/profile_picker_utils.h"
+
+#include <memory>
+
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "url/gurl.h"
+
+using ProfilePickerUtilsBrowserTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerUtilsBrowserTest, OpenLearnMorePopup) {
+  blink::mojom::WindowFeatures window_features;
+
+  auto contents = content::WebContents::Create(
+      content::WebContents::CreateParams(browser()->profile()));
+  content::WebContents* raw_contents = contents.get();
+
+  ui_test_utils::BrowserCreatedObserver observer;
+
+  OpenLearnMorePopup(browser()->profile(), std::move(contents),
+                     /*target_url=*/GURL(url::kAboutBlankURL), window_features);
+
+  Browser* popup_browser = observer.Wait();
+  ASSERT_NE(popup_browser, nullptr);
+
+  EXPECT_NE(popup_browser, browser());
+  EXPECT_TRUE(popup_browser->is_type_popup());
+  EXPECT_EQ(popup_browser->profile(), browser()->profile());
+  EXPECT_EQ(popup_browser->tab_strip_model()->GetActiveWebContents(),
+            raw_contents);
+}

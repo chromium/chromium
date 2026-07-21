@@ -4742,6 +4742,7 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_glic_flow_controller_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_sign_in_provider_browsertest.cc",
+        "../browser/ui/views/profiles/profile_picker_utils_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",

@@ -24,9 +24,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -203,12 +202,9 @@ content::WebContents* ProfilePickerSignInProvider::AddNewContents(
     return nullptr;
   }
 
-  NavigateParams params(profile_, target_url, ui::PAGE_TRANSITION_LINK);
-  // Open all links as new popups.
-  params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.contents_to_insert = std::move(new_contents);
-  params.window_features = window_features;
-  Navigate(&params);
+  OpenLearnMorePopup(profile_, std::move(new_contents), target_url,
+                     window_features);
+
   return nullptr;
 }
 
