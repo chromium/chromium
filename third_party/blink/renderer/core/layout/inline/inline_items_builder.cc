@@ -34,19 +34,7 @@ InlineItemsBuilderTemplate<MappingBuilder>::InlineItemsBuilderTemplate(
     : block_flow_(block_flow),
       items_(items),
       text_chunk_offsets_(chunk_offsets),
-      is_text_combine_(block_flow_->IsLayoutTextCombine()) {
-  const LayoutObject* child = block_flow->FirstChild();
-  if (!previous_text_content.IsNull() && child && child->NextSibling()) {
-    // 10 avoids reallocations in many cases of Speedometer3.
-    constexpr wtf_size_t kAdditionalSize = 10;
-    wtf_size_t capacity = previous_text_content.length() + kAdditionalSize;
-    if (previous_text_content.Is8Bit()) {
-      text_.ReserveCapacity(capacity);
-    } else {
-      text_.Reserve16BitCapacity(capacity);
-    }
-  }
-}
+      is_text_combine_(block_flow_->IsLayoutTextCombine()) {}
 
 // Returns true if items builder is used for other than offset mapping.
 template <typename MappingBuilder>
@@ -67,7 +55,7 @@ String InlineItemsBuilderTemplate<MappingBuilder>::ToString() {
 
 namespace {
 
-// TODO(curbug.com/324111880): We can't support forced-breaks in ruby-base boxes
+// TODO(crbug.com/324111880): We can't support forced-breaks in ruby-base boxes
 // until ruby-columns become actually line-breakable. So we replace
 // forced-breaks in ruby-base boxes with spaces for now. This flag should be
 // removed before shipping RubyLineBreakable.
@@ -656,13 +644,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   }
 
   const wtf_size_t estimated_length = text_.length() + string.length();
-  // Don't reserve on the first append, as it will reallocate the string buffer
-  // causing duplication.
-  if (!text_.empty() && estimated_length > text_.Capacity()) {
-    // The reallocations may occur very frequently for large text such as log
-    // files. We use a more aggressive expansion strategy, the same as
-    // |Vector::ExpandCapacity| does for |Vector|s with inline storage.
-    // |ReserveCapacity| reserves only the requested size.
+  // Only grow an already-materialized buffer to preserve string sharing.
+  if (text_.Capacity() && estimated_length > text_.Capacity()) {
     const wtf_size_t new_capacity =
         std::max(estimated_length, text_.Capacity() * 2);
     if (string.Is8Bit())

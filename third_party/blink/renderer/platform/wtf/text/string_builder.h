@@ -79,8 +79,8 @@ class WTF_EXPORT StringBuilder {
 
     if (!length_ && !HasBuffer() && !other.string_.IsNull()) {
       string_ = other.string_;
-      length_ = other.string_.length();
-      is_8bit_ = other.string_.Is8Bit();
+      length_ = other.length_;
+      is_8bit_ = other.is_8bit_;
       return;
     }
 
@@ -104,35 +104,52 @@ class WTF_EXPORT StringBuilder {
     Append(StringView(string, offset, length));
   }
 
-  void Append(const StringView& string) {
-    if (string.empty())
+  void Append(const StringView& view) {
+    if (view.empty()) {
       return;
+    }
 
     // If we're appending to an empty builder, and there is not a buffer
-    // (reserveCapacity has not been called), then share the impl if
-    // possible.
+    // (reserveCapacity has not been called), then retain a view into the
+    // source impl rather than copying its characters.
     //
     // This is important to avoid string copies inside dom operations like
     // Node::textContent when there's only a single Text node child, or
     // inside the parser in the common case when flushing buffered text to
-    // a Text node.
-    StringImpl* impl = string.SharedImpl();
-    if (!length_ && !HasBuffer() && impl) {
-      string_ = impl;
-      length_ = impl->length();
-      is_8bit_ = impl->Is8Bit();
-      return;
+    // a Text node. It also seeds the view that the span append paths below
+    // can later extend (see TryExtendSharedView) so that a buffer collected
+    // verbatim from a single source (e.g. inline `text_content`) is never
+    // materialized as a copy.
+    //
+    // We only retain when the view starts at the beginning of its impl (a
+    // prefix). A view starting partway in could never be returned as the
+    // shared impl anyway (ToString() would substring-copy it), and extension
+    // only grows the view forward, so restricting to prefixes loses no
+    // sharing while letting us track just a length (no offset).
+    if (!length_ && !HasBuffer()) {
+      if (StringImpl* impl = view.SharedSubImpl()) {
+        string_ = String(impl);
+        length_ = view.length();
+        is_8bit_ = impl->Is8Bit();
+        return;
+      }
     }
 
-    if (string.Is8Bit())
-      Append(string.Span8());
-    else
-      Append(string.Span16());
+    // Otherwise append the characters. When we already hold a shared view, the
+    // span append paths try to extend it in place instead of copying.
+    if (view.Is8Bit()) {
+      Append(view.Span8());
+    } else {
+      Append(view.Span16());
+    }
   }
 
   void Append(UChar c) {
     if (is_8bit_ && c <= 0xFF) {
       Append(static_cast<LChar>(c));
+      return;
+    }
+    if (!is_8bit_ && TryExtendSharedViewWithChar(string_.Span16(), c)) {
       return;
     }
     EnsureBuffer16(1);
@@ -143,6 +160,9 @@ class WTF_EXPORT StringBuilder {
   void Append(LChar c) {
     if (!is_8bit_) {
       Append(static_cast<UChar>(c));
+      return;
+    }
+    if (TryExtendSharedViewWithChar(string_.Span8(), c)) {
       return;
     }
     EnsureBuffer8(1);
@@ -281,7 +301,7 @@ class WTF_EXPORT StringBuilder {
       return {};
     }
     if (!string_.IsNull()) {
-      return string_.Span8();
+      return string_.Span8().first(length_);
     }
     DCHECK(has_buffer_);
     return base::span(buffer8_).first(length());
@@ -293,7 +313,7 @@ class WTF_EXPORT StringBuilder {
       return {};
     }
     if (!string_.IsNull()) {
-      return string_.Span16();
+      return string_.Span16().first(length_);
     }
     DCHECK(has_buffer_);
     return base::span(buffer16_).first(length());
@@ -328,6 +348,36 @@ class WTF_EXPORT StringBuilder {
   void ClearBuffer();
   bool HasBuffer() const { return has_buffer_; }
 
+  // True when `string_` is the source of a sub-range view (rather than holding
+  // exactly the builder's content), i.e. the content is the [0, length_) prefix
+  // of `string_` and `length_` is shorter than the whole impl.
+  bool HasSharedSubview() const {
+    // Retained views always start at offset 0 (see `Append(StringView)`), so a
+    // view is a strict sub-range exactly when it is a truncated prefix.
+    return !string_.IsNull() && length_ != string_.length();
+  }
+
+  // Collapses any sub-range view so that `string_` holds exactly the builder's
+  // content and can be returned directly. A no-op (and copy-free) when the view
+  // already covers the whole impl.
+  void NormalizeSharedString() {
+    if (HasSharedSubview()) {
+      string_ = string_.substr(0, length_);
+    }
+  }
+
+  // When no buffer exists and we hold a shared view into `string_`, attempts to
+  // extend that view to also cover `chars` (or the single character `c`), which
+  // succeeds only when the characters immediately following the view in
+  // `string_` are byte-identical to what is being appended. Returns true if
+  // absorbed (no copy made).
+  template <typename CharType>
+  bool TryExtendSharedView(base::span<const CharType> buffer,
+                           base::span<const CharType> chars);
+  template <typename CharType>
+  bool TryExtendSharedViewWithChar(base::span<const CharType> buffer,
+                                   CharType c);
+
   template <typename StringType>
   void BuildString() {
     if (is_8bit_)
@@ -347,6 +397,21 @@ class WTF_EXPORT StringBuilder {
   bool is_8bit_ = true;
   bool has_buffer_ = false;
 };
+
+template <typename CharType>
+bool StringBuilder::TryExtendSharedViewWithChar(
+    base::span<const CharType> buffer,
+    CharType c) {
+  if (HasBuffer() || string_.IsNull()) {
+    return false;
+  }
+  const size_t end = length_;
+  if (end >= buffer.size() || buffer[end] != c) {
+    return false;
+  }
+  ++length_;
+  return true;
+}
 
 template <typename StringType>
 bool Equal(const StringBuilder& a, const StringType& b) {

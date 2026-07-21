@@ -159,6 +159,230 @@ TEST(StringBuilderTest, AppendSharingImpl) {
   EXPECT_EQ(string.Impl(), builder2.ToAtomicString().Impl());
 }
 
+TEST(StringBuilderTest, ExtendSharedViewAcrossAppends) {
+  String source("Hello, World!");
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 5));  // "Hello"
+  builder.Append(StringView(source, 5, 8));  // ", World!"
+  EXPECT_EQ(source, builder.ToString());
+  EXPECT_EQ(source.Impl(), builder.ToString().Impl());
+}
+
+TEST(StringBuilderTest, ExtendSharedViewWithMatchingSeparateString) {
+  String source("Hello, World!");
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 5));  // "Hello"
+  builder.Append(String(", World!"));        // distinct impl, matching bytes
+  EXPECT_EQ(source, builder.ToString());
+  EXPECT_EQ(source.Impl(), builder.ToString().Impl());
+}
+
+TEST(StringBuilderTest, ExtendSharedViewWithChar) {
+  String source("ab");
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 1));  // "a"
+  builder.Append('b');                       // matches source[1]
+  EXPECT_EQ(source, builder.ToString());
+  EXPECT_EQ(source.Impl(), builder.ToString().Impl());
+}
+
+TEST(StringBuilderTest, SharedViewNotExtendedOnMismatch) {
+  String source("ab");
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 1));  // "a"
+  builder.Append('c');                       // source[1] is 'b', not 'c'
+  EXPECT_EQ(String("ac"), builder.ToString());
+  EXPECT_NE(source.Impl(), builder.ToString().Impl());
+}
+
+// A view that does not start at the beginning of the source impl is not
+// retained (only prefixes are); it is materialized via the buffer path, and
+// still reads back as the correct content.
+TEST(StringBuilderTest, SharedViewPartialOffset) {
+  String source("Hello, World!");
+  StringBuilder builder;
+  builder.Append(StringView(source, 7, 6));  // "World!"
+  EXPECT_EQ(String("World!"), builder.ToString());
+  EXPECT_EQ(6u, builder.length());
+}
+
+// A view that starts at offset 0 but is shorter than the source impl must be
+// normalized to its logical content by ToString(); otherwise the whole source
+// impl would leak out. This pins the `length_ != string_.length()` term of
+// HasSharedSubview() (a zero-offset view is not necessarily a whole view).
+TEST(StringBuilderTest, SharedViewZeroOffsetPrefixToString) {
+  String source("abcdef");
+  StringBuilder builder;
+  builder.Append(
+      StringView(source, 0, 3));  // "abc": offset 0, but length 3 < 6
+  String result = builder.ToString();
+  EXPECT_EQ(String("abc"), result);
+  EXPECT_EQ(3u, result.length());
+}
+
+// The same zero-offset-but-truncated state reached via Resize(): the whole impl
+// is retained, then shrunk in place. ToString() must still return the prefix.
+TEST(StringBuilderTest, SharedViewResizedPrefixToString) {
+  String source("abcdef");
+  StringBuilder builder;
+  builder.Append(source);  // Whole-impl view: offset 0, length 6.
+  builder.Resize(3);       // Offset 0, length 3, but string_ is still length 6.
+  String result = builder.ToString();
+  EXPECT_EQ(String("abc"), result);
+  EXPECT_EQ(3u, result.length());
+}
+
+// Two adjacent non-prefix sub-ranges of the same source: the first is not
+// retained (not a prefix), so both go through the buffer path and produce the
+// correct concatenated content.
+TEST(StringBuilderTest, ExtendSharedViewWithPartialOffset) {
+  String source("Hello, World!");
+  StringBuilder builder;
+  builder.Append(StringView(source, 7, 3));   // "Wor" at offset 7
+  builder.Append(StringView(source, 10, 3));  // "ld!"
+  EXPECT_EQ(String("World!"), builder.ToString());
+  EXPECT_EQ(6u, builder.length());
+}
+
+// A view is reconstructed across many single-character appends, each extending
+// it (this mirrors the inline collection path, where characters such as the
+// forced-break '\n' are appended one at a time).
+TEST(StringBuilderTest, ExtendSharedViewCharByChar) {
+  String source("abcdefghij");
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 1));  // "a"
+  for (unsigned i = 1; i < source.length(); ++i) {
+    builder.Append(static_cast<LChar>(source[i]));
+  }
+  EXPECT_EQ(source, builder.ToString());
+  EXPECT_EQ(source.Impl(), builder.ToString().Impl());
+}
+
+// A 16-bit source is retained and extended via a multi-character span append
+// (exercises the UChar overload of TryExtendSharedView).
+TEST(StringBuilderTest, ExtendSharedView16Bit) {
+  String source(u"ab\uFF21cd");  // 16-bit because of U+FF21.
+  ASSERT_FALSE(source.Is8Bit());
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 2));  // "ab"
+  builder.Append(StringView(source, 2, 3));  // U+FF21 "cd"
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(source, builder.ToString());
+  EXPECT_EQ(source.Impl(), builder.ToString().Impl());
+}
+
+// A 16-bit source is extended by a single non-Latin-1 character (exercises the
+// 16-bit branch of TryExtendSharedViewWithChar).
+TEST(StringBuilderTest, ExtendSharedView16BitWithWideChar) {
+  String source(u"ab\uFF21");
+  ASSERT_FALSE(source.Is8Bit());
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 2));  // "ab"
+  builder.Append(static_cast<UChar>(0xFF21));
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(source, builder.ToString());
+  EXPECT_EQ(source.Impl(), builder.ToString().Impl());
+}
+
+// A Latin-1 character extends a 16-bit shared view when the next source code
+// unit has the same value (the comparison is by code-unit value, across the
+// 8-bit/16-bit width boundary).
+TEST(StringBuilderTest, ExtendSharedView16BitWithLatin1Char) {
+  String source(u"a\uFF21b");  // 'a', U+FF21, 'b'; 16-bit.
+  ASSERT_FALSE(source.Is8Bit());
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 2));  // "a" U+FF21
+  builder.Append('b');                       // matches source[2]
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(source, builder.ToString());
+  EXPECT_EQ(source.Impl(), builder.ToString().Impl());
+}
+
+// A mismatching append against a 16-bit source materializes a copy with the
+// correct content.
+TEST(StringBuilderTest, SharedView16BitNotExtendedOnMismatch) {
+  String source(u"ab\uFF21");
+  ASSERT_FALSE(source.Is8Bit());
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 2));    // "ab"
+  builder.Append(static_cast<UChar>(0xFF22));  // source[2] is U+FF21
+  EXPECT_EQ(String(u"ab\uFF22"), builder.ToString());
+  EXPECT_NE(source.Impl(), builder.ToString().Impl());
+}
+
+// Appending a non-Latin-1 character to an 8-bit shared view cannot extend it
+// (the 8-bit source can't contain the character); the view is materialized and
+// widened to 16-bit with the correct content.
+TEST(StringBuilderTest, Shared8BitViewForcedTo16Bit) {
+  String source("abc");
+  ASSERT_TRUE(source.Is8Bit());
+  StringBuilder builder;
+  builder.Append(StringView(source, 0, 2));  // "ab", 8-bit view
+  EXPECT_TRUE(builder.Is8Bit());
+  builder.Append(static_cast<UChar>(0x1234));
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(String(u"ab\u1234"), builder.ToString());
+}
+
+// Resize shrinks a shared view without copying and keeps the source, so a
+// subsequent matching append can re-extend the view back over the source.
+TEST(StringBuilderTest, SharedViewResizeThenReextend) {
+  String source("abcdef");
+  StringBuilder builder;
+  builder.Append(source);  // Retain the whole impl.
+  builder.Resize(3);       // Logical content "abc"; source still retained.
+  EXPECT_EQ(String("abc"), StringView(builder));
+  builder.Append(StringView(source, 3, 3));  // "def" matches source[3, 6)
+  EXPECT_EQ(source, builder.ToString());
+  EXPECT_EQ(source.Impl(), builder.ToString().Impl());
+}
+
+// Substring()/SubstringView() honor the shared view's offset and clamp an
+// over-long length to the view's logical end (not the end of the source impl).
+TEST(StringBuilderTest, SharedViewSubstringClamped) {
+  String source("Hello, World!");
+  StringBuilder builder;
+  builder.Append(StringView(source, 7, 6));  // "World!"
+  EXPECT_EQ(String("orl"), builder.Substring(1, 3));
+  EXPECT_EQ("orl", builder.SubstringView(1, 3));
+  // The over-long length must stop at the logical end ("World!"), and must not
+  // read into the rest of `source` past the view.
+  EXPECT_EQ(String("orld!"), builder.Substring(1, 1000));
+  EXPECT_EQ("orld!", builder.SubstringView(1, 1000));
+}
+
+// Append(StringBuilder) from a source builder holding a non-prefix sub-range
+// (which is materialized, not retained) reproduces the correct content.
+TEST(StringBuilderTest, AppendBuilderSharesPartialView) {
+  String source("Hello, World!");
+  StringBuilder src;
+  src.Append(StringView(source, 7, 6));  // "World!" at offset 7
+  StringBuilder dst;
+  dst.Append(src);
+  EXPECT_EQ(String("World!"), dst.ToString());
+  EXPECT_EQ(6u, dst.length());
+}
+
+// Append(StringBuilder) of a whole-impl view shares the same impl.
+TEST(StringBuilderTest, AppendBuilderSharesWholeView) {
+  String source("abcdef");
+  StringBuilder src;
+  src.Append(source);
+  StringBuilder dst;
+  dst.Append(src);
+  EXPECT_EQ(source.Impl(), dst.ToString().Impl());
+}
+
+// Ensure16Bit() on a retained 8-bit view materializes it as 16-bit content.
+TEST(StringBuilderTest, Ensure16BitOnSharedView) {
+  String source("abc");
+  StringBuilder builder;
+  builder.Append(source);  // Retain 8-bit whole impl.
+  builder.Ensure16Bit();
+  EXPECT_FALSE(builder.Is8Bit());
+  EXPECT_EQ(String("abc"), builder.ToString());
+}
+
 TEST(StringBuilderTest, ToString) {
   StringBuilder builder;
   builder.Append("0123456789");

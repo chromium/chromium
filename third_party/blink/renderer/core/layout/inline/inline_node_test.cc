@@ -47,6 +47,7 @@ class InlineNodeForTest : public InlineNode {
   using InlineNode::InlineNode;
 
   std::string Text() const { return Data().text_content.Utf8(); }
+  const String& TextContent() const { return Data().text_content; }
   InlineItems& Items() { return MutableData()->items; }
   static InlineItems& Items(InlineNodeData& data) { return data.items; }
   void Append(const String& text, LayoutObject* layout_object) {
@@ -213,6 +214,71 @@ TEST_F(InlineNodeTest, CollectInlinesBR) {
   TEST_ITEM_TYPE_OFFSET(items[1], kControl, 5u, 6u);
   TEST_ITEM_TYPE_OFFSET(items[2], kText, 6u, 11u);
   EXPECT_EQ(3u, items.size());
+}
+
+namespace {
+
+constexpr wtf_size_t kLargeSharedTextLength = 1024;
+
+String MakeLargeMultilineText() {
+  StringBuilder builder;
+  while (builder.length() < kLargeSharedTextLength) {
+    if (!builder.empty()) {
+      builder.Append("\n");
+    }
+    builder.Append("abcdefghijklmnopqrstuvwxyz0123456789");
+  }
+  return builder.ToString();
+}
+
+String WrapInDiv(const StringView& style, const StringView& content) {
+  StringBuilder html;
+  html << "<div id=t";
+  if (!style.empty()) {
+    html << " style='" << style << "'";
+  }
+  html << ">" << content << "</div>";
+  return html.ToString();
+}
+}  // namespace
+
+TEST_F(InlineNodeTest, ShareInlineTextContentSingleSource) {
+  String content = MakeLargeMultilineText();
+  SetupHtml("t", WrapInDiv("white-space:pre", content));
+  InlineNodeForTest node = CreateInlineNode();
+  node.CollectInlines();
+  const auto* layout_text = To<LayoutText>(layout_object_.Get());
+  EXPECT_EQ(content, node.TextContent());
+  EXPECT_EQ(node.TextContent().Impl(), layout_text->TransformedText().Impl());
+}
+
+// Large text whose whitespace collapsing changes the length is not shared.
+TEST_F(InlineNodeTest, ShareInlineTextContentLargeNotSharedWhenCollapsed) {
+  StringBuilder builder;
+  while (builder.length() < kLargeSharedTextLength) {
+    if (!builder.empty()) {
+      builder.Append("  ");  // Two spaces collapse to one.
+    }
+    builder.Append("word");
+  }
+  String content = builder.ToString();
+  SetupHtml("t", WrapInDiv(/*style=*/"", content));
+  InlineNodeForTest node = CreateInlineNode();
+  node.CollectInlines();
+  const auto* layout_text = To<LayoutText>(layout_object_.Get());
+  EXPECT_NE(node.TextContent().Impl(), layout_text->TransformedText().Impl());
+}
+
+// Large text whose collapsing keeps the length but changes bytes (each '\n'
+// becomes a space) is not shared.
+TEST_F(InlineNodeTest, ShareInlineTextContentLargeNotSharedSameLength) {
+  String content = MakeLargeMultilineText();
+  SetupHtml("t", WrapInDiv(/*style=*/"", content));
+  InlineNodeForTest node = CreateInlineNode();
+  node.CollectInlines();
+  const auto* layout_text = To<LayoutText>(layout_object_.Get());
+  ASSERT_EQ(content.length(), node.TextContent().length());
+  EXPECT_NE(node.TextContent().Impl(), layout_text->TransformedText().Impl());
 }
 
 TEST_F(InlineNodeTest, CollectInlinesFloat) {

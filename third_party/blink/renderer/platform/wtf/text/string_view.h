@@ -310,6 +310,16 @@ class WTF_EXPORT StringView {
     return nullptr;
   }
 
+  // Like SharedImpl(), but also succeeds when this view is a *prefix* of its
+  // backing StringImpl (starts at the beginning of the impl's buffer but may be
+  // shorter than the whole impl). Returns that StringImpl on success.
+  StringImpl* SharedSubImpl() const {
+    if (impl_->RawByteSpan().data() == Bytes()) {
+      return GetPtr(impl_);
+    }
+    return nullptr;
+  }
+
   // Returns the substring of `this` string, starting at `offset` and consisting
   // of at most `len` characters.
   //
