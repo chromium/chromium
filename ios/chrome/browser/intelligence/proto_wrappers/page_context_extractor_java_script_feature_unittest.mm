@@ -2073,6 +2073,31 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_TRUE(result_value->is_none());
 }
 
+// Tests that page context extraction does not throw a TypeError when traversing
+// non-HTMLElement nodes like SVG or MathML elements in actionable mode.
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtractionWithActionable_SvgAndNonHtmlElements) {
+  const std::string html =
+      "<html><body>"
+      "<svg width=\"100\" height=\"100\"><rect width=\"50\" "
+      "height=\"50\"/></svg>"
+      "<math><mrow><mi>x</mi></mrow></math>"
+      "</body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value.has_value());
+  EXPECT_FALSE(result_value->is_none());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContextExtractorJavaScriptFeatureTest,
                          ::testing::Values(IPCExtractionMethod::kNative,

@@ -153,22 +153,32 @@ function safeMatches(element: Element, selector: string): boolean {
 }
 
 // Returns the equivalent of `element.isContentEditable` but directly calls the
-// `HTMLElement` prototype to prevent clobbering.
-function safeIsContentEditable(element: HTMLElement): boolean {
-  if (typeof element.isContentEditable === 'boolean') {
-    return element.isContentEditable;
+// `HTMLElement` prototype to prevent DOM clobbering. Non-HTMLElement nodes
+// (e.g. SVGElement) do not inherit from HTMLElement and calling the prototype
+// getter on them throws a TypeError. Returns false for non-HTMLElements to
+// mirror Blink's `IsEditable()` in:
+// third_party/blink/renderer/modules/content_extraction/ai_page_content_agent
+function safeIsContentEditable(element: Element): boolean {
+  if (typeof (element as HTMLElement).isContentEditable === 'boolean') {
+    return (element as HTMLElement).isContentEditable;
   }
-  return isContentEditableGetter ? isContentEditableGetter.call(element) :
-                                   element.isContentEditable;
+  return isContentEditableGetter && element instanceof HTMLElement ?
+      isContentEditableGetter.call(element) :
+      false;
 }
 
 // Returns the equivalent of `element.tabIndex` but directly calls the
-// `HTMLElement` prototype to prevent clobbering.
-function safeTabIndex(element: HTMLElement): number {
-  if (typeof element.tabIndex === 'number') {
-    return element.tabIndex;
+// `HTMLElement` prototype to prevent DOM clobbering. If the tabIndex property
+// is not numeric and the element is not an HTMLElement, returns -1 (the default
+// for non-focusable nodes), mirroring Blink's `AdjustedTabIndex()` in:
+// third_party/blink/renderer/modules/content_extraction/ai_page_content_agent
+function safeTabIndex(element: Element): number {
+  if (typeof (element as HTMLElement).tabIndex === 'number') {
+    return (element as HTMLElement).tabIndex;
   }
-  return tabIndexGetter ? tabIndexGetter.call(element) : element.tabIndex;
+  return tabIndexGetter && element instanceof HTMLElement ?
+      tabIndexGetter.call(element) :
+      -1;
 }
 
 // Returns the equivalent of `node.textContent` but directly calls the `Node`
