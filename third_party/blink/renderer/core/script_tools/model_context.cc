@@ -512,13 +512,12 @@ bool ModelContext::CancelTool(const base::UnguessableToken& invocation_id) {
 
   // The pending_executions_ map might have been rehashed during DispatchEvent.
   auto pending_execution =
-      pending_executions_.find(String(invocation_id.ToString()));
-  if (pending_execution == pending_executions_.end()) {
+      pending_executions_.Take(String(invocation_id.ToString()));
+  if (pending_execution.callback.is_null()) {
     return false;
   }
-  OnToolFailed(std::move(pending_execution->value.callback), invocation_id,
+  OnToolFailed(std::move(pending_execution.callback), invocation_id,
                ScriptToolError(ScriptToolErrorCode::kToolCancelled));
-  pending_executions_.erase(pending_execution);
   return true;
 }
 
@@ -734,20 +733,20 @@ void ModelContext::RegisterDeclarativeTool(
 void ModelContext::OnToolExecuted(
     const base::UnguessableToken& invocation_id,
     base::expected<String, std::pair<ScriptValue, ScriptState*>> result) {
-  auto it = pending_executions_.find(String(invocation_id.ToString()));
-  if (it == pending_executions_.end()) {
+  auto pending_execution =
+      pending_executions_.Take(String(invocation_id.ToString()));
+  if (pending_execution.callback.is_null()) {
     return;
   }
 
   if (result.has_value()) {
     probe::WebMCPToolResponded(document_, result.value(), invocation_id);
-    std::move(it->value.callback).Run(result.value());
+    std::move(pending_execution.callback).Run(result.value());
   } else {
     ScriptToolError error(ScriptToolErrorCode::kToolInvocationFailed);
     probe::WebMCPToolFailed(document_, error, invocation_id, result.error());
-    std::move(it->value.callback).Run(base::unexpected(error));
+    std::move(pending_execution.callback).Run(base::unexpected(error));
   }
-  pending_executions_.erase(it);
 }
 
 void ModelContext::MaybeRecordToolCount() {
