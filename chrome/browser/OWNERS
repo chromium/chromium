@@ -67,6 +67,9 @@ per-file *_mac.h=file://ui/base/cocoa/OWNERS
 per-file shell_integration_win*=gab@chromium.org
 per-file shell_integration_win*=grt@chromium.org
 
+per-file after_startup_task_utils*=gab@chromium.org
+per-file after_startup_task_utils*=joenotcharles@google.com
+
 per-file *linux*=thomasanderson@chromium.org
 
 per-file unload_browsertest.cc=file://content/OWNERS
