@@ -61,7 +61,6 @@
     ]
   },
   "archive_path": "linux-debug-asan-arm64-sim/libfuzzer-v8-arm64-linux-debug",
-  "archive_prefix": "libfuzzer-v8-arm64",
   "builder_group": "chromium.fuzz",
   "gardener_rotations": [
     "chromium"
@@ -71,6 +70,6 @@
     "chromium"
   ],
   "upload_bucket": "chromium-browser-libfuzzer",
-  "upload_directory": "asan-arm64-sim",
+  "use_archive_path": true,
   "v8_targets_only": true
 }

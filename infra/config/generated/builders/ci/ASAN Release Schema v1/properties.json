@@ -15,13 +15,11 @@
             "builder_spec": {
               "builder_group": "chromium.fuzz",
               "clusterfuzz_archive": {
-                "archive_name_prefix": "asan",
                 "archive_path": "linux-release-schema-v1/asan-linux-release",
                 "archive_schema_version": 1,
-                "archive_subdir": "schema-v1",
                 "gs_acl": "public-read",
                 "gs_bucket": "chromium-browser-asan",
-                "use_archive_path": false
+                "use_archive_path": true
               },
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
