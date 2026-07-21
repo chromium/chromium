@@ -114,3 +114,29 @@ void test_get_span() {
   if (!get_span().empty()) {
   }
 }
+
+extern int UnsafeIndex();  // This function might return an out-of-bound index.
+
+void test_nullptr_comparison() {
+  // Expected rewrite:
+  // base::span<int> buf = {};
+  base::span<int> buf = {};
+  std::ignore = buf[UnsafeIndex()];
+
+  // Expected rewrite:
+  // if (buf.empty()) {
+  if (buf.empty()) {
+  }
+  // Expected rewrite:
+  // if (!buf.empty()) {
+  if (!buf.empty()) {
+  }
+  // Expected rewrite:
+  // if (buf.empty()) {
+  if (buf.empty()) {
+  }
+  // Expected rewrite:
+  // if (!buf.empty()) {
+  if (!buf.empty()) {
+  }
+}

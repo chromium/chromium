@@ -1553,6 +1553,35 @@ void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
                                                ".empty()", source_manager));
 }
 
+// Rewrite binary comparison expressions with nullptr to .empty() or !.empty()
+void RewriteComparisonWithNullptr(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::LangOptions& lang_opts = result.Context->getLangOpts();
+  const auto* binary_op = GetNodeOrCrash<clang::BinaryOperator>(
+      result, "compare_with_nullptr_op", __FUNCTION__);
+  const auto* pointer_expr =
+      GetNodeOrCrash<clang::Expr>(result, "rhs_expr", __FUNCTION__);
+  const std::string key = GetRHS(result);
+
+  std::string pointer_expr_text =
+      clang::Lexer::getSourceText(
+          clang::CharSourceRange::getTokenRange(pointer_expr->getSourceRange()),
+          source_manager, lang_opts)
+          .str();
+
+  std::string replacement;
+  if (binary_op->getOpcode() == clang::BO_EQ) {
+    replacement = pointer_expr_text + ".empty()";
+  } else {
+    assert(binary_op->getOpcode() == clang::BO_NE);
+    replacement = "!" + pointer_expr_text + ".empty()";
+  }
+
+  EmitReplacement(key, GetReplacementDirective(
+                           GetExprRange(*binary_op, source_manager, lang_opts),
+                           replacement, source_manager));
+}
+
 // Erases the member call expression. For example:
 //  ... = member_.get();
 //        ^^^^^^^^^^^^^------ member_expr
@@ -3893,6 +3922,18 @@ class Spanifier {
                      hasOperands(ignoringParenCasts(lhs_expr_variations),
                                  ignoringParenCasts(c_array_iter_call_expr))));
     Match(equality_op, RewriteComparisonWithCArrayIter);
+
+    // Matches comparisons of pointers (rewritten to span) with nullptr:
+    // ptr == nullptr  =>  ptr.empty()
+    // ptr != nullptr  =>  !ptr.empty()
+    auto compare_with_nullptr = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        binaryOperation(
+            anyOf(hasOperatorName("=="), hasOperatorName("!=")),
+            hasOperands(ignoringParenCasts(rhs_exprs_without_size_nodes),
+                        ignoringParenCasts(cxxNullPtrLiteralExpr())))
+            .bind("compare_with_nullptr_op"));
+    Match(compare_with_nullptr, RewriteComparisonWithNullptr);
 
     // Supports:
     // return member;
