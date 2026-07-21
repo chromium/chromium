@@ -930,15 +930,28 @@ AutofillAiManager::GetSavePromptCandidates(
             })) {
       continue;
     }
-    // If `observed_entity` is not mergeable with any saved entity, we should
-    // show a save prompt for it.
-    if (std::ranges::all_of(
-            mergeabilities,
-            [](const std::optional<EntityInstance::EntityMergeability>&
-                   mergeability) {
-              return !mergeability ||
-                     mergeability->mergeable_attributes.empty();
-            }) &&
+    // If `observed_entity` is not mergeable with any non-readonly saved entity,
+    // we should show a save prompt for it. Read-only saved entities are ignored
+    // here because they cannot be updated.
+    bool has_non_readonly_mergeable_entity = false;
+    for (auto [mergeability, saved_entity] :
+         base::zip(mergeabilities, saved_entities)) {
+      if (mergeability && !mergeability->mergeable_attributes.empty()) {
+        // Read-only entities cannot be updated, so they do not block saving the
+        // observed entity as a new entity. However, this save-promoting
+        // behavior is restricted to personal context entities (which are
+        // read-only by design, so the only way to save edits is to create a new
+        // user-owned entity). For other read-only entities (like read-only
+        // local/wallet entities), we still block showing a save prompt.
+        if (!saved_entity.are_attributes_read_only() ||
+            saved_entity.record_type() !=
+                EntityInstance::RecordType::kPersonalContext) {
+          has_non_readonly_mergeable_entity = true;
+          break;
+        }
+      }
+    }
+    if (!has_non_readonly_mergeable_entity &&
         !IsSaveBlockedByStrikeDatabase(form.source_url(), observed_entity)) {
       save_candidates.emplace_back(
           AutofillClient::AutofillAiImportPromptType::kSave, observed_entity);

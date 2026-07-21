@@ -676,6 +676,58 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
       features::kAutofillAiWalletVehicleRegistration};
 };
 
+// Tests that Chrome prompts the user to save when they edit an entity filled
+// from read-only personal context data, but does NOT prompt if they submit it
+// without edits.
+TEST_F(AutofillAiManagerImportFormTest,
+       PromptToSaveEditedPersonalContextEntity) {
+  // 1. Create a read-only personal context passport entity.
+  EntityInstance pcontext_passport = test::GetPassportEntityInstance({
+      .name = u"Jon Doe",
+      .number = u"123",
+      .expiry_date = u"2026-01-01",
+      .record_type = EntityInstance::RecordType::kPersonalContext,
+      .are_attributes_read_only = EntityInstance::AreAttributesReadOnly(true),
+  });
+  edm().SetPersonalContextEntitiesForTesting({pcontext_passport});
+
+  // 2. Scenario A: The user submits the form with an edited expiration date.
+  // The observed entity has number "123" and expiry date "2030-01-01".
+  std::unique_ptr<FormStructure> form_edited = CreateFormStructure(
+      {NAME_FULL, PASSPORT_NUMBER, PASSPORT_EXPIRATION_DATE}, kDefaultUrl);
+  form_edited->field(0)->set_value(u"Jon Doe");
+  form_edited->field(1)->set_value(u"123");
+  form_edited->field(2)->set_value(u"2030-01-01");
+  form_edited->field(2)->set_format_string_unless_overruled(
+      AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+      AutofillFormatStringSource::kServer);
+
+  // We expect ShowEntityImportBubble to be called to save the edited entity.
+  EXPECT_CALL(autofill_client(),
+              ShowEntityImportBubble(PassportWithNumber(u"123"), _, _, _))
+      .WillOnce(
+          RunOnceCallback<3>(kDeclineBubble, std::nullopt, kDeclineUIContext));
+
+  EXPECT_TRUE(manager().OnFormSubmitted(*form_edited, /*ukm_source_id=*/{}));
+
+  // 3. Scenario B: The user submits the form WITHOUT editing anything.
+  // The observed entity matches the personal context entity exactly (subset).
+  std::unique_ptr<FormStructure> form_not_edited = CreateFormStructure(
+      {NAME_FULL, PASSPORT_NUMBER, PASSPORT_EXPIRATION_DATE}, kDefaultUrl);
+  form_not_edited->field(0)->set_value(u"Jon Doe");
+  form_not_edited->field(1)->set_value(u"123");
+  form_not_edited->field(2)->set_value(u"2026-01-01");
+  form_not_edited->field(2)->set_format_string_unless_overruled(
+      AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+      AutofillFormatStringSource::kServer);
+
+  // We expect ShowEntityImportBubble NOT to be called.
+  EXPECT_CALL(autofill_client(), ShowEntityImportBubble).Times(0);
+
+  EXPECT_FALSE(
+      manager().OnFormSubmitted(*form_not_edited, /*ukm_source_id=*/{}));
+}
+
 // Tests that save prompts are only shown three times per url and entity type.
 TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerUrl) {
   constexpr char16_t kOtherPassportNumber[] = u"67867";
