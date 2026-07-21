@@ -42,17 +42,55 @@ static_library("chrome_test_launcher") {
   }
 }
 
-# Thin header-only target that exposes test_launcher_utils.h for gn check.
-# The implementation (test_launcher_utils.cc) still lives in
-# //chrome/test:test_support until chrome/test/base/ is fully componentized.
-#
-# TODO(crbug.com/353332589): Add test_launcher_utils.{cc,h} as sources and
-# remove from //chrome/test:test_support once chrome/test/base/ is fully
-# componentized.
 source_set("test_launcher_utils") {
   testonly = true
-  sources = [ "test_launcher_utils.h" ]
+  sources = [
+    "test_launcher_utils.cc",
+    "test_launcher_utils.h",
+  ]
   public_deps = [ "//base" ]
+  deps = [
+    "//chrome/common",
+    "//components/os_crypt/common:switches",
+    "//components/password_manager/core/browser:password_switches",
+    "//content/public/common",
+    "//ui/display",
+  ]
+  if (use_aura) {
+    deps += [ "//ui/wm" ]
+  }
+}
+
+source_set("browser_feature_test_waiters") {
+  testonly = true
+  sources = [
+    "autocomplete_change_observer.cc",
+    "autocomplete_change_observer.h",
+    "find_result_waiter.cc",
+    "find_result_waiter.h",
+    "search_test_utils.cc",
+    "search_test_utils.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//chrome/browser/omnibox",
+    "//chrome/browser/profiles",
+    "//components/find_in_page",
+    "//components/omnibox/browser",
+    "//components/search_engines",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("chrome_test_scoped_utils") {
+  testonly = true
+  sources = [
+    "scoped_browser_locale.cc",
+    "scoped_browser_locale.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//chrome/browser:browser_process" ]
 }
 
 # Thin header-only target exposing testing_profile.h and friends. No ash or
