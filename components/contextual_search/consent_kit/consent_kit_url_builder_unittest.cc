@@ -77,11 +77,12 @@ TEST(ConsentKitUrlBuilderTest, BuildMinimalUrl) {
   std::string uuid_string = shared_consent_session_id[2].GetString();
   EXPECT_TRUE(base::Uuid::ParseLowercase(uuid_string).is_valid());
 
-  // Field 3: PresentationParams [locale]
+  // Field 3: PresentationParams [locale, color_theme]
   ASSERT_TRUE(ppc_list[3].is_list());
   const base::ListValue& presentation_params = ppc_list[3].GetList();
-  ASSERT_EQ(presentation_params.size(), 1u);
+  ASSERT_EQ(presentation_params.size(), 2u);
   EXPECT_EQ(presentation_params[0].GetString(), "fr");
+  EXPECT_EQ(presentation_params[1].GetInt(), 1);  // default is LIGHT
 
   // Field 4: WebPlatformParams [[session_index], integration_type]
   ASSERT_TRUE(ppc_list[4].is_list());
@@ -161,11 +162,12 @@ TEST(ConsentKitUrlBuilderTest, BuildFullUrl) {
   std::string uuid_string = shared_consent_session_id[2].GetString();
   EXPECT_TRUE(base::Uuid::ParseLowercase(uuid_string).is_valid());
 
-  // Field 3: PresentationParams [locale]
+  // Field 3: PresentationParams [locale, color_theme]
   ASSERT_TRUE(ppc_list[3].is_list());
   const base::ListValue& presentation_params = ppc_list[3].GetList();
-  ASSERT_EQ(presentation_params.size(), 1u);
+  ASSERT_EQ(presentation_params.size(), 2u);
   EXPECT_EQ(presentation_params[0].GetString(), "ja");
+  EXPECT_EQ(presentation_params[1].GetInt(), 1);  // default is LIGHT
 
   // Field 4: WebPlatformParams [[session_index], integration_type]
   ASSERT_TRUE(ppc_list[4].is_list());

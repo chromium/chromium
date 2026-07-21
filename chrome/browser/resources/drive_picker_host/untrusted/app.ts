@@ -101,6 +101,7 @@ export class DrivePickerHostUntrustedAppElement extends CrLitElement {
   private loadConsentKitUrl_(consentKitUrl: string) {
     const iframe = document.createElement('iframe');
     iframe.src = consentKitUrl;
+    iframe.setAttribute('scrolling', 'no');
 
     const container = this.shadowRoot.querySelector('#picker-container');
     if (container) {
