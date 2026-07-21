@@ -50,7 +50,7 @@ class SigninCoordinatorTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     profile_ = std::move(builder).Build();
 
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     // Mock ProfileState to satisfy ScopedUIBlocker assertions during
     // coordinator initialization.
     mock_profile_state_ = OCMClassMock([ProfileState class]);

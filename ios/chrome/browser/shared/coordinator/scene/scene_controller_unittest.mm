@@ -104,7 +104,7 @@ class SceneControllerTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
 
     profile_state_ = CreateProfileState(ProfileInitStage::kFinal);
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     [scene_state_ connectWithOptions:{.profile_state = profile_state_,
                                       .identifier = "scene-id"}];
 
@@ -352,7 +352,7 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgentEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kEnableScreenshotProtectionIOS);
 
-  SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene_state = [[SceneState alloc] init];
   SceneController* scene_controller =
       [[SceneController alloc] initWithSceneState:scene_state];
 
@@ -371,7 +371,7 @@ TEST_F(SceneControllerTest, TestDataProtectionSceneAgentDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kEnableScreenshotProtectionIOS);
 
-  SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene_state = [[SceneState alloc] init];
   SceneController* scene_controller =
       [[SceneController alloc] initWithSceneState:scene_state];
 

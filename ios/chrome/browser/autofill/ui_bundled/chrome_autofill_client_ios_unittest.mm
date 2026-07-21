@@ -79,7 +79,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
  public:
   ChromeAutofillClientIOSTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());

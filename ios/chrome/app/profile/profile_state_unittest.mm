@@ -115,11 +115,11 @@ TEST_F(ProfileStateTest, connectedSceneStates) {
   ASSERT_NSEQ(state.connectedScenes, @[]);
 
   // Check that scenes are immediately visible in -connectedScenes.
-  SceneState* scene1 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene1 = [[SceneState alloc] init];
   [state sceneStateConnected:scene1];
   EXPECT_NSEQ(state.connectedScenes, @[ scene1 ]);
 
-  SceneState* scene2 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene2 = [[SceneState alloc] init];
   [state sceneStateConnected:scene2];
   EXPECT_NSEQ(state.connectedScenes, (@[ scene1, scene2 ]));
 }
@@ -131,7 +131,7 @@ TEST_F(ProfileStateTest, connectedSceneStates_scenesRemovedWhenDisconnected) {
   ASSERT_NSEQ(state.connectedScenes, @[]);
 
   // Connect a scene. It should be returned by -connectedScenes.
-  SceneState* scene1 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene1 = [[SceneState alloc] init];
   [state sceneStateConnected:scene1];
   EXPECT_NSEQ(state.connectedScenes, @[ scene1 ]);
 
@@ -148,11 +148,11 @@ TEST_F(ProfileStateTest, foregroundActiveScene) {
 
   // Connect two scenes, one that is in foreground and active. The foreground
   // active scene should be returned by -foregroundActiveScene.
-  SceneState* scene1 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene1 = [[SceneState alloc] init];
   [state sceneStateConnected:scene1];
   EXPECT_NSEQ(state.foregroundActiveScene, nil);
 
-  SceneState* scene2 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene2 = [[SceneState alloc] init];
   scene2.activationLevel = SceneActivationLevelForegroundActive;
   [state sceneStateConnected:scene2];
   EXPECT_NSEQ(state.foregroundActiveScene, scene2);
@@ -173,16 +173,16 @@ TEST_F(ProfileStateTest, foregroundScenes) {
   // Connect three scenes, one that is in the foreground and active, one that
   // is in foreground but inactive, and one that is in the background. Only
   // the foreground ones should be returned in -foregroundScenes.
-  SceneState* scene1 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene1 = [[SceneState alloc] init];
   [state sceneStateConnected:scene1];
   EXPECT_NSEQ(state.foregroundScenes, @[]);
 
-  SceneState* scene2 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene2 = [[SceneState alloc] init];
   scene2.activationLevel = SceneActivationLevelForegroundActive;
   [state sceneStateConnected:scene2];
   EXPECT_NSEQ(state.foregroundScenes, @[ scene2 ]);
 
-  SceneState* scene3 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene3 = [[SceneState alloc] init];
   scene3.activationLevel = SceneActivationLevelForegroundInactive;
   [state sceneStateConnected:scene3];
   EXPECT_NSEQ(state.foregroundScenes, (@[ scene2, scene3 ]));
@@ -208,11 +208,11 @@ TEST_F(ProfileStateTest, firstSceneHasInitializedUI) {
   ASSERT_FALSE(state.firstSceneHasInitializedUI);
 
   // Connect two scenes, in the foreground and active.
-  SceneState* scene1 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene1 = [[SceneState alloc] init];
   scene1.activationLevel = SceneActivationLevelForegroundActive;
   [state sceneStateConnected:scene1];
 
-  SceneState* scene2 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene2 = [[SceneState alloc] init];
   scene2.activationLevel = SceneActivationLevelForegroundActive;
   [state sceneStateConnected:scene2];
 

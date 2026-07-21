@@ -41,7 +41,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
     // The profile state will receive UI blocker request. They are not tested
     // here, so it’s a non-strict mock.
     profile_state_ = OCMClassMock([ProfileState class]);
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     scene_state_.profileState = profile_state_;
     TestProfileIOS::Builder builder = TestProfileIOS::Builder();
     builder.AddTestingFactory(

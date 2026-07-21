@@ -132,7 +132,7 @@ class CertificatePolicyProfileStateAgentTest : public BlockCleanupTest {
   // Triggers certificate cache updates in the app agent under test, and wait
   // for updates to complete.
   void TriggerCertCacheUpdate() {
-    SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+    SceneState* scene_state = [[SceneState alloc] init];
 
     [profile_state_ sceneStateConnected:scene_state];
     scene_state.activationLevel = SceneActivationLevelForegroundInactive;

@@ -163,7 +163,7 @@ base::Time SessionMetricsProfileAgentTest::now_override_;
 TEST_F(SessionMetricsProfileAgentTest, OneSceneConnectedAfterProfileReady) {
   SetProfileStateInitStage(profile_state(), ProfileInitStage::kUIReady);
 
-  SceneState* scene = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene = [[SceneState alloc] init];
   scene.profileState = profile_state();
   [profile_state() sceneStateConnected:scene];
 
@@ -193,7 +193,7 @@ TEST_F(SessionMetricsProfileAgentTest, OneSceneConnectedAfterProfileReady) {
 // Tests that the session is correctly recorded if the Scenes connects
 // before the Profile initialisation has advanced enough.
 TEST_F(SessionMetricsProfileAgentTest, OneSceneConnectedBeforeProfileReady) {
-  SceneState* scene = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene = [[SceneState alloc] init];
   scene.profileState = profile_state();
   [profile_state() sceneStateConnected:scene];
 
@@ -231,11 +231,11 @@ TEST_F(SessionMetricsProfileAgentTest, OneSceneConnectedBeforeProfileReady) {
 TEST_F(SessionMetricsProfileAgentTest, MultipleScenes) {
   SetProfileStateInitStage(profile_state(), ProfileInitStage::kUIReady);
 
-  SceneState* scene1 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene1 = [[SceneState alloc] init];
   scene1.profileState = profile_state();
   [profile_state() sceneStateConnected:scene1];
 
-  SceneState* scene2 = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene2 = [[SceneState alloc] init];
   scene2.profileState = profile_state();
   [profile_state() sceneStateConnected:scene2];
 
@@ -280,7 +280,7 @@ TEST_F(SessionMetricsProfileAgentTest, ActiveDaysRecordedOnSessionStateChange) {
   base::HistogramTester histogram_tester;
   SetProfileStateInitStage(profile_state(), ProfileInitStage::kUIReady);
 
-  SceneState* scene = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene = [[SceneState alloc] init];
   scene.profileState = profile_state();
   [profile_state() sceneStateConnected:scene];
 
@@ -313,7 +313,7 @@ TEST_F(SessionMetricsProfileAgentTest, ActiveDaysRecordedOncePerDay) {
   base::HistogramTester histogram_tester;
   SetProfileStateInitStage(profile_state(), ProfileInitStage::kUIReady);
 
-  SceneState* scene = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene = [[SceneState alloc] init];
   scene.profileState = profile_state();
   [profile_state() sceneStateConnected:scene];
 
@@ -353,7 +353,7 @@ TEST_F(SessionMetricsProfileAgentTest, ActiveDaysCount) {
   base::HistogramTester histogram_tester;
   SetProfileStateInitStage(profile_state(), ProfileInitStage::kUIReady);
 
-  SceneState* scene = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene = [[SceneState alloc] init];
   scene.profileState = profile_state();
   [profile_state() sceneStateConnected:scene];
 

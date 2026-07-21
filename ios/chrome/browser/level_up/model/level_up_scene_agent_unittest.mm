@@ -37,7 +37,7 @@ class LevelUpSceneAgentTest : public PlatformTest {
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
     profile_state_.profile = profile_.get();
 
-    scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
+    scene_state_ = [[SceneState alloc] init];
     scene_state_.profileState = profile_state_;
 
     agent_ = [[LevelUpSceneAgent alloc] init];

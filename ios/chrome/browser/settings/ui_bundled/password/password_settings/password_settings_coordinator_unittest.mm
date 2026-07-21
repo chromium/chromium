@@ -79,7 +79,7 @@ class PasswordSettingsCoordinatorTest : public PlatformTest {
                               base::BindOnce(&CreateFakeReauthService));
 
     // Create scene state for reauthentication coordinator.
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
     profile_ = std::move(builder).Build();

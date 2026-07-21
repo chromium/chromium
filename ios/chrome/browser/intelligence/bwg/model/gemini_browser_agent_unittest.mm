@@ -105,7 +105,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
     web::test::OverrideJavaScriptFeatures(
         profile_, {web::FindInPageJavaScriptFeature::GetInstance(),
                    PageContextExtractorJavaScriptFeature::GetInstance()});
-    SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+    SceneState* scene_state = [[SceneState alloc] init];
     browser_ = std::make_unique<TestBrowser>(profile_, scene_state);
     FullscreenBrowserAgent::CreateForBrowser(browser_.get());
     GeminiBrowserAgent::CreateForBrowser(browser_.get());

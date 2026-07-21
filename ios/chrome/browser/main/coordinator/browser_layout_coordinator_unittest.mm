@@ -20,7 +20,7 @@ class BrowserLayoutCoordinatorTest : public PlatformTest {
  protected:
   BrowserLayoutCoordinatorTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     LayoutGuideSceneAgent* layout_guide_scene_agent =
         [[LayoutGuideSceneAgent alloc] init];
     [scene_state_ addAgent:layout_guide_scene_agent];

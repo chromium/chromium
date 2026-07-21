@@ -29,7 +29,7 @@ class SyncedSetUpUtilsTest : public PlatformTest {
   // Helper function to create and connect a scene with a specific activation
   // level.
   SceneState* ConnectSceneWithActivationLevel(SceneActivationLevel level) {
-    SceneState* scene = [[SceneState alloc] initWithAppState:nil];
+    SceneState* scene = [[SceneState alloc] init];
     scene.activationLevel = level;
 
     [profile_state_ sceneStateConnected:scene];

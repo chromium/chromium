@@ -95,7 +95,7 @@ class BrowserCoordinatorTest : public PlatformTest {
  protected:
   BrowserCoordinatorTest() {
     base_view_controller_ = [[UIViewController alloc] init];
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
 
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(

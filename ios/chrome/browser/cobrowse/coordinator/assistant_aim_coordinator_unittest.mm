@@ -42,7 +42,7 @@ class AssistantAIMCoordinatorTest : public PlatformTest {
         IOSChromeAimEligibilityServiceFactory::GetInstance(),
         base::BindRepeating(&BuildMockIOSChromeAimEligibilityService));
     profile_ = std::move(builder).Build();
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     mock_container_handler_ =

@@ -83,7 +83,7 @@ class BackendPromoProfileAgentTest : public PlatformTest {
 TEST_F(BackendPromoProfileAgentTest, NotifyWhenProfileReachesFinal) {
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kUIReady);
 
-  SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene_state = [[SceneState alloc] init];
   scene_state.profileState = profile_state_;
   [profile_state_ sceneStateConnected:scene_state];
 
@@ -102,7 +102,7 @@ TEST_F(BackendPromoProfileAgentTest, NotifyWhenProfileReachesFinal) {
 TEST_F(BackendPromoProfileAgentTest, NotifyOnForegroundActiveTransitions) {
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
 
-  SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene_state = [[SceneState alloc] init];
   scene_state.profileState = profile_state_;
   [profile_state_ sceneStateConnected:scene_state];
 

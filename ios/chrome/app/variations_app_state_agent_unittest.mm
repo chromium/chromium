@@ -66,8 +66,8 @@ class VariationsAppStateAgentTest : public PlatformTest {
     mock_fetcher_ =
         OCMPartialMock([[IOSChromeVariationsSeedFetcher alloc] init]);
     OCMStub([mock_fetcher_ startSeedFetch]);
-    // Set up scene state from the mock app state.
-    scene_state_ = [[SceneState alloc] initWithAppState:mock_app_state_];
+    // Set up scene state.
+    scene_state_ = [[SceneState alloc] init];
   }
 
   ~VariationsAppStateAgentTest() override {

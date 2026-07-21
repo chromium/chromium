@@ -58,7 +58,7 @@ class SyncErrorBrowserAgentTest : public PlatformTest {
 
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
     SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     scene_state_.profileState = profile_state_;
 
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);

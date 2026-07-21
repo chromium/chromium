@@ -60,7 +60,7 @@ class ChangeProfileAnimatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     scene_state_.profileState = profile_state_;
     [profile_state_ sceneStateConnected:scene_state_];
   }

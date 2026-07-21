@@ -15,7 +15,7 @@ namespace {
 class IncognitoBlockerSceneAgentTest : public PlatformTest {
  public:
   IncognitoBlockerSceneAgentTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]),
+      : scene_state_([[SceneState alloc] init]),
         scene_state_mock_(OCMPartialMock(scene_state_)),
         agent_([[IncognitoBlockerSceneAgent alloc] init]) {
     scene_session_mock_ = OCMClassMock([UISceneSession class]);

@@ -104,7 +104,7 @@ class BrowserLifecycleManagerTest : public PlatformTest {
     SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
     profile_state_.profile = profile_.get();
 
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     [scene_state_ connectWithOptions:{.profile_state = profile_state_,
                                       .identifier = "scene"}];
 

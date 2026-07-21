@@ -67,7 +67,7 @@ class AppBarCoordinatorTest : public PlatformTest {
                               GeminiServiceFactory::GetDefaultFactory());
     regular_profile_ = std::move(builder).Build();
     incognito_profile_ = TestProfileIOS::Builder().Build();
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     regular_browser_ =
         std::make_unique<TestBrowser>(regular_profile_.get(), scene_state_);
     incognito_browser_ =

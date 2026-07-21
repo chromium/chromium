@@ -15,8 +15,7 @@
 
 class SafeModeCoordinatorTest : public PlatformTest {
  public:
-  SafeModeCoordinatorTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]) {
+  SafeModeCoordinatorTest() : scene_state_([[SceneState alloc] init]) {
     scene_session_mock_ = OCMClassMock([UISceneSession class]);
     OCMStub([scene_session_mock_ persistentIdentifier])
         .andReturn([[NSUUID UUID] UUIDString]);

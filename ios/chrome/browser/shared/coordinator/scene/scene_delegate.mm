@@ -87,7 +87,7 @@ void SyncBreadcrumbsLog() {
   MainApplicationDelegate* appDelegate =
       base::apple::ObjCCastStrict<MainApplicationDelegate>(
           UIApplication.sharedApplication.delegate);
-  _sceneState = [[SceneState alloc] initWithAppState:appDelegate.appState];
+  _sceneState = [[SceneState alloc] init];
   _sceneController = [[SceneController alloc] initWithSceneState:_sceneState];
   _sceneState.controller = _sceneController;
 

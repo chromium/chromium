@@ -11,8 +11,7 @@
 
 class PersistTabContextStateAgentTest : public PlatformTest {
  protected:
-  PersistTabContextStateAgentTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]) {}
+  PersistTabContextStateAgentTest() : scene_state_([[SceneState alloc] init]) {}
 
   PersistTabContextStateAgent* agent() { return agent_; }
   SceneState* scene_state() { return scene_state_; }

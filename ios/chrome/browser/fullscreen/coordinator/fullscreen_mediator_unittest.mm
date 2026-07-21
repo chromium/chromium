@@ -46,7 +46,7 @@ class FullscreenMediatorTestObserver : public FullscreenBrowserAgentObserver {
 class FullscreenMediatorTest : public PlatformTest {
  protected:
   FullscreenMediatorTest() {
-    scene_state_ = [[SceneState alloc] initWithAppState:nil];
+    scene_state_ = [[SceneState alloc] init];
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     FullscreenBrowserAgent::CreateForBrowser(browser_.get());

@@ -72,8 +72,8 @@ TEST_F(AppMetricsAppStateAgentTest, LogStartupDuration) {
   [[metricsMediator expect] logStartupDuration:nil];
   [metricsMediator setExpectationOrderMatters:YES];
 
-  SceneState* sceneA = [[SceneState alloc] initWithAppState:app_state_];
-  SceneState* sceneB = [[SceneState alloc] initWithAppState:app_state_];
+  SceneState* sceneA = [[SceneState alloc] init];
+  SceneState* sceneB = [[SceneState alloc] init];
   app_state_.connectedScenes = @[ sceneA, sceneB ];
   [agent_ appState:app_state_ sceneConnected:sceneA];
   [agent_ appState:app_state_ sceneConnected:sceneB];
@@ -110,7 +110,7 @@ TEST_F(AppMetricsAppStateAgentTest, LogStartupDurationWhenSafeMode) {
 
   app_state_.initStageForTesting = GetMaximalInitStageThatDontAllowLogging();
 
-  SceneState* sceneA = [[SceneState alloc] initWithAppState:app_state_];
+  SceneState* sceneA = [[SceneState alloc] init];
   app_state_.connectedScenes = @[ sceneA ];
   [agent_ appState:app_state_ sceneConnected:sceneA];
 

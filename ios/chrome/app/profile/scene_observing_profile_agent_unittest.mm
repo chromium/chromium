@@ -36,7 +36,7 @@ TEST_F(SceneObservingProfileAgentTest, sceneConnected) {
   [profile_state addAgent:agent];
   ASSERT_EQ(agent.profileState, profile_state);
 
-  SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+  SceneState* scene_state = [[SceneState alloc] init];
   [profile_state sceneStateConnected:scene_state];
 
   scene_state.activationLevel = SceneActivationLevelBackground;
