@@ -1,12 +1,12 @@
 {
-  "info" : {
-    "author" : "xcode",
-    "version" : 1
+  "info": {
+    "author": "xcode",
+    "version": 1
   },
-  "symbols" : [
+  "symbols": [
     {
-      "filename" : "bottom.omnibox.cr.svg",
-      "idiom" : "universal"
+      "filename": "bottom.omnibox.option.cr.svg",
+      "idiom": "universal"
     }
   ]
 }

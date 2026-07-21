@@ -53,7 +53,7 @@ NSString* const kReadingListSymbol = @"square_bullet_square";
 NSString* const kRecentTabsSymbol = @"laptopcomputer_and_phone";
 NSString* const kLanguageSymbol = @"language";
 NSString* const kPassportSymbol = @"passport";
-NSString* const kPassportSparkSymbol = @"passport.spark";
+NSString* const kPassportSparkSymbol = @"passport_spark";
 NSString* const kPasswordSymbol = @"password";
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 NSString* const kMulticolorPasswordSymbol = @"multicolor_password";
@@ -75,27 +75,27 @@ NSString* const kFamilylinkSymbol = @"familylink";
 NSString* const kMyDriveSymbol = @"my_drive";
 NSString* const kSharedDrivesSymbol = @"shared_drives";
 NSString* const kEllipsisSquareFillSymbol = @"ellipsis_square_fill";
-NSString* const kMagnifyingglassSparkSymbol = @"magnifyingglass.spark";
+NSString* const kMagnifyingglassSparkSymbol = @"magnifyingglass_spark";
 NSString* const kPhoneSparkleSymbol = @"phone_sparkle";
 NSString* const kTextSearchSymbol = @"text_search";
 NSString* const kIncognitoRectangle = @"incognito_rectangle";
 NSString* const kTextAnalysisSymbol = @"text_analysis";
-NSString* const kTextSparkSymbol = @"text.spark";
+NSString* const kTextSparkSymbol = @"text_spark";
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
 NSString* const kPDFFillSymbol = @"pdf_fill";
 NSString* const kLineThreeSparkSymbol = @"line_three_spark";
 NSString* const kDocumentBadgeSpark = @"document_badge_spark";
-NSString* const kBagSparkSymbol = @"bag.spark";
-NSString* const kTruckBoxSparkSymbol = @"truck.box.spark";
-NSString* const kAirplaneUpSymbol = @"airplane.up";
-NSString* const kCarSparkSymbol = @"car.spark";
-NSString* const kLocationSparkSymbol = @"location.spark";
-NSString* const kPersonTextRectangle2Symbol = @"person.text.rectangle.2";
+NSString* const kBagSparkSymbol = @"bag_spark";
+NSString* const kTruckBoxSparkSymbol = @"truck_box_spark";
+NSString* const kAirplaneUpSymbol = @"airplane_up";
+NSString* const kCarSparkSymbol = @"car_spark";
+NSString* const kLocationSparkSymbol = @"location_spark";
+NSString* const kPersonTextRectangle2Symbol = @"person_text_rectangle_2";
 NSString* const kPersonTextRectangle2SparkSymbol =
-    @"person.text.rectangle.2.spark";
+    @"person_text_rectangle_2_spark";
 NSString* const kPersonTextRectangleSparkSymbol =
-    @"person.text.rectangle.spark";
+    @"person_text_rectangle_spark";
 NSString* const kDeepSearchSymbol = @"deep_search";
 
 // Use custom symbol for camera because the default video icon in iOS should
