@@ -52,6 +52,7 @@ class Profile;
 class ContextualSearchboxTabFaviconHelper;
 class SkBitmap;
 class DrivePickerHostController;
+class OmniboxPopupDeactivationBlocker;
 
 namespace contextual_tasks {
 class ActiveTaskContextProvider;
@@ -168,6 +169,11 @@ class ContextualSearchboxHandler
   void GetDriveDisclaimerStatus(
       GetDriveDisclaimerStatusCallback callback) override;
   void OnDriveDisclaimerAccepted() override;
+#if !BUILDFLAG(IS_ANDROID)
+  bool has_drive_picker_deactivation_blocker_for_testing() const {
+    return drive_picker_deactivation_blocker_ != nullptr;
+  }
+#endif
   void QueryAutocomplete(int32_t query_id,
                          const std::u16string& input,
                          bool prevent_inline_autocomplete,
@@ -475,6 +481,10 @@ class ContextualSearchboxHandler
 
   std::unique_ptr<drive_picker::DriveDisclaimerController>
       drive_disclaimer_controller_;
+
+  // Keeps the AIM popup open while the Google Drive picker is active.
+  std::unique_ptr<OmniboxPopupDeactivationBlocker>
+      drive_picker_deactivation_blocker_;
 #endif
 
   OnDriveUploadClickedCallback drive_upload_click_callback_;

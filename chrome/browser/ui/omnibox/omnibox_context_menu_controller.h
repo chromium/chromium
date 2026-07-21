@@ -123,6 +123,13 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
       std::optional<omnibox::ToolMode> tool_mode,
       std::vector<searchbox::mojom::SearchContextAttachmentPtr> attachments =
           {});
+  // Handles the response from the Drive picker upload flow. Updates the
+  // searchbox context with files/errors. Ignores cancellations to preserve
+  // existing contexts.
+  static void HandleDriveUploadResponse(
+      bool was_ai_mode_open,
+      base::WeakPtr<content::WebContents> web_contents,
+      searchbox::mojom::DriveUploadResponsePtr response);
 
   static void RecordContextMenuItemSelection(const std::string& prefix,
                                              omnibox::ContextType context_type);

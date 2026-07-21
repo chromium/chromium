@@ -141,6 +141,29 @@ suite('AimAppTest', function() {
             'ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox'));
   });
 
+  test('ResetsPreserveContextOnAddContext', async function() {
+    const app = document.createElement('omnibox-aim-app');
+    document.body.appendChild(app);
+
+    // Set preserve context on close.
+    page.setPreserveContextOnClose(true);
+    await microtasksFinished();
+
+    // Adding context should reset `preserveContextOnClose` to false.
+    page.addContext({
+      input: 'test context',
+      attachments: [],
+      toolMode: 0,
+    });
+    await microtasksFinished();
+
+    // Clear popup should clear inputs because `preserveContextOnClose` was
+    // reset to false.
+    page.clearPopup();
+    await microtasksFinished();
+    assertTrue(!app.$.composebox.input);
+  });
+
   test('PlaysGlowAnimationOnShowByDefault', async function() {
     const app = document.createElement('omnibox-aim-app');
     document.body.appendChild(app);

@@ -14,9 +14,12 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_file_selector.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_popup_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -25,6 +28,7 @@
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service_impl.h"
@@ -33,6 +37,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
@@ -134,11 +139,29 @@ class OmniboxContextMenuControllerTest : public testing::Test {
         .WillByDefault(testing::ReturnRef(browser_window_features_));
     webui::SetBrowserWindowInterface(web_contents_.get(),
                                      &browser_window_interface_);
+    OmniboxPopupWebContentsHelper::CreateForWebContents(web_contents_.get());
+    omnibox_controller_ = std::make_unique<OmniboxController>(
+        std::make_unique<TestOmniboxClient>(), std::nullopt);
+    auto* client =
+        static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+    ON_CALL(*client, IsAimPopupEnabled()).WillByDefault(testing::Return(true));
+    OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())
+        ->set_omnibox_controller(omnibox_controller_.get());
+    omnibox_controller_->edit_model()->set_popup_view(&popup_view_);
     controller_ = std::make_unique<TestOmniboxContextMenuController>(
         file_selector_.get(), web_contents_.get());
   }
 
-  void TearDown() override { policy_provider_.Shutdown(); }
+  void TearDown() override {
+    policy_provider_.Shutdown();
+    if (web_contents_) {
+      auto* helper =
+          OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get());
+      if (helper) {
+        helper->set_omnibox_controller(nullptr);
+      }
+    }
+  }
 
   TestOmniboxContextMenuController* controller() { return controller_.get(); }
 
@@ -152,6 +175,11 @@ class OmniboxContextMenuControllerTest : public testing::Test {
   BrowserWindowFeatures browser_window_features_;
 
   std::unique_ptr<OmniboxPopupFileSelector> file_selector_;
+  // `omnibox_controller_` must outlive `web_contents_`, as `web_contents_`
+  // holds an `OmniboxPopupWebContentsHelper` with a raw_ptr to
+  // `omnibox_controller_`.
+  std::unique_ptr<OmniboxController> omnibox_controller_;
+  TestOmniboxPopupView popup_view_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<TestOmniboxContextMenuController> controller_;
 };
@@ -294,7 +322,6 @@ TEST_F(OmniboxContextMenuControllerTest, GetIconForInputType_Drive) {
 }
 
 TEST_F(OmniboxContextMenuControllerTest, ExecuteCommand_DriveInputType) {
-  OmniboxPopupWebContentsHelper::CreateForWebContents(web_contents_.get());
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {omnibox::kAimUsePecApi, omnibox::kComposeboxDriveContextMenuOption}, {});
@@ -610,4 +637,72 @@ TEST_F(OmniboxContextMenuControllerTest,
   // Verify smart tab sharing toggle is disabled.
   EXPECT_FALSE(
       controller()->IsCommandIdEnabled(IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING));
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       HandleDriveUploadResponse_CancelledWhenAiModeClosed_RemainsNone) {
+  auto* omnibox_controller =
+      OmniboxContextMenuController::GetOmniboxController(web_contents_.get());
+  ASSERT_TRUE(omnibox_controller);
+  ASSERT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kNone);
+
+  auto response = searchbox::mojom::DriveUploadResponse::New();
+
+  OmniboxContextMenuController::HandleDriveUploadResponse(
+      /*was_ai_mode_open=*/false, web_contents_->GetWeakPtr(),
+      std::move(response));
+
+  // If upload is cancelled and AI mode was not open, state should remain
+  // `kNone`.
+  EXPECT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kNone);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       HandleDriveUploadResponse_CancelledWhenAiModeOpen_RemainsAim) {
+  auto* omnibox_controller =
+      OmniboxContextMenuController::GetOmniboxController(web_contents_.get());
+  ASSERT_TRUE(omnibox_controller);
+  // Set initial state to `kAim`.
+  omnibox_controller->edit_model()->OpenAiMode(
+      OmniboxEditModel::AimActivation::kContextMenu);
+  ASSERT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
+
+  // Set an empty/cancelled response.
+  auto response = searchbox::mojom::DriveUploadResponse::New();
+
+  OmniboxContextMenuController::HandleDriveUploadResponse(
+      /*was_ai_mode_open=*/true, web_contents_->GetWeakPtr(),
+      std::move(response));
+
+  // If upload is cancelled and AI mode was not open, state should remain
+  // `kAim`.
+  EXPECT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
+}
+
+TEST_F(OmniboxContextMenuControllerTest,
+       HandleDriveUploadResponse_SuccessTransitionsState) {
+  auto* omnibox_controller =
+      OmniboxContextMenuController::GetOmniboxController(web_contents_.get());
+  ASSERT_TRUE(omnibox_controller);
+  ASSERT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kNone);
+
+  auto response = searchbox::mojom::DriveUploadResponse::New();
+  auto file = searchbox::mojom::DriveFile::New();
+  file->token = base::UnguessableToken::Create();
+  file->file_name = "test.txt";
+  file->mime_type = "text/plain";
+  response->files.push_back(std::move(file));
+
+  OmniboxContextMenuController::HandleDriveUploadResponse(
+      /*was_ai_mode_open=*/false, web_contents_->GetWeakPtr(),
+      std::move(response));
+
+  // If upload is successful, state should transition to `kAim`.
+  EXPECT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
 }

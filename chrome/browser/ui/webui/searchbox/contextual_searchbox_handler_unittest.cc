@@ -35,6 +35,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
@@ -370,6 +371,8 @@ class ContextualSearchboxHandlerTest
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
     ON_CALL(mock_browser_window_interface_, GetWindow())
         .WillByDefault(testing::Return(&mock_base_window_));
+    ON_CALL(mock_browser_window_interface_, GetFeatures())
+        .WillByDefault(testing::ReturnRef(browser_window_features_));
     ON_CALL(mock_base_window_, GetNativeWindow())
         .WillByDefault(
             testing::Return(web_contents()->GetTopLevelNativeWindow()));
@@ -479,6 +482,7 @@ class ContextualSearchboxHandlerTest
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       contextual_session_handle_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface_;
+  BrowserWindowFeatures browser_window_features_;
   testing::NiceMock<ui::MockBaseWindow> mock_base_window_;
   ui::UnownedUserDataHost unowned_user_data_host_;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1912,6 +1916,7 @@ TEST_F(ContextualSearchboxHandlerTest, OnDriveUploadClicked) {
   EXPECT_FALSE(response->error.has_value());
 
   EXPECT_FALSE(handler().IsDrivePickerReceiverBound());
+  EXPECT_FALSE(handler().has_drive_picker_deactivation_blocker_for_testing());
 }
 
 TEST_F(ContextualSearchboxHandlerTest,

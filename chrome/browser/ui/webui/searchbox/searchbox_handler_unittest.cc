@@ -18,6 +18,9 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#endif
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -155,6 +158,9 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<RealboxHandler> handler_;
   testing::NiceMock<MockBrowserWindowInterface> browser_window_interface_;
+#if !BUILDFLAG(IS_ANDROID)
+  BrowserWindowFeatures browser_window_features_;
+#endif
   ui::UnownedUserDataHost unowned_user_data_host_;
 
   void SetUp() override {
@@ -167,6 +173,10 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
         .WillByDefault(testing::Return(profile()));
     ON_CALL(browser_window_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+#if !BUILDFLAG(IS_ANDROID)
+    ON_CALL(browser_window_interface_, GetFeatures())
+        .WillByDefault(testing::ReturnRef(browser_window_features_));
+#endif
     webui::SetBrowserWindowInterface(web_contents_.get(),
                                      &browser_window_interface_);
 

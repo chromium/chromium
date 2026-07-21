@@ -172,72 +172,9 @@ bool IsValidTab(GURL url) {
          !url.IsAboutBlank();
 }
 
-
 bool IsThinkingModel(omnibox::ModelMode model) {
   return model == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO ||
          model == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
-}
-
-void HandleDriveUploadResponse(
-    bool was_ai_mode_open,
-    base::WeakPtr<content::WebContents> web_contents,
-    searchbox::mojom::DriveUploadResponsePtr response) {
-  if (!response || !web_contents) {
-    return;
-  }
-
-  std::vector<searchbox::mojom::SearchContextAttachmentPtr> file_attachments;
-  for (const auto& file : response->files) {
-    auto file_attachment = searchbox::mojom::FileAttachment::New();
-    file_attachment->uuid = file->token;
-    file_attachment->name = file->file_name;
-    file_attachment->mime_type = file->mime_type;
-    file_attachment->image_data_url = file->thumbnail_url;
-    file_attachment->icon_url = file->icon_url;
-
-    file_attachments.push_back(
-        searchbox::mojom::SearchContextAttachment::NewFileAttachment(
-            std::move(file_attachment)));
-  }
-
-  if (response->error.has_value()) {
-    auto file_attachment = searchbox::mojom::FileAttachment::New();
-    file_attachment->uuid = base::UnguessableToken::Create();
-    file_attachment->name = "";
-    file_attachment->mime_type = "";
-
-    contextual_search::ContextUploadErrorType error_type =
-        contextual_search::ContextUploadErrorType::kUnknown;
-    switch (response->error.value()) {
-      case searchbox::mojom::DriveUploadError::kMaxFilesExceeded:
-        error_type = contextual_search::ContextUploadErrorType::
-            kBrowserProcessingMaxFilesExceededError;
-        break;
-      case searchbox::mojom::DriveUploadError::kSizeLimitExceeded:
-        error_type = contextual_search::ContextUploadErrorType::
-            kBrowserProcessingFileTooLargeError;
-        break;
-    }
-    file_attachment->error_type = error_type;
-    file_attachments.push_back(
-        searchbox::mojom::SearchContextAttachment::NewFileAttachment(
-            std::move(file_attachment)));
-  }
-
-  bool has_files_or_errors = !file_attachments.empty();
-
-  OmniboxContextMenuController::UpdateSearchboxContext(
-      web_contents.get(), /*tab_info=*/std::nullopt,
-      /*tool_mode=*/std::nullopt, std::move(file_attachments));
-
-  auto* omnibox_controller =
-      OmniboxContextMenuController::GetOmniboxController(web_contents.get());
-  if (omnibox_controller && omnibox_controller->edit_model()) {
-    if (was_ai_mode_open || has_files_or_errors) {
-      omnibox_controller->edit_model()->OpenAiMode(
-          OmniboxEditModel::AimActivation::kContextMenu);
-    }
-  }
 }
 
 }  // namespace
@@ -889,6 +826,71 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
   }
 }
 
+void OmniboxContextMenuController::HandleDriveUploadResponse(
+    bool was_ai_mode_open,
+    base::WeakPtr<content::WebContents> web_contents,
+    searchbox::mojom::DriveUploadResponsePtr response) {
+  if (!response || !web_contents) {
+    return;
+  }
+
+  std::vector<searchbox::mojom::SearchContextAttachmentPtr> file_attachments;
+  for (const auto& file : response->files) {
+    auto file_attachment = searchbox::mojom::FileAttachment::New();
+    file_attachment->uuid = file->token;
+    file_attachment->name = file->file_name;
+    file_attachment->mime_type = file->mime_type;
+    file_attachment->image_data_url = file->thumbnail_url;
+    file_attachment->icon_url = file->icon_url;
+
+    file_attachments.push_back(
+        searchbox::mojom::SearchContextAttachment::NewFileAttachment(
+            std::move(file_attachment)));
+  }
+
+  if (response->error.has_value()) {
+    auto file_attachment = searchbox::mojom::FileAttachment::New();
+    file_attachment->uuid = base::UnguessableToken::Create();
+    file_attachment->name = "";
+    file_attachment->mime_type = "";
+
+    contextual_search::ContextUploadErrorType error_type =
+        contextual_search::ContextUploadErrorType::kUnknown;
+    switch (response->error.value()) {
+      case searchbox::mojom::DriveUploadError::kMaxFilesExceeded:
+        error_type = contextual_search::ContextUploadErrorType::
+            kBrowserProcessingMaxFilesExceededError;
+        break;
+      case searchbox::mojom::DriveUploadError::kSizeLimitExceeded:
+        error_type = contextual_search::ContextUploadErrorType::
+            kBrowserProcessingFileTooLargeError;
+        break;
+    }
+    file_attachment->error_type = error_type;
+    file_attachments.push_back(
+        searchbox::mojom::SearchContextAttachment::NewFileAttachment(
+            std::move(file_attachment)));
+  }
+
+  // Only update the search context and open AI mode if files or errors were
+  // received. Ignore cancellations to preserve the current search/query state.
+  bool has_files_or_errors = !file_attachments.empty();
+  if (has_files_or_errors) {
+    OmniboxContextMenuController::UpdateSearchboxContext(
+        web_contents.get(), /*tab_info=*/std::nullopt,
+        /*tool_mode=*/std::nullopt, std::move(file_attachments));
+  }
+
+  auto* omnibox_controller =
+      OmniboxContextMenuController::GetOmniboxController(web_contents.get());
+  if (omnibox_controller && omnibox_controller->edit_model()) {
+    if (was_ai_mode_open || has_files_or_errors) {
+      omnibox_controller->edit_model()->OpenAiMode(
+          OmniboxEditModel::AimActivation::kContextMenu);
+    }
+  }
+}
+
 bool OmniboxContextMenuController::IsContentSharingEnabled() const {
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_.get());
@@ -1442,7 +1444,8 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
                                       : nullptr;
                   if (handler) {
                     handler->OnDriveUploadClicked(
-                        base::BindOnce(&HandleDriveUploadResponse,
+                        base::BindOnce(&OmniboxContextMenuController::
+                                           HandleDriveUploadResponse,
                                        is_aim_popup_open, web_contents));
                   }
                 },

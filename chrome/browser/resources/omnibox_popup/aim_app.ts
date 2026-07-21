@@ -227,6 +227,10 @@ export class OmniboxAimAppElement extends CrLitElement {
   private addContext_(context: SearchContext) {
     this.$.composebox.addSearchContext(context);
     this.focusInput_();
+    // Reset `preserveContextOnClose_` so subsequent popup closes correctly
+    // clear searchbox state (e.g. after adding context via Drive picker while
+    // popup stayed open).
+    this.setPreserveContextOnClose_(false);
   }
 
   private focusInput_() {
