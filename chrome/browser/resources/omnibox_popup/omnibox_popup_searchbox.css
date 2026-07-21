@@ -247,3 +247,40 @@ cr-searchbox-dropdown::part(dropdown-content) {
   height: auto;
   min-height: var(--cr-searchbox-input-height);
 }
+
+#composeButton {
+  --cr-button-height: 24px;
+  align-self: center;
+}
+
+#composeButton::part(glow-container) {
+  height: 24px;
+  margin-inline-end: 4px;
+  top: 0;
+}
+
+#composeButton::part(compose-button) {
+  --cr-hover-background-color: transparent;
+  background-color: var(--color-sys-tonal-container);
+  color: var(--color-sys-on-tonal-container);
+  font-size: 13px;
+  font-weight: 500;
+  padding-inline-end: 12.5px;
+  padding-inline-start: 7px;
+}
+
+#composeButton::part(compose-icon) {
+  height: 16px;
+  width: 16px;
+}
+
+#composeButton::part(hoverBackground) {
+  background-color: var(--color-sys-state-hover-dim-blend-protection);
+  display: block;
+  opacity: 0;
+  transition: opacity 250ms linear;
+}
+
+#composeButton:hover::part(hoverBackground) {
+  opacity: 1;
+}

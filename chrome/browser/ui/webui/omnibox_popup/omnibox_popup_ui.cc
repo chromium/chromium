@@ -100,6 +100,11 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("isTouchUi", ui::TouchUiController::Get()->touch_ui());
   source->AddBoolean("omniboxAimPopupEnabled",
                      omnibox::IsAimPopupFeatureEnabled());
+  // TODO(b/504670497): Replace this NTP-specific flag with a generic flag.
+  // TODO(b/474406096): Replace this NTP-specific flag with a generic flag.
+  source->AddBoolean("ntpRealboxNextEnabled", false);
+  source->AddBoolean("searchboxShowComposeEntrypoint",
+                     omnibox::IsAimPopupEnabled(profile_));
   source->AddBoolean("omniboxShowContextButtonSuggestionLabel",
                      omnibox::kContextButtonShowSuggestionLabel.Get());
   source->AddBoolean(

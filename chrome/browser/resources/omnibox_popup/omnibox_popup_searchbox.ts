@@ -4,6 +4,7 @@
 
 import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
+import '//resources/cr_components/searchbox/searchbox_compose_button.js';
 
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
@@ -101,6 +102,10 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      composeButtonEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -122,6 +127,8 @@ export class OmniboxPopupSearchboxElement extends
   protected accessor isTouchUi_: boolean = loadTimeData.getBoolean('isTouchUi');
   protected accessor omniboxPopupDebugEnabled_: boolean =
       loadTimeData.getBoolean('omniboxPopupDebugEnabled');
+  protected accessor composeButtonEnabled: boolean =
+      loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
 
   private eventTracker_ = new EventTracker();
   private searchboxPageHandler_: SearchboxPageHandlerInterface;
@@ -606,6 +613,12 @@ export class OmniboxPopupSearchboxElement extends
   protected onLensSearchClick_() {
     this.dropdownIsVisible = false;
     this.dispatchEvent(new Event('open-lens-search'));
+  }
+
+  protected onComposeClick_() {
+    // TODO(b/504670284): Open AIM popup on-click via Mojo IPC.
+    this.dropdownIsVisible = false;
+    this.dispatchEvent(new Event('open-composebox'));
   }
 
   override async handleKeyNavigation(e: KeyboardEvent) {

@@ -7,6 +7,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OmniboxPopupSearchboxElement} from './omnibox_popup_searchbox.js';
 
 export function getHtml(this: OmniboxPopupSearchboxElement) {
+  // clang-format off
   return html`
     <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
         @keydown="${this.onInputWrapperKeydown}">
@@ -48,6 +49,11 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
           </div>
         ` :
                                                                     ''}
+        ${
+      this.composeButtonEnabled ? html`
+          <cr-searchbox-compose-button id="composeButton" slot="compose-button"
+              @compose-click="${this.onComposeClick_}">
+          </cr-searchbox-compose-button>` : ''}
       </cr-searchbox-input>
       <div class="dropdownContainer">
         <cr-searchbox-dropdown id="matches" part="searchbox-dropdown"
@@ -62,4 +68,5 @@ export function getHtml(this: OmniboxPopupSearchboxElement) {
       </div>
     </div>
   `;
+  // clang-format on
 }

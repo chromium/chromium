@@ -44,7 +44,13 @@
 }
 
 .compose-icon {
-  filter: invert(1);
+  background-color: currentColor;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
   vertical-align: text-bottom;
   height: 18px;
   width: 18px;
