@@ -36,7 +36,7 @@ template <typename T>
 COMPONENT_EXPORT(KCER)
 base::span<const uint8_t> MakeSpan(T* value) {
   static_assert(std::is_integral_v<T>);
-  return base::as_bytes(UNSAFE_TODO(base::span<T>(value, /*count=*/1u)));
+  return base::byte_span_from_ref(*value);
 }
 
 // The main class to communicate with Chaps. Further simplifies the D-Bus
