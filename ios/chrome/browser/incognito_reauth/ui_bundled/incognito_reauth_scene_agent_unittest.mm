@@ -14,9 +14,10 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -63,8 +64,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
  public:
   IncognitoReauthSceneAgentTest()
       : profile_(TestProfileIOS::Builder().Build()),
-        scene_state_([[SceneState alloc] initWithAppState:nil]),
-        scene_state_mock_(OCMPartialMock(scene_state_)),
+        scene_state_([[FakeSceneState alloc] initWithProfile:profile_.get()]),
         scene_controller_(
             [[SceneController alloc] initWithSceneState:scene_state_]),
         scene_controller_mock_(OCMPartialMock(scene_controller_)),
@@ -83,7 +83,6 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   }
 
   ~IncognitoReauthSceneAgentTest() override {
-    EXPECT_OCMOCK_VERIFY(scene_state_mock_);
     EXPECT_OCMOCK_VERIFY(scene_controller_mock_);
     EXPECT_OCMOCK_VERIFY(scene_handler_mock_);
     EXPECT_OCMOCK_VERIFY(tab_grid_commands_handler_mock_);
@@ -94,26 +93,14 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
                         bool reauth_enabled,
                         bool soft_lock_feature_enabled,
                         bool soft_lock_pref_enabled) {
-    // Stub all calls to be able to mock the following:
-    // 1. sceneState.browserProviderInterface.incognitoBrowserProvider
-    //            .browser->GetWebStateList()->count()
-    // 2. sceneState.browserProviderInterface.hasIncognitoBrowserProvider
-    test_browser_ = std::make_unique<TestBrowser>(profile_.get());
+    Browser* browser = incognito_browser();
     for (int i = 0; i < tab_count; ++i) {
-      test_browser_->GetWebStateList()->InsertWebState(
+      browser->GetWebStateList()->InsertWebState(
           std::make_unique<web::FakeWebState>(),
           WebStateList::InsertionParams::AtIndex(i));
     }
 
-    stub_browser_interface_provider_ =
-        [[StubBrowserProviderInterface alloc] init];
-    stub_browser_interface_provider_.incognitoBrowserProvider.browser =
-        test_browser_.get();
-
-    OCMStub([scene_state_mock_ browserProviderInterface])
-        .andReturn(stub_browser_interface_provider_);
-
-    CommandDispatcher* dispatcher = test_browser_->GetCommandDispatcher();
+    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:tab_grid_commands_handler_mock_
                              forProtocol:@protocol(TabGridCommands)];
     [dispatcher startDispatchingToTarget:scene_handler_mock_
@@ -139,7 +126,13 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     stub_reauth_module_.returnedResult = ReauthenticationResult::kSuccess;
   }
 
-  void TearDown() override { scene_state_.UIEnabled = NO; }
+  void TearDown() override {
+    @autoreleasepool {
+      scene_state_.UIEnabled = NO;
+      [scene_state_ shutdown];
+      scene_state_ = nil;
+    }
+  }
 
   void AdvanceClock(const base::TimeDelta& delay) {
     scoped_clock_.Advance(delay);
@@ -149,13 +142,16 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     pref_service_.SetTime(prefs::kLastBackgroundedTime, scoped_clock_.Now());
   }
 
+  Browser* incognito_browser() {
+    return scene_state_.browserProviderInterface.incognitoBrowserProvider
+        .browser;
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 
   // The scene state that the agent works with.
-  SceneState* scene_state_;
-  // Partial mock for stubbing scene_state_'s methods
-  id scene_state_mock_;
+  FakeSceneState* scene_state_;
   SceneController* scene_controller_;
   id scene_controller_mock_;
   StubReauthenticationModule* stub_reauth_module_;
@@ -163,8 +159,6 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   id tab_grid_commands_handler_mock_;
   // The tested agent
   IncognitoReauthSceneAgent* agent_;
-  StubBrowserProviderInterface* stub_browser_interface_provider_;
-  std::unique_ptr<TestBrowser> test_browser_;
   TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
   base::ScopedMockClockOverride scoped_clock_;
@@ -257,7 +251,7 @@ TEST_F(IncognitoReauthSceneAgentTest,
   EXPECT_TRUE(scene_state_.incognitoState.authenticationRequired);
 
   // Open another tab.
-  test_browser_->GetWebStateList()->InsertWebState(
+  incognito_browser()->GetWebStateList()->InsertWebState(
       std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionParams::AtIndex(0));
 
@@ -366,7 +360,7 @@ TEST_F(IncognitoReauthSceneAgentTest,
   EXPECT_FALSE(scene_state_.incognitoState.authenticationRequired);
 
   // Open another tab.
-  test_browser_->GetWebStateList()->InsertWebState(
+  incognito_browser()->GetWebStateList()->InsertWebState(
       std::make_unique<web::FakeWebState>(),
       WebStateList::InsertionParams::AtIndex(0));
 
