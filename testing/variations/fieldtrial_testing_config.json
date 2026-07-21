@@ -21211,6 +21211,29 @@
             ]
         }
     ],
+    "RecordLockAcquisitionTimeStudy": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260721",
+                    "params": {
+                        "RecordLockAcquisitionTimeAllowedThreads": "CrBrowserMain,CrRendererMain,CrGpuMain,VizCompositor,Compositor,BrowserIO,NetworkService,GPU.ForegroundWorker,GPU.BackgroundWorker,Renderer.ForegroundWorker,Renderer.BackgroundWorker,Browser.ForegroundWorker,Browser.BackgroundWorker"
+                    },
+                    "enable_features": [
+                        "RecordLockAcquisitionTime"
+                    ]
+                }
+            ]
+        }
+    ],
     "RedWarningSurvey": [
         {
             "platforms": [
