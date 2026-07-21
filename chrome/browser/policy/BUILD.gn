@@ -181,6 +181,10 @@ source_set("test_support") {
     "cloud/cloud_policy_test_utils.h",
     "messaging_layer/upload/file_upload_job_test_util.cc",
     "messaging_layer/upload/file_upload_job_test_util.h",
+    "messaging_layer/util/reporting_server_connector_test_util.cc",
+    "messaging_layer/util/reporting_server_connector_test_util.h",
+    "messaging_layer/util/test_response_payload.cc",
+    "messaging_layer/util/test_response_payload.h",
     "policy_test_utils.cc",
     "policy_test_utils.h",
     "safe_browsing_policy_test.cc",
@@ -194,6 +198,11 @@ source_set("test_support") {
     "//chrome/test:test_support",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
     "//components/reporting/util:test_callbacks_support",
     "//components/safe_search_api",
     "//components/security_interstitials/content:security_interstitial_page",
@@ -208,6 +217,7 @@ source_set("test_support") {
     deps += [
       "//ash",
       "//ash/public/cpp",
+      "//chromeos/ash/components/system",
     ]
   }
 
