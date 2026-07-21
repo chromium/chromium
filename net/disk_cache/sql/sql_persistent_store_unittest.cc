@@ -729,9 +729,9 @@ class SqlPersistentStoreTestBase : public testing::Test {
  protected:
   virtual bool IsWalModeEnabled() const = 0;
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   std::vector<scoped_refptr<base::SequencedTaskRunner>>
       background_task_runners_;
