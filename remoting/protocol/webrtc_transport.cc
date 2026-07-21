@@ -71,9 +71,6 @@ using DataChannelState = webrtc::DataChannelInterface::DataState;
 // transport-info messages.
 const int kTransportInfoSendDelayMs = 20;
 
-// XML namespace for the transport elements.
-const char kTransportNamespace[] = "google:remoting:webrtc";
-
 // Global maximum bitrate set for the PeerConnection.
 const int kMaxBitrateBps = 1e8;  // 100 Mbps.
 
@@ -505,10 +502,6 @@ bool WebrtcTransport::ProcessTransportInfo(
     const JingleTransportInfo& transport_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (transport_info.xml_namespace != kTransportNamespace) {
-    return false;
-  }
-
   if (!peer_connection()) {
     return false;
   }
@@ -810,7 +803,6 @@ void WebrtcTransport::OnLocalSessionDescriptionCreated(
 
   // Format and send the session description to the peer.
   auto transport_info = std::make_unique<JingleTransportInfo>();
-  transport_info->xml_namespace = kTransportNamespace;
 
   SessionDescription session_description;
   if (description->GetType() == webrtc::SdpType::kOffer) {
@@ -1221,7 +1213,6 @@ void WebrtcTransport::EnsurePendingTransportInfoMessage() {
 
   if (!pending_transport_info_message_) {
     pending_transport_info_message_ = std::make_unique<JingleTransportInfo>();
-    pending_transport_info_message_->xml_namespace = kTransportNamespace;
 
     // Delay sending the new candidates in case we get more candidates
     // that we can send in one message.

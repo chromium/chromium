@@ -315,7 +315,6 @@ TEST(JingleMessageXmlConverterTest, ContentDescription_RoundTrip) {
 
 TEST(JingleMessageXmlConverterTest, JingleTransportInfo_RoundTrip) {
   JingleTransportInfo transport;
-  transport.xml_namespace = "google:remoting:webrtc";
 
   IceTransportInfo::NamedCandidate candidate;
   candidate.name = "test-candidate";
@@ -331,7 +330,6 @@ TEST(JingleMessageXmlConverterTest, JingleTransportInfo_RoundTrip) {
   JingleTransportInfo parsed_transport;
   EXPECT_TRUE(JingleTransportInfoFromXml(xml.get(), &parsed_transport));
 
-  EXPECT_EQ(parsed_transport.xml_namespace, "google:remoting:webrtc");
   ASSERT_EQ(parsed_transport.candidates.size(), 1U);
   EXPECT_EQ(parsed_transport.candidates.front().name, "test-candidate");
   EXPECT_EQ(parsed_transport.candidates.front()
@@ -391,7 +389,6 @@ TEST(JingleMessageXmlConverterTest, JingleMessage_SessionInitiate) {
   SessionInitiate initiate;
   initiate.authentication = auth;
   JingleTransportInfo transport;
-  transport.xml_namespace = "google:remoting:webrtc";
   initiate.transport_info = std::move(transport);
 
   message.SetPayload(std::move(initiate));
@@ -423,8 +420,6 @@ TEST(JingleMessageXmlConverterTest, JingleMessage_SessionInitiate) {
   EXPECT_EQ(parsed_initiate->authentication->session_authz_host_token,
             "host_token");
   ASSERT_TRUE(parsed_initiate->transport_info.has_value());
-  EXPECT_EQ(parsed_initiate->transport_info->xml_namespace,
-            "google:remoting:webrtc");
 }
 
 TEST(JingleMessageXmlConverterTest, JingleMessage_SessionAccept) {
@@ -438,7 +433,6 @@ TEST(JingleMessageXmlConverterTest, JingleMessage_SessionAccept) {
   SessionAccept accept;
   accept.authentication = auth;
   JingleTransportInfo transport;
-  transport.xml_namespace = "google:remoting:webrtc";
   accept.transport_info = std::move(transport);
 
   message.SetPayload(std::move(accept));
@@ -468,8 +462,6 @@ TEST(JingleMessageXmlConverterTest, JingleMessage_SessionAccept) {
             AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519);
   EXPECT_EQ(parsed_accept->authentication->spake_message, auth.spake_message);
   ASSERT_TRUE(parsed_accept->transport_info.has_value());
-  EXPECT_EQ(parsed_accept->transport_info->xml_namespace,
-            "google:remoting:webrtc");
 }
 
 TEST(JingleMessageXmlConverterTest, JingleMessage_SessionTerminate) {
@@ -546,7 +538,6 @@ TEST(JingleMessageXmlConverterTest, JingleMessage_TransportInfo) {
   JingleMessage message = CreateBaseJingleMessage();
 
   JingleTransportInfo transport;
-  transport.xml_namespace = "google:remoting:webrtc";
   IceTransportInfo::NamedCandidate candidate;
   candidate.name = "test-candidate";
   candidate.candidate = webrtc::Candidate(
@@ -569,7 +560,6 @@ TEST(JingleMessageXmlConverterTest, JingleMessage_TransportInfo) {
   auto* parsed_transport =
       std::get_if<JingleTransportInfo>(&parsed_message.payload());
   ASSERT_TRUE(parsed_transport);
-  EXPECT_EQ(parsed_transport->xml_namespace, "google:remoting:webrtc");
   ASSERT_EQ(parsed_transport->candidates.size(), 1U);
   EXPECT_EQ(parsed_transport->candidates.front().name, "test-candidate");
 }

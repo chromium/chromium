@@ -278,7 +278,6 @@ TEST(JingleMessageStructConverterTest, JingleTransportInfoConversion) {
   message.sid = "sid";
 
   JingleTransportInfo transport;
-  transport.xml_namespace = "google:remoting:webrtc";
   SessionDescription sdp;
   sdp.type = SessionDescription::Type::kOffer;
   sdp.sdp = "v=0\r\no=-...";
@@ -317,7 +316,7 @@ TEST(JingleMessageStructConverterTest, JingleTransportInfoConversion) {
   const auto* converted_transport =
       std::get_if<JingleTransportInfo>(&converted.payload());
   ASSERT_TRUE(converted_transport);
-  EXPECT_EQ(converted_transport->xml_namespace, "google:remoting:webrtc");
+
   ASSERT_TRUE(converted_transport->session_description.has_value());
   EXPECT_EQ(converted_transport->session_description->type,
             SessionDescription::Type::kOffer);

@@ -160,7 +160,7 @@ class FakePlugin : public SessionPlugin {
 std::unique_ptr<JingleTransportInfo> CreateTransportInfo(
     const std::string& id) {
   auto result = std::make_unique<JingleTransportInfo>();
-  result->xml_namespace = "google:remoting:webrtc";
+
   // Store the ID in the candidate name so it can be verified in the test.
   IceTransportInfo::NamedCandidate candidate;
   candidate.name = id;

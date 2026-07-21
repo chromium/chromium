@@ -780,18 +780,16 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
 std::unique_ptr<jingle_xmpp::XmlElement> JingleTransportInfoToXml(
     const JingleTransportInfo& transport) {
   auto result = std::make_unique<XmlElement>(
-      QName(transport.xml_namespace, "transport"), /*useDefaultNs=*/true);
+      QName(kWebrtcTransportNamespace, "transport"), /*useDefaultNs=*/true);
 
-  if (transport.xml_namespace == kWebrtcTransportNamespace) {
-    if (transport.session_description) {
-      result->AddElement(
-          FormatSessionDescription(*transport.session_description));
-    }
-    for (const auto& candidate : transport.candidates) {
-      auto* candidate_xml = FormatWebrtcCandidate(candidate);
-      if (candidate_xml) {
-        result->AddElement(candidate_xml);
-      }
+  if (transport.session_description) {
+    result->AddElement(
+        FormatSessionDescription(*transport.session_description));
+  }
+  for (const auto& candidate : transport.candidates) {
+    auto* candidate_xml = FormatWebrtcCandidate(candidate);
+    if (candidate_xml) {
+      result->AddElement(candidate_xml);
     }
   }
 
@@ -800,12 +798,12 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleTransportInfoToXml(
 
 bool JingleTransportInfoFromXml(const jingle_xmpp::XmlElement* element,
                                 JingleTransportInfo* transport) {
-  transport->xml_namespace = element->Name().Namespace();
+  std::string xml_namespace = element->Name().Namespace();
 
   transport->candidates.clear();
   transport->session_description.reset();
 
-  if (transport->xml_namespace == kWebrtcTransportNamespace) {
+  if (xml_namespace == kWebrtcTransportNamespace) {
     const XmlElement* session_description_tag =
         element->FirstNamed(kQNameSessionDescription);
     if (session_description_tag) {

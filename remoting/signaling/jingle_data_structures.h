@@ -157,10 +157,6 @@ struct JingleTransportInfo {
   JingleTransportInfo& operator=(JingleTransportInfo&&);
   ~JingleTransportInfo();
 
-  // The XML namespace for this transport (e.g., google:remoting:ice or
-  // google:remoting:webrtc).
-  std::string xml_namespace;
-
   std::vector<IceTransportInfo::NamedCandidate> candidates;
 
   std::optional<SessionDescription> session_description;

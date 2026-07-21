@@ -300,7 +300,7 @@ std::string CreateValidSessionInitiateXml(const std::string& id,
 
   SessionInitiate initiate;
   initiate.transport_info.emplace();
-  initiate.transport_info->xml_namespace = "google:remoting:webrtc";
+
   message.description =
       std::make_unique<ContentDescription>(JingleAuthentication());
   message.SetPayload(std::move(initiate));
