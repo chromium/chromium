@@ -21,7 +21,11 @@ class EmptyNotebooksService : public NotebooksService {
   EmptyNotebooksService& operator=(const EmptyNotebooksService&) = delete;
 
   // NotebooksService:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   bool IsEmptyForTesting() const override;
+  bool IsUserEligible() const override;
+  bool IsEligibilityLoading() const override;
 };
 
 }  // namespace notebooks

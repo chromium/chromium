@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace notebooks {
@@ -15,11 +16,20 @@ class NotebooksServiceImplTest : public testing::Test {
   NotebooksServiceImplTest() = default;
 
   ~NotebooksServiceImplTest() override = default;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(NotebooksServiceImplTest, ConstructionAndInitialization) {
   auto service = std::make_unique<NotebooksServiceImpl>();
   EXPECT_FALSE(service->IsEmptyForTesting());
+}
+
+TEST_F(NotebooksServiceImplTest, IsUserEligibleReturnsFalse) {
+  auto service = std::make_unique<NotebooksServiceImpl>();
+  EXPECT_FALSE(service->IsUserEligible());
+  EXPECT_FALSE(service->IsEligibilityLoading());
 }
 
 }  // namespace notebooks

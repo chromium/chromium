@@ -10,8 +10,20 @@ EmptyNotebooksService::EmptyNotebooksService() = default;
 
 EmptyNotebooksService::~EmptyNotebooksService() = default;
 
+void EmptyNotebooksService::AddObserver(Observer* observer) {}
+
+void EmptyNotebooksService::RemoveObserver(Observer* observer) {}
+
 bool EmptyNotebooksService::IsEmptyForTesting() const {
   return true;
+}
+
+bool EmptyNotebooksService::IsUserEligible() const {
+  return false;
+}
+
+bool EmptyNotebooksService::IsEligibilityLoading() const {
+  return false;
 }
 
 }  // namespace notebooks

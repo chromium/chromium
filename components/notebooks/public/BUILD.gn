@@ -9,7 +9,7 @@ source_set("public") {
     "notebooks_service.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//components/keyed_service/core",
   ]

@@ -16,6 +16,7 @@ static_library("internal") {
   ]
 
   deps = [
+    "//base",
     "//components/keyed_service/core",
     "//components/notebooks/public",
   ]
@@ -33,6 +34,8 @@ source_set("unit_tests") {
 
   deps = [
     ":internal",
+    "//base",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }
