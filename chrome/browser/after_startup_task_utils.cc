@@ -20,6 +20,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -38,8 +39,6 @@
 using content::BrowserThread;
 
 namespace {
-
-static constexpr base::TimeDelta kFailsafeTimeout = base::Minutes(3);
 
 struct AfterStartupTask {
   AfterStartupTask(const base::Location& from_here,
@@ -195,25 +194,63 @@ class StartupObserver : public performance_manager::GraphOwned,
 
   ~StartupObserver() override = default;
 
-  static void Start();
+  static void Start(performance_manager::Graph* graph);
 
  private:
   using LoadingState = performance_manager::PageNode::LoadingState;
 
   StartupObserver() {
+    // If this is destroyed before a visible page is observed, log
+    // kNoVisiblePageFound.
     startup_ref_ = AfterStartupTaskUtils::RegisterStartupInProgressRef(
-        StartupIsCompleteReason::kVisiblePageLoadingFinished);
+        StartupIsCompleteReason::kNoVisiblePageFound);
   }
 
-  void OnFirstVisiblePageLoadComplete() {
+  void StopObserving() {
     startup_ref_.reset();
     // This will result in delete getting called.
-    TakeFromGraph();
+    GetOwningGraph()->TakeFromGraph(this);
+  }
+
+  bool CheckIfPageIsInteresting(
+      const performance_manager::PageNode* page_node) {
+    // Only interested in visible tabs when feature is enabled, or any visible
+    // page node when disabled.
+    if (!page_node->IsVisible()) {
+      return false;
+    }
+    if (page_node->GetType() != performance_manager::PageType::kTab &&
+        base::FeatureList::IsEnabled(
+            features::kImprovedStartupBestEffortDelay)) {
+      return false;
+    }
+    // A visible page has been observed, so don't report kNoVisiblePageFound.
+    no_visible_tab_timer_.Stop();
+    startup_ref_->SetStartupIsCompleteReason(
+        StartupIsCompleteReason::kVisiblePageLoadingFinished);
+    return true;
   }
 
   // GraphOwned overrides
   void OnPassedToGraph(performance_manager::Graph* graph) override {
     graph->AddPageNodeObserver(this);
+    if (base::FeatureList::IsEnabled(
+            features::kImprovedStartupBestEffortDelay)) {
+      // The observer will only watch for pages of type kTab, so also add a
+      // timeout in case none appear (eg. first-run dialog or profile picker).
+      // First check if any were added before the observer was created.
+      for (const performance_manager::PageNode* page_node :
+           graph->GetAllPageNodes()) {
+        if (CheckIfPageIsInteresting(page_node)) {
+          return;
+        }
+      }
+      const base::TimeDelta timeout =
+          features::kStartupDelayVisibleTabTimeout.Get();
+      CHECK(timeout.is_positive());
+      no_visible_tab_timer_.Start(FROM_HERE, timeout, this,
+                                  &StartupObserver::StopObserving);
+    }
   }
 
   void OnTakenFromGraph(performance_manager::Graph* graph) override {
@@ -221,45 +258,57 @@ class StartupObserver : public performance_manager::GraphOwned,
   }
 
   // PageNodeObserver overrides
+  void OnPageNodeAdded(
+      const performance_manager::PageNode* page_node) override {
+    CheckIfPageIsInteresting(page_node);
+  }
+
+  void OnTypeChanged(const performance_manager::PageNode* page_node,
+                     performance_manager::PageType previous_type) override {
+    CheckIfPageIsInteresting(page_node);
+  }
+
+  void OnIsVisibleChanged(
+      const performance_manager::PageNode* page_node) override {
+    CheckIfPageIsInteresting(page_node);
+  }
+
   void OnLoadingStateChanged(const performance_manager::PageNode* page_node,
                              LoadingState previous_state) override {
-    // Only interested in visible tabs when feature is enabled, or any visible
-    // page node when disabled.
-    if (!page_node->IsVisible()) {
-      return;
-    }
-    if (page_node->GetType() != performance_manager::PageType::kTab &&
-        base::FeatureList::IsEnabled(
-            features::kImprovedStartupBestEffortDelay)) {
+    if (!CheckIfPageIsInteresting(page_node)) {
       return;
     }
 
     LoadingState state = page_node->GetLoadingState();
     if (state == LoadingState::kLoadedIdle) {
-      OnFirstVisiblePageLoadComplete();
+      StopObserving();
     } else if (state == LoadingState::kLoadingTimedOut) {
       startup_ref_->SetStartupIsCompleteReason(
           StartupIsCompleteReason::kVisiblePageLoadingTimedOut);
-      OnFirstVisiblePageLoadComplete();
+      StopObserving();
     }
   }
 
-  void TakeFromGraph() {
-    CHECK(performance_manager::PerformanceManager::IsAvailable());
-    performance_manager::PerformanceManager::GetGraph()->TakeFromGraph(this);
-  }
-
   std::unique_ptr<AfterStartupTaskUtils::StartupInProgressRef> startup_ref_;
+  base::OneShotTimer no_visible_tab_timer_;
 };
 
 // static
-void StartupObserver::Start() {
-  CHECK(performance_manager::PerformanceManager::IsAvailable());
+void StartupObserver::Start(performance_manager::Graph* graph) {
+  // Tests can pass a null `graph` to disable the StartupObserver.
+  if (!graph) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kImprovedStartupBestEffortDelay) &&
+      features::kStartupDelayVisibleTabTimeout.Get().is_zero()) {
+    // Zero means don't observe visible tabs.
+    return;
+  }
 
   // Pass a new StartupObserver to the performance manager so we can get
   // notified when loading completes. The performance manager takes ownership.
-  performance_manager::PerformanceManager::GetGraph()->PassToGraph(
-      base::WrapUnique(new StartupObserver()));
+  graph->PassToGraph(base::WrapUnique(new StartupObserver()));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -269,23 +318,28 @@ void StartupObserver::Start() {
 void AfterStartupTaskUtils::BeginMonitoringStartupCompletion() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!g_is_monitoring_started);
-  AfterStartupTaskUtils::FinishStartupRegistration(
-      /*include_default_refs=*/true);
+  performance_manager::Graph* graph = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
+  // StartupObserver isn't used on Android, so no need for PerformanceManager.
+  CHECK(performance_manager::PerformanceManager::IsAvailable());
+  graph = performance_manager::PerformanceManager::GetGraph();
+#endif  // !BUILDFLAG(IS_ANDROID)
+  AfterStartupTaskUtils::FinishStartupRegistration(graph);
 }
 
 // static
 void AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
-    bool include_default_refs) {
+    performance_manager::Graph* graph) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (g_is_monitoring_started) {
     return;
   }
-  AfterStartupTaskUtils::FinishStartupRegistration(include_default_refs);
+  AfterStartupTaskUtils::FinishStartupRegistration(graph);
 }
 
 // static
 void AfterStartupTaskUtils::FinishStartupRegistration(
-    bool include_default_refs) {
+    performance_manager::Graph* graph) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   g_is_monitoring_started = true;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -302,9 +356,7 @@ void AfterStartupTaskUtils::FinishStartupRegistration(
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (include_default_refs) {
-    StartupObserver::Start();
-  }
+  StartupObserver::Start(graph);
 
   // Release the implicit reference representing the startup sequence. This
   // enables considering startup complete once all other registered references
@@ -317,7 +369,7 @@ void AfterStartupTaskUtils::FinishStartupRegistration(
       FROM_HERE,
       base::BindOnce(&SetBrowserStartupIsComplete,
                      StartupIsCompleteReason::kFailsafeTimeout),
-      kFailsafeTimeout);
+      GetFailsafeTimeout());
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -385,5 +437,7 @@ void AfterStartupTaskUtils::UnsafeResetForTesting() {
 
 // static
 base::TimeDelta AfterStartupTaskUtils::GetFailsafeTimeout() {
-  return kFailsafeTimeout;
+  return base::FeatureList::IsEnabled(features::kImprovedStartupBestEffortDelay)
+             ? features::kStartupDelayFailsafeTimeout.Get()
+             : base::Minutes(3);
 }

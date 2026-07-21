@@ -151,6 +151,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="AndroidStartup"/>
   <int value="7" label="VisiblePageLoaded"/>
   <int value="8" label="VisiblePageLoadingTimedOut"/>
+  <int value="9" label="NoVisiblePageFound"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/after_startup_task_utils.h:StartupIsCompleteReason) -->

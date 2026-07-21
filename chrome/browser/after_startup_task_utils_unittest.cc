@@ -10,21 +10,32 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/performance_manager/public/features.h"
+#include "components/performance_manager/test_support/graph_test_harness.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace {
+
+using performance_manager::GraphTestHarness;
+using performance_manager::PageNode;
+using performance_manager::PageNodeImpl;
+using performance_manager::PageType;
 
 class WrappedTaskRunner : public base::SequencedTaskRunner {
  public:
@@ -78,8 +89,6 @@ class WrappedTaskRunner : public base::SequencedTaskRunner {
   int posted_task_count_ = 0;
   int ran_task_count_ = 0;
 };
-
-}  // namespace
 
 class AfterStartupTaskTest : public testing::Test {
  public:
@@ -151,6 +160,154 @@ class AfterStartupTaskTest : public testing::Test {
     loop->Quit();
   }
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+
+// Arbitrary, since this uses a mock clock, as long as it's less than the
+// kStartupDelayFailsafeTimeout feature param.
+constexpr base::TimeDelta kVisibleTabTimeout = base::Seconds(5);
+
+enum class StartupObserverFeatureParams {
+  // Disable kImprovedStartupBestEffortDelay feature.
+  kFeatureDisabled,
+  // Enable kImprovedStartupBestEffortDelay feature but don't wait for visible
+  // tabs to load.
+  kFeatureEnabledIgnoreVisibleTabs,
+  // Enable kImprovedStartupBestEffortDelay feature and wait for the first
+  // visible tab to reach kLoadedIdle or kLoadingTimedOut.
+  kFeatureEnabledWaitForLoadOrTimeout,
+};
+
+class StartupObserverTest
+    : public GraphTestHarness,
+      public ::testing::WithParamInterface<StartupObserverFeatureParams> {
+ public:
+  StartupObserverTest()
+      : GraphTestHarness(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    GraphTestHarness::SetUp();
+    AfterStartupTaskUtils::UnsafeResetForTesting();
+
+    bool feature_enabled = false;
+    base::TimeDelta visible_tab_timeout;
+    switch (GetParam()) {
+      case StartupObserverFeatureParams::kFeatureDisabled:
+        // Do nothing.
+        break;
+      case StartupObserverFeatureParams::kFeatureEnabledIgnoreVisibleTabs:
+        feature_enabled = true;
+        // Leave `visible_tab_timeout` at 0.
+        break;
+      case StartupObserverFeatureParams::kFeatureEnabledWaitForLoadOrTimeout:
+        feature_enabled = true;
+        visible_tab_timeout = kVisibleTabTimeout;
+        break;
+    }
+
+    if (feature_enabled) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          features::kImprovedStartupBestEffortDelay,
+          {
+              {"StartupDelayVisibleTabTimeout",
+               absl::StrFormat("%dms", visible_tab_timeout.InMilliseconds())},
+              // Ensure failsafe timeout is larger than `visible_tab_timeout`.
+              // With the mock clock the precise value doesn't matter.
+              {"StartupDelayFailsafeTimeout",
+               absl::StrFormat("%dms",
+                               visible_tab_timeout.InMilliseconds() * 2)},
+          });
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kImprovedStartupBestEffortDelay);
+    }
+
+    ASSERT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  }
+
+  void TearDown() override {
+    AfterStartupTaskUtils::UnsafeResetForTesting();
+    GraphTestHarness::TearDown();
+  }
+
+ protected:
+  void FlushTasks() {
+    task_env().GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                   task_env().QuitClosure());
+    task_env().RunUntilQuit();
+  }
+
+  // Call immediately after BeginMonitoringStartupCompletion. Returns true if
+  // the observer should consider startup complete immediately, false if it
+  // should keep waiting.
+  bool ExpectImmediateStartupComplete() {
+    FlushTasks();
+    if (GetParam() ==
+        StartupObserverFeatureParams::kFeatureEnabledIgnoreVisibleTabs) {
+      // Should not monitor visible pages.
+      EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+      histogram_tester_.ExpectUniqueSample(
+          "Startup.BrowserStartupCompleteReason",
+          StartupIsCompleteReason::kStartupRegistrationDone, 1);
+      return true;
+    }
+    EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+    return false;
+  }
+
+  // Call at the end of the test, if no visible page will be detected.
+  void ExpectNoVisiblePage() {
+    if (GetParam() == StartupObserverFeatureParams::kFeatureDisabled) {
+      // Without the feature, it waits the full failsafe timeout.
+      ExpectFailsafeTimeout();
+      return;
+    }
+    task_env().FastForwardBy(kVisibleTabTimeout);
+    FlushTasks();
+    EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+    histogram_tester_.ExpectUniqueSample(
+        "Startup.BrowserStartupCompleteReason",
+        StartupIsCompleteReason::kNoVisiblePageFound, 1);
+  }
+
+  // Call at the end of the test if the observer is expected to wait for the
+  // full failsafe timeout.
+  void ExpectFailsafeTimeout() {
+    task_env().FastForwardBy(AfterStartupTaskUtils::GetFailsafeTimeout());
+    FlushTasks();
+    EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+    histogram_tester_.ExpectUniqueSample(
+        "Startup.BrowserStartupCompleteReason",
+        StartupIsCompleteReason::kFailsafeTimeout, 1);
+  }
+
+  // Call as soon as the observer should detect that a visible page is loaded.
+  void ExpectVisiblePageLoaded(
+      StartupIsCompleteReason expected_reason =
+          StartupIsCompleteReason::kVisiblePageLoadingFinished) {
+    FlushTasks();
+    EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+    histogram_tester_.ExpectUniqueSample("Startup.BrowserStartupCompleteReason",
+                                         expected_reason, 1);
+  }
+
+  base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    FeatureParams,
+    StartupObserverTest,
+    ::testing::Values(
+        StartupObserverFeatureParams::kFeatureDisabled,
+        StartupObserverFeatureParams::kFeatureEnabledIgnoreVisibleTabs,
+        StartupObserverFeatureParams::kFeatureEnabledWaitForLoadOrTimeout));
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
 
 TEST_F(AfterStartupTaskTest, IsStartupComplete) {
   // Check IsBrowserStartupComplete on a background sequence first to
@@ -224,8 +381,7 @@ TEST_F(AfterStartupTaskTest, PostTask) {
 TEST_F(AfterStartupTaskTest, StartupInProgressRef_NoRefs) {
   base::HistogramTester histogram_tester;
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
-  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
-      /*include_default_refs=*/false);
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting();
   FlushUIThread();
   EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
   histogram_tester.ExpectUniqueSample(
@@ -240,8 +396,7 @@ TEST_F(AfterStartupTaskTest, StartupInProgressRef_MultipleRefs) {
       StartupIsCompleteReason::kFirstIdle);
   auto ref2 = AfterStartupTaskUtils::RegisterStartupInProgressRef(
       StartupIsCompleteReason::kSessionRestore);
-  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
-      /*include_default_refs=*/false);
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting();
   FlushUIThread();
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
   ref2.reset();
@@ -260,8 +415,7 @@ TEST_F(AfterStartupTaskTest, StartupInProgressRef_FailsafeTimeout) {
   auto ref = AfterStartupTaskUtils::RegisterStartupInProgressRef(
       StartupIsCompleteReason::kFirstIdle);
 
-  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
-      /*include_default_refs=*/false);
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting();
   FlushUIThread();
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
   task_environment_.FastForwardBy(AfterStartupTaskUtils::GetFailsafeTimeout());
@@ -277,8 +431,7 @@ TEST_F(AfterStartupTaskTest, StartupInProgressRef_ShutdownWithRef) {
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
   auto ref = AfterStartupTaskUtils::RegisterStartupInProgressRef(
       StartupIsCompleteReason::kFirstIdle);
-  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(
-      /*include_default_refs=*/false);
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting();
   FlushUIThread();
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
 
@@ -296,6 +449,202 @@ TEST_F(AfterStartupTaskTest, StartupInProgressRef_ShutdownWithRef) {
   task_environment_.FastForwardBy(AfterStartupTaskUtils::GetFailsafeTimeout());
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
   histogram_tester.ExpectTotalCount("Startup.BrowserStartupCompleteReason", 0);
+}
+
+TEST_P(StartupObserverTest, NoVisiblePages) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+  ExpectNoVisiblePage();
+}
+
+TEST_P(StartupObserverTest, VisibleTabLoads) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  page_node->SetIsVisible(true);
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  // Shouldn't timeout yet since a visible tab exists.
+  task_env().FastForwardBy(kVisibleTabTimeout);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ExpectVisiblePageLoaded();
+}
+
+TEST_P(StartupObserverTest, VisibleNonTabLoads) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  ASSERT_EQ(page_node->GetType(), PageType::kUnknown);
+  page_node->SetIsVisible(true);
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  task_env().FastForwardBy(kVisibleTabTimeout);
+  FlushTasks();
+  if (GetParam() != StartupObserverFeatureParams::kFeatureDisabled) {
+    // Should timeout now since there's no visible tab.
+    // Without the feature, StartupObserver monitors all pages, not just tabs.
+    EXPECT_TRUE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+    histogram_tester_.ExpectUniqueSample(
+        "Startup.BrowserStartupCompleteReason",
+        StartupIsCompleteReason::kNoVisiblePageFound, 1);
+    return;
+  }
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ExpectVisiblePageLoaded();
+}
+
+TEST_P(StartupObserverTest, NonVisibleTabLoads) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  ASSERT_FALSE(page_node->IsVisible());
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  // Ignore the loading state because the page isn't visible.
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  ExpectNoVisiblePage();
+}
+
+TEST_P(StartupObserverTest, VisibleTabTimesOut) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  page_node->SetIsVisible(true);
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
+  ExpectVisiblePageLoaded(StartupIsCompleteReason::kVisiblePageLoadingTimedOut);
+}
+
+TEST_P(StartupObserverTest, VisibleNonTabTimesOut) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  ASSERT_EQ(page_node->GetType(), PageType::kUnknown);
+  page_node->SetIsVisible(true);
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
+  if (GetParam() == StartupObserverFeatureParams::kFeatureDisabled) {
+    // Monitoring all pages.
+    ExpectVisiblePageLoaded(
+        StartupIsCompleteReason::kVisiblePageLoadingTimedOut);
+    return;
+  }
+
+  // Only monitoring tabs, so startup isn't complete.
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  ExpectNoVisiblePage();
+}
+
+TEST_P(StartupObserverTest, NonVisibleTabTimesOut) {
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  ASSERT_FALSE(page_node->IsVisible());
+
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  // Ignore the loading state because the page isn't visible.
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  ExpectNoVisiblePage();
+}
+
+// Tests that make sure StartupObserver detects visible tabs no matter when they
+// become visible.
+
+TEST_P(StartupObserverTest, PageBecomesVisibleBeforeStart) {
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  page_node->SetIsVisible(true);
+
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  // Shouldn't timeout yet since a visible tab exists.
+  task_env().FastForwardBy(kVisibleTabTimeout);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ExpectVisiblePageLoaded();
+}
+
+TEST_P(StartupObserverTest, PageBecomesVisibleAfterStart) {
+  auto page_node = CreateNode<PageNodeImpl>();
+  page_node->SetType(PageType::kTab);
+  ASSERT_FALSE(page_node->IsVisible());
+
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  page_node->SetIsVisible(true);
+
+  // Shouldn't timeout yet since a visible tab exists.
+  task_env().FastForwardBy(kVisibleTabTimeout);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ExpectVisiblePageLoaded();
+}
+
+TEST_P(StartupObserverTest, PageBecomesTabAfterStart) {
+  auto page_node = CreateNode<PageNodeImpl>();
+  ASSERT_EQ(page_node->GetType(), PageType::kUnknown);
+  page_node->SetIsVisible(true);
+
+  AfterStartupTaskUtils::BeginMonitoringStartupCompletionForTesting(graph());
+  if (ExpectImmediateStartupComplete()) {
+    return;
+  }
+
+  page_node->SetType(PageType::kTab);
+
+  // Shouldn't timeout yet since a visible tab exists.
+  task_env().FastForwardBy(kVisibleTabTimeout);
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+
+  page_node->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ExpectVisiblePageLoaded();
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

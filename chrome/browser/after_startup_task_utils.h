@@ -22,6 +22,10 @@ namespace base {
 class SequencedTaskRunner;
 }
 
+namespace performance_manager {
+class Graph;
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(StartupIsCompleteReason)
@@ -35,7 +39,8 @@ enum class StartupIsCompleteReason {
   kAndroidStartup = 6,
   kVisiblePageLoadingFinished = 7,
   kVisiblePageLoadingTimedOut = 8,
-  kMaxValue = kVisiblePageLoadingTimedOut,
+  kNoVisiblePageFound = 9,
+  kMaxValue = kNoVisiblePageFound,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/startup/enums.xml:StartupIsCompleteReason)
 
@@ -77,17 +82,20 @@ class AfterStartupTaskUtils {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Signals the end of the startup registration phase, allowing startup to be
-  // considered complete once all registered references are released.
+  // considered complete once all registered references are released. On
+  // platforms that support references, this will also register a standard
+  // reference that's dropped when the first visible page finishes loading
+  // (unless the kStartupDelayVisibleTabTimeout feature flag is zero).
   static void BeginMonitoringStartupCompletion();
 
   // For use by tests where BeginMonitoringStartupCompletion() may already have
   // been called or where we want to ensure monitoring has begun without
-  // triggering duplicate initialization checks. If `include_default_refs` is
-  // true a set of standard StartupInProgressRefs will be registered first. The
-  // standard refs are always registered by the production
-  // BeginMonitoringStartupCompletion().
+  // triggering duplicate initialization checks. If `graph` is non-null, this
+  // also registers the standard "first visible page finishes loading"
+  // reference in the same circumstances that BeginMonitoringStartupCompletion()
+  // does. Otherwise this reference is not used.
   static void BeginMonitoringStartupCompletionForTesting(
-      bool include_default_refs);
+      performance_manager::Graph* graph = nullptr);
 
   // Queues `task` to run on `destination_runner` after startup is complete.
   // Note: prefer to simply post a task with BEST_EFFORT priority. This will
@@ -122,7 +130,7 @@ class AfterStartupTaskUtils {
   // normal approach.
   friend class android::AfterStartupTaskUtilsJNI;
 
-  static void FinishStartupRegistration(bool include_default_refs);
+  static void FinishStartupRegistration(performance_manager::Graph* graph);
   static void SetBrowserStartupIsComplete(StartupIsCompleteReason reason);
 };
 

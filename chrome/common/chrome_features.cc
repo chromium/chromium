@@ -124,9 +124,33 @@ BASE_FEATURE(kCryptographyComplianceCnsa, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kImprovedStartupBestEffortDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kSessionRestoreDelaysBestEffort{
-    &kImprovedStartupBestEffortDelay, "session_restore_delays_best_effort",
-    true};
+// Sets the timeout until startup is declared "finished" even if not all
+// StartupInProgressRefs have been dropped.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kStartupDelayFailsafeTimeout,
+                   &kImprovedStartupBestEffortDelay,
+                   base::Minutes(3));
+
+// Sets the timeout until the startup observer stops waiting for a visible tab.
+// This can happen if a dialog is shown on start (eg. the profile picker), or in
+// Mac's zero-window mode. If a tab appears before this timeout, the observer
+// waits for it to fully load. If this is 0, the startup observer won't wait for
+// tabs to become loaded/idle.
+//
+// The default matches kWaitingForNavigationTimeout because before the
+// kImprovedStartupBestEffortDelay feature, many startups were marked "finished"
+// at that point.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kStartupDelayVisibleTabTimeout,
+                   &kImprovedStartupBestEffortDelay,
+                   base::Seconds(5));
+
+// If true, session restore will create a StartupInProgressRef, and drop it when
+// restore is finished.
+BASE_FEATURE_PARAM(bool,
+                   kStartupDelayIncludesSessionRestore,
+                   &kImprovedStartupBestEffortDelay,
+                   true);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Whether to allow installed-by-default web apps to be installed or not.

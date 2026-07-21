@@ -104,7 +104,13 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kImprovedStartupBestEffortDelay);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool> kSessionRestoreDelaysBestEffort;
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kStartupDelayFailsafeTimeout);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kStartupDelayVisibleTabTimeout);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(bool, kStartupDelayIncludesSessionRestore);
 
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
