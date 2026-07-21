@@ -49,7 +49,6 @@ import androidx.test.filters.SmallTest;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -1012,7 +1011,6 @@ public class HistoryUiTest {
 
     @Test
     @SmallTest
-    @Ignore // See https://crbug.com/40861892
     public void testCopyLink() {
         final ClipboardManager clipboardManager =
                 (ClipboardManager) mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
