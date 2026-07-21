@@ -28,7 +28,10 @@ RecordAccountUpsertionResultStatus(
 
 }  // namespace
 
-AccountManagerDialogCoordinator::AccountManagerDialogCoordinator() = default;
+AccountManagerDialogCoordinator::AccountManagerDialogCoordinator(
+    base::RepeatingClosure dialog_flow_finished_callback)
+    : dialog_flow_finished_callback_(std::move(dialog_flow_finished_callback)) {
+}
 
 AccountManagerDialogCoordinator::~AccountManagerDialogCoordinator() = default;
 
@@ -118,11 +121,6 @@ void AccountManagerDialogCoordinator::ResetDialogCallbacksForTesting() {
   show_add_account_dialog_callback_for_testing_.Reset();
   show_reauth_account_dialog_callback_for_testing_.Reset();
   is_dialog_shown_callback_for_testing_.Reset();
-}
-
-void AccountManagerDialogCoordinator::SetDialogFlowFinishedCallback(
-    base::RepeatingClosure callback) {
-  dialog_flow_finished_callback_ = std::move(callback);
 }
 
 void AccountManagerDialogCoordinator::OnAccountUpsertionFinished(

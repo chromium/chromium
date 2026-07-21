@@ -337,13 +337,12 @@ void ProcessMirrorHeader(
 
   // 3. Displaying an account addition window.
   if (service_type == GAIA_SERVICE_TYPE_ADDSESSION) {
-    account_manager::AccountAdditionOptions options;
-    options.is_available_in_arc = false;
-    options.show_arc_availability_picker = false;
     ash::AccountManagerDialogCoordinatorFactory::GetForProfile(profile)
         ->ShowAddAccountDialog(
             account_manager::AccountAdditionSource::kOgbAddAccount,
-            std::move(options), base::DoNothing());
+            {.is_available_in_arc = false,
+             .show_arc_availability_picker = false},
+            base::DoNothing());
     return;
   }
 

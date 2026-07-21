@@ -34,7 +34,9 @@ account_manager::Account FakeAccount() {
 
 class AccountManagerDialogCoordinatorTest : public testing::Test {
  public:
-  AccountManagerDialogCoordinatorTest() = default;
+  AccountManagerDialogCoordinatorTest()
+      : coordinator_(base::BindLambdaForTesting(
+            [this]() { ++dialog_flow_finished_calls_; })) {}
   AccountManagerDialogCoordinatorTest(
       const AccountManagerDialogCoordinatorTest&) = delete;
   AccountManagerDialogCoordinatorTest& operator=(
@@ -62,7 +64,10 @@ class AccountManagerDialogCoordinatorTest : public testing::Test {
 
   AccountManagerDialogCoordinator& coordinator() { return coordinator_; }
 
+  int dialog_flow_finished_calls() const { return dialog_flow_finished_calls_; }
+
  private:
+  int dialog_flow_finished_calls_ = 0;
   AccountManagerDialogCoordinator coordinator_;
   test::FakeAccountManagerDialog fake_account_manager_dialog_;
   base::ScopedClosureRunner reset_dialog_callbacks_;
@@ -177,9 +182,6 @@ TEST_F(AccountManagerDialogCoordinatorTest,
 TEST_F(AccountManagerDialogCoordinatorTest,
        AddAccountDialogRecordsSourceAndResultUMA) {
   base::HistogramTester histogram_tester;
-  int dialog_flow_finished_calls = 0;
-  coordinator().SetDialogFlowFinishedCallback(base::BindLambdaForTesting(
-      [&dialog_flow_finished_calls]() { ++dialog_flow_finished_calls; }));
 
   coordinator().ShowAddAccountDialog(
       account_manager::AccountAdditionSource::kArc,
@@ -192,16 +194,13 @@ TEST_F(AccountManagerDialogCoordinatorTest,
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountUpsertionResultStatusHistogramName,
       account_manager::AccountUpsertionResult::Status::kCancelledByUser, 1);
-  EXPECT_EQ(1, dialog_flow_finished_calls);
+  EXPECT_EQ(1, dialog_flow_finished_calls());
 }
 
 TEST_F(AccountManagerDialogCoordinatorTest,
        ReauthAccountDialogRecordsSourceAndResultUMA) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<const account_manager::AccountUpsertionResult&> future;
-  int dialog_flow_finished_calls = 0;
-  coordinator().SetDialogFlowFinishedCallback(base::BindLambdaForTesting(
-      [&dialog_flow_finished_calls]() { ++dialog_flow_finished_calls; }));
 
   coordinator().ShowReauthAccountDialog(
       account_manager::AccountAdditionSource::kChromeOSProjectorAppReauth,
@@ -219,7 +218,7 @@ TEST_F(AccountManagerDialogCoordinatorTest,
   histogram_tester.ExpectUniqueSample(
       account_manager::kAccountUpsertionResultStatusHistogramName,
       account_manager::AccountUpsertionResult::Status::kSuccess, 1);
-  EXPECT_EQ(1, dialog_flow_finished_calls);
+  EXPECT_EQ(1, dialog_flow_finished_calls());
 }
 
 TEST_F(AccountManagerDialogCoordinatorTest,

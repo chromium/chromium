@@ -25,8 +25,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator.h"
-#include "chrome/browser/ui/ash/account_manager/account_manager_dialog_coordinator_factory.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #endif
@@ -93,9 +91,6 @@ AccountReconcilorFactory::AccountReconcilorFactory()
               .Build()) {
   DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-#if BUILDFLAG(IS_CHROMEOS)
-  DependsOn(ash::AccountManagerDialogCoordinatorFactory::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 AccountReconcilorFactory::~AccountReconcilorFactory() = default;
@@ -125,16 +120,6 @@ AccountReconcilorFactory::BuildServiceInstanceForBrowserContext(
           identity_manager, signin_client,
           CreateAccountReconcilorDelegate(profile));
   reconcilor->Initialize(true /* start_reconcile_if_tokens_available */);
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, the account addition/reauth flows are managed by an OS-level
-  // system dialog (Ash-native). When the dialog closes, there are no natural
-  // app-foreground or lifecycle events to trigger a reconciliation. We must
-  // explicitly listen for the dialog flow completion to force an immediate
-  // reconciliation and ensure the browser cookies are instantly in sync.
-  ash::AccountManagerDialogCoordinatorFactory::GetForProfile(profile)
-      ->SetDialogFlowFinishedCallback(
-          reconcilor->CreateForceReconcileCallback());
-#endif  // BUILDFLAG(IS_CHROMEOS)
   return reconcilor;
 }
 

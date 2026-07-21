@@ -21,7 +21,9 @@ static_library("account_manager") {
   ]
 
   deps = [
+    "//chrome/browser/signin",
     "//chrome/browser/ui/webui/signin/ash:inline_login_dialog",
+    "//components/signin/core/browser",
     "//content/public/browser",
   ]
 }

@@ -36,7 +36,8 @@ class AccountManagerDialogCoordinator : public KeyedService {
                                    base::OnceClosure close_dialog_closure)>;
   using IsDialogShownCallbackForTesting = base::RepeatingCallback<bool()>;
 
-  AccountManagerDialogCoordinator();
+  explicit AccountManagerDialogCoordinator(
+      base::RepeatingClosure dialog_flow_finished_callback);
   AccountManagerDialogCoordinator(const AccountManagerDialogCoordinator&) =
       delete;
   AccountManagerDialogCoordinator& operator=(
@@ -74,10 +75,6 @@ class AccountManagerDialogCoordinator : public KeyedService {
       ShowReauthAccountDialogCallbackForTesting
           show_reauth_account_dialog_callback,
       IsDialogShownCallbackForTesting is_dialog_shown_callback);
-
-  // Sets a callback run each time a dialog flow finishes. AccountReconcilor
-  // uses it to re-sync cookies once the dialog closes.
-  void SetDialogFlowFinishedCallback(base::RepeatingClosure callback);
 
  private:
   void OnAccountUpsertionFinished(
