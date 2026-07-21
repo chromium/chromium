@@ -1864,5 +1864,18 @@ TEST_F(AddressFormDataImporterTest,
   }
 }
 
+// Tests that a profile without an observed country is not extracted if no
+// country fallback is available.
+TEST_F(AddressFormDataImporterTest,
+       ImportMetadataProfileCountrySource_NoCountry) {
+  address_data_manager().SetDefaultCountryCode(AddressCountryCode(""));
+
+  const std::vector<AddressFormDataImporter::ExtractedAddressProfile> profiles =
+      test_api(GetAddressFormDataImporter())
+          .ExtractAddressProfiles(*ConstructFormStructureFromTypeValuePairs(
+              GetDefaultProfileTypeValuePairsWithOverriddenCountry("")));
+  EXPECT_TRUE(profiles.empty());
+}
+
 }  // namespace
 }  // namespace autofill

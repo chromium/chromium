@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,6 +36,7 @@ using AddressImportRequirement =
 // Stores the collection of AddressImportRequirement that are violated. These
 // violation prevents the import of a profile.
 constexpr AddressImportRequirement kMinimumAddressRequirementViolations[] = {
+    AddressImportRequirement::kCountryValidRequirementViolated,
     AddressImportRequirement::kLine1RequirementViolated,
     AddressImportRequirement::kCityRequirementViolated,
     AddressImportRequirement::kStateRequirementViolated,
@@ -47,7 +49,11 @@ constexpr AddressImportRequirement kMinimumAddressRequirementViolations[] = {
 std::vector<autofill_metrics::AddressProfileImportRequirementMetric>
 ValidateProfileImportRequirements(const AutofillProfile& profile,
                                   LogBuffer* import_log_buffer) {
-  CHECK(profile.HasInfo(ADDRESS_HOME_COUNTRY));
+  if (!profile.HasInfo(ADDRESS_HOME_COUNTRY)) {
+    // TODO(crbug.com/414842437) Remove crash dump.
+    base::debug::DumpWithoutCrashing();
+    return {AddressImportRequirement::kCountryValidRequirementViolated};
+  }
 
   std::vector<AddressImportRequirement> address_import_requirements;
   // Validates the `profile` by testing that it has information for at least one
