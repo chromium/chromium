@@ -27,7 +27,6 @@ class Browser;
 class BrowserWindowInterface;
 class GURL;
 enum class WindowOpenDisposition;
-struct NavigateParams;
 
 namespace apps {
 struct AppLaunchParams;
@@ -119,8 +118,6 @@ Browser::CreateParams CreateParamsForApp(const webapps::AppId& app_id,
 Browser* CreateWebAppWindowMaybeWithHomeTab(
     const webapps::AppId& app_id,
     const Browser::CreateParams& params);
-
-content::WebContents* NavigateWebAppUsingParams(NavigateParams& nav_params);
 
 // Report UMA metrics and updates  app's last launch time, site engagement
 // stats, etc.
