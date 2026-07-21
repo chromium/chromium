@@ -12,7 +12,6 @@
 #include "base/trace_event/trace_event.h"
 #include "components/crash/core/common/crash_key.h"
 #include "ui/accessibility/ax_event.h"
-#include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/automation/automation_api_util.h"
@@ -44,9 +43,7 @@ std::map<std::string, std::vector<AppNodeInfo>>& GetAppIDToTreeNodeMap() {
 
 AutomationAXTreeWrapper::AutomationAXTreeWrapper(
     AutomationTreeManagerOwner* owner)
-    : AXTreeManager(std::make_unique<AXTree>()), owner_(owner) {
-  ax_tree_->language_detection_manager->RegisterLanguageDetectionObserver();
-}
+    : AXTreeManager(std::make_unique<AXTree>()), owner_(owner) {}
 
 AutomationAXTreeWrapper::~AutomationAXTreeWrapper() {
   // Code paths, when not exiting gracefully, may leave a reference to an

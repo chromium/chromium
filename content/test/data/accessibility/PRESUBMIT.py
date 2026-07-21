@@ -438,6 +438,8 @@ def CheckAccessibilityHtmlFileTest(input_api, output_api):
     problems = []
 
     for f in input_api.AffectedFiles(file_filter=FileFilter):
+        if f.Action() == 'D':
+            continue
         if f.LocalPath().endswith(".html"):
             html_files[input_api.os_path.basename(f.LocalPath())] = f.LocalPath()
         if f.LocalPath().endswith(".txt"):

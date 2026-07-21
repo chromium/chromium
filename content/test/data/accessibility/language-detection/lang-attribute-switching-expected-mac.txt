@@ -1,8 +1,0 @@
-AXWebArea AXLanguage='en'
-++AXGroup AXLanguage='en'
-++++AXStaticText AXLanguage='en' AXValue='In the morning, I sometimes eat breakfast.'
-++AXGroup AXLanguage='fr'
-++++AXStaticText AXLanguage='fr' AXValue='Dans l'apres-midi, je dejeune.'
-++AXGroup AXLanguage='en'
-++++AXStaticText AXLanguage='en' AXValue='Hello it's a pleasure to meet you. '
-++++AXStaticText AXLanguage='fr' AXValue='Comment ca va?'

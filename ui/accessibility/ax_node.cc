@@ -17,7 +17,6 @@
 #include "ui/accessibility/ax_computed_node_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_hypertext.h"
-#include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_table_info.h"
@@ -1084,18 +1083,6 @@ const std::vector<int32_t>& AXNode::GetIntListAttribute(
   return data().GetIntListAttribute(ax::mojom::IntListAttribute::kNone);
 }
 
-AXLanguageInfo* AXNode::GetLanguageInfo() const {
-  return language_info_.get();
-}
-
-void AXNode::SetLanguageInfo(std::unique_ptr<AXLanguageInfo> lang_info) {
-  language_info_ = std::move(lang_info);
-}
-
-void AXNode::ClearLanguageInfo() {
-  language_info_.reset();
-}
-
 const AXComputedNodeData& AXNode::GetComputedNodeData() const {
   if (!computed_node_data_)
     computed_node_data_ = std::make_unique<AXComputedNodeData>(*this);
@@ -1281,14 +1268,9 @@ gfx::RectF AXNode::GetTextContentRangeBoundsUTF16(int start_offset,
 
 std::string AXNode::GetLanguage() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
-  // Walk up tree considering both detected and author declared languages.
+  // Walk up tree considering author declared languages.
   for (const AXNode* cur = this; cur; cur = cur->GetParent()) {
-    // If language detection has assigned a language then we prefer that.
-    const AXLanguageInfo* lang_info = cur->GetLanguageInfo();
-    if (lang_info && !lang_info->language.empty())
-      return lang_info->language;
-
-    // If the page author has declared a language attribute we fallback to that.
+    // If the page author has declared a language attribute we use that.
     if (cur->HasStringAttribute(ax::mojom::StringAttribute::kLanguage))
       return cur->GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
   }

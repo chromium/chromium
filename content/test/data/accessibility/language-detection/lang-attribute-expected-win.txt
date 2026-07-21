@@ -1,5 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE language:es-ES
-++IA2_ROLE_SECTION language:es-ES language:fr language:en
-++++ROLE_SYSTEM_STATICTEXT name='Este documento es excelente. ' language:es-ES
-++++ROLE_SYSTEM_STATICTEXT name='Ce document est excellent. ' language:fr
-++++ROLE_SYSTEM_STATICTEXT name='This document is excellent.' language:en

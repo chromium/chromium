@@ -29,7 +29,6 @@
 namespace ui {
 
 struct AXEvent;
-class AXLanguageDetectionManager;
 class AXNode;
 struct AXNodeData;
 class AXTableInfo;
@@ -271,11 +270,6 @@ class AX_EXPORT AXTree {
 
   // Returns true if the tree represents a paginated document
   bool HasPaginationSupport() const;
-
-  // Language detection manager, entry point to language detection features.
-  // TODO(chrishall): Should this be stored by pointer or value?
-  //                  When should we initialize this?
-  std::unique_ptr<AXLanguageDetectionManager> language_detection_manager;
 
   // Event metadata while applying a tree update during unserialization.
   AXEvent* event_data() const { return event_data_.get(); }

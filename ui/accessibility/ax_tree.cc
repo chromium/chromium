@@ -36,7 +36,6 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
-#include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -889,30 +888,14 @@ std::unique_ptr<AXNode> ExtraAnnouncementNodes::CreateNode(
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
-AXTree::AXTree() {
-  // TODO(chrishall): should language_detection_manager be a member or pointer?
-  // TODO(chrishall): do we want to initialize all the time, on demand, or only
-  //                  when feature flag is set?
-  DCHECK(!language_detection_manager);
-  language_detection_manager =
-      std::make_unique<AXLanguageDetectionManager>(this);
-}
+AXTree::AXTree() = default;
 
 AXTree::AXTree(const AXTreeUpdate& initial_state) {
   CHECK(Unserialize(initial_state)) << error();
-  DCHECK(!language_detection_manager);
-  language_detection_manager =
-      std::make_unique<AXLanguageDetectionManager>(this);
 }
 
 AXTree::~AXTree() {
   Destroy();
-
-  // Language detection manager will detach from AXTree observer list in its
-  // destructor. But because of variable order, when destroying AXTree, the
-  // observer list will already be destroyed. To avoid that problem, free
-  // language detection manager before.
-  language_detection_manager.reset();
 
   CHECK(observers_.empty());
 }

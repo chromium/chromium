@@ -19,7 +19,6 @@
 #include "gin/handle.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_event_generator.h"
-#include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_text_utils.h"

@@ -1,8 +1,0 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE language:en language:fr language:en
-++IA2_ROLE_PARAGRAPH language:en
-++++ROLE_SYSTEM_STATICTEXT name='In the morning, I sometimes eat breakfast.' language:en
-++IA2_ROLE_PARAGRAPH language:fr
-++++ROLE_SYSTEM_STATICTEXT name='Dans l'apres-midi, je dejeune.' language:fr
-++IA2_ROLE_PARAGRAPH language:en language:fr
-++++ROLE_SYSTEM_STATICTEXT name='Hello it's a pleasure to meet you. ' language:en
-++++ROLE_SYSTEM_STATICTEXT name='Comment ca va?' language:fr
