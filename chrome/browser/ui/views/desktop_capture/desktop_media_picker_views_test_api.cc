@@ -12,11 +12,9 @@
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_tab_list.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/controls/table/table_view_observer.h"
-#include "ui/views/test/button_test_api.h"
 
 namespace {
 
@@ -148,12 +146,11 @@ std::u16string_view DesktopMediaPickerViewsTestApi::GetAudioLabelText() const {
 }
 
 void DesktopMediaPickerViewsTestApi::SetAudioSharingApprovedByUser(bool allow) {
-  views::ToggleButton* toggle =
-      GetActivePane() ? GetActivePane()->GetAudioToggleButtonForTesting()
-                      : nullptr;
-  if (toggle && toggle->GetIsOn() != allow) {
-    views::test::ButtonTestApi(toggle).NotifyDefaultMouseClick();
-  }
+  GetActivePane()->SetAudioSharingApprovedByUser(allow);
+}
+
+void DesktopMediaPickerViewsTestApi::TriggerAudioShareToggled() {
+  picker_->dialog_->OnAudioShareToggled();
 }
 
 bool DesktopMediaPickerViewsTestApi::IsAudioSharingApprovedByUser() const {
@@ -186,22 +183,6 @@ bool DesktopMediaPickerViewsTestApi::IsOkButtonEnabled() const {
 
 bool DesktopMediaPickerViewsTestApi::IsAudioRecommendationVisible() const {
   return GetActivePane() && GetActivePane()->IsAudioRecommendationVisible();
-}
-
-std::u16string DesktopMediaPickerViewsTestApi::GetDelegatedButtonText() const {
-#if BUILDFLAG(IS_MAC)
-  views::View* list_view = picker_->dialog_->GetSelectedController()->view_;
-  if (!list_view) {
-    return std::u16string();
-  }
-  for (views::View* child : list_view->children()) {
-    if (child->GetClassName() == "MdTextButton") {
-      return std::u16string(
-          static_cast<views::MdTextButton*>(child)->GetText());
-    }
-  }
-#endif
-  return std::u16string();
 }
 
 const DesktopMediaPaneView* DesktopMediaPickerViewsTestApi::GetActivePane()

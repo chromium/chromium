@@ -16605,17 +16605,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_WINDOW_BUTTON" desc="Select window button text." >
         Choose a window
       </message>
-      <message name="IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_WINDOW_BUTTON_WITH_AUDIO" desc="Select window with audio button text." >
-        Choose a window with audio
-      </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_SCREEN_TEXT" desc="Select screen label text." >
         To share your screen, use your system's screen picker
       </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_SCREEN_BUTTON" desc="Select screen button text." >
         Choose a screen
-      </message>
-      <message name="IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_SCREEN_BUTTON_WITH_AUDIO" desc="Select screen with audio button text." >
-        Choose a screen with audio
       </message>
 
       <message name="IDS_SHARE_THIS_TAB_DIALOG_TITLE" desc="Title for the tab-sharing dialog shown when a getDisplayMedia capture is constrained to share only the current tab.">

@@ -95,10 +95,6 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   void OnReselectRequested();
 
-  // Called when the user toggles the audio sharing checkbox.
-  // Propagates this update to the underlying view.
-  void OnAudioShareToggled(bool audio_shared);
-
   // Returns whether or not the reselect button (if supported), should be
   // enabled.
   bool can_reselect() const { return can_reselect_; }

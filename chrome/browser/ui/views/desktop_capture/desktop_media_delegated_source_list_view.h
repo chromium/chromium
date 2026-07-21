@@ -48,16 +48,10 @@ class DesktopMediaDelegatedSourceListView
   void OnSourcePreviewChanged(size_t index) override;
   void OnDelegatedSourceListSelection() override;
 
-  // Updates the action button label based on whether audio sharing is currently
-  // enabled.
-  void SetAudioShared(bool audio_shared);
-
  private:
   base::WeakPtr<DesktopMediaListController> controller_;
 
   std::optional<content::DesktopMediaID> selected_id_;
-
-  DesktopMediaList::Type type_;
 
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::MdTextButton> button_ = nullptr;

@@ -33,18 +33,14 @@ std::u16string GetMessageText(DesktopMediaList::Type type) {
   NOTREACHED();
 }
 
-std::u16string GetButtonText(DesktopMediaList::Type type, bool audio_shared) {
+std::u16string GetButtonText(DesktopMediaList::Type type) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
       return l10n_util::GetStringUTF16(
-          audio_shared
-              ? IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_SCREEN_BUTTON_WITH_AUDIO
-              : IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_SCREEN_BUTTON);
+          IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_SCREEN_BUTTON);
     case DesktopMediaList::Type::kWindow:
       return l10n_util::GetStringUTF16(
-          audio_shared
-              ? IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_WINDOW_BUTTON_WITH_AUDIO
-              : IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_WINDOW_BUTTON);
+          IDS_DESKTOP_MEDIA_PICKER_DELEGATED_SOURCE_LIST_WINDOW_BUTTON);
     case DesktopMediaList::Type::kWebContents:
     case DesktopMediaList::Type::kCurrentTab:
     case DesktopMediaList::Type::kNone:
@@ -59,7 +55,7 @@ DesktopMediaDelegatedSourceListView::DesktopMediaDelegatedSourceListView(
     base::WeakPtr<DesktopMediaListController> controller,
     const std::u16string& accessible_name,
     DesktopMediaList::Type type)
-    : controller_(controller), type_(type) {
+    : controller_(controller) {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(0),
@@ -75,7 +71,7 @@ DesktopMediaDelegatedSourceListView::DesktopMediaDelegatedSourceListView(
   button_ = AddChildView(std::make_unique<views::MdTextButton>(
       base::BindRepeating(&DesktopMediaListController::ShowDelegatedList,
                           controller->GetWeakPtr())));
-  button_->SetText(GetButtonText(type, /*audio_shared=*/false));
+  button_->SetText(GetButtonText(type));
   button_->SetStyle(ui::ButtonStyle::kProminent);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
@@ -84,12 +80,6 @@ DesktopMediaDelegatedSourceListView::DesktopMediaDelegatedSourceListView(
 
 DesktopMediaDelegatedSourceListView::~DesktopMediaDelegatedSourceListView() =
     default;
-
-void DesktopMediaDelegatedSourceListView::SetAudioShared(bool audio_shared) {
-  if (button_) {
-    button_->SetText(GetButtonText(type_, audio_shared));
-  }
-}
 
 void DesktopMediaDelegatedSourceListView::OnSelectionChanged() {
   if (controller_) {
