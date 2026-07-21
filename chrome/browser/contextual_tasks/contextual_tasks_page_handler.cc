@@ -56,6 +56,7 @@
 #include "components/tabs/public/tab_handle_factory.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -986,5 +987,20 @@ void ContextualTasksPageHandler::ShowPageInfoBubble() {
   if (!base::FeatureList::IsEnabled(
           contextual_tasks::kContextualTasksSidePanelRearchitecture)) {
     return;
+  }
+}
+
+void ContextualTasksPageHandler::CreateNewThread() {
+  std::optional<base::Uuid> task_id = web_ui_controller_->GetTaskId();
+  GURL url;
+  if (task_id.has_value()) {
+    url = ui_service_->GetDefaultAiPageUrlForTask(task_id.value());
+  } else {
+    url = ui_service_->GetDefaultAiPageUrl();
+  }
+  if (auto* inner_contents = web_ui_controller_->GetInnerWebContents()) {
+    content::NavigationController::LoadURLParams params(url);
+    params.transition_type = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+    inner_contents->GetController().LoadURLWithParams(params);
   }
 }

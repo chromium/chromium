@@ -22,6 +22,7 @@ build_webui("build") {
   static_files = [
     "contextual_tasks.html",
     "internals/contextual_tasks_internals.html",
+    "toolbar.html",
   ]
 
   if (is_chrome_branded) {
@@ -32,6 +33,8 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "toolbar_app.ts",
+    "toolbar_app.html.ts",
     "contextual_tasks_browser_proxy.ts",
     "error_dialog.html.ts",
     "error_dialog.ts",
@@ -90,6 +93,7 @@ build_webui("build") {
     "reopen_tabs.css",
     "sources_menu.css",
     "top_toolbar.css",
+    "toolbar_app.css",
   ]
   if (!is_android) {
     css_files += [

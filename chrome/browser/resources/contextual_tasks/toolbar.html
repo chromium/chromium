@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>$i18n{title}</title>
+    <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
+<if expr="not is_android">
+    <link rel="stylesheet" href="//theme/colors.css?sets=chrome">
+</if>
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        padding: 0;
+        width: 100%;
+      }
+
+      body {
+        align-items: stretch;
+        display: flex;
+        flex-direction: column;
+      }
+
+      contextual-tasks-toolbar-app {
+        flex-grow: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <contextual-tasks-toolbar-app></contextual-tasks-toolbar-app>
+    <script type="module" src="toolbar_app.js"></script>
+  </body>
+</html>

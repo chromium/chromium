@@ -242,6 +242,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'closeWindow',
       'maybeTriggerPinningPromo',
       'showPageInfoBubble',
+      'createNewThread',
     ]);
 
     this.url_ = url;
@@ -471,6 +472,10 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   showPageInfoBubble() {
     this.methodCalled('showPageInfoBubble');
+  }
+
+  createNewThread() {
+    this.methodCalled('createNewThread');
   }
 }
 

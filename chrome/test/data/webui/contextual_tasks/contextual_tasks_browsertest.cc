@@ -134,6 +134,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, OverflowMenu) {
   RunTest("contextual_tasks/overflow_menu_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Toolbar) {
+  RunTest("contextual_tasks/toolbar_test.js", "mocha.run();");
+}
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, OnboardingTooltip) {
   RunTest("contextual_tasks/onboarding_tooltip_test.js", "mocha.run();");
 }

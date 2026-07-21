@@ -215,6 +215,9 @@ interface PageHandler {
 
   // Triggers the display of the native PageInfo bubble.
   ShowPageInfoBubble();
+
+  // Requests the browser to load a new thread URL in the guest WebContents.
+  CreateNewThread();
 };
 
 // WebUI-side handler for requests from the browser.
