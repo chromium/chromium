@@ -23,8 +23,10 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/test_ai_mode_button_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -89,9 +91,7 @@ TEST_F(AiModeButtonServiceTest, NoConfigWithNonGoogleDse) {
 }
 
 TEST_F(AiModeButtonServiceTest, CallbackCalledWhenDseChange) {
-  base::MockRepeatingCallback<void(
-      const ai_mode_button_config::AiModeButtonConfig*)>
-      callback;
+  base::MockRepeatingCallback<void(const AiModeButtonUiConfig*)> callback;
 
   // Expect immediate notification on registration.
   EXPECT_CALL(callback, Run(testing::_)).WillOnce([this](const auto* config) {
@@ -139,7 +139,7 @@ TEST_F(AiModeButtonServiceTest, IsValidConfig) {
   };
 
   // Test empty config.
-  ai_mode_button_config::AiModeButtonConfig empty_config = {
+  AiModeButtonUiConfig empty_config = {
       .id = SearchEngineType::SEARCH_ENGINE_UNKNOWN,
       .text = nullptr,
       .tooltip = nullptr,
@@ -153,7 +153,7 @@ TEST_F(AiModeButtonServiceTest, IsValidConfig) {
   EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(empty_config));
 
   // Test valid config.
-  ai_mode_button_config::AiModeButtonConfig valid_config{
+  AiModeButtonUiConfig valid_config{
       SearchEngineType::SEARCH_ENGINE_BING,
       u"Bing text",
       u"Bing tooltip",

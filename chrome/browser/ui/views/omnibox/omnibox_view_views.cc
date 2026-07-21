@@ -2382,8 +2382,7 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
           : kColorOmniboxText);
 }
 
-const ai_mode_button_config::AiModeButtonConfig*
-OmniboxViewViews::GetAiModeConfig() const {
+const AiModeButtonUiConfig* OmniboxViewViews::GetAiModeUiConfig() const {
   if (!location_bar_view_) {
     return nullptr;
   }
@@ -2391,7 +2390,6 @@ OmniboxViewViews::GetAiModeConfig() const {
       location_bar_view_->GetProfile());
   return service ? service->GetCurrentConfig() : nullptr;
 }
-
 
 BEGIN_METADATA(OmniboxViewViews)
 ADD_READONLY_PROPERTY_METADATA(bool, SelectionAtEnd)

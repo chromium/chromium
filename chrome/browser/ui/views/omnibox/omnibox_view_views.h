@@ -46,9 +46,7 @@
 class LocationBarView;
 class IconLabelBubbleView;
 
-namespace ai_mode_button_config {
-struct AiModeButtonConfig;
-}
+#include "components/search_engines/ai_mode_button_service.h"
 
 namespace content {
 class WebContents;
@@ -406,7 +404,7 @@ class OmniboxViewViews
   void UpdatePlaceholderTextColor();
 
   // Helper to get the current `AiModeButtonConfig` if available.
-  const ai_mode_button_config::AiModeButtonConfig* GetAiModeConfig() const;
+  const AiModeButtonUiConfig* GetAiModeUiConfig() const;
 
   // Returns the AI Mode page action icon view, if present, or nullptr if the
   // view doesn't exist.

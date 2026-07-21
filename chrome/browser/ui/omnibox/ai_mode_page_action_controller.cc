@@ -118,7 +118,7 @@ AiModePageActionController::AiModePageActionController(
   CHECK(ai_mode_button_service);
   ai_mode_config_subscription_ =
       ai_mode_button_service->RegisterOnConfigChanged(
-          base::IgnoreArgs<const ai_mode_button_config::AiModeButtonConfig*>(
+          base::IgnoreArgs<const AiModeButtonUiConfig*>(
               base::BindRepeating(&AiModePageActionController::UpdatePageAction,
                                   weak_factory_.GetWeakPtr())));
 }

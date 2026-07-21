@@ -86,8 +86,7 @@ void AiModeButtonService::OnTemplateURLServiceShuttingDown() {
   template_url_service_ = nullptr;
 }
 
-const ai_mode_button_config::AiModeButtonConfig*
-AiModeButtonService::LookupCurrentConfig() const {
+const AiModeButtonUiConfig* AiModeButtonService::LookupCurrentConfig() const {
   if (!template_url_service_) {
     return nullptr;
   }
@@ -102,7 +101,7 @@ AiModeButtonService::LookupCurrentConfig() const {
     return &google_config_;
   }
 
-  const ai_mode_button_config::AiModeButtonConfig* found_config = nullptr;
+  const AiModeButtonUiConfig* found_config = nullptr;
   for (const auto* config : ai_mode_button_config::kAiModeButtonConfigs) {
     if (config->id == type) {
       // `kAiModeButtonConfigs` contains a debug config to allow for manual
@@ -124,8 +123,7 @@ AiModeButtonService::LookupCurrentConfig() const {
 }
 
 // static
-bool AiModeButtonService::IsValidConfig(
-    const ai_mode_button_config::AiModeButtonConfig& config) {
+bool AiModeButtonService::IsValidConfig(const AiModeButtonUiConfig& config) {
   // Don't enforce max length on Google strings because they're translated and
   // there's no guarantee translated strings will be of expected lengths.
   const bool is_google = config.id == SearchEngineType::SEARCH_ENGINE_GOOGLE;

@@ -314,7 +314,7 @@ class OmniboxNextAimEligibilityTest : public testing::Test {
                                       -> std::unique_ptr<KeyedService> {
           auto service = std::make_unique<TestAiModeButtonService>(
               /*template_url_service=*/nullptr);
-          static const ai_mode_button_config::AiModeButtonConfig test_config = {
+          static const AiModeButtonUiConfig test_config = {
               .id = SearchEngineType::SEARCH_ENGINE_GOOGLE};
           service->current_config_ = &test_config;
           return service;

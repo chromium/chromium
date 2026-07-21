@@ -19,9 +19,7 @@
 class LocationBar;
 class OmniboxController;
 
-namespace ai_mode_button_config {
-struct AiModeButtonConfig;
-}  // namespace ai_mode_button_config
+#include "components/search_engines/ai_mode_button_service.h"
 
 namespace content {
 struct ContextMenuParams;
@@ -122,7 +120,7 @@ class OmniboxContextMenuMixinBase {
   void BuildSendTabToSelfSimpleItem(ui::SimpleMenuModel* menu_contents,
                                     size_t index);
 
-  const ai_mode_button_config::AiModeButtonConfig* GetAiModeConfig() const;
+  const AiModeButtonUiConfig* GetAiModeUiConfig() const;
 
   raw_ptr<LocationBar> location_bar_;
   raw_ptr<OmniboxController> controller_;

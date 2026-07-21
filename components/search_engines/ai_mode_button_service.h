@@ -17,6 +17,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
+using AiModeButtonUiConfig = ai_mode_button_config::AiModeButtonConfig;
+
 class AiModeButtonService : public KeyedService,
                             public TemplateURLServiceObserver {
  public:
@@ -28,14 +30,13 @@ class AiModeButtonService : public KeyedService,
   // Registers a callback to be notified when the config changes. The callback
   // is also called immediately with the current config when
   // `RegisterOnConfigChanged()` is called.
-  using Callback = base::RepeatingCallback<void(
-      const ai_mode_button_config::AiModeButtonConfig*)>;
+  using Callback = base::RepeatingCallback<void(const AiModeButtonUiConfig*)>;
   base::CallbackListSubscription RegisterOnConfigChanged(Callback callback);
 
   // Returns `current_config_`. `nullptr` if the DSE doesn't support AIM button.
   // Returns a pointer to prevent callsites accidentally making copies passing
   // optionals around.
-  const ai_mode_button_config::AiModeButtonConfig* GetCurrentConfig() const {
+  const AiModeButtonUiConfig* GetCurrentConfig() const {
     return current_config_;
   }
 
@@ -49,11 +50,10 @@ class AiModeButtonService : public KeyedService,
   void OnTemplateURLServiceShuttingDown() override;
 
   // Lookup the config for the current DSE.
-  const ai_mode_button_config::AiModeButtonConfig* LookupCurrentConfig() const;
+  const AiModeButtonUiConfig* LookupCurrentConfig() const;
 
   // Checks all fields are populated as expected.
-  static bool IsValidConfig(
-      const ai_mode_button_config::AiModeButtonConfig& config);
+  static bool IsValidConfig(const AiModeButtonUiConfig& config);
 
   raw_ptr<TemplateURLService> template_url_service_;
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
@@ -70,16 +70,13 @@ class AiModeButtonService : public KeyedService,
   } google_config_owned_;
 
   // The non-owning view struct that's compatible with `GetCurrentConfig()`.
-  ai_mode_button_config::AiModeButtonConfig google_config_;
+  AiModeButtonUiConfig google_config_;
 
   // Non-owning pointer into the `ai_mode_button_config::kAiModeButtonConfigs`
   // array.
-  raw_ptr<const ai_mode_button_config::AiModeButtonConfig> current_config_ =
-      nullptr;
+  raw_ptr<const AiModeButtonUiConfig> current_config_ = nullptr;
 
-  base::RepeatingCallbackList<void(
-      const ai_mode_button_config::AiModeButtonConfig*)>
-      callbacks_;
+  base::RepeatingCallbackList<void(const AiModeButtonUiConfig*)> callbacks_;
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_AI_MODE_BUTTON_SERVICE_H_

@@ -1885,7 +1885,7 @@ TEST_F(OmniboxEditModelPopupTest, RecordAiModeMetrics_ThirdParty) {
 
   // Test google config.
   {
-    constexpr ai_mode_button_config::AiModeButtonConfig kGoogleConfig = {
+    constexpr AiModeButtonUiConfig kGoogleConfig = {
         .id = SearchEngineType::SEARCH_ENGINE_GOOGLE};
     service->current_config_ = &kGoogleConfig;
 
@@ -1924,8 +1924,8 @@ TEST_F(OmniboxEditModelPopupTest, RecordAiModeMetrics_ThirdParty) {
 
   // Test 3P config.
   {
-    static constexpr ai_mode_button_config::AiModeButtonConfig
-        kThirdPartyConfig = {.id = SearchEngineType::SEARCH_ENGINE_YAHOO};
+    static constexpr AiModeButtonUiConfig kThirdPartyConfig = {
+        .id = SearchEngineType::SEARCH_ENGINE_YAHOO};
     service->current_config_ = &kThirdPartyConfig;
 
     base::HistogramTester histogram_tester;
@@ -2252,16 +2252,15 @@ TEST_F(OmniboxEditModelPopupTest, OpenFeaturedSearchMatch) {
 
 TEST_F(OmniboxEditModelTest, NavigateToThirdPartyAiMode) {
   // Setup testing config.
-  ai_mode_button_config::AiModeButtonConfig test_config = {
-      SearchEngineType::SEARCH_ENGINE_YAHOO,
-      u"text",
-      u"tooltip",
-      u"a11y_label",
-      u"context_menu_label",
-      u"placeholder_text",
-      "favicon_url",
-      "https://url.com/search?p={searchTerms}",
-      "https://url-empty.com"};
+  AiModeButtonUiConfig test_config = {SearchEngineType::SEARCH_ENGINE_YAHOO,
+                                      u"text",
+                                      u"tooltip",
+                                      u"a11y_label",
+                                      u"context_menu_label",
+                                      u"placeholder_text",
+                                      "favicon_url",
+                                      "https://url.com/search?p={searchTerms}",
+                                      "https://url-empty.com"};
   client()->GetAiModeButtonService()->current_config_ = &test_config;
 
   // Test with query.
