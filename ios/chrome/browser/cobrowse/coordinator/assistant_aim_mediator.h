@@ -105,6 +105,9 @@ class WebState;
 // if the handshake has not completed yet.
 - (const std::optional<std::vector<lens::FeatureCapability>>&)capabilities;
 
+// Updates the context from the browser agent and reloads if it has changed.
+- (void)updateContext;
+
 // Disconnects the mediator.
 - (void)disconnect;
 

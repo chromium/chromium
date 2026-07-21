@@ -176,6 +176,18 @@
     [self loadAIMURL];
   }
 }
+- (void)updateContext {
+  if (_cobrowseBrowserAgent) {
+    CobrowseContext* newContext = _cobrowseBrowserAgent->GetCobrowseContext();
+    if (newContext && newContext != _context) {
+      BOOL urlChanged = (!_context || newContext.url != _context.url);
+      _context = newContext;
+      if (urlChanged && _context.url.is_valid()) {
+        [self loadAIMURL];
+      }
+    }
+  }
+}
 
 - (void)disconnect {
   _policyDeciderBridge.reset();
@@ -272,6 +284,9 @@
 
 // Loads the URL defined in the cobrowse context.
 - (void)loadAIMURL {
+  if (!_context || !_context.url.is_valid()) {
+    return;
+  }
   AssistantContainerDetent detent;
   if (IsAssistantAimMinimizedStateEnabled()) {
     detent = AssistantContainerDetent::kMinimized;

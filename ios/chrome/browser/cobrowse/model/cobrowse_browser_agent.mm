@@ -99,6 +99,9 @@ void CobrowseBrowserAgent::ConfigureAssistantContextForWebState(
     web::WebState* web_state) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   const int index = web_state_list->GetIndexOfWebState(web_state);
+  if (index == WebStateList::kInvalidIndex) {
+    return;
+  }
   web::WebState* opener = web_state_list->GetOpenerOfWebStateAt(index).opener;
   if (opener) {
     SetCobrowseContext(

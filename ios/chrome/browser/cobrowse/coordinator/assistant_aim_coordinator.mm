@@ -226,6 +226,7 @@ class AssistantAIMUIStateProvider
   if (visible) {
     [self dismissSnackbars];
     if (_viewController) {
+      [_mediator updateContext];
       if (minimized) {
         _currentDetent = AssistantContainerDetent::kMinimized;
       }
