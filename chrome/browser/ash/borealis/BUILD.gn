@@ -21,9 +21,6 @@ static_library("borealis") {
     "borealis_app_uninstaller.h",
     "borealis_context.cc",
     "borealis_context.h",
-    "borealis_context_manager.h",
-    "borealis_context_manager_impl.cc",
-    "borealis_context_manager_impl.h",
     "borealis_credits.cc",
     "borealis_credits.h",
     "borealis_engagement_metrics.cc",
@@ -130,8 +127,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "borealis_context_manager_mock.cc",
-    "borealis_context_manager_mock.h",
     "borealis_service_fake.cc",
     "borealis_service_fake.h",
     "borealis_window_manager_mock.cc",
@@ -151,13 +146,11 @@ source_set("unit_tests") {
   sources = [
     "borealis_app_launcher_unittest.cc",
     "borealis_app_uninstaller_unittest.cc",
-    "borealis_context_manager_unittest.cc",
     "borealis_context_unittest.cc",
     "borealis_features_unittest.cc",
     "borealis_hardware_checker_unittest.cc",
     "borealis_power_controller_unittest.cc",
     "borealis_security_delegate_unittest.cc",
-    "borealis_shutdown_monitor_unittest.cc",
     "borealis_survey_handler_unittest.cc",
     "borealis_task_unittest.cc",
     "borealis_util_unittest.cc",

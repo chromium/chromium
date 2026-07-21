@@ -60,8 +60,6 @@ class BorealisContext {
   void NotifyUnexpectedVmShutdown();
 
  private:
-  friend class BorealisContextManagerImpl;
-
   explicit BorealisContext(Profile* profile);
 
   const raw_ptr<Profile> profile_;

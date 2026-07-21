@@ -10,7 +10,6 @@ BorealisServiceImpl::BorealisServiceImpl(Profile* profile)
     : profile_(profile),
       app_launcher_(profile_),
       app_uninstaller_(profile_),
-      context_manager_(profile),
       features_(profile_),
       installer_(profile_),
       launch_options_(profile_),
@@ -26,10 +25,6 @@ BorealisAppLauncher& BorealisServiceImpl::AppLauncher() {
 
 BorealisAppUninstaller& BorealisServiceImpl::AppUninstaller() {
   return app_uninstaller_;
-}
-
-BorealisContextManager& BorealisServiceImpl::ContextManager() {
-  return context_manager_;
 }
 
 BorealisFeatures& BorealisServiceImpl::Features() {

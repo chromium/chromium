@@ -6,7 +6,6 @@
 
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 
@@ -36,9 +35,9 @@ void BorealisShutdownMonitor::ShutdownWithDelay() {
 }
 
 void BorealisShutdownMonitor::ShutdownNow() {
-  BorealisServiceFactory::GetForProfile(profile_)
-      ->ContextManager()
-      .ShutDownBorealis();
+  // Not calling ShutdownBorealis anymore as the feature is
+  // being removed
+  LOG(WARNING) << "Borealis is no longer available";
 }
 
 void BorealisShutdownMonitor::CancelDelayedShutdown() {

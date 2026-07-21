@@ -33,11 +33,6 @@ BorealisAppUninstaller& BorealisServiceFake::AppUninstaller() {
   return *app_uninstaller_;
 }
 
-BorealisContextManager& BorealisServiceFake::ContextManager() {
-  CHECK(context_manager_);
-  return *context_manager_;
-}
-
 BorealisFeatures& BorealisServiceFake::Features() {
   CHECK(features_);
   return *features_;
@@ -76,11 +71,6 @@ void BorealisServiceFake::SetAppLauncherForTesting(
 void BorealisServiceFake::SetAppUninstallerForTesting(
     BorealisAppUninstaller* app_uninstaller) {
   app_uninstaller_ = app_uninstaller;
-}
-
-void BorealisServiceFake::SetContextManagerForTesting(
-    BorealisContextManager* context_manager) {
-  context_manager_ = context_manager;
 }
 
 void BorealisServiceFake::SetFeaturesForTesting(BorealisFeatures* features) {
