@@ -26,13 +26,13 @@
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/session_manager/core/session_manager.h"
@@ -78,7 +78,8 @@ class OemAppPositionTest : public ash::LoginManagerTest {
         user_manager::FakeUserManager::GetFakeUsernameHash(
             login_mixin_.users()[0].account_id);
     const base::FilePath user_profile_path = user_data_dir.Append(
-        ash::ProfileHelper::GetUserProfileDir(user_id_hash));
+        base::FilePath(ash::BrowserContextHelper::GetUserBrowserContextDirName(
+            user_id_hash)));
     base::CreateDirectory(user_profile_path);
 
     base::FilePath src_dir;
