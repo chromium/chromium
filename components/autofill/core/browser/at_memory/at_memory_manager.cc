@@ -1218,6 +1218,9 @@ void AtMemoryManager::OnSensitivePersonalContextDataFetched(
     std::unique_ptr<AtMemoryMetricsRecorder> metrics,
     AtMemoryQueryService::SpiiRetrievalResult result) {
   if (!result.has_value()) {
+    if (metrics) {
+      metrics->OnFetchPersonalContextPiiDataFailed(result.error());
+    }
     return;
   }
 

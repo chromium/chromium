@@ -806,8 +806,9 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
                                       false, 1);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.AtMemory.Latency.FetchPii.AutofillAi", 0);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AtMemory.FetchPersonalContextPiiData.FailureReason",
+      AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed, 1);
 }
 
 // Tests that when fetching the unmasked entity instance fails, the manager
@@ -868,6 +869,8 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
                                       true, 1);
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
                                       false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.AtMemory.Latency.FetchPii.AutofillAi", 0);
 }
 
 // Tests that when filling a sensitive Credit Card, the manager fetches the

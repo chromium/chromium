@@ -680,6 +680,18 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Internal error"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillAtMemorySpiiRetrievalFailureReason) -->
+
+<enum name="AutofillAtMemorySpiiRetrievalFailureReason">
+  <int value="0" label="No connection"/>
+  <int value="1" label="Reauth failed"/>
+  <int value="2" label="Reauth in progress"/>
+  <int value="3" label="Fetch failed"/>
+  <int value="4" label="Parse failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h:SpiiRetrievalFailureReason) -->
+
 <enum name="AutofillAtMemoryTriggerSource">
   <int value="0" label="Typed trigger"/>
   <int value="1" label="Context menu"/>

@@ -2311,6 +2311,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AtMemory.FetchPersonalContextPiiData.FailureReason"
+    enum="AutofillAtMemorySpiiRetrievalFailureReason"
+    expires_after="2027-03-09">
+  <owner>picarella@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the failure reason for an unsuccessful fetch request for sensitive
+    PII data to Personal Context in AtMemory. Emitted when the authentication
+    and fetching process fails.
+  </summary>
+</histogram>
+
 <!-- LINT.IfChange(Autofill.AtMemory.Latency.FetchPii) -->
 
 <histogram name="Autofill.AtMemory.Latency.FetchPii.{source}" units="ms"

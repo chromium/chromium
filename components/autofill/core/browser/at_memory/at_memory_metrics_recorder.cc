@@ -337,6 +337,12 @@ void AtMemoryMetricsRecorder::OnFetchPiiCompleted() {
   fetch_pii_.duration.emplace(base::TimeTicks::Now() - *fetch_pii_.start_time);
 }
 
+void AtMemoryMetricsRecorder::OnFetchPersonalContextPiiDataFailed(
+    AtMemoryQueryService::SpiiRetrievalFailureReason reason) {
+  base::UmaHistogramEnumeration(
+      "Autofill.AtMemory.FetchPersonalContextPiiData.FailureReason", reason);
+}
+
 void AtMemoryMetricsRecorder::MarkFilled() {
   suggestion_filled_in_session_ = true;
   if (ukm_search_query_builder_) {

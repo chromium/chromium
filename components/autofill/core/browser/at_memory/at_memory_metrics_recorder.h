@@ -17,6 +17,7 @@
 #include "base/token.h"
 #include "base/types/optional_ref.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
@@ -124,6 +125,11 @@ class AtMemoryMetricsRecorder {
 
   // Records the completion of the asynchronous PII fetching process.
   void OnFetchPiiCompleted();
+
+  // Records the failure reason of the asynchronous PII fetching process using
+  // `PersonalContextService`.
+  void OnFetchPersonalContextPiiDataFailed(
+      AtMemoryQueryService::SpiiRetrievalFailureReason reason);
 
  private:
   friend class AtMemoryMetricsRecorderTestApi;

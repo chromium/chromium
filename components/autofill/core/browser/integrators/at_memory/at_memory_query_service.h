@@ -37,19 +37,25 @@ class AutofillDataProvider;
 // profile.
 class AtMemoryQueryService : public KeyedService {
  public:
+  // LINT.IfChange(SpiiRetrievalFailureReason)
   // Reasons for unmasking or authentication failure when retrieving PII.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class SpiiRetrievalFailureReason {
     // There is no network connection.
-    kNoConnection,
+    kNoConnection = 0,
     // Biometric/screen-lock authentication failed or was cancelled.
-    kReauthFailed,
+    kReauthFailed = 1,
     // Another authentication request is already in progress.
-    kReauthInProgress,
+    kReauthInProgress = 2,
     // The request to the `PersonalContextService` failed.
-    kFetchFailed,
+    kFetchFailed = 3,
     // The server response could not be parsed.
-    kParseFailed
+    kParseFailed = 4,
+    kMaxValue = kParseFailed
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAtMemorySpiiRetrievalFailureReason)
 
   using SpiiRetrievalResult =
       base::expected<std::u16string, SpiiRetrievalFailureReason>;
