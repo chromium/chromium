@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/mac/authorization_util.h"
 
 #import <Foundation/Foundation.h>
@@ -18,6 +13,7 @@
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/posix/eintr_wrapper.h"
@@ -147,7 +143,7 @@ OSStatus ExecuteWithPrivilegesAndGetPID(AuthorizationRef authorization,
   size_t line_length = 0;
   char* line_c = fgetln(*pipe_pointer, &line_length);
   if (line_c) {
-    if (line_length > 0 && line_c[line_length - 1] == '\n') {
+    if (line_length > 0 && UNSAFE_TODO(line_c[line_length - 1]) == '\n') {
       // line_c + line_length is the start of the next line if there is one.
       // Back up one character.
       --line_length;
