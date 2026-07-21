@@ -96,6 +96,7 @@ bool NthIndexCache::MatchesFilter(
   sub_context.is_sub_selector = true;
   sub_context.in_nested_complex_selector = true;
   sub_context.pseudo_id = kPseudoIdNone;
+  sub_context.pseudo_element = nullptr;
   for (sub_context.selector = filter->First(); sub_context.selector;
        sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
     // NOTE: We don't want to propagate match_result up to the parent;
