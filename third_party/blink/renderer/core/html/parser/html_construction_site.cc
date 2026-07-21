@@ -1089,15 +1089,17 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     return;
   }
 
-  if (!patch_target.IsNull()) {
-    if (auto* patch =
-            Patch::Prepare(current_insertion_location.parent, patch_target)) {
-      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
-      UseCounter::Count(OwnerDocumentForCurrentNode(),
-                        WebFeature::kHTMLPatching);
-      template_element->SetPatch(patch);
+  if (Patch* patch = Patch::Prepare(current_insertion_location.parent,
+                                    patch_target, template_element)) {
+    CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+    UseCounter::Count(OwnerDocumentForCurrentNode(), WebFeature::kHTMLPatching);
+    template_element->SetPatch(patch);
+    if (!patch_target.empty()) {
       return;
     }
+
+    // empty patch_target attaches the template while streaming content.
+    CHECK(RuntimeEnabledFeatures::DeclarativeFragmentEnabled());
   }
 
   AttachLater(current_insertion_location, template_element);

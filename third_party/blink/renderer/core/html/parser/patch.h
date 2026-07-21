@@ -13,11 +13,14 @@ namespace blink {
 class AtomicString;
 class ContainerNode;
 class Node;
+class HTMLTemplateElement;
 struct HTMLConstructionSiteTask;
 
 class Patch : public GarbageCollected<Patch> {
  public:
-  static Patch* Prepare(ContainerNode* scope, const AtomicString& target);
+  static Patch* Prepare(ContainerNode* scope,
+                        const AtomicString& target,
+                        HTMLTemplateElement*);
   void Apply(HTMLConstructionSiteTask&);
   void Finalize();
   void Trace(Visitor* visitor) const;

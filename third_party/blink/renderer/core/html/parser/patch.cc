@@ -39,9 +39,19 @@ class NodeRemovalScope {
 
 }  // namespace
 
-Patch* Patch::Prepare(ContainerNode* scope, const AtomicString& marker_name) {
+Patch* Patch::Prepare(ContainerNode* scope,
+                      const AtomicString& marker_name,
+                      HTMLTemplateElement* template_element) {
   if (!RuntimeEnabledFeatures::DocumentPatchingEnabled() ||
-      marker_name.IsNull() || marker_name.empty()) {
+      marker_name.IsNull()) {
+    return nullptr;
+  }
+
+  if (marker_name.empty()) {
+    if (RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {
+      return MakeGarbageCollected<Patch>(base::PassKey<Patch>(), scope,
+                                         template_element, template_element);
+    }
     return nullptr;
   }
 

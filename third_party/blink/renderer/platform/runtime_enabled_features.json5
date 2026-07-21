@@ -2243,6 +2243,11 @@
       status: "experimental",
     },
     {
+      name: "DeclarativeFragment",
+      status: "experimental",
+      depends_on: ["DocumentPatching"],
+    },
+    {
       name: "DeclarativePerformanceObserver",
       origin_trial_feature_name: "DeclarativePerformanceObserver",
       status: "experimental",
