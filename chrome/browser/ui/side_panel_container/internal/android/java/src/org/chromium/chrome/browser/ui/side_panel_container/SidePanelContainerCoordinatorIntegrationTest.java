@@ -9,13 +9,16 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.Px;
 import androidx.core.view.ViewCompat;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -32,6 +35,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -331,35 +335,52 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         waitForContainerViewOpen(coordinator);
 
         // Act: Change the theme.
-        boolean isNightMode = ColorUtils.inNightMode(mResponsivePageStation.getActivity());
-        ChromeTabbedActivity activityInNewTheme =
-                ApplicationTestUtils.waitForActivityWithClass(
-                        ChromeTabbedActivity.class,
-                        Stage.RESUMED,
-                        () ->
-                                ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
-                                        !isNightMode));
-        assertNotEquals(isNightMode, ColorUtils.inNightMode(activityInNewTheme));
+        ChromeTabbedActivity activityInNewTheme = changeTheme(mResponsivePageStation.getActivity());
 
         // Assert:
         // (1) Wait for the SidePanelContainerCoordinator in the new Activity to be initialized,
         // then
         // (2) Verify the side panel is still open.
-        var newCoordinatorRef = new AtomicReference<SidePanelContainerCoordinatorImpl>();
+        var newCoordinator = waitForSidePanelContainerCoordinator(activityInNewTheme);
+        waitForContainerViewOpen(newCoordinator);
+    }
+
+    @Test
+    @MediumTest
+    public void changeTheme_retainsBrowserControlContainerWidth() {
+        // Arrange:
+        ChromeTabbedActivity activity = mResponsivePageStation.getActivity();
+        var tab = mResponsivePageStation.getTab();
+        var coordinator = getSidePanelContainerCoordinator();
+        showPanel(tab);
+        int sidePanelWidth = waitForContainerViewOpen(coordinator).getWidth();
         CriteriaHelper.pollUiThread(
                 () -> {
-                    var newCoordinator =
-                            ((TabbedRootUiCoordinator)
-                                            activityInNewTheme.getRootUiCoordinatorForTesting())
-                                    .getSidePanelContainerCoordinatorForTesting();
-
-                    if (newCoordinator != null) {
-                        newCoordinatorRef.set((SidePanelContainerCoordinatorImpl) newCoordinator);
-                    }
-                    return newCoordinator != null;
+                    int controlContainerWidth = getBrowserControlContainer(activity).getWidth();
+                    return controlContainerWidth > 0
+                            && controlContainerWidth + sidePanelWidth <= getWindowWidth(activity);
                 },
-                "SidePanelContainerCoordinator isn't initialized for the new Activity.");
-        waitForContainerViewOpen(newCoordinatorRef.get());
+                "Browser control container isn't resized to accommodate side panel.");
+
+        // Act: Change the theme.
+        ChromeTabbedActivity activityInNewTheme = changeTheme(activity);
+
+        // Assert:
+        // (1) Wait for the SidePanelContainerCoordinator in the new Activity to be initialized,
+        // then
+        // (2) Verify the browser control container's width in the new Activity matches the width
+        // before theme change.
+        var newCoordinator = waitForSidePanelContainerCoordinator(activityInNewTheme);
+        int newSidePanelWidth = waitForContainerViewOpen(newCoordinator).getWidth();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    int newControlContainerWidth =
+                            getBrowserControlContainer(activityInNewTheme).getWidth();
+                    return newControlContainerWidth > 0
+                            && newControlContainerWidth + newSidePanelWidth
+                                    <= getWindowWidth(activityInNewTheme);
+                },
+                "Browser control container isn't resized to accommodate side panel.");
     }
 
     @Test
@@ -392,13 +413,38 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
     private SidePanelContainerCoordinatorImpl getSidePanelContainerCoordinator() {
         var sidePanelContainerCoordinator =
-                ((TabbedRootUiCoordinator)
-                                mFreshCtaTransitTestRule
-                                        .getActivity()
-                                        .getRootUiCoordinatorForTesting())
-                        .getSidePanelContainerCoordinatorForTesting();
+                getSidePanelContainerCoordinator(mFreshCtaTransitTestRule.getActivity());
         assertNotNull(sidePanelContainerCoordinator);
+        return sidePanelContainerCoordinator;
+    }
+
+    private @Nullable SidePanelContainerCoordinatorImpl getSidePanelContainerCoordinator(
+            ChromeTabbedActivity activity) {
+        var rootUiCoordinator = (TabbedRootUiCoordinator) activity.getRootUiCoordinatorForTesting();
+        if (rootUiCoordinator == null) {
+            return null;
+        }
+
+        var sidePanelContainerCoordinator =
+                rootUiCoordinator.getSidePanelContainerCoordinatorForTesting();
         return (SidePanelContainerCoordinatorImpl) sidePanelContainerCoordinator;
+    }
+
+    private SidePanelContainerCoordinatorImpl waitForSidePanelContainerCoordinator(
+            ChromeTabbedActivity activity) {
+        var coordinatorRef = new AtomicReference<SidePanelContainerCoordinatorImpl>();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var coordinator = getSidePanelContainerCoordinator(activity);
+                    if (coordinator != null) {
+                        coordinatorRef.set(coordinator);
+                    }
+                    return coordinator != null;
+                },
+                "SidePanelContainerCoordinator isn't initialized for the Activity.");
+        SidePanelContainerCoordinatorImpl coordinator = coordinatorRef.get();
+        assertNotNull(coordinator);
+        return coordinator;
     }
 
     private static void showPanel(Tab tab) {
@@ -413,6 +459,25 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                 () ->
                         SidePanelContainerCoordinatorIntegrationTestSupport.closeSidePanel(
                                 tab, /* suppressAnimations= */ true));
+    }
+
+    /**
+     * Changes the theme for the {@code currentActivity}.
+     *
+     * @param currentActivity The current {@link ChromeTabbedActivity}.
+     * @return A {@link ChromeTabbedActivity} with the new theme.
+     */
+    private static ChromeTabbedActivity changeTheme(ChromeTabbedActivity currentActivity) {
+        boolean isNightMode = ColorUtils.inNightMode(currentActivity);
+        ChromeTabbedActivity activityInNewTheme =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () ->
+                                ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
+                                        !isNightMode));
+        assertNotEquals(isNightMode, ColorUtils.inNightMode(activityInNewTheme));
+        return activityInNewTheme;
     }
 
     /**
@@ -438,5 +503,20 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         CriteriaHelper.pollUiThread(
                 () -> containerView.getParent() == null,
                 "The container View should have been detached.");
+    }
+
+    private static View getBrowserControlContainer(Activity activity) {
+        View browserControlContainer =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> activity.findViewById(org.chromium.chrome.R.id.control_container));
+        assertNotNull(browserControlContainer);
+        return browserControlContainer;
+    }
+
+    private static @Px int getWindowWidth(Activity activity) {
+        return WindowMetricsCalculator.getOrCreate()
+                .computeCurrentWindowMetrics(activity)
+                .getBounds()
+                .width();
     }
 }
