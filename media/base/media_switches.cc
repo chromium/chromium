@@ -924,6 +924,10 @@ BASE_FEATURE(kWebRTCColorAccuracy,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
+// Enables verbose logging of color space.
+// TODO: Delete this after testing is done.
+BASE_FEATURE(kWebRTCLogColorSpace, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables support for External Clear Key (ECK) key system for testing on
 // supported platforms. On platforms that do not support ECK, this feature has
 // no effect.

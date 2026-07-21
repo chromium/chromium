@@ -208,6 +208,18 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
         WebRtcToMediaVideoRotation(incoming_frame.rotation());
   }
 
+  if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
+    LOG(ERROR) << "MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::"
+                  "OnFrame video_frame color_space = "
+               << video_frame->ColorSpace().ToString();
+    if (incoming_frame.color_space()) {
+      LOG(ERROR) << "WebRTC color_space = "
+                 << incoming_frame.color_space()->AsString();
+    } else {
+      LOG(ERROR) << "WebRTC color_space = UNSET";
+    }
+  }
+
   // The third clause of the condition is controlled by the feature flag
   // WebRtcIgnoreUnspecifiedColorSpace. If the feature is enabled we won't try
   // to guess a color space if the webrtc::ColorSpace is unspecified. If the

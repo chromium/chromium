@@ -353,6 +353,11 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedData");
 
+  if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
+    LOG(ERROR) << "OnIncommingCapturedData: color_space = "
+               << data_color_space.ToString();
+  }
+
   // The input |length| can be greater than the required buffer size because of
   // paddings and/or alignments, but it cannot be smaller.
   CHECK_GE(static_cast<size_t>(length),
@@ -480,6 +485,11 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedImage");
 
+  if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
+    LOG(ERROR) << "OnIncomingCapturedImage: color_space = "
+               << shared_image->color_space().ToString();
+  }
+
   if (last_captured_pixel_format_ != frame_format.pixel_format) {
     OnLog("Pixel format: " +
           VideoPixelFormatToString(frame_format.pixel_format));
@@ -531,6 +541,10 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImage(
     receiver_->OnFrameDropped(
         ConvertReservationFailureToFrameDropReason(reservation_result_code));
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
+    LOG(ERROR) << "Dropping color space because shared image is copied to YUV";
   }
 
   uint8_t* y_plane_data;
@@ -594,6 +608,11 @@ void VideoCaptureDeviceClient::OnIncomingCapturedImageZeroCopy(
   gfx::Rect visible_rect(shared_image->size());
   CapturedExternalVideoBuffer buffer = CapturedExternalVideoBuffer(
       std::move(shared_image), frame_format, color_space);
+
+  if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
+    LOG(ERROR) << "OnIncomingCapturedImageZeroCopy: color_space = "
+               << color_space.ToString();
+  }
 
   VideoFrameMetadata new_metadata = metadata.value_or(VideoFrameMetadata());
   media::VideoRotation video_rotation = media::VIDEO_ROTATION_0;
@@ -711,6 +730,11 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
       metadata, visible_rect, natural_size, /*is_premapped=*/false,
       buffer.color_space);
 
+  if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
+    LOG(ERROR) << "CreateReadyFrameFromExternalBuffer: color_space = "
+               << buffer.color_space.ToString();
+  }
+
   buffer_pool_->HoldForConsumers(buffer_id, 1);
   buffer_pool_->RelinquishProducerReservation(buffer_id);
 
@@ -806,6 +830,11 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedBufferExt");
+
+  if (base::FeatureList::IsEnabled(media::kWebRTCLogColorSpace)) {
+    LOG(ERROR) << "OnIncomingCapturedBufferExt: color_space = "
+               << color_space.ToString();
+  }
 
   auto metadata = additional_metadata.value_or(VideoFrameMetadata{});
   if (auto fake_toggle_period = GetFakeBackgroundBlurTogglePeriodMillis()) {
