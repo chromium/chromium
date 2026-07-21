@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/linked_list.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -844,7 +845,8 @@ void HostResolverManager::Job::StartDnsTask(
   if (secure) {
     secure_dns_attempted_ = true;
   }
-  if (resolver_->IsHappyEyeballsV3Enabled()) {
+  if (base::FeatureList::IsEnabled(features::kEnableIntermediateDnsResults) ||
+      resolver_->IsHappyEyeballsV3Enabled()) {
     dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(
         this, key_.host, key_.query_types, net_log_);
   }
