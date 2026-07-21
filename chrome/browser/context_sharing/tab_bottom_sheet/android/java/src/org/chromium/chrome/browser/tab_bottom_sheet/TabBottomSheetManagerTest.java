@@ -263,7 +263,7 @@ public class TabBottomSheetManagerTest {
                             .hideContent(any(), anyBoolean(), anyInt());
 
                     // Simulate Omnibox losing focus (hasFocus = false).
-                    // This triggers maybeShowBottomSheet().
+                    // This triggers unsuppressBottomSheet().
                     // If the bug is present, it will try to show, fail (since it is showing),
                     // and call notifyOnClose() which calls hideContent().
                     omniboxFocusSupplier.set(false);

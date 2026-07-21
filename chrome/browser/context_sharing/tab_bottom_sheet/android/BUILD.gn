@@ -63,6 +63,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetPeekView.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetPeekViewBinder.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetSuppressionController.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetUtils.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetWebUi.java",

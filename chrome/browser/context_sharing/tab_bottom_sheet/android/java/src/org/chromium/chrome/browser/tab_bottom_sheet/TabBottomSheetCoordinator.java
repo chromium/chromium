@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -92,6 +93,9 @@ public class TabBottomSheetCoordinator {
     private @Nullable ComponentCallbacks mComponentsCallbacks;
     private @Nullable PropertyModelChangeProcessor mViewBinder;
     private @Nullable View mContentView;
+    private @Nullable TabBottomSheetPeekView mPeekView;
+    private @Nullable PeekViewManager mPeekViewManager;
+    private @Nullable PropertyModelChangeProcessor mPeekViewChangeProcessor;
 
     private boolean mIsShowingTabBottomSheet;
     private boolean mExpectingLayoutChange;
@@ -151,9 +155,7 @@ public class TabBottomSheetCoordinator {
         if (mIsShowingTabBottomSheet || mSheetEventsCallback == null) {
             return false;
         }
-        if (mCoBrowseViews.hasPeekView()) {
-            mMediator.onSheetStateChanged(startsExpanded ? SheetState.FULL : SheetState.PEEK);
-        }
+        setupPeekView(startsExpanded);
 
         createSheetContent();
         assert mSheetContent != null : "TabBottomSheetContent must not be null";
@@ -172,24 +174,6 @@ public class TabBottomSheetCoordinator {
             cleanupSheetResources();
             return false;
         }
-    }
-
-    /**
-     * Attaches the peek view to the bottom sheet.
-     *
-     * @param peekView The peek view to attach.
-     */
-    void attachPeekView(View peekView) {
-        mCoBrowseViews.attachPeekView(peekView);
-    }
-
-    /**
-     * Removes the peek view from the bottom sheet.
-     *
-     * @param peekView The peek view to remove.
-     */
-    void removePeekView(View peekView) {
-        mCoBrowseViews.removePeekView(peekView);
     }
 
     /**
@@ -341,6 +325,15 @@ public class TabBottomSheetCoordinator {
             mViewBinder.destroy();
             mViewBinder = null;
         }
+        if (mPeekViewChangeProcessor != null) {
+            mPeekViewChangeProcessor.destroy();
+            mPeekViewChangeProcessor = null;
+        }
+        if (mPeekViewManager != null) {
+            mPeekViewManager.destroy();
+            mPeekViewManager = null;
+        }
+        mPeekView = null;
         mSheetEventsCallback = null;
 
         mIsShowingTabBottomSheet = false;
@@ -349,6 +342,22 @@ public class TabBottomSheetCoordinator {
     private void collapseSheet() {
         if (mBottomSheetController.getCurrentSheetContent() == mSheetContent) {
             mBottomSheetController.collapseSheet(/* animate= */ true);
+        }
+    }
+
+    private void setupPeekView(boolean startsExpanded) {
+        mPeekViewManager = mCoBrowseViews.getPeekViewManager();
+        if (mPeekViewManager != null) {
+            PropertyModel model = mPeekViewManager.getModel();
+            mPeekView =
+                    (TabBottomSheetPeekView)
+                            LayoutInflater.from(mContext)
+                                    .inflate(R.layout.tab_bottom_sheet_peek_layout, null, false);
+            mPeekViewChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            model, mPeekView, TabBottomSheetPeekViewBinder::bind);
+            mCoBrowseViews.attachPeekView(mPeekView);
+            mMediator.onSheetStateChanged(startsExpanded ? SheetState.FULL : SheetState.PEEK);
         }
     }
 

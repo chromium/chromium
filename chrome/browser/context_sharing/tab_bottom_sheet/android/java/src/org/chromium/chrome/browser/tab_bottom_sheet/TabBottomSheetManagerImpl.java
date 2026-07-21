@@ -5,41 +5,23 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
-import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
-import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -100,134 +82,38 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                 }
             };
 
-    private final LayoutStateObserver mLayoutStateObserver =
-            new LayoutStateObserver() {
-                @Override
-                public void onStartedShowing(@LayoutType int layoutType) {
-                    if (layoutType == LayoutType.HUB) {
-                        mIsSuppressedOnTabSwitcher = true;
-                        maybeCloseBottomSheet();
-                    } else if (layoutType == LayoutType.TOOLBAR_SWIPE) {
-                        mIsSuppressedOnToolbarSwipe = true;
-                        maybeCloseBottomSheet();
-                    }
-                }
-
-                @Override
-                public void onStartedHiding(@LayoutType int layoutType) {
-                    if (layoutType == LayoutType.HUB) {
-                        mIsSuppressedOnTabSwitcher = false;
-                        maybeShowIfNextIsBrowsing();
-                    } else if (layoutType == LayoutType.TOOLBAR_SWIPE) {
-                        mIsSuppressedOnToolbarSwipe = false;
-                        maybeShowIfNextIsBrowsing();
-                    }
-                }
-
-                private void maybeShowIfNextIsBrowsing() {
-                    var layoutStateProvider = mLayoutStateProviderOneShotSupplier.get();
-                    assert layoutStateProvider != null;
-                    @LayoutType int nextLayoutType = layoutStateProvider.getNextLayoutType();
-                    if (nextLayoutType == LayoutType.BROWSING) {
-                        maybeShowBottomSheet();
-                    }
-                }
-            };
-
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
-    private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderOneShotSupplier;
     private final TouchEventProvider mTouchEventProvider;
-    private final CallbackController mCallbackController = new CallbackController();
+    private final TabBottomSheetSuppressionController mSuppressionController;
 
-    // Indicates if tabBottomSheet was suppressed by entering the tab switcher.
-    private boolean mIsSuppressedOnTabSwitcher;
-    // Indicates if tabBottomSheet was suppressed by entering the toolbar swipe.
-    private boolean mIsSuppressedOnToolbarSwipe;
-    // Indicates if tabBottomSheet was suppressed by read aloud.
-    private boolean mIsSuppressedByReadAloud;
-    // Indicates if tabBottomSheet was suppressed by the user entering incognito mode.
-    private boolean mIsSuppressedByIncognito;
-    // Indicates if tabBottomSheet was suppressed by autofill keyboard accessory.
-    private boolean mIsSuppressedByAutofill;
-    // Indicates if tabBottomSheet was suppressed by omnibox focus.
-    private boolean mIsSuppressedByOmniboxFocus;
     // Indicates if tabBottomSheet was suppressed by another bottom sheet.
     private boolean mSuppressedByBottomSheetController;
-
-    private boolean isInternallySuppressed() {
-        return mIsSuppressedOnTabSwitcher
-                || mIsSuppressedOnToolbarSwipe
-                || mIsSuppressedByReadAloud
-                || mIsSuppressedByIncognito
-                || mIsSuppressedByAutofill
-                || mIsSuppressedByOmniboxFocus;
-    }
-
-    private final NonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
-    private final Callback<Boolean> mOmniboxFocusObserver =
-            (hasFocus) -> {
-                mIsSuppressedByOmniboxFocus = hasFocus;
-                if (hasFocus) {
-                    maybeCloseBottomSheet();
-                } else {
-                    maybeShowBottomSheet();
-                }
-            };
-
-    private final Callback<TabModel> mTabModelSupplierObserver =
-            tabModel -> {
-                if (tabModel == null) return;
-
-                boolean isIncognito = tabModel.isIncognito();
-
-                if (isIncognito) {
-                    if (!mIsSuppressedByIncognito) {
-                        mIsSuppressedByIncognito = true;
-                        maybeCloseBottomSheet();
-                    }
-                } else if (mIsSuppressedByIncognito) {
-                    mIsSuppressedByIncognito = false;
-                    maybeShowBottomSheet();
-                }
-            };
-
-    private final TabObserver mTabObserver =
-            new EmptyTabObserver() {
-                @Override
-                public void onDidStartNavigationInPrimaryMainFrame(
-                        Tab tab, NavigationHandle navigationHandle) {
-                    if (UrlConstants.DISTILLER_SCHEME.equals(
-                            navigationHandle.getUrl().getScheme())) {
-                        tryToCloseBottomSheet(/* animate= */ false);
-                    }
-                }
-            };
-    private @Nullable CurrentTabObserver mCurrentTabObserver;
-
-    private @Nullable TabBottomSheetPeekView mPeekView;
-    private @Nullable PeekViewManager mPeekViewManager;
-    private @Nullable PropertyModelChangeProcessor mPeekViewChangeProcessor;
-    private @Nullable MonotonicObservableSupplier<ManualFillingComponent>
-            mManualFillingComponentSupplier;
-    private @Nullable ManualFillingComponent mCurrentManualFillingComponent;
-    private @Nullable NullableObservableSupplier<Tab> mActivePlaybackTabSupplier;
-    private @Nullable Runnable mReadAloudStopPlaybackCallback;
-    private final Callback<@Nullable Tab> mActivePlaybackTabObserver =
-            this::onActivePlaybackTabChanged;
 
     private @Nullable TabBottomSheetCoordinator mTabBottomSheetCoordinator;
     private @Nullable NativeInterfaceDelegate mNativeInterfaceDelegate;
     private @Nullable CoBrowseViews mCurrentCoBrowseViews;
 
-    private final Callback<ManualFillingComponent> mFillingComponentObserver =
-            this::connectToFillingComponent;
-
-    private final Callback<Boolean> mIsAccessoryRequestedObserver =
-            this::onAccessoryRequestedChanged;
-
     private final Runnable mOnBackPressed = () -> tryToCloseBottomSheet(/* animate= */ true);
+
+    private final TabBottomSheetSuppressionController.Delegate mSuppressionDelegate =
+            new TabBottomSheetSuppressionController.Delegate() {
+                @Override
+                public void onSuppressionStarted() {
+                    suppressBottomSheet();
+                }
+
+                @Override
+                public void onSuppressionEnded() {
+                    unsuppressBottomSheet();
+                }
+
+                @Override
+                public void onCloseRequested() {
+                    tryToCloseBottomSheet(/* animate= */ false);
+                }
+            };
 
     /**
      * Constructor.
@@ -252,75 +138,17 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
-        mLayoutStateProviderOneShotSupplier = layoutStateProviderOneShotSupplier;
         mTouchEventProvider = touchEventProvider;
-        mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
 
-        mLayoutStateProviderOneShotSupplier.onAvailable(
-                mCallbackController.makeCancelable(
-                        (provider) -> provider.addObserver(mLayoutStateObserver)));
+        mSuppressionController =
+                new TabBottomSheetSuppressionController(
+                        windowAndroid,
+                        layoutStateProviderOneShotSupplier,
+                        omniboxFocusStateSupplier,
+                        mSuppressionDelegate);
 
-        MonotonicObservableSupplier<TabModelSelector> selectorSupplier =
-                TabModelSelectorSupplier.from(mWindowAndroid);
-        if (selectorSupplier != null) {
-            selectorSupplier.addSyncObserverAndCallIfNonNull(
-                    mCallbackController.makeCancelable(
-                            (TabModelSelector selector) -> {
-                                if (selector != null) {
-                                    selector.getCurrentTabModelSupplier()
-                                            .addSyncObserver(mTabModelSupplierObserver);
-                                    mCurrentTabObserver =
-                                            new CurrentTabObserver(
-                                                    selector.getCurrentTabSupplier(), mTabObserver);
-                                }
-                            }));
-        }
-        mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(mWindowAndroid);
-        if (mManualFillingComponentSupplier != null) {
-            mManualFillingComponentSupplier.addSyncObserverAndPostIfNonNull(
-                    mFillingComponentObserver);
-        }
-
-        mOmniboxFocusStateSupplier.addSyncObserverAndPostIfNonNull(mOmniboxFocusObserver);
-
-        TabBottomSheetUtils.attachManagerToWindow(windowAndroid, this);
-        // Defer sending onManagerInitialized to C++ until the activity's window has non-zero
-        // height. During early activity restoration/recreation, layout passes haven't run yet
-        // (decorView.getHeight() == 0). Sending the initialization event after layout pass
-        // guarantees full layout height is available when C++ calculates bottom sheet dimensions.
-        Window window = windowAndroid.getWindow();
-        if (window != null) {
-            View decorView = window.getDecorView();
-            if (decorView.getHeight() > 0) {
-                TabBottomSheetNativeInterfaceJni.get().onManagerInitialized(windowAndroid);
-            } else {
-                decorView.addOnLayoutChangeListener(
-                        new View.OnLayoutChangeListener() {
-                            @Override
-                            public void onLayoutChange(
-                                    View v,
-                                    int left,
-                                    int top,
-                                    int right,
-                                    int bottom,
-                                    int oldLeft,
-                                    int oldTop,
-                                    int oldRight,
-                                    int oldBottom) {
-                                if (decorView.getHeight() > 0) {
-                                    decorView.removeOnLayoutChangeListener(this);
-                                    if (TabBottomSheetUtils.getManagerFromWindow(windowAndroid)
-                                            != null) {
-                                        TabBottomSheetNativeInterfaceJni.get()
-                                                .onManagerInitialized(windowAndroid);
-                                    }
-                                }
-                            }
-                        });
-            }
-        } else {
-            TabBottomSheetNativeInterfaceJni.get().onManagerInitialized(windowAndroid);
-        }
+        TabBottomSheetUtils.attachManagerToWindow(mWindowAndroid, this);
+        notifyNativeManagerInitialized();
     }
 
     /**
@@ -352,20 +180,7 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         }
         // Close any existing bottom sheet before showing a new one.
         tryToCloseBottomSheet(/* animate= */ false);
-        clearPeekView();
 
-        mPeekViewManager = coBrowseViews.getPeekViewManager();
-        if (mPeekViewManager != null) {
-            PropertyModel model = mPeekViewManager.getModel();
-
-            mPeekView =
-                    (TabBottomSheetPeekView)
-                            LayoutInflater.from(mContext)
-                                    .inflate(R.layout.tab_bottom_sheet_peek_layout, null, false);
-            mPeekViewChangeProcessor =
-                    PropertyModelChangeProcessor.create(
-                            model, mPeekView, TabBottomSheetPeekViewBinder::bind);
-        }
         mTabBottomSheetCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,
@@ -375,16 +190,11 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
                         coBrowseViews,
                         mSheetEventsCallback,
                         mOnBackPressed);
-        if (mPeekView != null) {
-            mTabBottomSheetCoordinator.attachPeekView(mPeekView);
-        }
 
         if (isInternallySuppressed()) {
             // We are currently suppressed, save this sheet to be shown when suppression ends.
             mNativeInterfaceDelegate = nativeInterfaceDelegate;
-            if (mIsSuppressedByReadAloud && mReadAloudStopPlaybackCallback != null) {
-                mReadAloudStopPlaybackCallback.run();
-            }
+            mSuppressionController.handleReadAloudStopPlayback();
             return true;
         }
         if (!mSuppressBottomSheetForTesting
@@ -454,35 +264,15 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     public void initReadAloudIntegration(
             NullableObservableSupplier<Tab> activePlaybackTabSupplier,
             Runnable stopPlaybackCallback) {
-        assert mActivePlaybackTabSupplier == null;
-        mActivePlaybackTabSupplier = activePlaybackTabSupplier;
-        mActivePlaybackTabSupplier.addSyncObserverAndCallIfNonNull(mActivePlaybackTabObserver);
-        mReadAloudStopPlaybackCallback = stopPlaybackCallback;
+        mSuppressionController.initReadAloudIntegration(
+                activePlaybackTabSupplier, stopPlaybackCallback);
     }
 
     @Override
     public void destroy() {
-        mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
-        if (mActivePlaybackTabSupplier != null) {
-            mActivePlaybackTabSupplier.removeObserver(mActivePlaybackTabObserver);
-            mActivePlaybackTabSupplier = null;
-        }
-        mReadAloudStopPlaybackCallback = null;
-        if (mCurrentManualFillingComponent != null) {
-            mCurrentManualFillingComponent
-                    .getIsAccessoryRequestedSupplier()
-                    .removeObserver(mIsAccessoryRequestedObserver);
-            mCurrentManualFillingComponent = null;
-        }
-        if (mManualFillingComponentSupplier != null) {
-            mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
-            mManualFillingComponentSupplier = null;
-        }
+        mSuppressionController.destroy();
 
         mState = SheetState.CLOSING;
-        mCallbackController.destroy();
-
-        clearPeekView();
 
         // Destroy the coordinator in case the manager is abruptly destroyed before hiding the
         // bottom sheet.
@@ -493,23 +283,12 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         mCurrentCoBrowseViews = null;
         mState = SheetState.NONE;
 
-        if (mCurrentTabObserver != null) {
-            mCurrentTabObserver.destroy();
-            mCurrentTabObserver = null;
-        }
-
-        TabModelSelector selector = TabModelSelectorSupplier.getValueOrNullFrom(mWindowAndroid);
-        if (selector != null) {
-            selector.getCurrentTabModelSupplier().removeObserver(mTabModelSupplierObserver);
-        }
-
-        var layoutStateProvider = mLayoutStateProviderOneShotSupplier.get();
-        if (layoutStateProvider != null) {
-            layoutStateProvider.removeObserver(mLayoutStateObserver);
-        }
-
         mNativeInterfaceDelegate = null;
         TabBottomSheetUtils.detachManagerFromWindow(mWindowAndroid);
+    }
+
+    private boolean isInternallySuppressed() {
+        return mSuppressionController.isInternallySuppressed();
     }
 
     private void notifyOnClose() {
@@ -529,24 +308,14 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         mState = SheetState.NONE;
     }
 
-    private void onActivePlaybackTabChanged(@Nullable Tab tab) {
-        if (tab != null) {
-            mIsSuppressedByReadAloud = true;
-            maybeCloseBottomSheet();
-        } else {
-            mIsSuppressedByReadAloud = false;
-            maybeShowBottomSheet();
-        }
-    }
-
-    private void maybeCloseBottomSheet() {
+    private void suppressBottomSheet() {
         if (mTabBottomSheetCoordinator != null && mNativeInterfaceDelegate != null) {
             mState = SheetState.SUPPRESSED;
             mTabBottomSheetCoordinator.closeBottomSheet(/* animate= */ false);
         }
     }
 
-    private void maybeShowBottomSheet() {
+    private void unsuppressBottomSheet() {
         if (!isInternallySuppressed()) {
             if (mTabBottomSheetCoordinator != null && mNativeInterfaceDelegate != null) {
                 if (mState == SheetState.SHOWING) return;
@@ -560,29 +329,47 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
         }
     }
 
-    private void connectToFillingComponent(ManualFillingComponent component) {
-        if (mCurrentManualFillingComponent == component) return;
-        if (mCurrentManualFillingComponent != null) {
-            mCurrentManualFillingComponent
-                    .getIsAccessoryRequestedSupplier()
-                    .removeObserver(mIsAccessoryRequestedObserver);
+    private void notifyNativeManagerInitialized() {
+        // Defer sending onManagerInitialized to C++ until the activity's window has non-zero
+        // height. During early activity restoration/recreation, layout passes haven't run yet
+        // (decorView.getHeight() == 0). Sending the initialization event after layout pass
+        // guarantees full layout height is available when C++ calculates bottom sheet dimensions.
+        Window window = mWindowAndroid.getWindow();
+        if (window != null) {
+            View decorView = window.getDecorView();
+            if (decorView.getHeight() > 0) {
+                TabBottomSheetNativeInterfaceJni.get().onManagerInitialized(mWindowAndroid);
+            } else {
+                decorView.addOnLayoutChangeListener(
+                        new View.OnLayoutChangeListener() {
+                            @Override
+                            public void onLayoutChange(
+                                    View v,
+                                    int left,
+                                    int top,
+                                    int right,
+                                    int bottom,
+                                    int oldLeft,
+                                    int oldTop,
+                                    int oldRight,
+                                    int oldBottom) {
+                                if (decorView.getHeight() > 0) {
+                                    decorView.removeOnLayoutChangeListener(this);
+                                    if (TabBottomSheetUtils.getManagerFromWindow(mWindowAndroid)
+                                            != null) {
+                                        TabBottomSheetNativeInterfaceJni.get()
+                                                .onManagerInitialized(mWindowAndroid);
+                                    }
+                                }
+                            }
+                        });
+            }
+        } else {
+            TabBottomSheetNativeInterfaceJni.get().onManagerInitialized(mWindowAndroid);
         }
-
-        mCurrentManualFillingComponent = component;
-        mCurrentManualFillingComponent
-                .getIsAccessoryRequestedSupplier()
-                .addSyncObserverAndCallIfNonNull(mIsAccessoryRequestedObserver);
     }
 
-    private void onAccessoryRequestedChanged(boolean isRequested) {
-        if (isRequested && !mIsSuppressedByAutofill) {
-            mIsSuppressedByAutofill = true;
-            maybeCloseBottomSheet();
-        } else if (!isRequested && mIsSuppressedByAutofill) {
-            mIsSuppressedByAutofill = false;
-            maybeShowBottomSheet();
-        }
-    }
+    // TESTING METHODS
 
     public @Nullable TabBottomSheetCoordinator getTabBottomSheetCoordinatorForTesting() {
         return mTabBottomSheetCoordinator;
@@ -605,70 +392,12 @@ public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
     public void initReadAloudIntegrationForTesting(
             NullableObservableSupplier<Tab> activePlaybackTabSupplier,
             Runnable stopPlaybackCallback) {
-        var oldSupplier = mActivePlaybackTabSupplier;
-        if (oldSupplier != null) {
-            oldSupplier.removeObserver(mActivePlaybackTabObserver);
-        }
-        var oldCallback = mReadAloudStopPlaybackCallback;
-
-        mActivePlaybackTabSupplier = activePlaybackTabSupplier;
-        mActivePlaybackTabSupplier.addSyncObserverAndCallIfNonNull(mActivePlaybackTabObserver);
-        mReadAloudStopPlaybackCallback = stopPlaybackCallback;
-        ResettersForTesting.register(
-                () -> {
-                    if (mActivePlaybackTabSupplier != null) {
-                        mActivePlaybackTabSupplier.removeObserver(mActivePlaybackTabObserver);
-                    }
-                    mActivePlaybackTabSupplier = oldSupplier;
-                    mReadAloudStopPlaybackCallback = oldCallback;
-                    if (mActivePlaybackTabSupplier != null) {
-                        mActivePlaybackTabSupplier.addSyncObserverAndCallIfNonNull(
-                                mActivePlaybackTabObserver);
-                    }
-                });
+        mSuppressionController.initReadAloudIntegrationForTesting(
+                activePlaybackTabSupplier, stopPlaybackCallback);
     }
 
     public void setManualFillingComponentSupplierForTesting(
             @Nullable MonotonicObservableSupplier<ManualFillingComponent> supplier) {
-        var oldSupplier = mManualFillingComponentSupplier;
-        if (oldSupplier != null) {
-            oldSupplier.removeObserver(mFillingComponentObserver);
-        }
-        mManualFillingComponentSupplier = supplier;
-        if (mManualFillingComponentSupplier != null) {
-            mManualFillingComponentSupplier.addSyncObserverAndPostIfNonNull(
-                    mFillingComponentObserver);
-        }
-        ResettersForTesting.register(
-                () -> {
-                    if (mManualFillingComponentSupplier != null) {
-                        mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
-                    }
-                    mManualFillingComponentSupplier = oldSupplier;
-                    if (mManualFillingComponentSupplier != null) {
-                        mManualFillingComponentSupplier.addSyncObserverAndPostIfNonNull(
-                                mFillingComponentObserver);
-                    } else {
-                        if (mCurrentManualFillingComponent != null) {
-                            mCurrentManualFillingComponent
-                                    .getIsAccessoryRequestedSupplier()
-                                    .removeObserver(mIsAccessoryRequestedObserver);
-                            mCurrentManualFillingComponent = null;
-                        }
-                        mIsSuppressedByAutofill = false;
-                    }
-                });
-    }
-
-    private void clearPeekView() {
-        if (mPeekViewChangeProcessor != null) {
-            mPeekViewChangeProcessor.destroy();
-            mPeekViewChangeProcessor = null;
-        }
-        if (mPeekViewManager != null) {
-            mPeekViewManager.destroy();
-            mPeekViewManager = null;
-        }
-        mPeekView = null;
+        mSuppressionController.setManualFillingComponentSupplierForTesting(supplier);
     }
 }
