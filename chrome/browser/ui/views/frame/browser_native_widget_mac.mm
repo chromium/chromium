@@ -525,26 +525,34 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
     NSEvent* current_event = [NSApp currentEvent];
     if (auto* controller =
             tabs::VerticalTabStripStateController::From(browser)) {
-      // NSEventTypeApplicationDefined is specifically for test cases.
-      const bool is_keyboard =
-          current_event &&
-          (current_event.type == NSEventTypeKeyDown ||
-           current_event.type == NSEventTypeApplicationDefined);
-      if (is_keyboard) {
-        if (controller->IsCollapsed()) {
-          base::RecordAction(base::UserMetricsAction(
-              "VerticalTabs_TabStrip_KeyboardShortcutToggleUncollapsed"));
-        } else {
-          base::RecordAction(base::UserMetricsAction(
-              "VerticalTabs_TabStrip_KeyboardShortcutToggleCollapsed"));
-        }
-      } else {
+      const bool is_mouse_click =
+          current_event && (current_event.type == NSEventTypeLeftMouseUp ||
+                            current_event.type == NSEventTypeLeftMouseDown);
+
+      NSMenuItem* view_menu_item =
+          [[NSApp mainMenu] itemWithTag:kMacViewMenuId];
+      NSMenuItem* collapse_item = [[view_menu_item submenu]
+          itemWithTag:IDC_TOGGLE_VERTICAL_TABS_COLLAPSE];
+      const bool is_menu_item_focused =
+          collapse_item && [collapse_item isHighlighted];
+
+      const bool is_view_menu = is_mouse_click || is_menu_item_focused;
+
+      if (is_view_menu) {
         if (controller->IsCollapsed()) {
           base::RecordAction(base::UserMetricsAction(
               "VerticalTabs_TabStrip_ViewMenuToggleUncollapsed"));
         } else {
           base::RecordAction(base::UserMetricsAction(
               "VerticalTabs_TabStrip_ViewMenuToggleCollapsed"));
+        }
+      } else {
+        if (controller->IsCollapsed()) {
+          base::RecordAction(base::UserMetricsAction(
+              "VerticalTabs_TabStrip_KeyboardShortcutToggleUncollapsed"));
+        } else {
+          base::RecordAction(base::UserMetricsAction(
+              "VerticalTabs_TabStrip_KeyboardShortcutToggleCollapsed"));
         }
       }
     }
