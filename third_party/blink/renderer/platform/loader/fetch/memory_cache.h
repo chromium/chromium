@@ -220,6 +220,8 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   void SaveTieredStrongReference(Resource* resource);
 
   double CalculateResourceValue(const Resource* resource) const;
+  size_t GetStrongReferencesTotalSize() const;
+  size_t GetTargetStrongReferencesMaxSize() const;
 
   MemoryPressureListenerRegistration memory_pressure_listener_registration_;
 
@@ -259,7 +261,9 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest,
                            ClearStrongReferences);
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest,
-                           ChangeMemoryCacheSize);
+                           ChangeMemoryCacheSizeStateful);
+  FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest,
+                           ChangeMemoryCacheSizeStateless);
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIStrongReferenceTest,
                            DataURIStrongReference);
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheDataURIStrongReferenceTest, DataURILRU);

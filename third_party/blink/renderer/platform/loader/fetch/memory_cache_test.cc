@@ -33,6 +33,7 @@
 #include <string_view>
 #include <variant>
 
+#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -392,9 +393,13 @@ TEST_F(MemoryCacheStrongReferenceTest, ClearStrongReferences) {
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
 }
 
-TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSize) {
-  // Memory cache has a non-null max size, but is empty.
-  EXPECT_NE(MemoryCache::Get()->strong_references_max_size_, 0u);
+TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSizeStateful) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
+  const size_t baseline =
+      features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, baseline);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
 
   // Add a resource.
@@ -403,15 +408,16 @@ TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSize) {
       MakeGarbageCollected<FakeResource>(kURL, ResourceType::kRaw);
   MemoryCache::Get()->SaveStrongReference(resource);
 
-  EXPECT_NE(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, baseline);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
 
-  // Change the memory limit. This will reduce the max size to zero, but not
-  // clear anything yet.
+  // Change the memory limit to 0%. Under stateful pressure,
+  // OnUpdateMemoryLimit() clamps max_size to current size (resource->size()),
+  // preventing growth without immediate eviction.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
       0, task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
-  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, resource->size());
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
 
   // ReleaseMemory notification. This actually calls PruneStrongReferences();
@@ -419,6 +425,42 @@ TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSize) {
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
   EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
+
+  // Relax memory limit back to 100%. Under stateful mode, OnUpdateMemoryLimit()
+  // expands max_size back to baseline.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      100, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, baseline);
+}
+
+TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSizeStateless) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
+
+  const size_t baseline =
+      features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, baseline);
+
+  // Add a resource.
+  const KURL kURL("http://test/resource1");
+  Member<FakeResource> resource =
+      MakeGarbageCollected<FakeResource>(kURL, ResourceType::kRaw);
+  MemoryCache::Get()->SaveStrongReference(resource);
+
+  // In stateless mode, OnUpdateMemoryLimit does nothing.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      0, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, baseline);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
+
+  // OnReleaseMemory evicts down to 0, then restores max_size back to baseline.
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, baseline);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
 }
 
