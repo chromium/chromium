@@ -79,16 +79,6 @@ namespace extensions {
 
 namespace {
 
-// DO NOT REORDER. This enum is used in histograms.
-enum class ManifestVersionPopulationSplit {
-  kNoExtensions = 0,
-  kMv2ExtensionsOnly,
-  kMv2AndMv3Extensions,
-  kMv3ExtensionsOnly,
-
-  kMaxValue = kMv3ExtensionsOnly,
-};
-
 // Used in histogram Extensions.BackgroundPageType.
 enum class BackgroundPageType {
   kNone = 0,
@@ -891,44 +881,6 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
                               unpacked_manifest_version_counts.version_2_count);
   base::UmaHistogramCounts100("Extensions.ManifestVersion3Count.Unpacked",
                               unpacked_manifest_version_counts.version_3_count);
-
-  auto get_manifest_version_population_split =
-      [](const ManifestVersion2And3Counts& counts) {
-        if (counts.version_2_count == 0 && counts.version_3_count == 0) {
-          return ManifestVersionPopulationSplit::kNoExtensions;
-        }
-        if (counts.version_2_count > 0 && counts.version_3_count == 0) {
-          return ManifestVersionPopulationSplit::kMv2ExtensionsOnly;
-        }
-        if (counts.version_3_count > 0 && counts.version_2_count == 0) {
-          return ManifestVersionPopulationSplit::kMv3ExtensionsOnly;
-        }
-        return ManifestVersionPopulationSplit::kMv2AndMv3Extensions;
-      };
-  base::UmaHistogramEnumeration(
-      "Extensions.ManifestVersionPopulationSplit.Internal",
-      get_manifest_version_population_split(internal_manifest_version_counts));
-  base::UmaHistogramEnumeration(
-      "Extensions.ManifestVersionPopulationSplit.External",
-      get_manifest_version_population_split(external_manifest_version_counts));
-  base::UmaHistogramEnumeration(
-      "Extensions.ManifestVersionPopulationSplit.Component",
-      get_manifest_version_population_split(component_manifest_version_counts));
-  base::UmaHistogramEnumeration(
-      "Extensions.ManifestVersionPopulationSplit.Unpacked",
-      get_manifest_version_population_split(unpacked_manifest_version_counts));
-  ManifestVersion2And3Counts internal_and_external_counts;
-  internal_and_external_counts.version_2_count =
-      internal_manifest_version_counts.version_2_count +
-      external_manifest_version_counts.version_2_count;
-  internal_and_external_counts.version_3_count =
-      internal_manifest_version_counts.version_3_count +
-      external_manifest_version_counts.version_3_count;
-  // We log an additional one for the combination of internal and external
-  // since these are both "user controlled" and not unpacked.
-  base::UmaHistogramEnumeration(
-      "Extensions.ManifestVersionPopulationSplit.InternalAndExternal",
-      get_manifest_version_population_split(internal_manifest_version_counts));
 
   base::UmaHistogramCounts100("Extensions.LoadApp2",
                               app_user_count + app_external_count);

@@ -3545,13 +3545,6 @@ Called by update_extension_permission.py.-->
 
 <!-- LINT.ThenChange(/chrome/browser/extensions/chrome_extensions_browser_client.h:ManifestSettingsOverrideType) -->
 
-<enum name="ManifestVersionPopulationSplit">
-  <int value="0" label="No extensions"/>
-  <int value="1" label="Manifest Version 2 extensions only"/>
-  <int value="2" label="Manifest Version 2 and Manifest Version 3 extensions"/>
-  <int value="3" label="Manifest Version 3 extensions only"/>
-</enum>
-
 <!-- LINT.IfChange(MissingParams) -->
 
 <enum name="MissingParams">
