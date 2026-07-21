@@ -72,7 +72,7 @@ bool GetCertificateOptions::operator==(
     const GetCertificateOptions& other) const {
   return IsMatchingCert(issuer_pattern, other.issuer_pattern) &&
          IsMatchingCert(subject_pattern, other.subject_pattern) &&
-         nonce == other.nonce && timestamp == other.timestamp;
+         challenge == other.challenge;
 }
 
 bool CrowdStrikeSignals::IsEmpty() const {

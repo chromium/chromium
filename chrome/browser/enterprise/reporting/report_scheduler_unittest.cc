@@ -1428,6 +1428,164 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
             ReportTrigger::kTriggerSecurity);
 }
 
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       ChallengeFetchedWhenPolicySet) {
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+
+  // Enable reporting and security signals
+  profile->GetTestingPrefService()->SetManagedPref(
+      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/true);
+  SetLastUploadInHour(base::Hours(1), profile);
+  profile->GetTestingPrefService()->SetString(kLastUploadVersion,
+                                              chrome::kChromeVersion);
+
+  // Set certificates selectors policy to non-empty
+  base::ListValue policy_value;
+  base::DictValue selector;
+  base::DictValue issuer;
+  issuer.Set("CN", "IssuerCN");
+  selector.Set("ISSUER", std::move(issuer));
+  policy_value.Append(std::move(selector));
+  profile->GetTestingPrefService()->SetManagedPref(
+      kSecuritySignalsClientCertificatesSelectors,
+      base::Value(std::move(policy_value)));
+
+  // Expect challenge fetch
+  em::GenerateChromeProfileChallengeResponse challenge_response;
+  challenge_response.set_challenge("test_challenge");
+
+  EXPECT_CALL(*client_, GenerateChromeProfileChallenge(_))
+      .WillOnce(
+          RunOnceCallback<0>(policy::DM_STATUS_SUCCESS, challenge_response));
+
+  // Expect report generation and upload with the challenge
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+
+  ReportTrigger expected_trigger = upload_report_on_profile_open_enabled()
+                                       ? ReportTrigger::kTriggerProfileOpened
+                                       : ReportTrigger::kTriggerSecurity;
+  SecuritySignalsMode expected_mode =
+      upload_report_on_profile_open_enabled()
+          ? SecuritySignalsMode::kSignalsAttached
+          : SecuritySignalsMode::kSignalsOnly;
+
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(ReportGenerationConfig(
+                                      expected_trigger,
+                                      ReportType::kProfileReport, expected_mode,
+                                      /*use_cookies=*/false, "test_challenge"),
+                                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  CreateSchedulerForProfileReporting(profile);
+  ASSERT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Run pending task to trigger report.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       ChallengeNotFetchedWhenPolicyNotSet) {
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+
+  // Enable reporting and security signals
+  profile->GetTestingPrefService()->SetManagedPref(
+      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/true);
+  SetLastUploadInHour(base::Hours(1), profile);
+  profile->GetTestingPrefService()->SetString(kLastUploadVersion,
+                                              chrome::kChromeVersion);
+
+  // Policy kSecuritySignalsClientCertificatesSelectors is NOT set.
+
+  // Expect NO challenge fetch
+  EXPECT_CALL(*client_, GenerateChromeProfileChallenge(_)).Times(0);
+
+  // Expect report generation and upload with EMPTY challenge
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+
+  ReportTrigger expected_trigger = upload_report_on_profile_open_enabled()
+                                       ? ReportTrigger::kTriggerProfileOpened
+                                       : ReportTrigger::kTriggerSecurity;
+  SecuritySignalsMode expected_mode =
+      upload_report_on_profile_open_enabled()
+          ? SecuritySignalsMode::kSignalsAttached
+          : SecuritySignalsMode::kSignalsOnly;
+
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(ReportGenerationConfig(
+                                      expected_trigger,
+                                      ReportType::kProfileReport, expected_mode,
+                                      /*use_cookies=*/false, std::nullopt),
+                                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  CreateSchedulerForProfileReporting(profile);
+  ASSERT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Run pending task to trigger report.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
+       ReportGenerationProceedsWhenChallengeFetchFails) {
+  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
+
+  // Enable reporting and security signals
+  profile->GetTestingPrefService()->SetManagedPref(
+      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+  SetUserSecuritySignalsPolicy(profile, /*enabled=*/true);
+  SetLastUploadInHour(base::Hours(1), profile);
+  profile->GetTestingPrefService()->SetString(kLastUploadVersion,
+                                              chrome::kChromeVersion);
+
+  // Set certificates selectors policy to non-empty
+  base::ListValue policy_value;
+  base::DictValue selector;
+  base::DictValue issuer;
+  issuer.Set("CN", "IssuerCN");
+  selector.Set("ISSUER", std::move(issuer));
+  policy_value.Append(std::move(selector));
+  profile->GetTestingPrefService()->SetManagedPref(
+      kSecuritySignalsClientCertificatesSelectors,
+      base::Value(std::move(policy_value)));
+
+  // Expect challenge fetch to FAIL
+  em::GenerateChromeProfileChallengeResponse challenge_response;
+  EXPECT_CALL(*client_, GenerateChromeProfileChallenge(_))
+      .WillOnce(RunOnceCallback<0>(policy::DM_STATUS_REQUEST_FAILED,
+                                   challenge_response));
+
+  // Expect report generation and upload with EMPTY challenge
+  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
+      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
+
+  ReportTrigger expected_trigger = upload_report_on_profile_open_enabled()
+                                       ? ReportTrigger::kTriggerProfileOpened
+                                       : ReportTrigger::kTriggerSecurity;
+  SecuritySignalsMode expected_mode =
+      upload_report_on_profile_open_enabled()
+          ? SecuritySignalsMode::kSignalsAttached
+          : SecuritySignalsMode::kSignalsOnly;
+
+  EXPECT_CALL(*uploader_,
+              SetRequestAndUpload(ReportGenerationConfig(
+                                      expected_trigger,
+                                      ReportType::kProfileReport, expected_mode,
+                                      /*use_cookies=*/false, std::nullopt),
+                                  _, _))
+      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
+
+  CreateSchedulerForProfileReporting(profile);
+  ASSERT_TRUE(scheduler_->IsNextReportScheduledForTesting());
+
+  // Run pending task to trigger report.
+  task_environment_.FastForwardBy(base::TimeDelta());
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_reporting

@@ -126,10 +126,8 @@ struct GetCertificateOptions {
   ~GetCertificateOptions();
   certificate_matching::CertificatePrincipalPattern issuer_pattern;
   certificate_matching::CertificatePrincipalPattern subject_pattern;
-  // A 256-bit random value generated per-report to prevent replay attacks.
-  std::string nonce;
-  // The time the challenge was generated, in milliseconds.
-  int64_t timestamp = 0;
+  // A challenge value from the server to prevent replay attacks.
+  std::string challenge;
 };
 
 }  // namespace device_signals

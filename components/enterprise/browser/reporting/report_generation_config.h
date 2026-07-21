@@ -6,7 +6,9 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORT_GENERATION_CONFIG_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "components/enterprise/browser/reporting/report_type.h"
 
@@ -60,9 +62,14 @@ struct ReportGenerationConfig {
   ReportGenerationConfig(ReportTrigger report_trigger,
                          ReportType report_type,
                          SecuritySignalsMode security_signals_mode,
-                         bool use_cookies);
+                         bool use_cookies,
+                         std::optional<std::string> challenge = std::nullopt);
   explicit ReportGenerationConfig(ReportTrigger report_trigger);
   ReportGenerationConfig();
+  ReportGenerationConfig(const ReportGenerationConfig&);
+  ReportGenerationConfig& operator=(const ReportGenerationConfig&);
+  ReportGenerationConfig(ReportGenerationConfig&&);
+  ReportGenerationConfig& operator=(ReportGenerationConfig&&);
   ~ReportGenerationConfig();
 
   bool operator==(const ReportGenerationConfig&) const;
@@ -75,6 +82,7 @@ struct ReportGenerationConfig {
   ReportType report_type;
   SecuritySignalsMode security_signals_mode;
   bool use_cookies;
+  std::optional<std::string> challenge;
 };
 
 }  // namespace enterprise_reporting

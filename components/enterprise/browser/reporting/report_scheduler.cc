@@ -272,6 +272,8 @@ void ReportScheduler::Stop() {
   if (pref_change_registrar_.IsObserved(kCloudReportingUploadFrequency)) {
     pref_change_registrar_.Remove(kCloudReportingUploadFrequency);
   }
+  active_report_generation_config_ =
+      ReportGenerationConfig(ReportTrigger::kTriggerNone);
 }
 
 void ReportScheduler::RestartReportTimer() {
@@ -401,8 +403,64 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   ReportType report_type = TriggerToReportType(trigger);
   SecuritySignalsMode signals_mode = GetSecurityMode(report_type, trigger);
 
-  active_report_generation_config_ = ReportGenerationConfig(
-      trigger, report_type, signals_mode, delegate_->UseCookiesInUploads());
+  // Set active config trigger so we know we are generating.
+  active_report_generation_config_.report_trigger = trigger;
+
+  if (NeedChallenge(trigger, signals_mode)) {
+    cloud_policy_client_->GenerateChromeProfileChallenge(
+        base::BindOnce(&ReportScheduler::OnChallengeGenerated,
+                       weak_ptr_factory_.GetWeakPtr(), trigger, signals_mode));
+  } else {
+    ContinueGenerateAndUploadReport(trigger, signals_mode, std::nullopt);
+  }
+}
+
+bool ReportScheduler::NeedChallenge(ReportTrigger trigger,
+                                    SecuritySignalsMode signals_mode) const {
+  if (signals_mode == SecuritySignalsMode::kNoSignals) {
+    return false;
+  }
+
+  if (!delegate_ || !delegate_->GetPrefService()) {
+    return false;
+  }
+
+  return !delegate_->GetPrefService()
+              ->GetList(kSecuritySignalsClientCertificatesSelectors)
+              .empty();
+}
+
+void ReportScheduler::OnChallengeGenerated(
+    ReportTrigger trigger,
+    SecuritySignalsMode signals_mode,
+    policy::DeviceManagementStatus status,
+    const em::GenerateChromeProfileChallengeResponse& response) {
+  std::optional<std::string> challenge;
+  if (status == policy::DM_STATUS_SUCCESS) {
+    VLOG_POLICY(1, REPORTING)
+        << "Successfully generated Chrome profile challenge.";
+    challenge = response.challenge();
+  } else {
+    LOG_POLICY(ERROR, REPORTING)
+        << "Failed to fetch Chrome profile challenge: " << status;
+  }
+  ContinueGenerateAndUploadReport(trigger, signals_mode, challenge);
+}
+
+void ReportScheduler::ContinueGenerateAndUploadReport(
+    ReportTrigger trigger,
+    SecuritySignalsMode signals_mode,
+    const std::optional<std::string>& challenge) {
+  // If we were stopped while waiting for the challenge, abort.
+  if (active_report_generation_config_.report_trigger ==
+      ReportTrigger::kTriggerNone) {
+    return;
+  }
+
+  ReportType report_type = TriggerToReportType(trigger);
+  active_report_generation_config_ =
+      ReportGenerationConfig(trigger, report_type, signals_mode,
+                             delegate_->UseCookiesInUploads(), challenge);
 
   VLOG_POLICY(1, REPORTING)
       << "Starting report generation with the following configuration: "

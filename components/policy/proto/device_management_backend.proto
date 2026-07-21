@@ -2331,13 +2331,12 @@ message CertificateDetails {
     RSA_PSS_SHA256 = 4;
   }
 
+  reserved 3;
+
   // The DER encoded enterprise certificate.
   optional bytes certificate = 1;
-  // A 256-bit random value.
-  optional bytes nonce = 2;
-  // A timestamp to limit the timeframe during which the challenge may be
-  // replayed.
-  optional int64 timestamp = 3;
+  // The challenge signed using the private key matching the certificate.
+  optional bytes challenge = 2;
   // The algorithm used when signing the challenge
   optional SignatureAlgorithm algorithm = 4;
 }

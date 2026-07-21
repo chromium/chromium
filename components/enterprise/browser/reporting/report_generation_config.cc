@@ -10,8 +10,7 @@
 namespace {
 constexpr char kReportGenerationConfigTemplate[] =
     R"(Trigger: %s, Report Type: %s, Security Signals Mode: %s,"
-    " Using Cookies: %s)";
-
+    " Using Cookies: %s, Has Challenge: %s)";
 
 std::string_view TranslateReportType(
     enterprise_reporting::ReportType report_type) {
@@ -64,11 +63,13 @@ ReportGenerationConfig::ReportGenerationConfig(
     ReportTrigger report_trigger,
     ReportType report_type,
     SecuritySignalsMode security_signals_mode,
-    bool use_cookies)
+    bool use_cookies,
+    std::optional<std::string> challenge)
     : report_trigger(report_trigger),
       report_type(report_type),
       security_signals_mode(security_signals_mode),
-      use_cookies(use_cookies) {
+      use_cookies(use_cookies),
+      challenge(std::move(challenge)) {
   // Currently security signals are only being reported in profile level
   // reporting.
   if (report_type != ReportType::kProfileReport) {
@@ -80,10 +81,23 @@ ReportGenerationConfig::ReportGenerationConfig(ReportTrigger report_trigger)
     : ReportGenerationConfig(report_trigger,
                              ReportType::kBrowser,
                              SecuritySignalsMode::kNoSignals,
-                             /*use_cookies=*/false) {}
+                             /*use_cookies=*/false,
+                             /*challenge=*/std::nullopt) {}
 
 ReportGenerationConfig::ReportGenerationConfig()
     : ReportGenerationConfig(ReportTrigger::kTriggerNone) {}
+
+ReportGenerationConfig::ReportGenerationConfig(const ReportGenerationConfig&) =
+    default;
+
+ReportGenerationConfig& ReportGenerationConfig::operator=(
+    const ReportGenerationConfig&) = default;
+
+ReportGenerationConfig::ReportGenerationConfig(ReportGenerationConfig&&) =
+    default;
+
+ReportGenerationConfig& ReportGenerationConfig::operator=(
+    ReportGenerationConfig&&) = default;
 
 ReportGenerationConfig::~ReportGenerationConfig() = default;
 
@@ -91,11 +105,11 @@ bool ReportGenerationConfig::operator==(const ReportGenerationConfig&) const =
     default;
 
 std::string ReportGenerationConfig::ToString() const {
-  return base::StringPrintf(kReportGenerationConfigTemplate,
-                            ReportTriggerToString(report_trigger),
-                            TranslateReportType(report_type),
-                            TranslateSecuritySignalsMode(security_signals_mode),
-                            use_cookies ? "Yes" : "No");
+  return base::StringPrintf(
+      kReportGenerationConfigTemplate, ReportTriggerToString(report_trigger),
+      TranslateReportType(report_type),
+      TranslateSecuritySignalsMode(security_signals_mode),
+      use_cookies ? "Yes" : "No", challenge.has_value() ? "Yes" : "No");
 }
 
 }  // namespace enterprise_reporting
