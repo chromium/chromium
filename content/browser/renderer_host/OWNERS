@@ -38,6 +38,9 @@ per-file dwrite_*=drott@chromium.org
 # Clipboard
 per-file *clipboard_host_impl*=file://ui/base/clipboard/OWNERS
 
+# Cookies
+per-file cookie_*=file://net/cookies/OWNERS
+
 # AgentSchedulingGroup (MBI)
 per-file agent_scheduling_group*=dom@chromium.org
 per-file agent_scheduling_group*=kouhei@chromium.org
