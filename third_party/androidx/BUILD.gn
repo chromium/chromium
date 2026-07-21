@@ -1342,6 +1342,7 @@ if (!limit_android_deps) {
       ":androidx_customview_customview_java",
       ":androidx_exifinterface_exifinterface_java",
       ":androidx_pdf_pdf_core_java",
+      ":androidx_recyclerview_recyclerview_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
       "//third_party/android_deps:material_design_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
