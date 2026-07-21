@@ -420,13 +420,18 @@ TEST_F(DnsPlatformAndroidAttemptTest, SuccessAsync) {
   }
 }
 
+class DnsPlatformAndroidAttemptE2ETest
+    : public DnsPlatformAndroidAttemptTest,
+      public testing::WithParamInterface<SuccessTestParam> {};
+
 // E2E test that does not mock the Android API surface
 // (DnsPlatformAndroidAttempt::Delegate). Instead, it calls into the real
 // Android APIs. We use a non-existing hostname to have a consistent behavior
 // that does not rely on the test device internet connectivity.
 // This is a regression test for https://crbug.com/450545129.
-TEST_F(DnsPlatformAndroidAttemptTest, E2EUnsuccessfulResolution) {
+TEST_P(DnsPlatformAndroidAttemptE2ETest, E2EUnsuccessfulResolution) {
   if (__builtin_available(android 29, *)) {
+    SuccessTestParam param = GetParam();
     // Wire-format DNS name for "we-dont-expect-this-to-resolve.notarealdomain."
     constexpr uint8_t kUnresolvableHostname[] = {
         // Hostname length
@@ -443,7 +448,7 @@ TEST_F(DnsPlatformAndroidAttemptTest, E2EUnsuccessfulResolution) {
     DnsPlatformAndroidAttempt::DelegateImpl delegate;
     DnsPlatformAndroidAttempt executor(
         /*server_index=*/0, base::as_byte_span(kUnresolvableHostname),
-        dns_protocol::kTypeA, handles::kInvalidNetworkHandle, &delegate,
+        param.qtype, handles::kInvalidNetworkHandle, &delegate,
         NetLogWithSource());
 
     ResultsCallbackTestFuture future;
@@ -460,6 +465,16 @@ TEST_F(DnsPlatformAndroidAttemptTest, E2EUnsuccessfulResolution) {
     GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    DnsPlatformAndroidAttemptE2ETests,
+    DnsPlatformAndroidAttemptE2ETest,
+    testing::Values(SuccessTestParam{dns_protocol::kTypeA, "A"},
+                    SuccessTestParam{dns_protocol::kTypeAAAA, "AAAA"},
+                    SuccessTestParam{dns_protocol::kTypeHttps, "HTTPS"}),
+    [](const testing::TestParamInfo<SuccessTestParam>& info) {
+      return std::string(info.param.qtype_str);
+    });
 
 }  // namespace
 }  // namespace net

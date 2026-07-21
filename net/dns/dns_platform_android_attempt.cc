@@ -107,8 +107,8 @@ int DnsPlatformAndroidAttempt::DelegateImpl::Query(
     net_handle_t network,
     base::cstring_view hostname,
     uint16_t dns_query_type) {
-  return android_res_nquery(network, hostname.c_str(), dns_query_type,
-                            dns_protocol::kClassIN,
+  return android_res_nquery(network, hostname.c_str(), dns_protocol::kClassIN,
+                            dns_query_type,
                             /*flags=*/0);
 }
 
