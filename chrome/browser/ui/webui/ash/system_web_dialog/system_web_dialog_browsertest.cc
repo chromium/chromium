@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, FontSize) {
   const int kDefaultFixedFontSize = kDefaultPrefs.default_fixed_font_size;
 
   // Set the browser font sizes to non-default values.
-  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  PrefService* profile_prefs = browser()->GetProfile()->GetPrefs();
   profile_prefs->SetInteger(prefs::kWebKitDefaultFontSize,
                             kDefaultFontSize + 2);
   profile_prefs->SetInteger(prefs::kWebKitDefaultFixedFontSize,
@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, FontSize) {
 IN_PROC_BROWSER_TEST_F(SystemWebDialogTest, PageZoom) {
   // Set the default browser page zoom to 150%.
   double level = blink::ZoomFactorToZoomLevel(1.5);
-  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
+  browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
 
   // Open a system dialog.
   MockSystemWebDialog* dialog = new MockSystemWebDialog();

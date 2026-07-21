@@ -275,7 +275,7 @@ class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
   FileHandlerDialogBrowserTest& operator=(const FileHandlerDialogBrowserTest&) =
       delete;
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -1816,7 +1816,7 @@ class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
     upload_task_->OnMoveConfirmationComplete(user_response);
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  protected:
   // Use a non-managed user in this browser test to ensure

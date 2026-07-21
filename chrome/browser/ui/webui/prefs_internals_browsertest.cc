@@ -33,8 +33,8 @@ IN_PROC_BROWSER_TEST_F(PrefsInternalsTest, MAYBE_TestPrefsAreServed) {
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   GURL fake_homepage_url = GURL("http://example.com/" + guid);
   EXPECT_TRUE(fake_homepage_url.is_valid());
-  browser()->profile()->GetPrefs()->SetString(prefs::kHomePage,
-                                              fake_homepage_url.spec());
+  browser()->GetProfile()->GetPrefs()->SetString(prefs::kHomePage,
+                                                 fake_homepage_url.spec());
 
   // First, check that navigation succeeds.
   GURL kUrl(content::GetWebUIURL(chrome::kChromeUIPrefsInternalsHost));

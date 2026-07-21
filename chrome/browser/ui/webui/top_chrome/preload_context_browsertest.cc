@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(PreloadContextTest, Basic) {
   EXPECT_FALSE(profile_context.IsBrowser());
   EXPECT_TRUE(profile_context.IsProfile());
   EXPECT_EQ(profile_context.GetBrowser(), nullptr);
-  EXPECT_EQ(profile_context.GetProfile(), browser()->profile());
+  EXPECT_EQ(profile_context.GetProfile(), browser()->GetProfile());
 }
 
 }  // namespace webui

@@ -114,7 +114,7 @@ class CustomizeButtonsHandlerBrowserTestBase : public InProcessBrowserTest {
         std::move(promo_helper_ptr));
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   void TearDownOnMainThread() override {
     promo_helper_ = nullptr;

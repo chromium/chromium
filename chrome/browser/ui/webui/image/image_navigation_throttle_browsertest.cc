@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(ImageNavigationThrottleTest, SubresourceLoadSucceeds) {
 
   // Ensure that chrome://image URLs are available in WebUIs. WebUI data sources
   // are registered per-profile and available in all WebUIs once registered.
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
 

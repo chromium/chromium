@@ -289,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, DictationLocalesCalculation) {
     }
 
     // Set up fake preferred languages.
-    browser()->profile()->GetPrefs()->SetString(
+    browser()->GetProfile()->GetPrefs()->SetString(
         language::prefs::kPreferredLanguages, testcase.preferred_languages);
 
     MaybeAddDictationLocales();

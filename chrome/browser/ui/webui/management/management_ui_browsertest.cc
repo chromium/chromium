@@ -63,11 +63,14 @@ class ManagementUITest : public InProcessBrowserTest {
   policy::MockConfigurationPolicyProvider* provider() { return &provider_; }
 
   policy::ProfilePolicyConnector* profile_policy_connector() {
-    return browser()->profile()->GetProfilePolicyConnector();
+    return browser()->GetProfile()->GetProfilePolicyConnector();
   }
 
   policy::PolicyService* policy_service() {
-    return browser()->profile()->GetProfilePolicyConnector()->policy_service();
+    return browser()
+        ->GetProfile()
+        ->GetProfilePolicyConnector()
+        ->policy_service();
   }
 
  private:

@@ -383,7 +383,7 @@ void NetInternalsTest::MessageHandler::DnsLookup(const base::ListValue& list) {
       base::BindOnce(&NetInternalsTest::MessageHandler::DnsLookupFinished,
                      weak_factory_.GetWeakPtr(), callback_id));
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(

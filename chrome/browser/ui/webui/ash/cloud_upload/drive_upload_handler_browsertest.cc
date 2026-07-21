@@ -264,7 +264,7 @@ class DriveUploadHandlerTest
     EndWait();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   const base::FilePath source_file_path() { return source_file_path_; }
 

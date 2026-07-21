@@ -100,7 +100,7 @@ class HatsServiceBrowserTestBase : public policy::PolicyTest {
 
   HatsServiceDesktop* GetHatsService(Browser* browser = nullptr) {
     Profile* profile =
-        browser ? browser->GetProfile() : this->browser()->profile();
+        browser ? browser->GetProfile() : this->browser()->GetProfile();
     HatsServiceDesktop* service = static_cast<HatsServiceDesktop*>(
         HatsServiceFactory::GetForProfile(profile, true));
     return service;
@@ -173,8 +173,8 @@ class HatsServiceProbabilityOne : public HatsServiceBrowserTestBase {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     // Set the profile creation time to be old enough to ensure triggering.
-    browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
-                                                    base::Days(45));
+    browser()->GetProfile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                       base::Days(45));
   }
 
   void TearDownOnMainThread() override {
@@ -328,8 +328,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {
   SetMetricsConsent(true);
   base::HistogramTester histogram_tester;
   // Set creation time to only 15 days.
-  browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
-                                                  base::Days(15));
+  browser()->GetProfile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                     base::Days(15));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
@@ -340,8 +340,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileOldEnoughToShow) {
   SetMetricsConsent(true);
   // Set creation time to 31 days. This is just past the threshold.
-  browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
-                                                  base::Days(31));
+  browser()->GetProfile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                     base::Days(31));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_TRUE(HatsNextDialogCreated());
 }
@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
                        ProfileJustCreatedAnyAgeRequirementShow) {
   SetMetricsConsent(true);
   // Simulate a brand new profile.
-  browser()->profile()->SetCreationTimeForTesting(base::Time::Now());
+  browser()->GetProfile()->SetCreationTimeForTesting(base::Time::Now());
   // Launch the survey with kAnyAge requirement.
   GetHatsService()->LaunchSurvey(MockSurveyWithProfileAgeRequirement(
       hats::SurveyConfig::ProfileAgeRequirement::kAnyAge));
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne,
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, IncognitoModeDisabledNoShow) {
   SetMetricsConsent(true);
   // Disable incognito mode for this profile.
-  PrefService* pref_service = browser()->profile()->GetPrefs();
+  PrefService* pref_service = browser()->GetProfile()->GetPrefs();
   pref_service->SetInteger(
       policy::policy_prefs::kIncognitoModeAvailability,
       static_cast<int>(policy::IncognitoModeAvailability::kDisabled));

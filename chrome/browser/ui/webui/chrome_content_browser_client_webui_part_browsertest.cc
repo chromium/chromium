@@ -34,7 +34,7 @@ class ChromeContentBrowserClientWebUiPartTest : public InProcessBrowserTest {
   // the default preferences.
   const blink::web_pref::WebPreferences RegisterCustomFontPrefs() {
     const blink::web_pref::WebPreferences prefs = GetCustomFontPrefs();
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     PrefService* profile_prefs = profile->GetPrefs();
     profile_prefs->SetInteger(prefs::kWebKitDefaultFontSize,
                               prefs.default_font_size);

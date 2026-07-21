@@ -125,7 +125,7 @@ class GlobalErrorBubbleTest : public DialogBrowserTest {
 };
 
 void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
 

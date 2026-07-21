@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // We want to simulate not being able to find an existing window compatible
   // with our non-tabbed browser window so Navigate() is forced to create a
   // new compatible window. Because browser() supplied by the in-process
-  // browser testing framework is compatible with browser()->profile(), we
+  // browser testing framework is compatible with browser()->GetProfile(), we
   // need a different profile, and creating a popup window with an incognito
   // profile is a quick and dirty way of achieving this.
   Browser* popup = CreateEmptyBrowserForType(

@@ -27,5 +27,5 @@ void BookmarkAppleScriptTest::SetUpOnMainThread() {
 }
 
 Profile* BookmarkAppleScriptTest::profile() const {
-  return browser()->profile();
+  return browser()->GetProfile();
 }

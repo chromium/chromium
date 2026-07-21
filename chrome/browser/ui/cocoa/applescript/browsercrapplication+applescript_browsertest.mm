@@ -25,7 +25,7 @@ using BrowserCrApplicationAppleScriptTest = InProcessBrowserTest;
 // Create windows of different |Type|.
 IN_PROC_BROWSER_TEST_F(BrowserCrApplicationAppleScriptTest, Creation) {
   // Create additional |Browser*| objects of different type.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   Browser* b1 = Browser::Create(Browser::CreateParams(
       Browser::TYPE_POPUP, profile, /*user_gesture=*/true));
   Browser* b2 = Browser::Create(Browser::CreateParams::CreateForApp(

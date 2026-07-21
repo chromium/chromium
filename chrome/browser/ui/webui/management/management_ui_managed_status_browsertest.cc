@@ -219,7 +219,7 @@ class ManagementUIManagedStatusTest
   void EnableProfileManagement() {
     // Condition to deflake, some builds will initiate a client before this and
     // will crash when adding a new client
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 #if BUILDFLAG(IS_CHROMEOS)
     profile->GetCloudPolicyManager()->core()->client()->SetupRegistration(
         "dm_token", "client_id", {});
@@ -298,7 +298,7 @@ class ManagementUIManagedStatusTest
 
  protected:
   void SetPromotionBannerDismissedPref(bool is_dismissed) {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(
         policy::policy_prefs::kHasDismissedManagementPagePromotionBanner,
         is_dismissed);
@@ -314,7 +314,7 @@ class ManagementUIManagedStatusTest
     auto* handler = static_cast<ManagementUIHandler*>(handlers[0][0].get());
 
     // Only wait if the feature is enabled AND locale is en-US AND not dismissed
-    const bool is_dismissed = browser()->profile()->GetPrefs()->GetBoolean(
+    const bool is_dismissed = browser()->GetProfile()->GetPrefs()->GetBoolean(
         policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
     if (is_feature_enabled() &&

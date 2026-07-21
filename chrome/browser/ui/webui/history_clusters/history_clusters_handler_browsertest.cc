@@ -64,7 +64,7 @@ class HistoryClustersHandlerBrowserTest : public InProcessBrowserTest {
   ~HistoryClustersHandlerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         history_clusters::prefs::kLastSelectedTab,
         history_clusters::prefs::TabbedPage::GROUP);
     EXPECT_TRUE(ui_test_utils::NavigateToURL(

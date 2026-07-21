@@ -266,9 +266,9 @@ class WebUiNtpEnterpriseShortcutsBrowserTest : public WebUiNtpBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebUiNtpEnterpriseShortcutsBrowserTest,
                        DISABLED_EnterpriseShortcuts) {
   // 1. Set the user preference to use enterprise shortcuts.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ntp_prefs::kNtpCustomLinksVisible, false);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ntp_prefs::kNtpEnterpriseShortcutsVisible, true);
 
   // 2. Navigate to the New Tab Page.

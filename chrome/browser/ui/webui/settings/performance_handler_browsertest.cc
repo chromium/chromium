@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceHandlerTest, GetCpuPerformanceInfo) {
   // Set an override and check that the handler still returns the hardware tier
   // (not the override).
   int override_tier = (*hardware_tier == 1) ? 2 : 1;
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kCpuPerformanceTierOverride, override_tier);
 
   // Check that the overridden setting reads correctly via the browser client.

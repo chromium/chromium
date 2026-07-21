@@ -228,7 +228,7 @@ class AppParentalControlsHandlerBrowserTest : public InProcessBrowserTest {
         ->app_parental_controls_handler();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
   AppParentalControlsTestObserver* observer() { return observer_.get(); }
 
  private:

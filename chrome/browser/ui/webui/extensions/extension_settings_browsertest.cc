@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
                        TestSafetyHubMenuNotificationDismissed) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   extensions::ExtensionPrefs* extension_prefs =
       extensions::ExtensionPrefs::Get(profile);
   const extensions::Extension* extension = InstallExtensionWithInPageOptions();

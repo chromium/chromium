@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
                        {MobilePromoOnDesktopPromoType::kAllPromos}));
 
   // Set the last impression timestamp to now.
-  browser()->profile()->GetPrefs()->SetTime(
+  browser()->GetProfile()->GetPrefs()->SetTime(
       promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
       base::Time::Now());
 
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
                        {MobilePromoOnDesktopPromoType::kAllPromos}));
 
   // Set the impression count to the maximum.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 10);
 
   views::Widget* widget =

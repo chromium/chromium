@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForBrowserTypes) {
       browser()->browser_window_features();
   EXPECT_TRUE(normal_window_features->toast_service());
   EXPECT_TRUE(normal_window_features->toast_controller());
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
 
   BrowserWindowFeatures* const popup_window_features =
       CreateBrowserForPopup(profile)->browser_window_features();

@@ -134,7 +134,7 @@ class SigninHelperTest : public InProcessBrowserTest,
                 &test_url_loader_factory_)) {}
 
   void SetUpOnMainThread() override {
-    auto* profile = browser()->profile();
+    auto* profile = browser()->GetProfile();
     account_manager_ = AccountManagerFactory::Get()->GetAccountManager(
         profile->GetPath().value());
     account_manager_->SetUrlLoaderFactoryForTests(shared_url_loader_factory());

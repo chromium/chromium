@@ -63,7 +63,7 @@ class FooterContextMenuBrowserTest : public InProcessBrowserTest {
 
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
   FooterContextMenu* menu() { return menu_.get(); }
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  private:
   std::unique_ptr<FooterContextMenu> menu_;

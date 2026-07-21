@@ -225,7 +225,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
     return installed_app_id;
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   void UninstallTestWebApp(const webapps::AppId& app_id) {
     web_app::test::UninstallWebApp(profile(), app_id);

@@ -181,7 +181,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
     base::FilePath test_root_path;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path));
 
-    Profile* const profile = browser()->profile();
+    Profile* const profile = browser()->GetProfile();
     scoped_refptr<const extensions::Extension> extension =
         extensions::ChromeTestExtensionLoader(profile).LoadExtension(
             test_root_path.AppendASCII("extensions/api_test/override/newtab"));
@@ -192,7 +192,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
     base::FilePath test_root_path;
     ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path));
 
-    Profile* const profile = browser()->profile();
+    Profile* const profile = browser()->GetProfile();
     scoped_refptr<const extensions::Extension> extension =
         extensions::ChromeTestExtensionLoader(profile).LoadExtension(
             test_root_path.AppendASCII("extensions/search_provider_override"));

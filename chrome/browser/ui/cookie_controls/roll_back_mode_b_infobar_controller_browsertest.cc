@@ -23,8 +23,8 @@ namespace {
 class RollBackModeBInfoBarControllerBrowserTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowRollbackUiModeB,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowRollbackUiModeB,
+                                                    true);
   }
 
   bool HasRollBackModeBInfoBar(Browser* browser) {

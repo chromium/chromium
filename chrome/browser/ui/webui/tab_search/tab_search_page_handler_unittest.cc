@@ -224,7 +224,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
   }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
-  Profile* profile1() { return browser()->profile(); }
+  Profile* profile1() { return browser()->GetProfile(); }
   Profile* profile2() { return profile2_; }
 
   // The default browser.

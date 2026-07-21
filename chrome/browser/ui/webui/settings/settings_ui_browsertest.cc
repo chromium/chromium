@@ -164,7 +164,7 @@ class SettingsUITestGlicDisabledButAnchored : public SettingsUITest {
 
 IN_PROC_BROWSER_TEST_F(SettingsUITestGlicDisabledButAnchored, DoesNotCrash) {
   // Set Glic as completed onboarding.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       glic::prefs::kGlicCompletedFre,
       static_cast<int>(glic::prefs::FreStatus::kCompleted));
 

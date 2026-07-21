@@ -74,8 +74,8 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
         std::make_unique<AutofillContextMenuManager>(
             render_view_context_menu_.get(), nullptr);
 
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                    true);
   }
 
   void TearDownOnMainThread() override {

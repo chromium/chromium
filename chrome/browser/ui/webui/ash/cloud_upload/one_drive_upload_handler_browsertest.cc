@@ -270,7 +270,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest,
     on_notification_displayed_callback_ = std::move(callback);
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  protected:
   base::FilePath my_files_dir_;

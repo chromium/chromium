@@ -400,7 +400,7 @@ class InlineLoginHandlerTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   content::TestWebUI* web_ui() { return &web_ui_; }
 

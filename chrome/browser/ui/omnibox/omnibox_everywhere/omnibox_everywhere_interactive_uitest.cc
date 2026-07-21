@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, ShowAndCloseWidget) {
   EXPECT_FALSE(ui_manager.widget_for_testing());
 
   // Show the widget.
-  ui_manager.ShowForProfile(browser()->profile(),
+  ui_manager.ShowForProfile(browser()->GetProfile(),
                             browser()->GetWindow()->GetNativeWindow());
 
   views::Widget* widget = ui_manager.widget_for_testing();
@@ -65,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, ShowAndCloseWidget) {
 IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest, FocusAndActivationState) {
   OmniboxEverywhereUIManager ui_manager;
 
-  ui_manager.ShowForProfile(browser()->profile(),
+  ui_manager.ShowForProfile(browser()->GetProfile(),
                             browser()->GetWindow()->GetNativeWindow());
   views::Widget* widget = ui_manager.widget_for_testing();
   ASSERT_TRUE(widget);

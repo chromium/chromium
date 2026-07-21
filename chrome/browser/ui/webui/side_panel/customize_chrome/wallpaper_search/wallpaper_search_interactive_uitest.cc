@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
   RunTestSequence(
       // 1. Open the NTP.
       Steps(InstrumentTab(kNewTabPageElementId, 0), Do([=, this]() {
-              browser()->profile()->GetPrefs()->SetInteger(
+              browser()->GetProfile()->GetPrefs()->SetInteger(
                   optimization_guide::prefs::GetSettingEnabledPrefName(
                       optimization_guide::UserVisibleFeatureKey::
                           kWallpaperSearch),
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
       WaitForElementToRender(kNewTabPageElementId, kWallpaperSearchButton),
       // 3. Turn wallpaper search setting off.
       Do([=, this]() {
-        browser()->profile()->GetPrefs()->SetInteger(
+        browser()->GetProfile()->GetPrefs()->SetInteger(
             optimization_guide::prefs::GetSettingEnabledPrefName(
                 optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
             static_cast<int>(
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchInteractiveTest,
       WaitForElementExists(kNewTabPageElementId, kWallpaperSearchButton, false),
       // 5. Turn wallpaper search setting on.
       Do([=, this]() {
-        browser()->profile()->GetPrefs()->SetInteger(
+        browser()->GetProfile()->GetPrefs()->SetInteger(
             optimization_guide::prefs::GetSettingEnabledPrefName(
                 optimization_guide::UserVisibleFeatureKey::kWallpaperSearch),
             static_cast<int>(
@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                               kWallpaperSearch))
                   .WillByDefault(testing::Return(true));
               // Set shown count lower than threshold.
-              browser()->profile()->GetPrefs()->SetInteger(
+              browser()->GetProfile()->GetPrefs()->SetInteger(
                   prefs::kNtpWallpaperSearchButtonShownCount, 14);
             }),
             NavigateWebContents(kNewTabPageElementId,
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
                               kWallpaperSearch))
                   .WillByDefault(testing::Return(true));
               // Set shown count higher than threshold.
-              browser()->profile()->GetPrefs()->SetInteger(
+              browser()->GetProfile()->GetPrefs()->SetInteger(
                   prefs::kNtpWallpaperSearchButtonShownCount, 16);
             }),
             NavigateWebContents(kNewTabPageElementId,
@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(NTPWallpaperSearchButtonAnimationTest,
                               kWallpaperSearch))
                   .WillByDefault(testing::Return(true));
               // Set shown count higher than threshold.
-              browser()->profile()->GetPrefs()->SetInteger(
+              browser()->GetProfile()->GetPrefs()->SetInteger(
                   prefs::kNtpWallpaperSearchButtonShownCount, 1000);
             }),
             NavigateWebContents(kNewTabPageElementId,

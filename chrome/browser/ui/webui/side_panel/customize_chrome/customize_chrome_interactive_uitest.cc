@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeEnterpriseInteractiveTest,
                              /*enabled=*/true),
       // Disable extension attribution by policy.
       Do(base::BindLambdaForTesting([=, this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
             prefs::kNTPFooterExtensionAttributionEnabled, false);
       })),
       // Check that the footer section still exists.
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeEnterpriseInteractiveTest,
       Do(base::BindLambdaForTesting([=, this]() {
         g_browser_process->local_state()->SetBoolean(
             prefs::kNTPFooterManagementNoticeEnabled, false);
-        browser()->profile()->GetPrefs()->SetBoolean(
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
             prefs::kNTPFooterExtensionAttributionEnabled, false);
       })),
       // Open non-extension new tab page.

@@ -1167,21 +1167,21 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
 
   // Sanity-check sites of all relevant frames to verify test setup.
   GURL app_site =
-      GetSiteForURL(app_browser_->profile(), app->GetLastCommittedURL());
+      GetSiteForURL(app_browser_->GetProfile(), app->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, app_site.GetScheme());
 
-  GURL same_dir_site =
-      GetSiteForURL(app_browser_->profile(), same_dir->GetLastCommittedURL());
+  GURL same_dir_site = GetSiteForURL(app_browser_->GetProfile(),
+                                     same_dir->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, same_dir_site.GetScheme());
   EXPECT_EQ(same_dir_site, app_site);
 
-  GURL diff_dir_site =
-      GetSiteForURL(app_browser_->profile(), diff_dir->GetLastCommittedURL());
+  GURL diff_dir_site = GetSiteForURL(app_browser_->GetProfile(),
+                                     diff_dir->GetLastCommittedURL());
   EXPECT_NE(extensions::kExtensionScheme, diff_dir_site.GetScheme());
   EXPECT_NE(diff_dir_site, app_site);
 
-  GURL same_site_site =
-      GetSiteForURL(app_browser_->profile(), same_site->GetLastCommittedURL());
+  GURL same_site_site = GetSiteForURL(app_browser_->GetProfile(),
+                                      same_site->GetLastCommittedURL());
   EXPECT_NE(extensions::kExtensionScheme, same_site_site.GetScheme());
   EXPECT_NE(same_site_site, app_site);
   EXPECT_EQ(same_site_site, diff_dir_site);
@@ -1197,15 +1197,15 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, IframesInsideHostedApp) {
   // content/public via SiteInfo.  For now, this verification will be done
   // implicitly by comparing SiteInstances and then actual processes further
   // below.
-  GURL isolated_site =
-      GetSiteForURL(app_browser_->profile(), isolated->GetLastCommittedURL());
+  GURL isolated_site = GetSiteForURL(app_browser_->GetProfile(),
+                                     isolated->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, isolated_site.GetScheme());
   EXPECT_EQ(isolated_site, app_site);
   EXPECT_NE(isolated->GetSiteInstance(), app->GetSiteInstance());
   EXPECT_NE(isolated_site, diff_dir_site);
 
-  GURL cross_site_site =
-      GetSiteForURL(app_browser_->profile(), cross_site->GetLastCommittedURL());
+  GURL cross_site_site = GetSiteForURL(app_browser_->GetProfile(),
+                                       cross_site->GetLastCommittedURL());
   EXPECT_NE(cross_site_site, app_site);
   EXPECT_NE(cross_site_site, same_site_site);
 
@@ -1621,7 +1621,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelFencedFrameTest,
                                               .GetDeprecatedSiteURL()
                                               .GetScheme());
   GURL app_site =
-      GetSiteForURL(app_browser_->profile(), app->GetLastCommittedURL());
+      GetSiteForURL(app_browser_->GetProfile(), app->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, app_site.GetScheme());
   EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetDeprecatedID()));
 
@@ -1692,7 +1692,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppIsolatedOriginTest,
                                               .GetDeprecatedSiteURL()
                                               .GetScheme());
   GURL app_site =
-      GetSiteForURL(app_browser_->profile(), app->GetLastCommittedURL());
+      GetSiteForURL(app_browser_->GetProfile(), app->GetLastCommittedURL());
   EXPECT_EQ(extensions::kExtensionScheme, app_site.GetScheme());
   EXPECT_TRUE(process_map_->Contains(app->GetProcess()->GetDeprecatedID()));
 

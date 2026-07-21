@@ -190,7 +190,7 @@ void ManagePasswordsTest::SetupAutoSignin(
 }
 
 void ManagePasswordsTest::SetupSafeState() {
-  browser()->profile()->GetPrefs()->SetDouble(
+  browser()->GetProfile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   SetupPendingPassword();
@@ -208,7 +208,7 @@ void ManagePasswordsTest::SetupSafeState() {
 }
 
 void ManagePasswordsTest::SetupMoreToFixState() {
-  browser()->profile()->GetPrefs()->SetDouble(
+  browser()->GetProfile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =

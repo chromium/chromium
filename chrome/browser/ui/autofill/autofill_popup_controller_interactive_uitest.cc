@@ -92,7 +92,7 @@ class AutofillPopupControllerBrowserTest : public InProcessBrowserTest {
         autofill_driver().GetAutofillManager());
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   TestAutofillExternalDelegate& autofill_external_delegate() {
     return static_cast<TestAutofillExternalDelegate&>(

@@ -202,7 +202,7 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
   }
 
   void EnableProfileManagement() {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     // ChromeOS creates a client on profile creation, so we only need to setup
     // the registration for it there.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -282,7 +282,7 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
 
  protected:
   void SetPromotionBannerDismissedPref(bool is_dismissed) {
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(
         policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner,
         is_dismissed);
@@ -291,7 +291,7 @@ class PolicyUIManagedStatusTest : public PlatformBrowserTest,
   // Helper method to setup and wait for the promotion listener.
   void SetupAndListenForPromotion() {
     // Only wait if the locale is en-US AND not dismissed.
-    const bool is_dismissed = browser()->profile()->GetPrefs()->GetBoolean(
+    const bool is_dismissed = browser()->GetProfile()->GetPrefs()->GetBoolean(
         policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
     if (g_browser_process->GetApplicationLocale() == kValidLocale &&

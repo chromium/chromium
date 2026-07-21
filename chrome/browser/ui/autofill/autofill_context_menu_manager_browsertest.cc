@@ -302,7 +302,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  virtual Profile* profile() { return browser()->profile(); }
+  virtual Profile* profile() { return browser()->GetProfile(); }
 
   ChromePasswordManagerClient* password_manager_client() {
     return ChromePasswordManagerClient::FromWebContents(web_contents());
@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
   // Add a saved credential so "Select password" fallback item is shown.
   auto* password_store =
       ProfilePasswordStoreFactory::GetForProfile(
-          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          browser()->GetProfile(), ServiceAccessType::IMPLICIT_ACCESS)
           .get();
   password_manager::PasswordStoreWaiter add_waiter(password_store);
   password_manager::PasswordForm form;

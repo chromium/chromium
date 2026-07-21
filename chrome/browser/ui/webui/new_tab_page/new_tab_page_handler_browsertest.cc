@@ -94,7 +94,7 @@ class NewTabPageHandlerBaseBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }

@@ -639,7 +639,7 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinHelperBrowserTest,
 
   // Simulate the promo being shown twice.
   signin::AvatarButtonPromoManager avatar_promo_manager(
-      identity_manager(), browser()->profile()->GetPrefs());
+      identity_manager(), browser()->GetProfile()->GetPrefs());
   avatar_promo_manager.RecordPromoShown(
       signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo);
   avatar_promo_manager.RecordPromoShown(

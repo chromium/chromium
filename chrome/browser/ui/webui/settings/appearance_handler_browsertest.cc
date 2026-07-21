@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppearanceHandlerTest, ResetPinnedToolbarActions) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kShowHomeButton, true);
   prefs->SetBoolean(prefs::kShowForwardButton, false);
 

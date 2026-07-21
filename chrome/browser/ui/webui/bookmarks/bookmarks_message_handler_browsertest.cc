@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
       BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
   bookmarks::test::WaitForBookmarkModelToLoad(model);
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kEditBookmarksEnabled, false);
 
   const bookmarks::BookmarkNode* node = model->AddURL(
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
 IN_PROC_BROWSER_TEST_F(BookmarkMessageHandlerTest,
                        CanNotUploadInIncognitoMode) {
   // Add a bookmark that can be uploaded.
-  Profile* original_profile = browser()->profile();
+  Profile* original_profile = browser()->GetProfile();
   bookmarks::BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(original_profile);
   bookmarks::test::WaitForBookmarkModelToLoad(model);

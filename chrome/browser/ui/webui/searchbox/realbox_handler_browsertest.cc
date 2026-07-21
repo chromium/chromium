@@ -143,7 +143,7 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
     RealboxSearchBrowserTestPage page;
     RealboxHandler realbox_handler = RealboxHandler(
         remote_page_handler.BindNewPipeAndPassReceiver(), page.GetRemotePage(),
-        browser()->profile(), GetWebContents(),
+        browser()->GetProfile(), GetWebContents(),
         base::BindLambdaForTesting(
             []() -> contextual_search::ContextualSearchSessionHandle* {
               return nullptr;
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadWithSearchStatsBrowserTest,
 
   // The prefetch should match the prerender.
   EXPECT_TRUE(IsSearchDestinationMatch(GetCanonicalSearchURL(prefetch_url),
-                                       browser()->profile(), prerender_url));
+                                       browser()->GetProfile(), prerender_url));
 }
 
 IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadWithoutSearchStatsBrowserTest,
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadWithoutSearchStatsBrowserTest,
 
   // The prefetch should match the prerender.
   EXPECT_TRUE(IsSearchDestinationMatch(GetCanonicalSearchURL(prefetch_url),
-                                       browser()->profile(), prerender_url));
+                                       browser()->GetProfile(), prerender_url));
 }
 
 class RealboxHandlerTest : public InProcessBrowserTest,
@@ -278,7 +278,7 @@ class RealboxHandlerTest : public InProcessBrowserTest,
     InProcessBrowserTest::SetUpOnMainThread();
     handler_ = std::make_unique<RealboxHandler>(
         mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-        page_.BindAndGetRemote(), browser()->profile(),
+        page_.BindAndGetRemote(), browser()->GetProfile(),
         /*web_contents=*/browser()->tab_strip_model()->GetActiveWebContents(),
         base::BindLambdaForTesting(
             []() -> contextual_search::ContextualSearchSessionHandle* {

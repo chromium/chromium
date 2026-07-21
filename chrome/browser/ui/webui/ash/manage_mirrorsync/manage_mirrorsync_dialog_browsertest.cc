@@ -203,7 +203,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
     }
 
     drivefs::FakeDriveFs& fake_drivefs =
-        fake_drivefs_helpers_[browser()->profile()]->fake_drivefs();
+        fake_drivefs_helpers_[browser()->GetProfile()]->fake_drivefs();
 
     // Toggle the MirrorSync preference to enable / disable the feature.
     {
@@ -218,7 +218,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
             .WillOnce(RunOnceCallback<0>(drive::FileError::FILE_ERROR_OK,
                                          std::vector<base::FilePath>()));
       }
-      browser()->profile()->GetPrefs()->SetBoolean(
+      browser()->GetProfile()->GetPrefs()->SetBoolean(
           drive::prefs::kDriveFsEnableMirrorSync, enabled);
       observer.WaitForStatusChange();
     }

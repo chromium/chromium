@@ -236,7 +236,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   {
     base::RunLoop run_loop;
     dialog = extensions::ExtensionUninstallDialog::Create(
-        app_browser->profile(), app_browser->GetWindow()->GetNativeWindow(),
+        app_browser->GetProfile(), app_browser->GetWindow()->GetNativeWindow(),
         &delegate);
     run_loop.RunUntilIdle();
   }

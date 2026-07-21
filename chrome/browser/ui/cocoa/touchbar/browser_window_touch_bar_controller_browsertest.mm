@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowTouchBarControllerTest,
   [[maybe_unused]] TouchBarInvalidationWatcher* invalidationWatcher =
       [TouchBarInvalidationWatcher newWatcher];
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   DCHECK(prefs);
 
   EXPECT_FALSE(browser_touch_bar_controller());

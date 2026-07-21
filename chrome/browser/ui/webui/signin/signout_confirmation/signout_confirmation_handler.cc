@@ -234,7 +234,7 @@ void SignoutConfirmationHandler::FinishAndCloseDialog(
     bool uninstall_account_extensions) {
   RecordChromeSignoutConfirmationPromptMetrics(variant_, choice);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (browser_ && HasAccountExtensions(browser_->profile())) {
+  if (browser_ && HasAccountExtensions(browser_->GetProfile())) {
     RecordAccountExtensionsSignoutChoice(choice, !uninstall_account_extensions);
   }
 #endif
@@ -265,7 +265,7 @@ void SignoutConfirmationHandler::ComputeAccountExtensions() {
   }
 
   extensions::AccountExtensionTracker* tracker =
-      extensions::AccountExtensionTracker::Get(browser_->profile());
+      extensions::AccountExtensionTracker::Get(browser_->GetProfile());
   std::vector<const extensions::Extension*> account_extensions =
       tracker->GetSignedInAccountExtensions();
   if (account_extensions.empty()) {
@@ -280,7 +280,7 @@ void SignoutConfirmationHandler::ComputeAccountExtensions() {
           &SignoutConfirmationHandler::ComputeAndSendSignoutConfirmationData,
           weak_ptr_factory_.GetWeakPtr()));
 
-  auto* image_loader = extensions::ImageLoader::Get(browser_->profile());
+  auto* image_loader = extensions::ImageLoader::Get(browser_->GetProfile());
 
   for (const extensions::Extension* extension : account_extensions) {
     extensions::ExtensionResource icon = extensions::IconsInfo::GetIconResource(

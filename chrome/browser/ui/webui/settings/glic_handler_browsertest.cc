@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerConsentBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     GlicHandlerSubscriptionTierBrowserTest,
     GetWebActuationToggleVisibility_SubscriptionTierIneligible) {
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 0);
 
   glic_handler()->HandleGetWebActuationToggleVisibility(
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     GlicHandlerSubscriptionTierBrowserTest,
     DISABLED_GetWebActuationToggleVisibility_SubscriptionTierEligible) {
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
 
   glic_handler()->HandleGetWebActuationToggleVisibility(
@@ -398,11 +398,11 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     GlicHandlerSubscriptionTierBrowserTest,
     DISABLED_FireWebActuationToggleVisibilityChanged_SubscriptionTierBecomesEligible) {
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 0);
   glic_handler()->AllowJavascript();
   web_ui()->ClearTrackedCalls();
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
 
   glic_handler()->FireWebActuationToggleVisibilityChanged();

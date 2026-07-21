@@ -330,7 +330,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void SetupSearchEngine() {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     TemplateURLService* model =
         TemplateURLServiceFactory::GetForProfile(profile);
     ASSERT_TRUE(model);
@@ -360,7 +360,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
   }
 
   void AddHistoryEntry(const TestHistoryEntry& entry, const base::Time& time) {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -653,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLDWithTemporaryText) {
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
   ASSERT_TRUE(GetOmniboxController()->IsPopupOpen());
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
 
@@ -1000,7 +1000,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonDefaultSubstitutingKeywordTest) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
 
@@ -1036,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
   OmniboxView* omnibox_view = nullptr;
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
 
@@ -1822,7 +1822,7 @@ class OmniboxViewAiModeTest : public OmniboxViewTest {
 IN_PROC_BROWSER_TEST_F(OmniboxViewAiModeTest,
                        OpenAiModeTriggersContextualization) {
   // Re-add google keyword; otherwise AI flow will hit a `CHECK()`.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   TemplateURLData data;

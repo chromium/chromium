@@ -33,7 +33,7 @@ using ChromeWebContentsMenuHelperBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ChromeWebContentsMenuHelperBrowserTest,
                        AllowContextMenuAccessThroughPreferences) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
 
   // Make sure we have 1 window to start with.
@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebContentsMenuHelperBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeWebContentsMenuHelperBrowserTest,
                        DisallowContextMenuAccessThroughPreferences) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, false);
 
   // Make sure we have 1 window to start with.

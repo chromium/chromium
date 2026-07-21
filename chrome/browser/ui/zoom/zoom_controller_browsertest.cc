@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest, OnPreferenceChanged) {
   ZoomChangedWatcher zoom_change_watcher(web_contents, zoom_change_data);
   // TODO(wjmaclean): Convert this to call partition-specific zoom level prefs
   // when they become available.
-  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
+  browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
       new_default_zoom_level);
   // Because this test relies on a round-trip IPC to/from the renderer process,
   // we need to wait for it to propagate.

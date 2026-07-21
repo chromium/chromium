@@ -121,7 +121,7 @@ void WebUIAllUrlsBrowserTest::SetUpCommandLine(
 
 #if BUILDFLAG(IS_CHROMEOS)
 void WebUIAllUrlsBrowserTest::SetUpOnMainThread() {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ash::prefs::kSamlInSessionPasswordChangeEnabled, true);
 
   // This is needed to simulate the presence of the ODFS extension, which is

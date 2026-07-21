@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ViewSource) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabAppleScriptTest, ExecuteJavascript) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TabAppleScript* tab_applescript =

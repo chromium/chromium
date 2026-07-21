@@ -188,7 +188,7 @@ class SettingsOverriddenDialogInteractiveUiTest
       ASSERT_TRUE(
           base::PathService::Get(chrome::DIR_TEST_DATA, &test_root_path));
 
-      Profile* const profile = browser()->profile();
+      Profile* const profile = browser()->GetProfile();
       scoped_refptr<const extensions::Extension> extension =
           extensions::ChromeTestExtensionLoader(profile).LoadExtension(
               test_root_path.AppendASCII(

@@ -31,7 +31,7 @@ class AccessCodeCastDialogBrowserTest : public DialogBrowserTest {
     content::WebContentsAddedObserver observer;
 
     // Enable AccessCodeCast.
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         media_router::prefs::kAccessCodeCastEnabled, true);
 
     // Show the dialog.
