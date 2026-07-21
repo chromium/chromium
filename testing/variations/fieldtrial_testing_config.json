@@ -10836,6 +10836,25 @@
             ]
         }
     ],
+    "EnterpriseGroupsExperiments": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260721",
+                    "enable_features": [
+                        "EnterpriseGroupsExperiments"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterpriseIframeDlpRulesSupport": [
         {
             "platforms": [
