@@ -39,6 +39,10 @@ struct ActionSource {
   // TODO(crbug.com/510383413): Support combining `gemini_in_chrome` with
   // profile-bound attributes like `incognito`.
   bool gemini_in_chrome = false;
+
+  // Byte size of the clipboard content or file transfer.
+  // Nullopt if unknown or if the action does not involve sized data.
+  std::optional<int64_t> content_size;
 };
 
 struct ActionDestination {

@@ -13,8 +13,9 @@ bool ActionSource::empty() const {
   // - The OS clipboard with `os_clipboard` set to true.
   // - The integrated Gemini browser agent (Glic) with `gemini_in_chrome` set
   //   to true.
+  // - A clipboard or file transfer action with `content_size` set to a non-negative value.
   return url.is_empty() && !incognito && !other_profile && !os_clipboard &&
-         !gemini_in_chrome;
+         !gemini_in_chrome && !content_size.has_value();
 }
 
 bool ActionDestination::empty() const {
