@@ -499,6 +499,8 @@ crbug.com/436522727 [ amd-0x7340 debug graphite-enabled no-clang-coverage sonoma
 
 ## Apple M2 ##
 
+crbug.com/537387984 [ mac apple-angle-metal-renderer:-apple-m2 asan ] conformance/glsl/misc/shader-with-for-loop.html [ Slow ]
+
 ####################
 # Linux failures   #
 ####################
