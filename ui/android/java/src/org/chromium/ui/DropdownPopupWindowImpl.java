@@ -4,9 +4,12 @@
 
 package org.chromium.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
 import android.view.accessibility.AccessibilityEvent;
@@ -89,14 +92,14 @@ class DropdownPopupWindowImpl
 
         ViewRectProvider rectProvider = new ViewRectProvider(mAnchorView);
         rectProvider.setIncludePadding(true);
-        mBackground = AppCompatResources.getDrawable(context, R.drawable.menu_bg_baseline);
+        TypedValue typedValue = new TypedValue();
+        int bgResId =
+                context.getTheme().resolveAttribute(R.attr.popupBg, typedValue, true)
+                        ? typedValue.resourceId
+                        : R.drawable.menu_bg_baseline;
+        mBackground = assumeNonNull(AppCompatResources.getDrawable(context, bgResId));
         mAnchoredPopupWindow =
-                new AnchoredPopupWindow(
-                        context,
-                        mAnchorView,
-                        mBackground,
-                        mListView,
-                        rectProvider);
+                new AnchoredPopupWindow(context, mAnchorView, mBackground, mListView, rectProvider);
         mAnchoredPopupWindow.addOnDismissListener(onDismissLitener);
         mAnchoredPopupWindow.setLayoutObserver(this);
         mAnchoredPopupWindow.setElevation(
