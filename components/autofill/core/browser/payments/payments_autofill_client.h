@@ -842,6 +842,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Shows the Payments Churned Users UI. This UI is responsible for providing
   // users that have turned off autofill with a value prop to turn autofill back
   // on.
+  // TODO(crbug.com/524740910): Rename to ShowPaymentsChurnedUsersUi().
   virtual void ShowPaymentsChurnedUsersUI(base::OnceClosure accept_callback,
                                           base::OnceClosure cancel_callback) {}
 };
