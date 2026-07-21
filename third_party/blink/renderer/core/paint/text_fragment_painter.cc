@@ -291,7 +291,7 @@ void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
                                       const PhysicalSize box_size,
                                       const PaintInfo& paint_info,
                                       const PhysicalOffset& paint_offset) {
-  const AtomicString& type = LayoutCounter::ListStyle(layout_object, style);
+  const AtomicString type = LayoutCounter::ListStyle(layout_object, style);
   PhysicalRect marker_rect(
       ListMarker::RelativeSymbolMarkerRect(style, type, box_size.width));
   marker_rect.Move(paint_offset);

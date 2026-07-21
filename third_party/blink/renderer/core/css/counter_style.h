@@ -75,6 +75,19 @@ class CORE_EXPORT CounterStyle final : public GarbageCollected<CounterStyle> {
   bool IsPredefinedSymbolMarker() const { return is_predefined_symbol_marker_; }
   void SetIsPredefinedSymbolMarker() { is_predefined_symbol_marker_ = true; }
 
+  // Returns the predefined symbol marker (`disc`, `circle`, `square`,
+  // `disclosure-open` or `disclosure-closed`) this style resolves to through
+  // the `extends` chain, or `g_null_atom` if none.
+  AtomicString GetEffectiveSymbolMarkerName() const;
+
+  // Returns true if this counter style is, or resolves through `extends` to,
+  // `disclosure-open` or `disclosure-closed`.
+  bool IsDisclosureMarker() const;
+
+  bool RendersAsSymbolMarker() const {
+    return IsPredefinedSymbolMarker() || IsDisclosureMarker();
+  }
+
   // A CounterStyle object is dirtied when the information it holds becomes
   // stale, e.g., when the style rule mutated or the 'extends' or 'fallback'
   // counter styles mutated, etc. Once dirtied, it will never be reused, and

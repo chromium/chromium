@@ -678,6 +678,25 @@ AtomicString CounterStyle::GetName() const {
   return style_rule_->GetName();
 }
 
+AtomicString CounterStyle::GetEffectiveSymbolMarkerName() const {
+  // Walk the `extends` chain until we reach a predefined symbol marker, as the
+  // extends chain can in rare cases be more than one layer deep.
+  for (const CounterStyle* style = this; style;
+       style = style->extended_style_.Get()) {
+    if (style->is_predefined_symbol_marker_) {
+      CHECK(!style->GetName().empty());
+      return style->GetName();
+    }
+  }
+  return g_null_atom;
+}
+
+bool CounterStyle::IsDisclosureMarker() const {
+  const AtomicString name = GetEffectiveSymbolMarkerName();
+  return name == keywords::kDisclosureOpen ||
+         name == keywords::kDisclosureClosed;
+}
+
 // static
 CounterStyle* CounterStyle::Create(
     const CascadeLayered<const StyleRuleCounterStyle>& rule) {

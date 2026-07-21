@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Counter style extending disclosure-open/closed paints the engine's disclosure marker</title>
+<link rel="help" href="https://drafts.csswg.org/css-counter-styles-3/#disclosure-closed">
+<link rel="help" href="https://drafts.csswg.org/css-counter-styles-3/#disclosure-open">
+<link rel="author" title="Ananya Anand" href="mailto:t-anaanand@microsoft.com">
+<link rel="match" href="disclosure-extends-painted-direction-ref.html">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<meta name="flags" content="ahem image">
+<meta name="assert" content="A custom @counter-style that extends disclosure-open/closed through a multi-level extends chain paints Chromium's directional disclosure triangle. Chromium paints these as geometry, not glyphs, so the reference hardcodes the triangle with clip-path; this lives in wpt_internal because a glyph-painting UA wouldn't match.">
+<style type="text/css">
+  /* Two-level extends chains: the predefined marker is reached through
+     disclosure-*-base, not the direct parent, exercising multi-layer
+     resolution. */
+  @counter-style disclosure-closed-base {
+    system: extends disclosure-closed;
+  }
+  @counter-style disclosure-closed2 {
+    system: extends disclosure-closed-base;
+  }
+  @counter-style disclosure-open-base {
+    system: extends disclosure-open;
+  }
+  @counter-style disclosure-open2 {
+    system: extends disclosure-open-base;
+  }
+  ul {
+    padding: 0;
+    list-style-position: inside;
+  }
+  .closed { list-style-type: disclosure-closed2; }
+  .open { list-style-type: disclosure-open2; }
+  p::before {
+    content: counter(a, disclosure-closed2) " ";
+  }
+  div { font: 50px Ahem; margin: 1em; border: 1px solid gray; }
+  ::marker { font-family: Ahem; }
+</style>
+<div style="width: 10em">
+<ul dir="ltr">
+  <li class="closed">CL
+  <li class="open">OL
+</ul>
+<ul dir="rtl">
+  <li class="closed">CR
+  <li class="open">OR
+</ul>
+<p dir="ltr">CL
+<p dir="rtl">CR
+</div>
+<div style="writing-mode: vertical-lr; height: 10em;">
+  <ul dir="ltr">
+    <li class="closed">CL
+    <li class="open">OL
+  </ul>
+  <ul dir="rtl">
+    <li class="closed">CR
+    <li class="open">OR
+  </ul>
+  <p dir="ltr">CL
+  <p dir="rtl">CR
+</div>
+<div style="writing-mode: vertical-rl; height: 10em;">
+  <ul dir="ltr">
+    <li class="closed">CL
+    <li class="open">OL
+  </ul>
+  <ul dir="rtl">
+    <li class="closed">CR
+    <li class="open">OR
+  </ul>
+  <p dir="ltr">CL
+  <p dir="rtl">CR
+</div>

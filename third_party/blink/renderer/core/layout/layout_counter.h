@@ -54,17 +54,16 @@ class LayoutCounter : public LayoutText {
   // Calls GenerateCounterText to update counter text.
   void UpdateCounter(Vector<int> counter_values);
 
-  // Returns true if <counter-style> is "disclosure-open" or
-  // "disclosure-closed".
+  // Returns true if `<counter-style>` is `disclosure-open` or
+  // `disclosure-closed`, or resolves to one of them through `extends`.
   bool IsDirectionalSymbolMarker() const;
   // Returns <string> in counters().
   const AtomicString& Separator() const;
 
-  // Returns LayoutCounter::counter_->ListStyle() if `object` is a
-  // LayoutCounter.
-  // Returns style.ListStyleType()->GetCounterStyleName() otherwise.
-  static const AtomicString& ListStyle(const LayoutObject* object,
-                                       const ComputedStyle& style);
+  // Returns the list style name for `object`/`style`, resolving through
+  // `extends` to the base predefined symbol marker name when applicable.
+  static AtomicString ListStyle(const LayoutObject* object,
+                                const ComputedStyle& style);
 
   const char* GetName() const override {
     NOT_DESTROYED();

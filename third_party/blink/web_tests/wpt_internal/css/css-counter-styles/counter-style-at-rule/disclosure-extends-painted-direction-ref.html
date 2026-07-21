@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Reference: disclosure markers drawn with the engine's clip-path geometry</title>
+<link rel="help" href="https://drafts.csswg.org/css-counter-styles-3/#disclosure-closed">
+<link rel="help" href="https://drafts.csswg.org/css-counter-styles-3/#disclosure-open">
+<link rel="author" title="Ananya Anand" href="mailto:t-anaanand@microsoft.com">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<meta name="flags" content="ahem image">
+<style type="text/css">
+  ul {
+    padding: 0;
+    list-style: none;
+  }
+  /* Chromium paints the disclosure marker as a font-size*0.66 triangle on
+     the baseline, from text_fragment_painter.cc GetDisclosurePathPoints. */
+  li::before, p::before {
+    content: "";
+    display: inline-block;
+    width: .66em;
+    height: .66em;
+    background: currentColor;
+    vertical-align: baseline;
+  }
+  li::before { margin-inline-end: .4em; }
+  .t-r::before { clip-path: polygon(0% 0%, 86% 50%, 0% 100%); }
+  .t-l::before { clip-path: polygon(100% 0%, 14% 50%, 100% 100%); }
+  .t-d::before { clip-path: polygon(0% 7%, 50% 93%, 100% 7%); }
+  .t-u::before { clip-path: polygon(0% 93%, 50% 7%, 100% 93%); }
+  .vert li::before, .vert p::before { position: relative; left: .03em; }
+  div { font: 50px Ahem; margin: 1em; border: 1px solid gray; }
+</style>
+<div style="width: 10em">
+<ul dir="ltr">
+  <li class="t-r">CL
+  <li class="t-d">OL
+</ul>
+<ul dir="rtl">
+  <li class="t-l">CR
+  <li class="t-d">OR
+</ul>
+<p dir="ltr" class="t-r"> CL
+<p dir="rtl" class="t-l"> CR
+</div>
+<div style="writing-mode: vertical-lr; height: 10em;" class="vert">
+  <ul dir="ltr">
+    <li class="t-d">CL
+    <li class="t-r">OL
+  </ul>
+  <ul dir="rtl">
+    <li class="t-u">CR
+    <li class="t-r">OR
+  </ul>
+  <p dir="ltr" class="t-d"> CL
+  <p dir="rtl" class="t-u"> CR
+</div>
+<div style="writing-mode: vertical-rl; height: 10em;" class="vert">
+  <ul dir="ltr">
+    <li class="t-d">CL
+    <li class="t-l">OL
+  </ul>
+  <ul dir="rtl">
+    <li class="t-u">CR
+    <li class="t-l">OR
+  </ul>
+  <p dir="ltr" class="t-d"> CL
+  <p dir="rtl" class="t-u"> CR
+</div>

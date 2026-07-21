@@ -41,6 +41,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
+#include "third_party/blink/renderer/core/css/counter_style.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -921,10 +922,8 @@ bool LayoutObject::IsListMarkerForSummary() const {
     if (ListMarker::GetListStyleCategory(GetDocument(), StyleRef()) !=
         ListMarker::ListStyleCategory::kSymbol)
       return false;
-    const AtomicString& name =
-        StyleRef().ListStyleType()->GetCounterStyleName();
-    return name == keywords::kDisclosureOpen ||
-           name == keywords::kDisclosureClosed;
+    return ListMarker::GetCounterStyle(GetDocument(), StyleRef())
+        .IsDisclosureMarker();
   }
   return false;
 }
