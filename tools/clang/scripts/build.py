@@ -931,7 +931,7 @@ def main():
   # while elsewhere it's called through the compiler driver, and we pass
   # -fuse-ld=lld there to make the compiler driver call the linker (by setting
   # LLVM_ENABLE_LLD).
-  cc, cxx, lld = None, None, None
+  cc, cxx, lld, libtool = None, None, None, None
   cmake_sysroot = None
 
   cflags = []
@@ -1198,6 +1198,8 @@ def main():
     else:
       cc = os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'clang')
       cxx = os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'clang++')
+      if sys.platform == 'darwin':
+        libtool = os.path.join(LLVM_BOOTSTRAP_INSTALL_DIR, 'bin', 'llvm-libtool-darwin')
 
     print('Bootstrap compiler installed.')
 
@@ -1227,6 +1229,7 @@ def main():
     if cc is not None:  instrument_args.append('-DCMAKE_C_COMPILER=' + cc)
     if cxx is not None: instrument_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
     if lld is not None: instrument_args.append('-DCMAKE_LINKER=' + lld)
+    if libtool is not None: instrument_args.append('-DCMAKE_LIBTOOL=' + libtool)
 
     with timer.time('pgo cmake'):
       RunCommand(['cmake'] + instrument_args + [os.path.join(LLVM_DIR, 'llvm')],
@@ -1311,6 +1314,7 @@ def main():
   if cc is not None:  base_cmake_args.append('-DCMAKE_C_COMPILER=' + cc)
   if cxx is not None: base_cmake_args.append('-DCMAKE_CXX_COMPILER=' + cxx)
   if lld is not None: base_cmake_args.append('-DCMAKE_LINKER=' + lld)
+  if libtool is not None: base_cmake_args.append('-DCMAKE_LIBTOOL=' + libtool)
   final_install_dir = args.install_dir if args.install_dir else LLVM_BUILD_DIR
   cmake_args = base_cmake_args + [
       '-DCMAKE_C_FLAGS=' + ' '.join(cflags),
