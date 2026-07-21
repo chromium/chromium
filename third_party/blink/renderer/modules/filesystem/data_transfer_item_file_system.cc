@@ -78,12 +78,14 @@ Entry* DataTransferItemFileSystem::webkitGetAsEntry(ScriptState* script_state,
 
   // FIXME: This involves synchronous file operation. Consider passing file type
   // data when we dispatch drag event.
-  FileMetadata metadata;
-  if (!GetFileMetadata(To<File>(file)->GetPath(), *context, metadata))
+  std::optional<FileMetadata> metadata =
+      GetFileMetadata(To<File>(file)->GetPath(), *context);
+  if (!metadata) {
     return nullptr;
-
-  if (metadata.type == FileMetadata::kTypeDirectory)
+  }
+  if (metadata->type == FileMetadata::kTypeDirectory) {
     return MakeGarbageCollected<DirectoryEntry>(dom_file_system, virtual_path);
+  }
   return MakeGarbageCollected<FileEntry>(dom_file_system, virtual_path);
 }
 

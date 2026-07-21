@@ -105,8 +105,7 @@ bool IsAccessibleFile(const JSONValue& value, HTMLFormElement& form) {
     if (!path.IsAbsolute()) {
       return false;
     }
-    FileMetadata metadata;
-    return GetFileMetadata(path_string, *execution_context, metadata);
+    return GetFileMetadata(path_string, *execution_context).has_value();
   }
   return false;
 }

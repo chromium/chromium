@@ -46,6 +46,23 @@
 
 namespace blink {
 
+namespace {
+
+std::optional<base::File::Info> GetFileInfo(const String& path,
+                                            const MojoBindingContext& context) {
+  mojo::Remote<mojom::blink::FileUtilitiesHost> host;
+  context.GetBrowserInterfaceBroker().GetInterface(
+      host.BindNewPipeAndPassReceiver());
+
+  std::optional<base::File::Info> file_info;
+  if (!host->GetFileInfo(StringToFilePath(path), &file_info)) {
+    return std::nullopt;
+  }
+  return file_info;
+}
+
+}  // namespace
+
 // static
 FileMetadata FileMetadata::From(const base::File::Info& file_info) {
   FileMetadata file_metadata;
@@ -59,34 +76,22 @@ FileMetadata FileMetadata::From(const base::File::Info& file_info) {
   return file_metadata;
 }
 
-bool GetFileSize(const String& path,
-                 const MojoBindingContext& context,
-                 int64_t& result) {
-  FileMetadata metadata;
-  if (!GetFileMetadata(path, context, metadata))
-    return false;
-  result = metadata.length;
-  return true;
+std::optional<int64_t> GetFileSize(const String& path,
+                                   const MojoBindingContext& context) {
+  std::optional<base::File::Info> file_info = GetFileInfo(path, context);
+  if (!file_info) {
+    return std::nullopt;
+  }
+  return file_info->size;
 }
 
-bool GetFileMetadata(const String& path,
-                     const MojoBindingContext& context,
-                     FileMetadata& metadata) {
-  mojo::Remote<mojom::blink::FileUtilitiesHost> host;
-  context.GetBrowserInterfaceBroker().GetInterface(
-      host.BindNewPipeAndPassReceiver());
-
-  std::optional<base::File::Info> file_info;
-  if (!host->GetFileInfo(StringToFilePath(path), &file_info) || !file_info) {
-    return false;
+std::optional<FileMetadata> GetFileMetadata(const String& path,
+                                            const MojoBindingContext& context) {
+  std::optional<base::File::Info> file_info = GetFileInfo(path, context);
+  if (!file_info) {
+    return std::nullopt;
   }
-
-  metadata.modification_time =
-      NullableTimeToOptionalTime(file_info->last_modified);
-  metadata.length = file_info->size;
-  metadata.type = file_info->is_directory ? FileMetadata::kTypeDirectory
-                                          : FileMetadata::kTypeFile;
-  return true;
+  return FileMetadata::From(*file_info);
 }
 
 KURL FilePathToURL(const String& path) {

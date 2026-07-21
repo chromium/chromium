@@ -65,12 +65,11 @@ class FileMetadata {
   String platform_path;
 };
 
-PLATFORM_EXPORT bool GetFileSize(const String&,
-                                 const MojoBindingContext&,
-                                 int64_t& result);
-PLATFORM_EXPORT bool GetFileMetadata(const String&,
-                                     const MojoBindingContext&,
-                                     FileMetadata& result);
+PLATFORM_EXPORT std::optional<int64_t> GetFileSize(const String&,
+                                                   const MojoBindingContext&);
+PLATFORM_EXPORT std::optional<FileMetadata> GetFileMetadata(
+    const String&,
+    const MojoBindingContext&);
 PLATFORM_EXPORT KURL FilePathToURL(const String&);
 
 inline std::optional<base::Time> NullableTimeToOptionalTime(base::Time time) {
