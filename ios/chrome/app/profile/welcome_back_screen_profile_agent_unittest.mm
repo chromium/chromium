@@ -15,6 +15,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/promos_manager/model/mock_promos_manager.h"
@@ -88,15 +89,7 @@ class WelcomeBackScreenProfileAgentTest : public PlatformTest {
     // agent in the autorelease pool. Wrapping this block in an autorelease pool
     // ensures those references are immediately cleared.
     @autoreleasepool {
-      profile_state_.initStage = ProfileInitStage::kLoadProfile;
-      profile_state_.initStage = ProfileInitStage::kPurgeDiscardedSessionsData;
-      profile_state_.initStage = ProfileInitStage::kProfileLoaded;
-      profile_state_.initStage = ProfileInitStage::kPrepareUI;
-      profile_state_.initStage = ProfileInitStage::kUIReady;
-      profile_state_.initStage = ProfileInitStage::kFirstRun;
-      profile_state_.initStage = ProfileInitStage::kChoiceScreen;
-      profile_state_.initStage = ProfileInitStage::kNormalUI;
-      profile_state_.initStage = ProfileInitStage::kFinal;
+      SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
     }
   }
 
