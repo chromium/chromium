@@ -24,6 +24,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
+#include "net/base/sockaddr_storage.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/datagram_socket.h"
@@ -404,6 +405,16 @@ class NET_EXPORT UDPSocketPosix {
   int InternalRecvFromConnectedSocket(IOBuffer* buf,
                                       int buf_len,
                                       IPEndPoint* address);
+  struct RecvmsgResult {
+    int bytes_read = 0;
+    int msg_flags = 0;
+    uint8_t tos = 0;
+    SockaddrStorage storage;
+  };
+  base::expected<RecvmsgResult, Error> DoRecvmsg(IOBuffer* buf,
+                                                 size_t buf_len,
+                                                 bool populate_remote_address);
+
   base::expected<DatagramsMetadata, Error> InternalReadMultiple(
       IOBuffer* buffer,
       size_t buf_len,

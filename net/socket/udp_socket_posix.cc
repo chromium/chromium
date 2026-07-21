@@ -1009,6 +1009,45 @@ int UDPSocketPosix::InternalRecvFrom(IOBuffer* buf,
   return InternalRecvFromNonConnectedSocket(buf, buf_len, address);
 }
 
+base::expected<UDPSocketPosix::RecvmsgResult, Error> UDPSocketPosix::DoRecvmsg(
+    IOBuffer* buf,
+    size_t buf_len,
+    bool populate_remote_address) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  RecvmsgResult res;
+  struct iovec iov = {
+      .iov_base = buf->data(),
+      .iov_len = buf_len,
+  };
+  // control_buffer needs to be big enough to accommodate the maximum
+  // conceivable number of CMSGs. Other (proprietary) Google QUIC code uses
+  // 512 Bytes, reused here.
+  constexpr size_t kControlBufferSize = 512;
+  alignas(struct cmsghdr) char control_buffer[kControlBufferSize];
+  struct msghdr msg = {
+      .msg_name = populate_remote_address ? res.storage.addr() : nullptr,
+      .msg_namelen = populate_remote_address ? res.storage.addr_len : 0,
+      .msg_iov = &iov,
+      .msg_iovlen = 1,
+      .msg_control = control_buffer,
+      .msg_controllen = kControlBufferSize,
+  };
+
+  res.bytes_read = HANDLE_EINTR(recvmsg(socket_, &msg, 0));
+  if (res.bytes_read < 0) {
+    return base::unexpected(static_cast<Error>(MapSystemError(errno)));
+  }
+
+  res.msg_flags = msg.msg_flags;
+  if (populate_remote_address) {
+    res.storage.addr_len = msg.msg_namelen;
+  }
+
+  res.tos = GetTosFromMsghdr(&msg);
+
+  return res;
+}
+
 base::expected<DatagramsMetadata, Error> UDPSocketPosix::InternalReadMultiple(
     IOBuffer* buffer,
     size_t buf_len,
@@ -1153,51 +1192,36 @@ int UDPSocketPosix::InternalRecvFromConnectedSocket(IOBuffer* buf,
 int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
                                                        int buf_len,
                                                        IPEndPoint* address) {
-  SockaddrStorage storage;
-  struct iovec iov = {
-      .iov_base = buf->data(),
-      .iov_len = static_cast<size_t>(buf_len),
-  };
-  // control_buffer needs to be big enough to accommodate the maximum
-  // conceivable number of CMSGs. Other (proprietary) Google QUIC code uses
-  // 512 Bytes, re-used here.
-  char control_buffer[512];
-  struct msghdr msg = {
-      .msg_name = storage.addr(),
-      .msg_namelen = storage.addr_len,
-      .msg_iov = &iov,
-      .msg_iovlen = 1,
-      .msg_control = control_buffer,
-      .msg_controllen = ABSL_ARRAYSIZE(control_buffer),
-  };
+  auto recv_result = DoRecvmsg(buf, static_cast<size_t>(buf_len),
+                               /*populate_remote_address=*/true);
   int result;
-  int bytes_transferred = HANDLE_EINTR(recvmsg(socket_, &msg, 0));
-  if (bytes_transferred < 0) {
-    result = MapSystemError(errno);
-    if (result == ERR_IO_PENDING) {
-      return result;
+  if (!recv_result.has_value()) {
+    result = static_cast<int>(recv_result.error());
+    if (result != ERR_IO_PENDING) {
+      LogRead(result, buf->data(), 0, nullptr);
     }
-  } else {
-    storage.addr_len = msg.msg_namelen;
-    if (msg.msg_flags & MSG_CTRUNC) {
-      result = ERR_UNEXPECTED;
-    } else if (msg.msg_flags & MSG_TRUNC) {
-      // NB: recvfrom(..., MSG_TRUNC, ...) would be a simpler way to do this on
-      // Linux, but isn't supported by POSIX.
-      result = ERR_MSG_TOO_BIG;
-    } else if (address &&
-               !address->FromSockAddr(storage.addr(), storage.addr_len)) {
-      result = ERR_ADDRESS_INVALID;
-    } else {
-      result = bytes_transferred;
-    }
-    last_tos_ = 0;
-    if (result >= 0) {
-      last_tos_ = GetTosFromMsghdr(&msg);
-    }
+    return result;
   }
 
-  LogRead(result, buf->data(), storage.addr_len, storage.addr());
+  const RecvmsgResult& res = recv_result.value();
+  if (res.msg_flags & MSG_CTRUNC) {
+    result = ERR_UNEXPECTED;
+  } else if (res.msg_flags & MSG_TRUNC) {
+    // NB: recvfrom(..., MSG_TRUNC, ...) would be a simpler way to do this on
+    // Linux, but isn't supported by POSIX.
+    result = ERR_MSG_TOO_BIG;
+  } else if (address &&
+             !address->FromSockAddr(res.storage.addr(), res.storage.addr_len)) {
+    result = ERR_ADDRESS_INVALID;
+  } else {
+    result = res.bytes_read;
+  }
+  last_tos_ = 0;
+  if (result >= 0) {
+    last_tos_ = res.tos;
+  }
+
+  LogRead(result, buf->data(), res.storage.addr_len, res.storage.addr());
   return result;
 }
 
