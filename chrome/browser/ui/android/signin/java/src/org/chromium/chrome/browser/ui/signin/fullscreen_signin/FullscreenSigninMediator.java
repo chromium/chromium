@@ -240,6 +240,8 @@ public class FullscreenSigninMediator
     void reset() {
         mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, false);
         mModel.set(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
+        mModel.set(FullscreenSigninProperties.ANIMATOR_LISTENER, null);
+        mModel.set(FullscreenSigninProperties.START_ANIMATION, false);
     }
 
     private void onNativeLoaded() {
@@ -597,11 +599,17 @@ public class FullscreenSigninMediator
                         .getById(assumeNonNull(mSelectedAccount).getId())
                         .getImage());
         if (sAnimationsEnabled) {
+            mModel.set(FullscreenSigninProperties.SHOW_ANIMATION, mConfig.logoId == 0);
             mModel.set(
                     FullscreenSigninProperties.ANIMATOR_LISTENER,
                     new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
+                            if (mDestroyed) return;
+                            mModel.set(FullscreenSigninProperties.ANIMATOR_LISTENER, null);
+                            mModel.set(FullscreenSigninProperties.SHOW_ANIMATION, false);
+                            mModel.set(FullscreenSigninProperties.START_ANIMATION, false);
+
                             // To give users more time to read the welcome text, we will wait for a
                             // delay time (according to UX request).
                             ThreadUtils.postOnUiThreadDelayed(
@@ -683,6 +691,9 @@ public class FullscreenSigninMediator
                 mModel.set(FullscreenSigninProperties.LOGO_DRAWABLE_ID, mConfig.logoId);
                 mModel.set(FullscreenSigninProperties.SHOW_ANIMATION, mConfig.logoId == 0);
                 mModel.set(FullscreenSigninProperties.TITLE_STRING, mConfig.title);
+                mModel.set(FullscreenSigninProperties.ANIMATOR_LISTENER, null);
+                mModel.set(FullscreenSigninProperties.START_ANIMATION, false);
+                mModel.set(FullscreenSigninProperties.PROFILE_PICTURE, null);
             }
         };
     }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import android.animation.Animator.AnimatorListener;
+import android.graphics.drawable.Drawable;
 import android.text.method.LinkMovementMethod;
 import android.transition.AutoTransition;
 import android.transition.ChangeBounds;
@@ -84,27 +86,32 @@ class FullscreenSigninViewBinder {
         } else if (propertyKey == FullscreenSigninProperties.IS_SIGNIN_SUPPORTED) {
             updateSelectedAccount(view, model);
             updateBottomGroupVisibility(view, model);
-        } else if (propertyKey == FullscreenSigninProperties.LOGO_DRAWABLE_ID) {
-            int logoId = model.get(FullscreenSigninProperties.LOGO_DRAWABLE_ID);
-            LayoutParams params = view.getIcon().getLayoutParams();
-
-            // TODO(crbug.com/390418475): Remove the if block below and
-            // fullscreen_signin_logo_default_height when fre_product_logo will be a VectorDrawable
-            // with appropriate height.
-            if (logoId == 0) {
-                logoId = R.drawable.fre_product_logo;
-                params.height =
-                        view.getContext()
-                                .getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.fullscreen_signin_logo_default_height);
+        } else if ((propertyKey == FullscreenSigninProperties.LOGO_DRAWABLE_ID)
+                || (propertyKey == FullscreenSigninProperties.PROFILE_PICTURE)) {
+            @Nullable Drawable profilePicture =
+                    model.get(FullscreenSigninProperties.PROFILE_PICTURE);
+            if (profilePicture != null) {
+                view.getIcon().setImageDrawable(profilePicture);
             } else {
-                params.height = LayoutParams.WRAP_CONTENT;
+                int logoId = model.get(FullscreenSigninProperties.LOGO_DRAWABLE_ID);
+                LayoutParams params = view.getIcon().getLayoutParams();
+
+                // TODO(crbug.com/390418475): Remove the if block below and
+                // fullscreen_signin_logo_default_height when fre_product_logo will be a
+                // VectorDrawable with appropriate height.
+                if (logoId == 0) {
+                    logoId = R.drawable.fre_product_logo;
+                    params.height =
+                            view.getContext()
+                                    .getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.fullscreen_signin_logo_default_height);
+                } else {
+                    params.height = LayoutParams.WRAP_CONTENT;
+                }
+                view.getIcon().setImageResource(logoId);
+                view.getIcon().setLayoutParams(params);
             }
-            view.getIcon().setImageResource(logoId);
-            view.getIcon().setLayoutParams(params);
-        } else if (propertyKey == FullscreenSigninProperties.PROFILE_PICTURE) {
-            view.getIcon().setImageDrawable(model.get(FullscreenSigninProperties.PROFILE_PICTURE));
         } else if (propertyKey == FullscreenSigninProperties.SHOW_ANIMATION) {
             boolean visible = model.get(FullscreenSigninProperties.SHOW_ANIMATION);
             view.getAnimationView().setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -113,11 +120,17 @@ class FullscreenSigninViewBinder {
             LottieAnimationView animation = view.getAnimationView();
             if (startAnimation) {
                 animation.playAnimation();
+            } else {
+                animation.cancelAnimation();
+                animation.setProgress(0.0f);
             }
         } else if (propertyKey == FullscreenSigninProperties.ANIMATOR_LISTENER) {
             LottieAnimationView animation = view.getAnimationView();
             animation.removeAllAnimatorListeners();
-            animation.addAnimatorListener(model.get(FullscreenSigninProperties.ANIMATOR_LISTENER));
+            AnimatorListener listener = model.get(FullscreenSigninProperties.ANIMATOR_LISTENER);
+            if (listener != null) {
+                animation.addAnimatorListener(listener);
+            }
         } else if (Objects.equals(propertyKey, FullscreenSigninProperties.TITLE_STRING)) {
             String text = model.get(FullscreenSigninProperties.TITLE_STRING);
             view.getTitle().setText(text);
