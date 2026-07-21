@@ -195,7 +195,8 @@ export class WebviewController {
     // <if expr="not is_android">
     if (isFullWebView(this.webview)) {
       this.eventTracker.add(
-          this.webview, 'zoomchange', (e: {newZoomFactor: number}) => {
+          this.webview, 'zoomchange',
+          (e: chrome.webviewTag.ZoomChangeEvent) => {
             const percentage = Math.round(e.newZoomFactor * 100);
             const message =
                 loadTimeData.getStringF('zoomLabel', percentage + '%');

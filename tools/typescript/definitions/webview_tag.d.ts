@@ -191,6 +191,11 @@ declare global {
         readonly newWidth: number;
       }
 
+      export interface ZoomChangeEvent extends Event {
+        readonly oldZoomFactor: number;
+        readonly newZoomFactor: number;
+      }
+
       export interface PermissionRequestEvent extends Event {
         readonly permission: PermissionType;
         request: MediaPermissionRequest|GeolocationPermissionRequest|

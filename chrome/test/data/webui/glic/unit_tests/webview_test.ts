@@ -9,12 +9,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-// Mock the `zoomchange` event defined in the chrome webviewTag API.
-interface WebViewZoomChangeEvent extends Event {
-  newZoomFactor: number;
-  oldZoomFactor?: number;
-}
-
 import {configureLoadTimeData, FakeApiHostEmbedder, FakeBrowserProxy, FakeWebviewDelegate} from './test_helpers.js';
 
 suite('urlMatchesAllowedOriginTest', () => {
@@ -259,8 +253,10 @@ suite('WebviewZoomTest', () => {
             'cr-a11y-announcer-messages-sent', document.body);
 
     // Simulate a zoom change to 125%
-    const zoomEvent = new Event('zoomchange') as WebViewZoomChangeEvent;
-    zoomEvent.newZoomFactor = 1.25;
+    const zoomEvent = Object.assign(
+                          new Event('zoomchange'),
+                          {oldZoomFactor: 1.0, newZoomFactor: 1.25}) as
+        chrome.webviewTag.ZoomChangeEvent;
     controller.webview.dispatchEvent(zoomEvent);
 
     const event = await announcementPromise;
