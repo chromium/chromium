@@ -165,6 +165,40 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
+                       StoreTokens_Success) {
+  Profile* profile = GetProfile();
+
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+
+  WaitForInitialization(service);
+
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  const auto c_origin = url::Origin::Create(GURL("https://c.net"));
+  std::vector<private_verification_tokens::PrivateVerificationTokensToken>
+      new_tokens = {
+          private_verification_tokens::PrivateVerificationTokensToken(
+              c_origin, std::vector<uint8_t>{10, 11}, 3, expiration, 1),
+      };
+
+  base::test::TestFuture<void> store_future;
+  service->StoreTokens(std::move(new_tokens), store_future.GetCallback());
+  EXPECT_TRUE(store_future.Wait());
+
+  base::test::TestFuture<std::vector<
+      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
+      get_future;
+  service->GetTokens(get_future.GetCallback());
+
+  auto tokens = get_future.Take();
+  auto expected_tokens = CreateTestTokens();
+  expected_tokens.emplace_back(c_origin, std::vector<uint8_t>{10, 11}, 3,
+                               expiration, 1);
+  VerifyTokens(tokens, expected_tokens);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
                        GetTokens_WhenShuttingDown_ReturnsEmpty) {
   PrivateVerificationTokensService* service =
       PrivateVerificationTokensServiceFactory::GetForProfile(GetProfile());

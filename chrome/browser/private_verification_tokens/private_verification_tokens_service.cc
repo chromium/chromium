@@ -128,6 +128,28 @@ void PrivateVerificationTokensService::GetTokens(
   std::move(callback).Run(std::move(tokens));
 }
 
+void PrivateVerificationTokensService::StoreTokens(
+    std::vector<private_verification_tokens::PrivateVerificationTokensToken>
+        tokens,
+    base::OnceClosure callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (is_shutting_down_) {
+    std::move(callback).Run();
+    return;
+  }
+
+  if (!is_initialized()) {
+    pending_operations_.push_back(
+        base::BindOnce(&PrivateVerificationTokensService::StoreTokens,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(tokens),
+                       std::move(callback)));
+    return;
+  }
+
+  CHECK(store_);
+  store_->StoreTokens(std::move(tokens), std::move(callback));
+}
+
 void PrivateVerificationTokensService::GetTokenIssuers(
     base::OnceCallback<void(std::vector<url::Origin>)> callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

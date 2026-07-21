@@ -73,6 +73,12 @@ class PrivateVerificationTokensService
           storage_key_filter,
       base::OnceClosure callback);
 
+  // Store tokens asynchronously.
+  void StoreTokens(
+      std::vector<private_verification_tokens::PrivateVerificationTokensToken>
+          tokens,
+      base::OnceClosure callback);
+
   base::WeakPtr<PrivateVerificationTokensService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

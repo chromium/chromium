@@ -50,6 +50,9 @@ class PrivateVerificationTokensStore {
                     std::optional<std::vector<url::Origin>> issuers,
                     base::OnceClosure callback);
 
+  void StoreTokens(std::vector<PrivateVerificationTokensToken> tokens,
+                   base::OnceClosure callback);
+
  private:
   explicit PrivateVerificationTokensStore(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -62,6 +65,7 @@ class PrivateVerificationTokensStore {
   void OnCacheInitialized(base::OnceCallback<void()> callback);
   void InitializeCache(base::OnceCallback<void()> callback, bool file_exists);
   void OnTokensDeleted(base::OnceClosure callback, bool success);
+  void OnTokensStored(base::OnceClosure callback, bool success);
 
   base::SequenceBound<PrivateVerificationTokensDatabase> database_;
 

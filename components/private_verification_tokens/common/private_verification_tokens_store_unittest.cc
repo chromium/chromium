@@ -590,6 +590,35 @@ TEST_F(PrivateVerificationTokensStoreTest, DeleteTokens_TimeRange) {
   }
 }
 
+TEST_F(PrivateVerificationTokensStoreTest, StoreTokens_Success) {
+  const base::FilePath database_path = DbPath(TempDir());
+  CreateStore(database_path);
+  ASSERT_EQ(store()->tokens().size(), 0u);
+
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  std::vector<PrivateVerificationTokensToken> tokens = {
+      PrivateVerificationTokensToken(kOriginA, {1, 2, 3}, 1, expiration, 1),
+      PrivateVerificationTokensToken(kOriginBTri, {4, 5, 6}, 2, expiration, 1),
+  };
+
+  base::test::TestFuture<void> future;
+  store()->StoreTokens(std::move(tokens), future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  EXPECT_EQ(store()->tokens().size(), 2u);
+  EXPECT_TRUE(store()->tokens().contains(kOriginA));
+  EXPECT_TRUE(store()->tokens().contains(kOriginBTri));
+
+  store_.reset();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  {
+    sql::Database database(sql::test::kTestTag);
+    ASSERT_TRUE(database.Open(database_path));
+    VerifyTableRowCount(database, kTokenTableName, 2u);
+  }
+}
+
 }  // namespace
 
 }  // namespace private_verification_tokens
