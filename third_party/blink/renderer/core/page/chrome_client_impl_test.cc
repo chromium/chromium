@@ -222,6 +222,7 @@ class FakeColorChooserClient : public GarbageCollected<FakeColorChooserClient>,
     return gfx::Rect();
   }
   Color CurrentColor() override { return Color(); }
+  bool ShouldShowAlpha() const override { return false; }
   bool ShouldShowSuggestions() const override { return false; }
   Vector<mojom::blink::ColorSuggestionPtr> Suggestions() const override {
     return Vector<mojom::blink::ColorSuggestionPtr>();

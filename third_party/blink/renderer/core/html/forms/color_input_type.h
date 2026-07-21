@@ -54,6 +54,7 @@ class ColorInputType final : public InputType,
   Element& OwnerElement() const override;
   gfx::Rect ElementRectRelativeToLocalRoot() const override;
   Color CurrentColor() override;
+  bool ShouldShowAlpha() const override;
   bool ShouldShowSuggestions() const override;
   Vector<mojom::blink::ColorSuggestionPtr> Suggestions() const override;
   ColorChooserClient* GetColorChooserClient() override;

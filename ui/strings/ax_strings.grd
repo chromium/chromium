@@ -770,6 +770,9 @@ need to be translated for each locale.-->
 
       <!-- Localized labels for the color input popup.  Exclude from Android to save binary size since Android uses a native popup. -->
       <if expr="not is_android">
+        <message name="IDS_AX_COLOR_ALPHA_SLIDER" desc="Accessibility label of the alpha channel controls in a color picker popup">
+          Alpha channel
+        </message>
         <message name="IDS_AX_COLOR_EDIT_BLUE" desc="Accessibility label of the blue channel edit box in a color picker popup">
           Blue channel
         </message>

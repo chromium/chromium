@@ -12,7 +12,8 @@ function initializeColorPicker() {
   if (global.params.selectedColor === undefined) {
     global.params.selectedColor = DefaultColor;
   }
-  const colorPicker = new ColorPicker(new Color(global.params.selectedColor));
+  const colorPicker = new ColorPicker(
+      new Color(global.params.selectedColor, global.params.selectedColorAlpha));
   main.append(colorPicker);
   const width = colorPicker.offsetWidth;
   const height = colorPicker.offsetHeight;
@@ -76,7 +77,11 @@ class Color {
    * @param  {...number} colorValues ignored if colorStringOrFormat is a string
    */
   constructor(colorStringOrFormat, ...colorValues) {
+    this.alphaValue_ = 1;
     if (typeof colorStringOrFormat === 'string') {
+      if (colorValues[0] !== undefined) {
+        this.alphaValue = colorValues[0];
+      }
       colorStringOrFormat = colorStringOrFormat.toLowerCase();
       if (colorStringOrFormat.startsWith('#')) {
         this.hexValue_ = colorStringOrFormat.substr(1);
@@ -98,12 +103,17 @@ class Color {
       switch (colorStringOrFormat) {
         case ColorFormat.HEX:
           this.hexValue_ = colorValues[0].toLowerCase();
+          this.alphaValue = colorValues[1] ?? 1;
           break;
         case ColorFormat.RGB:
-          [this.rValue_, this.gValue_, this.bValue_] = colorValues.map(Number);
+          [this.rValue_, this.gValue_, this.bValue_] =
+              colorValues.slice(0, 3).map(Number);
+          this.alphaValue = colorValues[3] ?? 1;
           break;
         case ColorFormat.HSL:
-          [this.hValue_, this.sValue_, this.lValue_] = colorValues.map(Number);
+          [this.hValue_, this.sValue_, this.lValue_] =
+              colorValues.slice(0, 3).map(Number);
+          this.alphaValue = colorValues[3] ?? 1;
           break;
       }
     }
@@ -113,7 +123,30 @@ class Color {
    * @param {!Color} other
    */
   equals(other) {
-    return (this.hexValue === other.hexValue);
+    return this.hexValue === other.hexValue &&
+        this.alphaValue === other.alphaValue;
+  }
+
+  /**
+   * @returns {number} between 0 and 1
+   */
+  get alphaValue() {
+    return this.alphaValue_;
+  }
+
+  /**
+   * @param {number} alphaValue
+   */
+  set alphaValue(alphaValue) {
+    this.alphaValue_ = Math.max(0, Math.min(1, Number(alphaValue)));
+  }
+
+  /**
+   * @param {number} alphaValue
+   * @returns {!Color}
+   */
+  withAlpha(alphaValue) {
+    return new Color(ColorFormat.RGB, ...this.rgbValues(), alphaValue);
   }
 
   /**
@@ -136,6 +169,11 @@ class Color {
 
   asHex() {
     return '#' + this.hexValue;
+  }
+
+  asHexWithAlpha() {
+    const alphaValue = Math.round(this.alphaValue * 255);
+    return this.asHex() + alphaValue.toString(16).padStart(2, '0');
   }
 
   /**
@@ -179,7 +217,19 @@ class Color {
   }
 
   asRGB() {
-    return 'rgb(' + this.rgbValues().join() + ')';
+    if (this.alphaValue === 1) {
+      return 'rgb(' + this.rgbValues().join() + ')';
+    }
+    return 'rgba(' + [...this.rgbValues(), this.alphaValue].join() + ')';
+  }
+
+  asColorFunction() {
+    const components = this.rgbValues().map(value => value / 255);
+    let result = 'color(srgb ' + components.join(' ');
+    if (this.alphaValue !== 1) {
+      result += ' / ' + this.alphaValue;
+    }
+    return result + ')';
   }
 
   /**
@@ -426,6 +476,10 @@ class ColorPicker extends HTMLElement {
   constructor(initialColor) {
     super();
 
+    if (global.params.shouldShowAlpha) {
+      this.classList.add('alpha-enabled');
+    }
+
     if (global.params.isBorderTransparent) {
       this.style.borderColor = 'transparent';
     }
@@ -452,6 +506,8 @@ class ColorPicker extends HTMLElement {
         .addEventListener('manual-color-change', this.onManualColorChange_);
 
     this.addEventListener('visual-color-change', this.onVisualColorChange_);
+
+    this.addEventListener('alpha-change', this.onAlphaChange_);
 
     this.addEventListener('format-change', this.onFormatChange_);
 
@@ -486,8 +542,7 @@ class ColorPicker extends HTMLElement {
       this.selectedColor = newColor;
       this.updateVisualColorPicker(newColor);
 
-      const selectedValue = newColor.asHex();
-      window.pagePopupController.setValue(selectedValue);
+      this.setValue_(newColor);
     }
   };
 
@@ -495,7 +550,8 @@ class ColorPicker extends HTMLElement {
    * @param {!Event} event
    */
   onVisualColorChange_ = (event) => {
-    const newColor = event.detail.color;
+    const newColor =
+        event.detail.color.withAlpha(this.selectedColor.alphaValue);
     if (!this.selectedColor.equals(newColor)) {
       if (!this.processingManualColorChange_) {
         this.selectedColor = newColor;
@@ -503,8 +559,8 @@ class ColorPicker extends HTMLElement {
 
         this.colorValueAXAnnouncer_.announceColor(newColor);
 
-        const selectedValue = newColor.asHex();
-        window.pagePopupController.setValue(selectedValue);
+        this.visualColorPicker_.alphaColor = newColor;
+        this.setValue_(newColor);
       } else {
         // We are making a visual color change in response to a manual color
         // change. So we do not overwrite the manually specified values and do
@@ -512,6 +568,28 @@ class ColorPicker extends HTMLElement {
       }
     }
   };
+
+  /**
+   * @param {!Event} event
+   */
+  onAlphaChange_ = (event) => {
+    const newColor = this.selectedColor.withAlpha(event.detail.alpha);
+    if (!this.selectedColor.equals(newColor)) {
+      this.selectedColor = newColor;
+      this.manualColorPicker_.color = newColor;
+      this.visualColorPicker_.alphaColor = newColor;
+      this.setValue_(newColor);
+    }
+  };
+
+  /**
+   * @param {!Color} color
+   */
+  setValue_(color) {
+    window.pagePopupController.setValue(
+        global.params.shouldShowAlpha ? color.asColorFunction() :
+                                        color.asHex());
+  }
 
   /**
    * @param {!Color} newColor
@@ -591,6 +669,7 @@ class ColorPicker extends HTMLElement {
   updateFocusableElements_ = () => {
     this.focusableElements_ = Array.from(this.querySelectorAll(
         'color-value-container:not(.hidden-color-value-container) > input,' +
+        'alpha-slider > input,' +
         '[tabindex]:not([tabindex=\'-1\'])'));
   };
 
@@ -611,8 +690,7 @@ class ColorPicker extends HTMLElement {
       this.manualColorPicker_.color = selectedValue;
       this.updateVisualColorPicker(selectedValue);
 
-      const hexValue = selectedValue.asHex();
-      window.pagePopupController.setValue(hexValue);
+      this.setValue_(selectedValue);
     }
     this.visualColorPicker_.eyeDropper.finished();
     delete window.updateData;
@@ -642,6 +720,11 @@ class VisualColorPicker extends HTMLElement {
 
     this.colorWell_ = new ColorWell(initialColor);
     this.prepend(this.colorWell_);
+
+    if (global.params.shouldShowAlpha) {
+      this.alphaSlider_ = new AlphaSlider(initialColor);
+      this.append(this.alphaSlider_);
+    }
 
     this.colorWell_.addEventListener('color-well-initialized', () => {
       this.initializeListeners_();
@@ -801,6 +884,19 @@ class VisualColorPicker extends HTMLElement {
   set color(newColor) {
     this.hueSlider_.color = newColor;
     this.colorWell_.selectedColor = newColor;
+    this.alphaColor = newColor;
+  }
+
+  /**
+   * Updates the alpha slider and color preview without moving the hue or color
+   * well controls.
+   * @param {!Color} newColor
+   */
+  set alphaColor(newColor) {
+    this.colorViewer_.color = newColor;
+    if (this.alphaSlider_) {
+      this.alphaSlider_.color = newColor;
+    }
   }
 
   get eyeDropper() {
@@ -808,6 +904,81 @@ class VisualColorPicker extends HTMLElement {
   }
 }
 window.customElements.define('visual-color-picker', VisualColorPicker);
+
+/**
+ * AlphaSlider: Allows the alpha component to be selected from 0% to 100%.
+ */
+class AlphaSlider extends HTMLElement {
+  /**
+   * @param {!Color} initialColor
+   */
+  constructor(initialColor) {
+    super();
+
+    this.label_ = document.createElement('label');
+    this.label_.setAttribute('for', 'alphaSlider');
+    this.label_.textContent = global.params.axAlphaChannelLabel;
+
+    this.value_ = document.createElement('input');
+    this.value_.setAttribute('id', 'alphaValue');
+    this.value_.setAttribute('type', 'number');
+    this.value_.setAttribute('min', '0');
+    this.value_.setAttribute('max', '100');
+    this.value_.setAttribute('step', '1');
+    this.value_.setAttribute('aria-label', global.params.axAlphaChannelLabel);
+    this.value_.addEventListener('input', this.onValueInput_);
+    this.value_.addEventListener('blur', this.updateValue_);
+
+    this.percentSign_ = document.createElement('span');
+    this.percentSign_.textContent = '%';
+    this.percentSign_.setAttribute('aria-hidden', 'true');
+
+    this.slider_ = document.createElement('input');
+    this.slider_.setAttribute('id', 'alphaSlider');
+    this.slider_.setAttribute('type', 'range');
+    this.slider_.setAttribute('min', '0');
+    this.slider_.setAttribute('max', '100');
+    this.slider_.addEventListener('input', this.onInput_);
+    this.append(this.label_, this.value_, this.percentSign_, this.slider_);
+    this.color = initialColor;
+  }
+
+  /**
+   * @param {!Color} color
+   */
+  set color(color) {
+    this.slider_.value = Math.round(color.alphaValue * 100);
+    this.updateValue_();
+    this.style.setProperty('--alpha-slider-color', color.withAlpha(1).asRGB());
+  }
+
+  onInput_ = () => {
+    this.updateValue_();
+    this.dispatchAlphaChange_();
+  };
+
+  onValueInput_ = () => {
+    const value = Number(this.value_.value);
+    if (this.value_.value !== '' && value >= 0 && value <= 100) {
+      this.slider_.value = value;
+      this.dispatchAlphaChange_();
+    }
+  };
+
+  dispatchAlphaChange_ = () => {
+    this.dispatchEvent(new CustomEvent(
+        'alpha-change',
+        {bubbles: true, detail: {alpha: Number(this.slider_.value) / 100}}));
+  };
+
+  updateValue_ = () => {
+    this.value_.value = this.slider_.value;
+    const valueText = this.slider_.value + '%';
+    this.value_.setAttribute('aria-valuetext', valueText);
+    this.slider_.setAttribute('aria-valuetext', valueText);
+  };
+}
+window.customElements.define('alpha-slider', AlphaSlider);
 
 /**
  * EyeDropper: Allows color selection from content outside the color picker.
@@ -1683,6 +1854,7 @@ class ColorValueContainer extends HTMLElement {
     super();
 
     this.colorFormat_ = colorFormat;
+    this.alphaValue_ = initialColor.alphaValue;
     this.channelValueContainers_ = [];
     if (this.colorFormat_ === ColorFormat.HEX) {
       const hexValueContainer =
@@ -1719,16 +1891,23 @@ class ColorValueContainer extends HTMLElement {
   }
 
   get color() {
+    let alphaValue = this.alphaValue_;
+    if (global.params.shouldShowAlpha &&
+        this.colorFormat_ === ColorFormat.HEX) {
+      alphaValue = this.channelValueContainers_[0].alphaValue;
+    }
     return new Color(
         this.colorFormat_,
         ...this.channelValueContainers_.map(
-            (channelValueContainer) => channelValueContainer.channelValue));
+            (channelValueContainer) => channelValueContainer.channelValue),
+        alphaValue);
   }
 
   /**
    * @param {!Color} color
    */
   set color(color) {
+    this.alphaValue_ = color.alphaValue;
     this.channelValueContainers_.forEach(
         (channelValueContainer) => channelValueContainer.setValue(color));
   }
@@ -1766,7 +1945,8 @@ class ChannelValueContainer extends HTMLInputElement {
     switch (colorChannel) {
       case ColorChannel.HEX:
         this.setAttribute('id', 'hexValueContainer');
-        this.setAttribute('maxlength', '7');
+        this.setAttribute(
+            'maxlength', global.params.shouldShowAlpha ? '9' : '7');
         this.setAttribute('aria-label', global.params.axHexadecimalEditLabel);
         break;
       case ColorChannel.R:
@@ -1813,15 +1993,22 @@ class ChannelValueContainer extends HTMLInputElement {
     return this.channelValue_;
   }
 
+  get alphaValue() {
+    return this.alphaValue_;
+  }
+
   /**
    * @param {!Color} color
    */
   setValue(color) {
     switch (this.colorChannel_) {
       case ColorChannel.HEX:
-        if (this.channelValue_ !== color.hexValue) {
+        if (this.channelValue_ !== color.hexValue ||
+            this.alphaValue_ !== color.alphaValue) {
           this.channelValue_ = color.hexValue;
-          this.value = '#' + this.channelValue_;
+          this.alphaValue_ = color.alphaValue;
+          this.value = global.params.shouldShowAlpha ? color.asHexWithAlpha() :
+                                                       color.asHex();
         }
         break;
       case ColorChannel.R:
@@ -1872,9 +2059,14 @@ class ChannelValueContainer extends HTMLInputElement {
           if (value.startsWith('#'))
             value = value.substr(1).toLowerCase();
           if (value.match(/^[0-9a-f]+$/)) {
-            // Ex. 'ffffff' => this.channelValue_ == 'ffffff'
-            // Ex. 'ff' => this.channelValue_ == '0000ff'
-            this.channelValue_ = ('000000' + value).slice(-6);
+            if (global.params.shouldShowAlpha && value.length === 8) {
+              this.channelValue_ = value.substring(0, 6);
+              this.alphaValue_ = parseInt(value.substring(6), 16) / 255;
+            } else if (!global.params.shouldShowAlpha || value.length <= 6) {
+              // Ex. 'ffffff' => this.channelValue_ == 'ffffff'
+              // Ex. 'ff' => this.channelValue_ == '0000ff'
+              this.channelValue_ = ('000000' + value).slice(-6);
+            }
           }
           break;
         case ColorChannel.R:
@@ -1904,8 +2096,14 @@ class ChannelValueContainer extends HTMLInputElement {
   onBlur_ = () => {
     switch (this.colorChannel_) {
       case ColorChannel.HEX:
-        if (this.channelValue_ !== Number(this.value.substr(1))) {
-          this.value = '#' + this.channelValue_;
+        const expectedValue = global.params.shouldShowAlpha ?
+            '#' + this.channelValue_ +
+                Math.round(this.alphaValue_ * 255)
+                    .toString(16)
+                    .padStart(2, '0') :
+            '#' + this.channelValue_;
+        if (this.value.toLowerCase() !== expectedValue) {
+          this.value = expectedValue;
         }
         break;
       case ColorChannel.R:
@@ -2134,8 +2332,9 @@ class ColorValueAXAnnouncer extends HTMLElement {
   announceColor(newColor) {
     let announcementString = null;
     if (this.colorFormat_ === ColorFormat.HEX) {
-      announcementString =
-          `${global.params.axHexadecimalEditLabel} ${newColor.hexValue}`;
+      announcementString = `${global.params.axHexadecimalEditLabel} ${
+          global.params.shouldShowAlpha ? newColor.asHexWithAlpha() :
+                                          newColor.hexValue}`;
     } else if (this.colorFormat_ === ColorFormat.RGB) {
       announcementString =
           `${global.params.axRedEditLabel} ${newColor.rValue}, ${
@@ -2146,6 +2345,10 @@ class ColorValueAXAnnouncer extends HTMLElement {
           `${global.params.axHueEditLabel} ${newColor.hValue}, ${
               global.params.axSaturationEditLabel} ${newColor.sValue}, ${
               global.params.axLightnessEditLabel} ${newColor.lValue}`;
+    }
+    if (global.params.shouldShowAlpha) {
+      announcementString += `, ${global.params.axAlphaChannelLabel} ${
+          Math.round(newColor.alphaValue * 100)}%`;
     }
     this.announce_(announcementString)
   }
