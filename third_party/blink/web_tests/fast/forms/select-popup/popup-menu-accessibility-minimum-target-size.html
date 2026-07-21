@@ -14,7 +14,11 @@
 
 <script>
 function test(dimension, expectedValue, message) {
-  promise_test(() => {
+  promise_test(t => {
+    t.add_cleanup(() => {
+      if (window.eventSender)
+        eventSender.keyDown('Escape');
+    });
     const menu = document.querySelector("select");
     return openPicker(menu)
     .then(() => {

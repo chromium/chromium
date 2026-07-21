@@ -22,7 +22,10 @@ const openPickerAndGetThumb = async () => {
   return { thumb, thumbX: thumbOffset[0] + 1, thumbY: thumbOffset[1] + 1, originalTop };
 }
 
-promise_test(async () => {
+promise_test(async t => {
+  t.add_cleanup(() => {
+    eventSender.keyDown('Escape');
+  });
   const {thumb, thumbX, thumbY, originalTop} = await openPickerAndGetThumb();
 
   eventSender.mouseMoveTo(thumbX, thumbY);
@@ -34,7 +37,10 @@ promise_test(async () => {
   assert_equals(thumb.style.top, originalTop);
 }, `Verifies that the date picker's scrubby scrollbar returns to its initial state after being clicked and dragged.`);
 
-promise_test(async () => {
+promise_test(async t => {
+  t.add_cleanup(() => {
+    eventSender.keyDown('Escape');
+  });
   const {thumb, thumbX, thumbY, originalTop} = await openPickerAndGetThumb();
 
   eventSender.clearTouchPoints();

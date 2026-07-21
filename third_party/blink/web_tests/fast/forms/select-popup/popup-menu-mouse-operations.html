@@ -57,7 +57,8 @@ function test1() {
     // scrolled. crbug.com/558287.
     eventSender.mouseMoveTo(10, picker.selectElement_.offsetHeight - 2);
     shouldBeEqualToString('picker.selectElement_.selectedOptions[0].label', 'option20');
-    waitUntilClosingDeprecatedJsTest(function() {
+    eventSender.keyDown('Escape');
+    requestAnimationFrame(function() {
         openPickerDeprecatedJsTest(menu, test2, openPickerErrorCallback);
     });
 }

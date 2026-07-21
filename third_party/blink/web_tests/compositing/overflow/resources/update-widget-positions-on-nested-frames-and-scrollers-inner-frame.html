@@ -9,8 +9,37 @@
       display: block;
       margin: 5px;
     }
+    button {
+      position: absolute;
+      top: 550px;
+      left: 0;
+      z-index: 99999;
+    }
   </style>
   <script>
+    function waitUntilClosed() {
+      return new Promise((resolve) => {
+        function tick() {
+          if (!window.internals || !internals.pagePopupWindow) {
+            resolve();
+          } else {
+            requestAnimationFrame(tick);
+          }
+        }
+        tick();
+      });
+    }
+
+    const originalClick = window.test_driver_internal.click;
+    window.test_driver_internal.click = function(element, coords) {
+      let r1 = window.frameElement.getBoundingClientRect();
+      let r2 = window.parent.frameElement.getBoundingClientRect();
+      return originalClick(element, {
+        x: coords.x + r1.left + r2.left,
+        y: coords.y + r1.top + r2.top
+      });
+    };
+
     // We need to 'click' the select element by sending an actual event
     // through internals, since the regular javascript click() method
     // won't trigger the right events for this test.
@@ -19,11 +48,10 @@
         return;
 
       var select = document.getElementById('select');
-      var selectRect = select.getBoundingClientRect();
       openPicker(select)
       .then(callback)
       .catch(() => {
-          setTimeout(callback, 0);
+        setTimeout(callback, 0);
       });
     }
 

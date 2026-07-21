@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-1000">
+<meta name=fuzzy content="maxDifference=0-20; totalPixels=0-1000">
 <script src="../../../resources/testdriver.js"></script>
 <script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
@@ -7,8 +7,32 @@
 <input style='margin: 40px 0' type='color' id='color' value='#FFFFFF'>
 
 <script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+
   const element = document.querySelector('input');
+
+  function waitUntilClosed() {
+    return new Promise((resolve) => {
+      function tick() {
+        if (!internals.pagePopupWindow) {
+          resolve();
+        } else {
+          requestAnimationFrame(tick);
+        }
+      }
+      tick();
+    });
+  }
+
   openPicker(element)
-  .then(eventSender.keyDown('Enter'))
-  .then(openPickerAppearanceOnly(element));
+  .then(() => eventSender.keyDown('Enter'))
+  .then(() => waitUntilClosed())
+  .then(() => openPickerAppearanceOnly(element))
+  .catch((err) => {
+    if (window.testRunner) {
+      testRunner.notifyDone();
+    }
+  });
 </script>

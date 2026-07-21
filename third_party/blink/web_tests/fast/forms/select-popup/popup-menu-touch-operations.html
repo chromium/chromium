@@ -101,6 +101,7 @@ function testDisabled() {
         shouldNotBe('internals.pagePopupWindow', 'null');
         shouldBeEqualToString('menuElement.value', 'baz');
 
+        eventSender.keyDown('Escape');
         test2();
     }, function () {
         testFailed('picker didn\'t open')
@@ -146,6 +147,7 @@ function test2AfterScrollEvent() {
     shouldNotBe('internals.pagePopupWindow', 'null');
     shouldBeEqualToString('menuElement2.value', '2');
 
+    eventSender.keyDown('Escape');
     test3();
 }
 
