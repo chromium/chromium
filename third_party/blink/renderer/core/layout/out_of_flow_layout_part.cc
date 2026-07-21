@@ -790,49 +790,6 @@ void OutOfFlowLayoutPart::HandleFragmentation() {
 const OutOfFlowLayoutPart::ContainingBlockInfo
 OutOfFlowLayoutPart::GetContainingBlockInfo(
     const LogicalOofPositionedNode& candidate) {
-  const auto* container_object = container_builder_->GetLayoutObject();
-  const auto& node_style = candidate.Node().Style();
-  bool is_hidden_for_paint =
-      container_builder_->GetConstraintSpace().IsHiddenForPaint();
-
-  auto IsPlacedWithinGridOrGridLanesArea = [&](const auto* containing_block) {
-    if (!containing_block->IsLayoutGridOrGridLanes()) {
-      return false;
-    }
-
-    return !node_style.GridColumnStart().IsAuto() ||
-           !node_style.GridColumnEnd().IsAuto() ||
-           !node_style.GridRowStart().IsAuto() ||
-           !node_style.GridRowEnd().IsAuto();
-  };
-
-  auto GridAreaContainingBlockInfo = [&](const LayoutBox& containing_box,
-                                         const GridLayoutData& layout_data,
-                                         const LogicalRect& padding_box_rect)
-      -> OutOfFlowLayoutPart::ContainingBlockInfo {
-    DCHECK(containing_box.IsLayoutGrid() || containing_box.IsLayoutGridLanes());
-
-    const auto& style = containing_box.StyleRef();
-    GridItemData* item =
-        MakeGarbageCollected<GridItemData>(candidate.Node(), style);
-
-    LogicalRect rect;
-    if (containing_box.IsLayoutGrid()) {
-      rect = GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
-          To<LayoutGrid>(containing_box).CachedPlacementData(), layout_data,
-          style, padding_box_rect, item);
-    } else {
-      rect = GridLanesLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
-          To<LayoutGridLanes>(containing_box).CachedPlacementData(),
-          layout_data, style, padding_box_rect, item);
-    }
-
-    return {.writing_direction = style.GetWritingDirection(),
-            .is_hidden_for_paint = is_hidden_for_paint,
-            .rect = rect,
-            .scroll_direction = default_containing_block_.scroll_direction};
-  };
-
   if (const LayoutInline* container = candidate.InlineContainer()) {
     const auto it = containing_blocks_map_.find(container);
     CHECK(it != containing_blocks_map_.end());
@@ -852,12 +809,10 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
           containing_block_fragment->GetLayoutObject();
       DCHECK(containing_block);
 
-      bool is_placed_within_grid_area =
-          containing_block->IsLayoutGrid() &&
-          IsPlacedWithinGridOrGridLanesArea(containing_block);
       auto it = containing_blocks_map_.find(containing_block);
-      if (it != containing_blocks_map_.end() && !is_placed_within_grid_area)
+      if (it != containing_blocks_map_.end()) {
         return it->value;
+      }
 
       const auto writing_direction =
           containing_block->StyleRef().GetWritingDirection();
@@ -872,13 +827,6 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
           To<PhysicalBoxFragment>(containing_block_fragment)
               ->Borders()
               .ConvertToLogical(writing_direction));
-
-      // TODO(yanlingwang): Add support for grid-lanes fragmentation.
-      if (is_placed_within_grid_area) {
-        return GridAreaContainingBlockInfo(
-            *To<LayoutGrid>(containing_block),
-            *To<LayoutGrid>(containing_block)->LayoutData(), padding_box_rect);
-      }
 
       padding_box_rect.offset +=
           fragmentainer_descendant.containing_block.Offset();
@@ -899,13 +847,7 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
     }
   }
 
-  if (IsPlacedWithinGridOrGridLanesArea(container_object)) {
-    return GridAreaContainingBlockInfo(*To<LayoutBox>(container_object),
-                                       container_builder_->GetGridLayoutData(),
-                                       default_containing_block_.rect);
-  }
-
-  if (node_style.GetPosition() == EPosition::kFixed &&
+  if (candidate.Node().Style().GetPosition() == EPosition::kFixed &&
       viewport_containing_block_) {
     return *viewport_containing_block_;
   }
@@ -1799,7 +1741,9 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
   std::optional<LogicalRect> scroll_rect = container_info.scroll_rect;
 
   const AnchorMap* anchor_map = nullptr;
+  const LayoutObject* containing_block = nullptr;
   const LayoutObject* actual_containing_block = nullptr;
+  const GridLayoutData* grid_layout_data = nullptr;
   if (is_inside_fragmentation_context &&
       !RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
     // The containing block of the OOF is part of the fragmentation context
@@ -1865,14 +1809,17 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
     }
     anchor_map = stitched_anchor_map;
     actual_containing_block = candidate_layout_box.Container();
+    containing_block = candidate_layout_box.Container();
   } else {
     anchor_map = container_builder_->GetAnchorMap();
+    containing_block = container_builder_->Node().GetLayoutBox();
+    grid_layout_data = container_builder_->GetGridLayoutData();
   }
 
   return AnchorEvaluatorImpl(candidate_layout_box, anchor_map, implicit_anchor,
-                             actual_containing_block,
-                             container_info.writing_direction, container_size,
-                             container_rect, scroll_rect);
+                             containing_block, actual_containing_block,
+                             grid_layout_data, container_info.writing_direction,
+                             container_size, container_rect, scroll_rect);
 }
 
 OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(

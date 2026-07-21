@@ -9,6 +9,10 @@
 #include "third_party/blink/renderer/core/layout/anchor_map.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid_lanes/layout_grid_lanes.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/position_area.h"
@@ -656,6 +660,25 @@ LogicalRect AnchorEvaluatorImpl::AdjustedContainingBlockRect(
     bool has_default_anchor) const {
   LogicalRect rect =
       has_default_anchor && scroll_rect_ ? *scroll_rect_ : container_rect_;
+
+  // Apply the grid/grid-lanes area if needed.
+  const ComputedStyle& style = containing_block_->StyleRef();
+  if (const auto* grid = DynamicTo<LayoutGrid>(containing_block_)) {
+    rect = GridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+        grid->CachedPlacementData(),
+        grid_layout_data_ ? *grid_layout_data_ : *grid->LayoutData(), style,
+        rect,
+        MakeGarbageCollected<GridItemData>(
+            BlockNode(const_cast<LayoutBox*>(query_box_)), style));
+  } else if (const auto* grid_lanes =
+                 DynamicTo<LayoutGridLanes>(containing_block_)) {
+    rect = GridLanesLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
+        grid_lanes->CachedPlacementData(),
+        grid_layout_data_ ? *grid_layout_data_ : *grid_lanes->LayoutData(),
+        style, rect,
+        MakeGarbageCollected<GridItemData>(
+            BlockNode(const_cast<LayoutBox*>(query_box_)), style));
+  }
 
   // If present, reduce the containing-block rect based on the position-area.
   if (position_area_offsets) {

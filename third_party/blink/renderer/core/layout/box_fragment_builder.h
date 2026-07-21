@@ -692,10 +692,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     reading_flow_nodes_ = std::move(nodes);
   }
 
-  const GridLayoutData& GetGridLayoutData() const {
-    DCHECK(grid_layout_data_);
-    return *grid_layout_data_;
-  }
+  const GridLayoutData* GetGridLayoutData() const { return grid_layout_data_; }
 
   BreakTokenAlgorithmData* GetBreakTokenData() { return break_token_data_; }
 

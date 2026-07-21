@@ -25,6 +25,7 @@ class AnchorMap;
 class AnchorQuery;
 class AnchorSpecifierValue;
 class Element;
+class GridLayoutData;
 class LayoutBox;
 class LayoutObject;
 class PaintLayer;
@@ -34,10 +35,14 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   STACK_ALLOCATED();
 
  public:
+  // The parameter `actual_containing_block` should be present when involved in
+  // fragmentation. It is used to limit the anchor-map to acceptable anchors.
   AnchorEvaluatorImpl(const LayoutBox& query_box,
                       const AnchorMap* anchor_map,
                       const LayoutObject* implicit_anchor,
-                      const LayoutObject* css_containing_block,
+                      const LayoutObject* containing_block,
+                      const LayoutObject* actual_containing_block,
+                      const GridLayoutData* grid_layout_data,
                       WritingDirectionMode container_writing_direction,
                       const LogicalSize& container_size,
                       const LogicalRect& container_rect,
@@ -45,7 +50,9 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       : query_box_(&query_box),
         anchor_map_(anchor_map),
         implicit_anchor_(implicit_anchor),
-        query_box_actual_containing_block_(css_containing_block),
+        containing_block_(containing_block),
+        query_box_actual_containing_block_(actual_containing_block),
+        grid_layout_data_(grid_layout_data),
         container_writing_direction_(container_writing_direction),
         container_size_(container_size),
         container_rect_(container_rect),
@@ -83,7 +90,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // Given the computed value of `position-anchor`, returns the default anchor.
   const LayoutObject* DefaultAnchor(const DefaultAnchorData&) const;
 
-  // Returns the containing-block rect, adjusted by the position-area insets.
+  // Returns the containing-block rect, adjusted by any grid/grid-lanes area
+  // and position-area insets.
   // See: https://drafts.csswg.org/css-position/#original-cb
   LogicalRect AdjustedContainingBlockRect(
       const std::optional<PositionAreaOffsets>&,
@@ -155,6 +163,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   const LayoutBox* query_box_ = nullptr;
   const AnchorMap* anchor_map_ = nullptr;
   const LayoutObject* implicit_anchor_ = nullptr;
+  const LayoutObject* containing_block_ = nullptr;
 
   // The (CSS) containing block of the querying element. This should only be set
   // if the containing block in the physical fragment tree is not the same as
@@ -162,6 +171,8 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
   // fragmentation. If specified, some additional tree-walking will be performed
   // when looking for acceptable anchors.
   const LayoutObject* query_box_actual_containing_block_ = nullptr;
+
+  const GridLayoutData* grid_layout_data_ = nullptr;
 
   WritingDirectionMode container_writing_direction_{WritingMode::kHorizontalTb,
                                                     TextDirection::kLtr};
