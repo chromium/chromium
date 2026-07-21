@@ -13,6 +13,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/ca_layer_params.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/mac/io_surface.h"
@@ -91,7 +92,8 @@ void SoftwareOutputDeviceMac::UpdateAndCopyBufferDamage(
   for (SkRegion::Iterator it(copy_region); !it.done(); it.next()) {
     const SkIRect& rect = it.rect();
     current_paint_canvas_->writePixels(
-        SkImageInfo::MakeN32Premul(rect.width(), rect.height()),
+        SkImageInfo::MakeN32Premul(rect.width(), rect.height(),
+                                   SkColorSpace::MakeSRGB()),
         UNSAFE_TODO(pixels + bytes_per_element * rect.x() + stride * rect.y()),
         stride, rect.x(), rect.y());
   }
@@ -168,8 +170,10 @@ SkCanvas* SoftwareOutputDeviceMac::BeginPaint(
         IOSurfaceGetBaseAddress(current_paint_buffer_->io_surface.get()));
     size_t stride =
         IOSurfaceGetBytesPerRow(current_paint_buffer_->io_surface.get());
-    current_paint_canvas_ = SkCanvas::MakeRasterDirectN32(
-        pixel_size_.width(), pixel_size_.height(), pixels, stride);
+    current_paint_canvas_ = SkCanvas::MakeRasterDirect(
+        SkImageInfo::MakeN32Premul(pixel_size_.width(), pixel_size_.height(),
+                                   SkColorSpace::MakeSRGB()),
+        pixels, stride);
   }
 
   UpdateAndCopyBufferDamage(previous_paint_buffer,
