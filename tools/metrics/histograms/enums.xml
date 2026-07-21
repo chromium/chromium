@@ -23468,7 +23468,7 @@ Called by update_net_error_codes.py.-->
     The outcome status when attempting to process request headers for integrity
     checks.
   </summary>
-  <int value="0" label="Component unavailable"/>
+  <int value="0" label="(Obsolete) Component unavailable"/>
   <int value="1" label="Library unavailable"/>
   <int value="2" label="Success"/>
   <int value="3" label="Failure"/>
