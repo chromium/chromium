@@ -38,12 +38,15 @@
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics_test_util.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_paint_attribution_tracker.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -3957,6 +3960,360 @@ TEST_F(SoftNavigationDisplayLockContextTest, DescendantSoftNavigationContext) {
   EXPECT_FALSE(target_object->ShouldInheritSoftNavigationContext());
   EXPECT_TRUE(content_object->ShouldInheritSoftNavigationContext());
   EXPECT_TRUE(tracker->IsAttributable(content_element, context));
+}
+
+class ContainerTimingDisplayLockContextTest : public DisplayLockContextTest {
+ public:
+  ContainerTimingPaintAttributionTracker* GetTracker() {
+    return ContainerTiming::From(*GetDocument().domWindow())
+        .PaintAttributionTracker();
+  }
+
+ private:
+  ScopedContainerTimingPrepaintTraversalForTest scoped_feature_{true};
+};
+
+TEST_F(ContainerTimingDisplayLockContextTest, AncestorContainerTimingRoot) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #locked {
+      width: 100px;
+      height: 100px;
+      contain: style layout paint;
+    }
+    </style>
+    <div id="ancestor">
+      <div id="target">
+        <div id="descendant">
+          <div id="locked">
+            <div id="lockedchild">Content</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* locked_element = GetDocument().getElementById(AtomicString("locked"));
+  auto* lockedchild_element =
+      GetDocument().getElementById(AtomicString("lockedchild"));
+
+  LockElement(*locked_element, false);
+  EXPECT_TRUE(locked_element->GetDisplayLockContext()->IsLocked());
+
+  auto* target_object = target_element->GetLayoutObject();
+  auto* locked_object = locked_element->GetLayoutObject();
+
+  ContainerTimingPaintAttributionTracker* tracker = GetTracker();
+  ASSERT_TRUE(tracker);
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(lockedchild_element));
+
+  // Make target_element a container-timing root; an empty value is still a
+  // valid identifier, so this marks the layout object as needing measurement.
+  target_element->setAttribute(html_names::kContainertimingAttr, g_empty_atom);
+  EXPECT_TRUE(target_object->ContainerTimingChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(target_object->ContainerTimingChanged());
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(lockedchild_element));
+
+  CommitElement(*locked_element, false);
+  UnlockImmediate(locked_element->GetDisplayLockContext());
+  EXPECT_TRUE(locked_object->ContainerTimingChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(target_element, tracker->GetContainerRootFor(lockedchild_element));
+}
+
+TEST_F(ContainerTimingDisplayLockContextTest, DescendantContainerTimingRoot) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #locked {
+      width: 100px;
+      height: 100px;
+      contain: style layout paint;
+    }
+    </style>
+    <div id="ancestor">
+      <div id="descendant">
+        <div id="locked">
+          <div id="target">
+            <div id="content">Content</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* ancestor_element =
+      GetDocument().getElementById(AtomicString("ancestor"));
+  auto* descendant_element =
+      GetDocument().getElementById(AtomicString("descendant"));
+  auto* locked_element = GetDocument().getElementById(AtomicString("locked"));
+  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* content_element = GetDocument().getElementById(AtomicString("content"));
+
+  LockElement(*locked_element, false);
+  EXPECT_TRUE(locked_element->GetDisplayLockContext()->IsLocked());
+
+  auto* ancestor_object = ancestor_element->GetLayoutObject();
+  auto* descendant_object = descendant_element->GetLayoutObject();
+  auto* locked_object = locked_element->GetLayoutObject();
+  auto* target_object = target_element->GetLayoutObject();
+  auto* content_object = content_element->GetLayoutObject();
+
+  ContainerTimingPaintAttributionTracker* tracker = GetTracker();
+  ASSERT_TRUE(tracker);
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
+
+  EXPECT_FALSE(ancestor_object->ContainerTimingChanged());
+  EXPECT_FALSE(descendant_object->ContainerTimingChanged());
+  EXPECT_FALSE(locked_object->ContainerTimingChanged());
+  EXPECT_FALSE(target_object->ContainerTimingChanged());
+  EXPECT_FALSE(content_object->ContainerTimingChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(descendant_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(locked_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(target_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(content_object->DescendantContainerTimingChanged());
+
+  // Mark a container timing root on an element inside the locked subtree.
+  target_element->setAttribute(html_names::kContainertimingAttr, g_empty_atom);
+
+  // The dirty bit fires on target. Propagation stops at the lock: the locked
+  // ancestor records the descendant change but it does not bubble further up.
+  EXPECT_FALSE(ancestor_object->ContainerTimingChanged());
+  EXPECT_FALSE(descendant_object->ContainerTimingChanged());
+  EXPECT_FALSE(locked_object->ContainerTimingChanged());
+  EXPECT_TRUE(target_object->ContainerTimingChanged());
+  EXPECT_FALSE(content_object->ContainerTimingChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(descendant_object->DescendantContainerTimingChanged());
+  EXPECT_TRUE(locked_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(target_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(content_object->DescendantContainerTimingChanged());
+
+  // Lifecycle update does not walk the locked subtree, so target's bit
+  // survives, and the content element is not yet attributed.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->ContainerTimingChanged());
+  EXPECT_FALSE(descendant_object->ContainerTimingChanged());
+  EXPECT_FALSE(locked_object->ContainerTimingChanged());
+  EXPECT_TRUE(target_object->ContainerTimingChanged());
+  EXPECT_FALSE(content_object->ContainerTimingChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(descendant_object->DescendantContainerTimingChanged());
+  EXPECT_TRUE(locked_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(target_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(content_object->DescendantContainerTimingChanged());
+
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
+
+  // Commit + unlock. The dirty bits previously stranded at the lock should
+  // now propagate up to the document root.
+  CommitElement(*locked_element, false);
+  UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  EXPECT_TRUE(ancestor_object->DescendantContainerTimingChanged());
+  EXPECT_TRUE(descendant_object->DescendantContainerTimingChanged());
+  EXPECT_TRUE(locked_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(target_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(content_object->DescendantContainerTimingChanged());
+
+  // Next lifecycle update walks the now-unlocked subtree and registers the
+  // container root on target. Content gets attributed to target.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(ancestor_object->ContainerTimingChanged());
+  EXPECT_FALSE(descendant_object->ContainerTimingChanged());
+  EXPECT_FALSE(locked_object->ContainerTimingChanged());
+  EXPECT_FALSE(target_object->ContainerTimingChanged());
+  EXPECT_FALSE(content_object->ContainerTimingChanged());
+
+  EXPECT_FALSE(ancestor_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(descendant_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(locked_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(target_object->DescendantContainerTimingChanged());
+  EXPECT_FALSE(content_object->DescendantContainerTimingChanged());
+
+  EXPECT_EQ(target_element, tracker->GetContainerRootFor(content_element));
+}
+
+TEST_F(ContainerTimingDisplayLockContextTest, IgnoreInsideLockedSubtree) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #locked {
+      width: 100px;
+      height: 100px;
+      contain: style layout paint;
+    }
+    </style>
+    <div id="ancestor">
+      <div id="locked">
+        <div id="ignored">
+          <div id="content">Content</div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* ancestor_element =
+      GetDocument().getElementById(AtomicString("ancestor"));
+  auto* locked_element = GetDocument().getElementById(AtomicString("locked"));
+  auto* ignored_element = GetDocument().getElementById(AtomicString("ignored"));
+  auto* content_element = GetDocument().getElementById(AtomicString("content"));
+
+  LockElement(*locked_element, false);
+  EXPECT_TRUE(locked_element->GetDisplayLockContext()->IsLocked());
+
+  auto* ignored_object = ignored_element->GetLayoutObject();
+  auto* locked_object = locked_element->GetLayoutObject();
+
+  ContainerTimingPaintAttributionTracker* tracker = GetTracker();
+  ASSERT_TRUE(tracker);
+
+  // Mark the outer ancestor as a container timing root.
+  ancestor_element->setAttribute(html_names::kContainertimingAttr,
+                                 g_empty_atom);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Content sits inside the lock, so the walk did not reach it yet.
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
+
+  // Add containertiming-ignore inside the locked subtree.
+  ignored_element->setAttribute(html_names::kContainertimingIgnoreAttr,
+                                g_empty_atom);
+
+  // Dirty bit fires on the ignored element and stops at the lock.
+  EXPECT_TRUE(ignored_object->ContainerTimingChanged());
+  EXPECT_TRUE(locked_object->DescendantContainerTimingChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Locked subtree still not walked.
+  EXPECT_TRUE(ignored_object->ContainerTimingChanged());
+  EXPECT_TRUE(locked_object->DescendantContainerTimingChanged());
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
+
+  // Commit + unlock. After the walk, ignore takes effect: content under the
+  // ignored subtree must NOT be attributed to the ancestor root.
+  CommitElement(*locked_element, false);
+  UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
+}
+
+TEST_F(ContainerTimingDisplayLockContextTest, LockedElementIsContainerRoot) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #locked {
+      width: 100px;
+      height: 100px;
+      contain: style layout paint;
+    }
+    </style>
+    <div id="ancestor">
+      <div id="locked">
+        <div id="content">Content</div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* locked_element = GetDocument().getElementById(AtomicString("locked"));
+  auto* content_element = GetDocument().getElementById(AtomicString("content"));
+
+  LockElement(*locked_element, false);
+  EXPECT_TRUE(locked_element->GetDisplayLockContext()->IsLocked());
+
+  auto* locked_object = locked_element->GetLayoutObject();
+
+  ContainerTimingPaintAttributionTracker* tracker = GetTracker();
+  ASSERT_TRUE(tracker);
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
+
+  // The lock element itself becomes a container timing root.
+  locked_element->setAttribute(html_names::kContainertimingAttr, g_empty_atom);
+  EXPECT_TRUE(locked_object->ContainerTimingChanged());
+
+  // The walk processes the locked element itself (only its children are
+  // skipped), so the root is registered, but content below is not yet
+  // attributed.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
+
+  // Commit + unlock makes the children visible to pre-paint, and content gets
+  // attributed to the locked element as its container root.
+  CommitElement(*locked_element, false);
+  UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(locked_element, tracker->GetContainerRootFor(content_element));
+}
+
+TEST_F(ContainerTimingDisplayLockContextTest, NestedRootsAcrossLockBoundary) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #locked {
+      width: 100px;
+      height: 100px;
+      contain: style layout paint;
+    }
+    </style>
+    <div id="outer">
+      <div id="descendant">
+        <div id="locked">
+          <div id="inner">
+            <div id="content">Content</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* outer_element = GetDocument().getElementById(AtomicString("outer"));
+  auto* locked_element = GetDocument().getElementById(AtomicString("locked"));
+  auto* inner_element = GetDocument().getElementById(AtomicString("inner"));
+  auto* content_element = GetDocument().getElementById(AtomicString("content"));
+
+  LockElement(*locked_element, false);
+  EXPECT_TRUE(locked_element->GetDisplayLockContext()->IsLocked());
+
+  auto* inner_object = inner_element->GetLayoutObject();
+  auto* locked_object = locked_element->GetLayoutObject();
+
+  ContainerTimingPaintAttributionTracker* tracker = GetTracker();
+  ASSERT_TRUE(tracker);
+
+  // Outer root, above the lock.
+  outer_element->setAttribute(html_names::kContainertimingAttr,
+                              AtomicString("outer"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
+
+  // Inner root, inside the lock.
+  inner_element->setAttribute(html_names::kContainertimingAttr,
+                              AtomicString("inner"));
+  EXPECT_TRUE(inner_object->ContainerTimingChanged());
+  EXPECT_TRUE(locked_object->DescendantContainerTimingChanged());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(inner_object->ContainerTimingChanged());
+  EXPECT_EQ(nullptr, tracker->GetContainerRootFor(content_element));
+
+  CommitElement(*locked_element, false);
+  UnlockImmediate(locked_element->GetDisplayLockContext());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // After commit, the inner root is registered and content is attributed to
+  // it. The parent-of-root chain crosses the lock boundary correctly.
+  EXPECT_EQ(inner_element, tracker->GetContainerRootFor(content_element));
+  EXPECT_EQ(outer_element, tracker->GetParentContainerRootFor(inner_element));
+  EXPECT_EQ(nullptr, tracker->GetParentContainerRootFor(outer_element));
 }
 
 TEST_F(DisplayLockContextRenderingTest,

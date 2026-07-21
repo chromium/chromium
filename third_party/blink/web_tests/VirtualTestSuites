@@ -387,6 +387,14 @@
     "expires": "Dec 1, 2026"
   },
   {
+    "prefix": "container-timing-pre-paint-traversal",
+    "owners": [ "jdapena@igalia.com" ],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [ "external/wpt/container-timing/" ],
+    "args": [ "--enable-features=ContainerTimingPrepaintTraversal" ],
+    "expires": "Nov 1, 2026"
+  },
+  {
     "prefix": "controls-refresh-hc",
     "owners": [
       "masonf@chromium.org",

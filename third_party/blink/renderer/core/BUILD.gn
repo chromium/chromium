@@ -1726,6 +1726,7 @@ source_set("unit_test_support") {
     "html/html_permission_element_test_helper.h",
     "html/media/html_media_test_helper.cc",
     "html/media/html_media_test_helper.h",
+    "paint/timing/container_timing_test_utils.h",
     "script/mock_script_element_base.h",
     "speculation_rules/auto_speculation_rules_test_helper.cc",
     "speculation_rules/auto_speculation_rules_test_helper.h",
