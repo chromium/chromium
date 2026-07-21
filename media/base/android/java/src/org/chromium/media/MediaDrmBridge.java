@@ -797,6 +797,11 @@ public class MediaDrmBridge {
                             + "MediaDrmBridge creation can trigger the provision flow.",
                     e);
             unprovision();
+        } catch (MediaDrm.SessionException e) {
+            // getKeyRequest sometimes has transient SessionException.
+            // We just catch and log it, and let the player retry if they would like to.
+            // Refer to crbug.com/537329064 for details.
+            Log.e(TAG, "Failed to getKeyRequest().", e);
         } catch (java.lang.IllegalStateException e) {
             // We've seen both MediaDrmStateException and MediaDrmResetException happening.
             // Since both are IllegalStateExceptions, so they will be handled here.
