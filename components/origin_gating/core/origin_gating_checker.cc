@@ -222,7 +222,7 @@ void OriginGatingChecker::EvaluatePredicates(
                 VALID_CONTEXT_REQUIRED(sequence_checker_) {
                   GatingDecisionContext* raw_context = context.get();
                   custom_predicate.Run(
-                      raw_context, input.event, input.source, input.destination,
+                      raw_context, input.source, input.destination,
                       base::BindOnce(
                           &OriginGatingChecker::OnEvaluatedAsyncPredicate,
                           weak_ptr_factory_.GetWeakPtr(), std::move(context),

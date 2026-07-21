@@ -624,8 +624,7 @@ TEST_F(OriginGatingCheckerTest,
 TEST_F(OriginGatingCheckerTest, CustomPredicate_Allowed_ShortCircuits) {
   CustomPredicate custom(
       base::BindRepeating([](const GatingDecisionContext* context,
-                             GateableEvent event, const GURL& source,
-                             const GURL& destination,
+                             const GURL& source, const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
         EXPECT_EQ(source, GURL("https://example.com"));
         EXPECT_EQ(destination, GURL("https://foo.com"));
@@ -655,8 +654,7 @@ TEST_F(OriginGatingCheckerTest,
        CustomPredicate_NoDecision_FallsBackToDelegate) {
   CustomPredicate custom(
       base::BindRepeating([](const GatingDecisionContext* context,
-                             GateableEvent event, const GURL& source,
-                             const GURL& destination,
+                             const GURL& source, const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kNoDecision);
       }),
@@ -775,8 +773,7 @@ TEST_F(OriginGatingCheckerTest, PredicateSkipped_WhenEventNotApplicable) {
   // A custom predicate that would allow, but is restricted to kPageAction only.
   CustomPredicate page_action_only(
       base::BindRepeating([](const GatingDecisionContext* context,
-                             GateableEvent event, const GURL& source,
-                             const GURL& destination,
+                             const GURL& source, const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kAllowed);
       }),
@@ -814,8 +811,7 @@ TEST_F(OriginGatingCheckerTest, PredicateSkipped_WhenEventNotApplicable) {
 TEST_F(OriginGatingCheckerTest, PredicateRuns_WhenEventApplicable) {
   CustomPredicate page_action_only(
       base::BindRepeating([](const GatingDecisionContext* context,
-                             GateableEvent event, const GURL& source,
-                             const GURL& destination,
+                             const GURL& source, const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kAllowed);
       }),
@@ -849,10 +845,8 @@ TEST_F(OriginGatingCheckerTest, EventReachesPredicateAndDelegate) {
   // delegate, allowing us to assert the event is threaded through both hops.
   CustomPredicate observing_predicate(
       base::BindRepeating([](const GatingDecisionContext* context,
-                             GateableEvent event, const GURL& source,
-                             const GURL& destination,
+                             const GURL& source, const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
-        EXPECT_EQ(event, GateableEvent::kPageAction);
         std::move(callback).Run(Decision::kNoDecision);
       }),
       "observing_predicate");

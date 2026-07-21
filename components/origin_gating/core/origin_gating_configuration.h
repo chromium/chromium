@@ -22,14 +22,12 @@ class CustomPredicate {
  public:
   using AsyncPredicate = base::RepeatingCallback<void(
       const GatingDecisionContext* context,
-      GateableEvent event,
       const GURL& source,
       const GURL& destination,
       base::OnceCallback<void(Decision)> callback)>;
 
   using SyncPredicate =
       base::RepeatingCallback<Decision(const GatingDecisionContext* context,
-                                       GateableEvent event,
                                        const GURL& source,
                                        const GURL& destination)>;
 
@@ -41,7 +39,6 @@ class CustomPredicate {
   CustomPredicate& operator=(const CustomPredicate&);
 
   void Run(const GatingDecisionContext* context,
-           GateableEvent event,
            const GURL& source,
            const GURL& destination,
            base::OnceCallback<void(Decision)> callback) const;

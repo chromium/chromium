@@ -29,12 +29,11 @@ CustomPredicate::CustomPredicate(SyncPredicate predicate, std::string_view name)
     : CustomPredicate(base::BindRepeating(
                           [](SyncPredicate sync_pred,
                              const GatingDecisionContext* context,
-                             GateableEvent event,
                              const GURL& source,
                              const GURL& destination,
                              base::OnceCallback<void(Decision)> callback) {
-                            std::move(callback).Run(sync_pred.Run(
-                                context, event, source, destination));
+                            std::move(callback).Run(
+                                sync_pred.Run(context, source, destination));
                           },
                           std::move(predicate)),
                       name) {}
@@ -46,11 +45,10 @@ CustomPredicate::CustomPredicate(const CustomPredicate&) = default;
 CustomPredicate& CustomPredicate::operator=(const CustomPredicate&) = default;
 
 void CustomPredicate::Run(const GatingDecisionContext* context,
-                          GateableEvent event,
                           const GURL& source,
                           const GURL& destination,
                           base::OnceCallback<void(Decision)> callback) const {
-  predicate_.Run(context, event, source, destination, std::move(callback));
+  predicate_.Run(context, source, destination, std::move(callback));
 }
 
 PredicateConfiguration::PredicateConfiguration(

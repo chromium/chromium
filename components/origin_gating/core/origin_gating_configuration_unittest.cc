@@ -17,16 +17,16 @@ namespace {
 
 TEST(OriginGatingConfigurationTest, StoresPredicatesInOrder) {
   CustomPredicate custom1(
-      base::BindRepeating([](const GatingDecisionContext*, GateableEvent,
-                             const GURL&, const GURL&,
+      base::BindRepeating([](const GatingDecisionContext*, const GURL&,
+                             const GURL&,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kNoDecision);
       }),
       "custom_1");
 
   CustomPredicate custom2(
-      base::BindRepeating([](const GatingDecisionContext*, GateableEvent,
-                             const GURL&, const GURL&,
+      base::BindRepeating([](const GatingDecisionContext*, const GURL&,
+                             const GURL&,
                              base::OnceCallback<void(Decision)> callback) {
         std::move(callback).Run(Decision::kAllowed);
       }),

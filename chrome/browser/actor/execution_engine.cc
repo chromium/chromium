@@ -155,7 +155,6 @@ struct PageActionGatingContext : public origin_gating::GatingDecisionContext {
 // Blocks acting on a tab whose primary main frame is showing an error document.
 origin_gating::Decision EvaluateTabErrorDocument(
     const origin_gating::GatingDecisionContext* context,
-    origin_gating::GateableEvent event,
     const GURL& source,
     const GURL& destination) {
   content::WebContents* web_contents =
@@ -171,7 +170,6 @@ origin_gating::Decision EvaluateTabErrorDocument(
 // until user interaction; such a page has a user interaction observer attached.
 origin_gating::Decision EvaluateTabSafeBrowsingObserver(
     const origin_gating::GatingDecisionContext* context,
-    origin_gating::GateableEvent event,
     const GURL& source,
     const GURL& destination) {
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -190,7 +188,6 @@ origin_gating::Decision EvaluateTabSafeBrowsingObserver(
 origin_gating::CustomPredicate CreateSafetyListPredicate() {
   return origin_gating::CustomPredicate(
       base::BindRepeating([](const origin_gating::GatingDecisionContext*,
-                             origin_gating::GateableEvent,
                              const GURL& source_url,
                              const GURL& destination_url) {
         switch (SafetyListManager::GetInstance()->Find(source_url,
@@ -206,19 +203,12 @@ origin_gating::CustomPredicate CreateSafetyListPredicate() {
       kSafetyListPredicateName);
 }
 
-void EvaluateSensitiveUrl(
+void BlockSensitiveUrl(
     Profile* profile,
     const origin_gating::GatingDecisionContext* context,
-    origin_gating::GateableEvent event,
     const GURL& source,
     const GURL& destination,
     base::OnceCallback<void(origin_gating::Decision)> callback) {
-  if (event == origin_gating::GateableEvent::kNavigationRequest &&
-      IsNavigationGatingEnabled()) {
-    std::move(callback).Run(origin_gating::Decision::kNoDecision);
-    return;
-  }
-
   base::expected<void, base::OnceCallback<void(bool)>> sensitive_check_result =
       MaybeCheckOptimizationGuideForSensitiveUrl(
           destination, profile,
@@ -233,10 +223,23 @@ void EvaluateSensitiveUrl(
   }
 }
 
+void BlockSensitiveUrlWhenNavigationGatingDisabled(
+    Profile* profile,
+    const origin_gating::GatingDecisionContext* context,
+    const GURL& source,
+    const GURL& destination,
+    base::OnceCallback<void(origin_gating::Decision)> callback) {
+  if (IsNavigationGatingEnabled()) {
+    std::move(callback).Run(origin_gating::Decision::kNoDecision);
+    return;
+  }
+
+  BlockSensitiveUrl(profile, context, source, destination, std::move(callback));
+}
+
 origin_gating::Decision EvaluateLookalikeUrl(
     Profile* profile,
     const origin_gating::GatingDecisionContext* context,
-    origin_gating::GateableEvent event,
     const GURL& source,
     const GURL& destination) {
   auto* lookalike_service = LookalikeUrlServiceFactory::GetForProfile(profile);
@@ -262,7 +265,6 @@ origin_gating::Decision EvaluateLookalikeUrl(
 origin_gating::Decision EvaluateSafeBrowsingEnabled(
     Profile* profile,
     const origin_gating::GatingDecisionContext* context,
-    origin_gating::GateableEvent event,
     const GURL& source,
     const GURL& destination) {
   bool is_safe_browsing_enabled = false;
@@ -278,7 +280,6 @@ origin_gating::Decision EvaluateSafeBrowsingEnabled(
 
 origin_gating::Decision EvaluateSafetyChecksDisabled(
     const origin_gating::GatingDecisionContext* context,
-    origin_gating::GateableEvent event,
     const GURL& source,
     const GURL& destination) {
   return IsActorSafetyCheckDisabled() ? origin_gating::Decision::kAllowed
@@ -306,7 +307,6 @@ bool IsHostInAllowList(const std::vector<std::string_view>& allowlist,
 
 origin_gating::Decision EvaluateActionAllowlist(
     const origin_gating::GatingDecisionContext* context,
-    origin_gating::GateableEvent event,
     const GURL& source,
     const GURL& destination) {
   if (!base::FeatureList::IsEnabled(kGlicActionAllowlist)) {
@@ -607,11 +607,16 @@ ExecutionEngine::ExecutionEngine(
                   {origin_gating::DecisionSource::kAllowSameOrigin,
                    {origin_gating::GateableEvent::kNavigationResponse}},
                   {origin_gating::CustomPredicate(
-                       base::BindRepeating(&EvaluateSensitiveUrl,
+                       base::BindRepeating(
+                           &BlockSensitiveUrlWhenNavigationGatingDisabled,
+                           task_->GetProfile()),
+                       kSensitiveUrlPredicateName),
+                   {origin_gating::GateableEvent::kNavigationRequest}},
+                  {origin_gating::CustomPredicate(
+                       base::BindRepeating(&BlockSensitiveUrl,
                                            task_->GetProfile()),
                        kSensitiveUrlPredicateName),
-                   {origin_gating::GateableEvent::kNavigationRequest,
-                    origin_gating::GateableEvent::kPageAction}},
+                   {origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::DecisionSource::kCacheWithoutUserConfirmation,
                    {origin_gating::GateableEvent::kNavigationResponse}},
               },
