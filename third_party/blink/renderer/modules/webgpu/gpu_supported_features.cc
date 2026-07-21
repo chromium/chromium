@@ -62,6 +62,8 @@ std::optional<V8GPUFeatureName::Enum> GPUSupportedFeatures::ToV8FeatureNameEnum(
       return V8GPUFeatureName::Enum::kTextureFormatsTier2;
     case wgpu::FeatureName::SubgroupSizeControl:
       return V8GPUFeatureName::Enum::kSubgroupSizeControl;
+    case wgpu::FeatureName::TextureCompressionUnaligned:
+      return V8GPUFeatureName::Enum::kTextureCompressionUnaligned;
     default:
       return std::nullopt;
   }
