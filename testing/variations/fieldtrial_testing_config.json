@@ -21841,6 +21841,26 @@
             ]
         }
     ],
+    "SafeBrowsingWaitForDnsForRealTimeLookup": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingWaitForDnsForRealTimeLookup"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafetyCheckMagicStackWithCaching": [
         {
             "platforms": [
