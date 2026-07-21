@@ -176,7 +176,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         () -> {},
                         (isFocused, view) -> {},
                         mGlicClickHandler,
-                        /* glicKeyboardFocusHandler= */ null,
+                        (isFocused, view) -> {},
                         () -> mGlicIphShowing,
                         mObserver);
         ShadowLooper.idleMainLooper();
@@ -646,6 +646,25 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertFalse(
                 "Glic button should not be pressed after context menu is shown.",
                 mGlicButton.isPressed());
+        assertTrue("Glic context menu should be showing.", mCoordinator.isMenuShowing());
+    }
+
+    @Test
+    public void testOpenContextMenu_glicButton() {
+        mCoordinator.onSizeChanged(
+                /* width= */ 1000f,
+                /* rightPadding= */ 10f,
+                /* leftPadding= */ 10f,
+                /* topPadding= */ 10f);
+
+        assertFalse(
+                "Should return false when Glic button is not keyboard focused.",
+                mCoordinator.openKeyboardFocusedContextMenu(mActivity));
+
+        mGlicButton.setKeyboardFocused(true);
+        assertTrue(
+                "Should return true when Glic button is keyboard focused.",
+                mCoordinator.openKeyboardFocusedContextMenu(mActivity));
         assertTrue("Glic context menu should be showing.", mCoordinator.isMenuShowing());
     }
 

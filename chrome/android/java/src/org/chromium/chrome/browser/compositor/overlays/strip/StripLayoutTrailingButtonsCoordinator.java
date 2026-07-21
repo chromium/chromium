@@ -762,6 +762,20 @@ public class StripLayoutTrailingButtonsCoordinator {
                 anchorRectProvider, activity, mProfile, mTabWidthSupplier.get());
     }
 
+    /**
+     * Opens the context menu for the currently keyboard-focused trailing button, if applicable.
+     *
+     * @param activity The current {@link Activity}.
+     * @return Whether the context menu was successfully opened.
+     */
+    public boolean openKeyboardFocusedContextMenu(Activity activity) {
+        if (isGlicButtonVisible() && mGlicButton.isKeyboardFocused()) {
+            showMenu(activity);
+            return true;
+        }
+        return false;
+    }
+
     private void updateButtonTints(boolean incognito) {
         if (mGlicButton == null) return;
 

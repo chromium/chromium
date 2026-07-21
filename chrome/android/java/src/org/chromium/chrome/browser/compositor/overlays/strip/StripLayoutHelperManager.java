@@ -1870,7 +1870,11 @@ public class StripLayoutHelperManager
      * @return Whether the context menu was successfully opened.
      */
     public boolean openKeyboardFocusedContextMenu() {
-        return getActiveStripLayoutHelper().openKeyboardFocusedContextMenu();
+        if (getActiveStripLayoutHelper().openKeyboardFocusedContextMenu()) {
+            return true;
+        }
+        var activity = assertNonNull(mWindowAndroid.getActivity().get());
+        return mTrailingButtonsCoordinator.openKeyboardFocusedContextMenu(activity);
     }
 
     /**
