@@ -536,6 +536,118 @@ TEST(H264ParserTest, RangeChecks) {
 
     EXPECT_EQ(H264Parser::kInvalidStream, parser.ParseSEI(&sei));
   }
+
+  // SliceHeader: DecRefPicMarking and RefPicListModification range checks.
+  {
+    H264SPS sps;
+    sps.profile_idc = 66;  // Baseline
+    sps.level_idc = 10;
+    sps.log2_max_frame_num_minus4 = 0;
+    sps.pic_order_cnt_type = 0;
+    sps.log2_max_pic_order_cnt_lsb_minus4 = 0;
+    sps.max_num_ref_frames = 4;
+    sps.pic_width_in_mbs_minus1 = 1;
+    sps.pic_height_in_map_units_minus1 = 1;
+    sps.frame_mbs_only_flag = true;
+
+    H264PPS pps;
+    pps.pic_parameter_set_id = 0;
+    pps.seq_parameter_set_id = 0;
+
+    // Helper lambda to build a slice header with custom modification and
+    // marking ops.
+    auto build_slice = [&](uint32_t ref_mod_idc, uint32_t ref_mod_val,
+                           uint32_t mmco, uint32_t mmco_val1,
+                           uint32_t mmco_val2 = 0) {
+      H26xAnnexBBitstreamBuilder builder(
+          /*insert_emulation_prevention_bytes=*/true);
+      BuildPackedH264SPS(builder, sps);
+      BuildPackedH264PPS(builder, sps, pps);
+
+      builder.BeginNALU(H264NALU::kNonIDRSlice, 1);
+      builder.AppendUE(0);       // first_mb_in_slice
+      builder.AppendUE(0);       // slice_type (P slice)
+      builder.AppendUE(0);       // pic_parameter_set_id
+      builder.AppendBits(4, 0);  // frame_num
+      builder.AppendBits(4, 0);  // pic_order_cnt_lsb
+
+      builder.AppendBool(false);  // num_ref_idx_active_override_flag
+      if (ref_mod_idc != 3) {
+        builder.AppendBool(true);  // ref_pic_list_modification_flag_l0
+        builder.AppendUE(ref_mod_idc);
+        builder.AppendUE(ref_mod_val);
+        builder.AppendUE(3);  // end of modifications
+      } else {
+        builder.AppendBool(false);  // ref_pic_list_modification_flag_l0
+      }
+
+      if (mmco != 0) {
+        builder.AppendBool(true);  // adaptive_ref_pic_marking_mode_flag
+        builder.AppendUE(mmco);
+        if (mmco == 1 || mmco == 3) {
+          builder.AppendUE(mmco_val1);
+        }
+        if (mmco == 2) {
+          builder.AppendUE(mmco_val1);
+        }
+        if (mmco == 3 || mmco == 6) {
+          builder.AppendUE(mmco == 3 ? mmco_val2 : mmco_val1);
+        }
+        if (mmco == 4) {
+          builder.AppendUE(mmco_val1);
+        }
+        builder.AppendUE(0);  // end of MMCO
+      } else {
+        builder.AppendBool(false);  // adaptive_ref_pic_marking_mode_flag
+      }
+
+      builder.AppendSE(0);  // slice_qp_delta
+      builder.FinishNALU();
+      return std::vector<uint8_t>(builder.data().begin(), builder.data().end());
+    };
+
+    auto parse_slice = [&](const std::vector<uint8_t>& stream_data) {
+      H264Parser p;
+      p.SetStream(stream_data);
+      H264NALU n;
+      int sps_id_out, pps_id_out;
+      EXPECT_EQ(H264Parser::kOk, p.AdvanceToNextNALU(&n));  // SPS
+      EXPECT_EQ(H264Parser::kOk, p.ParseSPS(&sps_id_out));
+      EXPECT_EQ(H264Parser::kOk, p.AdvanceToNextNALU(&n));  // PPS
+      EXPECT_EQ(H264Parser::kOk, p.ParsePPS(&pps_id_out));
+      EXPECT_EQ(H264Parser::kOk, p.AdvanceToNextNALU(&n));  // Slice
+      H264SliceHeader sh;
+      return p.ParseSliceHeader(n, &sh);
+    };
+
+    // Valid slice header.
+    EXPECT_EQ(H264Parser::kOk, parse_slice(build_slice(3, 0, 0, 0)));
+
+    // MMCO 6: long_term_frame_idx = 16 (invalid, max 15).
+    EXPECT_EQ(H264Parser::kInvalidStream,
+              parse_slice(build_slice(3, 0, 6, 16)));
+
+    // MMCO 2: long_term_pic_num = 16 (invalid, max 15).
+    EXPECT_EQ(H264Parser::kInvalidStream,
+              parse_slice(build_slice(3, 0, 2, 16)));
+
+    // MMCO 1: difference_of_pic_nums_minus1 = 65536 (invalid, max 65535).
+    EXPECT_EQ(H264Parser::kInvalidStream,
+              parse_slice(build_slice(3, 0, 1, 65536)));
+
+    // MMCO 4: max_long_term_frame_idx_plus1 = 17 (invalid, max 16).
+    EXPECT_EQ(H264Parser::kInvalidStream,
+              parse_slice(build_slice(3, 0, 4, 17)));
+
+    // RefPicListModification 2: long_term_pic_num = 16 (invalid, max 15).
+    EXPECT_EQ(H264Parser::kInvalidStream,
+              parse_slice(build_slice(2, 16, 0, 0)));
+
+    // RefPicListModification 0: abs_diff_pic_num_minus1 = 65536 (invalid, max
+    // 65535).
+    EXPECT_EQ(H264Parser::kInvalidStream,
+              parse_slice(build_slice(0, 65536, 0, 0)));
+  }
 }
 
 TEST(H264ParserTest, SpsOverwritesInvalidatesPps) {

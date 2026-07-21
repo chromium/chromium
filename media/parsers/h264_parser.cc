@@ -1200,10 +1200,18 @@ H264Parser::Result H264Parser::ParseRefPicListModification(
       case 0:
       case 1:
         READ_UE_OR_RETURN(&pic_num_mod->abs_diff_pic_num_minus1);
+        // H.264 Section 7.4.3.1: abs_diff_pic_num_minus1 shall be in
+        // [0, MaxPicNum - 1], MaxPicNum <= 65536.
+        IN_RANGE_IF_OR_RETURN(pic_num_mod->abs_diff_pic_num_minus1, 0, 65535,
+                              validate_extended_bitstream_);
         break;
 
       case 2:
         READ_UE_OR_RETURN(&pic_num_mod->long_term_pic_num);
+        // H.264 Section 7.4.3.1: long_term_pic_num in [0, MaxLongTermFrameIdx],
+        // MaxLongTermFrameIdx <= max_num_ref_frames - 1 <= 15.
+        IN_RANGE_IF_OR_RETURN(pic_num_mod->long_term_pic_num, 0, 15,
+                              validate_extended_bitstream_);
         break;
 
       case 3:
@@ -1345,18 +1353,40 @@ H264Parser::Result H264Parser::ParseDecRefPicMarking(H264SliceHeader* shdr) {
           break;
 
         if (marking->memory_mgmnt_control_operation == 1 ||
-            marking->memory_mgmnt_control_operation == 3)
+            marking->memory_mgmnt_control_operation == 3) {
           READ_UE_OR_RETURN(&marking->difference_of_pic_nums_minus1);
+          // H.264 Section 7.4.3.3: difference_of_pic_nums_minus1 shall be in
+          // [0, MaxPicNum - 1], MaxPicNum <= 65536.
+          IN_RANGE_IF_OR_RETURN(marking->difference_of_pic_nums_minus1, 0,
+                                65535, validate_extended_bitstream_);
+        }
 
-        if (marking->memory_mgmnt_control_operation == 2)
+        if (marking->memory_mgmnt_control_operation == 2) {
           READ_UE_OR_RETURN(&marking->long_term_pic_num);
+          // H.264 Section 7.4.3.3: long_term_pic_num in [0,
+          // MaxLongTermFrameIdx], MaxLongTermFrameIdx <= max_num_ref_frames - 1
+          // <= 15.
+          IN_RANGE_IF_OR_RETURN(marking->long_term_pic_num, 0, 15,
+                                validate_extended_bitstream_);
+        }
 
         if (marking->memory_mgmnt_control_operation == 3 ||
-            marking->memory_mgmnt_control_operation == 6)
+            marking->memory_mgmnt_control_operation == 6) {
           READ_UE_OR_RETURN(&marking->long_term_frame_idx);
+          // H.264 Section 7.4.3.3: long_term_frame_idx in [0,
+          // MaxLongTermFrameIdx], MaxLongTermFrameIdx <= max_num_ref_frames - 1
+          // <= 15.
+          IN_RANGE_IF_OR_RETURN(marking->long_term_frame_idx, 0, 15,
+                                validate_extended_bitstream_);
+        }
 
-        if (marking->memory_mgmnt_control_operation == 4)
+        if (marking->memory_mgmnt_control_operation == 4) {
           READ_UE_OR_RETURN(&marking->max_long_term_frame_idx_plus1);
+          // H.264 Section 7.4.3.3: max_long_term_frame_idx_plus1 in [0,
+          // max_num_ref_frames], max_num_ref_frames <= 16.
+          IN_RANGE_IF_OR_RETURN(marking->max_long_term_frame_idx_plus1, 0, 16,
+                                validate_extended_bitstream_);
+        }
 
         if (marking->memory_mgmnt_control_operation > 6)
           return kInvalidStream;
