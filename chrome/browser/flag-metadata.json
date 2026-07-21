@@ -10294,6 +10294,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "webui-omnibox-ask-g-about-this-page",
+    "owners": [ "caitc@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "webui-omnibox-full-popup",
     "owners": [ "avivkiss@google.com", "khalidpeer@chromium.org", "mahmadi@chromium.org", "kylixrd@chromium.org", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160

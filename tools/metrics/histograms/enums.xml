@@ -18218,6 +18218,7 @@ from previous Chrome versions.
   <int value="1149741132" label="RecordPermissionExpirationTimestamps:enabled"/>
   <int value="1149763389" label="ReadAnythingWithReadability:enabled"/>
   <int value="1149823105" label="enable-input-ime-api"/>
+  <int value="1150102241" label="WebUIOmniboxAskGAboutThisPage:disabled"/>
   <int value="1150622273" label="enable-apps-file-associations"/>
   <int value="1151907729" label="NtpModuleSignInRequirement:enabled"/>
   <int value="1152166164" label="EnableExclusiveAccessManager:disabled"/>
@@ -20318,6 +20319,7 @@ from previous Chrome versions.
   <int value="1805706414" label="PerformanceInterventionUI:disabled"/>
   <int value="1805859042"
       label="ExtractRelatedSearchesFromPrefetchedZPSResponse:enabled"/>
+  <int value="1805996092" label="WebUIOmniboxAskGAboutThisPage:enabled"/>
   <int value="1806220475" label="IgnoreSyncEncryptionKeysLongMissing:disabled"/>
   <int value="1806450300" label="WebUsbDeviceDetection:enabled"/>
   <int value="1806868888" label="GetTheMostOutOfProgram:enabled"/>

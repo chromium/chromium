@@ -3794,6 +3794,12 @@ inline constexpr char kWebUIOmniboxSimplificationDescription[] =
     "If enabled, the WebUI omnibox popup will have a different UX for the "
     "entrypoint to composebox.";
 
+inline constexpr char kWebUiOmniboxAskGAboutThisPageName[] =
+    "WebUI Omnibox Ask G About This Page";
+inline constexpr char kWebUiOmniboxAskGAboutThisPageDescription[] =
+    "If enabled, the 'Ask Google about this page' action will route to cobrowse.";
+
+
 inline constexpr char kWebuiRefresh2026Name[] = "WebUI Refresh 2026";
 inline constexpr char kWebuiRefresh2026Description[] =
     "Enables the WebUI Refresh 2026 feature.";

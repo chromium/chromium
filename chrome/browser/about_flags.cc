@@ -1010,6 +1010,19 @@ const FeatureEntry::FeatureVariation kWebUIOmniboxFullPopupVariations[] = {
     {"- Use BrowserView", kWebUIOmniboxFullPopupUseBrowserView, nullptr},
     {"- with Multiline", kWebUIOmniboxFullPopupMultiline, nullptr},
 };
+
+const FeatureEntry::FeatureParam kWebUiOmniboxAskGAboutThisPageCoBrowse[] = {
+    {"Omnibox_AskGCoBrowse", "true"}};
+const FeatureEntry::FeatureParam kWebUiOmniboxAskGAboutThisPageCoBrowseWithVisualSelection[] = {
+    {"Omnibox_AskGCoBrowseWithVisualSelection", "true"}};
+const FeatureEntry::FeatureParam kWebUiOmniboxAskGAboutThisPageComposeBox[] = {
+    {"Omnibox_AskGComposeBox", "true"}};
+
+const FeatureEntry::FeatureVariation kWebUiOmniboxAskGAboutThisPageVariations[] = {
+    {"Open Co-Browse side panel", kWebUiOmniboxAskGAboutThisPageCoBrowse, nullptr},
+    {"Open Co-Browse side panel with visual selection",
+     kWebUiOmniboxAskGAboutThisPageCoBrowseWithVisualSelection, nullptr},
+    {"Open compose box with tab content", kWebUiOmniboxAskGAboutThisPageComposeBox, nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
@@ -9522,6 +9535,13 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox::internal::kWebUIOmniboxSimplification,
          kWebUIOmniboxSimplificationVariations,
          "WebUIOmniboxSimplificationVariations")},
+
+    {"webui-omnibox-ask-g-about-this-page",
+     flag_descriptions::kWebUiOmniboxAskGAboutThisPageName,
+     flag_descriptions::kWebUiOmniboxAskGAboutThisPageDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kWebUIOmniboxAskGAboutThisPage,
+                                    kWebUiOmniboxAskGAboutThisPageVariations,
+                                    "WebUiOmniboxAskGAboutThisPage")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
