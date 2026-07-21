@@ -47,6 +47,12 @@ function combinePaths(origin, source) {
  *     corresponding to |source|. Otherwise, returns the full path for |source|.
  */
 function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes, isCss) {
+  assert.ok(
+      !(source.startsWith('/') && !source.startsWith('//') && !!origin &&
+        origin.startsWith(normalizeSlashes(urlSrcPath))),
+      `Root-relative import '${source}' in external path '${origin}' ` +
+      `is not allowed.`);
+
   if (source === urlPrefix) {
     // Handle case where 'urlPrefix` matches the entire `source` URL and
     // therefore is not just a prefix, but a complete URL.

@@ -99,6 +99,18 @@ class BundleJsTest(unittest.TestCase):
     depfile_d = self._read_out_file('depfile.d')
     self._check_dep_file(['src/foo.js', 'src/subdir/baz.js'], depfile_d)
 
+  def testBundleWithRootRelativeFails(self):
+    args = [
+        '--host',
+        'fake-host',
+        '--js_module_in_files',
+        'root_relative_test.js',
+    ]
+    with self.assertRaises(Exception) as context:
+      self._run_bundle(args)
+    self.assertIn("Root-relative import '/strings.m.js' in external path",
+                  str(context.exception))
+
   def testBundleWithResources(self):
     resources_path = './tests/bundle_js/resources'
     args = [
