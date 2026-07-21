@@ -61,9 +61,7 @@ void RecordDatabaseOnDiskSizeKB(StorageType storage_type,
           : "Storage.SessionStorage.DatabaseOnDiskSizeKB";
   base::UmaHistogramMemoryKB(
       base::StrCat(
-          {name_prefix, metrics_type == DatabaseMetricsType::kOnDiskExperimental
-                            ? ".OnDiskExperimental"
-                            : ""}),
+          {name_prefix, MaybeGetOnDiskExperimentalSuffix(metrics_type)}),
       base::ByteSize(base::checked_cast<uint64_t>(size_bytes)));
 }
 

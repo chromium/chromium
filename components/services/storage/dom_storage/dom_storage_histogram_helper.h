@@ -54,19 +54,29 @@ enum class DomStorageRecoveryReason {
   kCommitErrorThresholdExceeded,
 };
 
+// Classifies the histogram suffix for DomStorage metrics.
+enum class DatabaseMetricsType {
+  kInMemory,            // ".InMemory"
+  kOnDisk,              // ".OnDisk"
+  kOnDiskExperimental,  // ".OnDiskExperimental"
+};
+
 // Tracks the state of a single database recovery cycle, including what
 // triggered it and the outcome of each Destroy() attempt.
 struct DomStorageRecoveryState {
   DomStorageRecoveryState(DomStorageRecoveryReason reason,
-                          bool started_in_memory);
+                          DatabaseMetricsType metrics_type);
   ~DomStorageRecoveryState();
   DomStorageRecoveryState(DomStorageRecoveryState&&);
   DomStorageRecoveryState& operator=(DomStorageRecoveryState&&);
 
   DomStorageRecoveryReason reason;
 
-  // Whether the database was in-memory when recovery started.
-  bool started_in_memory;
+  // The metrics type of the database when recovery started. Captured at the
+  // start because a recovery cycle spans multiple destroys and reopens that may
+  // change the database backend (experimentation) or lifetime (recovered to
+  // in-memory DB).
+  DatabaseMetricsType metrics_type;
 
   // Result of each Destroy() call in order. true = succeeded,
   // false = failed. Size indicates how many destroy attempts occurred
@@ -77,7 +87,8 @@ struct DomStorageRecoveryState {
 };
 
 // Logs recovery outcome histograms:
-// - On-disk: `Storage.{Local,Session}Storage.Recovery.{Reason}` (enum)
+// - On-disk: `Storage.{Local,Session}Storage.Recovery.{Reason}` (enum), with a
+//   `.OnDiskExperimental` suffix for an experimental on-disk database.
 // - In-memory: `Storage.{Local,Session}Storage.Recovery.{Reason}.InMemory`
 //   (bool: true = recovered, false = gave up)
 void LogDomStorageRecoveryOutcome(std::string_view storage_type_prefix,
@@ -85,23 +96,22 @@ void LogDomStorageRecoveryOutcome(std::string_view storage_type_prefix,
                                   bool has_database,
                                   bool is_in_memory);
 
-// Records `Storage.{Local,Session}Storage.CommitErrorCountAtReset` if
+// Records `Storage.{Local,Session}Storage.CommitErrorCountAtReset` (with a
+// `.OnDiskExperimental` suffix for an experimental on-disk database) if
 // `commit_error_count` > 0.
 void RecordCommitErrorCountAtReset(std::string_view storage_type_prefix,
-                                   int commit_error_count);
+                                   int commit_error_count,
+                                   DatabaseMetricsType metrics_type);
 
 void RecordOnDiskSqliteVacuumMetrics(std::string_view storage_type_prefix,
                                      sql::Database& database);
 
-// Classifies the histogram suffix for DomStorage metrics.
-enum class DatabaseMetricsType {
-  kInMemory,            // ".InMemory"
-  kOnDisk,              // ".OnDisk"
-  kOnDiskExperimental,  // ".OnDiskExperimental"
-};
-
 // Returns the histogram suffix string for the given metrics type.
 std::string_view GetHistogramSuffix(DatabaseMetricsType type);
+
+// Returns ".OnDiskExperimental" for an experimental on-disk database, and ""
+// otherwise.
+std::string_view MaybeGetOnDiskExperimentalSuffix(DatabaseMetricsType type);
 
 }  // namespace storage
 

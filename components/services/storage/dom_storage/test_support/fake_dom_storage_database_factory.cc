@@ -47,7 +47,7 @@ void FakeDomStorageDatabaseFactory::Open(
   std::optional<DomStorageDatabaseFactory::DestroyOutcome> destroy_outcome;
   if (!dir_to_destroy.empty()) {
     destroy_outcome = DomStorageDatabaseFactory::DestroyOutcome{
-        NextDestroyResult(), DatabaseMetricsType::kOnDisk};
+        NextDestroyResult(), on_disk_metrics_type_};
   }
 
   DbStatus open_status = open_count_++ < num_open_failures_
@@ -57,7 +57,7 @@ void FakeDomStorageDatabaseFactory::Open(
   result.SetDatabase(GetTaskRunnerForDb(dir_to_open),
                      std::make_unique<FakeDomStorageDatabase>(open_status));
   result.metrics_type = dir_to_open.empty() ? DatabaseMetricsType::kInMemory
-                                            : DatabaseMetricsType::kOnDisk;
+                                            : on_disk_metrics_type_;
   result.open_status = open_status;
   result.destroy_outcome = std::move(destroy_outcome);
   std::move(callback).Run(std::move(result));

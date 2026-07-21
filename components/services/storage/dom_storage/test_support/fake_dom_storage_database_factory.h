@@ -15,6 +15,7 @@
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "components/services/storage/dom_storage/db_status.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
+#include "components/services/storage/dom_storage/dom_storage_histogram_helper.h"
 #include "components/services/storage/dom_storage/test_support/scoped_dom_storage_database_factory_for_testing.h"
 
 namespace storage {
@@ -52,6 +53,13 @@ class FakeDomStorageDatabaseFactory {
   FakeDomStorageDatabaseFactory& operator=(
       const FakeDomStorageDatabaseFactory&) = delete;
 
+  // Overrides the metrics type reported for on-disk databases. Defaults to
+  // `kOnDisk`. Set `kOnDiskExperimental` to exercise the experiment-arm
+  // histogram suffixes.
+  void SetOnDiskMetricsType(DatabaseMetricsType metrics_type) {
+    on_disk_metrics_type_ = metrics_type;
+  }
+
  private:
   void Open(StorageType storage_type,
             const base::FilePath& dir_to_open,
@@ -66,6 +74,7 @@ class FakeDomStorageDatabaseFactory {
   const int num_open_failures_;
   const int num_destroy_failures_;
   const DestroyResultCallback custom_destroy_result_;
+  DatabaseMetricsType on_disk_metrics_type_ = DatabaseMetricsType::kOnDisk;
   int open_count_ = 0;
   int destroy_count_ = 0;
 

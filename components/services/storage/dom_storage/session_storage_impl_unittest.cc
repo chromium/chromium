@@ -1476,9 +1476,30 @@ class SessionStorageImplFakeDbTest : public SessionStorageImplTestBase {
   }
 };
 
+// Parametrized over the on-disk metrics type to verify that recovery and
+// commit-error histograms carry the rollout-experiment suffix
+// `.OnDiskExperimental` for the experiment arm and none otherwise. This matches
+// the database's reported metrics type.
+class SessionStorageImplFakeDbRolloutTest
+    : public SessionStorageImplFakeDbTest,
+      public testing::WithParamInterface<DatabaseMetricsType> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    SessionStorageImplFakeDbRolloutTest,
+    testing::Values(DatabaseMetricsType::kOnDisk,
+                    DatabaseMetricsType::kOnDiskExperimental),
+    [](const testing::TestParamInfo<DatabaseMetricsType>& info) {
+      return info.param == DatabaseMetricsType::kOnDiskExperimental
+                 ? "Experimental"
+                 : "NonExperimental";
+    });
+
 // After recovery, some commit errors occur but resolve via a successful commit.
-// Verifies the kTransientErrorsAfterAttemptedRecovery histogram is emitted.
-TEST_F(SessionStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
+// Verifies the kTransientErrorsAfterAttemptedRecovery and commit-error-count
+// histograms are emitted with the suffix matching the database's metrics type.
+TEST_P(SessionStorageImplFakeDbRolloutTest, TransientErrorsAfterRecovery) {
+  const DatabaseMetricsType metrics_type = GetParam();
   base::HistogramTester histograms;
 
   size_t num_databases_destroyed = 0;
@@ -1502,12 +1523,12 @@ TEST_F(SessionStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
             DomStorageDatabaseFactory::OpenResult result;
             result.SetDatabase(GetTaskRunnerForDb(dir_to_open),
                                std::move(fake));
-            result.metrics_type = DatabaseMetricsType::kOnDisk;
+            result.metrics_type = metrics_type;
             result.open_status = DbStatus::OK();
             if (!dir_to_destroy.empty()) {
               result.destroy_outcome =
-                  DomStorageDatabaseFactory::DestroyOutcome{
-                      DbStatus::OK(), DatabaseMetricsType::kOnDisk};
+                  DomStorageDatabaseFactory::DestroyOutcome{DbStatus::OK(),
+                                                            metrics_type};
             }
             std::move(callback).Run(std::move(result));
           }));
@@ -1594,35 +1615,47 @@ TEST_F(SessionStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
   EXPECT_TRUE(area.is_connected());
 
   // Verify the transient errors histogram was emitted exactly once.
+  const std::string suffix(MaybeGetOnDiskExperimentalSuffix(metrics_type));
   histograms.ExpectBucketCount(
-      "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
+      "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded" + suffix,
       DomStorageDatabaseRecoveryOutcome::kTransientErrorsAfterAttemptedRecovery,
       1);
 
   // Verify the commit error count was recorded: once during the initial
   // recovery (kCommitErrorThreshold + 1) and once when the successful commit
   // reset the 3 transient errors.
-  histograms.ExpectBucketCount("Storage.SessionStorage.CommitErrorCountAtReset",
-                               kCommitErrorThreshold + 1, 1);
-  histograms.ExpectBucketCount("Storage.SessionStorage.CommitErrorCountAtReset",
-                               3, 1);
+  histograms.ExpectBucketCount(
+      "Storage.SessionStorage.CommitErrorCountAtReset" + suffix,
+      kCommitErrorThreshold + 1, 1);
+  histograms.ExpectBucketCount(
+      "Storage.SessionStorage.CommitErrorCountAtReset" + suffix, 3, 1);
 }
 
-// Both disk opens fail, destroy succeeds, in-memory open succeeds.
-TEST_F(SessionStorageImplFakeDbTest, FallbackToInMemory_DestroySucceeded) {
+// Both disk opens fail, destroy succeeds, in-memory open succeeds. The recovery
+// outcome and destroy histograms keep the database's metrics-type suffix even
+// though recovery falls back to in-memory, because the metrics type is captured
+// when recovery starts.
+TEST_P(SessionStorageImplFakeDbRolloutTest,
+       FallbackToInMemory_DestroySucceeded) {
+  const DatabaseMetricsType metrics_type = GetParam();
   base::HistogramTester histograms;
   FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/2,
                                              /*num_destroy_failures=*/0);
+  fake_factory.SetOnDiskMetricsType(metrics_type);
 
   EnsureDatabaseOpen();
 
-  histograms.ExpectUniqueSample("Storage.SessionStorage.Recovery.OpenFailure",
-                                DomStorageDatabaseRecoveryOutcome::
-                                    kRecoveredToInMemoryBothDestroysSucceeded,
-                                1);
+  histograms.ExpectUniqueSample(
+      "Storage.SessionStorage.Recovery.OpenFailure" +
+          std::string(MaybeGetOnDiskExperimentalSuffix(metrics_type)),
+      DomStorageDatabaseRecoveryOutcome::
+          kRecoveredToInMemoryBothDestroysSucceeded,
+      1);
   // Two successful destroys during recovery (one per failed open attempt).
-  histograms.ExpectUniqueSample("Storage.SessionStorage.DestroyDatabase.OnDisk",
-                                /*sample=*/0, 2);
+  histograms.ExpectUniqueSample(
+      "Storage.SessionStorage.DestroyDatabase" +
+          std::string(GetHistogramSuffix(metrics_type)),
+      /*sample=*/0, 2);
 }
 
 // Both disk opens fail, destroy also fails, in-memory open succeeds.

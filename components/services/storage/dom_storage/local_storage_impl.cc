@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
@@ -538,13 +539,16 @@ void LocalStorageImpl::OnConnectionFinished() {
 
 void LocalStorageImpl::DeleteAndRecreateDatabase(
     DomStorageRecoveryReason reason) {
+  CHECK(database_);
+  const DatabaseMetricsType metrics_type = database_->metrics_type();
+
   // Record the reason that initiated this recovery cycle. The first reason
   // wins: subsequent calls during the same recovery cycle (e.g. an open
   // failure after a destroy triggered by kCommitErrorThresholdExceeded) do not
   // overwrite it. So, the histogram correctly attributes the outcome to the
   // original reason.
   if (!recovery_state_) {
-    recovery_state_.emplace(reason, in_memory_);
+    recovery_state_.emplace(reason, metrics_type);
   }
 
   // We're about to set database_ to null, so delete the StorageAreaImpls
@@ -554,9 +558,9 @@ void LocalStorageImpl::DeleteAndRecreateDatabase(
   // Reset state to be in process of connecting. This will cause requests for
   // StorageAreas to be queued until the connection is complete.
   connection_state_ = CONNECTION_IN_PROGRESS;
-  RecordCommitErrorCountAtReset("LocalStorage", commit_error_count_);
+  RecordCommitErrorCountAtReset("LocalStorage", commit_error_count_,
+                                metrics_type);
   commit_error_count_ = 0;
-  CHECK(database_);
   database_.reset();
 
   bool recreate_in_memory = false;
@@ -666,22 +670,21 @@ void LocalStorageImpl::GetStatistics(size_t* total_cache_size,
 }
 
 void LocalStorageImpl::OnCommitResult(DbStatus status) {
+  CHECK_EQ(connection_state_, CONNECTION_FINISHED);
+  CHECK(database_);
   if (status.ok()) {
+    const DatabaseMetricsType metrics_type = database_->metrics_type();
     if (commit_error_count_ > 0 && tried_to_recover_from_commit_errors_) {
       base::UmaHistogramEnumeration(
-          "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
+          base::StrCat(
+              {"Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
+               MaybeGetOnDiskExperimentalSuffix(metrics_type)}),
           DomStorageDatabaseRecoveryOutcome::
               kTransientErrorsAfterAttemptedRecovery);
     }
-    RecordCommitErrorCountAtReset("LocalStorage", commit_error_count_);
+    RecordCommitErrorCountAtReset("LocalStorage", commit_error_count_,
+                                  metrics_type);
     commit_error_count_ = 0;
-    return;
-  }
-
-  if (connection_state_ != CONNECTION_FINISHED) {
-    // Previous commit errors deleted and recreated the database below.  Ignore
-    // additional errors from the old database while waiting for the new
-    // database to open.
     return;
   }
 
@@ -692,7 +695,9 @@ void LocalStorageImpl::OnCommitResult(DbStatus status) {
       // are still having problems: there isn't really anything left to try, so
       // just ignore errors.
       base::UmaHistogramEnumeration(
-          "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
+          base::StrCat(
+              {"Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
+               MaybeGetOnDiskExperimentalSuffix(database_->metrics_type())}),
           DomStorageDatabaseRecoveryOutcome::
               kOngoingErrorsAfterAttemptedRecovery);
       return;

@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -490,22 +491,26 @@ void SessionStorageImpl::OnDataMapDestruction(int64_t map_id) {
 }
 
 void SessionStorageImpl::OnCommitResult(DbStatus status) {
+  // Previous commit errors deleted and recreated the database below. Ignore
+  // additional errors from the old database while waiting for the new database
+  // to open. The `!database_` check additionally handles the case where
+  // recovery failed completely and we are now running without a database.
+  if (connection_state_ != CONNECTION_FINISHED || !database_) {
+    return;
+  }
   if (status.ok()) {
+    const DatabaseMetricsType metrics_type = database_->metrics_type();
     if (commit_error_count_ > 0 && tried_to_recover_from_commit_errors_) {
       base::UmaHistogramEnumeration(
-          "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
+          base::StrCat(
+              {"Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
+               MaybeGetOnDiskExperimentalSuffix(metrics_type)}),
           DomStorageDatabaseRecoveryOutcome::
               kTransientErrorsAfterAttemptedRecovery);
     }
-    RecordCommitErrorCountAtReset("SessionStorage", commit_error_count_);
+    RecordCommitErrorCountAtReset("SessionStorage", commit_error_count_,
+                                  metrics_type);
     commit_error_count_ = 0;
-    return;
-  }
-
-  if (connection_state_ != CONNECTION_FINISHED) {
-    // Previous commit errors deleted and recreated the database below.  Ignore
-    // additional errors from the old database while waiting for the new
-    // database to open.
     return;
   }
 
@@ -516,7 +521,9 @@ void SessionStorageImpl::OnCommitResult(DbStatus status) {
       // are still having problems: there isn't really anything left to try, so
       // just ignore errors.
       base::UmaHistogramEnumeration(
-          "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
+          base::StrCat(
+              {"Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded",
+               MaybeGetOnDiskExperimentalSuffix(database_->metrics_type())}),
           DomStorageDatabaseRecoveryOutcome::
               kOngoingErrorsAfterAttemptedRecovery);
       return;
@@ -754,10 +761,13 @@ void SessionStorageImpl::PurgeAllNamespaceDataMaps() {
 
 void SessionStorageImpl::DeleteAndRecreateDatabase(
     DomStorageRecoveryReason reason) {
+  CHECK(database_);
+  const DatabaseMetricsType metrics_type = database_->metrics_type();
+
   // Record the reason that initiated this recovery cycle. Only the first
   // reason is kept when recovery re-enters (e.g. open-fail after destroy).
   if (!recovery_state_) {
-    recovery_state_.emplace(reason, in_memory_);
+    recovery_state_.emplace(reason, metrics_type);
   }
 
   // We're about to set database_ to null, so delete the StorageAreas
@@ -768,9 +778,9 @@ void SessionStorageImpl::DeleteAndRecreateDatabase(
   // StorageAreas to be queued until the connection is complete.
   connection_state_ = CONNECTION_IN_PROGRESS;
   receiver_.Pause();
-  RecordCommitErrorCountAtReset("SessionStorage", commit_error_count_);
+  RecordCommitErrorCountAtReset("SessionStorage", commit_error_count_,
+                                metrics_type);
   commit_error_count_ = 0;
-  CHECK(database_);
   database_.reset();
 
   bool recreate_in_memory = false;

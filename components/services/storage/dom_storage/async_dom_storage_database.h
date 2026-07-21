@@ -72,6 +72,7 @@ class AsyncDomStorageDatabase {
     CHECK(is_database_opened_);
     return is_sqlite_;
   }
+  DatabaseMetricsType metrics_type() const { return metrics_type_; }
 
   // The functions below use `base::SequenceBound` to read and write
   // `database_` through the `DomStorageDatabase` interface. See function

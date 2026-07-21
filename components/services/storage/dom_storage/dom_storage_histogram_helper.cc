@@ -99,8 +99,8 @@ const char* GetReasonSuffix(DomStorageRecoveryReason reason) {
 
 DomStorageRecoveryState::DomStorageRecoveryState(
     DomStorageRecoveryReason reason,
-    bool started_in_memory)
-    : reason(reason), started_in_memory(started_in_memory) {}
+    DatabaseMetricsType metrics_type)
+    : reason(reason), metrics_type(metrics_type) {}
 
 DomStorageRecoveryState::~DomStorageRecoveryState() = default;
 
@@ -125,7 +125,7 @@ void LogDomStorageRecoveryOutcome(std::string_view storage_type_prefix,
       base::StrCat({"Storage.", storage_type_prefix, ".Recovery.",
                     GetReasonSuffix(state.reason)});
 
-  if (state.started_in_memory) {
+  if (state.metrics_type == DatabaseMetricsType::kInMemory) {
     // No Destroy() calls should occur if DB started in-memory.
     CHECK(state.destroy_results.empty());
     base::UmaHistogramBoolean(base::StrCat({histogram_name, ".InMemory"}),
@@ -133,19 +133,22 @@ void LogDomStorageRecoveryOutcome(std::string_view storage_type_prefix,
     return;
   }
 
-  // On-disk recovery: log full outcome enum.
+  // On-disk recovery: log full outcome enum, suffixed for the experiment arm.
   base::UmaHistogramEnumeration(
-      histogram_name,
+      base::StrCat({histogram_name,
+                    MaybeGetOnDiskExperimentalSuffix(state.metrics_type)}),
       GetOnDiskDBRecoveryOutcome(state, has_database, is_in_memory));
 }
 
 void RecordCommitErrorCountAtReset(std::string_view storage_type_prefix,
-                                   int commit_error_count) {
+                                   int commit_error_count,
+                                   DatabaseMetricsType metrics_type) {
   if (commit_error_count > 0) {
-    base::UmaHistogramExactLinear(base::StrCat({"Storage.", storage_type_prefix,
-                                                ".CommitErrorCountAtReset"}),
-                                  commit_error_count,
-                                  kCommitErrorCountHistogramMax);
+    base::UmaHistogramExactLinear(
+        base::StrCat({"Storage.", storage_type_prefix,
+                      ".CommitErrorCountAtReset",
+                      MaybeGetOnDiskExperimentalSuffix(metrics_type)}),
+        commit_error_count, kCommitErrorCountHistogramMax);
   }
 }
 
@@ -176,6 +179,12 @@ std::string_view GetHistogramSuffix(DatabaseMetricsType type) {
     case DatabaseMetricsType::kOnDiskExperimental:
       return ".OnDiskExperimental";
   }
+}
+
+std::string_view MaybeGetOnDiskExperimentalSuffix(DatabaseMetricsType type) {
+  return type == DatabaseMetricsType::kOnDiskExperimental
+             ? ".OnDiskExperimental"
+             : "";
 }
 
 }  // namespace storage

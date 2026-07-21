@@ -1869,9 +1869,30 @@ class LocalStorageImplFakeDbTest : public LocalStorageImplTestBase {
   }
 };
 
+// Parametrized over the on-disk metrics type to verify that recovery and
+// commit-error histograms carry the rollout-experiment suffix
+// `.OnDiskExperimental` for the experiment arm and none otherwise. This matches
+// the database's reported metrics type.
+class LocalStorageImplFakeDbRolloutTest
+    : public LocalStorageImplFakeDbTest,
+      public testing::WithParamInterface<DatabaseMetricsType> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    LocalStorageImplFakeDbRolloutTest,
+    testing::Values(DatabaseMetricsType::kOnDisk,
+                    DatabaseMetricsType::kOnDiskExperimental),
+    [](const testing::TestParamInfo<DatabaseMetricsType>& info) {
+      return info.param == DatabaseMetricsType::kOnDiskExperimental
+                 ? "Experimental"
+                 : "NonExperimental";
+    });
+
 // After recovery, some commit errors occur but resolve via a successful commit.
-// Verifies the kTransientErrorsAfterAttemptedRecovery histogram is emitted.
-TEST_F(LocalStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
+// Verifies the kTransientErrorsAfterAttemptedRecovery and commit-error-count
+// histograms are emitted with the suffix matching the database's metrics type.
+TEST_P(LocalStorageImplFakeDbRolloutTest, TransientErrorsAfterRecovery) {
+  const DatabaseMetricsType metrics_type = GetParam();
   base::HistogramTester histograms;
   ShutDownStorage();
 
@@ -1879,22 +1900,23 @@ TEST_F(LocalStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
   // the second database to OK mid-flight to simulate transient errors.
   ScopedDomStorageDatabaseFactoryForTesting scoped_factory(
       base::BindLambdaForTesting(
-          [](StorageType, const base::FilePath& dir_to_open,
-             const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&,
-             const base::FilePath& dir_to_destroy,
-             DomStorageDatabaseFactory::OpenResultCallback callback) {
+          [metrics_type](
+              StorageType, const base::FilePath& dir_to_open,
+              const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&,
+              const base::FilePath& dir_to_destroy,
+              DomStorageDatabaseFactory::OpenResultCallback callback) {
             auto fake =
                 std::make_unique<FakeDomStorageDatabase>(DbStatus::OK());
             fake->SetUpdateMapsStatus(DbStatus::IOError("test"));
             DomStorageDatabaseFactory::OpenResult result;
             result.SetDatabase(GetTaskRunnerForDb(dir_to_open),
                                std::move(fake));
-            result.metrics_type = DatabaseMetricsType::kOnDisk;
+            result.metrics_type = metrics_type;
             result.open_status = DbStatus::OK();
             if (!dir_to_destroy.empty()) {
               result.destroy_outcome =
-                  DomStorageDatabaseFactory::DestroyOutcome{
-                      DbStatus::OK(), DatabaseMetricsType::kOnDisk};
+                  DomStorageDatabaseFactory::DestroyOutcome{DbStatus::OK(),
+                                                            metrics_type};
             }
             std::move(callback).Run(std::move(result));
           }));
@@ -1977,38 +1999,49 @@ TEST_F(LocalStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
   WaitForDatabaseTasks();
 
   // Verify the transient errors histogram was emitted exactly once.
+  const std::string suffix(MaybeGetOnDiskExperimentalSuffix(metrics_type));
   histograms.ExpectBucketCount(
-      "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded",
+      "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded" + suffix,
       DomStorageDatabaseRecoveryOutcome::kTransientErrorsAfterAttemptedRecovery,
       1);
 
   // Verify the commit error count was recorded: once during the initial
   // recovery (kCommitErrorThreshold + 1) and once when the successful commit
   // reset the 3 transient errors.
-  histograms.ExpectBucketCount("Storage.LocalStorage.CommitErrorCountAtReset",
-                               kCommitErrorThreshold + 1, 1);
-  histograms.ExpectBucketCount("Storage.LocalStorage.CommitErrorCountAtReset",
-                               3, 1);
+  histograms.ExpectBucketCount(
+      "Storage.LocalStorage.CommitErrorCountAtReset" + suffix,
+      kCommitErrorThreshold + 1, 1);
+  histograms.ExpectBucketCount(
+      "Storage.LocalStorage.CommitErrorCountAtReset" + suffix, 3, 1);
 }
 
-// Both disk opens fail, destroy succeeds, in-memory open succeeds.
-TEST_F(LocalStorageImplFakeDbTest, FallbackToInMemory_DestroySucceeded) {
+// Both disk opens fail, destroy succeeds, in-memory open succeeds. The recovery
+// outcome and destroy histograms keep the database's metrics-type suffix even
+// though recovery falls back to in-memory, because the metrics type is captured
+// when recovery starts.
+TEST_P(LocalStorageImplFakeDbRolloutTest, FallbackToInMemory_DestroySucceeded) {
+  const DatabaseMetricsType metrics_type = GetParam();
   base::HistogramTester histograms;
   ShutDownStorage();
 
   FakeDomStorageDatabaseFactory fake_factory(/*num_open_failures=*/2,
                                              /*num_destroy_failures=*/0);
+  fake_factory.SetOnDiskMetricsType(metrics_type);
 
   InitializeStorage(storage_path());
   WaitForDatabaseOpen();
 
-  histograms.ExpectUniqueSample("Storage.LocalStorage.Recovery.OpenFailure",
-                                DomStorageDatabaseRecoveryOutcome::
-                                    kRecoveredToInMemoryBothDestroysSucceeded,
-                                1);
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.Recovery.OpenFailure" +
+          std::string(MaybeGetOnDiskExperimentalSuffix(metrics_type)),
+      DomStorageDatabaseRecoveryOutcome::
+          kRecoveredToInMemoryBothDestroysSucceeded,
+      1);
   // Two successful destroys during recovery (one per failed open attempt).
-  histograms.ExpectUniqueSample("Storage.LocalStorage.DestroyDatabase.OnDisk",
-                                /*sample=*/0, 2);
+  histograms.ExpectUniqueSample(
+      "Storage.LocalStorage.DestroyDatabase" +
+          std::string(GetHistogramSuffix(metrics_type)),
+      /*sample=*/0, 2);
 }
 
 // Both disk opens fail, destroy also fails, in-memory open succeeds.
