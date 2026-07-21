@@ -912,8 +912,15 @@ std::optional<EpDeviceInfo> Environment::SelectEpDeviceForCompiler(
 
   mojom::Device selected_device_type =
       OrtToWebnnDeviceType(hardware_device_type);
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtDisableVirtualDevices)) {
+
+  // Skip offline compilation checks when testing online compilation on real
+  // hardware or when all compiler devices are explicitly allowed.
+  const bool allow_all_compiler_devices =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtDisableVirtualDevices) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtAllowAllCompilerDevices);
+  if (!allow_all_compiler_devices) {
     const auto& offline_support = ep_it->second.offline_compilation_support;
     auto support_it =
         std::ranges::find(offline_support, selected_device_type,

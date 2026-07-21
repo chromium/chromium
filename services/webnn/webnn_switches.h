@@ -93,6 +93,12 @@ inline constexpr char kWebNNOrtIgnoreIhvEps[] = "webnn-ort-ignore-ihv-eps";
 inline constexpr char kWebNNOrtDisableVirtualDevices[] =
     "webnn-ort-disable-virtual-devices";
 
+// Allow all EP devices to be selected for the Compiler process, regardless of
+// whether `kKnownEPs` declares offline compilation support for them. For
+// testing only.
+inline constexpr char kWebNNOrtAllowAllCompilerDevices[] =
+    "webnn-ort-allow-all-compiler-devices";
+
 // Configure the graph optimization level of ONNX Runtime.
 // Usage: --webnn-ort-graph-optimization-level=DISABLE_ALL
 // Other levels could be "BASIC", "EXTENDED" and "ALL".
