@@ -819,6 +819,11 @@ IN_PROC_BROWSER_TEST_F(
 // state updated.
 IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
                        OcclusionDetectionForMultipleWebContents) {
+  if (base::mac::MacOSMajorVersion() == 13) {
+    GTEST_SKIP()
+        << "Flaky on MacOS 13 builders; see https://crbug.com/537434839";
+  }
+
   InitWindowA();
 
   EXPECT_EQ(WindowAWebContentsVisibility(),
