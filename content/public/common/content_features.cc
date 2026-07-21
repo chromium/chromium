@@ -662,6 +662,10 @@ BASE_FEATURE(kIsolateFencedFrames, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIsolateOrigins, base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 
+// Enables process isolation for subframe error pages. See
+// https://crbug.com/40134629.
+BASE_FEATURE(kIsolateSubframeErrorPages, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables the ability to specification a renderer that does not use Java.
 BASE_FEATURE(kJavalessRendererExperimentOn, base::FEATURE_ENABLED_BY_DEFAULT);

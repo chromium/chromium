@@ -292,7 +292,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::SiteInstance* site_instance,
       const GURL& current_effective_url,
       const GURL& destination_effective_url) override;
-  bool ShouldIsolateErrorPage(bool in_main_frame) override;
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override;
   void WillComputeSiteForNavigation(content::BrowserContext* browser_context,
                                     const GURL& url) override;

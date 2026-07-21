@@ -198,6 +198,7 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolatedWebApps);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolateFencedFrames);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolateOrigins);
 CONTENT_EXPORT extern const char kIsolateOriginsFieldTrialParamName[];
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIsolateSubframeErrorPages);
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kJavalessRendererExperimentOn);
 #endif

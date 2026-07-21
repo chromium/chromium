@@ -2594,12 +2594,6 @@ bool ChromeContentBrowserClient::ShouldSwapBrowsingInstancesForNavigation(
 #endif
 }
 
-bool ChromeContentBrowserClient::ShouldIsolateErrorPage(bool in_main_frame) {
-  // TODO(nasko): Consider supporting error page isolation in subframes if
-  // Site Isolation is enabled.
-  return in_main_frame;
-}
-
 std::vector<url::Origin>
 ChromeContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
   std::vector<url::Origin> isolated_origin_list;
