@@ -42,6 +42,11 @@ BASE_DECLARE_FEATURE(kAndroidGrammarCheck);
 // on the user's data region setting.
 BASE_DECLARE_FEATURE(kEnableSpellcheckRegionalSignal);
 
+// When enabled, spellcheck character attributes and break iterator rule sets
+// are initialized lazily on first spellcheck use rather than at renderer
+// launch.
+BASE_DECLARE_FEATURE(kLazyInitializeSpellcheckCharAttribute);
+
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 }  // namespace spellcheck

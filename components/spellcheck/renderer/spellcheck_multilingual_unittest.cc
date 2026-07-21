@@ -17,8 +17,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/spellcheck/common/spellcheck_common.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "components/spellcheck/renderer/empty_local_interface_provider.h"
 #include "components/spellcheck/renderer/spellcheck.h"
@@ -52,9 +54,17 @@ base::FilePath GetHunspellDirectory() {
 
 }  // namespace
 
-class MultilingualSpellCheckTest : public testing::Test {
+class MultilingualSpellCheckTest : public testing::TestWithParam<bool> {
  public:
-  MultilingualSpellCheckTest() = default;
+  MultilingualSpellCheckTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          spellcheck::kLazyInitializeSpellcheckCharAttribute);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          spellcheck::kLazyInitializeSpellcheckCharAttribute);
+    }
+  }
 
   void ReinitializeSpellCheck(const std::string& unsplit_languages) {
     spellcheck_ = new SpellCheck(&embedder_provider_);
@@ -79,6 +89,9 @@ class MultilingualSpellCheckTest : public testing::Test {
 
   ~MultilingualSpellCheckTest() override = default;
   TestingSpellCheckProvider* provider() { return provider_.get(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 
  protected:
   void CheckSpellCheckWordResults(
@@ -146,7 +159,7 @@ class MultilingualSpellCheckTest : public testing::Test {
 
 // Check that a string of different words is properly spellchecked for different
 // combinations of different languages.
-TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWord) {
+TEST_P(MultilingualSpellCheckTest, MultilingualSpellCheckWord) {
   static const SpellcheckTestCase kTestCases[] = {
       // An English, Spanish, Russian, and Greek word, all spelled correctly.
       {L"rocket destruyan \x0432\x0441\x0435\x0445 \x03C4\x03B9\x03C2", 0, 0},
@@ -176,7 +189,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWord) {
                                  permuted_languages.end()));
 }
 
-TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWordEnglishSpanish) {
+TEST_P(MultilingualSpellCheckTest, MultilingualSpellCheckWordEnglishSpanish) {
   static const SpellcheckTestCase kTestCases[] = {
       {L"", 0, 0},
       {L"head hand foot legs arms", 0, 0},
@@ -207,7 +220,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckWordEnglishSpanish) {
 }
 
 // To check when no language is set, no spelling check and no crash.
-TEST_F(MultilingualSpellCheckTest,
+TEST_P(MultilingualSpellCheckTest,
        MultilingualSpellCheckCustomDictionarySpellCheckWordWithoutLanguage) {
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "SpellCheckCustomDictionaryAPI", true);
@@ -231,7 +244,7 @@ TEST_F(MultilingualSpellCheckTest,
   ExpectSpellCheckWordResultsWithoutLanguages("", kNewTestCases1);
 }
 
-TEST_F(MultilingualSpellCheckTest,
+TEST_P(MultilingualSpellCheckTest,
        MultilingualSpellCheckCustomDictionarySpellCheckWord) {
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "SpellCheckCustomDictionaryAPI", true);
@@ -272,7 +285,7 @@ TEST_F(MultilingualSpellCheckTest,
 }
 
 // Word added to the SpellCheckDictionary applies for all languages.
-TEST_F(MultilingualSpellCheckTest,
+TEST_P(MultilingualSpellCheckTest,
        SpellCheckCustomDictionarySpellCheckWordRegardlessLang) {
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "SpellCheckCustomDictionaryAPI", true);
@@ -302,7 +315,7 @@ TEST_F(MultilingualSpellCheckTest,
 
 // Cross-script counterpart of the above for the synchronous CheckSpelling()
 // path.
-TEST_F(MultilingualSpellCheckTest,
+TEST_P(MultilingualSpellCheckTest,
        MultilingualCrossScriptCustomDictionarySpellCheckWord) {
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "SpellCheckCustomDictionaryAPI", true);
@@ -334,7 +347,7 @@ TEST_F(MultilingualSpellCheckTest,
 }
 
 // If there are no spellcheck languages, no text should be marked as misspelled.
-TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraphBlank) {
+TEST_P(MultilingualSpellCheckTest, MultilingualSpellCheckParagraphBlank) {
   ReinitializeSpellCheck(std::string());
 
   ExpectSpellCheckParagraphResults(
@@ -345,7 +358,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraphBlank) {
 
 // Make sure nothing is considered misspelled when at least one of the selected
 // languages determines that a word is correctly spelled.
-TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraphCorrect) {
+TEST_P(MultilingualSpellCheckTest, MultilingualSpellCheckParagraphCorrect) {
   ReinitializeSpellCheck("en-US,es-ES,de-DE");
 
   ExpectSpellCheckParagraphResults(
@@ -354,7 +367,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraphCorrect) {
 }
 
 // Make sure that all the misspellings in the text are found.
-TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraph) {
+TEST_P(MultilingualSpellCheckTest, MultilingualSpellCheckParagraph) {
   ReinitializeSpellCheck("en-US,es-ES");
   std::vector<SpellCheckResult> expected;
   expected.emplace_back(spellcheck::Decoration::SPELLING, 7, 15);
@@ -365,7 +378,7 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckParagraph) {
       u"rocket Schwarzkommando destruyan pcnyhon", expected);
 }
 
-TEST_F(MultilingualSpellCheckTest,
+TEST_P(MultilingualSpellCheckTest,
        MultilingualCustomDictionarySpellCheckParagraph) {
   blink::WebRuntimeFeatures::EnableFeatureFromString(
       "SpellCheckCustomDictionaryAPI", true);
@@ -406,7 +419,7 @@ TEST_F(MultilingualSpellCheckTest,
 }
 
 // Ensure that suggestions are handled properly for multiple languages.
-TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckSuggestions) {
+TEST_P(MultilingualSpellCheckTest, MultilingualSpellCheckSuggestions) {
   ReinitializeSpellCheck("en-US,es-ES");
   struct TestCases {
     // A string of text for checking.
@@ -453,3 +466,5 @@ TEST_F(MultilingualSpellCheckTest, MultilingualSpellCheckSuggestions) {
     }
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, MultilingualSpellCheckTest, testing::Bool());

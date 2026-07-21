@@ -54,6 +54,9 @@ BASE_FEATURE(kAndroidGrammarCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableSpellcheckRegionalSignal,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLazyInitializeSpellcheckCharAttribute,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 }  // namespace spellcheck

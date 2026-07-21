@@ -6,6 +6,7 @@
 #define COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_LANGUAGE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -81,7 +82,7 @@ class SpellcheckLanguage {
 
   // Returns true if all the characters in a text string are in the script
   // associated with this spellcheck language.
-  bool IsTextInSameScript(const std::u16string& text) const;
+  bool IsTextInSameScript(const std::u16string& text);
 
  private:
   friend class SpellCheckTest;
@@ -92,9 +93,12 @@ class SpellcheckLanguage {
   bool IsValidContraction(const std::u16string& word,
                           spellcheck::mojom::SpellCheckHost& host);
 
+  // Ensures character_attributes_ has been initialized with language_.
+  void EnsureCharacterAttributesInitialized();
+
   // Represents character attributes used for filtering out characters which
   // are not supported by this SpellCheck object.
-  SpellcheckCharAttribute character_attributes_;
+  std::optional<SpellcheckCharAttribute> character_attributes_;
 
   // Represents word iterators used in this spellchecker. The |text_iterator_|
   // splits text provided by WebKit into words, contractions, or concatenated
@@ -107,6 +111,9 @@ class SpellcheckLanguage {
   // Pointer to a platform-specific spelling engine, if it is in use. This
   // should only be set if hunspell is not used. (I.e. on OSX, for now)
   std::unique_ptr<SpellingEngine> platform_spelling_engine_;
+
+  // The BCP-47 language tag for this spellcheck language.
+  std::optional<std::string> language_;
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_SPELLCHECK_LANGUAGE_H_
