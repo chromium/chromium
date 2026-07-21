@@ -9,8 +9,10 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -58,8 +60,11 @@ IN_PROC_BROWSER_TEST_F(TabsFromOtherDevicesSidePanelBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TabsFromOtherDevicesSidePanelBrowserTest, ShowFromMenu) {
   coordinator()->SetNoDelaysForTesting(true);
-  chrome::ExecuteCommand(browser(),
-                         IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL);
+  chrome::ExecuteCommandWithContext(
+      browser(), IDC_SHOW_TABS_FROM_OTHER_DEVICES_SIDE_PANEL,
+      actions::ActionInvocationContext::Builder()
+          .SetProperty(kSidePanelOpenTriggerKey, SidePanelOpenTrigger::kAppMenu)
+          .Build());
 
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return GetSidePanel()->GetVisible(); }));

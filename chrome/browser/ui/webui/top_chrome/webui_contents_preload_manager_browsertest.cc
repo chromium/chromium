@@ -20,6 +20,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/top_chrome/preload_candidate_selector.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -34,6 +37,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/actions/actions.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -209,8 +213,12 @@ IN_PROC_BROWSER_TEST_P(WebUIContentsPreloadManagerBrowserSmokeTest,
     }
 
     // Trigger the WebUI.
-    new_browser->command_controller()->ExecuteCommand(
-        GetCommandIdForURL(browser()->GetProfile(), webui_url));
+    chrome::ExecuteCommandWithContext(
+        new_browser, GetCommandIdForURL(browser()->GetProfile(), webui_url),
+        actions::ActionInvocationContext::Builder()
+            .SetProperty(kSidePanelOpenTriggerKey,
+                         SidePanelOpenTrigger::kToolbarButton)
+            .Build());
     navigation_waiter()->Wait();
 
     // Clean up.
