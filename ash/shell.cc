@@ -672,10 +672,11 @@ void Shell::NotifyUserWorkAreaInsetsChanged(aura::Window* root_window) {
   if (shutting_down_) {
     return;
   }
-  // A fullscreen state change in `NotifyFullscreenStateChanged` may trigger a
-  // reentrancy call to user work area insets change.
-  // TODO(crbug.com/528597195): Investigate if we can remove the reentrancy.
-  shell_observers_.NotifyAllowReentrancyUntriaged(
+  // Allow reentrancy here. A fullscreen state change in
+  // `NotifyFullscreenStateChanged` could move the accessibility panel which
+  // triggers this call to update shelf components' layout.
+  // See crbug.com/525739020 for details.
+  shell_observers_.NotifyAllowReentrancy(
       &ShellObserver::OnUserWorkAreaInsetsChanged, root_window);
 }
 
