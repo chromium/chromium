@@ -82,6 +82,7 @@ static_library("browser") {
       "crowdstrike_client.cc",
       "desktop/desktop_os_signals_collector.cc",
     ]
+    deps += [ "//components/certificate_matching" ]
   }
 
   if (is_win) {
@@ -173,10 +174,14 @@ source_set("unit_tests") {
   if (is_win || is_mac || is_linux) {
     sources += [
       "agent_signals_collector_unittest.cc",
+      "certificate_signals_collector_unittest.cc",
       "crowdstrike_client_unittest.cc",
       "desktop/desktop_os_signals_collector_unittest.cc",
     ]
-    deps += [ "//components/device_signals/core/common:test_support" ]
+    deps += [
+      "//components/certificate_matching",
+      "//components/device_signals/core/common:test_support",
+    ]
   }
 
   if (is_win) {

@@ -325,6 +325,7 @@ struct CertificateSignalsResponse : BaseSignalResponse {
   bool operator==(const CertificateSignalsResponse&) const;
   ~CertificateSignalsResponse() override;
   std::vector<std::string> serialized_caa_responses;
+  bool truncated_certificates = false;
 };
 
 // Request struct containing properties that will be used by the

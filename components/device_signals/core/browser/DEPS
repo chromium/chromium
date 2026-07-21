@@ -1,5 +1,6 @@
 include_rules = [
   "+components/enterprise/connectors/core",
+  "+components/certificate_matching",
   "+components/keyed_service/core",
   "+components/signin/public",
   "+components/policy/core",
@@ -12,4 +13,5 @@ include_rules = [
   "+content/public/test",
   "+net",
   "+mojo/public/cpp/bindings",
+  "+third_party/boringssl/src/include",
 ]

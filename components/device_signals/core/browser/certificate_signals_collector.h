@@ -25,6 +25,7 @@ class TimeTicks;
 namespace net {
 class ClientCertIdentity;
 class ClientCertStore;
+class SSLPrivateKey;
 }  // namespace net
 
 namespace device_signals {
@@ -63,11 +64,20 @@ class CertificateSignalsCollector : public BaseSignalsCollector {
   // signing.
   void ProcessSingleCertificateAsync(
       std::unique_ptr<net::ClientCertIdentity> cert_identity,
-      const std::string& nonce,
-      int64_t timestamp,
+      const std::string& challenge,
       base::RepeatingCallback<
           void(std::optional<enterprise_management::SignedCertificateDetails>)>
           barrier_callback);
+
+  // Callback invoked after acquiring the private key for a certificate.
+  void OnPrivateKeyAcquired(
+      std::unique_ptr<net::ClientCertIdentity> cert_identity,
+      std::vector<uint8_t> certificate_details,
+      std::string challenge,
+      base::RepeatingCallback<
+          void(std::optional<enterprise_management::SignedCertificateDetails>)>
+          barrier_callback,
+      scoped_refptr<net::SSLPrivateKey> private_key);
 
   // Callback invoked after the platform-specific utility signs the challenge.
   void OnCertificateDetailsSigned(
@@ -75,6 +85,7 @@ class CertificateSignalsCollector : public BaseSignalsCollector {
       base::RepeatingCallback<
           void(std::optional<enterprise_management::SignedCertificateDetails>)>
           barrier_callback,
+      std::unique_ptr<std::vector<uint8_t>> bound_data_to_sign,
       net::Error error,
       const std::vector<uint8_t>& signature);
 
