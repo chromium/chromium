@@ -225,8 +225,7 @@ void It2MeHost::Connect(
     std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
     base::WeakPtr<It2MeHost::Observer> observer,
     CreateDeferredConnectContext create_context,
-    const std::string& username,
-    const protocol::IceConfig& ice_config) {
+    const std::string& username) {
   DCHECK(host_context->ui_task_runner()->BelongsToCurrentThread());
 
   host_context_ = std::move(host_context);
@@ -255,9 +254,8 @@ void It2MeHost::Connect(
 
   // Switch to the network thread to start the actual connection.
   host_context_->network_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&It2MeHost::ConnectOnNetworkThread, this, username,
-                     ice_config, std::move(create_context)));
+      FROM_HERE, base::BindOnce(&It2MeHost::ConnectOnNetworkThread, this,
+                                username, std::move(create_context)));
 }
 
 void It2MeHost::Disconnect() {
@@ -269,7 +267,6 @@ void It2MeHost::Disconnect() {
 
 void It2MeHost::ConnectOnNetworkThread(
     const std::string& username,
-    const protocol::IceConfig& ice_config,
     CreateDeferredConnectContext create_context) {
   DCHECK(host_context_->network_task_runner()->BelongsToCurrentThread());
   DCHECK_EQ(It2MeHostState::kDisconnected, state_);
@@ -365,15 +362,14 @@ void It2MeHost::ConnectOnNetworkThread(
       base::BindOnce(&It2MeHost::OnReceivedSupportID,
                      weak_factory_.GetWeakPtr()));
 
-  auto ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherDefault>(
+  auto get_ice_config_fetcher_cb = base::BindRepeating(
+      [](scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+         OAuthTokenGetter* api_token_getter)
+          -> std::unique_ptr<protocol::IceConfigFetcher> {
+        return std::make_unique<protocol::IceConfigFetcherDefault>(
+            url_loader_factory, api_token_getter);
+      },
       host_context_->url_loader_factory(), api_token_getter_.get());
-  auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
-      std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-      webrtc::ThreadWrapper::current()->SocketServer(),
-      std::move(ice_config_fetcher), protocol::TransportRole::SERVER);
-  if (!ice_config.is_null()) {
-    transport_context->set_turn_ice_config(ice_config);
-  }
 
   std::unique_ptr<protocol::SessionManager> session_manager(
       new protocol::JingleSessionManager(signal_strategy_.get()));
@@ -424,8 +420,9 @@ void It2MeHost::ConnectOnNetworkThread(
   // Create the host.
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
-      /* secondary_session_manager */ nullptr, transport_context,
-      host_context_->audio_task_runner(), options,
+      /* secondary_session_manager */ nullptr,
+      std::move(get_ice_config_fetcher_cb), host_context_->audio_task_runner(),
+      options,
       base::BindRepeating(&It2MeHost::OnEffectiveSessionPoliciesReceived,
                           base::Unretained(this)),
       local_session_policies_provider_.get());

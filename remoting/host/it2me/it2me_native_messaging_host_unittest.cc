@@ -53,7 +53,6 @@ namespace {
 constexpr char kTestAccessCode[] = "888888";
 constexpr base::TimeDelta kTestAccessCodeLifetime = base::Seconds(666);
 constexpr char kTestClientUsername[] = "some_user@gmail.com";
-constexpr char kTestStunServer[] = "test_relay_server.com";
 constexpr char kTestSignalingAccessToken[] = "signaling_token";
 constexpr char kTestApiAccessToken[] = "api_token";
 
@@ -91,10 +90,6 @@ base::DictValue CreateConnectMessage(int id) {
   connect_message.Set(kUserName, kTestClientUsername);
   connect_message.Set(kSignalingAccessToken, kTestSignalingAccessToken);
   connect_message.Set(kApiAccessToken, kTestApiAccessToken);
-  connect_message.Set(
-      kIceConfig,
-      base::test::ParseJsonDict("{ \"iceServers\": [ { \"urls\": [ \"stun:" +
-                                std::string(kTestStunServer) + "\" ] } ] }"));
 
   return connect_message;
 }
@@ -133,8 +128,7 @@ class MockIt2MeHost : public It2MeHost {
                std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
                base::WeakPtr<It2MeHost::Observer> observer,
                CreateDeferredConnectContext create_connection_context,
-               const std::string& username,
-               const protocol::IceConfig& ice_config) override;
+               const std::string& username) override;
   void Disconnect() override;
 
   OAuthTokenGetter* signaling_token_getter() {
@@ -161,13 +155,11 @@ void MockIt2MeHost::Connect(
     std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
     base::WeakPtr<It2MeHost::Observer> observer,
     CreateDeferredConnectContext create_connection_context,
-    const std::string& username,
-    const protocol::IceConfig& ice_config) {
+    const std::string& username) {
   DCHECK(context->ui_task_runner()->BelongsToCurrentThread());
 
   // Verify that parameters are passed correctly.
   EXPECT_EQ(username, kTestClientUsername);
-  EXPECT_EQ(ice_config.stun_servers[0].hostname(), kTestStunServer);
 
   host_context_ = std::move(context);
   observer_ = std::move(observer);

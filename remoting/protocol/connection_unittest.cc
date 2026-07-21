@@ -32,6 +32,7 @@
 #include "remoting/protocol/fake_session.h"
 #include "remoting/protocol/fake_video_renderer.h"
 #include "remoting/protocol/fake_webrtc_audio_classes.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/transport_context.h"
@@ -316,7 +317,7 @@ class ConnectionTest : public testing::Test, public Session::EventHandler {
 
     host_connection_ = std::make_unique<WebrtcConnectionToClient>(
         base::WrapUnique(host_session_.get()),
-        TransportContext::ForTests(protocol::TransportRole::SERVER),
+        /*ice_config_fetcher=*/nullptr,
         task_environment_.GetMainThreadTaskRunner());
     client_connection_ = std::make_unique<WebrtcConnectionToHost>();
 

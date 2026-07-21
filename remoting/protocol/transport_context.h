@@ -40,17 +40,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
   TransportContext(const TransportContext&) = delete;
   TransportContext& operator=(const TransportContext&) = delete;
 
-  void set_turn_ice_config(const IceConfig& ice_config) {
-    DCHECK(!ice_config.is_null());
-    // If an external entity provides a valid ICE Config, then disable the local
-    // caching logic and use the provided config.
-    //
-    // Note: Using this method to provide a config means the caller must ensure
-    // the ICE config is valid and has not expired.
-    last_request_completion_time_ = base::Time::Max();
-    ice_config_ = ice_config;
-  }
-
   // Requests fresh STUN and TURN information.
   void GetIceConfig(OnIceConfigCallback callback);
 

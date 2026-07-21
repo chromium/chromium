@@ -41,6 +41,7 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/fake_connection_to_client.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_manager.h"
@@ -95,7 +96,7 @@ class ChromotingHostTest : public testing::Test {
         desktop_environment_factory_.get(),
         base::WrapUnique(session_manager_.get()),
         /* secondary_session_manager */ nullptr,
-        protocol::TransportContext::ForTests(protocol::TransportRole::SERVER),
+        /*get_ice_config_fetcher_cb=*/base::NullCallback(),
         task_runner_,  // Audio
         DesktopEnvironmentOptions::CreateDefault(), base::NullCallback(),
         &local_session_policies_provider_);
@@ -438,7 +439,7 @@ TEST_F(ChromotingHostTest, SessionAcceptedWhenSecondarySessionManagerExists) {
       desktop_environment_factory_.get(),
       base::WrapUnique(session_manager_.get()),
       std::move(secondary_session_manager),
-      protocol::TransportContext::ForTests(protocol::TransportRole::SERVER),
+      /*get_ice_config_fetcher_cb=*/base::NullCallback(),
       task_runner_,  // Audio
       DesktopEnvironmentOptions::CreateDefault(), base::NullCallback(),
       &local_session_policies_provider_);

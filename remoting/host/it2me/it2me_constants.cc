@@ -18,7 +18,6 @@ const char kApiAccessToken[] = "apiAccessToken";
 const char kLocalJid[] = "localJid";
 const char kIsEnterpriseAdminUser[] = "isEnterpriseAdminUser";
 const char kUseElevatedHost[] = "useElevatedHost";
-const char kIceConfig[] = "iceConfig";
 const char kAuthorizedHelper[] = "authorizedHelper";
 const char kIsCorpUser[] = "isCorpUser";
 const char kConnectResponse[] = "connectResponse";

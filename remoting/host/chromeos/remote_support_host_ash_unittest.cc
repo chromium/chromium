@@ -67,8 +67,7 @@ class FakeIt2MeHost : public It2MeHost {
                std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
                base::WeakPtr<It2MeHost::Observer> observer,
                CreateDeferredConnectContext create_context,
-               const std::string& user_name,
-               const protocol::IceConfig& ice_config) override {
+               const std::string& user_name) override {
     observer_ = observer;
     user_name_ = user_name;
     connect_waiter_.SetValue();

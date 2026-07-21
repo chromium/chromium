@@ -100,8 +100,8 @@ void TransportContext::EnsureFreshIceConfig() {
     return;
   }
 
-  if (last_request_completion_time_.is_max()) {
-    HOST_LOG << "Skipping ICE Config request as refreshing is disabled";
+  if (!ice_config_fetcher_) {
+    LOG(WARNING) << "No ICE Config fetcher available.";
     return;
   }
 

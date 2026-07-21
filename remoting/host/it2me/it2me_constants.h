@@ -40,7 +40,6 @@ extern const char kApiAccessToken[];
 extern const char kLocalJid[];
 extern const char kIsEnterpriseAdminUser[];
 extern const char kUseElevatedHost[];
-extern const char kIceConfig[];
 extern const char kAuthorizedHelper[];
 extern const char kIsCorpUser[];
 // Response sent back to the client after the Connect message has been handled.

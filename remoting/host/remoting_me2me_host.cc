@@ -123,7 +123,6 @@
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/pairing_registry.h"
 #include "remoting/protocol/transport.h"
-#include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/corp_messaging_constants.h"
 #include "remoting/signaling/corp_signal_strategy.h"
 #include "remoting/signaling/ftl_host_device_id_provider.h"
@@ -1963,25 +1962,40 @@ void HostProcess::StartHost() {
 
   // Create the appropriate API service client (corp, cloud, or me2me) for the
   // IceConfigFetcher.
-  std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher;
+  ChromotingHost::GetIceConfigFetcherCallback get_ice_config_fetcher_cb;
   if (is_cloud_host_) {
-    ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherCloud>(
+    get_ice_config_fetcher_cb = base::BindRepeating(
+        [](scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+           OAuthTokenGetter* oauth_token_getter,
+           InstanceIdentityTokenGetter* instance_identity_token_getter)
+            -> std::unique_ptr<protocol::IceConfigFetcher> {
+          return std::make_unique<protocol::IceConfigFetcherCloud>(
+              url_loader_factory, oauth_token_getter,
+              instance_identity_token_getter);
+        },
         context_->url_loader_factory(), oauth_token_getter_.get(),
         instance_identity_token_getter_.get());
     // TODO: joedow - Implement IceConfigFetcherCorp.
     // } else if (is_corp_host_) {
-    // ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherCorp>(
+    // get_ice_config_fetcher_cb = base::BindRepeating(
+    //     [](scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    //        OAuthTokenGetter* oauth_token_getter)
+    //         -> std::unique_ptr<protocol::IceConfigFetcher> {
+    //       return std::make_unique<protocol::IceConfigFetcherCorp>(
+    //           url_loader_factory, oauth_token_getter);
+    //     },
     //     context_->url_loader_factory(), oauth_token_getter_.get());
   } else {
-    ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherDefault>(
+    get_ice_config_fetcher_cb = base::BindRepeating(
+        [](scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+           OAuthTokenGetter* oauth_token_getter)
+            -> std::unique_ptr<protocol::IceConfigFetcher> {
+          return std::make_unique<protocol::IceConfigFetcherDefault>(
+              url_loader_factory, oauth_token_getter);
+        },
         context_->url_loader_factory(), oauth_token_getter_.get());
   }
 
-  scoped_refptr<protocol::TransportContext> transport_context =
-      new protocol::TransportContext(
-          std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-          webrtc::ThreadWrapper::current()->SocketServer(),
-          std::move(ice_config_fetcher), protocol::TransportRole::SERVER);
   std::unique_ptr<protocol::SessionManager> session_manager(
       new protocol::JingleSessionManager(ftl_signal_strategy_.get()));
   std::unique_ptr<protocol::SessionManager> corp_session_manager;
@@ -2018,12 +2032,11 @@ void HostProcess::StartHost() {
 
   host_ = std::make_unique<ChromotingHost>(
       desktop_environment_factory_.get(), std::move(session_manager),
-      std::move(corp_session_manager), transport_context,
+      std::move(corp_session_manager), std::move(get_ice_config_fetcher_cb),
       context_->audio_task_runner(), desktop_environment_options_,
       base::BindRepeating(&HostProcess::OnSessionPoliciesReceived,
                           base::Unretained(this)),
       &local_session_policies_provider_);
-
 
   host_->AddExtension(std::make_unique<TestEchoExtension>());
 

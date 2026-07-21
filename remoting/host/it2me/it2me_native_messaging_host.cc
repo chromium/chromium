@@ -44,7 +44,6 @@
 #include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/remoting_register_support_host_request.h"
-#include "remoting/protocol/ice_config.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/ftl_support_host_device_id_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -342,12 +341,6 @@ void It2MeNativeMessagingHost::ProcessConnect(base::DictValue message,
     return;
   }
 
-  protocol::IceConfig ice_config;
-  base::DictValue* ice_config_dict = message.FindDict(kIceConfig);
-  if (ice_config_dict) {
-    ice_config = protocol::IceConfig::Parse(*ice_config_dict);
-  }
-
   base::DictValue policies = policy_watcher_->GetEffectivePolicies();
   if (policies.empty()) {
     // At this point policies have been read, so if there are none set then
@@ -383,7 +376,7 @@ void It2MeNativeMessagingHost::ProcessConnect(base::DictValue message,
                        std::make_unique<It2MeConfirmationDialogFactory>(
                            dialog_style, connection_auto_accept_timeout),
                        weak_ptr_, std::move(create_connection_context),
-                       username, ice_config);
+                       username);
 
   SendMessageToClient(std::move(response));
 }

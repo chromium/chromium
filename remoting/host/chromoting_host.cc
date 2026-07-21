@@ -33,9 +33,8 @@
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojo_caller_security_checker.h"
 #include "remoting/protocol/client_stub.h"
-#include "remoting/protocol/host_stub.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/input_stub.h"
-#include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_connection_to_client.h"
 #include "remoting/signaling/signaling_id_util.h"
 
@@ -85,7 +84,7 @@ ChromotingHost::ChromotingHost(
     DesktopEnvironmentFactory* desktop_environment_factory,
     std::unique_ptr<protocol::SessionManager> session_manager,
     std::unique_ptr<protocol::SessionManager> secondary_session_manager,
-    scoped_refptr<protocol::TransportContext> transport_context,
+    GetIceConfigFetcherCallback get_ice_config_fetcher_cb,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     const DesktopEnvironmentOptions& options,
     const SessionPoliciesValidator& per_session_policies_validator,
@@ -93,7 +92,7 @@ ChromotingHost::ChromotingHost(
     : desktop_environment_factory_(desktop_environment_factory),
       session_manager_(std::move(session_manager)),
       secondary_session_manager_(std::move(secondary_session_manager)),
-      transport_context_(transport_context),
+      get_ice_config_fetcher_cb_(std::move(get_ice_config_fetcher_cb)),
       audio_task_runner_(audio_task_runner),
       status_monitor_(new HostStatusMonitor()),
       login_backoff_(&kDefaultBackoffPolicy),
@@ -337,10 +336,18 @@ void ChromotingHost::OnIncomingSession(
 
   HOST_LOG << "Client connected: " << session->jid();
 
+  LOG_IF(WARNING, !get_ice_config_fetcher_cb_)
+      << "Missing Ice Config Fetcher callback.";
+  std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher;
+  if (get_ice_config_fetcher_cb_) {
+    ice_config_fetcher = get_ice_config_fetcher_cb_.Run();
+  }
+
   // Create a WebrtcConnectionToClient.
   std::unique_ptr<protocol::ConnectionToClient> connection =
       std::make_unique<protocol::WebrtcConnectionToClient>(
-          base::WrapUnique(session), transport_context_, audio_task_runner_);
+          base::WrapUnique(session), std::move(ice_config_fetcher),
+          audio_task_runner_);
 
   // Create a ClientSession object.
   std::vector<raw_ptr<HostExtension, VectorExperimental>> extension_ptrs;

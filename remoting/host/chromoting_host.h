@@ -104,6 +104,9 @@ class ChromotingHost :
   using SessionPoliciesValidator =
       base::RepeatingCallback<std::optional<ErrorCode>(const SessionPolicies&)>;
 
+  using GetIceConfigFetcherCallback =
+      base::RepeatingCallback<std::unique_ptr<protocol::IceConfigFetcher>()>;
+
   // |per_session_policies_validator|: Extra SessionPolicies validator in
   //   addition to the ones in ClientSession. Pass base::NullCallback() if there
   //   is no extra validator.
@@ -112,7 +115,7 @@ class ChromotingHost :
       DesktopEnvironmentFactory* desktop_environment_factory,
       std::unique_ptr<protocol::SessionManager> session_manager,
       std::unique_ptr<protocol::SessionManager> secondary_session_manager,
-      scoped_refptr<protocol::TransportContext> transport_context,
+      GetIceConfigFetcherCallback get_ice_config_fetcher_cb,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       const DesktopEnvironmentOptions& options,
       const SessionPoliciesValidator& per_session_policies_validator,
@@ -203,10 +206,6 @@ class ChromotingHost :
 
   const ClientSessions& client_sessions_for_tests() { return clients_; }
 
-  scoped_refptr<protocol::TransportContext> transport_context_for_tests() {
-    return transport_context_;
-  }
-
   const DesktopEnvironmentOptions& desktop_environment_options_for_tests()
       const {
     return desktop_environment_options_;
@@ -225,7 +224,7 @@ class ChromotingHost :
   raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<protocol::SessionManager> session_manager_;
   std::unique_ptr<protocol::SessionManager> secondary_session_manager_;
-  scoped_refptr<protocol::TransportContext> transport_context_;
+  GetIceConfigFetcherCallback get_ice_config_fetcher_cb_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
 
   scoped_refptr<HostStatusMonitor> status_monitor_;

@@ -31,6 +31,7 @@ struct AudioSampleInfo;
 class WebrtcAudioFifoSinkAdapter;
 
 class WebrtcVideoEncoderFactory;
+class IceConfigFetcher;
 class HostControlDispatcher;
 class HostEventDispatcher;
 
@@ -40,7 +41,7 @@ class WebrtcConnectionToClient : public ConnectionToClient,
  public:
   WebrtcConnectionToClient(
       std::unique_ptr<Session> session,
-      scoped_refptr<protocol::TransportContext> transport_context,
+      std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner);
 
   WebrtcConnectionToClient(const WebrtcConnectionToClient&) = delete;

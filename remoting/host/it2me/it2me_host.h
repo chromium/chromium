@@ -44,9 +44,6 @@ class OAuthTokenGetter;
 class RegisterSupportHostRequest;
 class RsaKeyPair;
 
-namespace protocol {
-struct IceConfig;
-}  // namespace protocol
 
 // Internal implementation of the plugin's It2Me host function.
 class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
@@ -141,8 +138,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
       std::unique_ptr<It2MeConfirmationDialogFactory> dialog_factory,
       base::WeakPtr<It2MeHost::Observer> observer,
       CreateDeferredConnectContext create_context,
-      const std::string& username,
-      const protocol::IceConfig& ice_config);
+      const std::string& username);
 
   // Disconnects and shuts down the host.
   virtual void Disconnect();
@@ -195,7 +191,6 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
 
   // Task posted to the network thread from Connect().
   void ConnectOnNetworkThread(const std::string& username,
-                              const protocol::IceConfig& ice_config,
                               CreateDeferredConnectContext create_context);
 
   // Called when the support host registration completes.
