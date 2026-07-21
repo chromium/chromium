@@ -107,8 +107,10 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn(mContentView).when(mAnchorView).getRootView();
         doReturn(mContentView).when(mContentView).findViewById(android.R.id.content);
         doReturn(mContentView).when(mAnchorView).getParent();
+        doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
         doReturn(Integer.MAX_VALUE).when(mContentView).getMeasuredHeight();
         doReturn(ANCHOR_WIDTH).when(mAnchorView).getMeasuredWidth();
+        doReturn(ANCHOR_WIDTH).when(mAnchorView).getWidth();
         doReturn(ALIGNMENT_WIDTH).when(mHorizontalAlignmentView).getMeasuredWidth();
         doReturn(ANCHOR_HEIGHT).when(mAnchorView).getMeasuredHeight();
         doReturn(ANCHOR_TOP).when(mAnchorView).getTop();
@@ -463,7 +465,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     public void testRecalculateOmniboxAlignment_tabletToPhoneSwitch() {
         int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContextWeakRef.get());
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
-        assertTrue(mImpl.isTablet());
+        assertTrue(mImpl.isWideWindow());
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
         int expectedTop = ANCHOR_HEIGHT + ANCHOR_TOP - TABLET_OVERLAP;
@@ -482,7 +484,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         Configuration newConfig = getConfiguration();
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
         mImpl.onConfigurationChanged(newConfig);
-        assertFalse(mImpl.isTablet());
+        assertFalse(mImpl.isWideWindow());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
         assertEquals(
                 new OmniboxAlignment(
@@ -505,7 +507,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP - 1;
         mImpl.onConfigurationChanged(newConfig);
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
-        assertFalse(mImpl.isTablet());
+        assertFalse(mImpl.isWideWindow());
         mImpl.recalculateOmniboxAlignment();
         OmniboxAlignment alignment = mImpl.getCurrentAlignment();
         assertEquals(
@@ -523,7 +525,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
         int sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContextWeakRef.get());
         mImpl.onConfigurationChanged(newConfig);
-        assertTrue(mImpl.isTablet());
+        assertTrue(mImpl.isWideWindow());
         OmniboxAlignment newAlignment = mImpl.getCurrentAlignment();
         int expectedTop = ANCHOR_HEIGHT + ANCHOR_TOP - TABLET_OVERLAP;
         assertEquals(
@@ -543,12 +545,12 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
     @Config(qualifiers = "sw400dp")
     public void testAdaptToNarrowWindows_widePhoneScreen() {
         doReturn(mAnchorView).when(mHorizontalAlignmentView).getParent();
-        assertFalse(mImpl.isTablet());
+        assertFalse(mImpl.isWideWindow());
 
         Configuration newConfig = getConfiguration();
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
         mImpl.onConfigurationChanged(newConfig);
-        assertFalse(mImpl.isTablet());
+        assertFalse(mImpl.isWideWindow());
     }
 
     @Test
@@ -697,6 +699,17 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         mImpl.onToEdgeChange(
                 /* systemTopInset= */ 0, /* consumeTopInset= */ true, LayoutType.BROWSING);
         assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
+    }
+
+    @Test
+    public void testRecalculateOmniboxAlignment_phone_popover() {
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        doReturn(10).when(mAnchorView).getLeft();
+        mImpl.recalculateOmniboxAlignment();
+        assertEquals(
+                new OmniboxAlignment(
+                        10, ANCHOR_TOP, ANCHOR_WIDTH, getExpectedHeight(ANCHOR_TOP), 0, 0, 0, 0),
+                mImpl.getCurrentAlignment());
     }
 
     @Test

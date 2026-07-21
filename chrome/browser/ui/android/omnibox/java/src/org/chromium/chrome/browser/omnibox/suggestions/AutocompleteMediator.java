@@ -1353,9 +1353,8 @@ class AutocompleteMediator
 
     private void onFuseboxStateChanged(@FuseboxState int fuseboxState) {
         boolean suggestionsSeparated =
-                mEmbedder.isTablet()
-                        && (fuseboxState == FuseboxState.DISABLED
-                                || getFuseboxLayoutMode() == FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+                (mEmbedder.isWideWindow() && fuseboxState == FuseboxState.DISABLED)
+                        || getFuseboxLayoutMode() == FuseboxLayoutMode.SUGGESTIONS_POPOVER;
 
         mListPropertyModel.set(SuggestionListProperties.ROUND_TOP_CORNERS, suggestionsSeparated);
         mListPropertyModel.set(SuggestionListProperties.DRAW_OVER_ANCHOR, suggestionsSeparated);
@@ -1364,7 +1363,7 @@ class AutocompleteMediator
 
     boolean shouldAnimateFuseboxPopover() {
         return mFuseboxCoordinator.getFuseboxStateSupplier().get() != FuseboxState.DISABLED
-                && mEmbedder.isTablet()
+                && mEmbedder.isWideWindow()
                 && !OmniboxCapabilities.isDesktopPlatform();
     }
 

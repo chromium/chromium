@@ -91,10 +91,14 @@ class SuggestionListViewBinder {
             view.container.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
         } else if (SuggestionListProperties.GESTURE_OBSERVER.equals(propertyKey)) {
             view.dropdown.setGestureObserver(model.get(SuggestionListProperties.GESTURE_OBSERVER));
-        } else if (SuggestionListProperties.IS_LARGE_SCREEN.equals(propertyKey)) {
+        } else if (SuggestionListProperties.IS_LARGE_SCREEN.equals(propertyKey)
+                || SuggestionListProperties.FUSEBOX_LAYOUT_MODE.equals(propertyKey)) {
             updateColorScheme(model, view);
+            boolean isLargeScreen = model.get(SuggestionListProperties.IS_LARGE_SCREEN);
+            @FuseboxLayoutMode
+            int layoutMode = model.get(SuggestionListProperties.FUSEBOX_LAYOUT_MODE);
             view.container.setShouldClipToOutline(
-                    model.get(SuggestionListProperties.IS_LARGE_SCREEN));
+                    isLargeScreen || layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         } else if (SuggestionListProperties.LIST_IS_FINAL.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
                 view.dropdown.emitWindowContentChangedAnnouncement();
