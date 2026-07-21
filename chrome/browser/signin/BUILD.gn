@@ -227,6 +227,7 @@ source_set("impl") {
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/webdata_services",
     "//components/application_locale_storage",
+    "//components/browser_actuator/public:feature_list",
     "//components/contextual_tasks/public:feature_list",
     "//components/embedder_support:user_agent",
     "//components/plus_addresses/core/common:features",

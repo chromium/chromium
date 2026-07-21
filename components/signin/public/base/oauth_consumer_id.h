@@ -15,6 +15,7 @@ inline extern const char kIndigoName[] = "indigo";
 inline extern const char kGlicInvokeApiName[] = "glic_invoke_api";
 inline extern const char kSkillsServiceName[] = "skills_service";
 inline extern const char kContextualTasksName[] = "contextual_tasks";
+inline extern const char kBrowserActuatorName[] = "browser_actuator";
 }  // namespace oauth_consumer_name
 
 // LINT.IfChange(OAuthConsumerId)
@@ -128,7 +129,8 @@ enum class OAuthConsumerId {
   kFpopService = 103,
   kNotebooksService = 104,
   kRemoteActorLoginCredentialsService = 105,
-  kMaxValue = kRemoteActorLoginCredentialsService,
+  kBrowserActuator = 106,
+  kMaxValue = kBrowserActuator,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

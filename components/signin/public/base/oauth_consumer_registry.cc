@@ -804,6 +804,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kRemoteActorLoginCredentialsServiceName,
           /*scopes=*/{kPassboxCredentialOAuth2Scope});
+    case OAuthConsumerId::kBrowserActuator:
+      return GetOAuthConsumerForBrowserActuator();
   }
 }
 

@@ -8,4 +8,8 @@ namespace browser_actuator {
 
 BASE_FEATURE(kBrowserActuator, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<std::string> kBrowserActuatorOAuth2ScopeParam{
+    &kBrowserActuator, "BrowserActuatorOAuth2Scope",
+    "https://www.googleapis.com/auth/chrome.autobrowse.actuator"};
+
 }  // namespace browser_actuator

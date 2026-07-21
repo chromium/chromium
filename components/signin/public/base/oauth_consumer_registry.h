@@ -45,6 +45,9 @@ class OAuthConsumerRegistry {
   // TODO: b/502940191 - Remove this and hard-code the scope after Indigo is
   // launched.
   virtual OAuthConsumer GetOAuthConsumerForIndigo() const = 0;
+  // TODO(crbug.com/536892467): Remove this and hard-code the scope after
+  // BrowserActuator is launched.
+  virtual OAuthConsumer GetOAuthConsumerForBrowserActuator() const = 0;
 };
 
 }  // namespace signin
