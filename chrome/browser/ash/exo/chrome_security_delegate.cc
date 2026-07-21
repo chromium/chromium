@@ -326,6 +326,10 @@ bool ChromeSecurityDelegate::CanAccessRemoteShell() const {
   return true;
 }
 
+bool ChromeSecurityDelegate::CanSetRestoreInfo() const {
+  return true;
+}
+
 std::vector<ui::FileInfo> ChromeSecurityDelegate::GetFilenames(
     ui::EndpointType source,
     const std::vector<uint8_t>& data) const {

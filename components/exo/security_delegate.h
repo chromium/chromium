@@ -80,6 +80,10 @@ class SecurityDelegate {
   // Returns true if the client can access the remote shell interface.
   virtual bool CanAccessRemoteShell() const = 0;
 
+  // Returns true if the client may supply window-restore identifiers used to
+  // associate a surface with an app-restore entry.
+  virtual bool CanSetRestoreInfo() const = 0;
+
   // Read filenames from text/uri-list |data| which was provided by `source`
   // endpoint. Translates paths from source to host format.
   virtual std::vector<ui::FileInfo> GetFilenames(

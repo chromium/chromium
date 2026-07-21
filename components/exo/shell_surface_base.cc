@@ -918,6 +918,10 @@ void ShellSurfaceBase::SetRestoreInfo(int32_t restore_session_id,
   // TODO(crbug.com/1327490): Rename restore info variables.
   // Restore information must be set before widget is created.
   DCHECK(!widget_);
+  SecurityDelegate* security = GetSecurityDelegate();
+  if (!security || !security->CanSetRestoreInfo()) {
+    return;
+  }
   restore_session_id_.emplace(restore_session_id);
   restore_window_id_.emplace(restore_window_id);
   ash::LoginUnlockThroughputRecorder* throughput_recorder =
@@ -928,6 +932,10 @@ void ShellSurfaceBase::SetRestoreInfo(int32_t restore_session_id,
 void ShellSurfaceBase::SetRestoreInfoWithWindowIdSource(
     int32_t restore_session_id,
     const std::string& restore_window_id_source) {
+  SecurityDelegate* security = GetSecurityDelegate();
+  if (!security || !security->CanSetRestoreInfo()) {
+    return;
+  }
   restore_session_id_.emplace(restore_session_id);
   if (!restore_window_id_source.empty())
     restore_window_id_source_.emplace(restore_window_id_source);

@@ -4227,6 +4227,28 @@ TEST_F(ShellSurfaceTest, SetRestoreInfo) {
                 app_restore::kRestoreWindowIdKey));
 }
 
+// Test that restore info supplied by a client is dropped when the server's
+// SecurityDelegate does not allow it.
+TEST_F(ShellSurfaceTest, SetRestoreInfoNotAllowed) {
+  exo::test::TestSecurityDelegate security_delegate;
+  security_delegate.SetCanSetRestoreInfo(false);
+
+  auto shell_surface = test::ShellSurfaceBuilder({20, 30})
+                           .SetSecurityDelegate(&security_delegate)
+                           .SetNoCommit()
+                           .BuildShellSurface();
+
+  shell_surface->SetRestoreInfo(200, 100);
+  shell_surface->SetRestoreInfoWithWindowIdSource(200, "app_id");
+  shell_surface->Restore();
+  shell_surface->root_surface()->Commit();
+
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(0, window->GetProperty(app_restore::kWindowIdKey));
+  EXPECT_EQ(0, window->GetProperty(app_restore::kRestoreWindowIdKey));
+  EXPECT_EQ(nullptr, window->GetProperty(app_restore::kAppIdKey));
+}
+
 TEST_F(ShellSurfaceTest, SetNotPersistable) {
   auto shell_surface = test::ShellSurfaceBuilder(gfx::Size(20, 30))
                            .SetNoCommit()
