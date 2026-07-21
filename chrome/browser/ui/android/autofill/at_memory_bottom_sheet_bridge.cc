@@ -146,6 +146,13 @@ void AtMemoryBottomSheetBridge::OnQueryTextChanged(
   }
 }
 
+void AtMemoryBottomSheetBridge::OnSuggestionDismissed(JNIEnv* env,
+                                                      int position) {
+  if (delegate_) {
+    delegate_->OnSuggestionDismissed(position);
+  }
+}
+
 void AtMemoryBottomSheetBridge::OnSuggestionSelected(JNIEnv* env,
                                                      int position) {
   if (delegate_) {

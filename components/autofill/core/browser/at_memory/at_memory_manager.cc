@@ -872,9 +872,6 @@ bool AtMemoryManager::IsSearching() const {
 
 void AtMemoryManager::MaybeAppendPersonalContextNotice(
     std::vector<Suggestion>& suggestions) const {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return;
-#else
   if (!owner_->client().ShouldShowPersonalContextAtMemoryNotice()) {
     return;
   }
@@ -900,7 +897,6 @@ void AtMemoryManager::MaybeAppendPersonalContextNotice(
 
   // This handles both empty vectors and vectors containing search results.
   suggestions.insert(suggestions.begin(), std::move(notice));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {

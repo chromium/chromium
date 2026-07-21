@@ -51,6 +51,8 @@ public class AtMemoryBottomSheetCoordinator {
 
         void onSuggestionClicked(int position);
 
+        void onSuggestionDismissed(int position);
+
         void onChildSuggestionsShown(int parentPosition);
 
         void onChildSuggestionClicked(int parentPosition, int childPosition);

@@ -337,8 +337,10 @@ public class AutofillSuggestion {
         }
 
         public AutofillSuggestion build() {
-            assert mSuggestionType == SuggestionType.SEPARATOR || !TextUtils.isEmpty(mLabel)
-                    : "Only separators may have an empty label.";
+            assert mSuggestionType == SuggestionType.SEPARATOR
+                            || mSuggestionType == SuggestionType.PERSONAL_CONTEXT_NOTICE
+                            || !TextUtils.isEmpty(mLabel)
+                    : "Only separators and personal context notices may have an empty label.";
             assert (mSubLabel != null)
                     : "The AutofillSuggestion sublabel can be empty but never null.";
             return new AutofillSuggestion(

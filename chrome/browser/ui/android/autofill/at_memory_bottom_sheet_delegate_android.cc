@@ -64,6 +64,17 @@ void AtMemoryBottomSheetDelegateAndroid::OnSuggestionSelected(int position) {
   }
 }
 
+void AtMemoryBottomSheetDelegateAndroid::OnSuggestionDismissed(int position) {
+  if (position < 0 ||
+      base::checked_cast<size_t>(position) >= suggestions_.size()) {
+    return;
+  }
+
+  if (delegate_) {
+    delegate_->RemoveSuggestion(suggestions_[position]);
+  }
+}
+
 void AtMemoryBottomSheetDelegateAndroid::OnChildSuggestionsShown(
     int parent_position) {
   if (parent_position < 0 ||

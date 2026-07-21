@@ -1323,14 +1323,10 @@ TEST_F(AtMemoryManagerTest, PersonalContext_AppendsNoticeSuggestion) {
 
   manager().OnFilterChanged(u"");
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(suggestions.empty());
-#else
   ASSERT_EQ(1u, suggestions.size());
   EXPECT_EQ(SuggestionType::kPersonalContextNotice, suggestions[0].type);
   EXPECT_EQ(Suggestion::FiltrationPolicy::kStatic,
             suggestions[0].filtration_policy);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 // Tests that before search results are returned (when only the search
@@ -1355,15 +1351,10 @@ TEST_F(AtMemoryManagerTest,
   // Simulate user typing in the search bar to show the search affordance.
   manager().OnFilterChanged(u"query");
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  ASSERT_EQ(1u, suggestions.size());
-  EXPECT_EQ(SuggestionType::kAtMemorySearchAffordance, suggestions[0].type);
-#else
   ASSERT_EQ(3u, suggestions.size());
   EXPECT_EQ(SuggestionType::kAtMemorySearchAffordance, suggestions[0].type);
   EXPECT_EQ(SuggestionType::kSeparator, suggestions[1].type);
   EXPECT_EQ(SuggestionType::kPersonalContextNotice, suggestions[2].type);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 // Tests that after search results are returned, the personal context notice
@@ -1397,14 +1388,9 @@ TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
 
   // Verify that the personal context notice card is prepended first, followed
   // by the search result entry.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  ASSERT_EQ(1u, suggestions.size());
-  EXPECT_EQ(SuggestionType::kAtMemorySearchResult, suggestions[0].type);
-#else
   ASSERT_EQ(2u, suggestions.size());
   EXPECT_EQ(SuggestionType::kPersonalContextNotice, suggestions[0].type);
   EXPECT_EQ(SuggestionType::kAtMemorySearchResult, suggestions[1].type);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 // Tests that the personal context notice is not appended when the user does not

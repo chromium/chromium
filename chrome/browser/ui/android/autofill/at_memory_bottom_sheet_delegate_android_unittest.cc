@@ -67,6 +67,18 @@ TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
 }
 
 TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
+       OnSuggestionDismissedCallsDelegate) {
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"first", SuggestionType::kAddressEntry),
+      Suggestion(u"second", SuggestionType::kPersonalContextNotice)};
+  AtMemoryBottomSheetDelegateAndroid delegate(
+      &client_, mock_suggestion_delegate_.GetWeakPtr(), suggestions);
+
+  EXPECT_CALL(mock_suggestion_delegate_, RemoveSuggestion(suggestions[1]));
+  delegate.OnSuggestionDismissed(1);
+}
+
+TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
        OnChildSuggestionSelectedCallsDelegate) {
   Suggestion child0(u"child0", SuggestionType::kAddressEntry);
   Suggestion child1(u"child1", SuggestionType::kAddressEntry);
