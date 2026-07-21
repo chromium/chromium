@@ -406,7 +406,9 @@ crbug.com/349132647 [ android android-sm-s911u1 android-chromium ] Pixel_WebGLCo
 # the initial heartbeat message to be delayed significantly. Additionally, these
 # are marked as failing until they are confirmed to be stable.
 crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Slow ]
-crbug.com/286989320 [ mac no-clang-coverage no-asan ] Pixel_MeetEffects* [ Slow ]
+crbug.com/286989320 [ mac no-clang-coverage no-asan release ] Pixel_MeetEffects* [ Slow ]
+# Easily time out on mac retina debug amd/intel.
+crbug.com/286989320 [ mac no-clang-coverage no-asan debug ] Pixel_MeetEffects* [ Skip ]
 crbug.com/286989320 [ win amd ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win nvidia ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win qualcomm ] Pixel_MeetEffects* [ Slow ]
