@@ -271,10 +271,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppInfoDialog.CreateWebAppShortcutSuccess" enum="Boolean"
-    expires_after="2026-05-12">
+    expires_after="2027-06-13">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
+    Warning: this histogram was expired from 2026-05-12 to 2026-07; data may be
+    missing.
+
     Records the result of creating shortcuts for a WebApp, specifically from the
     user clicking on &quot;Create Shortcut&quot; on the chrome://apps page, in
     the right click menu of the respective WebApp icon. Warning: this histogram
@@ -2198,7 +2201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FileHandler.Unregistration.Linux.Result"
-    enum="FileHandlerRegistrationLinuxResult" expires_after="2026-05-12">
+    enum="FileHandlerRegistrationLinuxResult" expires_after="2027-06-13">
   <owner>estade@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

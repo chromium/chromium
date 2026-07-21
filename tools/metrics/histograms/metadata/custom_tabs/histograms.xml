@@ -1077,11 +1077,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.LaunchHandler.ClientMode"
-    enum="TwaLaunchHandlerClientMode" expires_after="2026-05-01">
+    enum="TwaLaunchHandlerClientMode" expires_after="2027-06-13">
   <owner>tkachenkoo@google.com</owner>
   <owner>sselyvon@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
+    Warning: this histogram was expired from 2026-05-01 to 2026-07; data may be
+    missing.
+
     Records the client mode of a web app launched through Trusted Web Activity.
     Client mode is a part of Launch Handler API. Recorded on Trusted Web
     Activity startup if the Launch Handler API is enabled.
@@ -1089,11 +1092,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.LaunchHandler.FailureReason"
-    enum="TwaLaunchHandlerFailureReason" expires_after="2026-05-01">
+    enum="TwaLaunchHandlerFailureReason" expires_after="2027-06-13">
   <owner>tkachenkoo@google.com</owner>
   <owner>sselyvon@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
+    Warning: this histogram was expired from 2026-05-01 to 2026-07; data may be
+    missing.
+
     Records the verification failure that caused launch queue to not be notified
     in Trusted Web Activity, if any. Recorded on Trusted Web Activity startup if
     the Launch Handler API is enabled.
@@ -1101,11 +1107,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.LaunchHandler.FileHandling"
-    enum="TwaLaunchHandlerFileHandling" expires_after="2026-05-01">
+    enum="TwaLaunchHandlerFileHandling" expires_after="2027-06-13">
   <owner>tkachenkoo@google.com</owner>
   <owner>sselyvon@google.com</owner>
   <owner>lt-web-apps-team@google.com</owner>
   <summary>
+    Warning: this histogram was expired from 2026-05-01 to 2026-07; data may be
+    missing.
+
     Records the usage of file handling API in Trusted Web Activities, as part of
     Launch Handler API. Recorded on Trusted Web Activity startup if the Launch
     Handler API is enabled. If file handling is not used, NO_FILES will be
@@ -1114,12 +1123,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.Notification.PermissionRequestResult"
-    enum="ContentSetting" expires_after="2026-02-01">
+    enum="ContentSetting" expires_after="2027-06-13">
   <owner>peconn@chromium.org</owner>
   <owner>
     src/chrome/android/java/src/org/chromium/chrome/browser/browserservices/OWNERS
   </owner>
   <summary>
+    Warning: this histogram was expired from 2026-02-01 to 2026-07; data may be
+    missing.
+
     The result of a TWA notification permission request for the purpose of
     notification delegation. This is logged when the
     NotificationPermissionUpdater receives the result from the
