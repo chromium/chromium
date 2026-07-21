@@ -23,29 +23,23 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Mediator for tab bottom sheet */
 @NullMarked
 public class TabBottomSheetMediator extends GestureStateListener {
+
     private static final int MIN_SHEET_HEIGHT_DP = 240;
 
     private final Context mContext;
     private final PropertyModel mModel;
+
     private final TouchArbitrator mTouchArbitrator;
-    private final float mFullheightRatio;
-    private final float mKeyboardShowingHeightRatio;
 
     private @SheetState int mCurrentSheetState = SheetState.HIDDEN;
     private int mPeekHeight;
     private @Nullable ResizeLock mResizeLock;
 
-    public TabBottomSheetMediator(
-            Context context,
-            PropertyModel model,
-            CoBrowseViews coBrowseViews,
-            float fullheightRatio,
-            float keyboardShowingHeightRatio) {
+    public TabBottomSheetMediator(Context context, PropertyModel model) {
         mContext = context;
         mModel = model;
+
         mTouchArbitrator = new TouchArbitrator();
-        mFullheightRatio = fullheightRatio;
-        mKeyboardShowingHeightRatio = keyboardShowingHeightRatio;
     }
 
     /** Sets whether the sheet is resizing. */
@@ -198,17 +192,5 @@ public class TabBottomSheetMediator extends GestureStateListener {
     @SheetState
     int getSheetStateForTesting() {
         return mCurrentSheetState;
-    }
-
-    PropertyModel getModelForTesting() {
-        return mModel;
-    }
-
-    float getFullHeightRatioForTesting() {
-        return mFullheightRatio;
-    }
-
-    float getKeyboardShowingHeightRatioForTesting() {
-        return mKeyboardShowingHeightRatio;
     }
 }

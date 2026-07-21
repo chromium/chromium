@@ -86,7 +86,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisabledTest(message = "crbug.com/525121206")
-public class TabBottomSheetCoordinatorTest {
+public class TabBottomSheetCoordinatorUnitTest {
     private static final float FULL_HEIGHT_RATIO = 0.7f;
     private static final float SMALL_SCREEN_HEIGHT_RATIO = 0.9f;
     private static final int MAX_OFFSET = 1000;

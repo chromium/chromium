@@ -9,6 +9,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.glic.GlicMetrics;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 
@@ -46,6 +47,36 @@ public class TabBottomSheetMetrics {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TabBottomSheetStateTransition)
+
+    /**
+     * Records all UMA metrics for entering a new stable sheet state.
+     *
+     * @param clientType The type of client using the bottom sheet.
+     * @param fromState The previous stable SheetState.
+     * @param toState The new stable SheetState entered.
+     * @param reason The reason for the state change.
+     */
+    public static void recordStableStateMetrics(
+            @TabBottomSheetClientType int clientType,
+            @SheetState int fromState,
+            @SheetState int toState,
+            @StateChangeReason int reason) {
+        recordStateHit(clientType, toState);
+
+        if (toState == SheetState.PEEK && clientType == TabBottomSheetClientType.GLIC) {
+            GlicMetrics.recordShowPeekView();
+        }
+
+        if ((toState == SheetState.HALF || toState == SheetState.FULL)
+                && fromState != SheetState.HALF
+                && fromState != SheetState.FULL
+                && clientType == TabBottomSheetClientType.GLIC) {
+            GlicMetrics.recordShowBottomSheet();
+        }
+
+        recordTransition(clientType, fromState, toState);
+        recordStateChangeReason(clientType, toState, reason);
+    }
 
     /**
      * Records a stable state hit.

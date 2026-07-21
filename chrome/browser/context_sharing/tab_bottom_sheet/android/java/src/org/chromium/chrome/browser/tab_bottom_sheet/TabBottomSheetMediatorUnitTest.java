@@ -67,7 +67,7 @@ public class TabBottomSheetMediatorUnitTest {
         when(mWebViewResizingHelper.requestResize()).thenReturn(mResizeLock);
 
         mModel = TabBottomSheetProperties.createDefaultModel(mCoBrowseViews);
-        mMediator = new TabBottomSheetMediator(mContext, mModel, mCoBrowseViews, 0.7f, 0.9f);
+        mMediator = new TabBottomSheetMediator(mContext, mModel);
     }
 
     @Test
