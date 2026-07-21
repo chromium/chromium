@@ -476,7 +476,7 @@ group("installer_deps") {
     ":strip_libEGL_shlib",
     ":strip_libGLESv2_shlib",
   ]
-  if (use_static_angle) {
+  if (use_static_angle && !is_chromeos) {
     public_deps += [
       "//ui/gl:dummy_libEGL",
       "//ui/gl:dummy_libGLESv2",

@@ -241,7 +241,7 @@ component("gl") {
 
   if (use_ozone) {
     if (!is_fuchsia) {
-      if (!use_static_angle) {
+      if (!use_static_angle || is_chromeos) {
         data_deps += [
           "//third_party/angle:libEGL",
           "//third_party/angle:libGLESv2",
