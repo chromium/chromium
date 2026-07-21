@@ -195,6 +195,7 @@ source_set("impl") {
     "//chrome/browser/themes",
     "//chrome/browser/ui:browser_actions",
     "//chrome/browser/ui:layout_constants",
+    "//chrome/browser/ui:toolbar_controller_util",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/actions",
@@ -373,6 +374,7 @@ if (!is_android) {
       ]
 
       deps += [
+        "//chrome/browser/ui:toolbar_controller_util",
         "//chrome/browser/ui/views/performance_controls",
         "//chrome/browser/ui/webui:webui_util",
         "//chrome/browser/ui/webui/webui_toolbar:test_support",
@@ -455,6 +457,9 @@ if (!is_android && !is_chromeos_device) {
       "//ui/events:test_support",
       "//ui/views",
     ]
+    if (toolkit_views) {
+      deps += [ "//chrome/browser/ui:toolbar_controller_util" ]
+    }
   }
 }
 

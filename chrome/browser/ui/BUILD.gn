@@ -3667,8 +3667,6 @@ static_library("ui") {
   if (toolkit_views) {
     sources += [
       "bubble_anchor_util.h",
-      "toolbar_controller_util.cc",
-      "toolbar_controller_util.h",
       "views/autofill/address_bubble_base_view.cc",
       "views/autofill/address_editor_view.cc",
       "views/autofill/address_editor_view.h",
@@ -4464,6 +4462,7 @@ static_library("ui") {
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/ui:sad_tab",
       "//chrome/browser/ui:sad_tab_impl",
+      "//chrome/browser/ui:toolbar_controller_util",
       "//chrome/browser/ui/actions",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/actions:actions_util",
@@ -5638,6 +5637,13 @@ static_library("browser_element_identifiers") {
 }
 
 if (toolkit_views) {
+  source_set("toolbar_controller_util") {
+    sources = [
+      "toolbar_controller_util.cc",
+      "toolbar_controller_util.h",
+    ]
+  }
+
   source_set("sad_tab") {
     public = [
       "sad_tab.h",
