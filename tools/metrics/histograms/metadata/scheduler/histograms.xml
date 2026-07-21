@@ -620,7 +620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ThreadPool.UnnecessaryWakeup.{ThreadPoolName}.{WorkerGroup}"
-    enum="BooleanHit" expires_after="2026-08-30">
+    enum="BooleanHit" expires_after="2027-02-28">
   <owner>spvm@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

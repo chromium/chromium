@@ -348,7 +348,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </variants>
 
 <histogram name="PerformanceMonitor.AverageCPU10.Total{UsageScenario}"
-    units="1/100 %" expires_after="2026-12-06">
+    units="1/100 %" expires_after="2027-02-28">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -384,7 +384,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PerformanceMonitor.AverageCPU10.{ProcessName}" units="1/100 %"
-    expires_after="2026-12-06">
+    expires_after="2027-02-28">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>

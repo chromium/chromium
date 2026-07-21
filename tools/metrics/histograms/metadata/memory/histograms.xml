@@ -1498,7 +1498,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.Dump.Type.{DetailLevel}" enum="MemoryDumpType"
-    expires_after="2026-08-30">
+    expires_after="2027-02-28">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
