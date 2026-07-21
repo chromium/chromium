@@ -5462,6 +5462,26 @@ bool LayoutObject::IsBackdropForOverscrollAreaParent() const {
   return pseudo && pseudo->GetPseudoId() == kPseudoIdOverscrollBackdrop;
 }
 
+bool LayoutObject::IsCanvasOrInCanvasSubtree() const {
+  if (auto* element = DynamicTo<Element>(GetNode())) {
+    return element->IsCanvasOrInCanvasSubtree();
+  }
+  return IsInCanvasSubtree();
+}
+
+bool LayoutObject::IsInCanvasSubtree() const {
+  if (auto* node = GetNode()) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      return element->IsInCanvasSubtree();
+    }
+    if (auto* document = DynamicTo<Document>(node)) {
+      auto* owner = document->LocalOwner();
+      return owner && owner->IsCanvasOrInCanvasSubtree();
+    }
+  }
+  return Parent() && Parent()->IsCanvasOrInCanvasSubtree();
+}
+
 }  // namespace blink
 
 #if DCHECK_IS_ON()

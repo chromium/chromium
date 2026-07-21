@@ -1936,6 +1936,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // which is already marked for subtree recalc.
   void InvalidateSubtreePositionTry(bool mark_style_dirty);
 
+  // Equivalent to Element's corresponding functions if GetNode() is an
+  // Element, or returns the result of the nearest ancestor (across frame
+  // boundaries) whose GetNode() is an Element.
+  bool IsCanvasOrInCanvasSubtree() const;
+  bool IsInCanvasSubtree() const;
+
  protected:
   enum PositionedState {
     kIsStaticallyPositioned = 0,

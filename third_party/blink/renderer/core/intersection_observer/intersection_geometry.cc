@@ -149,8 +149,7 @@ VisibilityInfo ComputeVisibilityInfo(const LayoutObject* target,
   }
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
           target->GetDocument().GetExecutionContext()) &&
-      IsA<Element>(target->GetNode()) &&
-      To<Element>(target->GetNode())->IsInCanvasSubtree()) {
+      target->IsInCanvasSubtree()) {
     return {false, kInvalidDOMNodeId};
   }
   if (target->HasDistortingVisualEffects())

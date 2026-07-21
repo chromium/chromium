@@ -490,11 +490,9 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
   DCHECK_EQ(reasons, DirectReasonsForPaintProperties(object));
 
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          object.GetDocument().GetExecutionContext())) {
-    const auto* element = DynamicTo<Element>(object.GetNode());
-    if (element && element->IsInCanvasSubtree()) {
-      return false;
-    }
+          object.GetDocument().GetExecutionContext()) &&
+      object.IsInCanvasSubtree()) {
+    return false;
   }
 
   if (reasons != CompositingReason::kNone) {

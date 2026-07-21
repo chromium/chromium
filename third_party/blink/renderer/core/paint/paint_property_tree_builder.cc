@@ -1045,8 +1045,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
       DCHECK(object_.GetDocument().Printing() ||
              (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
                   object_.GetDocument().GetExecutionContext()) &&
-              IsA<Element>(object_.GetNode()) &&
-              To<Element>(object_.GetNode())->IsInCanvasSubtree()) ||
+              object_.IsInCanvasSubtree()) ||
              (full_context_.direct_compositing_reasons &
               CompositingReason::kAnchorPosition));
       state.direct_compositing_reasons =
@@ -2516,9 +2515,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       bool is_filter_disallowed =
           RuntimeEnabledFeatures::CanvasDrawElementEnabled(
               object_.GetDocument().GetExecutionContext()) &&
-          IsA<Element>(object_.GetNode()) &&
-          To<Element>(object_.GetNode())->IsInCanvasSubtree() &&
-          filter_info.operations.OriginTainted();
+          object_.IsInCanvasSubtree() && filter_info.operations.OriginTainted();
       if (!(filter_info.operations.IsEmpty() || is_filter_disallowed)) {
         state.filter_info =
             std::make_unique<EffectPaintPropertyNode::FilterInfo>(
@@ -4275,9 +4272,7 @@ void FragmentPaintPropertyTreeBuilder::PopulateBackdropFilterIfNeeded(
     bool is_filter_disallowed =
         RuntimeEnabledFeatures::CanvasDrawElementEnabled(
             object_.GetDocument().GetExecutionContext()) &&
-        IsA<Element>(object_.GetNode()) &&
-        To<Element>(object_.GetNode())->IsInCanvasSubtree() &&
-        operations.OriginTainted();
+        object_.IsInCanvasSubtree() && operations.OriginTainted();
     if (!is_filter_disallowed) {
       state.backdrop_filter_info =
           base::WrapUnique(new EffectPaintPropertyNode::BackdropFilterInfo{
@@ -4792,8 +4787,7 @@ void PaintPropertyTreeBuilder::IssueInvalidationsAfterUpdate() {
     // invalidations.
     if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
             object_.GetDocument().GetExecutionContext()) &&
-        IsA<Element>(object_.GetNode()) &&
-        To<Element>(object_.GetNode())->IsInCanvasSubtree()) {
+        object_.IsInCanvasSubtree()) {
       context_.painting_layer->SetNeedsRepaint();
     }
     object_.GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
@@ -4847,8 +4841,7 @@ bool PaintPropertyTreeBuilder::CanDoDeferredTransformNodeUpdate(
   // invalidations.
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
           object.GetDocument().GetExecutionContext()) &&
-      IsA<Element>(object.GetNode()) &&
-      To<Element>(object.GetNode())->IsInCanvasSubtree()) {
+      object.IsInCanvasSubtree()) {
     return false;
   }
   return true;
@@ -4900,8 +4893,7 @@ bool PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
   // invalidations.
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
           object.GetDocument().GetExecutionContext()) &&
-      IsA<Element>(object.GetNode()) &&
-      To<Element>(object.GetNode())->IsInCanvasSubtree()) {
+      object.IsInCanvasSubtree()) {
     return false;
   }
 

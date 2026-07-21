@@ -2531,17 +2531,15 @@ FilterOperations PaintLayer::FilterOperationsIncludingReflection() const {
     BoxReflection reflection = BoxReflectionForPaintLayer(*this, style);
 
     if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-            GetLayoutObject().GetDocument().GetExecutionContext())) {
-      auto* element = DynamicTo<Element>(GetLayoutObject().GetNode());
-      if (element && element->IsInCanvasSubtree()) {
-        if (const auto* reflect_style = style.BoxReflect()) {
-          if (auto* style_image = reflect_style->Mask().GetImage()) {
-            // Strip the mask image if it is being rendered into a canvas and it
-            // is cross-origin.
-            if (!style_image->IsCorsSameOrigin()) {
-              reflection =
-                  BoxReflection(reflection.Direction(), reflection.Offset());
-            }
+            GetLayoutObject().GetDocument().GetExecutionContext()) &&
+        GetLayoutObject().IsInCanvasSubtree()) {
+      if (const auto* reflect_style = style.BoxReflect()) {
+        if (auto* style_image = reflect_style->Mask().GetImage()) {
+          // Strip the mask image if it is being rendered into a canvas and it
+          // is cross-origin.
+          if (!style_image->IsCorsSameOrigin()) {
+            reflection =
+                BoxReflection(reflection.Direction(), reflection.Offset());
           }
         }
       }

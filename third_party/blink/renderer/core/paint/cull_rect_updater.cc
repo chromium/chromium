@@ -112,11 +112,9 @@ bool ShouldUseInfiniteCullRect(
   }
 
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-          object.GetDocument().GetExecutionContext())) {
-    auto* element = DynamicTo<Element>(object.GetNode());
-    if (element && element->IsInCanvasSubtree()) {
-      return true;
-    }
+          object.GetDocument().GetExecutionContext()) &&
+      object.IsInCanvasSubtree()) {
+    return true;
   }
 
   // TODO(crbug.com/501066634): This can likely be tighter bounded than

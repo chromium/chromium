@@ -38,7 +38,7 @@ using testing::MatchesRegex;
 class LayoutObjectTest : public RenderingTest {
  public:
   LayoutObjectTest()
-      : RenderingTest(MakeGarbageCollected<EmptyLocalFrameClient>()) {}
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
  protected:
   template <bool should_have_wrapper>
@@ -2095,6 +2095,74 @@ TEST_F(LayoutObjectTest, NoEllipsisForAnonymousBlockWithNonBlockParent) {
       EXPECT_FALSE(anon_block->ShouldTruncateOverflowingText());
     }
   }
+}
+
+TEST_F(LayoutObjectTest, InCanvasSubtree) {
+  SetBodyInnerHTML(R"HTML(
+    <canvas id="canvas" htmlsubtree>
+      <div id="canvas-child-div">Div</div>
+      <span id="canvas-child-span">Span</span>
+      <iframe></iframe>
+    </canvas>
+    <div id="non-canvas-child-div">Div</div>
+  )HTML");
+  SetChildFrameHTML(R"HTML(
+    <div id="div">Div</div>
+    <span id="span">Span</span>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* canvas = GetLayoutObjectByElementId("canvas");
+  EXPECT_TRUE(canvas->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(canvas->IsInCanvasSubtree());
+  EXPECT_FALSE(canvas->Parent()->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(canvas->Parent()->IsInCanvasSubtree());
+  EXPECT_FALSE(canvas->View()->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(canvas->View()->IsInCanvasSubtree());
+
+  auto* canvas_child_div = GetLayoutObjectByElementId("canvas-child-div");
+  EXPECT_TRUE(canvas_child_div->Parent()->IsAnonymous());
+  EXPECT_TRUE(canvas_child_div->Parent()->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(canvas_child_div->Parent()->IsInCanvasSubtree());
+  EXPECT_TRUE(canvas_child_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(canvas_child_div->IsInCanvasSubtree());
+  EXPECT_TRUE(canvas_child_div->SlowFirstChild()->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(canvas_child_div->SlowFirstChild()->IsInCanvasSubtree());
+
+  auto* canvas_child_span = GetLayoutObjectByElementId("canvas-child-span");
+  EXPECT_TRUE(canvas_child_span->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(canvas_child_span->IsInCanvasSubtree());
+  EXPECT_TRUE(canvas_child_span->SlowFirstChild()->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(canvas_child_span->SlowFirstChild()->IsInCanvasSubtree());
+
+  auto* non_canvas_child_div =
+      GetLayoutObjectByElementId("non-canvas-child-div");
+  EXPECT_FALSE(non_canvas_child_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(non_canvas_child_div->IsInCanvasSubtree());
+  EXPECT_FALSE(
+      non_canvas_child_div->SlowFirstChild()->IsCanvasOrInCanvasSubtree());
+  EXPECT_FALSE(non_canvas_child_div->SlowFirstChild()->IsInCanvasSubtree());
+
+  auto* subframe_div =
+      ChildDocument().getElementById(AtomicString("div"))->GetLayoutObject();
+  EXPECT_TRUE(subframe_div->Parent()->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(subframe_div->Parent()->IsInCanvasSubtree());
+  EXPECT_TRUE(subframe_div->View()->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(subframe_div->View()->IsInCanvasSubtree());
+  EXPECT_TRUE(subframe_div->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(subframe_div->IsInCanvasSubtree());
+  EXPECT_TRUE(subframe_div->SlowFirstChild()->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(subframe_div->SlowFirstChild()->IsInCanvasSubtree());
+
+  auto* subframe_span =
+      ChildDocument().getElementById(AtomicString("span"))->GetLayoutObject();
+  EXPECT_TRUE(subframe_span->Parent()->IsAnonymous());
+  EXPECT_TRUE(subframe_span->Parent()->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(subframe_span->Parent()->IsInCanvasSubtree());
+  EXPECT_TRUE(subframe_span->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(subframe_span->IsInCanvasSubtree());
+  EXPECT_TRUE(subframe_span->SlowFirstChild()->IsCanvasOrInCanvasSubtree());
+  EXPECT_TRUE(subframe_span->SlowFirstChild()->IsInCanvasSubtree());
 }
 
 }  // namespace blink

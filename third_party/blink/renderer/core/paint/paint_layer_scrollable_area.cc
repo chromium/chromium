@@ -2778,14 +2778,11 @@ bool PaintLayerScrollableArea::PrefersNonCompositedScrolling() const {
         return true;
       }
     }
-    if (auto* element = DynamicTo<Element>(node)) {
-      if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-              element->GetExecutionContext())) {
-        if (element->IsInCanvasSubtree()) {
-          return true;
-        }
-      }
-    }
+  }
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
+          GetLayoutBox()->GetDocument().GetExecutionContext()) &&
+      GetLayoutBox()->IsInCanvasSubtree()) {
+    return true;
   }
   return false;
 }
@@ -3164,8 +3161,7 @@ bool PaintLayerScrollableArea::MayCompositeScrollbar(
   const auto* box = GetLayoutBox();
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
           box->GetDocument().GetExecutionContext()) &&
-      IsA<Element>(box->GetNode()) &&
-      To<Element>(box->GetNode())->IsInCanvasSubtree()) {
+      box->IsInCanvasSubtree()) {
     return false;
   }
   // Compositing of scrollbar is decided in PaintArtifactCompositor. We assume
