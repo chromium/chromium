@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
@@ -50,6 +51,7 @@ import java.util.function.Supplier;
 class DropdownItemViewInfoListBuilder {
     private final List<SuggestionProcessor> mPriorityOrderedSuggestionProcessors;
     private final Supplier<@Nullable Tab> mActivityTabSupplier;
+    private final OmniboxResourceProvider mResourceProvider;
 
     private GroupSeparatorProcessor mGroupSeparatorProcessor;
     private HeaderProcessor mHeaderProcessor;
@@ -61,9 +63,11 @@ class DropdownItemViewInfoListBuilder {
     DropdownItemViewInfoListBuilder(
             Supplier<@Nullable Tab> tabSupplier,
             BookmarkState bookmarkState,
-            MonotonicObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
+            MonotonicObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
+            OmniboxResourceProvider resourceProvider) {
         mPriorityOrderedSuggestionProcessors = new ArrayList<>();
         mActivityTabSupplier = tabSupplier;
+        mResourceProvider = resourceProvider;
         mImageSupplier = null;
         mBookmarkState = bookmarkState;
         mToolbarPositionSupplier = toolbarPositionSupplier;
@@ -84,6 +88,7 @@ class DropdownItemViewInfoListBuilder {
             OmniboxActionDelegate actionDelegate) {
         return new AutocompleteUIContext(
                 context,
+                mResourceProvider,
                 host,
                 textProvider,
                 mImageSupplier,

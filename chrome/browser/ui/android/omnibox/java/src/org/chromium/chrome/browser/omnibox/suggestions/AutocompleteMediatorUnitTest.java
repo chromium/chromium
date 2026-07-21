@@ -178,6 +178,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock TemplateUrl mTemplateUrl;
     private @Mock PropertyObserver<PropertyKey> mPropertyObserver;
     private PropertyModel mListModel;
+    private OmniboxResourceProvider mResourceProvider;
     private AutocompleteMediator mMediator;
     private List<AutocompleteMatch> mSuggestionsList;
     private AutocompleteResult mAutocompleteResult;
@@ -193,6 +194,8 @@ public class AutocompleteMediatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mResourceProvider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
         CachedZeroSuggestionsManager.setOverridesForTesting(mMockCachedZeroSuggestionsManager);
         UserPrefs.setPrefServiceForTesting(mPrefService);
@@ -234,6 +237,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator =
                 new AutocompleteMediator(
                         mContext,
+                        mResourceProvider,
                         mAutocompleteDelegate,
                         mTextStateProvider,
                         mListModel,
@@ -2597,6 +2601,7 @@ public class AutocompleteMediatorUnitTest {
         AutocompleteMediator mediator =
                 new AutocompleteMediator(
                         mContext,
+                        mResourceProvider,
                         mAutocompleteDelegate,
                         mTextStateProvider,
                         mListModel,

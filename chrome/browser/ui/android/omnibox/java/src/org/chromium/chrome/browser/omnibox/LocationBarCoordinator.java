@@ -146,6 +146,7 @@ public class LocationBarCoordinator
     private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final boolean mIsToolbarPositionCustomizationEnabled;
     private final View mBottomContainerView;
+    private final OmniboxResourceProvider mResourceProvider;
     private UrlBarCoordinator mUrlCoordinator;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private StatusCoordinator mStatusCoordinator;
@@ -290,6 +291,12 @@ public class LocationBarCoordinator
         mUserEducationHelper = userEducationHelper;
         mActivityLifecycleDispatcher.register(this);
         Context context = mLocationBarLayout.getContext();
+        mResourceProvider =
+                new OmniboxResourceProvider(
+                        context,
+                        locationBarDataProvider.isIncognitoBranded(),
+                        locationBarDataProvider.getPrimaryColor());
+
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
         mDeferredIMEWindowInsetApplicationCallback =
@@ -422,6 +429,7 @@ public class LocationBarCoordinator
                 new AutocompleteCoordinator(
                         mLocationBarLayout,
                         this,
+                        mResourceProvider,
                         mOmniboxDropdownEmbedderImpl,
                         mUrlCoordinator,
                         modalDialogManagerSupplier,

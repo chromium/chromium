@@ -139,6 +139,7 @@ class AutocompleteMediator
             "omnibox.keyword_space_triggering_enabled";
 
     private final Context mContext;
+    private final OmniboxResourceProvider mResourceProvider;
     private final AutocompleteDelegate mDelegate;
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private final PropertyModel mListPropertyModel;
@@ -219,6 +220,7 @@ class AutocompleteMediator
 
     AutocompleteMediator(
             Context context,
+            OmniboxResourceProvider resourceProvider,
             AutocompleteDelegate delegate,
             UrlBarEditingTextStateProvider textProvider,
             PropertyModel listPropertyModel,
@@ -237,6 +239,7 @@ class AutocompleteMediator
             FuseboxCoordinator fuseboxCoordinator,
             LocationBarEmbedderUiOverrides uiOverrides) {
         mContext = context;
+        mResourceProvider = resourceProvider;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
         mListPropertyModel = listPropertyModel;
@@ -254,7 +257,8 @@ class AutocompleteMediator
                 new DropdownItemViewInfoListBuilder(
                         activityTabSupplier,
                         bookmarkState,
-                        locationBarDataProvider.getToolbarPositionSupplier());
+                        locationBarDataProvider.getToolbarPositionSupplier(),
+                        mResourceProvider);
         mDropdownViewInfoListBuilder.setShareDelegateSupplier(shareDelegateSupplier);
         mDropdownViewInfoListManager =
                 new DropdownItemViewInfoListManager(

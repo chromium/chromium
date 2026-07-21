@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
@@ -231,8 +230,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                 String suggestionKindStr = mContext.getString(getSuggestionKindString(suggestion));
                 if (textLine2 != null && !TextUtils.isEmpty(textLine2.toString())) {
                     announcement =
-                            OmniboxResourceProvider.getString(
-                                    mContext,
+                            mUiContext.resourceProvider.getString(
                                     R.string
                                             .acc_omnibox_suggestion_in_group_with_type_and_description,
                                     textLine1.toString(),
@@ -241,10 +239,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
                                     String.valueOf(indexInGroup),
                                     String.valueOf(totalInGroup),
                                     header != null ? header : "");
+
                 } else {
                     announcement =
-                            OmniboxResourceProvider.getString(
-                                    mContext,
+                            mUiContext.resourceProvider.getString(
                                     R.string.acc_omnibox_suggestion_in_group_with_type,
                                     textLine1.toString(),
                                     suggestionKindStr,

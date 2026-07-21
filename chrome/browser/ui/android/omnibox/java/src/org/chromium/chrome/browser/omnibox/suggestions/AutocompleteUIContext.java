@@ -6,15 +6,19 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 
 import java.util.function.Supplier;
@@ -31,6 +35,9 @@ import java.util.function.Supplier;
 public final class AutocompleteUIContext {
     /** Android context for UI operations and resource access. */
     public final Context context;
+
+    /** Omnibox resource provider. */
+    public final OmniboxResourceProvider resourceProvider;
 
     /** Host responding to suggestion events. */
     public final SuggestionHost host;
@@ -66,6 +73,8 @@ public final class AutocompleteUIContext {
      * @param shareDelegateSupplier Share delegate supplier, may be null
      * @param actionDelegate Delegate for OmniboxAction execution
      */
+    @VisibleForTesting
+    @Deprecated
     public AutocompleteUIContext(
             Context context,
             SuggestionHost host,
@@ -76,7 +85,43 @@ public final class AutocompleteUIContext {
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             MonotonicObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
             OmniboxActionDelegate actionDelegate) {
+        this(
+                context,
+                new OmniboxResourceProvider(context, BrandedColorScheme.APP_DEFAULT),
+                host,
+                textProvider,
+                imageSupplier,
+                bookmarkState,
+                activityTabSupplier,
+                shareDelegateSupplier,
+                toolbarPositionSupplier,
+                actionDelegate);
+    }
+
+    /**
+     * @param context Android context for UI operations
+     * @param resourceProvider Omnibox resource provider
+     * @param host Component for creating suggestion view delegates
+     * @param textProvider Provider for Omnibox text state
+     * @param imageSupplier Image supplier for suggestion icons
+     * @param bookmarkState Bookmark state provider
+     * @param activityTabSupplier Activity tab supplier
+     * @param shareDelegateSupplier Share delegate supplier, may be null
+     * @param actionDelegate Delegate for OmniboxAction execution
+     */
+    public AutocompleteUIContext(
+            Context context,
+            OmniboxResourceProvider resourceProvider,
+            SuggestionHost host,
+            UrlBarEditingTextStateProvider textProvider,
+            @Nullable OmniboxImageSupplier imageSupplier,
+            BookmarkState bookmarkState,
+            Supplier<@Nullable Tab> activityTabSupplier,
+            @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
+            OmniboxActionDelegate actionDelegate) {
         this.context = context;
+        this.resourceProvider = resourceProvider;
         this.host = host;
         this.textProvider = textProvider;
         this.imageSupplier = imageSupplier;

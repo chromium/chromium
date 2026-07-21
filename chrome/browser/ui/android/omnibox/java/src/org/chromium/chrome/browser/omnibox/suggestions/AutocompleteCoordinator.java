@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
@@ -95,6 +96,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     public AutocompleteCoordinator(
             ViewGroup parent,
             AutocompleteDelegate delegate,
+            OmniboxResourceProvider resourceProvider,
             OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
             UrlBarEditingTextStateProvider urlBarEditingTextProvider,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
@@ -133,6 +135,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mMediator =
                 new AutocompleteMediator(
                         context,
+                        resourceProvider,
                         delegate,
                         urlBarEditingTextProvider,
                         listModel,
@@ -150,6 +153,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                         deferredIMEWindowInsetApplicationCallback,
                         fuseboxCoordinator,
                         uiOverrides);
+
         mMediator.initDefaultProcessors();
 
         if (scrollListener != null) {
