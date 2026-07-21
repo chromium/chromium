@@ -25,6 +25,8 @@ source_set("internal") {
   sources = [
     "browser_actuator_service_impl.cc",
     "browser_actuator_service_impl.h",
+    "transport_handler_factory_registry_impl.cc",
+    "transport_handler_factory_registry_impl.h",
     "transport_session_impl.cc",
     "transport_session_impl.h",
     "transport_session_registry_impl.cc",
@@ -45,6 +47,7 @@ source_set("unit_tests") {
 
   sources = [
     "browser_actuator_service_impl_unittest.cc",
+    "transport_handler_factory_registry_impl_unittest.cc",
     "transport_session_impl_unittest.cc",
     "transport_session_registry_impl_unittest.cc",
   ]
