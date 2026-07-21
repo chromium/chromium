@@ -179,6 +179,8 @@ source_set("test_support") {
   sources = [
     "cloud/cloud_policy_test_utils.cc",
     "cloud/cloud_policy_test_utils.h",
+    "messaging_layer/upload/file_upload_job_test_util.cc",
+    "messaging_layer/upload/file_upload_job_test_util.h",
     "policy_test_utils.cc",
     "policy_test_utils.h",
     "safe_browsing_policy_test.cc",
@@ -188,9 +190,11 @@ source_set("test_support") {
   deps = [
     "//base",
     "//chrome/browser/lifetime:termination_notification",
+    "//chrome/browser/policy:impl",
     "//chrome/test:test_support",
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
+    "//components/reporting/util:test_callbacks_support",
     "//components/safe_search_api",
     "//components/security_interstitials/content:security_interstitial_page",
     "//url",
