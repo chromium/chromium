@@ -206,17 +206,20 @@ void ChromiumSystemIdentityManager::FetchCapabilitiesWithPartial(
 
 void ChromiumSystemIdentityManager::RegisterExternalPrivacyContextProvider(
     id<ExternalPrivacyContextUIProvider> provider) {
-  NOTREACHED();
+  // Nothing to do.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void ChromiumSystemIdentityManager::UnregisterExternalPrivacyContextProvider(
     id<ExternalPrivacyContextUIProvider> provider) {
-  NOTREACHED();
+  // Nothing to do.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void ChromiumSystemIdentityManager::ExternalPrivacyContextProviderReady(
     id<ExternalPrivacyContextUIProvider> provider) {
-  NOTREACHED();
+  // Nothing to do.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 bool ChromiumSystemIdentityManager::HandleMDMNotification(
