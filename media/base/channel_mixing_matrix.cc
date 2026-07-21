@@ -13,38 +13,33 @@
 
 namespace media {
 
-static void ValidateLayout(ChannelLayout layout) {
-  CHECK_NE(layout, CHANNEL_LAYOUT_NONE);
-  CHECK_LE(layout, CHANNEL_LAYOUT_MAX);
-  CHECK_NE(layout, CHANNEL_LAYOUT_UNSUPPORTED);
-  CHECK_NE(layout, CHANNEL_LAYOUT_DISCRETE);
-  CHECK_NE(layout, CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC);
-
-  // Verify there's at least one channel.  Should always be true here by virtue
-  // of not being one of the invalid layouts, but lets double check to be sure.
-  int channel_count = ChannelLayoutToChannelCount(layout);
-  DCHECK_GT(channel_count, 0);
+static void ValidateLayout(const ChannelLayoutConfig& config) {
+  CHECK_NE(config.channel_layout(), CHANNEL_LAYOUT_NONE);
+  CHECK_LE(config.channel_layout(), CHANNEL_LAYOUT_MAX);
+  CHECK_NE(config.channel_layout(), CHANNEL_LAYOUT_UNSUPPORTED);
+  CHECK_NE(config.channel_layout(), CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC);
 
   // If we have more than one channel, verify a symmetric layout for sanity.
   // The unit test will verify all possible layouts, so this can be a DCHECK.
   // Symmetry allows simplifying the matrix building code by allowing us to
   // assume that if one channel of a pair exists, the other will too.
-  if (channel_count > 1) {
+  if (config.channels() > 1) {
     // Assert that LEFT exists if and only if RIGHT exists, and so on.
-    DCHECK_EQ(ChannelOrder(layout, LEFT) >= 0,
-              ChannelOrder(layout, RIGHT) >= 0);
-    DCHECK_EQ(ChannelOrder(layout, SIDE_LEFT) >= 0,
-              ChannelOrder(layout, SIDE_RIGHT) >= 0);
-    DCHECK_EQ(ChannelOrder(layout, BACK_LEFT) >= 0,
-              ChannelOrder(layout, BACK_RIGHT) >= 0);
-    DCHECK_EQ(ChannelOrder(layout, LEFT_OF_CENTER) >= 0,
-              ChannelOrder(layout, RIGHT_OF_CENTER) >= 0);
-    DCHECK_EQ(ChannelOrder(layout, TOP_FRONT_LEFT) >= 0,
-              ChannelOrder(layout, TOP_FRONT_RIGHT) >= 0);
-    DCHECK_EQ(ChannelOrder(layout, TOP_BACK_LEFT) >= 0,
-              ChannelOrder(layout, TOP_BACK_RIGHT) >= 0);
+    DCHECK_EQ(ChannelOrder(config.channel_layout(), LEFT) >= 0,
+              ChannelOrder(config.channel_layout(), RIGHT) >= 0);
+    DCHECK_EQ(ChannelOrder(config.channel_layout(), SIDE_LEFT) >= 0,
+              ChannelOrder(config.channel_layout(), SIDE_RIGHT) >= 0);
+    DCHECK_EQ(ChannelOrder(config.channel_layout(), BACK_LEFT) >= 0,
+              ChannelOrder(config.channel_layout(), BACK_RIGHT) >= 0);
+    DCHECK_EQ(ChannelOrder(config.channel_layout(), LEFT_OF_CENTER) >= 0,
+              ChannelOrder(config.channel_layout(), RIGHT_OF_CENTER) >= 0);
+    DCHECK_EQ(ChannelOrder(config.channel_layout(), TOP_FRONT_LEFT) >= 0,
+              ChannelOrder(config.channel_layout(), TOP_FRONT_RIGHT) >= 0);
+    DCHECK_EQ(ChannelOrder(config.channel_layout(), TOP_BACK_LEFT) >= 0,
+              ChannelOrder(config.channel_layout(), TOP_BACK_RIGHT) >= 0);
   } else {
-    DCHECK_EQ(layout, CHANNEL_LAYOUT_MONO);
+    DCHECK(config.channel_layout() == CHANNEL_LAYOUT_MONO ||
+           config.channel_layout() == CHANNEL_LAYOUT_DISCRETE);
   }
 }
 
@@ -55,12 +50,8 @@ ChannelMixingMatrix::ChannelMixingMatrix(ChannelLayoutConfig input_config,
   CHECK_NE(output_config.channel_layout(), CHANNEL_LAYOUT_STEREO_DOWNMIX);
 
   // Verify that the layouts are supported
-  if (input_config.channel_layout() != CHANNEL_LAYOUT_DISCRETE) {
-    ValidateLayout(input_config.channel_layout());
-  }
-  if (output_config.channel_layout() != CHANNEL_LAYOUT_DISCRETE) {
-    ValidateLayout(output_config.channel_layout());
-  }
+  ValidateLayout(input_config);
+  ValidateLayout(output_config);
 
   // Special case for 5.0, 5.1 with back channels when upmixed to 7.0, 7.1,
   // which should map the back LR to side LR.
