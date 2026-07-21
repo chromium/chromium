@@ -2562,11 +2562,13 @@ BrowserAccessibilityAndroid::PlatformGetLowestPlatformAncestor() const {
   if (lowest_unignored_node->IsIgnored()) {
     lowest_unignored_node = lowest_unignored_node->PlatformGetParent();
   }
-  DCHECK(!lowest_unignored_node || !lowest_unignored_node->IsIgnored())
+  if (!lowest_unignored_node) {
+    return current_object;
+  }
+  CHECK(!lowest_unignored_node->IsIgnored())
       << "`BrowserAccessibility::PlatformGetParent()` should return either an "
          "unignored object or nullptr.";
 
-  // `highest_leaf_node` could be nullptr.
   ui::BrowserAccessibility* highest_leaf_node = lowest_unignored_node;
   // For the purposes of this method, a leaf node does not include leaves in the
   // internal accessibility tree, only in the platform exposed tree.
@@ -2576,14 +2578,7 @@ BrowserAccessibilityAndroid::PlatformGetLowestPlatformAncestor() const {
       highest_leaf_node = ancestor_node;
     }
   }
-  if (highest_leaf_node) {
-    return highest_leaf_node;
-  }
-
-  if (lowest_unignored_node) {
-    return lowest_unignored_node;
-  }
-  return current_object;
+  return highest_leaf_node;
 }
 
 bool BrowserAccessibilityAndroid::HasOnlyTextChildren() const {
