@@ -118,12 +118,8 @@ bool IsValidToolName(const String& name) {
 
 ScriptObject JSONStringToScriptObject(ScriptState* script_state,
                                       const String& json_string) {
-  v8::Local<v8::String> v8_json_string;
-  if (!v8::String::NewFromUtf8(script_state->GetIsolate(),
-                               json_string.Utf8().c_str())
-           .ToLocal(&v8_json_string)) {
-    return ScriptObject();
-  }
+  v8::Local<v8::String> v8_json_string =
+      V8String(script_state->GetIsolate(), json_string);
 
   v8::Local<v8::Value> parsed_value;
   if (!v8::JSON::Parse(script_state->GetContext(), v8_json_string)
@@ -131,6 +127,11 @@ ScriptObject JSONStringToScriptObject(ScriptState* script_state,
     return ScriptObject();
   }
 
+  // `v8::JSON::Parse()` parses any valid JSON primitive, which means
+  // `parsed_value` could be a Number, a String, etc. We want to explicitly
+  // reject non-objects. Note that arrays are considered objects by v8 and
+  // ECMAScript; see
+  // `external/wpt/webmcp/imperative/object-arguments.https.html`.
   if (!parsed_value->IsObject()) {
     return ScriptObject();
   }
