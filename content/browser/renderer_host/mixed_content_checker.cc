@@ -98,7 +98,7 @@ RenderFrameHostImpl* InWhichFrameIsContentMixedForFetchKeepAlive(
 }
 
 void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
-                                       const GURL& mixed_content_url,
+                                       RenderFrameHostImpl* mixed_content_frame,
                                        bool was_allowed,
                                        bool for_redirect) {
   // TODO(carlosk): the root node should never be considered as being/having
@@ -109,6 +109,14 @@ void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
 
   RenderFrameHostImpl* rfh =
       navigation_request->frame_tree_node()->current_frame_host();
+  // Mirrors `blink::MainResourceUrlForFrame()`. When the mixed content frame
+  // is in a different process from the navigating frame, only send its origin
+  // since the renderer should not have access to its full URL.
+  GURL mixed_content_url =
+      mixed_content_frame->GetSiteInstance()->group() ==
+              rfh->GetSiteInstance()->group()
+          ? mixed_content_frame->GetLastCommittedURL()
+          : mixed_content_frame->GetLastCommittedOrigin().GetURL();
   DCHECK(!navigation_request->GetRedirectChain().empty());
   GURL url_before_redirects = navigation_request->GetRedirectChain()[0];
   rfh->GetAssociatedLocalFrame()->MixedContentFound(
@@ -217,9 +225,9 @@ bool MixedContentChecker::ShouldBlockNavigation(
       &navigation_mixed_content_features_, &should_report_to_renderer);
 
   if (should_report_to_renderer) {
-    UpdateRendererOnMixedContentFound(
-        request, mixed_content_frame->GetLastCommittedURL(),
-        /*was_allowed=*/!should_block, for_redirect);
+    UpdateRendererOnMixedContentFound(request, mixed_content_frame,
+                                      /*was_allowed=*/!should_block,
+                                      for_redirect);
     MaybeSendBlinkFeatureUsageReport(navigation_handle,
                                      navigation_mixed_content_features_);
   }
