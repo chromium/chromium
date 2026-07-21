@@ -24,6 +24,9 @@ specific_include_rules = {
   "directory_lister(\\.cc|_unittest\\.cc)": [
     "+base/i18n",
   ],
+  "structured_headers\.cc": [
+    "+third_party/rust/sfv/v0_15/wrapper",
+  ],
 
   # Functions largely not used by the rest of net.
   "directory_listing\\.cc": [

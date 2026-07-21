@@ -749,6 +749,7 @@ component("net") {
     "http/proxy_client_socket.h",
     "http/proxy_fallback.cc",
     "http/proxy_fallback.h",
+    "http/structured_headers.cc",
     "http/structured_headers.h",
     "http/transport_security_persister.cc",
     "http/transport_security_persister.h",
@@ -1223,6 +1224,7 @@ component("net") {
     "//components/network_time/time_tracker",
     "//components/unexportable_keys",
     "//net/http:transport_security_state_generated_files",
+    "//third_party/rust/sfv/v0_15/wrapper",
     "//third_party/simdutf",
   ]
 
@@ -3026,6 +3028,7 @@ target(_test_target_type, "net_unittests") {
     "http/no_vary_search_cache_storage_unittest.cc",
     "http/no_vary_search_cache_unittest.cc",
     "http/proxy_fallback_unittest.cc",
+    "http/structured_headers_unittest.cc",
     "http/test_upload_data_stream_not_allow_http1.cc",
     "http/test_upload_data_stream_not_allow_http1.h",
     "http/transport_security_persister_unittest.cc",
@@ -3297,6 +3300,9 @@ target(_test_target_type, "net_unittests") {
     "QuicheHostnameUtilsFuzzTest.FuzzPropertyNormalizationIsIdempotentForValidSni",
     "QuicVersionsFuzzTest.ParseSerializeParseIdentityProperty",
     "SocketPoolAdditionalCapacityTest.ValidateRandomizedInputs",
+    "StructuredHeadersTest.ParseDictionaryParity",
+    "StructuredHeadersTest.ParseItemParity",
+    "StructuredHeadersTest.ParseListParity",
     "TransportParametersFuzzTest.ParseTransportParametersDoesNotCrash",
     "UrlUnescapeIteratorTest.SameOutputAsUnescapePercentEncodedUrl",
   ]

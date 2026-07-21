@@ -60,6 +60,7 @@ pub struct Parser<'de> {
     input: &'de [u8],
     index: usize,
     version: Version,
+    lenient: bool,
 }
 
 impl<'de> Parser<'de> {
@@ -69,12 +70,23 @@ impl<'de> Parser<'de> {
             input: input.as_ref(),
             index: 0,
             version: Version::Rfc9651,
+            lenient: false,
         }
     }
 
     /// Sets the parser's version and returns it.
     pub fn with_version(mut self, version: Version) -> Self {
         self.version = version;
+        self
+    }
+
+    /// Sets whether the parser is in lenient mode and returns it.
+    ///
+    /// Lenient mode tolerates some specification violations found in legacy
+    /// implementations (e.g. trailing decimal points and internal whitespace
+    /// in byte sequences).
+    pub fn with_lenient_mode(mut self, lenient: bool) -> Self {
+        self.lenient = lenient;
         self
     }
 
@@ -460,23 +472,85 @@ assert_eq!(
 
         let colon_index = self.index - 1;
 
-        match base64::Engine::decode(&utils::BASE64, &self.input[start..colon_index]) {
-            Ok(content) => Ok(content),
-            Err(err) => {
-                let index = match err {
-                    base64::DecodeError::InvalidByte(offset, _)
-                    | base64::DecodeError::InvalidLastSymbol(offset, _) => start + offset,
-                    // Report these two at the position of the last base64
-                    // character, since they correspond to errors in the input
-                    // as a whole.
-                    base64::DecodeError::InvalidLength(_) | base64::DecodeError::InvalidPadding => {
-                        colon_index - 1
-                    }
-                };
+        if !self.lenient {
+            return match base64::Engine::decode(&utils::BASE64, &self.input[start..colon_index]) {
+                Ok(content) => Ok(content),
+                Err(err) => {
+                    let index = match err {
+                        base64::DecodeError::InvalidByte(offset, _)
+                        | base64::DecodeError::InvalidLastSymbol(offset, _) => start + offset,
+                        // Report these two at the position of the last base64
+                        // character, since they correspond to errors in the input
+                        // as a whole.
+                        base64::DecodeError::InvalidLength(_)
+                        | base64::DecodeError::InvalidPadding => colon_index - 1,
+                    };
 
-                Err(error::Repr::InvalidByteSequence(index))
+                    Err(error::Repr::InvalidByteSequence(index))
+                }
+            };
+        }
+
+        // Replicate Quiche's bug-for-bug compatible base64 decoding.
+        // 1. Quiche synthesizes padding by resizing to a multiple of 4.
+        // 2. It uses absl::Base64Unescape which allows '.' as padding.
+        // 3. It skips ASCII whitespace anywhere in the input.
+        let mut base64_vec = self.input[start..colon_index].to_vec();
+        let padding_len = (base64_vec.len() + 3) / 4 * 4;
+        base64_vec.resize(padding_len, b'=');
+
+        let mut dest = Vec::new();
+        let mut temp: u32 = 0;
+        let mut state = 0;
+        let mut equals = 0;
+        let mut in_padding = false;
+
+        for &ch in &base64_vec {
+            if ch.is_ascii_whitespace() || ch == 0x0b {
+                continue;
+            }
+            if ch == b'=' || ch == b'.' {
+                in_padding = true;
+                equals += 1;
+                continue;
+            }
+            if in_padding {
+                return Err(error::Repr::InvalidByteSequence(start));
+            }
+            let val = match ch {
+                b'A'..=b'Z' => ch - b'A',
+                b'a'..=b'z' => ch - b'a' + 26,
+                b'0'..=b'9' => ch - b'0' + 52,
+                b'+' => 62,
+                b'/' => 63,
+                _ => return Err(error::Repr::InvalidByteSequence(start)),
+            };
+            temp = (temp << 6) | u32::from(val);
+            state += 1;
+            if state == 4 {
+                dest.push((temp >> 16) as u8);
+                dest.push((temp >> 8) as u8);
+                dest.push(temp as u8);
+                temp = 0;
+                state = 0;
             }
         }
+        let expected_equals = match state {
+            0 => 0,
+            2 => 2,
+            3 => 1,
+            _ => return Err(error::Repr::InvalidByteSequence(start)),
+        };
+        if equals != 0 && equals != expected_equals {
+            return Err(error::Repr::InvalidByteSequence(start));
+        }
+        if state == 2 {
+            dest.push((temp >> 4) as u8);
+        } else if state == 3 {
+            dest.push((temp >> 10) as u8);
+            dest.push((temp >> 2) as u8);
+        }
+        Ok(dest)
     }
 
     pub(crate) fn parse_number(&mut self) -> Result<Num, error::Repr> {
@@ -537,9 +611,13 @@ assert_eq!(
             scale /= 10;
         }
 
-        if scale == 100 {
+        if scale == 100 && !self.lenient {
             // Report the error at the position of the decimal itself, rather
             // than the next position.
+            //
+            // RFC 8941 requires at least one digit after the decimal point.
+            // However, legacy Quiche allows trailing decimal points (e.g. "1.")
+            // if followed by a delimiter or EOF.
             Err(error::Repr::TrailingDecimalPoint(self.index - 1))
         } else {
             Ok(Num::Decimal(Decimal::from_integer_scaled_1000(
