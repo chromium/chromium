@@ -43,3 +43,24 @@ message TcbVersion {
   // or unpopulated.
   uint32 fmc = 5;
 }
+
+// The security version numbers of the components in the Intel TDX Trusted
+// Compute Base (TCB).
+message TdxTcbSvn {
+  uint32 svn_0 = 1;
+  uint32 svn_1 = 2;
+  uint32 svn_2 = 3;
+  uint32 svn_3 = 4;
+  uint32 svn_4 = 5;
+  uint32 svn_5 = 6;
+  uint32 svn_6 = 7;
+  uint32 svn_7 = 8;
+  uint32 svn_8 = 9;
+  uint32 svn_9 = 10;
+  uint32 svn_10 = 11;
+  uint32 svn_11 = 12;
+  uint32 svn_12 = 13;
+  uint32 svn_13 = 14;
+  uint32 svn_14 = 15;
+  uint32 svn_15 = 16;
+}

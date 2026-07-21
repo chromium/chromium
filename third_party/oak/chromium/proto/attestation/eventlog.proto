@@ -25,7 +25,23 @@ option go_package = "proto/oak/attestation/v1";
 option java_multiple_files = true;
 option java_package = "com.google.oak.attestation.v1";
 
-// All the related measurements for Stage 0.
+// Regex-based measurement of the command line for a binary. This includes a
+// regex arguement to match against the command line arguements and the
+// associated result of the regex match.
+message BinaryArgvRegexMeasurement {
+  // Regex (if any) that was matched against the command-line arguments during
+  // measurement.
+  string binary_static_argv_regex = 1;
+
+  // Whether the `binary_static_argv_regex` matched the command line arguements
+  // at build time.
+  bool argv_regex_match = 2;
+}
+
+// Measurements performed by Stage 0.
+//
+// Encoded as event_log[0] in both Oak Containers and Restricted Kernel
+// evidence. During verification this is decoded into KernelLayerData.
 message Stage0Measurements {
   // Kernel setup data digest.
   bytes setup_data_digest = 1;
@@ -41,7 +57,28 @@ message Stage0Measurements {
   string kernel_cmdline = 6;
 }
 
-// All the related measurements for Oak Container's Stage 1.
+// Transparent (i.e. externally shareable) measurements for Stage 0.
+// These measurements will be used in the transparent version of the event log.
+// The digests are derived from the SHA2-256 hash algorithm.
+message Stage0TransparentMeasurements {
+  // Kernel setup data digest.
+  bytes setup_data_digest = 1;
+  // Kernel digest.
+  bytes kernel_measurement = 2;
+  // Initial RAM disk digest.
+  bytes ram_disk_digest = 3;
+  // E820 table digest.
+  bytes memory_map_digest = 4;
+  // ACPI table generation digest
+  bytes acpi_digest = 5;
+  // Kernel Command line digest.
+  // TODO: b/452735395 - Change this field to BinaryCommandLine.
+  bytes kernel_cmdline_digest = 6;
+}
+
+// All measurements by Oak Container's Stage 1.
+//
+// Encoded as event_log[1] in legacy Oak Containers evidence.
 message Stage1Measurements {
   // replaced by SystemLayerData, which holds the same data. Will be removed.
   option deprecated = true;
@@ -49,7 +86,9 @@ message Stage1Measurements {
   oak.RawDigest system_image = 1;
 }
 
-// All the related measurements for Oak Container's Stage 1.
+// All measurements by Oak Containers orchestrator.
+//
+// Encoded as event_log[2] in legacy Oak Containers evidence.
 message OrchestratorMeasurements {
   // replaced by ContainerLayerData, which holds the same data. Will be removed.
   option deprecated = true;

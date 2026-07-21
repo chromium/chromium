@@ -18,21 +18,20 @@ syntax = "proto3";
 
 package oak.session.v1;
 
+import "proto/attestation/assertion.proto";
 import "proto/session/messages.proto";
 
 option java_multiple_files = true;
 option java_package = "com.google.oak.session.v1";
 
-// Assertion that an attesting party is making to the verifying peer. Assertion
-// represents a claim that the attesting party is making to the verifying party,
-// which the verifying party can use to make a decision on whether to proceed
-// with establishing a secure session. and must contain all evidence needed to
-// verify the assertion.
-message Assertion {
-  // Bytes of the assertion. We make no assumption about the format used: it can
-  // be a serialized proto, JWT or any other data that the peer can use to make
-  // the pass/fail decision about the assertion.
-  bytes content = 1;
+// Assertion that wraps an assertion of a different type that signs a public key
+// used to bind this assertion to the session. Allows the use of arbitrary
+// assertion generators and verifiers for attestation within the session.
+message SessionBindingKeyWrapperAssertion {
+  // Public component of the P256 ECDSA binding key signing the attested data.
+  bytes public_binding_key = 1;
+  // Inner assertion over the public binding key.
+  oak.attestation.v1.Assertion inner_assertion = 2;
 }
 
 // Request message for the remote attestation.
@@ -44,7 +43,7 @@ message AttestRequest {
   // Maps unique IDs of attestation type to the assertions. Until
   // endorsed_evidence is deprecated both endorsed_evidence and assertions can
   // be provided, it is up to the peer to disambiguate between the two.
-  map<string, Assertion> assertions = 2;
+  map<string, oak.attestation.v1.Assertion> assertions = 2;
 }
 
 // Response message for the remote attestation.
@@ -56,7 +55,7 @@ message AttestResponse {
   // Maps unique IDs of attestation type to the assertions. Until
   // endorsed_evidence is deprecated both endorsed_evidence and assertions can
   // be provided, it is up to the peer to disambiguate between the two.
-  map<string, Assertion> assertions = 2;
+  map<string, oak.attestation.v1.Assertion> assertions = 2;
 }
 
 // Noise handshake message containing fields for all handshake patterns.

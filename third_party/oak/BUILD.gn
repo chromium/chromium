@@ -6,17 +6,21 @@ import("//components/proto_extras/proto_extras.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_sources = [
+  "chromium/proto/attestation/assertion.proto",
   "chromium/proto/attestation/endorsement.proto",
   "chromium/proto/attestation/eventlog.proto",
   "chromium/proto/attestation/evidence.proto",
   "chromium/proto/attestation/tcb_version.proto",
   "chromium/proto/chromium_types/any.proto",
+  "chromium/proto/chromium_types/duration.proto",
+  "chromium/proto/chromium_types/empty.proto",
   "chromium/proto/chromium_types/timestamp.proto",
   "chromium/proto/crypto/certificate.proto",
   "chromium/proto/crypto/crypto.proto",
   "chromium/proto/digest.proto",
   "chromium/proto/session/messages.proto",
   "chromium/proto/session/session.proto",
+  "chromium/proto/validity.proto",
   "chromium/proto/variant.proto",
 ]
 

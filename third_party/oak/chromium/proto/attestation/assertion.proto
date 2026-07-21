@@ -1,0 +1,68 @@
+//
+// Copyright 2024 The Project Oak Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// An attachment is a shim between the actual binary and the endorsement.
+// The endorsement mentions the digest of the attachment, and the
+// attachment in turn contains hashes related to the actual binary.
+
+syntax = "proto3";
+
+package oak.attestation.v1;
+
+import "proto/attestation/endorsement.proto";
+import "proto/attestation/evidence.proto";
+
+option go_package = "proto/oak/attestation/v1";
+option java_multiple_files = true;
+option java_package = "com.google.oak.attestation.v1";
+
+// Assertion that an attesting party is making to the verifying peer. Assertion
+// represents a claim that the attesting party is making to the verifying party,
+// which the verifying party can use to make a decision on whether to proceed
+// with establishing a secure session. and must contain all evidence needed to
+// verify the assertion.
+message Assertion {
+  // Bytes of the assertion. We make no assumption about the format used: it can
+  // be a serialized proto, JWT or any other data that the peer can use to make
+  // the pass/fail decision about the assertion.
+  bytes content = 1;
+}
+
+// Assertion that wraps an inner assertion that signs the enclosed asserted
+// data. The asserted data is then used to verify a wrapper assertion.
+message WrapperAssertion {
+  // Inner assertion establishes the authenticity of the asserted data.
+  Assertion inner_assertion = 1;
+  // Asserted data is signed by the inner assertion and is being used to verify
+  // the outer assertion. For example it can contain a public key for the
+  // signature in the wrapper assertion.
+  bytes inner_asserted_data = 2;
+  // Outer assertion that can be verified with the help if the asserted data.
+  Assertion outer_assertion = 3;
+}
+
+message ConfidentialSpaceAssertion {
+  // GCP attestation token for the container image.
+  bytes jwt_token = 1;
+  // An optional endorsement for the endorsement that can be sent to the client
+  // by the Cloud application to support the measurements in the JWT token.
+  ConfidentialSpaceEndorsement container_image_endorsement = 2;
+}
+
+message EndorsedEvidenceAssertion {
+  Evidence evidence = 1;
+  Endorsements endorsements = 2;
+  bytes asserted_data_signature = 3;
+}

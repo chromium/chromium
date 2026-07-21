@@ -1,0 +1,47 @@
+//
+// Copyright 2025 The Project Oak Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package oak;
+
+import "proto/chromium_types/duration.proto";
+import "proto/chromium_types/timestamp.proto";
+
+option go_package = "proto/oak";
+option java_multiple_files = true;
+option java_package = "com.google.oak";
+
+// Defines a period of validity between two timestamps.
+message Validity {
+  // Time when the valid period begins. The timestamp itself is included in
+  // the valid period.
+  Timestamp not_before = 1;
+
+  // Time when the valid period ends. The timestamp itself is included in
+  // the valid period.
+  Timestamp not_after = 2;
+}
+
+// Offsets which produce a new `Validity` instance from either a single
+// timestamp or an existing `Validity` instance.
+message ValidityOffset {
+  // Offset that produces `not_before`, perhaps negative.
+  Duration not_before_offset = 1;
+
+  // Offset that produces `not_after`, perhaps negative.
+  Duration not_after_offset = 2;
+}

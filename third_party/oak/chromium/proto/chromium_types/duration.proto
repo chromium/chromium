@@ -1,0 +1,16 @@
+// Copyright 2026 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package oak;
+
+option go_package = "proto/oak";
+option java_multiple_files = true;
+option java_package = "com.google.oak";
+
+message Duration {
+  int64 seconds = 1;
+  int32 nanos = 2;
+}

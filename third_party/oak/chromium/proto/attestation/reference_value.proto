@@ -19,7 +19,8 @@ syntax = "proto3";
 
 package oak.attestation.v1;
 
-import "google/protobuf/duration.proto";
+import "proto/chromium_types/duration.proto";
+import "proto/chromium_types/empty.proto";
 import "proto/chromium_types/timestamp.proto";
 import "proto/attestation/tcb_version.proto";
 import "proto/digest.proto";
@@ -38,6 +39,9 @@ enum KeyType {
   // An overview of key formats can be found at:
   // https://www.iana.org/assignments/cose/cose.xhtml#algorithms
   KEY_TYPE_ECDSA_P256_SHA256 = 1;
+
+  // RSA key with SHA-256 hashing.
+  KEY_TYPE_RSA_SHA2_256 = 2;
 }
 
 message VerifyingKey {
@@ -61,7 +65,7 @@ message TimestampReferenceValue {
 
   // Verification passes whenever the timestamp under verification is not before
   // the current time to which the specified (signed) duration is added.
-  google.protobuf.Duration not_before_relative = 2;
+  Duration not_before_relative = 2;
 }
 
 // Set of keys currently needed for verification. Will contain one element
@@ -94,6 +98,65 @@ message VerifyingKeyReferenceValue {
   }
 }
 
+// Reference value for verifying a C2SP tlog-proof.
+// See: https://c2sp.org/tlog-proof
+message C2SPTLogProofReferenceValue {
+  reserved 1;
+
+  // The sigsum policy specifying trusted log keys and witness quorum.
+  // Must contain at least one `log` line and a `quorum` line.
+  // See:
+  // https://c2sp.org/tlog-policy
+  string policy = 2;
+}
+
+// Reference value for verifying a PES confirmation.
+message PesReferenceValue {
+  // The PES service's public verifying key(s) used to verify the PES signature.
+  //
+  // The PES confirmation is expected to contain the `key_id` of the key used
+  // for signing. During verification, the `key_id` extracted from the PES
+  // confirmation can be used to locate the correct key.
+  //
+  // This field is a set to support key rotation. During transition period,
+  // multiple keys can be listed here so that both old and new endorsements
+  // remain verifiable.
+  VerifyingKeySet key_set = 1;
+}
+
+// Encapsulates parameters related to verification of receipts from
+// t-log-like setups. If nothing should be verified, then this needs to be
+// disclaimed by
+//   tlog { strategy { skip {} } }
+// NEXT_ID: 8
+message TLogReferenceValues {
+  // Specifies how to aggegrate verification results from individual t-logs.
+  // Must be populated - rejected if empty.
+  oneof strategy {
+    // Doesn't verify anything, no matter what is populated.
+    SkipVerification skip = 1;
+
+    // Requires that ALL of the populated t-log verifications pass. If none
+    // of the verifications is populated, then this is equivalent to `skip`,
+    // but exploiting this is discouraged.
+    Empty all = 2;
+
+    // Requires that ANY (at least one) of the populated t-log verifications
+    // pass. If none of the verifications is populated, then this will
+    // always fail.
+    Empty any = 3;
+  }
+
+  // Verifies Rekor inclusion. Ignored if not populated.
+  VerifyingKeySet rekor = 5;
+
+  // Verifies C2SP t-log proof. Ignored if not populated.
+  C2SPTLogProofReferenceValue c2sp = 6;
+
+  // Verifies PES confirmation. Ignored if not populated.
+  PesReferenceValue pes = 7;
+}
+
 // Specifies a list of claim types. Claims are assertions about artifacts made
 // by the endorsing entity. An overview of the claims maintained by Oak can be
 // found at: https://github.com/project-oak/oak/tree/main/docs/tr/claim
@@ -102,22 +165,10 @@ message ClaimReferenceValue {
 }
 
 // Verifies the transparency log entry, including signatures and the digest.
+// NEXT_ID: 7
 message EndorsementReferenceValue {
-  // The endorser's public verifying key for signature verification. The
-  // attestation verification requires that all endorsements need to be
-  // signed, therefore this cannot be empty.
-  //
-  // Deprecated - use field `endorser` instead.
-  // TODO: b/379253152 - Cut support of deprecated field and remove it.
-  bytes endorser_public_key = 1 [deprecated = true];
-
-  // Rekor's public verifying key for log entry verification. Needs to be
-  // set when a log entry is present that should be verified. If it is not set,
-  // then log entry verification is skipped.
-  //
-  // Deprecated - use field `rekor` instead.
-  // TODO: b/379253152 - Cut support of deprecated field and remove it.
-  bytes rekor_public_key = 2 [deprecated = true];
+  reserved 1, 2;
+  reserved "endorser_public_key", "rekor_public_key";
 
   // Verifies the endorsement. Since the signed endorsement is required to
   // be present, this cannot be skipped as part of this message. (It may
@@ -129,7 +180,18 @@ message EndorsementReferenceValue {
   ClaimReferenceValue required_claims = 4;
 
   // Verifies the Rekor log entry, if present and requested.
-  VerifyingKeyReferenceValue rekor = 5;
+  // DEPRECATED - use TLogReferenceValues instead. The deprecated
+  // approach is equivalent to
+  //
+  // tlog {
+  //    strategy { all {} }
+  //    rekor { <the VerifyingKeySet> }
+  // }
+  VerifyingKeyReferenceValue rekor = 5 [deprecated = true];
+
+  // Verifies any t-log-like setups associated with the endorsement.
+  // Leaving this empty is rejected.
+  TLogReferenceValues tlog = 6;
 }
 
 message BinaryReferenceValue {
@@ -146,6 +208,22 @@ message BinaryReferenceValue {
 
     // Explicitly verifies digests if the client has them.
     Digests digests = 3;
+  }
+}
+
+// Verifies that the endorsed subject is one of the specified MPM versions.
+message MpmVersionIds {
+  // A match in at least one version is considered a success.
+  // No checks are performed if this is empty (discouraged but allowed use).
+  // Requires that the endorsement to be verified has the MPM claim.
+  repeated string versions = 1;
+}
+
+message MpmReferenceValue {
+  oneof type {
+    SkipVerification skip = 1;
+    EndorsementReferenceValue endorsement = 2;
+    MpmVersionIds versions = 3;
   }
 }
 
@@ -231,7 +309,7 @@ message RootLayerReferenceValues {
   InsecureReferenceValues insecure = 3;
 }
 
-// Reference value that matches a TCB version.
+// Reference value that matches a TCB version for AMD SEV-SNP.
 message TcbVersionReferenceValue {
   oneof type {
     // Skips this check. As elsewhere, an empty `type` oneof makes verification
@@ -249,8 +327,27 @@ message TcbVersionReferenceValue {
   }
 }
 
+// Reference value that matches TCB Security Version Numbers (SVNs) for Intel
+// TDX.
+message TdxTcbSvnReferenceValue {
+  oneof type {
+    // Skips this check. As elsewhere, an empty `type` oneof makes verification
+    // fail.
+    //
+    // Caveat: `skip {}` happens to behave identically to `minimum {}`. It is
+    // recommended to avoid using `minimum {}`, but this is not enforced.
+    SkipVerification skip = 1;
+
+    // Requires minimum TCB SVNs reported in the attestation. Verification
+    // checks that, separately for each field, the actual value is >= the
+    // reference value. Leaving any field unpopulated (and hence == 0) will
+    // always pass verification since version numbers are unsigned.
+    TdxTcbSvn minimum = 2;
+  }
+}
+
 // Collection of reference values for an AMD SEV-SNP hardware root.
-// NEXT_ID: 9
+// NEXT_ID: 10
 message AmdSevReferenceValues {
   reserved 1, 2;
 
@@ -282,9 +379,21 @@ message AmdSevReferenceValues {
 
   // Verifies the stage0 binary implicitly contained in the root layer.
   BinaryReferenceValue stage0 = 4;
+
+  // Whether the current time should be used when checking the validity of the
+  // Versioned Chip Endorsement Key (VCEK) certificate.
+  bool check_vcek_cert_expiry = 9;
 }
 
-message IntelTdxReferenceValues {}
+// Collection of reference values for an Intel TDX Attestation Quote.
+message IntelTdxReferenceValues {
+  // Minimum acceptable SVNs for the TEE TCB.
+  TdxTcbSvnReferenceValue tee_tcb_svn = 1;
+  // If true, will skip the check that the TEE is not in debug mode.
+  bool allow_debug = 2;
+  // Verifies the stage0 binary implicitly contained in the root layer.
+  BinaryReferenceValue stage0 = 3;
+}
 
 message InsecureReferenceValues {}
 
@@ -349,7 +458,10 @@ message ApplicationKeysReferenceValues {
   PublicKeyReferenceValue signing_public_key = 3;
 }
 
+// Deprecated: Use EndorsementReferenceValue instead.
 message CosignReferenceValues {
+  option deprecated = true;
+
   VerifyingKey developer_public_key = 1;
   VerifyingKey rekor_public_key = 2;
 }
@@ -373,24 +485,54 @@ message CBReferenceValues {
   repeated EventReferenceValues layers = 5;
 }
 
+message CbLayer1TransparentReferenceValues {
+  BinaryReferenceValue runtime_agent = 1 [deprecated = true];
+  BinaryReferenceValue runtime_agent_binary = 2;
+  BinaryReferenceValue userspace = 3;
+}
+
+message CbLayer2TransparentReferenceValues {
+  reserved 1;
+  // DEPRECATED: Use binary_mpms instead.
+  MpmReferenceValue binary_mpm = 2 [deprecated = true];
+
+  // Reference values for the binary MPMs running on CB.
+  repeated MpmReferenceValue binary_mpms = 3;
+}
+
+// Verifies a transparent CB evidence, i.e. uses the `transparent_event_log`
+// branch in the associated `Evidence` proto.
+message CbTransparentReferenceValues {
+  RootLayerReferenceValues root_layer = 1;
+  KernelLayerReferenceValues kernel_layer = 2;
+  CbLayer1TransparentReferenceValues layer1 = 3;
+  CbLayer2TransparentReferenceValues layer2 = 4;
+}
+
 message CertificateBasedReferenceValues {
   CertificateAuthorityReferenceValue ca = 1;
 }
 
 message ConfidentialSpaceReferenceValues {
+  reserved 4;
+
   // The PEM-encoded root certificate for verifying Confidential Space
   // attestations.
   string root_certificate_pem = 1;
 
   // Reference values specific to the workload container.
   oneof container_image {
-    CosignReferenceValues cosign_reference_values = 2;
+    // Deprecated.
+    CosignReferenceValues cosign_reference_values = 2 [deprecated = true];
 
     // Image reference from the Confidential Space attestation. See
     // https://cloud.google.com/confidential-computing/confidential-space/docs/reference/token-claims#workload-container-claims
     // TODO: b/439861326 - Remove this field and introduce new endorsement field
     // that relies on Oak Transparent release.
-    string container_image_reference = 3;
+    string container_image_reference_prefix = 3;
+
+    // Used to verify the container image.
+    BinaryReferenceValue image_reference_value = 5;
   }
 }
 
@@ -402,6 +544,7 @@ message ReferenceValues {
     CBReferenceValues cb = 3 [deprecated = true];
     CertificateBasedReferenceValues certificate_based = 4;
     ConfidentialSpaceReferenceValues confidential_space = 5;
+    CbTransparentReferenceValues cbt = 6;
   }
 }
 

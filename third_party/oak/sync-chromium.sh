@@ -8,6 +8,7 @@ shopt -s extglob dotglob
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 FILES=(
+  "proto/attestation/assertion.proto"
   "proto/attestation/endorsement.proto"
   "proto/attestation/eventlog.proto"
   "proto/attestation/evidence.proto"
@@ -18,6 +19,7 @@ FILES=(
   "proto/digest.proto"
   "proto/session/messages.proto"
   "proto/session/session.proto"
+  "proto/validity.proto"
   "proto/variant.proto"
 )
 
@@ -27,4 +29,8 @@ for f in "${FILES[@]}"; do
   sed -i 's|google.protobuf.Any|Any|g' "${SCRIPT_DIR}/chromium/${f}"
   sed -i 's|google/protobuf/timestamp.proto|proto/chromium_types/timestamp.proto|g' "${SCRIPT_DIR}/chromium/${f}"
   sed -i 's|google.protobuf.Timestamp|Timestamp|g' "${SCRIPT_DIR}/chromium/${f}"
+  sed -i 's|google/protobuf/duration.proto|proto/chromium_types/duration.proto|g' "${SCRIPT_DIR}/chromium/${f}"
+  sed -i 's|google.protobuf.Duration|Duration|g' "${SCRIPT_DIR}/chromium/${f}"
+  sed -i 's|google/protobuf/empty.proto|proto/chromium_types/empty.proto|g' "${SCRIPT_DIR}/chromium/${f}"
+  sed -i 's|google.protobuf.Empty|Empty|g' "${SCRIPT_DIR}/chromium/${f}"
 done

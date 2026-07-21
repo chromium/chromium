@@ -66,8 +66,28 @@ message SignedEndorsement {
   Signature signature = 2;
 
   // The Rekor log entry about the endorsement or empty if there is no log
-  // entry.
+  // entry. Conceptually an endorsement should be rooted in only one t-log.
+  // For convenience and flexibility, the t-log configuration is at the
+  // caller's discretion - i.e., possible to pass and verify an arbitrary
+  // subset of all supported t-logs.
+  // Independent of c2sp_tlog_proof and pes_confirmation: any field
+  // constellation is permissible and can be verified.
   bytes rekor_log_entry = 3;
+
+  // A C2SP tlog-proof bundle proving inclusion of the endorsement in a
+  // transparency log. This is the text-format proof as defined at
+  // https://c2sp.org/tlog-proof, serialized as bytes.
+  // Independent of rekor_log_entry and pes_confirmation: any field
+  // constellation is permissible and can be verified.
+  bytes c2sp_tlog_proof = 4;
+
+  // The confirmation from Public Endorsement Service (PES). PES manages
+  // developer (or publisher) signing identities and verifies related
+  // signatures. The present attestation verification once more verifies
+  // these signatures.
+  // Independent of rekor_log_entry and c2sp_tlog_proof: any field
+  // constellation is permissible and can be verified.
+  bytes pes_confirmation = 5;
 }
 
 // Tink endorsement consists of a single Tink signature over the endorsed
@@ -198,6 +218,27 @@ message ApplicationEndorsement {
 message ContainerEndorsement {
   SignedEndorsement binary = 1;
   SignedEndorsement configuration = 2;
+}
+
+// Event endorsement for the layer matching `CbLayer1TransparentEvent`.
+message CbLayer1TransparentEndorsement {
+  SignedEndorsement runtime_agent = 1 [deprecated = true];
+
+  // Endorsement of the runtime agent binary.
+  SignedEndorsement runtime_agent_binary = 2;
+
+  // Endorsement of the userspace tarball.
+  SignedEndorsement userspace = 3;
+}
+
+// Event endorsement for the layer matching `CbLayer2TransparentEvent`.
+message CbLayer2TransparentEndorsement {
+  // Endorsement of the binary MPM running on CB.
+  // DEPRECATED: Use binary_mpms instead.
+  SignedEndorsement binary_mpm = 1 [deprecated = true];
+
+  // Endorsements of the binary MPMs running on CB.
+  repeated SignedEndorsement binary_mpms = 2;
 }
 
 // Endorsement for a public key used to verify that an encrypted session is
