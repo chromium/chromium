@@ -53,6 +53,25 @@ base::FilePath GetBinaryPath(const base::FilePath& install_dir) {
       base::GetNativeLibraryName("chrome_platform_runtime"));
 }
 
+// Extracts the release time from the version.
+// Assumes the version is in the format <YEAR>.<MONTH>.<DAY>.<BUILD>.
+base::Time GetReleaseTimeFromVersion(const base::Version& version) {
+  if (version.IsValid() && version.components().size() >= 3) {
+    base::Time::Exploded exploded = {
+        .year = static_cast<int>(version.components()[0]),
+        .month = static_cast<int>(version.components()[1]),
+        .day_of_month = static_cast<int>(version.components()[2]),
+    };
+
+    base::Time release_time;
+    if (exploded.HasValidValues() &&
+        base::Time::FromUTCExploded(exploded, &release_time)) {
+      return release_time;
+    }
+  }
+  return base::Time::Now();
+}
+
 }  // namespace
 
 namespace component_updater {
@@ -101,7 +120,8 @@ void PlatformRuntimeComponentInstallerPolicy::ComponentReady(
         !last_version.IsValid()) {
       local_state->SetString(kPlatformRuntimeLastInstalledVersion,
                              version.GetString());
-      local_state->SetTime(kPlatformRuntimeLastInstallTime, base::Time::Now());
+      local_state->SetTime(kPlatformRuntimeLastInstallTime,
+                           GetReleaseTimeFromVersion(version));
 
       base::UmaHistogramEnumeration(
           "ComponentUpdater.PlatformRuntime.InstallTrigger", install_trigger_);
