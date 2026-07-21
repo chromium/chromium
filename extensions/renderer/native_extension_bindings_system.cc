@@ -613,8 +613,8 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
   // WebUI script contexts, currently it is not.
   bool set_accessor_on_browser = false;
   const Extension* extension = context->extension();
-  // Create `browser` accessor if this is an MV3+ extension script context.
-  if (extension && extension->manifest_version() >= 3) {
+  // Create `browser` accessor if this is an extension script context.
+  if (extension && extension->is_extension()) {
     set_accessor_on_browser = true;
   } else if (is_webpage &&
              (CanWebpageContextConnectExternally(context) ||
