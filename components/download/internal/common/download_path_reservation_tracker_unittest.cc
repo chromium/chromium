@@ -844,4 +844,31 @@ TEST_F(DownloadPathReservationTrackerTest,
   SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DownloadPathReservationTrackerTest,
+       AndroidPathOutsideDownloadsDirectory) {
+  std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
+
+  base::ScopedTempDir external_dir;
+  ASSERT_TRUE(external_dir.CreateUniqueTempDir());
+
+  base::FilePath target_path =
+      external_dir.GetPath().Append(FILE_PATH_LITERAL("payload.txt"));
+  ASSERT_FALSE(IsPathInUse(target_path));
+
+  base::FilePath reserved_path;
+  PathValidationResult result = PathValidationResult::SUCCESS;
+  DownloadPathReservationTracker::FilenameConflictAction conflict_action =
+      DownloadPathReservationTracker::OVERWRITE;
+  bool create_directory = false;
+
+  CallGetReservedPath(item.get(), target_path, create_directory,
+                      conflict_action, &reserved_path, &result);
+  EXPECT_EQ(PathValidationResult::SUCCESS, result);
+  EXPECT_EQ(target_path, reserved_path);
+
+  SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
+}
+#endif
+
 }  // namespace download
