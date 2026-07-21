@@ -32,7 +32,8 @@ _XCRESULT_SUFFIX = '.xcresult'
 IPS_REGEX = re.compile(r'ios_.*chrome.+\.ips')
 
 # Messages checked for in EG test logs to determine if the app crashed
-# see: https://github.com/google/EarlGrey/blob/earlgrey2/TestLib/DistantObject/GREYTestApplicationDistantObject.m
+# see: https://github.com/google/EarlGrey/blob/earlgrey2/TestLib/
+# DistantObject/GREYTestApplicationDistantObject.m
 CRASH_REGEX = re.compile(
     r'(App crashed and disconnected\.)|'
     r'(App process is hanging\.)|'
@@ -372,8 +373,6 @@ class XcodeLogParser(object):
       test_result.ResultCollection: Test results.
     """
     xcresult = output_path + _XCRESULT_SUFFIX
-    if not os.path.exists(xcresult) and os.path.exists(output_path):
-      xcresult = output_path
     result = ResultCollection()
     # See TESTS_REF in xcode_log_parser_test.py for an example of |root|.
     root = json.loads(XcodeLogParser._xcresulttool_get(xcresult, 'testsRef'))
@@ -482,30 +481,30 @@ class XcodeLogParser(object):
     LOGGER.info('Reading %s' % output_path)
     overall_collected_result = ResultCollection()
 
-    # Xcodebuild writes staging data or .xcresult during test execution.
-    # If neither exists, it means tests didn't start at all.
-    xcresult = output_path + _XCRESULT_SUFFIX
-    if not os.path.exists(output_path) and not os.path.exists(xcresult):
+    # Xcodebuild writes staging data to |output_path| folder during test
+    # execution. If |output_path| doesn't exist, it means tests didn't start at
+    # all.
+    if not os.path.exists(output_path):
       overall_collected_result.crashed = True
       overall_collected_result.crash_message = (
           '%s with staging data does not exist.\n' % output_path +
           '\n'.join(output))
       return overall_collected_result
 
-    # |xcresult| folder is created at the end of tests. If neither
-    # |output_path|.xcresult nor directory bundle |output_path| exists, it
-    # means xcodebuild exited or was killed halfway during tests.
+    xcresult = output_path + _XCRESULT_SUFFIX
+
+    # |output_path|.xcresult folder is created at the end of tests. If
+    # |output_path|.xcresult folder doesn't exist, it means xcodebuild exited
+    # or was killed halfway during tests.
     if not os.path.exists(xcresult):
-      if os.path.isdir(output_path):
-        xcresult = output_path
-      else:
-        overall_collected_result.crashed = True
-        overall_collected_result.crash_message = (
-            '%s with test results does not exist.\n' % xcresult +
-            '\n'.join(output))
-        overall_collected_result.add_result_collection(
-            parse_passed_failed_tests_for_interrupted_run(output))
-        return overall_collected_result
+      overall_collected_result.crashed = True
+      overall_collected_result.crash_message = (
+          '%s with test results does not exist.\n' % xcresult +
+          '\n'.join(output))
+      overall_collected_result.add_result_collection(
+          parse_passed_failed_tests_for_interrupted_run(output))
+      file_util.zip_and_remove_folder(output_path)
+      return overall_collected_result
 
     # See XCRESULT_ROOT in xcode_log_parser_test.py for an example of |root|.
     root = json.loads(XcodeLogParser._xcresulttool_get(xcresult))
@@ -834,8 +833,6 @@ class Xcode16LogParser(object):
       test_result.ResultCollection: Test results.
     """
     xcresult = output_path + _XCRESULT_SUFFIX
-    if not os.path.exists(xcresult) and os.path.exists(output_path):
-      xcresult = output_path
     result = ResultCollection()
     root = json.loads(Xcode16LogParser._xcresulttool_get_tests(xcresult))
     for test in Xcode16LogParser._find_test_cases(root.get('testNodes', [])):
@@ -920,30 +917,30 @@ class Xcode16LogParser(object):
     LOGGER.info('Reading %s' % output_path)
     overall_collected_result = ResultCollection()
 
-    # Xcodebuild writes staging data or .xcresult during test execution.
-    # If neither exists, it means tests didn't start at all.
-    xcresult = output_path + _XCRESULT_SUFFIX
-    if not os.path.exists(output_path) and not os.path.exists(xcresult):
+    # Xcodebuild writes staging data to |output_path| folder during test
+    # execution. If |output_path| doesn't exist, it means tests didn't start at
+    # all.
+    if not os.path.exists(output_path):
       overall_collected_result.crashed = True
       overall_collected_result.crash_message = (
           '%s with staging data does not exist.\n' % output_path +
           '\n'.join(output))
       return overall_collected_result
 
-    # |xcresult| folder is created at the end of tests. If neither
-    # |output_path|.xcresult nor directory bundle |output_path| exists, it
-    # means xcodebuild exited or was killed halfway during tests.
+    xcresult = output_path + _XCRESULT_SUFFIX
+
+    # |xcresult| folder is created at the end of tests. If
+    # |output_path|.xcresult folder doesn't exist, it means xcodebuild exited
+    # or was killed halfway during tests.
     if not os.path.exists(xcresult):
-      if os.path.isdir(output_path):
-        xcresult = output_path
-      else:
-        overall_collected_result.crashed = True
-        overall_collected_result.crash_message = (
-            '%s with test results does not exist.\n' % xcresult +
-            '\n'.join(output))
-        overall_collected_result.add_result_collection(
-            parse_passed_failed_tests_for_interrupted_run(output))
-        return overall_collected_result
+      overall_collected_result.crashed = True
+      overall_collected_result.crash_message = (
+          '%s with test results does not exist.\n' % xcresult +
+          '\n'.join(output))
+      overall_collected_result.add_result_collection(
+          parse_passed_failed_tests_for_interrupted_run(output))
+      file_util.zip_and_remove_folder(output_path)
+      return overall_collected_result
 
     summary = json.loads(Xcode16LogParser._xcresulttool_get_summary(xcresult))
 
@@ -974,11 +971,8 @@ class Xcode16LogParser(object):
     """
     xcresult = output_path + _XCRESULT_SUFFIX
     if not os.path.exists(xcresult):
-      if os.path.isdir(output_path):
-        xcresult = output_path
-      else:
-        LOGGER.warn('%s does not exist.' % xcresult)
-        return
+      LOGGER.warn('%s does not exist.' % xcresult)
+      return
 
     root = json.loads(Xcode16LogParser._xcresulttool_get_tests(xcresult))
     for test in Xcode16LogParser._find_test_cases(root.get('testNodes', [])):
@@ -995,11 +989,8 @@ class Xcode16LogParser(object):
     """
     xcresult = output_path + _XCRESULT_SUFFIX
     if not os.path.exists(xcresult):
-      if os.path.isdir(output_path):
-        xcresult = output_path
-      else:
-        LOGGER.warn('%s does not exist.' % xcresult)
-        return
+      LOGGER.warn('%s does not exist.' % xcresult)
+      return
     diagnostic_folder = '%s_diagnostic' % xcresult
     try:
       export_command = [

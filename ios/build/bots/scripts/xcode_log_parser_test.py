@@ -931,8 +931,9 @@ class XcodeLogParserTest(test_runner_test.TestCase):
                      '/tmp/attempt_0 with staging data does not exist.\n')
     self.assertEqual(len(results.all_test_names()), 0)
 
+  @mock.patch('file_util.zip_and_remove_folder')
   @mock.patch('os.path.exists', autospec=True)
-  def testCollectTestsInterruptedRun(self, mock_exist_file):
+  def testCollectTestsInterruptedRun(self, mock_exist_file, mock_zip):
     mock_exist_file.side_effect = [True, False]
     results = xcode_log_parser.XcodeLogParser().collect_test_results(
         OUTPUT_PATH, [])
@@ -941,6 +942,7 @@ class XcodeLogParserTest(test_runner_test.TestCase):
         results.crash_message,
         '/tmp/attempt_0.xcresult with test results does not exist.\n')
     self.assertEqual(len(results.all_test_names()), 0)
+    mock_zip.assert_called_once_with(OUTPUT_PATH)
 
   @mock.patch('subprocess.check_output', autospec=True)
   @mock.patch('os.path.exists', autospec=True)
@@ -1033,8 +1035,9 @@ class XcodeLogParserTest(test_runner_test.TestCase):
           'test_data/attempt_0/../Crash Reports/ios_chrome_eg2tests-2024-11-07-115354.ips'
       )
 
+  @mock.patch('file_util.zip_and_remove_folder')
   @mock.patch('os.path.exists', autospec=True)
-  def testCollectTestResults_interruptedTests(self, mock_path_exists):
+  def testCollectTestResults_interruptedTests(self, mock_path_exists, mock_zip):
     mock_path_exists.side_effect = [True, False]
     output = [
         '[09:03:42:INFO] Test case \'-[TestCase1 method1]\' passed on device.',
@@ -1049,6 +1052,7 @@ class XcodeLogParserTest(test_runner_test.TestCase):
     self.assertEqual('\n'.join(not_found_message + output), res.crash_message)
     self.assertEqual(
         set(['TestCase1/method1', 'TestCase2/method1']), res.expected_tests())
+    mock_zip.assert_called_once_with(OUTPUT_PATH)
 
   @mock.patch('file_util.zip_and_remove_folder')
   @mock.patch('xcode_log_parser.XcodeLogParser._extract_artifacts_for_test')
@@ -1238,21 +1242,11 @@ class Xcode16LogParserTest(test_runner_test.TestCase):
     mock_zip_and_remove.assert_called_once_with(
         output_path + xcode_log_parser._XCRESULT_SUFFIX)
 
-  @mock.patch('xcode_log_parser.Xcode16LogParser._xcresulttool_get_summary')
-  @mock.patch('xcode_log_parser.Xcode16LogParser.export_diagnostic_data')
-  @mock.patch('xcode_log_parser.Xcode16LogParser._get_test_statuses')
   @mock.patch('xcode_log_parser.file_util.zip_and_remove_folder')
-  @mock.patch('os.path.isdir')
   @mock.patch('os.path.exists')
-  def test_collect_test_results_directory_bundle(self, mock_exists, mock_isdir,
-                                                 mock_zip_and_remove,
-                                                 mock_get_statuses,
-                                                 mock_export_data,
-                                                 mock_get_summary):
+  def test_collect_test_results_interrupted_run_zips_staging_folder(
+      self, mock_exists, mock_zip_and_remove):
     mock_exists.side_effect = lambda path: not path.endswith('.xcresult')
-    mock_isdir.return_value = True
-    mock_get_summary.return_value = json.dumps({"some_key": "some_value"})
-    mock_get_statuses.return_value = ResultCollection()
 
     output_path = "some_output_path"
     output = ["some_output"]
@@ -1260,7 +1254,6 @@ class Xcode16LogParserTest(test_runner_test.TestCase):
         output_path, output)
 
     self.assertTrue(result.crashed)
-    mock_export_data.assert_called_once_with(output_path)
     mock_zip_and_remove.assert_called_once_with(output_path)
 
   @mock.patch(
