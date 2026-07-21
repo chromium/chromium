@@ -355,7 +355,8 @@ public class ContextMenuCoordinatorTest {
                 null,
                 webContentView,
                 new Rect(0, 0, 0, 0),
-                null);
+                /* onDismissCallback= */ null,
+                /* flyoutExtraPaddingY= */ 0);
     }
 
     private ContextMenuDialog displayContextMenuDialogAtLocation(

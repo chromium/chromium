@@ -87,6 +87,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
     private @Nullable DragEventDispatchHelper mDragEventDispatchHelper;
     private final Rect mRect;
+    private final int mFlyoutExtraPaddingY;
 
     private final int mTopMarginPx;
     private final int mBottomMarginPx;
@@ -134,6 +135,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      *     coordinates are expected to be screen coordinates.
      * @param shouldPadForWindowInsets If a wrapper layout should be applied to window inset
      *     padding.
+     * @param onDismissCallback Callback to run when the dialog is dismissed.
+     * @param flyoutExtraPaddingY Extra vertical padding for flyout positioning.
      */
     public ContextMenuDialog(
             Activity ownerActivity,
@@ -151,7 +154,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             @Nullable View touchEventDelegateView,
             Rect rect,
             boolean shouldPadForWindowInsets,
-            @Nullable Runnable onDismissCallback) {
+            @Nullable Runnable onDismissCallback,
+            int flyoutExtraPaddingY) {
         super(ownerActivity, theme, shouldPadForWindowInsets);
         mActivity = ownerActivity;
         mWindowAndroid = windowAndroid;
@@ -167,6 +171,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mTouchEventDelegateView = touchEventDelegateView;
         mRect = rect;
         mOnDismissCallback = onDismissCallback;
+        mFlyoutExtraPaddingY = flyoutExtraPaddingY;
     }
 
     @Override
@@ -331,7 +336,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                                 builder.setDesiredContentWidth(mDesiredPopupContentWidth);
                             }
                             if (mIsFlyout) {
-                                builder.setSpecCalculator(new FlyoutPopupSpecCalculator());
+                                builder.setSpecCalculator(
+                                        new FlyoutPopupSpecCalculator(mFlyoutExtraPaddingY));
                                 builder.setAnimationStyle(R.style.PopupWindowAnimFade);
                             }
 

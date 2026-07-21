@@ -611,7 +611,11 @@ class AppMenu implements OnKeyListener {
                         .setTouchModal(false)
                         .setAnimateFromAnchor(false)
                         .setAnimationStyle(R.style.PopupWindowAnimFade)
-                        .setSpecCalculator(new FlyoutPopupSpecCalculator())
+                        .setSpecCalculator(
+                                new FlyoutPopupSpecCalculator(
+                                        contentView
+                                                .findViewById(R.id.app_menu_content_container)
+                                                .getPaddingTop()))
                         .setWindowLayoutType(WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL)
                         .addOnDismissListener(
                                 () -> {

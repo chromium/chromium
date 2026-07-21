@@ -282,7 +282,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,
                         contextMenuRect,
-                        /* onDismissCallback= */ null);
+                        /* onDismissCallback= */ null,
+                        /* flyoutExtraPaddingY= */ 0);
         dialog.setOnShowListener(dialogInterface -> onMenuShown.run());
         dialog.setOnDismissListener(
                 (dialogInterface) -> {
@@ -426,7 +427,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         calculateFlyoutAnchorRect(mActivity, view),
                         () -> {
                             dismissRunnable.run();
-                        });
+                        },
+                        listView.getPaddingTop());
 
         listView.setOnScrollChangeListener(scrollListener);
         dialog.show();
@@ -461,7 +463,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
      * @param layout The inflated context menu layout that will house the context menu.
      * @param menuView The inflated view that contains the list view.
      * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
-     * @param isPopup Whether the window is a flyout popup.
+     * @param isFlyout Whether the window is a flyout popup.
+     * @param shouldRemoveScrim Whether to remove the scrim behind the dialog.
      * @param topMarginPx An explicit top margin for the dialog, or -1 to use default defined in
      *     XML.
      * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default defined
@@ -472,6 +475,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
      *     drag event happened outside of ContextMenu will be dispatched into this View.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
      *     coordinates are expected to be screen coordinates.
+     * @param onDismissCallback Callback to run when the dialog is dismissed.
+     * @param flyoutExtraPaddingY Extra vertical padding for flyout positioning.
      * @return Returns a final dialog that does not have a background can be displayed using {@link
      *     AlertDialog#show()}.
      */
@@ -490,7 +495,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View dragDispatchingTargetView,
             Rect rect,
-            @Nullable Runnable onDismissCallback) {
+            @Nullable Runnable onDismissCallback,
+            int flyoutExtraPaddingY) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
         final ContextMenuDialog dialog =
                 new ContextMenuDialog(
@@ -510,7 +516,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         rect,
                         /* shouldPadForWindowInsets= */ EdgeToEdgeUtils
                                 .isEdgeToEdgeEverywhereEnabled(),
-                        onDismissCallback);
+                        onDismissCallback,
+                        flyoutExtraPaddingY);
         dialog.setContentView(layout);
 
         return dialog;

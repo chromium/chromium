@@ -284,7 +284,8 @@ public class ContextMenuDialogUnitTest {
                 mSpyDragDispatchingDestinationView,
                 new Rect(0, 0, 0, 0),
                 /* shouldPadForWindowInsets= */ true,
-                /* onDismissCallback= */ null);
+                /* onDismissCallback= */ null,
+                /* flyoutExtraPaddingY= */ 0);
     }
 
     private void requestLayoutForRootView() {

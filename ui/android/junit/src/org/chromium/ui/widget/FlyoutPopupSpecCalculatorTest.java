@@ -92,6 +92,18 @@ public final class FlyoutPopupSpecCalculatorTest {
                 /* expectedRect= */ new Rect(250, 0, 400, 300));
     }
 
+    @Test
+    public void flyoutPopupSpecCalculatorTest_ExtraPaddingY() {
+        mContentView.setPadding(0, 5, 0, 0);
+        mCalculator = new FlyoutPopupSpecCalculator(/* extraPaddingY= */ 25);
+
+        // Total top offset = 5 (contentView padding) + 25 (extraPaddingY) = 30.
+        doTestFlyoutAnchoredPopupAtRect(
+                "Anchored with extra padding Y.",
+                /* anchoredRect= */ new Rect(0, 100, 100, 150),
+                /* expectedRect= */ new Rect(100, 70, 250, 370));
+    }
+
     /**
      * Test cases for {@link FlyoutPopupSpecCalculator#calculatePopupWindowSpec}, calculation is
      * explained at each call site.
