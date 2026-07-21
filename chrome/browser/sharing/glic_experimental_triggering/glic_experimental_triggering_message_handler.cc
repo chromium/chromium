@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/atomic_sequence_num.h"
 #include "base/containers/span.h"
@@ -329,6 +330,10 @@ class ExperimentalTriggeringUpdatesHandler
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kYieldToUser:
             SendTaskUpdateMessage(TaskUpdate::YIELD, std::nullopt,
+                                  std::move(update->data));
+            break;
+          case glic::mojom::ExperimentalTriggeringUpdateType::kResumed:
+            SendTaskUpdateMessage(TaskUpdate::RESUMED, std::nullopt,
                                   std::move(update->data));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kUnknown:

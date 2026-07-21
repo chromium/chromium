@@ -96,6 +96,7 @@ message GlicExperimentalTriggering {
         STOPPED = 5;   // Task Ended: Halted by user or system.
         COMPLETE = 6;  // Task Ended: Finished successfully.
         FAILED = 7;    // Task Ended: Terminated due to model error or failure.
+        RESUMED = 8;   // Task resumed after pause or yield.
       }
 
       // Defines the type of string payload being sent in the `data` field.

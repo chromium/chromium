@@ -60,6 +60,14 @@ class TriggeringUpdatesTest extends ApiTestFixtureBase {
     });
   }
 
+  async testRelaysResumedUpdate(): Promise<void> {
+    await runUntil(() => client.isSubscribed);
+    client.triggeringUpdatesSubject.next({
+      type: ExperimentalTriggeringUpdateType.RESUMED,
+      data: '',
+    });
+  }
+
   async testRelaysConversationId() {
     await runUntil(() => client.isSubscribed);
     assertDefined(this.host.registerConversation);

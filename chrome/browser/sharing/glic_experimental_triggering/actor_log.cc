@@ -38,6 +38,8 @@ std::string_view TaskUpdateStateToString(
       return "COMPLETE";
     case TaskUpdate::FAILED:
       return "FAILED";
+    case TaskUpdate::RESUMED:
+      return "RESUMED";
   }
   return "UNKNOWN_STATE";
 }

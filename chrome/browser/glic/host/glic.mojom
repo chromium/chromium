@@ -2207,6 +2207,8 @@ enum ExperimentalTriggeringUpdateType {
   kTerminalFailed = 5,
   // The interaction yielded to the user.
   [MinVersion=1] kYieldToUser = 6,
+  // The interaction has resumed after a pause or wait state.
+  [MinVersion=2] kResumed = 7,
 };
 
 // Types of subscriber observations that may be observed.

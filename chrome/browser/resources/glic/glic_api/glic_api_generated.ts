@@ -506,6 +506,8 @@ export enum ExperimentalTriggeringUpdateType {
   TERMINAL_FAILED = 5,
   // The interaction yielded to the user.
   YIELD_TO_USER = 6,
+  // The interaction has resumed after a pause or wait state.
+  RESUMED = 7,
 }
 
 // Lightweight page features detected on the page.
