@@ -835,7 +835,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest,
 
 // Ensure that tab model changes in a browser with a different profile
 // will not call TabsChanged().
-IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, TabsNotChanged) {
+// TODO(crbug.com/537468010): Flaky on linux-chromeos-rel. Fix and re-enable.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TabsNotChanged DISABLED_TabsNotChanged
+#else
+#define MAYBE_TabsNotChanged TabsNotChanged
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MAYBE_TabsNotChanged) {
   EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(0);
   FireTimer();  // Will call TabsChanged().
