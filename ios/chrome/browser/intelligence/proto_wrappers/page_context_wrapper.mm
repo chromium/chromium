@@ -12,7 +12,9 @@
 #import <utility>
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/barrier_closure.h"
+#import "base/base64.h"
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/feature_list.h"
@@ -199,6 +201,11 @@ anchorElements.forEach((anchor) => {
 
 result.links = linksArray;
   )DELIM";
+
+// We match Blue*'s PDF size limit of 64 MB.
+// TODO(crbug.com/485311221): make this configurable per-provider, e.g.
+// via Gemini's configurable params, instead of hardcoding it here.
+const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
 
 }  // namespace
 
@@ -439,7 +446,8 @@ result.links = linksArray;
     return;
   }
 
-  if (!CanExtractPageContextForWebState(_webState.get())) {
+  if (!CanExtractPageContextForWebState(_webState.get(),
+                                        _shouldGetFullPagePDF)) {
     _notExtractable = YES;
     [self asyncWorkCompletedForPageContext];
     return;
@@ -493,8 +501,7 @@ result.links = linksArray;
     [_pageContextMetrics executionStartedForTask:PageContextTask::kPDF];
 
     _webState->CreateFullPagePdf(base::BindOnce(^(NSData* PDFData) {
-      [weakSelf encodeAndSetFullPagePDF:PDFData];
-      pageContextBarrier.Run();
+      [weakSelf encodeAndSetFullPagePDF:PDFData barrier:pageContextBarrier];
     }));
   }
 }
@@ -973,21 +980,43 @@ result.links = linksArray;
 
 // If it exists, convert the PDF data to base64 encoded string and set it in
 // the PageContext proto.
-- (void)encodeAndSetFullPagePDF:(NSData*)PDFData {
-  if (!PDFData) {
-    [_pageContextMetrics
-        executionFinishedForTask:PageContextTask::kPDF
-            withCompletionStatus:PageContextCompletionStatus::kFailure];
-    DLOG(WARNING) << "Failed to fetch webpage PDF data.";
-    return;
-  }
-
-  NSString* base64String = [PDFData base64EncodedStringWithOptions:0];
-  _pageContext->set_pdf_data(base::SysNSStringToUTF8(base64String));
+- (void)setEncodedPDFData:(std::string)base64PDFData {
+  _pageContext->set_pdf_data(std::move(base64PDFData));
 
   [_pageContextMetrics
       executionFinishedForTask:PageContextTask::kPDF
           withCompletionStatus:PageContextCompletionStatus::kSuccess];
+}
+
+// If it exists, convert the PDF data to base64 encoded string and set it in
+// the PageContext proto.
+- (void)encodeAndSetFullPagePDF:(NSData*)PDFData
+                        barrier:(base::RepeatingClosure)barrier {
+  if (!PDFData || PDFData.length > kMaxPDFByteLimit) {
+    [_pageContextMetrics
+        executionFinishedForTask:PageContextTask::kPDF
+            withCompletionStatus:PageContextCompletionStatus::kFailure];
+    DLOG(WARNING)
+        << "Failed to fetch webpage PDF data (or size limit exceeded).";
+    barrier.Run();
+    return;
+  }
+
+  __weak PageContextWrapper* weakSelf = self;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(
+          ^(NSData* data) {
+            return base::Base64Encode(base::apple::NSDataToSpan(data));
+          },
+          PDFData),
+      base::BindOnce(^(std::string base64_str) {
+        PageContextWrapper* strongSelf = weakSelf;
+        if (strongSelf) {
+          [strongSelf setEncodedPDFData:std::move(base64_str)];
+        }
+        barrier.Run();
+      }));
 }
 
 // Adds a frame's focus info to the flat array if it is focused.

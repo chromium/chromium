@@ -35,6 +35,9 @@ typedef void (^TabPickerCompletionBlock)(std::set<web::WebStateID> selectedIDs,
 // preselected.
 @property(nonatomic, assign) std::set<web::WebStateID> preselectedWebStateIDs;
 
+// Whether PDF extraction is enabled for the tab picker.
+@property(nonatomic, assign) BOOL PDFEnabled;
+
 // The presenter that will display snackbar messages. This should stay non-nil
 // for the duration of the tab picker's lifecycle.
 @property(nonatomic, weak, readonly) id<TabPickerSnackbarPresenter>

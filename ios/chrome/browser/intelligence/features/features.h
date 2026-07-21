@@ -341,6 +341,13 @@ bool IsPageContextIPCOptimizationEnabled();
 // optimization.
 bool IsPageContextIPCOptimizationActionableEnabled();
 
+// Enables the PageContextPdf feature. This allows PDFs to be used as context
+// for prompts for Gemini only. Other providers would have separate flags.
+BASE_DECLARE_FEATURE(kPageContextPdf);
+
+// Returns true if the PageContextPdf feature is enabled.
+bool IsPageContextPDFEnabled();
+
 // Enables the GeminiClientMigration feature.
 BASE_DECLARE_FEATURE(kGeminiClientMigration);
 

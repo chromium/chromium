@@ -7,6 +7,7 @@
 #import <set>
 
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
@@ -40,6 +41,7 @@ constexpr NSUInteger kMaxTabAttachmentCount = 10;
   if (self.selectedTabsProvider) {
     params.preselectedWebStateIDs = self.selectedTabsProvider();
   }
+  params.PDFEnabled = IsPageContextPDFEnabled();
 
   __weak __typeof(self) weakSelf = self;
   TabPickerCompletionBlock completionBlock =

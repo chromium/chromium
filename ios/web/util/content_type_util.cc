@@ -4,7 +4,11 @@
 
 #include "ios/web/util/content_type_util.h"
 
+#include "base/strings/string_util.h"
+
 namespace web {
+
+const char kPDFMimeType[] = "application/pdf";
 
 bool IsContentTypeHtml(const std::string& mime_type) {
   return mime_type == "text/html" || mime_type == "application/xhtml+xml" ||
@@ -14,6 +18,10 @@ bool IsContentTypeHtml(const std::string& mime_type) {
 bool IsContentTypeImage(const std::string& mime_type) {
   const std::string image = "image";
   return mime_type.compare(0, image.size(), image) == 0;
+}
+
+bool IsContentTypePdf(const std::string& mime_type) {
+  return base::EqualsCaseInsensitiveASCII(mime_type, kPDFMimeType);
 }
 
 }  // namespace web

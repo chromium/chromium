@@ -9,6 +9,9 @@
 
 namespace web {
 
+// MIME type string for PDF documents.
+extern const char kPDFMimeType[];
+
 // Returns true if `mime_type` is one of:
 //   1. text/html;
 //   2. application/xhtml+xml;
@@ -16,6 +19,8 @@ namespace web {
 bool IsContentTypeHtml(const std::string& mime_type);
 // Returns true if `mime_type` begins with "image".
 bool IsContentTypeImage(const std::string& mime_type);
+// Returns true if `mime_type` is "application/pdf".
+bool IsContentTypePdf(const std::string& mime_type);
 
 }  // namespace web
 

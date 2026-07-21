@@ -662,6 +662,31 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext) {
   EXPECT_TRUE(fakeWrapper.populateCalled);
 }
 
+// Test that PDF extraction is triggered for PDFs when the feature is enabled.
+TEST_F(GeminiTabHelperTest, TestGeneratePageContext_Pdf) {
+  feature_list_.InitWithFeatures(/*enabled_features=*/{kPageContextPdf},
+                                 /*disabled_features=*/{});
+  web_state_->SetCurrentURL(GURL("https://example.com/test.pdf"));
+  web_state_->SetContentsMimeType("application/pdf");
+
+  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
+  FakePageContextWrapper* fakeWrapper =
+      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
+                                    completionCallback:base::DoNothing()];
+  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
+
+  base::RunLoop run_loop;
+  tab_helper_->GeneratePageContext(
+      base::BindRepeating([](base::RunLoop* run_loop,
+                             GeminiPageContext* response) { run_loop->Quit(); },
+                          &run_loop));
+
+  EXPECT_FALSE(fakeWrapper.shouldGetAnnotatedPageContent);
+  EXPECT_TRUE(fakeWrapper.shouldGetFullPagePDF);
+  EXPECT_TRUE(fakeWrapper.shouldGetSnapshot);
+  EXPECT_TRUE(fakeWrapper.populateCalled);
+}
+
 TEST_F(GeminiTabHelperTest, TestGeneratePageContext_WaitsForLoad) {
   web_state_->SetCurrentURL(GURL("https://example.com"));
   web_state_->SetContentsMimeType("text/html");
@@ -890,10 +915,10 @@ TEST_F(GeminiTabHelperTest,
   EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
-// Tests that Gemini is not available for a web state when the URL is a PDF and
-// the AllPages flag is disabled.
-TEST_F(GeminiTabHelperTest,
-       IsGeminiAvailableForWebState_WhenUrlIsPdf_AllPagesDisabled) {
+// Tests that Gemini is available for a web state when the URL is a PDF.
+TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_WhenUrlIsPdf) {
+  feature_list_.InitWithFeatures(/*enabled_features=*/{kPageContextPdf},
+                                 /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
   web_state_->WasShown();
@@ -901,7 +926,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetContentsMimeType("application/pdf");
   GeminiTabHelper::CreateForWebState(web_state_.get());
   tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is available for a web state when the URL is a PDF and
@@ -909,7 +934,7 @@ TEST_F(GeminiTabHelperTest,
 TEST_F(GeminiTabHelperTest,
        IsGeminiAvailableForWebState_WhenUrlIsPdf_AllPagesEnabled) {
   feature_list_.InitWithFeatures(
-      /*enabled_features=*/{kPageActionMenu},
+      /*enabled_features=*/{kPageActionMenu, kPageContextPdf},
       /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
@@ -1024,6 +1049,8 @@ TEST_F(GeminiTabHelperTest, GetCurrentPageType_ChromeInternal) {
 
 // Tests that `GetCurrentPageType` correctly categorizes PDF documents.
 TEST_F(GeminiTabHelperTest, GetCurrentPageType_Pdf) {
+  feature_list_.InitWithFeatures(/*enabled_features=*/{kPageContextPdf},
+                                 /*disabled_features=*/{});
   web_state_->SetCurrentURL(GURL("https://www.example.com/test.pdf"));
   web_state_->SetContentsMimeType("application/pdf");
   EXPECT_EQ(tab_helper_->GetCurrentPageType(),

@@ -377,7 +377,8 @@ bool GeminiTabHelper::IsGeminiChatAvailableForWebState() {
   }
 
   // By default, the NTP is ineligible, and only extractable pages are eligible.
-  return !is_ntp && CanExtractPageContextForWebState(web_state_);
+  return !is_ntp && CanExtractPageContextForWebState(web_state_,
+                                                     IsPageContextPDFEnabled());
 }
 
 IOSGeminiInvocationPageType GeminiTabHelper::GetCurrentPageType() {
@@ -620,8 +621,15 @@ void GeminiTabHelper::PopulatePageContextFields() {
       completionCallback:base::BindRepeating(
                              &GeminiTabHelper::OnPageContextWrapperResponse,
                              weak_ptr_factory_.GetWeakPtr())];
-  [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
-  [page_context_wrapper_ setShouldGetSnapshot:YES];
+  const bool is_pdf = base::EqualsCaseInsensitiveASCII(
+      web_state_->GetContentsMimeType(), kAdobePortableDocumentFormatMimeType);
+  if (is_pdf) {
+    page_context_wrapper_.shouldGetFullPagePDF = YES;
+    page_context_wrapper_.shouldGetAnnotatedPageContent = NO;
+  } else {
+    page_context_wrapper_.shouldGetAnnotatedPageContent = YES;
+  }
+  page_context_wrapper_.shouldGetSnapshot = YES;
   [page_context_wrapper_ populatePageContextFieldsAsync];
 }
 
@@ -837,7 +845,8 @@ void GeminiTabHelper::OnGeminiEligibilityOnDemandDecision(
 }
 
 bool GeminiTabHelper::CanExtractPageContextForGemini(bool is_background_tab) {
-  return CanExtractPageContextForWebState(web_state_) &&
+  return CanExtractPageContextForWebState(web_state_,
+                                          IsPageContextPDFEnabled()) &&
          (is_background_tab || !IsNextIaOrLiveMode() ||
           web_state_->IsVisible());
 }

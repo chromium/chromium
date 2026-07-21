@@ -266,9 +266,10 @@ TEST_F(WebStateTest, CreateFullPagePdf_InvalidURLs) {
   }
 }
 
-// Tests that CreateFullPagePdf invokes completion callback nil when the
-// WebState content is not HTML (e.g. a PDF file).
+// Tests that CreateFullPagePdf returns PDF data when the WebState content is a
+// PDF file.
 TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
+  [GetAnyKeyWindow() addSubview:web_state()->GetView()];
   CGRect fake_bounds = CGRectMake(0, 0, 100, 100);
   UIGraphicsPDFRenderer* pdf_renderer =
       [[UIGraphicsPDFRenderer alloc] initWithBounds:fake_bounds];
@@ -280,6 +281,14 @@ TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
       }];
 
   GURL test_url("https://www.chromium.org/somePDF.pdf");
+  web::NavigationManager::WebLoadParams load_params(test_url);
+  web_state()->GetNavigationManager()->LoadURLWithParams(load_params);
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^bool {
+        return web_state()->GetLastCommittedURL() == test_url &&
+               !web_state()->IsLoading();
+      }));
+
   std::string mime_type = "application/pdf";
   web_state()->LoadData(
       pdf_data, [NSString stringWithUTF8String:mime_type.c_str()], test_url);
@@ -300,7 +309,7 @@ TEST_F(WebStateTest, CreateFullPagePdfWebStatePdfContent) {
     return callback_called;
   }));
 
-  ASSERT_FALSE(callback_data);
+  ASSERT_TRUE(callback_data);
 }
 
 // Tests that the web state has an opener after calling SetHasOpener().

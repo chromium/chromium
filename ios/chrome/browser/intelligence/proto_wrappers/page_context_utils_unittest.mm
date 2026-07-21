@@ -24,7 +24,8 @@ class PageContextUtilsTest : public PlatformTest {
 TEST_F(PageContextUtilsTest, TestHttpUrlAndHtmlContentType) {
   web_state()->SetCurrentURL(GURL("http://www.example.com"));
   web_state()->SetContentsMimeType("text/html");
-  EXPECT_TRUE(CanExtractPageContextForWebState(web_state()));
+  EXPECT_TRUE(
+      CanExtractPageContextForWebState(web_state(), /*pdf_enabled=*/false));
 }
 
 // Tests that CanExtractPageContextForWebState returns true for HTTPS URLs with
@@ -32,7 +33,8 @@ TEST_F(PageContextUtilsTest, TestHttpUrlAndHtmlContentType) {
 TEST_F(PageContextUtilsTest, TestHttpsUrlAndHtmlContentType) {
   web_state()->SetCurrentURL(GURL("https://www.example.com"));
   web_state()->SetContentsMimeType("text/html");
-  EXPECT_TRUE(CanExtractPageContextForWebState(web_state()));
+  EXPECT_TRUE(
+      CanExtractPageContextForWebState(web_state(), /*pdf_enabled=*/false));
 }
 
 // Tests that CanExtractPageContextForWebState returns true for HTTP URLs with
@@ -40,7 +42,8 @@ TEST_F(PageContextUtilsTest, TestHttpsUrlAndHtmlContentType) {
 TEST_F(PageContextUtilsTest, TestHttpUrlAndImageContentType) {
   web_state()->SetCurrentURL(GURL("http://www.example.com"));
   web_state()->SetContentsMimeType("image/png");
-  EXPECT_TRUE(CanExtractPageContextForWebState(web_state()));
+  EXPECT_TRUE(
+      CanExtractPageContextForWebState(web_state(), /*pdf_enabled=*/false));
 }
 
 // Tests that CanExtractPageContextForWebState returns false for non-HTTP/HTTPS
@@ -48,21 +51,42 @@ TEST_F(PageContextUtilsTest, TestHttpUrlAndImageContentType) {
 TEST_F(PageContextUtilsTest, TestNonHttpUrl) {
   web_state()->SetCurrentURL(GURL("chrome://newtab"));
   web_state()->SetContentsMimeType("text/html");
-  EXPECT_FALSE(CanExtractPageContextForWebState(web_state()));
+  EXPECT_FALSE(
+      CanExtractPageContextForWebState(web_state(), /*pdf_enabled=*/false));
 }
 
-// Tests that CanExtractPageContextForWebState returns false for non-HTML/image
-// content types.
-TEST_F(PageContextUtilsTest, TestNonHtmlOrImageContentType) {
+// Tests that CanExtractPageContextForWebState returns true for PDF content
+// type when PDF support is enabled.
+TEST_F(PageContextUtilsTest, TestPdfContentType) {
   web_state()->SetCurrentURL(GURL("https://www.example.com"));
   web_state()->SetContentsMimeType("application/pdf");
-  EXPECT_FALSE(CanExtractPageContextForWebState(web_state()));
+  EXPECT_TRUE(
+      CanExtractPageContextForWebState(web_state(), /*pdf_enabled=*/true));
+}
+
+// Tests that CanExtractPageContextForWebState returns false for PDF content
+// type when PDF support is disabled.
+TEST_F(PageContextUtilsTest, TestPdfContentTypeDisabled) {
+  web_state()->SetCurrentURL(GURL("https://www.example.com"));
+  web_state()->SetContentsMimeType("application/pdf");
+  EXPECT_FALSE(
+      CanExtractPageContextForWebState(web_state(), /*pdf_enabled=*/false));
+}
+
+// Tests that CanExtractPageContextForWebState returns false for unsupported
+// content types.
+TEST_F(PageContextUtilsTest, TestUnsupportedContentType) {
+  web_state()->SetCurrentURL(GURL("https://www.example.com"));
+  web_state()->SetContentsMimeType("application/zip");
+  EXPECT_FALSE(
+      CanExtractPageContextForWebState(web_state(), /*pdf_enabled=*/false));
 }
 
 // Tests that CanExtractPageContextForWebState returns false for null
 // web_state.
 TEST_F(PageContextUtilsTest, TestNullWebState) {
-  EXPECT_FALSE(CanExtractPageContextForWebState(nullptr));
+  EXPECT_FALSE(
+      CanExtractPageContextForWebState(nullptr, /*pdf_enabled=*/false));
 }
 
 // Tests DeserializeFrameIdAsLocalFrameToken with a valid ID.

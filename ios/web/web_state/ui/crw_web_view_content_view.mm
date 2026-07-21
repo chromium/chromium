@@ -10,9 +10,11 @@
 #import "base/check.h"
 #import "base/feature_list.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/crw_viewport_controller.h"
 #import "ios/web/common/crw_web_view_resizing_type.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/util/content_type_util.h"
 
 namespace {
 
@@ -57,9 +59,6 @@ BOOL IsFrameLargeEnoughToApplyViewportInsets(CGSize frameSize,
 // used by UIWebView.
 const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 
-// MIME type string for PDF documents.
-NSString* const kPDFMimeType = @"application/pdf";
-
 }  // namespace
 
 @interface CRWWebViewContentView () {
@@ -67,6 +66,7 @@ NSString* const kPDFMimeType = @"application/pdf";
   UIEdgeInsets _pendingMaxInset;
   UIEdgeInsets _maxViewportInset;
   BOOL _hasPendingViewportInsets;
+  std::string _mimeTypeString;
 }
 @end
 
@@ -107,6 +107,7 @@ NSString* const kPDFMimeType = @"application/pdf";
 - (void)setMimeType:(NSString*)mimeType {
   if (_mimeType != mimeType && ![_mimeType isEqualToString:mimeType]) {
     _mimeType = mimeType;
+    _mimeTypeString = base::SysNSStringToUTF8(mimeType);
     [self setNeedsLayout];
     // Force a re-evaluation of obscuredInsets now that the MIME type is known.
     UIEdgeInsets currentInsets = _obscuredInsets;
@@ -158,7 +159,7 @@ NSString* const kPDFMimeType = @"application/pdf";
       }
       break;
     case WebViewResizingType::kFrame:
-      if ([self.mimeType isEqualToString:kPDFMimeType]) {
+      if (web::IsContentTypePdf(_mimeTypeString)) {
         UIEdgeInsets maxInsets = _maxViewportInset;
         maxInsets.bottom = 0;
         _webView.frame = UIEdgeInsetsInsetRect(self.frame, maxInsets);
@@ -224,7 +225,7 @@ NSString* const kPDFMimeType = @"application/pdf";
       // If the top inset changed, and the scroll view was scrolled to the very
       // top, adjust the contentOffset to the new top boundary to prevent the
       // page from appearing pre-scrolled.
-      if (![self.mimeType isEqualToString:kPDFMimeType] && topDelta != 0 &&
+      if (!web::IsContentTypePdf(_mimeTypeString) && topDelta != 0 &&
           fabs(_scrollView.contentOffset.y - (-oldInsets.top)) < 0.1) {
         CGPoint offset = _scrollView.contentOffset;
         offset.y = -obscuredInsets.top;
@@ -238,7 +239,7 @@ NSString* const kPDFMimeType = @"application/pdf";
       break;
     }
     case WebViewResizingType::kFrame:
-      if ([self.mimeType isEqualToString:kPDFMimeType]) {
+      if (web::IsContentTypePdf(_mimeTypeString)) {
         _scrollView.contentInsetAdjustmentBehavior =
             UIScrollViewContentInsetAdjustmentNever;
 
@@ -304,7 +305,7 @@ NSString* const kPDFMimeType = @"application/pdf";
     case WebViewResizingType::kFrame: {
       _maxViewportInset = maxInset;
 
-      if ([self.mimeType isEqualToString:kPDFMimeType]) {
+      if (web::IsContentTypePdf(_mimeTypeString)) {
         // Inset the frame by maxInsets to prevent covering the page indicator
         // badge underneath the top toolbar.
         UIEdgeInsets maxInsetsForFrame = _maxViewportInset;

@@ -32,4 +32,13 @@ TEST_F(ContentTypeUtilTest, TestIsContentTypeImage) {
   EXPECT_FALSE(IsContentTypeImage("text/html"));
 }
 
+TEST_F(ContentTypeUtilTest, TestIsContentTypePdf) {
+  EXPECT_TRUE(IsContentTypePdf("application/pdf"));
+  EXPECT_TRUE(IsContentTypePdf("APPLICATION/PDF"));
+  EXPECT_TRUE(IsContentTypePdf("application/PDF"));
+
+  EXPECT_FALSE(IsContentTypePdf("application/x-pdf"));
+  EXPECT_FALSE(IsContentTypePdf("text/html"));
+}
+
 }  // namespace web

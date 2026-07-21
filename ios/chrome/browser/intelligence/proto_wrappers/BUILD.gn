@@ -188,8 +188,11 @@ source_set("utils") {
     "page_context_utils.mm",
   ]
   deps = [
+    "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/web/public",
     "//ios/web/util",
     "//url",
@@ -291,6 +294,7 @@ source_set("eg_app_support+eg2") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/test/app:test_support",
     "//ios/web/public",

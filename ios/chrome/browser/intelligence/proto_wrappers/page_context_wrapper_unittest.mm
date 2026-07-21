@@ -1169,10 +1169,10 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_UnsafePageBlocked) {
 }
 
 // Tests that the wrapper correctly handles an unextractable page due to MIME
-// type (PDF).
-TEST_P(PageContextWrapperTest, PopulatePageContext_NotExtractable_PDF) {
-  fake_web_state()->SetVisibleURL(GURL("https://example.com/file.pdf"));
-  fake_web_state()->SetContentsMimeType("application/pdf");
+// type (zip).
+TEST_P(PageContextWrapperTest, PopulatePageContext_NotExtractable_Zip) {
+  fake_web_state()->SetVisibleURL(GURL("https://example.com/file.zip"));
+  fake_web_state()->SetContentsMimeType("application/zip");
 
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {

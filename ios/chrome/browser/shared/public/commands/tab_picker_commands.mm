@@ -22,6 +22,8 @@ const NSUInteger kDefaultMaxTabAttachmentCount = 10;
     CHECK(snackbarPresenter);
     _snackbarPresenter = snackbarPresenter;
     _maxTabAttachmentCount = kDefaultMaxTabAttachmentCount;
+    // TODO(crbug.com/485311221): Support PDFs by default once ready.
+    _PDFEnabled = NO;
   }
   return self;
 }

@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/shared/model/utils/web_state_deferred_executor.h"
@@ -172,7 +173,7 @@
     return;
   }
 
-  if (!CanExtractPageContextForWebState(webState)) {
+  if (!CanExtractPageContextForWebState(webState, _params.PDFEnabled)) {
     [self handleAttemptToAttachInvalidTab:itemID];
   }
 }
@@ -276,6 +277,11 @@
   std::set<std::string> validCachedwebStatesIDs;
   for (const auto& [webStateUniqueIDString, pageContext] : pageContextMap) {
     if (pageContext.has_value()) {
+      const std::unique_ptr<optimization_guide::proto::PageContext>& context =
+          pageContext.value();
+      if (context->has_pdf_data() && !_params.PDFEnabled) {
+        continue;
+      }
       validCachedwebStatesIDs.insert(webStateUniqueIDString);
     }
   }
@@ -370,7 +376,7 @@
     return;
   }
 
-  if (!CanExtractPageContextForWebState(webState)) {
+  if (!CanExtractPageContextForWebState(webState, _params.PDFEnabled)) {
     [self handleAttemptToAttachInvalidTab:itemID];
     return;
   }

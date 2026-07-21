@@ -318,7 +318,9 @@ std::set<int64_t> GetWebStateIDs(ProfileIOS* profile, bool eligible_only) {
 
     for (int i = 0; i < browser->GetWebStateList()->count(); i++) {
       web::WebState* web_state = browser->GetWebStateList()->GetWebStateAt(i);
-      if (!eligible_only || CanExtractPageContextForWebState(web_state)) {
+      if (!eligible_only ||
+          // TODO(crbug.com/485311221): Support PDFs once ready.
+          CanExtractPageContextForWebState(web_state, /*pdf_enabled=*/false)) {
         web_state_ids.insert(static_cast<int64_t>(
             web_state->GetUniqueIdentifier().identifier()));
       }
@@ -564,7 +566,8 @@ void PersistTabContextBrowserAgent::ExtractAndStoreContext(
 
   // Check if the tab should be persisted, and skip + clean up any remaining
   // context if it shouldn't.
-  if (!CanExtractPageContextForWebState(web_state)) {
+  // TODO(crbug.com/485311221): Support PDFs once ready.
+  if (!CanExtractPageContextForWebState(web_state, /*pdf_enabled=*/false)) {
     if (use_page_content_cache_) {
       DeleteContextFromContentCache(
           web_state->GetUniqueIdentifier().identifier());

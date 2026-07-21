@@ -887,8 +887,11 @@ JavaScriptCompletionBlock WrapCompletionBlock(
 - (void)createFullPagePDFWithCompletion:(void (^)(NSData*))completionBlock {
   // Invoke the `completionBlock` with nil rather than a blank PDF for certain
   // URLs or if there is a javascript dialog running.
+  const std::string& mimeType = self.webState->GetContentsMimeType();
+  const bool contentSupported =
+      web::IsContentTypeHtml(mimeType) || web::IsContentTypePdf(mimeType);
   const GURL& URL = self.webState->GetLastCommittedURL();
-  if (![self contentIsHTML] || !URL.is_valid() ||
+  if (!self.webView || !contentSupported || !URL.is_valid() ||
       web::GetWebClient()->IsAppSpecificURL(URL) ||
       self.webStateImpl->IsJavaScriptDialogRunning()) {
     dispatch_async(dispatch_get_main_queue(), ^{

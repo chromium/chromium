@@ -721,6 +721,12 @@ bool IsPageContextIPCOptimizationActionableEnabled() {
          kPageContextIPCOptimizationActionable.Get();
 }
 
+BASE_FEATURE(kPageContextPdf, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageContextPDFEnabled() {
+  return base::FeatureList::IsEnabled(kPageContextPdf);
+}
+
 BASE_FEATURE(kGeminiClientMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiClientMigrationEnabled() {
