@@ -2920,6 +2920,22 @@
       ]
     },
     {
+      "id": 418,
+      "description": "Uploading data or rendering to R8 EGL images generates driver errors.",
+      "cr_bugs": [1455752],
+      "os": {
+        "type": "android",
+        "version": {
+          "op": "<=",
+          "value": "9.0"
+        }
+      },
+      "gl_vendor": "ARM.*",
+      "features": [
+        "r8_egl_images_broken"
+      ]
+    },
+    {
       "id": 420,
       "cr_bugs": [1475546],
       "description": "GPU process crash when decoding HEVC on Intel with specific drivers.",
