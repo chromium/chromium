@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -425,6 +426,54 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
             PersonalContextEligibilityState::kDisabledNotEligible);
 
   service().RemoveObserver(&observer);
+}
+
+// Verifies that the internal state cache is updated when data is loaded
+// from disk in account settings.
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       CacheUpdatedOnAccountSettingsLoaded) {
+  // Initial state is kEligible.
+  ASSERT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kEligible);
+
+  // Opt out of context in account settings.
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContext.name)))
+      .WillByDefault(Return(false));
+
+  // Notify the service that data has been loaded from disk.
+  service().OnAccountSettingsLoaded();
+
+  // The eligibility state should be updated to kDisabledNotEligible.
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
+}
+
+// Verifies that observers are notified when data is loaded from disk
+// in account settings and causes an eligibility state change.
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       NotifiedOnAccountSettingsLoaded) {
+  MockPersonalContextEligibilityServiceObserver observer;
+  base::ScopedObservation<PersonalContextEligibilityService,
+                          PersonalContextEligibilityService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(&service());
+
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContext.name)))
+      .WillByDefault(Return(false));
+
+  // Expect that the observer is called with the new state.
+  EXPECT_CALL(observer,
+              OnEligibilityStateChanged(
+                  PersonalContextEligibilityState::kDisabledNotEligible));
+
+  service().OnAccountSettingsLoaded();
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
 }  // namespace

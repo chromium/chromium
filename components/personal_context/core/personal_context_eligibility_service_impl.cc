@@ -302,4 +302,8 @@ void PersonalContextEligibilityServiceImpl::OnAccountSettingDataUpdated(
   UpdateEligibilityState();
 }
 
+void PersonalContextEligibilityServiceImpl::OnAccountSettingsLoaded() {
+  UpdateEligibilityState();
+}
+
 }  // namespace personal_context

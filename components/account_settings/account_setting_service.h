@@ -29,6 +29,12 @@ class AccountSettingService : public KeyedService {
     // Called when the value of a specific account setting changes.
     virtual void OnAccountSettingDataUpdated(
         const std::string& setting_name) = 0;
+    // Called when account settings data is loaded from the local cache , as
+    // opposed to synced data from the network. Note that when this event is
+    // triggered shortly after startup, it only means that data that was
+    // previously downloaded is available in-memory. If the client is newly
+    // syncing, settings haven't been downloaded from the network yet.
+    virtual void OnAccountSettingsLoaded() = 0;
   };
 
   ~AccountSettingService() override = default;

@@ -92,6 +92,8 @@ void AccountSettingServiceImpl::OnDataLoadedFromDisk() {
   base::UmaHistogramBoolean(
       "Autofill.Ai.WalletContextualSurfacingEnabled",
       GetBoolean(kWalletPrivacyContextualSurfacing).value_or(false));
+
+  observers_.Notify(&AccountSettingService::Observer::OnAccountSettingsLoaded);
 }
 
 void AccountSettingServiceImpl::OnDataUpdated(const std::string& setting_name) {

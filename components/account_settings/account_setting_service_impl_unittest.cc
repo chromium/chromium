@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/account_settings/account_setting_service_impl.h"
+
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/account_settings/account_setting_service_impl.h"
 #include "components/account_settings/account_setting_sync_bridge.h"
 #include "components/account_settings/account_setting_sync_util.h"
+#include "components/account_settings/account_settings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/account_setting_specifics.pb.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
@@ -41,6 +45,16 @@ class MockAccountSettingSyncBridge : public AccountSettingSyncBridge {
               (const, override));
 };
 
+class MockAccountSettingServiceObserver
+    : public AccountSettingService::Observer {
+ public:
+  MOCK_METHOD(void,
+              OnAccountSettingDataUpdated,
+              (const std::string&),
+              (override));
+  MOCK_METHOD(void, OnAccountSettingsLoaded, (), (override));
+};
+
 class AccountSettingServiceTest : public testing::Test {
  public:
   AccountSettingServiceTest() {
@@ -52,7 +66,7 @@ class AccountSettingServiceTest : public testing::Test {
     service_ = std::make_unique<AccountSettingServiceImpl>(std::move(bridge));
   }
 
-  AccountSettingService& service() { return *service_; }
+  AccountSettingServiceImpl& service() { return *service_; }
   MockAccountSettingSyncBridge& bridge() { return *bridge_; }
 
  private:
@@ -77,6 +91,22 @@ TEST_F(AccountSettingServiceTest, GetBooleanReturnsNulloptIfFeatureDisabled) {
 
   EXPECT_THAT(service().GetBoolean(kWalletPrivacyContextualSurfacing),
               Eq(std::nullopt));
+}
+
+TEST_F(AccountSettingServiceTest, OnAccountSettingsLoadedNotifiesObservers) {
+  MockAccountSettingServiceObserver observer;
+  base::ScopedObservation<AccountSettingService,
+                          AccountSettingService::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(&service());
+
+  EXPECT_CALL(observer, OnAccountSettingsLoaded);
+
+  // We cast to the base class `AccountSettingSyncBridge::Observer` to access
+  // the private implementation of the observer method in
+  // `AccountSettingServiceImpl`.
+  static_cast<AccountSettingSyncBridge::Observer&>(service())
+      .OnDataLoadedFromDisk();
 }
 
 }  // namespace
