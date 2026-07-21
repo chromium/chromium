@@ -451,7 +451,7 @@ class CORE_EXPORT DisplayLockContext final
 
   bool IsScreenReaderActive() const;
 
-  WeakMember<Element> element_;
+  Member<Element> element_;
   WeakMember<Document> document_;
   EContentVisibility state_ = EContentVisibility::kVisible;
 
