@@ -101,6 +101,7 @@ source_set("unit_tests") {
     "//components/sync:test_support",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
     "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/test",

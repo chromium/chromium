@@ -89,11 +89,12 @@ class TaskRequestForUserActivityTest : public PlatformTest {
     SaveEnableNewStartupFlowForNextStart();
 
     profile_ = TestProfileIOS::Builder().Build();
-    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
 
-    mock_profile_state_ = OCMClassMock([ProfileState class]);
-    OCMStub([mock_profile_state_ profile]).andReturn(profile_.get());
-    scene_state_.profileState = mock_profile_state_;
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    profile_state_.profile = profile_.get();
+
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
+    scene_state_.profileState = profile_state_;
 
     test_tab_opener_ = [[TestTabOpener alloc] initWithSceneState:scene_state_];
     scene_state_.controller = test_tab_opener_;
@@ -105,6 +106,7 @@ class TaskRequestForUserActivityTest : public PlatformTest {
     browser_.reset();
     [scene_state_ shutdown];
     scene_state_ = nil;
+    profile_state_ = nil;
     profile_.reset();
     ResetEnableNewStartupFlowEnabledForTesting();
     PlatformTest::TearDown();
@@ -113,7 +115,7 @@ class TaskRequestForUserActivityTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
-  ProfileState* mock_profile_state_;
+  ProfileState* profile_state_;
   FakeSceneState* scene_state_;
   TestTabOpener* test_tab_opener_;
   std::unique_ptr<TestBrowser> browser_;

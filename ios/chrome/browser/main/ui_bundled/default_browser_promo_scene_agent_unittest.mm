@@ -14,6 +14,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
@@ -104,9 +105,9 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
 
-    profile_state_ = OCMClassMock([ProfileState class]);
-    OCMStub([profile_state_ initStage]).andReturn(ProfileInitStage::kFinal);
-    OCMStub([profile_state_ profile]).andReturn(profile_.get());
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+    profile_state_.profile = profile_.get();
 
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     scene_state_.scene = static_cast<UIWindowScene*>(
@@ -137,6 +138,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
          forKey:@"SimulatePostDeviceRestore"];
     [scene_state_ shutdown];
     scene_state_ = nil;
+    profile_state_ = nil;
     ClearDefaultBrowserPromoData();
     ClearSharedUserDefaults();
     ResetDeviceRestoreDataForTesting();

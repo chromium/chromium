@@ -116,6 +116,7 @@ source_set("unit_tests") {
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:mode",
     "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main/ui_bundled",

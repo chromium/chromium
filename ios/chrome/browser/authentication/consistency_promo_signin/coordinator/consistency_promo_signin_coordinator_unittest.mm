@@ -38,9 +38,7 @@ namespace {
 class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
  public:
   ConsistencyPromoSigninCoordinatorTest() {
-    // The profile state will receive UI blocker request. They are not tested
-    // here, so it’s a non-strict mock.
-    profile_state_ = OCMClassMock([ProfileState class]);
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
     scene_state_ = [[SceneState alloc] init];
     scene_state_.profileState = profile_state_;
     TestProfileIOS::Builder builder = TestProfileIOS::Builder();
@@ -74,7 +72,6 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY((id)base_view_controller_mock_);
     EXPECT_OCMOCK_VERIFY((id)consistency_default_account_coordinator_mock_);
     EXPECT_OCMOCK_VERIFY((id)consistency_sheet_navigation_controller_mock_);
-    EXPECT_OCMOCK_VERIFY((id)profile_state_);
     PlatformTest::TearDown();
   }
 

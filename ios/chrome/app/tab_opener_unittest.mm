@@ -10,6 +10,7 @@
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/main/ui_bundled/wrangled_browser.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
@@ -78,8 +79,8 @@ class TabOpenerTest : public PlatformTest {
     if (!scene_controller_) {
       profile_ = TestProfileIOS::Builder().Build();
 
-      profile_state_ = OCMClassMock([ProfileState class]);
-      OCMStub([profile_state_ initStage]).andReturn(ProfileInitStage::kFinal);
+      profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+      SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
 
       scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
       scene_state_.profileState = profile_state_;

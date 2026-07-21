@@ -48,9 +48,7 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
  public:
   TwoScreensSigninCoordinatorTest() {
     TestProfileIOS::Builder builder;
-    // The profile state will receive UI blocker request. They are not tested
-    // here, so it’s a non-strict mock.
-    profile_state_ = OCMClassMock([ProfileState class]);
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
     scene_state_ = [[SceneState alloc] init];
     scene_state_.profileState = profile_state_;
     builder.AddTestingFactory(
@@ -83,7 +81,6 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   }
 
   ~TwoScreensSigninCoordinatorTest() override {
-    EXPECT_OCMOCK_VERIFY((id)profile_state_);
     EXPECT_OCMOCK_VERIFY((id)fullscreen_signin_screen_coordinator_mock_);
     EXPECT_OCMOCK_VERIFY((id)history_sync_coordinator_mock_);
   }
@@ -241,13 +238,10 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
   base::UserActionTester user_actions_;
   UIWindow* window_;
   FakeSystemIdentity* fake_identity_ = nil;
+  ProfileState* profile_state_;
   SceneState* scene_state_;
   FullscreenSigninScreenCoordinator* fullscreen_signin_screen_coordinator_mock_;
   HistorySyncCoordinator* history_sync_coordinator_mock_;
-
- private:
-  // Required for UI blocker.
-  ProfileState* profile_state_;
 };
 
 #pragma mark - Tests

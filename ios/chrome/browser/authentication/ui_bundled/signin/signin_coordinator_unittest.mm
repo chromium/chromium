@@ -51,10 +51,8 @@ class SigninCoordinatorTest : public PlatformTest {
     profile_ = std::move(builder).Build();
 
     scene_state_ = [[SceneState alloc] init];
-    // Mock ProfileState to satisfy ScopedUIBlocker assertions during
-    // coordinator initialization.
-    mock_profile_state_ = OCMClassMock([ProfileState class]);
-    scene_state_.profileState = mock_profile_state_;
+    profile_state_ = [[ProfileState alloc] initWithAppState:nil];
+    scene_state_.profileState = profile_state_;
     browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     view_controller_ = [[UIViewController alloc] init];
@@ -77,17 +75,12 @@ class SigninCoordinatorTest : public PlatformTest {
         };
   }
 
-  void TearDown() override {
-    [mock_profile_state_ stopMocking];
-    PlatformTest::TearDown();
-  }
-
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   SceneState* scene_state_;
-  id mock_profile_state_ = nil;
+  ProfileState* profile_state_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_;
