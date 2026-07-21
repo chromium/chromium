@@ -6,11 +6,7 @@
   "schema": [
     { "field": "id", "type": "enum", "ctype": "SearchEngineType" },
     // Strings that will be used in UI are `string16`.
-    { "field": "text", "type": "string16" },
-    { "field": "tooltip", "type": "string16" },
-    { "field": "a11y_label", "type": "string16" },
-    { "field": "context_menu_label", "type": "string16" },
-    { "field": "placeholder_text", "type": "string16" },
+    { "field": "name", "type": "string16" },
     // Strings that are used to form URLs are `string`.
     { "field": "favicon_url", "type": "string" },
     { "field": "navigation_url", "type": "string" },

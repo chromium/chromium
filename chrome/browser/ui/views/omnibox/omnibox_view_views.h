@@ -46,7 +46,7 @@
 class LocationBarView;
 class IconLabelBubbleView;
 
-#include "components/search_engines/ai_mode_button_service.h"
+struct AiModeButtonUiConfig;
 
 namespace content {
 class WebContents;

@@ -14,7 +14,7 @@ class TestAiModeButtonService : public AiModeButtonService {
 
   using AiModeButtonService::IsValidConfig;
 
-  using AiModeButtonService::current_config_;
+  using AiModeButtonService::current_ui_config_;
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEST_AI_MODE_BUTTON_SERVICE_H_

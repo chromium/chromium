@@ -7,17 +7,32 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/search_engines/ai_mode_button_config.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
-using AiModeButtonUiConfig = ai_mode_button_config::AiModeButtonConfig;
+namespace ai_mode_button_config {
+struct AiModeButtonConfig;
+}
+
+struct AiModeButtonUiConfig {
+  SearchEngineType id;
+  std::u16string_view name;
+  std::u16string text;
+  std::u16string tooltip;
+  std::u16string a11y_label;
+  std::u16string context_menu_label;
+  std::u16string placeholder_text;
+  std::string_view favicon_url;
+  std::string_view navigation_url;
+  std::string_view navigation_url_empty;
+};
 
 class AiModeButtonService : public KeyedService,
                             public TemplateURLServiceObserver {
@@ -33,48 +48,35 @@ class AiModeButtonService : public KeyedService,
   using Callback = base::RepeatingCallback<void(const AiModeButtonUiConfig*)>;
   base::CallbackListSubscription RegisterOnConfigChanged(Callback callback);
 
-  // Returns `current_config_`. `nullptr` if the DSE doesn't support AIM button.
-  // Returns a pointer to prevent callsites accidentally making copies passing
-  // optionals around.
+  // Returns `current_ui_config_`. `nullptr` if the DSE doesn't support AIM
+  // button. Returns a pointer to prevent callsites accidentally making copies
+  // passing optionals around.
   const AiModeButtonUiConfig* GetCurrentConfig() const {
-    return current_config_;
+    return current_ui_config_.has_value() ? &current_ui_config_.value()
+                                          : nullptr;
   }
 
  private:
   friend class TestAiModeButtonService;
 
   // TemplateURLServiceObserver:
-  // If the config has changed, updates `current_config_` and notifies
+  // If the config has changed, updates `current_ui_config_` and notifies
   // `callbacks_`.
   void OnTemplateURLServiceChanged() override;
   void OnTemplateURLServiceShuttingDown() override;
 
-  // Lookup the config for the current DSE.
-  const AiModeButtonUiConfig* LookupCurrentConfig() const;
+  // Build the UI config for the current DSE.
+  std::optional<AiModeButtonUiConfig> BuildCurrentUiConfig() const;
 
   // Checks all fields are populated as expected.
-  static bool IsValidConfig(const AiModeButtonUiConfig& config);
+  static bool IsValidConfig(
+      const ai_mode_button_config::AiModeButtonConfig& config);
 
   raw_ptr<TemplateURLService> template_url_service_;
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observer{this};
 
-  // `AiModeButtonConfig` contains raw pointers that can't own their data.
-  // `google_config_owned_` owns the data for `google_config_`.
-  struct GoogleConfigOwned {
-    std::u16string entrypoint_label;
-    std::u16string action_suggestion_contents;
-    std::u16string accessibility_focused_description;
-    std::u16string context_menu_label;
-    std::u16string placeholder_text;
-  } google_config_owned_;
-
-  // The non-owning view struct that's compatible with `GetCurrentConfig()`.
-  AiModeButtonUiConfig google_config_;
-
-  // Non-owning pointer into the `ai_mode_button_config::kAiModeButtonConfigs`
-  // array.
-  raw_ptr<const AiModeButtonUiConfig> current_config_ = nullptr;
+  std::optional<AiModeButtonUiConfig> current_ui_config_;
 
   base::RepeatingCallbackList<void(const AiModeButtonUiConfig*)> callbacks_;
 };

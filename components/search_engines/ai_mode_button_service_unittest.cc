@@ -7,12 +7,12 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -139,27 +139,13 @@ TEST_F(AiModeButtonServiceTest, IsValidConfig) {
   };
 
   // Test empty config.
-  AiModeButtonUiConfig empty_config = {
-      .id = SearchEngineType::SEARCH_ENGINE_UNKNOWN,
-      .text = nullptr,
-      .tooltip = nullptr,
-      .a11y_label = nullptr,
-      .context_menu_label = nullptr,
-      .placeholder_text = nullptr,
-      .favicon_url = nullptr,
-      .navigation_url = nullptr,
-      .navigation_url_empty = nullptr,
-  };
+  ai_mode_button_config::AiModeButtonConfig empty_config{};
   EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(empty_config));
 
   // Test valid config.
-  AiModeButtonUiConfig valid_config{
+  ai_mode_button_config::AiModeButtonConfig valid_config{
       SearchEngineType::SEARCH_ENGINE_BING,
       u"Bing text",
-      u"Bing tooltip",
-      u"Bing a11y",
-      u"Bing menu",
-      u"Bing placeholder",
       "https://bing.com/favicon.ico",
       "https://bing.com/search?q={searchTerms}",
       "https://bing.com/chat",
@@ -169,74 +155,30 @@ TEST_F(AiModeButtonServiceTest, IsValidConfig) {
   // Test individual fields missing.
   {
     auto config_copy = valid_config;
-    mutate(config_copy.text, u"");
+    mutate(config_copy.name, u"");
     EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
   }
   {
     auto config_copy = valid_config;
-    mutate(config_copy.tooltip, u"");
+    mutate(config_copy.favicon_url, static_cast<const char*>(nullptr));
     EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
   }
   {
     auto config_copy = valid_config;
-    mutate(config_copy.a11y_label, u"");
+    mutate(config_copy.navigation_url, static_cast<const char*>(nullptr));
     EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
   }
   {
     auto config_copy = valid_config;
-    mutate(config_copy.context_menu_label, u"");
-    EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
-  }
-  {
-    auto config_copy = valid_config;
-    mutate(config_copy.placeholder_text, u"");
-    EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
-  }
-  {
-    auto config_copy = valid_config;
-    mutate(config_copy.favicon_url, "");
-    EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
-  }
-  {
-    auto config_copy = valid_config;
-    mutate(config_copy.navigation_url, "");
-    EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
-  }
-  {
-    auto config_copy = valid_config;
-    mutate(config_copy.navigation_url_empty, "");
+    mutate(config_copy.navigation_url_empty, static_cast<const char*>(nullptr));
     EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
   }
 
-  // Test string fields too long.
+  // Test name field too long.
   {
     auto config_copy = valid_config;
-    std::u16string long_str(17, 'a');
-    mutate(config_copy.text, long_str.c_str());
-    EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
-  }
-  {
-    auto config_copy = valid_config;
-    std::u16string long_str(65, 'a');
-    mutate(config_copy.tooltip, long_str.c_str());
-    EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
-  }
-  {
-    auto config_copy = valid_config;
-    std::u16string long_str(65, 'a');
-    mutate(config_copy.a11y_label, long_str.c_str());
-    EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
-  }
-  {
-    auto config_copy = valid_config;
-    std::u16string long_str(65, 'a');
-    mutate(config_copy.context_menu_label, long_str.c_str());
-    EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
-  }
-  {
-    auto config_copy = valid_config;
-    std::u16string long_str(65, 'a');
-    mutate(config_copy.placeholder_text, long_str.c_str());
+    std::u16string long_name(17, 'a');
+    mutate(config_copy.name, long_name.c_str());
     EXPECT_FALSE(TestAiModeButtonService::IsValidConfig(config_copy));
   }
 
@@ -333,7 +275,7 @@ TEST_F(AiModeButtonServiceTest, DebugConfig) {
     const auto* config = service_->GetCurrentConfig();
     ASSERT_TRUE(config);
     EXPECT_EQ(config->id, SearchEngineType::SEARCH_ENGINE_BING);
-    EXPECT_EQ(std::u16string_view(config->text), u"Google DEBÜG");
+    EXPECT_EQ(std::u16string_view(config->text), u"DEBÜG");
   }
 }
 

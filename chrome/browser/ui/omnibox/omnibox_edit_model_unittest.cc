@@ -53,7 +53,6 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
-#include "components/search_engines/ai_mode_button_config.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/url_formatter/url_fixer.h"
 #include "extensions/buildflags/buildflags.h"
@@ -1885,9 +1884,9 @@ TEST_F(OmniboxEditModelPopupTest, RecordAiModeMetrics_ThirdParty) {
 
   // Test google config.
   {
-    constexpr AiModeButtonUiConfig kGoogleConfig = {
-        .id = SearchEngineType::SEARCH_ENGINE_GOOGLE};
-    service->current_config_ = &kGoogleConfig;
+    AiModeButtonUiConfig google_config = {
+        SearchEngineType::SEARCH_ENGINE_GOOGLE};
+    service->current_ui_config_ = google_config;
 
     base::HistogramTester histogram_tester;
     model()->RecordAiModeMetrics(u"",
@@ -1924,9 +1923,9 @@ TEST_F(OmniboxEditModelPopupTest, RecordAiModeMetrics_ThirdParty) {
 
   // Test 3P config.
   {
-    static constexpr AiModeButtonUiConfig kThirdPartyConfig = {
-        .id = SearchEngineType::SEARCH_ENGINE_YAHOO};
-    service->current_config_ = &kThirdPartyConfig;
+    AiModeButtonUiConfig third_party_config = {
+        SearchEngineType::SEARCH_ENGINE_YAHOO};
+    service->current_ui_config_ = third_party_config;
 
     base::HistogramTester histogram_tester;
     model()->RecordAiModeMetrics(u"",
@@ -2252,16 +2251,19 @@ TEST_F(OmniboxEditModelPopupTest, OpenFeaturedSearchMatch) {
 
 TEST_F(OmniboxEditModelTest, NavigateToThirdPartyAiMode) {
   // Setup testing config.
-  AiModeButtonUiConfig test_config = {SearchEngineType::SEARCH_ENGINE_YAHOO,
-                                      u"text",
-                                      u"tooltip",
-                                      u"a11y_label",
-                                      u"context_menu_label",
-                                      u"placeholder_text",
-                                      "favicon_url",
-                                      "https://url.com/search?p={searchTerms}",
-                                      "https://url-empty.com"};
-  client()->GetAiModeButtonService()->current_config_ = &test_config;
+  AiModeButtonUiConfig test_config = {
+      SearchEngineType::SEARCH_ENGINE_YAHOO,
+      u"Yahoo",
+      u"text",
+      u"tooltip",
+      u"a11y_label",
+      u"context_menu_label",
+      u"placeholder_text",
+      "https://url.com/favicon.ico",
+      "https://url.com/search?p={searchTerms}",
+      "https://url-empty.com",
+  };
+  client()->GetAiModeButtonService()->current_ui_config_ = test_config;
 
   // Test with query.
   EXPECT_CALL(*client(), OpenUrl(GURL("https://url.com/search?p=query"),

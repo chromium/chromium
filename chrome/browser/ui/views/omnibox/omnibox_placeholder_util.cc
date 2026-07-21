@@ -20,7 +20,6 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/search/search.h"
-#include "components/search_engines/ai_mode_button_config.h"
 #include "components/search_engines/ai_mode_button_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"

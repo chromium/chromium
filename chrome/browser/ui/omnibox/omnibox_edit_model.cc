@@ -89,7 +89,6 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
-#include "components/search_engines/ai_mode_button_config.h"
 #include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
@@ -3464,8 +3463,8 @@ void OmniboxEditModel::NavigateToAiModeWithoutContextualizer(
 void OmniboxEditModel::NavigateToThirdPartyAiMode(
     const std::u16string& query_text) {
   auto* config = GetAiModeButtonUiConfig(controller_);
-  std::string url = query_text.empty() ? config->navigation_url_empty
-                                       : config->navigation_url;
+  std::string url(query_text.empty() ? config->navigation_url_empty
+                                     : config->navigation_url);
   TemplateURLData turl_data;
   turl_data.SetURL(url);
   TemplateURL turl(turl_data);

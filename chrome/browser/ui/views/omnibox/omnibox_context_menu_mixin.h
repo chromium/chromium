@@ -19,7 +19,7 @@
 class LocationBar;
 class OmniboxController;
 
-#include "components/search_engines/ai_mode_button_service.h"
+struct AiModeButtonUiConfig;
 
 namespace content {
 struct ContextMenuParams;
