@@ -66,6 +66,18 @@ export class ProtectedContentPageElement extends
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
+
+  protected getSyncSavedLocallyIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:sync-saved-locally' :
+        'privacy:sync-saved-locally-old';
+  }
+
+  protected getSyncSavedLocallyOffIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:sync-saved-locally-off' :
+        'privacy:sync-saved-locally-off-old';
+  }
 }
 
 declare global {

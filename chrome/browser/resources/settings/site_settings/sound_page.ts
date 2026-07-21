@@ -105,6 +105,18 @@ export class SoundPageElement extends SoundPageElementBase {
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
+
+  protected getVolumeOffIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:volume-off' :
+        'privacy:volume-off-old';
+  }
+
+  protected getVolumeUpIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:volume-up' :
+        'privacy:volume-up-old';
+  }
 }
 
 declare global {

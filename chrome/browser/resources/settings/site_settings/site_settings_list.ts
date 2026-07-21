@@ -232,9 +232,11 @@ class SettingsSiteSettingsListElement extends
         'privacy:sensors' :
         'privacy:sensors-old';
     if (setting === ContentSetting.ASK) {
-      icon = 'privacy:sensors-ask';
+      icon = 'privacy:sensors-ask-custom';
     } else if (setting === ContentSetting.BLOCK) {
-      icon = 'privacy:sensors-off';
+      icon = loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+          'privacy:sensors-off' :
+          'privacy:sensors-off-old';
     }
     this.set(`categoryList.${index}.icon`, icon);
   }

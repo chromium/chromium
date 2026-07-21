@@ -58,6 +58,12 @@ export class SensorsPageElement extends SensorsPageElementBase {
         'privacy:sensors' :
         'privacy:sensors-old';
   }
+
+  protected getSensorsOffIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:sensors-off' :
+        'privacy:sensors-off-old';
+  }
 }
 
 declare global {

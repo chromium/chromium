@@ -8,6 +8,7 @@ import './settings_category_default_radio_group.js';
 import './site_settings_shared.css.js';
 import './storage_access_site_list.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -49,6 +50,18 @@ export class StorageAccessPageElement extends StorageAccessPageElementBase {
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  protected getVr180Create2dIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:vr180-create2d' :
+        'privacy:storage-access-old';
+  }
+
+  protected getVr180Create2dOffIcon_(): string {
+    return loadTimeData.getBoolean('webuiRoundedIconsEnabled') ?
+        'privacy:vr180-create2d-off' :
+        'privacy:storage-access-off-old';
   }
 }
 

@@ -11,11 +11,11 @@
         allow-option-label="$i18n{siteSettingsSensorsAllowed}"
         allow-option-icon="[[getSensorsIcon_()]]"
         ask-option-label="$i18n{siteSettingsSensorsAsk}"
-        ask-option-icon="privacy:sensors-ask"
+        ask-option-icon="privacy:sensors-ask-custom"
         block-option-label="$i18n{siteSettingsSensorsBlocked}"
         block-option-sub-label=
             "$i18n{siteSettingsSensorsBlockedSubLabel}"
-        block-option-icon="privacy:sensors-off">
+        block-option-icon="[[getSensorsOffIcon_()]]">
     </settings-category-default-radio-group>
   </template>
   <template is="dom-if" if="[[!isSensorsAllowAskBlockPermissionModelEnabled_]]">
@@ -26,7 +26,7 @@
         block-option-label="$i18n{siteSettingsSensorsBlocked}"
         block-option-sub-label=
             "$i18n{siteSettingsSensorsBlockedSubLabel}"
-        block-option-icon="privacy:sensors-off">
+        block-option-icon="[[getSensorsOffIcon_()]]">
     </settings-category-default-radio-group>
   </template>
   <category-setting-exceptions
