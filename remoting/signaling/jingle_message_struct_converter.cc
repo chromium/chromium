@@ -40,6 +40,8 @@ using internal::TransportInfoStruct;
 
 namespace {
 
+constexpr char kWebrtcTransportNamespace[] = "google:remoting:webrtc";
+
 SessionDescriptionStruct::SdpType ToSdpTypeStruct(
     SessionDescription::Type type) {
   switch (type) {
@@ -268,6 +270,7 @@ TransportInfoStruct TransportInfoToStruct(
 JingleTransportInfo TransportInfoFromStruct(
     const TransportInfoStruct& struct_val) {
   JingleTransportInfo transport;
+  transport.xml_namespace = kWebrtcTransportNamespace;
   for (const auto& candidate_struct : struct_val.candidates) {
     transport.candidates.push_back(IceCandidateFromStruct(candidate_struct));
   }
