@@ -76,6 +76,7 @@ source_set("internal") {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/animation",
       "//chrome/browser/ui/bookmarks",
+      "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/context_highlight",

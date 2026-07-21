@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/browser_location_bar_model_delegate.h"
 #include "chrome/browser/ui/browser_select_file_dialog_controller.h"
 #include "chrome/browser/ui/browser_tab_menu_model_delegate.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
@@ -749,6 +750,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       browser,
       BrowserWindow::FromBrowser(browser)->GetExclusiveAccessContext());
 
+  // Must be after exclusive_access_manager_ and
+  // desktop_browser_window_capabilities_.
+  browser_web_contents_delegate_ = std::make_unique<BrowserWebContentsDelegate>(
+      browser, *exclusive_access_manager_, *BrowserWindow::FromBrowser(browser),
+      *desktop_browser_window_capabilities_);
+
   // Must be after exclusive_access_manager_.
 #if !BUILDFLAG(IS_CHROMEOS)
   if (browser_view) {
@@ -1153,6 +1160,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
     download_toolbar_ui_controller_->TearDownPreBrowserWindowDestruction();
   }
 #endif
+  browser_web_contents_delegate_.reset();
   exclusive_access_manager_.reset();
   // Must be after exclusive_access_manager_ (which holds a reference to this
   // context for WebUI browser windows).

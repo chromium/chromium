@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+source_set("browser_web_contents_delegate") {
+  sources = [
+    "browser_web_contents_delegate.cc",
+    "browser_web_contents_delegate.h",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    "//base",
+    "//chrome/browser/devtools",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/ui/exclusive_access",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}

@@ -32,6 +32,7 @@ class BrowserSelectFileDialogController;
 class BrowserSyncedWindowDelegate;
 class BrowserUserEducationInterface;
 class BrowserView;
+class BrowserWebContentsDelegate;
 class BrowserWindowFullscreenController;
 class BrowserWindowInterface;
 class BrowserWindowModalDialogDelegate;
@@ -538,6 +539,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<BrowserFocusController> browser_focus_controller_;
   std::unique_ptr<BrowserSelectFileDialogController>
       browser_select_file_dialog_controller_;
+  std::unique_ptr<BrowserWebContentsDelegate> browser_web_contents_delegate_;
   std::unique_ptr<BrowserWindowModalDialogDelegate>
       browser_window_modal_dialog_delegate_;
   std::unique_ptr<BrowserWindowThemeObserver> browser_window_theme_observer_;

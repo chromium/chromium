@@ -1094,6 +1094,7 @@ static_library("ui") {
     # //chrome/browser/ui.
     allow_circular_includes_from += [
       "//chrome/browser/download:impl",
+      "//chrome/browser/ui/browser_web_contents_delegate",
 
       # bookmarks includes headers from //chrome/browser/ui (e.g. browser.h,
       # browser_window_interface.h) that can't be split out yet.
@@ -1643,6 +1644,7 @@ static_library("ui") {
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/speech",
       "//chrome/browser/subscription_eligibility",
+      "//chrome/browser/ui/browser_web_contents_delegate",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/desktop_to_mobile_promos:controller",

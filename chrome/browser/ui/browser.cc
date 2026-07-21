@@ -108,6 +108,7 @@
 #include "chrome/browser/ui/browser_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
+#include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -1154,23 +1155,14 @@ void Browser::HandleDragEnded() {
 content::KeyboardEventProcessingResult Browser::PreHandleKeyboardEvent(
     content::WebContents* source,
     const NativeWebKeyboardEvent& event) {
-  // Forward keyboard events to the manager for fullscreen / mouse lock. This
-  // may consume the event (e.g., Esc exits fullscreen mode).
-  // TODO(koz): Write a test for this http://crbug.com/40647724.
-  if (browser_window_features()->exclusive_access_manager()->HandleUserKeyEvent(
-          event)) {
-    return content::KeyboardEventProcessingResult::HANDLED;
-  }
-
-  return window_->PreHandleKeyboardEvent(event);
+  return BrowserWebContentsDelegate::From(this)->PreHandleKeyboardEvent(source,
+                                                                        event);
 }
 
 bool Browser::HandleKeyboardEvent(content::WebContents* source,
                                   const NativeWebKeyboardEvent& event) {
-  DevToolsWindow* devtools_window =
-      DevToolsWindow::GetInstanceForInspectedWebContents(source);
-  return (devtools_window && devtools_window->ForwardKeyboardEvent(event)) ||
-         window_->HandleKeyboardEvent(event);
+  return BrowserWebContentsDelegate::From(this)->HandleKeyboardEvent(source,
+                                                                     event);
 }
 
 bool Browser::CanDragEnter(content::WebContents* source,
@@ -1240,12 +1232,12 @@ void Browser::OnDidBlockNavigation(
 
 content::PictureInPictureResult Browser::EnterPictureInPicture(
     content::WebContents* web_contents) {
-  return PictureInPictureWindowManager::GetInstance()
-      ->EnterVideoPictureInPicture(web_contents);
+  return BrowserWebContentsDelegate::From(this)->EnterPictureInPicture(
+      web_contents);
 }
 
 void Browser::ExitPictureInPicture() {
-  PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+  BrowserWebContentsDelegate::From(this)->ExitPictureInPicture();
 }
 
 bool Browser::IsBackForwardCacheSupported(content::WebContents& web_contents) {
@@ -2133,44 +2125,33 @@ void Browser::FindReply(WebContents* web_contents,
 void Browser::RequestPointerLock(WebContents* web_contents,
                                  bool user_gesture,
                                  bool last_unlocked_by_target) {
-  browser_window_features()
-      ->exclusive_access_manager()
-      ->pointer_lock_controller()
-      ->RequestToLockPointer(web_contents, user_gesture,
-                             last_unlocked_by_target);
+  BrowserWebContentsDelegate::From(this)->RequestPointerLock(
+      web_contents, user_gesture, last_unlocked_by_target);
 }
 
 void Browser::LostPointerLock() {
-  browser_window_features()
-      ->exclusive_access_manager()
-      ->pointer_lock_controller()
-      ->ExitExclusiveAccessToPreviousState();
+  BrowserWebContentsDelegate::From(this)->LostPointerLock();
 }
 
 bool Browser::IsWaitingForPointerLockPrompt(WebContents* web_contents) {
-  return browser_window_features()
-      ->exclusive_access_manager()
-      ->pointer_lock_controller()
-      ->IsWaitingForPointerLockPrompt(web_contents);
+  return BrowserWebContentsDelegate::From(this)->IsWaitingForPointerLockPrompt(
+      web_contents);
 }
 
 bool Browser::AllowKeyboardLockForInnerContents(WebContents* web_contents) {
-  return capabilities()->AllowKeyboardLockForInnerContents(web_contents);
+  return BrowserWebContentsDelegate::From(this)
+      ->AllowKeyboardLockForInnerContents(web_contents);
 }
 
 void Browser::RequestKeyboardLock(WebContents* web_contents,
                                   bool esc_key_locked) {
-  browser_window_features()
-      ->exclusive_access_manager()
-      ->keyboard_lock_controller()
-      ->RequestKeyboardLock(web_contents, esc_key_locked);
+  BrowserWebContentsDelegate::From(this)->RequestKeyboardLock(web_contents,
+                                                              esc_key_locked);
 }
 
 void Browser::CancelKeyboardLockRequest(WebContents* web_contents) {
-  browser_window_features()
-      ->exclusive_access_manager()
-      ->keyboard_lock_controller()
-      ->CancelKeyboardLockRequest(web_contents);
+  BrowserWebContentsDelegate::From(this)->CancelKeyboardLockRequest(
+      web_contents);
 }
 
 void Browser::RequestMediaAccessPermission(
