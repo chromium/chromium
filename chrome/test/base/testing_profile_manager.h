@@ -107,6 +107,14 @@ class TestingProfileManager : public ProfileObserver {
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
           nullptr);
 
+  // Creates a testing profile with the given parameters of Builder.
+  // Note that the path set to the `builder` will be ignored, and instead
+  // the path based on the name under the directory managed by this manager
+  // will be used.
+  TestingProfile* CreateTestingProfile(TestingProfile::Builder builder,
+                                       const std::u16string& user_name,
+                                       int avatar_id);
+
   // Creates a new guest TestingProfile whose data lives in the guest profile
   // test environment directory, as specified by the profile manager. If the
   // builder is given, it will be used to create a guest profile.  This profile

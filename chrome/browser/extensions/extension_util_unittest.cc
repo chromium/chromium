@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -216,14 +215,11 @@ class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
   void SetUp() override {
     ExtensionUtilUnittest::SetUp();
 
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
     auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
         std::vector<
             raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>{
             policy_provider()});
-    signin_profile_ = testing_profile_manager_->CreateTestingProfile(
+    signin_profile_ = testing_profile_manager()->CreateTestingProfile(
         chrome::kInitialProfile, /*prefs=*/nullptr,
         base::UTF8ToUTF16(chrome::kInitialProfile), 0,
         TestingProfile::TestingFactories(),
@@ -235,7 +231,6 @@ class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
   void TearDown() override {
     signin_profile_ = nullptr;
     signin_profile_prefs_ = nullptr;
-    testing_profile_manager_->DeleteAllTestingProfiles();
     ExtensionUtilUnittest::TearDown();
   }
 
@@ -260,7 +255,6 @@ class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
   raw_ptr<TestingProfile> signin_profile_;
 
  private:
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> signin_profile_prefs_;
 };
 

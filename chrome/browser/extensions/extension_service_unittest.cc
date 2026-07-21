@@ -3990,6 +3990,10 @@ TEST_F(ExtensionServiceTest, ReloadBlocklistedExtension) {
 TEST_F(ExtensionServiceTest, BlockAndUnblockEnabledExtension) {
   InitializeGoodInstalledExtensionService();
   service()->Init();
+  base::RunLoop run_loop;
+  extensions::ExtensionSystem::Get(profile())->ready().Post(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 
   AssertExtensionBlocksAndUnblocks(true, kGood0);
 }
@@ -4001,6 +4005,10 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockDisabledExtension) {
   service()->Init();
 
   registrar()->DisableExtension(kGood0, {disable_reason::DISABLE_RELOAD});
+  base::RunLoop run_loop;
+  extensions::ExtensionSystem::Get(profile())->ready().Post(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 
   AssertExtensionBlocksAndUnblocks(true, kGood0);
 }
@@ -4012,6 +4020,10 @@ TEST_F(ExtensionServiceTest, BlockAndUnblockTerminatedExtension) {
   service()->Init();
 
   TerminateExtension(kGood0);
+  base::RunLoop run_loop;
+  extensions::ExtensionSystem::Get(profile())->ready().Post(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 
   AssertExtensionBlocksAndUnblocks(true, kGood0);
 }

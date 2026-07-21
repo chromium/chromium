@@ -25,7 +25,14 @@ namespace ash::shimless_rma {
 
 class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
  public:
+  // `web_ui` is unused, but taking as a param to adapt with templated
+  // factory method.
   explicit ChromeShimlessRmaDelegate(content::WebUI* web_ui);
+
+  // Delegating constructor. Exposed for testing.
+  explicit ChromeShimlessRmaDelegate(
+      std::unique_ptr<DiagnosticsAppProfileHelperDelegate>
+          diagnostics_app_profile_helper_delegate);
 
   ChromeShimlessRmaDelegate(const ChromeShimlessRmaDelegate&) = delete;
   ChromeShimlessRmaDelegate& operator=(const ChromeShimlessRmaDelegate&) =
@@ -53,14 +60,9 @@ class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
       const extensions::Extension* extension) override;
   base::WeakPtr<ShimlessRmaDelegate> GetWeakPtr() override;
 
-  void SetDiagnosticsAppProfileHelperDelegateForTesting(
-      DiagnosticsAppProfileHelperDelegate* delegate);
-
  private:
-  DiagnosticsAppProfileHelperDelegate diagnostics_app_profile_helper_delegete_;
-  raw_ptr<DiagnosticsAppProfileHelperDelegate>
-      diagnostics_app_profile_helper_delegete_ptr_{
-          &diagnostics_app_profile_helper_delegete_};
+  const std::unique_ptr<DiagnosticsAppProfileHelperDelegate>
+      diagnostics_app_profile_helper_delegate_;
 
   base::WeakPtrFactory<ChromeShimlessRmaDelegate> weak_ptr_factory_{this};
 };

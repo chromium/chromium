@@ -217,19 +217,18 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
             ash::features::kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
         },
         {});
-    ASSERT_TRUE(testing_profile_manager_.SetUp());
-    profile_ = testing_profile_manager_.CreateTestingProfile(
+    profile_ = testing_profile_manager()->CreateTestingProfile(
         kShimlessRmaAppBrowserContextBaseName);
-
-    fake_diagnostics_app_profile_helper_delegate_ =
-        std::make_unique<FakeDiagnosticsAppProfileHelperDelegate>(profile_);
 
     InitializeExtensionSystem(profile_);
     ::web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_);
 
-    chrome_shimless_rma_delegate_
-        .SetDiagnosticsAppProfileHelperDelegateForTesting(
-            fake_diagnostics_app_profile_helper_delegate_.get());
+    auto fake_diagnostics_app_profile_helper_delegate =
+        std::make_unique<FakeDiagnosticsAppProfileHelperDelegate>(profile_);
+    fake_diagnostics_app_profile_helper_delegate_ =
+        fake_diagnostics_app_profile_helper_delegate.get();
+    chrome_shimless_rma_delegate_ = std::make_unique<ChromeShimlessRmaDelegate>(
+        std::move(fake_diagnostics_app_profile_helper_delegate));
   }
 
   void InitializeExtensionSystem(Profile* profile) {
@@ -264,6 +263,8 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
   }
 
   void TearDown() override {
+    fake_diagnostics_app_profile_helper_delegate_ = nullptr;
+    chrome_shimless_rma_delegate_.reset();
     profile_ = nullptr;
     extensions::ExtensionServiceTestBase::TearDown();
   }
@@ -275,7 +276,7 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
   PrepareResult PrepareDiagnosticsAppBrowserContext(
       const base::FilePath& crx_path) {
     base::test::TestFuture<PrepareResult> future;
-    chrome_shimless_rma_delegate_.PrepareDiagnosticsAppBrowserContext(
+    chrome_shimless_rma_delegate_->PrepareDiagnosticsAppBrowserContext(
         crx_path, base::FilePath{kFakeIwaPath}, future.GetCallback());
     return future.Get();
   }
@@ -283,13 +284,11 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
  protected:
   raw_ptr<TestingProfile> profile_;
   base::test::ScopedFeatureList feature_list_;
-  TestingProfileManager testing_profile_manager_{
-      TestingBrowserProcess::GetGlobal()};
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  std::unique_ptr<FakeDiagnosticsAppProfileHelperDelegate>
+  raw_ptr<FakeDiagnosticsAppProfileHelperDelegate>
       fake_diagnostics_app_profile_helper_delegate_;
-  ChromeShimlessRmaDelegate chrome_shimless_rma_delegate_{nullptr};
+  std::unique_ptr<ChromeShimlessRmaDelegate> chrome_shimless_rma_delegate_;
 };
 
 // Verify the whole flow of `PrepareDiagnosticsAppProfile`.

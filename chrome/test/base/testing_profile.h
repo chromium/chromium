@@ -254,6 +254,8 @@ class TestingProfile : public Profile {
 #endif
 
     const base::FilePath& GetPath() const { return path_; }
+    const std::string& profile_name() const { return profile_name_; }
+    bool is_supervised_profile() const { return is_supervised_profile_; }
 
    private:
     // If true, Build() has already been called.

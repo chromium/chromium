@@ -41,6 +41,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 class TestingProfile;
+class TestingProfileManager;
 
 namespace content {
 class BrowserContext;
@@ -173,6 +174,10 @@ class ExtensionServiceTestBase : public testing::Test {
   // are commonly used and/or reimplemented. For instance, methods to install
   // extensions from various locations, etc.
 
+  TestingProfileManager* testing_profile_manager() {
+    return testing_profile_manager_.get();
+  }
+
   content::BrowserContext* browser_context();
   Profile* profile();
   TestingProfile* testing_profile();
@@ -255,7 +260,8 @@ class ExtensionServiceTestBase : public testing::Test {
 #endif
 
   // The associated testing profile.
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
   // The directory into which extensions are installed.
   base::FilePath extensions_install_dir_;

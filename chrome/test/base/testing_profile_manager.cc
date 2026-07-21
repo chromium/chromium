@@ -98,12 +98,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   DCHECK(called_set_up_);
 
-  base::FilePath profile_path = GetProfilePath(profile_name);
-
   // Create the profile and register it.
   TestingProfile::Builder builder;
-  builder.SetDelegate(profile_manager_.get());
-  builder.SetPath(profile_path);
   builder.SetPrefService(std::move(prefs));
   if (is_supervised_profile)
     builder.SetIsSupervisedProfile();
@@ -118,10 +114,34 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     builder.SetUserCloudPolicyManager(std::move(user_cloud_policy_manager));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
-
   builder.AddTestingFactories(std::move(testing_factories));
-
   builder.SetSharedURLLoaderFactory(shared_url_loader_factory);
+
+  return CreateTestingProfile(std::move(builder), user_name, avatar_id);
+}
+
+TestingProfile* TestingProfileManager::CreateTestingProfile(
+    const std::string& name,
+    TestingProfile::TestingFactories testing_factories,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
+  DCHECK(called_set_up_);
+  return CreateTestingProfile(
+      name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
+      base::UTF8ToUTF16(name), /*avatar_id=*/0, std::move(testing_factories),
+      /*is_supervised_profile=*/false, /*is_new_profile=*/std::nullopt,
+      /*policy_service=*/std::nullopt, shared_url_loader_factory);
+}
+
+TestingProfile* TestingProfileManager::CreateTestingProfile(
+    TestingProfile::Builder builder,
+    const std::u16string& user_name,
+    int avatar_id) {
+  std::string profile_name = builder.profile_name();
+  base::FilePath profile_path = GetProfilePath(profile_name);
+  bool is_supervised_profile = builder.is_supervised_profile();
+
+  builder.SetDelegate(profile_manager_.get());
+  builder.SetPath(profile_path);
 
   auto* profile_ptr =
       static_cast<TestingProfile*>(profile_manager_->CreateAndInitializeProfile(
@@ -148,18 +168,6 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   }
 #endif
   return profile_ptr;
-}
-
-TestingProfile* TestingProfileManager::CreateTestingProfile(
-    const std::string& name,
-    TestingProfile::TestingFactories testing_factories,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
-  DCHECK(called_set_up_);
-  return CreateTestingProfile(
-      name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-      base::UTF8ToUTF16(name), /*avatar_id=*/0, std::move(testing_factories),
-      /*is_supervised_profile=*/false, /*is_new_profile=*/std::nullopt,
-      /*policy_service=*/std::nullopt, shared_url_loader_factory);
 }
 
 TestingProfile* TestingProfileManager::CreateGuestProfile(

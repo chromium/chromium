@@ -35,7 +35,15 @@
 namespace ash {
 namespace shimless_rma {
 
-ChromeShimlessRmaDelegate::ChromeShimlessRmaDelegate(content::WebUI* web_ui) {}
+ChromeShimlessRmaDelegate::ChromeShimlessRmaDelegate(content::WebUI* web_ui)
+    : ChromeShimlessRmaDelegate(
+          std::make_unique<DiagnosticsAppProfileHelperDelegate>()) {}
+ChromeShimlessRmaDelegate::ChromeShimlessRmaDelegate(
+    std::unique_ptr<DiagnosticsAppProfileHelperDelegate>
+        diagnostics_app_profile_helper_delegate)
+    : diagnostics_app_profile_helper_delegate_(
+          std::move(diagnostics_app_profile_helper_delegate)) {}
+
 ChromeShimlessRmaDelegate::~ChromeShimlessRmaDelegate() = default;
 
 void ChromeShimlessRmaDelegate::ExitRmaThenRestartChrome() {
@@ -101,7 +109,7 @@ void ChromeShimlessRmaDelegate::PrepareDiagnosticsAppBrowserContext(
     const base::FilePath& crx_path,
     const base::FilePath& swbn_path,
     PrepareDiagnosticsAppBrowserContextCallback callback) {
-  PrepareDiagnosticsAppProfile(diagnostics_app_profile_helper_delegete_ptr_,
+  PrepareDiagnosticsAppProfile(diagnostics_app_profile_helper_delegate_.get(),
                                crx_path, swbn_path, std::move(callback));
 }
 
@@ -121,12 +129,6 @@ void ChromeShimlessRmaDelegate::ProcessMediaAccessRequest(
 
 base::WeakPtr<ShimlessRmaDelegate> ChromeShimlessRmaDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-void ChromeShimlessRmaDelegate::
-    SetDiagnosticsAppProfileHelperDelegateForTesting(
-        DiagnosticsAppProfileHelperDelegate* delegate) {
-  diagnostics_app_profile_helper_delegete_ptr_ = delegate;
 }
 
 }  // namespace shimless_rma

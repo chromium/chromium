@@ -8,9 +8,6 @@
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/extension_registrar.h"
 
 namespace test {
@@ -21,11 +18,6 @@ AppListSyncableServiceTestBase::~AppListSyncableServiceTestBase() = default;
 
 void AppListSyncableServiceTestBase::SetUp() {
   AppListTestBase::SetUp();
-
-  // Make sure we have a Profile Manager.
-  DCHECK(temp_dir_.CreateUniqueTempDir());
-  TestingBrowserProcess::GetGlobal()->SetProfileManager(
-      std::make_unique<ProfileManagerWithoutInit>(temp_dir_.GetPath()));
 
   app_list_syncable_service_ =
       std::make_unique<app_list::AppListSyncableService>(profile());

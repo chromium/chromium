@@ -229,7 +229,6 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
 
   void TearDown() override {
     extensions::ExtensionServiceTestBase::TearDown();
-    DeleteProfile();
 #if BUILDFLAG(IS_CHROMEOS)
     ash::LoginState::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS)

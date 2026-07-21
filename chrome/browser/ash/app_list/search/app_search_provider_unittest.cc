@@ -444,12 +444,6 @@ class AppSearchProviderCrostiniTest : public AppSearchProviderTestBase {
   void TearDown() override {
     AppSearchProviderTestBase::TearDown();
 
-    // |profile_| is initialized in AppListTestBase::SetUp but not destroyed in
-    // the ::TearDown method, but we need it to go away before shutting down
-    // DBusThreadManager to ensure all keyed services that might rely on DBus
-    // clients are destroyed.
-    DeleteProfile();
-
     user_manager_.Reset();
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();

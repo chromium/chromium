@@ -182,10 +182,6 @@ class LoginApiUnittest : public ExtensionApiUnittest {
 
  protected:
   void SetUp() override {
-    profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(profile_manager_->SetUp());
-
     session_manager_ = std::make_unique<session_manager::SessionManager>(
         std::make_unique<session_manager::FakeSessionManagerDelegate>());
 
@@ -239,10 +235,11 @@ class LoginApiUnittest : public ExtensionApiUnittest {
       const std::string& email) {
     user_manager::User* user = fake_chrome_user_manager_->AddPublicAccountUser(
         AccountId::FromUserEmail(email));
-    TestingProfile* profile = profile_manager_->CreateTestingProfile(email);
+    TestingProfile* profile =
+        testing_profile_manager()->CreateTestingProfile(email);
 
     return std::make_unique<ScopedTestingProfile>(
-        profile, profile_manager_.get(), user->GetAccountId());
+        profile, testing_profile_manager(), user->GetAccountId());
   }
 
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
@@ -253,7 +250,6 @@ class LoginApiUnittest : public ExtensionApiUnittest {
   std::unique_ptr<MockExistingUserController> mock_existing_user_controller_;
   std::unique_ptr<MockLoginApiLockHandler> mock_lock_handler_;
   std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
-  std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
 };
 
@@ -668,10 +664,11 @@ class LoginApiUserSessionUnittest : public LoginApiUnittest {
     auto* user = fake_chrome_user_manager_->AddUserWithAffiliation(
         AccountId::FromUserEmailGaiaId(email, kGaiaId),
         /* is_affiliated= */ true);
-    TestingProfile* profile = profile_manager_->CreateTestingProfile(email);
+    TestingProfile* profile =
+        testing_profile_manager()->CreateTestingProfile(email);
 
     return std::make_unique<ScopedTestingProfile>(
-        profile, profile_manager_.get(), user->GetAccountId());
+        profile, testing_profile_manager(), user->GetAccountId());
   }
 };
 
@@ -1422,13 +1419,13 @@ TEST_F(LoginApiSharedSessionUnittest, SharedSessionFlow) {
 
 TEST_F(LoginApiUnittest, CallsOnRequestExternalLogout) {
   // Register two more profiles to test event routing.
-  profile_manager_->CreateTestingProfile("other1@test");
-  profile_manager_->CreateTestingProfile("other2@test");
+  testing_profile_manager()->CreateTestingProfile("other1@test");
+  testing_profile_manager()->CreateTestingProfile("other2@test");
 
   std::vector<std::unique_ptr<extensions::TestEventRouterObserver>> observers;
   {
     auto loaded_profiles =
-        profile_manager_->profile_manager()->GetLoadedProfiles();
+        testing_profile_manager()->profile_manager()->GetLoadedProfiles();
     ASSERT_GE(loaded_profiles.size(), 2u);
     for (auto* profile : loaded_profiles) {
       observers.push_back(std::make_unique<TestEventRouterObserver>(
@@ -1454,13 +1451,13 @@ TEST_F(LoginApiUnittest, CallsOnRequestExternalLogout) {
 
 TEST_F(LoginApiUnittest, CallsOnExternalLogoutDone) {
   // Register two more profiles to test event routing.
-  profile_manager_->CreateTestingProfile("other1@test");
-  profile_manager_->CreateTestingProfile("other2@test");
+  testing_profile_manager()->CreateTestingProfile("other1@test");
+  testing_profile_manager()->CreateTestingProfile("other2@test");
 
   std::vector<std::unique_ptr<extensions::TestEventRouterObserver>> observers;
   {
     auto loaded_profiles =
-        profile_manager_->profile_manager()->GetLoadedProfiles();
+        testing_profile_manager()->profile_manager()->GetLoadedProfiles();
     ASSERT_GE(loaded_profiles.size(), 2u);
     for (auto* profile : loaded_profiles) {
       observers.push_back(std::make_unique<TestEventRouterObserver>(
