@@ -1,9 +1,28 @@
 <!DOCTYPE html>
 <head>
   <link rel="icon" href="./blue32x32.ico">
+  <script>
+    setTimeout(() => {
+      const link1 = document.createElement('a');
+      link1.href = "https://policies.google.com/terms/generative-ai/use-policy";
+      link1.textContent = "safely";
+      document.body.appendChild(link1);
+
+      const link2 = document.createElement('a');
+      link2.href = "https://support.google.com/gen-ai-unexpected_results";
+      link2.textContent = "unexpected results";
+      document.body.appendChild(link2);
+
+      const link3 = document.createElement('a');
+      link3.href = "https://support.google.com/chrome?p=gemini_spark_safety";
+      link3.textContent = "Review the risks";
+      document.body.appendChild(link3);
+    }, 100);
+  </script>
 </head>
 <title>Why did the web developer leave the restaurant?</title>
 <body>
 <h1>Because of the table layout.</h1>
 <p>Ba dum tss 🥁</p>
 </body>
+</html>
