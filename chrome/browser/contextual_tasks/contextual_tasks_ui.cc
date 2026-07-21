@@ -105,13 +105,14 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
+#include "components/zoom/zoom_controller.h"  // nogncheck
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"  // nogncheck
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
-#include "components/zoom/zoom_controller.h"  // nogncheck
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #endif
@@ -364,12 +365,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   host_zoom_map_subscription_ =
       content::HostZoomMap::GetDefaultForBrowserContext(profile)
           ->AddZoomLevelChangedCallback(base::BindRepeating(
               &ContextualTasksUI::OnZoomLevelChanged, base::Unretained(this)));
-#endif
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIContextualTasksHost);
@@ -1347,9 +1346,7 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
 
   PostMessageToWebview(message);
 
-#if !BUILDFLAG(IS_ANDROID)
   UpdateZoom();
-#endif
 }
 
 void ContextualTasksUI::OnLensOverlayStateChanged(
@@ -1541,10 +1538,8 @@ void ContextualTasksUI::PushTaskDetailsToPage(std::optional<base::Uuid> id,
     page_->SetTaskDetails(id.value_or(base::Uuid()), url,
                           replace_navigation_entry);
   }
-#if !BUILDFLAG(IS_ANDROID)
   tracked_zoom_host_ = url.host();
   UpdateZoom();
-#endif
 }
 
 bool ContextualTasksUI::CanExpandToFullTab() const {
@@ -1987,6 +1982,7 @@ base::RefCountedMemory* ContextualTasksUI::GetFaviconResourceBytes(
           IDR_NTP_FAVICON, scale_factor));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ContextualTasksUI::SyncZoom(bool site_to_webui) {
   if (tracked_zoom_host_.empty()) {
@@ -2057,6 +2053,5 @@ void ContextualTasksUI::OnZoomLevelChanged(
   }
 }
 
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ContextualTasksUI)
