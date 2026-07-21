@@ -4,6 +4,7 @@
 
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
 
+#include "base/android/jni_bytebuffer.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
@@ -16,10 +17,9 @@ IOBufferWithByteBuffer::IOBufferWithByteBuffer(
     int32_t position,
     int32_t limit)
     : net::WrappedIOBuffer(
-          UNSAFE_TODO(base::span(static_cast<char*>(env->GetDirectBufferAddress(
-                                     jbyte_buffer.obj())),
-                                 base::checked_cast<size_t>(limit)))
-              .subspan(base::checked_cast<size_t>(position))),
+          base::android::JavaByteBufferToMutableSpan(env, jbyte_buffer)
+              .subspan(base::checked_cast<size_t>(position),
+                       base::checked_cast<size_t>(limit - position))),
       byte_buffer_(env, jbyte_buffer),
       initial_position_(position),
       initial_limit_(limit) {}
