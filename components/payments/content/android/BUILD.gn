@@ -48,6 +48,7 @@ static_library("android") {
     ":minimal_jni",
     ":service_jni",
     "//base",
+    "//components/back_forward_cache",
     "//components/keyed_service/core",
     "//components/payments/content",
     "//components/payments/content:utils",

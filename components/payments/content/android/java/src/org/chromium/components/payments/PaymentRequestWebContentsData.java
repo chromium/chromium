@@ -12,6 +12,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -74,6 +75,20 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
         PaymentRequestWebContentsDataJni.get().recordActivationlessShow(webContents);
     }
 
+    @Override
+    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+        if (!navigation.hasCommitted() || navigation.isSameDocument()) {
+            return;
+        }
+        PaymentRequestService showingPaymentRequest =
+                BrowserGlobalPaymentFlowManager.getShowingPaymentFlow();
+        if (showingPaymentRequest != null
+                && showingPaymentRequest.getWebContents() == getWebContents()) {
+            PaymentRequestWebContentsDataJni.get()
+                    .disableBFCacheForPreviousFrame(navigation.nativeNavigationHandlePtr());
+        }
+    }
+
     public @SPCTransactionMode int getSPCTransactionMode() {
         WebContents webContents = getWebContents();
         if (webContents == null || webContents.isDestroyed()) {
@@ -90,5 +105,7 @@ public class PaymentRequestWebContentsData extends WebContentsObserver implement
         void recordActivationlessShow(WebContents webContents);
 
         int getSPCTransactionMode(WebContents webContents);
+
+        void disableBFCacheForPreviousFrame(long navigationHandle);
     }
 }

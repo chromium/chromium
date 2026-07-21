@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
@@ -140,7 +139,6 @@ public class PaymentRequestTabTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @DisabledTest(message = "https://crbug.com/512689341: Broken by BFCache.")
     public void testDismissOnTabNavigate() throws TimeoutException {
         // Install two apps to force showing the payment request UI.
         mPaymentRequestTestRule.addPaymentAppFactory(

@@ -4,6 +4,7 @@ include_rules = [
   "+chromeos/ash/experiences/arc/pay",
   "+chromeos/components/payments",
   "+components/autofill",
+  "+components/back_forward_cache",
   "+components/keyed_service/content",
   "+components/link_header_util",
   "+components/keyed_service/core",
