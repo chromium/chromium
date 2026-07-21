@@ -4449,6 +4449,7 @@ if (!is_android) {
         "//chrome/browser/ui/views/crostini:browser_tests",
         "//chrome/browser/ui/views/frame",
         "//chrome/browser/ui/views/frame:app_menu_button_observer",
+        "//chrome/browser/ui/views/frame:top_controls_slide_controller",
         "//chrome/browser/ui/views/mahi",
         "//chrome/browser/ui/views/plugin_vm:browser_tests",
         "//chrome/browser/ui/views/select_file_dialog_extension:browser_tests",
