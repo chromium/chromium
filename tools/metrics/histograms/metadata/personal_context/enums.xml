@@ -42,6 +42,20 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/personal_context/core/context_memory_error.h:ExecutionError) -->
 
+<!-- LINT.IfChange(PersonalContextAmbientAutofillNoticeInteractions) -->
+
+<enum name="PersonalContextAmbientAutofillNoticeInteractions">
+  <summary>
+    The outcomes of interaction with the Ambient Autofill notice.
+  </summary>
+  <int value="0" label="Shown"/>
+  <int value="1" label="Acknowledged"/>
+  <int value="2" label="Dismissed"/>
+  <int value="3" label="ManageSettingsButtonClicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/touch_to_fill/autofill/android/internal/java/src/org/chromium/chrome/browser/touch_to_fill/autofill/TouchToFillAutofillMediator.java:NoticeInteraction) -->
+
 <!-- LINT.IfChange(PersonalContextAtMemoryNoticeInteractions) -->
 
 <enum name="PersonalContextAtMemoryNoticeInteractions">
