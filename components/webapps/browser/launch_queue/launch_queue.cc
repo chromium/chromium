@@ -52,10 +52,10 @@ class EntriesBuilder {
     entries_.reserve(expected_number_of_entries);
   }
 
-  void AddFileEntry(const content::PathInfo& path_info) {
-    entries_.push_back(entry_factory_->CreateFileEntryFromPath(
-        context_, path_info,
-        content::FileSystemAccessEntryFactory::UserAction::kSave));
+  void AddFileEntry(const content::PathInfo& path_info,
+                    content::FileSystemAccessEntryFactory::UserAction action) {
+    entries_.push_back(
+        entry_factory_->CreateFileEntryFromPath(context_, path_info, action));
   }
 
   void AddDirectoryEntry(const content::PathInfo& path_info) {
@@ -132,8 +132,13 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
           delegate_->GetPathInfo(launch_params.dir()));
     }
 
-    for (const auto& path : launch_params.paths()) {
-      entries_builder.AddFileEntry(delegate_->GetPathInfo(path));
+    for (size_t i = 0; i < launch_params.paths().size(); ++i) {
+      bool can_write = launch_params.can_write()[i];
+      content::FileSystemAccessEntryFactory::UserAction action =
+          can_write ? content::FileSystemAccessEntryFactory::UserAction::kSave
+                    : content::FileSystemAccessEntryFactory::UserAction::kOpen;
+      entries_builder.AddFileEntry(
+          delegate_->GetPathInfo(launch_params.paths()[i]), action);
     }
 
     files = entries_builder.Build();

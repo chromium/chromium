@@ -148,7 +148,7 @@ TEST_F(LaunchQueueTest, EnqueueImmediatelyDispatches) {
 TEST_F(LaunchQueueTest, EnqueueInvalidParams) {
   GURL launch_url("https://example.com/launch");
   LaunchParams params = CreateLaunchParams(launch_url);
-  params.add_path(base::FilePath(FILE_PATH_LITERAL("sensitive_file.txt")));
+  params.set_paths({base::FilePath(FILE_PATH_LITERAL("sensitive_file.txt"))});
 
   EXPECT_CALL(*delegate_, IsValidLaunchParams(testing::_))
       .WillOnce(testing::Return(false));

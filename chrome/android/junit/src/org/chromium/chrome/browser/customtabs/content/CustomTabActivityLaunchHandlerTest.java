@@ -92,7 +92,7 @@ public class CustomTabActivityLaunchHandlerTest {
         verify(mNavigationController, times(1)).navigate(any(), any());
 
         verify(mWebAppLaunchHandlerJniMock, times(expectedNotifyQueueTimes))
-                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any());
+                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any(), any());
     }
 
     private CustomTabIntentDataProvider createIntentDataProvider() {
@@ -149,6 +149,6 @@ public class CustomTabActivityLaunchHandlerTest {
 
         verify(mNavigationController, times(0)).navigate(any(), any());
         verify(mWebAppLaunchHandlerJniMock, times(0))
-                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any());
+                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any(), any());
     }
 }

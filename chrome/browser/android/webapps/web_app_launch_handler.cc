@@ -19,14 +19,18 @@ static void JNI_WebAppLaunchHandler_NotifyLaunchQueue(
     bool start_new_navigation,
     const std::string& start_url,
     const std::string& package_name,
-    const std::vector<std::string>& file_uris) {
+    const std::vector<std::string>& file_uris,
+    const std::vector<bool>& can_write) {
   webapps::LaunchParams launch_params;
   launch_params.set_started_new_navigation(start_new_navigation);
   launch_params.set_app_id(package_name);
   launch_params.set_target_url(GURL(start_url));
+  std::vector<base::FilePath> paths;
+  paths.reserve(file_uris.size());
   for (const auto& file_uri : file_uris) {
-    launch_params.add_path(base::FilePath(file_uri));
+    paths.push_back(base::FilePath(file_uri));
   }
+  launch_params.set_paths_with_permissions(std::move(paths), can_write);
 
   auto* helper =
       TwaLaunchQueueTabHelper::GetOrCreateForWebContents(web_contents);

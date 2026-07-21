@@ -38,15 +38,23 @@ public class WebAppLaunchParams {
      */
     public final String[] fileUris;
 
+    /**
+     * The array of booleans indicating whether the web app has write permission for each file in
+     * fileUris.
+     */
+    public final boolean[] canWrite;
+
     public WebAppLaunchParams(
             boolean newNavigationStarted,
             String targetUrl,
             String packageName,
-            @Nullable List<Uri> fileUris) {
+            @Nullable List<Uri> fileUris,
+            boolean[] canWrite) {
         this.newNavigationStarted = newNavigationStarted;
         this.targetUrl = targetUrl;
         this.packageName = packageName;
         this.fileUris = getFileUrisArray(fileUris);
+        this.canWrite = canWrite;
     }
 
     private String[] getFileUrisArray(@Nullable List<Uri> urisList) {

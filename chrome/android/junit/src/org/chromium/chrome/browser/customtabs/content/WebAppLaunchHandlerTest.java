@@ -68,6 +68,7 @@ public class WebAppLaunchHandlerTest {
     public static final String TEST_PACKAGE_NAME = "com.test";
     private FileHandlingData mFileHandlingData;
     private String[] mExpectedFileList = new String[0];
+    private boolean[] mExpectedCanWriteList = new boolean[0];
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Mock MockWebContents mWebContentsMock;
@@ -173,10 +174,11 @@ public class WebAppLaunchHandlerTest {
                             eq(expectedWaitNavigation),
                             eq(url),
                             eq(TEST_PACKAGE_NAME),
-                            eq(mExpectedFileList));
+                            eq(mExpectedFileList),
+                            eq(mExpectedCanWriteList));
         } else {
             verify(mWebAppLaunchHandlerJniMock, times(0))
-                    .notifyLaunchQueue(any(), anyBoolean(), eq(url), any(), any());
+                    .notifyLaunchQueue(any(), anyBoolean(), eq(url), any(), any(), any());
         }
 
         boolean expectedStartNewActivity =
@@ -277,6 +279,7 @@ public class WebAppLaunchHandlerTest {
     public void filePath() {
         mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI)));
         mExpectedFileList = new String[] {CONTENT_URI};
+        mExpectedCanWriteList = new boolean[] {true};
         doTestHandleIntent(
                 LaunchHandlerClientMode.AUTO,
                 INITIAL_URL,
@@ -298,6 +301,7 @@ public class WebAppLaunchHandlerTest {
                         Arrays.asList(
                                 Uri.parse(CONTENT_URI), Uri.parse(secondUri), Uri.parse(thirdUri)));
         mExpectedFileList = new String[] {CONTENT_URI, secondUri, thirdUri};
+        mExpectedCanWriteList = new boolean[] {true, true, true};
         doTestHandleIntent(
                 LaunchHandlerClientMode.AUTO,
                 INITIAL_URL,
@@ -401,7 +405,7 @@ public class WebAppLaunchHandlerTest {
         verifyNoInteractions(mActivityMock);
         verifyNoInteractions(mNavigationControllerMock);
         verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any());
+                .notifyLaunchQueue(any(), anyBoolean(), any(), any(), any(), any());
     }
 
     void doTestNavigateNewNewIntent(Integer clientMode, int expectedStartActivityTimes) {
@@ -436,9 +440,9 @@ public class WebAppLaunchHandlerTest {
         final int expectedOtherTimes = expectedStartActivityTimes == 0 ? 1 : 0;
         verify(mNavigationControllerMock, times(expectedOtherTimes)).navigate(any(), any());
         verify(mWebAppLaunchHandlerJniMock, times(expectedOtherTimes))
-                .notifyLaunchQueue(any(), anyBoolean(), eq(OTHER_URL), any(), any());
+                .notifyLaunchQueue(any(), anyBoolean(), eq(OTHER_URL), any(), any(), any());
         verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), anyBoolean(), eq(INITIAL_URL), any(), any());
+                .notifyLaunchQueue(any(), anyBoolean(), eq(INITIAL_URL), any(), any(), any());
     }
 
     @Test
@@ -468,6 +472,7 @@ public class WebAppLaunchHandlerTest {
 
         mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI)));
         mExpectedFileList = new String[] {CONTENT_URI};
+        mExpectedCanWriteList = new boolean[] {true};
         doTestNavigateNewNewIntent(
                 LaunchHandlerClientMode.NAVIGATE_NEW, /* expectedStartActivityTimes= */ 1);
         verify(mActivityMock, never())
@@ -489,6 +494,7 @@ public class WebAppLaunchHandlerTest {
 
         mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI), pwCsv));
         mExpectedFileList = new String[] {CONTENT_URI};
+        mExpectedCanWriteList = new boolean[] {true};
         doTestNavigateNewNewIntent(
                 LaunchHandlerClientMode.NAVIGATE_NEW, /* expectedStartActivityTimes= */ 1);
         verify(mActivityMock, never())
@@ -524,6 +530,7 @@ public class WebAppLaunchHandlerTest {
                 Uri.parse("content://com.android.externalstorage.documents/photo.png");
         mFileHandlingData = new FileHandlingData(Arrays.asList(authorizedUri));
         mExpectedFileList = new String[] {authorizedUri.toString()};
+        mExpectedCanWriteList = new boolean[] {true};
 
         when(mActivityMock.checkUriPermission(eq(authorizedUri), anyInt(), anyInt(), anyInt()))
                 .thenReturn(PackageManager.PERMISSION_GRANTED);
@@ -562,6 +569,7 @@ public class WebAppLaunchHandlerTest {
 
         mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI)));
         mExpectedFileList = new String[] {CONTENT_URI};
+        mExpectedCanWriteList = new boolean[] {true};
         doTestNavigateNewNewIntent(
                 LaunchHandlerClientMode.NAVIGATE_EXISTING, /* expectedStartActivityTimes= */ 1);
         verify(mActivityMock, never())
@@ -587,6 +595,35 @@ public class WebAppLaunchHandlerTest {
         shadowOf(Looper.getMainLooper()).idle();
 
         verify(mWebAppLaunchHandlerJniMock, times(1))
-                .notifyLaunchQueue(any(), eq(false), eq(INITIAL_URL), any(), any());
+                .notifyLaunchQueue(any(), eq(false), eq(INITIAL_URL), any(), any(), any());
+    }
+
+    @Test
+    public void testFileHandling_readOnlyPermission() {
+        final Uri authorizedUri =
+                Uri.parse("content://com.android.externalstorage.documents/photo.png");
+        mFileHandlingData = new FileHandlingData(Arrays.asList(authorizedUri));
+        mExpectedFileList = new String[] {authorizedUri.toString()};
+        mExpectedCanWriteList = new boolean[] {false};
+
+        // Grant read, deny write
+        when(mActivityMock.checkUriPermission(
+                        eq(authorizedUri),
+                        anyInt(),
+                        anyInt(),
+                        eq(Intent.FLAG_GRANT_READ_URI_PERMISSION)))
+                .thenReturn(PackageManager.PERMISSION_GRANTED);
+        when(mActivityMock.checkUriPermission(
+                        eq(authorizedUri),
+                        anyInt(),
+                        anyInt(),
+                        eq(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)))
+                .thenReturn(PackageManager.PERMISSION_DENIED);
+
+        doTestHandleIntent(
+                LaunchHandlerClientMode.AUTO,
+                INITIAL_URL,
+                /* expectedLoadUrl= */ false,
+                /* expectedNotifyQueue= */ true);
     }
 }

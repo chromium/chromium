@@ -170,7 +170,8 @@ public class WebAppLaunchHandler extends WebContentsObserver {
             boolean newNavigationStarted,
             String targetUrl,
             String packageName,
-            @Nullable FileHandlingData fileHandlingData) {
+            @Nullable FileHandlingData fileHandlingData,
+            @Nullable SessionHolder<?> session) {
         List<Uri> fileUris = null;
         @FileHandlingAction int action = FileHandlingAction.NO_FILES;
 
@@ -185,7 +186,19 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         }
 
         WebAppLaunchHandlerHistogram.logFileHandling(action);
-        return new WebAppLaunchParams(newNavigationStarted, targetUrl, packageName, fileUris);
+        boolean[] canWrite;
+        if (fileUris != null) {
+            canWrite = new boolean[fileUris.size()];
+            for (int i = 0; i < fileUris.size(); i++) {
+                canWrite[i] =
+                        doesCallerHavePermissionForUri(
+                                session, fileUris.get(i), Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            }
+        } else {
+            canWrite = new boolean[0];
+        }
+        return new WebAppLaunchParams(
+                newNavigationStarted, targetUrl, packageName, fileUris, canWrite);
     }
 
     /**
@@ -207,7 +220,8 @@ public class WebAppLaunchHandler extends WebContentsObserver {
                         /* newNavigationStarted= */ true,
                         assertNonNull(intentDataProvider.getUrlToLoad()),
                         assertNonNull(intentDataProvider.getClientPackageName()),
-                        filteredData);
+                        filteredData,
+                        intentDataProvider.getSession());
 
         maybeNotifyLaunchQueue(launchParams);
     }
@@ -251,7 +265,12 @@ public class WebAppLaunchHandler extends WebContentsObserver {
 
             assert packageName != null;
             WebAppLaunchParams launchParams =
-                    getLaunchParams(startNavigation, urlToLoad, packageName, filteredData);
+                    getLaunchParams(
+                            startNavigation,
+                            urlToLoad,
+                            packageName,
+                            filteredData,
+                            intentDataProvider.getSession());
 
             maybeNotifyLaunchQueue(launchParams);
         }
@@ -332,7 +351,8 @@ public class WebAppLaunchHandler extends WebContentsObserver {
                             false,
                             launchParams.targetUrl,
                             launchParams.packageName,
-                            launchParams.fileUris);
+                            launchParams.fileUris,
+                            launchParams.canWrite);
             return;
         }
 
@@ -361,7 +381,8 @@ public class WebAppLaunchHandler extends WebContentsObserver {
                                             mIsPageLoading,
                                             launchParams.targetUrl,
                                             launchParams.packageName,
-                                            launchParams.fileUris);
+                                            launchParams.fileUris,
+                                            launchParams.canWrite);
                         });
     }
 
@@ -392,10 +413,11 @@ public class WebAppLaunchHandler extends WebContentsObserver {
 
         List<Uri> filteredUris = new ArrayList<>();
         for (Uri uri : fileHandlingData.uris) {
-            if (doesCallerHavePermissionForUri(intentDataProvider.getSession(), uri)) {
+            if (doesCallerHavePermissionForUri(
+                    intentDataProvider.getSession(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)) {
                 filteredUris.add(uri);
             } else {
-                Log.w(TAG, "Caller does not have permission for URI: " + uri);
+                Log.w(TAG, "Caller does not have read permission for URI: " + uri);
             }
         }
 
@@ -419,13 +441,13 @@ public class WebAppLaunchHandler extends WebContentsObserver {
      * @return True if the caller has explicit read permission for uri, false otherwise.
      */
     @SuppressLint("NewApi")
-    private boolean doesCallerHavePermissionForUri(@Nullable SessionHolder<?> session, Uri uri) {
+    private boolean doesCallerHavePermissionForUri(
+            @Nullable SessionHolder<?> session, Uri uri, int requestedPermission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             try {
                 var caller = mActivity.getCurrentCaller();
                 if (caller != null) {
-                    return caller.checkContentUriPermission(
-                                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    return caller.checkContentUriPermission(uri, requestedPermission)
                             == PackageManager.PERMISSION_GRANTED;
                 }
             } catch (Exception e) {
@@ -442,8 +464,7 @@ public class WebAppLaunchHandler extends WebContentsObserver {
             int pid = CustomTabsConnection.getInstance().getClientPidForSession(session);
             if (uid != -1) {
                 try {
-                    return mActivity.checkUriPermission(
-                                    uri, pid, uid, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    return mActivity.checkUriPermission(uri, pid, uid, requestedPermission)
                             == PackageManager.PERMISSION_GRANTED;
                 } catch (Exception e) {
                     Log.w(TAG, "Failed to check URI permission for UID: " + uid, e);
@@ -464,6 +485,7 @@ public class WebAppLaunchHandler extends WebContentsObserver {
                 @JniType("bool") boolean startNewNavigation,
                 @JniType("std::string") String startUrl,
                 @JniType("std::string") String packageName,
-                @JniType("std::vector<std::string>") String[] fileUris);
+                @JniType("std::vector<std::string>") String[] fileUris,
+                @JniType("std::vector<bool>") boolean[] canWrite);
     }
 }
