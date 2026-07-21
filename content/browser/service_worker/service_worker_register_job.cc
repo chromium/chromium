@@ -154,7 +154,9 @@ ServiceWorkerRegisterJob::~ServiceWorkerRegisterJob() {
   DCHECK(phase_ == INITIAL || phase_ == COMPLETE || phase_ == ABORT)
       << "Jobs should only be interrupted during shutdown.";
   if (creator_network_restrictions_id_ !=
-      network::GetNoOpNetworkRestrictionsId()) {
+          network::GetNoOpNetworkRestrictionsId() &&
+      context_ && context_->wrapper() &&
+      context_->wrapper()->storage_partition()) {
     context_->wrapper()
         ->storage_partition()
         ->ClearNetworkRestrictionsAfterDelay(
