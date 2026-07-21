@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -93,6 +94,12 @@ class OnTaskSystemWebAppManagerImplBrowserTest : public InProcessBrowserTest {
     GetOnTaskSessionManager()->OnSessionStarted("test_session",
                                                 ::boca::UserIdentity());
     InProcessBrowserTest::SetUpOnMainThread();
+
+    // Wait for the auto-launched SWA to finish launching and initializing. This
+    // eliminates the possibility of a race between the browser test attempting
+    // to start from a clean state and the SWA not being available.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return FindBocaSystemWebAppBrowser() != nullptr; }));
   }
 
   OnTaskSessionManager* GetOnTaskSessionManager() {
@@ -116,11 +123,16 @@ class OnTaskSystemWebAppManagerImplBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
                        LaunchSystemWebAppAsync) {
-  // Verify no Boca app is launched initially.
+  // Close the auto-launched SWA window to start from a clean state.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  Browser* const auto_launched_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(auto_launched_browser, NotNull());
+  system_web_app_manager.CloseSystemWebAppWindow(
+      auto_launched_browser->session_id());
+  content::RunAllTasksUntilIdle();
   ASSERT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
 
   // Launch Boca app and verify launch result.
-  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback());
   ASSERT_TRUE(launch_future.Get());
@@ -137,11 +149,16 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
                        LaunchSystemWebAppAsyncWithCustomUrl) {
-  // Verify no Boca app is launched initially.
+  // Close the auto-launched SWA window to start from a clean state.
+  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
+  Browser* const auto_launched_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(auto_launched_browser, NotNull());
+  system_web_app_manager.CloseSystemWebAppWindow(
+      auto_launched_browser->session_id());
+  content::RunAllTasksUntilIdle();
   ASSERT_THAT(FindBocaSystemWebAppBrowser(), IsNull());
 
   // Launch Boca app and verify launch result.
-  OnTaskSystemWebAppManagerImpl system_web_app_manager(profile());
   base::test::TestFuture<bool> launch_future;
   system_web_app_manager.LaunchSystemWebAppAsync(launch_future.GetCallback(),
                                                  GURL(kTestUrl));

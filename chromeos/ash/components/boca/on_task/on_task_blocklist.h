@@ -56,9 +56,11 @@ class OnTaskBlocklist {
   // nav restriction setup.
   static bool IsURLInDomain(const GURL& url, const GURL& domain_url);
 
-  // Returns the URLBlocklistState for the given url.
+  // Returns the URLBlocklistState for the given url in the context of the
+  // specified tab.
   policy::URLBlocklist::URLBlocklistState GetURLBlocklistState(
-      const GURL& url) const;
+      const GURL& url,
+      content::WebContents* tab) const;
 
   // Sets the url restrictions for the given `url` with `restriction_level`.
   // This is different from `SetParentURLRestrictionLevel` since this can be
@@ -69,6 +71,12 @@ class OnTaskBlocklist {
       content::WebContents* tab,
       const GURL& url,
       ::boca::LockedNavigationOptions::NavigationType restriction_level);
+
+  // Convenient helper to register the parent-child tab association between the
+  // specified child and parent tabs. Triggered early on from the navigation
+  // throttle to prepare downstream blocklist checks.
+  void SetParentForTab(content::WebContents* child_tab,
+                       content::WebContents* parent_tab);
 
   // Sets the url restrictions for the given `url` with `restriction_level`.
   // Should only be called for the set of urls sent by the boca producer.
@@ -93,39 +101,52 @@ class OnTaskBlocklist {
   // restriction level is not `kOneLevelDeepNavigation`, then this will return
   // false. This should only be called in a block that checks that the current
   // restriction level is for one level deep navigation.
-  bool CanPerformOneLevelNavigation(content::WebContents* tab);
+  bool CanPerformOneLevelNavigation(content::WebContents* tab) const;
 
-  bool IsCurrentRestrictionOneLevelDeep();
+  bool IsTabRestrictionOneLevelDeep(content::WebContents* tab) const;
 
   // Returns true if the `tab` is a parent tab. A parent tab is any tab that was
   // sent as part of a session bundle. Any other tab created (either via
   // ctrl+left click or a link click that sets itself to open in a new window)
   // during the session by the user is a child tab. Parent tabs should not
   // be closed during any point of an ongoing session.
-  bool IsParentTab(content::WebContents* tab);
+  bool IsParentTab(content::WebContents* tab) const;
 
-  content::WebContents* previous_tab();
+  ::boca::LockedNavigationOptions::NavigationType GetRestrictionLevelForTab(
+      content::WebContents* tab) const;
+
+  // Gets the original URL that was committed on creation of the specified tab.
+  // Especially useful for domain level and 1LD checks.
+  GURL GetOriginalURLForTab(content::WebContents* tab) const;
+
+  SessionID GetParentTabId(content::WebContents* tab) const;
+
+  // Gets the original URL for a tab under 1LD restrictions.
+  GURL GetOneLevelDeepOriginalURL(SessionID tab_id) const;
 
   const policy::URLBlocklistManager* url_blocklist_manager();
   std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>
-  parent_tab_to_nav_filters();
+  parent_tab_to_nav_filters() const;
   std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>
-  child_tab_to_nav_filters();
-  std::map<SessionID, GURL> one_level_deep_original_url();
-  ::boca::LockedNavigationOptions::NavigationType
-  current_page_restriction_level();
+  child_tab_to_nav_filters() const;
 
  private:
-  ::boca::LockedNavigationOptions::NavigationType
-      current_page_restriction_level_ =
-          ::boca::LockedNavigationOptions::OPEN_NAVIGATION;
-  base::WeakPtr<content::WebContents> previous_tab_;
+  SessionID previous_tab_id_ = SessionID::InvalidValue();
   GURL previous_url_;
   std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>
       parent_tab_to_nav_filters_;
   std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>
       child_tab_to_nav_filters_;
   std::map<SessionID, GURL> one_level_deep_original_url_;
+
+  // Maps a tab to its original navigation URL. This is used for validating
+  // permitted domains synchronously under DOMAIN_NAVIGATION.
+  std::map<SessionID, GURL> tab_to_original_url_;
+
+  // Maps a child tab to its parent tab. This allows child tabs to
+  // resolve domain and 1LD restriction checks against their parent
+  // tab's original URL.
+  std::map<SessionID, SessionID> child_to_parent_tab_id_;
   const std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager_;
   base::WeakPtrFactory<OnTaskBlocklist> weak_pointer_factory_{this};
 };
