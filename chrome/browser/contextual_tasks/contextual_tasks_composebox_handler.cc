@@ -574,6 +574,10 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
             tab_id = tabs::SessionMappedTabHandleFactory::GetInstance()
                          .GetHandleForSessionId(
                              file_info.tab_session_id.value().id());
+            // In case the tab is not mapped.
+            if (tab_id == tabs::TabHandle::NullValue) {
+              tab_id = file_info.tab_session_id.value().id();
+            }
           }
           tab_info->tab_id = tab_id;
           tab_info->title = file_info.tab_title.value_or("");
