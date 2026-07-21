@@ -13,6 +13,7 @@ export function getHtml(this: CertificateListElement) {
   <div id="listHeader"
       class="section-title list-title first
           ${this.getListHeaderAdditionalClass_()}"
+      role="heading"
       ?hidden="${this.hideHeader}">
     ${this.headerText}
     <div class="header-buttons">
