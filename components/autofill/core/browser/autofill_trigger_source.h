@@ -61,6 +61,9 @@ enum class AutofillTriggerSource {
   kGlic = 15,
   // A refill was triggered by JavaScript.
   kProgrammaticRefill = 16,
+  // Autofill was triggered from accepting a suggestion in the Omnibox Autofill
+  // bubble.
+  kOmniboxAutofill = 17,
 };
 
 // The `AutofillTriggerSource` indicates what caused an Autofill fill or preview

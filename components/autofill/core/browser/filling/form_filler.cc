@@ -304,6 +304,7 @@ DenseSet<FieldFillingSkipReason> GetIgnorableSkipReasons(
     case AutofillTriggerSource::kProactivePasswordRecovery:
     case AutofillTriggerSource::kCreditCardSaveAndFill:
     case AutofillTriggerSource::kProgrammaticRefill:
+    case AutofillTriggerSource::kOmniboxAutofill:
       return {};
   }
   NOTREACHED();

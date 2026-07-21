@@ -1986,6 +1986,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
       case AutofillTriggerSource::kPopup:
       case AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet:
       case AutofillTriggerSource::kGlic:
+      case AutofillTriggerSource::kOmniboxAutofill:
         return ShouldFetchCreditCard(form, trigger_field, credit_card,
                                      trigger_source,
                                      GetAcUnrecognizedBehavior(client()));
