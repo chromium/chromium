@@ -357,5 +357,5 @@ class MotionMarkRampCompositeGraphite(MotionMarkRampComposite):
                 component='Internals>GPU>Internals')
 class MotionMarkRampCompositeGanesh(MotionMarkRampComposite):
   BASE_NAME = 'motionmark_ramp_composite_ganesh'
-  SUPPORTED_PLATFORMS = [story.expectations.ALL_MAC, story.expectations.ALL_WIN]
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_WIN]
   EXTRA_BROWSER_ARGS = '--disable-skia-graphite'
