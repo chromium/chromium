@@ -2,16 +2,14 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 
-action("generate_enum_conversions") {
-  script = "glic_api_impl/run_module.py"
+action_with_pydeps("generate_enum_conversions") {
+  script = "glic_api_impl/generate_impl/gen_conversions.py"
   inputs = [
-    "glic_api_impl/run_module.py",
-    "glic_api_impl/generate_impl/gen_conversions.py",
-    "glic_api_impl/generate_impl/parse.py",
     "//chrome/browser/glic/host/glic.mojom",
     "//chrome/common/actor_webui.mojom",
     "//chrome/common/glic_enums.mojom",
@@ -19,8 +17,6 @@ action("generate_enum_conversions") {
   ]
   outputs = [ "$target_gen_dir/enum_conversions.ts" ]
   args = [
-    rebase_path("//", root_build_dir),
-    "chrome.browser.resources.glic.glic_api_impl.generate_impl.gen_conversions",
     "--conversions-output",
     rebase_path(outputs[0], root_build_dir),
   ]

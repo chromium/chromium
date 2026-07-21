@@ -5,8 +5,12 @@
 import argparse
 import io
 import os
+import sys
 
-from . import parse
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+
+from generate_impl import parse
 
 
 def _FunctionSignatureString(function_name, param_type, return_type):
