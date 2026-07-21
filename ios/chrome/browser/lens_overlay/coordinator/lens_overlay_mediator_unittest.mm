@@ -92,8 +92,8 @@ class LensOverlayMediatorTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
-    SceneState* mock_scene_state = OCMClassMock([SceneState class]);
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), mock_scene_state);
+    SceneState* scene_state = [[SceneState alloc] init];
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state);
     CreateAndAttachWebState();
 
     mediator_ = [[LensOverlayMediator alloc]

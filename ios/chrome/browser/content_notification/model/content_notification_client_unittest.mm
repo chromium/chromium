@@ -79,10 +79,9 @@ class ContentNotificationClientTest : public PlatformTest {
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
     BrowserList* list = BrowserListFactory::GetForProfile(profile);
-    mock_scene_state_ = OCMClassMock([SceneState class]);
-    OCMStub([mock_scene_state_ activationLevel])
-        .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(profile, mock_scene_state_);
+    scene_state_ = [[SceneState alloc] init];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+    browser_ = std::make_unique<TestBrowser>(profile, scene_state_);
     list->AddBrowser(browser_.get());
     client_ = IsMultiProfilePushNotificationHandlingEnabled()
                   ? std::make_unique<ContentNotificationClient>(profile)
@@ -142,7 +141,7 @@ class ContentNotificationClientTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  id mock_scene_state_;
+  SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<ContentNotificationClient> client_;
   id mock_notification_center_;

@@ -50,9 +50,8 @@ class CrossPlatformPromosNotificationClientTest : public PlatformTest {
     profile_ = std::move(builder).Build();
 
     // Set up SceneState with activation level.
-    scene_state_ = OCMClassMock([SceneState class]);
-    OCMStub([scene_state_ activationLevel])
-        .andReturn(SceneActivationLevelForegroundActive);
+    scene_state_ = [[SceneState alloc] init];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
     client_ =
         std::make_unique<CrossPlatformPromosNotificationClient>(profile_.get());
@@ -97,7 +96,7 @@ class CrossPlatformPromosNotificationClientTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> profile_;
-  id scene_state_;
+  SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<CrossPlatformPromosNotificationClient> client_;
 };

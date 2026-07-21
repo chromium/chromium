@@ -88,7 +88,7 @@ class TabsClosureUtilTest : public PlatformTest {
         tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
 
-    scene_state_ = OCMClassMock([SceneState class]);
+    scene_state_ = [[SceneState alloc] init];
     browser_ = Browser::Create(profile_.get(), scene_state_);
   }
 

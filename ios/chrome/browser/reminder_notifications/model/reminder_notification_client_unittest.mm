@@ -50,10 +50,9 @@ class ReminderNotificationClientTest : public PlatformTest {
     builder.SetPrefService(CreatePrefService());
     profile_ = std::move(builder).Build();
 
-    mock_scene_state_ = OCMClassMock([SceneState class]);
-    OCMStub([mock_scene_state_ activationLevel])
-        .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), mock_scene_state_);
+    scene_state_ = [[SceneState alloc] init];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     BrowserListFactory::GetForProfile(profile_.get())
         ->AddBrowser(browser_.get());
 
@@ -149,7 +148,7 @@ class ReminderNotificationClientTest : public PlatformTest {
   std::unique_ptr<ReminderNotificationClient> client_;
   id mock_notification_center_;
   std::unique_ptr<ScopedBlockSwizzler> notification_center_swizzler_;
-  id mock_scene_state_;
+  SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
 };
 

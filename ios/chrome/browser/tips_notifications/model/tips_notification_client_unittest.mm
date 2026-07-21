@@ -98,10 +98,9 @@ class TipsNotificationClientTest : public PlatformTest {
                               base::BindRepeating(&CreateTestSyncService));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     BrowserList* list = BrowserListFactory::GetForProfile(profile_);
-    mock_scene_state_ = OCMClassMock([SceneState class]);
-    OCMStub([mock_scene_state_ activationLevel])
-        .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(profile_, mock_scene_state_);
+    scene_state_ = [[SceneState alloc] init];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+    browser_ = std::make_unique<TestBrowser>(profile_, scene_state_);
     list->AddBrowser(browser_.get());
     client_ = std::make_unique<TipsNotificationClient>();
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
@@ -319,7 +318,7 @@ class TipsNotificationClientTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   raw_ptr<feature_engagement::Tracker> tracker_;
   base::SimpleTestClock test_clock_;
-  id mock_scene_state_;
+  SceneState* scene_state_;
   UNNotificationResponse* mock_notification_response_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TipsNotificationClient> client_;

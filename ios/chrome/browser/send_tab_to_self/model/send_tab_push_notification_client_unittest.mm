@@ -53,10 +53,9 @@ class SendTabPushNotificationClientTest : public PlatformTest {
     ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
     BrowserList* list = BrowserListFactory::GetForProfile(profile);
-    mock_scene_state_ = OCMClassMock([SceneState class]);
-    OCMStub([mock_scene_state_ activationLevel])
-        .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(profile, mock_scene_state_);
+    scene_state_ = [[SceneState alloc] init];
+    scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+    browser_ = std::make_unique<TestBrowser>(profile, scene_state_);
     list->AddBrowser(browser_.get());
     client_ = IsMultiProfilePushNotificationHandlingEnabled()
                   ? std::make_unique<SendTabPushNotificationClient>(profile)
@@ -76,7 +75,6 @@ class SendTabPushNotificationClientTest : public PlatformTest {
   void TearDown() override {
     EXPECT_OCMOCK_VERIFY(mock_response_);
     EXPECT_OCMOCK_VERIFY(mock_notification_);
-    EXPECT_OCMOCK_VERIFY(mock_scene_state_);
     EXPECT_OCMOCK_VERIFY((id)application_handler_);
     PlatformTest::TearDown();
   }
@@ -127,7 +125,7 @@ class SendTabPushNotificationClientTest : public PlatformTest {
   web::WebTaskEnvironment web_task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  id mock_scene_state_;
+  SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<SendTabPushNotificationClient> client_;
   raw_ptr<send_tab_to_self::FakeSendTabToSelfModel> model_;
