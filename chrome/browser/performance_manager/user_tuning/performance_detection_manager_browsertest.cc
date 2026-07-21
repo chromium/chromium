@@ -100,8 +100,14 @@ IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
   EXPECT_TRUE(GetWebContentsAt(2)->WasDiscarded());
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/500854310): Flaky on Mac 13.
+#define MAYBE_DiscardEligibleAndClosedPage DISABLED_DiscardEligibleAndClosedPage
+#else
+#define MAYBE_DiscardEligibleAndClosedPage DiscardEligibleAndClosedPage
+#endif
 IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
-                       DiscardEligibleAndClosedPage) {
+                       MAYBE_DiscardEligibleAndClosedPage) {
   ASSERT_TRUE(AddTabAtIndex(1, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(AddTabAtIndex(2, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
 
