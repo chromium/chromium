@@ -76,7 +76,7 @@ void RuntimeEnabledFeaturesBase::SetOriginTrialControlledFeaturesEnabled(bool en
 }
 
 void RuntimeEnabledFeaturesBase::SetFeatureEnabledFromString(
-    const std::string& name, bool enable) {
+    std::string_view name, bool enable) {
   static const struct {
     const char* name;
     void (*SetFunction)(bool);
@@ -86,7 +86,7 @@ void RuntimeEnabledFeaturesBase::SetFeatureEnabledFromString(
   {% endfor %}
   };
 
-  auto feature = std::lower_bound(std::begin(kFeatures), std::end(kFeatures), name, [](const auto& feature, const std::string& name) {
+  auto feature = std::lower_bound(std::begin(kFeatures), std::end(kFeatures), name, [](const auto& feature, std::string_view name) {
     return feature.name < name;
   });
 
@@ -97,7 +97,7 @@ void RuntimeEnabledFeaturesBase::SetFeatureEnabledFromString(
 }
 
 bool RuntimeEnabledFeaturesBase::IsFeatureEnabledFromString(
-    const std::string& name) {
+    std::string_view name) {
   static const struct {
     const char* name;
     bool (*GetFunction)();
@@ -109,7 +109,7 @@ bool RuntimeEnabledFeaturesBase::IsFeatureEnabledFromString(
   {% endfor %}
   };
 
-  auto feature = std::lower_bound(std::begin(kFeatures), std::end(kFeatures), name, [](const auto& feature, const std::string& name) {
+  auto feature = std::lower_bound(std::begin(kFeatures), std::end(kFeatures), name, [](const auto& feature, std::string_view name) {
     return feature.name < name;
   });
 

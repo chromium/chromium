@@ -6,7 +6,7 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
-#include <string>
+#include <string_view>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/protected_memory.h"
@@ -90,7 +90,7 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
 
   {% endfor %}
 
-  static bool IsFeatureEnabledFromString(const std::string& name);
+  static bool IsFeatureEnabledFromString(std::string_view name);
 
  protected:
   // See the comment in RuntimeEnabledFeatures for why these are protected.
@@ -99,7 +99,7 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
   {% endfor %}
   static void SetOriginTrialControlledFeaturesEnabled(bool);
 
-  static void SetFeatureEnabledFromString(const std::string& name, bool enabled);
+  static void SetFeatureEnabledFromString(std::string_view name, bool enabled);
   static void UpdateStatusFromBaseFeatures();
 
   {% for feature in features %}

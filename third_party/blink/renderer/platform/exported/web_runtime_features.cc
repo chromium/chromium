@@ -39,7 +39,7 @@ void WebRuntimeFeatures::EnableExperimentalFeatures(bool enable) {
   RuntimeEnabledFeatures::SetExperimentalFeaturesEnabled(enable);
 }
 
-void WebRuntimeFeatures::EnableFeatureFromString(const std::string& name,
+void WebRuntimeFeatures::EnableFeatureFromString(std::string_view name,
                                                  bool enable) {
   RuntimeEnabledFeatures::SetFeatureEnabledFromString(name, enable);
 }

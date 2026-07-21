@@ -31,11 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RUNTIME_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RUNTIME_FEATURES_H_
 
+#include <string_view>
+
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_runtime_features_base.h"
-#include "third_party/blink/public/platform/web_string.h"
-
-#include <string>
 
 namespace blink {
 
@@ -57,10 +56,10 @@ class BLINK_PLATFORM_EXPORT WebRuntimeFeatures : public WebRuntimeFeaturesBase {
 
   // Enables or disables a feature by its string identifier from
   // renderer/platform/runtime_enabled_features.json5.
-  // Note: We use std::string instead of WebString because this API can
+  // Note: We use std::string_view instead of WebString because this API can
   // be called before blink::Initalize(). We can't create WebString objects
   // before blink::Initialize().
-  static void EnableFeatureFromString(const std::string& name, bool enable);
+  static void EnableFeatureFromString(std::string_view name, bool enable);
 
   // Update runtime features status from blink::features features status.
   static void UpdateStatusFromBaseFeatures();

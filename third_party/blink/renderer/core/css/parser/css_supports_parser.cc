@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
 
@@ -305,7 +306,7 @@ bool CSSSupportsParser::ConsumeBlinkFeatureFn(CSSParserTokenStream& stream) {
   if (stream.Peek().GetType() == kIdentToken) {
     const CSSParserToken& feature_name = stream.ConsumeIncludingWhitespace();
     if (RuntimeEnabledFeatures::IsFeatureEnabledFromString(
-            feature_name.Value().Utf8()) &&
+            StringUtf8Adaptor(feature_name.Value()).AsStringView()) &&
         guard.Release()) {
       stream.ConsumeWhitespace();
       return true;
