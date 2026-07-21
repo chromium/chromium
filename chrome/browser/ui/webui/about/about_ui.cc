@@ -70,7 +70,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/base64.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ash/borealis/borealis_credits.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/customization/customization_document.h"
@@ -291,21 +290,6 @@ class ChromeOSCreditsHandler
   base::FilePath prefix_;
 };
 
-void OnBorealisCreditsLoaded(content::URLDataSource::GotDataCallback callback,
-                             std::string credits_html) {
-  if (credits_html.empty()) {
-    credits_html = l10n_util::GetStringUTF8(IDS_BOREALIS_CREDITS_PLACEHOLDER);
-  }
-  std::move(callback).Run(
-      base::MakeRefCounted<base::RefCountedString>(std::move(credits_html)));
-}
-
-void HandleBorealisCredits(Profile* profile,
-                           content::URLDataSource::GotDataCallback callback) {
-  borealis::LoadBorealisCredits(
-      profile, base::BindOnce(&OnBorealisCreditsLoaded, std::move(callback)));
-}
-
 class CrostiniCreditsHandler
     : public base::RefCountedThreadSafe<CrostiniCreditsHandler> {
  public:
@@ -461,9 +445,6 @@ LinuxProxyConfigUI::LinuxProxyConfigUI()
 #if BUILDFLAG(IS_CHROMEOS)
 OSCreditsUI::OSCreditsUI() : AboutUIConfigBase(ash::kChromeUIOSCreditsHost) {}
 
-BorealisCreditsUI::BorealisCreditsUI()
-    : AboutUIConfigBase(ash::kChromeUIBorealisCreditsHost) {}
-
 CrostiniCreditsUI::CrostiniCreditsUI()
     : AboutUIConfigBase(ash::kChromeUICrostiniCreditsHost) {}
 #endif
@@ -508,8 +489,7 @@ void AboutUIHTMLSource::StartDataRequest(
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
   } else if (source_name_ == ash::kChromeUIOSCreditsHost ||
-             source_name_ == ash::kChromeUICrostiniCreditsHost ||
-             source_name_ == ash::kChromeUIBorealisCreditsHost) {
+             source_name_ == ash::kChromeUICrostiniCreditsHost) {
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath) {
       idr = IDR_ABOUT_UI_CREDITS_JS;
@@ -522,8 +502,6 @@ void AboutUIHTMLSource::StartDataRequest(
                                       os_credits_prefix_);
       } else if (source_name_ == ash::kChromeUICrostiniCreditsHost) {
         CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
-      } else if (source_name_ == ash::kChromeUIBorealisCreditsHost) {
-        HandleBorealisCredits(profile(), std::move(callback));
       } else {
         NOTREACHED();
       }

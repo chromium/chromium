@@ -58,12 +58,6 @@ class OSCreditsUI : public AboutUIConfigBase {
   OSCreditsUI();
 };
 
-// chrome://borealis-credits
-class BorealisCreditsUI : public AboutUIConfigBase {
- public:
-  BorealisCreditsUI();
-};
-
 // chrome://crostini-credits
 class CrostiniCreditsUI : public AboutUIConfigBase {
  public:

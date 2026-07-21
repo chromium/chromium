@@ -248,7 +248,6 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<BluetoothPairingDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<BocaReceiverUIConfig>());
   map.AddWebUIConfig(std::make_unique<borealis::BorealisMOTDUIConfig>());
-  map.AddWebUIConfig(std::make_unique<BorealisCreditsUI>());
   map.AddWebUIConfig(std::make_unique<cloud_upload::CloudUploadUIConfig>());
   map.AddWebUIConfig(std::make_unique<ColorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ConfirmPasswordChangeUIConfig>());
