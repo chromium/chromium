@@ -30,8 +30,10 @@
   /* Transparent so background from animated-glow shows. */
   background-color: transparent;
   display: flex;
+  flex-direction: column;
   height: 100%;
   min-height: var(--voice-search-minimum-height);
+  overflow: hidden;
   padding: 7px 0;
   pointer-events: none;
   width: 100%;
@@ -135,6 +137,33 @@
   transition: var(--voice-search-fade-transition);
 }
 
+:host([live-transcript-enabled]) #container:not(.has-error) {
+  height: auto;
+  inset: auto;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  position: relative;
+}
+
+:host([live-transcript-enabled]) #input {
+  box-sizing: border-box;
+  flex: 0 1 auto;
+  height: auto;
+  max-height: var(--text-input-max-height, 190px);
+  overflow-y: auto;
+  padding-bottom: 0;
+  padding-inline-end: 20px;
+  word-break: break-word;
+}
+
+:host([live-transcript-enabled]) #bottomActions {
+  align-self: flex-end;
+  margin-bottom: 0;
+  margin-inline-end: var(--voice-bottom-actions-inset-inline-end, 12px);
+  margin-top: auto;
+  position: static;
+}
+
 #stopButton {
   /* Colors are hardcoded here because Contextual Tasks and New Tab Page should not change color based on the theme. Omnibox overrides this based on theme.*/
   --cr-icon-button-fill-color: #1F1F1F;
@@ -181,12 +210,9 @@
   pointer-events: none;
 }
 
-/* Hide submit/stop buttons (if applicable) via fade if permission
- * prompt is showing.
- */
+/* Hide submit/stop buttons (if applicable) if permission prompt is showing. */
 :host(.permission-prompt-showing) #bottomActions {
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }
 
 /* Initial fade in for submit/stop buttons. */

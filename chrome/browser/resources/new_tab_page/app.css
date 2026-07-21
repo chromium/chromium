@@ -424,6 +424,7 @@ ntp-lens-upload-dialog {
   background: var(--color-composebox-background);
   border: none;
   border-radius: 28px;
+  bottom: auto;
   box-shadow: var(--cr-searchbox-shadow);
   height: 128px;
   inset-inline-start: anchor(start);
@@ -434,6 +435,12 @@ ntp-lens-upload-dialog {
   position-anchor: --dialog-anchor;
   top: anchor(top);
   width: var(--ntp-search-box-width);
+}
+
+#voiceSearchDialog:has(#voiceSearch[live-transcript-enabled]) {
+  height: auto;
+  max-height: 254px;
+  min-height: 128px;
 }
 
 /* Disable default scrim and use custom scrim instead. */
@@ -447,6 +454,11 @@ ntp-lens-upload-dialog {
   width: 100%;
 }
 
+#voiceSearchDialog:has(#voiceSearch[live-transcript-enabled])
+    #voiceSearchCardContainer {
+  height: auto;
+}
+
 #voiceSearch {
   height: 100%;
   width: 100%;
@@ -458,7 +470,13 @@ ntp-lens-upload-dialog {
    * determines the composebox height. In normal voice search mode, 'search-animated-glow'
    * determines the composebox height and min-height is ignored.
    */
-  --voice-search-minimum-height: 121px;
+  --voice-search-minimum-height: 128px;
+}
+
+#voiceSearch[live-transcript-enabled] {
+  height: auto;
+  inset: auto;
+  position: static;
 }
 
 #voiceSearch::part(voice-stop-button) {
@@ -472,5 +490,11 @@ ntp-lens-upload-dialog {
 #voiceSearchGlow {
   inset: 0;
   pointer-events: none;
+  position: absolute;
+}
+
+#voiceSearch:not([live-transcript-enabled])
+    ~ #voiceSearchGlow::part(full-container-overlay) {
+  min-block-size: 0;
   position: absolute;
 }

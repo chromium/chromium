@@ -346,12 +346,14 @@ suite('ComposeboxVoiceSearchRecognition', () => {
 
     const voiceSearchInput = voiceSearchElement.$.input;
 
-    assertEquals('helloworld', voiceSearchInput.value);
+    assertEquals('helloworld', voiceSearchInput.textContent?.trim());
 
     // Reset the composebox input.
-    voiceSearchInput.value = 'test';
-    voiceSearchInput.dispatchEvent(new Event('input'));
-    assertEquals('test', voiceSearchInput.value);
+    const resetResult = createResults(1);
+    Object.assign(resetResult.results[0]![0]!, {transcript: 'test'});
+    mockSpeechRecognition.onresult!(resetResult);
+    await voiceSearchElement.updateComplete;
+    assertEquals('test', voiceSearchInput.textContent?.trim());
     await microtasksFinished();
 
     const result2 = createResults(2);
@@ -362,7 +364,7 @@ suite('ComposeboxVoiceSearchRecognition', () => {
     mockSpeechRecognition.onresult!(result2);
     await microtasksFinished();
     // Speech recognition overrides existing composebox input.
-    assertEquals('hellogoodbye', voiceSearchInput.value);
+    assertEquals('hellogoodbye', voiceSearchInput.textContent?.trim());
   });
 
   test('idle timer submits voice search if final result exists', async () => {

@@ -3398,10 +3398,9 @@ suite('NewTabPageAppTest', () => {
           await microtasksFinished();
 
           // Verify that the live transcript textarea displays the spoken text.
-          const inputArea =
-              $$<HTMLTextAreaElement>(voiceSearch, '#input');
+          const inputArea = $$<HTMLElement>(voiceSearch, '#input');
           assertTrue(!!inputArea);
-          assertEquals('hello live voice query', inputArea.value);
+          assertEquals('hello live voice query', inputArea.textContent?.trim());
 
           // Simulate clicking Stop button and verify dialog closes.
           $$<HTMLElement>(voiceSearch, '#stopButton')!.click();
