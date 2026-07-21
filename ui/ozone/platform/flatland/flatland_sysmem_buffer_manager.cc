@@ -51,6 +51,7 @@ void FlatlandSysmemBufferManager::Initialize(
   flatland_allocator_.Bind(std::move(flatland_allocator));
   flatland_allocator_.set_error_handler(base::LogFidlErrorAndExitProcess(
       FROM_HERE, "fuchsia::ui::composition::Allocator"));
+  allocator_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
 void FlatlandSysmemBufferManager::Shutdown() {
@@ -71,14 +72,20 @@ FlatlandSysmemBufferManager::CreateNativePixmap(VkDevice vk_device,
       0, &pixmap_handle.buffer_collection_handle, &service_handle);
   ZX_DCHECK(status == ZX_OK, status);
 
-  auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
   // Scanout images must be registered with flatland.
+  FlatlandSysmemBufferCollection::RegisterBufferCollectionCallback register_cb;
+  if (usage == NativePixmapBufferUsage::kScanout) {
+    register_cb = base::BindOnce(
+        &FlatlandSysmemBufferManager::RegisterWithFlatlandAllocator,
+        base::Unretained(this));
+  }
+
+  auto collection = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
   if (!collection->Initialize(
-          sysmem_allocator_.get(), flatland_allocator_.get(),
+          sysmem_allocator_.get(), std::move(register_cb),
           flatland_surface_factory_, std::move(service_handle),
           /*token_channel=*/zx::channel(), size, format, usage, vk_device,
-          /*min_buffer_count=*/1, /*register_with_flatland_allocator=*/usage ==
-                                      NativePixmapBufferUsage::kScanout)) {
+          /*min_buffer_count=*/1)) {
     return nullptr;
   }
 
@@ -112,17 +119,49 @@ void FlatlandSysmemBufferManager::ImportSysmemBufferCollection(
   }
   NativePixmapUsageSet native_pixmap_usage =
       BufferUsageToNativePixmapUsage(usage);
+
+  FlatlandSysmemBufferCollection::RegisterBufferCollectionCallback register_cb;
+  if (register_with_flatland_allocator) {
+    register_cb = base::BindOnce(
+        &FlatlandSysmemBufferManager::RegisterWithFlatlandAllocator,
+        base::Unretained(this));
+  }
+
   auto result = base::MakeRefCounted<FlatlandSysmemBufferCollection>();
-  if (!result->Initialize(sysmem_allocator_.get(), flatland_allocator_.get(),
+  if (!result->Initialize(sysmem_allocator_.get(), std::move(register_cb),
                           flatland_surface_factory_, std::move(service_handle),
                           std::move(sysmem_token), size, format,
-                          native_pixmap_usage, vk_device, min_buffer_count,
-                          register_with_flatland_allocator)) {
+                          native_pixmap_usage, vk_device, min_buffer_count)) {
     base::AutoLock auto_lock(collections_lock_);
     collections_.erase(koid.value());
     return;
   }
   RegisterCollection(result);
+}
+
+void FlatlandSysmemBufferManager::RegisterWithFlatlandAllocator(
+    fuchsia::ui::composition::RegisterBufferCollectionArgs args) {
+  DCHECK(allocator_task_runner_);
+  if (!allocator_task_runner_->BelongsToCurrentThread()) {
+    allocator_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &FlatlandSysmemBufferManager::RegisterWithFlatlandAllocator,
+            base::Unretained(this), std::move(args)));
+    return;
+  }
+
+  if (!flatland_allocator_) {
+    return;
+  }
+  flatland_allocator_->RegisterBufferCollection(
+      std::move(args),
+      [](fuchsia::ui::composition::Allocator_RegisterBufferCollection_Result
+             result) {
+        if (result.is_err()) {
+          LOG(FATAL) << "RegisterBufferCollection failed";
+        }
+      });
 }
 
 void FlatlandSysmemBufferManager::RegisterCollection(

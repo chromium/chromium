@@ -40,6 +40,9 @@ class FlatlandSysmemBufferCollection
     : public base::RefCountedDeleteOnSequence<FlatlandSysmemBufferCollection>,
       public base::MessagePumpForIO::ZxHandleWatcher {
  public:
+  using RegisterBufferCollectionCallback = base::OnceCallback<void(
+      fuchsia::ui::composition::RegisterBufferCollectionArgs)>;
+
   static bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
                                             gfx::BufferUsage usage);
   static bool IsNativePixmapConfigSupported(viz::SharedImageFormat format,
@@ -56,10 +59,10 @@ class FlatlandSysmemBufferCollection
   // collection is created. |size| may be empty. In that case |token_handle|
   // must not be null and the image size is determined by the other sysmem
   // participants.
-  // If |register_with_flatland_allocator| is true, |token_handle| gets
-  // duplicated and registered with the Flatland Allocator.
+  // If |register_buffer_collection| is non-null, |token_handle| gets duplicated
+  // and registered with the Flatland Allocator via the callback.
   bool Initialize(fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
-                  fuchsia::ui::composition::Allocator* flatland_allocator,
+                  RegisterBufferCollectionCallback register_buffer_collection,
                   FlatlandSurfaceFactory* flatland_surface_factory,
                   zx::eventpair handle,
                   zx::channel sysmem_token,
@@ -67,8 +70,7 @@ class FlatlandSysmemBufferCollection
                   viz::SharedImageFormat format,
                   NativePixmapUsageSet usage,
                   VkDevice vk_device,
-                  size_t min_buffer_count,
-                  bool register_with_flatland_allocator);
+                  size_t min_buffer_count);
 
   // Does minimum initialization needed for tests based on |usage|.
   void InitializeForTesting(zx::eventpair handle, NativePixmapUsageSet usage);
@@ -110,9 +112,8 @@ class FlatlandSysmemBufferCollection
 
   bool InitializeInternal(
       fuchsia::sysmem2::Allocator_Sync* sysmem_allocator,
-      fuchsia::ui::composition::Allocator* flatland_allocator,
+      RegisterBufferCollectionCallback register_buffer_collection,
       fuchsia::sysmem2::BufferCollectionTokenSyncPtr collection_token,
-      bool register_with_flatland_allocator,
       size_t min_buffer_count);
 
   void InitializeImageCreateInfo(VkImageCreateInfo* vk_image_info,
