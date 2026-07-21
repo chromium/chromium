@@ -844,8 +844,10 @@ void ContextualTasksUiService::OnThreadLinkClicked(
           << "ContextualTasks navigation trace: OnThreadLinkClicked "
              "loading URL in inserted tab: "
           << url;
-      new_tab->GetContents()->GetController().LoadURLWithParams(
-          content::NavigationController::LoadURLParams(url));
+      content::NavigationController::LoadURLParams params(url);
+      params.override_user_agent =
+          content::NavigationController::UA_OVERRIDE_TRUE;
+      new_tab->GetContents()->GetController().LoadURLWithParams(params);
     } else {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: OnThreadLinkClicked "
@@ -905,8 +907,9 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       << "ContextualTasks navigation trace: OnThreadLinkClicked "
          "loading URL in inserted tab: "
       << url;
-  new_tab->GetContents()->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(url));
+  content::NavigationController::LoadURLParams params(url);
+  params.override_user_agent = content::NavigationController::UA_OVERRIDE_TRUE;
+  new_tab->GetContents()->GetController().LoadURLWithParams(params);
 
   // Detach the WebContents from tab.
   std::unique_ptr<content::WebContents> contextual_task_contents =
