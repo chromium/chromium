@@ -34,7 +34,7 @@ class OrcaPolicyTest : public PolicyTest {
   }
 
  public:
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;

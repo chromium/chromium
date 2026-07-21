@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_P(
     ShowExtensionSigninPrompt) {
   const GURL sync_url = GaiaUrls::GetInstance()->signin_chrome_sync_dice();
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ShowExtensionSigninPrompt(profile, /*enable_sync=*/true,
                             /*email_hint=*/std::string(), kExtensionName);
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_F(SigninUiUtilExtensionsTest,
                        ShowExtensionSigninPrompt_AsLockedProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilExtensionsTest,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_CALL(
       mock_delegate_,

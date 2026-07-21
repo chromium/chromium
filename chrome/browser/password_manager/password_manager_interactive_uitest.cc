@@ -684,7 +684,7 @@ class PasswordManagerInteractiveTestWithSigninInterception
 IN_PROC_BROWSER_TEST_F(
     PasswordManagerInteractiveTestWithSigninInterception,
     MAYBE_InterceptionBubbleSuppressedByPendingPasswordUpdate) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   helper_.SetupProfilesForInterception(profile);
   // Prepopulate Gaia credentials to trigger an update bubble.
   scoped_refptr<password_manager::TestPasswordStore> password_store =

@@ -229,7 +229,7 @@ TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManager() {
 TestGuestViewManager* PDFExtensionTestBase::GetGuestViewManagerForProfile(
     content::BrowserContext* profile) {
   if (!profile) {
-    profile = browser()->profile();
+    profile = browser()->GetProfile();
   }
   return std::get<std::unique_ptr<guest_view::TestGuestViewManagerFactory>>(
              factory_)

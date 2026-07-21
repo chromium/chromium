@@ -62,7 +62,7 @@ class SigninBrowserTestBaseT : public T {
   }
 
   // Returns the profile attached to the `signin::IdentityTestEnvironment`. This
-  // may not be the same as `browser()->profile()`.
+  // may not be the same as `browser()->GetProfile()`.
   Profile* GetProfile() const { return profile_; }
 
   signin::IdentityTestEnvironment* identity_test_env() const {
@@ -85,7 +85,7 @@ class SigninBrowserTestBaseT : public T {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     base::FilePath profile_path =
         profile_manager->GenerateNextProfileDirectoryPath();
-    profile_ = use_main_profile_ ? this->browser()->profile()
+    profile_ = use_main_profile_ ? this->browser()->GetProfile()
                                  : &profiles::testing::CreateProfileSync(
                                        profile_manager, profile_path);
 

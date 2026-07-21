@@ -21,7 +21,7 @@ class GenAIWallpaperPolicyTest : public PolicyTest {};
 
 IN_PROC_BROWSER_TEST_F(GenAIWallpaperPolicyTest,
                        EnableFeatureIfGenAIWallpaperPolicyUnset) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   UpdateProviderPolicy(PolicyMap());
@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(GenAIWallpaperPolicyTest,
 
 IN_PROC_BROWSER_TEST_F(GenAIWallpaperPolicyTest,
                        EnableFeatureIfGenAIWallpaperPolicyEnabled) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PolicyMap policies;
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(GenAIWallpaperPolicyTest,
 IN_PROC_BROWSER_TEST_F(
     GenAIWallpaperPolicyTest,
     EnableFeatureIfGenAIWallpaperPolicyEnabledWithoutLogging) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PolicyMap policies;
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(GenAIWallpaperPolicyTest,
                        DisableFeatureIfGenAIWallpaperPolicyDisabled) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PolicyMap policies;
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);

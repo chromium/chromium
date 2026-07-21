@@ -43,7 +43,7 @@ class AutocompleteDictionaryPreloadBrowserTest
  protected:
   network::mojom::NetworkContext* GetTargetNetworkContext() {
     return browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext();
   }

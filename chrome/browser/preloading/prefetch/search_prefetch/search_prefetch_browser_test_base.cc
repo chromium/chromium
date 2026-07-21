@@ -206,7 +206,7 @@ void SearchPrefetchBaseBrowserTest::ClearBrowsingCacheData(
   if (url_origin)
     filter->AddOrigin(url::Origin::Create(url_origin.value()));
   content::BrowsingDataRemover* remover =
-      browser()->profile()->GetBrowsingDataRemover();
+      browser()->GetProfile()->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
   remover->RemoveWithFilterAndReply(
       base::Time(), base::Time::Max(),

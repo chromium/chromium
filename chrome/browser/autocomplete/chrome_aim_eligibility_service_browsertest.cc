@@ -316,8 +316,8 @@ class ChromeAimEligibilityServiceBrowserTest
         country);
 
     // Set up the AIM policy pref; 0 = allowed, 1 = disallowed.
-    browser()->profile()->GetPrefs()->SetInteger(omnibox::kAIModeSettings,
-                                                 allowed_by_policy ? 0 : 1);
+    browser()->GetProfile()->GetPrefs()->SetInteger(omnibox::kAIModeSettings,
+                                                    allowed_by_policy ? 0 : 1);
 
     SetUpDefaultSearchEngine(browser()->GetProfile(), is_google_dse);
 
@@ -1212,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOffTheRecordBrowserTest,
   EXPECT_TRUE(service->IsCreateImagesEligible());
 
   // Check off-the-record profile.
-  Profile* otr_profile = browser()->profile()->GetPrimaryOTRProfile(
+  Profile* otr_profile = browser()->GetProfile()->GetPrimaryOTRProfile(
       /*create_if_needed=*/true);
   auto* otr_service = GetAimEligibilityService(otr_profile);
   ASSERT_TRUE(otr_service);
@@ -1312,7 +1312,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
 
   // Trigger the request.
   // Check off-the-record profile.
-  Profile* otr_profile = browser()->profile()->GetPrimaryOTRProfile(
+  Profile* otr_profile = browser()->GetProfile()->GetPrimaryOTRProfile(
       /*create_if_needed=*/true);
   auto* service = GetAimEligibilityService(otr_profile);
   base::test::TestFuture<void> eligibility_changed_future;

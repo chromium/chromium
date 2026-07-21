@@ -69,7 +69,7 @@ class LegacyCookieScopePolicyBrowserTest
 
 IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
                        TestLegacyCookieScopeEnabled) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   // No cookies at startup
   ASSERT_TRUE(content::GetCookies(profile, example_port_80_).empty());
 
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
                        TestLegacyCookieScopeEnabledForDomainList) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // No cookies at startup
   ASSERT_TRUE(content::GetCookies(profile, example_port_80_).empty());
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
                        TestLegacyCookieScopeEnabledForSingleDomain) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // No cookies at startup
   ASSERT_TRUE(content::GetCookies(profile, example_port_80_).empty());
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     LegacyCookieScopePolicyBrowserTest,
     TestLegacyCookieScopeEnabledForDomainListPartitionedCookies) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // No cookies at startup
   ASSERT_TRUE(content::GetCookies(profile, example_port_80_).empty());
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(LegacyCookieScopePolicyBrowserTest,
                        TestLegacyCookieScopeEnabledPartitionedCookies) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // No cookies at startup
   ASSERT_TRUE(content::GetCookies(profile, example_port_80_).empty());

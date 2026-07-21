@@ -127,8 +127,8 @@ class MirrorBrowserTest : public InProcessBrowserTest {
 //    not because it was on a secure Google domain.
 // This is a regression test for crbug.com/40083730.
 IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
-  browser()->profile()->GetPrefs()->SetString(prefs::kGoogleServicesAccountId,
-                                              "account_id");
+  browser()->GetProfile()->GetPrefs()->SetString(
+      prefs::kGoogleServicesAccountId, "account_id");
 
   base::Lock lock;
   // Map from the path of the URLs that test server sees to the request header.

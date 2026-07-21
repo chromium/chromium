@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientTabletModePartTest,
   const int kDefaultFixedFontSize = kDefaultPrefs.default_fixed_font_size;
 
   // Set the browser font sizes to non-default values.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PrefService* profile_prefs = profile->GetPrefs();
   profile_prefs->SetInteger(prefs::kWebKitDefaultFontSize,
                             kDefaultFontSize + 2);

@@ -92,7 +92,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(AutoPictureInPictureHatsBrowserTest,
                        ServiceCreationRespectsFeatureFlag) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   if (is_surveys_feature_enabled()) {
     ON_CALL(*GetMockHatsService(profile), CanShowAnySurvey(false))
         .WillByDefault(testing::Return(true));
@@ -119,7 +119,7 @@ class AutoPictureInPictureHatsEnabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureHatsEnabledBrowserTest,
                        TriggersSurveyOnWindowClose) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* hats_service = GetMockHatsService(profile);
   ON_CALL(*hats_service, CanShowAnySurvey(false))
       .WillByDefault(testing::Return(true));

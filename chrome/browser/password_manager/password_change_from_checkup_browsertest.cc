@@ -111,7 +111,7 @@ class PasswordChangeFromCheckupDelegateBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
                        StartsFlowAndVerifiesActorTab) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
 
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
                        FormWaiterFindsFormFillsAndSubmitsThroughGlic) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
 
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
                        FlowStopsOnUserIntervention) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
 
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
                        OnFindFormTaskStateChangedTracksTaskCorrectly) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
 
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
                        DummyTaskCleanedUpOnDestruction) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
 
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
                        FlowStopsOnStopCalled) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* actor_service =
       actor::ActorKeyedServiceFactory::GetActorKeyedService(profile);
 

@@ -68,7 +68,7 @@ class CpuPerformancePolicyTest : public PolicyTest {
   }
 
   void SetUserOverride(int tier) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCpuPerformanceTierOverride, tier);
     base::RunLoop().RunUntilIdle();
   }

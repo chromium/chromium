@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersPolicyTest, HistoryClustersVisible) {
   auto* history_clusters_service =
       HistoryClustersServiceFactory::GetForBrowserContext(
           browser()->GetProfile());
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   PolicyMap policies;
 
   // Verify that history clusters are visible by default.

@@ -21,7 +21,7 @@ using GenAIVcBackgroundPolicyTest = PolicyTest;
 
 IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
                        EnableFeatureIfGenAIVcBackgroundPolicyUnset) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   UpdateProviderPolicy(PolicyMap());
@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
 }
 IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
                        EnableFeatureIfGenAIVcBackgroundPolicyEnabled) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PolicyMap policies;
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
 IN_PROC_BROWSER_TEST_F(
     GenAIVcBackgroundPolicyTest,
     EnableFeatureIfGenAIVcBackgroundPolicyEnabledWithoutLogging) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PolicyMap policies;
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
                        DisableFeatureIfGenAIVcBackgroundPolicyDisabled) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   PolicyMap policies;
 
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);

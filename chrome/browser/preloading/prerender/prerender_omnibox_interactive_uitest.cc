@@ -992,8 +992,8 @@ class PrerenderOmniboxReferrerChainUIBrowserTest
     // Disable Safe Browsing service so we can directly control when
     // SafeBrowsingNavigationObserverManager and SafeBrowsingNavigationObserver
     // are instantiated.
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                                 false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                    false);
     PrerenderOmniboxUIBrowserTest::SetUpOnMainThread();
     observer_manager_ = std::make_unique<
         safe_browsing::TestSafeBrowsingNavigationObserverManager>(browser());

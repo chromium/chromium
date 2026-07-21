@@ -139,7 +139,7 @@ class ManagedConfigurationAPITestBase : public MixinBasedInProcessBrowserTest {
     return value_future.Take();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
   const url::Origin& origin() const { return origin_; }
   ManagedConfigurationAPI* api() {
     return ManagedConfigurationAPIFactory::GetForProfile(profile());

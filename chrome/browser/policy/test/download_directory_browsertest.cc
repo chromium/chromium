@@ -66,8 +66,8 @@ void DownloadAndVerifyFile(Browser* browser,
 // Verifies that the download directory can be forced by policy.
 IN_PROC_BROWSER_TEST_F(PolicyTest, DownloadDirectory) {
   // Don't prompt for the download location during this test.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
+                                                  false);
 
   base::FilePath initial_dir =
       DownloadPrefs(browser()->GetProfile()).DownloadPath();

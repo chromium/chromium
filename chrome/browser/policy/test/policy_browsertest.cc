@@ -128,12 +128,12 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
 IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_HomepageLocation) {
   // Verifies that the homepage can be configured with policies.
   // Set a default, and check that the home button navigates there.
-  browser()->profile()->GetPrefs()->SetString(prefs::kHomePage,
-                                              chrome::kChromeUIPolicyURL);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetString(prefs::kHomePage,
+                                                 chrome::kChromeUIPolicyURL);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage,
+                                                  false);
   EXPECT_EQ(GURL(chrome::kChromeUIPolicyURL),
-            browser()->profile()->GetHomePage());
+            browser()->GetProfile()->GetHomePage());
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(GURL(url::kAboutBlankURL), contents->GetLastCommittedURL());

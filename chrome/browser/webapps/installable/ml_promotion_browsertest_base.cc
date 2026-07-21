@@ -222,7 +222,7 @@ Profile* MLPromotionBrowserTestBase::profile() {
   // TODO(b/287255120) : Build functionalities for Android.
   return nullptr;
 #else
-  return browser()->profile();
+  return browser()->GetProfile();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

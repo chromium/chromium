@@ -34,7 +34,7 @@ class BackgroundSyncContentSettingBrowserTest : public InProcessBrowserTest {
 
   void SetBackgroundSyncContentSetting(const GURL& url,
                                        ContentSetting setting) {
-    auto* profile = browser()->profile();
+    auto* profile = browser()->GetProfile();
     auto* host_content_settings_map =
         HostContentSettingsMapFactory::GetForProfile(profile);
     ASSERT_TRUE(host_content_settings_map);

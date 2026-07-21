@@ -914,7 +914,7 @@ class DeviceBoundSessionsLiveSignInTest : public LiveSignInTestBase {
   std::string GetCookies(const GURL& url) {
     network::mojom::CookieManager* cookie_manager =
         browser()
-            ->profile()
+            ->GetProfile()
             ->GetDefaultStoragePartition()
             ->GetCookieManagerForBrowserProcess();
     net::CookieOptions options;
@@ -933,7 +933,7 @@ class DeviceBoundSessionsLiveSignInTest : public LiveSignInTestBase {
   void DeleteCookie(const std::string& cookie_name, const std::string& domain) {
     network::mojom::CookieManager* cookie_manager =
         browser()
-            ->profile()
+            ->GetProfile()
             ->GetDefaultStoragePartition()
             ->GetCookieManagerForBrowserProcess();
 
@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(DeviceBoundSessionsLiveSignInTest,
 
   // Delete all browsing data on google.com.
   content::BrowsingDataRemover* remover =
-      browser()->profile()->GetBrowsingDataRemover();
+      browser()->GetProfile()->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver completion_observer(remover);
 
   auto filter_builder = content::BrowsingDataFilterBuilder::Create(

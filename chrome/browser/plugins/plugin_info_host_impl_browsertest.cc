@@ -66,7 +66,7 @@ class PluginInfoHostImplTest : public InProcessBrowserTest {
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     plugin_info_host_impl_ = std::make_unique<PluginInfoHostImpl>(
         web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
-        browser()->profile());
+        browser()->GetProfile());
   }
 
   void TearDownOnMainThread() override { plugin_info_host_impl_.reset(); }

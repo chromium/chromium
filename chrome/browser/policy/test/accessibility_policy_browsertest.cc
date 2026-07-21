@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, DictationEnabled) {
   // Verifies that the dictation accessibility feature can be
   // controlled through policy.
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
 
   // Verify that the dictation is initially disabled
   EXPECT_FALSE(accessibility_manager->IsDictationEnabled());
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, ColorCorrectionEnabled) {
 // policy.
 IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, FaceGazeForcedOff) {
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
 
   // Verify that FaceGaze is initially disabled.
   EXPECT_FALSE(accessibility_manager->IsFaceGazeEnabled());

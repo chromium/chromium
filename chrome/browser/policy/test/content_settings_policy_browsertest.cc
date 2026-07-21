@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_PRE_DefaultCookiesSetting) {
   // Verifies that cookies are deleted on shutdown. This test is split in 3
   // parts because it spans 2 browser restarts.
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GURL url(kURL);
   // No cookies at startup.
   EXPECT_TRUE(content::GetCookies(profile, url).empty());
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_PRE_WebsiteCookiesSetting) {
   // Verifies that cookies are deleted on shutdown. This test is split in 3
   // parts because it spans 2 browser restarts.
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GURL url(kURL);
   // No cookies at startup.
   EXPECT_TRUE(content::GetCookies(profile, url).empty());
@@ -350,7 +350,7 @@ class SensorsPolicyTest : public PolicyTest {
   void VerifyPermission(const char* url,
                         blink::mojom::PermissionStatus status) {
     content::PermissionController* permission_controller =
-        browser()->profile()->GetPermissionController();
+        browser()->GetProfile()->GetPermissionController();
     EXPECT_EQ(permission_controller
                   ->GetPermissionResultForOriginWithoutContext(
                       content::PermissionDescriptorUtil::
@@ -1445,7 +1445,7 @@ class AutomaticDownloadsPolicyTest : public PolicyTest {
         permissions::PermissionRequestManager::DENY_ALL);
 
     content::DownloadManager* download_manager =
-        browser()->profile()->GetDownloadManager();
+        browser()->GetProfile()->GetDownloadManager();
     std::unique_ptr<content::DownloadTestObserver> downloads_observer =
         std::make_unique<content::DownloadTestObserverTerminal>(
             download_manager, expected_downloads,

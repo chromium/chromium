@@ -31,7 +31,7 @@ using SigninUiUtilChromeOSTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(SigninUiUtilChromeOSTest,
                        ShowReauthForAccountOpensAccountManagerDialog) {
   base::HistogramTester histogram_tester;
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   ash::test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(
       profile);
 

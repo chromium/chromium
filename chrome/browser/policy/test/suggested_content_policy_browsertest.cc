@@ -17,7 +17,7 @@ class SuggestedContentPolicyTest : public PolicyTest {};
 
 IN_PROC_BROWSER_TEST_F(SuggestedContentPolicyTest, SuggestedContentEnabled) {
   // Verify Suggested Content pref behavior before policy.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_FALSE(
       prefs->IsManagedPreference(ash::prefs::kSuggestedContentEnabled));
   EXPECT_TRUE(prefs->GetBoolean(ash::prefs::kSuggestedContentEnabled));

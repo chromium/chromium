@@ -740,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
   signin::MakePrimaryAccountAvailable(GetIdentityManager(), "foo@example.com",
                                       signin::ConsentLevel::kSignin);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   TabStripModel* tab_strip = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip->count());
 
@@ -904,7 +904,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
                        ShowSignInUiForHistorySyncOptin_SignedOut) {
   sync_service()->GetUserSettings()->SetSelectedTypes(false, {});
 
-  SignInAndEnableHistorySync(browser(), browser()->profile(),
+  SignInAndEnableHistorySync(browser(), browser()->GetProfile(),
                              signin_metrics::AccessPoint::kRecentTabs);
   EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
                   *browser()->tab_strip_model()->GetActiveWebContents())
@@ -937,7 +937,7 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
 
   sync_service()->GetUserSettings()->SetSelectedTypes(false, {});
 
-  SignInAndEnableHistorySync(browser(), browser()->profile(),
+  SignInAndEnableHistorySync(browser(), browser()->GetProfile(),
                              signin_metrics::AccessPoint::kRecentTabs);
 
   // The sign in tab should not be shown: user is expected to be signed in
@@ -1005,7 +1005,7 @@ IN_PROC_BROWSER_TEST_F(
   sync_service()->GetUserSettings()->SetSelectedTypes(false, {});
 
   SignInAndEnableHistorySync(
-      browser(), browser()->profile(),
+      browser(), browser()->GetProfile(),
       signin_metrics::AccessPoint::kCollaborationShareTabGroup);
 
   EXPECT_TRUE(

@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsFalse, QuicDisallowedForProfile) {
     CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->FlushNetworkInterfaceForTesting();
     EXPECT_FALSE(IsQuicEnabled(browser()->GetProfile()));
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue,
     CrashNetworkService();
     // Make sure the NetworkContext has noticed the pipe was closed.
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->FlushNetworkInterfaceForTesting();
     EXPECT_TRUE(IsQuicEnabled(browser()->GetProfile()));
@@ -327,7 +327,7 @@ class QuicAllowedPolicyDynamicTest : public QuicTestBase {
   }
 
   void SetUpOnMainThread() override {
-    profile_1_ = browser()->profile();
+    profile_1_ = browser()->GetProfile();
     QuicTestBase::SetUpOnMainThread();
   }
 

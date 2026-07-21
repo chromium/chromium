@@ -264,8 +264,8 @@ class CapturedSitesPasswordManagerBrowserTest
         ChromePasswordManagerClient::FromWebContents(WebContents());
     client->SetTestObserver(&observer_);
 
-    browser()->profile()->GetPrefs()->SetBoolean(::prefs::kSafeBrowsingEnabled,
-                                                 false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        ::prefs::kSafeBrowsingEnabled, false);
 
     // Disable the caret blinking to not generate any compositor frames from
     // just a blinking cursor.

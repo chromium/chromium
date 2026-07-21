@@ -216,7 +216,7 @@ class DiceMtlsBrowserTest : public InProcessBrowserTest {
           return nullptr;
         }));
     embedded_https_test_server().StartAcceptingConnections();
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     SetupMtlsEnvironment(profile);
   }
 
@@ -292,7 +292,7 @@ void DiceMtlsBrowserTest::SetupMtlsEnvironment(Profile* profile) {
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMtlsBrowserTest, DiceSigninWithMtlsTokenBinding) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 

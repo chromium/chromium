@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSharingTest, TabGroupSharingEnableToDisable) {
                 collaboration::prefs::kSharedTabGroupsManagedAccountSetting));
 
   testing::StrictMock<MockCollaborationServiceObserver> mock_observer;
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   auto* service =
       collaboration::CollaborationServiceFactory::GetForProfile(profile);
   service->AddObserver(&mock_observer);

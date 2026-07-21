@@ -116,7 +116,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InitSignin();
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         optimization_guide::prefs::GetSettingEnabledPrefName(
             optimization_guide::UserVisibleFeatureKey::kHistorySearch),
         static_cast<int>(

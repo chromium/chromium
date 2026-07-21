@@ -157,7 +157,7 @@ class OneDrivePrefObserverBrowserTest
         proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id));
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   extensions::ExtensionRegistrar* extension_registrar() {
     return extensions::ExtensionRegistrar::Get(profile());
@@ -168,7 +168,7 @@ class OneDrivePrefObserverBrowserTest
   }
 
   policy::ProfilePolicyConnector* profile_policy_connector() {
-    return browser()->profile()->GetProfilePolicyConnector();
+    return browser()->GetProfile()->GetProfilePolicyConnector();
   }
 
  private:

@@ -4030,7 +4030,7 @@ class PasswordManagerBrowserTestWithSigninInterception
 // Checks that password update suppresses signin interception.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
                        InterceptionBubbleSuppressedByPasswordUpdate) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   helper_.SetupProfilesForInterception(profile);
   // Prepopulate Gaia credentials to trigger an update bubble.
   scoped_refptr<password_manager::TestPasswordStore> password_store =
@@ -4081,7 +4081,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
   prompt_observer.WaitForAutomaticSavePrompt();
 
   // Complete the Gaia signin.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   CoreAccountId account_id = helper_.AddGaiaAccountToProfile(
       profile, helper_.gaia_email(), helper_.gaia_id());
 
@@ -4103,7 +4103,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
 // processed before the signin completes.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
                        SavePasswordSuppressedBeforeSignin) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   helper_.SetupProfilesForInterception(profile);
   helper_.NavigateToGaiaSigninPage(WebContents());
 
@@ -4131,7 +4131,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
 // processed after the signin completes.
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithSigninInterception,
                        SavePasswordSuppressedAfterSignin) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   helper_.SetupProfilesForInterception(profile);
   helper_.NavigateToGaiaSigninPage(WebContents());
 

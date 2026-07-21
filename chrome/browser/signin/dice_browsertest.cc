@@ -1764,7 +1764,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithSyncOptinScreen,
   // Open the signin tab from the tabs history page (reuses the previous sign
   // in tab with an updated entry point).
   access_point = signin_metrics::AccessPoint::kRecentTabs;
-  signin_ui_util::SignInAndEnableHistorySync(browser(), browser()->profile(),
+  signin_ui_util::SignInAndEnableHistorySync(browser(), browser()->GetProfile(),
                                              access_point);
   // Receive token.
   SendRefreshTokenResponse();
@@ -2215,7 +2215,7 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   content::RunAllTasksUntilIdle();
 
   // Verify that there is an active profile.
-  Profile* initial_profile = browser()->profile();
+  Profile* initial_profile = browser()->GetProfile();
   EXPECT_EQ(1U, g_browser_process->profile_manager()->GetNumberOfProfiles());
   EXPECT_EQ(g_browser_process->profile_manager()->GetLastUsedProfile(),
             initial_profile);

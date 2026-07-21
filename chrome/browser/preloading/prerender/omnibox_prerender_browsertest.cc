@@ -98,7 +98,7 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
 #if BUILDFLAG(IS_ANDROID)
     return chrome_test_utils::GetProfile(this);
 #else
-    return browser()->profile();
+    return browser()->GetProfile();
 #endif
   }
 

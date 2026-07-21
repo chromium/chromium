@@ -414,7 +414,7 @@ class ChromeDirectSocketsTest : public TestHarness {
     TestHarness::SetUpOnMainThread();
     TestHarness::host_resolver()->AddRule(kHostname, "127.0.0.1");
     test_server()->Start(InProcessBrowserTest::browser()
-                             ->profile()
+                             ->GetProfile()
                              ->GetDefaultStoragePartition()
                              ->GetNetworkContext());
   }

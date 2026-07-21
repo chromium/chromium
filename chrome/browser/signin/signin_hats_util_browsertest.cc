@@ -44,7 +44,7 @@ class SigninHatsUtilBaseBrowserTest : public SigninBrowserTestBase {
     SigninBrowserTestBase::SetUpOnMainThread();
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            CHECK_DEREF(browser()).profile(),
+            CHECK_DEREF(browser()).GetProfile(),
             base::BindRepeating(&BuildMockHatsService)));
   }
 
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest, LaunchHatsSurveyForProfile) {
       .Times(0);
 
   signin::LaunchHatsSurveyForProfile(trigger(),
-                                     CHECK_DEREF(browser()).profile());
+                                     CHECK_DEREF(browser()).GetProfile());
 }
 
 IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
       .Times(0);
 
   signin::LaunchHatsSurveyForProfile(trigger(),
-                                     CHECK_DEREF(browser()).profile());
+                                     CHECK_DEREF(browser()).GetProfile());
 }
 
 IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
@@ -138,13 +138,13 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
       .Times(0);
 
   signin::LaunchHatsSurveyForProfile(
-      trigger(), CHECK_DEREF(browser()).profile(),
+      trigger(), CHECK_DEREF(browser()).GetProfile(),
       /*defer_if_no_browser=*/false, std::move(survey_data));
 }
 
 IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
                        LaunchHatsSurveyDeferIfNoBrowser) {
-  Profile* profile = CHECK_DEREF(browser()).profile();
+  Profile* profile = CHECK_DEREF(browser()).GetProfile();
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
   ScopedProfileKeepAlive profile_keep_alive(
@@ -167,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
   EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey).Times(0);
 
   signin::LaunchHatsSurveyForProfile(/*trigger=*/"unknown_trigger",
-                                     CHECK_DEREF(browser()).profile());
+                                     CHECK_DEREF(browser()).GetProfile());
 }
 
 struct PromoBubbleTestParams {
@@ -207,7 +207,7 @@ IN_PROC_BROWSER_TEST_P(SigninHatsUtilPromoBubbleDismissedBrowserTest,
       .Times(0);
 
   signin::LaunchHatsSurveyForProfile(
-      trigger(), CHECK_DEREF(browser()).profile(),
+      trigger(), CHECK_DEREF(browser()).GetProfile(),
       /*defer_if_no_browser=*/false, GetParam().access_point);
 }
 
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilConflictingFeaturesBrowserTest,
       .Times(0);
 
   signin::LaunchHatsSurveyForProfile(trigger_with_no_conflict(),
-                                     CHECK_DEREF(browser()).profile());
+                                     CHECK_DEREF(browser()).GetProfile());
 }
 
 IN_PROC_BROWSER_TEST_F(SigninHatsUtilConflictingFeaturesBrowserTest,
@@ -274,5 +274,5 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilConflictingFeaturesBrowserTest,
   EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey).Times(0);
 
   signin::LaunchHatsSurveyForProfile(trigger_with_conflict(),
-                                     CHECK_DEREF(browser()).profile());
+                                     CHECK_DEREF(browser()).GetProfile());
 }

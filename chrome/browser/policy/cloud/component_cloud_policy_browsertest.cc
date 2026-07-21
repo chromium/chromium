@@ -192,7 +192,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS)
     UserCloudPolicyManagerAsh* policy_manager =
-        browser()->profile()->GetUserCloudPolicyManagerAsh();
+        browser()->GetProfile()->GetUserCloudPolicyManagerAsh();
     ASSERT_TRUE(policy_manager);
 #else
     // Mock a signed-in user. This is used by the UserCloudPolicyStore to pass
@@ -202,7 +202,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
         PolicyBuilder::kFakeUsername, signin::ConsentLevel::kSignin);
 
     UserCloudPolicyManager* policy_manager =
-        browser()->profile()->GetUserCloudPolicyManager();
+        browser()->GetProfile()->GetUserCloudPolicyManager();
     ASSERT_TRUE(policy_manager);
     policy_manager->SetSigninAccountId(
         PolicyBuilder::GetFakeAccountIdForTesting());
@@ -242,7 +242,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
 
   void RefreshPolicies() {
     ProfilePolicyConnector* profile_connector =
-        browser()->profile()->GetProfilePolicyConnector();
+        browser()->GetProfile()->GetProfilePolicyConnector();
     PolicyService* policy_service = profile_connector->policy_service();
     base::RunLoop run_loop;
     policy_service->RefreshPolicies(run_loop.QuitClosure(),

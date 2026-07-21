@@ -263,10 +263,10 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest,
 
 #if BUILDFLAG(IS_CHROMEOS)
   CrosSpeechRecognitionServiceFactory::GetInstanceForTest()->SetTestingFactory(
-      incognito_browser->profile(), std::move(testing_factory));
+      incognito_browser->GetProfile(), std::move(testing_factory));
 #else
   SpeechRecognitionServiceFactory::GetInstanceForTest()->SetTestingFactory(
-      incognito_browser->profile(), std::move(testing_factory));
+      incognito_browser->GetProfile(), std::move(testing_factory));
 #endif
 
   WebContents* web_contents =

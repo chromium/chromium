@@ -118,7 +118,7 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     DCHECK_EQ(helper_created_count_, helper_deleted_count_);
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   SigninClient* signin_client() {
     return ChromeSigninClientFactory::GetForProfile(profile());

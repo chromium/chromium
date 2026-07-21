@@ -218,9 +218,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     return GetProfile()->GetPrefs();
   }
 
-  Profile* GetProfile() {
-    return browser()->profile();
-  }
+  Profile* GetProfile() { return browser()->GetProfile(); }
 
   std::vector<GURL> GetHistoryContents() {
     ui_test_utils::HistoryEnumerator enumerator(GetProfile());
@@ -1156,7 +1154,7 @@ class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
     return results.begin()->has_actor_source();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   actor::TaskId CreateActingTask(content::WebContents* web_contents) {
     auto* actor_service = actor::ActorKeyedService::Get(profile());

@@ -188,12 +188,12 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
     // manager to help reduce the potential for flakiness due to the race
     // condition described in the bug.
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetDefaultStoragePartition()
         ->GetCookieManagerForBrowserProcess()
         ->BlockThirdPartyCookies(value);
 
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             value ? content_settings::CookieControlsMode::kBlockThirdParty
@@ -312,7 +312,7 @@ class InsecureRequestStorageAccessForBaseBrowserTest
     ASSERT_TRUE(http_server_.Start());
   }
   void SetBlockThirdPartyCookies(bool value) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             value ? content_settings::CookieControlsMode::kBlockThirdParty
@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForBrowserTest,
   };
 
   auto* cookie_manager = browser()
-                             ->profile()
+                             ->GetProfile()
                              ->GetDefaultStoragePartition()
                              ->GetCookieManagerForBrowserProcess();
 
@@ -653,7 +653,7 @@ class RequestStorageAccessForWithFirstPartySetsBrowserTest
   void SetUpOnMainThread() override {
     RequestStorageAccessForBaseBrowserTest::SetUpOnMainThread();
     // Explicitly enable Related Website Sets (formerly First Party Sets).
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
   }
 

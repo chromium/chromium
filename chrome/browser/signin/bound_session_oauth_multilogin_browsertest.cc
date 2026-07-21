@@ -777,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(BoundSessionOAuthMultiloginSecondaryPartitionTest,
 
   // Verify no sessions in the default partition.
   content::StoragePartition* default_partition =
-      browser()->profile()->GetDefaultStoragePartition();
+      browser()->GetProfile()->GetDefaultStoragePartition();
   ASSERT_TRUE(default_partition);
   base::test::TestFuture<
       const std::vector<net::device_bound_sessions::SessionKey>&>

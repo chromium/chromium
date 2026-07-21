@@ -3840,7 +3840,7 @@ class PDFExtensionZoomTest : public PDFExtensionTest {
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionZoomTest, DefaultZoomFullPage) {
-  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(0.5);
+  browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(0.5);
 
   content::RenderFrameHost* extension_host =
       LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -3850,7 +3850,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionZoomTest, DefaultZoomFullPage) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionZoomTest, DefaultZoomEmbed) {
-  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(0.5);
+  browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(0.5);
 
   content::RenderFrameHost* extension_host =
       LoadPdfInFirstChildGetExtensionHost(

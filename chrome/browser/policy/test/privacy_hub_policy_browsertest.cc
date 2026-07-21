@@ -22,7 +22,7 @@ class PrivacyHubPolicyTest
       public testing::WithParamInterface<std::optional<int>> {};
 
 IN_PROC_BROWSER_TEST_F(PrivacyHubPolicyTest, CheckDefault) {
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_FALSE(
       prefs->IsManagedPreference(ash::prefs::kUserGeolocationAccessLevel));
   EXPECT_EQ(static_cast<int>(ash::GeolocationAccessLevel::kAllowed),
@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubPolicyTest, CheckPolicyToPrefMapping) {
                test_policy_value.Clone(), nullptr);
   UpdateProviderPolicy(policies);
 
-  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  const PrefService* const prefs = browser()->GetProfile()->GetPrefs();
 
   if (test_policy_value.is_none()) {
     EXPECT_FALSE(

@@ -35,7 +35,7 @@ class SpellCheckHostChromeImplWinBrowserTest : public InProcessBrowserTest {
   void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void SetUpOnMainThread() override {
-    content::BrowserContext* context = browser()->profile();
+    content::BrowserContext* context = browser()->GetProfile();
     renderer_ = std::make_unique<content::MockRenderProcessHost>(context);
 
     SpellCheckHostChromeImpl::Create(

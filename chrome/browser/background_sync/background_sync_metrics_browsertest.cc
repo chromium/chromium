@@ -29,7 +29,7 @@ class BackgroundSyncMetricsBrowserTest : public InProcessBrowserTest {
   ~BackgroundSyncMetricsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
     background_sync_delegate_ =
         std::make_unique<BackgroundSyncDelegateImpl>(profile);
