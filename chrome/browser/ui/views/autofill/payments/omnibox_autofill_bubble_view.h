@@ -58,7 +58,6 @@ class OmniboxAutofillBubbleView : public AutofillLocationBarBubble {
   void OnSuggestionDeselected();
 
   base::WeakPtr<OmniboxAutofillBubbleController> controller_;
-  raw_ptr<views::View> initially_focused_view_ = nullptr;
   base::WeakPtrFactory<OmniboxAutofillBubbleView> weak_ptr_factory_{this};
 };
 
