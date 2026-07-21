@@ -335,6 +335,10 @@ class ScriptContext {
   // Owns and structures the JS that is injected to set up extension bindings.
   std::unique_ptr<ModuleSystem> module_system_;
 
+  // Must be declared before `safe_builtins_` because `safe_builtins_` uses it
+  // during initialization (via `ScriptContext::isolate()`).
+  raw_ptr<v8::Isolate> isolate_;
+
   // Contains safe copies of builtin objects like Function.prototype.
   SafeBuiltins safe_builtins_;
 
@@ -344,8 +348,6 @@ class ScriptContext {
   // A list of base::OnceClosure instances as an observer interface for
   // invalidation.
   std::vector<base::OnceClosure> invalidate_observers_;
-
-  raw_ptr<v8::Isolate> isolate_;
 
   GURL url_;
 

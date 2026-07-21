@@ -18,10 +18,6 @@ namespace extensions {
 APIBindingTest::APIBindingTest() = default;
 APIBindingTest::~APIBindingTest() = default;
 
-v8::ExtensionConfiguration* APIBindingTest::GetV8ExtensionConfiguration() {
-  return nullptr;
-}
-
 void APIBindingTest::SetUp() {
   test_js_runner_ = CreateTestJSRunner();
 
@@ -40,8 +36,7 @@ void APIBindingTest::SetUp() {
   isolate()->Enter();
 
   v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context =
-      v8::Context::New(isolate(), GetV8ExtensionConfiguration());
+  v8::Local<v8::Context> context = v8::Context::New(isolate());
   context->Enter();
   main_context_holder_ = std::make_unique<gin::ContextHolder>(isolate());
   main_context_holder_->SetContext(context);
@@ -101,8 +96,7 @@ void APIBindingTest::DisposeAllContexts() {
 
 v8::Local<v8::Context> APIBindingTest::AddContext() {
   auto holder = std::make_unique<gin::ContextHolder>(isolate());
-  v8::Local<v8::Context> context =
-      v8::Context::New(isolate(), GetV8ExtensionConfiguration());
+  v8::Local<v8::Context> context = v8::Context::New(isolate());
   holder->SetContext(context);
   additional_context_holders_.push_back(std::move(holder));
   binding::InitializeContext(context);

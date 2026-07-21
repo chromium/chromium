@@ -202,7 +202,7 @@ void ScriptController::SetWasmEvalErrorMessageForWorld(
 namespace {
 
 Vector<const char*>& RegisteredExtensionNames() {
-  DEFINE_STATIC_LOCAL(Vector<const char*>, extension_names, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(Vector<const char*>, extension_names, ());
   return extension_names;
 }
 

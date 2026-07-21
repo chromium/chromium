@@ -102,7 +102,6 @@ void ExtensionsRendererClient::RenderThreadStarted() {
     dispatcher_ = std::make_unique<Dispatcher>(std::move(api_providers_));
   }
   content::RenderThread* thread = content::RenderThread::Get();
-  dispatcher()->OnRenderThreadStarted(thread);
   thread->AddObserver(dispatcher());
 
   resource_request_policy_ = std::make_unique<ResourceRequestPolicy>(

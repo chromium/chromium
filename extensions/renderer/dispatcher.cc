@@ -81,7 +81,6 @@
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/renderer_extension_registry.h"
-#include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/script_injection_manager.h"
@@ -105,7 +104,6 @@
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_script_controller.h"
 #include "third_party/blink/public/web/web_security_policy.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_v8_features.h"
@@ -383,11 +381,6 @@ bool Dispatcher::ShouldNotifyServiceWorkerOnWebSocketActivity(
   return script_context &&
          ExtensionAPIEnabledForServiceWorkerScript(
              script_context->service_worker_scope(), script_context->url());
-}
-
-void Dispatcher::OnRenderThreadStarted(content::RenderThread* thread) {
-  blink::WebScriptController::RegisterExtension(
-      SafeBuiltins::CreateV8Extension());
 }
 
 void Dispatcher::OnRenderFrameCreated(content::RenderFrame* render_frame) {

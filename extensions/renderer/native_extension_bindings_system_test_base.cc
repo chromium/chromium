@@ -18,7 +18,6 @@
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
-#include "extensions/renderer/test_v8_extension_configuration.h"
 
 namespace extensions {
 
@@ -34,11 +33,6 @@ NativeExtensionBindingsSystemUnittest::NativeExtensionBindingsSystemUnittest() {
 
 NativeExtensionBindingsSystemUnittest::
     ~NativeExtensionBindingsSystemUnittest() {}
-
-v8::ExtensionConfiguration*
-NativeExtensionBindingsSystemUnittest::GetV8ExtensionConfiguration() {
-  return TestV8ExtensionConfiguration::GetConfiguration();
-}
 
 void NativeExtensionBindingsSystemUnittest::SetUp() {
   render_thread_ = std::make_unique<content::MockRenderThread>();

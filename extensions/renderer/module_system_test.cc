@@ -32,7 +32,6 @@
 #include "extensions/renderer/safe_builtins.h"
 #include "extensions/renderer/script_context_set.h"
 #include "extensions/renderer/string_source_map.h"
-#include "extensions/renderer/test_v8_extension_configuration.h"
 #include "extensions/renderer/utils_native_handler.h"
 #include "gin/converter.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -155,8 +154,7 @@ ModuleSystemTestEnvironment::ModuleSystemTestEnvironment(
       extension_(extension),
       context_set_(context_set),
       source_map_(std::make_unique<StringSourceMap>()) {
-  context_holder_->SetContext(v8::Context::New(
-      isolate, TestV8ExtensionConfiguration::GetConfiguration()));
+  context_holder_->SetContext(v8::Context::New(isolate));
 
   {
     auto context = std::make_unique<ScriptContext>(

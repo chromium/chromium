@@ -15,7 +15,6 @@
 #include "extensions/renderer/module_system.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/string_source_map.h"
-#include "extensions/renderer/test_v8_extension_configuration.h"
 #include "v8/include/v8.h"
 
 namespace controlled_frame {
@@ -33,9 +32,7 @@ class WebUrlPatternNativesBrowserTest : public ChromeRenderViewTest {
     ChromeRenderViewTest::SetUp();
 
     v8::HandleScope handle_scope(Isolate());
-    v8::Local<v8::Context> context = v8::Context::New(
-        Isolate(),
-        extensions::TestV8ExtensionConfiguration::GetConfiguration());
+    v8::Local<v8::Context> context = v8::Context::New(Isolate());
     v8::Context::Scope context_scope(context);
     script_context_ = std::make_unique<extensions::ScriptContext>(
         context, /* frame=*/nullptr,

@@ -35,10 +35,6 @@ namespace content {
 class MockRenderThread;
 }
 
-namespace v8 {
-class ExtensionConfiguration;
-}
-
 namespace extensions {
 
 class ScriptContext;
@@ -130,7 +126,6 @@ class NativeExtensionBindingsSystemUnittest
   void SetUp() override;
   void TearDown() override;
   void OnWillDisposeContext(v8::Local<v8::Context> context) override;
-  v8::ExtensionConfiguration* GetV8ExtensionConfiguration() override;
   std::unique_ptr<TestJSRunner::Scope> CreateTestJSRunner() override;
 
   ScriptContext* CreateScriptContext(v8::Local<v8::Context> v8_context,

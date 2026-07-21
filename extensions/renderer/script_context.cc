@@ -144,8 +144,8 @@ ScriptContext::ScriptContext(const v8::Local<v8::Context>& v8_context,
       effective_extension_(effective_extension),
       effective_context_type_(effective_context_type),
       context_id_(base::UnguessableToken::Create()),
-      safe_builtins_(this),
       isolate_(v8::Isolate::GetCurrent()),
+      safe_builtins_(this),
       service_worker_version_id_(blink::mojom::kInvalidServiceWorkerVersionId) {
   VLOG(1) << "Created context:\n" << GetDebugString();
   v8_context_.AnnotateStrongRetainer("extensions::ScriptContext::v8_context_");
@@ -207,6 +207,7 @@ void ScriptContext::Invalidate() {
   DCHECK(invalidate_observers_.empty())
       << "Invalidation observers cannot be added during invalidation";
 
+  safe_builtins_.Reset();
   v8_context_.Reset();
 }
 

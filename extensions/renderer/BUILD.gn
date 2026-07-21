@@ -342,8 +342,6 @@ static_library("unit_test_support") {
     "native_extension_bindings_system_test_base.h",
     "string_source_map.cc",
     "string_source_map.h",
-    "test_v8_extension_configuration.cc",
-    "test_v8_extension_configuration.h",
   ]
 
   deps = [
