@@ -22,7 +22,7 @@ std::string ToString(const std::vector<std::uint8_t>& data) {
 class FakeConnectionWithRtcLog : public protocol::FakeConnectionToClient {
  public:
   explicit FakeConnectionWithRtcLog(protocol::WebrtcEventLogData* event_log)
-      : protocol::FakeConnectionToClient(nullptr), event_log_(event_log) {}
+      : event_log_(event_log) {}
   ~FakeConnectionWithRtcLog() override = default;
   FakeConnectionWithRtcLog(const FakeConnectionWithRtcLog&) = delete;
   FakeConnectionWithRtcLog& operator=(const FakeConnectionWithRtcLog&) = delete;

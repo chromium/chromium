@@ -343,12 +343,6 @@ void ChromotingHost::OnIncomingSession(
     ice_config_fetcher = get_ice_config_fetcher_cb_.Run();
   }
 
-  // Create a WebrtcConnectionToClient.
-  std::unique_ptr<protocol::ConnectionToClient> connection =
-      std::make_unique<protocol::WebrtcConnectionToClient>(
-          base::WrapUnique(session), std::move(ice_config_fetcher),
-          audio_task_runner_);
-
   // Create a ClientSession object.
   std::vector<raw_ptr<HostExtension, VectorExperimental>> extension_ptrs;
   for (const auto& extension : extensions_) {
@@ -358,10 +352,12 @@ void ChromotingHost::OnIncomingSession(
   std::string client_id;
   SplitSignalingIdResource(session->jid(), &client_id, nullptr);
   clients_.emplace(
-      client_id, std::make_unique<ClientSession>(
-                     this, std::move(connection), desktop_environment_factory_,
-                     desktop_environment_options_, pairing_registry_,
-                     extension_ptrs, local_session_policies_provider_));
+      client_id,
+      std::make_unique<ClientSession>(
+          this, base::WrapUnique(session), std::move(ice_config_fetcher),
+          audio_task_runner_, desktop_environment_factory_,
+          desktop_environment_options_, pairing_registry_, extension_ptrs,
+          local_session_policies_provider_));
 }
 
 ClientSession* ChromotingHost::GetConnectedClientSession() const {

@@ -45,8 +45,7 @@ base::WeakPtr<FakeVideoStream> FakeVideoStream::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-FakeConnectionToClient::FakeConnectionToClient(std::unique_ptr<Session> session)
-    : session_(std::move(session)) {}
+FakeConnectionToClient::FakeConnectionToClient() = default;
 
 FakeConnectionToClient::~FakeConnectionToClient() = default;
 
@@ -95,13 +94,10 @@ void FakeConnectionToClient::Disconnect(ErrorCode disconnect_error,
 
   is_connected_ = false;
   disconnect_error_ = disconnect_error;
-  if (session_) {
-    session_->Close(disconnect_error, error_details, error_location);
+  if (event_handler_) {
+    event_handler_->OnConnectionClosed(disconnect_error, error_details,
+                                       error_location);
   }
-}
-
-Session* FakeConnectionToClient::session() {
-  return session_.get();
 }
 
 Transport* FakeConnectionToClient::transport() {

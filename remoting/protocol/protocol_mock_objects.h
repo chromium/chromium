@@ -115,6 +115,12 @@ class MockConnectionToClientEventHandler
                              std::unique_ptr<MessagePipe> pipe) override {
     OnIncomingDataChannelPtr(channel_name, pipe.get());
   }
+  MOCK_METHOD(void,
+              OnConnectionClosed,
+              (ErrorCode error,
+               std::string_view error_details,
+               const SourceLocation& error_location),
+              (override));
 };
 
 class MockClipboardStub : public ClipboardStub {

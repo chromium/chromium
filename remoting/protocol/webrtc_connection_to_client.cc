@@ -53,11 +53,9 @@ const char kVideoStatsStreamLabel[] = "screen_stream";
 // TODO(sergeyu): Figure out if we would benefit from using a separate thread as
 // a worker thread.
 WebrtcConnectionToClient::WebrtcConnectionToClient(
-    std::unique_ptr<protocol::Session> session,
     std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner)
-    : session_(std::move(session)),
-      video_stats_dispatcher_(kVideoStatsStreamLabel),
+    : video_stats_dispatcher_(kVideoStatsStreamLabel),
       audio_task_runner_(audio_task_runner),
       control_dispatcher_(new HostControlDispatcher()),
       event_dispatcher_(new HostEventDispatcher()) {
@@ -91,11 +89,6 @@ void WebrtcConnectionToClient::SetEventHandler(
   event_handler_ = event_handler;
 }
 
-protocol::Session* WebrtcConnectionToClient::session() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return session_.get();
-}
-
 Transport* WebrtcConnectionToClient::transport() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return transport_.get();
@@ -118,9 +111,9 @@ void WebrtcConnectionToClient::Disconnect(
     transport_.reset();
   }
 
-  // This should trigger OnConnectionClosed() event and this object
-  // may be destroyed as the result.
-  session_->Close(error, error_details, error_location);
+  if (event_handler_) {
+    event_handler_->OnConnectionClosed(error, error_details, error_location);
+  }
 }
 
 std::unique_ptr<VideoStream> WebrtcConnectionToClient::StartVideoStream(

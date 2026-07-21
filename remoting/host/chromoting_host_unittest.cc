@@ -41,6 +41,7 @@
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/fake_connection_to_client.h"
+#include "remoting/protocol/fake_session.h"
 #include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/session.h"
@@ -103,8 +104,8 @@ class ChromotingHostTest : public testing::Test {
     host_->status_monitor()->AddStatusObserver(&host_status_observer_);
 
     owner_email_ = "host@domain";
-    session1_ = new MockSession();
-    session2_ = new MockSession();
+    session1_ = std::make_unique<MockSession>();
+    session2_ = std::make_unique<MockSession>();
     session_unowned1_ = std::make_unique<MockSession>();
     session_unowned2_ = std::make_unique<MockSession>();
     session_jid1_ = "user@domain/rest-of-jid";
@@ -125,13 +126,11 @@ class ChromotingHostTest : public testing::Test {
         .Times(AnyNumber())
         .WillRepeatedly(SaveArg<0>(&session_unowned2_event_handler_));
 
-    connection1_ = std::make_unique<protocol::FakeConnectionToClient>(
-        base::WrapUnique(session1_.get()));
+    connection1_ = std::make_unique<protocol::FakeConnectionToClient>();
     connection1_->set_host_stub(&host_stub1_);
     connection1_->set_client_stub(&client_stub1_);
 
-    connection2_ = std::make_unique<protocol::FakeConnectionToClient>(
-        base::WrapUnique(session2_.get()));
+    connection2_ = std::make_unique<protocol::FakeConnectionToClient>();
     connection2_->set_host_stub(&host_stub2_);
     connection2_->set_client_stub(&client_stub2_);
   }
@@ -143,11 +142,14 @@ class ChromotingHostTest : public testing::Test {
     std::unique_ptr<protocol::ConnectionToClient> connection =
         std::move((connection_index == 0) ? connection1_ : connection2_);
     protocol::ConnectionToClient* connection_ptr = connection.get();
-    auto client = std::make_unique<ClientSession>(
-        host_.get(), std::move(connection), desktop_environment_factory_.get(),
+    std::unique_ptr<protocol::Session> session =
+        (connection_index == 0) ? std::move(session1_) : std::move(session2_);
+    auto client = base::WrapUnique(new ClientSession(
+        host_.get(), std::move(session), std::move(connection),
+        desktop_environment_factory_.get(),
         DesktopEnvironmentOptions::CreateDefault(), nullptr,
         std::vector<raw_ptr<HostExtension, VectorExperimental>>(),
-        &local_session_policies_provider_);
+        &local_session_policies_provider_));
     ClientSession* client_ptr = client.get();
 
     connection_ptr->set_host_stub(client.get());
@@ -170,13 +172,14 @@ class ChromotingHostTest : public testing::Test {
       }
     } else {
       PrepareForClientDisconnection(connection_index);
-      client_ptr->OnConnectionClosed(ErrorCode::AUTHENTICATION_FAILED);
+      client_ptr->OnConnectionClosed(ErrorCode::AUTHENTICATION_FAILED, {},
+                                     FROM_HERE);
     }
   }
 
   void CloseClientConnection(ClientSession* client,
                              ErrorCode error = ErrorCode::OK) {
-    client->OnConnectionClosed(error);
+    client->OnConnectionClosed(error, {}, FROM_HERE);
   }
 
   void TearDown() override {
@@ -291,13 +294,13 @@ class ChromotingHostTest : public testing::Test {
   std::unique_ptr<protocol::FakeConnectionToClient> connection1_;
   raw_ptr<ClientSession> client1_;  // Owned by |host_|.
   std::string session_jid1_;
-  raw_ptr<MockSession> session1_;  // Owned by |connection1_|.
+  std::unique_ptr<MockSession> session1_;
   MockClientStub client_stub1_;
   MockHostStub host_stub1_;
   std::unique_ptr<protocol::FakeConnectionToClient> connection2_;
   raw_ptr<ClientSession> client2_;  // Owned by |host_|.
   std::string session_jid2_;
-  raw_ptr<MockSession> session2_;  // Owned by |connection2_|.
+  std::unique_ptr<MockSession> session2_;
   MockClientStub client_stub2_;
   MockHostStub host_stub2_;
   std::unique_ptr<MockSession> session_unowned1_;  // Not owned by a connection.

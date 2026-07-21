@@ -55,6 +55,7 @@
 #include "remoting/protocol/fake_message_pipe.h"
 #include "remoting/protocol/fake_message_pipe_wrapper.h"
 #include "remoting/protocol/fake_session.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/test_event_matchers.h"
@@ -280,14 +281,14 @@ void ClientSessionTest::CreateClientSession(
   // Mock protocol::ConnectionToClient APIs called directly by ClientSession.
   // HostStub is not touched by ClientSession, so we can safely pass nullptr.
   std::unique_ptr<protocol::FakeConnectionToClient> connection(
-      new protocol::FakeConnectionToClient(std::move(session)));
+      new protocol::FakeConnectionToClient());
   connection->set_client_stub(&client_stub_);
   connection_ = connection.get();
 
-  client_session_ = std::make_unique<ClientSession>(
-      &session_event_handler_, std::move(connection),
+  client_session_ = base::WrapUnique(new ClientSession(
+      &session_event_handler_, std::move(session), std::move(connection),
       desktop_environment_factory_.get(), desktop_environment_options_, nullptr,
-      extensions_, &local_session_policies_provider_);
+      extensions_, &local_session_policies_provider_));
 }
 
 void ClientSessionTest::CreateClientSession() {

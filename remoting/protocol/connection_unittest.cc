@@ -291,15 +291,13 @@ class ConnectionTest : public testing::Test, public Session::EventHandler {
   void OnSessionStateChange(Session::State state) override {
     if (state == Session::AUTHENTICATED) {
       if (host_connection_) {
-        host_connection_->session()->SetTransport(
-            host_connection_->transport());
+        host_session_->SetTransport(host_connection_->transport());
         host_connection_->Start();
       }
     } else if (state == Session::CLOSED || state == Session::FAILED) {
       if (host_connection_) {
-        ErrorCode error = state == Session::CLOSED
-                              ? ErrorCode::OK
-                              : host_connection_->session()->error();
+        ErrorCode error =
+            state == Session::CLOSED ? ErrorCode::OK : host_session_->error();
         host_connection_->Disconnect(error, {}, FROM_HERE);
       }
     }
@@ -308,7 +306,8 @@ class ConnectionTest : public testing::Test, public Session::EventHandler {
  protected:
   void SetUp() override {
     // Create fake sessions.
-    host_session_ = new FakeSession();
+    owned_host_session_ = std::make_unique<FakeSession>();
+    host_session_ = owned_host_session_.get();
     owned_client_session_ = std::make_unique<FakeSession>();
     client_session_ = owned_client_session_.get();
 
@@ -316,14 +315,13 @@ class ConnectionTest : public testing::Test, public Session::EventHandler {
     WebrtcTransport::SetDataChannelPollingIntervalForTests(base::TimeDelta());
 
     host_connection_ = std::make_unique<WebrtcConnectionToClient>(
-        base::WrapUnique(host_session_.get()),
         /*ice_config_fetcher=*/nullptr,
         task_environment_.GetMainThreadTaskRunner());
     client_connection_ = std::make_unique<WebrtcConnectionToHost>();
 
     // Setup host side.
     host_connection_->SetEventHandler(&host_event_handler_);
-    host_connection_->session()->SetEventHandler(this);
+    host_session_->SetEventHandler(this);
     host_connection_->set_clipboard_stub(&host_clipboard_stub_);
     host_connection_->set_host_stub(&host_stub_);
     host_connection_->set_input_stub(&host_input_stub_);
@@ -451,8 +449,8 @@ class ConnectionTest : public testing::Test, public Session::EventHandler {
   MockHostStub host_stub_;
   MockInputStub host_input_stub_;
   std::unique_ptr<ConnectionToClient> host_connection_;
-  raw_ptr<FakeSession, AcrossTasksDanglingUntriaged>
-      host_session_;  // Owned by |host_connection_|.
+  std::unique_ptr<FakeSession> owned_host_session_;
+  raw_ptr<FakeSession, AcrossTasksDanglingUntriaged> host_session_;
   bool host_connected_ = false;
 
   MockConnectionToHostEventCallback client_event_handler_;
@@ -461,9 +459,9 @@ class ConnectionTest : public testing::Test, public Session::EventHandler {
   FakeVideoRenderer client_video_renderer_;
   FakeAudioPlayer client_audio_player_;
   std::unique_ptr<ConnectionToHost> client_connection_;
+  std::unique_ptr<FakeSession> owned_client_session_;
   raw_ptr<FakeSession, AcrossTasksDanglingUntriaged>
       client_session_;  // Owned by |client_connection_|.
-  std::unique_ptr<FakeSession> owned_client_session_;
   bool client_connected_ = false;
 
   base::Thread video_encode_thread_;

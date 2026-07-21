@@ -51,7 +51,7 @@ class FakeVideoStream : public protocol::VideoStream {
 
 class FakeConnectionToClient : public ConnectionToClient {
  public:
-  explicit FakeConnectionToClient(std::unique_ptr<Session> session);
+  FakeConnectionToClient();
 
   FakeConnectionToClient(const FakeConnectionToClient&) = delete;
   FakeConnectionToClient& operator=(const FakeConnectionToClient&) = delete;
@@ -74,7 +74,6 @@ class FakeConnectionToClient : public ConnectionToClient {
                   std::string_view error_details,
                   const SourceLocation& error_location) override;
 
-  Session* session() override;
   Transport* transport() override;
 
   void set_clipboard_stub(ClipboardStub* clipboard_stub) override;
@@ -106,7 +105,6 @@ class FakeConnectionToClient : public ConnectionToClient {
   // retains a pointer to the capturer if the relative pointer experiment is
   // a success.
   std::unique_ptr<DesktopCapturer> desktop_capturer_;
-  std::unique_ptr<Session> session_;
   raw_ptr<EventHandler> event_handler_ = nullptr;
 
   base::WeakPtr<FakeVideoStream> last_video_stream_;

@@ -85,6 +85,7 @@
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/data_channel_manager.h"
 #include "remoting/protocol/errors.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/input_event_timestamps.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/keyboard_layout_stub.h"
@@ -95,6 +96,7 @@
 #include "remoting/protocol/peer_connection_controls.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/transport.h"
+#include "remoting/protocol/webrtc_connection_to_client.h"
 #include "remoting/protocol/webrtc_video_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -140,6 +142,28 @@ using protocol::ActionRequest;
 
 ClientSession::ClientSession(
     EventHandler* event_handler,
+    std::unique_ptr<protocol::Session> session,
+    std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
+    scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
+    DesktopEnvironmentFactory* desktop_environment_factory,
+    const DesktopEnvironmentOptions& desktop_environment_options,
+    scoped_refptr<protocol::PairingRegistry> pairing_registry,
+    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
+    const LocalSessionPoliciesProvider* local_session_policies_provider)
+    : ClientSession(event_handler,
+                    std::move(session),
+                    std::make_unique<protocol::WebrtcConnectionToClient>(
+                        std::move(ice_config_fetcher),
+                        audio_task_runner),
+                    desktop_environment_factory,
+                    desktop_environment_options,
+                    pairing_registry,
+                    extensions,
+                    local_session_policies_provider) {}
+
+ClientSession::ClientSession(
+    EventHandler* event_handler,
+    std::unique_ptr<protocol::Session> session,
     std::unique_ptr<protocol::ConnectionToClient> connection,
     DesktopEnvironmentFactory* desktop_environment_factory,
     const DesktopEnvironmentOptions& desktop_environment_options,
@@ -155,11 +179,12 @@ ClientSession::ClientSession(
       input_pipeline_(&coordinate_converter_, this),
       pairing_registry_(pairing_registry),
       connection_(std::move(connection)),
-      client_jid_(connection_->session()->jid()),
+      session_(std::move(session)),
+      client_jid_(session_->jid()),
       local_session_policies_provider_(local_session_policies_provider) {
-  connection_->session()->AddPlugin(&host_experiment_session_plugin_);
+  session_->AddPlugin(&host_experiment_session_plugin_);
   connection_->SetEventHandler(this);
-  connection_->session()->SetEventHandler(this);
+  session_->SetEventHandler(this);
 
   HostExtensionSessionManager::HostExtensions all_extensions = extensions;
   bool gnubby_policy_enabled = true;
@@ -673,7 +698,7 @@ void ClientSession::OnConnectionAuthenticated(
   connection_->ApplyNetworkSettings(
       protocol::NetworkSettings(effective_policies_));
 
-  connection_->session()->SetTransport(connection_->transport());
+  session_->SetTransport(connection_->transport());
   connection_->Start();
 
   DesktopEnvironmentOptions options = desktop_environment_options_;
@@ -858,8 +883,20 @@ void ClientSession::OnConnectionChannelsConnected() {
   event_handler_->OnSessionChannelsConnected(this);
 }
 
-void ClientSession::OnConnectionClosed(protocol::ErrorCode error) {
+void ClientSession::OnConnectionClosed(protocol::ErrorCode error,
+                                       std::string_view error_details,
+                                       const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_closing_) {
+    return;
+  }
+  is_closing_ = true;
+
+  if (session_) {
+    std::unique_ptr<protocol::Session> session = std::move(session_);
+    session->Close(error, error_details, error_location);
+  }
 
   HOST_LOG << "Client disconnected: " << client_jid_
            << "; error = " << ErrorCodeToString(error);
@@ -947,8 +984,8 @@ void ClientSession::DisconnectSession(ErrorCode error,
 
   max_duration_timer_.Stop();
 
-  // This triggers OnConnectionClosed(), and the session may be destroyed
-  // as the result, so this call must be the last in this method.
+  // Disconnect() notifies event_handler_->OnConnectionClosed(), which closes
+  // session_ and executes session teardown.
   connection_->Disconnect(error, error_details, error_location);
 }
 
@@ -1106,17 +1143,17 @@ void ClientSession::OnSessionStateChange(protocol::Session::State state) {
       break;
 
     case protocol::Session::AUTHENTICATED:
-      OnConnectionAuthenticated(
-          connection_->session()->authenticator().GetSessionPolicies());
+      OnConnectionAuthenticated(session_->authenticator().GetSessionPolicies());
       break;
 
     case protocol::Session::CLOSED:
     case protocol::Session::FAILED: {
-      ErrorCode error = state == protocol::Session::CLOSED
+      ErrorCode error = (state == protocol::Session::CLOSED || !session_)
                             ? ErrorCode::OK
-                            : connection_->session()->error();
+                            : session_->error();
+      // Disconnect() notifies event_handler_->OnConnectionClosed(), which
+      // executes session teardown.
       connection_->Disconnect(error, /* error_details= */ {}, FROM_HERE);
-      OnConnectionClosed(error);
       break;
     }
   }

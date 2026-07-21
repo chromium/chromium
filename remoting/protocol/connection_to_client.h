@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -33,7 +34,6 @@ class ClipboardStub;
 class HostStub;
 class InputStub;
 class PeerConnectionControls;
-class Session;
 class VideoStream;
 class WebrtcEventLogData;
 
@@ -69,6 +69,11 @@ class ConnectionToClient {
         const AudioSampleInfo& info,
         base::OnceCallback<void(bool)> done) = 0;
 
+    // Called when the connection is closed or fails.
+    virtual void OnConnectionClosed(ErrorCode error,
+                                    std::string_view error_details,
+                                    const SourceLocation& error_location) = 0;
+
    protected:
     virtual ~EventHandler() = default;
   };
@@ -79,10 +84,6 @@ class ConnectionToClient {
   // Set |event_handler| for connection events. Must be called once when this
   // object is created.
   virtual void SetEventHandler(EventHandler* event_handler) = 0;
-
-  // Returns the Session object for the connection.
-  // TODO(sergeyu): Remove this method.
-  virtual Session* session() = 0;
 
   // Returns the Transport object for the connection.
   virtual Transport* transport() = 0;

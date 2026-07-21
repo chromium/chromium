@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -78,6 +79,7 @@ class TerminalSessionManager;
 
 namespace protocol {
 class AudioStream;
+class IceConfigFetcher;
 class VideoLayout;
 }  // namespace protocol
 
@@ -135,7 +137,9 @@ class ClientSession : public protocol::HostStub,
   // All |HostExtension|s in |extensions| must outlive |this|.
   ClientSession(
       EventHandler* event_handler,
-      std::unique_ptr<protocol::ConnectionToClient> connection,
+      std::unique_ptr<protocol::Session> session,
+      std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
+      scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       DesktopEnvironmentFactory* desktop_environment_factory,
       const DesktopEnvironmentOptions& desktop_environment_options,
       scoped_refptr<protocol::PairingRegistry> pairing_registry,
@@ -179,6 +183,9 @@ class ClientSession : public protocol::HostStub,
   void OnIncomingAudioFormatChanged(
       const protocol::AudioSampleInfo& info,
       base::OnceCallback<void(bool)> done) override;
+  void OnConnectionClosed(protocol::ErrorCode error,
+                          std::string_view error_details,
+                          const SourceLocation& error_location) override;
 
   // ClientSessionControl interface.
   const std::string& client_jid() const override;
@@ -258,9 +265,18 @@ class ClientSession : public protocol::HostStub,
   friend class ClientSessionTest;
   friend class ChromotingHostTest;
 
+  ClientSession(
+      EventHandler* event_handler,
+      std::unique_ptr<protocol::Session> session,
+      std::unique_ptr<protocol::ConnectionToClient> connection,
+      DesktopEnvironmentFactory* desktop_environment_factory,
+      const DesktopEnvironmentOptions& desktop_environment_options,
+      scoped_refptr<protocol::PairingRegistry> pairing_registry,
+      const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
+      const LocalSessionPoliciesProvider* local_session_policies_provider);
+
   void OnConnectionAuthenticating();
   void OnConnectionAuthenticated(const SessionPolicies* session_policies);
-  void OnConnectionClosed(protocol::ErrorCode error);
 
   void OnDesktopEnvironmentCreated(
       std::unique_ptr<DesktopEnvironment> desktop_environment);
@@ -434,6 +450,13 @@ class ClientSession : public protocol::HostStub,
 
   // The connection to the client.
   std::unique_ptr<protocol::ConnectionToClient> connection_;
+
+  // The signaling session.
+  std::unique_ptr<protocol::Session> session_;
+
+  // True if ClientSession teardown has already begun. Prevents re-entrant
+  // execution of OnConnectionClosed() when callbacks fire during teardown.
+  bool is_closing_ = false;
 
   std::string client_jid_;
 
