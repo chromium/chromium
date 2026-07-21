@@ -2089,7 +2089,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                  actions::ActionInvocationContext context) {
                 base::RecordAction(
                     base::UserMetricsAction("InstallWebAppFromMenu"));
-                web_app::ShowPwaInstallDialog(bwi);
+                web_app::CreateWebAppFromCurrentWebContents(
+                    bwi->GetBrowserForMigrationOnly(),
+                    web_app::WebAppInstallFlow::kInstallSite);
               },
               bwi))
           .SetActionId(kActionInstallPwa)
