@@ -3840,6 +3840,18 @@
       "features": [
         "pack_large_row_length_separately_pack_buffer"
       ]
+    },
+    {
+      "id": 485,
+      "cr_bugs": [529991907],
+      "description": "Limit the number of declared varying output components at compile time to work around a PowerVR driver bug.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "limit_output_varyings_at_compile_time"
+      ]
     }
   ]
 }

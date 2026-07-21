@@ -3803,6 +3803,9 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   if (workarounds().validate_max_per_stage_uniform_blocks_at_compile_time) {
     driver_bug_workarounds.validatePerStageMaxUniformBlocks = true;
   }
+  if (workarounds().limit_output_varyings_at_compile_time) {
+    driver_bug_workarounds.limitOutputVaryingsTo256 = true;
+  }
 
   // Initialize uninitialized locals and shared variables by default
   driver_bug_workarounds.initializeUninitializedLocals = true;
