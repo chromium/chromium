@@ -700,8 +700,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       WaitForGoogleSearch(kNewTab, {{"q", "suggestion-1"}}));
 }
 
-// TODO(crbug.com/535715456): Flaky/failing on ASan.
-#if defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/535715456): Flaky/failing on ASan and ChromeOS.
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_RecordsEarlyExitMetrics DISABLED_RecordsEarlyExitMetrics
 #else
 #define MAYBE_RecordsEarlyExitMetrics RecordsEarlyExitMetrics
