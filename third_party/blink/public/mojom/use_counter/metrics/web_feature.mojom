@@ -5283,6 +5283,8 @@ enum WebFeature {
   kDeclarativePerformanceObserver = 5966,
   kPrefetchAndPrerenderActivationBeacon = 5967,
   kLocalNetworkAccessForWebRTCOptOut = 5968,
+  kHTMLCameraElement = 5969,
+  kHTMLMicrophoneElement = 5970,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

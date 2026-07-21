@@ -41,11 +41,13 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_camera_element.h"
 #include "third_party/blink/renderer/core/html/html_capability_element_base.h"
 #include "third_party/blink/renderer/core/html/html_geolocation_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_install_element.h"
+#include "third_party/blink/renderer/core/html/html_microphone_element.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -390,6 +392,10 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     CHECK((RuntimeEnabledFeatures::UserMediaElementEnabled(
                element.GetExecutionContext()) &&
            IsA<HTMLUserMediaElement>(element)) ||
+          (RuntimeEnabledFeatures::CameraAndMicrophoneElementsEnabled(
+               element.GetExecutionContext()) &&
+           (IsA<HTMLCameraElement>(element) ||
+            IsA<HTMLMicrophoneElement>(element))) ||
           (RuntimeEnabledFeatures::GeolocationElementEnabled(
                element.GetExecutionContext()) &&
            IsA<HTMLGeolocationElement>(element)) ||

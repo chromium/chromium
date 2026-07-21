@@ -9,7 +9,7 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-permission, geolocation, install, usermedia {
+permission, geolocation, install, usermedia, camera, microphone {
   background-color: ButtonFace;
   border: solid 1px ButtonBorder;
   box-sizing: content-box !important;
@@ -26,11 +26,11 @@ permission, geolocation, install, usermedia {
   vertical-align: middle !important;
  }
 
-permission:granted {
+permission:granted, camera:granted, microphone:granted {
   background-color: white;
 }
 
-permission::-internal-permission-text, geolocation::-internal-permission-text, install::-internal-permission-text, usermedia::-internal-permission-text {
+permission::-internal-permission-text, geolocation::-internal-permission-text, install::-internal-permission-text, usermedia::-internal-permission-text, camera::-internal-permission-text, microphone::-internal-permission-text {
   text-emphasis: initial !important;
   text-shadow: initial !important;
   align-items: center;
@@ -53,7 +53,7 @@ permission::-internal-permission-text, geolocation::-internal-permission-text, i
   -webkit-text-security: none !important;
 }
 
-permission::-internal-permission-container, geolocation::-internal-permission-container, install::-internal-permission-container, usermedia::-internal-permission-container {
+permission::-internal-permission-container, geolocation::-internal-permission-container, install::-internal-permission-container, usermedia::-internal-permission-container, camera::-internal-permission-container, microphone::-internal-permission-container {
   display: flex;
   flex-flow: row nowrap;
   justify-content: center;
@@ -66,7 +66,7 @@ permission::-internal-permission-container, geolocation::-internal-permission-co
   text-indent: 0px;
 }
 
-permission::permission-icon, geolocation::permission-icon, install::permission-icon, usermedia::permission-icon {
+permission::permission-icon, geolocation::permission-icon, install::permission-icon, usermedia::permission-icon, camera::permission-icon, microphone::permission-icon {
   fill: currentcolor;
   height: 1.3em;
   width: auto;

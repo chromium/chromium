@@ -220,6 +220,8 @@ class CORE_EXPORT HTMLElement : public Element {
   virtual bool IsHTMLCapabilityElementBase() const { return false; }
   virtual bool IsHTMLMediaCaptureElementBase() const { return false; }
   virtual bool IsHTMLUserMediaElement() const { return false; }
+  virtual bool IsHTMLCameraElement() const { return false; }
+  virtual bool IsHTMLMicrophoneElement() const { return false; }
   virtual bool IsHTMLUnknownElement() const { return false; }
   virtual bool IsPluginElement() const { return false; }
 

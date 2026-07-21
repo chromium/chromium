@@ -222,8 +222,13 @@ Node::InsertionNotificationRequest HTMLMediaCaptureElementBase::InsertedInto(
   if (permission_descriptors_.empty()) {
     GetTaskRunner()->PostTask(
         FROM_HERE,
-        blink::BindOnce(&HTMLMediaCaptureElementBase::ApplyDefaultConstraints,
-                        WrapWeakPersistent(this)));
+        blink::BindOnce(
+            [](HTMLMediaCaptureElementBase* element) {
+              if (element) {
+                element->ApplyDefaultConstraints();
+              }
+            },
+            WrapWeakPersistent(this)));
   }
   return kInsertionDone;
 }

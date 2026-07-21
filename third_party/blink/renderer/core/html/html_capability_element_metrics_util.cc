@@ -31,6 +31,10 @@ const char* GetCapabilityNameForHistogram(const QualifiedName& tag_name) {
     return "Install";
   } else if (tag_name == html_names::kUsermediaTag) {
     return "UserMedia";
+  } else if (tag_name == html_names::kCameraTag) {
+    return "Camera";
+  } else if (tag_name == html_names::kMicrophoneTag) {
+    return "Microphone";
   } else {
     NOTREACHED();
   }
@@ -45,6 +49,10 @@ void RecordPermissionElementUseCounter(Document& document,
     UseCounter::Count(document, WebFeature::kHTMLInstallElement);
   } else if (tag_name == html_names::kUsermediaTag) {
     UseCounter::Count(document, WebFeature::kHTMLUserMediaElement);
+  } else if (tag_name == html_names::kCameraTag) {
+    UseCounter::Count(document, WebFeature::kHTMLCameraElement);
+  } else if (tag_name == html_names::kMicrophoneTag) {
+    UseCounter::Count(document, WebFeature::kHTMLMicrophoneElement);
   } else {
     NOTREACHED();
   }
