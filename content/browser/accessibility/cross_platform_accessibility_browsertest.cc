@@ -156,12 +156,24 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
         *GetManager()->GetBrowserAccessibilityRoot(), role_value);
   }
 
-  void PressTabAndWaitForFocusChange() {
+  // Repeatedly presses Tab until `target_name` is focused, waiting for the
+  // accessibility focus node to change and settle on a named element after
+  // each keypress.
+  void PressTabUntilFocused(std::string_view target_name) {
     AccessibilityNotificationWaiter waiter(
         shell()->web_contents(), ui::AXEventGenerator::Event::FOCUS_CHANGED);
-    SimulateKeyPress(shell()->web_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                     ui::VKEY_TAB, false, false, false, false);
-    ASSERT_TRUE(waiter.WaitForNotification());
+    while (GetNameOfFocusedNode() != target_name) {
+      std::string previous_focus = GetNameOfFocusedNode();
+      SimulateKeyPress(shell()->web_contents(), ui::DomKey::TAB,
+                       ui::DomCode::TAB, ui::VKEY_TAB, false, false, false,
+                       false);
+      // Wait for focus to change away from `previous_focus` and settle past
+      // transient iframe document root focus events, which have empty names.
+      while (GetNameOfFocusedNode() == previous_focus ||
+             GetNameOfFocusedNode().empty()) {
+        ASSERT_TRUE(waiter.WaitForNotification());
+      }
+    }
   }
 
   std::string GetNameOfFocusedNode() {
@@ -2792,12 +2804,6 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        NavigateInIframe) {
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/511198770): Re-enable once test deflaked on MacOS 26+
-  if (base::mac::MacOSMajorVersion() == 26) {
-    GTEST_SKIP() << "Disabled on macOS Tahoe.";
-  }
-#endif
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/regression/iframe-navigation.html");
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
@@ -2813,9 +2819,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   // Keep pressing Tab until we get to the "Go to Inner 2" link in the
   // inner iframe.
-  while (GetNameOfFocusedNode() != "Go to Inner 2") {
-    PressTabAndWaitForFocusChange();
-  }
+  PressTabUntilFocused("Go to Inner 2");
 
   // Press enter to activate the link, wait for the second iframe to load.
   {
@@ -2829,9 +2833,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   // Press Tab, we should eventually land on the last button within the
   // second iframe.
-  while (GetNameOfFocusedNode() != "Bottom of Inner 2") {
-    PressTabAndWaitForFocusChange();
-  }
+  PressTabUntilFocused("Bottom of Inner 2");
 }
 
 IN_PROC_BROWSER_TEST_F(
