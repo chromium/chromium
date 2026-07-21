@@ -20,4 +20,10 @@ void RecordActorOneTimeTokenFillingServiceFillOtp(
       kActorOneTimeTokenFillingServiceFillOtpHistogram, event);
 }
 
+void RecordActorOtpRetrieveOtpCallbackSuperseded(
+    ActorOtpRetrieveOtpCallbackSuperseded event) {
+  base::UmaHistogramEnumeration(kActorOtpRetrieveOtpCallbackSupersededHistogram,
+                                event);
+}
+
 }  // namespace autofill

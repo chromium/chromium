@@ -40,6 +40,15 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtpEvent) -->
 
+<!-- LINT.IfChange(ActorOtpRetrieveOtpCallbackSupersededEvent) -->
+
+<enum name="ActorOtpRetrieveOtpCallbackSupersededEvent">
+  <int value="0" label="RetrieveOtpStarted"/>
+  <int value="1" label="CallbackSuperseded"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOtpRetrieveOtpCallbackSuperseded) -->
+
 <!-- LINT.IfChange(AttemptOtpFillingEvent) -->
 
 <enum name="AttemptOtpFillingEvent">

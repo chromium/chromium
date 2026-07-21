@@ -48,6 +48,19 @@ enum class ActorOneTimeTokenFillingServiceFillOtp {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceFillOtp)
 
+// LINT.IfChange(ActorOtpRetrieveOtpCallbackSuperseded)
+
+// Events recorded during the ActorOneTimeTokenFillingService RetrieveOtp
+// callback superseded operation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ActorOtpRetrieveOtpCallbackSuperseded {
+  kRetrieveOtpStarted = 0,
+  kCallbackSuperseded = 1,
+  kMaxValue = kCallbackSuperseded
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOtpRetrieveOtpCallbackSupersededEvent)
+
 // Histogram names for ActorOneTimeTokenFillingService operations.
 inline constexpr std::string_view
     kActorOneTimeTokenFillingServiceRetrieveOtpHistogram =
@@ -55,6 +68,10 @@ inline constexpr std::string_view
 inline constexpr std::string_view
     kActorOneTimeTokenFillingServiceFillOtpHistogram =
         "OneTimeTokens.Actor.OneTimeTokenFillingService.FillOtp";
+inline constexpr std::string_view
+    kActorOtpRetrieveOtpCallbackSupersededHistogram =
+        "OneTimeTokens.Actor.OneTimeTokenFillingService."
+        "RetrieveOtpCallbackSuperseded";
 
 // Records events during RetrieveOtp operation.
 void RecordActorOneTimeTokenFillingServiceRetrieveOtp(
@@ -63,6 +80,10 @@ void RecordActorOneTimeTokenFillingServiceRetrieveOtp(
 // Records events during FillOtp operation.
 void RecordActorOneTimeTokenFillingServiceFillOtp(
     ActorOneTimeTokenFillingServiceFillOtp event);
+
+// Records events measuring superseded callbacks during RetrieveOtp operation.
+void RecordActorOtpRetrieveOtpCallbackSuperseded(
+    ActorOtpRetrieveOtpCallbackSuperseded event);
 
 }  // namespace autofill
 

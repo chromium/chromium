@@ -72,6 +72,20 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram
+    name="OneTimeTokens.Actor.OneTimeTokenFillingService.RetrieveOtpCallbackSuperseded"
+    enum="ActorOtpRetrieveOtpCallbackSupersededEvent"
+    expires_after="2027-06-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>sdrab@google.com</owner>
+  <summary>
+    Records events measuring how often a pending RetrieveOtp callback is
+    superseded by a new RetrieveOtp request in ActorOneTimeTokenFillingService.
+    Recorded at the start of RetrieveOtp invocations and when a pending callback
+    is superseded.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

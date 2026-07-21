@@ -266,6 +266,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Success) {
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kCacheHit, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpRetrieveOtpCallbackSupersededHistogram,
+      ActorOtpRetrieveOtpCallbackSuperseded::kRetrieveOtpStarted, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpRetrieveOtpCallbackSupersededHistogram,
+      ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 0);
 }
 
 // Tests that `RetrieveOtp` correctly selects the most recent Gmail OTP when
@@ -396,6 +402,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest, RetrieveOtp_Superseded) {
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kStart, 2);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpRetrieveOtpCallbackSupersededHistogram,
+      ActorOtpRetrieveOtpCallbackSuperseded::kRetrieveOtpStarted, 2);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpRetrieveOtpCallbackSupersededHistogram,
+      ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 1);
 }
 
 // Tests that a pending subscription request is superseded when a subsequent
@@ -429,6 +441,12 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   histogram_tester_.ExpectBucketCount(
       kActorOneTimeTokenFillingServiceRetrieveOtpHistogram,
       ActorOneTimeTokenFillingServiceRetrieveOtp::kCacheHit, 1);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpRetrieveOtpCallbackSupersededHistogram,
+      ActorOtpRetrieveOtpCallbackSuperseded::kRetrieveOtpStarted, 2);
+  histogram_tester_.ExpectBucketCount(
+      kActorOtpRetrieveOtpCallbackSupersededHistogram,
+      ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded, 1);
 }
 
 // Tests that OnOneTimeTokenReceived handles the case where

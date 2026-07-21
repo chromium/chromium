@@ -205,7 +205,11 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
   // If there is a pending request, its callback is superseded. We run the
   // previous callback with a default error so the old caller can gracefully
   // time out rather than hanging indefinitely.
+  RecordActorOtpRetrieveOtpCallbackSuperseded(
+      ActorOtpRetrieveOtpCallbackSuperseded::kRetrieveOtpStarted);
   if (retrieve_otp_callback_) {
+    RecordActorOtpRetrieveOtpCallbackSuperseded(
+        ActorOtpRetrieveOtpCallbackSuperseded::kCallbackSuperseded);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
