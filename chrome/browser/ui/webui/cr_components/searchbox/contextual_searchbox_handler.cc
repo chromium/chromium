@@ -270,24 +270,33 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
 
   // Now that tabs have been culled, extract data for only this most recent
   // selection, which is a small subset of all tabs.
+  const bool tab_deselection_enabled =
+      omnibox::IsTabDeselectionInComposeboxEnabled();
+  const GURL active_tab_url =
+      active_web_contents ? (tab_deselection_enabled
+                                 ? active_web_contents->GetVisibleURL()
+                                 : active_web_contents->GetLastCommittedURL())
+                          : GURL();
+
   std::vector<searchbox::mojom::TabInfoPtr> tabs;
   for (const TabTime& tab_time : tab_times) {
     content::WebContents* web_contents = tab_time.tab->GetContents();
-    const GURL& last_committed_url = web_contents->GetLastCommittedURL();
+    const GURL& url = tab_deselection_enabled
+                          ? web_contents->GetVisibleURL()
+                          : web_contents->GetLastCommittedURL();
 
     auto tab_data = searchbox::mojom::TabInfo::New();
     tab_data->tab_id = tab_time.tab->GetHandle().raw_value();
     tab_data->title = base::UTF16ToUTF8(web_contents->GetTitle());
-    tab_data->url = last_committed_url;
+    tab_data->url = url;
     const bool show_in_current_tab_chip =
-        active_web_contents &&
-        active_web_contents->GetLastCommittedURL() == last_committed_url;
+        active_web_contents && active_tab_url == url;
     tab_data->show_in_current_tab_chip = show_in_current_tab_chip;
 
     lens::TabContextualizationController* tab_context_controller =
         lens::TabContextualizationController::From(tab_time.tab);
     tab_data->show_in_previous_tab_chip =
-        !google_util::IsGoogleSearchUrl(last_committed_url) &&
+        !google_util::IsGoogleSearchUrl(url) &&
         tab_context_controller->GetInitialPageContextEligibility() &&
         active_web_contents &&
         active_web_contents->GetLastCommittedURL() ==
@@ -409,6 +418,33 @@ class ContextualSearchboxHandler::ActiveTabNavigationObserver
   base::RepeatingClosure on_navigation_cb_;
 };
 
+class ContextualSearchboxHandler::AllTabNavigationObserver
+    : public content::WebContentsObserver {
+ public:
+  AllTabNavigationObserver(
+      content::WebContents* web_contents,
+      base::RepeatingCallback<void(content::WebContents*)> on_navigation_cb)
+      : content::WebContentsObserver(web_contents),
+        on_navigation_cb_(on_navigation_cb) {}
+  ~AllTabNavigationObserver() override = default;
+
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (navigation_handle->IsInPrimaryMainFrame() &&
+        navigation_handle->HasCommitted() &&
+        !navigation_handle->IsSameDocument()) {
+      on_navigation_cb_.Run(web_contents());
+    }
+  }
+
+  void TitleWasSet(content::NavigationEntry* entry) override {
+    on_navigation_cb_.Run(web_contents());
+  }
+
+ private:
+  base::RepeatingCallback<void(content::WebContents*)> on_navigation_cb_;
+};
+
 ContextualSearchboxHandler::ContextualSearchboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
@@ -442,6 +478,7 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
       // supported API for external users.
       tab_list_observation_.Observe(tab_list);
       active_tab_nav_observer_->ObserveTab(tab_list->GetActiveTab());
+      UpdateAllTabNavigationObservers();
     }
   }
 
@@ -479,6 +516,7 @@ void ContextualSearchboxHandler::UpdateTabListObservation(
 void ContextualSearchboxHandler::OnTabAdded(TabListInterface& tab_list,
                                             tabs::TabInterface* tab,
                                             int index) {
+  UpdateAllTabNavigationObservers();
   page_->OnTabStripChanged();
 }
 
@@ -495,12 +533,14 @@ void ContextualSearchboxHandler::OnActiveTabNavigated() {
 void ContextualSearchboxHandler::OnTabRemoved(TabListInterface& tab_list,
                                               tabs::TabInterface* tab,
                                               TabRemovedReason removed_reason) {
+  UpdateAllTabNavigationObservers();
   page_->OnTabStripChanged();
 }
 
 void ContextualSearchboxHandler::OnTabListDestroyed(
     TabListInterface& tab_list) {
   tab_list_observation_.Reset();
+  all_tab_nav_observers_.clear();
 }
 
 void ContextualSearchboxHandler::OnAllTabsAreClosing(
@@ -555,6 +595,37 @@ ContextualSearchboxHandler::~ContextualSearchboxHandler() {
       }
     }
   }
+}
+
+void ContextualSearchboxHandler::UpdateAllTabNavigationObservers() {
+  all_tab_nav_observers_.clear();
+  if (!omnibox::IsTabDeselectionInComposeboxEnabled()) {
+    return;
+  }
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser_window_interface) {
+    return;
+  }
+  auto* tab_list = TabListInterface::From(browser_window_interface);
+  if (!tab_list) {
+    return;
+  }
+  for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+    if (tab && tab->GetContents()) {
+      all_tab_nav_observers_.push_back(
+          std::make_unique<AllTabNavigationObserver>(
+              tab->GetContents(),
+              base::BindRepeating(
+                  &ContextualSearchboxHandler::OnAnyTabNavigated,
+                  base::Unretained(this))));
+    }
+  }
+}
+
+void ContextualSearchboxHandler::OnAnyTabNavigated(
+    content::WebContents* web_contents) {
+  page_->OnTabStripChanged();
 }
 
 void ContextualSearchboxHandler::ResetInputStateModel() {

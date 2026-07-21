@@ -211,6 +211,12 @@ class ContextualSearchSessionHandle {
                        const GURL& current_url,
                        const std::string& current_title) const;
 
+  // Returns true if the two URLs are equivalent using the session's validator.
+  bool AreUrlsEquivalent(const GURL& url1,
+                         const std::string& title1,
+                         const GURL& url2,
+                         const std::string& title2) const;
+
   // Removes a tab from the deselected list (e.g. when it is re-selected).
   void RemoveDeselectedTab(SessionID tab_session_id);
 
