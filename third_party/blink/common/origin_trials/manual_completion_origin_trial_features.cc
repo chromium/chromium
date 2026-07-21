@@ -25,6 +25,7 @@ bool FeatureHasExpiryGracePeriod(blink::mojom::OriginTrialFeature feature) {
           kOriginTrialsSampleAPIPersistentExpiryGracePeriod,
       // Production grace period trials start here:
       blink::mojom::OriginTrialFeature::kRTCEncodedFrameSetMetadata,
+      blink::mojom::OriginTrialFeature::kXSLT,
   };
   return std::ranges::contains(kHasExpiryGracePeriod, feature);
 }
