@@ -55,8 +55,10 @@ static constexpr char kInvalidProtocol[] = "The protocol is not valid";
 static constexpr char kInvalidTransport[] = "The transport is not valid";
 static constexpr char kInvalidUserHandle[] =
     "The User Handle must have a maximum size of ";
-static constexpr char kLargeBlobRequiresResidentKey[] =
-    "Large blob requires resident key support";
+static constexpr char kRequiresResidentKey[] =
+    "Specified options require an authenticator with resident key support";
+static constexpr char kRequiresCtap2[] =
+    "Specified options require a CTAP 2 authenticator";
 static constexpr char kRequiresCtap2_1[] =
     "Specified options require a CTAP 2.1 authenticator";
 static constexpr char kResidentCredentialNotSupported[] =
@@ -224,9 +226,15 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
   bool has_hmac_secret = options->GetHasHmacSecret(/*defaultValue=*/false);
   bool has_hmac_secret_mc = options->GetHasHmacSecretMc(/*defaultValue=*/false);
   bool has_resident_key = options->GetHasResidentKey(/*defaultValue=*/false);
+  bool has_cmtg_key = options->GetHasCmtgKey(/*defaultValue=*/false);
 
-  if (has_large_blob && !has_resident_key)
-    return Response::InvalidParams(kLargeBlobRequiresResidentKey);
+  if (!has_resident_key && (has_large_blob || has_cmtg_key)) {
+    return Response::InvalidParams(kRequiresResidentKey);
+  }
+
+  if (protocol != device::ProtocolVersion::kCtap2 && has_cmtg_key) {
+    return Response::InvalidParams(kRequiresCtap2);
+  }
 
   if ((protocol != device::ProtocolVersion::kCtap2 ||
        ctap2_version < device::Ctap2Version::kCtap2_1) &&
@@ -267,6 +275,7 @@ Response WebAuthnHandler::AddVirtualAuthenticator(
       virt_auth_options.has_prf = has_prf;
       virt_auth_options.has_hmac_secret = has_hmac_secret;
       virt_auth_options.has_hmac_secret_mc = has_hmac_secret_mc;
+      virt_auth_options.has_cmtg_key = has_cmtg_key;
       virt_auth_options.default_backup_eligibility =
           options->GetDefaultBackupEligibility(/*defaultValue=*/false);
       virt_auth_options.default_backup_state =
@@ -354,8 +363,7 @@ void WebAuthnHandler::AddCredential(
     return;
   }
   if (credential->HasLargeBlob() && !credential->GetIsResidentCredential()) {
-    callback->sendFailure(
-        Response::InvalidParams(kLargeBlobRequiresResidentKey));
+    callback->sendFailure(Response::InvalidParams(kRequiresResidentKey));
     return;
   }
 

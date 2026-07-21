@@ -107,5 +107,27 @@
   });
   testRunner.log(alreadyHasInternalAuthenticatorError);
 
+  const cmtgRequiresRKError = await dp.WebAuthn.addVirtualAuthenticator({
+    options: {
+      protocol: "ctap2",
+      transport: "usb",
+      hasResidentKey: false,
+      hasUserVerification: false,
+      hasCmtgKey: true
+    },
+  });
+  testRunner.log(cmtgRequiresRKError);
+
+  const cmtgRequiresCtap2Error = await dp.WebAuthn.addVirtualAuthenticator({
+    options: {
+      protocol: "u2f",
+      transport: "usb",
+      hasResidentKey: true,
+      hasUserVerification: false,
+      hasCmtgKey: true
+    },
+  });
+  testRunner.log(cmtgRequiresCtap2Error);
+
   testRunner.completeTest();
 })

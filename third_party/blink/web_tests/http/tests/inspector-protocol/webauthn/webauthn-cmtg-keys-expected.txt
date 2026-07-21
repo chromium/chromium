@@ -1,0 +1,13 @@
+Check that CMTG keys can be managed via DevTools Protocol
+Registering credential with CMTG on an authenticator without support...
+Register status: OK
+CMTG key: missing
+Registering credential with CMTG on an authenticator with support...
+Register status: OK
+Generated CMTG public key A: present
+Generated CMTG signature A: present
+Getting assertion...
+Assertion status: OK
+Assertion key matches key A: true
+Assertion signature present: yes
+

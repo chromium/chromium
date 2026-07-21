@@ -42,7 +42,7 @@ Check that the WebAuthn addVirtualAuthenticator command validates parameters
 {
     error : {
         code : -32602
-        message : Large blob requires resident key support
+        message : Specified options require an authenticator with resident key support
     }
     id : <number>
     sessionId : <string>
@@ -68,6 +68,22 @@ Created first internal authenticator
     error : {
         code : -32602
         message : Chrome only supports one internal authenticator per environment
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Specified options require an authenticator with resident key support
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Specified options require a CTAP 2 authenticator
     }
     id : <number>
     sessionId : <string>
