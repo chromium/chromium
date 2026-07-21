@@ -107,13 +107,23 @@ DemuxerStreamReader::DemuxerStreamReader(
   }
 
   if (audio_stream_) {
-    ::media::AudioDecoderConfig audio_config =
-        audio_stream_->audio_decoder_config();
+    chromium_audio_config_ = audio_stream_->audio_decoder_config();
+    if (audio_sample_info_) {
+      // audio_sample_info_'s audio_specific_config may currently point to the
+      // extra data of an AudioDecoderConfig owned by the caller. Re-point it
+      // at our own copy so that it remains valid for the lifetime of this
+      // object.
+      audio_sample_info_->audio_specific_config_size =
+          chromium_audio_config_.extra_data().size();
+      audio_sample_info_->audio_specific_config =
+          chromium_audio_config_.extra_data().data();
+    }
 
-    if (IsResamplingNecessary(audio_config)) {
+    if (IsResamplingNecessary(chromium_audio_config_)) {
       convert_audio_fn_ = base::BindRepeating(
-          &ConvertPcmAudioBufferToS16, audio_config.codec(),
-          audio_config.sample_format(), audio_config.channels());
+          &ConvertPcmAudioBufferToS16, chromium_audio_config_.codec(),
+          chromium_audio_config_.sample_format(),
+          chromium_audio_config_.channels());
     } else {
       convert_audio_fn_ = base::BindRepeating(&DoNotConvertBuffer);
     }

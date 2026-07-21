@@ -721,6 +721,83 @@ TEST_F(StarboardPlayerManagerTest,
 }
 
 TEST_F(StarboardPlayerManagerTest,
+       WritesInitialAudioSpecificConfigToStarboard) {
+  // Verify that when the initial audio config has extra data, the bytes that
+  // audio_specific_config points to are still readable and correct by the time
+  // the first sample is written to starboard.
+  constexpr auto kSeekTime = base::Seconds(10);
+  constexpr auto kAudioData = std::to_array<uint8_t>({9, 8, 7});
+  const std::vector<uint8_t> kExtraData = {0x12, 0x10, 0x56, 0xE5, 0x00};
+
+  audio_stream_.set_audio_decoder_config(::media::AudioDecoderConfig(
+      ::media::AudioCodec::kAAC, ::media::SampleFormat::kSampleFormatS16,
+      ::media::ChannelLayoutConfig::Stereo(), 44100, kExtraData,
+      ::media::EncryptionScheme::kUnencrypted));
+
+  // This will be updated whenever the player manager seeks in starboard.
+  int seek_ticket = -1;
+  ON_CALL(starboard_, SeekTo(&sb_player_, _, _))
+      .WillByDefault(SaveArg<2>(&seek_ticket));
+
+  // This will be set to the callbacks received by the mock Starboard.
+  const StarboardPlayerCallbackHandler* callbacks = nullptr;
+  EXPECT_CALL(starboard_, CreatePlayer(NotNull(), _))
+      .WillOnce(DoAll(SaveArg<1>(&callbacks), Return(&sb_player_)));
+
+  scoped_refptr<::media::DecoderBuffer> audio_buffer =
+      ::media::DecoderBuffer::CopyFrom(kAudioData);
+  EXPECT_CALL(audio_stream_, OnRead)
+      .WillOnce(RunOnceCallback<0>(
+          DemuxerStream::Status::kOk,
+          std::vector<scoped_refptr<::media::DecoderBuffer>>({audio_buffer})));
+
+  // Capture a copy of the bytes that starboard would read from
+  // audio_specific_config.
+  std::vector<uint8_t> captured_audio_specific_config;
+  EXPECT_CALL(
+      starboard_,
+      WriteSample(&sb_player_, StarboardMediaType::kStarboardMediaTypeAudio, _))
+      .WillOnce(WithArg<2>(
+          [&captured_audio_specific_config](
+              base::span<const StarboardSampleInfo> sample_infos) {
+            ASSERT_EQ(sample_infos.size(), 1u);
+            const StarboardAudioSampleInfo& audio_info =
+                sample_infos[0].audio_sample_info;
+            ASSERT_THAT(audio_info.audio_specific_config, NotNull());
+            const uint8_t* config_bytes =
+                static_cast<const uint8_t*>(audio_info.audio_specific_config);
+            // SAFETY: audio_specific_config points to
+            // audio_specific_config_size bytes per the Starboard API contract.
+            UNSAFE_BUFFERS(captured_audio_specific_config.assign(
+                config_bytes,
+                config_bytes + audio_info.audio_specific_config_size));
+          }));
+
+  std::unique_ptr<StarboardPlayerManager> player_manager =
+      StarboardPlayerManager::Create(
+          &starboard_, &audio_stream_, /*video_stream=*/nullptr,
+          &renderer_client_, &metrics_helper_,
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          /*enable_buffering=*/true);
+  ASSERT_THAT(player_manager, NotNull());
+
+  player_manager->StartPlayingFrom(kSeekTime);
+
+  // Simulate Starboard requesting an audio buffer.
+  ASSERT_THAT(callbacks, NotNull());
+  ASSERT_THAT(callbacks->decoder_status_fn, NotNull());
+  ASSERT_THAT(callbacks->context, NotNull());
+  callbacks->decoder_status_fn(
+      &sb_player_, callbacks->context,
+      StarboardMediaType::kStarboardMediaTypeAudio,
+      StarboardDecoderState::kStarboardDecoderStateNeedsData, seek_ticket);
+
+  RunPendingTasks();
+
+  EXPECT_EQ(captured_audio_specific_config, kExtraData);
+}
+
+TEST_F(StarboardPlayerManagerTest,
        CreatePlayerReturnsNullIfBothDemuxerStreamsAreNull) {
   EXPECT_THAT(StarboardPlayerManager::Create(
                   &starboard_, /*audio_stream=*/nullptr,
