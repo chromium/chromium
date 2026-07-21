@@ -8597,6 +8597,10 @@ inline constexpr char kEnableCookieBindingCookieUpgradeDescription[] =
     "Enables upgrading unbound session cookies to be hardware-bound on "
     "supported device platforms.";
 
+inline constexpr char kDiceLinkedAccountsName[] = "Linked Accounts";
+inline constexpr char kDiceLinkedAccountsDescription[] =
+    "Enables Linked Accounts and DICE version 2 protocol header.";
+
 inline constexpr char kEnableOAuthMultiloginStandardCookiesBindingName[] =
     "Enable OAuthMultilogin Standard Cookies Binding";
 inline constexpr char
