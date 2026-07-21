@@ -4,9 +4,12 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -17,6 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 class GlassFrameServiceInteractiveTest : public InProcessBrowserTest {
  public:
@@ -26,15 +30,8 @@ class GlassFrameServiceInteractiveTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ui::UserDataFactory::ScopedOverride glass_frame_service_override_;
 };
-
-IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, GetInstance) {
-  if (!features::IsGlassFrameEnabled()) {
-    GTEST_SKIP();
-  }
-
-  EXPECT_TRUE(GlassFrameService::GetInstance());
-}
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, SingleWindowEligible) {
   if (!features::IsGlassFrameEnabled()) {
@@ -182,4 +179,16 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, LocalStatePref) {
   local_state->SetBoolean(prefs::kGlassFrameEnabled, true);
   EXPECT_TRUE(local_state->GetBoolean(prefs::kGlassFrameEnabled));
   EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser1));
+}
+
+#if !BUILDFLAG(IS_MAC)
+#define MAYBE_GetInstanceDoesNotConstructService \
+  GetInstanceDoesNotConstructService
+#else
+#define MAYBE_GetInstanceDoesNotConstructService \
+  DISABLED_GetInstanceDoesNotConstructService
+#endif  // !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
+                       MAYBE_GetInstanceDoesNotConstructService) {
+  EXPECT_EQ(GlassFrameService::GetInstance(), nullptr);
 }

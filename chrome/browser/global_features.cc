@@ -26,12 +26,14 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/browser_apis/tab_drag/sessions/tab_drag_session_manager.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "media/base/media_switches.h"
 #include "net/net_buildflags.h"
+#include "ui/base/ui_base_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 // This causes a gn error on Android builds, because gn does not understand
@@ -80,11 +82,6 @@
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 #include "chrome/browser/on_device_translation/installer_impl.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
-
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/views/frame/glass_frame_service.h"
-#include "ui/base/ui_base_features.h"
-#endif
 
 namespace {
 
@@ -194,7 +191,7 @@ void GlobalFeatures::PostBrowserProcessInit() {
         GetUserDataFactory().CreateInstance<GlassFrameService>(
             *g_browser_process, *g_browser_process);
   }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void GlobalFeatures::PostBrowserProcessInitCore() {
@@ -282,9 +279,7 @@ void GlobalFeatures::PostMainMessageLoopRun() {
   application_advanced_protection_status_detector_.reset();
   tab_drag_session_manager_.reset();
 
-#if BUILDFLAG(IS_MAC)
   glass_frame_service_.reset();
-#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(

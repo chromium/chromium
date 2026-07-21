@@ -66,9 +66,7 @@ class ApplicationAdvancedProtectionStatusDetector;
 class ProfileLaunchObserver;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_MAC)
 class GlassFrameService;
-#endif
 
 #if BUILDFLAG(IS_WIN)
 class StartupLaunchManager;
@@ -314,9 +312,7 @@ class GlobalFeatures {
 
   std::unique_ptr<tabs_api::TabDragSessionManager> tab_drag_session_manager_;
 
-#if BUILDFLAG(IS_MAC)
   std::unique_ptr<GlassFrameService> glass_frame_service_;
-#endif
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

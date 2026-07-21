@@ -8641,6 +8641,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/ui/views/autofill/payments/select_bnpl_issuer_dialog_interactive_uitest.cc",
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
+      "../browser/ui/views/frame/glass_frame_service_interactive_uitest.cc",
       "../browser/ui/views/new_tab_footer/footer_interactive_uitest.cc",
       "../browser/ui/views/permissions/midi_permissions_flow_interactive_uitest.cc",
       "../browser/ui/views/permissions/permission_rhs_indicators_interactive_uitest.cc",
@@ -8675,12 +8676,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_mac || is_linux || is_win || is_chromeos) {
       sources += [ "../browser/ui/views/web_apps/web_app_navigation_capturing_iph_interactive_uitest.cc" ]
-    }
-
-    if (is_mac) {
-      sources += [
-        "../browser/ui/views/frame/glass_frame_service_interactive_uitest.cc",
-      ]
     }
 
     configs += [ "//build/config:precompiled_headers" ]
