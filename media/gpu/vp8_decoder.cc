@@ -186,9 +186,7 @@ uint8_t VP8Decoder::GetBitDepth() const {
 }
 
 VideoChromaSampling VP8Decoder::GetChromaSampling() const {
-  // VP8 decoder currently does not rely on chroma sampling format for
-  // creating/reconfiguring decoder, so return an unknown format.
-  return VideoChromaSampling::kUnknown;
+  return VideoChromaSampling::k420;
 }
 
 VideoColorSpace VP8Decoder::GetVideoColorSpace() const {
