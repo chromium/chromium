@@ -114,6 +114,8 @@ int GetLiveCaptionsNumberOfLines() {
   return 0;
 }
 
+void SetShouldShowSuggestionChips(bool should_show) {}
+
 UIViewController* GetFloatyViewControllerWithConfiguration(
     GeminiConfiguration* gemini_configuration) {
   UIViewController* viewController = [[UIViewController alloc] init];
