@@ -1019,7 +1019,8 @@ if (is_chromeos) {
   }
 
   # This group is used to collect all targets used when verifying a new version
-  # of Chrome for Chrome OS.
+  # of Chrome for Chrome OS. They should be aligned with the build targets
+  # specified in chromeos-chrome-9999.ebuild.
   group("chromiumos_preflight") {
     testonly = true
     data_deps = [
@@ -1037,7 +1038,17 @@ if (is_chromeos) {
       "//third_party/dawn/src/dawn/tests:dawn_unittests",
       "//ui/ozone:ozone_integration_tests",
       "//ui/ozone/gl:ozone_gl_unittests",
+
+      # libtest_trace_processor.so
+      "//base/test:test_trace_processor",
+
+      # chromedriver
+      "//chrome/test/chromedriver:chromedriver_integrationtests",
     ]
+
+    if (is_chromeos_device) {
+      data_deps += [ "//chrome/test/base/chromeos/crosier/helper/fake_chrome" ]
+    }
 
     if (use_linux_video_acceleration) {
       data_deps += [
@@ -1061,6 +1072,15 @@ if (is_chromeos) {
           "//media/gpu/chromeos:image_processor_perf_test",
           "//media/gpu/v4l2:v4l2_stateless_decoder",
           "//media/gpu/v4l2:v4l2_unittest",
+        ]
+        if (enable_vulkan) {
+          data_deps += [ "//media/gpu/chromeos:vulkan_overlay_adaptor_test" ]
+        }
+      }
+      if (enable_swiftshader) {
+        data_deps += [
+          # libvk_swiftshader.so
+          "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
         ]
       }
     }
