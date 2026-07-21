@@ -16,3 +16,7 @@ class WebAppInternalsTest : public WebUIMochaBrowserTest {
 IN_PROC_BROWSER_TEST_F(WebAppInternalsTest, Utils) {
   RunTest("web_app_internals/utils_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(WebAppInternalsTest, App) {
+  RunTest("web_app_internals/app_test.js", "mocha.run()");
+}

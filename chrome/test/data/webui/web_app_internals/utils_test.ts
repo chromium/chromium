@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {DebugData} from 'chrome://web-app-internals/web_app_internals_utils.js';
-import {debugDataJsonReplacer, filterToApp, getAppIndexEntries, getQuery, renderAppIndex} from 'chrome://web-app-internals/web_app_internals_utils.js';
+import {debugDataJsonReplacer, filterToApp, getAppIndexEntries, getQuery} from 'chrome://web-app-internals/web_app_internals_utils.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // Tests only exercise the InstalledWebApps section. Cast as DebugData since
@@ -83,78 +83,7 @@ suite('WebAppInternalsUtilsTest', function() {
     });
   });
 
-  suite('renderAppIndex', function() {
-    let container: HTMLElement;
-
-    setup(function() {
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      container = document.createElement('div');
-      document.body.appendChild(container);
-    });
-
-    test('creates links from Index data', function() {
-      const data = makeFakeData({'App1': 'id1', 'App2': 'id2'}, []);
-      renderAppIndex(data, container, '');
-      const links = container.querySelectorAll('a');
-      // "Show All" + 2 app links
-      assertEquals(3, links.length);
-      assertEquals('App1 (id1)', links[1]!.textContent);
-      assertEquals('#id1', links[1]!.getAttribute('href'));
-      assertEquals('App2 (id2)', links[2]!.textContent);
-      assertEquals('#id2', links[2]!.getAttribute('href'));
-    });
-
-    test('includes Show All link', function() {
-      const data = makeFakeData({'App1': 'id1'}, []);
-      renderAppIndex(data, container, '');
-      const links = container.querySelectorAll('a');
-      assertEquals('Show All', links[0]!.textContent);
-      assertEquals('#', links[0]!.getAttribute('href'));
-    });
-
-    test('handles array of IDs for same app name', function() {
-      const data = makeFakeData({'App1': ['id1', 'id2']}, []);
-      renderAppIndex(data, container, '');
-      const links = container.querySelectorAll('a');
-      // "Show All" + 2 links for same app name
-      assertEquals(3, links.length);
-      assertEquals('App1 (id1)', links[1]!.textContent);
-      assertEquals('App1 (id2)', links[2]!.textContent);
-    });
-
-    test('marks matching link as active', function() {
-      const data = makeFakeData({'App1': 'id1', 'App2': 'id2'}, []);
-      renderAppIndex(data, container, 'id2');
-      const links = container.querySelectorAll('a');
-      assertFalse(links[0]!.classList.contains('active'));
-      assertFalse(links[1]!.classList.contains('active'));
-      assertTrue(links[2]!.classList.contains('active'));
-    });
-
-    test('marks Show All as active when query is empty', function() {
-      const data = makeFakeData({'App1': 'id1'}, []);
-      renderAppIndex(data, container, '');
-      const links = container.querySelectorAll('a');
-      assertTrue(links[0]!.classList.contains('active'));
-      assertFalse(links[1]!.classList.contains('active'));
-    });
-
-    test('marks Show All as active when query matches no app', function() {
-      const data = makeFakeData({'App1': 'id1'}, []);
-      renderAppIndex(data, container, 'nonexistent');
-      const links = container.querySelectorAll('a');
-      assertTrue(links[0]!.classList.contains('active'));
-      assertFalse(links[1]!.classList.contains('active'));
-    });
-
-    test('clears previous content', function() {
-      container.appendChild(document.createElement('span'));
-      const data = makeFakeData({'App1': 'id1'}, []);
-      renderAppIndex(data, container, '');
-      assertEquals(0, container.querySelectorAll('span').length);
-      assertEquals(2, container.querySelectorAll('a').length);
-    });
-
+  suite('appIndexUtils', function() {
     test('extracts entries with Show All prepended', function() {
       const data = makeFakeData({'App1': 'id1', 'App2': 'id2'}, []);
       const entries = getAppIndexEntries(data, 'id2');

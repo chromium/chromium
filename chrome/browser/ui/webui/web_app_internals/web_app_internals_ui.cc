@@ -39,6 +39,12 @@ WEB_UI_CONTROLLER_TYPE_IMPL(WebAppInternalsUI)
 WebAppInternalsUI::~WebAppInternalsUI() = default;
 
 void WebAppInternalsUI::BindInterface(
+    mojo::PendingReceiver<mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void WebAppInternalsUI::CreateWebAppInternalsHandler(
     mojo::PendingReceiver<mojom::WebAppInternalsHandler> receiver) {
   page_handler_ =
       std::make_unique<WebAppInternalsHandler>(web_ui(), std::move(receiver));

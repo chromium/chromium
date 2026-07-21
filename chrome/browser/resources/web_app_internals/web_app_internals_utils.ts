@@ -129,24 +129,6 @@ export function getAppIndexEntries(
 }
 
 /**
- * Builds a clickable index of installed web apps from the parsed debug JSON.
- * Each app name becomes a link that filters the page to that app's details.
- * The currently selected app (based on URL hash) is highlighted.
- */
-export function renderAppIndex(
-    data: DebugData, indexContainer: HTMLElement, query: string): void {
-  indexContainer.replaceChildren();
-
-  for (const entry of getAppIndexEntries(data, query)) {
-    const link = document.createElement('a');
-    link.href = `#${entry.id || ''}`;
-    link.textContent = entry.label;
-    link.classList.toggle('active', entry.isActive);
-    indexContainer.appendChild(link);
-  }
-}
-
-/**
  * Filters the debug data to only show the InstalledWebApps section with the
  * matching app's details. The !Index is preserved for navigation. All other
  * sections are removed to reduce clutter.

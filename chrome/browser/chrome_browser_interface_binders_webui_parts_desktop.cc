@@ -548,7 +548,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
         }));
   }
 
-  RegisterWebUIControllerInterfaceBinder<::mojom::WebAppInternalsHandler,
+  RegisterWebUIControllerInterfaceBinder<::mojom::PageHandlerFactory,
                                          WebAppInternalsUI>(map);
   if (base::FeatureList::IsEnabled(multistep_filter::kMultistepFilter)) {
     RegisterWebUIControllerInterfaceBinder<

@@ -15,12 +15,10 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import type {IwaDevModeAppInfo, IwaDevModeLocation, VersionEntry} from './web_app_internals.mojom-webui.js';
-import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
+import {browserProxyFactory} from './web_app_internals.mojom-webui.js';
+import type {BrowserProxy, IwaDevModeAppInfo, IwaDevModeLocation, VersionEntry} from './web_app_internals.mojom-webui.js';
 import type {AppIndexEntry, DebugData} from './web_app_internals_utils.js';
 import {debugDataJsonReplacer, filterToApp, getAppIndexEntries, getQuery} from './web_app_internals_utils.js';
-
-const webAppInternalsHandler = WebAppInternalsHandler.getRemote();
 
 export interface WebAppInternalsAppElement {
   $: {
@@ -138,6 +136,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
   private activeAppId_: string = '';
   private activeAppName_: string = '';
   private tracker_: EventTracker = new EventTracker();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -174,7 +173,8 @@ export class WebAppInternalsAppElement extends CrLitElement {
 
   private async fetchDebugInfo_(): Promise<void> {
     try {
-      const response = await webAppInternalsHandler.getDebugInfoAsJsonString();
+      const response =
+          await this.browserProxy_.handler.getDebugInfoAsJsonString();
       this.rawDebugData_ = response.result;
       try {
         this.parsedDebugData_ = JSON.parse(response.result);
@@ -223,7 +223,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
   protected async onIwaUpdatesSearchButtonClick_() {
     this.iwaUpdatesMessage_ = 'Queueing update discovery tasks...';
     const response =
-        await webAppInternalsHandler.searchForIsolatedWebAppUpdates();
+        await this.browserProxy_.handler.searchForIsolatedWebAppUpdates();
     this.iwaUpdatesMessage_ = response.result;
   }
 
@@ -268,7 +268,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
     try {
       const location: Url = urlStr;
       const {result} =
-          await webAppInternalsHandler.installIsolatedWebAppFromDevProxy(
+          await this.browserProxy_.handler.installIsolatedWebAppFromDevProxy(
               location);
       if (result.success) {
         this.iwaDevInstallMessage_ =
@@ -288,7 +288,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
   protected async onIwaDevInstallBundleSelectorClick_() {
     this.iwaDevInstallMessage_ = 'Installing IWA from bundle...';
 
-    const {result} = await webAppInternalsHandler
+    const {result} = await this.browserProxy_.handler
                          .selectFileAndInstallIsolatedWebAppFromDevBundle();
     if (result.success) {
       this.iwaDevInstallMessage_ =
@@ -330,8 +330,9 @@ export class WebAppInternalsAppElement extends CrLitElement {
     this.iwaDevInstallMessage_ = `Fetching the update manifest at ${urlStr}...`;
 
     const updateManifestUrl: Url = urlStr;
-    const {result} = await webAppInternalsHandler.parseUpdateManifestFromUrl(
-        updateManifestUrl);
+    const {result} =
+        await this.browserProxy_.handler.parseUpdateManifestFromUrl(
+            updateManifestUrl);
     if (result.error) {
       this.iwaDevInstallMessage_ = `Installing IWA from update manifest: ${
           urlStr} failed to install: ${result.error}`;
@@ -377,7 +378,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
 
     // TODO(crbug.com/373396075): Allow selecting the channel.
     const {result: installResult} =
-        await webAppInternalsHandler.installIsolatedWebAppFromBundleUrl({
+        await this.browserProxy_.handler.installIsolatedWebAppFromBundleUrl({
           webBundleUrl: selectedVersionEntry.webBundleUrl,
           updateInfo: {
             updateManifestUrl,
@@ -420,7 +421,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
           `Switching channel to ${updateChannel.value} for ${name}...`;
 
       const {success} =
-          await webAppInternalsHandler.setUpdateChannelForIsolatedWebApp(
+          await this.browserProxy_.handler.setUpdateChannelForIsolatedWebApp(
               appId,
               updateChannel.value,
           );
@@ -455,7 +456,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
 
   protected onIwaPinnedVersionUnpinClick_() {
     this.$.pinnedVersionInputDialog.close();
-    webAppInternalsHandler.resetPinnedVersionForIsolatedWebApp(
+    this.browserProxy_.handler.resetPinnedVersionForIsolatedWebApp(
         this.activeAppId_);
     this.refreshDevModeAppList_();
   }
@@ -468,7 +469,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
     this.$.pinnedVersionInputDialog.close();
 
     const {success} =
-        await webAppInternalsHandler.setPinnedVersionForIsolatedWebApp(
+        await this.browserProxy_.handler.setPinnedVersionForIsolatedWebApp(
             appId, version);
 
     this.iwaDevInstallMessage_ = success ?
@@ -488,7 +489,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
       return;
     }
     try {
-      await webAppInternalsHandler.setAllowDowngradesForIsolatedWebApp(
+      await this.browserProxy_.handler.setAllowDowngradesForIsolatedWebApp(
           input.checked, appId);
       await this.refreshDevModeAppList_();
     } catch (error) {
@@ -512,18 +513,17 @@ export class WebAppInternalsAppElement extends CrLitElement {
     this.requestUpdate();
     try {
       if (app.updateInfo) {
-        const {result} =
-            await webAppInternalsHandler.updateManifestInstalledIsolatedWebApp(
-                app.appId);
+        const {result} = await this.browserProxy_.handler
+                             .updateManifestInstalledIsolatedWebApp(app.appId);
         app.updateMsg = result;
       } else if (app.location.bundlePath) {
         const {result} =
-            await webAppInternalsHandler
+            await this.browserProxy_.handler
                 .selectFileAndUpdateIsolatedWebAppFromDevBundle(app.appId);
         app.updateMsg = result;
       } else if (app.location.proxyOrigin) {
         const {result} =
-            await webAppInternalsHandler.updateDevProxyIsolatedWebApp(
+            await this.browserProxy_.handler.updateDevProxyIsolatedWebApp(
                 app.appId);
         app.updateMsg = result;
       } else {
@@ -544,7 +544,7 @@ export class WebAppInternalsAppElement extends CrLitElement {
     this.requestUpdate();
     try {
       const {success} =
-          await webAppInternalsHandler.deleteIsolatedWebApp(app.appId);
+          await this.browserProxy_.handler.deleteIsolatedWebApp(app.appId);
 
       if (success) {
         await this.refreshDevModeAppList_();
@@ -590,7 +590,8 @@ export class WebAppInternalsAppElement extends CrLitElement {
     this.devModeUpdatesMessage_ = 'Loading IWAs list...';
 
     const devModeApps: IwaDevModeAppInfo[] =
-        (await webAppInternalsHandler.getIsolatedWebAppDevModeAppInfo()).apps;
+        (await this.browserProxy_.handler.getIsolatedWebAppDevModeAppInfo())
+            .apps;
 
     if (devModeApps.length === 0) {
       this.devModeUpdatesMessage_ = 'None';
