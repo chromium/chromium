@@ -283,7 +283,7 @@
     Tabs opened from a chat or a shared tab are also shared with Gemini.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1" desc="First point in 'things to consider' column of the 'default tab access' expands" formatter_data="android_java">
-    When tabs are shared, their page contents, media and URLs are sent to Google.
+    When tabs are shared, their page contents, media and URLs are sent to Google and may be reviewed for safety.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_2" desc="Second point in 'things to consider' column of the 'default tab access' expands">
     Conversations about shared tabs may be seen by human reviewers to improve Gemini.
@@ -355,7 +355,7 @@
     Gemini shows its steps and tries to confirm before taking sensitive ones. You can stop or take over anytime.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_1" desc="First point in 'things to consider' column of the 'let Gemini browse for you' expands" formatter_data="android_java">
-    The page content and URLs that Gemini uses during a task will be shared with Google.
+    The page content and URLs that Gemini uses during a task will be shared with Google and may be reviewed for safety.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_2" desc="Second point in 'things to consider' column of the 'let Gemini browse for you' expands" formatter_data="android_java">
     Use Gemini carefully and <ph name="BEGIN_LINK1">&lt;a href="$1" target="_blank"&gt;</ph>safely<ph name="LINK_END1">&lt;/a&gt;</ph>. You are responsible for Gemini's actions during a task, including mistakes and <ph name="BEGIN_LINK2">&lt;a href="$2" target="_blank"&gt;</ph>unexpected results<ph name="LINK_END2">&lt;/a&gt;</ph> like purchases.
