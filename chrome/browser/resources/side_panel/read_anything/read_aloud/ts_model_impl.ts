@@ -4,7 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import {getReadingModeTextNodes} from '../shared/common.js';
+import {getReadingModeTextNodes} from '../shared/tree_traversal.js';
 
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
 import type {OffsetByNode, Segment, SegmentedSentence, Sentence} from './read_aloud_types.js';

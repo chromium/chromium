@@ -9,8 +9,9 @@ import {previousReadHighlightClass} from '../read_aloud/movement.js';
 import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {ReadAloudNode} from '../read_aloud/read_aloud_types.js';
 import {SpeechController} from '../read_aloud/speech_controller.js';
-import {getReadingModeTextNodes, isDistilledByReadability, LOG_EMPTY_DELAY_MS} from '../shared/common.js';
+import {isDistilledByReadability, LOG_EMPTY_DELAY_MS} from '../shared/common.js';
 import {LinkStatus, ReadAnythingLogger} from '../shared/read_anything_logger.js';
+import {getReadingModeTextNodes} from '../shared/tree_traversal.js';
 
 import {NodeStore} from './node_store.js';
 import {removeExtraneousElementsFrom} from './readability_content_processing.js';
