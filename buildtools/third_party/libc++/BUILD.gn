@@ -22,6 +22,9 @@ config("config") {
   ]
   if (is_win) {
     cflags += [
+      # TODO(crbug.com/534283300): remove this flag once it is fixed upstream
+      "-Wno-microsoft-cast",
+
       # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S
       # in its implementation.
       "-Wno-macro-redefined",
