@@ -422,7 +422,10 @@ if (enable_openxr) {
         output_name = "libmockopenxrruntime"
       }
 
-      defines = [ "XR_EXTENSION_PROTOTYPES" ]
+      defines = [
+        "XR_EXTENSION_PROTOTYPES",
+        "DEVICE_VR_IMPLEMENTATION",
+      ]
 
       include_dirs = [ "//third_party/openxr/src/include" ]
 
@@ -437,6 +440,7 @@ if (enable_openxr) {
         "openxr/test/openxr_negotiate.h",
         "openxr/test/openxr_test_helper.cc",
         "openxr/test/openxr_test_helper.h",
+        "vr_export.h",
       ]
 
       deps = [
@@ -444,6 +448,7 @@ if (enable_openxr) {
         "//base",
         "//components/version_info",
         "//device/gamepad/public/cpp:shared_with_blink",
+        "//device/vr/public/cpp:features",
         "//device/vr/public/mojom:vr_service",
         "//device/vr/public/mojom/test:test_mojom",
         "//third_party/openxr:openxr_headers",

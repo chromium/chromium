@@ -22,6 +22,17 @@ declare_args() {
 }
 
 if (enable_openxr) {
+  source_set("openxr_core_headers") {
+    sources = [
+      "dev/xr_android.h",
+      "src/include/openxr/openxr.h",
+      "src/include/openxr/openxr_platform_defines.h",
+      "src/src/common/hex_and_handles.h",
+    ]
+
+    public_configs = [ ":config" ]
+  }
+
   source_set("openxr_headers") {
     # This visibility is done to help enforce the dependency that
     # openxr_platform.h requires platform headers to be included before it.
@@ -34,15 +45,9 @@ if (enable_openxr) {
       "//device/vr/*",
     ]
 
-    sources = [
-      "dev/xr_android.h",
-      "src/include/openxr/openxr.h",
-      "src/include/openxr/openxr_platform.h",
-      "src/include/openxr/openxr_platform_defines.h",
-      "src/src/common/hex_and_handles.h",
-    ]
+    sources = [ "src/include/openxr/openxr_platform.h" ]
 
-    public_configs = [ ":config" ]
+    public_deps = [ ":openxr_core_headers" ]
   }
 
   if (is_android) {
