@@ -96,6 +96,10 @@ class CONTENT_EXPORT WebContentsViewAura
     int flags;
   };
 
+#if BUILDFLAG(IS_WIN)
+  class AsyncDropNavigationObserver;
+#endif
+
   // A structure used to keep drop context for asynchronously finishing a
   // drop operation.  This is required because some drop event data gets
   // cleared out once PerformDropCallback() returns.
@@ -120,6 +124,11 @@ class CONTENT_EXPORT WebContentsViewAura
     base::ScopedClosureRunner drop_exit_cleanup;
     std::optional<gfx::PointF> transformed_pt;
     gfx::PointF screen_pt;
+#if BUILDFLAG(IS_WIN)
+    // Watches for navigations that complete while virtual file retrieval is in
+    // progress so that this drop can be disallowed if the page changes.
+    std::unique_ptr<AsyncDropNavigationObserver> navigation_observer;
+#endif
   };
 
   friend class WebContentsViewAuraTest;
@@ -132,6 +141,14 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropVirtualFiles);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            DragDropVirtualFilesOriginateFromRenderer);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      DragDropVirtualFilesNavigationObservedAcrossOverlappingDrops);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           DragDropVirtualFiles_DestroyDuringExtraction);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           DragDropVirtualFiles_UnrelatedNavigation);
+
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropUrlData);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, DragDropOnOopif);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
@@ -370,8 +387,6 @@ class CONTENT_EXPORT WebContentsViewAura
                                   /*display name*/ base::FilePath>>&
           filepaths_and_names);
 
-  class AsyncDropNavigationObserver;
-  std::unique_ptr<AsyncDropNavigationObserver> async_drop_navigation_observer_;
 
   class AsyncDropTempFileDeleter;
   std::unique_ptr<AsyncDropTempFileDeleter> async_drop_temp_file_deleter_;

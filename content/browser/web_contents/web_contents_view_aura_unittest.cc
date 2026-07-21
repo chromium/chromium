@@ -15,12 +15,14 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -127,6 +129,36 @@ class TestDragDropClient : public aura::client::DragDropClient {
   gfx::Point last_screen_location_;
   std::optional<ui::mojom::DragEventSource> last_source_;
 };
+
+#if BUILDFLAG(IS_WIN)
+// An OSExchangeDataProvider that exposes virtual files but lets the test
+// control when the temp-file retrieval callback is invoked.
+class DeferredVirtualFileProvider : public ui::OSExchangeDataProviderWin {
+ public:
+  using TempFilesCallback = base::OnceCallback<void(
+      const std::vector<std::pair<base::FilePath, base::FilePath>>&)>;
+
+  bool HasVirtualFilenames() const override { return true; }
+
+  std::optional<std::vector<ui::FileInfo>> GetVirtualFilenames()
+      const override {
+    return std::vector<ui::FileInfo>{
+        {base::FilePath(FILE_PATH_LITERAL("temp.tmp")),
+         base::FilePath(FILE_PATH_LITERAL("file.txt"))}};
+  }
+
+  void GetVirtualFilesAsTempFiles(TempFilesCallback callback) const override {
+    pending_callback_ = std::move(callback);
+  }
+
+  TempFilesCallback TakePendingCallback() {
+    return std::move(pending_callback_);
+  }
+
+ private:
+  mutable TempFilesCallback pending_callback_;
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -635,6 +667,147 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles) {
     ASSERT_TRUE(read_contents.has_value());
     EXPECT_EQ(test_filenames_and_contents[i].second, read_contents.value());
   }
+}
+
+// Ensures that when two virtual file drops overlap, navigations during the
+// first drop's extraction are correctly respected and disallow the drop.
+// This is a regression test for https://crbug.com/503720291.
+TEST_F(WebContentsViewAuraTest,
+       DragDropVirtualFilesNavigationObservedAcrossOverlappingDrops) {
+  WebContentsViewAura* view = GetView();
+
+  // First virtual file drop.
+  auto first_provider = std::make_unique<DeferredVirtualFileProvider>();
+  DeferredVirtualFileProvider* first_provider_ptr = first_provider.get();
+  auto first_data =
+      std::make_unique<ui::OSExchangeData>(std::move(first_provider));
+  ui::DropTargetEvent first_event(*first_data.get(), kClientPt, kScreenPt,
+                                  ui::DragDropTypes::DRAG_COPY);
+  view->OnDragEntered(first_event);
+  ASSERT_NE(nullptr, view->current_drag_data_);
+
+  std::optional<bool> first_drop_allowed;
+  view->RegisterDropCallbackForTesting(base::BindLambdaForTesting(
+      [&](RenderWidgetHostImpl*, const DropData&, const gfx::PointF&,
+          const gfx::PointF&, int,
+          bool drop_allowed) { first_drop_allowed = drop_allowed; }));
+
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  auto first_drop_cb = view->GetDropCallback(first_event);
+  ASSERT_TRUE(first_drop_cb);
+  std::move(first_drop_cb)
+      .Run(std::move(first_data), output_drag_op,
+           /*drag_image_layer_owner=*/nullptr);
+  DeferredVirtualFileProvider::TempFilesCallback first_temp_files_cb =
+      first_provider_ptr->TakePendingCallback();
+  ASSERT_TRUE(first_temp_files_cb);
+
+  // A navigation completes while the first drop's temp-file retrieval is
+  // pending.
+  NavigateAndCommit(GURL("https://b.test/"));
+
+  // A second virtual file drag enters and is dropped while the first drop's
+  // temp-file retrieval is still pending.
+  auto second_provider = std::make_unique<DeferredVirtualFileProvider>();
+  DeferredVirtualFileProvider* second_provider_ptr = second_provider.get();
+  auto second_data =
+      std::make_unique<ui::OSExchangeData>(std::move(second_provider));
+  ui::DropTargetEvent second_event(*second_data.get(), kClientPt, kScreenPt,
+                                   ui::DragDropTypes::DRAG_COPY);
+  view->OnDragEntered(second_event);
+  ASSERT_NE(nullptr, view->current_drag_data_);
+
+  auto second_drop_cb = view->GetDropCallback(second_event);
+  ASSERT_TRUE(second_drop_cb);
+  std::move(second_drop_cb)
+      .Run(std::move(second_data), output_drag_op,
+           /*drag_image_layer_owner=*/nullptr);
+  DeferredVirtualFileProvider::TempFilesCallback second_temp_files_cb =
+      second_provider_ptr->TakePendingCallback();
+  ASSERT_TRUE(second_temp_files_cb);
+
+  // Temp-file retrieval for the first drop completes.
+  std::move(first_temp_files_cb)
+      .Run({{base::FilePath(FILE_PATH_LITERAL("first.tmp")),
+             base::FilePath(FILE_PATH_LITERAL("file.txt"))}});
+
+  // The first drop must be disallowed because the page navigated after that
+  // drop was initiated, regardless of any later drag activity.
+  ASSERT_TRUE(first_drop_allowed.has_value());
+  EXPECT_FALSE(first_drop_allowed.value());
+}
+
+TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles_DestroyDuringExtraction) {
+  WebContentsViewAura* view = GetView();
+
+  // First virtual file drop.
+  auto provider = std::make_unique<DeferredVirtualFileProvider>();
+  DeferredVirtualFileProvider* provider_ptr = provider.get();
+  auto data = std::make_unique<ui::OSExchangeData>(std::move(provider));
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_COPY);
+  view->OnDragEntered(event);
+
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(std::move(data), output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
+  DeferredVirtualFileProvider::TempFilesCallback temp_files_cb =
+      provider_ptr->TakePendingCallback();
+  ASSERT_TRUE(temp_files_cb);
+
+  // Destroy WebContents (and thus WebContentsViewAura) while extraction is
+  // pending.
+  DeleteContents();
+
+  // Now run the callback. It should not crash.
+  std::move(temp_files_cb)
+      .Run({{base::FilePath(FILE_PATH_LITERAL("first.tmp")),
+             base::FilePath(FILE_PATH_LITERAL("file.txt"))}});
+}
+
+TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles_UnrelatedNavigation) {
+  WebContentsViewAura* view = GetView();
+
+  NavigateAndCommit(GURL("https://a.test/"));
+
+  // First virtual file drop.
+  auto provider = std::make_unique<DeferredVirtualFileProvider>();
+  DeferredVirtualFileProvider* provider_ptr = provider.get();
+  auto data = std::make_unique<ui::OSExchangeData>(std::move(provider));
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_COPY);
+  view->OnDragEntered(event);
+
+  std::optional<bool> drop_allowed;
+  view->RegisterDropCallbackForTesting(base::BindLambdaForTesting(
+      [&](RenderWidgetHostImpl*, const DropData&, const gfx::PointF&,
+          const gfx::PointF&, int, bool allowed) { drop_allowed = allowed; }));
+
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(std::move(data), output_drag_op,
+                         /*drag_image_layer_owner=*/nullptr);
+  DeferredVirtualFileProvider::TempFilesCallback temp_files_cb =
+      provider_ptr->TakePendingCallback();
+  ASSERT_TRUE(temp_files_cb);
+
+  // Create and navigate an unrelated WebContents.
+  std::unique_ptr<WebContents> unrelated_contents = CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      unrelated_contents.get(), GURL("https://unrelated.test/"));
+
+  // Temp-file retrieval for the drop completes.
+  std::move(temp_files_cb)
+      .Run({{base::FilePath(FILE_PATH_LITERAL("first.tmp")),
+             base::FilePath(FILE_PATH_LITERAL("file.txt"))}});
+
+  // The drop should still be allowed because the navigation was in an unrelated
+  // WebContents.
+  ASSERT_TRUE(drop_allowed.has_value());
+  EXPECT_TRUE(drop_allowed.value());
 }
 
 TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {

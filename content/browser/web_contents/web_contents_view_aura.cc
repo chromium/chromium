@@ -383,28 +383,6 @@ WebContentsViewAura::DropMetadata::DropMetadata(
   flags = event.flags();
 }
 
-WebContentsViewAura::OnPerformingDropContext::OnPerformingDropContext(
-    RenderWidgetHostImpl* target_rwh,
-    std::unique_ptr<DropData> drop_data,
-    DropMetadata drop_metadata,
-    std::unique_ptr<ui::OSExchangeData> data,
-    base::ScopedClosureRunner drop_exit_cleanup,
-    std::optional<gfx::PointF> transformed_pt,
-    gfx::PointF screen_pt)
-    : target_rwh(target_rwh->GetWeakPtr()),
-      drop_data(std::move(drop_data)),
-      drop_metadata(drop_metadata),
-      data(std::move(data)),
-      drop_exit_cleanup(std::move(drop_exit_cleanup)),
-      transformed_pt(std::move(transformed_pt)),
-      screen_pt(screen_pt) {}
-
-WebContentsViewAura::OnPerformingDropContext::OnPerformingDropContext(
-    OnPerformingDropContext&&) = default;
-
-WebContentsViewAura::OnPerformingDropContext::~OnPerformingDropContext() =
-    default;
-
 #if BUILDFLAG(IS_WIN)
 // A web contents observer that watches for navigations while an async drop
 // operation is in progress during virtual file data retrieval and temp file
@@ -453,6 +431,31 @@ void WebContentsViewAura::AsyncDropNavigationObserver::DidFinishNavigation(
     drop_allowed_ = false;
   }
 }
+#endif  // BUILDFLAG(IS_WIN)
+
+WebContentsViewAura::OnPerformingDropContext::OnPerformingDropContext(
+    RenderWidgetHostImpl* target_rwh,
+    std::unique_ptr<DropData> drop_data,
+    DropMetadata drop_metadata,
+    std::unique_ptr<ui::OSExchangeData> data,
+    base::ScopedClosureRunner drop_exit_cleanup,
+    std::optional<gfx::PointF> transformed_pt,
+    gfx::PointF screen_pt)
+    : target_rwh(target_rwh->GetWeakPtr()),
+      drop_data(std::move(drop_data)),
+      drop_metadata(drop_metadata),
+      data(std::move(data)),
+      drop_exit_cleanup(std::move(drop_exit_cleanup)),
+      transformed_pt(std::move(transformed_pt)),
+      screen_pt(screen_pt) {}
+
+WebContentsViewAura::OnPerformingDropContext::OnPerformingDropContext(
+    OnPerformingDropContext&&) = default;
+
+WebContentsViewAura::OnPerformingDropContext::~OnPerformingDropContext() =
+    default;
+
+#if BUILDFLAG(IS_WIN)
 
 // Deletes registered temp files asynchronously when the object goes out of
 // scope (when the WebContentsViewAura is deleted on tab closure).
@@ -1531,9 +1534,6 @@ void WebContentsViewAura::OnDragEntered(const ui::DropTargetEvent& event) {
     return;
   }
 
-#if BUILDFLAG(IS_WIN)
-  async_drop_navigation_observer_.reset();
-#endif
 
   std::unique_ptr<DropData> drop_data = std::make_unique<DropData>();
   // Calling this here as event.data might become invalid inside the callback.
@@ -1789,7 +1789,7 @@ void WebContentsViewAura::PerformDropCallback(
     // written to temporary files, the OnGotVirtualFilesAsTempFiles
     // callback will be invoked and the drop communicated to the renderer
     // process.
-    async_drop_navigation_observer_ =
+    drop_context.navigation_observer =
         std::make_unique<AsyncDropNavigationObserver>(web_contents_);
     ui::OSExchangeData* data_ptr = drop_context.data.get();
     data_ptr->GetVirtualFilesAsTempFiles(base::BindOnce(
@@ -1920,13 +1920,13 @@ void WebContentsViewAura::OnGotVirtualFilesAsTempFiles(
     OnPerformingDropContext drop_context,
     const std::vector<std::pair<base::FilePath, base::FilePath>>&
         filepaths_and_names) {
-  if (!async_drop_navigation_observer_) {
+  if (!drop_context.navigation_observer) {
     return;
   }
 
   if (!filepaths_and_names.empty()) {
     std::unique_ptr<AsyncDropNavigationObserver> drop_observer(
-        std::move(async_drop_navigation_observer_));
+        std::move(drop_context.navigation_observer));
 
     RenderWidgetHostImpl* target_rwh = drop_context.target_rwh.get();
 
