@@ -39,6 +39,9 @@ class BluetoothDevicePairConfirmView : public views::DialogDelegateView {
   // WidgetDelegate:
   std::u16string GetWindowTitle() const override;
 
+  // DialogDelegate:
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
+
  private:
   // Runs the |close_callback_| with the PairPromptResult if the dialog is
   // accepted.
