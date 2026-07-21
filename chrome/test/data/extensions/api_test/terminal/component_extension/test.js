@@ -263,53 +263,32 @@ chrome.test.runTests([
     const pSettings = 'crostini.terminal_settings';
     const pA11y = 'settings.accessibility';
     const paths = [pContainers, pSettings, pA11y, 'unknown-ignored'];
-    const validateGetPrefs = (prefs, settingsLength) => {
+    const validateGetPrefs = (prefs) => {
       chrome.test.assertEq(3, Object.keys(prefs).length);
       chrome.test.assertTrue(Array.isArray(prefs[pContainers]));
       chrome.test.assertEq(0, prefs[pContainers].length);
       chrome.test.assertEq('object', typeof prefs[pSettings]);
-      chrome.test.assertEq(
-          settingsLength, Object.keys(prefs[pSettings]).length);
+      chrome.test.assertEq(0, Object.keys(prefs[pSettings]).length);
       chrome.test.assertEq('boolean', typeof prefs[pA11y]);
       chrome.test.assertFalse(prefs[pA11y]);
     };
 
-    const listener = (prefs) => {
-      // 3. Event is fired - only includes settings with {'k': 'v'}.
-      chrome.test.assertEq(1, Object.keys(prefs).length);
-      chrome.test.assertEq('object', typeof prefs[pSettings]);
-      chrome.test.assertEq(1, Object.keys(prefs[pSettings]).length);
-      chrome.test.assertEq('v', prefs[pSettings]['k']);
-
-      // 4. Get prefs - settings has {'k': 'v'}, others unchanged.
-      chrome.terminalPrivate.getPrefs(paths, (prefs) => {
-        chrome.test.assertNoLastError();
-        validateGetPrefs(prefs, 1);
-        chrome.test.assertEq('v', prefs[pSettings]['k']);
-
-        // 5. Cleanup.
-        chrome.terminalPrivate.onPrefChanged.removeListener(listener);
-        chrome.terminalPrivate.onPrefChanged.addListener(chrome.test.succeed);
-        chrome.terminalPrivate.setPrefs(
-            {[pSettings]: {}}, chrome.test.assertNoLastError);
-      });
-    };
-    chrome.terminalPrivate.onPrefChanged.addListener(listener);
-
     // 1. Get prefs - 3 valid, plus another unknown (will be ignored).
     chrome.terminalPrivate.getPrefs(paths, (prefs) => {
       chrome.test.assertNoLastError();
-      validateGetPrefs(prefs, 0);
+      validateGetPrefs(prefs);
 
-      // 2. Set prefs - only settings allows write.
+      // 2. Set prefs - rejected for extension contexts.
       chrome.terminalPrivate.setPrefs(
-          {
-            [pContainers]: [{k1: 'v1'}, {k2: 'v2'}],
-            [pSettings]: {k: 'v'},
-            [pA11y]: true,
-            'unknown-ignored': 'ignored',
-          },
-          chrome.test.assertNoLastError);
+          {[pSettings]: {k: 'v'}},
+          chrome.test.callbackFail('Unsupported context', () => {
+            // 3. Get prefs - settings unchanged.
+            chrome.terminalPrivate.getPrefs(paths, (prefs) => {
+              chrome.test.assertNoLastError();
+              validateGetPrefs(prefs);
+              chrome.test.succeed();
+            });
+          }));
     });
   },
 

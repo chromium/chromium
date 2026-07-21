@@ -831,6 +831,14 @@ ExtensionFunction::ResponseAction TerminalPrivateSetPrefsFunction::Run() {
   std::optional<SetPrefs::Params> params = SetPrefs::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  // The writable prefs below belong to the Terminal System Web App and drive
+  // browser-side state such as shelf shortcut menu items, so writes from any
+  // other context are rejected.
+  if (extension() || source_url().DeprecatedGetOriginAsURL() !=
+                         ash::kChromeUIUntrustedTerminalURL) {
+    return RespondNow(Error("Unsupported context"));
+  }
+
   PrefService* service =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
 
