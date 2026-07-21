@@ -90,13 +90,8 @@ class TabStripView final : public views::View,
   views::ScrollView* GetPinnedTabsScrollViewForTesting() {
     return pinned_tabs_scroll_view_;
   }
-  views::View* GetActivatedViewForTesting() const;
-  views::View* GetBackgroundViewForTesting() const;
-  gfx::Rect GetBoundsInScrollViewContentsForTesting(
-      views::View* view,
-      views::ScrollView* scroll_view) {
-    return GetBoundsInScrollViewContents(view, scroll_view);
-  }
+  views::View* GetPrimaryScrollTargetForTesting() const;
+  views::View* GetSecondaryScrollTargetForTesting() const;
 
  private:
   class TargetViewsTracker;

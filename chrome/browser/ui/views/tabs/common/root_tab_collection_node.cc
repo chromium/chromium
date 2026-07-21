@@ -274,7 +274,3 @@ void RootTabCollectionNode::NotifyTabSelectionChanged(
     node->NotifyTabSelectionChanged();
   }
 }
-
-void RootTabCollectionNode::NotifyOnChildrenAdded() {
-  on_children_added_callback_list_.Notify(tabs::TabCollectionNodes());
-}

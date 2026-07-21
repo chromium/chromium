@@ -149,8 +149,8 @@ class VerticalTabStripRegionViewTest
 
   void WaitForTrackersCleared() {
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return tab_strip_view()->GetActivatedViewForTesting() == nullptr &&
-             tab_strip_view()->GetBackgroundViewForTesting() == nullptr;
+      return tab_strip_view()->GetPrimaryScrollTargetForTesting() == nullptr &&
+             tab_strip_view()->GetSecondaryScrollTargetForTesting() == nullptr;
     }));
   }
 
@@ -1516,12 +1516,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   ASSERT_TRUE(active_view);
   ASSERT_TRUE(new_view);
 
-  gfx::Rect active_bounds =
-      tab_strip_view()->GetBoundsInScrollViewContentsForTesting(active_view,
-                                                                scroll_view);
-  gfx::Rect new_bounds =
-      tab_strip_view()->GetBoundsInScrollViewContentsForTesting(new_view,
-                                                                scroll_view);
+  gfx::Rect active_bounds = views::View::ConvertRectToTarget(
+      active_view, scroll_view->contents(), active_view->GetLocalBounds());
+  gfx::Rect new_bounds = views::View::ConvertRectToTarget(
+      new_view, scroll_view->contents(), new_view->GetLocalBounds());
 
   int y_min = std::min(active_bounds.y(), new_bounds.y());
   int y_max = std::max(active_bounds.bottom(), new_bounds.bottom());
@@ -1576,9 +1574,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   WaitForTrackersCleared();
 
   views::View* active_view = GetTabViewAt(kActiveTabIndex);
-  gfx::Rect active_bounds =
-      tab_strip_view()->GetBoundsInScrollViewContentsForTesting(active_view,
-                                                                scroll_view);
+  gfx::Rect active_bounds = views::View::ConvertRectToTarget(
+      active_view, scroll_view->contents(), active_view->GetLocalBounds());
   int current_offset = scroll_view->GetVisibleRect().y();
   EXPECT_LE(current_offset, active_bounds.y());
 }

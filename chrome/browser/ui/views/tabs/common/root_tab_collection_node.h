@@ -76,8 +76,6 @@ class RootTabCollectionNode : public TabCollectionNode,
   void NotifyTabSelectionChanged(
       const std::set<tabs::TabInterface*>& changed_tabs);
 
-  void NotifyOnChildrenAdded();
-
   raw_ptr<TabStripModel> tab_strip_model_;
   SelectionHandles selected_tabs_;
   CustomAddChildViewCallback add_node_view_to_parent_;

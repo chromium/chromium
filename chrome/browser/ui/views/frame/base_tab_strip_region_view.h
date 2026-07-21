@@ -102,8 +102,6 @@ class BaseTabStripRegionView : public TabStripRegionView {
 
   void RecordNewTabButtonPressed();
   virtual void OnActiveTabChanged(const tabs::TabInterface* active_tab);
-  void ScrollToFitTabs(const tabs::TabInterface* active_tab,
-                       const tabs::TabInterface* new_tab);
 
   void SetLinkDropArrow(const std::optional<BrowserRootView::DropIndex>& index);
   virtual gfx::Point GetLinkDropArrowPosition(

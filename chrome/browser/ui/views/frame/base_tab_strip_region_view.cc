@@ -486,8 +486,8 @@ void BaseTabStripRegionView::OnChildrenAdded(
     }
   }
 
-  if (last_new_tab) {
-    ScrollToFitTabs(active_tab, last_new_tab);
+  if (last_new_tab && tab_strip_view_) {
+    tab_strip_view_->ScrollToFitTabs(active_tab, last_new_tab);
   }
 }
 
@@ -509,13 +509,6 @@ void BaseTabStripRegionView::OnActiveTabChanged(
   }
 }
 
-void BaseTabStripRegionView::ScrollToFitTabs(
-    const tabs::TabInterface* active_tab,
-    const tabs::TabInterface* new_tab) {
-  if (tab_strip_view_) {
-    tab_strip_view_->ScrollToFitTabs(active_tab, new_tab);
-  }
-}
 
 void BaseTabStripRegionView::SetLinkDropArrow(
     const std::optional<BrowserRootView::DropIndex>& index) {
