@@ -1219,17 +1219,16 @@ void WebContentsViewAura::StartDragging(
       source_rwh->GetWeakPtr();
   base::WeakPtr<WebContentsViewAura> weak_this = weak_ptr_factory_.GetWeakPtr();
 
-  drag_security_info_.OnDragInitiated(source_rwh, drop_data);
-
   ClipboardEndpoint source_endpoint = CreateClipboardEndpoint(source_rfh);
 
   // Synchronous policy check.
   // If drag is not allowed, it means the policy blocked the action.
   if (!IsDragAllowedByDataControlPolicy(source_endpoint, drop_data)) {
-    // Critical: We must notify the renderer that the drag has ended.
     web_contents_->SystemDragEnded(source_rwh);
     return;
   }
+
+  drag_security_info_.OnDragInitiated(source_rwh, drop_data);
 
   ui::TouchSelectionController* selection_controller = GetSelectionController();
   if (selection_controller)

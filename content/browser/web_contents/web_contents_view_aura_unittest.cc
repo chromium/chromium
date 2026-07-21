@@ -966,6 +966,55 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+class BlockDragContentBrowserClient : public ContentBrowserClient {
+ public:
+  bool IsDragAllowedByPolicy(const ClipboardEndpoint& source,
+                             const DropData& drop_data) override {
+    return false;
+  }
+};
+
+TEST_F(WebContentsViewAuraTest, StartDraggingBlockedByPolicy) {
+  const char kGmailUrl[] = "http://mail.google.com/";
+  NavigateAndCommit(GURL(kGmailUrl));
+  FocusWebContentsOnMainFrame();
+
+  BlockDragContentBrowserClient block_drag_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&block_drag_client);
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  WebContentsViewAura* view = GetView();
+  view->drag_in_progress_ = true;
+
+  DropData drop_data;
+  drop_data.text.emplace(u"Restricted Text");
+
+  // Verify initial state
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+
+  // Attempt the first drag. It should be blocked by policy.
+  view->StartDragging(*main_rfh(), drop_data,
+                      blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo());
+
+  // Verify that the state was properly cleared after being blocked.
+  // If the bug is present, did_initiate() would incorrectly remain true.
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+
+  // Attempt a second drag to ensure it doesn't early-return due to dirty state.
+  view->StartDragging(*main_rfh(), drop_data,
+                      blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo());
+
+  EXPECT_FALSE(view->drag_security_info_.did_initiate());
+
+  SetBrowserClientForTesting(old_client);
+}
+
 TEST_F(WebContentsViewAuraTest,
        RejectDragFromPrivilegedWebContentsToNonPrivilegedWebContents) {
   WebContentsViewAura* view = GetView();
