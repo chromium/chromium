@@ -176,6 +176,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting() override;
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInScreen() override;
+  gfx::Rect GetBoundsInScreenWithoutTransform() override;
   void WheelEventAck(const blink::WebMouseWheelEvent& event,
                      blink::mojom::InputEventResultState ack_result) override;
   void GestureEventAck(const blink::WebGestureEvent& event,

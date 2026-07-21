@@ -1803,6 +1803,30 @@ TEST_F(WindowTest, GetBoundsInRootWindowWithLayersAndTranslations) {
   EXPECT_EQ("0,0 100x100", child->GetBoundsInRootWindow().ToString());
 }
 
+TEST_F(WindowTest, GetBoundsInScreenWithoutTransform) {
+  std::unique_ptr<Window> viewport(CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 50, 200, 200}}));
+
+  std::unique_ptr<Window> child(CreateTestWindow(
+      {.parent = viewport.get(), .bounds = {25, 25, 100, 100}}));
+
+  // Sanity check.
+  EXPECT_EQ(gfx::Rect(125, 75, 100, 100), child->GetBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(125, 75, 100, 100),
+            child->GetBoundsInScreenWithoutTransform());
+
+  gfx::Transform transform;
+  transform.Translate(50, 50);
+  viewport->SetTransform(transform);
+
+  // GetBoundsInScreen should include the transform in the calculations.
+  EXPECT_EQ(gfx::Rect(175, 125, 100, 100), child->GetBoundsInScreen());
+
+  // GetBoundsInScreenWithoutTransforms should completely skip the transform.
+  EXPECT_EQ(gfx::Rect(125, 75, 100, 100),
+            child->GetBoundsInScreenWithoutTransform());
+}
+
 // TODO(tdanderson): Remove this class and use
 //                   test::EventCountDelegate in its place.
 class MouseEnterExitWindowDelegate : public TestWindowDelegate {

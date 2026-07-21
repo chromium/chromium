@@ -504,6 +504,10 @@ WidgetType RenderWidgetHostViewBase::GetWidgetType() {
   return widget_type_;
 }
 
+gfx::Rect RenderWidgetHostViewBase::GetBoundsInScreenWithoutTransform() {
+  return GetBoundsInScreen();
+}
+
 gfx::AcceleratedWidget
     RenderWidgetHostViewBase::AccessibilityGetAcceleratedWidget() {
   return gfx::kNullAcceleratedWidget;

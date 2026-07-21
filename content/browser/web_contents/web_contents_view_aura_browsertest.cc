@@ -1225,7 +1225,7 @@ class WebContentsViewAuraTransformTest : public WebContentsViewAuraTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTransformTest,
-                       WindowTransformUpdatesScreenRects) {
+                       WindowTransformDoesNotUpdateScreenRects) {
   StartTestWithPage("/simple_page.html");
   WebContentsImpl* contents = GetWebContentsImpl();
 
@@ -1254,12 +1254,22 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTransformTest,
   gfx::Transform transform;
   transform.Translate(100, 50);
   top_level->SetTransform(transform);
-  int transformed_x = wait_for_coordinate("screenX", initial_x + 100);
-  int transformed_y = wait_for_coordinate("screenY", initial_y + 50);
-  EXPECT_EQ(transformed_x, initial_x + 100);
-  EXPECT_EQ(transformed_y, initial_y + 50);
+
+  // Move the window slightly to trigger the bounds update.
+  gfx::Rect new_bounds = top_level->bounds();
+  new_bounds.Offset(10, 10);
+  top_level->SetBounds(new_bounds);
+
+  // The new coordinates should remove the slight move, but not the transform.
+  int transformed_x = wait_for_coordinate("screenX", initial_x + 10);
+  int transformed_y = wait_for_coordinate("screenY", initial_y + 10);
+  EXPECT_EQ(transformed_x, initial_x + 10);
+  EXPECT_EQ(transformed_y, initial_y + 10);
 
   top_level->SetTransform(gfx::Transform());
+  new_bounds.Offset(-10, -10);
+  top_level->SetBounds(new_bounds);
+
   int restored_x = wait_for_coordinate("screenX", initial_x);
   int restored_y = wait_for_coordinate("screenY", initial_y);
   EXPECT_EQ(restored_x, initial_x);

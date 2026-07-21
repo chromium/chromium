@@ -526,6 +526,30 @@ gfx::Rect Window::GetActualBoundsInScreen() const {
   return bounds;
 }
 
+gfx::Rect Window::GetBoundsInScreenWithoutTransform() const {
+  if (aura::client::ScreenPositionClient* screen_position_client =
+          aura::client::GetScreenPositionClient(GetRootWindow())) {
+    gfx::Point origin;
+    screen_position_client->ConvertPointToScreenIgnoringTransforms(this,
+                                                                   &origin);
+    return gfx::Rect(origin, bounds().size());
+  } else {
+    gfx::Point origin;
+    const Window* current_window = this;
+    const Window* root_window = GetRootWindow();
+    if (root_window) {
+      // If aura::client::GetScreenPositionClient returns null, then the origin
+      // of the root_window is always (0, 0).
+      CHECK_EQ(root_window->GetBoundsInScreen().origin(), gfx::Point(0, 0));
+    }
+    while (current_window && current_window != root_window) {
+      origin += current_window->bounds().OffsetFromOrigin();
+      current_window = current_window->parent();
+    }
+    return gfx::Rect(origin, bounds().size());
+  }
+}
+
 void Window::SetTransform(const gfx::Transform& transform) {
   CHECK(layer());
   DUMP_WILL_BE_CHECK(!is_destroying_);

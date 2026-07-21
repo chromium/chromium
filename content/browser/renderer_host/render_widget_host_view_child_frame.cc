@@ -791,6 +791,20 @@ gfx::Rect RenderWidgetHostViewChildFrame::GetBoundsInScreen() {
   return rect;
 }
 
+gfx::Rect RenderWidgetHostViewChildFrame::GetBoundsInScreenWithoutTransform() {
+  gfx::Rect rect;
+  if (frame_connector_) {
+    RenderWidgetHostViewBase* root_view =
+        frame_connector_->GetRootRenderWidgetHostView();
+
+    // The root_view can be null in tests when using a TestWebContents.
+    if (root_view) {
+      rect = root_view->GetBoundsInScreenWithoutTransform();
+    }
+  }
+  return rect;
+}
+
 void RenderWidgetHostViewChildFrame::DidStopFlinging() {
   if (selection_controller_client_)
     selection_controller_client_->DidStopFlinging();

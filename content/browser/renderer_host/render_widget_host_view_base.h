@@ -468,6 +468,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // Gets the bounds of the top-level window, in screen coordinates.
   virtual gfx::Rect GetBoundsInScreen() = 0;
 
+  // Gets the bounds of the top-level window, in screen coordinates, ignoring
+  // any transforms that might be applied.
+  virtual gfx::Rect GetBoundsInScreenWithoutTransform();
+
   // Increments the LocalSurfaceId associated with this view when a commit IPC
   // is being sent to change the Document for the root RenderFrameHost rendering
   // to this view.

@@ -152,6 +152,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInScreen() override;
+  gfx::Rect GetBoundsInScreenWithoutTransform() override;
   void DidStopFlinging() override;
   blink::mojom::PointerLockResult LockPointer(
       bool request_unadjusted_movement) override;

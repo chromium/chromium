@@ -336,6 +336,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // this function returns the same value as `GetBoundsInScreen()`.
   gfx::Rect GetActualBoundsInScreen() const;
 
+  // Similar to `GetBoundsInScreen()` except that the returned value ignores
+  // any transforms.
+  gfx::Rect GetBoundsInScreenWithoutTransform() const;
+
   // Note: Must be called after initializing the window.
   void SetTransform(const gfx::Transform& transform);
   const gfx::Transform& transform() const;

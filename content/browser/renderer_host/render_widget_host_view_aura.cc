@@ -1287,6 +1287,18 @@ gfx::Rect RenderWidgetHostViewAura::GetBoundsInScreen() {
   return bounds;
 }
 
+gfx::Rect RenderWidgetHostViewAura::GetBoundsInScreenWithoutTransform() {
+#if BUILDFLAG(IS_WIN)
+  if (legacy_render_widget_host_HWND_) {
+    return GetBoundsInScreen();
+  }
+#endif
+
+  aura::Window* top_level = window_->GetToplevelWindow();
+  CHECK(top_level);
+  return top_level->GetBoundsInScreenWithoutTransform();
+}
+
 void RenderWidgetHostViewAura::WheelEventAck(
     const blink::WebMouseWheelEvent& event,
     blink::mojom::InputEventResultState ack_result) {
