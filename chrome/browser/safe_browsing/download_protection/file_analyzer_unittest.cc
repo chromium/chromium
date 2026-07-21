@@ -4,6 +4,10 @@
 
 #include "chrome/browser/safe_browsing/download_protection/file_analyzer.h"
 
+#include <stdint.h>
+
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -495,6 +499,83 @@ TEST_F(FileAnalyzerTest, ArchivedBinariesHasArchiveAndExecutable) {
   ASSERT_TRUE(has_result_);
   EXPECT_THAT(result_.archived_binaries, SizeIs(2));
   EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
+}
+
+TEST_F(FileAnalyzerTest, ArchivedBinariesUsesPhysicalZipPath) {
+  scoped_refptr<MockBinaryFeatureExtractor> extractor =
+      new testing::StrictMock<MockBinaryFeatureExtractor>();
+  FileAnalyzer analyzer(extractor);
+  base::RunLoop run_loop;
+
+  base::FilePath target_file_name(FILE_PATH_LITERAL("target.zip"));
+  base::FilePath tmp_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("tmp.crdownload"));
+  // Regression fixture for crbug.com/517074167. The ZIP's physical path is an
+  // executable, but its Info-ZIP Unicode Path Extra Field presents a benign
+  // filename. The fixture's filename CRC matches the physical path, so the
+  // Unicode Path Extra Field is honored.
+  base::FilePath zip_path;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &zip_path));
+  zip_path = zip_path.AppendASCII("safe_browsing")
+                 .AppendASCII("download_protection")
+                 .AppendASCII("zipfile_unicode_path_extra_field.zip");
+  ASSERT_TRUE(base::CopyFile(zip_path, tmp_path));
+
+  analyzer.Start(
+      target_file_name, tmp_path, /*password=*/std::nullopt,
+      base::BindOnce(&FileAnalyzerTest::DoneCallback, base::Unretained(this),
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(has_result_);
+  EXPECT_EQ(result_.type, ClientDownloadRequest::ZIPPED_EXECUTABLE);
+  EXPECT_EQ(result_.inspection_performed, DownloadFileType::ZIP);
+  ASSERT_EQ(result_.archived_binaries.size(), 1);
+  EXPECT_TRUE(result_.archived_binaries[0].is_executable());
+  EXPECT_EQ(result_.archived_binaries[0].file_path(), "malware.exe");
+}
+
+TEST_F(FileAnalyzerTest, ArchivedArchiveUsesPhysicalZipPath) {
+  scoped_refptr<MockBinaryFeatureExtractor> extractor =
+      new testing::StrictMock<MockBinaryFeatureExtractor>();
+  FileAnalyzer analyzer(extractor);
+  base::RunLoop run_loop;
+
+  base::FilePath target_file_name(FILE_PATH_LITERAL("target.zip"));
+  base::FilePath tmp_path =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("tmp.crdownload"));
+  // Regression fixture for crbug.com/517074167. The ZIP's physical path is a
+  // nested archive, but its Info-ZIP Unicode Path Extra Field presents a benign
+  // filename. The fixture's filename CRC matches the physical path, so the
+  // Unicode Path Extra Field is honored.
+  static constexpr uint8_t zip_data[] = {
+      0x50, 0x4b, 0x03, 0x04, 0x0a, 0x03, 0x00, 0x00, 0x00, 0x00, 0xd0, 0x71,
+      0x91, 0x4e, 0x11, 0x2c, 0xf9, 0x51, 0x09, 0x00, 0x00, 0x00, 0x09, 0x00,
+      0x00, 0x00, 0x0b, 0x00, 0x00, 0x00, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61,
+      0x64, 0x2e, 0x7a, 0x69, 0x70, 0x54, 0x65, 0x73, 0x74, 0x20, 0x64, 0x61,
+      0x74, 0x61, 0x50, 0x4b, 0x01, 0x02, 0x3f, 0x03, 0x0a, 0x03, 0x00, 0x00,
+      0x00, 0x00, 0xd0, 0x71, 0x91, 0x4e, 0x11, 0x2c, 0xf9, 0x51, 0x09, 0x00,
+      0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x0b, 0x00, 0x14, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x20, 0x80, 0xc9, 0x81, 0x00, 0x00, 0x00, 0x00,
+      0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x2e, 0x7a, 0x69, 0x70, 0x75,
+      0x70, 0x10, 0x00, 0x01, 0x0c, 0xe9, 0x91, 0x5f, 0x72, 0x65, 0x63, 0x65,
+      0x69, 0x70, 0x74, 0x2e, 0x74, 0x78, 0x74, 0x50, 0x4b, 0x05, 0x06, 0x00,
+      0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x4d, 0x00, 0x00, 0x00, 0x32,
+      0x00, 0x00, 0x00, 0x00, 0x00};
+  ASSERT_TRUE(base::WriteFile(tmp_path, base::span(zip_data)));
+
+  analyzer.Start(
+      target_file_name, tmp_path, /*password=*/std::nullopt,
+      base::BindOnce(&FileAnalyzerTest::DoneCallback, base::Unretained(this),
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(has_result_);
+  EXPECT_EQ(result_.type, ClientDownloadRequest::ZIPPED_ARCHIVE);
+  EXPECT_TRUE(result_.archived_archive);
+  ASSERT_EQ(result_.archived_binaries.size(), 1);
+  EXPECT_TRUE(result_.archived_binaries[0].is_archive());
+  EXPECT_EQ(result_.archived_binaries[0].file_path(), "payload.zip");
 }
 
 TEST_F(FileAnalyzerTest, ArchivedBinariesSkipsSafeFiles) {

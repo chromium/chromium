@@ -26,6 +26,16 @@
 
 namespace safe_browsing {
 
+namespace {
+
+bool IsCheckedBinaryOrArchiveFile(const base::FilePath& path) {
+  const FileTypePolicies* file_type_policies = FileTypePolicies::GetInstance();
+  return file_type_policies->IsCheckedBinaryFile(path) ||
+         file_type_policies->IsArchiveFile(path);
+}
+
+}  // namespace
+
 ZipAnalyzer::ZipAnalyzer() = default;
 ZipAnalyzer::~ZipAnalyzer() = default;
 
@@ -68,8 +78,21 @@ bool ZipAnalyzer::ResumeExtraction() {
           EncryptionInfo::kKnownIncorrect;
     }
 
-    if (!UpdateResultsForEntry(temp_file_.Duplicate(),
-                               GetRootPath().Append(entry->path),
+    // The Info-ZIP Unicode Path Extra Field can present a benign Unicode name
+    // (e.g. "receipt.txt") for an entry whose Central Directory path is a
+    // checked binary or nested archive (e.g. "malware.exe" or "payload.zip").
+    // Different extractors may use either name, so consider both for Safe
+    // Browsing classification while reporting the extracted bytes once.
+    base::FilePath path = GetRootPath().Append(entry->path);
+    if (entry->path != entry->physical_path && !entry->is_directory) {
+      base::FilePath physical_path = GetRootPath().Append(entry->physical_path);
+      if (!IsCheckedBinaryOrArchiveFile(path) &&
+          IsCheckedBinaryOrArchiveFile(physical_path)) {
+        path = std::move(physical_path);
+      }
+    }
+
+    if (!UpdateResultsForEntry(temp_file_.Duplicate(), std::move(path),
                                writer->file_length(), entry->is_encrypted,
                                entry->is_directory, extract_success)) {
       return false;
