@@ -170,7 +170,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool TooLong(const String*, NeedsToCheckDirtyFlag) const;
   bool TooShort(const String*, NeedsToCheckDirtyFlag) const;
 
-  void DidChangeIsCanvasOrInCanvasSubtree() final;
+  void DidChangeIsCanvasOrInCanvasSubtree(bool) final;
 
   unsigned rows_;
   unsigned cols_;

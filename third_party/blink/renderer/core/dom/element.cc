@@ -4337,7 +4337,7 @@ void Element::SetIsCanvasOrInCanvasSubtree(bool value) {
 
   if (value != IsCanvasOrInCanvasSubtree()) {
     SetElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree, value);
-    DidChangeIsCanvasOrInCanvasSubtree();
+    DidChangeIsCanvasOrInCanvasSubtree(value);
   } else {
 #if DCHECK_IS_ON()
     if (!GetDocument().IsSlotAssignmentRecalcForbidden()) {
@@ -4367,7 +4367,7 @@ void Element::SetIsCanvasOrInCanvasSubtree(bool value) {
   }
 }
 
-void Element::DidChangeIsCanvasOrInCanvasSubtree() {
+void Element::DidChangeIsCanvasOrInCanvasSubtree(bool) {
   if (auto* layout_object = GetLayoutObject()) {
     layout_object->SetNeedsPaintPropertyUpdate();
     if (layout_object->HasLayer()) {

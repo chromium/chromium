@@ -239,11 +239,12 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
   return result;
 }
 
-void HTMLFrameOwnerElement::DidChangeIsCanvasOrInCanvasSubtree() {
-  HTMLElement::DidChangeIsCanvasOrInCanvasSubtree();
+void HTMLFrameOwnerElement::DidChangeIsCanvasOrInCanvasSubtree(
+    bool is_in_canvas_subtree) {
+  HTMLElement::DidChangeIsCanvasOrInCanvasSubtree(is_in_canvas_subtree);
   if (Document* inner_document = contentDocument()) {
     if (Element* root = inner_document->documentElement()) {
-      root->SetIsCanvasOrInCanvasSubtree(IsCanvasOrInCanvasSubtree());
+      root->SetIsCanvasOrInCanvasSubtree(is_in_canvas_subtree);
     }
   }
 }

@@ -1134,8 +1134,10 @@ class CORE_EXPORT Element : public ContainerNode {
   bool IsCanvasOrInCanvasSubtree() const {
     return HasElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree);
   }
-  // Called when `IsCanvasOrInCanvasSubtree()` has changed.
-  virtual void DidChangeIsCanvasOrInCanvasSubtree();
+  // Called when `IsCanvasOrInCanvasSubtree()` changes.
+  // Note: `is_in_canvas_subtree` passes the new state so that overriding
+  // methods do not need to recompute it, thus avoiding re-entrancy.
+  virtual void DidChangeIsCanvasOrInCanvasSubtree(bool is_in_canvas_subtree);
   // Like `IsCanvasOrInCanvasSubtree()`, but excludes the outermost <canvas>.
   bool IsInCanvasSubtree() const;
 
