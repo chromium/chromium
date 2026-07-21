@@ -74,6 +74,7 @@ def init(ctx):
         # This is necessary for cross platform build actions. e.g. node binary for typescript
         "executables": [
             "third_party/node/linux/node-linux-x64/bin/node",
+            "third_party/typescript/linux-amd64/src/lib/tsc",
         ],
     }
     step_config = blink_all.step_config(ctx, step_config)
