@@ -34,6 +34,8 @@ constexpr char kId[] = "id";
 constexpr char kType[] = "content/type";
 constexpr uint64_t kOffset = 0;
 constexpr uint64_t kSize = 16;
+constexpr char kMainFrameUrl[] = "https://google.com";
+constexpr char kSubframeUrl[] = "https://example.com/subframe";
 }  // namespace
 
 class FileBackedBlobFactoryFrameImplTest
@@ -46,7 +48,7 @@ class FileBackedBlobFactoryFrameImplTest
     FileBackedBlobFactoryFrameImpl::CreateForCurrentDocument(
         main_test_rfh(), factory_.BindNewEndpointAndPassDedicatedReceiver());
 
-    main_test_rfh()->SetLastCommittedUrl(GURL("https://google.com"));
+    main_test_rfh()->SetLastCommittedUrl(GURL(kMainFrameUrl));
 
     mojo::SetDefaultProcessErrorHandler(
         base::BindRepeating(&FileBackedBlobFactoryFrameImplTest::OnBadMessage,
@@ -256,6 +258,48 @@ TEST_F(FileBackedBlobFactoryFrameImplTest,
   expected_blob_data.set_content_type(kType);
 
   EXPECT_EQ(expected_blob_data, *handle->CreateSnapshot());
+}
+
+TEST_F(FileBackedBlobFactoryFrameImplTest,
+       Register_SubframeUsesOwnUrlAsFileAccessDestination) {
+  main_test_rfh()->InitializeRenderFrameIfNeeded();
+  TestRenderFrameHost* child_rfh = main_test_rfh()->AppendChild("child");
+  ASSERT_TRUE(child_rfh);
+  child_rfh->SetLastCommittedUrl(GURL(kSubframeUrl));
+
+  mojo::AssociatedRemote<blink::mojom::FileBackedBlobFactory> child_factory;
+  FileBackedBlobFactoryFrameImpl::CreateForCurrentDocument(
+      child_rfh, child_factory.BindNewEndpointAndPassDedicatedReceiver());
+
+  file_access::MockScopedFileAccessDelegate scoped_file_access_delegate;
+  GURL captured_destination;
+  EXPECT_CALL(scoped_file_access_delegate, CreateFileAccessCallback)
+      .WillOnce(::testing::DoAll(
+          ::testing::SaveArg<0>(&captured_destination),
+          ::testing::Return(base::BindRepeating(
+              [](const std::vector<base::FilePath>& files,
+                 base::OnceCallback<void(file_access::ScopedFileAccess)>
+                     callback) {
+                std::move(callback).Run(
+                    file_access::ScopedFileAccess::Allowed());
+              }))));
+
+  const base::FilePath path = base::FilePath(TEST_PATH("/dir/testfile"));
+  ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFile(
+      child_rfh->GetProcess()->GetID(), path);
+
+  auto element =
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
+
+  mojo::Remote<blink::mojom::Blob> blob;
+  child_factory->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
+                              std::move(element));
+  base::RunLoop().RunUntilIdle();
+  blob.FlushForTesting();
+
+  EXPECT_TRUE(bad_messages_.empty());
+  EXPECT_EQ(GURL(kSubframeUrl), captured_destination);
+  EXPECT_NE(GURL(kMainFrameUrl), captured_destination);
 }
 
 }  // namespace content

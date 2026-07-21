@@ -16,8 +16,9 @@
 namespace content {
 
 // `FileBackedBlobFactoryBase` is an abstract class to allow the registration of
-// file backed blobs. The URL used for the registration should be the outermost
-// document in the case the interface is used in a frame context. To be able to
+// file backed blobs. The URL used for the registration should be the URL of the
+// document that bound the interface so that file access checks are performed
+// against the document that actually receives the file data. To be able to
 // reliably retrieve the correct URL `FileBackedBlobFactoryFrameImpl` is a
 // navigation-associated interface. This way the URL is retrieved in sync with
 // the navigation.

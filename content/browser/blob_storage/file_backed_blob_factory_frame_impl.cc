@@ -33,7 +33,7 @@ GURL FileBackedBlobFactoryFrameImpl::GetCurrentUrl() {
   if (render_frame_host().IsNestedWithinFencedFrame()) {
     return GURL();
   }
-  return render_frame_host().GetOutermostMainFrame()->GetLastCommittedURL();
+  return render_frame_host().GetLastCommittedURL();
 }
 
 mojo::ReportBadMessageCallback
