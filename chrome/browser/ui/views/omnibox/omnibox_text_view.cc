@@ -304,6 +304,6 @@ void OmniboxTextView::OnStyleChanged() {
 }
 
 BEGIN_METADATA(OmniboxTextView)
-ADD_PROPERTY_METADATA(std::u16string_view, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_READONLY_PROPERTY_METADATA(int, LineHeight)
 END_METADATA

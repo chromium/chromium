@@ -205,10 +205,21 @@ struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<const char*>
   static std::u16string ToString(const char* source_value);
 };
 
+// Note: View types (std::string_view, std::u16string_view, const char*) must
+// be read-only (BaseTypeConverter<true, true>). Writable metadata properties
+// must use std::u16string or std::string as their property type in
+// ADD_PROPERTY_METADATA to prevent dangling string references during
+// deserialization (FromString).
 template <>
 struct COMPONENT_EXPORT(UI_BASE_METADATA) TypeConverter<std::string_view>
     : BaseTypeConverter<true, true> {
   static std::u16string ToString(std::string_view source_value);
+};
+
+template <>
+struct COMPONENT_EXPORT(UI_BASE_METADATA)
+    TypeConverter<std::u16string_view> : BaseTypeConverter<true, true> {
+  static std::u16string ToString(std::u16string_view source_value);
 };
 
 #define DECLARE_CONVERSIONS(T)                                              \
@@ -245,11 +256,19 @@ DECLARE_CONVERSIONS(gfx::ShadowValues)
 DECLARE_CONVERSIONS(gfx::Size)
 DECLARE_CONVERSIONS(gfx::SizeF)
 DECLARE_CONVERSIONS(std::string)
-DECLARE_CONVERSIONS(std::u16string)
 DECLARE_CONVERSIONS(ui::ColorVariant)
 DECLARE_CONVERSIONS(url::Component)
 
 #undef DECLARE_CONVERSIONS
+
+template <>
+struct COMPONENT_EXPORT(UI_BASE_METADATA)
+    TypeConverter<std::u16string> : BaseTypeConverter<true> {
+  static std::u16string ToString(std::u16string_view source_value);
+  static std::optional<std::u16string> FromString(
+      const std::u16string& source_value);
+  static ValidStrings GetValidStrings() { return {}; }
+};
 
 // Special conversions for wrapper types --------------------------------------
 

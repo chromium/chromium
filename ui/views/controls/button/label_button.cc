@@ -780,7 +780,7 @@ void LabelButtonActionViewInterface::ActionItemChangedImpl(
 }
 
 BEGIN_METADATA(LabelButton)
-ADD_PROPERTY_METADATA(std::u16string_view, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Size, MinSize)
 ADD_PROPERTY_METADATA(gfx::Size, MaxSize)

@@ -312,9 +312,9 @@ std::vector<raw_ptr<views::View>> RichHoverButton::AddFillerViews(
 
 BEGIN_METADATA(RichHoverButton)
 ADD_PROPERTY_METADATA(ui::ImageModel, Icon)
-ADD_PROPERTY_METADATA(std::u16string_view, TitleText)
+ADD_PROPERTY_METADATA(std::u16string, TitleText)
 ADD_PROPERTY_METADATA(ui::ImageModel, StateIcon)
 ADD_PROPERTY_METADATA(ui::ImageModel, ActionIcon)
-ADD_PROPERTY_METADATA(std::u16string_view, SubtitleText)
+ADD_PROPERTY_METADATA(std::u16string, SubtitleText)
 ADD_PROPERTY_METADATA(bool, SubtitleMultiline)
 END_METADATA

@@ -681,8 +681,8 @@ const ui::ComboboxModel* EditableCombobox::GetComboboxModel() const {
 }
 
 BEGIN_METADATA(EditableCombobox)
-ADD_PROPERTY_METADATA(std::u16string_view, Text)
-ADD_PROPERTY_METADATA(std::u16string_view, PlaceholderText)
+ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
 END_METADATA
 
 }  // namespace views

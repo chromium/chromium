@@ -215,9 +215,9 @@ void ResultView::OnPhoneticsAudioButtonPressed() {
 }
 
 BEGIN_METADATA(ResultView)
-ADD_PROPERTY_METADATA(std::u16string_view, FirstLineText)
-ADD_PROPERTY_METADATA(std::u16string_view, FirstLineSubText)
-ADD_PROPERTY_METADATA(std::u16string_view, SecondLineText)
+ADD_PROPERTY_METADATA(std::u16string, FirstLineText)
+ADD_PROPERTY_METADATA(std::u16string, FirstLineSubText)
+ADD_PROPERTY_METADATA(std::u16string, SecondLineText)
 END_METADATA
 
 }  // namespace quick_answers

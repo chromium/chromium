@@ -3538,7 +3538,7 @@ void Textfield::UpdateAccessibleDefaultActionVerb() {
 
 BEGIN_METADATA(Textfield)
 ADD_PROPERTY_METADATA(bool, ReadOnly)
-ADD_PROPERTY_METADATA(std::u16string_view, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_PROPERTY_METADATA(ui::TextInputType, TextInputType)
 ADD_PROPERTY_METADATA(int, TextInputFlags)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
@@ -3553,7 +3553,7 @@ ADD_READONLY_PROPERTY_METADATA(SkColor,
                                SelectionBackgroundColor,
                                ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, CursorEnabled)
-ADD_PROPERTY_METADATA(std::u16string_view, PlaceholderText)
+ADD_PROPERTY_METADATA(std::u16string, PlaceholderText)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                PlaceholderTextColor,
                                ui::metadata::SkColorConverter)

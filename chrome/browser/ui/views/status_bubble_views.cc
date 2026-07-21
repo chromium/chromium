@@ -608,7 +608,7 @@ DEFINE_ENUM_CONVERTERS(StatusView::BubbleStyle,
                         u"kStandardRight"})
 
 BEGIN_METADATA(StatusView)
-ADD_PROPERTY_METADATA(std::u16string_view, Text)
+ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_READONLY_PROPERTY_METADATA(StatusView::BubbleState, State)
 ADD_PROPERTY_METADATA(StatusView::BubbleStyle, Style)
 END_METADATA

@@ -127,6 +127,18 @@ class ObjectPropertyMetaData
   ObjectPropertyMetaData& operator=(const ObjectPropertyMetaData&) = delete;
   ~ObjectPropertyMetaData() override = default;
 
+ private:
+  static constexpr bool kTypeIsSerializable = TConverter::is_serializable;
+  static constexpr bool kTypeIsReadOnly = TConverter::is_read_only;
+
+ public:
+  static_assert(
+      !kTypeIsSerializable || !kTypeIsReadOnly,
+      "Do not use read-only view types (such as std::string_view, "
+      "std::u16string_view, or const char*) as the property_type in "
+      "ADD_PROPERTY_METADATA. Use owned types (e.g. std::u16string) or use "
+      "ADD_READONLY_PROPERTY_METADATA instead.");
+
   void SetValueAsString(void* obj, const std::u16string& new_value) override {
     if constexpr (kTypeIsSerializable && !kTypeIsReadOnly) {
       if (std::optional<TValue> result = TConverter::FromString(new_value)) {
@@ -153,10 +165,6 @@ class ObjectPropertyMetaData
     }
     return flags;
   }
-
- private:
-  static constexpr bool kTypeIsSerializable = TConverter::is_serializable;
-  static constexpr bool kTypeIsReadOnly = TConverter::is_read_only;
 };
 
 // Represents metadata for a ui::ClassProperty attached on a class instance.

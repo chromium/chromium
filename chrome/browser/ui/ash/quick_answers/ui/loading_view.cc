@@ -73,7 +73,7 @@ void LoadingView::SetDesign(Design design) {
 }
 
 BEGIN_METADATA(LoadingView)
-ADD_PROPERTY_METADATA(std::u16string_view, FirstLineText)
+ADD_PROPERTY_METADATA(std::u16string, FirstLineText)
 END_METADATA
 
 }  // namespace quick_answers

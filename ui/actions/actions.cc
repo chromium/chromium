@@ -372,14 +372,14 @@ void ActionItem::EndUpdate() {
 }
 
 BEGIN_METADATA(ActionItem)
-ADD_PROPERTY_METADATA(std::u16string_view, AccessibleName)
+ADD_PROPERTY_METADATA(std::u16string, AccessibleName)
 ADD_PROPERTY_METADATA(std::optional<ActionId>, ActionId)
 ADD_PROPERTY_METADATA(ui::Accelerator, Accelerator)
 ADD_PROPERTY_METADATA(bool, Checked)
 ADD_PROPERTY_METADATA(bool, Enabled)
 ADD_PROPERTY_METADATA(std::optional<int>, GroupId)
-ADD_PROPERTY_METADATA(std::u16string_view, Text)
-ADD_PROPERTY_METADATA(std::u16string_view, TooltipText)
+ADD_PROPERTY_METADATA(std::u16string, Text)
+ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 ADD_PROPERTY_METADATA(bool, Visible)
 ADD_READONLY_PROPERTY_METADATA(int, InvokeCount)
 ADD_READONLY_PROPERTY_METADATA(std::optional<base::TimeTicks>, LastInvokeTime)
