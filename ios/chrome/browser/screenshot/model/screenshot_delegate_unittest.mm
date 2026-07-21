@@ -4,13 +4,14 @@
 
 #import "ios/chrome/browser/screenshot/model/screenshot_delegate.h"
 
+#import "base/check.h"
+#import "base/notreached.h"
 #import "base/strings/stringprintf.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/enterprise/data_controls/core/browser/test_utils.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -24,18 +25,76 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
+// A fake object that implements BrowserProvider and BrowserProviderInterface.
+@interface ScreenshotDelegateTestProvider
+    : NSObject <BrowserProviderInterface, BrowserProvider>
+@end
+
+@implementation ScreenshotDelegateTestProvider {
+  std::unique_ptr<TestBrowser> _browser;
+}
+
+- (void)dealloc {
+  CHECK(!_browser) << "-shutdown must be called before dealloc";
+}
+
+- (void)shutdown {
+  _browser.reset();
+}
+
+- (void)createBrowserWithProfile:(ProfileIOS*)profile {
+  CHECK(!profile->IsOffTheRecord());
+  _browser = std::make_unique<TestBrowser>(profile);
+}
+
+#pragma mark - BrowserProviderInterface
+
+- (id<BrowserProvider>)mainBrowserProvider {
+  return self;
+}
+
+- (id<BrowserProvider>)currentBrowserProvider {
+  return self;
+}
+
+- (id<BrowserProvider>)incognitoBrowserProvider {
+  return nil;
+}
+
+- (BOOL)hasIncognitoBrowserProvider {
+  return NO;
+}
+
+#pragma mark - BrowserProvider
+
+- (Browser*)browser {
+  return _browser.get();
+}
+
+- (UIViewController*)viewController:(BrowserProviderPassKey)key {
+  NOTREACHED();
+}
+
+@end
+
 class ScreenshotDelegateTest : public PlatformTest {
  protected:
   ScreenshotDelegateTest() { profile_ = TestProfileIOS::Builder().Build(); }
   ~ScreenshotDelegateTest() override {}
 
   void SetUp() override {
-    browser_interface_ = [[StubBrowserProvider alloc] init];
-    browser_provider_interface_ = [[StubBrowserProviderInterface alloc] init];
+    PlatformTest::SetUp();
+    browser_provider_interface_ = [[ScreenshotDelegateTestProvider alloc] init];
     screenshot_service_ = OCMClassMock([UIScreenshotService class]);
   }
 
-  void createScreenshotDelegate() {
+  void TearDown() override {
+    [browser_provider_interface_ shutdown];
+    browser_provider_interface_ = nil;
+    PlatformTest::TearDown();
+  }
+
+  void CreateScreenshotDelegate() {
     screenshot_delegate_ = [[ScreenshotDelegate alloc]
         initWithBrowserProviderInterface:browser_provider_interface_];
   }
@@ -51,15 +110,15 @@ class ScreenshotDelegateTest : public PlatformTest {
   // Sets up a browser with a single tab containing `web_state` and configures
   // the screenshot delegate to use it.
   void SetupMockTab(std::unique_ptr<web::FakeWebState> web_state) {
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
-    int insertion_index =
-        browser_->GetWebStateList()->InsertWebState(std::move(web_state));
-    browser_->GetWebStateList()->ActivateWebStateAt(insertion_index);
+    [browser_provider_interface_ createBrowserWithProfile:profile_.get()];
+    Browser* browser = browser_provider_interface_.mainBrowserProvider.browser;
+    WebStateList* web_state_list = browser->GetWebStateList();
 
-    browser_interface_.browser = browser_.get();
-    browser_provider_interface_.currentBrowserProvider = browser_interface_;
+    web_state_list->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::Automatic().Activate(true));
 
-    createScreenshotDelegate();
+    CreateScreenshotDelegate();
   }
 
   // Sets up a Data Controls policy to block screenshots for the given `url`.
@@ -92,11 +151,9 @@ class ScreenshotDelegateTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
-  StubBrowserProvider* browser_interface_;
-  StubBrowserProviderInterface* browser_provider_interface_;
+  ScreenshotDelegateTestProvider* browser_provider_interface_;
   ScreenshotDelegate* screenshot_delegate_;
   id screenshot_service_;
-  std::unique_ptr<TestBrowser> browser_;
 };
 
 // Tests that ScreenshotDelegate can be init with browserProviderInterface can
@@ -148,12 +205,11 @@ TEST_F(ScreenshotDelegateTest, ScreenshotService) {
 // Browser screenshotService will return nil.
 TEST_F(ScreenshotDelegateTest, NilBrowser) {
   // Expected: nil NSData.
-  // Add the StubBrowserProvider with no set Browser to
-  // StubBrowserProviderInterface.
-  browser_provider_interface_.currentBrowserProvider = browser_interface_;
 
-  createScreenshotDelegate();
+  // Assert that the BrowserProviderIterface has no Browser.
+  ASSERT_FALSE(browser_provider_interface_.mainBrowserProvider.browser);
 
+  CreateScreenshotDelegate();
   VerifyScreenshotBlocked(true);
 }
 
@@ -161,16 +217,12 @@ TEST_F(ScreenshotDelegateTest, NilBrowser) {
 // WebSatate screenshotService will return nil.
 TEST_F(ScreenshotDelegateTest, NilWebState) {
   // Expected: nil NSData.
-  auto browser = std::make_unique<TestBrowser>(profile_.get());
 
-  // Add the empty Browser to StubBrowserProvider.
-  browser_interface_.browser = browser.get();
+  // Create an empty Browser in the BrowserProviderInterface.
+  [browser_provider_interface_ createBrowserWithProfile:profile_.get()];
+  ASSERT_TRUE(browser_provider_interface_.mainBrowserProvider.browser);
 
-  // Add the StubBrowserProvider to StubBrowserProviderInterface.
-  browser_provider_interface_.currentBrowserProvider = browser_interface_;
-
-  createScreenshotDelegate();
-
+  CreateScreenshotDelegate();
   VerifyScreenshotBlocked(true);
 }
 
