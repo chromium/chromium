@@ -147,25 +147,10 @@ NSMutableSet<NSString*>* GetPasskeyUsernames(
     NSArray<FormSuggestion*>* suggestions) {
   NSMutableSet<NSString*>* passkeyUsernames = [NSMutableSet set];
   for (FormSuggestion* suggestion in suggestions) {
-    if (suggestion.type == autofill::SuggestionType::kWebauthnCredential) {
-      std::string encodedId =
-          webauthn::GetPasskeySuggestionEncodedCredentialId(suggestion);
-      std::string decodedIdString;
-      if (base::Base64Decode(encodedId, &decodedIdString)) {
-        std::vector<uint8_t> decodedId(decodedIdString.begin(),
-                                       decodedIdString.end());
-        auto it = std::ranges::find_if(
-            passkeys,
-            [&decodedId](const password_manager::PasskeyCredential& passkey) {
-              return passkey.credential_id() == decodedId;
-            });
-        if (it != passkeys.end()) {
-          NSString* username = base::SysUTF8ToNSString(it->username());
-          if (username.length) {
-            [passkeyUsernames addObject:[username lowercaseString]];
-          }
-        }
-      }
+    NSString* passkeyUsername =
+        webauthn::GetPasskeyUsernameForSuggestion(suggestion, passkeys);
+    if (passkeyUsername.length) {
+      [passkeyUsernames addObject:[passkeyUsername lowercaseString]];
     }
   }
   return passkeyUsernames;

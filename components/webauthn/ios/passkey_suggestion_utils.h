@@ -26,6 +26,13 @@ NSArray<FormSuggestion*>* FormSuggestionsFromPasskeyCredentials(
 std::string GetPasskeySuggestionEncodedCredentialId(
     FormSuggestion* passkey_suggestion);
 
+// Returns the username associated with the passkey matching `suggestion`.
+// Returns nil if no matching passkey is found or if the suggestion is not a
+// passkey.
+NSString* GetPasskeyUsernameForSuggestion(
+    FormSuggestion* suggestion,
+    const std::vector<password_manager::PasskeyCredential>& passkeys);
+
 // Merges passkey and password suggestions into a single array.
 NSArray<FormSuggestion*>* MergePasskeyAndPasswordSuggestions(
     NSArray<FormSuggestion*>* passkey_suggestions,

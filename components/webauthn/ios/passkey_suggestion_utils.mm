@@ -107,4 +107,27 @@ NSString* FormatPasskeyManualFillSubtitle(NSString* display_name) {
   return [NSString stringWithFormat:@"%@ • %@", passkey_label, display_name];
 }
 
+NSString* GetPasskeyUsernameForSuggestion(
+    FormSuggestion* suggestion,
+    const std::vector<password_manager::PasskeyCredential>& passkeys) {
+  if (suggestion.type != autofill::SuggestionType::kWebauthnCredential) {
+    return nil;
+  }
+  std::string encoded_id = GetPasskeySuggestionEncodedCredentialId(suggestion);
+  std::string decoded_id_string;
+  if (base::Base64Decode(encoded_id, &decoded_id_string)) {
+    std::vector<uint8_t> decoded_id(decoded_id_string.begin(),
+                                    decoded_id_string.end());
+    auto it = std::ranges::find_if(
+        passkeys,
+        [&decoded_id](const password_manager::PasskeyCredential& passkey) {
+          return passkey.credential_id() == decoded_id;
+        });
+    if (it != passkeys.end()) {
+      return base::SysUTF8ToNSString(it->username());
+    }
+  }
+  return nil;
+}
+
 }  // namespace webauthn
