@@ -47,6 +47,8 @@ class ActorInternalsUIHandler
  private:
   void TraceFileInitDone(bool success);
 
+  actor::AggregatedJournal& GetJournal();
+
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<actor::AggregatedJournalFileSerializer> trace_logger_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

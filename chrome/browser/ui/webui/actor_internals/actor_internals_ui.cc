@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/actor_internals/actor_internals_ui_handler.h"
 #include "chrome/common/chrome_features.h"
@@ -20,7 +21,7 @@
 
 bool ActorInternalsUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(features::kGlicActor);
+  return browser_context && actor::ActorKeyedService::Get(browser_context);
 }
 
 ActorInternalsUI::ActorInternalsUI(content::WebUI* web_ui)

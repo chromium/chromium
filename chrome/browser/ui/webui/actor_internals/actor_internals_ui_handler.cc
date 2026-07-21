@@ -35,9 +35,7 @@ ActorInternalsUIHandler::ActorInternalsUIHandler(
   handler_ = std::make_unique<actor_internals::ActorInternalsHandler>(
       std::move(page), std::move(receiver), this);
 
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  auto& journal = actor::ActorKeyedService::Get(profile)->GetJournal();
+  auto& journal = GetJournal();
   journal.AddObserver(this);
 
   for (auto it = journal.Items(); it; ++it) {
@@ -46,9 +44,7 @@ ActorInternalsUIHandler::ActorInternalsUIHandler(
 }
 
 ActorInternalsUIHandler::~ActorInternalsUIHandler() {
-  auto* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  auto& journal = actor::ActorKeyedService::Get(profile)->GetJournal();
+  auto& journal = GetJournal();
   journal.RemoveObserver(this);
 }
 
@@ -100,9 +96,7 @@ void ActorInternalsUIHandler::StopLogging() {
 
 void ActorInternalsUIHandler::FileSelected(const ui::SelectedFileInfo& file,
                                            int index) {
-  auto* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  auto& journal = actor::ActorKeyedService::Get(profile)->GetJournal();
+  auto& journal = GetJournal();
   trace_logger_ =
       std::make_unique<actor::AggregatedJournalFileSerializer>(journal);
 
@@ -121,4 +115,12 @@ void ActorInternalsUIHandler::TraceFileInitDone(bool success) {
 void ActorInternalsUIHandler::FileSelectionCanceled() {
   select_file_dialog_.reset();
   trace_logger_.reset();
+}
+
+actor::AggregatedJournal& ActorInternalsUIHandler::GetJournal() {
+  auto* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  CHECK(actor_service);
+  return actor_service->GetJournal();
 }
