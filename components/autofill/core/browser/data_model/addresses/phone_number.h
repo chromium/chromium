@@ -100,7 +100,8 @@ class PhoneNumber : public FormGroup {
     std::optional<std::u16string> ParseNumber(const std::string& region) const;
 
     // Parses the combined phone number and returns the region to which it
-    // belongs.
+    // belongs. The region code is the two-letter string according to ISO-3166
+    // that represents the country of the phone number.
     std::optional<std::u16string> GetRegionCode() const;
 
     // Returns true if both `phone_` and `whole_number_` are empty.

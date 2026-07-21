@@ -294,10 +294,9 @@ TEST(PhoneCombineHelperTest, SetInfoAndParseNumber) {
   helper.SetInfo(PHONE_HOME_NUMBER_PREFIX, u"234");
   helper.SetInfo(PHONE_HOME_NUMBER_SUFFIX, u"5682");
 
-  std::optional<std::u16string> parsed_phone =
+  const std::optional<std::u16string> parsed_phone =
       helper.ParseNumber(AutofillCountry::CountryCodeForLocale(kLocale));
-  ASSERT_TRUE(parsed_phone);
-  EXPECT_EQ(*parsed_phone, u"(650) 234-5682");
+  EXPECT_EQ(u"(650) 234-5682", parsed_phone);
 }
 
 // Tests the construction of a `PhoneCombineHelper` instance from a collection
@@ -314,10 +313,9 @@ TEST(PhoneCombineHelperTest, FromObservedValues) {
   const PhoneNumber::PhoneCombineHelper helper =
       PhoneNumber::PhoneCombineHelper::FromObservedValues(observed_values);
 
-  std::optional<std::u16string> parsed_phone =
+  const std::optional<std::u16string> parsed_phone =
       helper.ParseNumber(AutofillCountry::CountryCodeForLocale(kLocale));
-  ASSERT_TRUE(parsed_phone);
-  EXPECT_EQ(*parsed_phone, u"(650) 234-5682");
+  EXPECT_EQ(u"(650) 234-5682", parsed_phone);
 }
 
 // Tests that `PhoneCombineHelper` can handle all types of phone fields.
@@ -343,8 +341,7 @@ TEST(PhoneCombineHelperTest, GetRegionCodeWholeNumber) {
   helper.SetInfo(PHONE_HOME_WHOLE_NUMBER, u"+43 1 2345678");
 
   const std::optional<std::u16string> region = helper.GetRegionCode();
-  ASSERT_TRUE(region);
-  EXPECT_EQ(u"AT", *region);
+  EXPECT_EQ(u"AT", region);
 }
 
 // Tests retrieving the region code from a combined phone number.
@@ -352,21 +349,20 @@ TEST(PhoneCombineHelperTest, GetRegionCodeCombinedNumber) {
   const base::flat_map<FieldType, std::u16string> observed_values = {
       // Valid phone number components.
       {PHONE_HOME_COUNTRY_CODE, u"+1"},
-      {PHONE_HOME_CITY_CODE, u"650"},
-      {PHONE_HOME_NUMBER_PREFIX, u"234"},
-      {PHONE_HOME_NUMBER_SUFFIX, u"5682"}};
+      {PHONE_HOME_CITY_CODE, u"613"},
+      {PHONE_HOME_NUMBER_PREFIX, u"943"},
+      {PHONE_HOME_NUMBER_SUFFIX, u"5959"}};
 
   const PhoneNumber::PhoneCombineHelper helper =
       PhoneNumber::PhoneCombineHelper::FromObservedValues(observed_values);
 
   const std::optional<std::u16string> region = helper.GetRegionCode();
-  ASSERT_TRUE(region);
-  EXPECT_EQ(u"US", *region);
+  EXPECT_EQ(u"CA", region);
 }
 
-// Tests that no region is determined for national whole number, but
-// international phone number components (to be consistent with the behavior of
-// `ParseNumber`).
+// Tests that no region is determined for national whole number, although
+// international phone number components are present. The test case ensures
+// consistency between `GetRegionCode()` and `ParseNumber`.
 TEST(PhoneCombineHelperTest, GetRegionCodeNationalWholeNumber) {
   const base::flat_map<FieldType, std::u16string> observed_values = {
       // National whole phone number.
