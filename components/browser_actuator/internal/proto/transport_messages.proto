@@ -101,3 +101,22 @@ message ActuatorDownstreamMessage {
   // Typed payloads with the intended target feature handler in Chrome.
   repeated ActuatorDownstreamTypedPayload typed_payloads = 3;
 }
+
+// Body uploaded with the (re)connection request that opens the downstream
+// stream. Names the sessions the client wants to watch and, per session, the
+// resume position so the server can replay anything missed since the last
+// connection.
+message WatchSessionsRequest {
+  // Unique identifier for this request used by the server for
+  // idempotency and retry deduplication.
+  string request_id = 1;
+
+  // The sessions that the client is watching.
+  repeated Session sessions = 2;
+  message Session {
+    // Unique identifier for the session.
+    string session_id = 1;
+    // The sequence number of the last seen downstream message.
+    int64 last_seen_sequence_number = 2;
+  }
+}

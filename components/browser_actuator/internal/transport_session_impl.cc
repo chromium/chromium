@@ -41,6 +41,11 @@ int64_t TransportSessionImpl::last_seen_sequence_number() const {
   return last_seen_sequence_number_;
 }
 
+bool TransportSessionImpl::has_last_seen_sequence_number() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return last_seen_sequence_number_ > 0;
+}
+
 void TransportSessionImpl::RecordServerSequenceNumber(int64_t seq) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Sequence numbers begin at 1 and can only be strictly increasing.

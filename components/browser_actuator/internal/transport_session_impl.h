@@ -37,6 +37,7 @@ class TransportSessionImpl : public TransportSession {
   // Last sequence number for the session received from the server, used for
   // message ordering
   int64_t last_seen_sequence_number() const;
+  bool has_last_seen_sequence_number() const;
 
   // Updates the last seen sequence number if the new sequence number is
   // positive and strictly greater than the current sequence number.

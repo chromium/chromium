@@ -48,6 +48,13 @@ void OAuthStreamConnectionDelegate::OnConnectionEstablished() {
   inner_->OnConnectionEstablished();
 }
 
+std::optional<StreamUploadBody>
+OAuthStreamConnectionDelegate::GetConnectionRequestBody() {
+  // Auth adds no body of its own; pass through whatever the inner delegate
+  // wants to upload.
+  return inner_->GetConnectionRequestBody();
+}
+
 void OAuthStreamConnectionDelegate::PrepareRequest(
     std::unique_ptr<network::ResourceRequest> request,
     PrepareRequestCallback callback) {
@@ -55,6 +62,8 @@ void OAuthStreamConnectionDelegate::PrepareRequest(
   // available right now, fail this attempt instead of waiting — the stream
   // client's backoff schedule provides the retry cadence, and the service
   // layer tears the client down on signout.
+  // base::Unretained is safe: `this` owns `token_fetcher_`, which cancels the
+  // fetch and callback upon destruction.
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       oauth_consumer_id_, identity_manager_,
       base::BindOnce(&OAuthStreamConnectionDelegate::OnTokenFetched,

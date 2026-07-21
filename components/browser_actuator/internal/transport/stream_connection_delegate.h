@@ -6,6 +6,7 @@
 #define COMPONENTS_BROWSER_ACTUATOR_INTERNAL_TRANSPORT_STREAM_CONNECTION_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -15,6 +16,14 @@ struct ResourceRequest;
 }  // namespace network
 
 namespace browser_actuator {
+
+// An upload body to send with a connection request. When a delegate returns
+// one from GetConnectionRequestBody(), the client issues the request as a
+// POST and attaches the body via SimpleURLLoader::AttachStringForUpload.
+struct StreamUploadBody {
+  std::string content;
+  std::string content_type;
+};
 
 // Strategy interface for how a stream connection is prepared and how it
 // communicates resume state, keeping that policy out of the connection
@@ -62,6 +71,11 @@ class StreamConnectionDelegate {
   // — e.g. after invalidating a stale OAuth token on a 401 — or false
   // (the default) to fail the connection permanently.
   virtual bool ShouldRetryOnHttpFailure(int response_code);
+
+  // Returns the body to upload with the next connection request, or nullopt
+  // for a bodyless (GET) request. The client calls this once PrepareRequest
+  // has completed; a decorator must forward it to its inner delegate.
+  virtual std::optional<StreamUploadBody> GetConnectionRequestBody();
 };
 
 // Pass-through delegate for servers that need no request decoration.

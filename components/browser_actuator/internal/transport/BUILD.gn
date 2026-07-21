@@ -9,6 +9,8 @@
 source_set("transport") {
   sources = [
     "message_stream_client.h",
+    "resume_body_connection_delegate.cc",
+    "resume_body_connection_delegate.h",
     "stream_connection_delegate.cc",
     "stream_connection_delegate.h",
     "stream_framer.h",
@@ -22,7 +24,10 @@ source_set("transport") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "stream_connection_delegate_unittest.cc" ]
+  sources = [
+    "resume_body_connection_delegate_unittest.cc",
+    "stream_connection_delegate_unittest.cc",
+  ]
 
   deps = [
     ":transport",

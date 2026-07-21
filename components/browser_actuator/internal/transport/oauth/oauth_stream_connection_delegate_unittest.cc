@@ -251,5 +251,27 @@ TEST_F(OAuthStreamConnectionDelegateTest, MintsFreshTokenAfter401) {
   EXPECT_EQ(tokens_removed_from_cache_, 2);
 }
 
+// A delegate that always offers an upload body, to check that the OAuth
+// decorator forwards it to the inner delegate unchanged.
+class BodyProvidingDelegate : public StreamConnectionDelegate {
+ public:
+  void PrepareRequest(std::unique_ptr<network::ResourceRequest> request,
+                      PrepareRequestCallback callback) override {
+    std::move(callback).Run(std::move(request));
+  }
+  std::optional<StreamUploadBody> GetConnectionRequestBody() override {
+    return StreamUploadBody{"inner-watch-body", "application/x-protobuf"};
+  }
+};
+
+TEST_F(OAuthStreamConnectionDelegateTest, ForwardsInnerConnectionRequestBody) {
+  auto delegate = MakeDelegate(std::make_unique<BodyProvidingDelegate>());
+
+  std::optional<StreamUploadBody> body = delegate->GetConnectionRequestBody();
+  ASSERT_TRUE(body);
+  EXPECT_EQ(body->content, "inner-watch-body");
+  EXPECT_EQ(body->content_type, "application/x-protobuf");
+}
+
 }  // namespace
 }  // namespace browser_actuator

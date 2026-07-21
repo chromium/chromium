@@ -25,6 +25,8 @@ source_set("internal") {
   sources = [
     "browser_actuator_service_impl.cc",
     "browser_actuator_service_impl.h",
+    "transport_channel_impl.cc",
+    "transport_channel_impl.h",
     "transport_handler_factory_registry_impl.cc",
     "transport_handler_factory_registry_impl.h",
     "transport_session_impl.cc",
@@ -33,7 +35,10 @@ source_set("internal") {
     "transport_session_registry_impl.h",
   ]
 
-  public_deps = [ "//components/browser_actuator/public" ]
+  public_deps = [
+    "//components/browser_actuator/internal/transport",
+    "//components/browser_actuator/public",
+  ]
 
   deps = [
     "//base",
@@ -47,6 +52,7 @@ source_set("unit_tests") {
 
   sources = [
     "browser_actuator_service_impl_unittest.cc",
+    "transport_channel_impl_unittest.cc",
     "transport_handler_factory_registry_impl_unittest.cc",
     "transport_session_impl_unittest.cc",
     "transport_session_registry_impl_unittest.cc",
@@ -56,6 +62,8 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/browser_actuator/internal/proto",
+    "//components/browser_actuator/internal/transport",
     "//components/browser_actuator/internal/transport:unit_tests",
     "//components/browser_actuator/internal/transport/oauth:unit_tests",
     "//components/browser_actuator/internal/transport/proto_stream_client:unit_tests",

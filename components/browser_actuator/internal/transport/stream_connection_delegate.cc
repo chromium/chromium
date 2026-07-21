@@ -14,6 +14,11 @@ bool StreamConnectionDelegate::ShouldRetryOnHttpFailure(int response_code) {
   return false;
 }
 
+std::optional<StreamUploadBody>
+StreamConnectionDelegate::GetConnectionRequestBody() {
+  return std::nullopt;
+}
+
 void DefaultStreamConnectionDelegate::PrepareRequest(
     std::unique_ptr<network::ResourceRequest> request,
     PrepareRequestCallback callback) {

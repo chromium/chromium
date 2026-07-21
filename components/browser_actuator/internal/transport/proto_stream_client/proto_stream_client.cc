@@ -128,8 +128,19 @@ void ProtoStreamClient::OnRequestPrepared(
     return;
   }
 
+  // A delegate may supply a body to upload with the connection request (e.g.
+  // the resume state); the request then goes out as a POST.
+  std::optional<StreamUploadBody> upload =
+      delegate_->GetConnectionRequestBody();
+  if (upload) {
+    request->method = "POST";
+  }
   loader_ =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation_);
+  if (upload) {
+    loader_->AttachStringForUpload(std::move(upload->content),
+                                   std::move(upload->content_type));
+  }
   // base::Unretained is safe: `this` owns and outlives `loader_`, and
   // SimpleURLLoader never invokes callbacks during its own destruction.
   loader_->SetOnResponseStartedCallback(base::BindOnce(
@@ -158,6 +169,7 @@ void ProtoStreamClient::OnResponseStarted(
   }
   const base::TimeDelta stall_timeout = kProtoStreamStallTimeout.Get();
   if (stall_timeout.is_positive()) {
+    // base::Unretained is safe: `this` owns `stall_timer_`.
     stall_timer_.Start(FROM_HERE, stall_timeout,
                        base::BindOnce(&ProtoStreamClient::OnStallTimeout,
                                       base::Unretained(this)));
@@ -311,6 +323,7 @@ void ProtoStreamClient::ScheduleReconnect() {
       std::min(kProtoStreamBaseReconnectionTime.Get() *
                    std::pow(2.0, std::max(consecutive_failed_attempts_ - 1, 0)),
                kProtoStreamMaxReconnectionTime.Get());
+  // base::Unretained is safe: `this` owns `reconnect_timer_`.
   reconnect_timer_.Start(
       FROM_HERE, delay,
       base::BindOnce(&ProtoStreamClient::StartRequest, base::Unretained(this)));

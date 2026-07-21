@@ -63,6 +63,7 @@ class OAuthStreamConnectionDelegate : public StreamConnectionDelegate {
   void PrepareRequest(std::unique_ptr<network::ResourceRequest> request,
                       PrepareRequestCallback callback) override;
   bool ShouldRetryOnHttpFailure(int response_code) override;
+  std::optional<StreamUploadBody> GetConnectionRequestBody() override;
 
  private:
   void OnTokenFetched(std::unique_ptr<network::ResourceRequest> request,

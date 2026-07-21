@@ -796,5 +796,28 @@ TEST_F(ProtoStreamClientTest, DisconnectCancelsPendingPrepare) {
   EXPECT_FALSE(client->IsConnected());
 }
 
+// A delegate that offers a fixed upload body, to exercise the client's
+// POST + AttachStringForUpload path.
+class FixedBodyDelegate : public StreamConnectionDelegate {
+ public:
+  void PrepareRequest(std::unique_ptr<network::ResourceRequest> request,
+                      PrepareRequestCallback callback) override {
+    std::move(callback).Run(std::move(request));
+  }
+  std::optional<StreamUploadBody> GetConnectionRequestBody() override {
+    return StreamUploadBody{"watch-request-bytes", "application/x-protobuf"};
+  }
+};
+
+TEST_F(ProtoStreamClientTest, UploadsDelegateBodyAsPost) {
+  ServeStream("stream body bytes");
+  auto client = MakeClient(std::make_unique<FixedBodyDelegate>());
+  client->Connect();
+  ASSERT_TRUE(WaitFor([&] { return !requests_.empty(); }));
+
+  EXPECT_EQ(requests_[0].method, "POST");
+  EXPECT_EQ(network::GetUploadData(requests_[0]), "watch-request-bytes");
+}
+
 }  // namespace
 }  // namespace browser_actuator
