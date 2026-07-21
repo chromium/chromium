@@ -53,7 +53,7 @@ class GlicNetLogBrowserTest : public InProcessBrowserTest {
 
 // Tests that opening the UI logs a request to the Glic main page.
 IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicRequestOnOpenUI) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
   SetFRECompletion(profile, prefs::FreStatus::kCompleted);

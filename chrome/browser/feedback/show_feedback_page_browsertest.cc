@@ -53,8 +53,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
   histogram_tester.ExpectTotalCount("Feedback.NotAllowed.RequestSource", 0);
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  false);
   chrome::ShowFeedbackPage(browser(), feedback::kFeedbackSourceBrowserCommand,
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
@@ -83,8 +83,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   navigation_observer.StartWatchingNewWebContents();
 
   std::string unused;
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  true);
   chrome::ShowFeedbackPage(browser(), feedback::kFeedbackSourceBrowserCommand,
                            /*description_template=*/unused,
                            /*description_placeholder_text=*/unused,
@@ -141,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  true);
   chrome::ShowFeedbackPage(
       browser(), feedback::kFeedbackSourceAssistant,
       /*description_template=*/description_template,
@@ -199,8 +199,8 @@ IN_PROC_BROWSER_TEST_F(
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  true);
 
   chrome::ShowFeedbackPage(
       browser(), feedback::kFeedbackSourceOsSettingsSearch,
@@ -258,8 +258,8 @@ IN_PROC_BROWSER_TEST_F(
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  true);
 
   chrome::ShowFeedbackPage(
       browser(), feedback::kFeedbackSourceOsSettingsSearch,
@@ -325,8 +325,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
   content::TestNavigationObserver navigation_observer(expected_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  true);
 
   chrome::ShowFeedbackPage(
       browser(), feedback::kFeedbackSourceAutofillContextMenu,

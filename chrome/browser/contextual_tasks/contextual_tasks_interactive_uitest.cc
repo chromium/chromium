@@ -332,7 +332,7 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
 
     // Explicitly enable user-level content sharing settings to satisfy native
     // FeatureEligibility.
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         contextual_search::kSearchContentSharingSettings,
         static_cast<int>(
             contextual_search::SearchContentSharingSettingsValue::kEnabled));

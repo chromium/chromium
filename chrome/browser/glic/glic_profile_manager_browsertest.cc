@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
   }
 
-  auto* profile0 = browser()->profile();
+  auto* profile0 = browser()->GetProfile();
   auto* service0 = GetMockGlicKeyedService(profile0);
 
   // Setup Profile 1
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
                        ProfileForLaunch_BasedOnActivationOrder) {
-  auto* profile0 = browser()->profile();
+  auto* profile0 = browser()->GetProfile();
   ASSERT_TRUE(GlicEnabling::IsEnabledAndConsentForProfile(profile0));
 
   // Setup Profile 1
@@ -401,7 +401,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
   ResetPrewarming();
-  browser()->profile()->NotifyWillBeDestroyed();
+  browser()->GetProfile()->NotifyWillBeDestroyed();
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kBrowserShuttingDown);
 }

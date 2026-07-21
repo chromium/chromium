@@ -221,9 +221,10 @@ IN_PROC_BROWSER_TEST_F(GlicContextMenuArm3BrowserTest, GlicInvokeArm3) {
 
 IN_PROC_BROWSER_TEST_F(GlicContextMenuBrowserTest, GlicItemAbsentInAppWindow) {
   // Create an app browser window.
-  Browser* app_browser = Browser::Create(Browser::CreateParams::CreateForApp(
-      "test_app", /*trusted_source=*/false, gfx::Rect(), browser()->profile(),
-      /*user_gesture=*/true));
+  Browser* app_browser = Browser::Create(
+      Browser::CreateParams::CreateForApp("test_app", /*trusted_source=*/false,
+                                          gfx::Rect(), browser()->GetProfile(),
+                                          /*user_gesture=*/true));
 
   // Add a tab and navigate to a test page.
   content::WebContents* blank_tab = chrome::AddSelectedTabWithURL(

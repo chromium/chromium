@@ -75,7 +75,7 @@ class GeolocationHeaderBrowserTest : public InProcessBrowserTest {
 
     host_resolver()->AddRule("untrusted.com", "127.0.0.1");
 
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(profile);
     search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, AppendsXGeoHeader) {
   device::ScopedGeolocationOverrider overrider(
       /*latitude=*/12.34, /*longitude=*/56.78);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GeolocationHeaderService* geo_service =
       GeolocationHeaderServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(geo_service);
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
   device::ScopedGeolocationOverrider overrider(
       /*latitude=*/12.34, /*longitude=*/56.78);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GeolocationHeaderService* geo_service =
       GeolocationHeaderServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(geo_service);
@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, NoHeaderForNonDse) {
   device::ScopedGeolocationOverrider overrider(
       /*latitude=*/12.34, /*longitude=*/56.78);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GeolocationHeaderService* geo_service =
       GeolocationHeaderServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(geo_service);
@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, RedirectToNonDse) {
   device::ScopedGeolocationOverrider overrider(
       /*latitude=*/12.34, /*longitude=*/56.78);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GeolocationHeaderService* geo_service =
       GeolocationHeaderServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(geo_service);
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest, RedirectToSameOrigin) {
   device::ScopedGeolocationOverrider overrider(
       /*latitude=*/12.34, /*longitude=*/56.78);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GeolocationHeaderService* geo_service =
       GeolocationHeaderServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(geo_service);
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderFencedFrameBrowserTest,
   device::ScopedGeolocationOverrider overrider(
       /*latitude=*/12.34, /*longitude=*/56.78);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GeolocationHeaderService* geo_service =
       GeolocationHeaderServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(geo_service);
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderBrowserTest,
   device::ScopedGeolocationOverrider overrider(
       /*latitude=*/12.34, /*longitude=*/56.78);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GeolocationHeaderService* geo_service =
       GeolocationHeaderServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(geo_service);
@@ -617,7 +617,7 @@ IN_PROC_BROWSER_TEST_F(GeolocationHeaderDisabledBrowserTest,
   device::ScopedGeolocationOverrider overrider(
       /*latitude=*/12.34, /*longitude=*/56.78);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GeolocationHeaderService* geo_service =
       GeolocationHeaderServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(geo_service);

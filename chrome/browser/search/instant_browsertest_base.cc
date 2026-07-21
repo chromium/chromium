@@ -70,7 +70,7 @@ void InstantBrowserTestBase::SetUserSelectedDefaultSearchProvider(
 
 Profile* InstantBrowserTestBase::CreateProfile(
     const std::string& profile_name) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
       profile,
       base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));

@@ -2031,7 +2031,7 @@ class ContextualTasksContextServiceSmartTabSharingTest
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceSmartTabSharingTest,
                        GetIsSmartTabSharingEnabled) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   EXPECT_TRUE(
       ContextualTasksContextService::GetIsSmartTabSharingEnabled(profile));

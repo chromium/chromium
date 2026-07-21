@@ -98,7 +98,7 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
     registry()->Register(std::move(lens_entry));
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   GlicEnabling* enabling() {
     return &GlicKeyedServiceFactory::GetGlicKeyedService(profile())->enabling();

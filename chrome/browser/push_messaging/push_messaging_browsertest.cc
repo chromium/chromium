@@ -228,7 +228,7 @@ class PushMessagingBrowserTestBase
 
   // Calls should be wrapped in the ASSERT_NO_FATAL_FAILURE() macro.
   void RestartPushService() {
-    Profile* profile = GetBrowser()->profile();
+    Profile* profile = GetBrowser()->GetProfile();
     PushMessagingServiceFactory::GetInstance()->SetTestingFactory(
         profile, BrowserContextKeyedServiceFactory::TestingFactory());
     ASSERT_EQ(nullptr, PushMessagingServiceFactory::GetForProfile(profile));
@@ -2660,7 +2660,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Simulate a user clearing site data (including Service Workers, crucially).
   content::BrowsingDataRemover* remover =
-      GetBrowser()->profile()->GetBrowsingDataRemover();
+      GetBrowser()->GetProfile()->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),

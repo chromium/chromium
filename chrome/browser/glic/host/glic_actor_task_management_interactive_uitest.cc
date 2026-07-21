@@ -452,8 +452,8 @@ class GlicActorTaskManagementDownloadUiTest
   }
   void SetUpOnMainThread() override {
     GlicActorTaskManagementUiTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(::prefs::kPromptForDownload,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(::prefs::kPromptForDownload,
+                                                    true);
 
     file_activity_observer_ =
         std::make_unique<DownloadTestFileActivityObserver>(
@@ -484,7 +484,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementDownloadUiTest,
   const GURL task_url = embedded_test_server()->GetURL("/actor/download.html");
 
   content::DownloadManager* download_manager =
-      browser()->profile()->GetDownloadManager();
+      browser()->GetProfile()->GetDownloadManager();
   std::unique_ptr<content::DownloadTestObserverTerminal> download_observer;
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementDownloadUiTest,
   const GURL task_url = embedded_test_server()->GetURL("/actor/download.html");
 
   content::DownloadManager* download_manager =
-      browser()->profile()->GetDownloadManager();
+      browser()->GetProfile()->GetDownloadManager();
   std::unique_ptr<content::DownloadTestObserverTerminal> download_observer;
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementDownloadUiTest,
       embedded_test_server()->GetURL("example.com", "/actor/download.html");
 
   content::DownloadManager* download_manager =
-      browser()->profile()->GetDownloadManager();
+      browser()->GetProfile()->GetDownloadManager();
   std::unique_ptr<content::DownloadTestObserverTerminal> download_observer;
   RunTestSequence(
       InitializeWithOpenGlicWindow(),

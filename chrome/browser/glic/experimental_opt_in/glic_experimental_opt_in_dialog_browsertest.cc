@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, MultipleOptInRequests) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, SyncsCookiesToWebview) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* service_ptr = GlicKeyedServiceFactory::GetGlicKeyedService(profile);
 
   signin::SetAutomaticIssueOfAccessTokens(
@@ -861,7 +861,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, SyncsCookiesToWebview) {
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, NoAccountCookieSyncFails) {
   base::UserActionTester tester;
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   signin::SetAutomaticIssueOfAccessTokens(
       IdentityManagerFactory::GetForProfile(profile), false);

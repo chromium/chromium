@@ -39,8 +39,8 @@ class GlicNudgeControllerInteractiveUiTest : public test::InteractiveGlicTest {
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
     GlicEnabling::SetBypassEnablementChecksForTesting(true);
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kGlicPinnedToTabstrip, true);
 
     ASSERT_TRUE(tab_strip_action_container());
   }

@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(
   SigninWithFullInfo();
   test_helper().SetReturnDescriptions(syncer::DataType::PASSWORDS, 1);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   Browser* browser_2 = CreateBrowser(profile);
 
   // Second browser opens dialog.
@@ -368,7 +368,7 @@ class BatchUploadServiceFactorySyncServiceUnavailableTest
 // Regression test for crbug.com/502567799.
 IN_PROC_BROWSER_TEST_F(BatchUploadServiceFactorySyncServiceUnavailableTest,
                        ReturnsNullWhenSyncServiceIsUnavailable) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   ASSERT_EQ(nullptr, SyncServiceFactory::GetForProfile(profile));
 

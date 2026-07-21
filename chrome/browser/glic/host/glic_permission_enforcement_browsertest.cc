@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   const InteractiveBrowserTest::DeepQuery kAudioCaptureStart = {
       "#audioCapStart"};
   const InteractiveBrowserTest::DeepQuery kAudioCaptureStop = {"#audioCapStop"};
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicMicrophoneEnabled, false);
   RunTestSequence(
       DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
@@ -60,7 +60,7 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
   const InteractiveBrowserTest::DeepQuery kAudioCaptureStart = {
       "#audioCapStart"};
   const InteractiveBrowserTest::DeepQuery kAudioCaptureStop = {"#audioCapStop"};
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicMicrophoneEnabled, true);
   RunTestSequence(
       DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
   }
   const InteractiveBrowserTest::DeepQuery kContextToggle = {"#getpagecontext"};
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicTabContextEnabled, false);
   RunTestSequence(
       InstrumentTab(kActiveTabId),
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
 IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
                        TabContextPermissionTestAllow) {
   const InteractiveBrowserTest::DeepQuery kContextToggle = {"#getpagecontext"};
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicTabContextEnabled, true);
   RunTestSequence(
       InstrumentTab(kActiveTabId),
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
 IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
                        LocationPermissionTestDeny) {
   const InteractiveBrowserTest::DeepQuery kGetLocationButton = {"#getlocation"};
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicGeolocationEnabled, false);
   RunTestSequence(
       DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,
@@ -136,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
 IN_PROC_BROWSER_TEST_F(GlicPermissionEnforcementUiTest,
                        LocationPermissionTestAllow) {
   const InteractiveBrowserTest::DeepQuery kGetLocationButton = {"#getlocation"};
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicGeolocationEnabled, true);
   RunTestSequence(
       DeprecatedOpenGlicWindow(GlicWindowMode::kAttached,

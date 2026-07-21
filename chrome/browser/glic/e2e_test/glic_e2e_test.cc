@@ -227,7 +227,7 @@ void GlicE2ETest::SetFRECompletion() {
 }
 
 void GlicE2ETest::SetUserEnabledActuationOnWeb(bool enabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicUserEnabledActuationOnWeb, enabled);
 }
 

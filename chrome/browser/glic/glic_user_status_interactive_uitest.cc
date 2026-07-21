@@ -147,7 +147,7 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusInteractiveUiTest,
                        GlicButtonVisibilityAndSettingsState) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile),
       policy::EnterpriseManagementAuthority::CLOUD);

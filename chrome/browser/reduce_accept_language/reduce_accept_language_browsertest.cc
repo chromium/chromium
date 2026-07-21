@@ -157,7 +157,7 @@ class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
   void TearDownOnMainThread() override {
     // Clean up any saved settings after test run.
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetOriginTrialsControllerDelegate()
         ->ClearPersistedTokens();
 

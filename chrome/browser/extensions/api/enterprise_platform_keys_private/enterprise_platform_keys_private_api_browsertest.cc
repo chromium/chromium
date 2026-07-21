@@ -40,7 +40,7 @@ class EPKPChallengeKeyTestBase : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     extension_ = ExtensionBuilder("Test").Build();
-    prefs_ = browser()->profile()->GetPrefs();
+    prefs_ = browser()->GetProfile()->GetPrefs();
     SetAuthenticatedUser();
   }
 
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(EPKPChallengeMachineKeyTest, ExtensionNotAllowlisted) {
   EXPECT_EQ(
       ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
       utils::RunFunctionAndReturnError(func_.get(), kFuncArgs,
-                                       browser()->profile()));
+                                       browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(EPKPChallengeMachineKeyTest, Success) {
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(EPKPChallengeMachineKeyTest, Success) {
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
   std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
-      func_.get(), kFuncArgs, browser()->profile(),
+      func_.get(), kFuncArgs, browser()->GetProfile(),
       extensions::api_test_utils::FunctionMode::kNone);
 
   ASSERT_TRUE(value->is_string());
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(EPKPChallengeUserKeyTest, ExtensionNotAllowlisted) {
   EXPECT_EQ(
       ash::attestation::TpmChallengeKeyResult::kExtensionNotAllowedErrorMsg,
       utils::RunFunctionAndReturnError(func_.get(), kFuncArgs,
-                                       browser()->profile()));
+                                       browser()->GetProfile()));
 }
 
 IN_PROC_BROWSER_TEST_F(EPKPChallengeUserKeyTest, Success) {
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(EPKPChallengeUserKeyTest, Success) {
   prefs_->SetList(prefs::kAttestationExtensionAllowlist, std::move(allowlist));
 
   std::optional<base::Value> value = utils::RunFunctionAndReturnSingleResult(
-      func_.get(), kFuncArgs, browser()->profile(),
+      func_.get(), kFuncArgs, browser()->GetProfile(),
       extensions::api_test_utils::FunctionMode::kNone);
 
   ASSERT_TRUE(value->is_string());

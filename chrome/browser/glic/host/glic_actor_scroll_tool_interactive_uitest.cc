@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorScrollToolUiTest, BrowserZoomWithNodeId) {
   const std::string kElementLabel = "scroller";
 
   double level = blink::ZoomFactorToZoomLevel(1.5);
-  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
+  browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
 
   // 60 physical pixels translates to 40 CSS pixels when the zoom factor is 1.5
   // (3 physical pixels : 2 CSS Pixels)

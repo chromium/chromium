@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(AuthSessionBrowserTest, ProfileNotLoaded) {
   g_browser_process->local_state()->SetString(prefs::kProfileLastUsed,
                                               kProfileName);
   const base::FilePath kProfilePath =
-      browser()->profile()->GetPath().DirName().Append(kProfileName);
+      browser()->GetProfile()->GetPath().DirName().Append(kProfileName);
   ASSERT_FALSE(
       g_browser_process->profile_manager()->GetProfileByPath(kProfilePath));
 

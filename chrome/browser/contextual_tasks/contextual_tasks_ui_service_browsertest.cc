@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceTaskReuseTest,
 
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
 
   // 2. Start task on Tab 1 with mstk
   GURL launch_url1("https://google.com/aim?mstk=abc");
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceTaskReuseTest,
 
   ContextualTasksUiService* ui_service =
       ContextualTasksUiServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
 
   // 2. Start task on Tab 1 with mstk, flag=true (so it registers in map)
   GURL launch_url1("https://google.com/aim?mstk=abc");

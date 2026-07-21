@@ -1289,18 +1289,18 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
           std::move(mock_response)));
 
   std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[]", browser()->profile());
+      function.get(), "[]", browser()->GetProfile());
 
   ASSERT_TRUE(result);
   EXPECT_EQ("CHROME_ENTERPRISE_CORE", result->GetString());
   EXPECT_EQ(static_cast<int>(enterprise::PromotionType::kChromeEnterpriseCore),
-            browser()->profile()->GetPrefs()->GetInteger(
+            browser()->GetProfile()->GetPrefs()->GetInteger(
                 enterprise_promotion::kEnterprisePromotionEligibility));
 }
 
 IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
                        ReturnsCachedPromotionEligibility) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetInteger(
       enterprise_promotion::kEnterprisePromotionEligibility,
       static_cast<int>(enterprise::PromotionType::kChromeEnterprisePremium));
@@ -1314,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
       std::make_unique<FailIfCalledPromotionEligibilityChecker>());
 
   std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[]", browser()->profile());
+      function.get(), "[]", browser()->GetProfile());
 
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->is_string());
@@ -1330,19 +1330,19 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
                        ReturnsUnspecifiedResponseWhenBannerWasDismissed) {
 #if !BUILDFLAG(IS_CHROMEOS)
   policy::CloudPolicyManager* manager =
-      browser()->profile()->GetCloudPolicyManager();
+      browser()->GetProfile()->GetCloudPolicyManager();
   auto client = std::make_unique<policy::MockCloudPolicyClient>();
   client->SetDMToken("fake-dm-token");
   manager->Connect(g_browser_process->local_state(), std::move(client));
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(pref_names::kHasDismissedEnterprisePromotion, true);
   scoped_refptr<WebstorePrivateShouldShowEnterprisePromotionBannerFunction>
       function = base::MakeRefCounted<
           WebstorePrivateShouldShowEnterprisePromotionBannerFunction>();
 
   std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-      function.get(), "[]", browser()->profile());
+      function.get(), "[]", browser()->GetProfile());
 
   ASSERT_TRUE(result);
   EXPECT_EQ(
@@ -1350,7 +1350,7 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
           api::webstore_private::PromotionType::kPromotionTypeUnspecified),
       result->GetString());
   EXPECT_EQ(static_cast<int>(enterprise::PromotionType::kUnspecified),
-            browser()->profile()->GetPrefs()->GetInteger(
+            browser()->GetProfile()->GetPrefs()->GetInteger(
                 enterprise_promotion::kEnterprisePromotionEligibility));
   EXPECT_EQ(
       static_cast<int>(enterprise::PromotionType::kUnspecified),

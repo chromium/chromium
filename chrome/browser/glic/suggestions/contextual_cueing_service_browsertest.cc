@@ -71,7 +71,7 @@ class ContextualCueingServiceBrowserTestZSSFlag
   }
 
   void SetUpOnMainThread() override {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         glic::prefs::kGlicTabContextEnabled, true);
   }
 
@@ -356,7 +356,7 @@ class ContextualCueingServiceBrowserTestAllowZSSForSrp
   }
 
   void SetUpOnMainThread() override {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         glic::prefs::kGlicTabContextEnabled, true);
   }
 

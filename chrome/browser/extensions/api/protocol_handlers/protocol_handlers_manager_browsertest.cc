@@ -551,7 +551,7 @@ class ProtocolHandlersManagerOTRBrowserTest
     : public ProtocolHandlersManagerBrowserTest {
  protected:
   Profile* GetOTRProfile() {
-    return browser()->profile()->GetPrimaryOTRProfile(
+    return browser()->GetProfile()->GetPrimaryOTRProfile(
         /*create_if_needed=*/true);
   }
 

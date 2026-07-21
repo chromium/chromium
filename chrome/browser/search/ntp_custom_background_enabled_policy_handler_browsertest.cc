@@ -40,7 +40,7 @@ class NtpCustomBackgroundEnabledPolicyHandlerTest
 };
 
 IN_PROC_BROWSER_TEST_F(NtpCustomBackgroundEnabledPolicyHandlerTest, Override) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
 
   // Check initial states.
   EXPECT_FALSE(prefs->GetDict(prefs::kNtpCustomBackgroundDict).empty());

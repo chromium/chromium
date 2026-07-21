@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(ProfileListDesktopBrowserTest, MAYBE_SwitchToProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  base::FilePath path_profile1 = browser()->profile()->GetPath();
+  base::FilePath path_profile1 = browser()->GetProfile()->GetPath();
 
   base::FilePath path_profile2 = profile_manager->user_data_dir().Append(
       FILE_PATH_LITERAL("New Profile 2"));

@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteInactiveProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  base::FilePath current_profile_path = browser()->profile()->GetPath();
+  base::FilePath current_profile_path = browser()->GetProfile()->GetPath();
 
   // Create an additional profile.
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeleteCurrentProfile) {
   [[maybe_unused]] Profile& new_profile =
       profiles::testing::CreateProfileSync(profile_manager, new_profile_path);
 
-  base::FilePath current_profile_path = browser()->profile()->GetPath();
+  base::FilePath current_profile_path = browser()->GetProfile()->GetPath();
   base::FilePath new_last_used_path = new_profile_path;
 
   ASSERT_EQ(2u, storage.GetNumberOfProfiles());
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, MAYBE_DeleteAllProfiles) {
 
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, ProfileFromProfileKey) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile1 = browser()->profile();
+  Profile* profile1 = browser()->GetProfile();
 
   // Create an additional profile.
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
@@ -740,7 +740,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
 // The test makes sense on those platforms where the keychain exists.
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ASSERT_TRUE(profile);
 
   password_manager::PasswordForm form;
@@ -783,7 +783,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
 // profile counts in ProfileManager with respect to the creation and destruction
 // of incognito profiles.
 IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, IncognitoProfile) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ASSERT_TRUE(profile);
   EXPECT_FALSE(profile->HasPrimaryOTRProfile());
 

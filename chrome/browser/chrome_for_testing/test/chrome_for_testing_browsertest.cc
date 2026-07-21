@@ -104,7 +104,7 @@ class ChromeForTestingSearchEngineChoiceDialogBrowserTest
   }
 
   bool IsSearchEngineChoiceDialogEnabled() {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     return !!SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
   }
 };
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(ChromeForTestingUserEducationUIBrowserTest,
                        UserEducationUIOption) {
   EXPECT_EQ(EnableUserEducationUI(), IsEnableUserEducationUI());
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ASSERT_FALSE(profile->IsIncognitoProfile());
   ASSERT_FALSE(profile->IsGuestSession());
   ASSERT_FALSE(profiles::IsDemoSession());

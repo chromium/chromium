@@ -935,7 +935,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
 
   Profile* GenerateNewProfile() {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
-    base::FilePath current_profile_path = browser()->profile()->GetPath();
+    base::FilePath current_profile_path = browser()->GetProfile()->GetPath();
 
     // Create an additional profile.
     base::FilePath new_path =
@@ -3702,7 +3702,7 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
                        CriticalClientHintWithUncachedViewport) {
   // Force an empty viewport size.
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetClientHintsControllerDelegate()
       ->ForceEmptyViewportSizeForTesting(true);
   // We should never see real sizes sent.
@@ -3716,7 +3716,7 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
   EXPECT_EQ(observed_ch_viewport_widths_deprecated()[0], "MISSING");
   // Cleanup shim to prevent other tests from breaking.
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetClientHintsControllerDelegate()
       ->ForceEmptyViewportSizeForTesting(false);
 }
@@ -3727,7 +3727,7 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
                        CriticalClientHintWithUncachedViewportAndCachedHints) {
   // Force an empty viewport size.
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetClientHintsControllerDelegate()
       ->ForceEmptyViewportSizeForTesting(true);
   // Add setting for the host.
@@ -3757,7 +3757,7 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
   EXPECT_EQ(observed_ch_viewport_widths_deprecated()[0], "MISSING");
   // Cleanup shim to prevent other tests from breaking.
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetClientHintsControllerDelegate()
       ->ForceEmptyViewportSizeForTesting(false);
 }

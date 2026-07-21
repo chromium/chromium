@@ -25,7 +25,7 @@ ExtensionBrowserTestPlatformDelegate::ExtensionBrowserTestPlatformDelegate(
 Profile* ExtensionBrowserTestPlatformDelegate::GetProfile() {
   if (!profile_) {
     if (parent_->browser()) {
-      profile_ = parent_->browser()->profile();
+      profile_ = parent_->browser()->GetProfile();
     } else {
       profile_ = ProfileManager::GetLastUsedProfile();
     }

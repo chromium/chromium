@@ -50,8 +50,9 @@ class ExternalProtocolHandlerSandboxBrowserTest
   void AllowCustomProtocol() {
     base::ListValue allow_list;
     allow_list.Append("custom:*");
-    browser()->profile()->GetPrefs()->Set(policy::policy_prefs::kUrlAllowlist,
-                                          base::Value(std::move(allow_list)));
+    browser()->GetProfile()->GetPrefs()->Set(
+        policy::policy_prefs::kUrlAllowlist,
+        base::Value(std::move(allow_list)));
   }
 
   content::RenderFrameHost* CreateIFrame(content::RenderFrameHost* document,

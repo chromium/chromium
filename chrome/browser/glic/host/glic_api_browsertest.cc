@@ -913,7 +913,7 @@ class GlicApiTestWithDaisyChain : public GlicApiTest {
 
   void SetUpOnMainThread() override {
     GlicApiTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled, true);
   }
 
@@ -1566,7 +1566,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testStopMicrophone) {
 
 // TODO(crbug.com/438812885): This is flaky.
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testMetrics) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kGlicClosedCaptioningEnabled, true);
 
   ExecuteJsTest();
@@ -2331,7 +2331,7 @@ void UpdatePrimaryAccountToBeManaged(Profile* profile) {
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
                        testMaybeRefreshUserStatus) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -2356,7 +2356,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestUserStatusCheckTest,
   // browser tests yet, but they should be sufficient to catch a total lack of
   // throttling, at least.
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile),
       policy::EnterpriseManagementAuthority::CLOUD);

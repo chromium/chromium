@@ -177,7 +177,7 @@ class GlicApiTestBase : public T {
   }
 
   GlicKeyedService* GetService() {
-    Profile* profile = T::browser()->profile();
+    Profile* profile = T::browser()->GetProfile();
     return GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   }
 

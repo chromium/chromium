@@ -77,7 +77,7 @@ class PrivacySandboxSettingsTopicsInteractiveTest
   }
 
   void SetUpOnMainThread() override {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kPrivacySandboxM1TopicsEnabled, true);
     InteractiveBrowserTest::SetUpOnMainThread();
     browser()->GetWindow()->SetBounds(gfx::Rect(600, 700));

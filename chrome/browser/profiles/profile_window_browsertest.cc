@@ -324,14 +324,14 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   size_t num_browsers = GlobalBrowserCollection::GetInstance()->GetSize();
   base::test::TestFuture<Browser*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
                                         false, profile);
   ASSERT_TRUE(future.Get());
   EXPECT_NE(browser(), future.Get());
-  EXPECT_EQ(profile, future.Get()->profile());
+  EXPECT_EQ(profile, future.Get()->GetProfile());
   EXPECT_EQ(num_browsers + 1,
             GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_FALSE(ProfilePicker::IsOpen());
@@ -340,13 +340,13 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
 // Regression test for https://crbug.com/40903397
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        OpenTwoBrowserWindowsForProfile) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   size_t num_browsers = GlobalBrowserCollection::GetInstance()->GetSize();
   base::test::TestFuture<Browser*> future;
   profiles::OpenBrowserWindowForProfile(future.GetCallback(), true, false,
                                         false, profile);
   CreateBrowser(profile);
-  EXPECT_EQ(profile, future.Get()->profile());
+  EXPECT_EQ(profile, future.Get()->GetProfile());
   EXPECT_EQ(num_browsers + 2,
             GlobalBrowserCollection::GetInstance()->GetSize());
   EXPECT_FALSE(ProfilePicker::IsOpen());
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
                        MAYBE_OpenBrowserWindowForProfileWithSigninRequired) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()

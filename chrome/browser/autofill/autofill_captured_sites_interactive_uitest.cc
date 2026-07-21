@@ -336,7 +336,7 @@ class AutofillCapturedSitesInteractiveTest
     // Disable the Password Manager to prevent password bubbles from occurring.
     // The password bubbles could overlap with the Autofill popups, in which
     // case the Autofill popup would not be shown (crbug.com/40187831).
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         password_manager::prefs::kCredentialsEnableService, false);
     return true;
   }
@@ -370,8 +370,8 @@ class AutofillCapturedSitesInteractiveTest
     form_submission_counter_ =
         std::make_unique<FormSubmissionCounter>(GetWebContents());
 
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                                 false);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                    false);
   }
 
   void TearDownOnMainThread() override {

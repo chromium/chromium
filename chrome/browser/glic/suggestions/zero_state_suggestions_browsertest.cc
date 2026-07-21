@@ -90,7 +90,7 @@ class ZeroStateSuggestionsBrowserTest
 
   void SetUpOnMainThread() override {
     // Override glic tab context sharing to be always on.
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         glic::prefs::kGlicTabContextEnabled, true);
   }
 
@@ -731,7 +731,7 @@ class ZeroStateSuggestionsBFCacheConfusionBrowserTest
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         glic::prefs::kGlicTabContextEnabled, true);
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         optimization_guide::switches::

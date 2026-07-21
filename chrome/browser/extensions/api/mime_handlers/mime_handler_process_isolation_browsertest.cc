@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerProcessIsolationBrowserTest,
       NavigateToPdfAndGetExtensionFrame(pdf_url);
   ASSERT_TRUE(viewer_frame);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   sessions::TabRestoreService* trs =
       TabRestoreServiceFactory::GetForProfile(profile);
   ASSERT_TRUE(trs);

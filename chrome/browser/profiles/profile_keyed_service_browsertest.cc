@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsGuest());
   // ChromeOS Guest mode starts with the guest otr profile.
-  Profile* guest_otr_profile = browser()->profile();
+  Profile* guest_otr_profile = browser()->GetProfile();
   // Some key services are created asynchronosly. Wait util they're ready.
 #else
   Browser* guest_browser = CreateGuestBrowser();
@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsGuest());
   // ChromeOS Guest mode starts with the guest otr profile.
-  Profile* guest_otr_profile = browser()->profile();
+  Profile* guest_otr_profile = browser()->GetProfile();
   Profile* guest_parent_profile = guest_otr_profile->GetOriginalProfile();
   // Some key services are created asynchronosly. Wait util they're ready.
 #else

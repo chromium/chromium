@@ -72,7 +72,7 @@ class ContextualTasksPageHandlerBrowserTest : public ::InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    profile_ = browser()->profile();
+    profile_ = browser()->GetProfile();
 
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     web_ui_.set_web_contents(web_contents_);

@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(GlicBrowserTest, IncognitoModeCrash) {
 
 IN_PROC_BROWSER_TEST_F(GlicBrowserTest, PausedProfileIsNotReady) {
   // Signin and check that Glic is enabled.
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   auto* const identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(GlicBrowserTest, PausedProfileIsNotReady) {
 
 IN_PROC_BROWSER_TEST_F(GlicBrowserTest, GlicEnablingDismissed) {
   // Signin and check that Glic is enabled.
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
 
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
 
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(GlicBrowserTest, GlicEnablingDismissed) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicBrowserTest, InvokeFailsWhenProfileNotEnabled) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   ScopedGlicCapability scoped_glic_capability(profile, false);
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile));
 
@@ -248,7 +248,7 @@ class GlicKeyedServiceSyncBrowserTest : public GlicBrowserTest {
         }));
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   syncer::FakeDeviceInfoSyncService* fake_device_info_sync_service() {
     return static_cast<syncer::FakeDeviceInfoSyncService*>(

@@ -73,7 +73,7 @@ class GlicEnablingTest : public InProcessBrowserTest {
         {});
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
   ProfileManager* profile_manager() {
     return g_browser_process->profile_manager();
   }
@@ -423,7 +423,7 @@ class GlicEnablingTieredRolloutV2Test : public GlicEnablingTest {
   ~GlicEnablingTieredRolloutV2Test() override = default;
 
   void SetUserTier(int32_t tier) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier, tier);
   }
 

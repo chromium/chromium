@@ -188,7 +188,7 @@ class GlicPolicyTest : public PolicyTest {
     g_browser_process->local_state()->SetBoolean(
         glic::prefs::kGlicLauncherEnabled, true);
 
-    profile_1_ = browser()->profile();
+    profile_1_ = browser()->GetProfile();
     instance_tracker_.SetProfile(profile_1_);
 
     // "policy_for_profile_1_" is provider_, setup in PolicyTest.
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDefaultsToEnabled) {
 
 IN_PROC_BROWSER_TEST_F(GlicPolicyTest, PrefDisabledByPolicy) {
   // By default the pref should start off unmanaged and defaulted to enabled.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_FALSE(prefs->IsManagedPreference(kGeminiSettings));
   EXPECT_EQ(kEnabledValue, prefs->GetInteger(kGeminiSettings));
 
@@ -678,14 +678,14 @@ class GlicActuationOnWebPolicyTest : public GlicPolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActuationOnWebPolicyTest, DefaultToEnabled) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_FALSE(prefs->IsManagedPreference(kGlicActuationOnWeb));
   EXPECT_EQ(prefs->GetInteger(kGlicActuationOnWeb),
             ToInt(GlicActuationOnWebPolicyState::kEnabled));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActuationOnWebPolicyTest, PrefControlledByPolicy) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   ASSERT_EQ(prefs->GetInteger(kGlicActuationOnWeb),
             ToInt(GlicActuationOnWebPolicyState::kEnabled));
 

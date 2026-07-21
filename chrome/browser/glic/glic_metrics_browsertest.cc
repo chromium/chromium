@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, ZoomLevel_OnOpen) {
   base::HistogramTester histogram_tester;
 
   // Set zoom level for profile.
-  PlatformBrowserTest::browser()->profile()->GetPrefs()->SetInteger(
+  PlatformBrowserTest::browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kGlicZoomLevel, 150);
 
   // Open the side panel.

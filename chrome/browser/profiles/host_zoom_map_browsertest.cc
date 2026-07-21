@@ -95,7 +95,8 @@ class HostZoomMapBrowserTest : public InProcessBrowserTest {
 
  protected:
   void SetDefaultZoomLevel(double level) {
-    browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(level);
+    browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
+        level);
   }
 
   double GetZoomLevel(const GURL& url) {
@@ -121,7 +122,7 @@ class HostZoomMapBrowserTest : public InProcessBrowserTest {
   }
 
   std::vector<std::string> GetHostsWithZoomLevelsFromPrefs() {
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     const base::DictValue& dictionaries =
         prefs->GetDict(prefs::kPartitionPerHostZoomLevels);
     std::string partition_key =
@@ -337,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest,
   const double zoom_level_30 = 3.0;
   const double zoom_level_40 = 4.0;
 
-  Profile* parent_profile = browser()->profile();
+  Profile* parent_profile = browser()->GetProfile();
   Profile* child_profile =
       parent_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   HostZoomMap* parent_zoom_map =
@@ -382,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(HostZoomMapBrowserTest,
                        ParentDefaultZoomPropagatesToIncognitoChild) {
-  Profile* parent_profile = browser()->profile();
+  Profile* parent_profile = browser()->GetProfile();
   Profile* child_profile =
       parent_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 

@@ -72,7 +72,7 @@ TEST(SearchURLsTest, MatchesOriginAndPath) {
 
 class SearchTest : public MixinBasedInProcessBrowserTest {
  public:
-  Profile* profile() const { return browser()->profile(); }
+  Profile* profile() const { return browser()->GetProfile(); }
 
  protected:
   void SetUpOnMainThread() override {

@@ -37,11 +37,11 @@ class PrivacySandboxAdPrivacyDeprecationTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
                        PRE_PrefsSetToFalse) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxM1TopicsEnabled, true);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxM1FledgeEnabled, true);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
 }
 
@@ -90,11 +90,11 @@ class PrivacySandboxAdPrivacyDeprecationDisabledTest
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
                        PRE_PrefsNotSetToFalse) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxM1TopicsEnabled, true);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxM1FledgeEnabled, true);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
 }
 

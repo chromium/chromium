@@ -1090,8 +1090,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ActorPolicyCheckerBrowserTestWithManagedAccountWithPolicy,
     InvalidPolicyValueFallsSafeAndDoesNotCrash) {
-  browser()->profile()->GetPrefs()->SetInteger(glic::prefs::kGlicActuationOnWeb,
-                                               2);
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      glic::prefs::kGlicActuationOnWeb, 2);
   EXPECT_FALSE(GetPolicyChecker().CanActOnWeb());
   EXPECT_EQ(GetPolicyChecker().CannotActOnWebReason(),
             CannotActReason::kDisabledByPolicy);

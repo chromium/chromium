@@ -124,7 +124,7 @@ class LocalContextualSearchboxHandlerTestHarness : public InProcessBrowserTest {
 
   // Helper methods to access protected members
   content::WebContents* web_contents() { return web_contents_; }
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory() {
     return profile()
         ->GetDefaultStoragePartition()

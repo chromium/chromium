@@ -44,8 +44,9 @@ class ProfileShortcutManagerBrowserTest : public InProcessBrowserTest {
   }
 
   ProfileAttributesEntry* GetProfileAttributesEntry() {
-    if (!browser() || !browser()->profile())
+    if (!browser() || !browser()->GetProfile()) {
       return nullptr;
+    }
     return g_browser_process->profile_manager()
         ->GetProfileAttributesStorage()
         .GetProfileAttributesWithPath(browser()->GetProfile()->GetPath());
@@ -86,7 +87,8 @@ IN_PROC_BROWSER_TEST_F(ProfileShortcutManagerBrowserTest,
 
   // This is for triggering a profile icon update on the next run. 1 is just a
   // small enough number for kCurrentProfileIconVersion.
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kProfileIconVersion, 1);
+  browser()->GetProfile()->GetPrefs()->SetInteger(prefs::kProfileIconVersion,
+                                                  1);
 
   // Ensure that any tasks started by profile creation are finished before we
   // advance to the main test. In particular, we want to finish all tasks that

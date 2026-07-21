@@ -183,7 +183,7 @@ class ProfileStatisticsBrowserTest : public InProcessBrowserTest {
 using ProfileStatisticsBrowserDeathTest = ProfileStatisticsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ProfileStatisticsBrowserTest, GatherStatistics) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ASSERT_TRUE(profile);
   ProfileStatistics* profile_stat =
       ProfileStatisticsFactory::GetForProfile(profile);
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(ProfileStatisticsBrowserTest, GatherStatistics) {
 
 IN_PROC_BROWSER_TEST_F(ProfileStatisticsBrowserTest,
                        GatherStatisticsTwoCallbacks) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ASSERT_TRUE(profile);
   ProfileStatistics* profile_stat =
       ProfileStatisticsFactory::GetForProfile(profile);
