@@ -88,6 +88,10 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
       return gfx::Insets::TLBR(4, 20, 20, 20);
     case INSETS_PAGE_INFO_FOOTER_BUTTON:
       return gfx::Insets::VH(12, 20);
+    case INSETS_ACTION_APP_MENU_POPUP:
+      return gfx::Insets::VH(16, 16);
+    case INSETS_ACTION_APP_MENU_ITEM:
+      return gfx::Insets::TLBR(0, 16, 0, 12);
     default:
       return LayoutProvider::GetInsetsMetric(metric);
   }
@@ -246,6 +250,21 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING:
       return 12;
+    // Block-style Action App Menu layout constants.
+    case DISTANCE_ACTION_APP_MENU_MINIMUM_WIDTH:
+      return 440;
+    case DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS:
+      return 8;
+    case DISTANCE_ACTION_APP_MENU_ITEM_FIRST_TOP_PADDING:
+      return 14;
+    case DISTANCE_ACTION_APP_MENU_ITEM_LAST_BOTTOM_PADDING:
+      return 14;
+    case DISTANCE_ACTION_APP_MENU_ITEM_DEFAULT_VERTICAL_MARGIN:
+      return 8;
+    case DISTANCE_ACTION_APP_MENU_ICON_SIZE:
+      return 16;
+    case DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT:
+      return 32;
   }
   NOTREACHED();
 }
