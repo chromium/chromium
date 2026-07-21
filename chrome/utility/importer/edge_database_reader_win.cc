@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/utility/importer/edge_database_reader_win.h"
 
 #include <windows.h>
@@ -15,6 +10,8 @@
 #include <stdint.h>
 
 #include <vector>
+
+#include "base/compiler_specific.h"
 
 namespace {
 
@@ -31,7 +28,7 @@ bool ValidateAndConvertValueGeneric(const JET_COLTYP match_column_type,
                                     const std::vector<uint8_t>& column_data,
                                     T* value) {
   if ((column_type == match_column_type) && (column_data.size() == sizeof(T))) {
-    memcpy(value, &column_data[0], sizeof(T));
+    UNSAFE_TODO(memcpy(value, &column_data[0], sizeof(T)));
     return true;
   }
   return false;
@@ -55,7 +52,7 @@ bool ValidateAndConvertValue(const JET_COLTYP column_type,
     std::u16string& value_ref = *value;
     size_t char_length = column_data.size() / sizeof(char16_t);
     value_ref.resize(char_length);
-    memcpy(&value_ref[0], &column_data[0], column_data.size());
+    UNSAFE_TODO(memcpy(&value_ref[0], &column_data[0], column_data.size()));
     // Remove any trailing NUL characters.
     while (char_length > 0) {
       if (value_ref[char_length - 1])

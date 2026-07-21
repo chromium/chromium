@@ -541,6 +541,7 @@ if (is_win) {
       ":chrome_app_strings_bundle_data",
       ":chrome_resources",
       ":chrome_versioned_bundle_data",
+      "//base:compiler_specific",
       "//base/allocator:early_zone_registration_apple",
       "//build:branding_buildflags",
       "//chrome/common:buildflags",
@@ -777,6 +778,7 @@ if (is_win) {
       defines = [ "HELPER_EXECUTABLE" ]
 
       deps = [
+        "//base:compiler_specific",
         "//base/allocator:early_zone_registration_apple",
         "//build:branding_buildflags",
         "//chrome/common:version_header",

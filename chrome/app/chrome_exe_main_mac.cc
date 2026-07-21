@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 // The entry point for all Mac Chromium processes, including the outer app
 // bundle (browser) and helper app (renderer, plugin, and friends).
@@ -25,6 +21,7 @@
 #include <memory>
 
 #include "base/allocator/early_zone_registration_apple.h"
+#include "base/compiler_specific.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_version.h"
@@ -136,8 +133,8 @@ __attribute__((used)) const char kGrossPaddingForCrbug1300598[216 * 1024] = {};
   va_list valist;
   va_start(valist, format);
   char message[4096];
-  if (vsnprintf(message, sizeof(message), format, valist) >= 0) {
-    fputs(message, stderr);
+  if (UNSAFE_TODO(vsnprintf(message, sizeof(message), format, valist)) >= 0) {
+    UNSAFE_TODO(fputs(message, stderr));
     abort_report_np("%s", message);
   }
   va_end(valist);
@@ -195,8 +192,8 @@ __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
   // 2 accounts for a trailing NUL byte and the '/' in the middle of the paths.
   const size_t framework_path_size = parent_dir_len + rel_path_len + 2;
   std::unique_ptr<char[]> framework_path(new char[framework_path_size]);
-  snprintf(framework_path.get(), framework_path_size, "%s/%s", parent_dir,
-           rel_path);
+  UNSAFE_TODO(snprintf(framework_path.get(), framework_path_size, "%s/%s",
+                       parent_dir, rel_path));
 
   void* library =
       dlopen(framework_path.get(), RTLD_LAZY | RTLD_LOCAL | RTLD_FIRST);

@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/router/discovery/test_support/win/fake_ip_helper.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 
 namespace media_router {
@@ -59,9 +56,9 @@ ULONG FakeIpHelper::GetAdaptersAddresses(
   }
 
   for (size_t i = 0; i < ip_adapter_addresses_.size(); ++i) {
-    adapter_addresses[i] = *ip_adapter_addresses_[i].Get();
+    UNSAFE_TODO(adapter_addresses[i] = *ip_adapter_addresses_[i].Get());
     if (i > 0) {
-      adapter_addresses[i - 1].Next = &adapter_addresses[i];
+      UNSAFE_TODO(adapter_addresses[i - 1].Next = &adapter_addresses[i]);
     }
   }
   return ERROR_SUCCESS;
@@ -106,8 +103,8 @@ void FakeIpHelper::AddMibTableRow(
            static_cast<size_t>(IF_MAX_PHYS_ADDRESS_LENGTH));
 
   network_interface.PhysicalAddressLength = physical_address.size();
-  memcpy(network_interface.PhysicalAddress, &physical_address[0],
-         physical_address.size());
+  base::span(network_interface.PhysicalAddress)
+      .copy_prefix_from(physical_address);
 
   mib_table_rows_.push_back(network_interface);
 }

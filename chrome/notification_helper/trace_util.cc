@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 #include <windows.h>
 
@@ -13,6 +9,8 @@
 #include <stdio.h>
 
 #include <string>
+
+#include "base/compiler_specific.h"
 
 #if !defined(NDEBUG)
 // Sends string |format| to the debugger for display.
@@ -26,7 +24,7 @@ void TraceImpl(const wchar_t* format, ...) {
   va_list args = {};
 
   va_start(args, format);
-  if (vswprintf(buffer, std::size(buffer), format, args) > 0) {
+  if (UNSAFE_TODO(vswprintf(buffer, std::size(buffer), format, args)) > 0) {
     OutputDebugString(buffer);
   } else {
     std::wstring error_string(L"Format error for string: ");
