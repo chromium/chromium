@@ -46,6 +46,10 @@ struct ContentAutofillDriverAttorney {
       ContentAutofillDriver& driver) {
     return driver.GetAutofillAgent();
   }
+
+  static AutofillManager::RendererEventPassKey autofill_manager_pass_key() {
+    return ContentAutofillDriver::autofill_manager_pass_key();
+  }
 };
 
 namespace {
@@ -276,14 +280,16 @@ R RouteToAgent(AutofillDriverRouter& router,
 template <typename... RouterArgs,
           typename... ManagerArgs,
           typename... ActualArgs>
-void RouteToManager(ContentAutofillDriver& source,
-                    AutofillDriverRouter& router,
-                    void (AutofillDriverRouter::*router_fun)(
-                        AutofillDriverRouter::RoutedCallback<ManagerArgs...>,
-                        autofill::AutofillDriver& source,
-                        RouterArgs...),
-                    void (AutofillManager::*manager_fun)(ManagerArgs...),
-                    ActualArgs&&... args) {
+void RouteToManager(
+    ContentAutofillDriver& source,
+    AutofillDriverRouter& router,
+    void (AutofillDriverRouter::*router_fun)(
+        AutofillDriverRouter::RoutedCallback<ManagerArgs...>,
+        autofill::AutofillDriver& source,
+        RouterArgs...),
+    void (AutofillManager::*manager_fun)(ManagerArgs...,
+                                         AutofillManager::RendererEventPassKey),
+    ActualArgs&&... args) {
   if (!bad_message::CheckArgs(args...) ||
       !bad_message::CheckFrameNotPrerendering(source.render_frame_host())) {
     return;
@@ -291,8 +297,9 @@ void RouteToManager(ContentAutofillDriver& source,
   return (router.*router_fun)(
       [&manager_fun](autofill::AutofillDriver& target, ManagerArgs... args) {
         AutofillManager& manager = target.GetAutofillManager();
-        (manager.*
-         manager_fun)(WithNewVersion(std::forward<ManagerArgs>(args))...);
+        (manager.*manager_fun)(
+            WithNewVersion(std::forward<ManagerArgs>(args))...,
+            ContentAutofillDriverAttorney::autofill_manager_pass_key());
       },
       source, Lift(source, std::forward<ActualArgs>(args))...);
 }
@@ -696,7 +703,8 @@ void ContentAutofillDriver::RequestRefill(const FillId& fill_id) {
 void ContentAutofillDriver::FocusOnFormField(const FormData& form,
                                              FieldRendererId field_id) {
   auto focus_no_longer_on_form = [](autofill::AutofillDriver& target) {
-    target.GetAutofillManager().OnFocusOnNonFormField();
+    target.GetAutofillManager().OnFocusOnNonFormField(
+        /*pass_key=*/{});
   };
   RouteToManager(
       *this, router(), &AutofillDriverRouter::FocusOnFormField,

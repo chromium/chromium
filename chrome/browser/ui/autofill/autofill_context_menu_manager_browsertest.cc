@@ -36,6 +36,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -365,8 +366,9 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
     TestAutofillManagerSingleEventWaiter wait_for_forms_seen(
         autofill_manager(), &AutofillManager::Observer::OnAfterFormsSeen,
         ElementsAre(form.global_id()), IsEmpty());
-    autofill_manager().OnFormsSeen(/*updated_forms=*/{form},
-                                   /*removed_forms=*/{});
+    autofill_manager().OnFormsSeen(
+        /*updated_forms=*/{form},
+        /*removed_forms=*/{}, autofill::AutofillManagerTestApi::pass_key());
     ASSERT_TRUE(std::move(wait_for_forms_seen).Wait());
   }
 

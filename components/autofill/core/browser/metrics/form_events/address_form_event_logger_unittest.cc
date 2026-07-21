@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
@@ -389,7 +390,8 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
   FormData form = test::CreateTestAddressFormData();
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{form},
-                                 /*removed_forms=*/{});
+                                 /*removed_forms=*/{},
+                                 AutofillManagerTestApi::pass_key());
 
   autofill_manager().OnAskForValuesToFillTest(
       form, form.fields().front().global_id());
@@ -431,7 +433,8 @@ TEST_F(AutofillOnDidShowSuggestionsMetricsTest,
   FormData form = test::CreateTestAddressFormData();
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{form},
-                                 /*removed_forms=*/{});
+                                 /*removed_forms=*/{},
+                                 AutofillManagerTestApi::pass_key());
 
   autofill_manager().OnAskForValuesToFillTest(
       form, form.fields().front().global_id());

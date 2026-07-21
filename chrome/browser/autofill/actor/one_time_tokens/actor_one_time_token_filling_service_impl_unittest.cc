@@ -28,6 +28,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
@@ -881,7 +882,8 @@ TEST_F(ActorOneTimeTokenFillingServiceImplTest,
   // Simulate dynamic removal of the form from the DOM by notifying
   // `BrowserAutofillManager` via `OnFormsSeen` that the form was removed.
   manager().OnFormsSeen(/*updated_forms=*/{},
-                        /*removed_forms=*/{form.global_id()});
+                        /*removed_forms=*/{form.global_id()},
+                        autofill::AutofillManagerTestApi::pass_key());
 
   EXPECT_EQ(service().ValidateFormFillingContext(tab().GetHandle(), {field_id}),
             FormFillingContextStatus::kFormNotFound);

@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -406,7 +407,8 @@ class AutofillExternalDelegateTest : public testing::Test,
                     AutofillSuggestionTriggerSource trigger_source =
                         kDefaultSuggestionTriggerSource) {
     queried_form_ = std::move(form_data);
-    autofill_manager().OnFormsSeen({queried_form()}, {});
+    autofill_manager().OnFormsSeen({queried_form()}, {},
+                                   AutofillManagerTestApi::pass_key());
     external_delegate().OnQuery(queried_form(), queried_field(), caret_bounds,
                                 trigger_source);
   }

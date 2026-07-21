@@ -814,7 +814,9 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
     }
     MOCK_METHOD(void,
                 OnFormsSeen,
-                (std::vector<FormData>, std::vector<FormGlobalId>),
+                (std::vector<FormData>,
+                 std::vector<FormGlobalId>,
+                 RendererEventPassKey),
                 (override));
     MOCK_METHOD(void,
                 OnFocusOnFormFieldImpl,

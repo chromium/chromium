@@ -65,6 +65,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -1125,7 +1126,8 @@ class RenderViewContextMenuUsePasskeyFromAnotherDeviceTest
   void NotifyFormManagerAndWait(autofill::FormData form) {
     autofill::TestAutofillManagerWaiter waiter(
         autofill_manager(), {autofill::AutofillManagerEvent::kFormsSeen});
-    autofill_manager().OnFormsSeen({form}, {});
+    autofill_manager().OnFormsSeen(
+        {form}, {}, autofill::AutofillManagerTestApi::pass_key());
     ASSERT_TRUE(waiter.Wait());
   }
 

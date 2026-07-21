@@ -14,6 +14,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_autofill_delegate.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -141,8 +142,8 @@ TEST_F(TouchToFillAutofillControllerImplTest, ShowNoticePassesToTheView) {
 
   autofill_manager().OnAskForValuesToFill(
       some_form_data_, some_field_, gfx::Rect(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      std::nullopt);
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, std::nullopt,
+      autofill::AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(
       autofill_controller().keyboard_suppressor_for_test().is_suppressing());

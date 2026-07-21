@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -200,25 +201,29 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
     field.set_is_autofilled_according_to_renderer(false);
     field.set_value(new_value);
     if (field.IsSelectElement()) {
-      autofill_manager().OnSelectControlSelectionChanged(form,
-                                                         field.global_id());
+      autofill_manager().OnSelectControlSelectionChanged(
+          form, field.global_id(), AutofillManagerTestApi::pass_key());
     } else {
-      autofill_manager().OnTextFieldValueChanged(form, field.global_id(),
-                                                 timestamp);
+      autofill_manager().OnTextFieldValueChanged(
+          form, field.global_id(), timestamp,
+          AutofillManagerTestApi::pass_key());
     }
   }
 
   void AutofillForm(const FormData& form) {
-    autofill_manager().OnDidAutofillForm(form);
+    autofill_manager().OnDidAutofillForm(form,
+                                         AutofillManagerTestApi::pass_key());
   }
 
   void SeeForm(const FormData& form) {
-    autofill_manager().OnFormsSeen({form}, {});
+    autofill_manager().OnFormsSeen({form}, {},
+                                   AutofillManagerTestApi::pass_key());
   }
 
   void SubmitForm(const FormData& form) {
-    autofill_manager().OnFormSubmitted(
-        form, mojom::SubmissionSource::FORM_SUBMISSION);
+    autofill_manager().OnFormSubmitted(form,
+                                       mojom::SubmissionSource::FORM_SUBMISSION,
+                                       AutofillManagerTestApi::pass_key());
   }
 
   static CreditCard BuildCard(const std::u16string& real_pan,

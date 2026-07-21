@@ -74,6 +74,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -1029,7 +1030,7 @@ class BrowserAutofillManagerTest
           std::nullopt) {
     autofill_manager().OnAskForValuesToFill(
         form, field.global_id(), GetFakeCaretBounds(field), trigger_source,
-        std::move(password_request));
+        std::move(password_request), AutofillManagerTestApi::pass_key());
   }
 
   void DidShowSuggestions(const FormData& form,
@@ -1048,16 +1049,18 @@ class BrowserAutofillManagerTest
         form_element_was_clicked
             ? AutofillSuggestionTriggerSource::kFormControlElementClicked
             : AutofillSuggestionTriggerSource::kTextFieldValueChanged,
-        std::nullopt);
+        std::nullopt, AutofillManagerTestApi::pass_key());
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
     autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
-                                   /*removed_forms=*/{});
+                                   /*removed_forms=*/{},
+                                   AutofillManagerTestApi::pass_key());
   }
 
   void FormSubmitted(const FormData& form) {
-    autofill_manager().OnFormSubmitted(form, SubmissionSource::FORM_SUBMISSION);
+    autofill_manager().OnFormSubmitted(form, SubmissionSource::FORM_SUBMISSION,
+                                       AutofillManagerTestApi::pass_key());
   }
 
   // TODO(crbug.com/40227071): Have separate functions for profile and credit
@@ -1070,7 +1073,7 @@ class BrowserAutofillManagerTest
     autofill_manager().OnAskForValuesToFill(
         form, field.global_id(), GetFakeCaretBounds(field),
         AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown,
-        std::nullopt);
+        std::nullopt, AutofillManagerTestApi::pass_key());
     if (const AutofillProfile* profile =
             personal_data().address_data_manager().GetProfileByGUID(guid)) {
       autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill,
@@ -1788,7 +1791,7 @@ TEST_F(BrowserAutofillManagerTest, OnSelectControlSelectionChanged) {
 
   OnAskForValuesToFill(form, form.fields()[0]);
   autofill_manager().OnSelectControlSelectionChanged(
-      form, form.fields()[0].global_id());
+      form, form.fields()[0].global_id(), AutofillManagerTestApi::pass_key());
 
   FormSubmitted(form);
   autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
@@ -1815,7 +1818,7 @@ TEST_F(BrowserAutofillManagerTest, OnSelectControlSelectionChangedDisabled) {
 
   OnAskForValuesToFill(form, form.fields()[0]);
   autofill_manager().OnSelectControlSelectionChanged(
-      form, form.fields()[0].global_id());
+      form, form.fields()[0].global_id(), AutofillManagerTestApi::pass_key());
 
   FormSubmitted(form);
   autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
@@ -2506,8 +2509,9 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
 
   // Simulate user typing into field (due to the ablation we would not fill).
   field.set_value(u"Unknown User");
-  autofill_manager().OnTextFieldValueChanged(form, field.global_id(),
-                                             base::TimeTicks::Now());
+  autofill_manager().OnTextFieldValueChanged(
+      form, field.global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
 
   if (params.second_query_for_suggestions_with_typed_prefix) {
     // Do another lookup. We won't have any suggestions because they would not
@@ -2970,8 +2974,8 @@ TEST_F(BrowserAutofillManagerTest, SuggestionGenerationTimingMetric) {
 
   autofill_manager().OnAskForValuesToFill(
       form, form.fields()[0].global_id(), gfx::Rect(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      std::nullopt);
+      AutofillSuggestionTriggerSource::kFormControlElementClicked, std::nullopt,
+      AutofillManagerTestApi::pass_key());
 
   // Verify the metric was recorded exactly once.
   histogram_tester.ExpectTotalCount("Autofill.Timing.SuggestionGeneration2", 1);
@@ -3343,8 +3347,9 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
   FormFieldData& field = test_api(form).field(0);
   // Simulate editing the first field.
   field.set_value(u"Michael");
-  autofill_manager().OnTextFieldValueChanged(form, field.global_id(),
-                                             base::TimeTicks::Now());
+  autofill_manager().OnTextFieldValueChanged(
+      form, field.global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
 
   // Simulate form submission.
   FormSubmitted(response_data);
@@ -4377,10 +4382,11 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldValueChangedAndUnfocus_Upload) {
   test_api(form).field(2).set_value(u"theking@gmail.com");
   // Simulate editing a field.
   autofill_manager().OnTextFieldValueChanged(
-      form, form.fields().front().global_id(), base::TimeTicks::Now());
+      form, form.fields().front().global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
 
   // Simulate lost of focus on the form.
-  autofill_manager().OnFocusOnNonFormField();
+  autofill_manager().OnFocusOnNonFormField(AutofillManagerTestApi::pass_key());
 }
 
 // Test that navigating with a filled form sends an upload with types matching
@@ -4409,7 +4415,8 @@ TEST_F(BrowserAutofillManagerTest,
   test_api(form).field(2).set_value(u"theking@gmail.com");
   // Simulate editing a field.
   autofill_manager().OnTextFieldValueChanged(
-      form, form.fields().front().global_id(), base::TimeTicks::Now());
+      form, form.fields().front().global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
 
   // Simulate a navigation so that the pending form is uploaded.
   autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
@@ -4437,10 +4444,11 @@ TEST_F(BrowserAutofillManagerTest, OnDidAutofillFormAndUnfocus_Upload) {
   test_api(form).field(0).set_value(u"Elvis");
   test_api(form).field(1).set_value(u"Presley");
   test_api(form).field(2).set_value(u"theking@gmail.com");
-  autofill_manager().OnDidAutofillForm(form);
+  autofill_manager().OnDidAutofillForm(form,
+                                       AutofillManagerTestApi::pass_key());
 
   // Simulate lost of focus on the form.
-  autofill_manager().OnFocusOnNonFormField();
+  autofill_manager().OnFocusOnNonFormField(AutofillManagerTestApi::pass_key());
 }
 
 // Test that suggestions are returned for credit card fields with an
@@ -5427,7 +5435,8 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureContext) {
 TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
   FormData form = CreateTestAddressFormData();
 
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
   const FormStructure* parsed_form =
       autofill_manager().FindCachedFormById(form.global_id());
 
@@ -5436,7 +5445,8 @@ TEST_F(BrowserAutofillManagerTest, PageLanguageGetsCorrectlySet) {
 
   autofill_client().GetLanguageState()->SetCurrentLanguage("zh");
 
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
   parsed_form = autofill_manager().FindCachedFormById(form.global_id());
 
   EXPECT_EQ(autofill_manager().GetCurrentPageLanguage(), LanguageCode("zh"));
@@ -5463,7 +5473,8 @@ class BrowserAutofillManagerTestPageLanguageDetection
 TEST_P(BrowserAutofillManagerTestPageLanguageDetection, GetsCorrectlyDetected) {
   FormData form = CreateTestAddressFormData();
 
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
 
   translate::LanguageDetectionDetails language_detection_details;
   language_detection_details.adopted_language = "hu";
@@ -5687,7 +5698,7 @@ TEST_F(BrowserAutofillManagerTest, HideSuggestionsAndOtherPopups) {
                               Eq(std::nullopt)));
   EXPECT_CALL(autofill_client(), HideAutofillFieldIph);
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill);
-  autofill_manager().OnHidePopup();
+  autofill_manager().OnHidePopup(AutofillManagerTestApi::pass_key());
 }
 
 // Tests that only Autofill popup is hidden on editing end, but not TTF.
@@ -5696,7 +5707,8 @@ TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
       autofill_client(),
       HideSuggestions(SuggestionHidingReason::kEndEditing, Eq(std::nullopt)));
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill).Times(0);
-  autofill_manager().OnDidEndTextFieldEditing();
+  autofill_manager().OnDidEndTextFieldEditing(
+      AutofillManagerTestApi::pass_key());
 }
 
 // Tests that keyboard accessory is not shown if TTF is eligible.
@@ -6429,7 +6441,8 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
     std::u16string old_value = fill_data_.fields()[field_index].value();
     test_api(fill_data_).field(field_index).set_value(new_value);
     autofill_manager().OnJavaScriptChangedAutofilledValue(
-        fill_data_, fill_data_.fields()[field_index].global_id(), old_value);
+        fill_data_, fill_data_.fields()[field_index].global_id(), old_value,
+        AutofillManagerTestApi::pass_key());
   }
 
   // Content of the form.
@@ -6510,7 +6523,8 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
   void SimulateTypingFirstNameIntoFirstField() {
     test_api(form_).field(0).set_value(u"Elvis");
     autofill_manager().OnTextFieldValueChanged(
-        form_, form_.fields()[0].global_id(), base::TimeTicks::Now());
+        form_, form_.fields()[0].global_id(), base::TimeTicks::Now(),
+        AutofillManagerTestApi::pass_key());
   }
 
  protected:
@@ -6541,12 +6555,13 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
 
   // 2. Simulate removing focus from the form, which triggers a blur vote.
   FormSignature first_form_signature = CalculateFormSignature(form_);
-  autofill_manager().OnFocusOnNonFormField();
+  autofill_manager().OnFocusOnNonFormField(AutofillManagerTestApi::pass_key());
 
   // 3. Simulate typing into second field
   test_api(form_).field(1).set_value(u"Presley");
   autofill_manager().OnTextFieldValueChanged(
-      form_, form_.fields()[1].global_id(), base::TimeTicks::Now());
+      form_, form_.fields()[1].global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
 
   // 4. Simulate removing the focus from the form, which generates a second blur
   // vote which should be sent.
@@ -6563,7 +6578,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
                                        FieldType::NAME_LAST_SECOND})),
               ObservedSubmissionIs(false))),
           _, _));
-  autofill_manager().OnFocusOnNonFormField();
+  autofill_manager().OnFocusOnNonFormField(AutofillManagerTestApi::pass_key());
 
   // 5. Grow the form by one field, which changes the form signature.
   test_api(form_).Append(CreateTestFormField(
@@ -6605,7 +6620,7 @@ TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
                                 FieldAutofillTypeIs({FieldType::EMPTY_TYPE})),
                       ObservedSubmissionIs(false))),
                   _, _));
-  autofill_manager().OnFocusOnNonFormField();
+  autofill_manager().OnFocusOnNonFormField(AutofillManagerTestApi::pass_key());
 
   // Simulate a navigation. This is when the vote is sent.
   autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
@@ -6618,7 +6633,7 @@ TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
 
   // Simulate removing focus from form, which enqueues a blur vote. The blur
   // vote will be ignored and only the submission will be sent.
-  autofill_manager().OnFocusOnNonFormField();
+  autofill_manager().OnFocusOnNonFormField(AutofillManagerTestApi::pass_key());
   EXPECT_CALL(crowdsourcing_manager(),
               StartUploadRequest(
                   FirstElementIs(AllOf(
@@ -7224,7 +7239,8 @@ TEST_F(BrowserAutofillManagerTest,
                                           form.fields()[2].global_id()};
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
-      form, form.fields()[0].global_id(), field_ids);
+      form, form.fields()[0].global_id(), field_ids,
+      AutofillManagerTestApi::pass_key());
 
   EXPECT_TRUE(form_structure->field(0)->did_trigger_javascript_autofill());
   EXPECT_FALSE(form_structure->field(1)->did_trigger_javascript_autofill());
@@ -7247,7 +7263,8 @@ TEST_F(BrowserAutofillManagerTest,
                                           form.fields()[1].global_id()};
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
-      form, form.fields()[0].global_id(), field_ids);
+      form, form.fields()[0].global_id(), field_ids,
+      AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
 }
@@ -7272,7 +7289,8 @@ TEST_F(BrowserAutofillManagerTest,
                                           form.fields()[2].global_id()};
 
   autofill_manager().OnDidDetectJavaScriptAutofill(
-      form, form.fields()[0].global_id(), field_ids);
+      form, form.fields()[0].global_id(), field_ids,
+      AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(form_structure->field(0)->did_trigger_javascript_autofill());
 }

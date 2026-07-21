@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -41,7 +42,8 @@ TEST_F(SuggestionsListMetricsTest, SuggestionsCount) {
                   {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
                   {.role = CREDIT_CARD_NUMBER,
                    .autocomplete_attribute = "cc-number"}}});
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
   personal_data().address_data_manager().AddProfile(test::GetFullProfile());
   personal_data().address_data_manager().AddProfile(test::GetFullProfile2());
   personal_data().payments_data_manager().AddCreditCard(test::GetCreditCard());
@@ -72,7 +74,8 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndex) {
                   {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
                   {.role = CREDIT_CARD_NUMBER,
                    .autocomplete_attribute = "cc-number"}}});
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
   {
     Suggestion address_suggestion(SuggestionType::kAddressEntry);
     autofill_manager().OnAskForValuesToFillTest(
@@ -102,7 +105,8 @@ TEST_F(SuggestionsListMetricsTest, AcceptedSuggestionIndexDisplayedAtLeast) {
       test::GetFormData({.fields = {{.role = NAME_FULL},
                                     {.role = ADDRESS_HOME_STREET_ADDRESS},
                                     {.role = ADDRESS_HOME_CITY}}});
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
   const FormFieldData& form_field = form.fields()[0];
 
   std::vector<Suggestion> suggestions(
@@ -193,7 +197,8 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
                    .autocomplete_attribute = "cc-number"}}});
   test_api(form).field(0).set_value(std::u16string(3, 'a'));
   test_api(form).field(-1).set_value(std::u16string(2, 'a'));
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
   {
     Suggestion address_suggestion(SuggestionType::kAddressEntry);
     autofill_manager().OnAskForValuesToFillTest(

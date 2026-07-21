@@ -79,6 +79,14 @@ class FormInteractionsUkmLogger;
 class AutofillManager
     : public translate::TranslateDriver::LanguageDetectionObserver {
  public:
+  class RendererEventPassKey {
+   private:
+    RendererEventPassKey() = default;
+    friend class ContentAutofillDriver;
+    friend class AutofillDriverIOS;
+    friend class AutofillManagerTestApi;
+  };
+
   using LifecycleState = AutofillDriver::LifecycleState;
 
   // Observer of AutofillManager events.
@@ -310,39 +318,51 @@ class AutofillManager
   // See autofill_driver.mojom for documentation.
   // Some functions are virtual for testing.
   virtual void OnFormsSeen(std::vector<FormData> updated_forms,
-                           std::vector<FormGlobalId> removed_form_ids);
+                           std::vector<FormGlobalId> removed_form_ids,
+                           RendererEventPassKey pass_key);
   virtual void OnFormSubmitted(const FormData& form,
-                               mojom::SubmissionSource source);
+                               mojom::SubmissionSource source,
+                               RendererEventPassKey pass_key);
   virtual void OnTextFieldValueChanged(const FormData& form,
                                        const FieldGlobalId& field_id,
-                                       const base::TimeTicks timestamp);
-  virtual void OnDidEndTextFieldEditing();
+                                       const base::TimeTicks timestamp,
+                                       RendererEventPassKey pass_key);
+  virtual void OnDidEndTextFieldEditing(RendererEventPassKey pass_key);
   virtual void OnTextFieldDidScroll(const FormData& form,
-                                    const FieldGlobalId& field_id);
+                                    const FieldGlobalId& field_id,
+                                    RendererEventPassKey pass_key);
   virtual void OnSelectControlSelectionChanged(const FormData& form,
-                                               const FieldGlobalId& field_id);
+                                               const FieldGlobalId& field_id,
+                                               RendererEventPassKey pass_key);
   virtual void OnSelectFieldOptionsDidChange(const FormData& form,
-                                             const FieldGlobalId& field_id);
+                                             const FieldGlobalId& field_id,
+                                             RendererEventPassKey pass_key);
   virtual void OnFocusOnFormField(const FormData& form,
-                                  const FieldGlobalId& field_id);
-  void OnFocusOnNonFormField();
+                                  const FieldGlobalId& field_id,
+                                  RendererEventPassKey pass_key);
+  void OnFocusOnNonFormField(RendererEventPassKey pass_key);
   virtual void OnAskForValuesToFill(
       const FormData& form,
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source,
-      std::optional<PasswordSuggestionRequest> password_request);
-  void OnHidePopup();
+      std::optional<PasswordSuggestionRequest> password_request,
+      RendererEventPassKey pass_key);
+  void OnHidePopup(RendererEventPassKey pass_key);
   virtual void OnCaretMovedInFormField(const FormData& form,
                                        const FieldGlobalId& field_id,
-                                       const gfx::Rect& caret_bounds);
-  virtual void OnDidAutofillForm(const FormData& form);
-  void SuppressAutomaticRefills(const FillId& fill_id);
-  void RequestRefill(const FillId& fill_id);
+                                       const gfx::Rect& caret_bounds,
+                                       RendererEventPassKey pass_key);
+  virtual void OnDidAutofillForm(const FormData& form,
+                                 RendererEventPassKey pass_key);
+  void SuppressAutomaticRefills(const FillId& fill_id,
+                                RendererEventPassKey pass_key);
+  void RequestRefill(const FillId& fill_id, RendererEventPassKey pass_key);
   virtual void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FieldGlobalId& field_id,
-      const std::u16string& old_value);
+      const std::u16string& old_value,
+      RendererEventPassKey pass_key);
 
   // Invoked when the suggestions are actually hidden.
   virtual void OnSuggestionsHidden(SuggestionHidingReason reason);
@@ -350,14 +370,16 @@ class AutofillManager
   // Invoked when a form with an email verification token is submitted.
   virtual void OnFormWithEmailVerificationTokenSubmitted(
       const FormData& form,
-      const FieldGlobalId& field_id);
+      const FieldGlobalId& field_id,
+      RendererEventPassKey pass_key);
 
   // Invoked when the renderer suspects a custom JavaScript autofill event has
   // occurred.
   virtual void OnDidDetectJavaScriptAutofill(
       const FormData& form,
       const FieldGlobalId& trigger_field_id,
-      const std::vector<FieldGlobalId>& field_ids);
+      const std::vector<FieldGlobalId>& field_ids,
+      RendererEventPassKey pass_key);
 
   // Routes calls from external components to FormFiller::FillOrPreviewField.
   // Virtual for testing.

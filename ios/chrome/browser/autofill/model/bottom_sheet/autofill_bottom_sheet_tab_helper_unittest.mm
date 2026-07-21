@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
@@ -264,7 +265,7 @@ TEST_F(
 
   autofill::TestAutofillManagerWaiter waiter(
       manager, {autofill::AutofillManagerEvent::kFormsSeen});
-  manager.OnFormsSeen({form}, {});
+  manager.OnFormsSeen({form}, {}, autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait(1));
 
   // Manually set field types to ensure the form is recognized as a credit card
@@ -306,7 +307,7 @@ TEST_F(
   exp_field.set_label(u"Other Field 2");
 
   form.set_fields({field, cc_field, exp_field});
-  manager.OnFormsSeen({form}, {});
+  manager.OnFormsSeen({form}, {}, autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait(1));
 
   // Update the listeners again which should detach the listeners this time

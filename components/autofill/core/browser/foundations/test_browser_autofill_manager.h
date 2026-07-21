@@ -44,35 +44,46 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
   void OnFormsSeen(std::vector<FormData> updated_forms,
-                   std::vector<FormGlobalId> removed_forms) override;
+                   std::vector<FormGlobalId> removed_forms,
+                   RendererEventPassKey pass_key) override;
   void OnCaretMovedInFormField(const FormData& form,
                                const FieldGlobalId& field_id,
-                               const gfx::Rect& caret_bounds) override;
+                               const gfx::Rect& caret_bounds,
+                               RendererEventPassKey pass_key) override;
   void OnTextFieldValueChanged(const FormData& form,
                                const FieldGlobalId& field_id,
-                               const base::TimeTicks timestamp) override;
-  void OnDidEndTextFieldEditing() override;
+                               const base::TimeTicks timestamp,
+                               RendererEventPassKey pass_key) override;
+  void OnDidEndTextFieldEditing(RendererEventPassKey pass_key) override;
   void OnTextFieldDidScroll(const FormData& form,
-                            const FieldGlobalId& field_id) override;
+                            const FieldGlobalId& field_id,
+                            RendererEventPassKey pass_key) override;
   void OnSelectControlSelectionChanged(const FormData& form,
-                                       const FieldGlobalId& field_id) override;
+                                       const FieldGlobalId& field_id,
+                                       RendererEventPassKey pass_key) override;
   void OnSelectFieldOptionsDidChange(const FormData& form,
-                                     const FieldGlobalId& field_id) override;
+                                     const FieldGlobalId& field_id,
+                                     RendererEventPassKey pass_key) override;
   void OnAskForValuesToFill(
       const FormData& form,
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source,
-      std::optional<PasswordSuggestionRequest> password_request) override;
+      std::optional<PasswordSuggestionRequest> password_request,
+      RendererEventPassKey pass_key) override;
   void OnFocusOnFormField(const FormData& form,
-                          const FieldGlobalId& field_id) override;
-  void OnDidAutofillForm(const FormData& form) override;
+                          const FieldGlobalId& field_id,
+                          RendererEventPassKey pass_key) override;
+  void OnDidAutofillForm(const FormData& form,
+                         RendererEventPassKey pass_key) override;
   void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FieldGlobalId& field_id,
-      const std::u16string& old_value) override;
+      const std::u16string& old_value,
+      RendererEventPassKey pass_key) override;
   void OnFormSubmitted(const FormData& form,
-                       const mojom::SubmissionSource source) override;
+                       const mojom::SubmissionSource source,
+                       RendererEventPassKey pass_key) override;
 
   // BrowserAutofillManager overrides.
   const gfx::Image& GetCardImage(const CreditCard& credit_card) override;

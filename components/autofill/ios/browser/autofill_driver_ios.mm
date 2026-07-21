@@ -521,7 +521,8 @@ void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
          std::optional<PasswordSuggestionRequest> password_request) {
         driver.GetAutofillManager().OnAskForValuesToFill(
             form, field_id, bounding_box, trigger_source,
-            std::move(password_request));
+            std::move(password_request),
+            /*pass_key=*/{});
       };
   // The caret position is currently not extracted on iOS.
   gfx::Rect caret_bounds;
@@ -546,7 +547,7 @@ void AutofillDriverIOS::DidAutofillForm(const FormData& form) {
     if (!UseXhrFix()) {
       cast(&driver)->UpdateLastInteractedForm(/*form_data=*/form);
     }
-    driver.GetAutofillManager().OnDidAutofillForm(form);
+    driver.GetAutofillManager().OnDidAutofillForm(form, /*pass_key=*/{});
   };
   if (IsAcrossIframesEnabled()) {
     router_->DidAutofillForm(callback, *this, form);
@@ -562,7 +563,8 @@ void AutofillDriverIOS::FormsSeen(
                      std::vector<FormData> updated_forms,
                      std::vector<FormGlobalId> removed_forms) {
     driver.GetAutofillManager().OnFormsSeen(std::move(updated_forms),
-                                            std::move(removed_forms));
+                                            std::move(removed_forms),
+                                            /*pass_key=*/{});
   };
 
   if (IsAcrossIframesEnabled()) {
@@ -600,7 +602,8 @@ void AutofillDriverIOS::FormSubmitted(
     CHECK(webstate_ptr);
     base::UmaHistogramEnumeration(kAutofillSubmissionDetectionSourceHistogram,
                                   submission_source);
-    driver.GetAutofillManager().OnFormSubmitted(form, submission_source);
+    driver.GetAutofillManager().OnFormSubmitted(form, submission_source,
+                                                /*pass_key=*/{});
     if (UseXhrFix()) {
       // Clear the last interacted form on the child frames to not trigger
       // XHR again in case there were some interactions with forms in these
@@ -630,7 +633,8 @@ void AutofillDriverIOS::FormSubmitted(
 void AutofillDriverIOS::CaretMovedInFormField(const FormData& form,
                                               const FieldGlobalId& field_id,
                                               const gfx::Rect& caret_bounds) {
-  GetAutofillManager().OnCaretMovedInFormField(form, field_id, caret_bounds);
+  GetAutofillManager().OnCaretMovedInFormField(form, field_id, caret_bounds,
+                                               /*pass_key=*/{});
 }
 
 void AutofillDriverIOS::TextFieldValueChanged(const FormData& form,
@@ -653,8 +657,8 @@ void AutofillDriverIOS::TextFieldValueChanged(const FormData& form,
           /*formless_field=*/form.renderer_id() ? FieldRendererId()
                                                 : field_global_id.renderer_id);
     }
-    driver.GetAutofillManager().OnTextFieldValueChanged(form, field_id,
-                                                        timestamp);
+    driver.GetAutofillManager().OnTextFieldValueChanged(
+        form, field_id, timestamp, /*pass_key=*/{});
   };
 
   if (IsAcrossIframesEnabled()) {
@@ -693,7 +697,8 @@ void AutofillDriverIOS::SetSelfAsParent(const FormData& form,
                      std::vector<FormData> updated_forms,
                      std::vector<FormGlobalId> removed_forms) {
     driver.GetAutofillManager().OnFormsSeen(std::move(updated_forms),
-                                            std::move(removed_forms));
+                                            std::move(removed_forms),
+                                            /*pass_key=*/{});
   };
   router_->FormsSeen(callback, *this, {form}, {});
 }

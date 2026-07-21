@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/filling/test_form_filler.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -178,12 +179,14 @@ class FormFillerTest
 
   void FormsSeen(const std::vector<FormData>& forms) {
     autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
-                                   /*removed_forms=*/{});
+                                   /*removed_forms=*/{},
+                                   AutofillManagerTestApi::pass_key());
   }
 
   void FormsRemoved(const std::vector<FormGlobalId>& forms) {
     autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                   /*removed_forms=*/forms);
+                                   /*removed_forms=*/forms,
+                                   AutofillManagerTestApi::pass_key());
   }
 
   FormData FormSeen(test::FormDescription form_description) {
@@ -1885,7 +1888,8 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
   // Simulate editing the first field.
   test_api(filled_form).field(0).set_value(u"");
   autofill_manager().OnTextFieldValueChanged(
-      filled_form, filled_form.fields()[0].global_id(), base::TimeTicks::Now());
+      filled_form, filled_form.fields()[0].global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
 
   FormStructure* form_structure = GetFormStructure(form);
   ASSERT_TRUE(form_structure);
@@ -2424,7 +2428,8 @@ TEST_P(ExpirationDateRefillTest, RefillJavascriptModifiedExpirationDates) {
       .set_value(test_case.exp_date_from_js);
   autofill_manager().OnJavaScriptChangedAutofilledValue(
       form_after_js_modification,
-      form_after_js_modification.fields()[2].global_id(), u"04/2999");
+      form_after_js_modification.fields()[2].global_id(), u"04/2999",
+      AutofillManagerTestApi::pass_key());
 
   testing::Mock::VerifyAndClearExpectations(&autofill_driver());
 

@@ -80,7 +80,8 @@ class PaymentsChurnedUsersManagerTest
     }
     form_data.set_fields(std::move(fields));
 
-    autofill_manager().OnFormsSeen({form_data}, {});
+    autofill_manager().OnFormsSeen({form_data}, {},
+                                   AutofillManagerTestApi::pass_key());
     task_environment_.RunUntilIdle();
   }
 

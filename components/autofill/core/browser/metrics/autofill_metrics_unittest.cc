@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -2487,7 +2488,8 @@ TEST_F(AutofillMetricsTest, DynamicFormMetrics) {
   test_api(form).Remove(-1);
 
   // Trigger a refill, the refill metric should be updated.
-  autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{});
+  autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                 AutofillManagerTestApi::pass_key());
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.Address"),
               BucketsInclude(Bucket(FORM_EVENT_DID_DYNAMIC_REFILL, 1)));
 }

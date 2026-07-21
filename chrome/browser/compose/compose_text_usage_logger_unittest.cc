@@ -17,6 +17,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -109,16 +110,18 @@ class ComposeTextUsageLoggerTest : public ChromeRenderViewHostTestHarness {
       index = std::min(index + chars_at_a_time, text_value.size());
       test_api(form).FindFieldById(field_id)->set_value(
           std::u16string(text_value.substr(0, index)));
-      autofill_manager()->OnTextFieldValueChanged(form, field_id,
-                                                  /*timestamp=*/{});
+      autofill_manager()->OnTextFieldValueChanged(
+          form, field_id,
+          /*timestamp=*/{}, autofill::AutofillManagerTestApi::pass_key());
     }
   }
 
   void SimulateClearingField(autofill::FormData form,
                              autofill::FieldGlobalId field_id) {
     test_api(form).FindFieldById(field_id)->set_value(u"");
-    autofill_manager()->OnTextFieldValueChanged(form, field_id,
-                                                /*timestamp=*/{});
+    autofill_manager()->OnTextFieldValueChanged(
+        form, field_id,
+        /*timestamp=*/{}, autofill::AutofillManagerTestApi::pass_key());
   }
 
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -380,7 +383,8 @@ TEST_F(ComposeTextUsageLoggerTest, LastChangeClearsField) {
   SimulateTyping(form_data, form_data.fields()[0].global_id(), u"Some text");
   test_api(form_data).field(0).set_value(u"");
   autofill_manager()->OnTextFieldValueChanged(
-      form_data, form_data.fields()[0].global_id(), /*timestamp=*/{});
+      form_data, form_data.fields()[0].global_id(), /*timestamp=*/{},
+      autofill::AutofillManagerTestApi::pass_key());
 
   DeleteContents();
 

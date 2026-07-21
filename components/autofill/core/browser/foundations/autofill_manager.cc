@@ -237,7 +237,8 @@ LanguageCode AutofillManager::GetCurrentPageLanguage() {
   return LanguageCode(language_state->current_language());
 }
 
-void AutofillManager::OnDidAutofillForm(const FormData& form) {
+void AutofillManager::OnDidAutofillForm(const FormData& form,
+                                        RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -248,16 +249,19 @@ void AutofillManager::OnDidAutofillForm(const FormData& form) {
                                               form.global_id())));
 }
 
-void AutofillManager::SuppressAutomaticRefills(const FillId& fill_id) {
+void AutofillManager::SuppressAutomaticRefills(const FillId& fill_id,
+                                               RendererEventPassKey pass_key) {
   SuppressAutomaticRefillsImpl(fill_id);
 }
 
-void AutofillManager::RequestRefill(const FillId& fill_id) {
+void AutofillManager::RequestRefill(const FillId& fill_id,
+                                    RendererEventPassKey pass_key) {
   RequestRefillImpl(fill_id);
 }
 
 void AutofillManager::OnFormSubmitted(const FormData& form,
-                                      const mojom::SubmissionSource source) {
+                                      const mojom::SubmissionSource source,
+                                      RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -268,7 +272,8 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
 
 void AutofillManager::OnFormWithEmailVerificationTokenSubmitted(
     const FormData& form,
-    const FieldGlobalId& field_id) {
+    const FieldGlobalId& field_id,
+    RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -280,7 +285,8 @@ void AutofillManager::OnFormWithEmailVerificationTokenSubmitted(
 }
 
 void AutofillManager::OnFormsSeen(std::vector<FormData> updated_forms,
-                                  std::vector<FormGlobalId> removed_form_ids) {
+                                  std::vector<FormGlobalId> removed_form_ids,
+                                  RendererEventPassKey pass_key) {
   auto erase_removed_forms = [&] {
     // Erase forms that have been removed from the DOM. This prevents
     // |form_structures_| from growing up its upper bound
@@ -404,7 +410,8 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms,
 
 void AutofillManager::OnCaretMovedInFormField(const FormData& form,
                                               const FieldGlobalId& field_id,
-                                              const gfx::Rect& caret_bounds) {
+                                              const gfx::Rect& caret_bounds,
+                                              RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -421,7 +428,8 @@ void AutofillManager::OnCaretMovedInFormField(const FormData& form,
 
 void AutofillManager::OnTextFieldValueChanged(const FormData& form,
                                               const FieldGlobalId& field_id,
-                                              const base::TimeTicks timestamp) {
+                                              const base::TimeTicks timestamp,
+                                              RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -437,7 +445,8 @@ void AutofillManager::OnTextFieldValueChanged(const FormData& form,
 }
 
 void AutofillManager::OnTextFieldDidScroll(const FormData& form,
-                                           const FieldGlobalId& field_id) {
+                                           const FieldGlobalId& field_id,
+                                           RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -452,7 +461,8 @@ void AutofillManager::OnTextFieldDidScroll(const FormData& form,
 
 void AutofillManager::OnSelectControlSelectionChanged(
     const FormData& form,
-    const FieldGlobalId& field_id) {
+    const FieldGlobalId& field_id,
+    RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -471,7 +481,8 @@ void AutofillManager::OnAskForValuesToFill(
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source,
-    std::optional<PasswordSuggestionRequest> password_request) {
+    std::optional<PasswordSuggestionRequest> password_request,
+    RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -486,7 +497,8 @@ void AutofillManager::OnAskForValuesToFill(
 }
 
 void AutofillManager::OnFocusOnFormField(const FormData& form,
-                                         const FieldGlobalId& field_id) {
+                                         const FieldGlobalId& field_id,
+                                         RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -499,17 +511,17 @@ void AutofillManager::OnFocusOnFormField(const FormData& form,
                                         form.global_id(), field_id)));
 }
 
-void AutofillManager::OnFocusOnNonFormField() {
+void AutofillManager::OnFocusOnNonFormField(RendererEventPassKey pass_key) {
   NotifyObservers(&Observer::OnBeforeFocusOnNonFormField);
   OnFocusOnNonFormFieldImpl();
   NotifyObservers(&Observer::OnAfterFocusOnNonFormField);
 }
 
-void AutofillManager::OnDidEndTextFieldEditing() {
+void AutofillManager::OnDidEndTextFieldEditing(RendererEventPassKey pass_key) {
   OnDidEndTextFieldEditingImpl();
 }
 
-void AutofillManager::OnHidePopup() {
+void AutofillManager::OnHidePopup(RendererEventPassKey pass_key) {
   OnHidePopupImpl();
 }
 
@@ -524,7 +536,8 @@ void AutofillManager::OnSuggestionsHidden(SuggestionHidingReason reason) {
 
 void AutofillManager::OnSelectFieldOptionsDidChange(
     const FormData& form,
-    const FieldGlobalId& field_id) {
+    const FieldGlobalId& field_id,
+    RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -541,7 +554,8 @@ void AutofillManager::OnSelectFieldOptionsDidChange(
 void AutofillManager::OnJavaScriptChangedAutofilledValue(
     const FormData& form,
     const FieldGlobalId& field_id,
-    const std::u16string& old_value) {
+    const std::u16string& old_value,
+    RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }
@@ -559,7 +573,8 @@ void AutofillManager::OnJavaScriptChangedAutofilledValue(
 void AutofillManager::OnDidDetectJavaScriptAutofill(
     const FormData& form,
     const FieldGlobalId& trigger_field_id,
-    const std::vector<FieldGlobalId>& field_ids) {
+    const std::vector<FieldGlobalId>& field_ids,
+    RendererEventPassKey pass_key) {
   if (!IsValidFormData(form)) {
     return;
   }

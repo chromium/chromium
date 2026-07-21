@@ -51,51 +51,59 @@ void TestBrowserAutofillManager::OnLanguageDetermined(
 
 void TestBrowserAutofillManager::OnFormsSeen(
     std::vector<FormData> updated_forms,
-    std::vector<FormGlobalId> removed_forms) {
+    std::vector<FormGlobalId> removed_forms,
+    RendererEventPassKey pass_key) {
   AutofillManager::OnFormsSeen(std::move(updated_forms),
-                               std::move(removed_forms));
+                               std::move(removed_forms), pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnCaretMovedInFormField(
     const FormData& form,
     const FieldGlobalId& field_id,
-    const gfx::Rect& caret_bounds) {
-  AutofillManager::OnCaretMovedInFormField(form, field_id, caret_bounds);
+    const gfx::Rect& caret_bounds,
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnCaretMovedInFormField(form, field_id, caret_bounds,
+                                           pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnTextFieldValueChanged(
     const FormData& form,
     const FieldGlobalId& field_id,
-    const base::TimeTicks timestamp) {
-  AutofillManager::OnTextFieldValueChanged(form, field_id, timestamp);
+    const base::TimeTicks timestamp,
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnTextFieldValueChanged(form, field_id, timestamp, pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
-void TestBrowserAutofillManager::OnDidEndTextFieldEditing() {
-  AutofillManager::OnDidEndTextFieldEditing();
+void TestBrowserAutofillManager::OnDidEndTextFieldEditing(
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnDidEndTextFieldEditing(pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnTextFieldDidScroll(
     const FormData& form,
-    const FieldGlobalId& field_id) {
-  AutofillManager::OnTextFieldDidScroll(form, field_id);
+    const FieldGlobalId& field_id,
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnTextFieldDidScroll(form, field_id, pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnSelectControlSelectionChanged(
     const FormData& form,
-    const FieldGlobalId& field_id) {
-  AutofillManager::OnSelectControlSelectionChanged(form, field_id);
+    const FieldGlobalId& field_id,
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnSelectControlSelectionChanged(form, field_id, pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnSelectFieldOptionsDidChange(
     const FormData& form,
-    const FieldGlobalId& field_id) {
-  AutofillManager::OnSelectFieldOptionsDidChange(form, field_id);
+    const FieldGlobalId& field_id,
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnSelectFieldOptionsDidChange(form, field_id, pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
@@ -104,38 +112,44 @@ void TestBrowserAutofillManager::OnAskForValuesToFill(
     const FieldGlobalId& field_id,
     const gfx::Rect& caret_bounds,
     AutofillSuggestionTriggerSource trigger_source,
-    std::optional<PasswordSuggestionRequest> password_request) {
+    std::optional<PasswordSuggestionRequest> password_request,
+    RendererEventPassKey pass_key) {
   AutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                         trigger_source,
-                                        std::move(password_request));
+                                        std::move(password_request), pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnFocusOnFormField(
     const FormData& form,
-    const FieldGlobalId& field_id) {
-  AutofillManager::OnFocusOnFormField(form, field_id);
+    const FieldGlobalId& field_id,
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnFocusOnFormField(form, field_id, pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
-void TestBrowserAutofillManager::OnDidAutofillForm(const FormData& form) {
-  AutofillManager::OnDidAutofillForm(form);
+void TestBrowserAutofillManager::OnDidAutofillForm(
+    const FormData& form,
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnDidAutofillForm(form, pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
     const FormData& form,
     const FieldGlobalId& field_id,
-    const std::u16string& old_value) {
-  AutofillManager::OnJavaScriptChangedAutofilledValue(form, field_id,
-                                                      old_value);
+    const std::u16string& old_value,
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnJavaScriptChangedAutofilledValue(form, field_id, old_value,
+                                                      pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
 void TestBrowserAutofillManager::OnFormSubmitted(
     const FormData& form,
-    const mojom::SubmissionSource source) {
-  AutofillManager::OnFormSubmitted(form, source);
+    const mojom::SubmissionSource source,
+    RendererEventPassKey pass_key) {
+  AutofillManager::OnFormSubmitted(form, source, pass_key);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
@@ -183,9 +197,9 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
   gfx::PointF p =
       CHECK_DEREF(form.FindFieldByGlobalId(field_id)).bounds().origin();
   gfx::Rect caret_bounds(gfx::Point(p.x(), p.y()), gfx::Size(0, 10));
-  BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
-                                               trigger_source,
-                                               std::move(password_request));
+  BrowserAutofillManager::OnAskForValuesToFill(
+      form, field_id, caret_bounds, trigger_source, std::move(password_request),
+      AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter_.Wait(0));
 }
 

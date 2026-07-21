@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
@@ -106,7 +107,8 @@ class OmniboxAutofillDelegateTest
 
   void FormsSeen(const std::vector<FormData>& forms) {
     autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
-                                   /*removed_forms=*/{});
+                                   /*removed_forms=*/{},
+                                   AutofillManagerTestApi::pass_key());
   }
 
   FormData CreateTestCreditCardFormData() {
@@ -635,7 +637,8 @@ TEST_F(OmniboxAutofillDelegateTest, OnAfterFormsSeen_FormRemoved_HidesChip) {
   EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{form.global_id()});
+                                 /*removed_forms=*/{form.global_id()},
+                                 AutofillManagerTestApi::pass_key());
 
   EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_hidden());
   EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_shown());
@@ -655,7 +658,8 @@ TEST_F(OmniboxAutofillDelegateTest, OnAfterFormsSeen_FormRemoved_ResetsState) {
 
   // Remove the form. This should trigger `OnAfterFormsSeen` and `Reset()`.
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{form.global_id()});
+                                 /*removed_forms=*/{form.global_id()},
+                                 AutofillManagerTestApi::pass_key());
 
   // Verify that the state was reset. If it was reset, we can find the candidate
   // form again.
@@ -687,7 +691,8 @@ TEST_F(OmniboxAutofillDelegateTest,
   FormGlobalId different_form_id = test::MakeFormGlobalId();
   ASSERT_NE(different_form_id, form.global_id());
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{different_form_id});
+                                 /*removed_forms=*/{different_form_id},
+                                 AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(payments_autofill_client().omnibox_autofill_chip_hidden());
   EXPECT_TRUE(payments_autofill_client().omnibox_autofill_chip_shown());
@@ -697,7 +702,8 @@ TEST_F(OmniboxAutofillDelegateTest,
        OnAfterFormsSeen_CandidateFormNotFound_ReturnsEarly) {
   FormGlobalId form_id = test::MakeFormGlobalId();
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
-                                 /*removed_forms=*/{form_id});
+                                 /*removed_forms=*/{form_id},
+                                 AutofillManagerTestApi::pass_key());
 
   // Since a candidate form has not been found yet (`candidate_form_found_` is
   // false), checking `form_id` against the uninitialized

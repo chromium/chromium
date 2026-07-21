@@ -11,6 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -203,14 +204,15 @@ class OtpFieldDetectorAutofillManagerObserverTest
   }
 
   void RemoveOtpFromThePage(FormData form) {
-    autofill_manager().OnFormsSeen(
-        /*updated_forms=*/{},
-        /*removed_forms=*/{form.global_id()});
+    autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                   /*removed_forms=*/{form.global_id()},
+                                   AutofillManagerTestApi::pass_key());
   }
 
   void SimulateSubmission(FormData form) {
     autofill_manager().OnFormSubmitted(form,
-                                       mojom::SubmissionSource::XHR_SUCCEEDED);
+                                       mojom::SubmissionSource::XHR_SUCCEEDED,
+                                       AutofillManagerTestApi::pass_key());
   }
 
   OtpFieldDetector& otp_field_detector() { return otp_field_detector_; }

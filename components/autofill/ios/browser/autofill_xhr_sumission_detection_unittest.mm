@@ -43,9 +43,10 @@ class TestingAutofillManager : public BrowserAutofillManager {
       : BrowserAutofillManager(driver) {}
 
   void OnFormSubmitted(const FormData& form,
-                       const mojom::SubmissionSource source) override {
+                       const mojom::SubmissionSource source,
+                       RendererEventPassKey pass_key) override {
     submitted_form_ = form;
-    BrowserAutofillManager::OnFormSubmitted(form, source);
+    BrowserAutofillManager::OnFormSubmitted(form, source, pass_key);
   }
 
   const std::optional<FormData>& submitted_form() const {

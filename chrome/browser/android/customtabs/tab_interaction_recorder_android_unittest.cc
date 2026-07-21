@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -38,7 +39,8 @@ void OnTextFieldValueChangedForAutofillManager(
     autofill::AutofillManager& autofill_manager) {
   autofill::FormData form = autofill::test::CreateTestAddressFormData();
   autofill_manager.OnTextFieldValueChanged(
-      form, form.fields().front().global_id(), base::TimeTicks::Now());
+      form, form.fields().front().global_id(), base::TimeTicks::Now(),
+      autofill::AutofillManagerTestApi::pass_key());
 }
 
 void OnFormsSeenForAutofillManager(autofill::AutofillManager& autofill_manager,
@@ -48,7 +50,8 @@ void OnFormsSeenForAutofillManager(autofill::AutofillManager& autofill_manager,
     form.set_host_frame(
         autofill::LocalFrameToken(rfh->GetFrameToken().value()));
   }
-  autofill_manager.OnFormsSeen({form}, {});
+  autofill_manager.OnFormsSeen({form}, {},
+                               autofill::AutofillManagerTestApi::pass_key());
 }
 
 }  // namespace

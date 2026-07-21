@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -62,8 +63,9 @@ class ProfileTokenQualityTest : public testing::Test,
                       std::u16string new_value) {
     FormFieldData& field = test_api(form).field(field_index);
     field.set_value(std::move(new_value));
-    autofill_manager().OnTextFieldValueChanged(form, field.global_id(),
-                                               base::TimeTicks::Now());
+    autofill_manager().OnTextFieldValueChanged(
+        form, field.global_id(), base::TimeTicks::Now(),
+        AutofillManagerTestApi::pass_key());
   }
 
   // Fills the `form` with the `profile`, as-if autofilling was triggered from

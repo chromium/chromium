@@ -33,6 +33,7 @@
 #include "components/actor/core/actor_switches.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -412,8 +413,9 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
       driver->GetAutofillManager(),
       &autofill::AutofillManager::Observer::OnAfterFormsSeen,
       testing::ElementsAre(expected_form.global_id()), testing::IsEmpty());
-  driver->GetAutofillManager().OnFormsSeen(/*updated_forms=*/{expected_form},
-                                           /*removed_forms=*/{});
+  driver->GetAutofillManager().OnFormsSeen(
+      /*updated_forms=*/{expected_form},
+      /*removed_forms=*/{}, autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(std::move(wait_for_forms_seen).Wait());
 
   // Query the API for `expected_form`'s first field.

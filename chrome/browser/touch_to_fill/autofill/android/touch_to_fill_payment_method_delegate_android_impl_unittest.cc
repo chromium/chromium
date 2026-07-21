@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/mock_autofill_manager_observer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
@@ -312,7 +313,8 @@ class TouchToFillPaymentMethodDelegateAndroidImplUnitTest
 
   void OnFormsSeen() {
     if (!autofill_manager().FindCachedFormById(form_.global_id())) {
-      autofill_manager().OnFormsSeen({form_}, {});
+      autofill_manager().OnFormsSeen(
+          {form_}, {}, autofill::AutofillManagerTestApi::pass_key());
     }
   }
 
@@ -780,13 +782,15 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillFailsForPrefilledCardNumber) {
   // Force the form to be parsed here to test the case, when form values are
   // changed after the form is added to the cache.
-  autofill_manager().OnFormsSeen({form_}, {});
+  autofill_manager().OnFormsSeen({form_}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
   // Set credit card value.
   // TODO(crbug.com/40900766): Retrieve the card number field by name here.
   ASSERT_EQ(form_.fields()[1].name(), u"cardnumber");
   test_api(form_).field(1).set_value(u"411111111111");
   // Force a cache update so it knows about the field edit.
-  autofill_manager().OnFormsSeen({form_}, {});
+  autofill_manager().OnFormsSeen({form_}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
@@ -800,7 +804,8 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillSucceedsForPrefilledYear) {
   // Force the form to be parsed here to test the case, when form values are
   // changed after the form is added to the cache.
-  autofill_manager().OnFormsSeen({form_}, {});
+  autofill_manager().OnFormsSeen({form_}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
   // Set card expiration year.
   // TODO(crbug.com/40900766): Retrieve the card expiry year field by name here.
   ASSERT_EQ(form_.fields()[3].name(), u"ccyear");

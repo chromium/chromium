@@ -135,7 +135,8 @@ void OnFormsSeenWithExpectations(MockAutofillManager& autofill_manager,
   EXPECT_CALL(autofill_manager, OnFormProcessed).Times(num);
   TestAutofillManagerWaiter waiter(autofill_manager,
                                    {AutofillManagerEvent::kFormsSeen});
-  autofill_manager.OnFormsSeen(updated_forms, removed_forms);
+  autofill_manager.OnFormsSeen(updated_forms, removed_forms,
+                               AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   EXPECT_THAT(test_api(autofill_manager).form_structures(),
               HaveSameFormIdsAs(expectation));
@@ -263,41 +264,47 @@ TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
 
   // Triggers a parse.
   test_api(form).field(0).set_value(u"first seen value");
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"first seen value");
 
   // Triggers a reparse.
   test_api(form).field(0).set_value(u"second seen value");
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"second seen value");
 
   // Triggers no reparse.
   test_api(form).field(0).set_value(u"first changed value");
-  autofill_manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(),
-                                             {});
+  autofill_manager().OnTextFieldValueChanged(
+      form, form.fields()[0].global_id(), {},
+      AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"first changed value");
 
   // Triggers no reparse.
   test_api(form).field(0).set_value(u"second changed value");
-  autofill_manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(),
-                                             {});
+  autofill_manager().OnTextFieldValueChanged(
+      form, form.fields()[0].global_id(), {},
+      AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"second changed value");
 
   // Triggers a reparse.
   test_api(form).Remove(-1);
   test_api(form).field(0).set_value(u"first reparse value");
-  autofill_manager().OnFocusOnFormField(form, form.fields()[0].global_id());
+  autofill_manager().OnFocusOnFormField(form, form.fields()[0].global_id(),
+                                        AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"first reparse value");
 
   // Triggers a second reparse.
   test_api(form).Remove(-1);
   test_api(form).field(0).set_value(u"second reparse value");
-  autofill_manager().OnFocusOnFormField(form, form.fields()[0].global_id());
+  autofill_manager().OnFocusOnFormField(form, form.fields()[0].global_id(),
+                                        AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   EXPECT_EQ(current_cached_value(), u"second reparse value");
 }
@@ -383,7 +390,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
                 OnAfterFormsSeen(m, IsEmpty(), ElementsAre(id_to_remove)))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     autofill_manager().OnFormsSeen(std::vector<FormData>(kMaxListSize + 10),
-                                   {id_to_remove});
+                                   {id_to_remove},
+                                   AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
   }
 
@@ -394,7 +402,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     EXPECT_CALL(observer(), OnBeforeFormsSeen(m, ElementsAre(f, g),
                                               ElementsAre(id_to_remove)));
     EXPECT_CALL(observer(), OnBeforeLoadedServerPredictions(m));
-    autofill_manager().OnFormsSeen(forms, {id_to_remove});
+    autofill_manager().OnFormsSeen(forms, {id_to_remove},
+                                   AutofillManagerTestApi::pass_key());
     EXPECT_CALL(observer(), OnAfterLoadedServerPredictions(m));
     EXPECT_CALL(observer(), OnAfterFormsSeen(m, ElementsAre(f, g),
                                              ElementsAre(id_to_remove)))
@@ -431,7 +440,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     // asynchronous, so OnAfterTextFieldValueChanged() is asynchronous, too.
     base::RunLoop run_loop;
     EXPECT_CALL(observer(), OnBeforeTextFieldValueChanged(m, f, ff));
-    autofill_manager().OnTextFieldValueChanged(form, field.global_id(), {});
+    autofill_manager().OnTextFieldValueChanged(
+        form, field.global_id(), {}, AutofillManagerTestApi::pass_key());
     EXPECT_CALL(observer(), OnAfterTextFieldValueChanged(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     EXPECT_CALL(observer(),
@@ -444,7 +454,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     EXPECT_CALL(observer(), OnBeforeTextFieldDidScroll(m, f, ff));
     EXPECT_CALL(observer(), OnAfterTextFieldDidScroll(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    autofill_manager().OnTextFieldDidScroll(form, field.global_id());
+    autofill_manager().OnTextFieldDidScroll(form, field.global_id(),
+                                            AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
   }
 
@@ -453,7 +464,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     EXPECT_CALL(observer(), OnBeforeSelectControlSelectionChanged(m, f, ff));
     EXPECT_CALL(observer(), OnAfterSelectControlSelectionChanged(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    autofill_manager().OnSelectControlSelectionChanged(form, field.global_id());
+    autofill_manager().OnSelectControlSelectionChanged(
+        form, field.global_id(), AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
   }
 
@@ -462,7 +474,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     EXPECT_CALL(observer(), OnBeforeSelectFieldOptionsDidChange(m, f));
     EXPECT_CALL(observer(), OnAfterSelectFieldOptionsDidChange(m, f))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    autofill_manager().OnSelectFieldOptionsDidChange(form, field.global_id());
+    autofill_manager().OnSelectFieldOptionsDidChange(
+        form, field.global_id(), AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
   }
 
@@ -471,7 +484,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     EXPECT_CALL(observer(), OnBeforeDidAutofillForm(m, f));
     EXPECT_CALL(observer(), OnAfterDidAutofillForm(m, f))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    autofill_manager().OnDidAutofillForm(form);
+    autofill_manager().OnDidAutofillForm(form,
+                                         AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
   }
 
@@ -482,7 +496,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     autofill_manager().OnAskForValuesToFill(
         form, field.global_id(), gfx::Rect(),
-        AutofillSuggestionTriggerSource::kUnspecified, std::nullopt);
+        AutofillSuggestionTriggerSource::kUnspecified, std::nullopt,
+        AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
   }
 
@@ -491,13 +506,14 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     EXPECT_CALL(observer(), OnBeforeFocusOnFormField(m, f, ff));
     EXPECT_CALL(observer(), OnAfterFocusOnFormField(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    autofill_manager().OnFocusOnFormField(form, field.global_id());
+    autofill_manager().OnFocusOnFormField(form, field.global_id(),
+                                          AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
   }
 
   EXPECT_CALL(observer(), OnBeforeFocusOnNonFormField(m));
   EXPECT_CALL(observer(), OnAfterFocusOnNonFormField(m));
-  autofill_manager().OnFocusOnNonFormField();
+  autofill_manager().OnFocusOnNonFormField(AutofillManagerTestApi::pass_key());
 
   {
     base::RunLoop run_loop;
@@ -505,7 +521,7 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     EXPECT_CALL(observer(), OnAfterJavaScriptChangedAutofilledValue(m, f, ff))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     autofill_manager().OnJavaScriptChangedAutofilledValue(
-        form, field.global_id(), {});
+        form, field.global_id(), {}, AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
   }
 
@@ -521,8 +537,9 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     EXPECT_CALL(observer(), OnBeforeFormSubmitted(m, Ref(form)));
     EXPECT_CALL(observer(), OnAfterFormSubmitted(m, Ref(form)))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    autofill_manager().OnFormSubmitted(
-        form, mojom::SubmissionSource::FORM_SUBMISSION);
+    autofill_manager().OnFormSubmitted(form,
+                                       mojom::SubmissionSource::FORM_SUBMISSION,
+                                       AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
   }
 
@@ -550,7 +567,8 @@ class AutofillManagerTest_ObserverCalls_FullCache
     EXPECT_CALL(observer(), OnAfterFormsSeen)
         .WillOnce(RunClosure(run_loop.QuitClosure()));
     autofill_manager().OnFormsSeen(
-        CreateTestForms(kAutofillManagerMaxFormCacheSize - 1), {});
+        CreateTestForms(kAutofillManagerMaxFormCacheSize - 1), {},
+        AutofillManagerTestApi::pass_key());
     std::move(run_loop).Run();
     EXPECT_EQ(GetCacheSize(), kAutofillManagerMaxFormCacheSize - 1);
   }
@@ -589,7 +607,8 @@ TEST_F(AutofillManagerTest_ObserverCalls_FullCache,
 
   EXPECT_GT(GetCacheSize() + updated_form_ids.size() - removed_form_ids.size(),
             kAutofillManagerMaxFormCacheSize);
-  autofill_manager().OnFormsSeen(updated_forms, removed_form_ids);
+  autofill_manager().OnFormsSeen(updated_forms, removed_form_ids,
+                                 AutofillManagerTestApi::pass_key());
   std::move(run_loop).Run();
   EXPECT_EQ(GetCacheSize(), kAutofillManagerMaxFormCacheSize);
 }
@@ -621,13 +640,15 @@ TEST_F(AutofillManagerTest_ObserverCalls_FullCache,
       .WillOnce(RunClosure(run_loop2.QuitClosure()));
 
   autofill_manager().OnTextFieldValueChanged(
-      form1, form1.fields().front().global_id(), base::TimeTicks::Now());
+      form1, form1.fields().front().global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
   std::move(run_loop1).Run();
   EXPECT_TRUE(CacheContains(form_id1));
   EXPECT_EQ(GetCacheSize(), kAutofillManagerMaxFormCacheSize);
 
   autofill_manager().OnTextFieldValueChanged(
-      form2, form2.fields().front().global_id(), base::TimeTicks::Now());
+      form2, form2.fields().front().global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
   std::move(run_loop2).Run();
   EXPECT_FALSE(CacheContains(form_id2));
   EXPECT_EQ(GetCacheSize(), kAutofillManagerMaxFormCacheSize);
@@ -659,9 +680,11 @@ TEST_F(AutofillManagerTest_ObserverCalls_FullCache,
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   autofill_manager().OnTextFieldValueChanged(
-      form1, form1.fields().front().global_id(), base::TimeTicks::Now());
+      form1, form1.fields().front().global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
   autofill_manager().OnTextFieldValueChanged(
-      form2, form2.fields().front().global_id(), base::TimeTicks::Now());
+      form2, form2.fields().front().global_id(), base::TimeTicks::Now(),
+      AutofillManagerTestApi::pass_key());
   EXPECT_FALSE(CacheContains(form_id1));
   EXPECT_FALSE(CacheContains(form_id2));
   std::move(run_loop).Run();
@@ -938,7 +961,8 @@ TEST_F(AutofillManagerTest,
   EXPECT_CALL(autofill_manager(), ShouldParseForms).WillOnce(Return(true));
   TestAutofillManagerWaiter waiter(autofill_manager());
   FormData initial_form = test::CreateTestAddressFormData();
-  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{});
+  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{},
+                                 AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
 
@@ -990,7 +1014,8 @@ TEST_F(
   EXPECT_CALL(autofill_manager(), ShouldParseForms).WillOnce(Return(true));
   TestAutofillManagerWaiter waiter(autofill_manager());
   FormData initial_form = test::CreateTestAddressFormData();
-  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{});
+  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{},
+                                 AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
   const FormStructure& form_structure = CHECK_DEREF(
@@ -1049,7 +1074,8 @@ TEST_F(
   TestAutofillManagerWaiter waiter(autofill_manager());
   FormData initial_form = test::CreateTestAddressFormData();
   initial_form.set_version(FormVersion::FromUnsafeValue(1));
-  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{});
+  autofill_manager().OnFormsSeen({initial_form}, /*removed_forms=*/{},
+                                 AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   ASSERT_EQ(test_api(autofill_manager()).form_structures().size(), 1u);
 

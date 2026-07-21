@@ -352,12 +352,14 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
                const FieldGlobalId&,
                const gfx::Rect&,
                AutofillSuggestionTriggerSource,
-               std::optional<PasswordSuggestionRequest>),
+               std::optional<PasswordSuggestionRequest>,
+               RendererEventPassKey),
               (override));
   MOCK_METHOD(void,
               OnFormsSeen,
               (std::vector<FormData> updated_forms,
-               std::vector<FormGlobalId> removed_forms),
+               std::vector<FormGlobalId> removed_forms,
+               RendererEventPassKey),
               (override));
 };
 
@@ -646,7 +648,7 @@ TEST_F(ContentAutofillDriverTest, WithNewVersion) {
       manager(),
       OnFormsSeen(ElementsAre(Property("FormData::version", &FormData::version,
                                        Gt(previous_version))),
-                  _));
+                  _, _));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
 }
@@ -666,7 +668,7 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedForm) {
                                form.renderer_id()),
                       Property("FormData::fields", &FormData::fields,
                                SizeIs(form.fields().size())))),
-                  IsEmpty()));
+                  IsEmpty(), _));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
 }
@@ -675,9 +677,11 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedForm) {
 // Does not test multiple frames.
 TEST_F(ContentAutofillDriverTest, FormsSeen_RemovedForm) {
   FormRendererId form_renderer_id = test::MakeFormRendererId();
-  EXPECT_CALL(manager(),
-              OnFormsSeen(IsEmpty(), ElementsAre(FormGlobalId(
-                                         frame_token(), form_renderer_id))));
+  EXPECT_CALL(
+      manager(),
+      OnFormsSeen(IsEmpty(),
+                  ElementsAre(FormGlobalId(frame_token(), form_renderer_id)),
+                  _));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{},
                                        /*removed_forms=*/{form_renderer_id});
 }
@@ -700,7 +704,7 @@ TEST_F(ContentAutofillDriverTest, FormsSeen_UpdatedAndRemovedForm) {
                        form.renderer_id()),
               Property("FormData::fields", &FormData::fields,
                        SizeIs(form.fields().size())))),
-          ElementsAre(FormGlobalId(frame_token(), other_form_renderer_id))));
+          ElementsAre(FormGlobalId(frame_token(), other_form_renderer_id)), _));
   driver().renderer_events().FormsSeen(
       /*updated_forms=*/{form},
       /*removed_forms=*/{other_form_renderer_id});

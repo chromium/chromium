@@ -111,7 +111,8 @@ class ReceivedTabFormsFillerTest
     TestFuture<void> future;
     ReceivedTabFormsFiller::Start(autofill_client(), origin, field_info,
                                   future.GetCallback());
-    autofill_manager().OnFormsSeen({form}, {});
+    autofill_manager().OnFormsSeen(
+        {form}, {}, autofill::AutofillManagerTestApi::pass_key());
     return future.Wait();
   }
 
@@ -236,7 +237,8 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillUserClearedPrefilledField) {
        .host_frame = frame_token,
        .renderer_id = form_renderer_id,
        .url = "https://example.com"});
-  autofill_manager().OnFormsSeen({initial_form}, {});
+  autofill_manager().OnFormsSeen({initial_form}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
 
   // 2. Simulate user clearing the field (value is empty, properties_mask has
   // autofill::kUserTyped).
@@ -251,7 +253,8 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillUserClearedPrefilledField) {
        .host_frame = frame_token,
        .renderer_id = form_renderer_id,
        .url = "https://example.com"});
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
 
   // Expect ApplyFieldAction to NOT be called because the field is
   // user-cleared.
@@ -326,7 +329,8 @@ TEST_F(ReceivedTabFormsFillerTest,
   ReceivedTabFormsFiller::Start(autofill_client(), origin_, form_field_info,
                                 future.GetCallback());
 
-  autofill_manager().OnFormsSeen({form_receiver}, {});
+  autofill_manager().OnFormsSeen({form_receiver}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
 
   EXPECT_TRUE(future.Wait());
 
@@ -819,7 +823,8 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillFieldsWithDifferentOrigin) {
   ReceivedTabFormsFiller::Start(autofill_client(), origin_, form_field_info,
                                 future.GetCallback());
 
-  autofill_manager().OnFormsSeen({form}, {});
+  autofill_manager().OnFormsSeen({form}, {},
+                                 autofill::AutofillManagerTestApi::pass_key());
 
   // Force self-destruction by notifying about manager deletion.
   autofill_manager().NotifyObservers(

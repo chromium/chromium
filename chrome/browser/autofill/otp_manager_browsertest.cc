@@ -13,6 +13,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -328,7 +329,8 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
   autofill_manager().OnAskForValuesToFill(
       form.ToFormData(), first_field.global_id(), gfx::Rect(),
       AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*password_request=*/std::nullopt);
+      /*password_request=*/std::nullopt,
+      autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(autofill_manager().WaitForSuggestionsShown(1));
 
   // Verify expectations: The OTP should be suggested by autofill unless the

@@ -16,6 +16,7 @@
 #import "base/types/expected.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/foundations/autofill_driver_router.h"
+#import "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
 #import "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -388,7 +389,8 @@ TEST_F(SharedPasswordControllerTest,
           ->GetFrameToken());
   // `OnFormsSeen` emits a `OnFieldTypesDetermined` event, but with source
   // heuristics - this should be ignored by the `SharedPasswordController`.
-  manager->OnFormsSeen(/*updated_forms=*/{test_form}, /*removed_forms=*/{});
+  manager->OnFormsSeen(/*updated_forms=*/{test_form}, /*removed_forms=*/{},
+                       autofill::AutofillManagerTestApi::pass_key());
 }
 
 // Tests that the password manager of each frame is notified about server

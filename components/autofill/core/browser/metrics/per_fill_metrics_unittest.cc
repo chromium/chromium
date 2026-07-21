@@ -8,6 +8,7 @@
 #include "base/containers/to_vector.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -142,7 +143,8 @@ TEST_F(PerFillMetricsTest, RefillTriggerReason_OnSelectFieldOptionsDidChange) {
 
   base::HistogramTester histogram_tester;
   autofill_manager().OnSelectFieldOptionsDidChange(
-      form, form.fields().back().global_id());
+      form, form.fields().back().global_id(),
+      AutofillManagerTestApi::pass_key());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.RefillTriggerReason",
@@ -173,7 +175,8 @@ TEST_F(PerFillMetricsTest,
   base::HistogramTester histogram_tester;
   autofill_manager().OnJavaScriptChangedAutofilledValue(
       form_after_js_modification,
-      form_after_js_modification.fields()[2].global_id(), u"04/2099");
+      form_after_js_modification.fields()[2].global_id(), u"04/2099",
+      AutofillManagerTestApi::pass_key());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.RefillTriggerReason",

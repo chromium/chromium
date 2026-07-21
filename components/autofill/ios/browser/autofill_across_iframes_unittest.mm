@@ -313,22 +313,27 @@ class TestAutofillManager : public BrowserAutofillManager {
   }
 
   void OnFormsSeen(std::vector<FormData> updated_forms,
-                   std::vector<FormGlobalId> removed_forms) override {
+                   std::vector<FormGlobalId> removed_forms,
+                   AutofillManager::RendererEventPassKey pass_key) override {
     base::Extend(seen_forms_, updated_forms);
     base::Extend(removed_forms_, removed_forms);
     BrowserAutofillManager::OnFormsSeen(std::move(updated_forms),
-                                        std::move(removed_forms));
+                                        std::move(removed_forms), pass_key);
   }
 
-  void OnDidAutofillForm(const FormData& form) override {
+  void OnDidAutofillForm(
+      const FormData& form,
+      AutofillManager::RendererEventPassKey pass_key) override {
     filled_forms_.push_back(form);
-    BrowserAutofillManager::OnDidAutofillForm(form);
+    BrowserAutofillManager::OnDidAutofillForm(form, pass_key);
   }
 
-  void OnFormSubmitted(const FormData& form,
-                       const mojom::SubmissionSource source) override {
+  void OnFormSubmitted(
+      const FormData& form,
+      const mojom::SubmissionSource source,
+      AutofillManager::RendererEventPassKey pass_key) override {
     submitted_forms_.emplace_back(form);
-    BrowserAutofillManager::OnFormSubmitted(form, source);
+    BrowserAutofillManager::OnFormSubmitted(form, source, pass_key);
   }
 
   void OnAskForValuesToFill(
@@ -336,18 +341,22 @@ class TestAutofillManager : public BrowserAutofillManager {
       const FieldGlobalId& field_id,
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source,
-      std::optional<PasswordSuggestionRequest> password_request) override {
+      std::optional<PasswordSuggestionRequest> password_request,
+      AutofillManager::RendererEventPassKey pass_key) override {
     ask_for_filldata_forms_.emplace_back(form);
-    BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
-                                                 trigger_source,
-                                                 std::move(password_request));
+    BrowserAutofillManager::OnAskForValuesToFill(
+        form, field_id, caret_bounds, trigger_source,
+        std::move(password_request), pass_key);
   }
 
-  void OnTextFieldValueChanged(const FormData& form,
-                               const FieldGlobalId& field_id,
-                               const base::TimeTicks timestamp) override {
+  void OnTextFieldValueChanged(
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const base::TimeTicks timestamp,
+      AutofillManager::RendererEventPassKey pass_key) override {
     text_field_did_change_forms_.emplace_back(form);
-    BrowserAutofillManager::OnTextFieldValueChanged(form, field_id, timestamp);
+    BrowserAutofillManager::OnTextFieldValueChanged(form, field_id, timestamp,
+                                                    pass_key);
   }
 
   const std::vector<FormData>& seen_forms() { return seen_forms_; }

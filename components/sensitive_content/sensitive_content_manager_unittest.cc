@@ -173,21 +173,23 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
   TestAutofillManagerWaiter waiter(autofill_manager(),
                                    {AutofillManagerEvent::kFormsSeen});
   autofill_manager().OnFormsSeen(/*updated_forms=*/{not_sensitive_form},
-                                 /*removed_forms=*/{});
+                                 /*removed_forms=*/{},
+                                 autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   check.Call("no sensitive content present");
   histogram_tester.ExpectTotalCount(histogram_sensitivity_changed, 0);
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{sensitive_form},
-                                 /*removed_forms=*/{});
+                                 /*removed_forms=*/{},
+                                 autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   check.Call("sensitive content present");
   histogram_tester.ExpectUniqueSample(histogram_sensitivity_changed,
                                       /*content_is_sensitive=*/true, 1);
 
-  autofill_manager().OnFormsSeen(
-      /*updated_forms=*/{},
-      /*removed_forms=*/{sensitive_form.global_id()});
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{sensitive_form.global_id()},
+                                 autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   check.Call("no sensitive content present anymore");
   histogram_tester.ExpectBucketCount(histogram_sensitivity_changed,
@@ -197,7 +199,8 @@ TEST_F(SensitiveContentManagerTest, AddAndRemoveSensitiveAndNotSensitiveForms) {
 
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/{},
-      /*removed_forms=*/{not_sensitive_form.global_id()});
+      /*removed_forms=*/{not_sensitive_form.global_id()},
+      autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
 }
 
@@ -230,7 +233,8 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
   TestAutofillManagerWaiter waiter(autofill_manager(),
                                    {AutofillManagerEvent::kFormsSeen});
   autofill_manager().OnFormsSeen(/*updated_forms=*/{not_sensitive_form},
-                                 /*removed_forms=*/{});
+                                 /*removed_forms=*/{},
+                                 autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
 
   test_api(autofill_client()->GetAutofillDriverFactory())
@@ -243,7 +247,8 @@ TEST_F(SensitiveContentManagerTest, AutofillManagerStateChanged) {
   histogram_tester.ExpectTotalCount(histogram_sensitivity_changed, 0);
 
   autofill_manager().OnFormsSeen(/*updated_forms=*/{sensitive_form},
-                                 /*removed_forms=*/{});
+                                 /*removed_forms=*/{},
+                                 autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
   check.Call("sensitive content present now");
   histogram_tester.ExpectUniqueSample(histogram_sensitivity_changed,
@@ -281,7 +286,7 @@ TEST_F(SensitiveContentManagerTest, LatencyUntilSensitiveMetricRecorded) {
       autofill_manager(), &AutofillManager::Observer::OnAfterFormsSeen);
   autofill_manager().OnFormsSeen(
       /*updated_forms=*/{server_predictions_sensitive_form},
-      /*removed_forms=*/{});
+      /*removed_forms=*/{}, autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(std::move(wait_for_forms_seen).Wait());
 
   // Mock a delay between the start of parsing and receiving the server
@@ -312,16 +317,16 @@ TEST_F(SensitiveContentManagerTest, SensitiveTimeMetricRecorded) {
 
   TestAutofillManagerWaiter waiter(autofill_manager(),
                                    {AutofillManagerEvent::kFormsSeen});
-  autofill_manager().OnFormsSeen(
-      /*updated_forms=*/{sensitive_form},
-      /*removed_forms=*/{});
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{sensitive_form},
+                                 /*removed_forms=*/{},
+                                 autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
 
   task_environment()->FastForwardBy(base::Milliseconds(100));
 
-  autofill_manager().OnFormsSeen(
-      /*updated_forms=*/{},
-      /*removed_forms=*/{sensitive_form.global_id()});
+  autofill_manager().OnFormsSeen(/*updated_forms=*/{},
+                                 /*removed_forms=*/{sensitive_form.global_id()},
+                                 autofill::AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(waiter.Wait());
 
   histogram_tester.ExpectUniqueTimeSample(histogram_sensitive_time,

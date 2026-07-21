@@ -40,6 +40,7 @@
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -2770,7 +2771,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   autofill_manager()->AddSeenForm(form_data, {autofill::EMAIL_ADDRESS});
 
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -2800,7 +2802,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   autofill_manager()->AddSeenForm(form_data, {autofill::UNKNOWN_TYPE});
 
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -2830,7 +2833,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   auto form_data = CreateCreditCardForm();
 
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -2867,7 +2871,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
@@ -2915,7 +2920,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest, DoesNotProceedDueToSampling) {
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
@@ -2966,7 +2972,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
@@ -3019,7 +3026,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   base::StatisticsRecorder::HistogramWaiter event_waiter(
       "SBClientPhishing.CreditCardFormEvent3");
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   event_waiter.Wait();
 
   // The Autofill field detection event should not have resulted in
@@ -3075,7 +3083,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     base::StatisticsRecorder::HistogramWaiter event_waiter(
         "SBClientPhishing.CreditCardFormEvent3");
     autofill_manager()->OnFocusOnFormField(
-        form_data, form_data.fields().begin()->global_id());
+        form_data, form_data.fields().begin()->global_id(),
+        autofill::AutofillManagerTestApi::pass_key());
     event_waiter.Wait();
     WaitAndCheckPreClassificationChecks();
 
@@ -3109,7 +3118,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
     base::StatisticsRecorder::HistogramWaiter event_waiter(
         "SBClientPhishing.CreditCardFormEvent3");
     autofill_manager()->OnFocusOnFormField(
-        form_data2, form_data2.fields().begin()->global_id());
+        form_data2, form_data2.fields().begin()->global_id(),
+        autofill::AutofillManagerTestApi::pass_key());
     event_waiter.Wait();
 
     EXPECT_FALSE(future.IsReady());
@@ -3152,7 +3162,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
@@ -3198,7 +3209,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   base::StatisticsRecorder::HistogramWaiter event_waiter(
       "SBClientPhishing.CreditCardFormEvent3");
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   event_waiter.Wait();
 
   // The Autofill field detection event should not have resulted in
@@ -3237,7 +3249,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   // Trigger form field interaction, waiting for the event to be logged.
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
@@ -3254,7 +3267,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   csd_host_->set_preclassification_started_callback_for_testing(
       future.GetRepeatingCallback());
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   EXPECT_FALSE(future.IsReady());
 
   ExpectOnlyBucketCount(
@@ -3381,7 +3395,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   csd_host_->set_preclassification_started_callback_for_testing(
       future.GetRepeatingCallback());
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -3498,7 +3513,8 @@ TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
 
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr);
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
@@ -3557,7 +3573,8 @@ TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
   base::StatisticsRecorder::HistogramWaiter event_waiter(
       "SBClientPhishing.CreditCardFormEvent3");
   autofill_manager()->OnFocusOnFormField(
-      form_data, form_data.fields().begin()->global_id());
+      form_data, form_data.fields().begin()->global_id(),
+      autofill::AutofillManagerTestApi::pass_key());
   event_waiter.Wait();
 
   // The Autofill field detection event should not have resulted in
