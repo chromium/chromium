@@ -33,6 +33,7 @@
 #include <ostream>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"

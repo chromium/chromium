@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"

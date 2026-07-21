@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"

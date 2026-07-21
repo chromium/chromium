@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"

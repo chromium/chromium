@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
