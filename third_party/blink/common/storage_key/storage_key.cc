@@ -181,7 +181,7 @@ std::optional<StorageKey> StorageKey::Deserialize(std::string_view in) {
       }
 
       // The top_level_site is the portion beyond the first separator.
-      int length_of_site = pos_second_caret - (pos_first_caret + 2);
+      size_t length_of_site = pos_second_caret - (pos_first_caret + 2);
       const std::string_view top_level_site_substr =
           in.substr(pos_first_caret + 2, length_of_site);
       key_top_level_site = net::SchemefulSite(GURL(top_level_site_substr));
@@ -296,7 +296,7 @@ std::optional<StorageKey> StorageKey::Deserialize(std::string_view in) {
 
       // The first high 64 bits of the nonce are next, between the two
       // separators.
-      int length_of_high = pos_second_caret - (pos_first_caret + 2);
+      size_t length_of_high = pos_second_caret - (pos_first_caret + 2);
       std::string_view high_digits =
           in.substr(pos_first_caret + 2, length_of_high);
       // The low 64 bits are last, after the second separator.
@@ -368,11 +368,11 @@ std::optional<StorageKey> StorageKey::Deserialize(std::string_view in) {
 
       // The first high 64 bits of the sites's nonce are next, between the first
       // separators.
-      int length_of_high = pos_second_caret - (pos_first_caret + 2);
+      size_t length_of_high = pos_second_caret - (pos_first_caret + 2);
       std::string_view high_digits =
           in.substr(pos_first_caret + 2, length_of_high);
       // The low 64 bits are next, after the second separator.
-      int length_of_low = pos_third_caret - (pos_second_caret + 2);
+      size_t length_of_low = pos_third_caret - (pos_second_caret + 2);
       std::string_view low_digits =
           in.substr(pos_second_caret + 2, length_of_low);
 

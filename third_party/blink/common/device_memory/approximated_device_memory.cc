@@ -35,7 +35,7 @@ void ApproximatedDeviceMemory::CalculateAndSetApproximatedDeviceMemory() {
   // The calculations in this method are described in the specification:
   // https://w3c.github.io/device-memory/.
   DCHECK_GT(physical_memory_mb_, 0);
-  int lower_bound = physical_memory_mb_;
+  int64_t lower_bound = physical_memory_mb_;
   int power = 0;
 
   // Extract the most-significant-bit and its location.

@@ -124,6 +124,10 @@ source_set("common") {
 
   configs += [ ":blink_common_implementation" ]
 
+  if (is_clang) {
+    cflags = [ "-Wshorten-64-to-32" ]
+  }
+
   sources = [
     # NOTE: Please do not add public headers that need to be referenced from
     # outside WebKit, add them in public/common instead.

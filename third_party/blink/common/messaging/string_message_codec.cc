@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom.h"
@@ -195,17 +196,18 @@ TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
             if (ContainsOnlyLatin1(str)) {
               std::string data_latin1(str.cbegin(), str.cend());
               WriteUint8(kOneByteStringTag, &buffer);
-              WriteUint32(data_latin1.size(), &buffer);
+              WriteUint32(base::checked_cast<uint32_t>(data_latin1.size()),
+                          &buffer);
               WriteBytes(base::as_byte_span(data_latin1), &buffer);
             } else {
               auto str_as_bytes = base::as_byte_span(str);
-              if ((buffer.size() + 1 +
-                   BytesNeededForUint32(str_as_bytes.size())) &
-                  1) {
+              uint32_t str_size_32 =
+                  base::checked_cast<uint32_t>(str_as_bytes.size());
+              if ((buffer.size() + 1 + BytesNeededForUint32(str_size_32)) & 1) {
                 WriteUint8(kPaddingTag, &buffer);
               }
               WriteUint8(kTwoByteStringTag, &buffer);
-              WriteUint32(str_as_bytes.size(), &buffer);
+              WriteUint32(str_size_32, &buffer);
               WriteBytes(str_as_bytes, &buffer);
             }
           },

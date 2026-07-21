@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
 
@@ -15,7 +16,7 @@ namespace blink {
 FontTableMatcher::FontTableMatcher(
     const base::ReadOnlySharedMemoryMapping& mapping) {
   base::span<const uint8_t> mem(mapping);
-  font_table_.ParseFromArray(mem.data(), mem.size());
+  font_table_.ParseFromString(base::as_string_view(mem));
 }
 
 // static
@@ -28,7 +29,8 @@ FontTableMatcher::MemoryMappingFromFontUniqueNameTable(
       base::ReadOnlySharedMemoryRegion::Create(serialization_size);
   CHECK(mapped_region.IsValid());
   base::span<uint8_t> mem(mapped_region.mapping);
-  font_unique_name_table.SerializeToArray(mem.data(), mem.size());
+  font_unique_name_table.SerializeToArray(mem.data(),
+                                          base::checked_cast<int>(mem.size()));
   return mapped_region.region.Map();
 }
 

@@ -49,14 +49,13 @@ void AppendDataToRequestBody(
 void AppendFileRangeToRequestBody(
     const scoped_refptr<network::ResourceRequestBody>& request_body,
     const std::optional<std::u16string>& file_path,
-    int file_start,
-    int file_length,
+    uint64_t file_start,
+    uint64_t file_length,
     base::Time file_modification_time) {
   request_body->AppendFileRange(
       file_path ? base::FilePath::FromUTF16Unsafe(*file_path)
                 : base::FilePath(),
-      static_cast<uint64_t>(file_start), static_cast<uint64_t>(file_length),
-      file_modification_time);
+      file_start, file_length, file_modification_time);
 }
 
 //----------------------------------------------------------------------------
@@ -475,7 +474,8 @@ void ReadResourceRequestBody(
       int64_t file_length = ReadInteger64(obj);
       double file_modification_time = ReadReal(obj);
       AppendFileRangeToRequestBody(
-          request_body, file_path, file_start, file_length,
+          request_body, file_path, static_cast<uint64_t>(file_start),
+          static_cast<uint64_t>(file_length),
           base::Time::FromSecondsSinceUnixEpoch(file_modification_time));
     } else if (type == HTTPBodyElementType::kTypeBlob) {
       // Skip obsolete blob values.

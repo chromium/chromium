@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -96,7 +97,7 @@ void AppendReportingIdForSelectedReportingKeyKAnonKey(
   }
 
   std::array<uint8_t, 4u> size_in_bytes =
-      base::U32ToBigEndian(reporting_id->size());
+      base::U32ToBigEndian(base::checked_cast<uint32_t>(reporting_id->size()));
   base::StrAppend(&k_anon_key, {"\n\x01", base::as_string_view(size_in_bytes),
                                 *reporting_id});
 }
