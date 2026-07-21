@@ -633,6 +633,33 @@ XC16_TESTS_JSON = """
   ]}
 """
 
+XC16_PARALLEL_TESTS_JSON = """
+{
+  "testNodes": [
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "nodeType": "Destination",
+              "name": "Clone 1 of iPhone 16",
+              "children": [
+                {"nodeType": "Test Suite", "children": [
+                  {"nodeType": "Test Case", "nodeIdentifier": "test1", "result": "Passed", "duration": "1.234"},
+                  {"nodeType": "Test Case", "nodeIdentifier": "test2", "result": "Failed", "children": [
+                    {"nodeType": "Failure Message", "name": "Some failure message"}
+                  ]}
+                ]}
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+"""
+
 
 def _xcresulttool_get_side_effect(xcresult_path, ref_id=None):
   """Side effect for _xcresulttool_get in XcodeLogParser tested."""
@@ -1168,6 +1195,23 @@ class Xcode16LogParserTest(test_runner_test.TestCase):
     self.assertEqual(result.test_results[2].status, TestStatus.SKIP)
     self.assertEqual(result.test_results[3].status, TestStatus.FAIL)
 
+  @mock.patch(
+      'xcode_log_parser.Xcode16LogParser._xcresulttool_get_tests',
+      return_value=XC16_PARALLEL_TESTS_JSON)
+  @mock.patch(
+      'xcode_log_parser.Xcode16LogParser._extract_artifacts_for_test',
+      return_value={"screenshot.png": "/path/to/artifact"})
+  def test_get_test_statuses_parallel(self, mock_extract_artifacts,
+                                      mock_get_tests):
+    result = xcode_log_parser.Xcode16LogParser._get_test_statuses('some_path')
+
+    self.assertEqual(len(result.test_results), 2)
+    self.assertFalse(result.crashed)
+    self.assertEqual(result.test_results[0].status, TestStatus.PASS)
+    self.assertEqual(result.test_results[1].status, TestStatus.FAIL)
+    self.assertEqual(result.test_results[1].attachments,
+                     {"screenshot.png": "/path/to/artifact"})
+
   @mock.patch('xcode_log_parser.Xcode16LogParser._xcresulttool_get_summary')
   @mock.patch('xcode_log_parser.Xcode16LogParser.export_diagnostic_data')
   @mock.patch('xcode_log_parser.Xcode16LogParser._get_test_statuses')
@@ -1193,6 +1237,31 @@ class Xcode16LogParserTest(test_runner_test.TestCase):
     mock_export_data.assert_called_once_with(output_path)
     mock_zip_and_remove.assert_called_once_with(
         output_path + xcode_log_parser._XCRESULT_SUFFIX)
+
+  @mock.patch('xcode_log_parser.Xcode16LogParser._xcresulttool_get_summary')
+  @mock.patch('xcode_log_parser.Xcode16LogParser.export_diagnostic_data')
+  @mock.patch('xcode_log_parser.Xcode16LogParser._get_test_statuses')
+  @mock.patch('xcode_log_parser.file_util.zip_and_remove_folder')
+  @mock.patch('os.path.isdir')
+  @mock.patch('os.path.exists')
+  def test_collect_test_results_directory_bundle(self, mock_exists, mock_isdir,
+                                                 mock_zip_and_remove,
+                                                 mock_get_statuses,
+                                                 mock_export_data,
+                                                 mock_get_summary):
+    mock_exists.side_effect = lambda path: not path.endswith('.xcresult')
+    mock_isdir.return_value = True
+    mock_get_summary.return_value = json.dumps({"some_key": "some_value"})
+    mock_get_statuses.return_value = ResultCollection()
+
+    output_path = "some_output_path"
+    output = ["some_output"]
+    result = xcode_log_parser.Xcode16LogParser.collect_test_results(
+        output_path, output)
+
+    self.assertTrue(result.crashed)
+    mock_export_data.assert_called_once_with(output_path)
+    mock_zip_and_remove.assert_called_once_with(output_path)
 
   @mock.patch(
       'xcode_log_parser.Xcode16LogParser._xcresulttool_get_tests',
