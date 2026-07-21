@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/borealis/borealis_security_delegate.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/crostini/crostini_security_delegate.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -112,12 +112,9 @@ void GuestOsWaylandServer::Listen(base::ScopedFD fd,
                          std::move(callback)));
       return;
     case vm_tools::apps::BOREALIS:
-      borealis::BorealisSecurityDelegate::Build(
-          profile_, name,
-          base::BindOnce(&GuestOsWaylandServer::OnSecurityDelegateCreated,
-                         weak_factory_.GetWeakPtr(), std::move(fd), type, name,
-                         std::move(callback)));
-      return;
+      // Borealis is being removed and its VM no longer starts, so it should
+      // never request a Wayland server.
+      NOTREACHED();
     default:
       // For all other VMs, provide the minimal capability-set.
       OnSecurityDelegateCreated(
