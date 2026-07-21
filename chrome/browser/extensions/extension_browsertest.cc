@@ -81,6 +81,7 @@ namespace extensions {
 namespace {
 
 using ContextType = extensions::browser_test_util::ContextType;
+using extensions::InstallPromptData;
 using extensions::service_worker_test_utils::TestServiceWorkerContextObserver;
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
@@ -584,8 +585,9 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
 
     std::unique_ptr<ExtensionInstallPrompt> install_ui;
     if (prompt_auto_confirm) {
-      install_ui =
-          std::make_unique<ExtensionInstallPrompt>(active_web_contents);
+      install_ui = std::make_unique<ExtensionInstallPrompt>(
+          active_web_contents, std::make_unique<InstallPromptData>(
+                                   InstallPromptData::UNSET_PROMPT_TYPE));
     }
     installer = CrxInstaller::Create(profile(), std::move(install_ui));
     installer->set_expected_id(id);

@@ -471,13 +471,12 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
   }
 
   install_ui_ = std::make_unique<ExtensionInstallPrompt>(
-      Profile::FromBrowserContext(browser_context()), native_window);
+      Profile::FromBrowserContext(browser_context()), native_window,
+      std::make_unique<InstallPromptData>(
+          InstallPromptData::PERMISSIONS_PROMPT));
   install_ui_->ShowDialog(
       base::BindOnce(&PermissionsRequestFunction::OnInstallPromptDone, this),
-      extension(), nullptr,
-      std::make_unique<InstallPromptData>(
-          InstallPromptData::PERMISSIONS_PROMPT),
-      std::move(total_new_permissions),
+      extension(), nullptr, std::move(total_new_permissions),
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
 
   // ExtensionInstallPrompt::ShowDialog() can call the response synchronously.

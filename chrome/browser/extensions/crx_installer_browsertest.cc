@@ -148,7 +148,10 @@ class MockPromptProxy {
 class MockInstallPrompt : public ExtensionInstallPrompt {
  public:
   MockInstallPrompt(content::WebContents* web_contents, MockPromptProxy* proxy)
-      : ExtensionInstallPrompt(web_contents), proxy_(proxy) {}
+      : ExtensionInstallPrompt(web_contents,
+                               std::make_unique<InstallPromptData>(
+                                   InstallPromptData::UNSET_PROMPT_TYPE)),
+        proxy_(proxy) {}
 
   MockInstallPrompt(const MockInstallPrompt&) = delete;
   MockInstallPrompt& operator=(const MockInstallPrompt&) = delete;

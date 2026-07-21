@@ -68,15 +68,16 @@ class ExtensionInstallPrompt : public extensions::ExtensionInstallPromptClient {
                                     const extensions::Extension* extension);
 
   // Creates a prompt with a parent web content and a prompt data.
-  // If `prompt` is null, it will be created when calling `ShowDialog` method.
   explicit ExtensionInstallPrompt(
       content::WebContents* contents,
-      std::unique_ptr<extensions::InstallPromptData> prompt = nullptr);
+      std::unique_ptr<extensions::InstallPromptData> prompt);
 
   // Creates a prompt with a profile and a native window. The most recently
   // active browser window (or a new browser window if there are no browser
   // windows) is used if a new tab needs to be opened.
-  ExtensionInstallPrompt(Profile* profile, gfx::NativeWindow native_window);
+  ExtensionInstallPrompt(Profile* profile,
+                         gfx::NativeWindow native_window,
+                         std::unique_ptr<extensions::InstallPromptData> prompt);
 
   ExtensionInstallPrompt(const ExtensionInstallPrompt&) = delete;
   ExtensionInstallPrompt& operator=(const ExtensionInstallPrompt&) = delete;
@@ -88,27 +89,20 @@ class ExtensionInstallPrompt : public extensions::ExtensionInstallPromptClient {
   // Starts the process to show the install dialog. Loads the icon (if `icon` is
   // null), sets up the InstallPromptData, and calls `show_dialog_callback` when
   // ready to show. `extension` can be null in the case of a bundle install. If
-  // `icon` is null, this will attempt to load the extension's icon. `prompt` is
-  // used to pass in a prompt with additional data (like retained device
-  // permissions) or a different type. If not provided, `prompt` will be created
-  // as an INSTALL_PROMPT. `custom_permissions` will be used if provided;
-  // otherwise, the extensions current permissions are used.
+  // `icon` is null, this will attempt to load the extension's icon.
+  // `custom_permissions` will be used if provided; otherwise, the extension's
+  // current permissions are used. The prompt type and additional data should be
+  // specified in the constructor.
   //
   // The `install_callback` *MUST* eventually be called.
   void ShowDialog(DoneCallback install_callback,
                   const extensions::Extension* extension,
                   const SkBitmap* icon,
                   const ShowDialogCallback& show_dialog_callback);
-  void ShowDialog(DoneCallback install_callback,
-                  const extensions::Extension* extension,
-                  const SkBitmap* icon,
-                  std::unique_ptr<extensions::InstallPromptData> prompt,
-                  const ShowDialogCallback& show_dialog_callback);
   void ShowDialog(
       DoneCallback install_callback,
       const extensions::Extension* extension,
       const SkBitmap* icon,
-      std::unique_ptr<extensions::InstallPromptData> prompt,
       std::unique_ptr<const extensions::PermissionSet> custom_permissions,
       const ShowDialogCallback& show_dialog_callback);
 

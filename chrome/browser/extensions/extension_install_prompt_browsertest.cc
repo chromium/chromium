@@ -24,6 +24,7 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+using extensions::InstallPromptData;
 using extensions::ScopedTestDialogAutoConfirm;
 
 namespace {
@@ -49,7 +50,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
-  ExtensionInstallPrompt prompt(web_contents);
+  ExtensionInstallPrompt prompt(
+      web_contents,
+      std::make_unique<InstallPromptData>(InstallPromptData::INSTALL_PROMPT));
   CloseTabForWebContents(web_contents);
   content::RunAllPendingInMessageLoop();
 
@@ -78,8 +81,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest,
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
-  ExtensionInstallPrompt prompt(profile(),
-                                browser()->GetWindow()->GetNativeWindow());
+  ExtensionInstallPrompt prompt(
+      profile(), browser()->GetWindow()->GetNativeWindow(),
+      std::make_unique<InstallPromptData>(InstallPromptData::INSTALL_PROMPT));
   browser()->GetWindow()->Close();
   content::RunAllPendingInMessageLoop();
 
@@ -102,7 +106,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptBrowserTest, NoParent) {
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
-  ExtensionInstallPrompt prompt(profile(), gfx::NativeWindow());
+  ExtensionInstallPrompt prompt(
+      profile(), gfx::NativeWindow(),
+      std::make_unique<InstallPromptData>(InstallPromptData::INSTALL_PROMPT));
   base::RunLoop run_loop;
   ExtensionInstallPromptTestHelper helper(run_loop.QuitClosure());
   prompt.ShowDialog(

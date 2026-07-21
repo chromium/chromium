@@ -85,6 +85,8 @@
 #include "components/translate/core/browser/translate_manager.h"
 #endif
 
+using extensions::InstallPromptData;
+
 class InfoBarsTest : public InProcessBrowserTest {
  public:
   InfoBarsTest() = default;
@@ -97,7 +99,9 @@ class InfoBarsTest : public InProcessBrowserTest {
         extensions::ExtensionRegistry::Get(browser()->GetProfile()));
 
     std::unique_ptr<ExtensionInstallPrompt> client(new ExtensionInstallPrompt(
-        browser()->tab_strip_model()->GetActiveWebContents()));
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        std::make_unique<InstallPromptData>(
+            InstallPromptData::UNSET_PROMPT_TYPE)));
     scoped_refptr<extensions::CrxInstaller> installer(
         extensions::CrxInstaller::Create(browser()->GetProfile(),
                                          std::move(client)));

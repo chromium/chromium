@@ -20,6 +20,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "extensions/browser/crx_installer.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prompt_data.h"
 #include "extensions/browser/webstore_installer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
@@ -81,7 +82,9 @@ std::unique_ptr<ExtensionInstallPrompt> CreateExtensionInstallPrompt(
     TabListInterface* tab_list = TabListInterface::From(browser);
     web_contents = tab_list->GetActiveTab()->GetContents();
   }
-  return std::make_unique<ExtensionInstallPrompt>(web_contents);
+  return std::make_unique<ExtensionInstallPrompt>(
+      web_contents, std::make_unique<extensions::InstallPromptData>(
+                        extensions::InstallPromptData::UNSET_PROMPT_TYPE));
 }
 }  // namespace
 

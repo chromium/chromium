@@ -141,21 +141,23 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
     return;
   }
 
-  CreatePrompt();
   InstallPromptData::PromptType type =
       ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(profile_,
                                                                 extension);
+  CreatePrompt(std::make_unique<InstallPromptData>(type));
   prompt_->ShowDialog(base::BindOnce(&ExtensionEnableFlow::InstallPromptDone,
                                      weak_ptr_factory_.GetWeakPtr()),
                       extension, nullptr,
-                      std::make_unique<InstallPromptData>(type),
                       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
 }
 
-void ExtensionEnableFlow::CreatePrompt() {
-  prompt_.reset(parent_contents_ ? new ExtensionInstallPrompt(parent_contents_)
-                                 : new ExtensionInstallPrompt(
-                                       profile_, gfx::NativeWindow()));
+void ExtensionEnableFlow::CreatePrompt(
+    std::unique_ptr<InstallPromptData> prompt) {
+  prompt_.reset(
+      parent_contents_
+          ? new ExtensionInstallPrompt(parent_contents_, std::move(prompt))
+          : new ExtensionInstallPrompt(profile_, gfx::NativeWindow(),
+                                       std::move(prompt)));
 }
 
 void ExtensionEnableFlow::OnExtensionApprovalDone(

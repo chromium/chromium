@@ -74,6 +74,7 @@ class InstallPromptData {
       std::u16string initial_extensions_provider_name);
 
   PromptType type() const { return type_; }
+  void set_type(PromptType type) { type_ = type; }
 
   // Getters for UI element labels.
   std::u16string GetDialogTitle() const;
@@ -131,7 +132,7 @@ class InstallPromptData {
   void OnDialogCanceled();
 
  private:
-  const PromptType type_;
+  PromptType type_;
 
   // When this is non empty, means that this extension is an initial
   // pre-installed one.

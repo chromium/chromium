@@ -75,8 +75,8 @@ class ExtensionEnableFlow : public extensions::LoadErrorReporter::Observer,
   // to confirm.
   void CheckPermissionAndMaybePromptUser();
 
-  // Creates an ExtensionInstallPrompt in |prompt_|.
-  void CreatePrompt();
+  // Creates an ExtensionInstallPrompt in |prompt_| with the given prompt data.
+  void CreatePrompt(std::unique_ptr<extensions::InstallPromptData> prompt);
 
   // Called when the extension approval flow is complete.
   void OnExtensionApprovalDone(

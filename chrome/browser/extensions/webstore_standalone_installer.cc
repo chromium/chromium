@@ -165,8 +165,10 @@ void WebstoreStandaloneInstaller::OnManifestParsed() {
 }
 
 std::unique_ptr<ExtensionInstallPrompt>
-WebstoreStandaloneInstaller::CreateInstallUI() {
-  return std::make_unique<ExtensionInstallPrompt>(GetWebContents());
+WebstoreStandaloneInstaller::CreateInstallUI(
+    std::unique_ptr<InstallPromptData> prompt) {
+  return std::make_unique<ExtensionInstallPrompt>(GetWebContents(),
+                                                  std::move(prompt));
 }
 
 std::unique_ptr<InstallApproval> WebstoreStandaloneInstaller::CreateApproval()
@@ -350,11 +352,11 @@ void WebstoreStandaloneInstaller::ShowInstallUI() {
     return;
   }
 
-  install_ui_ = CreateInstallUI();
+  install_ui_ = CreateInstallUI(std::move(install_prompt_));
   install_ui_->ShowDialog(
       base::BindOnce(&WebstoreStandaloneInstaller::OnInstallPromptDone,
                      weak_ptr_factory_.GetWeakPtr()),
-      localized_extension.get(), &icon_, std::move(install_prompt_),
+      localized_extension.get(), &icon_,
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
 }
 

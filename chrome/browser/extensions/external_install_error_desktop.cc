@@ -454,16 +454,15 @@ void ExternalInstallErrorDesktop::OnFetchComplete() {
   // Create a new ExtensionInstallPrompt. We pass in NULL for the UI
   // components because we display at a later point, and don't want
   // to pass ones which may be invalidated.
-  install_ui_ = base::WrapUnique(
-      new ExtensionInstallPrompt(Profile::FromBrowserContext(browser_context_),
-                                 /*native_window=*/gfx::NativeWindow()));
+  install_ui_ = base::WrapUnique(new ExtensionInstallPrompt(
+      Profile::FromBrowserContext(browser_context_),
+      /*native_window=*/gfx::NativeWindow(), std::move(prompt_)));
 
   install_ui_->ShowDialog(
       base::BindOnce(&ExternalInstallErrorDesktop::OnInstallPromptDone,
                      weak_factory_.GetWeakPtr()),
       GetExtension(),
       nullptr,  // Force a fetch of the icon.
-      std::move(prompt_),
       base::BindRepeating(&ExternalInstallErrorDesktop::OnDialogReady,
                           weak_factory_.GetWeakPtr()));
 }

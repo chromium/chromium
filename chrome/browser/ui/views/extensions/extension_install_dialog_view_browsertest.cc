@@ -365,7 +365,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("Test extension").Build();
-  ExtensionInstallPrompt prompt(originating_web_contents);
+  ExtensionInstallPrompt prompt(
+      originating_web_contents,
+      std::make_unique<InstallPromptData>(InstallPromptData::INSTALL_PROMPT));
   prompt.ShowDialog(/*install_callback=*/base::DoNothing(), extension.get(),
                     /*icon=*/nullptr,
                     base::BindLambdaForTesting(show_dialog_callback));
@@ -527,10 +529,9 @@ class ExtensionInstallDialogViewInteractiveBrowserTest
 
     ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
     auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-    auto install_prompt =
-        std::make_unique<ExtensionInstallPrompt>(web_contents);
+    auto install_prompt = std::make_unique<ExtensionInstallPrompt>(
+        web_contents, std::move(prompt));
     install_prompt->ShowDialog(base::DoNothing(), extension.get(), &icon,
-                               std::move(prompt),
                                ExtensionInstallPrompt::ShowDialogCallback());
     base::RunLoop().RunUntilIdle();
   }

@@ -35,16 +35,17 @@ class ManagementSetEnabledFunctionInstallPromptDelegate
       content::BrowserContext* browser_context,
       const Extension* extension,
       base::OnceCallback<void(bool)> callback)
-      : install_prompt_(new ExtensionInstallPrompt(web_contents)),
-        callback_(std::move(callback)) {
+      : callback_(std::move(callback)) {
     InstallPromptData::PromptType type =
         ExtensionInstallPrompt::GetReEnablePromptTypeForExtension(
             browser_context, extension);
+    install_prompt_ = std::make_unique<ExtensionInstallPrompt>(
+        web_contents, std::make_unique<InstallPromptData>(type));
     install_prompt_->ShowDialog(
         base::BindOnce(&ManagementSetEnabledFunctionInstallPromptDelegate::
                            OnInstallPromptDone,
                        weak_factory_.GetWeakPtr()),
-        extension, nullptr, std::make_unique<InstallPromptData>(type),
+        extension, nullptr,
         ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   }
 

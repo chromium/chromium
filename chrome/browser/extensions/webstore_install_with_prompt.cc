@@ -48,10 +48,12 @@ WebstoreInstallWithPrompt::CreateInstallPrompt() const {
 }
 
 std::unique_ptr<ExtensionInstallPrompt>
-WebstoreInstallWithPrompt::CreateInstallUI() {
+WebstoreInstallWithPrompt::CreateInstallUI(
+    std::unique_ptr<InstallPromptData> prompt) {
   // Create an ExtensionInstallPrompt. If the parent window is NULL, the dialog
   // will be placed in the middle of the screen.
-  return std::make_unique<ExtensionInstallPrompt>(profile(), parent_window_);
+  return std::make_unique<ExtensionInstallPrompt>(profile(), parent_window_,
+                                                  std::move(prompt));
 }
 
 bool WebstoreInstallWithPrompt::ShouldShowPostInstallUI() const {

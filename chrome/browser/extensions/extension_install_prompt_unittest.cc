@@ -102,14 +102,14 @@ TEST_F(ExtensionInstallPromptUnitTest, PromptShowsPermissionWarnings) {
           .Build();
 
   content::TestWebContentsFactory factory;
-  ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
+  ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()),
+                                std::make_unique<InstallPromptData>(
+                                    InstallPromptData::PERMISSIONS_PROMPT));
   ShowDialogTestFuture show_dialog_future;
 
-  prompt.ShowDialog(
-      ExtensionInstallPrompt::DoneCallback(), extension.get(), nullptr,
-      std::make_unique<InstallPromptData>(
-          InstallPromptData::PERMISSIONS_PROMPT),
-      std::move(permission_set), show_dialog_future.GetRepeatingCallback());
+  prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
+                    nullptr, std::move(permission_set),
+                    show_dialog_future.GetRepeatingCallback());
 
   auto [params, done_callback, install_prompt] = show_dialog_future.Take();
   ASSERT_TRUE(install_prompt.get());
@@ -149,7 +149,9 @@ TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {
       content::WebContentsTester::CreateTestWebContents(browser_context(),
                                                         nullptr));
   {
-    ExtensionInstallPrompt prompt(web_contents.get());
+    ExtensionInstallPrompt prompt(web_contents.get(),
+                                  std::make_unique<InstallPromptData>(
+                                      InstallPromptData::PERMISSIONS_PROMPT));
     ShowDialogTestFuture show_dialog_future;
 
     prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension,
@@ -162,7 +164,9 @@ TEST_F(ExtensionInstallPromptTestWithService, ExtensionInstallPromptIconsTest) {
   }
 
   {
-    ExtensionInstallPrompt prompt(web_contents.get());
+    ExtensionInstallPrompt prompt(
+        web_contents.get(),
+        std::make_unique<InstallPromptData>(InstallPromptData::INSTALL_PROMPT));
     ShowDialogTestFuture show_dialog_future;
 
     gfx::ImageSkia app_icon = util::GetDefaultAppIcon();
@@ -193,7 +197,9 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test").AddHostPermission("<all_urls>").Build();
   content::TestWebContentsFactory factory;
-  ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
+  ExtensionInstallPrompt prompt(
+      factory.CreateWebContents(profile()),
+      std::make_unique<InstallPromptData>(InstallPromptData::INSTALL_PROMPT));
   ShowDialogTestFuture show_dialog_future;
 
   prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
@@ -208,7 +214,9 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("no_host").AddAPIPermission("tabs").Build();
   content::TestWebContentsFactory factory;
-  ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
+  ExtensionInstallPrompt prompt(
+      factory.CreateWebContents(profile()),
+      std::make_unique<InstallPromptData>(InstallPromptData::INSTALL_PROMPT));
   ShowDialogTestFuture show_dialog_future;
 
   prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),
@@ -226,7 +234,9 @@ TEST_F(ExtensionInstallPromptTestWithholdingAllowed,
           .SetLocation(mojom::ManifestLocation::kExternalPolicy)
           .Build();
   content::TestWebContentsFactory factory;
-  ExtensionInstallPrompt prompt(factory.CreateWebContents(profile()));
+  ExtensionInstallPrompt prompt(
+      factory.CreateWebContents(profile()),
+      std::make_unique<InstallPromptData>(InstallPromptData::INSTALL_PROMPT));
   ShowDialogTestFuture show_dialog_future;
 
   prompt.ShowDialog(ExtensionInstallPrompt::DoneCallback(), extension.get(),

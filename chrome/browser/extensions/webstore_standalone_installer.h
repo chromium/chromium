@@ -125,7 +125,8 @@ class WebstoreStandaloneInstaller
 
   // Returns an install UI to be shown. By default, this returns an install UI
   // that is a transient child of the host window for GetWebContents().
-  virtual std::unique_ptr<ExtensionInstallPrompt> CreateInstallUI();
+  virtual std::unique_ptr<ExtensionInstallPrompt> CreateInstallUI(
+      std::unique_ptr<InstallPromptData> prompt);
 
   // Create an approval to pass installation parameters to the CrxInstaller.
   virtual std::unique_ptr<InstallApproval> CreateApproval() const;

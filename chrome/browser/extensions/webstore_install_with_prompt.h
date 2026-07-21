@@ -51,7 +51,8 @@ class WebstoreInstallWithPrompt : public WebstoreStandaloneInstaller {
   bool ShouldShowPostInstallUI() const override;
   content::WebContents* GetWebContents() const override;
   std::unique_ptr<InstallPromptData> CreateInstallPrompt() const override;
-  std::unique_ptr<ExtensionInstallPrompt> CreateInstallUI() override;
+  std::unique_ptr<ExtensionInstallPrompt> CreateInstallUI(
+      std::unique_ptr<InstallPromptData> prompt) override;
 
  private:
   bool show_post_install_ui_;

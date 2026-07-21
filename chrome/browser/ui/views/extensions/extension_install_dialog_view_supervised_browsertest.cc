@@ -118,14 +118,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, ChildAccepts) {
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
 
   std::unique_ptr<InstallPromptData> prompt = CreatePrompt();
+  const extensions::Extension* const extension = prompt->extension();
 
   // Launch the extension install dialog.
-  ExtensionInstallPrompt install_prompt(profile(), gfx::NativeWindow());
+  ExtensionInstallPrompt install_prompt(profile(), gfx::NativeWindow(),
+                                        std::move(prompt));
   base::RunLoop run_loop;
   ExtensionInstallPromptTestHelper helper(run_loop.QuitClosure());
-  const extensions::Extension* const extension = prompt->extension();
   install_prompt.ShowDialog(
-      helper.GetCallback(), extension, nullptr, std::move(prompt),
+      helper.GetCallback(), extension, nullptr,
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   run_loop.Run();
   EXPECT_EQ(ExtensionInstallPrompt::Result::ACCEPTED, helper.result());
@@ -170,14 +171,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised,
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::CANCEL);
 
   std::unique_ptr<InstallPromptData> prompt = CreatePrompt();
+  const extensions::Extension* const extension = prompt->extension();
 
   // Launch the extension install dialog.
-  ExtensionInstallPrompt install_prompt(profile(), gfx::NativeWindow());
+  ExtensionInstallPrompt install_prompt(profile(), gfx::NativeWindow(),
+                                        std::move(prompt));
   base::RunLoop run_loop;
   ExtensionInstallPromptTestHelper helper(run_loop.QuitClosure());
-  const extensions::Extension* const extension = prompt->extension();
   install_prompt.ShowDialog(
-      helper.GetCallback(), extension, nullptr, std::move(prompt),
+      helper.GetCallback(), extension, nullptr,
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   run_loop.Run();
   EXPECT_EQ(ExtensionInstallPrompt::Result::USER_CANCELED, helper.result());
