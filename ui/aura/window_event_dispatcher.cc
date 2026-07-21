@@ -379,6 +379,9 @@ void WindowEventDispatcher::OnWindowHidden(Window* invisible,
   if (invisible->Contains(old_dispatch_target_))
     old_dispatch_target_ = nullptr;
 
+  // Block the deletion of the root window, its host thus this dispatcher.
+  aura::Window::ScopedDeleteBlocker blocker(host_->window());
+
   // Cleaning up gesture state may end up destroying the hidden window. We use a
   // weak pointer to detect this.
   base::WeakPtr<aura::Window> invisible_weak = invisible->GetWeakPtrAsWindow();
