@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -85,7 +84,7 @@ class DawnCachingInterfaceFactory;
 // browser process to them based on the corresponding renderer ID.
 class GPU_IPC_SERVICE_EXPORT GpuChannelManager
     : public raster::GrShaderCache::Client,
-      public base::MemoryPressureListener {
+      public base::MemoryConsumer {
  public:
   GpuChannelManager(
       const GpuPreferences& gpu_preferences,
@@ -303,8 +302,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   void DoWakeUpGpu();
 #endif
 
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   // These objects manage channels to individual renderer processes. There is
   // one channel for each renderer process that has connected to this GPU
@@ -343,8 +343,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // shaders. Read by the browser process on GPU process crash.
   const raw_ptr<GpuProcessShmCount> use_shader_cache_shm_count_;
 
-  base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
 
   // The SharedContextState is shared across all RasterDecoders. Note
   // that this class needs to be ref-counted to conveniently manage the lifetime

@@ -15,6 +15,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/memory_pressure_level.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/traits.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -86,6 +90,17 @@ const int kMaxGpuIdleTimeMs = 40;
 // draw.
 const int kMaxKeepAliveTimeMs = 200;
 #endif
+
+constexpr base::MemoryConsumerTraits kGpuChannelManagerTraits(
+    // Can free hundreds of MB via Skia, Dawn, and persistent cache purges.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+    // Purging requires iterating caches and invoking GPU resource cleanup.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Freed resources are caches or scratch buffers that can be recreated.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Asynchronous since AsyncMemoryConsumerRegistration is used.
+    base::MemoryConsumerTraits::ExecutionType::kAsynchronous);
+
 #if BUILDFLAG(IS_WIN)
 void TrimD3DResources(const scoped_refptr<SharedContextState>& context_state) {
   // Graphics drivers periodically allocate internal memory buffers in
@@ -364,10 +379,11 @@ GpuChannelManager::GpuChannelManager(
       default_offscreen_surface_(std::move(default_offscreen_surface)),
       gpu_feature_info_(gpu_feature_info),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kGpuChannelManager,
-          this),
+      memory_consumer_registration_(
+          "GpuChannelManager",
+          kGpuChannelManagerTraits,
+          this,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled),
       dawn_caching_interface_factory_(dawn_caching_interface_factory),
       vulkan_context_provider_(vulkan_context_provider),
       dawn_context_provider_(dawn_context_provider),
@@ -831,11 +847,19 @@ void GpuChannelManager::PerformImmediateCleanup() {
 #endif
 }
 
-void GpuChannelManager::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
+void GpuChannelManager::OnUpdateMemoryLimit() {}
+
+void GpuChannelManager::OnReleaseMemory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+  // Map the memory limit percentage to the legacy MemoryPressureLevel used by
+  // the downstream PurgeMemory calls.
+  base::MemoryPressureLevel memory_pressure_level;
+  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
+    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
+  } else if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+    memory_pressure_level = base::MEMORY_PRESSURE_LEVEL_MODERATE;
+  } else {
     return;
   }
 
