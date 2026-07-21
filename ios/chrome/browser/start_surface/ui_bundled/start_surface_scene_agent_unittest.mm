@@ -494,11 +494,10 @@ TEST_F(StartSurfaceSceneAgentTest,
       scene_state_, time_last_background);
 
   // Forcing the current BrowserProvider to be incognito.
-  scene_state_.browserProviderInterface.currentBrowserProvider =
-      scene_state_.browserProviderInterface.incognitoBrowserProvider;
+  auto interface = scene_state_.browserProviderInterface;
+  [scene_state_ setCurrentBrowserProvider:interface.incognitoBrowserProvider];
   CommandDispatcher* dispatcherIncognito =
-      scene_state_.browserProviderInterface.currentBrowserProvider.browser
-          ->GetCommandDispatcher();
+      interface.currentBrowserProvider.browser->GetCommandDispatcher();
 
   [dispatcherIncognito startDispatchingToTarget:application_handler_
                                     forProtocol:@protocol(SceneCommands)];
