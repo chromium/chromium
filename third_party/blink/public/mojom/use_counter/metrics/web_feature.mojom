@@ -5257,6 +5257,7 @@ enum WebFeature {
   kRTCSctpSnapNegotiated = 5940,
   kV8RTC_StartDiagnosticLogging_Method = 5941,
   kDeclarativePerformanceObserver = 5966,
+  kPrefetchAndPrerenderActivationBeacon = 5967,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
