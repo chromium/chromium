@@ -146,6 +146,7 @@ source_set("impl") {
       "//chrome/browser/translate",
       "//chrome/browser/ui",
       "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui:confirm_bubble",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/lens",

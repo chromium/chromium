@@ -392,7 +392,6 @@ source_set("view_ids") {
 # circular includes from each other.
 static_library("ui") {
   sources = [
-    "confirm_bubble.h",
     "crypto_module_password_dialog.h",
     "enterprise_startup_dialog.h",
     "idle_bubble.h",
@@ -1592,6 +1591,7 @@ static_library("ui") {
       ":browser_select_file_dialog_controller",
       ":browser_tab_strip",
       ":collected_cookies_infobar_delegate",
+      ":confirm_bubble",
       ":confirm_bubble_model",
       ":focus_tab_after_navigation_helper",
       ":layout_constants",
@@ -3855,8 +3855,6 @@ static_library("ui") {
       "views/chrome_web_dialog_view.h",
       "views/color_provider_browser_helper.cc",
       "views/color_provider_browser_helper.h",
-      "views/confirm_bubble_views.cc",
-      "views/confirm_bubble_views.h",
       "views/constrained_web_dialog_delegate_views.cc",
       "views/content_setting_bubble_contents.cc",
       "views/content_setting_bubble_contents.h",
@@ -4491,6 +4489,7 @@ static_library("ui") {
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl",
       "//chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/converters",
       "//chrome/browser/ui/views",
+      "//chrome/browser/ui/views:confirm_bubble",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views:layout_provider_impl",
       "//chrome/browser/ui/views:screen_sharing_util",
@@ -5403,6 +5402,14 @@ source_set("confirm_bubble_model") {
     "//url",
   ]
   deps = [ "//components/strings:components_strings" ]
+}
+
+source_set("confirm_bubble") {
+  public = [ "confirm_bubble.h" ]
+  public_deps = [
+    ":confirm_bubble_model",
+    "//ui/gfx",
+  ]
 }
 
 source_set("layout_constants") {
