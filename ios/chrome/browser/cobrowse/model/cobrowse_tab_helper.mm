@@ -58,6 +58,14 @@ void CobrowseTabHelper::WasShown(web::WebState* web_state) {
   }
 }
 
+void CobrowseTabHelper::WasHidden(web::WebState* web_state) {
+  if (!scene_handler_) {
+    return;
+  }
+
+  [scene_handler_ hideAssistant];
+}
+
 void CobrowseTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {

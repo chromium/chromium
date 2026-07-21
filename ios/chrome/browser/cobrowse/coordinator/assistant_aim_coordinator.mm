@@ -53,8 +53,7 @@
 @interface AssistantAIMCoordinator () <AIMSRPDebuggerURLViewControllerDelegate,
                                        AssistantAIMMediatorDelegate,
                                        AssistantAIMViewControllerDelegate,
-                                       AssistantContainerDelegate,
-                                       TabGridStateObserving>
+                                       AssistantContainerDelegate>
 
 // Block to execute when the 'Undo' snackbar dismisses.
 @property(nonatomic, strong) ProceduralBlock undoSnackbarDismissCompletion;
@@ -114,8 +113,6 @@ class AssistantAIMUIStateProvider
     return;
   }
   [_activityReporter reportActive];
-
-  [self.browser->GetSceneState().tabGridState addObserver:self];
 
   CobrowseBrowserAgent* agent = CobrowseBrowserAgent::FromBrowser(self.browser);
   if (agent) {
@@ -196,8 +193,6 @@ class AssistantAIMUIStateProvider
 }
 
 - (void)stop {
-  [self.browser->GetSceneState().tabGridState removeObserver:self];
-
   CobrowseBrowserAgent* agent = CobrowseBrowserAgent::FromBrowser(self.browser);
   if (agent) {
     agent->SetUIStateProvider(nullptr);
@@ -256,16 +251,6 @@ class AssistantAIMUIStateProvider
 
 - (BOOL)isTabGridVisible {
   return self.browser->GetSceneState().tabGridState.tabGridVisible;
-}
-
-#pragma mark - TabGridStateObserving
-
-- (void)willEnterTabGrid {
-  [self setVisible:NO];
-}
-
-- (void)willExitTabGrid {
-  [self setVisible:YES];
 }
 
 #pragma mark - AssistantAIMViewControllerDelegate
