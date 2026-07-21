@@ -20,9 +20,11 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -572,6 +574,23 @@ AddressFormDataImporter::ExtractAddressProfileFromSection(
       !ValidateNonEmptyValues(candidate_profile, &import_log_buffer) ||
       has_multiple_distinct_email_addresses || has_invalid_field_types ||
       has_synthesized_types;
+
+  // TODO(crbug.com/414842437) Remove debug data.
+  SCOPED_CRASH_KEY_BOOL("Autofill", "has_observed_country",
+                        observed_field_values.contains(ADDRESS_HOME_COUNTRY));
+  SCOPED_CRASH_KEY_STRING32(
+      "Autofill", "observed_country",
+      base::UTF16ToUTF8(
+          base::OptionalFromPtr(
+              base::FindOrNull(observed_field_values, ADDRESS_HOME_COUNTRY))
+              .value_or(u"")));
+  SCOPED_CRASH_KEY_STRING32(
+      "Autofill", "default_country",
+      *address_data_manager().GetDefaultCountryCodeForNewAddress());
+  SCOPED_CRASH_KEY_STRING32("Autofill", "app_locale",
+                            address_data_manager().app_locale());
+  SCOPED_CRASH_KEY_NUMBER("Autofill", "country_source",
+                          std::to_underlying(import_metadata.country_source));
 
   // Profiles with valid information qualify for multi-step imports.
   // This requires the profile to be finalized to apply the merging logic.

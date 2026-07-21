@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -48,13 +47,6 @@ constexpr AddressImportRequirement kMinimumAddressRequirementViolations[] = {
 std::vector<autofill_metrics::AddressProfileImportRequirementMetric>
 ValidateProfileImportRequirements(const AutofillProfile& profile,
                                   LogBuffer* import_log_buffer) {
-  // TODO(crbug.com/414842437) Remove debug data.
-  SCOPED_CRASH_KEY_STRING32(
-      "Autofill", "raw_countrycode",
-      base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
-  SCOPED_CRASH_KEY_STRING32(
-      "Autofill", "countrycode",
-      base::UTF16ToUTF8(profile.GetInfo(ADDRESS_HOME_COUNTRY, "en-US")));
   CHECK(profile.HasInfo(ADDRESS_HOME_COUNTRY));
 
   std::vector<AddressImportRequirement> address_import_requirements;
