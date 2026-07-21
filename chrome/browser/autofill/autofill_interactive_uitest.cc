@@ -2281,6 +2281,22 @@ class AutofillInteractiveFencedFrameTest
     : public AutofillInteractiveIsolationTest,
       public ::testing::WithParamInterface<FrameType> {
  protected:
+  class TestAutofillManager : public BrowserAutofillManager {
+   public:
+    explicit TestAutofillManager(ContentAutofillDriver* driver)
+        : BrowserAutofillManager(driver) {}
+
+    [[nodiscard]] AssertionResult WaitForFormsSeen(
+        int min_num_awaited_calls = 1) {
+      return forms_seen_waiter_.Wait(min_num_awaited_calls);
+    }
+
+   private:
+    TestAutofillManagerWaiter forms_seen_waiter_{
+        *this,
+        {AutofillManagerEvent::kFormsSeen}};
+  };
+
   AutofillInteractiveFencedFrameTest() {
     std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
@@ -2298,41 +2314,43 @@ class AutofillInteractiveFencedFrameTest
     return GetWebContents()->GetPrimaryMainFrame();
   }
 
+  TestAutofillManager* autofill_manager(content::RenderFrameHost* rfh) {
+    return autofill_manager_injector_[rfh];
+  }
+
   content::RenderFrameHost* LoadSubFrame(std::string relative_url) {
     GURL frame_url = https_server()->GetURL(
         "b.com", (GetParam() == FrameType::kIFrame ? "" : "/fenced_frames") +
                      relative_url);
+    content::RenderFrameHost* cross_frame = nullptr;
     switch (GetParam()) {
       case FrameType::kIFrame: {
         EXPECT_TRUE(content::NavigateIframeToURL(GetWebContents(), "crossFrame",
                                                  frame_url));
-        // TODO(crbug.com/40838553) Use AutofillManager::OnFormParsed instead of
-        // DoNothingAndWait.
-        // Wait to make sure the cross-frame form is parsed.
-        DoNothingAndWait(base::Seconds(2));
-        content::RenderFrameHost* cross_frame =
-            RenderFrameHostForName(GetWebContents(), "crossFrame");
-        return cross_frame;
+        cross_frame = RenderFrameHostForName(GetWebContents(), "crossFrame");
+        break;
       }
       case FrameType::kFencedFrame: {
         // Creates a <fencedframe> element in the renderer.
-        content::RenderFrameHost* cross_frame =
-            fenced_frame_test_helper_->CreateFencedFrame(
-                primary_main_frame_host(), frame_url);
-        // TODO(crbug.com/40838553) Use AutofillManager::OnFormParsed instead of
-        // DoNothingAndWait.
-        // Wait to make sure the cross-frame form is parsed.
-        DoNothingAndWait(base::Seconds(2));
-        return cross_frame;
+        cross_frame = fenced_frame_test_helper_->CreateFencedFrame(
+            primary_main_frame_host(), frame_url);
+        break;
       }
     }
-    NOTREACHED();
+    // Wait to make sure the cross-frame form is parsed.
+    if (cross_frame) {
+      if (TestAutofillManager* manager = autofill_manager(cross_frame)) {
+        EXPECT_TRUE(manager->WaitForFormsSeen());
+      }
+    }
+    return cross_frame;
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<content::test::FencedFrameTestHelper>
       fenced_frame_test_helper_;
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillInteractiveTest,
