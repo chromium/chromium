@@ -23,11 +23,17 @@ import java.io.InputStream;
 @NullMarked
 public class WebContentsPrinter implements Printable {
     private final WebContents mWebContents;
+    private final boolean mPrintSelectionOnly;
     private final String mDefaultTitle;
     private final String mErrorMessage;
 
     public WebContentsPrinter(WebContents webContents) {
+        this(webContents, false);
+    }
+
+    public WebContentsPrinter(WebContents webContents, boolean printSelectionOnly) {
         mWebContents = webContents;
+        mPrintSelectionOnly = printSelectionOnly;
         mDefaultTitle = ContextUtils.getApplicationContext().getString(R.string.menu_print);
         mErrorMessage =
                 ContextUtils.getApplicationContext().getString(R.string.error_printing_failed);
@@ -36,7 +42,8 @@ public class WebContentsPrinter implements Printable {
     @Override
     public boolean print(int renderProcessId, int renderFrameId) {
         if (!canPrint()) return false;
-        return WebContentsPrinterJni.get().print(mWebContents, renderProcessId, renderFrameId);
+        return WebContentsPrinterJni.get()
+                .print(mWebContents, renderProcessId, renderFrameId, mPrintSelectionOnly);
     }
 
     @Override
@@ -69,6 +76,10 @@ public class WebContentsPrinter implements Printable {
 
     @NativeMethods
     interface Natives {
-        boolean print(@Nullable WebContents webContents, int renderProcessId, int renderFrameId);
+        boolean print(
+                @Nullable WebContents webContents,
+                int renderProcessId,
+                int renderFrameId,
+                boolean printSelectionOnly);
     }
 }

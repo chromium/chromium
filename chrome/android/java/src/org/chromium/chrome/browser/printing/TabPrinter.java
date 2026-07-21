@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.printing;
 
 import static org.chromium.components.embedder_support.util.UrlConstants.CONTENT_SCHEME;
 
+import android.app.Activity;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -14,16 +15,27 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.pdf.PdfPage;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.GlobalRenderFrameHostId;
+import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.printing.PrintManagerDelegateImpl;
 import org.chromium.printing.Printable;
+import org.chromium.printing.PrintingController;
+import org.chromium.printing.PrintingControllerImpl;
+import org.chromium.ui.base.WindowAndroid;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -42,16 +54,79 @@ public class TabPrinter implements Printable {
     private static final String TAG = "printing";
 
     private final WeakReference<Tab> mTab;
+    private final @Nullable GlobalRenderFrameHostId mTargetFrameId;
     private final String mDefaultTitle;
     private final String mErrorMessage;
+    private final boolean mPrintSelectionOnly;
 
     @CalledByNative
     private static TabPrinter getPrintable(Tab tab) {
         return new TabPrinter(tab);
     }
 
+    /**
+     * Triggers printing for the current selection in the specified tab.
+     *
+     * @param tab The tab to print.
+     * @param rfh The render frame host containing the selection.
+     */
+    @CalledByNative
+    public static void printSelection(Tab tab, @Nullable RenderFrameHost rfh) {
+        ThreadUtils.assertOnUiThread();
+        if (rfh == null) {
+            // We cannot print the selection if we do not know which frame contains it.
+            // Printing a fallback frame here could lead to printing the wrong page content.
+            Log.w(TAG, "printSelection: no target frame; ignoring.");
+            return;
+        }
+        WindowAndroid window = tab.getWindowAndroid();
+        if (window == null) return;
+        Activity activity = window.getActivity().get();
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        PrintingController controller = PrintingControllerImpl.getInstance(window);
+        if (controller == null || controller.isBusy()) return;
+
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return;
+        SelectionPopupController spc = SelectionPopupController.fromWebContents(webContents);
+        if (spc == null || !spc.hasSelection()) return;
+
+        // Final line of defense: re-check if printing is enabled by policy.
+        Profile profile = Profile.fromWebContents(webContents);
+        if (profile == null || !UserPrefs.get(profile).getBoolean(Pref.PRINTING_ENABLED)) {
+            return;
+        }
+
+        spc.setPreserveSelectionOnNextLossOfFocus(true);
+        spc.hidePopupsAndPreserveSelection();
+
+        TabPrinter printer = new TabPrinter(tab, rfh.getGlobalRenderFrameHostId(), true);
+        controller.startPrint(printer, new PrintManagerDelegateImpl(activity));
+    }
+
+    /**
+     * Creates a {@link TabPrinter} for the given tab.
+     *
+     * @param tab The tab to print.
+     */
     public TabPrinter(Tab tab) {
+        this(tab, null, false);
+    }
+
+    /**
+     * Creates a {@link TabPrinter} for the given tab with optional subframe targeting and selection
+     * flags.
+     *
+     * @param tab The tab to print.
+     * @param targetFrameId Optional target subframe ID to print. If specified, this overrides the
+     *     default process and frame IDs passed into {@link #print(int, int)}.
+     * @param printSelectionOnly Whether to print only the text selection within the frame.
+     */
+    public TabPrinter(
+            Tab tab, @Nullable GlobalRenderFrameHostId targetFrameId, boolean printSelectionOnly) {
         mTab = new WeakReference<>(tab);
+        mTargetFrameId = targetFrameId;
+        mPrintSelectionOnly = printSelectionOnly;
         mDefaultTitle = ContextUtils.getApplicationContext().getString(R.string.menu_print);
         mErrorMessage =
                 ContextUtils.getApplicationContext().getString(R.string.error_printing_failed);
@@ -64,7 +139,11 @@ public class TabPrinter implements Printable {
         assert tab != null && tab.isInitialized();
         WebContents webContents = tab.getWebContents();
         if (webContents == null) return false;
-        return new WebContentsPrinter(webContents).print(renderProcessId, renderFrameId);
+        int targetProcessId = mTargetFrameId != null ? mTargetFrameId.childId() : renderProcessId;
+        int targetFrameId =
+                mTargetFrameId != null ? mTargetFrameId.frameRoutingId() : renderFrameId;
+        return new WebContentsPrinter(webContents, mPrintSelectionOnly)
+                .print(targetProcessId, targetFrameId);
     }
 
     @Override
