@@ -3843,6 +3843,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-isolated-web-app-inline-update",
+    "owners": [ "simonha@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "enable-isolated-web-app-managed-guest-session-install",
     "owners": [ "simonha@google.com", "iwa-team@google.com" ],
     "expiry_milestone": 150

@@ -60,6 +60,14 @@ class AppManagementPageHandlerChromeOs
   void OpenStorePage(const std::string& app_id) override;
   void SetAppLocale(const std::string& app_id,
                     const std::string& locale_tag) override;
+  void CheckForIsolatedWebAppUpdate(
+      const std::string& app_id,
+      CheckForIsolatedWebAppUpdateCallback callback) override;
+  void ApplyIsolatedWebAppUpdate(
+      const std::string& app_id,
+      ApplyIsolatedWebAppUpdateCallback callback) override;
+  void GetNumWindowsForApp(const std::string& app_id,
+                           GetNumWindowsForAppCallback callback) override;
 
   // apps::PreferredAppsListHandle::Observer overrides:
   void OnPreferredAppChanged(const std::string& app_id,
@@ -71,12 +79,16 @@ class AppManagementPageHandlerChromeOs
   app_management::mojom::AppPtr CreateApp(const std::string& app_id) override;
 
  private:
+  class IsolatedWebAppUpdateHandler;
+
   AppManagementShelfDelegate shelf_delegate_;
   const raw_ref<Delegate> delegate_;
 
   base::ScopedObservation<apps::PreferredAppsListHandle,
                           apps::PreferredAppsListHandle::Observer>
       preferred_apps_list_handle_observer_{this};
+
+  std::unique_ptr<IsolatedWebAppUpdateHandler> update_handler_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_APP_MANAGEMENT_APP_MANAGEMENT_PAGE_HANDLER_CHROMEOS_H_

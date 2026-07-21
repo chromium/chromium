@@ -6,8 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/version.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -16,6 +18,9 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,6 +32,7 @@
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"  // nogncheck
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
@@ -36,10 +42,14 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_chromeos.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "net/http/http_status_code.h"
 #else
 #include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
 #include "chrome/common/chrome_features.h"
@@ -106,6 +116,9 @@ class AppManagementPageHandlerTestBase
       public testing::WithParamInterface<
           apps::test::LinkCapturingFeatureVersion> {
  public:
+  AppManagementPageHandlerTestBase()
+      : WebAppTest(WebAppTest::WithTestUrlLoaderFactory{}) {}
+
   void SetUp() override {
     WebAppTest::SetUp();
 
@@ -116,6 +129,8 @@ class AppManagementPageHandlerTestBase
     mojo::PendingReceiver<app_management::mojom::Page> page;
     mojo::Remote<app_management::mojom::PageHandler> handler;
 #if BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kIsolatedWebAppInlineUpdate);
     handler_ = std::make_unique<AppManagementPageHandlerChromeOs>(
         handler.BindNewPipeAndPassReceiver(),
         page.InitWithNewPipeAndPassRemote(), profile(), *delegate_);
@@ -169,9 +184,7 @@ class AppManagementPageHandlerTestBase
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<TestDelegate> delegate_;
   std::unique_ptr<AppManagementPageHandlerBase> handler_;
-#if !BUILDFLAG(IS_CHROMEOS)
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_P(AppManagementPageHandlerTestBase, GetApp) {
@@ -849,7 +862,243 @@ TEST_P(AppManagementPageHandlerTestBase, UseCase_AEnabledBEnabled) {
       GetOverlappingPreferredApps(appB);
   EXPECT_TRUE(overlapping_apps_b.empty());
 }
+
+TEST_P(AppManagementPageHandlerTestBase,
+       CheckForIsolatedWebAppUpdate_NotFound) {
+  const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              .SetName("IWA")
+              .SetVersion("1.0.0")
+              .SetUpdateManifestUrl(
+                  GURL("https://example.com/update_manifest.json")))
+          .BuildBundle();
+  bundle->FakeInstallPageState(profile());
+  bundle->TrustSigningKey();
+  std::string app_id = bundle->InstallChecked(profile()).app_id();
+
+  profile_url_loader_factory().AddResponse(
+      "https://example.com/update_manifest.json", "",
+      net::HttpStatusCode::HTTP_NOT_FOUND);
+
+  base::test::TestFuture<const std::optional<base::Version>&> check_future;
+  handler()->CheckForIsolatedWebAppUpdate(app_id, check_future.GetCallback());
+  EXPECT_TRUE(check_future.Wait());
+  EXPECT_EQ(check_future.Get(), std::nullopt);
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  const web_app::WebApp* web_app =
+      provider->registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+  EXPECT_EQ(web_app->isolation_data()->version().version(),
+            base::Version("1.0.0"));
+  EXPECT_FALSE(web_app->isolation_data()->pending_update_info().has_value());
+}
+
+TEST_P(AppManagementPageHandlerTestBase, CheckForIsolatedWebAppUpdate_Success) {
+  const web_package::test::KeyPair& key_pair =
+      web_app::test::GetDefaultEd25519KeyPair();
+
+  const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              .SetName("IWA")
+              .SetVersion("1.0.0")
+              .SetUpdateManifestUrl(
+                  GURL("https://example.com/update_manifest.json")))
+          .BuildBundle(key_pair);
+  bundle->FakeInstallPageState(profile());
+  bundle->TrustSigningKey();
+  std::string app_id = bundle->InstallChecked(profile()).app_id();
+
+  const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> update_bundle =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().SetName("IWA").SetVersion("2.0.0"))
+          .BuildBundle(key_pair);
+  update_bundle->FakeInstallPageState(profile());
+
+  profile_url_loader_factory().AddResponse("https://example.com/bundle.swbn",
+                                           update_bundle->GetBundleData());
+  profile_url_loader_factory().AddResponse(
+      "https://example.com/update_manifest.json",
+      R"({"versions": [{"src": "https://example.com/bundle.swbn", "version": "2.0.0"}]})");
+
+  base::test::TestFuture<const std::optional<base::Version>&> check_future;
+  handler()->CheckForIsolatedWebAppUpdate(app_id, check_future.GetCallback());
+  EXPECT_TRUE(check_future.Wait());
+  EXPECT_EQ(check_future.Get(), base::Version("2.0.0"));
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  const web_app::WebApp* web_app =
+      provider->registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+  EXPECT_EQ(web_app->isolation_data()->version().version(),
+            base::Version("1.0.0"));
+  EXPECT_FALSE(web_app->isolation_data()->pending_update_info().has_value());
+}
+
+TEST_P(AppManagementPageHandlerTestBase,
+       CheckForIsolatedWebAppUpdate_SameVersionNoUpdateFound) {
+  const web_package::test::KeyPair& key_pair =
+      web_app::test::GetDefaultEd25519KeyPair();
+
+  const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              .SetName("IWA")
+              .SetVersion("1.0.0")
+              .SetUpdateManifestUrl(
+                  GURL("https://example.com/update_manifest.json")))
+          .BuildBundle(key_pair);
+  bundle->FakeInstallPageState(profile());
+  bundle->TrustSigningKey();
+  std::string app_id = bundle->InstallChecked(profile()).app_id();
+
+  profile_url_loader_factory().AddResponse("https://example.com/bundle.swbn",
+                                           bundle->GetBundleData());
+  profile_url_loader_factory().AddResponse(
+      "https://example.com/update_manifest.json",
+      R"({"versions": [{"src": "https://example.com/bundle.swbn", "version": "1.0.0"}]})");
+
+  base::test::TestFuture<const std::optional<base::Version>&> check_future;
+  handler()->CheckForIsolatedWebAppUpdate(app_id, check_future.GetCallback());
+  EXPECT_TRUE(check_future.Wait());
+  EXPECT_EQ(check_future.Get(), std::nullopt);
+}
+
+TEST_P(AppManagementPageHandlerTestBase,
+       CheckForIsolatedWebAppUpdate_UpdateAlreadyPending) {
+  const web_package::test::KeyPair& key_pair =
+      web_app::test::GetDefaultEd25519KeyPair();
+
+  const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              .SetName("IWA")
+              .SetVersion("1.0.0")
+              .SetUpdateManifestUrl(
+                  GURL("https://example.com/update_manifest.json")))
+          .BuildBundle(key_pair);
+  bundle->FakeInstallPageState(profile());
+  bundle->TrustSigningKey();
+  std::string app_id = bundle->InstallChecked(profile()).app_id();
+
+  profile_url_loader_factory().AddResponse(
+      "https://example.com/update_manifest.json",
+      R"({"versions": [{"src": "https://example.com/bundle.swbn", "version": "2.0.0"}]})");
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+  const web_app::WebApp* web_app =
+      provider->registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+
+  web_app::IsolationData isolation_data = *web_app->isolation_data();
+  web_app::IsolationData::Builder builder(isolation_data);
+  builder.SetPendingUpdateInfo(web_app::IsolationData::PendingUpdateInfo(
+      web_app::IwaStorageOwnedBundle("update_dir", /*dev_mode=*/false),
+      *web_app::IwaVersion::Create("2.0.0")));
+
+  {
+    web_app::ScopedRegistryUpdate update =
+        provider->sync_bridge_unsafe().BeginUpdate();
+    web_app::WebApp* mutable_app = update->UpdateApp(app_id);
+    mutable_app->SetIsolationData(std::move(builder).Build());
+  }
+
+  base::test::TestFuture<const std::optional<base::Version>&> check_future;
+  handler()->CheckForIsolatedWebAppUpdate(app_id, check_future.GetCallback());
+  EXPECT_TRUE(check_future.Wait());
+  EXPECT_EQ(check_future.Get(), base::Version("2.0.0"));
+}
+
+TEST_P(AppManagementPageHandlerTestBase, ApplyIsolatedWebAppUpdate) {
+  const web_package::test::KeyPair& key_pair =
+      web_app::test::GetDefaultEd25519KeyPair();
+
+  const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder()
+              .SetName("IWA")
+              .SetVersion("1.0.0")
+              .SetUpdateManifestUrl(
+                  GURL("https://example.com/update_manifest.json")))
+          .BuildBundle(key_pair);
+  bundle->FakeInstallPageState(profile());
+  bundle->TrustSigningKey();
+  std::string app_id = bundle->InstallChecked(profile()).app_id();
+
+  const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> update_bundle =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().SetName("IWA").SetVersion("2.0.0"))
+          .BuildBundle(key_pair);
+  update_bundle->FakeInstallPageState(profile());
+
+  profile_url_loader_factory().AddResponse("https://example.com/bundle.swbn",
+                                           update_bundle->GetBundleData());
+  profile_url_loader_factory().AddResponse(
+      "https://example.com/update_manifest.json",
+      R"({"versions": [{"src": "https://example.com/bundle.swbn", "version": "2.0.0"}]})");
+
+  base::test::TestFuture<const std::optional<base::Version>&> check_future;
+  handler()->CheckForIsolatedWebAppUpdate(app_id, check_future.GetCallback());
+  EXPECT_TRUE(check_future.Wait());
+  EXPECT_EQ(check_future.Get(), base::Version("2.0.0"));
+
+  base::test::TestFuture<bool> apply_future;
+  handler()->ApplyIsolatedWebAppUpdate(app_id, apply_future.GetCallback());
+  EXPECT_TRUE(apply_future.Get());
+
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForTest(profile());
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    const web_app::WebApp* web_app =
+        provider->registrar_unsafe().GetAppById(app_id);
+    return web_app && web_app->isolation_data().has_value() &&
+           web_app->isolation_data()->version().version() ==
+               base::Version("2.0.0");
+  }));
+}
+
+TEST_P(AppManagementPageHandlerTestBase, GetNumWindowsForApp) {
+  const std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+      web_app::IsolatedWebAppBuilder(
+          web_app::ManifestBuilder().SetName("IWA").SetVersion("1.0.0"))
+          .BuildBundle();
+  bundle->FakeInstallPageState(profile());
+  bundle->TrustSigningKey();
+  std::string app_id = bundle->InstallChecked(profile()).app_id();
+
+  fake_ui_manager().SetNumWindowsForApp(app_id, 3);
+
+  base::test::TestFuture<uint32_t> num_windows_future;
+  handler()->GetNumWindowsForApp(app_id, num_windows_future.GetCallback());
+  EXPECT_EQ(3u, num_windows_future.Get());
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+TEST_P(AppManagementPageHandlerTestBase, NavigationCapturingUserChoice) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/index.html"));
+  web_app_info->title = u"app_name";
+  web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
+
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+
+  base::test::TestFuture<app_management::mojom::AppPtr> app_future;
+  handler()->GetApp(app_id, app_future.GetCallback());
+  bool expected_value = true;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  expected_value =
+      base::FeatureList::IsEnabled(apps::features::kUpdateAppStringsOnSettings);
+#endif
+  EXPECT_EQ(app_future.Get()->disable_user_choice_navigation_capturing,
+            expected_value);
+}
 
 #if BUILDFLAG(IS_CHROMEOS)
 class AppManagementPageHandlerArcTest

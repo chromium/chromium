@@ -23,6 +23,42 @@
   #typeAndSource {
     display: flex;
   }
+
+  .update-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-inline-end: 20px;
+  }
+
+  .update-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .invisible {
+    visibility: hidden;
+  }
+
+  #checkUpdateButton {
+    width: 180px;
+    justify-content: center;
+  }
+
+  .last-check-text {
+    color: var(--cros-text-color-secondary);
+    font-size: 12px;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+  }
+
+  .spinner {
+    margin-inline-start: 8px;
+    width: 16px;
+    height: 16px;
+  }
 </style>
 <div class="permission-section-header">
   <localized-link id="heading" class="header-text"
@@ -65,6 +101,47 @@
   <div class="indented-app-details" id="version">
     [[i18n('appManagementAppDetailsVersion', app.version)]]
   </div>
+</template>
+<template is="dom-if" if="[[isIsolatedWebApp_(app)]]" restamp>
+  <div class="indented-app-details update-section">
+    <div class="update-info">
+      [[i18n('appManagementAppDetailsVersion', app.version)]]
+      <div class="last-check-text">
+        [[getUpdateStatusString_(updateState_)]]
+        <template is="dom-if" if="[[isChecking_(updateState_)]]">
+          <paper-spinner-lite active class="spinner"></paper-spinner-lite>
+        </template>
+      </div>
+    </div>
+    <div class="update-controls">
+      <cr-button id="checkUpdateButton" on-click="onCheckUpdateButtonClick_"
+          disabled$="[[isChecking_(updateState_)]]">
+        [[i18n('appManagementCheckForUpdates')]]
+      </cr-button>
+    </div>
+  </div>
+
+  <!-- Update Found Dialog -->
+  <template is="dom-if" if="[[showUpdateFoundDialog_]]" restamp>
+    <cr-dialog show-on-attach id="updateFoundDialog"
+      close-text="[[i18n('close')]]" on-close="onUpdateFoundDialogClose_">
+      <div slot="title">[[i18n('appManagementUpdateFoundDialogTitle')]]</div>
+      <div slot="body">
+        [[getUpdateFoundDialogBody_(hasOpenWindows_, availableUpdateVersion_,
+        app.title)]]
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onUpdateFoundDialogCancel_"
+          id="cancelFound">
+          [[i18n('cancel')]]
+        </cr-button>
+        <cr-button class="action-button" on-click="onUpdateFoundDialogConfirm_"
+          id="confirmFound">
+          [[i18n('appManagementApplyUpdate')]]
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
 </template>
 <template is="dom-if" if="[[shouldShowStorage_(app)]]" restamp>
   <div class="indented-app-details" id="storageTitle">

@@ -1090,6 +1090,9 @@ BASE_FEATURE(kInstantHotspotOnNearby, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables or disables Instant Tethering on ChromeOS.
 BASE_FEATURE(kInstantTethering, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the inline update flow for Isolated Web Apps in Settings.
+BASE_FEATURE(kIsolatedWebAppInlineUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the internal server side speech recognition on ChromeOS.
 // The supported locales for this feature are specified using the locales
 // filter in finch config.

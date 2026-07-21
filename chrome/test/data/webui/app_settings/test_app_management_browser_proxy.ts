@@ -18,6 +18,9 @@ export class FakePageHandler extends TestBrowserProxy implements
     super([
       'setPreferredApp',
       'getOverlappingPreferredApps',
+      'checkForIsolatedWebAppUpdate',
+      'applyIsolatedWebAppUpdate',
+      'getNumWindowsForApp',
     ]);
 
     this.app_ = app;
@@ -127,4 +130,20 @@ export class FakePageHandler extends TestBrowserProxy implements
   openStorePage(_appId: string) {}
 
   openSystemNotificationSettings(_appId: string) {}
+
+  checkForIsolatedWebAppUpdate(_appId: string):
+      Promise<{updateVersion: {components: number[]} | null}> {
+    this.methodCalled('checkForIsolatedWebAppUpdate');
+    return Promise.resolve({updateVersion: null});
+  }
+
+  applyIsolatedWebAppUpdate(_appId: string): Promise<{success: boolean}> {
+    this.methodCalled('applyIsolatedWebAppUpdate');
+    return Promise.resolve({success: true});
+  }
+
+  getNumWindowsForApp(_appId: string): Promise<{numWindows: number}> {
+    this.methodCalled('getNumWindowsForApp');
+    return Promise.resolve({numWindows: 0});
+  }
 }

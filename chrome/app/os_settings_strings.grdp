@@ -7087,6 +7087,24 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_VERSION" desc="Text for application version">
     Version: <ph name="APP_VERSION">$1<ex>17.2</ex></ph>
   </message>
+  <message name="IDS_APP_MANAGEMENT_APPLY_UPDATE" desc="Button label to apply a downloaded update for an app">
+    Apply update
+  </message>
+  <message name="IDS_APP_MANAGEMENT_CHECKING" desc="Button label while checking for updates">
+    Checking...
+  </message>
+  <message name="IDS_APP_MANAGEMENT_APP_IS_UP_TO_DATE" desc="Status text indicating the app is running the latest version">
+    App is up to date.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_UPDATE_FOUND_DIALOG_TITLE" desc="Title for the dialog indicating that an update has been found for an isolated web app.">
+    Update found
+  </message>
+  <message name="IDS_APP_MANAGEMENT_UPDATE_FOUND_DIALOG_DESCRIPTION" desc="Description for the dialog warning that an update has been found and asking if they want to apply it.">
+    A new version (<ph name="VERSION">$1<ex>1.2.0</ex></ph>) of <ph name="APP_NAME">$2<ex>Kitchen Sink IWA</ex></ph> is available. Would you like to apply it now?
+  </message>
+  <message name="IDS_APP_MANAGEMENT_UPDATE_FOUND_WARNING_DIALOG_DESCRIPTION" desc="Description for the dialog warning that an update has been found, app windows will close, and asking if they want to apply it.">
+    A new version (<ph name="VERSION">$1<ex>1.2.0</ex></ph>) of <ph name="APP_NAME">$2<ex>Kitchen Sink IWA</ex></ph> is available. All open windows will be closed to apply the update. Unsaved data may be lost.
+  </message>
   <message name="IDS_APP_MANAGEMENT_APP_DETAILS_STORAGE_TITLE" desc="Text for title of storage section for storage related to the app and its associated files">
     Storage
   </message>

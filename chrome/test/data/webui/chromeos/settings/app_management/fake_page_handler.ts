@@ -122,6 +122,9 @@ export class FakePageHandler extends TestBrowserProxy implements
 
   guid: number = 0;
   overlappingAppIds: string[] = [];
+  updateVersion: {components: number[]}|null = null;
+  applyUpdateSuccess: boolean = true;
+  numWindowsForApp: number = 0;
   page: PageRemote;
   private apps_: App[] = [];
   private receiver_: PageHandlerReceiver;
@@ -133,6 +136,9 @@ export class FakePageHandler extends TestBrowserProxy implements
       'getOverlappingPreferredApps',
       'setAppLocale',
       'uninstall',
+      'checkForIsolatedWebAppUpdate',
+      'applyIsolatedWebAppUpdate',
+      'getNumWindowsForApp',
     ]);
 
     this.receiver_ = new PageHandlerReceiver(this);
@@ -264,6 +270,22 @@ export class FakePageHandler extends TestBrowserProxy implements
   openStorePage(_appId: string): void {}
 
   openSystemNotificationSettings(_appId: string): void {}
+
+  checkForIsolatedWebAppUpdate(_appId: string):
+      Promise<{updateVersion: {components: number[]} | null}> {
+    this.methodCalled('checkForIsolatedWebAppUpdate');
+    return Promise.resolve({updateVersion: this.updateVersion});
+  }
+
+  applyIsolatedWebAppUpdate(_appId: string): Promise<{success: boolean}> {
+    this.methodCalled('applyIsolatedWebAppUpdate');
+    return Promise.resolve({success: this.applyUpdateSuccess});
+  }
+
+  getNumWindowsForApp(_appId: string): Promise<{numWindows: number}> {
+    this.methodCalled('getNumWindowsForApp');
+    return Promise.resolve({numWindows: this.numWindowsForApp});
+  }
 
   async addApp(optId?: string, optConfig?: AppConfig): Promise<App> {
     optId = optId || String(this.guid++);

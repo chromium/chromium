@@ -2,8 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+
+enum UpdateState {
+  IDLE = 'idle',
+  CHECKING = 'checking',
+  UP_TO_DATE = 'up-to-date',
+  UPDATE_AVAILABLE = 'update-available',
+}
 import './app_management_cros_shared_style.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -49,6 +58,26 @@ export class AppManagementAppDetailsItem extends
       subAppToParentAppId_: {
         type: Object,
       },
+
+      updateState_: {
+        type: String,
+        value: UpdateState.IDLE,
+      },
+
+      availableUpdateVersion_: {
+        type: String,
+        value: '',
+      },
+
+      hasOpenWindows_: {
+        type: Boolean,
+        value: false,
+      },
+
+      showUpdateFoundDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -56,6 +85,10 @@ export class AppManagementAppDetailsItem extends
   private appId_: string;
   private apps_: Record<string, App>;
   private subAppToParentAppId_: Record<string, string>;
+  private updateState_: UpdateState;
+  private availableUpdateVersion_: string;
+  private hasOpenWindows_: boolean = false;
+  private showUpdateFoundDialog_: boolean = false;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -65,9 +98,17 @@ export class AppManagementAppDetailsItem extends
     this.updateFromStore();
   }
 
+  private resetUpdateState_(): void {
+    this.updateState_ = UpdateState.IDLE;
+    this.availableUpdateVersion_ = '';
+    this.showUpdateFoundDialog_ = false;
+    this.hasOpenWindows_ = false;
+  }
+
   private appIdChanged_(appId: string): void {
     if (appId && this.app) {
       browserProxyFactory.getInstance().handler.updateAppSize(appId);
+      this.resetUpdateState_();
     }
   }
 
@@ -78,7 +119,120 @@ export class AppManagementAppDetailsItem extends
     if (app.installReason === InstallReason.kSystem) {
       return false;
     }
+    if (this.isIsolatedWebApp_(app)) {
+      return false;
+    }
     return Boolean(app.version);
+  }
+
+  private isIsolatedWebApp_(app: App): boolean {
+    return loadTimeData.getBoolean('isIwaInlineUpdateEnabled') && app &&
+        app.type === AppType.kWeb &&
+        app.publisherId.startsWith('isolated-app://');
+  }
+
+  private isChecking_(state: UpdateState): boolean {
+    return state === UpdateState.CHECKING;
+  }
+
+  private onCheckUpdateButtonClick_(): void {
+    this.checkForUpdates_();
+  }
+
+  private onUpdateFoundDialogClose_(): void {
+    this.showUpdateFoundDialog_ = false;
+  }
+
+  private onUpdateFoundDialogCancel_(): void {
+    this.showUpdateFoundDialog_ = false;
+  }
+
+  private onUpdateFoundDialogConfirm_(): void {
+    this.showUpdateFoundDialog_ = false;
+    this.triggerUpdate_();
+  }
+
+  private async checkForUpdates_(): Promise<void> {
+    if (!this.app) {
+      return;
+    }
+    const targetAppId = this.app.id;
+    this.updateState_ = UpdateState.CHECKING;
+    try {
+      const response = await browserProxyFactory.getInstance()
+                           .handler.checkForIsolatedWebAppUpdate(targetAppId);
+      if (this.app?.id !== targetAppId) {
+        return;
+      }
+      if (response && response.updateVersion) {
+        this.availableUpdateVersion_ =
+            response.updateVersion.components.join('.');
+        this.updateState_ = UpdateState.UPDATE_AVAILABLE;
+
+        // Query open windows state to configure dialogue body
+        const numWindowsResponse =
+            await browserProxyFactory.getInstance().handler.getNumWindowsForApp(
+                targetAppId);
+        if (this.app?.id !== targetAppId) {
+          return;
+        }
+        this.hasOpenWindows_ =
+            numWindowsResponse ? (numWindowsResponse.numWindows > 0) : false;
+        this.showUpdateFoundDialog_ = true;
+      } else {
+        this.updateState_ = UpdateState.UP_TO_DATE;
+      }
+    } catch (e) {
+      if (this.app?.id === targetAppId) {
+        console.error('Failed to check for updates:', e);
+        this.resetUpdateState_();
+      }
+    }
+  }
+
+  private async triggerUpdate_(): Promise<void> {
+    if (!this.app) {
+      return;
+    }
+    const targetAppId = this.app.id;
+    this.updateState_ = UpdateState.CHECKING;
+    try {
+      const response = await browserProxyFactory.getInstance()
+                           .handler.applyIsolatedWebAppUpdate(targetAppId);
+      if (this.app?.id !== targetAppId) {
+        return;
+      }
+      if (response && response.success) {
+        this.resetUpdateState_();
+      } else {
+        this.updateState_ = UpdateState.UPDATE_AVAILABLE;
+      }
+    } catch (e) {
+      if (this.app?.id === targetAppId) {
+        console.error('Failed to apply update:', e);
+        this.updateState_ = UpdateState.UPDATE_AVAILABLE;
+      }
+    }
+  }
+
+  private getUpdateStatusString_(state: UpdateState): string {
+    if (state === UpdateState.CHECKING) {
+      return this.i18n('appManagementCheckingForUpdates');
+    }
+    if (state === UpdateState.UP_TO_DATE) {
+      return this.i18n('appManagementAppIsUpToDate');
+    }
+    return '';
+  }
+
+  private getUpdateFoundDialogBody_(
+      hasOpenWindows: boolean, version: string, title: string): string {
+    if (hasOpenWindows) {
+      return this.i18n(
+          'appManagementUpdateFoundWarningDialogDescription', version, title);
+    }
+    return this.i18n(
+        'appManagementUpdateFoundDialogDescription', version, title);
   }
 
   /**

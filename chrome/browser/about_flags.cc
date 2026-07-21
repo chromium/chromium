@@ -13260,7 +13260,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDlpFileSystemApiName,
      flag_descriptions::kEnableDlpFileSystemApiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(enterprise_data_protection::kEnableDlpFileSystemApi)},
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    {"enable-isolated-web-app-inline-update",
+     flag_descriptions::kIsolatedWebAppInlineUpdateName,
+     flag_descriptions::kIsolatedWebAppInlineUpdateDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kIsolatedWebAppInlineUpdate)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-bricks-native-page",

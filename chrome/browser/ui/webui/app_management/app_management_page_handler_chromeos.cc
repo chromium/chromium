@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -22,9 +23,14 @@
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "chrome/browser/ui/webui/app_management/app_management_shelf_delegate_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
+#include "chrome/browser/web_applications/model/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
@@ -34,6 +40,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -117,6 +124,224 @@ CreateExtensionAppPermissionMessage(
 
 }  // namespace
 
+class AppManagementPageHandlerChromeOs::IsolatedWebAppUpdateHandler
+    : public web_app::IsolatedWebAppUpdateManager::Observer {
+ public:
+  IsolatedWebAppUpdateHandler(Profile& profile,
+                              web_app::WebAppProvider& provider)
+      : profile_(profile), provider_(provider) {
+    observation_.Observe(&provider.isolated_web_app_update_manager());
+  }
+
+  ~IsolatedWebAppUpdateHandler() override {
+    for (auto& [app_id, callback] : check_requests_) {
+      std::move(callback).Run(std::nullopt);
+    }
+    check_requests_.clear();
+
+    for (auto& [app_id, request] : apply_requests_) {
+      std::move(request.callback).Run(/*success=*/false);
+    }
+    apply_requests_.clear();
+  }
+
+  bool IsIsolatedWebApp(const std::string& app_id) const {
+    const web_app::WebApp* app =
+        provider_->registrar_unsafe().GetAppById(app_id);
+    return app && app->isolation_data().has_value();
+  }
+
+  void CheckForUpdate(const std::string& app_id,
+                      CheckForIsolatedWebAppUpdateCallback callback) {
+    if (check_requests_.contains(app_id)) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    if (!provider_->isolated_web_app_update_manager().DiscoverUpdate(app_id)) {
+      std::move(callback).Run(std::nullopt);
+      return;
+    }
+
+    check_requests_.emplace(app_id, std::move(callback));
+  }
+
+  void GetNumWindowsForApp(const std::string& app_id,
+                           GetNumWindowsForAppCallback callback) {
+    std::move(callback).Run(
+        provider_->ui_manager().GetNumWindowsForApp(app_id));
+  }
+
+  void ApplyUpdate(const std::string& app_id,
+                   ApplyIsolatedWebAppUpdateCallback callback) {
+    if (apply_requests_.contains(app_id)) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    const web_app::WebApp* iwa = provider_->registrar_unsafe().GetAppById(
+        app_id, web_app::WebAppFilter::IsIsolatedApp());
+    const bool was_running =
+        provider_->ui_manager().GetNumWindowsForApp(app_id) > 0;
+    const bool is_already_pending =
+        iwa && iwa->isolation_data()->pending_update_info().has_value();
+
+    apply_requests_.emplace(
+        app_id, ApplyRequest{.callback = std::move(callback),
+                             .was_running = was_running,
+                             .is_already_pending = is_already_pending});
+
+    if (was_running) {
+      provider_->ui_manager().CloseAppWindows(app_id);
+      provider_->ui_manager().NotifyOnAllAppWindowsClosed(
+          app_id,
+          base::BindOnce(&IsolatedWebAppUpdateHandler::OnAllAppWindowsClosed,
+                         weak_factory_.GetWeakPtr(), app_id));
+    } else {
+      OnAllAppWindowsClosed(app_id);
+    }
+  }
+
+  // web_app::IsolatedWebAppUpdateManager::Observer:
+  void OnUpdateDiscoveryCompleted(
+      const webapps::AppId& app_id,
+      web_app::IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status,
+      std::optional<web_app::IwaVersion> discovered_version) override {
+    auto itr = check_requests_.find(app_id);
+    if (itr == check_requests_.end()) {
+      return;
+    }
+
+    auto callback = std::move(itr->second);
+    check_requests_.erase(itr);
+
+    if (status.has_value() && discovered_version.has_value()) {
+      switch (*status) {
+        case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+            kUpdateFound:
+        case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+            kUpdateFoundAndSavedInDatabase:
+        case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+            kPinnedVersionUpdateFoundAndSavedInDatabase:
+        case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+            kDowngradeVersionFoundAndSavedInDatabase:
+        case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+            kUpdateAlreadyPending:
+          std::move(callback).Run(discovered_version->version());
+          return;
+        case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+            kNoUpdateFound:
+          break;
+      }
+    }
+
+    std::move(callback).Run(std::nullopt);
+  }
+
+  void OnUpdateDiscoverAndPrepareTaskCompleted(
+      const webapps::AppId& app_id,
+      web_app::IsolatedWebAppUpdateCheckAndPrepareTask::CompletionStatus status)
+      override {
+    auto itr = apply_requests_.find(app_id);
+    if (itr == apply_requests_.end()) {
+      return;
+    }
+
+    if (!status.has_value()) {
+      CompleteApplyRequest(app_id, /*success=*/false);
+      return;
+    }
+
+    switch (*status) {
+      case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+          kUpdateFoundAndSavedInDatabase:
+      case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+          kPinnedVersionUpdateFoundAndSavedInDatabase:
+      case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+          kDowngradeVersionFoundAndSavedInDatabase:
+      case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+          kUpdateAlreadyPending:
+        // The update manager will automatically queue and start the apply task
+        // because the app windows are closed. We just wait for
+        // OnUpdateApplyTaskCompleted.
+        return;
+      case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+          kNoUpdateFound:
+      case web_app::IsolatedWebAppUpdateCheckAndPrepareTask::Success::
+          kUpdateFound:
+        break;
+    }
+
+    CompleteApplyRequest(app_id, /*success=*/false);
+  }
+
+  void OnUpdateApplyTaskCompleted(
+      const webapps::AppId& app_id,
+      web_app::IsolatedWebAppApplyUpdateCommandResult status) override {
+    auto itr = apply_requests_.find(app_id);
+    if (itr == apply_requests_.end()) {
+      return;
+    }
+
+    bool success = status.has_value();
+    if (success && itr->second.was_running) {
+      apps::AppServiceProxyFactory::GetForProfile(&profile_.get())
+          ->Launch(app_id, ui::EF_NONE,
+                   apps::LaunchSource::kFromChromeInternal);
+    }
+
+    CompleteApplyRequest(app_id, success);
+  }
+
+ private:
+  struct ApplyRequest {
+    ApplyIsolatedWebAppUpdateCallback callback;
+    bool was_running;
+    bool is_already_pending;
+  };
+
+  void OnAllAppWindowsClosed(const std::string& app_id) {
+    auto itr = apply_requests_.find(app_id);
+    if (itr == apply_requests_.end()) {
+      return;
+    }
+
+    if (itr->second.is_already_pending) {
+      // The update is already staged. The update manager will automatically
+      // apply it now that the windows are closed. We just wait for
+      // OnUpdateApplyTaskCompleted.
+      return;
+    }
+
+    if (!provider_->isolated_web_app_update_manager()
+             .MaybeDiscoverAndPrepareUpdate(app_id)) {
+      CompleteApplyRequest(app_id, /*success=*/false);
+    }
+  }
+
+  void CompleteApplyRequest(const std::string& app_id, bool success) {
+    auto itr = apply_requests_.find(app_id);
+    if (itr == apply_requests_.end()) {
+      return;
+    }
+
+    auto callback = std::move(itr->second.callback);
+    apply_requests_.erase(itr);
+    std::move(callback).Run(success);
+  }
+
+  const raw_ref<Profile> profile_;
+  const raw_ref<web_app::WebAppProvider> provider_;
+  base::ScopedObservation<web_app::IsolatedWebAppUpdateManager,
+                          web_app::IsolatedWebAppUpdateManager::Observer>
+      observation_{this};
+  base::flat_map<webapps::AppId, CheckForIsolatedWebAppUpdateCallback>
+      check_requests_;
+  base::flat_map<webapps::AppId, ApplyRequest> apply_requests_;
+
+  base::WeakPtrFactory<IsolatedWebAppUpdateHandler> weak_factory_{this};
+};
+
 AppManagementPageHandlerChromeOs::AppManagementPageHandlerChromeOs(
     mojo::PendingReceiver<app_management::mojom::PageHandler> receiver,
     mojo::PendingRemote<app_management::mojom::Page> page,
@@ -130,6 +355,14 @@ AppManagementPageHandlerChromeOs::AppManagementPageHandlerChromeOs(
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   preferred_apps_list_handle_observer_.Observe(&proxy->PreferredAppsList());
+
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (base::FeatureList::IsEnabled(
+          ash::features::kIsolatedWebAppInlineUpdate) &&
+      provider) {
+    update_handler_ =
+        std::make_unique<IsolatedWebAppUpdateHandler>(*profile, *provider);
+  }
 }
 
 AppManagementPageHandlerChromeOs::~AppManagementPageHandlerChromeOs() = default;
@@ -344,4 +577,43 @@ app_management::mojom::AppPtr AppManagementPageHandlerChromeOs::CreateApp(
       });
 
   return app;
+}
+
+void AppManagementPageHandlerChromeOs::CheckForIsolatedWebAppUpdate(
+    const std::string& app_id,
+    CheckForIsolatedWebAppUpdateCallback callback) {
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                         std::nullopt);
+
+  if (!update_handler_ || !update_handler_->IsIsolatedWebApp(app_id)) {
+    return;
+  }
+
+  update_handler_->CheckForUpdate(app_id, std::move(callback));
+}
+
+void AppManagementPageHandlerChromeOs::ApplyIsolatedWebAppUpdate(
+    const std::string& app_id,
+    ApplyIsolatedWebAppUpdateCallback callback) {
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                         /*success=*/false);
+
+  if (!update_handler_ || !update_handler_->IsIsolatedWebApp(app_id)) {
+    return;
+  }
+
+  update_handler_->ApplyUpdate(app_id, std::move(callback));
+}
+
+void AppManagementPageHandlerChromeOs::GetNumWindowsForApp(
+    const std::string& app_id,
+    GetNumWindowsForAppCallback callback) {
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                         /*num_windows=*/0);
+
+  if (!update_handler_ || !update_handler_->IsIsolatedWebApp(app_id)) {
+    return;
+  }
+
+  update_handler_->GetNumWindowsForApp(app_id, std::move(callback));
 }

@@ -4,6 +4,7 @@
 
 module app_management.mojom;
 
+import "mojo/public/mojom/base/version.mojom";
 import "url/mojom/url.mojom";
 
 // The types of apps available in the registry.
@@ -254,6 +255,19 @@ interface PageHandler {
   // `show_system_notifications_settings_link` was true for the app.
   [EnableIf=is_mac]
   OpenSystemNotificationSettings(string app_id);
+  // Triggers an update check for the app identified by `app_id`.
+  // Returns the version string if an update is found, or null otherwise.
+  [EnableIf=is_chromeos]
+  CheckForIsolatedWebAppUpdate(string app_id) => (
+    mojo_base.mojom.Version? update_version
+  );
+  // Applies the pending update for the app identified by `app_id`.
+  [EnableIf=is_chromeos]
+  ApplyIsolatedWebAppUpdate(string app_id) => (bool success);
+  // Returns the number of active open windows for the app identified
+  // by `app_id`.
+  [EnableIf=is_chromeos]
+  GetNumWindowsForApp(string app_id) => (uint32 num_windows);
 };
 
 // Frontend interface.

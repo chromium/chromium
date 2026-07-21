@@ -2989,6 +2989,11 @@ inline constexpr char kInStockNotificationDescription[] =
     "Enables detecting, showing, and subscribing to back-in-stock "
     "notifications on eligible product pages.";
 
+inline constexpr char kIsolatedWebAppInlineUpdateName[] =
+    "Isolated Web App Inline Update";
+inline constexpr char kIsolatedWebAppInlineUpdateDescription[] =
+    "Enables the inline manual update flow for Isolated Web Apps in Settings.";
+
 inline constexpr char
     kInvalidateSearchEngineChoiceOnDeviceRestoreDetectionName[] =
         "Invalidate search engine choice after the install detects it has been "
