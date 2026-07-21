@@ -13,6 +13,10 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --color-button-background-prominent: var(--color-sys-primary);
+  --color-button-foreground-prominent: var(--color-sys-on-primary);
+  --color-button-foreground: var(--color-sys-primary);
+  --color-button-border: var(--color-sys-tonal-outline);
   color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: column;
@@ -28,13 +32,6 @@
   :host {
     gap: 24px;
   }
-}
-
-:host([app-mode='first-run']) {
-  --color-button-background-prominent: var(--color-sys-primary);
-  --color-button-foreground-prominent: var(--color-sys-on-primary);
-  --color-button-foreground: var(--color-sys-primary);
-  --color-button-border: var(--color-sys-tonal-outline);
 }
 
 :host(:not([revamp-enabled])),
