@@ -458,7 +458,6 @@ public class ToolbarManager
     private @Nullable TabGroupUiOneshotSupplier mTabGroupUiOneshotSupplier;
 
     private @Nullable SideUiStateProvider mSideUiStateProvider;
-    private @Nullable SideUiObserver mSideUiObserver;
     private @Nullable SideUiObserver mControlContainerSideUiObserver;
     private @Nullable SideUiObserver mProgressBarSideUiObserver;
 
@@ -1880,16 +1879,6 @@ public class ToolbarManager
 
         mSideUiStateProvider = sideUiStateProvider;
 
-        mSideUiObserver =
-                (sideUiSpecs) -> {
-                    // Can be null after destroy(), empty specs are passed when the observer
-                    // is removed.
-                    if (mFindToolbarManager != null) {
-                        mFindToolbarManager.onSideUiSpecsChanged(sideUiSpecs);
-                    }
-                };
-        mSideUiStateProvider.addObserver(mSideUiObserver);
-
         mControlContainerSideUiObserver = new ToolbarMarginAdjusterForSideUi(mControlContainer);
         mSideUiStateProvider.addObserver(mControlContainerSideUiObserver);
         mProgressBarSideUiObserver = new ViewMarginAdjusterForSideUi(mProgressBarContainer);
@@ -3079,9 +3068,6 @@ public class ToolbarManager
 
     private void removeSideUiObservers() {
         if (mSideUiStateProvider != null) {
-            if (mSideUiObserver != null) {
-                mSideUiStateProvider.removeObserver(mSideUiObserver);
-            }
             if (mControlContainerSideUiObserver != null) {
                 mSideUiStateProvider.removeObserver(mControlContainerSideUiObserver);
             }

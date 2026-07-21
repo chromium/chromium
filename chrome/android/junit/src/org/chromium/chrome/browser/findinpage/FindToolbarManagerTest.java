@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.findinpage;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -27,7 +24,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Test for {@link FindToolbarManagerTest}. */
@@ -107,21 +103,5 @@ public class FindToolbarManagerTest {
         mFindToolbarManager.showToolbar();
         mFindToolbarManager.setFindQuery("foo");
         Mockito.verify(mFindToolbar).setFindQuery("foo");
-    }
-
-    @Test
-    public void testOnSideUiSpecsChanged() {
-        SideUiSpecs specs = new SideUiSpecs(10, 20);
-
-        // Before inflation.
-        mFindToolbarManager.onSideUiSpecsChanged(specs);
-        Mockito.verify(mFindToolbar, never()).onSideUiSpecsChanged(any());
-
-        mFindToolbarManager.showToolbar();
-        Mockito.verify(mFindToolbar).onSideUiSpecsChanged(specs);
-
-        SideUiSpecs newSpecs = new SideUiSpecs(30, 40);
-        mFindToolbarManager.onSideUiSpecsChanged(newSpecs);
-        Mockito.verify(mFindToolbar).onSideUiSpecsChanged(newSpecs);
     }
 }

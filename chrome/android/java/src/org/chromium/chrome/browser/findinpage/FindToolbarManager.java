@@ -15,16 +15,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
-import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Manages the interactions with the find toolbar. */
 @NullMarked
-public class FindToolbarManager implements SideUiObserver {
+public class FindToolbarManager {
     private @Nullable FindToolbar mFindToolbar;
-    private @Nullable SideUiSpecs mSideUiSpecs;
     private final ViewStub mFindToolbarStub;
     private final TabModelSelector mTabModelSelector;
     private final WindowAndroid mWindowAndroid;
@@ -62,14 +59,6 @@ public class FindToolbarManager implements SideUiObserver {
         mSecondaryUiContainer = secondaryUiContainer;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mObservers = new ObserverList<>();
-    }
-
-    @Override
-    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-        mSideUiSpecs = sideUiSpecs;
-        if (mFindToolbar != null) {
-            mFindToolbar.onSideUiSpecsChanged(sideUiSpecs);
-        }
     }
 
     /**
@@ -129,9 +118,6 @@ public class FindToolbarManager implements SideUiObserver {
                 mBackPressManager.removeHandler(BackPressHandler.Type.FIND_TOOLBAR);
             }
             mBackPressManager.addHandler(mFindToolbar, BackPressHandler.Type.FIND_TOOLBAR);
-        }
-        if (mSideUiSpecs != null) {
-            mFindToolbar.onSideUiSpecsChanged(mSideUiSpecs);
         }
         mFindToolbar.activate();
     }
