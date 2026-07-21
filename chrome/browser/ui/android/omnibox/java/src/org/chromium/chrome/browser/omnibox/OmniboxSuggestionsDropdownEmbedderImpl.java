@@ -25,6 +25,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
@@ -284,10 +285,12 @@ class OmniboxSuggestionsDropdownEmbedderImpl
             } else if (mFuseboxStateSupplier.get() == FuseboxState.DISABLED) {
                 // Case 2: No fusebox on tablet. Width equal to alignment view and left equivalent
                 // to left of alignment view. Top minus a small overlap.
-                top -=
-                        mContext.getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.omnibox_suggestion_list_toolbar_overlap);
+                if (!ChromeFeatureList.sToolbarProgressBarRefactor.isEnabled()) {
+                    top -=
+                            mContext.getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.omnibox_suggestion_list_toolbar_overlap);
+                }
                 sideSpacing = OmniboxResourceProvider.getDropdownSideSpacing(mContext);
             } else {
                 // Case 3: Fusebox on tablet. The width of the dropdown should match the alignment
