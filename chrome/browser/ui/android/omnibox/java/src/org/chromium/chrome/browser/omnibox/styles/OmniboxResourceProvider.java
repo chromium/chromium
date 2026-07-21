@@ -1067,6 +1067,10 @@ public class OmniboxResourceProvider {
     /** Gets the start padding for a header suggestion. */
     public static @Px int getHeaderStartPadding(Context context) {
         context = maybeReplaceContextForSmallTabletWindow(context);
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            return context.getResources()
+                    .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start_desktop);
+        }
         return context.getResources()
                 .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_padding_start);
     }
