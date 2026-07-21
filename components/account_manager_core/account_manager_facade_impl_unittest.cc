@@ -214,11 +214,12 @@ TEST_F(AccountManagerFacadeImplTest, ReportAuthErrorIgnoresTransientErrors) {
   observation.Observe(account_manager_facade.get());
 
   Account account = CreateTestGaiaAccount(kTestAccountEmail);
-  for (auto state : {GoogleServiceAuthError::CONNECTION_FAILED,
-                     GoogleServiceAuthError::SERVICE_UNAVAILABLE,
-                     GoogleServiceAuthError::REQUEST_CANCELED,
-                     GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED}) {
-    GoogleServiceAuthError error(state);
+  for (auto error : {
+           GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED),
+           GoogleServiceAuthError::FromServiceUnavailable(""),
+           GoogleServiceAuthError::CreateRequestCanceled(),
+           GoogleServiceAuthError::FromTokenBindingChallenge(""),
+       }) {
     ASSERT_TRUE(error.IsTransientError());
     // `observer` is a StrictMock; test will fail if any method is called.
     account_manager_facade->ReportAuthError(account.key, error);

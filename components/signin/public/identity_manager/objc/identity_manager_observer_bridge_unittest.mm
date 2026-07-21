@@ -212,8 +212,8 @@ TEST_F(IdentityManagerObserverBridgeTest, OnAccountsInCookieUpdatedWithError) {
   signed_out_account.signed_out = true;
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
       /*accounts_are_fresh=*/false, /*accounts=*/{signed_out_account});
-  GoogleServiceAuthError error(
-      GoogleServiceAuthError::State::CONNECTION_FAILED);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED);
   observer_bridge_.get()->OnAccountsInCookieUpdated(accounts_in_cookie_jar_info,
                                                     error);
   EXPECT_EQ(1, observer_bridge_target_.accountsInCookieWasUpdatedCount);
