@@ -132,11 +132,8 @@ enum MediaContainerName;
 enum MediaStatusState;
 
 // See media/base/encryption_scheme.h for description.
-enum EncryptionScheme {
-  kUnencrypted,
-  kCenc,
-  kCbcs,
-};
+[Native]
+enum EncryptionScheme;
 
 // See media::EncryptionType for descriptions.
 enum EncryptionType {
