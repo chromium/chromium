@@ -71,7 +71,8 @@ class SplitViewIphController : public TabStripModelObserver {
   // Two most recently active tabs. Front is current active tab, end is previous
   // active tab. When a third tab becomes active, push to front, which will
   // evict the oldest from the end.
-  base::circular_deque<tabs::TabInterface*> recent_tabs_;
+  base::circular_deque<raw_ptr<tabs::TabInterface, DanglingUntriaged>>
+      recent_tabs_;
 
   ui::ScopedUnownedUserData<SplitViewIphController> scoped_data_;
 };

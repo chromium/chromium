@@ -112,7 +112,8 @@ const base::FilePath::CharType kCameraPage[] =
 
 class AnimationWaiter {
  public:
-  explicit AnimationWaiter(std::vector<gfx::Animation*> animations)
+  explicit AnimationWaiter(
+      const std::vector<raw_ptr<gfx::Animation>>& animations)
       : animations_(animations) {}
 
   AnimationWaiter() = delete;
@@ -121,7 +122,7 @@ class AnimationWaiter {
   AnimationWaiter& operator=(const AnimationWaiter&) = delete;
 
   void WaitForAnimationInterval(base::TimeDelta animation_interval) {
-    for (auto* animation : animations_) {
+    for (gfx::Animation* animation : animations_) {
       auto animation_api = std::make_unique<gfx::AnimationTestApi>(animation);
       animation_api->SetStartTime(waiter_creation_time_);
       animation_api->Step(waiter_creation_time_ + animation_interval);
@@ -130,7 +131,7 @@ class AnimationWaiter {
 
  private:
   const base::TimeTicks waiter_creation_time_ = base::TimeTicks::Now();
-  std::vector<gfx::Animation*> animations_;
+  std::vector<raw_ptr<gfx::Animation>> animations_;
 };
 
 class ModalWidgetDelegate : public views::WidgetDelegate {
@@ -378,9 +379,10 @@ class PictureInPictureBrowserFrameViewTest : public WebRtcTestBase,
         views::GetRootWindow(pip_frame_view_->GetWidget()));
   }
 
-  void WaitForTopBarAnimations(std::vector<gfx::Animation*> animations) {
+  void WaitForTopBarAnimations(
+      const std::vector<raw_ptr<gfx::Animation>>& animations) {
     base::TimeTicks now = base::TimeTicks::Now();
-    for (auto* animation : animations) {
+    for (auto& animation : animations) {
       gfx::AnimationTestApi animation_api(animation);
       animation_api.SetStartTime(now);
       animation_api.Step(now + kAnimationDuration);

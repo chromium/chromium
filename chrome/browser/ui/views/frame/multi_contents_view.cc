@@ -136,7 +136,7 @@ MultiContentsView::MultiContentsView(
   lens_overlay_view->SetLayoutManager(std::make_unique<views::FillLayout>());
   lens_overlay_view_ = AddChildView(std::move(lens_overlay_view));
 
-  for (auto* contents_container_view : contents_container_views_) {
+  for (auto& contents_container_view : contents_container_views_) {
     auto& view_map = container_focusable_map_[contents_container_view];
 
     auto* contents_view = contents_container_view->contents_view();
@@ -236,7 +236,7 @@ void MultiContentsView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
 
 ContentsContainerView* MultiContentsView::GetContentsContainerViewFor(
     content::WebContents* web_contents) const {
-  for (auto* container_view : contents_container_views_) {
+  for (auto& container_view : contents_container_views_) {
     if (container_view->contents_view()->web_contents() == web_contents) {
       return container_view;
     }
@@ -362,7 +362,7 @@ void MultiContentsView::SetHighlightActiveContentsView(bool is_highlighted) {
 
 void MultiContentsView::ExecuteOnEachVisibleContentsView(
     base::RepeatingCallback<void(ContentsWebView*)> callback) {
-  for (auto* contents_container_view : contents_container_views_) {
+  for (auto& contents_container_view : contents_container_views_) {
     if (contents_container_view->GetVisible()) {
       callback.Run(contents_container_view->contents_view());
     }
@@ -385,7 +385,7 @@ void MultiContentsView::SetTargetContentBounds(
 }
 
 void MultiContentsView::SetIsAnimatingContent(bool is_animating) {
-  for (auto* contents_container_view : contents_container_views_) {
+  for (auto& contents_container_view : contents_container_views_) {
     contents_container_view->contents_view()->SetIsAnimatingBounds(
         is_animating);
   }
@@ -393,7 +393,7 @@ void MultiContentsView::SetIsAnimatingContent(bool is_animating) {
 
 std::vector<views::View*> MultiContentsView::GetAccessiblePanes() {
   std::vector<views::View*> accessible_panes;
-  for (auto* contents_container_view : contents_container_views_) {
+  for (auto& contents_container_view : contents_container_views_) {
     auto contents_accessible_panes =
         contents_container_view->GetAccessiblePanes();
     accessible_panes.insert(accessible_panes.end(),
@@ -457,7 +457,7 @@ void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
 
 void MultiContentsView::OnActorOverlayFocused(views::WebView* web_view) {
   if (IsInSplitView() && GetWidget()->IsVisible()) {
-    for (auto* contents_container_view : contents_container_views_) {
+    for (auto& contents_container_view : contents_container_views_) {
       if (contents_container_view->actor_overlay_web_view() &&
           contents_container_view->actor_overlay_web_view() == web_view &&
           GetInactiveContentsView() ==
@@ -471,7 +471,7 @@ void MultiContentsView::OnActorOverlayFocused(views::WebView* web_view) {
 
 void MultiContentsView::OnNtpFooterFocused(views::WebView* web_view) {
   if (IsInSplitView() && GetWidget()->IsVisible()) {
-    for (auto* contents_container_view : contents_container_views_) {
+    for (auto& contents_container_view : contents_container_views_) {
       if (contents_container_view->new_tab_footer_view() &&
           contents_container_view->new_tab_footer_view() == web_view &&
           GetInactiveContentsView() ==
@@ -541,12 +541,12 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
                          gfx::Size(available_space.width(), sizes.end));
   }
 
-  layouts.child_layouts.emplace_back(contents_container_views_[0],
+  layouts.child_layouts.emplace_back(contents_container_views_[0].get(),
                                      contents_container_views_[0]->GetVisible(),
                                      start_rect);
   layouts.child_layouts.emplace_back(resize_area_.get(),
                                      resize_area_->GetVisible(), resize_rect);
-  layouts.child_layouts.emplace_back(contents_container_views_[1],
+  layouts.child_layouts.emplace_back(contents_container_views_[1].get(),
                                      contents_container_views_[1]->GetVisible(),
                                      end_rect);
   layouts.child_layouts.emplace_back(lens_overlay_view_.get(),
@@ -559,7 +559,7 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
 
 void MultiContentsView::BeforeApplyLayout(const views::ProposedLayout& layout) {
   if (!target_content_bounds_) {
-    for (auto* contents : contents_container_views_) {
+    for (auto& contents : contents_container_views_) {
       contents->SetTargetContentBounds(std::nullopt);
     }
     return;
@@ -588,7 +588,7 @@ void MultiContentsView::BeforeApplyLayout(const views::ProposedLayout& layout) {
 
   gfx::Outsets first_outsets = gfx::Outsets::TLBR(
       default_clip.top(), 0, default_clip.bottom(), default_clip.left());
-  auto* const first = contents_container_views_[0];
+  auto* const first = contents_container_views_[0].get();
   auto* const first_current = layout.GetLayoutFor(first);
   auto* const first_target = target_layout.GetLayoutFor(first);
   if (first_current && first_target) {
@@ -598,7 +598,7 @@ void MultiContentsView::BeforeApplyLayout(const views::ProposedLayout& layout) {
 
   gfx::Outsets second_outsets = gfx::Outsets::TLBR(
       default_clip.top(), 0, default_clip.bottom(), default_clip.right());
-  auto* const second = contents_container_views_[1];
+  auto* const second = contents_container_views_[1].get();
   auto* const second_current = layout.GetLayoutFor(second);
   auto* const second_target = target_layout.GetLayoutFor(second);
   if (second_current && second_target) {
@@ -787,7 +787,7 @@ int MultiContentsView::GetMinViewSize(gfx::Rect available_space) const {
 
 void MultiContentsView::UpdateContentsBorderAndOverlay() {
   const bool is_in_split = IsInSplitView();
-  for (auto* contents_container_view : contents_container_views_) {
+  for (auto& contents_container_view : contents_container_views_) {
     const bool is_active =
         contents_container_view->contents_view() == GetActiveContentsView();
     contents_container_view->SetRoundedCorners(

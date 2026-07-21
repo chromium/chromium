@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/file_system_access/file_system_access_restore_permission_bubble_view.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -169,9 +170,10 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestorePermissionBubbleViewTest,
       {1}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
-  std::vector<ContentsContainerView*> contents_container_views =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetContentsContainerViews();
+  std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>
+      contents_container_views =
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetContentsContainerViews();
   ASSERT_EQ(contents_container_views.size(), 2U);
   EXPECT_FALSE(
       contents_container_views[0]->contents_outline_view()->is_highlighted());

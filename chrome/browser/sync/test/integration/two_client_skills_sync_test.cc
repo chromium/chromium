@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -25,7 +26,7 @@ class SkillsMatchChecker : public StatusChangeChecker,
                            public skills::SkillsService::Observer {
  public:
   explicit SkillsMatchChecker(
-      const std::vector<skills::SkillsService*>& services)
+      const std::vector<raw_ptr<skills::SkillsService>>& services)
       : services_(services) {
     for (skills::SkillsService* service : services_) {
       CHECK(service);
@@ -104,7 +105,7 @@ class SkillsMatchChecker : public StatusChangeChecker,
     return true;
   }
 
-  const std::vector<skills::SkillsService*> services_;
+  const std::vector<raw_ptr<skills::SkillsService>> services_;
   std::vector<
       std::unique_ptr<base::ScopedObservation<skills::SkillsService,
                                               skills::SkillsService::Observer>>>
@@ -140,8 +141,8 @@ class TwoClientSkillsSyncTest
     return GetSkillsService(index).GetSkills().size();
   }
 
-  std::vector<skills::SkillsService*> GetSkillsServices() {
-    std::vector<skills::SkillsService*> services;
+  std::vector<raw_ptr<skills::SkillsService>> GetSkillsServices() {
+    std::vector<raw_ptr<skills::SkillsService>> services;
     for (Profile* profile : GetAllProfiles()) {
       skills::SkillsService* service =
           skills::SkillsServiceFactory::GetForProfile(profile);

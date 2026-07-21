@@ -171,7 +171,8 @@ class MultiContentsView
   // views::View:
   void OnThemeChanged() override;
 
-  const std::vector<ContentsContainerView*>& contents_container_views() const {
+  const std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>&
+  contents_container_views() const {
     return contents_container_views_;
   }
 
@@ -289,7 +290,8 @@ class MultiContentsView
 
   // Holds ContentsContainerViews, when not in a split view the second
   // ContentsContainerView is not visible.
-  std::vector<ContentsContainerView*> contents_container_views_;
+  std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>
+      contents_container_views_;
 
   ContentsSeparators contents_separators_;
 

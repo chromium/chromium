@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -278,10 +279,11 @@ IN_PROC_BROWSER_TEST_F(DeviceChooserBubbleTest,
       {1}, split_tabs::SplitTabVisualData(),
       split_tabs::SplitTabCreatedSource::kToolbarButton);
 
-  std::vector<ContentsContainerView*> contents_container_views =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->multi_contents_view()
-          ->contents_container_views();
+  std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>
+      contents_container_views =
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->multi_contents_view()
+              ->contents_container_views();
   ASSERT_EQ(contents_container_views.size(), 2U);
   EXPECT_FALSE(
       contents_container_views[0]->contents_outline_view()->is_highlighted());

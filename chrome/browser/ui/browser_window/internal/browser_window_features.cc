@@ -732,10 +732,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   if (browser_view) {
     devtools_ui_controller_ = std::make_unique<DevtoolsUIController>(
-        browser_, base::ToVector(browser_view->GetContentsContainerViews(),
-                                 [](ContentsContainerView* view) {
-                                   return raw_ptr<ContentsContainerView>(view);
-                                 }));
+        browser_, browser_view->GetContentsContainerViews());
   }
 
   // Must be before exclusive_access_manager_ (whose construction calls
@@ -889,7 +886,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
         std::vector<std::pair<views::WebView*, ActorOverlayWebView*>>
             container_overlay_view_pairs;
-        for (auto* contents_container :
+        for (auto& contents_container :
              browser_view->GetContentsContainerViews()) {
           container_overlay_view_pairs.emplace_back(
               contents_container->contents_view(),

@@ -30,7 +30,8 @@ class DevtoolsUIController {
 
   DevtoolsUIController(
       BrowserWindowInterface* browser,
-      std::vector<raw_ptr<ContentsContainerView>> contents_container_views);
+      const std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>&
+          contents_container_views);
   ~DevtoolsUIController();
 
   DevtoolsUIController(const DevtoolsUIController&) = delete;

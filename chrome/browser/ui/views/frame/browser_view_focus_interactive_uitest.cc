@@ -45,8 +45,9 @@ class BrowserViewFocusTest : public InProcessBrowserTest {
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
     views::FocusManager* focus_manager = widget->GetFocusManager();
 
-    std::vector<ContentsContainerView*> contents_container_views =
-        browser()->GetBrowserView().GetContentsContainerViews();
+    std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>
+        contents_container_views =
+            browser()->GetBrowserView().GetContentsContainerViews();
     ASSERT_EQ(2, contents_container_views.size());
 
     // Start from the view prior to the left contents web view in the focus

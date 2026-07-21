@@ -1761,7 +1761,7 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
 
   // The highlight should show around the contents container for the 0th tab
   // but not for the other tabs in the split.
-  std::vector<ContentsContainerView*> contents_container_views =
+  const auto& contents_container_views =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->multi_contents_view()
           ->contents_container_views();

@@ -339,7 +339,7 @@ static_assert(std::size(kResultCodeMapping) ==
 // Returns an entry in kResultCodeMapping or kUnknownResultCodeMappingEntry.
 // CHECKs if the `sqlite_result_code` is not in the mapping table.
 SqliteResultCodeMappingEntry FindResultCode(int sqlite_result_code) {
-  const auto* mapping_it = std::ranges::find_if(
+  const SqliteResultCodeMappingEntry* mapping_it = std::ranges::find_if(
       kResultCodeMapping,
       [&sqlite_result_code](SqliteResultCodeMappingEntry rhs) {
         return sqlite_result_code == rhs.result_code;

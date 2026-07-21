@@ -26,7 +26,8 @@ namespace new_tab_footer {
 
 NewTabFooterController::NewTabFooterController(
     Profile* profile,
-    std::vector<ContentsContainerView*> contents_container_views)
+    const std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>&
+        contents_container_views)
     : profile_(profile) {
   for (ContentsContainerView* contents_container_view :
        contents_container_views) {

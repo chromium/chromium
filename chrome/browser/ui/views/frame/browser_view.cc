@@ -1264,7 +1264,8 @@ ContentsContainerView* BrowserView::GetContentsContainerViewFor(
   return multi_contents_view_->GetContentsContainerViewFor(web_contents);
 }
 
-std::vector<ContentsContainerView*> BrowserView::GetContentsContainerViews() {
+std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>
+BrowserView::GetContentsContainerViews() {
   return multi_contents_view_->contents_container_views();
 }
 

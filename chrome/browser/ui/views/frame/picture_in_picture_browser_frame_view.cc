@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
@@ -1026,16 +1028,24 @@ bool PictureInPictureBrowserFrameView::HasAnyVisibleContentSettingViews()
 }
 
 // Helper functions for testing.
-std::vector<gfx::Animation*>
+std::vector<raw_ptr<gfx::Animation>>
 PictureInPictureBrowserFrameView::GetRenderActiveAnimationsForTesting() {
-  return animation_controller_
-      ->GetActiveTransitionAnimationsForTesting();  // IN-TEST
+  return base::ToVector(
+      animation_controller_
+          ->GetActiveTransitionAnimationsForTesting(),  // IN-TEST
+      [](gfx::Animation* animation) {
+        return raw_ptr<gfx::Animation>(animation);
+      });
 }
 
-std::vector<gfx::Animation*>
+std::vector<raw_ptr<gfx::Animation>>
 PictureInPictureBrowserFrameView::GetRenderInactiveAnimationsForTesting() {
-  return animation_controller_
-      ->GetInactiveTransitionAnimationsForTesting();  // IN-TEST
+  return base::ToVector(
+      animation_controller_
+          ->GetInactiveTransitionAnimationsForTesting(),  // IN-TEST
+      [](gfx::Animation* animation) {
+        return raw_ptr<gfx::Animation>(animation);
+      });
 }
 
 views::View* PictureInPictureBrowserFrameView::GetBackToTabButtonForTesting() {

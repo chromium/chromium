@@ -17,7 +17,8 @@ DEFINE_USER_DATA(DevtoolsUIController);
 
 DevtoolsUIController::DevtoolsUIController(
     BrowserWindowInterface* browser,
-    std::vector<raw_ptr<ContentsContainerView>> contents_container_views)
+    const std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>&
+        contents_container_views)
     : can_dock_devtools_(browser->GetType() ==
                          BrowserWindowInterface::Type::TYPE_NORMAL),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {

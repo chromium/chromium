@@ -220,7 +220,8 @@ class BrowserView : public BrowserWindow,
   views::View* GetSidePanelAnimationContent();
 
   // Returns all the ContentsContainerViews that belong to this browser.
-  std::vector<ContentsContainerView*> GetContentsContainerViews();
+  std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>
+  GetContentsContainerViews();
 
   // Returns the ContentsContainerView for the active tab.
   ContentsContainerView* GetActiveContentsContainerView();

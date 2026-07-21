@@ -183,8 +183,8 @@ class PictureInPictureBrowserFrameView
   bool HasAnyVisibleContentSettingViews() const;
 
   // Helper functions for testing.
-  std::vector<gfx::Animation*> GetRenderActiveAnimationsForTesting();
-  std::vector<gfx::Animation*> GetRenderInactiveAnimationsForTesting();
+  std::vector<raw_ptr<gfx::Animation>> GetRenderActiveAnimationsForTesting();
+  std::vector<raw_ptr<gfx::Animation>> GetRenderInactiveAnimationsForTesting();
   views::View* GetBackToTabButtonForTesting();
   views::View* GetCloseButtonForTesting();
   views::Label* GetWindowTitleForTesting();

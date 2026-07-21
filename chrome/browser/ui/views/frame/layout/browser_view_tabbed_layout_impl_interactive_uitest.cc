@@ -791,7 +791,8 @@ class BrowserViewTabbedLayoutImplContentLayoutUiTest
   }
 
  private:
-  const std::vector<ContentsContainerView*>& GetContentsContainers() {
+  const std::vector<raw_ptr<ContentsContainerView, DanglingUntriaged>>&
+  GetContentsContainers() {
     return browser()
         ->GetBrowserView()
         .multi_contents_view()
