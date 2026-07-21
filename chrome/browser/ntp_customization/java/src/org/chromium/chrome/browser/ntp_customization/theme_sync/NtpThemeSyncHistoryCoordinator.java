@@ -40,7 +40,7 @@ public class NtpThemeSyncHistoryCoordinator {
     private final PropertyModel mPropertyModel;
     private final NtpBackgroundDataManager mNtpBackgroundDataManager;
     private final List<NtpBackgroundDataBase> mDataShowingList;
-    private final NtpBackgroundDataColor mDefaultNtpBackgroundData;
+    private final List<NtpBackgroundDataBase> mDefaultOptions;
 
     private NtpBackgroundDataGroup @Nullable [] mNtpBackgroundDataGroups;
     private @Nullable NtpThemeSyncHistoryRecyclerViewAdaptor mRecyclerViewAdaptor;
@@ -72,10 +72,22 @@ public class NtpThemeSyncHistoryCoordinator {
                 NtpThemeSyncHistoryProperties.MORE_OPTIONS_CLICK_LISTENER,
                 moreOptionsClickListener);
 
-        mDefaultNtpBackgroundData =
-                new NtpBackgroundDataColor(
-                        context, PlatformType.ANDROID, NtpThemeColorId.DEFAULT, false);
+        mDefaultOptions = new ArrayList<>();
+        initDefaultOptions(context);
         mDataShowingList = new ArrayList<>();
+    }
+
+    /** Initialize default options for users to choose. */
+    private void initDefaultOptions(Context context) {
+        mDefaultOptions.add(
+                new NtpBackgroundDataColor(
+                        context, PlatformType.ANDROID, NtpThemeColorId.DEFAULT, false));
+        mDefaultOptions.add(
+                new NtpBackgroundDataColor(
+                        context, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_ORANGE, false));
+        mDefaultOptions.add(
+                new NtpBackgroundDataColor(
+                        context, PlatformType.ANDROID, NtpThemeColorId.NTP_COLORS_VIOLET, false));
     }
 
     /** Setups the recycler view. */
@@ -99,7 +111,7 @@ public class NtpThemeSyncHistoryCoordinator {
         mDataShowingList.clear();
 
         // The default option is placed at the first.
-        mDataShowingList.add(mDefaultNtpBackgroundData);
+        mDataShowingList.add(mDefaultOptions.get(0));
         int lastSelectedIndex = RecyclerView.NO_POSITION;
         NtpBackgroundDataBase currentNtpBackgroundData =
                 NtpCustomizationConfigManager.getInstance().getNtpBackgroundData();
@@ -115,7 +127,17 @@ public class NtpThemeSyncHistoryCoordinator {
                             PlatformType.ANDROID);
         }
 
+        int defaultOptionSize = 1;
         NtpBackgroundDataGroup localGroup = mNtpBackgroundDataGroups[PlatformType.ANDROID];
+        if (localGroup.size() < NtpBackgroundDataManager.MAXIMUM_LOCAL_HISTORY) {
+            for (int i = 1; i < mDefaultOptions.size(); i++) {
+                NtpBackgroundDataBase data = mDefaultOptions.get(i);
+                if (!localGroup.getList().contains(data)) {
+                    mDataShowingList.add(data);
+                    defaultOptionSize++;
+                }
+            }
+        }
         assumeNonNull(localGroup);
         if (currentNtpBackgroundData == null) {
             // Sets the index to the default theme if there isn't any NTP theme set before.
@@ -125,7 +147,7 @@ public class NtpThemeSyncHistoryCoordinator {
             if (index != -1) {
                 // The index is set to the item from local selected history which matches the
                 // current theme.
-                lastSelectedIndex = index + 1;
+                lastSelectedIndex = index + defaultOptionSize;
             }
         }
 

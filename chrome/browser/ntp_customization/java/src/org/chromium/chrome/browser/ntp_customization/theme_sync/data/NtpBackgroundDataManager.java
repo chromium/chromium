@@ -21,8 +21,9 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 /** Centralizes management of NTP background preference data. */
 @NullMarked
 public class NtpBackgroundDataManager {
+    public static final int MAXIMUM_LOCAL_HISTORY = 3;
+
     private static final String TAG = "NtpBackgroundData";
-    private static final int MAXIMUM_LOCAL_HISTORY = 3;
     private static final int MAXIMUM_REMOTE_HISTORY = 2;
 
     private final Context mContext;

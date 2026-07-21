@@ -125,12 +125,18 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        assertEquals(1, dataList.size());
-        // First item should be default data.
+        assertEquals(3, dataList.size());
+        // First three items should be default data options.
         assertTrue(dataList.get(0) instanceof NtpBackgroundDataColor);
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_ORANGE,
+                ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_VIOLET,
+                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
 
         assertEquals(
                 0, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
@@ -153,18 +159,24 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        assertEquals(2, dataList.size());
-        // First item is default, second is local history
+        assertEquals(4, dataList.size());
+        // First three items are default options, fourth is local history
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_BLUE,
+                NtpThemeColorId.NTP_COLORS_ORANGE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
-
-        // Highlighted index should be 1 (the local history item)
         assertEquals(
-                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+                NtpThemeColorId.NTP_COLORS_VIOLET,
+                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
+
+        // Highlighted index should be 3 (the local history item)
+        assertEquals(
+                3, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 
     @Test
@@ -184,7 +196,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        assertEquals(2, dataList.size());
+        assertEquals(4, dataList.size());
 
         // Highlighted index should be 0 (the default item)
         assertEquals(
@@ -207,9 +219,9 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        assertEquals(1, dataList.size());
+        assertEquals(3, dataList.size());
 
-        // Highlighted index should be 0 (the default item)
+        // Highlighted index should be NO_POSITION since localColor is not in local history
         assertEquals(
                 RecyclerView.NO_POSITION,
                 (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
@@ -256,18 +268,23 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default (local), Local history (blue), Remote history (blue customized
-        // color).
-        assertEquals(3, dataList.size());
+        // Should contain: Default, Orange, Violet, Local history (blue), Remote history (blue).
+        assertEquals(5, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
-        assertEquals(localColor, dataList.get(1));
-        assertEquals(remoteDuplicateColor, dataList.get(2));
-
-        // Highlighted index should be 1 (local history)
         assertEquals(
-                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+                NtpThemeColorId.NTP_COLORS_ORANGE,
+                ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_VIOLET,
+                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+        assertEquals(localColor, dataList.get(3));
+        assertEquals(remoteDuplicateColor, dataList.get(4));
+
+        // Highlighted index should be 3 (local history)
+        assertEquals(
+                3, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 
     @Test
@@ -289,9 +306,8 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 mCoordinator.getRecyclerViewAdaptorForTesting();
         assertNotNull(adapter);
 
-        int position = 1;
-        boolean isFromClick = true;
-        // Click the remote history item (index 1)
+        int position = 3;
+        // Click the remote history item (index 3, after Default, Orange, and Violet)
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
         // Verify config manager is notified.
@@ -327,7 +343,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         assertNotNull(adapter);
 
         // Click the Default item (index 0), which is different from the original selected item
-        // (index 1).
+        // (index 3).
         int position = 0;
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
@@ -336,8 +352,8 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
         clearInvocations(mNtpCustomizationConfigManager, mBottomSheetDelegate);
 
-        // Click back to the original selected item (index 1).
-        position = 1;
+        // Click back to the original selected item (index 3).
+        position = 3;
         adapter.setSelectedPosition(position, /* isFromClick= */ true);
 
         verify(mNtpCustomizationConfigManager)
@@ -372,17 +388,23 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default, localColor1 (blue), remoteColor1 (cyan).
-        assertEquals(3, dataList.size());
+        // Should contain: Default, Orange, Violet, localColor1 (blue), remoteColor1 (cyan).
+        assertEquals(5, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_BLUE,
+                NtpThemeColorId.NTP_COLORS_ORANGE,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
-        assertEquals(remoteColor1, dataList.get(2));
         assertEquals(
-                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+                NtpThemeColorId.NTP_COLORS_VIOLET,
+                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
+        assertEquals(remoteColor1, dataList.get(4));
+        assertEquals(
+                3, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
 
         // 2. Update Setup: add new local (VIRIDIAN), add new remote (GREEN).
         NtpBackgroundDataColor localColor2 =
@@ -409,22 +431,113 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
         mCoordinator.prepareToShow();
 
         dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default, localColor2 (viridian), localColor1 (blue), remoteColor1 (cyan).
-        // remoteColor2 should NOT be here because remote history is not reloaded.
+        // Should contain: Default, Orange, Violet, localColor2 (viridian), localColor1 (blue),
+        // remoteColor1 (cyan)
+        // remoteColor2 (green) should NOT be here because remote history is not reloaded.
+        assertEquals(6, dataList.size());
+        assertEquals(
+                NtpThemeColorId.DEFAULT,
+                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_ORANGE,
+                ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_VIOLET,
+                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_VIRIDIAN,
+                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                ((NtpBackgroundDataColor) dataList.get(4)).getThemeColorId());
+        assertEquals(remoteColor1, dataList.get(5));
+
+        // Highlighted index should be 3 (localColor2, the new first local history item).
+        assertEquals(
+                3, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+    }
+
+    @Test
+    public void testPrepareToShow_WithLocalHistoryContainingDefaultOption() {
+        // Save ORANGE (one of the extra default options) as local history.
+        NtpBackgroundDataColor localColor =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID,
+                        NtpThemeColorId.NTP_COLORS_ORANGE,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
+
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor);
+
+        mCoordinator.prepareToShow();
+
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        // Should contain 3 items: DEFAULT, VIOLET (default option), and ORANGE (local history).
+        assertEquals(3, dataList.size());
+        assertEquals(
+                NtpThemeColorId.DEFAULT,
+                ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_VIOLET,
+                ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_ORANGE,
+                ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
+
+        // Highlighted index should be 2 (the local history item)
+        assertEquals(
+                2, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+    }
+
+    @Test
+    public void testPrepareToShow_WithMaxLocalHistory() {
+        // Save 3 local history items (reaches MAXIMUM_LOCAL_HISTORY).
+        NtpBackgroundDataColor localColor1 =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor1);
+        NtpBackgroundDataColor localColor2 =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID,
+                        NtpThemeColorId.NTP_COLORS_AQUA,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor2);
+        NtpBackgroundDataColor localColor3 =
+                new NtpBackgroundDataColor(
+                        mContext,
+                        PlatformType.ANDROID,
+                        NtpThemeColorId.NTP_COLORS_GREEN,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor3);
+
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor2);
+
+        mCoordinator.prepareToShow();
+
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        // Should contain 4 items: only DEFAULT from default options, then the 3 local history
+        // items.
         assertEquals(4, dataList.size());
         assertEquals(
                 NtpThemeColorId.DEFAULT,
                 ((NtpBackgroundDataColor) dataList.get(0)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_VIRIDIAN,
+                NtpThemeColorId.NTP_COLORS_GREEN,
                 ((NtpBackgroundDataColor) dataList.get(1)).getThemeColorId());
         assertEquals(
-                NtpThemeColorId.NTP_COLORS_BLUE,
+                NtpThemeColorId.NTP_COLORS_AQUA,
                 ((NtpBackgroundDataColor) dataList.get(2)).getThemeColorId());
-        assertEquals(remoteColor1, dataList.get(3));
-
-        // Highlighted index should be 1 (localColor2, the new first local history item).
         assertEquals(
-                1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+                NtpThemeColorId.NTP_COLORS_BLUE,
+                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
+
+        // Highlighted index should be 2 (localColor2)
+        assertEquals(
+                2, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
     }
 }
