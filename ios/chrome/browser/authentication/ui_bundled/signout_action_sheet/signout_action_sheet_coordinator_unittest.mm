@@ -18,12 +18,13 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "google_apis/gaia/gaia_id.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -86,31 +87,20 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity_);
     system_identity_manager->AddIdentity(managed_identity_);
 
-    AppState* app_state = [[AppState alloc] initWithStartupInformation:nil];
-    SceneState* scene_state = [[SceneState alloc] initWithAppState:app_state];
-    ProfileState* profile_state =
-        [[ProfileState alloc] initWithAppState:app_state];
+    ProfileState* profile_state = [[ProfileState alloc] initWithAppState:nil];
     profile_state.profile = profile_.get();
-    scene_state.profileState = profile_state;
-
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state);
-
-    stub_browser_interface_provider_ =
-        [[StubBrowserProviderInterface alloc] init];
-    stub_browser_interface_provider_.mainBrowserProvider.browser =
-        browser_.get();
-    scene_state_mock_ = OCMPartialMock(scene_state);
-    OCMStub([scene_state_mock_ browserProviderInterface])
-        .andReturn(stub_browser_interface_provider_);
-    OCMStub([scene_state_mock_ window]).andReturn(scoped_key_window_.Get());
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
+    scene_state_.profileState = profile_state;
 
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
         SyncServiceFactory::GetForProfile(profile_.get()));
 
-    [browser_->GetCommandDispatcher()
+    Browser* browser =
+        scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:snackbar_handler_
                      forProtocol:@protocol(SnackbarCommands)];
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:scene_handler_
                      forProtocol:@protocol(SceneCommands)];
 
@@ -121,10 +111,13 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   }
 
   void TearDown() override {
-    EXPECT_OCMOCK_VERIFY((id)scene_state_mock_);
     EXPECT_OCMOCK_VERIFY((id)scene_handler_);
-    [signout_coordinator_ stop];
-    signout_coordinator_ = nil;
+    @autoreleasepool {
+      [signout_coordinator_ stop];
+      [scene_state_ shutdown];
+      signout_coordinator_ = nil;
+      scene_state_ = nil;
+    }
     PlatformTest::TearDown();
   }
 
@@ -137,9 +130,11 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   SignoutActionSheetCoordinator* CreateCoordinator(
       BOOL show_undo_button,
       signin_metrics::ProfileSignout source) {
+    Browser* browser =
+        scene_state_.browserProviderInterface.currentBrowserProvider.browser;
     signout_coordinator_ = [[SignoutActionSheetCoordinator alloc]
         initWithBaseViewController:view_controller_
-                           browser:browser_.get()
+                           browser:browser
                               rect:view_controller_.view.frame
                               view:view_controller_.view
           forceSnackbarOverToolbar:NO
@@ -199,12 +194,9 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   SignoutActionSheetCoordinator* signout_coordinator_ = nullptr;
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_ = nullptr;
-  // Partial mock for stubbing scene_state's methods
-  SceneState* scene_state_mock_;
-  StubBrowserProviderInterface* stub_browser_interface_provider_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<Browser> browser_;
+  FakeSceneState* scene_state_;
   id<SystemIdentity> identity_ = nil;
   id<SystemIdentity> managed_identity_ = nil;
   id<SnackbarCommands> snackbar_handler_ =
