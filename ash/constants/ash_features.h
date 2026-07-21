@@ -76,8 +76,7 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kBocaInSessionPeriodicJobIntervalInSeconds;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kBocaOnTaskLockedQuizMigration);
+
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kBocaOnTaskPod);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kBocaOnTaskUnmuteBrowserTabsOnUnlock);
@@ -994,7 +993,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaUberEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaConsumerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaCustomPollingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOnTaskStatusCheckEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskLockedQuizMigrationEnabled();
+
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBocaOnTaskPodEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsBocaOnTaskUnmuteBrowserTabsOnUnlockEnabled();

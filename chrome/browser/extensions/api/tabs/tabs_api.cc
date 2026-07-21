@@ -95,7 +95,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/wm/window_pin_util.h"
-#include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -120,12 +121,6 @@ constexpr char kCannotUpdateMuteCaptured[] =
     "being captured";
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS)
-constexpr char kWindowCreateLockedFullscreenUrlCountMismatchError[] =
-    "When creating a new window in locked fullscreen mode, exactly one URL "
-    "should be supplied.";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kInvalidWindowTypeError[] = "Invalid value for type";
 constexpr char kNoHighlightedTabError[] = "No highlighted tab";
@@ -366,21 +361,22 @@ void MaybeSetLockedFullscreenState(const api::windows::Update::Params& params,
   // the JS side, and in that case we don't want to change the locked state.
   Browser* const target_browser = browser->GetBrowserForMigrationOnly();
   if (target_browser) {
-    Profile* const browser_profile = target_browser->GetProfile();
     if (is_locked_fullscreen &&
         params.update_info.state != windows::WindowState::kLockedFullscreen &&
         params.update_info.state != windows::WindowState::kNone) {
-      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
-          ->GetForBrowserContext(browser_profile)
-          ->SetLockedFullscreenState(target_browser,
-                                     /*pinned=*/false);
+      auto* delegate =
+          ash::BrowserController::GetInstance()->GetDelegate(target_browser);
+      if (delegate && delegate->IsLockedFullscreen()) {
+        delegate->LeaveLockedFullscreen();
+      }
     } else if (!is_locked_fullscreen &&
                params.update_info.state ==
                    windows::WindowState::kLockedFullscreen) {
-      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
-          ->GetForBrowserContext(browser_profile)
-          ->SetLockedFullscreenState(target_browser,
-                                     /*pinned=*/true);
+      auto* delegate =
+          ash::BrowserController::GetInstance()->GetDelegate(target_browser);
+      if (delegate && !delegate->IsLockedFullscreen()) {
+        delegate->EnterLockedFullscreen(/*focus_toolbar=*/false);
+      }
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -1034,25 +1030,6 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       return RespondNow(
           Error(tabs_internal::kMissingLockWindowFullscreenPrivatePermission));
     }
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // Set up and launch the OnTask system web app if applicable. The legacy
-    // setup leverages a regular browser instance today.
-    if (ash::features::IsBocaOnTaskLockedQuizMigrationEnabled()) {
-      if (urls_.size() != 1) {
-        return RespondNow(
-            Error(kWindowCreateLockedFullscreenUrlCountMismatchError));
-      }
-      ash::boca::LockedQuizSessionManagerFactory::GetInstance()
-          ->GetForBrowserContext(calling_profile)
-          ->OpenLockedQuiz(
-              urls_.front(),
-              base::BindOnce(
-                  &WindowsCreateFunction::OnBocaWindowCreatedAsynchronously,
-                  this));
-      return RespondLater();
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   BrowserWindowInterface::Type window_type =
@@ -1397,10 +1374,14 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
   if (create_data_ &&
       create_data_->state == windows::WindowState::kLockedFullscreen) {
 #if BUILDFLAG(IS_CHROMEOS)
-    ash::boca::LockedQuizSessionManagerFactory::GetInstance()
-        ->GetForBrowserContext(Profile::FromBrowserContext(browser_context()))
-        ->SetLockedFullscreenState(new_window->GetBrowserForMigrationOnly(),
-                                   /*pinned=*/true);
+    Browser* const target_browser = new_window->GetBrowserForMigrationOnly();
+    if (target_browser) {
+      auto* delegate =
+          ash::BrowserController::GetInstance()->GetDelegate(target_browser);
+      if (delegate) {
+        delegate->EnterLockedFullscreen(/*focus_toolbar=*/false);
+      }
+    }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -1453,16 +1434,6 @@ base::expected<void, std::string> WindowsCreateFunction::ValidateTab(
   if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
     return base::unexpected(tabs_constants::kNotAllowedForDevToolsError);
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Tabs cannot be moved to the OnTask system web app. Only relevant for
-  // locked fullscreen on ChromeOS.
-  if (is_locked_fullscreen &&
-      ash::features::IsBocaOnTaskLockedQuizMigrationEnabled()) {
-    return base::unexpected(
-        ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return {};
 }

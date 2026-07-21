@@ -167,9 +167,6 @@ BASE_FEATURE(kOnTaskStatusCheck, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kOnTaskStatusCheckInterval{
     &kOnTaskStatusCheck, "OnTaskStatusCheckInterval", base::Seconds(60)};
 
-// Enables or disables locked quiz migration to leverage the OnTask SWA.
-BASE_FEATURE(kBocaOnTaskLockedQuizMigration, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables the Boca OnTask pod on ChromeOS.
 BASE_FEATURE(kBocaOnTaskPod, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2286,10 +2283,6 @@ bool IsBocaConsumerEnabled() {
 
 bool IsBocaCustomPollingEnabled() {
   return base::FeatureList::IsEnabled(kBocaCustomPolling);
-}
-
-bool IsBocaOnTaskLockedQuizMigrationEnabled() {
-  return base::FeatureList::IsEnabled(kBocaOnTaskLockedQuizMigration);
 }
 
 bool IsBocaOnTaskPodEnabled() {
