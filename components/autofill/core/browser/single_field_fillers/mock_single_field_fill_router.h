@@ -27,7 +27,10 @@ class MockSingleFieldFillRouter : public SingleFieldFillRouter {
   MOCK_METHOD(void, CancelPendingQueries, (), (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&, const std::u16string&, SuggestionType),
+              (const std::u16string&,
+               const std::u16string&,
+               const std::u16string&,
+               SuggestionType),
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,

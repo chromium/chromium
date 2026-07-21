@@ -72,6 +72,7 @@ class AutocompleteHistoryManager : public KeyedService {
 
   virtual void OnRemoveCurrentSingleFieldSuggestion(
       const std::u16string& field_name,
+      const std::u16string& field_label,
       const std::u16string& value,
       SuggestionType type);
 

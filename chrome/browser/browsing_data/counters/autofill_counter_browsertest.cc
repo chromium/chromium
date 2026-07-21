@@ -87,9 +87,11 @@ class AutofillCounterTest : public InProcessBrowserTest {
   // Autocomplete suggestions --------------------------------------------------
 
   void AddAutocompleteSuggestion(const std::string& name,
+                                 const std::string& label,
                                  const std::string& value) {
     autofill::FormFieldData field;
     field.set_name(base::ASCIIToUTF16(name));
+    field.set_label(base::ASCIIToUTF16(label));
     field.set_value(base::ASCIIToUTF16(value));
 
     std::vector<autofill::FormFieldData> form_fields;
@@ -98,9 +100,10 @@ class AutofillCounterTest : public InProcessBrowserTest {
   }
 
   void RemoveAutocompleteSuggestion(const std::string& name,
+                                    const std::string& label,
                                     const std::string& value) {
-    web_data_service_->RemoveFormValueForElementName(
-        base::ASCIIToUTF16(name),
+    web_data_service_->RemoveFormValueForElementNameAndLabel(
+        base::ASCIIToUTF16(name), base::ASCIIToUTF16(label),
         base::ASCIIToUTF16(value));
   }
 
@@ -260,22 +263,22 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, AutocompleteSuggestions) {
   WaitForResult();
   EXPECT_EQ(0, GetCounterValue());
 
-  AddAutocompleteSuggestion("email", "example@example.com");
+  AddAutocompleteSuggestion("email", "email", "example@example.com");
   counter.Restart();
   WaitForResult();
   EXPECT_EQ(1, GetCounterValue());
 
-  AddAutocompleteSuggestion("tel", "+123456789");
+  AddAutocompleteSuggestion("tel", "telephone", "+123456789");
   counter.Restart();
   WaitForResult();
   EXPECT_EQ(2, GetCounterValue());
 
-  AddAutocompleteSuggestion("tel", "+987654321");
+  AddAutocompleteSuggestion("tel", "telephone", "+987654321");
   counter.Restart();
   WaitForResult();
   EXPECT_EQ(3, GetCounterValue());
 
-  RemoveAutocompleteSuggestion("email", "example@example.com");
+  RemoveAutocompleteSuggestion("email", "email", "example@example.com");
   counter.Restart();
   WaitForResult();
   EXPECT_EQ(2, GetCounterValue());
@@ -406,11 +409,11 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, Addresses) {
 // Tests that we return the correct complex result when counting more than
 // one type of items.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
-  AddAutocompleteSuggestion("email", "example@example.com");
-  AddAutocompleteSuggestion("zip", "12345");
-  AddAutocompleteSuggestion("tel", "+123456789");
-  AddAutocompleteSuggestion("tel", "+987654321");
-  AddAutocompleteSuggestion("city", "Munich");
+  AddAutocompleteSuggestion("email", "Email", "example@example.com");
+  AddAutocompleteSuggestion("zip", "Zip code", "12345");
+  AddAutocompleteSuggestion("tel", "Telephone", "+123456789");
+  AddAutocompleteSuggestion("tel", "Telephone", "+987654321");
+  AddAutocompleteSuggestion("city", "Your city:", "Munich");
 
   AddCreditCard("0000-0000-0000-0000", "1", "2015", "1");
   AddCreditCard("1211-1098-7654-3210", "10", "2030", "1");
@@ -438,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
   autofill::TestAutofillClock test_clock;
   const base::Time kTime1 = base::Time::FromSecondsSinceUnixEpoch(25);
   test_clock.SetNow(kTime1);
-  AddAutocompleteSuggestion("email", "example@example.com");
+  AddAutocompleteSuggestion("email", "Email:", "example@example.com");
   AddCreditCard("0000-0000-0000-0000", "1", "2015", "1");
   AddAddress("John", "Doe", "Main Street 12345");
   base::ThreadPoolInstance::Get()->FlushForTesting();
@@ -452,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
 
   const base::Time kTime3 = kTime2 + base::Seconds(10);
   test_clock.SetNow(kTime3);
-  AddAutocompleteSuggestion("tel", "+987654321");
+  AddAutocompleteSuggestion("tel", "Telephone:", "+987654321");
   AddCreditCard("1211-1098-7654-3210", "10", "2030", "1");
   base::ThreadPoolInstance::Get()->FlushForTesting();
 

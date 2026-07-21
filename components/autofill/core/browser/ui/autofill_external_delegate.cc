@@ -1118,12 +1118,24 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
       return false;
     }
     case SuggestionType::kAutocompleteEntry: {
-      const AutocompleteEntry& entry =
-          CHECK_DEREF(std::get_if<AutocompleteEntry>(&suggestion.payload));
-      manager_->client()
-          .GetSingleFieldFillRouter()
-          .OnRemoveCurrentSingleFieldSuggestion(
-              entry.key().name(), entry.key().value(), suggestion.type);
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillLabelSensitiveAutocomplete)) {
+        const AutocompleteSearchResultLabelSensitive& entry =
+            CHECK_DEREF(std::get_if<AutocompleteSearchResultLabelSensitive>(
+                &suggestion.payload));
+        manager_->client()
+            .GetSingleFieldFillRouter()
+            .OnRemoveCurrentSingleFieldSuggestion(
+                entry.query_name(), entry.query_label(), entry.value(),
+                suggestion.type);
+      } else {
+        const AutocompleteEntry& entry =
+            CHECK_DEREF(std::get_if<AutocompleteEntry>(&suggestion.payload));
+        manager_->client()
+            .GetSingleFieldFillRouter()
+            .OnRemoveCurrentSingleFieldSuggestion(
+                entry.key().name(), u"", entry.key().value(), suggestion.type);
+      }
       return true;
     }
     // This suggestion type represents a notice about the usage of personal

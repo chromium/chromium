@@ -44,7 +44,9 @@
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -276,10 +278,10 @@ std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::RemoveExpiredAutocompleteEntries(WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AutocompleteChangeList changes;
-  bool status =
+  bool old_table_write_success =
       AutocompleteTable::FromWebDatabase(db)->RemoveExpiredFormElements(
           changes);
-  if (status && !changes.empty()) {
+  if (old_table_write_success && !changes.empty()) {
     // Post the notifications including the list of affected keys.
     // This is sent here so that work resulting from this notification
     // will be done on the DB sequence, and not the UI sequence.
@@ -288,8 +290,20 @@ AutofillWebDataBackendImpl::RemoveExpiredAutocompleteEntries(WebDatabase* db) {
     }
   }
 
-  return std::make_unique<WDResult<bool>>(AUTOFILL_CLEANUP_RESULT, status);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    const bool new_table_write_success =
+        AutocompleteTableLabelSensitive::FromWebDatabase(db)
+            ->RemoveExpiredFormElements();
+    return std::make_unique<WDResult<bool>>(
+        AUTOFILL_CLEANUP_RESULT,
+        new_table_write_success && old_table_write_success);
+  } else {
+    return std::make_unique<WDResult<bool>>(AUTOFILL_CLEANUP_RESULT,
+                                            old_table_write_success);
+  }
 }
+
 void AutofillWebDataBackendImpl::NotifyOfAutofillProfileChanged(
     const AutofillProfileChange& change) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
@@ -398,22 +412,36 @@ WebDatabase::State AutofillWebDataBackendImpl::AddFormElements(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AutocompleteChangeList changes;
-  if (!AutocompleteTable::FromWebDatabase(db)->AddFormFieldValues(fields,
-                                                                  &changes)) {
+  bool old_table_write_success =
+      AutocompleteTable::FromWebDatabase(db)->AddFormFieldValues(fields,
+                                                                 &changes);
+  if (old_table_write_success) {
+    // Post the notifications including the list of affected keys.
+    // This is sent here so that work resulting from this notification will be
+    // done on the DB sequence, and not the UI sequence.
+    for (auto& db_observer : db_observer_list_) {
+      db_observer.AutocompleteEntriesChanged(changes);
+    }
+  }
+
+  bool new_table_write_successful_or_not_needed = true;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    new_table_write_successful_or_not_needed =
+        AutocompleteTableLabelSensitive::FromWebDatabase(db)
+            ->AddFormFieldValues(fields);
+  }
+
+  if (old_table_write_success && new_table_write_successful_or_not_needed) {
+    ReportResult(Result::kAddFormElements_Success);
+    return WebDatabase::COMMIT_NEEDED;
+  } else {
     ReportResult(Result::kAddFormElements_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
-
-  // Post the notifications including the list of affected keys.
-  // This is sent here so that work resulting from this notification will be
-  // done on the DB sequence, and not the UI sequence.
-  for (auto& db_observer : db_observer_list_)
-    db_observer.AutocompleteEntriesChanged(changes);
-
-  ReportResult(Result::kAddFormElements_Success);
-  return WebDatabase::COMMIT_NEEDED;
 }
 
+// TODO(crbug.com/507327886): Remove after feature launch.
 std::unique_ptr<WDTypedResult>
 AutofillWebDataBackendImpl::GetFormValuesForElementName(
     const std::u16string& name,
@@ -428,48 +456,95 @@ AutofillWebDataBackendImpl::GetFormValuesForElementName(
       AUTOFILL_VALUE_RESULT, entries);
 }
 
+std::unique_ptr<WDTypedResult>
+AutofillWebDataBackendImpl::GetFormValuesForElementNameAndLabel(
+    std::u16string_view name,
+    std::u16string_view label,
+    std::u16string_view prefix,
+    int limit,
+    WebDatabase* db) {
+  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
+  std::vector<AutocompleteSearchResultLabelSensitive> entries;
+  bool get_form_values_success =
+      AutocompleteTableLabelSensitive::FromWebDatabase(db)
+          ->GetFormValuesForElementNameAndLabel(name, label, prefix, limit,
+                                                entries);
+  DCHECK(get_form_values_success);
+  return std::make_unique<
+      WDResult<std::vector<AutocompleteSearchResultLabelSensitive>>>(
+      AUTOCOMPLETE_SEARCH_RESULT, std::move(entries));
+}
+
 WebDatabase::State AutofillWebDataBackendImpl::RemoveFormElementsAddedBetween(
     base::Time delete_begin,
     base::Time delete_end,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   AutocompleteChangeList changes;
-  if (AutocompleteTable::FromWebDatabase(db)->RemoveFormElementsAddedBetween(
-          delete_begin, delete_end, changes)) {
-    if (!changes.empty()) {
-      // Post the notifications including the list of affected keys.
-      // This is sent here so that work resulting from this notification
-      // will be done on the DB sequence, and not the UI sequence.
-      for (auto& db_observer : db_observer_list_)
-        db_observer.AutocompleteEntriesChanged(changes);
+  bool old_table_write_success =
+      AutocompleteTable::FromWebDatabase(db)->RemoveFormElementsAddedBetween(
+          delete_begin, delete_end, changes);
+  if (old_table_write_success && !changes.empty()) {
+    // Post the notifications including the list of affected keys.
+    // This is sent here so that work resulting from this notification
+    // will be done on the DB sequence, and not the UI sequence.
+    for (auto& db_observer : db_observer_list_) {
+      db_observer.AutocompleteEntriesChanged(changes);
     }
+  }
+
+  bool new_table_write_successful_or_not_needed = true;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    new_table_write_successful_or_not_needed =
+        AutocompleteTableLabelSensitive::FromWebDatabase(db)
+            ->RemoveFormElementsAddedBetween(delete_begin, delete_end);
+  }
+
+  if (old_table_write_success && new_table_write_successful_or_not_needed) {
     ReportResult(Result::kRemoveFormElementsAddedBetween_Success);
     return WebDatabase::COMMIT_NEEDED;
+  } else {
+    ReportResult(Result::kRemoveFormElementsAddedBetween_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
   }
-  ReportResult(Result::kRemoveFormElementsAddedBetween_Failure);
-  return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::RemoveFormValueForElementName(
-    const std::u16string& name,
-    const std::u16string& value,
+WebDatabase::State
+AutofillWebDataBackendImpl::RemoveFormValueForElementNameAndLabel(
+    std::u16string_view name,
+    std::u16string_view label,
+    std::u16string_view value,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-
-  if (AutocompleteTable::FromWebDatabase(db)->RemoveFormElement(name, value)) {
+  bool old_table_write_success =
+      AutocompleteTable::FromWebDatabase(db)->RemoveFormElement(
+          std::u16string(name), std::u16string(value));
+  if (old_table_write_success) {
     AutocompleteChangeList changes;
-    changes.push_back(AutocompleteChange(AutocompleteChange::REMOVE,
-                                         AutocompleteKey(name, value)));
+    changes.push_back(AutocompleteChange(
+        AutocompleteChange::REMOVE,
+        AutocompleteKey(std::u16string(name), std::u16string(value))));
 
     // Post the notifications including the list of affected keys.
-    for (auto& db_observer : db_observer_list_)
+    for (auto& db_observer : db_observer_list_) {
       db_observer.AutocompleteEntriesChanged(changes);
-
+    }
+  }
+  bool new_table_write_successful_or_not_needed = true;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    new_table_write_successful_or_not_needed =
+        AutocompleteTableLabelSensitive::FromWebDatabase(db)->RemoveFormElement(
+            name, label, value);
+  }
+  if (old_table_write_success && new_table_write_successful_or_not_needed) {
     ReportResult(Result::kRemoveFormValueForElementName_Success);
     return WebDatabase::COMMIT_NEEDED;
+  } else {
+    ReportResult(Result::kRemoveFormValueForElementName_Failure);
+    return WebDatabase::COMMIT_NOT_NEEDED;
   }
-  ReportResult(Result::kRemoveFormValueForElementName_Failure);
-  return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
@@ -720,10 +795,16 @@ AutofillWebDataBackendImpl::GetCountOfValuesContainedBetween(base::Time begin,
                                                              base::Time end,
                                                              WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  int64_t value =
-      AutocompleteTable::FromWebDatabase(db)->GetCountOfValuesContainedBetween(
-          begin, end);
-  return std::make_unique<WDResult<int64_t>>(INT64_RESULT, value);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillLabelSensitiveAutocomplete)) {
+    const int64_t value = AutocompleteTableLabelSensitive::FromWebDatabase(db)
+                              ->GetCountOfValuesContainedBetween(begin, end);
+    return std::make_unique<WDResult<int64_t>>(INT64_RESULT, value);
+  } else {
+    const int64_t value = AutocompleteTable::FromWebDatabase(db)
+                              ->GetCountOfValuesContainedBetween(begin, end);
+    return std::make_unique<WDResult<int64_t>>(INT64_RESULT, value);
+  }
 }
 
 WebDatabase::State AutofillWebDataBackendImpl::UpdateAutocompleteEntries(

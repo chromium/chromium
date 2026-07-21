@@ -66,11 +66,25 @@ class AutofillWebDataService : public WebDataServiceBase {
       int limit,
       WebDataServiceRequestCallback consumer);
 
+  // Asynchronously fetches Autofill suggestions.
+  //
+  // Queries for stored form values matching the field's `name`, `label`,
+  // and the user-typed `prefix`. Returns up to `limit` suggestions
+  // via the `consumer`'s OnWebDataServiceRequestDone callback.
+  virtual WebDataServiceBase::Handle GetFormValuesForElementNameAndLabel(
+      std::u16string_view name,
+      std::u16string_view label,
+      std::u16string_view prefix,
+      int limit,
+      WebDataServiceRequestCallback consumer);
+
   // Removes form elements recorded for Autocomplete from the database.
   void RemoveFormElementsAddedBetween(base::Time delete_begin,
                                       base::Time delete_end);
-  void RemoveFormValueForElementName(const std::u16string& name,
-                                     const std::u16string& value);
+  // Deletes autocomplete `value` entries with matching `name` and/or `label`.
+  virtual void RemoveFormValueForElementNameAndLabel(std::u16string_view name,
+                                                     std::u16string_view label,
+                                                     std::u16string_view value);
 
   // Schedules a task to add an Autofill profile to the web database.
   void AddAutofillProfile(

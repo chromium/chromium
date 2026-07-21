@@ -369,10 +369,12 @@ void AutocompleteHistoryManager::CancelPendingQuery() {
 
 void AutocompleteHistoryManager::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
+    const std::u16string& field_label,
     const std::u16string& value,
     SuggestionType type) {
   if (profile_database_) {
-    profile_database_->RemoveFormValueForElementName(field_name, value);
+    profile_database_->RemoveFormValueForElementNameAndLabel(
+        field_name, field_label, value);
   }
 }
 

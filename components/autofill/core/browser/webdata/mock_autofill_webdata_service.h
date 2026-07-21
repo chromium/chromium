@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_MOCK_AUTOFILL_WEBDATA_SERVICE_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -31,8 +32,22 @@ class MockAutofillWebDataService : public AutofillWebDataService {
                WebDataServiceRequestCallback),
               (override));
   MOCK_METHOD(WebDataServiceBase::Handle,
+              GetFormValuesForElementNameAndLabel,
+              (std::u16string_view name,
+               std::u16string_view label,
+               std::u16string_view prefix,
+               int limit,
+               WebDataServiceRequestCallback),
+              (override));
+  MOCK_METHOD(WebDataServiceBase::Handle,
               RemoveExpiredAutocompleteEntries,
               (WebDataServiceRequestCallback),
+              (override));
+  MOCK_METHOD(void,
+              RemoveFormValueForElementNameAndLabel,
+              (std::u16string_view name,
+               std::u16string_view label,
+               std::u16string_view value),
               (override));
 
  protected:

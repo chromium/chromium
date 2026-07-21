@@ -124,9 +124,20 @@ class AutofillWebDataBackendImpl final
       const std::u16string& prefix,
       int limit,
       WebDatabase* db);
+  std::unique_ptr<WDTypedResult> GetFormValuesForElementNameAndLabel(
+      std::u16string_view name,
+      std::u16string_view label,
+      std::u16string_view prefix,
+      int limit,
+      WebDatabase* db);
 
-  // Function to remove expired Autocomplete entries, which deletes them from
-  // the Sqlite table, unlinks them from Sync and cleans up the metadata.
+  // Removes expired Autocomplete entries by deleting them from the Sqlite
+  // table, unlinking them from Sync, and cleaning up the metadata.
+  //
+  // Note: Unlinking and event emission occur only for the non-label-sensitive
+  // solution. The new label-sensitive solution is not synced at all, so
+  // event emission is not needed.
+  //
   // Returns the number of entries cleaned-up.
   std::unique_ptr<WDTypedResult> RemoveExpiredAutocompleteEntries(
       WebDatabase* db);
@@ -138,9 +149,11 @@ class AutofillWebDataBackendImpl final
 
   // Removes the Form-value |value| which has been entered in form input fields
   // named |name| from the database.
-  WebDatabase::State RemoveFormValueForElementName(const std::u16string& name,
-                                                   const std::u16string& value,
-                                                   WebDatabase* db);
+  WebDatabase::State RemoveFormValueForElementNameAndLabel(
+      std::u16string_view name,
+      std::u16string_view label,
+      std::u16string_view value,
+      WebDatabase* db);
 
   // Adds an Autofill profile to the web database.
   WebDatabase::State AddAutofillProfile(
@@ -162,8 +175,7 @@ class AutofillWebDataBackendImpl final
       WebDatabase* db);
 
   // Returns the Autofill profiles from the web database.
-  std::unique_ptr<WDTypedResult> GetAutofillProfiles(
-      WebDatabase* db);
+  std::unique_ptr<WDTypedResult> GetAutofillProfiles(WebDatabase* db);
 
   // Adds, updates, removes, or retrieves EntityInstances.
   // See the identically named functions in `EntityTable`, especially on why

@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
@@ -51,11 +52,12 @@ void SingleFieldFillRouter::CancelPendingQueries() {
 
 void SingleFieldFillRouter::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
+    const std::u16string& field_label,
     const std::u16string& value,
     SuggestionType type) {
   if (type == SuggestionType::kAutocompleteEntry) {
     autocomplete_history_manager_->OnRemoveCurrentSingleFieldSuggestion(
-        field_name, value, type);
+        field_name, field_label, value, type);
   }
 }
 
@@ -69,7 +71,12 @@ void SingleFieldFillRouter::OnSingleFieldSuggestionSelected(
   } else if (iban_manager_ && type == SuggestionType::kIbanEntry) {
     iban_manager_->OnSingleFieldSuggestionSelected(suggestion);
   } else if (type == SuggestionType::kAutocompleteEntry) {
-    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(suggestion);
+    // TODO(crbug.com/507313423): Reimplement this metric.
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillLabelSensitiveAutocomplete)) {
+      autocomplete_history_manager_->OnSingleFieldSuggestionSelected(
+          suggestion);
+    }
   }
 }
 

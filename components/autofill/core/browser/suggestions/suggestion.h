@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -274,7 +275,8 @@ struct Suggestion {
                                AutocompleteEntry,
                                BnplIssuer,
                                AtMemoryPayload,
-                               OpenGeminiPayload>;
+                               OpenGeminiPayload,
+                               AutocompleteSearchResultLabelSensitive>;
 
   // This struct is used to provide password suggestions with custom icons,
   // using the favicon of the website associated with the credentials. While

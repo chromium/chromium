@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <vector>
@@ -32,11 +34,13 @@
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/webdata/common/web_data_results.h"
@@ -57,6 +61,7 @@ using testing::DoDefault;
 using testing::ElementsAre;
 using testing::IsEmpty;
 using testing::Pointee;
+using testing::Property;
 using testing::ResultOf;
 using testing::UnorderedElementsAre;
 
@@ -93,10 +98,22 @@ class MockAutofillWebDataServiceObserver
               (override));
 };
 
+void AppendFormFieldWithLabel(const std::u16string& name,
+                              const std::u16string& label,
+                              const std::u16string& value,
+                              std::vector<FormFieldData>& form_fields) {
+  FormFieldData field;
+  field.set_name(name);
+  field.set_value(value);
+  field.set_label(label);
+  form_fields.push_back(field);
+}
+
 class WebDataServiceTest : public testing::Test {
  public:
   WebDataServiceTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
+                          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         os_crypt_(os_crypt_async::GetTestOSCryptAsyncForTesting(
             /*is_sync_for_unittests=*/true)) {}
 
@@ -108,6 +125,7 @@ class WebDataServiceTest : public testing::Test {
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
     wdbs_->AddTable(std::make_unique<AddressAutofillTable>());
     wdbs_->AddTable(std::make_unique<AutocompleteTable>());
+    wdbs_->AddTable(std::make_unique<AutocompleteTableLabelSensitive>());
     wdbs_->AddTable(std::make_unique<PaymentsAutofillTable>());
     wdbs_->LoadDatabase(os_crypt_.get());
 
@@ -200,8 +218,8 @@ TEST_F(WebDataServiceAutofillTest, FormFillAdd) {
   EXPECT_THAT(
       consumer.Get<1>(),
       ValueOfWDResult<std::vector<AutocompleteEntry>>(
-          UnorderedElementsAre(testing::Property(
-              &AutocompleteEntry::key, AutocompleteKey("name1", "value1")))));
+          UnorderedElementsAre(Property(&AutocompleteEntry::key,
+                                        AutocompleteKey("name1", "value1")))));
 }
 
 TEST_F(WebDataServiceAutofillTest, FormFillRemoveOne) {
@@ -220,7 +238,7 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveOne) {
       AutocompleteEntriesChanged(ElementsAre(AutocompleteChange(
           AutocompleteChange::REMOVE, AutocompleteKey("name1", "value1")))))
       .WillOnce(SignalEvent(&done_event_));
-  wds_->RemoveFormValueForElementName(u"name1", u"value1");
+  wds_->RemoveFormValueForElementNameAndLabel(u"name1", u"label1", u"value1");
   done_event_.TimedWait(kWebDataServiceTimeout);
 }
 
@@ -243,8 +261,8 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveMany) {
                   AutocompleteChange(AutocompleteChange::REMOVE,
                                      AutocompleteKey("name2", "value2")))))
       .WillOnce(SignalEvent(&done_event_));
-  wds_->RemoveFormElementsAddedBetween(AutofillClock::Now(),
-                                       AutofillClock::Now() + base::Days(1));
+  wds_->RemoveFormElementsAddedBetween(base::Time::Now(),
+                                       base::Time::Now() + base::Days(1));
   done_event_.TimedWait(kWebDataServiceTimeout);
 }
 
@@ -475,6 +493,142 @@ TEST_F(WebDataServiceAutofillTest, SuccessReporting) {
                     "WebDatabase.AutofillWebDataBackendImpl.OperationResult"),
                 BucketsAre(Bucket(kRemoveCreditCard_ReadFailure, 1)));
   }
+}
+
+// Tests for label-sensitive autocomplete functionality.
+class WebDataServiceAutofillLabelSensitiveTest
+    : public WebDataServiceAutofillTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillLabelSensitiveAutocomplete};
+};
+
+TEST_F(WebDataServiceAutofillLabelSensitiveTest, FormFillAddLabelSensitive) {
+  std::vector<FormFieldData> form_fields;
+  AppendFormFieldWithLabel(u"name", u"label", u"value", form_fields);
+  wds_->AddFormFields(form_fields);
+  WaitForEmptyDBSequence();
+
+  WebDataServiceRequestFuture consumer;
+  wds_->GetFormValuesForElementNameAndLabel(
+      u"something", u"label", u"v", /*limit=*/10, consumer.GetCallback());
+  EXPECT_THAT(
+      consumer.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteSearchResultLabelSensitive>>(
+          UnorderedElementsAre(AllOf(
+              Property(&AutocompleteSearchResultLabelSensitive::value,
+                       u"value"),
+              Property(&AutocompleteSearchResultLabelSensitive::matching_type,
+                       MatchingType::kLabel)))));
+}
+
+TEST_F(WebDataServiceAutofillLabelSensitiveTest,
+       FormFillRemoveOneLabelSensitive) {
+  // First add some values to autocomplete.
+  std::vector<FormFieldData> form_fields;
+  AppendFormFieldWithLabel(u"name", u"label", u"value", form_fields);
+  AppendFormFieldWithLabel(u"something", u"label", u"value", form_fields);
+  AppendFormFieldWithLabel(u"name", u"something", u"value", form_fields);
+  wds_->AddFormFields(form_fields);
+  WaitForEmptyDBSequence();
+
+  // This should remove all 3 entries.
+  wds_->RemoveFormValueForElementNameAndLabel(u"name", u"label", u"value");
+  WaitForEmptyDBSequence();
+
+  // Check that it was removed.
+  WebDataServiceRequestFuture consumer;
+  wds_->GetFormValuesForElementNameAndLabel(
+      u"name", u"label", u"v", /*limit=*/10, consumer.GetCallback());
+  EXPECT_THAT(
+      consumer.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteSearchResultLabelSensitive>>(
+          IsEmpty()));
+}
+
+TEST_F(WebDataServiceAutofillLabelSensitiveTest,
+       FormFillRemoveExpiredLabelSensitive) {
+  // Add some values to autocomplete with different timestamps.
+  std::vector<FormFieldData> form_fields;
+  AppendFormFieldWithLabel(u"name1", u"label1", u"value1", form_fields);
+  wds_->AddFormFields(form_fields);
+  WaitForEmptyDBSequence();
+
+  // Time travel to the future. Retention period is 14 month.
+  task_environment_.FastForwardBy(base::Days(500));
+
+  std::vector<FormFieldData> form_fields2;
+  AppendFormFieldWithLabel(u"name2", u"label2", u"value2", form_fields2);
+  wds_->AddFormFields(form_fields2);
+  WaitForEmptyDBSequence();
+
+  // Remove expired entries.
+  WebDataServiceRequestFuture consumer1;
+  wds_->RemoveExpiredAutocompleteEntries(consumer1.GetCallback());
+  WaitForEmptyDBSequence();
+
+  // Check that only the newer entry remains.
+  WebDataServiceRequestFuture consumer2;
+  wds_->GetFormValuesForElementNameAndLabel(
+      u"name1", u"label1", u"v", /*limit=*/10, consumer2.GetCallback());
+  EXPECT_THAT(
+      consumer2.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteSearchResultLabelSensitive>>(
+          IsEmpty()));
+
+  WebDataServiceRequestFuture consumer3;
+  wds_->GetFormValuesForElementNameAndLabel(
+      u"name2", u"label2", u"v", /*limit=*/10, consumer3.GetCallback());
+  EXPECT_THAT(
+      consumer3.Get<1>(),
+      ValueOfWDResult<std::vector<AutocompleteSearchResultLabelSensitive>>(
+          UnorderedElementsAre(AllOf(
+              Property(&AutocompleteSearchResultLabelSensitive::value,
+                       u"value2"),
+              Property(&AutocompleteSearchResultLabelSensitive::matching_type,
+                       MatchingType::kNameAndLabel)))));
+}
+
+TEST_F(WebDataServiceAutofillLabelSensitiveTest,
+       GetCountOfValuesContainedBetween) {
+  std::vector<FormFieldData> form_fields1;
+  AppendFormFieldWithLabel(u"name1", u"label1", u"value1", form_fields1);
+  wds_->AddFormFields(form_fields1);
+  WaitForEmptyDBSequence();
+
+  task_environment_.FastForwardBy(base::Days(1));
+  std::vector<FormFieldData> form_fields2;
+  AppendFormFieldWithLabel(u"name2", u"label2", u"value2", form_fields2);
+  wds_->AddFormFields(form_fields2);
+  WaitForEmptyDBSequence();
+
+  task_environment_.FastForwardBy(base::Days(1));
+  std::vector<FormFieldData> form_fields3;
+  AppendFormFieldWithLabel(u"name3", u"label3", u"value3", form_fields3);
+  wds_->AddFormFields(form_fields3);
+  WaitForEmptyDBSequence();
+
+  base::Time now = base::Time::Now();
+  base::TimeDelta day = base::Days(1);
+  base::TimeDelta epsilon = base::Seconds(1);
+
+  // Range: [now - 2 days, now + epsilon)
+  WebDataServiceRequestFuture consumer;
+  wds_->GetCountOfValuesContainedBetween(now - day * 2, now + epsilon,
+                                         consumer.GetCallback());
+  EXPECT_THAT(consumer.Get<1>(), ValueOfWDResult<int64_t>(3));
+
+  // Range: [now - 1 day, now + epsilon)
+  WebDataServiceRequestFuture consumer2;
+  wds_->GetCountOfValuesContainedBetween(now - day, now + epsilon,
+                                         consumer2.GetCallback());
+  EXPECT_THAT(consumer2.Get<1>(), ValueOfWDResult<int64_t>(2));
+
+  // Range: [now, now + epsilon)
+  WebDataServiceRequestFuture consumer3;
+  wds_->GetCountOfValuesContainedBetween(now, now + epsilon,
+                                         consumer3.GetCallback());
+  EXPECT_THAT(consumer3.Get<1>(), ValueOfWDResult<int64_t>(1));
 }
 
 }  // namespace

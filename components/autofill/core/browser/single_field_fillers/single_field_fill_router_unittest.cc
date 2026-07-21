@@ -129,17 +129,26 @@ TEST_F(SingleFieldFillRouterTest, RouteToAllFillers_CancelPendingQueries) {
 // OnRemoveCurrentSingleFieldSuggestion call.
 TEST_F(SingleFieldFillRouterTest,
        RouteToAutocompleteHistoryManager_OnRemoveCurrentSingleFieldSuggestion) {
-  EXPECT_CALL(history_manager(), OnRemoveCurrentSingleFieldSuggestion);
+  const std::u16string field_name = u"Field Name";
+  const std::u16string field_label = u"Field Label";
+  const std::u16string field_value = u"Value";
+  field().set_label(field_label);
+
+  EXPECT_CALL(history_manager(), OnRemoveCurrentSingleFieldSuggestion(
+                                     field_name, field_label, field_value,
+                                     SuggestionType::kAutocompleteEntry));
 
   router().OnRemoveCurrentSingleFieldSuggestion(
-      /*field_name=*/u"Field Name", /*value=*/u"Value",
-      SuggestionType::kAutocompleteEntry);
+      field_name, field_label, field_value, SuggestionType::kAutocompleteEntry);
 }
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
 // OnSingleFieldSuggestionSelected call.
 TEST_F(SingleFieldFillRouterTest,
        RouteToAutocompleteHistoryManager_OnSingleFieldSuggestionSelected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillLabelSensitiveAutocomplete);
   EXPECT_CALL(history_manager(), OnSingleFieldSuggestionSelected);
 
   Suggestion suggestion(u"Value", SuggestionType::kAutocompleteEntry);

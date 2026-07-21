@@ -33,7 +33,10 @@ class MockAutocompleteHistoryManager : public AutocompleteHistoryManager {
   MOCK_METHOD(void, CancelPendingQuery, (), (override));
   MOCK_METHOD(void,
               OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&, const std::u16string&, SuggestionType),
+              (const std::u16string&,
+               const std::u16string&,
+               const std::u16string&,
+               SuggestionType),
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,

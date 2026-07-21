@@ -15,6 +15,8 @@
 
 class WDTypedResult;
 
+// TODO(crbug.com/507327886): Remove AUTOFILL_VALUE_RESULT once the
+// label-sensitive autocomplete is launched.
 //
 // Result types for WebDataService.
 //
@@ -28,6 +30,8 @@ typedef enum {
   WEB_APP_IMAGES,                    // WDResult<WDAppImagesResult>
   TOKEN_RESULT,                      // WDResult<TokenResult>
   AUTOFILL_VALUE_RESULT,             // WDResult<std::vector<AutofillEntry>>
+  AUTOCOMPLETE_SEARCH_RESULT,        // WDResult<std::vector<
+                               //   AutocompleteSearchResultLabelSensitive>>
   AUTOFILL_CLEANUP_RESULT,           // WDResult<bool>
   AUTOFILL_CHANGES,                  // WDResult<std::vector<AutofillChange>>
   AUTOFILL_PROFILES_RESULT,          // WDResult<std::vector<AutofillProfile>>
