@@ -233,6 +233,16 @@ struct Conv2dParams {
   Conv2dActivationKind activation_kind;
 };
 
+struct CumulativeSumParams {
+  OperandDataType data_type;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  uint32_t axis;
+  bool exclusive;
+  bool reversed;
+  bool is_input_constant;
+};
+
 struct DequantizeLinearParams {
   OperandDataType input_data_type;
   OperandDataType scale_data_type;
@@ -1099,6 +1109,19 @@ auto AnyConv2dParams() {
           {Conv2dActivationKind::kNone, Conv2dActivationKind::kRelu,
            Conv2dActivationKind::kRelu6, Conv2dActivationKind::kReluN1To1,
            Conv2dActivationKind::kReluViaClamp})  // activation_kind
+  );
+}
+
+auto AnyCumulativeSumParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<CumulativeSumParams>(
+      AnyOperandDataTypeFor(limits.cumulative_sum_input.data_types),
+      AnyTensorRank(),                     // rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+      fuzztest::InRange<uint32_t>(0, 7),   // axis
+      fuzztest::Arbitrary<bool>(),         // exclusive
+      fuzztest::Arbitrary<bool>(),         // reversed
+      fuzztest::Arbitrary<bool>()          // is_input_constant
   );
 }
 
@@ -3066,6 +3089,7 @@ class WebNNGraphImplFuzzerImpl
   void Clamp(ClampParams params, uint8_t seed_for_data);
   void Concat(ConcatParams params, uint8_t seed_for_data);
   void Conv2d(Conv2dParams params, uint8_t seed_for_data);
+  void CumulativeSum(CumulativeSumParams params, uint8_t seed_for_data);
   void DequantizeLinear(DequantizeLinearParams params,
                         uint8_t seed_for_input,
                         float seed_for_scale,
@@ -3528,6 +3552,47 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Conv2d(Conv2dParams params,
     builder.BuildConv2d(params.conv2d_kind, input_id, filter_id, output_id,
                         conv2d_attr, bias_id);
   }
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::CumulativeSum(
+    CumulativeSumParams params,
+    uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+
+  params.axis = params.axis % params.rank;
+
+  ASSIGN_OR_RETURN_VOID(auto input_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, input_dims, ""));
+
+  ASSIGN_OR_RETURN_VOID(auto output_desc, ValidateCumulativeSumAndInferOutput(
+                                              this->context_properties(),
+                                              input_desc, params.axis, ""));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", input_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildCumulativeSum(input_id, output_id, params.axis, params.exclusive,
+                             params.reversed);
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -6791,6 +6856,20 @@ WEBNN_FUZZ_TEST_F(Conv2d,
                                        /*is_depthwise=*/false,
                                        /*activation_kind=*/
                                        Conv2dActivationKind::kRelu,
+                                   },
+                                   /*seed_for_data=*/1}}));
+
+WEBNN_FUZZ_TEST_F(CumulativeSum,
+                  .WithDomains(AnyCumulativeSumParams(),
+                               fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{CumulativeSumParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*rank=*/4,
+                                       /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                                       /*axis=*/2,
+                                       /*exclusive=*/false,
+                                       /*reversed=*/true,
+                                       /*is_input_constant=*/false,
                                    },
                                    /*seed_for_data=*/1}}));
 
