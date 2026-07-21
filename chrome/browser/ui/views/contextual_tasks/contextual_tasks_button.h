@@ -62,7 +62,10 @@ class ContextualTasksButton
   void OnShouldUpdateVisibility(bool should_show);
   void OnEligibilityChange(bool is_eligible);
   void MaybeUpdateVisibility();
+  void UpdateDropShadow(bool force_paint = false, float initial_opacity = 1.0f);
   void UpdateDropShadowLayerBounds();
+  void AnimateShow();
+  void ClearDropShadow();
   ui::ImageModel GetButtonImage();
 
   BooleanPrefMember side_panel_alignment_;
