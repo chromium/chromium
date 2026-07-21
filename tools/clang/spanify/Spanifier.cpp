@@ -1597,6 +1597,11 @@ void AppendDataCall(const MatchFinder::MatchResult& result) {
 
   if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
     if (result.Nodes.getNodeAs<clang::Expr>("container_buff_address")) {
+      if (result.Nodes.getNodeAs<clang::ArrayTypeLoc>("rhs_array_type_loc") &&
+          !result.Nodes.getNodeAs<clang::IntegerLiteral>(
+              "zero_container_offset")) {
+        return;
+      }
       rep_range = EmitContainerPointerRewrites(
           result, key, ContainerPointerRewritesMode::kDontWrapWithBaseSpan);
     } else {
@@ -1722,11 +1727,16 @@ clang::SourceLocation EmitContainerPointerRewrites(
   const auto* subscript_expr =
       GetNodeOrCrash<clang::Expr>(result, "subscript_expr", __FUNCTION__);
 
+  const auto* rhs_array_type =
+      result.Nodes.getNodeAs<clang::ArrayTypeLoc>("rhs_array_type_loc");
+
   std::string_view declref_bind_name = "container_decl_ref";
   std::string_view subspan_opener = ").subspan(";
   if (mode == ContainerPointerRewritesMode::kDontWrapWithBaseSpan) {
     declref_bind_name = "rhs_expr";
-    subspan_opener = ".subspan(";
+    if (!rhs_array_type) {
+      subspan_opener = ".subspan(";
+    }
   }
 
   const auto& container_decl_ref =
@@ -3381,14 +3391,18 @@ class Spanifier {
         hasType(pointer_type),
         allOf(hasType(raw_ptr_type),
               hasDescendant(raw_ptr_type_loc.bind("lhs_raw_ptr_type_loc"))),
-        hasTypeLoc(loc(qualType(arrayType().bind("lhs_array_type")))
+        hasTypeLoc(loc(qualType(arrayType(hasElementType(qualType().bind(
+                                              "contained_type")))
+                                    .bind("lhs_array_type")))
                        .bind("lhs_array_type_loc")));
 
     auto rhs_type_loc = anyOf(
         hasType(pointer_type),
         allOf(hasType(raw_ptr_type),
               hasDescendant(raw_ptr_type_loc.bind("rhs_raw_ptr_type_loc"))),
-        hasTypeLoc(loc(qualType(arrayType().bind("rhs_array_type")))
+        hasTypeLoc(loc(qualType(arrayType(hasElementType(qualType().bind(
+                                              "contained_type")))
+                                    .bind("rhs_array_type")))
                        .bind("rhs_array_type_loc")));
 
     auto lhs_field =

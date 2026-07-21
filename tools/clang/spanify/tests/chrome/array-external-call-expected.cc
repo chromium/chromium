@@ -88,3 +88,13 @@ void fct5() {
   // std::string s(buf.data());
   std::string s(buf.data());
 }
+
+void fct6() {
+  // Expected rewrite:
+  // std::array<char, 10> data;
+  std::array<char, 10> data;
+  data[UnsafeIndex()] = 'a';
+  File f;
+  // No rewrite expected.
+  f.ReadAtCurrentPos(&data[2], 8);
+}
