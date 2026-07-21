@@ -44,11 +44,6 @@ std::string GenerateRendererSpecificFileName(const std::string& file_name,
                             use_skia_renderer ? "_skia" : "");
 }
 
-base::FilePath GetReferenceFilePath(std::string_view test_filename) {
-  return base::FilePath(FILE_PATH_LITERAL("pdfium_print"))
-      .AppendASCII(test_filename);
-}
-
 void CheckPdfDimensions(base::span<const uint8_t> pdf_data,
                         const ExpectedDimensions& expected_dimensions) {
   PDFiumEngineExports exports;
@@ -94,8 +89,11 @@ void CheckPdfRendering(base::span<const uint8_t> pdf_data,
   ASSERT_TRUE(exports.RenderPDFPageToBitmap(pdf_data, page_number, settings,
                                             page_bitmap.getPixels()));
 
-  EXPECT_TRUE(MatchesPngFile(*page_bitmap.asImage(),
-                             GetReferenceFilePath(expected_png_filename)));
+  EXPECT_TRUE(
+      MatchesPngFile(*page_bitmap.asImage(),
+                     GetReferenceFilePath(FILE_PATH_LITERAL("pdfium_print"),
+                                          expected_png_filename,
+                                          /*use_platform_suffix=*/false)));
 }
 
 }  // namespace
