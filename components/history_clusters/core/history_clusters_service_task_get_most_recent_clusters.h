@@ -107,15 +107,6 @@ class HistoryClustersServiceTaskGetMostRecentClusters
   // `OnGotMostRecentPersistedClusters()`.
   QueryClustersCallback callback_;
 
-  // When `Start()` kicked off the request to fetch visits to cluster.
-  base::TimeTicks get_annotated_visits_to_cluster_start_time_;
-  // When `OnGotAnnotatedVisitsToCluster()` kicked off the request to cluster
-  // the visits.
-  base::TimeTicks get_model_clusters_start_time_;
-  // When `ReturnMostRecentPersistedClusters()` kicked off the request to get
-  // persisted clusters.
-  base::TimeTicks get_most_recent_persisted_clusters_start_time_;
-
   // Used for async callbacks.
   base::WeakPtrFactory<HistoryClustersServiceTaskGetMostRecentClusters>
       weak_ptr_factory_{this};

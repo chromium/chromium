@@ -992,22 +992,6 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
       "History.Clusters.Backend.NumClustersReturned", 2, 1);
   histogram_tester.ExpectBucketCount(
       "History.Clusters.Backend.NumVisitsToCluster", 3, 1);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.GetMostRecentClusters."
-      "ComputeClustersLatency",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.GetMostRecentClusters."
-      "ComputeClustersLatency.WebUI",
-      1);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.GetMostRecentClusters."
-      "ComputeClustersLatency.AllKeywordCacheRefresh",
-      0);
-  histogram_tester.ExpectTotalCount(
-      "History.Clusters.Backend.GetMostRecentClusters."
-      "GetMostRecentPersistedClustersLatency.ShortKeywordCacheRefresh",
-      0);
 }
 
 TEST_F(HistoryClustersServiceTest, CompleteVisitContextAnnotationsIfReady) {

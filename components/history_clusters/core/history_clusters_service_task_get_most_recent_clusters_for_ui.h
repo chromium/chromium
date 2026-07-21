@@ -53,13 +53,11 @@ class HistoryClustersServiceTaskGetMostRecentClustersForUI
 
   // Invoked after `Start()` asyncly fetches clusters.
   void OnGotMostRecentPersistedClusters(QueryClustersFilterParams filter_params,
-                                        base::TimeTicks start_time,
                                         std::vector<history::Cluster> clusters);
 
   // Invoked after `OnGotMostRecentPersistedClusters()` asyncly obtains
   // clusters. Will syncly invoke `callback_`.
-  void OnGotModelClusters(base::TimeTicks start_time,
-                          QueryClustersContinuationParams continuation_params,
+  void OnGotModelClusters(QueryClustersContinuationParams continuation_params,
                           std::vector<history::Cluster> clusters);
 
   // Never nullptr.

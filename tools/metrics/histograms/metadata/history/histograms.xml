@@ -637,121 +637,6 @@ chromium-metrics-reviews@google.com.
   <token key="Source" variants="ClusteringRequestSource"/>
 </histogram>
 
-<histogram
-    name="History.Clusters.Backend.GetMostRecentClusters.{Segment}{Source}"
-    units="ms" expires_after="2024-10-06">
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    Near startup and every 1 hour afterwards, unclustered visits are clustered,
-    and the clusters are persisted in the history DB.
-
-    As needed, both fresh and persisted clusters are fetched. Clusters are
-    fetched for: a) displaying on the Journeys WebUI and b) generating keyword
-    caches to match with omnibox inputs and show journey chips or suggestions in
-    the omnibox.
-
-    This histogram records the latency breakdown for fetching both fresh and
-    persisted clusters. See the similar
-    'History.Clusters.Backend.UpdateClusters.*' histograms for the latency
-    breakdown for updating clusters.
-
-    Recorded for every batch of fetched clusters; can be recorded more than once
-    per Journey WebUI load or keyword cache generations
-
-    This slice records the time between the main thread requesting and receiving
-    {Segment}. Records {Source}.
-  </summary>
-  <token key="Segment">
-    <variant name="ComputeClustersLatency" summary="clusters from the model"/>
-    <variant name="GetAnnotatedVisitsToClusterLatency"
-        summary="annotated visits to cluster (which can include clustered,
-                 unclustered, incomplete, and complete visits)"/>
-    <variant name="GetMostRecentPersistedClustersLatency"
-        summary="persisted clusters from the history DB"/>
-  </token>
-  <token key="Source" variants="ClusteringRequestSource"/>
-</histogram>
-
-<histogram
-    name="History.Clusters.Backend.GetMostRecentClustersForUI.GetMostRecentPersistedClustersTimeHorizon{Source}"
-    units="hours" expires_after="2024-10-06">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    On navigation, context clusters are created, grown, and persisted.
-
-    On startup and every 1 hour afterwards, these context clusters have their
-    triggability calculated. Context clusters older than 2 hours are not updated
-    are not re-updated after the initial triggability is calculated. However, if
-    there are unclustered visits (due to visits from before the user had context
-    clustering enabled or synced visits without a cluster ID), they will also be
-    context clustered with their triggerability calculated as well.
-
-    When a user visits the Journeys WebUI, persisted clusters (both those with
-    and without triggerability calculated) are fetched. Clusters are then
-    augmented with appropriate metadata needed for displaying on the Journeys
-    WebUI (e.g. ranking, deduping, labeling).
-
-    When the keyword cache used to match omnibox inputs and show journey chips
-    or suggestions in the omnibox needs updating, context clusters (both those
-    with and without triggerability calculated) are fetched.
-
-    This histogram records the number of hours that the persisted clusters
-    returned covers.
-
-    Recorded for every batch of fetched clusters; can be recorded more than once
-    per load of {Source}.
-  </summary>
-  <token key="Source" variants="ClusteringRequestSource"/>
-</histogram>
-
-<histogram
-    name="History.Clusters.Backend.GetMostRecentClustersForUI.{Segment}{Source}"
-    units="ms" expires_after="2024-10-06">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    On navigation, context clusters are created, grown, and persisted.
-
-    On startup and every 1 hour afterwards, these context clusters have their
-    triggability calculated. Context clusters older than 2 hours are not updated
-    are not re-updated after the initial triggability is calculated. However, if
-    there are unclustered visits (due to visits from before the user had context
-    clustering enabled or synced visits without a cluster ID), they will also be
-    context clustered with their triggerability calculated as well.
-
-    When a user visits the Journeys WebUI, persisted clusters (both those with
-    and without triggerability calculated) are fetched. Clusters are then
-    augmented with appropriate metadata needed for displaying on the Journeys
-    WebUI (e.g. ranking, deduping, labeling).
-
-    When the keyword cache used to match omnibox inputs and show journey chips
-    or suggestions in the omnibox needs updating, context clusters (both those
-    with and without triggerability calculated) are fetched.
-
-    This histogram records the latency breakdown for each step of getting
-    clusters for the webUI. It does not cover getting clusters for the keyword
-    cache.
-
-    Recorded for every batch of fetched clusters; can be recorded more than once
-    per Journey WebUI load.
-
-    This slice records the time between the main thread requesting and receiving
-    {Segment}. Records {Source}.
-  </summary>
-  <token key="Segment">
-    <variant name="ComputeClustersForUILatency"
-        summary="UI-augmented clusters from the model"/>
-    <variant name="GetMostRecentPersistedClustersLatency"
-        summary="persisted raw context clusters from the history DB"/>
-  </token>
-  <token key="Source" variants="ClusteringRequestSource"/>
-</histogram>
-
 <histogram name="History.Clusters.Backend.KeywordCache.AllKeywordsCount"
     units="count" expires_after="2025-07-13">
   <owner>manukh@chromium.org</owner>
@@ -900,9 +785,7 @@ chromium-metrics-reviews@google.com.
     caches to match with omnibox inputs and show journey chips or suggestions in
     the omnibox.
 
-    This histogram records the latency breakdown for updating clusters. See the
-    similar 'History.Clusters.Backend.GetMostRecentClusters.*' histograms for
-    the latency breakdown for fetching clusters.
+    This histogram records the latency breakdown for updating clusters.
 
     Recorded for every batch of visits clustered; can be recorded more than once
     every hour.
@@ -1170,19 +1053,10 @@ chromium-metrics-reviews@google.com.
     measured via the wall clock. Most of this time is not on the main thread.
 
     The total time spent populating the keywords cache will be:
-    History.Clusters.KeywordCache.Latency = (number of batches) * (
-    History.Clusters.Backend.GetMostRecentClusters.GetAnnotatedVisitsToClusterLatency.AllKeywordCacheRefresh
-    +
-    History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency.AllKeywordCacheRefresh
-    +
-    History.Clusters.Backend.GetMostRecentClusters.GetMostRecentPersistedClustersLatency.AllKeywordCacheRefresh
-    +
-    History.Clusters.Backend.GetMostRecentClusters.GetAnnotatedVisitsToClusterLatency.ShortKeywordCacheRefresh
-    +
-    History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency.ShortKeywordCacheRefresh
-    +
-    History.Clusters.Backend.GetMostRecentClusters.GetMostRecentPersistedClustersLatency.ShortKeywordCacheRefresh
-    + History.Clusters.KeywordCache.ThreadTime)
+    History.Clusters.KeywordCache.Latency = (number of batches) * (latency of
+    fetching and computing clusters + History.Clusters.KeywordCache.ThreadTime).
+    Historically, the breakdown of fetching and computing latency was recorded
+    in History.Clusters.Backend.GetMostRecentClusters.* histograms.
   </summary>
 </histogram>
 
@@ -1272,13 +1146,10 @@ chromium-metrics-reviews@google.com.
     the DOM. It's recorded in QueryClustersState, which is meant to be shared
     between multiple UIs.
 
-    Roughly, History.Clusters.ServiceLatency =
-    History.Clusters.Backend.GetMostRecentClusters.GetAnnotatedVisitsToClusterLatency.WebUI
-    +
-    History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency.WebUI
-    +
-    History.Clusters.Backend.GetMostRecentClusters.GetMostRecentPersistedClustersLatency.WebUI
-    + History.Clusters.ProcessClustersDuration
+    Roughly, History.Clusters.ServiceLatency = (latency of fetching and
+    computing clusters for UI) + History.Clusters.ProcessClustersDuration.
+    Historically, the breakdown of fetching and computing latency was recorded
+    in History.Clusters.Backend.GetMostRecentClusters.* histograms.
   </summary>
 </histogram>
 
