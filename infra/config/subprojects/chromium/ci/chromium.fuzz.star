@@ -531,7 +531,6 @@ ci.builder(
         ),
         clusterfuzz_archive = builder_config.clusterfuzz_archive(
             archive_name_prefix = "asan-v8-sandbox-testing",
-            archive_path = "linux-release-v8-sandbox-testing/asan-v8-sandbox-testing-linx-release",
             archive_subdir = "v8-sandbox-testing",
             gs_acl = "public-read",
             gs_bucket = "chromium-browser-asan",
