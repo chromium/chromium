@@ -137,30 +137,32 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   PolicyParserMessageBuffer report_only_permissions_policy_logger(
       "Error with Permissions-Policy-Report-Only header: ");
 
-  StringBuilder policy_builder;
-  policy_builder.Append(response.HttpHeaderField(http_names::kFeaturePolicy));
-  String feature_policy_header = policy_builder.ToString();
-  if (!feature_policy_header.empty())
+  const AtomicString& feature_policy_header =
+      response.HttpHeaderField(http_names::kFeaturePolicy);
+  if (!feature_policy_header.empty()) {
     UseCounter::Count(execution_context_, WebFeature::kFeaturePolicyHeader);
+  }
 
   permissions_policy_header_ = PermissionsPolicyParser::ParseHeader(
       feature_policy_header, permissions_policy_header,
       *execution_context_->GetSecurityOrigin(), feature_policy_logger,
       permissions_policy_logger, execution_context_);
 
+  const AtomicString& report_only_feature_policy_header =
+      response.HttpHeaderField(http_names::kFeaturePolicyReportOnly);
+  if (!report_only_feature_policy_header.empty()) {
+    UseCounter::Count(execution_context_,
+                      WebFeature::kFeaturePolicyReportOnlyHeader);
+  }
+
   network::ParsedPermissionsPolicy
       parsed_report_only_permissions_policy_header =
           PermissionsPolicyParser::ParseHeader(
-              response.HttpHeaderField(http_names::kFeaturePolicyReportOnly),
+              report_only_feature_policy_header,
               report_only_permissions_policy_header,
               *execution_context_->GetSecurityOrigin(),
               report_only_feature_policy_logger,
               report_only_permissions_policy_logger, execution_context_);
-
-  if (!response.HttpHeaderField(http_names::kFeaturePolicyReportOnly).empty()) {
-    UseCounter::Count(execution_context_,
-                      WebFeature::kFeaturePolicyReportOnlyHeader);
-  }
 
   Vector<PolicyParserMessageBuffer::Message> messages;
   messages.append_range(feature_policy_logger.GetMessages());
