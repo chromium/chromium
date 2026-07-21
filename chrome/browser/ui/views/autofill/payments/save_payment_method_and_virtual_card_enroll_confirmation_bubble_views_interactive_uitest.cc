@@ -13,9 +13,9 @@
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -86,16 +86,10 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
   IconLabelBubbleView* IconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    IconLabelBubbleView* icon;
-    if (IsPageActionMigrationEnabled()) {
-      auto* provider = browser_view->toolbar_button_provider();
-      icon = page_actions::GetIconLabelBubbleViewForTesting(
-          provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage),
-          kActionShowPaymentsBubbleOrPage);
-    } else {
-      icon = browser_view->toolbar_button_provider()->GetPageActionIconView(
-          PageActionIconType::kSaveCard);
-    }
+    auto* provider = browser_view->toolbar_button_provider();
+    IconLabelBubbleView* icon = page_actions::GetIconLabelBubbleViewForTesting(
+        provider->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage),
+        kActionShowPaymentsBubbleOrPage);
     CHECK(icon);
     return icon;
   }
@@ -111,10 +105,6 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
         BubbleView()->GetWidget());
     BubbleView()->GetWidget()->CloseWithReason(closed_reason);
     destroyed_waiter.Wait();
-  }
-
-  bool IsPageActionMigrationEnabled() {
-    return IsPageActionMigrated(PageActionIconType::kSaveCard);
   }
 
   bool IsWalletBrandingEnabled() { return std::get<0>(GetParam()); }
@@ -321,20 +311,14 @@ INSTANTIATE_TEST_SUITE_P(
 
 class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  public:
   VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest() {
-    const bool is_page_action_migration_enabled = std::get<0>(GetParam());
     const bool is_wallet_branding_enabled = IsWalletBrandingEnabled();
     std::vector<base::test::FeatureRefAndParams> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
 
-    enabled_features.push_back(
-        {::features::kPageActionsMigration,
-         {
-             {::features::kPageActionsMigrationVirtualCard.name,
-              is_page_action_migration_enabled ? "true" : "false"},
-         }});
+    enabled_features.push_back({::features::kPageActionsMigration, {}});
     if (is_wallet_branding_enabled) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
     } else {
@@ -398,7 +382,7 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
                   kPermanentFailure);
   }
 
-  bool IsWalletBrandingEnabled() { return std::get<1>(GetParam()); }
+  bool IsWalletBrandingEnabled() { return GetParam(); }
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
@@ -534,14 +518,9 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     ,
     VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest,
-    ::testing::Combine(testing::Bool(), testing::Bool()),
+    testing::Bool(),
     [](const ::testing::TestParamInfo<
         VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest::ParamType>&
-           info) {
-      return base::StrCat({
-          std::get<0>(info.param) ? "NewPageAction" : "OldPageAction",
-          std::get<1>(info.param) ? "BrandingFlagOn" : "BrandingFlagOff",
-      });
-    });
+           info) { return info.param ? "BrandingFlagOn" : "BrandingFlagOff"; });
 
 }  // namespace autofill

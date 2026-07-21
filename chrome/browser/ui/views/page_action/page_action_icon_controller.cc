@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
@@ -96,12 +95,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         add_page_action_icon(
             type, std::make_unique<IntentPickerView>(
                       params.browser, params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate));
-        break;
-      case PageActionIconType::kVirtualCardEnroll:
-        add_page_action_icon(
-            type, std::make_unique<autofill::VirtualCardEnrollIconView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
       case PageActionIconType::kOptimizationGuide:

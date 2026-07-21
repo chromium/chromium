@@ -1208,7 +1208,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"file_system_access", "true"},
     {"intent_picker", "true"},
     {"sharing_hub", "true"},
-    {"virtual_card", "true"},
 };
 const FeatureEntry::FeatureVariation kPageActionsMigrationVariations[] = {
     {"with all migrated page actions enabled", kPageActionsMigrationParams,

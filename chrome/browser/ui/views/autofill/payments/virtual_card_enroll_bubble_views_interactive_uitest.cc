@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_bubble_views.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_support.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
@@ -269,7 +269,6 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
 struct VirtualCardEnrollBubbleViewsInteractiveUiTestParams {
   VirtualCardEnrollmentSource enrollment_source;
   bool show_bubbles_based_on_priorities;
-  bool is_page_action_migration_enabled;
   bool is_wallet_branding_enabled;
 };
 
@@ -290,10 +289,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTestParameterized
           features::kAutofillShowBubblesBasedOnPriorities);
     }
 
-    enabled_features.push_back(
-        {::features::kPageActionsMigration,
-         {{::features::kPageActionsMigrationVirtualCard.name,
-           GetParam().is_page_action_migration_enabled ? "true" : "false"}}});
+    enabled_features.push_back({::features::kPageActionsMigration, {}});
 
     if (GetParam().is_wallet_branding_enabled) {
       enabled_features.push_back({features::kAutofillEnableWalletBranding, {}});
@@ -321,14 +317,12 @@ INSTANTIATE_TEST_SUITE_P(
                             VirtualCardEnrollmentSource::kDownstream,
                             VirtualCardEnrollmentSource::kSettingsPage),
             testing::Bool(),
-            testing::Bool(),
             testing::Bool()),
-        [](std::tuple<VirtualCardEnrollmentSource, bool, bool, bool> t) {
+        [](std::tuple<VirtualCardEnrollmentSource, bool, bool> t) {
           return VirtualCardEnrollBubbleViewsInteractiveUiTestParams{
               .enrollment_source = std::get<0>(t),
               .show_bubbles_based_on_priorities = std::get<1>(t),
-              .is_page_action_migration_enabled = std::get<2>(t),
-              .is_wallet_branding_enabled = std::get<3>(t),
+              .is_wallet_branding_enabled = std::get<2>(t),
           };
         }),
     [](const ::testing::TestParamInfo<
@@ -353,10 +347,6 @@ INSTANTIATE_TEST_SUITE_P(
       test_name.emplace_back(info.param.show_bubbles_based_on_priorities
                                  ? "_BubblePriorityEnabled"
                                  : "_BubblePriorityDisabled");
-
-      test_name.emplace_back(info.param.is_page_action_migration_enabled
-                                 ? "_NewPageAction"
-                                 : "_OldPageAction");
 
       test_name.emplace_back(info.param.is_wallet_branding_enabled
                                  ? "_WalletBrandingEnabled"

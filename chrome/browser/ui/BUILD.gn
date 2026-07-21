@@ -3747,8 +3747,6 @@ static_library("ui") {
       "views/autofill/payments/select_bnpl_issuer_dialog.h",
       "views/autofill/payments/virtual_card_enroll_bubble_views.cc",
       "views/autofill/payments/virtual_card_enroll_bubble_views.h",
-      "views/autofill/payments/virtual_card_enroll_icon_view.cc",
-      "views/autofill/payments/virtual_card_enroll_icon_view.h",
       "views/autofill/popup/custom_cursor_suppressor.cc",
       "views/autofill/popup/custom_cursor_suppressor.h",
       "views/autofill/popup/email_verifier/email_verification_popup_view.cc",
@@ -4839,7 +4837,6 @@ static_library("ui") {
       # TODO(crbug.com/434882143): Remove this circular dependency when the
       # following headers get componentized:
       # c/b/ui/browser.h, view_ids.h
-      # c/b/ui/views/autofill/payments/virtual_card_enroll_icon_view.h
       "//chrome/browser/ui/views/page_action:impl",
 
       # TODO(crbug.com/451609048): Remove this circular dependency when the
