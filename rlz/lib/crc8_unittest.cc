@@ -4,17 +4,15 @@
 //
 // Uniitest for data encryption functions.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "rlz/lib/crc8.h"
 
 #include <stddef.h>
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "rlz/lib/crc8.h"
 
 TEST(Crc8Unittest, TestCrc8) {
   struct Data {
@@ -33,25 +31,36 @@ TEST(Crc8Unittest, TestCrc8) {
     {"My CRC 8!", 0xDC, 0, 0x50},
   };
 
-  unsigned char* bytes;
-  unsigned char crc;
+  uint8_t crc;
   bool matches;
-  int length;
-  for (size_t i = 0; i < sizeof(data) / sizeof(data[0]); ++i) {
-    bytes = reinterpret_cast<unsigned char*>(data[i].string);
+  for (auto& item : data) {
+    std::string_view str_view(item.string);
+    auto bytes = base::as_byte_span(str_view);
     crc = 0;
     matches = false;
-    length = strlen(data[i].string);
 
     // Calculate CRC and compare against external value.
-    rlz_lib::Crc8::Generate(bytes, length, &crc);
-    EXPECT_TRUE(crc == data[i].external_crc);
-    rlz_lib::Crc8::Verify(bytes, length, crc, &matches);
+    rlz_lib::Crc8::Generate(bytes, &crc);
+    EXPECT_EQ(crc, item.external_crc);
+    rlz_lib::Crc8::Verify(bytes, crc, &matches);
     EXPECT_TRUE(matches);
 
     // Corrupt string and see if CRC still matches.
-    data[i].string[data[i].random_byte] = data[i].corrupt_value;
-    rlz_lib::Crc8::Verify(bytes, length, crc, &matches);
+    auto chars = base::span(item.string);
+    chars[item.random_byte] = item.corrupt_value;
+    rlz_lib::Crc8::Verify(bytes, crc, &matches);
     EXPECT_FALSE(matches);
   }
+}
+
+TEST(Crc8Unittest, TestEmptySpan) {
+  uint8_t crc = 0;
+  bool matches = false;
+
+  // Generating CRC for empty span should fail.
+  EXPECT_FALSE(rlz_lib::Crc8::Generate(base::span<const uint8_t>(), &crc));
+
+  // Verifying CRC for empty span should fail.
+  EXPECT_FALSE(
+      rlz_lib::Crc8::Verify(base::span<const uint8_t>(), 0x55, &matches));
 }

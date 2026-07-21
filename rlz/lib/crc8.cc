@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "rlz/lib/crc8.h"
 
 namespace {
@@ -53,39 +48,39 @@ const unsigned char kCrcTable[256] = {
 
 namespace rlz_lib {
 
-bool Crc8::Generate(const unsigned char *data, int length,
-                    unsigned char* check_sum) {
+bool Crc8::Generate(base::span<const uint8_t> data, uint8_t* check_sum) {
   if (!check_sum)
     return false;
 
   *check_sum = 0;
-  if (!data)
+  if (data.empty()) {
     return false;
+  }
 
   // The inital and final constants are as used in the ATM HEC.
-  static const unsigned char kInitial = 0x00;
-  static const unsigned char kFinal = 0x55;
-  unsigned char crc = kInitial;
-  for (int i = 0; i < length; ++i) {
-    crc = kCrcTable[(data[i] ^ crc) & 0xFFU];
+  static const uint8_t kInitial = 0x00;
+  static const uint8_t kFinal = 0x55;
+  uint8_t crc = kInitial;
+  for (uint8_t byte : data) {
+    crc = kCrcTable[(byte ^ crc) & 0xFFU];
   }
 
   *check_sum =  crc ^ kFinal;
   return true;
 }
 
-bool Crc8::Verify(const unsigned char* data, int length,
-                  unsigned char check_sum, bool* matches) {
+bool Crc8::Verify(base::span<const uint8_t> data,
+                  uint8_t check_sum,
+                  bool* matches) {
   if (!matches)
     return false;
 
   *matches = false;
-  if (!data)
-    return false;
 
-  unsigned char calculated_crc;
-  if (!Generate(data, length, &calculated_crc))
+  uint8_t calculated_crc;
+  if (!Generate(data, &calculated_crc)) {
     return false;
+  }
 
   *matches = check_sum == calculated_crc;
 

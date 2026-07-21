@@ -7,10 +7,16 @@
 #ifndef RLZ_LIB_CRC32_H_
 #define RLZ_LIB_CRC32_H_
 
+#include <stdint.h>
+
+#include <string_view>
+
+#include "base/containers/span.h"
+
 namespace rlz_lib {
 
-int Crc32(const unsigned char* buf, int length);
-bool Crc32(const char* text, int* crc);
+int Crc32(base::span<const uint8_t> data);
+bool Crc32(std::string_view text, int* crc);
 
 }  // namespace rlz_lib
 
