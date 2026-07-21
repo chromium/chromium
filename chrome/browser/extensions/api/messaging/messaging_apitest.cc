@@ -1970,65 +1970,6 @@ IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
       << message_;
 }
 
-// Tests that DevTools extensions do not support promise-based one-time
-// messaging. Specifically, if an `onMessage` listener in a DevTools extension
-// returns a `Promise`, it should not be treated as an asynchronous response,
-// and the message channel should be closed immediately, causing the sender's
-// `Promise` to reject.
-IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
-                       DevToolsExtension_NoPromiseMessaging) {
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(
-      R"({
-          "name": "DevTools Extension No Promise Messaging test",
-          "version": "0.1",
-          "manifest_version": 3,
-          "background": {"service_worker": "background.js"},
-          "devtools_page": "devtools.html"
-        })");
-  test_dir.WriteFile(FILE_PATH_LITERAL("devtools.html"), "");
-
-  // Background page registers an `onMessage` listener that returns a `Promise`.
-  // Since this is a DevTools extension, this `Promise` return should not
-  // be supported (it won't keep the channel open).
-  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
-                     R"(chrome.runtime.onMessage.addListener((msg) => {
-                          return Promise.resolve('response');
-                        });
-                        chrome.test.sendMessage('ready');)");
-
-  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"),
-                     "<script src='page.js'></script>");
-  // Extension page sends a message and expects it to fail because
-  // the listener's `Promise` is ignored and the channel is closed.
-  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"),
-                     R"(chrome.test.runTests([
-                          function testPromiseMessagingNotSupported() {
-                            chrome.runtime.sendMessage('ping', (response) => {
-                              chrome.test.assertNe(
-                                  undefined, chrome.runtime.lastError);
-                              chrome.test.assertTrue(
-                                  chrome.runtime.lastError.message.includes(
-                                      'The message port closed before a ' +
-                                      'response was received'));
-                              chrome.test.assertEq(undefined, response);
-                              chrome.test.succeed();
-                            });
-                          }
-                        ]);)");
-
-  ResultCatcher catcher;
-  ExtensionTestMessageListener ready_listener("ready");
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
-
-  // Navigate to the extension page to run the test.
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
-                            extension->GetResourceURL("page.html")));
-  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-}
-
 using OnMessageExternalAsyncMessagingApiTest = MessagingApiTest;
 
 // Tests that the channel for a sole onMessageExternal listener will not stay

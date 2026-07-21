@@ -613,17 +613,16 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
   // WebUI script contexts, currently it is not.
   bool set_accessor_on_browser = false;
   const Extension* extension = context->extension();
-  //  Create if this is an MV3+ extension script context.
-  if (extension && extension->manifest_version() >= 3 &&
-      chrome_manifest_urls::GetDevToolsPage(extension).is_empty()) {
+  // Create `browser` accessor if this is an MV3+ extension script context.
+  if (extension && extension->manifest_version() >= 3) {
     set_accessor_on_browser = true;
   } else if (is_webpage &&
              (CanWebpageContextConnectExternally(context) ||
               base::FeatureList::IsEnabled(
                   extensions_features::kExtensionBrowserNamespaceOnWebPages))) {
-    //  Create if this is a web page and it can communicate with an extension
-    //  (meaning it will have an extension API enabled for it) or we've
-    //  explicitly enabled it for webpages.
+    // Create `browser` accessor if this is a web page and it can communicate
+    // with an extension (meaning it will have an extension API enabled for it)
+    // or we've explicitly enabled it for webpages.
     set_accessor_on_browser = true;
   }
 
