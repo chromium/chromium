@@ -1,15 +1,15 @@
 Name: libzip
 Short Name: libzip
 URL: https://github.com/nih-at/libzip
-Version: 66e496489bdae81bfda8b0088172871d8fda0032
-Date: 2021-01-05
-Revision: 66e496489bdae81bfda8b0088172871d8fda0032
+Version: N/A
+Date: 2026-06-25
+Revision: fdb951209129e98c72628d7ec85c87b4efc2de64
 Update Mechanism: Manual
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: Yes
 Shipped: yes
-CPEPrefix: cpe:/a:nih:libzip:1.7.3
+CPEPrefix: cpe:/a:nih:libzip:1.11.4
 
 Description:
 This is libzip, a C library for reading, creating, and modifying zip and zip64 archives.
