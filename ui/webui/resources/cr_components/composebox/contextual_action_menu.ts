@@ -187,6 +187,7 @@ export class ContextualActionMenuElement extends
   private closeTimer_: number|null = null;
   private pointerOverTrigger_: boolean = false;
   private pointerOverFlyout_: boolean = false;
+  private shouldResetFlyoutScroll_: boolean = true;
   private firstTabBeingAdded_: boolean = false;
   private pendingTabAddId_: number|null = null;
   private anchor_: HTMLElement|null = null;
@@ -287,6 +288,11 @@ export class ContextualActionMenuElement extends
         this.updateSharingTabsText_();
       }
       this.manageShareTabsInitialFocus_(changedProperties);
+    }
+
+    if (changedProperties.has('shareTabsFlyoutOpen') &&
+        this.shareTabsFlyoutOpen) {
+      this.updateFlyoutPosition_();
     }
 
     if (changedProperties.has('tabSuggestions') ||
@@ -426,6 +432,7 @@ export class ContextualActionMenuElement extends
   }
 
   showAt(anchor: HTMLElement) {
+    this.shouldResetFlyoutScroll_ = true;
     this.anchor_ = anchor;
     const rect = anchor.getBoundingClientRect();
     if (rect.width === 0 && rect.height === 0 && rect.top === 0 &&
@@ -1050,6 +1057,16 @@ export class ContextualActionMenuElement extends
         return;
       }
 
+      if (this.shouldResetFlyoutScroll_) {
+        flyout.scrollTop = 0;
+        requestAnimationFrame(() => {
+          if (flyout) {
+            flyout.scrollTop = 0;
+          }
+        });
+        this.shouldResetFlyoutScroll_ = false;
+      }
+
       const triggerRect = trigger.getBoundingClientRect();
       const flyoutWidth = flyout.offsetWidth || DEFAULT_FLYOUT_WIDTH_PX;
       const viewportWidth = window.innerWidth;
@@ -1101,6 +1118,7 @@ export class ContextualActionMenuElement extends
     this.cancelCloseTimer_();
     this.pointerOverTrigger_ = false;
     this.pointerOverFlyout_ = false;
+    this.shouldResetFlyoutScroll_ = true;
     this.setShareTabsFlyoutOpen_(false);
 
     const flyout =
