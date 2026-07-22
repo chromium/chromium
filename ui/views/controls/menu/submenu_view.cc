@@ -205,6 +205,8 @@ void SubmenuView::ViewHierarchyChanged(
   }
 }
 
+// TODO(https://crbug.com/537701460): SubmenuView should use a
+// DelegatingLayoutManager instead of overriding layout.
 void SubmenuView::Layout(PassKey) {
   // We're in a ScrollView, and need to set our width/height ourselves.
   if (!parent()) {

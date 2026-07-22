@@ -1096,9 +1096,9 @@ void MenuItemView::UpdateEmptyMenusAndMetrics() {
           return;
         }
       }
-      submenu_
-          ->InvalidateLayout();  // Ideally the submenu would have a layout
-                                 // manager that would do this automatically.
+      // TODO(https://crbug.com/537701460): Remove after SubmenuView gets a
+      // proper layout.
+      submenu_->InvalidateLayout();
     } else {
       has_visible_menu_items |= child->GetVisible();
     }
