@@ -19,9 +19,11 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/test/base/ash/js_test_api.h"
+#include "chrome/test/base/web_ui_test_data_source.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -241,4 +243,5 @@ content::EvalJsResult SandboxedWebUiAppTestBase::EvalJsInAppFrame(
 void SandboxedWebUiAppTestBase::SetUpOnMainThread() {
   injector_ = std::make_unique<TestCodeInjector>(this);
   MojoWebUIBrowserTest::SetUpOnMainThread();
+  webui::CreateAndAddUntrustedWebUITestDataSource(browser()->profile());
 }

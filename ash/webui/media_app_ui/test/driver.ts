@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import type {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
 import {TEST_ONLY} from './launch.js';
@@ -393,7 +393,9 @@ export function assertFilenamesToBe(
  * @param message logged if the assertion fails
  */
 export function assertMatch(string: string, regex: string, message?: string) {
-  chai.assert.match(string, new RegExp(regex), message);
+  assertTrue(
+      new RegExp(regex).test(string),
+      message ?? `Expected '${string}' to match '${regex}'`);
 }
 
 /**

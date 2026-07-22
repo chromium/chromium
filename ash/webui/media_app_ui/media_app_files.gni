@@ -56,7 +56,7 @@ media_app_definitions_staged =
         media_app_static_defs + media_app_defs_for_unconverted_js,
         "$ts_root_dir/{{source_file_part}}")
 
-# Testing .d.ts and .ts files that are staged and consumed by tsc.
+# Testing .ts files that are staged and consumed by tsc.
 media_app_test_ts = [
   "driver_api.ts",
   "driver.ts",
@@ -65,9 +65,3 @@ media_app_test_ts = [
   "media_app_ui_browsertest.ts",
   "test_worker.ts",
 ]
-
-media_app_test_defs = [ "test_api.d.ts" ]
-
-media_app_test_definitions_staged =
-    process_file_template(media_app_test_defs,
-                          "$ts_root_dir/{{source_file_part}}")

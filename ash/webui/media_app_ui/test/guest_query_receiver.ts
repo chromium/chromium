@@ -22,6 +22,9 @@ const {
   setLoadFiles,
 } = TEST_ONLY;
 
+// Things that become available when dom_testing_helpers.js is injected.
+declare function waitForNode(query: string, path?: string[]): Promise<Element>;
+
 /**
  * TODO(b/314827247): Remove this when imports are converted to TypeScript. This
  * is needed because the generated .d.ts doesn't capture non-nullability.

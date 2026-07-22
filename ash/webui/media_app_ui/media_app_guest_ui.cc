@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
@@ -40,6 +41,8 @@ namespace {
 constexpr base::FilePath::CharType kFontsRoot[] =
     FILE_PATH_LITERAL("/usr/share/fonts");
 constexpr char kFontRequestPrefix[] = "fonts/";
+constexpr char kMediaAppUntrustedScriptSrc[] =
+    "script-src 'self' 'wasm-eval' chrome-untrusted://resources";
 
 int g_media_app_window_count = 0;
 
@@ -168,7 +171,7 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
   // Allow wasm and mojo.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src 'self' 'wasm-eval' chrome-untrusted://resources;");
+      base::StrCat({kMediaAppUntrustedScriptSrc, ";"}));
   // Allow calls to Maps reverse geocoding API for loading metadata.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
@@ -201,11 +204,16 @@ MediaAppGuestUI::MediaAppGuestUI(
   content::WebUIDataSource* untrusted_source =
       CreateAndAddMediaAppUntrustedDataSource(web_ui, delegate_.get());
 
-  MaybeConfigureTestableDataSource(
-      untrusted_source, "media_app/untrusted",
-      base::BindRepeating(&IsFontRequest),
-      base::BindRepeating(&MediaAppGuestUI::StartFontDataRequest,
-                          weak_factory_.GetWeakPtr()));
+  if (MaybeConfigureTestableDataSource(
+          untrusted_source, "media_app/untrusted",
+          base::BindRepeating(&IsFontRequest),
+          base::BindRepeating(&MediaAppGuestUI::StartFontDataRequest,
+                              weak_factory_.GetWeakPtr()))) {
+    untrusted_source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ScriptSrc,
+        base::StrCat(
+            {kMediaAppUntrustedScriptSrc, " chrome-untrusted://webui-test;"}));
+  }
 }
 
 MediaAppGuestUI::~MediaAppGuestUI() {
