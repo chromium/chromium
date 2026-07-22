@@ -20,9 +20,8 @@
 #include "content/public/test/test_content_browser_client.h"
 #include "content/public/test/test_content_client.h"
 #include "content/public/test/test_renderer_host.h"
-#include "mojo/public/c/system/data_pipe.h"
-#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -180,13 +179,7 @@ INSTANTIATE_TEST_SUITE_P(,
                          WebUIURLLoaderFactoryTest,
                          testing::ValuesIn(kRangeRequestTestData));
 
-// TODO(crbug.com/482413371): Disabled on linux for being flaky.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_RangeRequest DISABLED_RangeRequest
-#else
-#define MAYBE_RangeRequest RangeRequest
-#endif
-TEST_P(WebUIURLLoaderFactoryTest, MAYBE_RangeRequest) {
+TEST_P(WebUIURLLoaderFactoryTest, RangeRequest) {
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
       CreateWebUIURLLoaderFactory(main_rfh(), kTestWebUIScheme,
                                   /*allowed_hosts=*/{}));
@@ -216,27 +209,19 @@ TEST_P(WebUIURLLoaderFactoryTest, MAYBE_RangeRequest) {
 
   if (loader_client.completion_status().error_code == net::OK) {
     ASSERT_TRUE(loader_client.response_body().is_valid());
-    size_t response_size;
-    ASSERT_EQ(
-        loader_client.response_body().ReadData(
-            MOJO_READ_DATA_FLAG_QUERY, base::span<uint8_t>(), response_size),
-        MOJO_RESULT_OK);
-    ASSERT_EQ(response_size, GetParam().expected_size);
+    std::string response;
+    ASSERT_TRUE(mojo::BlockingCopyToString(
+        loader_client.response_body_release(), &response));
+    ASSERT_EQ(response.size(), GetParam().expected_size);
 
-    if (response_size > 0u) {
-      std::vector<uint8_t> response(response_size);
-      ASSERT_EQ(loader_client.response_body().ReadData(
-                    MOJO_READ_DATA_FLAG_ALL_OR_NONE, response, response_size),
-                MOJO_RESULT_OK);
-
-      std::vector<unsigned char> expected_resource =
-          TestWebUIDataSource::GetResource(GetParam().resource_size);
-      expected_resource.erase(expected_resource.begin(),
-                              expected_resource.begin() +
-                                  GetParam().first_byte_position.value_or(0));
-      expected_resource.resize(GetParam().expected_size);
-      EXPECT_EQ(response, expected_resource);
-    }
+    std::vector<unsigned char> expected_resource =
+        TestWebUIDataSource::GetResource(GetParam().resource_size);
+    expected_resource.erase(
+        expected_resource.begin(),
+        expected_resource.begin() + GetParam().first_byte_position.value_or(0));
+    expected_resource.resize(GetParam().expected_size);
+    EXPECT_EQ(std::vector<uint8_t>(response.begin(), response.end()),
+              expected_resource);
   }
 }
 
