@@ -64,6 +64,19 @@ public final class ShareButtonControllerTest {
     @Before
     public void setUp() {
         AdaptiveToolbarStatePredictor.setToolbarStateForTesting(AdaptiveToolbarButtonVariant.SHARE);
+
+        if (mActivityTestRule.getActivity() != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mActivityTestRule
+                                .getActivity()
+                                .getRootUiCoordinatorForTesting()
+                                .getAdaptiveToolbarUiCoordinatorForTesting()
+                                .getAdaptiveToolbarButtonControllerForTesting()
+                                .recomputeUiState();
+                    });
+        }
+
         mInitialPage = mActivityTestRule.startOnBlankPage();
 
         int deviceWidth =
