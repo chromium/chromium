@@ -449,10 +449,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
   // During editing password is exposed so eye icon shouldn't be shown.
   if (!self.tableView.editing) {
-    UIImage* image =
-        [self isPasswordShown]
-            ? DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize)
-            : DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
+    UIImage* image = [self isPasswordShown]
+                         ? SymbolWithPointSize(SymbolHideAction, kSymbolSize)
+                         : SymbolWithPointSize(SymbolShowAction, kSymbolSize);
     item.identifyingIcon = image;
     item.identifyingIconEnabled = YES;
     item.identifyingIconAccessibilityLabel = l10n_util::GetNSString(
@@ -588,8 +587,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   item.detailText = l10n_util::GetNSStringF(
       IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE_DESCRIPTION,
       base::SysNSStringToUTF16(self.userEmail));
-  item.image = CustomSymbolWithPointSize(kCloudAndArrowUpSymbol,
-                                         kRecommendationSymbolSize);
+  item.image =
+      SymbolWithPointSize(SymbolCloudAndArrowUp, kRecommendationSymbolSize);
   item.imageViewTintColor = [UIColor colorNamed:kBlueColor];
   return item;
 }
@@ -846,8 +845,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
       }
 
       UIButton* infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
-      [infoButton setImage:DefaultSymbolWithPointSize(kInfoCircleSymbol,
-                                                      kRecommendationSymbolSize)
+      [infoButton setImage:SymbolWithPointSize(SymbolInfoCircle,
+                                               kRecommendationSymbolSize)
                   forState:UIControlStateNormal];
       [infoButton addTarget:self
                      action:@selector(passkeyHiddenInfoButtonTapped:)
@@ -938,8 +937,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   SEL selector = policyEnabled ? @selector(onShareButtonPressed)
                                : @selector(onPolicyDisabledShareButtonPressed:);
   UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
-      initWithImage:DefaultSymbolWithPointSize(kShareSymbol,
-                                               kSymbolActionPointSize)
+      initWithImage:SymbolWithPointSize(SymbolShare, kSymbolActionPointSize)
               style:UIBarButtonItemStylePlain
              target:self
              action:selector];
@@ -1051,8 +1049,8 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
 // Applies tint colour and resizes image.
 - (UIImage*)compromisedIcon {
-  return DefaultSymbolTemplateWithPointSize(kErrorCircleFillSymbol,
-                                            kRecommendationSymbolSize);
+  return SymbolTemplateWithPointSize(SymbolErrorCircleFill,
+                                     kRecommendationSymbolSize);
 }
 
 // Reveals password to the user. If copyCompletion is provided and the user
@@ -1067,7 +1065,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
           self.credentials[_passwordIndexToReveal].password;
       self.passwordDetailsInfoItems[_passwordIndexToReveal]
           .passwordTextItem.identifyingIcon =
-          DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize);
+          SymbolWithPointSize(SymbolHideAction, kSymbolSize);
       self.passwordDetailsInfoItems[_passwordIndexToReveal]
           .passwordTextItem.identifyingIconAccessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_HIDE_BUTTON);
@@ -1550,7 +1548,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
 
     self.passwordDetailsInfoItems[_passwordIndexToReveal]
         .passwordTextItem.identifyingIcon =
-        DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
+        SymbolWithPointSize(SymbolShowAction, kSymbolSize);
     self.passwordDetailsInfoItems[_passwordIndexToReveal]
         .passwordTextItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORD_SHOW_BUTTON);

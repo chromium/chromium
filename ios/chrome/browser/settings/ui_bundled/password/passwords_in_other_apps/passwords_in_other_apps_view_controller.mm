@@ -526,8 +526,8 @@ CGFloat const kSubtitleMarginLayoutGuideHeight = 24;
 - (UIView*)turnOffInstructionView {
   if (!_turnOffInstructionView) {
     UITextView* captionTextView = [self drawCaptionTextView];
-    UIImage* checkmark = DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
-                                                    kCheckmarkIconSize);
+    UIImage* checkmark =
+        SymbolWithPointSize(SymbolCheckmarkCircleFill, kCheckmarkIconSize);
     UIImageView* checkmarkView = [[UIImageView alloc] initWithImage:checkmark];
     checkmarkView.tintColor = [UIColor colorNamed:kGreen500Color];
     checkmarkView.translatesAutoresizingMaskIntoConstraints = NO;

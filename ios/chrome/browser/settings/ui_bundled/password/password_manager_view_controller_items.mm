@@ -64,7 +64,7 @@
   _detailLabel = [[UILabel alloc] init];
   _faviconContainerView = [[FaviconContainerView alloc] init];
   UIImage* cloudSlashedImage =
-      CustomSymbolWithPointSize(kCloudSlashSymbol, kCloudSlashSymbolPointSize);
+      SymbolWithPointSize(SymbolCloudSlash, kCloudSlashSymbolPointSize);
   _localOnlyIcon = [[UIImageView alloc] initWithImage:cloudSlashedImage];
   _localOnlyIcon.tintColor = CloudSlashTintColor();
   [_localOnlyIcon setContentHuggingPriority:UILayoutPriorityRequired
