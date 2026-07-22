@@ -7,18 +7,38 @@
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "content/public/browser/navigation_handle.h"
 
+std::string StringifyChromeInitiatorLocation(
+    ChromeInitiatorLocation initiator_location) {
+  switch (initiator_location) {
+    case ChromeInitiatorLocation::kBookmarkBar:
+      return "BookmarkBar";
+    case ChromeInitiatorLocation::kNewTabPage:
+      return "NewTabPage";
+    case ChromeInitiatorLocation::kOmniboxDirectUrlInput:
+      return "OmniboxDirectUrlInput";
+    case ChromeInitiatorLocation::kOmniboxDefaultSearchEngine:
+      return "OmniboxDefaultSearchEngine";
+    case ChromeInitiatorLocation::kOther:
+      return "Other";
+  }
+  NOTREACHED();
+}
+
 void AttachNewTabPageNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
   page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
       navigation_handle,
-      GetInitiatorLocation(ChromeInitiatorLocation::kNewTabPage));
+      GetInitiatorLocation(ChromeInitiatorLocation::kNewTabPage),
+      StringifyChromeInitiatorLocation(ChromeInitiatorLocation::kNewTabPage));
 }
 
 void AttachOmniboxDirectUrlInputNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
   page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
       navigation_handle,
-      GetInitiatorLocation(ChromeInitiatorLocation::kOmniboxDirectUrlInput));
+      GetInitiatorLocation(ChromeInitiatorLocation::kOmniboxDirectUrlInput),
+      StringifyChromeInitiatorLocation(
+          ChromeInitiatorLocation::kOmniboxDirectUrlInput));
 }
 
 void AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
@@ -26,6 +46,8 @@ void AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
   page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
       navigation_handle,
       GetInitiatorLocation(
+          ChromeInitiatorLocation::kOmniboxDefaultSearchEngine),
+      StringifyChromeInitiatorLocation(
           ChromeInitiatorLocation::kOmniboxDefaultSearchEngine));
 }
 
@@ -33,5 +55,6 @@ void AttachBookmarkBarNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
   page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
       navigation_handle,
-      GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar));
+      GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
+      StringifyChromeInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar));
 }

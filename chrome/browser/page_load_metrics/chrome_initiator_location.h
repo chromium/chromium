@@ -45,6 +45,9 @@ inline ChromeInitiatorLocation GetChromeInitiatorLocation(
   return chrome_type;
 }
 
+std::string StringifyChromeInitiatorLocation(
+    ChromeInitiatorLocation initiator_location);
+
 void AttachNewTabPageNavigationHandleUserData(
     content::NavigationHandle& navigation_handle);
 

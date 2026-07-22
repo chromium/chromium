@@ -10,7 +10,11 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationHandleUserData);
 
 NavigationHandleUserData::NavigationHandleUserData(
     content::NavigationHandle& navigation,
-    InitiatorLocation navigation_type)
-    : navigation_type_(navigation_type) {}
+    InitiatorLocation navigation_type,
+    std::string navigation_type_string)
+    : navigation_type_(navigation_type),
+      navigation_type_string_(std::move(navigation_type_string)) {}
+
+NavigationHandleUserData::~NavigationHandleUserData() = default;
 
 }  // namespace page_load_metrics

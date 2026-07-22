@@ -43,7 +43,8 @@ void AttachInitiatorLocation(
     page_load_metrics::NavigationHandleUserData::InitiatorLocation location,
     content::NavigationHandle& navigation_handle) {
   page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle, location);
+      navigation_handle, location,
+      StringifyChromeInitiatorLocation(GetChromeInitiatorLocation(location)));
 }
 
 }  // namespace

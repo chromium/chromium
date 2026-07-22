@@ -33,18 +33,26 @@ class NavigationHandleUserData
   using InitiatorLocation = int16_t;
   static constexpr InitiatorLocation kInitiatorLocationOther = 0;
 
-  ~NavigationHandleUserData() override = default;
+  ~NavigationHandleUserData() override;
 
   InitiatorLocation navigation_type() const { return navigation_type_; }
 
+  const std::string& navigation_type_string() const {
+    return navigation_type_string_;
+  }
+
  private:
   NavigationHandleUserData(content::NavigationHandle& navigation,
-                           InitiatorLocation navigation_type);
+                           InitiatorLocation navigation_type,
+                           std::string navigation_type_string);
 
   // `navigation_type` is used to store where this navigation is initiated from.
   // This information is used to identify the source of the navigation, and this
   // kind of information is utilized by PageLoadMetricsObservers.
   const InitiatorLocation navigation_type_;
+
+  // Stringified information of `navigation_type_`.
+  const std::string navigation_type_string_;
 
   friend content::NavigationHandleUserData<NavigationHandleUserData>;
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();

@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/url_and_id.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -175,7 +176,9 @@ OpenedWebContentsSet OpenAllHelper(
         nav_wrapper.NavigateTo(&params);
     if (handle) {
       page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-          *handle, navigation_type);
+          *handle, navigation_type,
+          StringifyChromeInitiatorLocation(
+              GetChromeInitiatorLocation(navigation_type)));
     }
     content::WebContents* opened_tab =
         handle ? handle->GetWebContents() : nullptr;
