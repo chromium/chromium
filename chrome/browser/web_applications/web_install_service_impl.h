@@ -24,12 +24,14 @@
 #include "url/gurl.h"
 
 namespace content {
+class Page;
 class WebContents;
 }
 
 namespace webapps {
 enum class InstallResultCode;
 enum class InstallableStatusCode;
+class MlInstallOperationTracker;
 }  // namespace webapps
 namespace web_app {
 class AppLock;
@@ -216,10 +218,13 @@ class WebInstallServiceImpl
                             std::optional<GURL> manifest_id,
                             IsInstalledCallback callback);
 
-  // Callback for when InstallFromManifest's fetch completes.
+  // Callback for when InstallFromManifest's fetch completes. `install_tracker`
+  // holds the registered current-install state for the web contents; dropping
+  // it on any failure path releases the registration.
   void OnManifestFetched(
       InstallFromManifestCallbackWithGuard callback_with_guard,
       blink::mojom::ManifestInstallOptionsPtr options,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       bool triggered_from_element,
       base::expected<std::string, WebInstallManifestFetchError> result);
 
@@ -227,6 +232,7 @@ class WebInstallServiceImpl
   void OnManifestParsed(
       InstallFromManifestCallbackWithGuard callback_with_guard,
       blink::mojom::ManifestInstallOptionsPtr options,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       bool triggered_from_element,
       blink::mojom::ManifestPtr manifest);
 
@@ -237,19 +243,32 @@ class WebInstallServiceImpl
   void OnManifestPermissionDecided(
       InstallFromManifestCallbackWithGuard callback_with_guard,
       blink::mojom::ManifestInstallOptionsPtr options,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+      blink::mojom::ManifestPtr manifest,
       const std::vector<content::PermissionResult>& permission_result);
 
   // Shared "permission granted, proceed to install" step for the manifest URL
   // flow.
   void ContinueManifestInstall(
       InstallFromManifestCallbackWithGuard callback_with_guard,
-      blink::mojom::ManifestInstallOptionsPtr options);
+      blink::mojom::ManifestInstallOptionsPtr options,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+      blink::mojom::ManifestPtr manifest);
+
+  // Callback for when the manifest URL install command completes.
+  void OnAppInstalledFromManifest(
+      InstallFromManifestCallbackWithGuard callback_with_guard,
+      const webapps::AppId& app_id,
+      webapps::InstallResultCode code);
 
   // Only one install can be in progress at a time.
   bool install_in_progress_ = false;
 
   const content::GlobalRenderFrameHostId frame_routing_id_;
   GURL last_committed_url_;
+  // Captured when an install is received and passed to the install command to
+  // ensure the initiating page has not navigated away.
+  base::WeakPtr<content::Page> initiating_page_;
   // Active data retrievers. They are destroyed when this service is destroyed
   // or when their callback completes.
   absl::flat_hash_set<std::unique_ptr<WebAppDataRetriever>> data_retrievers_;

@@ -134,6 +134,15 @@ class FakeWebAppUiManager : public WebAppUiManager {
       const GURL& last_committed_url,
       InstallCallback callback) override;
 
+  void TriggerInstallDialogForManifestInstall(
+      content::WebContents* initiating_web_contents,
+      base::WeakPtr<content::Page> initiating_page,
+      std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+      blink::mojom::ManifestPtr manifest,
+      const GURL& manifest_url,
+      const GURL& requesting_page_url,
+      InstallCallback callback) override;
+
   void TriggerLaunchDialogForBackgroundInstall(
       content::WebContents* initiating_web_contents,
       const webapps::AppId& app_id,

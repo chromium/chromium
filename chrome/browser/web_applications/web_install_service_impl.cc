@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -52,6 +51,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
@@ -352,6 +352,10 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
   }
   base::ScopedClosureRunner install_guard = ReserveInstallInProgress();
 
+  // Snapshot the Page for the install command, which can outlive the document
+  // service, and needs to detect if the page navigated away at any point.
+  initiating_page_ = render_frame_host().GetPage().GetWeakPtr();
+
   // Wrap the callback so the install guard is released on every exit path.
   // TODO(crbug.com/525409692): Include manifest URL telemetry. This should
   // eventually mirror `callback_with_metrics`.
@@ -375,24 +379,61 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
     return;
   }
 
+  // Reject early if another install is already active on this web contents.
+  // This avoids unnecessary network fetches and protects against showing
+  // multiple install dialogs.
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+
+  // Null in two cases: `AreWebAppsUserInstallable` is false (e.g.
+  // Incognito/OTR), OR `AttachTabHelpers` never ran on this WebContents.
+  webapps::MLInstallabilityPromoter* promoter =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
+  if (promoter && promoter->HasCurrentInstall()) {
+    std::move(callback_with_guard)
+        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
+  auto* initiating_profile =
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+
+  // Use the original profile to access the command system.
+  auto* provider =
+      WebAppProvider::GetForWebApps(initiating_profile->GetOriginalProfile());
+  // Check the actual web contents; may be Incognito/OTR, in which case
+  // `IsInstallingForWebContents` will always be false.
+  if (provider &&
+      provider->command_manager().IsInstallingForWebContents(web_contents)) {
+    std::move(callback_with_guard)
+        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
+  // The concurrent install guard checks have passed; register this install
+  // on the web contents. `promoter` and `tracker` may be null (Incognito/OTR).
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker;
+  if (promoter) {
+    install_tracker = promoter->RegisterCurrentInstallForWebContents(
+        webapps::WebappInstallSource::WEB_INSTALL);
+  }
+
   // Fetch the manifest even in Incognito/off-the-record profiles so that
   // DataErrors (invalid JSON, missing id) are returned accurately. This
   // prevents sites from using error differences to detect Incognito mode.
-  auto* profile =
-      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
-
   manifest_fetcher_ = std::make_unique<WebInstallManifestFetcher>(
-      install_target, profile->GetURLLoaderFactory());
+      install_target, initiating_profile->GetURLLoaderFactory());
 
   manifest_fetcher_->Fetch(base::BindOnce(
       &WebInstallServiceImpl::OnManifestFetched, weak_ptr_factory_.GetWeakPtr(),
       std::move(callback_with_guard), std::move(options),
-      triggered_from_element));
+      std::move(install_tracker), triggered_from_element));
 }
 
 void WebInstallServiceImpl::OnManifestFetched(
     InstallFromManifestCallbackWithGuard callback_with_guard,
     blink::mojom::ManifestInstallOptionsPtr options,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     bool triggered_from_element,
     base::expected<std::string, WebInstallManifestFetchError> result) {
   manifest_fetcher_.reset();
@@ -424,12 +465,13 @@ void WebInstallServiceImpl::OnManifestFetched(
           base::BindOnce(&WebInstallServiceImpl::OnManifestParsed,
                          weak_ptr_factory_.GetWeakPtr(),
                          std::move(callback_with_guard), std::move(options),
-                         triggered_from_element)));
+                         std::move(install_tracker), triggered_from_element)));
 }
 
 void WebInstallServiceImpl::OnManifestParsed(
     InstallFromManifestCallbackWithGuard callback_with_guard,
     blink::mojom::ManifestInstallOptionsPtr options,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     bool triggered_from_element,
     blink::mojom::ManifestPtr parsed_manifest) {
   // Null manifest means the command failed (invalid JSON, empty, or missing
@@ -491,14 +533,17 @@ void WebInstallServiceImpl::OnManifestParsed(
   // TODO(liahiscock): Add test coverage for this branch once its publicly
   // reachable.
   if (triggered_from_element) {
-    ContinueManifestInstall(std::move(callback_with_guard), std::move(options));
+    ContinueManifestInstall(std::move(callback_with_guard), std::move(options),
+                            std::move(install_tracker),
+                            std::move(parsed_manifest));
     return;
   }
 
   RequestWebInstallPermission(
       base::BindOnce(&WebInstallServiceImpl::OnManifestPermissionDecided,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_with_guard), std::move(options)));
+                     std::move(callback_with_guard), std::move(options),
+                     std::move(install_tracker), std::move(parsed_manifest)));
 }
 
 void WebInstallServiceImpl::OnManifestInstallNotSupportedDialogClosed(
@@ -512,8 +557,11 @@ void WebInstallServiceImpl::OnManifestInstallNotSupportedDialogClosed(
 void WebInstallServiceImpl::OnManifestPermissionDecided(
     InstallFromManifestCallbackWithGuard callback_with_guard,
     blink::mojom::ManifestInstallOptionsPtr options,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    blink::mojom::ManifestPtr manifest,
     const std::vector<content::PermissionResult>& permission_result) {
   CHECK(options);
+  CHECK(manifest);
   CHECK_EQ(permission_result.size(), 1u);
 
   if (permission_result[0].status != PermissionStatus::GRANTED) {
@@ -522,18 +570,60 @@ void WebInstallServiceImpl::OnManifestPermissionDecided(
     return;
   }
 
-  ContinueManifestInstall(std::move(callback_with_guard), std::move(options));
+  ContinueManifestInstall(std::move(callback_with_guard), std::move(options),
+                          std::move(install_tracker), std::move(manifest));
 }
 
 void WebInstallServiceImpl::ContinueManifestInstall(
     InstallFromManifestCallbackWithGuard callback_with_guard,
-    blink::mojom::ManifestInstallOptionsPtr options) {
+    blink::mojom::ManifestInstallOptionsPtr options,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    blink::mojom::ManifestPtr manifest) {
   CHECK(options);
 
-  // TODO(liahiscock): Initiate installation process.
-  NOTIMPLEMENTED();
-  std::move(callback_with_guard)
-      .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+  // At this point, `AreWebAppsUserInstallable` is guaranteed true (false case
+  // falls out in `OnManifestParsed`), but `install_tracker` may still be null
+  // if `AttachTabHelpers` was never called on this WebContents (e.g.
+  // background/offscreen WebContents, certain test-created WebContents,
+  // non browser embedder-owned WebContents, etc.). These WebContents are not
+  // expected to call the Web Install API, but must still be handled gracefully.
+  if (!install_tracker) {
+    std::move(callback_with_guard)
+        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    return;
+  }
+
+  auto* profile =
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+  auto* provider = WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+
+  // TODO(liahiscock): Check if the app is already installed. Show the launch
+  // dialog and return.
+
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+
+  provider->ui_manager().TriggerInstallDialogForManifestInstall(
+      web_contents, initiating_page_, std::move(install_tracker),
+      std::move(manifest), options->manifest_url, last_committed_url_,
+      base::BindOnce(&WebInstallServiceImpl::OnAppInstalledFromManifest,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(callback_with_guard)));
+}
+
+void WebInstallServiceImpl::OnAppInstalledFromManifest(
+    InstallFromManifestCallbackWithGuard callback_with_guard,
+    const webapps::AppId& app_id,
+    webapps::InstallResultCode code) {
+  if (webapps::IsSuccess(code)) {
+    std::move(callback_with_guard)
+        .Run(blink::mojom::WebInstallServiceResult::kSuccess);
+  } else {
+    // TODO(liahiscock): Narrow abort error to user cancellations only.
+    std::move(callback_with_guard)
+        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+  }
 }
 
 void WebInstallServiceImpl::InstallInternal(

@@ -36,6 +36,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".InstallFromInfo"
       summary="an install via a custom WebAppInstallInfo object, which is
                usually a backup install, but can occur for other reasons."/>
+  <variant name=".InstallFromManifestUrl"
+      summary="a manifest-first install triggered by the user via the Web
+               Install API."/>
   <variant name=".InstallIsolatedWebApp"
       summary="an isolated web app install."/>
   <variant name=".NavigateAndTriggerInstallDialog"

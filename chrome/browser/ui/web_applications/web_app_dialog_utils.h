@@ -9,12 +9,14 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Browser;
 class BrowserWindowInterface;
 class Profile;
 
 namespace content {
+class Page;
 class WebContents;
 }
 
@@ -62,6 +64,18 @@ void CreateWebAppForBackgroundInstall(
     const GURL& install_url,
     const std::optional<GURL>& manifest_id,
     const GURL& last_committed_url,
+    WebAppInstalledCallback installed_callback);
+
+// Starts the background install of a WebApp using a pre-parsed manifest,
+// initiated from a `navigator.install({manifest_url})` call from within
+// `initiating_web_contents`. Used for the Web Install API manifest_url flow.
+void CreateWebAppForManifestInstall(
+    content::WebContents* initiating_web_contents,
+    base::WeakPtr<content::Page> initiating_page,
+    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+    blink::mojom::ManifestPtr manifest,
+    const GURL& manifest_url,
+    const GURL& requesting_page_url,
     WebAppInstalledCallback installed_callback);
 
 // Shows the PWA Install dialog for the active tab in the provided browser.

@@ -49,6 +49,7 @@
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/web_app_url_config.h"
 #include "content/public/browser/navigation_entry.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -358,6 +359,28 @@ void CreateWebAppForBackgroundInstall(
   provider->scheduler().InstallAppFromUrl(
       install_url, manifest_id, initiating_web_contents->GetWeakPtr(),
       last_committed_url,
+      base::BindOnce(&OnWebAppInstallShowInstallDialog,
+                     WebAppInstallFlow::kInstallSite,
+                     webapps::WebappInstallSource::WEB_INSTALL,
+                     PwaInProductHelpState::kNotShown, std::move(tracker),
+                     /*show_initiating_origin=*/true),
+      std::move(installed_callback));
+}
+
+void CreateWebAppForManifestInstall(
+    content::WebContents* initiating_web_contents,
+    base::WeakPtr<content::Page> initiating_page,
+    std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+    blink::mojom::ManifestPtr manifest,
+    const GURL& manifest_url,
+    const GURL& requesting_page_url,
+    WebAppInstalledCallback installed_callback) {
+  auto* provider = WebAppProvider::GetForWebContents(initiating_web_contents);
+  CHECK(provider);
+
+  provider->scheduler().InstallAppFromManifest(
+      std::move(manifest), manifest_url, initiating_web_contents->GetWeakPtr(),
+      std::move(initiating_page), requesting_page_url,
       base::BindOnce(&OnWebAppInstallShowInstallDialog,
                      WebAppInstallFlow::kInstallSite,
                      webapps::WebappInstallSource::WEB_INSTALL,

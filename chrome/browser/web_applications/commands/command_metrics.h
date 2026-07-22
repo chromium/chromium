@@ -24,6 +24,8 @@ enum class InstallCommand {
   kInstallIsolatedWebApp,
   // An installation triggered by the `navigator.install()` Web API.
   kWebAppInstallFromUrl,
+  // An manifest-first installation triggered by the web install API.
+  kInstallFromManifestUrl,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/histograms.xml)
 

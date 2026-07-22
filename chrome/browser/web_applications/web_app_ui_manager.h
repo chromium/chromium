@@ -21,6 +21,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "ui/gfx/native_ui_types.h"
 
 class Browser;
@@ -36,6 +37,7 @@ class FilePath;
 namespace content {
 class WebContents;
 class NavigationHandle;
+class Page;
 }  // namespace content
 
 namespace webapps {
@@ -282,6 +284,18 @@ class WebAppUiManager {
       const GURL& install_url,
       const std::optional<GURL>& manifest_id,
       const GURL& last_committed_url,
+      InstallCallback callback) = 0;
+
+  // Triggers the web app install dialog for a background install using a
+  // pre-parsed manifest. The dialog will be anchored to
+  // `initiating_web_contents`. Used for the Web Install API manifest_url flow.
+  virtual void TriggerInstallDialogForManifestInstall(
+      content::WebContents* initiating_web_contents,
+      base::WeakPtr<content::Page> initiating_page,
+      std::unique_ptr<webapps::MlInstallOperationTracker> tracker,
+      blink::mojom::ManifestPtr manifest,
+      const GURL& manifest_url,
+      const GURL& requesting_page_url,
       InstallCallback callback) = 0;
 
   using WebInstallAppLaunchAcceptanceCallback =

@@ -61,6 +61,7 @@
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
 #include "chrome/browser/web_applications/commands/web_app_install_from_migrate_from_field_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
+#include "chrome/browser/web_applications/commands/web_install_from_manifest_command.h"
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/check_isolated_web_app_bundle_user_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
@@ -737,6 +738,24 @@ void WebAppCommandScheduler::InstallAppFromUrl(
       std::make_unique<WebInstallFromUrlCommand>(
           profile_.get(), install_url, manifest_id, web_contents,
           last_committed_url, std::move(dialog_callback),
+          std::move(installed_callback)),
+      location);
+}
+
+void WebAppCommandScheduler::InstallAppFromManifest(
+    blink::mojom::ManifestPtr manifest,
+    const GURL& manifest_url,
+    base::WeakPtr<content::WebContents> initiating_web_contents,
+    base::WeakPtr<content::Page> initiating_page,
+    const GURL& requesting_page_url,
+    WebAppInstallDialogCallback dialog_callback,
+    WebInstallFromManifestCommandCallback installed_callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<WebInstallFromManifestCommand>(
+          profile_.get(), std::move(manifest), manifest_url,
+          std::move(initiating_web_contents), std::move(initiating_page),
+          requesting_page_url, std::move(dialog_callback),
           std::move(installed_callback)),
       location);
 }

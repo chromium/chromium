@@ -24,6 +24,8 @@ constexpr std::string_view ToVariantString(InstallCommand command) {
       return ".InstallIsolatedWebApp";
     case InstallCommand::kWebAppInstallFromUrl:
       return ".WebInstallFromUrl";
+    case InstallCommand::kInstallFromManifestUrl:
+      return ".InstallFromManifestUrl";
   }
 }
 

@@ -94,6 +94,8 @@ source_set("web_applications") {
     "commands/web_app_install_from_migrate_from_field_command.h",
     "commands/web_app_uninstall_command.cc",
     "commands/web_app_uninstall_command.h",
+    "commands/web_install_from_manifest_command.cc",
+    "commands/web_install_from_manifest_command.h",
     "commands/web_install_from_url_command.cc",
     "commands/web_install_from_url_command.h",
     "custom_icon_fetcher.cc",
