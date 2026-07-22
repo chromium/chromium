@@ -312,10 +312,15 @@
 }
 
 - (void)assistantButtonTapped {
-  GeminiStartupState* startupState = [[GeminiStartupState alloc]
-      initWithEntryPoint:gemini::EntryPoint::Toolbar];
+  if (_geminiBrowserAgent && _geminiBrowserAgent->is_floaty_invoked()) {
+    // Gemini floaty already started.
+    [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
+    return;
+  }
   [self.geminiHandler
-      startGeminiEntryFlowWithStartupState:startupState
+      startGeminiEntryFlowWithStartupState:
+          [[GeminiStartupState alloc]
+              initWithEntryPoint:gemini::EntryPoint::Toolbar]
                         baseViewController:self.baseViewController
                                accessPoint:signin_metrics::AccessPoint::
                                                kIosGeminiButtonToolbar

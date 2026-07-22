@@ -587,19 +587,24 @@ inline LayoutStateAssistantPassKey PassKey() {
   UmaHistogramEnumeration(kAppBarAssistantButtonTappedHistogram, state);
   switch (state) {
     case AppBarAssistantButtonState::kAsk: {
-      __weak __typeof(self) weakSelf = self;
-      [self.geminiHandler
-          startGeminiEntryFlowWithStartupState:
-              [[GeminiStartupState alloc]
-                  initWithEntryPoint:gemini::EntryPoint::AppBar]
-                            baseViewController:self.baseViewController
-                                   accessPoint:signin_metrics::AccessPoint::
-                                                   kIosAppBar
-                      showSnackbarOnCompletion:YES
-                                    completion:^(GeminiEntryFlowResult result) {
-                                      [weakSelf
-                                          handleGeminiEntryFlowResult:result];
-                                    }];
+      if (_geminiBrowserAgent && _geminiBrowserAgent->is_floaty_invoked()) {
+        [self.geminiHandler dismissGeminiFlowWithCompletion:nil];
+      } else {
+        __weak __typeof(self) weakSelf = self;
+        [self.geminiHandler
+            startGeminiEntryFlowWithStartupState:
+                [[GeminiStartupState alloc]
+                    initWithEntryPoint:gemini::EntryPoint::AppBar]
+                              baseViewController:self.baseViewController
+                                     accessPoint:signin_metrics::AccessPoint::
+                                                     kIosAppBar
+                        showSnackbarOnCompletion:YES
+                                      completion:^(
+                                          GeminiEntryFlowResult result) {
+                                        [weakSelf
+                                            handleGeminiEntryFlowResult:result];
+                                      }];
+      }
       break;
     }
     case AppBarAssistantButtonState::kAIM: {

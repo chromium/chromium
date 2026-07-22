@@ -970,6 +970,7 @@ UIColor* AssistantHighlightBackgroundColor() {
   if (shouldShow && !_assistantHighlightView) {
     _assistantHighlightView = [[UIView alloc] init];
     _assistantHighlightView.translatesAutoresizingMaskIntoConstraints = NO;
+    _assistantHighlightView.userInteractionEnabled = NO;
     _assistantHighlightView.backgroundColor =
         AssistantHighlightBackgroundColor();
     _assistantHighlightView.layer.cornerRadius =

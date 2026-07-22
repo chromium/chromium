@@ -20,7 +20,10 @@
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/banner_promo/model/fake_default_browser_banner_promo_app_agent.h"
 #import "ios/chrome/browser/default_browser/model/promo_source.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -139,6 +142,11 @@ class ToolbarMediatorTest : public PlatformTest,
     BrowserActionFactory* action_factory_ =
         [[BrowserActionFactory alloc] initWithBrowser:browser_.get()
                                              scenario:kTestMenuScenario];
+
+    FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+    GeminiBrowserAgent::CreateForBrowser(browser_.get());
+    gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
+
     mediator_ = [[ToolbarMediator alloc]
                    initWithIncognito:NO
                         webStateList:browser_->GetWebStateList()
@@ -146,12 +154,13 @@ class ToolbarMediatorTest : public PlatformTest,
                          prefService:profile_->GetTestingPrefService()
                 fullscreenController:TestFullscreenController::FromBrowser(
                                          browser_.get())
-              fullscreenBrowserAgent:nil
+              fullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(
+                                         browser_.get())
                          topPosition:GetParam()
         defaultBrowserBannerAppAgent:GetParam() ? mock_app_agent_ : nil
                authenticationService:auth_service_
                        geminiService:gemini_service_ptr_.get()
-                  geminiBrowserAgent:nil];
+                  geminiBrowserAgent:gemini_browser_agent_];
     mediator_.navigationBrowserAgent =
         WebNavigationBrowserAgent::FromBrowser(browser_.get());
     mediator_.settingsHandler = settings_handler_;
@@ -222,6 +231,10 @@ class ToolbarMediatorTest : public PlatformTest,
     }
   }
 
+  void SetFloatyInvoked(bool invoked) {
+    gemini_browser_agent_->is_floaty_invoked_ = invoked;
+  }
+
   void TearDown() override {
     [mediator_ disconnect];
     mediator_ = nil;
@@ -242,6 +255,7 @@ class ToolbarMediatorTest : public PlatformTest,
   id mock_app_agent_;
   id settings_handler_;
   raw_ptr<AuthenticationService> auth_service_;
+  raw_ptr<GeminiBrowserAgent> gemini_browser_agent_;
   std::unique_ptr<GeminiService> gemini_service_ptr_;
   raw_ptr<web::FakeNavigationManager> fake_navigation_manager_;
 };
@@ -644,6 +658,7 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonTapped) {
   id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
   mediator_.geminiHandler = mock_gemini_handler;
 
+  SetFloatyInvoked(false);
   OCMExpect([mock_gemini_handler
       startGeminiEntryFlowWithStartupState:[OCMArg any]
                         baseViewController:nil
@@ -651,7 +666,12 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonTapped) {
                                                kIosGeminiButtonToolbar
                   showSnackbarOnCompletion:YES
                                 completion:nil]);
+  [mediator_ assistantButtonTapped];
 
+  // Test that the floaty is dismissed if the assistant button is tapped while
+  // it is showing.
+  SetFloatyInvoked(true);
+  OCMExpect([mock_gemini_handler dismissGeminiFlowWithCompletion:nil]);
   [mediator_ assistantButtonTapped];
 
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler);

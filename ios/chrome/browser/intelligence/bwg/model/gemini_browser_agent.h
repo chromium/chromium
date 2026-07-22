@@ -37,6 +37,7 @@
 class Browser;
 class FullscreenController;
 class AppBarMediatorTest;
+class ToolbarMediatorTest;
 class LocationBarBadgeMediatorTest;
 
 namespace gemini {
@@ -193,6 +194,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   friend class BrowserUserData<GeminiBrowserAgent>;
   friend class GeminiBrowserAgentTest;
   friend class AppBarMediatorTest;
+  friend class ToolbarMediatorTest;
   friend class LocationBarBadgeMediatorTest;
 
   // Fetches the full context of the active page and feeds it to Gemini.
