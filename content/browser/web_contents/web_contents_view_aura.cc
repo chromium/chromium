@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/web_contents/web_contents_view_aura.h"
+#include "content/browser/bad_message.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -1203,6 +1204,9 @@ void WebContentsViewAura::StartDragging(
       static_cast<RenderWidgetHostImpl*>(source_rfh.GetRenderWidgetHost());
   // Disallow reentrant drag which could be an attempt to exploit drag state.
   if (drag_security_info_.did_initiate()) {
+    // Kill the renderer because this is a potential exploit attempt.
+    bad_message::ReceivedBadMessage(source_rwh->GetProcess(),
+                                    bad_message::WCV_REENTRANT_DRAG);
     return;
   }
   if (!aura::client::GetDragDropClient(root_window)) {
