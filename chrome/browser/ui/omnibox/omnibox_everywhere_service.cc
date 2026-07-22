@@ -29,49 +29,44 @@ OmniboxEverywhereService::~OmniboxEverywhereService() {
   Shutdown();
 }
 
+omnibox_everywhere::OmniboxEverywhereController*
+OmniboxEverywhereService::controller() const {
+  return g_browser_process && g_browser_process->GetFeatures()
+             ? g_browser_process->GetFeatures()->omnibox_everywhere_controller()
+             : nullptr;
+}
+
 void OmniboxEverywhereService::Shutdown() {
-  auto* controller =
-      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-  if (controller) {
-    controller->ShutdownForProfile(profile_);
+  if (controller()) {
+    controller()->ShutdownForProfile(profile_);
   }
 }
 
 void OmniboxEverywhereService::HidePopup() {
-  auto* controller =
-      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-  if (controller) {
-    controller->Close();
+  if (controller()) {
+    controller()->Close();
   }
 }
 
 bool OmniboxEverywhereService::IsPopupVisible() const {
-  auto* controller =
-      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-  return controller && controller->IsVisible();
+  return controller() && controller()->IsVisible();
 }
 
 void OmniboxEverywhereService::SetIsNavigating(bool is_navigating) {
-  auto* controller =
-      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-  if (controller && controller->ui_manager()) {
-    controller->ui_manager()->SetIsNavigating(is_navigating);
+  if (controller() && controller()->ui_manager()) {
+    controller()->ui_manager()->SetIsNavigating(is_navigating);
   }
 }
 
 void OmniboxEverywhereService::OnDrivePickerOpened() {
-  auto* controller =
-      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-  if (controller && controller->ui_manager()) {
-    controller->ui_manager()->OnDrivePickerOpened();
+  if (controller() && controller()->ui_manager()) {
+    controller()->ui_manager()->OnDrivePickerOpened();
   }
 }
 
 void OmniboxEverywhereService::OnDrivePickerClosed() {
-  auto* controller =
-      g_browser_process->GetFeatures()->omnibox_everywhere_controller();
-  if (controller && controller->ui_manager()) {
-    controller->ui_manager()->OnDrivePickerClosed();
+  if (controller() && controller()->ui_manager()) {
+    controller()->ui_manager()->OnDrivePickerClosed();
   }
 }
 
