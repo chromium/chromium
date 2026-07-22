@@ -11,7 +11,6 @@ namespace features {
 {% for feature in features %}
 {% if feature.base_feature %}
 BASE_FEATURE(k{{feature.base_feature}},
-    "{{feature.base_feature}}",
 {% if feature.base_feature_status %}
     base::FEATURE_{{'ENABLED' if feature.base_feature_status == 'enabled' else 'DISABLED'}}_BY_DEFAULT
 {% else %}

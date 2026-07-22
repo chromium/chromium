@@ -6,6 +6,7 @@
 
 #include <array>
 #include <cstddef>
+#include <string_view>
 
 #include "base/containers/span.h"
 
@@ -15,26 +16,6 @@ namespace base::internal {
 // go through the helper `BASE_FEATURE()` and `BASE_RUNTIME_MUTABLE_FEATURE()`
 // macros, below.
 enum class FeatureMacroHandshake { kSecret };
-
-// Storage class for feature name. This is needed so we store the feature name
-// "MyFeature" instead of the feature identifier name "kMyFeature" in .rodata.
-template <size_t N>
-struct StringStorage {
-  explicit constexpr StringStorage(base::span<const char, N + 1> feature) {
-    static_assert(N > 2, "Feature name cannot be too short.");
-    for (size_t i = 0; i < N; ++i) {
-      storage[i] = feature[i + 1];
-    }
-  }
-
-  std::array<char, N> storage;
-};
-
-// Deduce how much storage is needed for a given string literal. `feature`
-// includes space for a NUL terminator; `StringStorage` also needs storage
-// for the NUL terminator but drops the first character.
-template <size_t N>
-StringStorage(const char (&feature)[N]) -> StringStorage<N - 1>;
 
 // Returns true if all country codes in the given span are valid in a simple
 // sense: A valid country code consists of exactly two lowercase ASCII letters.
@@ -75,8 +56,7 @@ consteval auto MakeCountryCodeStorage(Args... args) {
   constinit const base::Feature feature(                                    \
       []() {                                                                \
         static_assert(#feature[0] == 'k');                                  \
-        static constexpr base::internal::StringStorage storage(#feature);   \
-        return storage.storage.data();                                      \
+        return std::string_view(#feature).substr(1).data();                 \
       }(),                                                                  \
       []() {                                                                \
         static_assert(!base::IsCountrySpecificFeatureState(default_state)); \
@@ -97,8 +77,7 @@ consteval auto MakeCountryCodeStorage(Args... args) {
   constinit const base::FeatureWithCountryRestriction feature(              \
       []() {                                                                \
         static_assert(#feature[0] == 'k');                                  \
-        static constexpr base::internal::StringStorage storage(#feature);   \
-        return storage.storage.data();                                      \
+        return std::string_view(#feature).substr(1).data();                 \
       }(),                                                                  \
       []() {                                                                \
         static_assert(base::IsCountrySpecificFeatureState(default_state));  \
@@ -143,9 +122,7 @@ consteval auto MakeCountryCodeStorage(Args... args) {
       T, feature_object_name, feature,                                      \
       []() {                                                                \
         static_assert(#feature_object_name[0] == 'k');                      \
-        static constexpr base::internal::StringStorage storage(             \
-            #feature_object_name);                                          \
-        return storage.storage.data();                                      \
+        return std::string_view(#feature_object_name).substr(1).data();     \
       }(),                                                                  \
       default_value)
 
@@ -171,16 +148,14 @@ consteval auto MakeCountryCodeStorage(Args... args) {
           GetFeatureParamWithCacheFor##feature_object_name)
 
 // Five-argument version of BASE_FEATURE_ENUM_PARAM macro.
-#define BASE_FEATURE_ENUM_PARAM_INTERNAL_5_ARGS(                \
-    T, feature_object_name, feature, default_value, options)    \
-  BASE_FEATURE_ENUM_PARAM_INTERNAL_6_ARGS(                      \
-      T, feature_object_name, feature,                          \
-      []() {                                                    \
-        static_assert(#feature_object_name[0] == 'k');          \
-        static constexpr base::internal::StringStorage storage( \
-            #feature_object_name);                              \
-        return storage.storage.data();                          \
-      }(),                                                      \
+#define BASE_FEATURE_ENUM_PARAM_INTERNAL_5_ARGS(                        \
+    T, feature_object_name, feature, default_value, options)            \
+  BASE_FEATURE_ENUM_PARAM_INTERNAL_6_ARGS(                              \
+      T, feature_object_name, feature,                                  \
+      []() {                                                            \
+        static_assert(#feature_object_name[0] == 'k');                  \
+        return std::string_view(#feature_object_name).substr(1).data(); \
+      }(),                                                              \
       default_value, options)
 
 // Helper macro to deduce the whether to use the 5 or 6 argument version of
