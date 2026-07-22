@@ -273,7 +273,9 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
   // parameter sets vs. creating a new format.
   if (!active_format_ || (combined_nalu_data.size() && frame_is_keyframe_)) {
     combined_nalu_data.clear();
-    CreateFormat(pic);
+    if (!CreateFormat(pic)) {
+      return Status::kFail;
+    }
   }
 
   // Append slice data.

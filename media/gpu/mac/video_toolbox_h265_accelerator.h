@@ -84,7 +84,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
       base::flat_map<int, std::vector<uint8_t>>* active_parameter_set_data_out,
       std::vector<const uint8_t*>* parameter_set_data_out,
       std::vector<size_t>* parameter_set_size_out);
-  bool CreateFormat(scoped_refptr<H265Picture> pic);
+  [[nodiscard]] bool CreateFormat(scoped_refptr<H265Picture> pic);
   bool ExtractChangedParameterSetData(
       const char* parameter_set_name,
       const base::flat_set<int>& parameter_set_ids,
