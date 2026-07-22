@@ -174,6 +174,9 @@ enum class StartupObserverFeatureParams {
   // tabs to load.
   kFeatureEnabledIgnoreVisibleTabs,
   // Enable kImprovedStartupBestEffortDelay feature and wait for the first
+  // visible tab to reach kLoadedIdle.
+  kFeatureEnabledWaitForLoad,
+  // Enable kImprovedStartupBestEffortDelay feature and wait for the first
   // visible tab to reach kLoadedIdle or kLoadingTimedOut.
   kFeatureEnabledWaitForLoadOrTimeout,
 };
@@ -191,6 +194,7 @@ class StartupObserverTest
 
     bool feature_enabled = false;
     base::TimeDelta visible_tab_timeout;
+    bool stop_on_loading_timed_out = false;
     switch (GetParam()) {
       case StartupObserverFeatureParams::kFeatureDisabled:
         // Do nothing.
@@ -199,9 +203,14 @@ class StartupObserverTest
         feature_enabled = true;
         // Leave `visible_tab_timeout` at 0.
         break;
+      case StartupObserverFeatureParams::kFeatureEnabledWaitForLoad:
+        feature_enabled = true;
+        visible_tab_timeout = kVisibleTabTimeout;
+        break;
       case StartupObserverFeatureParams::kFeatureEnabledWaitForLoadOrTimeout:
         feature_enabled = true;
         visible_tab_timeout = kVisibleTabTimeout;
+        stop_on_loading_timed_out = true;
         break;
     }
 
@@ -216,6 +225,8 @@ class StartupObserverTest
               {"StartupDelayFailsafeTimeout",
                absl::StrFormat("%dms",
                                visible_tab_timeout.InMilliseconds() * 2)},
+              {"StartupDelayStopOnLoadingTimedOut",
+               stop_on_loading_timed_out ? "true" : "false"},
           });
     } else {
       feature_list_.InitAndDisableFeature(
@@ -303,6 +314,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         StartupObserverFeatureParams::kFeatureDisabled,
         StartupObserverFeatureParams::kFeatureEnabledIgnoreVisibleTabs,
+        StartupObserverFeatureParams::kFeatureEnabledWaitForLoad,
         StartupObserverFeatureParams::kFeatureEnabledWaitForLoadOrTimeout));
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -537,7 +549,19 @@ TEST_P(StartupObserverTest, VisibleTabTimesOut) {
   }
 
   page_node->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
-  ExpectVisiblePageLoaded(StartupIsCompleteReason::kVisiblePageLoadingTimedOut);
+  if (GetParam() == StartupObserverFeatureParams::kFeatureDisabled ||
+      GetParam() ==
+          StartupObserverFeatureParams::kFeatureEnabledWaitForLoadOrTimeout) {
+    // Watching for the LoadingTimedOut state.
+    ExpectVisiblePageLoaded(
+        StartupIsCompleteReason::kVisiblePageLoadingTimedOut);
+    return;
+  }
+
+  // Not watching for the kLoadingTimedOut state, so startup is not complete.
+  FlushTasks();
+  EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
+  ExpectFailsafeTimeout();
 }
 
 TEST_P(StartupObserverTest, VisibleNonTabTimesOut) {
@@ -553,13 +577,14 @@ TEST_P(StartupObserverTest, VisibleNonTabTimesOut) {
 
   page_node->SetLoadingState(PageNode::LoadingState::kLoadingTimedOut);
   if (GetParam() == StartupObserverFeatureParams::kFeatureDisabled) {
-    // Monitoring all pages.
+    // Monitoring all pages, and watching for the LoadingTimedOut state.
     ExpectVisiblePageLoaded(
         StartupIsCompleteReason::kVisiblePageLoadingTimedOut);
     return;
   }
 
-  // Only monitoring tabs, so startup isn't complete.
+  // Only monitoring tabs, so startup isn't complete, even for
+  // kFeatureEnabledWaitForLoadOrTimeout.
   FlushTasks();
   EXPECT_FALSE(AfterStartupTaskUtils::IsBrowserStartupComplete());
   ExpectNoVisiblePage();

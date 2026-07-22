@@ -282,7 +282,10 @@ class StartupObserver : public performance_manager::GraphOwned,
     LoadingState state = page_node->GetLoadingState();
     if (state == LoadingState::kLoadedIdle) {
       StopObserving();
-    } else if (state == LoadingState::kLoadingTimedOut) {
+    } else if (state == LoadingState::kLoadingTimedOut &&
+               (!base::FeatureList::IsEnabled(
+                    features::kImprovedStartupBestEffortDelay) ||
+                features::kStartupDelayStopOnLoadingTimedOut.Get())) {
       startup_ref_->SetStartupIsCompleteReason(
           StartupIsCompleteReason::kVisiblePageLoadingTimedOut);
       StopObserving();

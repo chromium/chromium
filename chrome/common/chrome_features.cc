@@ -145,6 +145,13 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kImprovedStartupBestEffortDelay,
                    base::Seconds(5));
 
+// If true, the startup observer will consider a tab "finished" if it reaches
+// the kLoadingTimedOut state, instead of just kLoadedIdle.
+BASE_FEATURE_PARAM(bool,
+                   kStartupDelayStopOnLoadingTimedOut,
+                   &kImprovedStartupBestEffortDelay,
+                   false);
+
 // If true, session restore will create a StartupInProgressRef, and drop it when
 // restore is finished.
 BASE_FEATURE_PARAM(bool,
