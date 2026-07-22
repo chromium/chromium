@@ -396,7 +396,7 @@ public class VerticalTabListCoordinator {
                                     if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
                                         verticalTabsActionDelegate.openTabSearch();
                                     } else {
-                                        verticalTabsActionDelegate.openHubPane(PaneId.TAB_SWITCHER);
+                                        verticalTabsActionDelegate.openHubSearch();
                                     }
                                 })
                         .with(

@@ -3686,6 +3686,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     ((TabbedRootUiCoordinator) mRootUiCoordinator).showTabSearchOverlay();
                 }
             }
+
+            @Override
+            public void openHubSearch() {
+                openHubPane(PaneId.TAB_SWITCHER);
+                onMenuOrKeyboardAction(R.id.tab_search, /* fromMenu= */ false);
+            }
         };
     }
 
