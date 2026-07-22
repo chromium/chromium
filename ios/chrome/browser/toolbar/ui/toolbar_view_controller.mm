@@ -960,12 +960,10 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
 // Returns the location bar bottom padding for `progress`.
 - (CGFloat)locationBarBottomPaddingForFullscreenProgress:(CGFloat)progress {
   CHECK(!IsGlassToolbarEnabled());
-  CGFloat locationBarBottomPadding;
-  if (ShouldHaveCompactLocationBar(self.traitCollection)) {
-    locationBarBottomPadding = kToolbarPadding;
-  } else {
-    locationBarBottomPadding = kTopToolbarIPhonePortraitPadding;
-  }
+  CGFloat locationBarBottomPadding =
+      ShouldHaveCompactLocationBar(self.traitCollection)
+          ? kToolbarPadding
+          : kToolbarCompactLocationBarPadding;
   if ([self isBannerBelowToolbar]) {
     // When the banner is below the toolbar, always use its height for a
     // progress of 1 as progress is used below.
@@ -980,7 +978,11 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
 // `progress`.
 - (CGFloat)locationBarTopPaddingForFullscreenProgress:(CGFloat)progress {
   CHECK(!IsGlassToolbarEnabled());
-  return progress * kToolbarPadding +
+  CGFloat locationBarTopPadding =
+      ShouldHaveCompactLocationBar(self.traitCollection)
+          ? kToolbarPadding
+          : kToolbarCompactLocationBarPadding;
+  return progress * locationBarTopPadding +
          (1 - progress) * kToolbarPaddingFullscreen;
 }
 
