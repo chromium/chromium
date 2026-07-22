@@ -83,6 +83,8 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ssl",
     "//chrome/test:test_support",
+    "//components/favicon/content",
+    "//components/favicon/core",
     "//components/webapps/browser",
     "//content/test:test_support",
     "//net:test_support",

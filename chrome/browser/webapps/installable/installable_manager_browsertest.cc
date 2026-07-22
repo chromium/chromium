@@ -26,6 +26,9 @@
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/favicon/content/content_favicon_driver.h"
+#include "components/favicon/core/favicon_driver.h"
+#include "components/favicon/core/favicon_driver_observer.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
@@ -33,6 +36,7 @@
 #include "components/webapps/browser/installable/installable_icon_fetcher.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -41,6 +45,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -90,6 +95,39 @@ testing::Matcher<const blink::Manifest::DisplayOverride&> DisplayOverrideIs(
     blink::mojom::DisplayMode display) {
   return testing::Property(&blink::Manifest::DisplayOverride::display, display);
 }
+
+class FaviconUpdateWaiter : public favicon::FaviconDriverObserver {
+ public:
+  explicit FaviconUpdateWaiter(content::WebContents* web_contents)
+      : driver_(favicon::ContentFaviconDriver::FromWebContents(web_contents)) {
+    driver_->AddObserver(this);
+  }
+
+  ~FaviconUpdateWaiter() override { driver_->RemoveObserver(this); }
+
+  void Wait() {
+    if (favicon_updated_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+  // favicon::FaviconDriverObserver:
+  void OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
+                        favicon::FaviconDriverObserver::NotificationIconType
+                            notification_icon_type,
+                        const GURL& icon_url,
+                        bool icon_url_changed,
+                        const gfx::Image& image) override {
+    favicon_updated_ = true;
+    run_loop_.Quit();
+  }
+
+ private:
+  raw_ptr<favicon::FaviconDriver> driver_;
+  bool favicon_updated_ = false;
+  base::RunLoop run_loop_;
+};
 
 }  // anonymous namespace
 
@@ -952,13 +990,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckMaskableIcon) {
   }
 }
 
-// Flaky on Mac. TODO(crbug.com/333331507): Re-enable once the issue is fixed.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CheckFavicon DISABLED_CheckFavicon
-#else
-#define MAYBE_CheckFavicon CheckFavicon
-#endif
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, MAYBE_CheckFavicon) {
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckFavicon) {
   // Checks that InstallableManager chooses the correct primary icon when
   // fetching favicon.
 
@@ -971,11 +1003,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, MAYBE_CheckFavicon) {
     std::unique_ptr<CallbackTester> tester(
         new CallbackTester(run_loop.QuitClosure()));
 
-    NavigateAndRunInstallableManager(
-        tester.get(), installableParams,
-        GetUrlOfPageWithManifestAndTags(
-            "/banners/manifest_no_icon.json",
-            {{"icon", "/banners/256x256-red.png"}}));
+    FaviconUpdateWaiter waiter(web_contents());
+    NavigateToPath(GetUrlOfPageWithManifestAndTags(
+        "/banners/manifest_no_icon.json",
+        {{"icon", "/banners/256x256-red.png"}}));
+    waiter.Wait();
+
+    RunInstallableManager(tester.get(), installableParams);
     run_loop.Run();
 
     EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
@@ -993,11 +1027,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, MAYBE_CheckFavicon) {
     std::unique_ptr<CallbackTester> tester(
         new CallbackTester(run_loop.QuitClosure()));
 
-    NavigateAndRunInstallableManager(
-        tester.get(), installableParams,
-        GetUrlOfPageWithManifestAndTags(
-            "/banners/manifest_one_icon.json",
-            {{"icon", "/banners/256x256-red.png"}}));
+    FaviconUpdateWaiter waiter(web_contents());
+    NavigateToPath(GetUrlOfPageWithManifestAndTags(
+        "/banners/manifest_one_icon.json",
+        {{"icon", "/banners/256x256-red.png"}}));
+    waiter.Wait();
+
+    RunInstallableManager(tester.get(), installableParams);
     run_loop.Run();
 
     EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
@@ -1019,12 +1055,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, MAYBE_CheckFavicon) {
     std::unique_ptr<CallbackTester> tester(
         new CallbackTester(run_loop.QuitClosure()));
 
-    NavigateAndRunInstallableManager(
-        tester.get(), installableParams,
-        GetUrlOfPageWithManifestAndTags(
-            "/banners/manifest_no_icon.json",
-            {{"icon", "/banners/256x256-red.png"}}));
+    FaviconUpdateWaiter waiter(web_contents());
+    NavigateToPath(GetUrlOfPageWithManifestAndTags(
+        "/banners/manifest_no_icon.json",
+        {{"icon", "/banners/256x256-red.png"}}));
+    waiter.Wait();
 
+    RunInstallableManager(tester.get(), installableParams);
     run_loop.Run();
 
     EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
