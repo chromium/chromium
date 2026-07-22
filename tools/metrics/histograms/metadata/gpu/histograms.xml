@@ -1885,6 +1885,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.SharedImage.R16FToLuminanceF16Fallback" enum="Boolean"
+    expires_after="2027-07-01">
+  <owner>hitawala@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Records whether a single-channel 16-bit half-float texture (R_F16) fell back
+    to LUMINANCE_F16 because the OpenGL ES context lacks ES3 or half-float
+    linear filtering support. Recorded when getting GL format info for a plane
+    during backing creation.
+  </summary>
+</histogram>
+
 <histogram name="GPU.SharedImage.SharedImageFormat" enum="SharedImageFormatUMA"
     expires_after="2026-12-16">
   <owner>hitawala@chromium.org</owner>
