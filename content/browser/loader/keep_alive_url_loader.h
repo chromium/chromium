@@ -29,6 +29,7 @@
 #include "net/url_request/url_request.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -356,6 +357,10 @@ class CONTENT_EXPORT KeepAliveURLLoader
                            CookiesClearingWillDeleteRetryingLoader);
   FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
                            FailedMaxAttemptWillForwardLastError);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           IneligibleErrorWillNotBeRetriedOnDisconnect);
+  FRIEND_TEST_ALL_PREFIXES(KeepAliveURLLoaderServiceRetryTest,
+                           NoResultWillBeRetriedOnDisconnect);
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -505,6 +510,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
     kRetryFailed,
   };
   RetryState retry_state_ = RetryState::kNotAttemptingRetry;
+
+  // Stores the completion status of the most recent attempt.
+  // Set in `RetryOrDelayErrorIfNeeded()` when an error occurs, and reset in
+  // `MaybeScheduleRetry()` when a retry is scheduled.
+  std::optional<network::URLLoaderCompletionStatus>
+      last_attempt_completion_status_;
 
   // The last delay used for `retry_timer_` to schedule a retry.
   base::TimeDelta last_retry_delay_;

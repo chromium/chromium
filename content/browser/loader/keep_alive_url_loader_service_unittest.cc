@@ -1384,10 +1384,15 @@ class KeepAliveURLLoaderServiceRetryTest
   static constexpr base::TimeDelta kMinRetryDeltaForTesting = base::Seconds(10);
   static constexpr double kMinRetryBackoffFactorForTesting = 10.0;
   static constexpr base::TimeDelta kMaxRetryAgeForTesting = base::Days(1);
+  static constexpr base::TimeDelta kDisconnectedLoaderTimeoutForTesting =
+      base::Seconds(30);
 
   void SetUp() override {
     feature_list().InitWithFeaturesAndParameters(
-        {{blink::features::kKeepAliveInBrowserMigration, {}},
+        {{blink::features::kKeepAliveInBrowserMigration,
+          {{"disconnected_loader_timeout_seconds",
+            base::NumberToString(
+                kDisconnectedLoaderTimeoutForTesting.InSeconds())}}},
          {blink::features::kFetchRetry,
           {
               {"max_retry_count",
@@ -1973,6 +1978,107 @@ TEST_F(KeepAliveURLLoaderServiceRetryTest, SelfDeletionOnMaxAge) {
   // The loader should be deleted after hitting max age.
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
   EXPECT_FALSE(loader.get());
+}
+
+// Test that when a request completes with an error ineligible for retry, and
+// the renderer subsequently disconnects, the loader will not attempt to retry.
+TEST_F(KeepAliveURLLoaderServiceRetryTest,
+       IneligibleErrorWillNotBeRetriedOnDisconnect) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  auto resource_request = CreateResourceRequest(GURL(kTestRequestUrl));
+  network::FetchRetryOptions options;
+  options.max_attempts = 10;
+  options.max_age = base::Days(1);
+  options.retry_after_unload = true;
+  resource_request.fetch_retry_options = options;
+
+  // Loads keepalive request:
+  renderer_loader_factory.CreateLoaderAndStart(
+      resource_request, renderer_loader_client.BindNewPipeAndPassRemote());
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  base::WeakPtr<KeepAliveURLLoader> loader =
+      loader_service().GetLoaderWithRequestIdForTesting(
+          FakeRemoteURLLoaderFactory::kRequestId);
+
+  // Complete with an ineligible error.
+  loader->OnComplete(
+      network::URLLoaderCompletionStatus(net::ERR_NETWORK_ACCESS_REVOKED));
+
+  // The request is not eligible for retry, but the loader is kept alive to
+  // delay sending the error until max_age is reached.
+  EXPECT_FALSE(loader->IsAttemptingRetry(/*include_failed_retry=*/false));
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  // Disconnects and unbinds the receiver client & remote loader.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  {
+    base::RunLoop run_loop;
+    run_loop.QuitWhenIdle();
+    run_loop.Run();
+  }
+
+  // Fast forward by the disconnect timeout so OnDisconnectedLoaderTimerFired
+  // runs.
+  task_environment()->FastForwardBy(kDisconnectedLoaderTimeoutForTesting);
+
+  // Because the previous completion status was an ineligible error,
+  // OnDisconnectedLoaderTimerFired should not schedule a retry and should
+  // delete the loader.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
+  EXPECT_FALSE(loader.get());
+}
+
+// Test that when no completion result is received before renderer
+// disconnection, the loader will attempt a retry upon disconnect timer firing
+// if configured.
+TEST_F(KeepAliveURLLoaderServiceRetryTest, NoResultWillBeRetriedOnDisconnect) {
+  FakeRemoteURLLoaderFactory renderer_loader_factory;
+  MockReceiverURLLoaderClient renderer_loader_client;
+  BindKeepAliveURLLoaderFactory(renderer_loader_factory);
+
+  auto resource_request = CreateResourceRequest(GURL(kTestRequestUrl));
+  network::FetchRetryOptions options;
+  options.max_attempts = 10;
+  options.max_age = base::Days(1);
+  options.retry_after_unload = true;
+  resource_request.fetch_retry_options = options;
+
+  // Loads keepalive request:
+  renderer_loader_factory.CreateLoaderAndStart(
+      resource_request, renderer_loader_client.BindNewPipeAndPassRemote());
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+
+  base::WeakPtr<KeepAliveURLLoader> loader =
+      loader_service().GetLoaderWithRequestIdForTesting(
+          FakeRemoteURLLoaderFactory::kRequestId);
+
+  // Disconnect without completing the request.
+  renderer_loader_client.ResetReceiver();
+  renderer_loader_factory.reset_remote_url_loader();
+  {
+    base::RunLoop run_loop;
+    run_loop.QuitWhenIdle();
+    run_loop.Run();
+  }
+
+  // Fast forward by the disconnect timeout so OnDisconnectedLoaderTimerFired
+  // runs.
+  task_environment()->FastForwardBy(kDisconnectedLoaderTimeoutForTesting);
+
+  // Because there was no completion status yet, OnDisconnectedLoaderTimerFired
+  // should schedule a retry and keep the loader alive.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  EXPECT_TRUE(loader.get());
+  if (loader) {
+    EXPECT_TRUE(loader->IsAttemptingRetry(/*include_failed_retry=*/false));
+  }
 }
 
 }  // namespace content

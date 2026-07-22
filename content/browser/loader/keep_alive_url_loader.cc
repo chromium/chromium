@@ -987,6 +987,7 @@ bool KeepAliveURLLoader::MaybeScheduleRetry(
   // received another error signal after this (e.g. OnComplete with error
   // happened, then the disconnection triggers CancelWithStatus).
   url_loader_.reset();
+  last_attempt_completion_status_ = std::nullopt;
 
   // Set a timer to delete self when the max age has been reached. Note that
   // we check if the timer is already set here, because it could've been set
@@ -1216,6 +1217,7 @@ bool KeepAliveURLLoader::RetryOrDelayErrorIfNeeded(
     return false;
   }
 
+  last_attempt_completion_status_ = status;
   // Schedule retry if needed.
   if (MaybeScheduleRetry(status)) {
     return true;
@@ -1359,7 +1361,7 @@ void KeepAliveURLLoader::OnDisconnectedLoaderTimerFired() {
   if (resource_request_.fetch_retry_options.has_value() &&
       resource_request_.fetch_retry_options->retry_after_unload &&
       (IsAttemptingRetry(/*include_failed_retry=*/false) ||
-       MaybeScheduleRetry(/*completion_status=*/std::nullopt))) {
+       MaybeScheduleRetry(last_attempt_completion_status_))) {
     // A retry is already pending or we just scheduled a retry. Don't delete
     // the loader, and instead keep it around for the retry.
     return;
