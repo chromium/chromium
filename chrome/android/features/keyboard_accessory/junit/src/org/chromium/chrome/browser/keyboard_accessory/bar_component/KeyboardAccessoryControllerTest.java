@@ -114,6 +114,7 @@ import java.util.function.Supplier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures({
+    ChromeFeatureList.AUTOFILL_AI_LIMIT_SUGGESTION_WIDTH,
     ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP,
     ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING,
 })
@@ -169,6 +170,9 @@ public class KeyboardAccessoryControllerTest {
         when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
                         SuggestionType.LOYALTY_CARD_ENTRY))
                 .thenReturn(FillingProduct.LOYALTY_CARD);
+        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(
+                        SuggestionType.FILL_AUTOFILL_AI))
+                .thenReturn(FillingProduct.AUTOFILL_AI);
 
         mCoordinator =
                 new KeyboardAccessoryCoordinator(
@@ -1030,6 +1034,24 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mModel.get(BAR_ITEMS).get(2), instanceOf(AutofillBarItem.class));
         assertThat(mModel.get(BAR_ITEMS).get(3), instanceOf(AutofillBarItem.class));
         assertThat(mModel.get(BAR_ITEMS).get(4), instanceOf(AutofillBarItem.class));
+    }
+
+    @Test
+    public void testGroupCreationForAutofillAi() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
+
+        final AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("John Doe")
+                        .setSubLabel("Passport")
+                        .setSuggestionType(SuggestionType.FILL_AUTOFILL_AI)
+                        .setFeatureForIph("")
+                        .build();
+        mCoordinator.setSuggestions(
+                List.of(suggestion, suggestion, suggestion), mMockAutofillDelegate);
+        // Autofill AI suggestion width should be limited.
+        assertThat(mModel.get(BAR_ITEMS).size(), is(2));
+        assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(GroupBarItem.class));
     }
 
     @Test

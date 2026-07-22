@@ -659,8 +659,14 @@ class KeyboardAccessoryMediator
      * @return whether the width of the suggestion is allowed to be limited.
      */
     private static boolean canLimitWidth(@SuggestionType int suggestionType) {
-        return FillingProductBridge.getFillingProductFromSuggestionType(suggestionType)
-                == FillingProduct.ADDRESS;
+        @FillingProduct
+        final int fillingProduct =
+                FillingProductBridge.getFillingProductFromSuggestionType(suggestionType);
+        if (fillingProduct == FillingProduct.AUTOFILL_AI) {
+            return ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_AI_LIMIT_SUGGESTION_WIDTH);
+        }
+        return fillingProduct == FillingProduct.ADDRESS;
     }
 
     private @StringRes int getCaptionId(@AccessoryAction int actionType) {

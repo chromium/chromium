@@ -214,6 +214,10 @@ BASE_FEATURE_PARAM(std::string,
                    "autofill_ai_geo_ip_blocklist",
                    "");
 
+// If enabled, Autofill AI suggestion width can be limited.
+BASE_FEATURE(kAutofillAiLimitSuggestionWidth,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Autofill AI will use a new update prompt on Desktop that shows
 // both the previous and the new value of an updated entity attribute.
 BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAiNewUpdatePrompt,
