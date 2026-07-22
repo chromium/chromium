@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -23,6 +25,12 @@ const char* DownloadsCounter::GetPrefName() const {
 
 void DownloadsCounter::Count() {
   download_manager_observation_.Reset();
+
+  DownloadCoreService* service =
+      DownloadCoreServiceFactory::GetForBrowserContext(profile_);
+  if (service) {
+    service->InitializeHistory();
+  }
 
   content::DownloadManager* download_manager = profile_->GetDownloadManager();
   if (download_manager) {
