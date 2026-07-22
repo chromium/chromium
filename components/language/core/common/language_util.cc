@@ -130,13 +130,4 @@ void ToTranslateLanguageSynonym(std::string* language) {
   *language = std::string(main_part);
 }
 
-void ToChromeLanguageSynonym(std::string* language) {
-  auto [main_part, tail_part] = language::SplitIntoMainAndTail(*language);
-  if (main_part.empty()) {
-    return;
-  }
-
-  *language = base::StrCat({main_part, tail_part});
-}
-
 }  // namespace language

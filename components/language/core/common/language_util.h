@@ -31,9 +31,6 @@ OverrideLanguageModel GetOverrideLanguageModel();
 // chrome/browser/resources/settings/languages_page/languages.js,
 void ToTranslateLanguageSynonym(std::string* language);
 
-// Converts language code synonym to use at Chrome internal.
-void ToChromeLanguageSynonym(std::string* language);
-
 }  // namespace language
 
 #endif  // COMPONENTS_LANGUAGE_CORE_COMMON_LANGUAGE_UTIL_H_

@@ -13,6 +13,9 @@
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
+namespace base::i18n {
+class LanguageTagMatcher;
+}  // namespace base::i18n
 
 namespace language {
 
@@ -44,8 +47,8 @@ class AcceptLanguagesService : public KeyedService {
   // preference in |prefs|.
   void InitAcceptLanguages(PrefService* prefs);
 
-  // Set of accept languages.
-  std::set<std::string> accept_languages_;
+  // Matcher for the accept languages.
+  std::unique_ptr<base::i18n::LanguageTagMatcher> accept_languages_matcher_;
 
   // Listens to accept languages changes.
   PrefChangeRegistrar pref_change_registrar_;

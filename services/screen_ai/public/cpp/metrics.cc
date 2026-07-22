@@ -8,13 +8,18 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
+#include "base/i18n/tag_converters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "components/language/core/common/language_util.h"
 
 namespace screen_ai {
+
+using ::base::i18n::GetKnownLanguageTag;
+using ::base::i18n::LanguageTag;
+using ::base::i18n::LanguageTagConverter;
 
 std::optional<uint64_t> GetMostDetectedLanguageInOcrData(
     const chrome_screen_ai::VisualAnnotation& ocr_data) {
@@ -60,7 +65,11 @@ std::optional<uint64_t> GetMostDetectedLanguageInOcrData(
   if (lang_split.size() == 2 && lang_split[0] == lang_split[1]) {
     language_to_log = lang_split[0];
   }
-  language::ToChromeLanguageSynonym(&language_to_log);
+  std::optional<LanguageTag> parsed_tag =
+      LanguageTagConverter::GetInstance().FromString(language_to_log);
+  if (parsed_tag) {
+    language_to_log = std::string(parsed_tag->tag_string());
+  }
   return base::HashMetricName(language_to_log);
 }
 

@@ -30,7 +30,7 @@ source_set("metrics") {
 
   deps = [
     "//base",
-    "//components/language/core/common",
+    "//base:i18n",
     "//services/screen_ai/proto",
   ]
 }

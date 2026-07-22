@@ -35,11 +35,13 @@ class TranslateLocaleRestorer {
 TEST(AcceptLanguagesServiceTest, TestIsAcceptLanguage) {
   const char* const pref_setting = "translate-accept-languages";
   TestingPrefServiceSimple prefs;
-  prefs.registry()->RegisterStringPref(pref_setting, "en-US,es,zh-CN");
+  prefs.registry()->RegisterStringPref(pref_setting, "en-US,es,zh-CN,fil");
   AcceptLanguagesService accept_languages(&prefs, pref_setting);
 
   // All valid.
   EXPECT_TRUE(accept_languages.IsAcceptLanguage("en"));
+  // The "tl" gets matched into "fil".
+  EXPECT_TRUE(accept_languages.IsAcceptLanguage("tl"));
   EXPECT_TRUE(accept_languages.IsAcceptLanguage("en-US"));
   EXPECT_TRUE(accept_languages.IsAcceptLanguage("es"));
   EXPECT_TRUE(accept_languages.IsAcceptLanguage("zh-CN"));
@@ -62,6 +64,8 @@ TEST(AcceptLanguagesServiceTest, TestCanBeAcceptLanguage) {
   EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("zh-CN"));
   EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("en-us"));
   EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("zh-Hant"));
+  EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("fil"));
+  EXPECT_TRUE(AcceptLanguagesService::CanBeAcceptLanguage("tl"));
 
   // Not valid language.
   EXPECT_FALSE(AcceptLanguagesService::CanBeAcceptLanguage("xx"));

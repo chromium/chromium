@@ -328,11 +328,6 @@ LanguageSettingsPrivateEnableLanguageFunction::Run() {
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       CreateTranslatePrefsForBrowserContext(browser_context());
 
-  std::vector<std::string> languages;
-  translate_prefs->GetLanguageList(&languages);
-  std::string chrome_language = language_code;
-  language::ToChromeLanguageSynonym(&chrome_language);
-
   translate_prefs->AddToLanguageList(language_code, /*force_blocked=*/false);
 
   return RespondNow(NoArguments());
@@ -353,11 +348,6 @@ LanguageSettingsPrivateDisableLanguageFunction::Run() {
 
   std::unique_ptr<translate::TranslatePrefs> translate_prefs =
       CreateTranslatePrefsForBrowserContext(browser_context());
-
-  std::vector<std::string> languages;
-  translate_prefs->GetLanguageList(&languages);
-  std::string chrome_language = language_code;
-  language::ToChromeLanguageSynonym(&chrome_language);
 
   translate_prefs->RemoveFromLanguageList(language_code);
 

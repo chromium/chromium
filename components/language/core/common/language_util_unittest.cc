@@ -62,32 +62,3 @@ TEST_F(LanguageUtilTest, ToTranslateLanguageSynonym) {
   language::ToTranslateLanguageSynonym(&language);
   EXPECT_EQ("en", language);
 }
-
-// Tests that synonym language code is converted to one used in Chrome internal.
-TEST_F(LanguageUtilTest, ToChromeLanguageSynonym) {
-  std::string language;
-
-  // Norwegian (no) and Norwegian Bokmal (nb) are both supported.
-  language = std::string("no");
-  language::ToChromeLanguageSynonym(&language);
-  EXPECT_EQ("no", language);
-
-  language = std::string("nb");
-  language::ToChromeLanguageSynonym(&language);
-  EXPECT_EQ("nb", language);
-
-  // Convert to Chrome synonym
-  language = std::string("tl");
-  language::ToChromeLanguageSynonym(&language);
-  EXPECT_EQ("tl", language);
-
-  // Preserve a sub code
-  language = std::string("iw-IL");
-  language::ToChromeLanguageSynonym(&language);
-  EXPECT_EQ("iw-IL", language);
-
-  // Preserve the argument if it doesn't have its synonym.
-  language = std::string("en");
-  language::ToChromeLanguageSynonym(&language);
-  EXPECT_EQ("en", language);
-}
