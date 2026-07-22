@@ -926,13 +926,20 @@ class AndroidAutofillProviderWithCredManTest
   }
 
   void FocusFormField(const FormFieldData& field) {
+    // TODO(crbug.com/537704721): This is a hack to make the tests happy.
+    // Otherwise, the tests rely on a particular, unrealistic order of events.
+    // So either the tests or the production code are wrong.
+    test_api(autofill_provider())
+        .StartNewSession(&android_autofill_manager(), test_webauthn_form_,
+                         field);
+
+    android_autofill_manager().SimulateOnFocusOnFormField(test_webauthn_form_,
+                                                          field);
     keyboard_suppressor().OnBeforeAskForValuesToFill(
         android_autofill_manager(), test_webauthn_form_.global_id(),
         field.global_id(), test_webauthn_form_);
     android_autofill_manager().SimulateOnAskForValuesToFill(test_webauthn_form_,
                                                             field);
-    android_autofill_manager().SimulateOnFocusOnFormField(test_webauthn_form_,
-                                                          field);
     keyboard_suppressor().OnAfterAskForValuesToFill(
         android_autofill_manager(), test_webauthn_form_.global_id(),
         field.global_id());
