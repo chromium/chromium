@@ -5,8 +5,7 @@
 #include "components/update_client/protocol_parser.h"
 
 #include <string>
-
-#include "base/strings/stringprintf.h"
+#include <string_view>
 
 namespace update_client {
 
@@ -44,16 +43,11 @@ ProtocolParser::Data::Data(const std::string& install_data_index,
     : install_data_index(install_data_index), text(text) {}
 ProtocolParser::Data::~Data() = default;
 
-void ProtocolParser::ParseError(const char* details, ...) {
-  va_list args;
-  va_start(args, details);
-
+void ProtocolParser::ParseError(std::string_view details) {
   if (!errors_.empty()) {
     errors_ += "\r\n";
   }
-
-  UNSAFE_TODO(base::StringAppendV(&errors_, details, args));
-  va_end(args);
+  errors_.append(details);
 }
 
 bool ProtocolParser::Parse(const std::string& response) {
