@@ -199,7 +199,7 @@ def DFS(node: Node):
         DFS(neighbour)
 
 
-def ComputeSizeInfoAvailable(node: Node):
+def ComputeSizeInfoAvailable(node: Node, sinks: set):
     """
     Determines whether size information is available for a source node and its
     neighbors_directed. Updates the node's size_info_available attribute.
@@ -209,13 +209,13 @@ def ComputeSizeInfoAvailable(node: Node):
     """
 
     # Memoization: node.size_info_available has already been computed. Return.
-    if node.size_info_available:
+    if node.size_info_available is not None:
         return
 
-    # If there are no dependencies, the size info is definitely not available
-    # for this node.
+    # If there are no dependencies, the size info is available if this node
+    # is a sink.
     if not node.neighbors_directed:
-        node.size_info_available = False
+        node.size_info_available = (node.key in sinks)
         return
 
     # Cycle: If the node is currently being visited, it means it depends on
@@ -229,7 +229,7 @@ def ComputeSizeInfoAvailable(node: Node):
     # size info available.
     node.size_info_visiting = True
     for neighbour in node.neighbors_directed:
-        ComputeSizeInfoAvailable(neighbour)
+        ComputeSizeInfoAvailable(neighbour, sinks)
     node.size_info_visiting = False
 
     # This node can be rewritten if all of its dependencies can.
@@ -412,10 +412,6 @@ def main():
 
         assert False, "Unreachable code"
 
-    # Mark the sink nodes as rewritable.
-    for sink in sinks:
-        Node.from_key(sink).size_info_available = True
-
     # Mark the source nodes:
     source_nodes = []
     for source in sources:
@@ -423,7 +419,7 @@ def main():
         source_nodes.append(source_node)
 
         # Determine whether size information is available from this source.
-        ComputeSizeInfoAvailable(source_node)
+        ComputeSizeInfoAvailable(source_node, sinks)
 
     # Identify all the connected components in the undirected graph. This is
     # exploring the graph in depth-first search and assigning the same component
