@@ -29,8 +29,6 @@
   BOOL _shutdown;
 }
 
-@synthesize browserProviderInterface = _browserProviderInterface;
-
 @synthesize window = _window;
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile
@@ -74,6 +72,10 @@
   return [self initWithProfile:profile sceneSessionID:{} commandDispatcher:nil];
 }
 
+- (id<BrowserProviderInterface>)browserProviderInterface {
+  return _browserProviderInterface;
+}
+
 - (void)dealloc {
   CHECK(_shutdown) << "-shutdown must be called before -dealloc";
 }
@@ -88,6 +90,12 @@
 }
 
 - (void)destroyAndRecreateOffTheRecordProfile {
+  // Remember whether the current interface was incognito in order to
+  // restore it after the destruction/creation.
+  const BOOL currentInterfaceWasIncognito =
+      _browserProviderInterface.currentBrowserProvider ==
+      _browserProviderInterface.incognitoBrowserProvider;
+
   [_browserProviderInterface.incognitoBrowserProvider shutdown];
   _browserProviderInterface.incognitoBrowserProvider = nil;
 
@@ -103,17 +111,20 @@
   _incognito_browser =
       std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
 
-  _browserProviderInterface.incognitoBrowserProvider =
+  StubBrowserProvider* incognitoBrowserProvider =
       [[StubBrowserProvider alloc] initWithBrowser:_incognito_browser.get()];
+  _browserProviderInterface.incognitoBrowserProvider = incognitoBrowserProvider;
+
+  if (currentInterfaceWasIncognito) {
+    _browserProviderInterface.currentBrowserProvider = incognitoBrowserProvider;
+  }
 }
 
 - (void)appendWebStateWithURL:(const GURL&)URL {
   auto test_web_state = std::make_unique<web::FakeWebState>();
   test_web_state->SetCurrentURL(URL);
-  WebStateList* web_state_list =
-      self.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
-  web_state_list->InsertWebState(std::move(test_web_state));
+
+  _browser->GetWebStateList()->InsertWebState(std::move(test_web_state));
 }
 
 - (void)appendWebStatesWithURL:(const GURL&)URL count:(int)count {
