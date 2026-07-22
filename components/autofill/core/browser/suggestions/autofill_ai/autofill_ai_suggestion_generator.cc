@@ -202,7 +202,8 @@ Suggestion CreateUndoSuggestion() {
 
 std::vector<Suggestion> GetFooterSuggestions(
     const FormFieldData& trigger_field,
-    const DenseSet<AutofillAiUiSection>& ui_sections) {
+    const DenseSet<AutofillAiUiSection>& ui_sections,
+    bool is_loading_suggestion_shown) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(3);
 
@@ -211,29 +212,36 @@ std::vector<Suggestion> GetFooterSuggestions(
   if (trigger_field.is_autofilled_according_to_renderer()) {
     suggestions.emplace_back(CreateUndoSuggestion());
   }
-  if (base::FeatureList::IsEnabled(
-          features::kSuggestionManageButtonSplitForEnhancedAutofill) &&
-      base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
-    CHECK(!ui_sections.empty());
 
-    if (ui_sections.size() > 1) {
-      suggestions.emplace_back(CreateManageAutofillAiSuggestion());
-    } else {
-      switch (*ui_sections.begin()) {
-        case AutofillAiUiSection::kTravel:
-          suggestions.emplace_back(CreateManageTravelSuggestion());
-          break;
-        case AutofillAiUiSection::kIdentityDocs:
-          suggestions.emplace_back(CreateManageIdentityDocsSuggestion());
-          break;
-        case AutofillAiUiSection::kShopping:
-          suggestions.emplace_back(CreateManageShoppingSuggestion());
-          break;
-      }
+  const bool is_split_manage_enabled =
+      base::FeatureList::IsEnabled(
+          features::kSuggestionManageButtonSplitForEnhancedAutofill) &&
+      base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage);
+
+  const bool should_use_specific_manage_button = is_split_manage_enabled &&
+                                                 !is_loading_suggestion_shown &&
+                                                 ui_sections.size() == 1;
+
+  if (should_use_specific_manage_button) {
+    switch (*ui_sections.begin()) {
+      case AutofillAiUiSection::kTravel:
+        suggestions.emplace_back(CreateManageTravelSuggestion());
+        return suggestions;
+      case AutofillAiUiSection::kIdentityDocs:
+        suggestions.emplace_back(CreateManageIdentityDocsSuggestion());
+        return suggestions;
+      case AutofillAiUiSection::kShopping:
+        suggestions.emplace_back(CreateManageShoppingSuggestion());
+        return suggestions;
     }
-  } else {
-    suggestions.emplace_back(CreateManageAutofillAiSuggestion());
   }
+
+  // Graceful fallback for everything else:
+  // - Loading states
+  // - Features disabled
+  // - ui_sections has multiple items
+  // - Unhandled AutofillAiUiSection enums
+  suggestions.emplace_back(CreateManageAutofillAiSuggestion());
   return suggestions;
 }
 
@@ -1066,7 +1074,11 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     base::Extend(suggestions, CreateFetchingAmbientSuggestions());
   }
 
-  base::Extend(suggestions, GetFooterSuggestions(trigger_field, ui_sections));
+  base::Extend(
+      suggestions,
+      GetFooterSuggestions(
+          trigger_field, ui_sections,
+          /*is_loading_suggestion_shown=*/should_show_fetching_suggestions));
   return suggestions;
 }
 

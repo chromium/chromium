@@ -1876,6 +1876,29 @@ TEST_F(
                           EqualsSuggestion(SuggestionType::kManageAutofillAi)));
 }
 
+TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
+       ShowFetchingSuggestionWhenPending) {
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  client().set_personal_context_access_manager(&access_manager);
+
+  SetForm({PASSPORT_NUMBER});
+  SetEntities({});
+
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+  EXPECT_CALL(access_manager,
+              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
+                                  EntityType(EntityTypeName::kPassport)))
+      .WillRepeatedly(Return(RequestStatus::kPending));
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      ElementsAre(EqualsSuggestion(SuggestionType::kFetchingAmbientData),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAutofillAi)));
+}
+
 class AutofillAiSuggestionGeneratorPolicyTest
     : public AutofillAiSuggestionGeneratorTest {
  public:
