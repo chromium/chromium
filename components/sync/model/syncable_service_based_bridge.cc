@@ -325,7 +325,8 @@ std::string SyncableServiceBasedBridge::GetClientTag(
 
 std::string SyncableServiceBasedBridge::GetStorageKey(
     const EntityData& entity_data) const {
-  return syncable_service_->GetClientTag(entity_data);
+  // Not supported as per SupportsGetStorageKey().
+  NOTREACHED();
 }
 
 sync_pb::EntitySpecifics
