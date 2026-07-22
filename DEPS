@@ -1302,7 +1302,7 @@ deps = {
   'src/android_webview/tools/orderfiles/arm64': {
       'packages': [
           {
-              'package': 'chromium/android_webview/tools/orderfiles/arm64_webview_pgo',
+              'package': 'chromium/android_webview/tools/orderfiles/arm64',
               'version_file': 'android_webview/tools/android-webview-arm64.orderfile.txt',
           },
       ],
