@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -116,6 +118,19 @@ class GlicShareImageHandlerTest : public testing::Test {
   void OnPageContextEligibilityChanged(
       optimization_guide::PageContextEligibilityStatus eligibility) {
     handler_->OnPageContextEligibilityChanged(eligibility);
+  }
+
+  void SetRenderFrameHostId(content::GlobalRenderFrameHostId id) {
+    handler_->render_frame_host_id_ = id;
+  }
+
+  void OnReceivedImage(const std::vector<uint8_t>& thumbnail_data,
+                       const gfx::Size& original_size,
+                       const gfx::Size& downscaled_size,
+                       const std::string& mime_type,
+                       std::vector<lens::mojom::LatencyLogPtr> log_data) {
+    handler_->OnReceivedImage(thumbnail_data, original_size, downscaled_size,
+                              mime_type, std::move(log_data));
   }
 
  protected:
@@ -286,6 +301,65 @@ TEST_F(GlicShareImageHandlerTest,
   OnPageContextEligibilityChanged(
       optimization_guide::PageContextEligibilityStatus::kEligible);
   histogram_tester_.ExpectTotalCount("Glic.TabContext.ShareImageResult", 0);
+}
+
+TEST_F(GlicShareImageHandlerTest, OnReceivedImageUsesNewConversationByDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kGlicShareImageNoNewConversation);
+
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_, content::SiteInstance::Create(profile_));
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  SetTabHandle(mock_tab.GetHandle());
+  SetShareInProgress(true);
+  SetRenderFrameHostId(web_contents->GetPrimaryMainFrame()->GetGlobalId());
+
+  EXPECT_CALL(*mock_service_, Invoke(testing::_))
+      .WillOnce([](GlicInvokeOptions options) {
+        EXPECT_TRUE(std::holds_alternative<NewConversation>(
+            options.target.conversation));
+        return base::WeakPtr<GlicInstance>();
+      });
+
+  std::vector<uint8_t> thumbnail_data = {1, 2, 3};
+  OnReceivedImage(thumbnail_data, gfx::Size(10, 10), gfx::Size(10, 10),
+                  "image/png", {});
+}
+
+TEST_F(GlicShareImageHandlerTest, OnReceivedImageWithNoNewConversationFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicShareImageNoNewConversation);
+
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          profile_, content::SiteInstance::Create(profile_));
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+  ON_CALL(mock_tab, GetContents())
+      .WillByDefault(testing::Return(web_contents.get()));
+
+  SetTabHandle(mock_tab.GetHandle());
+  SetShareInProgress(true);
+  SetRenderFrameHostId(web_contents->GetPrimaryMainFrame()->GetGlobalId());
+
+  EXPECT_CALL(*mock_service_, Invoke(testing::_))
+      .WillOnce([](GlicInvokeOptions options) {
+        EXPECT_TRUE(std::holds_alternative<DefaultConversation>(
+            options.target.conversation));
+        return base::WeakPtr<GlicInstance>();
+      });
+
+  std::vector<uint8_t> thumbnail_data = {1, 2, 3};
+  OnReceivedImage(thumbnail_data, gfx::Size(10, 10), gfx::Size(10, 10),
+                  "image/png", {});
 }
 
 }  // namespace glic

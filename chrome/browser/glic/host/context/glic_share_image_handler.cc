@@ -4,12 +4,14 @@
 
 #include "chrome/browser/glic/host/context/glic_share_image_handler.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -192,7 +194,11 @@ void GlicShareImageHandler::OnReceivedImage(
   PolicyCheck policy_check =
       do_policy_checks ? PolicyCheck::kClipboard : PolicyCheck::kNone;
 
-  GlicInvokeOptions invoke_options(Target(*tab, NewConversation()),
+  Target target =
+      base::FeatureList::IsEnabled(features::kGlicShareImageNoNewConversation)
+          ? Target(*tab, DefaultConversation())
+          : Target(*tab, NewConversation());
+  GlicInvokeOptions invoke_options(std::move(target),
                                    mojom::InvocationSource::kSharedImage);
   invoke_options.additional_context = AdditionalTabContext(
       std::move(additional_context), render_frame_host_id_, policy_check);

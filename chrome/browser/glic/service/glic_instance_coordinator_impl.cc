@@ -1037,14 +1037,8 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     return;
   }
 
-  GlicInstanceImpl* instance = nullptr;
+  GlicInstanceImpl* instance = GetOrCreateGlicInstanceImplForTab(tab);
 
-  if (source == glic::mojom::InvocationSource::kSharedImage) {
-    // kSharedImage currently requires a new instance.
-    instance = CreateGlicInstance();
-  } else {
-    instance = GetOrCreateGlicInstanceImplForTab(tab);
-  }
   // If the tab is already bound, then it already has a pin trigger and this pin
   // trigger will not be used. If it's not already bound, then we know it's a
   // newly created instance, so we provide the instance creation trigger.
