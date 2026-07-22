@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -333,6 +334,55 @@ public class BookmarkUtilsTest {
         assertNotNull(mBookmarkIdListCaptor.getValue().get(0));
 
         verifyNoInteractions(mBottomSheetController);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
+    public void testAddOrEditBookmark_existingBookmark_desktopPopup() {
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        BookmarkItem existingBookmark = mock(BookmarkItem.class);
+        BookmarkId bookmarkId = new BookmarkId(123, BookmarkType.NORMAL);
+        doReturn(bookmarkId).when(existingBookmark).getId();
+
+        BookmarkUtils.addOrEditBookmark(
+                Collections.singletonList(existingBookmark),
+                mBookmarkModel,
+                Collections.singletonList(mTab),
+                /* snackbarManager= */ null,
+                mBottomSheetController,
+                mActivity,
+                BookmarkType.NORMAL,
+                mBookmarkIdListCallback,
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager,
+                false);
+
+        verify(mBookmarkManagerOpener, never()).startEditActivity(any(), any(), any());
+    }
+
+    @Test
+    public void testAddOrEditBookmark_existingBookmark_noDesktopPopup() {
+        BookmarkItem existingBookmark = mock(BookmarkItem.class);
+        BookmarkId bookmarkId = new BookmarkId(123, BookmarkType.NORMAL);
+        doReturn(bookmarkId).when(existingBookmark).getId();
+
+        BookmarkUtils.addOrEditBookmark(
+                Collections.singletonList(existingBookmark),
+                mBookmarkModel,
+                Collections.singletonList(mTab),
+                /* snackbarManager= */ null,
+                mBottomSheetController,
+                mActivity,
+                BookmarkType.NORMAL,
+                mBookmarkIdListCallback,
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager,
+                false);
+
+        verify(mBookmarkManagerOpener).startEditActivity(mActivity, mProfile, bookmarkId);
     }
 
     @Test
