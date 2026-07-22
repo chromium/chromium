@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.renderer_host;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -17,13 +17,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.AdvancedProtectionTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -32,7 +32,6 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.ServerCertificate;
 import org.chromium.url.GURL;
 
 /** Integration test for Android OS disabling Javascript Optimizers. */
@@ -42,13 +41,13 @@ import org.chromium.url.GURL;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
     "ignore-certificate-errors"
 })
-@DoNotBatch(reason = "Tests manipulate global profile state")
+@Batch(Batch.PER_CLASS)
 public class JavascriptOptimizerFeatureTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @ClassRule
     public static AdvancedProtectionTestRule sAdvancedProtectionRule =
@@ -62,10 +61,31 @@ public class JavascriptOptimizerFeatureTest {
         // These tests need an HTTPS test server as enabling Advanced
         // Protection also forces on HTTPS-First Mode.
         mTestServer =
-                EmbeddedTestServer.createAndStartHTTPSServer(
-                        ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
+                mActivityTestRule
+                        .getEmbeddedTestServerRule()
+                        .setServerUsesHttps(/* useHttps= */ true)
+                        .getServer();
         sAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(false);
         mPage = mActivityTestRule.startOnBlankPage();
+    }
+
+    @After
+    public void tearDown() {
+        sAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
+                    WebsitePreferenceBridge.setDefaultContentSetting(
+                            profile,
+                            ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                            ContentSetting.DEFAULT);
+                    for (var exception :
+                            new WebsitePreferenceBridge()
+                                    .getContentSettingsExceptions(
+                                            profile, ContentSettingsType.JAVASCRIPT_OPTIMIZER)) {
+                        exception.setContentSetting(profile, ContentSetting.DEFAULT);
+                    }
+                });
     }
 
     private boolean queryJavascriptOptimizersEnabledForActiveWebContents() {
