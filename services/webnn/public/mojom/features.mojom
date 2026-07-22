@@ -55,7 +55,7 @@ feature kWebNNOnnxRuntime {
 // Enables offloading graph construction/compilation to an out-of-process
 // WebNN Compiler process, isolated from the GPU process. When disabled,
 // graph construction runs in the GPU process as before.
-[EnableIf=is_win|is_mac]
+[EnableIf=is_win|is_apple]
 feature kWebNNCompilerProcess {
   const string name = "WebNNCompilerProcess";
   const bool default_state = false;

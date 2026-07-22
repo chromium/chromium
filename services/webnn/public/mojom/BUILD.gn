@@ -49,7 +49,7 @@ mojom_component("mojom") {
     "webnn_tensor.mojom",
   ]
 
-  if (is_win || is_mac) {
+  if (is_win || is_apple) {
     sources += [ "webnn_model_loader.mojom" ]
   }
   if (is_win) {
