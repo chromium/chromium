@@ -15,6 +15,7 @@
 #include "base/android/path_utils.h"
 #include "base/base_paths_posix.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -123,10 +124,12 @@ AwBrowserProcess::AwBrowserProcess(AwContentBrowserClient* browser_client)
 }
 
 AwBrowserProcess::~AwBrowserProcess() {
+  aw_contents_lifecycle_notifier_->RemoveObserver(this);
   g_aw_browser_process = nullptr;
 }
 
 void AwBrowserProcess::PreMainMessageLoopRun() {
+  aw_contents_lifecycle_notifier_->AddObserver(this);
   pref_change_registrar_.Init(local_state());
   auto auth_pref_callback = base::BindRepeating(
       &AwBrowserProcess::OnAuthPrefsChanged, base::Unretained(this));
@@ -156,6 +159,31 @@ void AwBrowserProcess::CreateLocalState() {
 void AwBrowserProcess::OnLoseForeground() {
   if (local_state_)
     local_state_->CommitPendingWrite();
+}
+
+void AwBrowserProcess::OnAppStateChanged(State state) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewPurgeMemoryInBackground)) {
+    return;
+  }
+
+  if (state != State::kBackground) {
+    purge_memory_timer_.Stop();
+    return;
+  }
+
+  if (purge_memory_timer_.IsRunning()) {
+    return;
+  }
+
+  purge_memory_timer_.Start(
+      FROM_HERE, features::kWebViewPurgeMemoryInBackgroundDelay.Get(), this,
+      &AwBrowserProcess::PurgeMemory);
+}
+
+void AwBrowserProcess::PurgeMemory() {
+  base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 AwBrowserPolicyConnector* AwBrowserProcess::browser_policy_connector() {

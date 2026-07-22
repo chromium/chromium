@@ -694,6 +694,9 @@ public final class ProductionSupportedFlagList {
                         + " to enable BFCache through AwSettings as well. If either of"
                         + " the flag / setting is enabled, BFCache will be enabled"),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_PURGE_MEMORY_IN_BACKGROUND,
+                "Aggressively purge memory when WebView apps go to the background."),
+        Flag.baseFeature(
                 AwSwitches.WEBVIEW_STATIC_METHODS_NOT_TRIGGER_STARTUP,
                 "When enabled, static methods in SharedStatics do not trigger startup."),
         Flag.baseFeature(

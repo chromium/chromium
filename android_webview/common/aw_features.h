@@ -42,6 +42,9 @@ BASE_DECLARE_FEATURE(kWebViewEnableDnsPlatform);
 BASE_DECLARE_FEATURE(kWebViewFasterGetDefaultUserAgent);
 BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);
 BASE_DECLARE_FEATURE(kWebViewForceWebAuthn);
+BASE_DECLARE_FEATURE(kWebViewPurgeMemoryInBackground);
+extern const base::FeatureParam<base::TimeDelta>
+    kWebViewPurgeMemoryInBackgroundDelay;
 BASE_DECLARE_FEATURE(kWebViewGateTextSizeAdjustOnTextAutosizing);
 BASE_DECLARE_FEATURE(kWebViewHttpCacheQuotaApi);
 extern const base::FeatureParam<bool> kWebViewHttpCacheQuotaApiAllowShrinking;

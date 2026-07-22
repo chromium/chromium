@@ -143,6 +143,14 @@ BASE_FEATURE(kWebViewForceWebAuthn, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewGateTextSizeAdjustOnTextAutosizing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, memory is aggressively purged when WebView apps go to the
+// background.
+BASE_FEATURE(kWebViewPurgeMemoryInBackground,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kWebViewPurgeMemoryInBackgroundDelay{
+    &kWebViewPurgeMemoryInBackground, "purge_delay", base::Minutes(4)};
+
 // Partial kill switch for the HTTP Cache Quota API.
 //
 // When enabled, HTTP Cache quota can be configured by the WebView embedder.
