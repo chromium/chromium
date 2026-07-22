@@ -98,7 +98,7 @@ const CGFloat kBackButtonSize = 24;
   if (!_settingsView) {
     CHECK(_previousViewControllerTitle);
     UIImage* image =
-        DefaultSymbolWithPointSize(kChevronBackwardSymbol, kBackButtonSize);
+        SymbolWithPointSize(SymbolChevronBackward, kBackButtonSize);
 
     UIButton* backButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [backButton setImage:image forState:UIControlStateNormal];

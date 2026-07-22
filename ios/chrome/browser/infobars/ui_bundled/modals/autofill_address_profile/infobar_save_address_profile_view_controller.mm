@@ -297,28 +297,26 @@ const CGFloat kButtonHorizontalInset = 16;
 
 - (void)loadSaveAddressModal {
   UIView* address = [self detailViewWithTitle:self.address
-                                       symbol:CustomSymbolTemplateWithPointSize(
-                                                  kLocationSymbol, kSymbolSize)
+                                       symbol:SymbolTemplateWithPointSize(
+                                                  SymbolLocation, kSymbolSize)
                          imageTintColorIsGrey:YES];
   [_contentStack addArrangedSubview:address];
   [_contentStack addArrangedSubview:[self separatorView]];
 
   if ([self.emailAddress length]) {
-    UIView* email =
-        [self detailViewWithTitle:self.emailAddress
-                           symbol:DefaultSymbolTemplateWithPointSize(
-                                      kMailFillSymbol, kSymbolSize)
-             imageTintColorIsGrey:YES];
+    UIView* email = [self detailViewWithTitle:self.emailAddress
+                                       symbol:SymbolTemplateWithPointSize(
+                                                  SymbolMailFill, kSymbolSize)
+                         imageTintColorIsGrey:YES];
     [_contentStack addArrangedSubview:email];
     [_contentStack addArrangedSubview:[self separatorView]];
   }
 
   if ([self.phoneNumber length]) {
-    UIView* phone =
-        [self detailViewWithTitle:self.phoneNumber
-                           symbol:DefaultSymbolTemplateWithPointSize(
-                                      kPhoneFillSymbol, kSymbolSize)
-             imageTintColorIsGrey:YES];
+    UIView* phone = [self detailViewWithTitle:self.phoneNumber
+                                       symbol:SymbolTemplateWithPointSize(
+                                                  SymbolPhoneFill, kSymbolSize)
+                         imageTintColorIsGrey:YES];
     [_contentStack addArrangedSubview:phone];
     [_contentStack addArrangedSubview:[self separatorView]];
   }
@@ -336,8 +334,8 @@ const CGFloat kButtonHorizontalInset = 16;
   [_contentStack
       addArrangedSubview:
           [self detailViewWithTitle:self.profileDescriptionForMigrationPrompt
-                             symbol:CustomSymbolTemplateWithPointSize(
-                                        kLocationSymbol, kSymbolSize)
+                             symbol:SymbolTemplateWithPointSize(SymbolLocation,
+                                                                kSymbolSize)
                imageTintColorIsGrey:YES]];
   [_contentStack addArrangedSubview:[self separatorView]];
 
@@ -438,13 +436,13 @@ const CGFloat kButtonHorizontalInset = 16;
     case autofill::AddressUIComponentIconType::kNoIcon:
       return nil;
     case autofill::AddressUIComponentIconType::kName:
-      return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolPersonFill, kSymbolSize);
     case autofill::AddressUIComponentIconType::kAddress:
-      return CustomSymbolTemplateWithPointSize(kLocationSymbol, kSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolLocation, kSymbolSize);
     case autofill::AddressUIComponentIconType::kEmail:
-      return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolMailFill, kSymbolSize);
     case autofill::AddressUIComponentIconType::kPhone:
-      return DefaultSymbolTemplateWithPointSize(kPhoneFillSymbol, kSymbolSize);
+      return SymbolTemplateWithPointSize(SymbolPhoneFill, kSymbolSize);
   }
 }
 
@@ -516,7 +514,7 @@ const CGFloat kButtonHorizontalInset = 16;
     ColorfulSymbolContentConfiguration* symbolConfiguration =
         [[ColorfulSymbolContentConfiguration alloc] init];
     symbolConfiguration.symbolImage =
-        CustomSymbolTemplateWithPointSize(kLocationSymbol, kSymbolSize);
+        SymbolTemplateWithPointSize(SymbolLocation, kSymbolSize);
     symbolConfiguration.symbolTintColor =
         imageTintColorIsGrey ? [UIColor colorNamed:kGrey400Color]
                              : [UIColor colorNamed:kBlueColor];

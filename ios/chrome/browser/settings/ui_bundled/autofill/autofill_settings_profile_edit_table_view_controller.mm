@@ -329,7 +329,7 @@ const CGFloat kSymbolSize = 22;
   item.detailText = l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_DESCRIPTION,
       base::SysNSStringToUTF16(self.userEmail));
-  item.image = CustomSymbolWithPointSize(kCloudAndArrowUpSymbol, kSymbolSize);
+  item.image = SymbolWithPointSize(SymbolCloudAndArrowUp, kSymbolSize);
   item.imageViewTintColor = [UIColor colorNamed:kBlueColor];
   return item;
 }

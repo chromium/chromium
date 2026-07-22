@@ -636,8 +636,8 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
         if ([self shouldShowCloudOffIconForProfile:autofillProfile]) {
           item.showMigrateToAccountButton = YES;
           item.localProfileIconShown = YES;
-          item.image = CustomSymbolTemplateWithPointSize(
-              kCloudSlashSymbol, kCloudSlashSymbolPointSize);
+          item.image = SymbolTemplateWithPointSize(SymbolCloudSlash,
+                                                   kCloudSlashSymbolPointSize);
         }
       }
       break;
