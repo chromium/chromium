@@ -9907,32 +9907,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.UDPSocketPosix.GroPacketsRead" units="packets"
-    expires_after="2027-07-17">
-  <owner>aymanm@google.com</owner>
-  <owner>ricea@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Records the number of UDP datagrams read and sliced from a UDP_GRO
-    superpacket (or un-coalesced datagram) per read operation when UDP Generic
-    Receive Offload (UDP_GRO) is enabled on a UDPSocketPosix. This metric is
-    sampled at 1% of successful GRO read operations. This metric is only emitted
-    if `ReadMultiple()` is called.
-  </summary>
-</histogram>
-
-<histogram name="Net.UDPSocketPosix.SetSocketOptionGroResult"
-    enum="SetSocketOptionGroResult" expires_after="2027-07-17">
-  <owner>aymanm@google.com</owner>
-  <owner>ricea@chromium.org</owner>
-  <owner>src/net/OWNERS</owner>
-  <summary>
-    Records the result of enabling UDP Generic Receive Offload (UDP_GRO) via
-    setsockopt on a UDPSocketPosix. This metric is sampled at 1% of socket
-    creations.
-  </summary>
-</histogram>
-
 <histogram name="Net.UDPSocketWinClose" units="ms" expires_after="2024-03-24">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>

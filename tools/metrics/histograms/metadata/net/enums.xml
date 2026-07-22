@@ -3339,17 +3339,6 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//chrome/browser/net/stub_resolver_config_reader.h:SecureDnsModeDetailsForHistogram) -->
 
-<!-- LINT.IfChange(SetSocketOptionGroResult) -->
-
-<enum name="SetSocketOptionGroResult">
-  <int value="0" label="Success"/>
-  <int value="1"
-      label="Unsupported Kernel Fallback (ENOPROTOOPT, EOPNOTSUPP, or ENOPKG)"/>
-  <int value="2" label="Other Error"/>
-</enum>
-
-<!-- LINT.ThenChange(//net/socket/udp_socket_posix.h:SetSocketOptionGroResult) -->
-
 <!-- LINT.IfChange(SharedDictionaryStorageEvictionReason) -->
 
 <enum name="SharedDictionaryStorageEvictionReason">

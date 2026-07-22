@@ -833,9 +833,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kQuicMaxPacketSize);
 // If enabled, QuicChromiumPacketReader will use ReadMultiple API.
 NET_EXPORT BASE_DECLARE_FEATURE(kQuicUseReadMultiple);
 
-// If enabled, UDPSocketPosix will enable UDP Generic Receive Offload (UDP_GRO).
-NET_EXPORT BASE_DECLARE_FEATURE(kEnableUdpGro);
-
 // When enabled, races QUIC connection attempts for the specified hostnames
 // even when there is no available ALPN information.
 NET_EXPORT BASE_DECLARE_FEATURE(kConfigureQuicHints);

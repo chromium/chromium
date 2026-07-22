@@ -10,7 +10,6 @@
 #include <sys/types.h>
 
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -41,16 +40,6 @@ class IPAddress;
 class NetLog;
 struct NetLogSource;
 class SocketTag;
-
-// These values are persisted to logs, entries should not be renumbered.
-// LINT.IfChange(SetSocketOptionGroResult)
-enum class SetSocketOptionGroResult {
-  kSuccess = 0,
-  kUnsupportedKernel = 1,
-  kOtherError = 2,
-  kMaxValue = kOtherError,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SetSocketOptionGroResult)
 
 class NET_EXPORT UDPSocketPosix {
  public:
@@ -322,30 +311,17 @@ class NET_EXPORT UDPSocketPosix {
   // not bound or connected to an address.
   int AdoptOpenedSocket(AddressFamily address_family, int socket);
 
-  uint32_t get_multicast_interface_for_testing() const {
+  uint32_t get_multicast_interface_for_testing() {
     return multicast_interface_;
   }
-  bool get_msg_confirm_for_testing() const { return sendto_flags_; }
-  bool get_experimental_recv_optimization_enabled_for_testing() const {
+  bool get_msg_confirm_for_testing() { return sendto_flags_; }
+  bool get_experimental_recv_optimization_enabled_for_testing() {
     return experimental_recv_optimization_enabled_;
   }
-  void set_gro_enabled_for_testing(bool gro_enabled) {
-    gro_status_ = gro_enabled ? GroStatus::kEnabled : GroStatus::kDisabled;
-  }
-  bool is_gro_enabled_for_testing() const {
-    return gro_status_ == GroStatus::kEnabled;
-  }
-  void ConfigureGroSocketOptionForTesting() { ConfigureGroSocketOption(); }
 
   DscpAndEcn GetLastTos() const { return TosToDscpAndEcn(last_tos_); }
 
  private:
-  enum class GroStatus : uint8_t {
-    kUnconfigured,
-    kEnabled,
-    kDisabled,
-  };
-
   enum SocketOptions {
     SOCKET_OPTION_MULTICAST_LOOP = 1 << 0
   };
@@ -405,7 +381,6 @@ class NET_EXPORT UDPSocketPosix {
                const sockaddr* addr);
   void LogRead(int result, const char* bytes, const IPEndPoint* address);
   void LogWrite(int result, const char* bytes, const IPEndPoint* address);
-  void ConfigureGroSocketOption();
 
   // Same as SendTo(), except that address is passed by pointer
   // instead of by reference. It is called from Write() with |address|
@@ -430,39 +405,28 @@ class NET_EXPORT UDPSocketPosix {
   int InternalRecvFromConnectedSocket(IOBuffer* buf,
                                       int buf_len,
                                       IPEndPoint* address);
-
   struct RecvmsgResult {
-    size_t bytes_read = 0;
+    int bytes_read = 0;
     int msg_flags = 0;
-    std::optional<uint8_t> tos;
-    std::optional<size_t> gso_size;
+    uint8_t tos = 0;
     SockaddrStorage storage;
   };
   base::expected<RecvmsgResult, Error> DoRecvmsg(IOBuffer* buf,
                                                  size_t buf_len,
                                                  bool populate_remote_address);
-  void FillResultFromMessageHeader(struct msghdr* msg, RecvmsgResult* result);
 
   base::expected<DatagramsMetadata, Error> InternalReadMultiple(
       IOBuffer* buffer,
       size_t buf_len,
       size_t maximum_packet_size);
-
-  // recvmmsg() and GRO are only available on Linux, ChromeOS, and Android.
+  // recvmmsg() is only available on Linux, ChromeOS, and Android.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  base::expected<DatagramsMetadata, Error> InternalReadMultipleWithGro(
-      IOBuffer* buffer,
-      size_t buf_len,
-      size_t maximum_packet_size);
   base::expected<DatagramsMetadata, Error> InternalRecvMmsg(
       IOBuffer* buffer,
       size_t num_messages,
       size_t maximum_packet_size);
-  base::expected<DatagramsMetadata, Error> ProcessRecvMmsgResults(
+  static base::expected<DatagramsMetadata, Error> ProcessRecvMmsgResults(
       base::span<struct mmsghdr> mmsg,
-      size_t maximum_packet_size);
-  static base::expected<DatagramsMetadata, Error> ProcessGroResult(
-      const RecvmsgResult& res,
       size_t maximum_packet_size);
 #endif
 
@@ -569,9 +533,6 @@ class NET_EXPORT UDPSocketPosix {
   // client of the socket has to opt-in by calling the
   // enable_experimental_recv_optimization() method.
   bool experimental_recv_optimization_enabled_ = false;
-
-  // Tracks the configuration status of UDP Generic Receive Offload (UDP_GRO).
-  GroStatus gro_status_ = GroStatus::kUnconfigured;
 
   // Manages decrementing the global open UDP socket counter when this
   // UDPSocket is destroyed.
