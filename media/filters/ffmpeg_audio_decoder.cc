@@ -13,6 +13,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_buffer.h"
@@ -225,7 +226,7 @@ bool FFmpegAudioDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
   } else {
     auto buffer_span = base::span(buffer);
     packet->data = const_cast<uint8_t*>(buffer_span.data());
-    packet->size = buffer_span.size();
+    packet->size = base::checked_cast<int>(buffer_span.size());
     packet->pts =
         ConvertToTimeBase(codec_context_->time_base, buffer.timestamp());
 

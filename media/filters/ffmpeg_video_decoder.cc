@@ -371,7 +371,7 @@ bool FFmpegVideoDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
     hdr_metadata_reordering_map_.Insert(buffer);
     auto buffer_span = base::span(buffer);
     packet->data = const_cast<uint8_t*>(buffer_span.data());
-    packet->size = buffer_span.size();
+    packet->size = base::checked_cast<int>(buffer_span.size());
     packet->pts = ConvertToTimeBase(codec_context_->pkt_timebase, buffer.timestamp());
 
     DCHECK(packet->data);
