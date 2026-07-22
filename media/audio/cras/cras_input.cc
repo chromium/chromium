@@ -91,8 +91,7 @@ void RecordVoiceIsolationState(StreamEffectState state) {
 
 class CrasAudioInputStreamProxy {
  public:
-  explicit CrasAudioInputStreamProxy(CrasInputStream* stream)
-      : stream_(stream) {}
+  CrasAudioInputStreamProxy() : stream_(nullptr), active_stream_id_(0) {}
 
   CrasAudioInputStreamProxy(const CrasAudioInputStreamProxy&) = delete;
   CrasAudioInputStreamProxy& operator=(const CrasAudioInputStreamProxy&) =
@@ -101,12 +100,25 @@ class CrasAudioInputStreamProxy {
   void Detach() {
     base::AutoLock auto_lock(lock_);
     stream_ = nullptr;
+    active_stream_id_ = 0;
+  }
+
+  // Re-attaches the proxy to its stream. Used when a stream is restarted via
+  // Stop() then Start() without an intervening Close().
+  void Attach(CrasInputStream* stream, cras_stream_id_t stream_id) {
+    base::AutoLock auto_lock(lock_);
+    stream_ = stream;
+    active_stream_id_ = stream_id;
   }
 
   int SamplesReady(struct libcras_stream_cb_data* data) {
     base::AutoLock auto_lock(lock_);
     if (stream_) {
-      return stream_->OnSamplesReady(data);
+      cras_stream_id_t cb_stream_id;
+      libcras_stream_cb_data_get_stream_id(data, &cb_stream_id);
+      if (cb_stream_id == active_stream_id_) {
+        return stream_->OnSamplesReady(data);
+      }
     }
     unsigned int frames = 0;
     libcras_stream_cb_data_get_frames(data, &frames);
@@ -115,7 +127,7 @@ class CrasAudioInputStreamProxy {
 
   int StreamError(cras_client* client, cras_stream_id_t stream_id, int err) {
     base::AutoLock auto_lock(lock_);
-    if (stream_) {
+    if (stream_ && stream_id == active_stream_id_) {
       return stream_->OnStreamError(client, stream_id, err);
     }
     return 0;
@@ -124,6 +136,7 @@ class CrasAudioInputStreamProxy {
  private:
   base::Lock lock_;
   raw_ptr<CrasInputStream> stream_ GUARDED_BY(lock_);
+  cras_stream_id_t active_stream_id_ GUARDED_BY(lock_);
 };
 
 CrasInputStream::CrasInputStream(const AudioParameters& params,
@@ -152,6 +165,11 @@ CrasInputStream::CrasInputStream(const AudioParameters& params,
     base::StringToUint64(device_id, &cras_node_id);
     pin_device_ = dev_index_of(cras_node_id);
   }
+  // The proxy lives for the entire lifetime of this stream. Recreating it per
+  // Start() would be unsafe: streams can be restarted in place (Stop() then
+  // Start() without Close()), and a late libcras callback from a previous run
+  // could still reference the old proxy.
+  proxy_ = std::make_unique<CrasAudioInputStreamProxy>();
 }
 
 CrasInputStream::~CrasInputStream() {
@@ -350,8 +368,6 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
     return;
   }
 
-  proxy_ = std::make_unique<CrasAudioInputStreamProxy>(this);
-
   int rc = libcras_stream_params_set(
       stream_params, stream_direction_, frames_per_packet, frames_per_packet,
       type, audio_manager_->GetClientType(), flags, proxy_.get(),
@@ -446,7 +462,16 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
         StreamStartResult::kCallbackStartFailedAddingStream);
     callback_->OnError(Error::kStartupFailed);
     callback_ = nullptr;
+    libcras_stream_params_destroy(stream_params);
+    return;
   }
+
+  // The stream is now fully (re)initialized, so attach the proxy right before
+  // the callbacks start. A previous Stop() may have detached it. Attaching
+  // only here guarantees that any forwarded callback observes a consistent
+  // stream; late callbacks from the previous run were already dropped while the
+  // proxy was detached.
+  proxy_->Attach(this, stream_id_);
 
   // Mute system audio if requested.
   if (mute_system_audio_) {
@@ -493,6 +518,7 @@ void CrasInputStream::Stop() {
 
   // Removing the stream from the client stops audio.
   libcras_client_rm_stream(client_, stream_id_);
+  stream_id_ = 0;
 
   ReportAndResetStats();
 
@@ -669,15 +695,17 @@ void CrasInputStream::ReportAndResetStats() {
   SystemGlitchReporter::Stats stats =
       glitch_reporter_.GetLongTermStatsAndReset();
 
-  std::string log_message = base::StringPrintf(
-      "CRAS in: (num_glitches_detected=[%d], cumulative_audio_lost=[%" PRId64
-      " ms],largest_glitch=[%" PRId64 " ms])",
-      stats.glitches_detected, stats.total_glitch_duration.InMilliseconds(),
-      stats.largest_glitch_duration.InMilliseconds());
+  if (!log_callback_.is_null()) {
+    std::string log_message = base::StringPrintf(
+        "CRAS in: (num_glitches_detected=[%d], cumulative_audio_lost=[%" PRId64
+        " ms],largest_glitch=[%" PRId64 " ms])",
+        stats.glitches_detected, stats.total_glitch_duration.InMilliseconds(),
+        stats.largest_glitch_duration.InMilliseconds());
 
-  log_callback_.Run(log_message);
-  if (stats.glitches_detected != 0) {
-    DLOG(WARNING) << log_message;
+    log_callback_.Run(log_message);
+    if (stats.glitches_detected != 0) {
+      DLOG(WARNING) << log_message;
+    }
   }
   last_overrun_frames_ = 0;
   last_dropped_samples_duration_ = base::TimeDelta();
