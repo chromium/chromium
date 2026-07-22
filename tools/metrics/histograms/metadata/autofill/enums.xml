@@ -5396,33 +5396,6 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Success, IBAN upload enabled"/>
 </enum>
 
-<enum name="InferredLabelSource">
-  <int value="0" label="No label"/>
-  <int value="1" label="&lt;label&gt; sibling/ancestor"/>
-  <int value="2" label="&lt;p&gt; sibling"/>
-  <int value="3" label="&lt;div&gt; ancestor"/>
-  <int value="4" label="&lt;td&gt; sibling"/>
-  <int value="5" label="&lt;dt&gt; sibling"/>
-  <int value="6" label="&lt;li&gt; ancestor"/>
-  <int value="7" label="placeholder attribute"/>
-  <int value="8" label="aria-label attribute"/>
-  <int value="9" label="Text node sibling (includes &lt;b&gt;, etc)"/>
-  <int value="10" label="value attribute"/>
-  <int value="11"
-      label="&lt;label&gt; for attribute linked to a control element via its
-             id attribute"/>
-  <int value="12"
-      label="&lt;label&gt; for attribute linked to a control element via its
-             name attribute"/>
-  <int value="13"
-      label="&lt;label&gt; for attribute linked to a control element inside a
-             shadow DOM via its id attribute"/>
-  <int value="14"
-      label="&lt;label&gt; for attribute linked to a control element inside a
-             shadow DOM via its name attribute"/>
-  <int value="15" label="Succeeding DOM node overlaying the input"/>
-</enum>
-
 <!-- LINT.IfChange(InvalidSubmittedFormReasonIOS) -->
 
 <enum name="InvalidSubmittedFormReasonIOS">

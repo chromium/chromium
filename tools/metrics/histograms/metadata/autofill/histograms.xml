@@ -5591,17 +5591,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="FormType" variants="AutofillFormType.Fillable"/>
 </histogram>
 
-<histogram name="Autofill.LabelInference.InferredLabelSource.AtSubmission2"
-    enum="InferredLabelSource" expires_after="2026-12-27">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs how/if the label of an input was derived. Emitted at form submission
-    for every field where the data the user entered matches some stored Autofill
-    data.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Leipzig.FillingAssistanceCategory"
     enum="AutofillCategoryResolvedFillingAssistance" expires_after="2026-11-29">
   <owner>koerber@chromium.org</owner>
