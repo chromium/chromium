@@ -543,7 +543,7 @@
       'ToTMacOfficial': {
         'mixins': [
           'chrome-tester-service-account',
-          'mac_default_x64',
+          'mac_15_x64',
           'chrome-swarming-pool',
         ],
         'test_suites': {
@@ -1016,7 +1016,7 @@
       'ai_wpt-mac-x64': {
         'mixins': [
           'chrome-swarming-pool',
-          'mac_default_x64',
+          'mac_15_x64',
           'mac_x64_ai_wpt_shards',
         ],
         'test_suites': {
@@ -1048,7 +1048,7 @@
       'model_validation-mac-x64': {
         'mixins': [
           'chrome-swarming-pool',
-          'mac_default_x64',
+          'mac_15_x64',
         ],
         'test_suites': {
            'isolated_scripts': 'model_validation_matrix_tests',
@@ -1169,7 +1169,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'mac_default_x64',
+          'mac_15_x64',
         ],
         'test_suites': {
            'gtest_tests': 'optimization_guide_desktop_gtests',
@@ -1280,7 +1280,7 @@
       'mac-x64-translatekit-builder': {
         'mixins': [
           'chrome-swarming-pool',
-          'mac_default_x64',
+          'mac_15_x64',
         ],
         'test_suites': {
            'isolated_scripts': 'translatekit_script_tests',

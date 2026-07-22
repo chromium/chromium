@@ -263,7 +263,7 @@ chromium_luci.configure_targets(
             "long_skylab_timeout": True,
             "mac_14_x64": True,
             "mac_default_arm64": True,
-            "mac_default_x64": True,
+            "mac_15_x64": True,
             "mac_toolchain": True,
             "mac_x64_ai_wpt_shards": True,
             "non-gce": True,

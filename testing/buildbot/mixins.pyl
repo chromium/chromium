@@ -596,6 +596,14 @@
       },
     },
   },
+  'mac_15_x64': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'x86-64',
+        'os': 'Mac-15',
+      },
+    },
+  },
   'mac_arm64_apple_m1_gpu_experimental': {
     'fail_if_unused': False,
     'swarming': {
@@ -668,14 +676,6 @@
     'swarming': {
       'dimensions': {
         'cpu': 'arm64',
-        'os': 'Mac-15|Mac-26',
-      },
-    },
-  },
-  'mac_default_x64': {
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
         'os': 'Mac-15|Mac-26',
       },
     },
