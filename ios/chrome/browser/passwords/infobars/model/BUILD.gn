@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "ios_chrome_password_saved_infobar_delegate.h",
+    "ios_chrome_password_saved_infobar_delegate.mm",
     "ios_chrome_save_password_infobar_delegate.h",
     "ios_chrome_save_password_infobar_delegate.mm",
   ]
@@ -21,6 +23,7 @@ source_set("model") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/passwords/infobars/public",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//services/metrics/public/cpp:metrics_cpp",
     "//ui/base",
   ]
@@ -28,7 +31,10 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ios_chrome_save_password_infobar_delegate_unittest.mm" ]
+  sources = [
+    "ios_chrome_password_saved_infobar_delegate_unittest.mm",
+    "ios_chrome_save_password_infobar_delegate_unittest.mm",
+  ]
   deps = [
     ":model",
     "//base",

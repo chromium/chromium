@@ -211,6 +211,7 @@ class InfoBarDelegate {
     AUTOFILL_AI_PRE_FETCH_FAILURE_INFOBAR_DELEGATE_IOS = 136,
     SIGNIN_QRCODE_INFOBAR_DELEGATE = 137,
     FORMS_AI_PRIVATE_INFERENCE_INFOBAR_DELEGATE_IOS = 138,
+    PASSWORD_SAVED_INFOBAR_DELEGATE_IOS = 139,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:InfoBarIdentifier)
 

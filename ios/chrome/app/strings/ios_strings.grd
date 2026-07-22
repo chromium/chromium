@@ -5650,6 +5650,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_PASSWORD_MOVE_CONFLICT_ACTION_SHEET_TITLE" desc="Action sheet title to inform the user that the password they want to move to their google account store already exists. [iOS only]">
         Password already exists
       </message>
+      <message name="IDS_IOS_PASSWORD_SAVED_INFOBAR_TITLE" desc="Title for the password saved confirmation infobar banner. [iOS only]">
+        Password saved
+      </message>
+      <message name="IDS_IOS_PASSWORD_SAVED_INFOBAR_VIEW_BUTTON" desc="Label for the action button on the password saved confirmation infobar to view the details of the saved password. [iOS only]">
+        View
+      </message>
       <message name="IDS_IOS_PASSWORD_SAVED_TO_ACCOUNT_SNACKBAR_MESSAGE" desc="Message briefly displayed at the bottom of the screen to inform the user that the password had successfully been moved to their google account store. [iOS only]">
         Password saved in your Google Account, <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
