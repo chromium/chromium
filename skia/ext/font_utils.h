@@ -9,11 +9,16 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypes.h"
 
+class SkData;
 class SkFont;
 class SkFontMgr;
 class SkTypeface;
 
 namespace skia {
+
+// OTS-transcodes/sanitizes the embedded font data stream.
+// Returns the pristine, normalized SkData on success, or nullptr on rejection.
+SK_API sk_sp<SkData> SanitizeTypefaceStream(sk_sp<const SkData> data);
 
 // Returns the platform specific SkFontMgr, which is a singleton.
 SK_API sk_sp<SkFontMgr> DefaultFontMgr();

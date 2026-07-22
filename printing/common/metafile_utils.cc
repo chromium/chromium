@@ -519,8 +519,8 @@ sk_sp<SkTypeface> DeserializeOopTypeface(SkStream& stream, void* ctx) {
 
   // Typeface not encountered before, expect it to be present in the stream.
   DCHECK(data_included);
-  sk_sp<SkTypeface> typeface =
-      SkTypeface::MakeDeserialize(&stream, skia::DefaultFontMgr());
+  sk_sp<SkTypeface> typeface = SkTypeface::MakeDeserialize(
+      &stream, skia::DefaultFontMgr(), &skia::SanitizeTypefaceStream);
   context->emplace(id, typeface);
   return typeface;
 }

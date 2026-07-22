@@ -497,6 +497,7 @@ component("skia") {
     "//base/allocator/partition_allocator:raw_ptr",
     "//third_party/libwebp",
     "//third_party/libwebp:libwebp_webp",
+    "//third_party/ots",
     "//ui/base:features",
   ]
   public_deps = [
@@ -1216,6 +1217,7 @@ test("skia_unittests") {
   sources = [
     "ext/codec_utils_unittest.cc",
     "ext/convolver_unittest.cc",
+    "ext/font_utils_unittest.cc",
     "ext/geometry_unittest.cc",
     "ext/image_operations_unittest.cc",
     "ext/platform_canvas_unittest.cc",

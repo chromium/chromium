@@ -5,8 +5,12 @@
 #include "skia/ext/font_utils.h"
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "skia/ext/codec_utils.h"
+#include "third_party/ots/src/include/opentype-sanitiser.h"
+#include "third_party/ots/src/include/ots-memory-stream.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -146,6 +150,30 @@ SkFont DefaultFont() {
 void InitializeFontRendering() {
   // for Fontations and DirectWrite to process emojis
   skia::EnsurePNGDecoderRegistered();
+}
+
+sk_sp<SkData> SanitizeTypefaceStream(sk_sp<const SkData> data) {
+  if (!data || data->isEmpty()) {
+    return nullptr;
+  }
+
+  // Prevent decompression bombs / extremely large font exploits.
+  constexpr size_t kMaxDecompressedSize = 128 * 1024 * 1024;
+  if (data->size() > kMaxDecompressedSize) {
+    DLOG(ERROR) << "[Security] Font stream is too large to sanitize.";
+    return nullptr;
+  }
+
+  // Setup OTS context and expanding memory stream.
+  ots::OTSContext context;
+  ots::ExpandingMemoryStream output_stream(data->size(), kMaxDecompressedSize);
+
+  if (!context.Process(&output_stream, data->bytes(), data->size())) {
+    DLOG(ERROR) << "[Security] OTS rejected malformed embedded font stream.";
+    return nullptr;
+  }
+
+  return SkData::MakeWithCopy(output_stream.get(), output_stream.Tell());
 }
 
 }  // namespace skia
