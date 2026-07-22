@@ -1,0 +1,32 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+option features.field_presence = IMPLICIT;
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.proto";
+option java_outer_classname = "AppInvocationProto";
+
+// Next index: 5
+message AppInvocation {
+  // The user id representing the user that the application should be launched
+  // as. On Android, this is the ID returned by UserHandle.getIdentifier().
+  int32 user_id = 1;
+
+  oneof data {
+    // The package name of the application to be launched.
+    string package_name = 2;
+
+    // The URI of the intent to be launched.
+    string uri = 3;
+  }
+
+  // An unique launch ID is used to identify the operation.
+  int64 launch_id = 4;
+}

@@ -7,11 +7,20 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [
+    "action_invocation.proto",
+    "app_invocation.proto",
+    "display_info.proto",
+    "exo_bootstrap.proto",
     "input_capabilities.proto",
     "input_event.proto",
     "keyboard_input_service.proto",
+    "launch_info.proto",
     "mouse_input_service.proto",
+    "resolution_info.proto",
+    "service_identifier.proto",
     "system_configuration.proto",
     "touch_input_service.proto",
+    "transport_options.proto",
+    "uid.proto",
   ]
 }

@@ -1,0 +1,52 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+option features.field_presence = IMPLICIT;
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.proto";
+option java_outer_classname = "DisplayInfoProto";
+
+// Next ID: 6
+message DisplayInfo {
+  enum DisplayOrientation {
+    DEGREES_0 = 0;
+    DEGREES_90 = 1;
+    DEGREES_180 = 2;
+    DEGREES_270 = 3;
+  }
+
+  // The width (in pixels) of the virtual display used for streaming
+  // application.
+  int32 width_px = 1;
+
+  // The height (in pixels) of the virtual display used for streaming
+  // application.
+  int32 height_px = 2;
+
+  // The orientation, the clockwise rotation degrees of the virtual display
+  // used for streaming application, available values below:
+  // DEGREES_0: the natural orientation based on the width_px and height_px
+  //   It will be portrait if width_px < height_px, otherwise it is landscape.
+  // DEGREES_90, DEGREES_180, DEGREES_270: 90, 180, 270 degrees clockwise
+  //   rotation.
+  DisplayOrientation orientation = 3;
+
+  // The device's density.
+  int32 dpi = 4;
+
+  // If set to true, it means the size is controlled by the user. Hence,
+  // if the app screen is rotated on the phone (e.g. when an always-landscape
+  // game is launched or a video is played in full screen in Youtube), no
+  // automatic resizing is going to happen on the guest device.
+  // If set to false, the user cannot change the size of the window. In this
+  // case, the window is auto-resized to landscape when the app goes to
+  // landscape mode.
+  bool resizable = 5;
+}

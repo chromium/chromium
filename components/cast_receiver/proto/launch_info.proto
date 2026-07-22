@@ -1,0 +1,70 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+import "components/cast_receiver/proto/action_invocation.proto";
+import "components/cast_receiver/proto/app_invocation.proto";
+import "components/cast_receiver/proto/display_info.proto";
+import "components/cast_receiver/proto/uid.proto";
+
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.proto";
+option java_outer_classname = "LaunchInfoProto";
+
+// Next index: 8
+message LaunchInfo {
+  enum LaunchType {
+    LAUNCH_INVALID = 0;
+    LAUNCH_NOTIFICATION = 1;
+    LAUNCH_APPLICATION = 2;
+    LAUNCH_UNDETERMINED = 3;
+  }
+
+  UID uid = 1;
+
+  oneof data {
+    // Deprecated field ActionInvocation is unused as we launch notifications
+    // via the notification service after the WebRTC connection is set up.
+    ActionInvocation action_invocation = 2 [deprecated = true];
+
+    AppInvocation app_invocation = 3;
+  }
+
+  DisplayInfo display_info = 4;
+  LaunchType launch_type = 5;
+
+  // True if any accessibility feature is enabled on CrOS e.g. ChromeVox,
+  // Select-to-Speak, etc.
+  bool any_accessibility_features_enabled = 6;
+
+  // New field containing client details.
+  ClientInfo client_info = 7;
+}
+
+// Information about the WebRTC client (Receiver) initiating the launch.
+// Next ID: 4
+message ClientInfo {
+  enum BootstrappingSystem {
+    SYSTEM_TYPE_UNKNOWN = 0;
+    SYSTEM_TYPE_WEBCLIENT = 1;
+    SYSTEM_TYPE_DEVICE_LINK = 2;
+    SYSTEM_TYPE_CHROME_OS = 3;
+    SYSTEM_TYPE_CAST = 4;
+    // Add other types as needed
+  }
+
+  // The type of the client device/platform.
+  BootstrappingSystem system = 1;
+
+  // The OS version of the client.
+  string os_version = 2;
+
+  // The user agent string of the client.
+  string user_agent = 3;
+}

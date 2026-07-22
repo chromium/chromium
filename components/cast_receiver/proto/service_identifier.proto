@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+import "components/cast_receiver/proto/uid.proto";
+
+option features.field_presence = IMPLICIT;
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.proto";
+option java_outer_classname = "ServiceIdentifierProto";
+
+// Next ID: 3
+message ServiceIdentifier {
+  // The UID of the endpoint that owns this service.
+  UID uid = 1;
+
+  // The name of the service. This name uniquely identifies an Exo service
+  // interface that can be used to communicate with this service.
+  string service_name = 2;
+}

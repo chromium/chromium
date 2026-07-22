@@ -1,0 +1,78 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+import "components/cast_receiver/proto/input_capabilities.proto";
+import "components/cast_receiver/proto/resolution_info.proto";
+import "components/cast_receiver/proto/uid.proto";
+import "components/cast_receiver/proto/launch_info.proto";
+
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.proto";
+option java_outer_classname = "ExoBootstrapProto";
+
+// Wrapper message for all Exo bootstrap communication.
+message ExoBootstrapMessage {
+  // The bootstrap information containing device capabilities.
+  ExoBootstrapInfo bootstrap_info = 1;
+
+  // Unique session identifier for the mirroring session.
+  int64 session_id = 2;
+
+  // The action to perform during bootstrapping.
+  BootstrapAction bootstrap_action = 3;
+
+  // Error information if bootstrapping failed.
+  BootstrapError bootstrap_error = 4;
+}
+
+// Information about the device's capabilities and resolutions.
+message ExoBootstrapInfo {
+  // Unique identifier of the device.
+  UID uid = 1;
+
+  // List of supported resolutions/capabilities by the device.
+  repeated ResolutionInfo resolutions = 2;
+
+  // Supported input simulation capabilities (Touch, Keyboard, Mouse).
+  InputCapabilities input_capabilities = 3;
+}
+
+// Action message to trigger bootstrap events.
+message BootstrapAction {
+  // The bootstrap action type.
+  enum Action {
+    UNKNOWN_ACTION = 0;
+    // Start the bootstrap negotiation.
+    START_BOOTSTRAP = 1;
+  }
+  // The action to perform.
+  Action action = 1;
+
+  // Information needed to launch the streaming app.
+  LaunchInfo launch_info = 2;
+
+  // Version of the bootstrap protocol.
+  int32 version = 3;
+}
+
+// Error message if bootstrapping fails.
+message BootstrapError {
+  // The type of bootstrap error.
+  enum ErrorType {
+    UNKNOWN_ERROR = 0;
+    // Failed because there is no CDM (Companion Device Manager) association.
+    NO_CDM_ASSOCIATION_ERROR = 1;
+  }
+  // Detailed debug error message.
+  string message = 1;
+
+  // The error type.
+  ErrorType error_type = 2;
+}

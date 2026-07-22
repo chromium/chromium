@@ -8,7 +8,9 @@ package cast_receiver;
 
 option optimize_for = LITE_RUNTIME;
 
-option features.field_presence = IMPLICIT;
+import "google/protobuf/cpp_features.proto";
+
+option features.(pb.cpp).string_type = VIEW;
 option java_multiple_files = true;
 option java_package = "com.google.pixel.exo.proto";
 option java_outer_classname = "InputCapabilitiesProto";

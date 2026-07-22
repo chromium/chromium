@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+import "components/cast_receiver/proto/service_identifier.proto";
+import "components/cast_receiver/proto/transport_options.proto";
+
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.proto";
+option java_outer_classname = "ResolutionInfoProto";
+
+// Next ID: 3
+message ResolutionInfo {
+  ServiceIdentifier service_identifier = 1;
+
+  // If this field is omitted, it means that the service exists but is
+  // not yet reachable. Endpoints should re-query the ResolutionService at a
+  // later time once the transport has been established.
+  repeated TransportOptions transport_options = 2;
+}

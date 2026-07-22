@@ -1,0 +1,35 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2023";
+
+package cast_receiver;
+
+option optimize_for = LITE_RUNTIME;
+
+import "components/cast_receiver/proto/uid.proto";
+
+option features.field_presence = IMPLICIT;
+option java_multiple_files = true;
+option java_package = "com.google.pixel.exo.proto";
+option java_outer_classname = "TransportOptionsProto";
+
+// Next ID: 3
+message TransportOptions {
+  reserved 1;
+
+  DataChannelOptions data_channel_options = 2;
+}
+
+// Next ID: 4
+message DataChannelOptions {
+  reserved 2;
+
+  // Data channel label. Each service is supposed to use
+  // a unique data channel label and sharing is not allowed.
+  string label = 1;
+
+  // The UID of the endpoint on receiver side.
+  UID receiver_uid = 3;
+}
