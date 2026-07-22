@@ -26,9 +26,15 @@ BASE_FEATURE_PARAM(size_t,
 
 BASE_FEATURE_PARAM(int,
                    kMaxTabGroups,
-                   &kContextHub,
+                   &browser::context_hub::mojom::kAutoTabGroups,
                    "max_tab_groups",
                    50);
+
+BASE_FEATURE_PARAM(size_t,
+                   kMaxTabGroupChatHistoryTurns,
+                   &browser::context_hub::mojom::kAutoTabGroups,
+                   "max_tab_group_chat_history_turns",
+                   20);
 
 BASE_FEATURE(kContextHubDatabaseStorage, base::FEATURE_DISABLED_BY_DEFAULT);
 
