@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_action/page_action_observer.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/tabs/public/tab_interface.h"
@@ -19,9 +20,11 @@ DEFINE_USER_DATA(OmniboxAutofillPageActionController);
 OmniboxAutofillPageActionController::OmniboxAutofillPageActionController(
     tabs::TabInterface& tab_interface,
     page_actions::PageActionController& page_action_controller)
-    : tab_interface_(tab_interface),
+    : page_actions::PageActionObserver(kActionAutofillPayment),
+      tab_interface_(tab_interface),
       page_action_controller_(page_action_controller),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+  RegisterAsPageActionObserver(*page_action_controller_);
 }
 
 OmniboxAutofillPageActionController::~OmniboxAutofillPageActionController() =
@@ -33,10 +36,8 @@ OmniboxAutofillPageActionController* OmniboxAutofillPageActionController::From(
   return Get(tab.GetUnownedUserDataHost());
 }
 
-void OmniboxAutofillPageActionController::Show() {
-  page_action_controller_->Show(kActionAutofillPayment);
-  page_action_controller_->ShowSuggestionChip(kActionAutofillPayment);
-
+void OmniboxAutofillPageActionController::OnPageActionChipShown(
+    const page_actions::PageActionState& page_action) {
   if (BrowserWindowInterface* browser_window =
           tab_interface_->GetBrowserWindowInterface()) {
     if (BrowserUserEducationInterface* user_education =
@@ -45,6 +46,11 @@ void OmniboxAutofillPageActionController::Show() {
           feature_engagement::kIPHAutofillOmniboxPaymentChipFeature);
     }
   }
+}
+
+void OmniboxAutofillPageActionController::Show() {
+  page_action_controller_->Show(kActionAutofillPayment);
+  page_action_controller_->ShowSuggestionChip(kActionAutofillPayment);
 }
 
 void OmniboxAutofillPageActionController::Hide() {

@@ -64,6 +64,7 @@ source_set("payments") {
     ]
     public_deps += [
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/page_action",
       "//chrome/browser/ui/webauthn",
       "//components/autofill/core/browser:legal_message_line",
       "//components/signin/public/identity_manager",
