@@ -700,6 +700,7 @@ ci.thin_tester(
         mixins = [
             "mac_arm64_apple_m2_retina_gpu_stable",
             "puppet_production",
+            "isolate_profile_data",
         ],
     ),
     targets_settings = targets.settings(

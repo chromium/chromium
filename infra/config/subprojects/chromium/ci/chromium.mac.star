@@ -606,6 +606,7 @@ ci.thin_tester(
         ],
         mixins = [
             "mac_26_vm_optional",
+            "isolate_profile_data",
         ],
         per_test_modifications = {
             # TODO(crbug.com/436628295): test fails on VM
