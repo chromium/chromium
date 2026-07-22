@@ -214,8 +214,8 @@ enum class VoiceOverOverrideForTesting {
           : delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK);
   [self.consumer setButtonText:base::SysUTF16ToNSString(buttonLabelText)];
 
-  UIImage* iconImage = DefaultSymbolTemplateWithPointSize(
-      kCreditCardSymbol, kInfobarSymbolPointSize);
+  UIImage* iconImage =
+      SymbolTemplateWithPointSize(SymbolCreditCard, kInfobarSymbolPointSize);
   [self.consumer setIconImage:iconImage];
 
   [self.consumer

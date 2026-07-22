@@ -57,9 +57,9 @@ TEST_F(TranslateInfobarBannerOverlayMediatorTest, SetUpConsumer) {
       l10n_util::GetNSString(IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_ACTION),
       consumer.buttonText);
   EXPECT_NSEQ(subtitle, consumer.subtitleText);
-  EXPECT_NSEQ(CustomSymbolTemplateWithPointSize(kTranslateSymbol,
-                                                kInfobarSymbolPointSize),
-              consumer.iconImage);
+  EXPECT_NSEQ(
+      SymbolTemplateWithPointSize(SymbolTranslate, kInfobarSymbolPointSize),
+      consumer.iconImage);
 }
 
 // Ensures that calling the -bannerInfobarButtonWasPressed: after the infobar

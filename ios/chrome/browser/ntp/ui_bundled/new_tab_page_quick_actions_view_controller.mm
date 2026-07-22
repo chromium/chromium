@@ -68,18 +68,18 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
                               constraintEqualToConstant:kQuickActionsHeight] ]];
   if (IsAimEnabledInNtp()) {
     _aimButton =
-        [self createButtonWithSymbolName:kMagnifyingglassSparkSymbol
-                                   title:l10n_util::GetNSString(
-                                             IDS_IOS_NTP_QUICK_ACTIONS_AIM)];
+        [self createButtonWithSymbol:SymbolMagnifyingglassSpark
+                               title:l10n_util::GetNSString(
+                                         IDS_IOS_NTP_QUICK_ACTIONS_AIM)];
     [_buttonStackView addArrangedSubview:_aimButton];
     [self.layoutGuideCenter referenceView:_aimButton
                                 underName:kNTPAIMButtonGuide];
   }
 
-  _incognitoButton = [self
-      createButtonWithSymbolName:kIncognitoSymbol
-                           title:l10n_util::GetNSString(
-                                     IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)];
+  _incognitoButton =
+      [self createButtonWithSymbol:SymbolIncognito
+                             title:l10n_util::GetNSString(
+                                       IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)];
   [_buttonStackView addArrangedSubview:_incognitoButton];
 
   [self setupQuickActionsButtonsAccessibility];
@@ -117,19 +117,18 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
 }
 
 // Creates a new quick action button with the given `icon`.
-- (UIButton*)createButtonWithSymbolName:(NSString*)symbolName {
-  return [self createButtonWithSymbolName:symbolName title:nil];
+- (UIButton*)createButtonWithSymbol:(Symbol)symbol {
+  return [self createButtonWithSymbol:symbol title:nil];
 }
 
 // Creates a new quick action button with the given `icon` and title.
-- (UIButton*)createButtonWithSymbolName:(NSString*)symbolName
-                                  title:(NSString*)title {
+- (UIButton*)createButtonWithSymbol:(Symbol)symbol title:(NSString*)title {
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.background.backgroundColor = ButtonBackgroundColor(nil);
   configuration.background.cornerRadius = kButtonCornerRadius;
   configuration.baseForegroundColor = [UIColor colorNamed:kGrey700Color];
-  UIImage* icon = CustomSymbolWithPointSize(symbolName, kSymbolPointSize);
+  UIImage* icon = SymbolWithPointSize(symbol, kSymbolPointSize);
   configuration.image = MakeSymbolMonochrome(icon);
 
   if (title) {

@@ -106,8 +106,8 @@
       setButtonText:base::SysUTF16ToNSString(delegate->GetButtonLabel(
                         ConfirmInfoBarDelegate::BUTTON_OK))];
 
-  UIImage* iconImage = DefaultSymbolTemplateWithPointSize(
-      kCreditCardSymbol, kInfobarSymbolPointSize);
+  UIImage* iconImage =
+      SymbolTemplateWithPointSize(SymbolCreditCard, kInfobarSymbolPointSize);
   [self.consumer setIconImage:iconImage];
 
   [self.consumer

@@ -82,10 +82,9 @@
   NSString* buttonText = l10n_util::GetNSString(IDS_IOS_EDIT_ACTION_TITLE);
 
   UIImage* iconImage =
-      isCameraAccessible ? CustomSymbolWithPointSize(kCameraFillSymbol,
-                                                     kInfobarSymbolPointSize)
-                         : DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
-                                                      kInfobarSymbolPointSize);
+      isCameraAccessible
+          ? SymbolWithPointSize(SymbolCameraFill, kInfobarSymbolPointSize)
+          : SymbolWithPointSize(SymbolMicrophoneFill, kInfobarSymbolPointSize);
 
   [self.consumer setTitleText:titleText];
   [self.consumer setButtonText:buttonText];

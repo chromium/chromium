@@ -168,10 +168,9 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
           configurationWithPointSize:kIncognitoSymbolImagePointSize
                               weight:UIImageSymbolWeightLight
                                scale:UIImageSymbolScaleMedium];
-      incognitoImage =
-          SymbolWithPalette(CustomSymbolWithConfiguration(
-                                kIncognitoCircleFillSymbol, configuration),
-                            LargeIncognitoPalette());
+      incognitoImage = SymbolWithPalette(
+          SymbolWithConfiguration(SymbolIncognitoCircleFill, configuration),
+          LargeIncognitoPalette());
 
       UIImageView* incognitoImageView =
           [[UIImageView alloc] initWithImage:incognitoImage];

@@ -99,8 +99,8 @@
                                      [self bannerSubtitleText]]];
   [self.consumer setButtonText:[self infobarButtonText]];
 
-  UIImage* iconImage = CustomSymbolTemplateWithPointSize(
-      kTranslateSymbol, kInfobarSymbolPointSize);
+  UIImage* iconImage =
+      SymbolTemplateWithPointSize(SymbolTranslate, kInfobarSymbolPointSize);
   [self.consumer setIconImage:iconImage];
   [self.consumer setPresentsModal:YES];
   [self.consumer setTitleText:[self bannerTitleText]];

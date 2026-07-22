@@ -79,8 +79,8 @@
 
   // TODO(crbug.com/509894544): Use a dedicated icon in case when
   // `delegate->DisplayPasswordErrorIcon()` is true.
-  [consumer setIconImage:DefaultSymbolTemplateWithPointSize(
-                             kSyncErrorSymbol, kInfobarSymbolPointSize)];
+  [consumer setIconImage:SymbolTemplateWithPointSize(SymbolSyncError,
+                                                     kInfobarSymbolPointSize)];
   [consumer setIconBackgroundColor:[UIColor colorNamed:kRed500Color]];
   [consumer setIconImageTintColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   [consumer setUseIconBackgroundTint:YES];

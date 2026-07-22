@@ -76,13 +76,12 @@
 
   // Default to the info icon.
   UIImage* icon =
-      DefaultSymbolWithPointSize(kInfoCircleSymbol, kInfobarSymbolPointSize);
+      SymbolWithPointSize(SymbolInfoCircle, kInfobarSymbolPointSize);
 
   // Use the shield icon only for the shield type on branded builds.
   if (delegate->GetIconType() == EnhancedSafeBrowsingIconType::kShield) {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-    icon =
-        CustomSymbolWithPointSize(kGoogleShieldSymbol, kInfobarSymbolPointSize);
+    icon = SymbolWithPointSize(SymbolGoogleShield, kInfobarSymbolPointSize);
 #endif
   }
 

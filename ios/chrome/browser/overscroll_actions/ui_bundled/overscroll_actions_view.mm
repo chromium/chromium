@@ -257,19 +257,19 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     [_selectionCircleCroppingLayer addSublayer:_selectionCircleLayer];
 
     _addTabActionImageView = [[UIImageView alloc] init];
-    _addTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
-        kPlusSymbol, kOverScrollSymbolPointSize);
+    _addTabActionImageView.image =
+        SymbolTemplateWithPointSize(SymbolPlus, kOverScrollSymbolPointSize);
     [_addTabActionImageView sizeToFit];
     [self addSubview:_addTabActionImageView];
     _reloadActionImageView = [[UIImageView alloc] init];
-    _reloadActionImageView.image = CustomSymbolTemplateWithPointSize(
-        kArrowClockWiseSymbol, kOverScrollSymbolPointSize);
+    _reloadActionImageView.image = SymbolTemplateWithPointSize(
+        SymbolArrowClockWise, kOverScrollSymbolPointSize);
     [_reloadActionImageView sizeToFit];
     [self addSubview:_reloadActionImageView];
 
     _closeTabActionImageView = [[UIImageView alloc] init];
-    _closeTabActionImageView.image = DefaultSymbolTemplateWithPointSize(
-        kXMarkSymbol, kOverScrollSymbolPointSize);
+    _closeTabActionImageView.image =
+        SymbolTemplateWithPointSize(SymbolXMark, kOverScrollSymbolPointSize);
     [_closeTabActionImageView sizeToFit];
     [self addSubview:_closeTabActionImageView];
 

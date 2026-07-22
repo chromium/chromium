@@ -29,8 +29,8 @@
 
     UIButtonConfiguration* configuration =
         [UIButtonConfiguration plainButtonConfiguration];
-    UIImage* icon = DefaultSymbolTemplateWithPointSize(
-        kMenuSymbol, ntp_home::kNTPMenuButtonIconSize);
+    UIImage* icon = SymbolTemplateWithPointSize(
+        SymbolMenu, ntp_home::kNTPMenuButtonIconSize);
     configuration.image = icon;
     configuration.background.cornerRadius =
         ntp_home::kNTPMenuButtonCornerRadius;

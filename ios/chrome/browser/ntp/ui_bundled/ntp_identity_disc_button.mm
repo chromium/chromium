@@ -111,8 +111,8 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
 #pragma mark - UserAccountImageUpdateDelegate
 
 - (void)setSignedOutAccountImage {
-  _identityDiscImage = DefaultSymbolTemplateWithPointSize(
-      kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconSize);
+  _identityDiscImage = SymbolTemplateWithPointSize(
+      SymbolPersonCropCircle, ntp_home::kSignedOutIdentityIconSize);
 
   _isSignedIn = NO;
 
@@ -275,8 +275,8 @@ UIColor* AccountParticleDiscBadgeBackgroundColor(UIUserInterfaceStyle style) {
 // constraints.
 - (void)setIdentityDiscErrorBadge {
   _accountDiscParticleBadgeImageView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kErrorCircleFillSymbol,
-                                               kErrorSymbolPointSize)];
+      initWithImage:SymbolWithPointSize(SymbolErrorCircleFill,
+                                        kErrorSymbolPointSize)];
   _accountDiscParticleBadgeImageView.translatesAutoresizingMaskIntoConstraints =
       NO;
   _accountDiscParticleBadgeImageView.tintColor =

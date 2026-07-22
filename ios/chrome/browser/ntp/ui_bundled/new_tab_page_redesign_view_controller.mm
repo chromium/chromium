@@ -792,7 +792,7 @@ constexpr CGFloat kHintLabelYOffset = -1.0;
     _plusButton.accessibilityLabel = l10n_util::GetNSString(
         IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL);
     [_plusButton
-        setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
+        setImage:SymbolWithPointSize(SymbolPlus, kSymbolActionPointSize)
         forState:UIControlStateNormal];
     [_plusButton addTarget:self.NTPShortcutsHandler
                     action:@selector(openMultimodalActionsMenu)

@@ -1040,8 +1040,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
 
-  UIImage* icon = DefaultSymbolTemplateWithPointSize(
-      kPencilSymbol, ntp_home::kNTPMenuButtonIconSize);
+  UIImage* icon = SymbolTemplateWithPointSize(SymbolPencil,
+                                              ntp_home::kNTPMenuButtonIconSize);
   configuration.image = icon;
   configuration.background.cornerRadius = ntp_home::kNTPMenuButtonCornerRadius;
   customizationMenuButton.configuration = configuration;
@@ -1358,7 +1358,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.plusButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL);
   [self.plusButton
-      setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
+      setImage:SymbolWithPointSize(SymbolPlus, kSymbolActionPointSize)
       forState:UIControlStateNormal];
   [self.plusButton addTarget:self.NTPShortcutsHandler
                       action:@selector(openMultimodalActionsMenu)
