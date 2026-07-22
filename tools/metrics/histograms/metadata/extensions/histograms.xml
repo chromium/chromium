@@ -4430,6 +4430,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Settings.DefaultPinningToggled" enum="Boolean"
+    expires_after="2027-01-01">
+  <owner>evasu@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Emitted whenever the user changes the state of the &quot;Pin new
+    extensions&quot; toggle on chrome://extensions. Records the new boolean
+    value of the preference.
+  </summary>
+</histogram>
+
 <histogram
     name="Extensions.SettingsOverridden.BackToGoogleNtpOverriddenDialogResult"
     enum="SettingsOverriddenDialogResult" expires_after="2026-11-15">

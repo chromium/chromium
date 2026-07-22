@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_functions.h"
@@ -1763,6 +1764,31 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateDevMode) {
     EXPECT_TRUE(profile_info->in_developer_mode);
     EXPECT_FALSE(profile_info->is_developer_mode_controlled_by_policy);
   }
+}
+
+TEST_F(DeveloperPrivateApiUnitTest,
+       DeveloperPrivateToggleExtensionsPinnedByDefault) {
+  base::HistogramTester histograms;
+  auto function1 = base::MakeRefCounted<
+      api::DeveloperPrivateUpdateProfileConfigurationFunction>();
+  base::ListValue args1 = base::ListValue().Append(
+      base::DictValue().Set("extensionsPinnedByDefault", false));
+  EXPECT_TRUE(RunFunction(function1, args1)) << function1->GetError();
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kExtensionsPinnedByDefault));
+  histograms.ExpectBucketCount("Extensions.Settings.DefaultPinningToggled",
+                               false, 1);
+
+  auto function2 = base::MakeRefCounted<
+      api::DeveloperPrivateUpdateProfileConfigurationFunction>();
+  base::ListValue args2 = base::ListValue().Append(
+      base::DictValue().Set("extensionsPinnedByDefault", true));
+  EXPECT_TRUE(RunFunction(function2, args2)) << function2->GetError();
+  EXPECT_TRUE(
+      profile()->GetPrefs()->GetBoolean(prefs::kExtensionsPinnedByDefault));
+  histograms.ExpectBucketCount("Extensions.Settings.DefaultPinningToggled",
+                               true, 1);
+  histograms.ExpectTotalCount("Extensions.Settings.DefaultPinningToggled", 2);
 }
 
 TEST_F(DeveloperPrivateApiUnitTest, LoadUnpackedFailsWithoutDevMode) {

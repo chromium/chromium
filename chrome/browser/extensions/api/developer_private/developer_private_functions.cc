@@ -600,6 +600,8 @@ DeveloperPrivateUpdateProfileConfigurationFunction::Run() {
   if (update.extensions_pinned_by_default) {
     profile->GetPrefs()->SetBoolean(prefs::kExtensionsPinnedByDefault,
                                     *update.extensions_pinned_by_default);
+    base::UmaHistogramBoolean("Extensions.Settings.DefaultPinningToggled",
+                              *update.extensions_pinned_by_default);
   }
 
   if (update.is_mv2_deprecation_notice_dismissed.value_or(false)) {
