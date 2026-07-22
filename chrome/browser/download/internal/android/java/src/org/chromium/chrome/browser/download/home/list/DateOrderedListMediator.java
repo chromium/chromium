@@ -124,6 +124,7 @@ class DateOrderedListMediator implements BackPressHandler {
     private final ListItemModel mModel;
     private final DeleteController mDeleteController;
     private final RenameController mRenameController;
+    private final Callback<OfflineItem> mOpenWithHandler;
     private final WarningBypassDialogController mWarningBypassDialogController;
 
     private final OfflineItemSource mSource;
@@ -195,6 +196,7 @@ class DateOrderedListMediator implements BackPressHandler {
             ShareController shareController,
             DeleteController deleteController,
             RenameController renameController,
+            Callback<OfflineItem> openWithHandler,
             WarningBypassDialogController warningBypassDialogController,
             SelectionDelegate<ListItem> selectionDelegate,
             DownloadManagerUiConfig config,
@@ -222,6 +224,7 @@ class DateOrderedListMediator implements BackPressHandler {
         mModel = model;
         mDeleteController = deleteController;
         mRenameController = renameController;
+        mOpenWithHandler = openWithHandler;
         mWarningBypassDialogController = warningBypassDialogController;
         mSelectionDelegate = selectionDelegate;
         mUiConfig = config;
@@ -262,6 +265,7 @@ class DateOrderedListMediator implements BackPressHandler {
         mModel.getProperties().set(ListProperties.PROVIDER_FAVICON, this::getFavicon);
         mModel.getProperties().set(ListProperties.CALLBACK_SELECTION, this::onSelection);
         mModel.getProperties().set(ListProperties.CALLBACK_RENAME, this::onRenameItem);
+        mModel.getProperties().set(ListProperties.CALLBACK_OPEN_WITH, this::onOpenWithItem);
         mModel.getProperties()
                 .set(
                         ListProperties.CALLBACK_SHOW_WARNING_BYPASS_DIALOG,
@@ -409,6 +413,12 @@ class DateOrderedListMediator implements BackPressHandler {
                 (newName, renameCallback) -> {
                     mProvider.renameItem(assumeNonNull(item.id), newName, renameCallback);
                 });
+    }
+
+    private void onOpenWithItem(OfflineItem item) {
+        if (mOpenWithHandler != null) {
+            mOpenWithHandler.onResult(item);
+        }
     }
 
     private void onShowWarningBypassDialog(OfflineItem item) {

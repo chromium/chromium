@@ -81,6 +81,10 @@ public interface ListProperties {
     WritableObjectPropertyKey<Callback<OfflineItem>> CALLBACK_RENAME =
             new WritableObjectPropertyKey<>();
 
+    /** The callback for when a UI action should open a {@link OfflineItem} with external apps. */
+    WritableObjectPropertyKey<Callback<OfflineItem>> CALLBACK_OPEN_WITH =
+            new WritableObjectPropertyKey<>();
+
     /**
      * The callback for when a UI action should display a {@link DownloadWarningBypassDialog} for a
      * {@link OfflineItem} that is displayed as dangerous (has a warning from Safe Browsing).
@@ -119,6 +123,7 @@ public interface ListProperties {
                 CALLBACK_SHARE,
                 CALLBACK_REMOVE,
                 CALLBACK_RENAME,
+                CALLBACK_OPEN_WITH,
                 PROVIDER_VISUALS,
                 PROVIDER_FAVICON,
                 CALLBACK_SELECTION,

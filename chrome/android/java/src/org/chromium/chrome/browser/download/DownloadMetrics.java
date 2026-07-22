@@ -25,6 +25,7 @@ public class DownloadMetrics {
         OpenWithExternalAppsSource.OPEN_FILE,
         OpenWithExternalAppsSource.DOWNLOAD_PROGRESS_MESSAGE,
         OpenWithExternalAppsSource.APP_MENU,
+        OpenWithExternalAppsSource.DOWNLOAD_HOME_MENU,
         OpenWithExternalAppsSource.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -32,8 +33,9 @@ public class DownloadMetrics {
         int OPEN_FILE = 0;
         int DOWNLOAD_PROGRESS_MESSAGE = 1;
         int APP_MENU = 2;
+        int DOWNLOAD_HOME_MENU = 3;
 
-        int NUM_ENTRIES = 3;
+        int NUM_ENTRIES = 4;
     }
 
     /**

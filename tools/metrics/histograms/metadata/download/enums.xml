@@ -663,6 +663,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Open file"/>
   <int value="1" label="Download progress message"/>
   <int value="2" label="App menu"/>
+  <int value="3" label="Download home menu"/>
 </enum>
 
 <enum name="PolicyWarningDialogEvent">

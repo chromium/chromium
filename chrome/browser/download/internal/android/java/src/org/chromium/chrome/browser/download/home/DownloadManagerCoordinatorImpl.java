@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
+import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.Closeable;
@@ -73,6 +74,7 @@ class DownloadManagerCoordinatorImpl
             Tracker tracker,
             FaviconProvider faviconProvider,
             OfflineContentProvider provider,
+            Callback<OfflineItem> openWithHandler,
             DiscardableReferencePool discardableReferencePool) {
         mActivity = activity;
         mSettingsNavigation = settingsNavigation;
@@ -91,6 +93,7 @@ class DownloadManagerCoordinatorImpl
                         modalDialogManager,
                         helpPageLauncher,
                         faviconProvider,
+                        openWithHandler,
                         discardableReferencePool);
         mToolbarCoordinator =
                 new ToolbarCoordinator(

@@ -273,6 +273,7 @@ public class DownloadActivityV2Test {
                         mTracker,
                         faviconProvider,
                         mStubbedOfflineContentProvider,
+                        /* openWithHandler= */ null,
                         mDiscardableReferencePool);
         sActivity.setContentView(mDownloadCoordinator.getView());
         BackPressHelper.create(

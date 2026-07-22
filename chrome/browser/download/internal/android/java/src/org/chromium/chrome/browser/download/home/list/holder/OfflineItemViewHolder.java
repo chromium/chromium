@@ -52,10 +52,12 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     private @Nullable Runnable mShareCallback;
     private @Nullable Runnable mDeleteCallback;
     private @Nullable Runnable mRenameCallback;
+    private @Nullable Runnable mOpenWithCallback;
     private @Nullable Runnable mShowWarningBypassDialogCallback;
 
     // flag to hide rename list menu option for offline pages
     private boolean mCanRename;
+    private boolean mCanOpenWith;
     private boolean mCanShare;
     private boolean mShowRemoveFromHistory;
     private boolean mCanShowWarningBypassDialog;
@@ -76,6 +78,10 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     public void bind(PropertyModel properties, ListItem item) {
         OfflineItem offlineItem = ((ListItem.OfflineItemListItem) item).item;
         mCanRename = offlineItem.canRename;
+        mCanOpenWith =
+                offlineItem.mimeType != null
+                        && offlineItem.mimeType.equals(
+                                org.chromium.ui.base.MimeTypeUtils.PDF_MIME_TYPE);
         mCanShare = UiUtils.canShare(offlineItem);
         mShowRemoveFromHistory = DownloadUtils.isBlockedSensitiveDownload(offlineItem);
         mCanShowWarningBypassDialog = canShowWarningBypassDialog(offlineItem);
@@ -150,23 +156,31 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     private void bindMenuButtonCallbacks(PropertyModel properties, OfflineItem offlineItem) {
         if (mMore == null) return;
 
-        if (mCanShare) {
-            mShareCallback =
-                    () -> properties.get(ListProperties.CALLBACK_SHARE).onResult(offlineItem);
-        }
+        mOpenWithCallback =
+                mCanOpenWith
+                        ? () ->
+                                properties
+                                        .get(ListProperties.CALLBACK_OPEN_WITH)
+                                        .onResult(offlineItem)
+                        : null;
 
-        if (mCanRename) {
-            mRenameCallback =
-                    () -> properties.get(ListProperties.CALLBACK_RENAME).onResult(offlineItem);
-        }
+        mShareCallback =
+                mCanShare
+                        ? () -> properties.get(ListProperties.CALLBACK_SHARE).onResult(offlineItem)
+                        : null;
 
-        if (canShowWarningBypassDialog(offlineItem)) {
-            mShowWarningBypassDialogCallback =
-                    () ->
-                            properties
-                                    .get(ListProperties.CALLBACK_SHOW_WARNING_BYPASS_DIALOG)
-                                    .onResult(offlineItem);
-        }
+        mRenameCallback =
+                mCanRename
+                        ? () -> properties.get(ListProperties.CALLBACK_RENAME).onResult(offlineItem)
+                        : null;
+
+        mShowWarningBypassDialogCallback =
+                canShowWarningBypassDialog(offlineItem)
+                        ? () ->
+                                properties
+                                        .get(ListProperties.CALLBACK_SHOW_WARNING_BYPASS_DIALOG)
+                                        .onResult(offlineItem)
+                        : null;
 
         mDeleteCallback =
                 () -> properties.get(ListProperties.CALLBACK_REMOVE).onResult(offlineItem);
@@ -191,6 +205,7 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
     public ListMenu getListMenu() {
         ModelList listItems = new ModelList();
 
+        if (mCanOpenWith) listItems.add(buildSimpleMenuItem(R.string.menu_open_with));
         if (mCanShare) listItems.add(buildSimpleMenuItem(R.string.share));
         if (mCanRename) listItems.add(buildSimpleMenuItem(R.string.rename));
         if (mCanShowWarningBypassDialog) {
@@ -212,6 +227,8 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
                         if (mDeleteCallback != null) mDeleteCallback.run();
                     } else if (textId == R.string.rename) {
                         if (mRenameCallback != null) mRenameCallback.run();
+                    } else if (textId == R.string.menu_open_with) {
+                        if (mOpenWithCallback != null) mOpenWithCallback.run();
                     } else if (textId == R.string.download_warning_bypass_menu_action_download) {
                         if (mShowWarningBypassDialogCallback != null) {
                             mShowWarningBypassDialogCallback.run();

@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
+import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -34,6 +35,7 @@ public class DownloadManagerCoordinatorFactory {
             Tracker tracker,
             FaviconProvider faviconProvider,
             OfflineContentProvider provider,
+            Callback<OfflineItem> openWithHandler,
             DiscardableReferencePool discardableReferencePool) {
         return new DownloadManagerCoordinatorImpl(
                 activity,
@@ -46,6 +48,7 @@ public class DownloadManagerCoordinatorFactory {
                 tracker,
                 faviconProvider,
                 provider,
+                openWithHandler,
                 discardableReferencePool);
     }
 }
