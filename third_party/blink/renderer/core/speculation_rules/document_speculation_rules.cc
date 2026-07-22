@@ -641,6 +641,34 @@ mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
   return host_.get();
 }
 
+void DocumentSpeculationRules::OnPointerDownHeuristic(const KURL& url) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSpeculationRulesRendererSideHeuristics)) {
+    return;
+  }
+  mojom::blink::SpeculationHost* host = GetHost();
+  if (!host) {
+    return;
+  }
+  // Pointerdown is the highest-confidence pointer signal and may enact any
+  // non-immediate candidate for `url`. (Immediate-eagerness candidates were
+  // already enacted at rule-parse time via UpdateSpeculationCandidates.)
+  //
+  // TODO(crbug.com/532860179): Fold in the browser-side eagerness mapping
+  // (BehaviorConfig) so different predictors enact different eagerness sets,
+  // and add No-Vary-Search matching (currently exact-URL only).
+  for (SpeculationCandidate* candidate : sent_candidates_) {
+    if (candidate->eagerness() ==
+        mojom::blink::SpeculationEagerness::kImmediate) {
+      continue;
+    }
+    if (candidate->url() != url) {
+      continue;
+    }
+    host->EnactCandidate(candidate->ToMojom());
+  }
+}
+
 void DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask() {
   DCHECK(IsMicrotaskQueued());
 

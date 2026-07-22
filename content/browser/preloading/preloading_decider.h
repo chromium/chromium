@@ -85,6 +85,17 @@ class CONTENT_EXPORT PreloadingDecider
   // used under LCPTimingPredictorPrerender2.
   void OnLCPPredicted();
 
+  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
+  //
+  // Executes a single candidate that the renderer's link-selection
+  // heuristics have already selected. Unlike the OnPointerDown/OnPointerHover
+  // path, this does NOT consult `on_standby_candidates_` or perform
+  // heuristic->eagerness mapping: the renderer owns that decision. This
+  // method only applies browser-side eligibility/holdback/resource limits
+  // and hands the candidate to the Prefetcher/Prerenderer.
+  void EnactRendererSelectedCandidate(
+      blink::mojom::SpeculationCandidatePtr candidate);
+
   // Returns true if the |url|, |action| pair is in the on-standby list.
   bool IsOnStandByForTesting(const GURL& url,
                              blink::mojom::SpeculationAction action) const;
@@ -174,6 +185,10 @@ class CONTENT_EXPORT PreloadingDecider
       const blink::mojom::SpeculationCandidatePtr& candidate);
   void RemoveStandbyCandidate(const SpeculationCandidateKey key);
   void ClearStandbyCandidates();
+
+  // Moves the candidates stored for |key| from |on_standby_candidates_| to
+  // |processed_candidates_|. No-op if |key| has no on-standby candidates.
+  void MarkCandidateAsProcessed(const SpeculationCandidateKey& key);
 
   // Helper functions to select a prerender/prefetch candidate to be
   // triggered.

@@ -41,6 +41,7 @@ class CONTENT_EXPORT SpeculationHostImpl final
       std::vector<blink::mojom::SpeculationCandidatePtr> candidates,
       bool enable_cross_origin_prerender_iframes) override;
   void OnLCPPredicted() override;
+  void EnactCandidate(blink::mojom::SpeculationCandidatePtr candidate) override;
 };
 
 }  // namespace content

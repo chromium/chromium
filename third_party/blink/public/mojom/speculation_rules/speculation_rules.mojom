@@ -32,6 +32,20 @@ interface SpeculationHost {
 
   // Called when LCP is predicted.
   OnLCPPredicted();
+
+  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
+  //
+  // The renderer's link-selection heuristics (pointerdown/hover/viewport)
+  // selected `candidate` for enactment and asks the browser to execute it
+  // now. Unlike UpdateSpeculationCandidates (which pushes the full proposed
+  // set and lets the browser decide when non-immediate candidates fire),
+  // this is a targeted request for a single candidate the renderer has
+  // already decided to enact. The browser still applies eligibility,
+  // holdback, and resource limits, and may decline.
+  //
+  // `candidate` must be one of the candidates previously sent via
+  // UpdateSpeculationCandidates (validated the same way).
+  EnactCandidate(SpeculationCandidate candidate);
 };
 
 // The action that is proposed. The actions can be executed in a pipeline-like

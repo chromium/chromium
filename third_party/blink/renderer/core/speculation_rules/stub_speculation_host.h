@@ -18,6 +18,7 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
   using Candidates = Vector<mojom::blink::SpeculationCandidatePtr>;
 
   const Candidates& candidates() const { return candidates_; }
+  const Candidates& enacted_candidates() const { return enacted_candidates_; }
   void SetDoneClosure(base::OnceClosure done) {
     done_closure_ = std::move(done);
   }
@@ -43,10 +44,15 @@ class StubSpeculationHost : public mojom::blink::SpeculationHost {
       Candidates candidates,
       bool enable_cross_origin_prerender_iframes) override;
   void OnLCPPredicted() override {}
+  void EnactCandidate(
+      mojom::blink::SpeculationCandidatePtr candidate) override {
+    enacted_candidates_.push_back(std::move(candidate));
+  }
 
  private:
   mojo::Receiver<SpeculationHost> receiver_{this};
   Vector<mojom::blink::SpeculationCandidatePtr> candidates_;
+  Vector<mojom::blink::SpeculationCandidatePtr> enacted_candidates_;
   base::OnceClosure done_closure_;
   base::RepeatingCallback<void(const Candidates&)> candidates_updated_callback_;
 };

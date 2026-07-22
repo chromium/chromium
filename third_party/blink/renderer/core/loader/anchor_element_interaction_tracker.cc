@@ -413,18 +413,36 @@ void AnchorElementInteractionTracker::OnPointerEvent(
     sender->MaybeReportAnchorElementPointerEvent(*anchor, pointer_event);
   }
 
-  // interaction_host_ might become unbound: Android's low memory detector
-  // sometimes call NotifyContextDestroyed to save memory. This unbinds mojo
-  // pipes using that ExecutionContext even if those pages can still navigate.
-  if (!interaction_host_.is_bound()) {
-    return;
-  }
-
   if (event_type == event_type_names::kPointerdown) {
     if (!pointer_event.IsLinkClickButton()) {
       return;
     }
-    interaction_host_->OnPointerDown(url);
+    // With renderer-side heuristics on, the renderer owns speculation candidate
+    // selection and enactment.
+    if (base::FeatureList::IsEnabled(
+            features::kSpeculationRulesRendererSideHeuristics)) {
+      if (auto* rules =
+              DocumentSpeculationRules::FromIfExists(*GetDocument())) {
+        rules->OnPointerDownHeuristic(url);
+      }
+    }
+    // Notify the browser regardless: it still owns the generic pointerdown side
+    // effects (HTTP disk cache and service worker prewarm) that don't depend on
+    // speculation-rule candidate selection.
+    //
+    // interaction_host_ can be unbound: Android's low-memory detector calls
+    // NotifyContextDestroyed, unbinding pipes for pages that can still
+    // navigate.
+    if (interaction_host_.is_bound()) {
+      interaction_host_->OnPointerDown(url);
+    }
+    return;
+  }
+
+  // interaction_host_ might become unbound: Android's low memory detector
+  // sometimes call NotifyContextDestroyed to save memory. This unbinds mojo
+  // pipes using that ExecutionContext even if those pages can still navigate.
+  if (!interaction_host_.is_bound()) {
     return;
   }
 

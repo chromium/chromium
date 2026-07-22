@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -33,6 +35,10 @@ class MockSpeculationHost : public mojom::blink::SpeculationHost {
     last_candidates_ = std::move(candidates);
   }
   void OnLCPPredicted() override {}
+  void EnactCandidate(
+      mojom::blink::SpeculationCandidatePtr candidate) override {
+    last_enacted_candidates_.push_back(std::move(candidate));
+  }
 
   void BindNewEndpointAndPassReceiver(mojo::ScopedMessagePipeHandle receiver) {
     receiver_.Bind(mojo::PendingReceiver<mojom::blink::SpeculationHost>(
@@ -42,10 +48,15 @@ class MockSpeculationHost : public mojom::blink::SpeculationHost {
   const Vector<mojom::blink::SpeculationCandidatePtr>& last_candidates() const {
     return last_candidates_;
   }
+  const Vector<mojom::blink::SpeculationCandidatePtr>& last_enacted_candidates()
+      const {
+    return last_enacted_candidates_;
+  }
   void ClearCandidates() { last_candidates_.clear(); }
 
  private:
   Vector<mojom::blink::SpeculationCandidatePtr> last_candidates_;
+  Vector<mojom::blink::SpeculationCandidatePtr> last_enacted_candidates_;
   mojo::Receiver<mojom::blink::SpeculationHost> receiver_{this};
 };
 
@@ -162,6 +173,66 @@ TEST_F(DocumentSpeculationRulesTest, NoVarySearchDedupesSentCandidates) {
   ProcessAllRuleSets(document_speculation_rules);
 
   EXPECT_EQ(document_speculation_rules.sent_candidates().size(), 2u);
+}
+
+TEST_F(DocumentSpeculationRulesTest, PointerDownHeuristicEnactsCandidate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kSpeculationRulesRendererSideHeuristics);
+
+  Document& document = GetDocument();
+  DocumentSpeculationRules& document_speculation_rules =
+      DocumentSpeculationRules::From(document);
+
+  // A conservative-eagerness candidate is sent to the browser but not enacted
+  // until a pointer interaction occurs.
+  const KURL url("https://example.com/prefetched.html");
+  auto* source = SpeculationRuleSet::Source::FromInlineScript(
+      R"({"prefetch": [{"urls": ["/prefetched.html"],
+                       "eagerness": "conservative"}]})",
+      document, static_cast<DOMNodeId>(1));
+  auto* rule_set =
+      SpeculationRuleSet::Parse(source, document.GetExecutionContext());
+  document_speculation_rules.AddRuleSet(rule_set);
+  ProcessAllRuleSets(document_speculation_rules);
+
+  ASSERT_EQ(document_speculation_rules.sent_candidates().size(), 1u);
+  EXPECT_TRUE(mock_host().last_enacted_candidates().empty());
+
+  // A pointerdown on the URL enacts the matching non-immediate candidate.
+  document_speculation_rules.OnPointerDownHeuristic(url);
+  document_speculation_rules.FlushMojoMessageForTesting();
+
+  const auto& enacted = mock_host().last_enacted_candidates();
+  ASSERT_EQ(enacted.size(), 1u);
+  EXPECT_EQ(enacted[0]->url, url);
+  EXPECT_EQ(enacted[0]->action, mojom::blink::SpeculationAction::kPrefetch);
+}
+
+TEST_F(DocumentSpeculationRulesTest,
+       PointerDownHeuristicNoOpWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kSpeculationRulesRendererSideHeuristics);
+
+  Document& document = GetDocument();
+  DocumentSpeculationRules& document_speculation_rules =
+      DocumentSpeculationRules::From(document);
+
+  const KURL url("https://example.com/prefetched.html");
+  auto* source = SpeculationRuleSet::Source::FromInlineScript(
+      R"({"prefetch": [{"urls": ["/prefetched.html"],
+                       "eagerness": "conservative"}]})",
+      document, static_cast<DOMNodeId>(1));
+  auto* rule_set =
+      SpeculationRuleSet::Parse(source, document.GetExecutionContext());
+  document_speculation_rules.AddRuleSet(rule_set);
+  ProcessAllRuleSets(document_speculation_rules);
+
+  document_speculation_rules.OnPointerDownHeuristic(url);
+  document_speculation_rules.FlushMojoMessageForTesting();
+
+  EXPECT_TRUE(mock_host().last_enacted_candidates().empty());
 }
 }  // namespace
 

@@ -128,6 +128,40 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
       candidates, enable_cross_origin_prerender_iframes);
 }
 
+void SpeculationHostImpl::EnactCandidate(
+    blink::mojom::SpeculationCandidatePtr candidate) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // The renderer must only send EnactCandidate when renderer-side heuristics
+  // are enabled; reject the message otherwise.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSpeculationRulesRendererSideHeuristics)) {
+    mojo::ReportBadMessage("SH_ENACT_CANDIDATE_FEATURE_DISABLED");
+    return;
+  }
+
+  // Validate the candidate the same way as UpdateSpeculationCandidates. A
+  // compromised renderer must not be able to enact an invalid candidate.
+  std::vector<blink::mojom::SpeculationCandidatePtr> singleton;
+  singleton.push_back(std::move(candidate));
+  if (!CandidatesAreValid(singleton)) {
+    return;
+  }
+
+  // Only handle messages from an active main frame.
+  // TODO(crbug.com/489033320): Validate with ValidateFrameState().
+  if (!render_frame_host().IsActive()) {
+    return;
+  }
+  if (render_frame_host().GetParent()) {
+    return;
+  }
+
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
+  preloading_decider->EnactRendererSelectedCandidate(
+      std::move(singleton.front()));
+}
+
 void SpeculationHostImpl::OnLCPPredicted() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!ValidateFrameState()) {

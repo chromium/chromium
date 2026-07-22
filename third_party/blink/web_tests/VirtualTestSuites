@@ -3032,6 +3032,27 @@
     "expires": "Apr 1, 2027"
   },
   {
+    "prefix": "speculation-rules-renderer-side-heuristics",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/speculation-rules/prefetch",
+      "external/wpt/speculation-rules/speculation-tags"
+    ],
+    "exclusive_tests": [],
+    "args": [
+      "--enable-features=SpeculationRulesRendererSideHeuristics"
+    ],
+    "owners": [
+      "yoavweiss@chromium.org",
+      "chrome-prerendering@google.com"
+    ],
+    "expires": "Jul 1, 2027"
+  },
+  {
     "prefix": "prerender-cross-origin-iframe-scroll",
     "platforms": [
       "Linux",

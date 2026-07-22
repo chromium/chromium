@@ -1395,6 +1395,17 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kPreloadingEagerViewportHeuristicsPresentTime);
 
+// When enabled, speculation-rules link-selection heuristics (pointerdown,
+// hover dwell, viewport) select and enact non-immediate candidates on the
+// renderer side and ask the browser to execute a specific candidate via
+// SpeculationHost.EnactCandidate, instead of forwarding raw interaction
+// signals to the browser's PreloadingDecider. This makes the renderer the
+// source of truth for which speculations were enacted (used by the
+// SpeculationMeasurement API). Prototype: currently only the pointerdown
+// path is renderer-driven.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kSpeculationRulesRendererSideHeuristics);
+
 // If enabled, the machine learning model will be employed to predict the next
 // click for speculation-rule based pre-loadings.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingHeuristicsMLModel);

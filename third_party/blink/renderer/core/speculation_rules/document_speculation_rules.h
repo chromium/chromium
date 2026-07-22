@@ -84,6 +84,16 @@ class CORE_EXPORT DocumentSpeculationRules
     return sent_candidates_;
   }
 
+  // Renderer-driven enactment (SpeculationRulesRendererSideHeuristics).
+  //
+  // Called when the pointerdown link-selection heuristic fires for `url`
+  // (from AnchorElementInteractionTracker). Selects the matching
+  // non-immediate candidate(s) previously sent to the browser and asks the
+  // browser to enact them via SpeculationHost::EnactCandidate. No-op unless
+  // the feature is enabled. Immediate-eagerness candidates are excluded (they
+  // are enacted at rule-parse time via UpdateSpeculationCandidates).
+  void OnPointerDownHeuristic(const KURL& url);
+
   // Requests a future call to UpdateSpeculationCandidates, if none is yet
   // scheduled.
   void QueueUpdateSpeculationCandidates(bool force_style_update = false);

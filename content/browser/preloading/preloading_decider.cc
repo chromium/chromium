@@ -246,6 +246,13 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
   if (observer_for_testing_) {
     observer_for_testing_->OnPointerDown(url);
   }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kSpeculationRulesRendererSideHeuristics)) {
+    // The renderer owns candidate enactment (and its preconnect fallback, in
+    // EnactRendererSelectedCandidate); enacting here too would double-enact
+    // this pointerdown.
+    return;
+  }
   MaybeEnactCandidate(url, preloading_predictor::kUrlPointerDownOnAnchor,
                       PreloadingConfidence{100},
                       /*fallback_to_preconnect=*/true,
@@ -442,6 +449,18 @@ void PreloadingDecider::ClearStandbyCandidates() {
   on_standby_candidates_.clear();
 }
 
+void PreloadingDecider::MarkCandidateAsProcessed(
+    const SpeculationCandidateKey& key) {
+  auto it = on_standby_candidates_.find(key);
+  if (it == on_standby_candidates_.end()) {
+    return;
+  }
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates_for_key =
+      std::move(it->second);
+  RemoveStandbyCandidate(key);
+  processed_candidates_[key] = std::move(candidates_for_key);
+}
+
 void PreloadingDecider::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
     bool enable_cross_origin_prerender_iframes) {
@@ -594,6 +613,74 @@ void PreloadingDecider::OnLCPPredicted() {
   prerenderer_->OnLCPPredicted();
 }
 
+void PreloadingDecider::EnactRendererSelectedCandidate(
+    blink::mojom::SpeculationCandidatePtr candidate) {
+  // SpeculationHostImpl::EnactCandidate rejects the message when the feature is
+  // disabled, so reaching here never happens.
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kSpeculationRulesRendererSideHeuristics));
+
+  // TODO(crbug.com/532860179): Plumb the actual enacting predictor from the
+  // renderer. For now only pointerdown is routed here, so attribute enactment
+  // to it.
+  const PreloadingPredictor enacting_predictor =
+      preloading_predictor::kUrlPointerDownOnAnchor;
+  const PreloadingConfidence confidence{100};
+
+  // Capture before `candidate` is moved below.
+  const GURL url = candidate->url;
+  const SpeculationCandidateKey key{candidate->url, candidate->action};
+
+  // The renderer sends one EnactCandidate per matching rule, so several may
+  // arrive for the same URL/action. Enact only the first; once enacted the
+  // key is no longer on standby, so drop the duplicates.
+  if (!on_standby_candidates_.contains(key)) {
+    return;
+  }
+
+  // Merge tags from every suitable on-standby candidate for this key, matching
+  // the browser-driven path (MaybePrefetch), so the enacted preload carries
+  // all applicable Sec-Speculation-Tags rather than just this candidate's.
+  candidate->tags = GetMergedSpeculationTagsFromSuitableCandidates(
+      key, enacting_predictor, confidence, /*eagerness_to_exclude=*/{});
+
+  bool enacted = false;
+  switch (candidate->action) {
+    case blink::mojom::SpeculationAction::kPrefetch:
+      AddPreloadingPrediction(url, enacting_predictor, confidence);
+      // The renderer may enact both a prefetch and a prerender for one
+      // pointerdown; an in-progress prerender wins, so skip the prefetch.
+      if (ShouldWaitForPrerenderResult(url)) {
+        return;
+      }
+      enacted =
+          prefetcher_.MaybePrefetch(std::move(candidate), enacting_predictor);
+      break;
+    case blink::mojom::SpeculationAction::kPrerender:
+    case blink::mojom::SpeculationAction::kPrerenderUntilScript:
+      enacted = prerenderer_->MaybePrerender(candidate, enacting_predictor,
+                                             confidence);
+      // Avoid a duplicate prediction when one is already recorded against
+      // another WebContents.
+      if (!enacted || !PredictionOccursInOtherWebContents(*candidate)) {
+        AddPreloadingPrediction(url, enacting_predictor, confidence);
+      }
+      break;
+  }
+
+  // If nothing more aggressive started (e.g. blocked by eligibility or resource
+  // limits), fall back to a preconnect, matching MaybeEnactCandidate. Only the
+  // pointerdown predictor requests this fallback.
+  if (!enacted &&
+      enacting_predictor == preloading_predictor::kUrlPointerDownOnAnchor &&
+      !ShouldWaitForPrefetchResult(url)) {
+    preconnector_.MaybePreconnect(url);
+  }
+
+  // Mark as processed so other heuristics don't re-enact it.
+  MarkCandidateAsProcessed(key);
+}
+
 std::vector<std::optional<std::string>>
 PreloadingDecider::GetMergedSpeculationTagsFromSuitableCandidates(
     const PreloadingDecider::SpeculationCandidateKey& lookup_key,
@@ -640,12 +727,7 @@ bool PreloadingDecider::MaybePrefetch(
   bool result = prefetcher_.MaybePrefetch(
       std::move(matched_candidate_pair.value().second), enacting_predictor);
 
-  auto it = on_standby_candidates_.find(key);
-  CHECK(it != on_standby_candidates_.end());
-  std::vector<blink::mojom::SpeculationCandidatePtr> candidates_for_key =
-      std::move(it->second);
-  RemoveStandbyCandidate(key);
-  processed_candidates_[std::move(key)] = std::move(candidates_for_key);
+  MarkCandidateAsProcessed(key);
   return result;
 }
 
@@ -793,12 +875,7 @@ std::pair<bool, bool> PreloadingDecider::MaybePrerenderForAction(
   result.second =
       result.first && PredictionOccursInOtherWebContents(*candidate);
 
-  auto it = on_standby_candidates_.find(key);
-  CHECK(it != on_standby_candidates_.end());
-  std::vector<blink::mojom::SpeculationCandidatePtr> processed =
-      std::move(it->second);
-  RemoveStandbyCandidate(it->first);
-  processed_candidates_[std::move(key)] = std::move(processed);
+  MarkCandidateAsProcessed(key);
   return result;
 }
 

@@ -1928,6 +1928,12 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "viewport_present_time",
                    base::Milliseconds(50));
 
+// When enabled, speculation-rules link-selection heuristics select and enact
+// non-immediate candidates on the renderer side (see the declaration in
+// features.h for details).
+BASE_FEATURE(kSpeculationRulesRendererSideHeuristics,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPreloadingHeuristicsMLModel, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
                    kPreloadingModelTimerStartDelay,
