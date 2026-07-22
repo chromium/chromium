@@ -112,6 +112,7 @@ class CWVAutofillControllerTest : public web::WebTest {
     pref_service_.registry()->RegisterBooleanPref(
         autofill::prefs::kAutofillProfileEnabled, true);
     ios_web_view::RegisterCWVAutofillPrefs(pref_service_.registry());
+    RegisterWebViewPasswordManagerPrefs(pref_service_.registry());
 
     web_state_.SetBrowserState(&browser_state_);
 

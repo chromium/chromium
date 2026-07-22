@@ -48,6 +48,11 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isPasswordLeakCheckEnabled)
     BOOL passwordLeakCheckEnabled;
 
+// Controls whether or not WebViewPasswordManagerClient is hardened against
+// WebState destruction.
+@property(nonatomic, assign, getter=isPasswordManagerSafeLifecycleEnabled)
+    BOOL passwordManagerSafeLifecycleEnabled;
+
 // Whether or not safe browsing is enabled.
 // Specifically this controls whether or not
 // -[CWVNavigationDelegate handleUnsafeURLWithHandler:] is called.
