@@ -165,12 +165,18 @@ IN_PROC_BROWSER_TEST_F(InfoBarsTest, TestInfoBarsCloseOnNewTheme) {
   }
 }
 
-class InfoBarUiTest : public TestInfoBar {
+class InfoBarUiTest : public TestInfoBar,
+                      public testing::WithParamInterface<bool> {
  public:
   InfoBarUiTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        infobars::kCentralizedInfoBarFramework,
-        {{"kMigratedCollectedCookies", "true"}, {"kMigratedPageInfo", "true"}});
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          infobars::kCentralizedInfoBarFramework,
+          {{"MigratedCollectedCookies", "true"}, {"MigratedPageInfo", "true"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          infobars::kCentralizedInfoBarFramework);
+    }
   }
 
   InfoBarUiTest(const InfoBarUiTest&) = delete;
@@ -408,7 +414,7 @@ bool InfoBarUiTest::VerifyUi() {
 #else
 #define MAYBE_InvokeUi_dev_tools InvokeUi_dev_tools
 #endif
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_dev_tools) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, MAYBE_InvokeUi_dev_tools) {
   ShowAndVerifyUi();
 }
 
@@ -419,70 +425,70 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_dev_tools) {
 #else
 #define MAYBE_InvokeUi_extension_dev_tools InvokeUi_extension_dev_tools
 #endif
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_extension_dev_tools) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, MAYBE_InvokeUi_extension_dev_tools) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_incognito_connectability) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_incognito_connectability) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_theme_installed) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_theme_installed) {
   ShowAndVerifyUi();
 }
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_reload_plugin) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_reload_plugin) {
   ShowAndVerifyUi();
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_file_access_disabled) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_file_access_disabled) {
   ShowAndVerifyUi();
 }
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_keystone_promotion) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_keystone_promotion) {
   ShowAndVerifyUi();
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_collected_cookies) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_collected_cookies) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_installation_error) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_installation_error) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_bad_flags) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_bad_flags) {
   ShowAndVerifyUi();
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_default_browser) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_default_browser) {
   ShowAndVerifyUi();
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_google_api_keys) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_google_api_keys) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_obsolete_system) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_obsolete_system) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_oscryptasync_availability) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_oscryptasync_availability) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_page_info) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_page_info) {
   ShowAndVerifyUi();
 }
 
 #if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_translate) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_translate) {
   ShowAndVerifyUi();
 }
 #endif
@@ -494,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, InvokeUi_translate) {
 #else
 #define MAYBE_InvokeUi_automation InvokeUi_automation
 #endif
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_automation) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, MAYBE_InvokeUi_automation) {
   ShowAndVerifyUi();
 }
 
@@ -504,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_automation) {
 #else
 #define MAYBE_InvokeUi_tab_sharing InvokeUi_tab_sharing
 #endif
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_tab_sharing) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, MAYBE_InvokeUi_tab_sharing) {
   ShowAndVerifyUi();
 }
 
@@ -514,6 +520,13 @@ IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_tab_sharing) {
 #else
 #define MAYBE_InvokeUi_multiple_infobars InvokeUi_multiple_infobars
 #endif
-IN_PROC_BROWSER_TEST_F(InfoBarUiTest, MAYBE_InvokeUi_multiple_infobars) {
+IN_PROC_BROWSER_TEST_P(InfoBarUiTest, MAYBE_InvokeUi_multiple_infobars) {
   ShowAndVerifyUi();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InfoBarUiTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Migrated" : "Legacy";
+                         });
