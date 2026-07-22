@@ -119,6 +119,7 @@ export class
 
   static override get properties() {
     return {
+      entrypointName: {type: String, reflect: true},
       carouselOnTop_: {type: Boolean},
       disableFallbackGlifAnimation: {type: Boolean},
       enableCarouselScrolling: {type: Boolean},
@@ -142,6 +143,7 @@ export class
   }
 
   // Wrapper-bound properties.
+  accessor entrypointName: string = 'ContextualTasks';
   accessor disableFallbackGlifAnimation: boolean = false;
   accessor enableCarouselScrolling: boolean = true;
   accessor enableFileHint: boolean = false;
@@ -280,6 +282,11 @@ export class
       // Fires `show-suggestion-activity-link`; the wrapper owns the link UI.
       this.shouldShowSuggestionActivityLink();
     }
+  }
+
+  override computeVoiceSearchCoherenceEnabled(): boolean {
+    return loadTimeData.getBoolean(
+        'voiceSearchCoherenceCobrowsingComposeboxEnabled');
   }
 
   private setupResizeObservers_() {

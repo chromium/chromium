@@ -13,13 +13,13 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
   return html`<!--_html_template_start_-->
     <search-animated-glow id="animatedSearchElement"
         animation-state="${this.animationState}"
-        entrypoint-name="ContextualTasks"
         .coloredTicTacVoiceAnimationEnabled="${this.voiceSearchCoherenceEnabled}"
         .isListening="${this.isListening}"
         .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
         .transcript="${this.transcript}"
         .receivedSpeech="${this.receivedSpeech}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
+        .entrypointName="${this.entrypointName}"
         .isZeroState="${this.isZeroState}"
         .darkThemeColorsEnabled="${true}"
         .showingOnlyCarouselOnTopOfInput="${this.showFileCarousel &&
@@ -76,9 +76,9 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
         @paste="${this.onPaste}">
       <div id="inputContainer" part="input-container">
         <cr-composebox-input id="composeboxInput"
-            .entrypointName="${'ContextualTasks'}"
             exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
             .disableCaretColorAnimation="${this.disableCaretColorAnimation}"
+            .entrypointName="${this.entrypointName}"
             .showDropdown="${this.showDropdown}"
             .inputPlaceholder="${this.inputPlaceholder}"
             .input="${this.input}"

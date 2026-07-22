@@ -445,6 +445,11 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
+        computeVoiceSearchCoherenceEnabled(): boolean {
+          return loadTimeData.getBoolean(
+              'voiceSearchCoherenceComposeboxesEnabled');
+        }
+
         override willUpdate(changedProperties: PropertyValues<this>) {
           super.willUpdate(changedProperties);
 
@@ -528,8 +533,8 @@ export const ComposeboxEmbedderMixin =
           }
 
           if (!this.hasUpdated) {
-            this.voiceSearchCoherenceEnabled = loadTimeData.getBoolean(
-                'voiceSearchCoherenceComposeboxesEnabled');
+            this.voiceSearchCoherenceEnabled =
+                this.computeVoiceSearchCoherenceEnabled();
           }
         }
 
@@ -2924,4 +2929,5 @@ export interface ComposeboxEmbedderMixinInterface extends I18nMixinLitInterface,
   computeShowDropdown(): boolean;
   shouldDisableFileInputs(): boolean;
   computeCancelButtonTitle(): string;
+  computeVoiceSearchCoherenceEnabled(): boolean;
 }

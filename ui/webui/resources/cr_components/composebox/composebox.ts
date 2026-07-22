@@ -342,15 +342,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     // If it is the first render, or 'entrypointName' has changed from its default.
     if (!this.hasUpdated || changedProperties.has('entrypointName')) {
-      // TODO(crbug.com/511319142): Add this first branch's logic to
-      // contextual tasks specific composebox.
-      if (this.entrypointName === 'ContextualTasks') {
-        this.voiceSearchCoherenceEnabled = loadTimeData.getBoolean(
-            'voiceSearchCoherenceCobrowsingComposeboxEnabled');
-      } else {
-        this.voiceSearchCoherenceEnabled =
-            loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
-      }
+      this.voiceSearchCoherenceEnabled =
+          this.computeVoiceSearchCoherenceEnabled();
     }
   }
 

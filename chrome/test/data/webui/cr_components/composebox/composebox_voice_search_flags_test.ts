@@ -390,90 +390,6 @@ suite('ComposeboxVoiceSearchFlags', () => {
         assertEquals('', voiceSearchElement.transcript_);
       });
 
-  test('contextual tasks uses correct flag', async () => {
-    loadTimeData.overrideValues({
-      // These are not the flags themselves, but the loadtime values, so
-      // the value derived from the main flag can be false here while
-      // the value derived from the feature param can be true.
-      voiceSearchCoherenceComposeboxesEnabled: false,
-      voiceSearchCoherenceCobrowsingComposeboxEnabled: true,
-    });
-    await createComposeboxElement();
-
-    composeboxElement.entrypointName = 'ContextualTasks';
-    composeboxElement.inVoiceSearchMode = true;  // Render voice search.
-    await microtasksFinished();
-
-    const searchAnimated = composeboxElement.$.animatedSearchElement;
-    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
-    assertTrue(
-        searchAnimated.coloredTicTacVoiceAnimationEnabled,
-        'Animation should be enabled when cobrowsing voice' +
-            ' coherence is enabled');
-    assertFalse(
-        voiceSearchElement.liveTranscriptEnabled,
-        'Live transcript should be disabled when cobrowsing' +
-            ' voice coherence is enabled');
-    assertTrue(
-        voiceSearchElement.submitStopButtonsEnabled,
-        'Stop submit buttons should be enabled when cobrowsing' +
-            ' voice coherence is enabled');
-  });
-
-  test('omnibox uses correct flag', async () => {
-    loadTimeData.overrideValues({
-      voiceSearchCoherenceComposeboxesEnabled: false,
-      voiceSearchCoherenceCobrowsingComposeboxEnabled: true,
-    });
-    await createComposeboxElement();
-
-    composeboxElement.entrypointName = 'Omnibox';
-    composeboxElement.inVoiceSearchMode = true;  // Render voice search.
-    await microtasksFinished();
-
-    const searchAnimated = composeboxElement.$.animatedSearchElement;
-    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
-    assertFalse(
-        searchAnimated.coloredTicTacVoiceAnimationEnabled,
-        'Animation should be disabled for omnibox when' +
-            ' only cobrowsing is enabled');
-    assertTrue(
-        voiceSearchElement.liveTranscriptEnabled,
-        'Live transcription should be enabled for omnibox' +
-            'when only cobrowsing is enabled');
-    assertFalse(
-        voiceSearchElement.submitStopButtonsEnabled,
-        'Stop submit buttons should be disabled for omnibox' +
-            'when only cobrowsing is enabled');
-  });
-
-  test('NTP uses correct flag', async () => {
-    loadTimeData.overrideValues({
-      voiceSearchCoherenceComposeboxesEnabled: false,
-      voiceSearchCoherenceCobrowsingComposeboxEnabled: true,
-    });
-    await createComposeboxElement();
-
-    composeboxElement.entrypointName = 'NTP';
-    composeboxElement.inVoiceSearchMode = true;  // Render voice search.
-    await microtasksFinished();
-
-    const searchAnimated = composeboxElement.$.animatedSearchElement;
-    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
-    assertFalse(
-        searchAnimated.coloredTicTacVoiceAnimationEnabled,
-        'Animation should be disabled for NTP when' +
-            ' only cobrowsing is enabled');
-    assertTrue(
-        voiceSearchElement.liveTranscriptEnabled,
-        'Live transcription should be enabled for NTP' +
-            'when only cobrowsing is enabled');
-    assertFalse(
-        voiceSearchElement.submitStopButtonsEnabled,
-        'Stop submit buttons should be disabled for NTP' +
-            'when only cobrowsing is enabled');
-  });
-
   test(
       'Enabled voice search coherence results in correct' +
           ' parameters being passed',
@@ -483,7 +399,6 @@ suite('ComposeboxVoiceSearchFlags', () => {
         });
         await createComposeboxElement();
 
-        composeboxElement.entrypointName = 'Omnibox';
         composeboxElement.inVoiceSearchMode = true;  // Render voice search.
         await microtasksFinished();
 
@@ -512,7 +427,6 @@ suite('ComposeboxVoiceSearchFlags', () => {
         });
         await createComposeboxElement();
 
-        composeboxElement.entrypointName = 'Omnibox';
         composeboxElement.inVoiceSearchMode = true;  // Render voice search.
         await microtasksFinished();
 

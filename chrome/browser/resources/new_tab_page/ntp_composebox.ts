@@ -63,6 +63,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
 
   static override get properties() {
     return {
+      entrypointName: {type: String, reflect: true},
       /*
       `expanding_` property is used in composebox.css styles. It is added
       so that the imported styles work well. Remove this property once each
@@ -75,6 +76,7 @@ export class NtpComposeboxElement extends ComposeboxEmbedderMixin
     };
   }
 
+  accessor entrypointName: string = 'Realbox';
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
