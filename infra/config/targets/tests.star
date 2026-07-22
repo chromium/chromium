@@ -3044,6 +3044,13 @@ targets.tests.gpu_telemetry_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "webdriver_bidi_unittests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.isolated_script_test(
     name = "webgpu_blink_web_tests",
     mixins = [
         "has_native_resultdb_integration",

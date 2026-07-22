@@ -2685,6 +2685,13 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "webdriver_bidi_unittests",
+    label = "//third_party/chromium-bidi:webdriver_bidi_unittests",
+    skip_usage_check = True,
+    module_scheme = "single",
+)
+
+targets.binaries.generated_script(
     name = "webgpu_blink_web_tests",
     label = "//:webgpu_blink_web_tests",
     # All references have been moved to starlark

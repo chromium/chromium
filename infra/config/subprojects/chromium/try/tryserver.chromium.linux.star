@@ -487,6 +487,20 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+try_.builder(
+    name = "linux-webdriver-bidi-rel",
+    description_html = "Runs webdriver bidi tests exactly like linux-rel",
+    mirrors = [
+        "ci/linux-webdriver-bidi-rel",
+    ],
+    gn_args = "ci/linux-webdriver-bidi-rel",
+    contact_team_email = "chrome-devtools@google.com",
+    cq_settings = try_.cq_settings(
+        includable_only = True,
+    ),
+    main_list_view = "try",
+)
+
 try_.orchestrator_builder(
     name = "linux-full-remote-rel",
     description_html = "Experimental " + linkify_builder("try", "linux-rel", "chromium") + " builder with more kinds of remote actions. e.g. remote linking",

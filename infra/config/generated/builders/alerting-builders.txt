@@ -653,6 +653,7 @@ try/linux-utr-tester
 try/linux-v4l2-codec-rel
 try/linux-wayland-mutter-rel
 try/linux-wayland-weston-rel
+try/linux-webdriver-bidi-rel
 try/linux-win-cross-rel
 try/linux-x64-centipede-asan-rel-tests
 try/linux-x64-libfuzzer-asan-dbg-tests

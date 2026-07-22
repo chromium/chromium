@@ -2826,3 +2826,22 @@ ci.builder(
     ),
     contact_team_email = "chrome-webui@google.com",
 )
+
+ci.builder(
+    name = "linux-webdriver-bidi-rel",
+    description_html = "Builder for WebDriver BiDi implementation",
+    schedule = "triggered",
+    triggered_by = [],
+    builder_spec = builder_config.copy_from("ci/Linux Builder"),
+    gn_args = "ci/Linux Builder",
+    targets = targets.bundle(
+        targets = ["webdriver_bidi_unittests"],
+        mixins = [
+            "linux-jammy",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "webdriver",
+    ),
+    contact_team_email = "chrome-devtools@google.com",
+)
