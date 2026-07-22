@@ -28,7 +28,7 @@ import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, deleteLastFile, FAKE_TOKEN_STRING, fixtureUrl, getSubmitContainer, installMock} from './contextual_tasks_test_utils.js';
+import {assertStyle, FAKE_TOKEN_STRING, fixtureUrl, getSubmitContainer, installMock} from './contextual_tasks_test_utils.js';
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN} from './test_searchbox_utils.js';
 
@@ -721,67 +721,6 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
       assertFalse(!!toolChip, toolModeInfo.text + ' chip should be removed');
     });
   });
-
-  test('Injected input can be added, then deleted from AIM', async () => {
-    composebox.injectInput('title', 'thumbnail.jpg', FAKE_TOKEN_STRING);
-    await composebox.updateComplete;
-    await microtasksFinished();
-
-    // Avoid using $.carousel since may be cached.
-    const carousel = composebox.shadowRoot.querySelector('#carousel');
-    assertTrue(!!carousel, 'Carousel should be in the DOM');
-    const files = carousel.files;
-    assertEquals(1, files.length);
-
-    composebox.deleteFile(FAKE_TOKEN_STRING);
-    await composebox.updateComplete;
-    await microtasksFinished();
-    assertFalse(
-        !!composebox.shadowRoot.querySelector('#carousel'),
-        'Carousel should be removed from the DOM');
-  });
-
-  test(
-      'Injected input with icon can be added, then deleted from AIM',
-      async () => {
-        composebox.injectInput('title', '', FAKE_TOKEN_STRING, 'quoteFilled');
-        await composebox.updateComplete;
-        await microtasksFinished();
-
-        // Avoid using $.carousel since may be cached.
-        const carousel = composebox.shadowRoot.querySelector('#carousel');
-        assertTrue(!!carousel, 'Carousel should be in the DOM');
-        const files = carousel.files;
-        assertEquals(1, files.length);
-
-        composebox.deleteFile(FAKE_TOKEN_STRING);
-        await composebox.updateComplete;
-        await microtasksFinished();
-        assertFalse(
-            !!composebox.shadowRoot.querySelector('#carousel'),
-            'Carousel should be removed from the DOM');
-      });
-
-  test(
-      'Injected input can be added, then deleted from composebox', async () => {
-        composebox.injectInput('title', 'thumbnail.jpg', FAKE_TOKEN_STRING);
-        await composebox.updateComplete;
-        await microtasksFinished();
-
-        // Avoid using $.carousel since may be cached.
-        const carousel = composebox.shadowRoot.querySelector('#carousel');
-        assertTrue(!!carousel, 'Carousel should be in the DOM');
-        const files = carousel.files;
-        assertEquals(1, files.length);
-
-        await deleteLastFile(composebox);
-        await composebox.updateComplete;
-        await microtasksFinished();
-
-        assertFalse(
-            !!composebox.shadowRoot.querySelector('#carousel'),
-            'Carousel should be removed from the DOM');
-      });
 
   test('Tab spinner on regular file upload triggers', async () => {
     // Upload tab.

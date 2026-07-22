@@ -310,7 +310,7 @@ export class
     // Reuse the mixin's dropdown/selection logic, but notify the wrapper via
     // `result-changed` only for accepted results (mirrors cr-composebox).
     const isValidResult =
-        !this.submitting && this.lastQueriedInput.trimStart() === result.input;
+        !this.submitting && result.queryId === this.activeQueryId;
     if (isValidResult && this.composeboxNoFlickerSuggestionsFix &&
         this.showTypedSuggest &&
         !this.haveReceivedSynchronousAutocompleteResponse) {
@@ -638,14 +638,37 @@ export class
   }
 
   injectInput(
-      _title: string, _thumbnail: string, _fileToken: UnguessableToken,
-      _supportsUnimodal: boolean, _iconName?: string): void {
-    // TODO: Migrate inject-input behavior.
+      title: string, thumbnail: string, fileToken: UnguessableToken,
+      supportsUnimodal: boolean, iconName?: string): void {
+    const attachment = ComposeboxFile.createFromInjectedInput(
+        fileToken, thumbnail, title, iconName ?? null);
+    attachment.supportsUnimodal = supportsUnimodal;
+
+    this.onFileContextAdded(attachment);
   }
 
   setInputProgrammatically(
-      _queryText: string, _willSubmitAfterInjection: boolean): void {
-    // TODO: Migrate set-input-programmatically behavior.
+      queryText: string, willSubmitAfterInjection: boolean): void {
+    this.input = queryText;
+
+    if (!willSubmitAfterInjection) {
+      // If not submitting immediately, suggestions for the new input might be
+      // desired.
+      this.queryAutocomplete(/*clearMatches=*/ true);
+      return;
+    }
+
+    // Stop any in-flight autocomplete queries to prevent unnecessary backend
+    // work for a query that is about to be submitted.
+    this.getSearchboxHandler().stopAutocomplete(/*clearResult=*/ true);
+
+    this.lastQueriedInput = '';
+
+    // Hide the dropdown and drop any stale matches. This also resets
+    // `activeQueryId` to -1, so autocomplete results that still arrive for
+    // earlier queries are rejected by the query-ID guard in
+    // `onAutocompleteResultChanged`.
+    this.clearAutocompleteMatches();
   }
 }
 

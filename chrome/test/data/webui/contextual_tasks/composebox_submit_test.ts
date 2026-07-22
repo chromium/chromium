@@ -6,23 +6,26 @@
 import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
+import {IconType} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {ContextUploadStatus, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
+import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteResult, PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, createCtComposeboxApp, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, installMock, simulateUserInput} from './contextual_tasks_test_utils.js';
+import {assertStyle, createCtComposeboxApp, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, fixtureUrl, getSubmitButton, getSubmitContainer, installMock, simulateUserInput} from './contextual_tasks_test_utils.js';
 import type {CtComposeboxAppParts} from './contextual_tasks_test_utils.js';
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {ADD_TAB_CONTEXT_FN, setupAutocompleteResults, uploadFileAndVerify} from './test_searchbox_utils.js';
@@ -141,69 +144,6 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
   teardown(() => {
     mockTimer.uninstall();
-  });
-
-  test('InjectInputSubmitAfterInjectionTrue', async () => {
-    const TEST_QUERY = 'injected query';
-
-    // Call `injectInput` with query text and submit_after_injection = true.
-    contextualTasksApp.$.composebox.injectInput({
-      title: null,
-      thumbnail: null,
-      iconId: 0,
-      fileToken: null,
-      supportsUnimodal: false,
-      queryText: TEST_QUERY,
-      submitAfterInjection: true,
-    });
-
-    // Verify `submitQuery` is called with the injected text.
-    const [query] = await mockSearchboxPageHandler.whenCalled('submitQuery');
-    assertEquals(TEST_QUERY, query);
-  });
-
-  test('InjectInputSubmitAfterInjectionTrueWithFile', async () => {
-    const TEST_QUERY = 'injected query';
-
-    contextualTasksApp.$.composebox.injectInput({
-      title: 'title',
-      thumbnail: 'thumbnail',
-      iconId: 0,
-      fileToken: FAKE_TOKEN_STRING,
-      supportsUnimodal: true,
-      queryText: TEST_QUERY,
-      submitAfterInjection: true,
-    });
-
-    await composebox.updateComplete;
-
-    // Since the file is injected as already successful, it should submit
-    // immediately.
-    const [query] = await mockSearchboxPageHandler.whenCalled('submitQuery');
-    assertEquals(TEST_QUERY, query);
-  });
-
-  test('InjectInputSubmitAfterInjectionFalse', async () => {
-    const TEST_QUERY = 'injected query';
-
-    // Call `injectInput` with query text and submit_after_injection = false.
-    contextualTasksApp.$.composebox.injectInput({
-      title: null,
-      thumbnail: null,
-      iconId: 0,
-      fileToken: null,
-      supportsUnimodal: false,
-      queryText: TEST_QUERY,
-      submitAfterInjection: false,
-    });
-    await composebox.updateComplete;
-
-    // Verify input is set.
-    assertEquals(TEST_QUERY, composebox.input);
-    assertEquals(TEST_QUERY, composebox.getInputElement().$.input.value);
-
-    // Verify `submitQuery` was not called.
-    assertEquals(mockSearchboxPageHandler.getCallCount('submitQuery'), 0);
   });
 
   test('LensButtonTriggersOverlay', async () => {
@@ -1080,88 +1020,6 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     assertEquals(1, composebox.pendingUploads.size);
   });
-
-  test('Submit button disabled if no input supports unimodal', async () => {
-    composebox.injectInput(
-        'title', 'thumbnail', FAKE_TOKEN_STRING, /*supportsUnimodal=*/ false);
-    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
-
-    await searchboxCallbackRouterRemote.$.flushForTesting();
-    await composebox.updateComplete;
-
-    assertEquals(
-        0, composebox.pendingUploads.size, 'pendingUploads should be 0');
-    assertTrue(composebox.submitEnabled, 'submitEnabled should be true');
-    assertFalse(
-        composebox.canSubmitFilesAndInput,
-        'canSubmitFilesAndInput should be false');
-
-    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
-    assertTrue(!!submitButton, 'Submit button should exist');
-    assertTrue(submitButton?.disabled, 'Button should be disabled');
-  });
-
-  test(
-      'Submit button enabled if no input supports unimodal but has text query',
-      async () => {
-        composebox.injectInput(
-            'title', 'thumbnail', FAKE_TOKEN_STRING,
-            /*supportsUnimodal=*/ false);
-        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-            FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
-        composebox.input = 'test';
-
-        await searchboxCallbackRouterRemote.$.flushForTesting();
-        await composebox.updateComplete;
-
-        const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
-        assertTrue(!!submitButton, 'Submit button should exist');
-        assertFalse(submitButton?.disabled, 'Button should be enabled');
-      });
-
-  test('Submit button enabled if input supports unimodal', async () => {
-    composebox.injectInput(
-        'title', 'thumbnail', FAKE_TOKEN_STRING, /*supportsUnimodal=*/ true);
-    searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
-
-    await searchboxCallbackRouterRemote.$.flushForTesting();
-    await composebox.updateComplete;
-
-    assertEquals(
-        0, composebox.pendingUploads.size, 'pendingUploads should be 0');
-    assertTrue(composebox.submitEnabled, 'submitEnabled should be true');
-    assertTrue(
-        composebox.canSubmitFilesAndInput,
-        'canSubmitFilesAndInput should be true');
-
-    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
-    assertTrue(!!submitButton, 'Submit button should exist');
-    assertFalse(submitButton?.disabled, 'Button should be enabled');
-  });
-
-  test(
-      'Submit button enabled if at least one input supports unimodal',
-      async () => {
-        composebox.injectInput(
-            'title', 'thumbnail', FAKE_TOKEN_STRING,
-            /*supportsUnimodal=*/ false);
-        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-            FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
-        composebox.injectInput(
-            'title2', 'thumbnail2', FAKE_TOKEN_STRING_2,
-            /*supportsUnimodal=*/ true);
-        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-            FAKE_TOKEN_STRING_2, ContextUploadStatus.kUploadSuccessful, null);
-
-        await searchboxCallbackRouterRemote.$.flushForTesting();
-        await composebox.updateComplete;
-
-        const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
-        assertTrue(!!submitButton, 'Submit button should exist');
-        assertFalse(submitButton?.disabled, 'Button should be enabled');
-      });
 });
 
 // =============================================================================
@@ -1170,7 +1028,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 // is implemented by both the legacy <cr-composebox> and
 // the <contextual-tasks-inner-composebox>, so this suite runs on both paths.
 // Submit tests depending on behavior the fork does not implement yet (files,
-// inject input, voice) stay in the flag-off suites above.
+// voice) stay in the flag-off suites above.
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(
@@ -1454,5 +1312,696 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
               cancelContainer, 'pointer-events', 'auto',
               'Expanded host must not match the collapsed-state selector');
         });
+      });
+});
+
+// =============================================================================
+// Fork DUAL-PATH INJECT-INPUT SUITE
+// Programmatic injection - injectInput / setInputProgrammatically /
+// submitAfterInjection - is implemented by both the legacy <cr-composebox>
+// and the <contextual-tasks-inner-composebox>, so this suite runs on both
+// paths.
+// =============================================================================
+[true, false].forEach(useFork => {
+  suite(
+      `ContextualTasksComposeboxForkInjectInputTest ` +
+          `(useContextualTasksComposeboxFork = ${useFork})`,
+      () => {
+        const QUERY_AUTOCOMPLETE_FN = 'queryAutocompleteWithSuggestInventory';
+        let testProxy: TestContextualTasksBrowserProxy;
+        let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>;
+        let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
+        let searchboxCallbackRouterRemote: SearchboxPageRemote;
+        let parts: CtComposeboxAppParts;
+
+        setup(async () => {
+          const win = window as any;
+
+          if (!win.chrome) {
+            Object.assign(window, {chrome: {}});
+          }
+
+          if (!win.chrome.histograms) {
+            win.chrome.histograms = {
+              recordEnumerationValue: () => {},
+              recordUserAction: () => {},
+              recordBoolean: () => {},
+            };
+          }
+
+          document.body.innerHTML = win.trustedTypes!.emptyHTML;
+
+          loadTimeData.overrideValues({
+            contextualMenuUsePecApi: false,
+            composeboxSmartTabSharingVisible: false,
+            enableComposeboxJumpFix: false,
+            composeboxShowTypedSuggest: true,
+            composeboxShowZps: true,
+            enableBasicModeZOrder: true,
+            composeboxShowContextMenu: true,
+          });
+
+          testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+          BrowserProxyImpl.setInstance(testProxy);
+
+          mockComposeboxPageHandler =
+              TestMock.fromClass(ComposeboxPageHandlerRemote);
+          mockComposeboxPageHandler.setResultFor(
+              'getSmartTabSharingActive', Promise.resolve({active: false}));
+          mockComposeboxPageHandler.setResultFor(
+              'canShowNextboxAnimation', Promise.resolve({canShow: true}));
+          mockSearchboxPageHandler =
+              TestMock.fromClass(SearchboxPageHandlerRemote);
+          mockSearchboxPageHandler.setResultFor(
+              'getInputState', Promise.resolve({state: new MockInputState()}));
+          mockSearchboxPageHandler.setResultFor(
+              'getPageClassification',
+              Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
+          mockSearchboxPageHandler.setResultFor(
+              'getRecentTabs', Promise.resolve({tabs: []}));
+          mockSearchboxPageHandler.setResultFor(
+              'addTabContext',
+              Promise.resolve({high: BigInt(1), low: BigInt(2)}));
+          const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
+          searchboxCallbackRouterRemote =
+              searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
+          ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+              mockComposeboxPageHandler as any, mockSearchboxPageHandler as any,
+              searchboxCallbackRouter));
+
+          parts = await createCtComposeboxApp(useFork);
+        });
+
+        // Flushes pending searchbox callbacks into the page, then settles the
+        // inner element and the wrapper so reactive state is current.
+        async function flushAndSettle() {
+          await searchboxCallbackRouterRemote.$.flushForTesting();
+          await microtasksFinished();
+          await parts.innerComposebox.updateComplete;
+          await parts.wrapper.updateComplete;
+        }
+
+        // Reads the wrapper's protected suggestions state (test-only cast).
+        function wrapperSuggestionsState() {
+          return parts.wrapper as unknown as {
+            zeroStateSuggestions_: AutocompleteResult,
+            isLoading_: boolean,
+          };
+        }
+
+        // Creates a real pending upload: the file-add surface registers the
+        // file, and a non-terminal processing status for the same token moves
+        // it into `pendingUploads`.
+        async function createPendingUpload() {
+          const {innerComposebox} = parts;
+          await uploadFileAndVerify(
+              FAKE_TOKEN_STRING,
+              new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}),
+              innerComposebox, mockSearchboxPageHandler);
+          searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+              FAKE_TOKEN_STRING, ContextUploadStatus.kProcessing, null);
+          await flushAndSettle();
+          assertTrue(
+              innerComposebox.files.get(FAKE_TOKEN_STRING) !== undefined,
+              'The pending file should be tracked in `files`');
+          assertFalse(
+              innerComposebox.fileUploadsComplete,
+              'The processing upload should be pending');
+          assertFalse(
+              innerComposebox.canSubmitFilesAndInput,
+              'A pending upload should block submission');
+        }
+
+        test('InjectInputSubmitAfterInjectionTrue', async () => {
+          const {innerComposebox, wrapper} = parts;
+          const TEST_QUERY = 'injected query';
+          const submitBaseline =
+              mockSearchboxPageHandler.getCallCount('submitQuery');
+
+          // Call `injectInput` with query text and submit_after_injection =
+          // true.
+          await wrapper.injectInput({
+            title: null,
+            thumbnail: null,
+            iconId: IconType.kUnspecified,
+            fileToken: null,
+            supportsUnimodal: false,
+            queryText: TEST_QUERY,
+            submitAfterInjection: true,
+          });
+          await innerComposebox.updateComplete;
+
+          // Verify `submitQuery` is called once with the injected text.
+          assertEquals(
+              submitBaseline + 1,
+              mockSearchboxPageHandler.getCallCount('submitQuery'),
+              'The injection should submit exactly once');
+          const submitArgs = mockSearchboxPageHandler.getArgs('submitQuery');
+          assertEquals(TEST_QUERY, submitArgs[submitArgs.length - 1][0]);
+        });
+
+        test('InjectInputSubmitAfterInjectionTrueWithFile', async () => {
+          const {innerComposebox, wrapper} = parts;
+          const TEST_QUERY = 'injected query';
+          const submitBaseline =
+              mockSearchboxPageHandler.getCallCount('submitQuery');
+
+          await wrapper.injectInput({
+            title: 'title',
+            thumbnail: 'thumbnail',
+            iconId: IconType.kUnspecified,
+            fileToken: FAKE_TOKEN_STRING,
+            supportsUnimodal: true,
+            queryText: TEST_QUERY,
+            submitAfterInjection: true,
+          });
+          await innerComposebox.updateComplete;
+
+          // Since the file is injected as already successful, it should submit
+          // immediately.
+          assertEquals(
+              submitBaseline + 1,
+              mockSearchboxPageHandler.getCallCount('submitQuery'),
+              'The injection should submit exactly once');
+          const submitArgs = mockSearchboxPageHandler.getArgs('submitQuery');
+          assertEquals(TEST_QUERY, submitArgs[submitArgs.length - 1][0]);
+        });
+
+        test('InjectInputSubmitAfterInjectionFalse', async () => {
+          const {innerComposebox, wrapper} = parts;
+          const TEST_QUERY = 'injected query';
+          const submitBaseline =
+              mockSearchboxPageHandler.getCallCount('submitQuery');
+
+          // Call `injectInput` with query text and submit_after_injection =
+          // false.
+          await wrapper.injectInput({
+            title: null,
+            thumbnail: null,
+            iconId: IconType.kUnspecified,
+            fileToken: null,
+            supportsUnimodal: false,
+            queryText: TEST_QUERY,
+            submitAfterInjection: false,
+          });
+          await innerComposebox.updateComplete;
+          await innerComposebox.getInputElement().updateComplete;
+
+          // Verify input is set.
+          assertEquals(TEST_QUERY, innerComposebox.input);
+          assertEquals(
+              TEST_QUERY, innerComposebox.getInputElement().$.input.value);
+
+          // Verify `submitQuery` was not called.
+          assertEquals(
+              submitBaseline,
+              mockSearchboxPageHandler.getCallCount('submitQuery'));
+        });
+
+        test('InjectInputPopulatesInjectedFileFields', async () => {
+          const {innerComposebox, wrapper} = parts;
+          // Contains a space, ':', '/', '?' and '&' so the encoded URL below
+          // differs from plain concatenation.
+          const THUMBNAIL = 'https://example.com/a b.png?x=1&y=2';
+
+          await wrapper.injectInput({
+            title: 'injected title',
+            thumbnail: THUMBNAIL,
+            iconId: IconType.kFormatQuoteFilled,
+            fileToken: FAKE_TOKEN_STRING,
+            supportsUnimodal: true,
+            queryText: null,
+            submitAfterInjection: false,
+          });
+          await innerComposebox.updateComplete;
+
+          const file = innerComposebox.files.get(FAKE_TOKEN_STRING);
+          assertTrue(file !== undefined, 'The injected file should exist');
+          assertEquals(FAKE_TOKEN_STRING, file.uuid);
+          assertEquals('injected title', file.name);
+          assertEquals('injectedinput', file.type);
+          assertEquals(ContextUploadStatus.kUploadSuccessful, file.status);
+          const expectedUrl =
+              'chrome://image?url=' + encodeURIComponent(THUMBNAIL);
+          assertEquals(expectedUrl, file.dataUrl);
+          assertEquals(expectedUrl, file.objectUrl);
+          assertEquals('quoteFilled', file.iconName);
+          assertTrue(file.supportsUnimodal);
+        });
+
+        test('LateAutocompleteResultsGatedByQueryId', async () => {
+          const {innerComposebox, wrapper} = parts;
+          const TEST_QUERY = 'injected query';
+
+          const queryBaseline =
+              mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN);
+          await wrapper.injectInput({
+            title: null,
+            thumbnail: null,
+            iconId: IconType.kUnspecified,
+            fileToken: null,
+            supportsUnimodal: false,
+            queryText: TEST_QUERY,
+            submitAfterInjection: false,
+          });
+          await innerComposebox.updateComplete;
+
+          // Anchor: the non-submit injection queried autocomplete once for
+          // the injected text.
+          assertEquals(
+              queryBaseline + 1,
+              mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN),
+              'The non-submit injection should query autocomplete once');
+          const queryArgs =
+              mockSearchboxPageHandler.getArgs(QUERY_AUTOCOMPLETE_FN);
+          assertEquals(TEST_QUERY, queryArgs[queryArgs.length - 1][1]);
+          const activeQueryId = innerComposebox.activeQueryId;
+          assertTrue(activeQueryId >= 0, 'A live query id should be active');
+
+          const resultChangedResults: AutocompleteResult[] = [];
+          innerComposebox.addEventListener('result-changed', e => {
+            resultChangedResults.push(
+                (e as CustomEvent<AutocompleteResult>).detail);
+          });
+
+          // A stale-ID result whose input matches `lastQueriedInput`: only
+          // the query-ID guard can reject it.
+          const wrapperState = wrapperSuggestionsState();
+          const suggestionsBefore = {
+            queryId: wrapperState.zeroStateSuggestions_.queryId,
+            input: wrapperState.zeroStateSuggestions_.input,
+            matchCount: wrapperState.zeroStateSuggestions_.matches.length,
+          };
+          wrapper.setIsLoadingForTesting(true);
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: activeQueryId + 1,
+                input: TEST_QUERY,
+                matches: [createAutocompleteMatch({
+                  allowedToBeDefaultMatch: false,
+                  contents: TEST_QUERY,
+                })],
+              }));
+          await flushAndSettle();
+
+          assertEquals(TEST_QUERY, innerComposebox.input);
+          assertEquals(null, innerComposebox.result);
+          assertEquals(null, innerComposebox.getDropdownElement().result);
+          assertEquals(
+              0, resultChangedResults.length,
+              'A stale-ID result must not fire result-changed');
+          assertEquals(
+              suggestionsBefore.queryId,
+              wrapperState.zeroStateSuggestions_.queryId);
+          assertEquals(
+              suggestionsBefore.input,
+              wrapperState.zeroStateSuggestions_.input);
+          assertEquals(
+              suggestionsBefore.matchCount,
+              wrapperState.zeroStateSuggestions_.matches.length);
+          assertTrue(
+              wrapperState.isLoading_,
+              'A rejected result must not touch the wrapper loading state');
+
+          // A correct-ID result with a DIFFERENT input is accepted end to end:
+          // mixin state, the outward result-changed event, and the wrapper
+          // suggestions.
+          const OTHER_QUERY = TEST_QUERY + ' refined';
+          searchboxCallbackRouterRemote.autocompleteResultChanged(
+              createAutocompleteResultForTesting({
+                queryId: activeQueryId,
+                input: OTHER_QUERY,
+                matches: [
+                  createAutocompleteMatch({
+                    allowedToBeDefaultMatch: false,
+                    contents: OTHER_QUERY,
+                  }),
+                  createAutocompleteMatch({allowedToBeDefaultMatch: false}),
+                ],
+              }));
+          await flushAndSettle();
+
+          const accepted = innerComposebox.result;
+          assertTrue(accepted !== null, 'The result should be accepted');
+          assertEquals(activeQueryId, accepted.queryId);
+          assertEquals(OTHER_QUERY, accepted.input);
+          assertEquals(2, accepted.matches.length);
+          assertEquals(
+              1, resultChangedResults.length,
+              'The accepted result must fire result-changed once');
+          const detail = resultChangedResults[0]!;
+          assertEquals(activeQueryId, detail.queryId);
+          assertEquals(OTHER_QUERY, detail.input);
+          assertEquals(2, detail.matches.length);
+          assertEquals(
+              activeQueryId, wrapperState.zeroStateSuggestions_.queryId);
+          assertEquals(OTHER_QUERY, wrapperState.zeroStateSuggestions_.input);
+          assertEquals(2, wrapperState.zeroStateSuggestions_.matches.length);
+          assertFalse(
+              wrapperState.isLoading_,
+              'The accepted result should clear the wrapper loading state');
+        });
+
+        test(
+            'LateResultRejectedWhileSubmitDeferredOnPendingUpload',
+            async () => {
+              const {innerComposebox, wrapper} = parts;
+              const NEW_QUERY = 'injected submit query';
+
+              await createPendingUpload();
+
+              // A real ZPS request whose id the late result replays below.
+              const queryBaseline =
+                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN);
+              await wrapper.injectInput({
+                title: null,
+                thumbnail: null,
+                iconId: IconType.kUnspecified,
+                fileToken: null,
+                supportsUnimodal: false,
+                queryText: '',
+                submitAfterInjection: false,
+              });
+              await innerComposebox.updateComplete;
+              assertEquals(
+                  queryBaseline + 1,
+                  mockSearchboxPageHandler.getCallCount(QUERY_AUTOCOMPLETE_FN),
+                  'The empty injection should issue one ZPS query');
+              const queryArgs =
+                  mockSearchboxPageHandler.getArgs(QUERY_AUTOCOMPLETE_FN);
+              assertEquals('', queryArgs[queryArgs.length - 1][1]);
+              const staleQueryId = innerComposebox.activeQueryId;
+              assertTrue(staleQueryId >= 0, 'The ZPS query should be live');
+
+              // Inject the query to submit. The pending upload defers the
+              // wrapper submit, so `submitting` stays false and only the
+              // query-ID guard can reject the late result below.
+              const stopBaseline =
+                  mockSearchboxPageHandler.getCallCount('stopAutocomplete');
+              const submitBaseline =
+                  mockSearchboxPageHandler.getCallCount('submitQuery');
+              await wrapper.injectInput({
+                title: null,
+                thumbnail: null,
+                iconId: IconType.kUnspecified,
+                fileToken: null,
+                supportsUnimodal: false,
+                queryText: NEW_QUERY,
+                submitAfterInjection: true,
+              });
+              await innerComposebox.updateComplete;
+              assertEquals(NEW_QUERY, innerComposebox.input);
+              assertEquals(-1, innerComposebox.activeQueryId);
+              assertEquals('', innerComposebox.lastQueriedInput);
+              assertEquals(
+                  submitBaseline,
+                  mockSearchboxPageHandler.getCallCount('submitQuery'),
+                  'The submit should be deferred on the pending upload');
+              assertEquals(
+                  stopBaseline + 2,
+                  mockSearchboxPageHandler.getCallCount('stopAutocomplete'),
+                  'The submit-path injection stops autocomplete twice: the ' +
+                      'explicit stop plus clearAutocompleteMatches');
+              assertEquals(null, innerComposebox.result);
+              assertEquals(null, innerComposebox.getDropdownElement().result);
+              assertFalse(
+                  innerComposebox.submitting,
+                  'The deferred submit must not set `submitting`, so only ' +
+                      'the query-ID guard can reject the late result below');
+
+              // Replay a result for the pre-injection query id with
+              // input === '' (=== lastQueriedInput), so an input-based guard
+              // would wrongly accept it.
+              let resultChangedCount = 0;
+              innerComposebox.addEventListener(
+                  'result-changed', () => resultChangedCount++);
+              const wrapperState = wrapperSuggestionsState();
+              const suggestionsBefore = {
+                queryId: wrapperState.zeroStateSuggestions_.queryId,
+                input: wrapperState.zeroStateSuggestions_.input,
+                matchCount: wrapperState.zeroStateSuggestions_.matches.length,
+              };
+              wrapper.setIsLoadingForTesting(true);
+              searchboxCallbackRouterRemote.autocompleteResultChanged(
+                  createAutocompleteResultForTesting({
+                    queryId: staleQueryId,
+                    input: '',
+                    matches: [createAutocompleteMatch(
+                        {allowedToBeDefaultMatch: false})],
+                  }));
+              await flushAndSettle();
+
+              assertEquals(NEW_QUERY, innerComposebox.input);
+              assertEquals(null, innerComposebox.result);
+              assertEquals(null, innerComposebox.getDropdownElement().result);
+              assertEquals(
+                  0, resultChangedCount,
+                  'The stale result must not fire result-changed');
+              assertEquals(
+                  suggestionsBefore.queryId,
+                  wrapperState.zeroStateSuggestions_.queryId);
+              assertEquals(
+                  suggestionsBefore.input,
+                  wrapperState.zeroStateSuggestions_.input);
+              assertEquals(
+                  suggestionsBefore.matchCount,
+                  wrapperState.zeroStateSuggestions_.matches.length);
+              assertTrue(
+                  wrapperState.isLoading_,
+                  'The stale result must not touch the wrapper loading state');
+              assertEquals(
+                  submitBaseline,
+                  mockSearchboxPageHandler.getCallCount('submitQuery'),
+                  'The submit should still be deferred');
+
+              // Completing the upload sends the injected query exactly once.
+              searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+                  FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful,
+                  null);
+              await flushAndSettle();
+              assertEquals(
+                  submitBaseline + 1,
+                  mockSearchboxPageHandler.getCallCount('submitQuery'),
+                  'Completing the upload should submit exactly once');
+              const submitArgs =
+                  mockSearchboxPageHandler.getArgs('submitQuery');
+              assertEquals(NEW_QUERY, submitArgs[submitArgs.length - 1][0]);
+            });
+
+        test('InjectInputSubmitDeferredUntilUploadCompletes', async () => {
+          const {innerComposebox, wrapper} = parts;
+          const TEST_QUERY = 'injected query';
+
+          await createPendingUpload();
+
+          const submitBaseline =
+              mockSearchboxPageHandler.getCallCount('submitQuery');
+          await wrapper.injectInput({
+            title: null,
+            thumbnail: null,
+            iconId: IconType.kUnspecified,
+            fileToken: null,
+            supportsUnimodal: false,
+            queryText: TEST_QUERY,
+            submitAfterInjection: true,
+          });
+          await innerComposebox.updateComplete;
+          assertEquals(
+              submitBaseline,
+              mockSearchboxPageHandler.getCallCount('submitQuery'),
+              'The submit should be deferred on the pending upload');
+
+          // Completing the upload drives the real
+          // can-submit-files-and-input-changed chain to the deferred submit.
+          searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+              FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
+          await flushAndSettle();
+          assertEquals(
+              submitBaseline + 1,
+              mockSearchboxPageHandler.getCallCount('submitQuery'),
+              'Completing the upload should submit exactly once');
+          const submitArgs = mockSearchboxPageHandler.getArgs('submitQuery');
+          assertEquals(TEST_QUERY, submitArgs[submitArgs.length - 1][0]);
+        });
+
+        test(
+            'Submit button disabled if no input supports unimodal',
+            async () => {
+              const {innerComposebox} = parts;
+              innerComposebox.injectInput(
+                  'title', 'thumbnail', FAKE_TOKEN_STRING,
+                  /*supportsUnimodal=*/ false);
+              searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+                  FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful,
+                  null);
+              await flushAndSettle();
+
+              assertEquals(
+                  0, innerComposebox.pendingUploads.size,
+                  'pendingUploads should be 0');
+              assertTrue(
+                  innerComposebox.submitEnabled,
+                  'submitEnabled should be true');
+              assertFalse(
+                  innerComposebox.canSubmitFilesAndInput,
+                  'canSubmitFilesAndInput should be false');
+
+              const submitButton = getSubmitButton(innerComposebox);
+              assertTrue(submitButton !== null, 'Submit button should exist');
+              assertTrue(submitButton.disabled, 'Button should be disabled');
+            });
+
+        test(
+            'Submit button enabled if no input supports unimodal but has ' +
+                'text query',
+            async () => {
+              const {innerComposebox} = parts;
+              innerComposebox.injectInput(
+                  'title', 'thumbnail', FAKE_TOKEN_STRING,
+                  /*supportsUnimodal=*/ false);
+              searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+                  FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful,
+                  null);
+              innerComposebox.input = 'test';
+              await flushAndSettle();
+
+              // Anchor the injected file: text alone enables the button, so
+              // a no-op injectInput would otherwise pass this test.
+              const file = innerComposebox.files.get(FAKE_TOKEN_STRING);
+              assertTrue(file !== undefined, 'The injected file should exist');
+              assertFalse(
+                  file.supportsUnimodal,
+                  'The injected file must not support unimodal');
+
+              const submitButton = getSubmitButton(innerComposebox);
+              assertTrue(submitButton !== null, 'Submit button should exist');
+              assertFalse(submitButton.disabled, 'Button should be enabled');
+            });
+
+        test('Submit button enabled if input supports unimodal', async () => {
+          const {innerComposebox} = parts;
+          innerComposebox.injectInput(
+              'title', 'thumbnail', FAKE_TOKEN_STRING,
+              /*supportsUnimodal=*/ true);
+          searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+              FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
+          await flushAndSettle();
+
+          assertEquals(
+              0, innerComposebox.pendingUploads.size,
+              'pendingUploads should be 0');
+          assertTrue(
+              innerComposebox.submitEnabled, 'submitEnabled should be true');
+          assertTrue(
+              innerComposebox.canSubmitFilesAndInput,
+              'canSubmitFilesAndInput should be true');
+
+          const submitButton = getSubmitButton(innerComposebox);
+          assertTrue(submitButton !== null, 'Submit button should exist');
+          assertFalse(submitButton.disabled, 'Button should be enabled');
+        });
+
+        test(
+            'Submit button enabled if at least one input supports unimodal',
+            async () => {
+              const {innerComposebox} = parts;
+              innerComposebox.injectInput(
+                  'title', 'thumbnail', FAKE_TOKEN_STRING,
+                  /*supportsUnimodal=*/ false);
+              searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+                  FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful,
+                  null);
+              innerComposebox.injectInput(
+                  'title2', 'thumbnail2', FAKE_TOKEN_STRING_2,
+                  /*supportsUnimodal=*/ true);
+              searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+                  FAKE_TOKEN_STRING_2, ContextUploadStatus.kUploadSuccessful,
+                  null);
+              await flushAndSettle();
+
+              const submitButton = getSubmitButton(innerComposebox);
+              assertTrue(submitButton !== null, 'Submit button should exist');
+              assertFalse(submitButton.disabled, 'Button should be enabled');
+            });
+
+        test('Injected input can be added, then deleted from AIM', async () => {
+          const {innerComposebox} = parts;
+          innerComposebox.injectInput(
+              'title', 'thumbnail.jpg', FAKE_TOKEN_STRING,
+              /*supportsUnimodal=*/ false);
+          await innerComposebox.updateComplete;
+          await microtasksFinished();
+
+          // Avoid using $.carousel since it may be cached.
+          const carousel =
+              innerComposebox.shadowRoot
+                  .querySelector<ComposeboxFileCarouselElement>('#carousel');
+          assertTrue(carousel !== null, 'Carousel should be in the DOM');
+          assertEquals(1, carousel.files.length);
+
+          innerComposebox.deleteFile(FAKE_TOKEN_STRING);
+          await innerComposebox.updateComplete;
+          await microtasksFinished();
+          assertEquals(
+              null, innerComposebox.shadowRoot.querySelector('#carousel'),
+              'Carousel should be removed from the DOM');
+        });
+
+        test(
+            'Injected input with icon can be added, then deleted from AIM',
+            async () => {
+              const {innerComposebox} = parts;
+              innerComposebox.injectInput(
+                  'title', '', FAKE_TOKEN_STRING, /*supportsUnimodal=*/ false,
+                  'quoteFilled');
+              await innerComposebox.updateComplete;
+              await microtasksFinished();
+
+              const file = innerComposebox.files.get(FAKE_TOKEN_STRING);
+              assertTrue(file !== undefined, 'The injected file should exist');
+              assertEquals('quoteFilled', file.iconName);
+
+              // Avoid using $.carousel since it may be cached.
+              const carousel =
+                  innerComposebox.shadowRoot
+                      .querySelector<ComposeboxFileCarouselElement>(
+                          '#carousel');
+              assertTrue(carousel !== null, 'Carousel should be in the DOM');
+              assertEquals(1, carousel.files.length);
+
+              innerComposebox.deleteFile(FAKE_TOKEN_STRING);
+              await innerComposebox.updateComplete;
+              await microtasksFinished();
+              assertEquals(
+                  null, innerComposebox.shadowRoot.querySelector('#carousel'),
+                  'Carousel should be removed from the DOM');
+            });
+
+        test(
+            'Injected input can be added, then deleted from composebox',
+            async () => {
+              const {innerComposebox} = parts;
+              innerComposebox.injectInput(
+                  'title', 'thumbnail.jpg', FAKE_TOKEN_STRING,
+                  /*supportsUnimodal=*/ false);
+              await innerComposebox.updateComplete;
+              await microtasksFinished();
+
+              // Avoid using $.carousel since it may be cached.
+              const carousel =
+                  innerComposebox.shadowRoot
+                      .querySelector<ComposeboxFileCarouselElement>(
+                          '#carousel');
+              assertTrue(carousel !== null, 'Carousel should be in the DOM');
+              assertEquals(1, carousel.files.length);
+
+              await deleteLastFile(innerComposebox);
+              await innerComposebox.updateComplete;
+              await microtasksFinished();
+
+              assertEquals(
+                  null, innerComposebox.shadowRoot.querySelector('#carousel'),
+                  'Carousel should be removed from the DOM');
+            });
       });
 });
