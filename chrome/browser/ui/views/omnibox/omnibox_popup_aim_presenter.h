@@ -21,7 +21,6 @@ class OmniboxPopupPresenterDelegate;
 class OmniboxPopupAimPresenter
     : public OmniboxPopupPresenterBase,
       public views::WidgetObserver,
-      public permissions::PermissionRequestManager::Observer,
       public views::FocusChangeListener {
  public:
   OmniboxPopupAimPresenter(LocationBar* location_bar,
@@ -50,11 +49,6 @@ class OmniboxPopupAimPresenter
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
-  // permissions::PermissionRequestManager::Observer:
-  // Called when a permission prompt is removed. Sets transition flag to prevent
-  // widget activation changes from hiding the popup during prompt dismissal.
-  void OnPromptRemoved() override;
-
   // views::FocusChangeListener:
   // Intercepts focus shifts while `is_restoring_focus_after_file_selection_` is
   // active. When the window focus is restored to the native Omnibox text field,
@@ -69,18 +63,10 @@ class OmniboxPopupAimPresenter
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
-  base::ScopedObservation<permissions::PermissionRequestManager,
-                          permissions::PermissionRequestManager::Observer>
-      permission_observation_{this};
-
   // Observes the browser window's FocusManager to track focus restoration after
   // the file selector closes.
   base::ScopedObservation<views::FocusManager, views::FocusChangeListener>
       focus_manager_observation_{this};
-
-  // Set to true when a permission prompt is removed to prevent the omnibox
-  // popup from closing due to activation loss while focus is being restored.
-  bool is_handling_prompt_dismissal_ = false;
 
   // Set to true when the file selection dialog is closed to prevent the
   // omnibox popup from closing due to focus transitions during focus

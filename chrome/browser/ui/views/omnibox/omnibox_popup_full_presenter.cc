@@ -198,20 +198,22 @@ void OmniboxPopupFullPresenter::SynchronizePopupBounds() {
 
 void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
                                                           bool active) {
+  // If omnibox has received focus, it has been told by permission prompt that
+  // permission prompt is closed and omnibox can behave normally again.
+  // Therefore, turn off the 'embedded-permission-showing' flag that forces
+  // omnibox to ignore focus-out events via function.
+  if (active) {
+    OnWidgetActivated();
+    return;
+  }
+
+  // Close full omnibox popup if there is no directive (like permission prompt
+  // open) to ignore focus out events, and this is a focus out event.
   if (!active &&
       controller()->popup_state_manager()->popup_state() ==
           OmniboxPopupState::kFull &&
-      !location_bar()->in_popup_state_transition()) {
-    // Don't close popup if there's an active permission prompt.
-    if (auto* content = GetWebUIContent()) {
-      auto* permission_manager =
-          permissions::PermissionRequestManager::FromWebContents(
-              content->GetWebContents());
-      if (permission_manager && permission_manager->IsRequestInProgress()) {
-        return;
-      }
-    }
-
+      !location_bar()->in_popup_state_transition() &&
+      !IsPermissionPromptPreventingClose()) {
     // TODO(b/519724566): Look into using popup_closer here.
     // Clear results here since `DeactivatePopupAndKillFocus` can happen
     // after the new tab is opened and can pass on the stale results.

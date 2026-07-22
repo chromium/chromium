@@ -317,6 +317,34 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
             OmniboxPopupState::kAim);
 }
 
+// Verify that permission prompt added notification prevents omnibox popup
+// close.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+                       PermissionPromptAddedPreventsPopupClose) {
+  location_bar()->GetOmniboxController()->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  presenter->Show();
+
+  // Simulate `OnPromptAdded` notification (as if permission prompt is shown).
+  static_cast<permissions::PermissionRequestManager::Observer*>(presenter)
+      ->OnPromptAdded();
+
+  // Simulate loss of widget activation while permission prompt is showing.
+  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+      nullptr, /*active=*/false);
+
+  // Verify popup state is still kAim (omnibox did not close due to activation
+  // loss).
+  EXPECT_EQ(location_bar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state(),
+            OmniboxPopupState::kAim);
+}
+
 // Verify that active deactivation blockers prevent the omnibox popup from
 // closing, and that destroying the blockers allows it to close.
 IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,

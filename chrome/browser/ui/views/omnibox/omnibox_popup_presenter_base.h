@@ -12,8 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -49,8 +51,10 @@ class OmniboxPopupDeactivationBlocker {
 // this class is presentation only, i.e. Views and Widgets.  For omnibox logic
 // concerns and communication between native omnibox code and the WebUI code,
 // work with OmniboxPopupViewWebUI directly.
-class OmniboxPopupPresenterBase : public content::WebContentsObserver,
-                                  public SearchboxHandler::Delegate {
+class OmniboxPopupPresenterBase
+    : public content::WebContentsObserver,
+      public SearchboxHandler::Delegate,
+      public permissions::PermissionRequestManager::Observer {
  public:
   // An RAII-style helper that registers itself as a blocker upon creation and
   // unregisters itself when destroyed.
@@ -187,7 +191,26 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
 
   views::Widget* GetWidget() const { return widget_.get(); }
 
-  OmniboxController* controller() const;
+  OmniboxController* controller() const { return controller_.get(); }
+
+  // Sets explicit permission prompt showing state. Called by permission request
+  // observer callbacks and WebUI media request handlers.
+  void SetPermissionPromptShowing(bool showing);
+
+  // permissions::PermissionRequestManager::Observer:
+  void OnPromptAdded() override;
+  void OnPromptRemoved() override;
+  void OnPromptRecreateViewFailed() override;
+  void OnPromptCreationFailedHiddenTab() override;
+  void OnRequestsFinalized() override;
+  void OnPermissionRequestManagerDestructed() override;
+
+  // Returns true if a permission prompt is showing or being dismissed,
+  // which should prevent out-of-focus activation events from hiding the popup.
+  bool IsPermissionPromptPreventingClose() const;
+
+  // Called by subclasses when widget activation changes to active = true.
+  void OnWidgetActivated();
 
   // Whether focus has been explicitly requested since the popup was shown.
   bool focus_requested_ = false;
@@ -199,6 +222,17 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   friend class OmniboxPopupViewWebUITest;
   friend class OmniboxWebUiInteractiveTest;
   friend class OmniboxPopupPresenterBaseTest;
+
+  base::ScopedObservation<permissions::PermissionRequestManager,
+                          permissions::PermissionRequestManager::Observer>
+      permission_observation_{this};
+
+  // Set to true when a permission prompt is added/showing.
+  bool is_prompt_showing_ = false;
+
+  // Set to true when a permission prompt is removed to prevent the omnibox
+  // popup from closing due to activation loss while focus is being restored.
+  bool is_handling_prompt_dismissal_ = false;
 
   void OnWidgetClosed(views::Widget::ClosedReason closed_reason);
 
