@@ -1900,6 +1900,45 @@ TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
           EqualsSuggestion(SuggestionType::kManageAutofillAiIdentityDocs)));
 }
 
+TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
+       ShowFetchingSuggestionWhenMultiplePending) {
+  testing::NiceMock<MockAutofillAiPersonalContextAccessManager> access_manager;
+  client().set_personal_context_access_manager(&access_manager);
+
+  SetForm({PASSPORT_NUMBER, VEHICLE_LICENSE_PLATE, NAME_FULL});
+  SetEntities({});
+
+  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
+  // The triggering field (`NAME_FULL`) is compatible with multiple entity
+  // types. The suggestion generator checks the status of all compatible
+  // types, so we define catch-all default expectations first to prevent
+  // GMock from reporting unexpected call failures on other types.
+  EXPECT_CALL(access_manager, ServerHasDataAvailable)
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType)
+      .WillRepeatedly(Return(RequestStatus::kNotStarted));
+
+  EXPECT_CALL(access_manager,
+              ServerHasDataAvailable(EntityType(EntityTypeName::kPassport)))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
+                                  EntityType(EntityTypeName::kPassport)))
+      .WillRepeatedly(Return(RequestStatus::kPending));
+
+  EXPECT_CALL(access_manager,
+              ServerHasDataAvailable(EntityType(EntityTypeName::kVehicle)))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(access_manager, GetPrefetchStatusByEntityType(
+                                  EntityType(EntityTypeName::kVehicle)))
+      .WillRepeatedly(Return(RequestStatus::kPending));
+
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(2)),
+      ElementsAre(EqualsSuggestion(SuggestionType::kFetchingAmbientData),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManageAutofillAi)));
+}
+
 class AutofillAiSuggestionGeneratorPolicyTest
     : public AutofillAiSuggestionGeneratorTest {
  public:
