@@ -38,8 +38,9 @@ class InstallerDownloaderInteractiveUiTest
         {kInstallerDownloader,
          {{kInstallerUrlTemplateParam.name, kUrlTemplate}}}};
     if (GetParam()) {
-      enabled_features.push_back({infobars::kCentralizedInfoBarFramework,
-                                  {{"installer_downloader", "true"}}});
+      enabled_features.push_back(
+          {infobars::kCentralizedInfoBarFramework,
+           {{"MigratedInstallerDownloader", "true"}}});
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     InteractiveBrowserTest::SetUp();
