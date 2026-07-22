@@ -4,13 +4,21 @@
 
 #include "build/rust/allocator/allocator_impls.h"
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <cstddef>
 #include <cstring>
+
+// //build doesn't depend on //base, so we can't use UNSAFE_BUFFERS macro here.
+// We define a local equivalent instead.
+#if defined(__clang__)
+// clang-format off
+#define BUILD_UNSAFE_BUFFERS(...)            \
+  _Pragma("clang unsafe_buffer_usage begin") \
+  __VA_ARGS__                                \
+  _Pragma("clang unsafe_buffer_usage end")
+// clang-format on
+#else
+#define BUILD_UNSAFE_BUFFERS(...) __VA_ARGS__
+#endif
 
 #include "build/build_config.h"
 #include "build/rust/allocator/buildflags.h"
@@ -94,7 +102,9 @@ unsigned char* alloc_zeroed(size_t size, size_t align) {
   // such API today. See b/342251590.
   unsigned char* p = alloc(size, align);
   if (p) {
-    memset(p, 0, size);
+    // SAFETY: `p` points to a newly allocated block of `size` bytes, so
+    // zeroing `size` bytes is safe.
+    BUILD_UNSAFE_BUFFERS(memset(p, 0, size));
   }
   return p;
 #else
