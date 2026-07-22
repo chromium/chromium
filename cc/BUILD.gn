@@ -185,8 +185,6 @@ cc_component("cc") {
     "layers/video_frame_provider.h",
     "layers/video_frame_provider_client_impl.cc",
     "layers/video_frame_provider_client_impl.h",
-    "layers/video_layer.cc",
-    "layers/video_layer.h",
     "layers/video_layer_impl.cc",
     "layers/video_layer_impl.h",
     "layers/view_transition_content_layer.cc",
