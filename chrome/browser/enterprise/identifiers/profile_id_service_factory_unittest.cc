@@ -62,6 +62,8 @@ class ProfileIdServiceFactoryTest : public testing::Test,
     store_.set_policy_data_for_testing(std::move(policy_data));
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   kFakeDeviceID);
+    fake_statistics_provider_.SetLoadingState(
+        ash::system::StatisticsProvider::LoadingState::kFinished);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
     EXPECT_TRUE(profile_manager_.SetUp());

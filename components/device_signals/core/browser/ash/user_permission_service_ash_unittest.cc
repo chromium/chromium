@@ -91,7 +91,7 @@ class UserPermissionServiceAshTest : public testing::Test {
 
   void SetUserAffiliated(bool is_affiliated = true) {
     EXPECT_CALL(*mock_user_delegate_, IsAffiliated())
-        .WillOnce(Return(is_affiliated));
+        .WillRepeatedly(Return(is_affiliated));
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -120,10 +120,12 @@ TEST_F(UserPermissionServiceAshTest,
   SetDeviceAsCloudManaged();
   SetSigninContext(/*is_signin_context=*/false);
   SetUserAffiliated();
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser())
+      .WillRepeatedly(Return(true));
 
   EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
   EXPECT_EQ(permission_service_->CanCollectReportSignals(),
-            UserPermission::kUnsupported);
+            UserPermission::kGranted);
 }
 
 // Tests that signals can be collected on the signin screen of a managed device.
@@ -131,6 +133,8 @@ TEST_F(UserPermissionServiceAshTest,
        CanCollectSignals_DeviceCloudManaged_SigninContext) {
   SetDeviceAsCloudManaged();
   SetSigninContext();
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser())
+      .WillRepeatedly(Return(false));
 
   EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
   EXPECT_EQ(permission_service_->CanCollectReportSignals(),
@@ -145,6 +149,8 @@ TEST_F(UserPermissionServiceAshTest,
   SetDeviceAsCloudManaged();
   SetSigninContext(/*is_signin_context=*/false);
   SetUserAffiliated(/*is_affiliated=*/false);
+  EXPECT_CALL(*mock_user_delegate_, IsManagedUser())
+      .WillRepeatedly(Return(true));
 
   EXPECT_EQ(permission_service_->CanCollectSignals(),
             UserPermission::kUnsupported);

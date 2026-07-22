@@ -56,16 +56,12 @@ ReportSchedulerDesktop::ReportSchedulerDesktop()
 ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
     : profile_(profile), prefs_(profile->GetPrefs()) {
   if (profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-    NOTREACHED();
-#else
     if (enterprise_signals::features::IsProfileSignalsReportingEnabled()) {
       user_security_signals_service_ =
           std::make_unique<UserSecuritySignalsService>(
               prefs_, this,
               profile->GetProfilePolicyConnector()->policy_service());
     }
-#endif
   }
 }
 

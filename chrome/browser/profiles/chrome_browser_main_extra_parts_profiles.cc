@@ -443,8 +443,9 @@
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/idle/idle_service_factory.h"
-#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 #endif
+
+#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -1027,15 +1028,13 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   enterprise_idle::IdleServiceFactory::GetInstance();
-  enterprise_signals::SignalsAggregatorFactory::GetInstance();
 #endif
+  enterprise_signals::SignalsAggregatorFactory::GetInstance();
 #if BUILDFLAG(ENTERPRISE_PROXY) && BUILDFLAG(IS_ANDROID)
   EnterpriseNetworkAuthServiceFactory::GetInstance();
   EnterpriseProxyServiceFactory::GetInstance();
 #endif
-#if !BUILDFLAG(IS_CHROMEOS)
   enterprise_reporting::CloudProfileReportingServiceFactory::GetInstance();
-#endif
   enterprise_reporting::LegacyTechServiceFactory::GetInstance();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

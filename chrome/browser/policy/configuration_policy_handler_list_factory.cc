@@ -3135,19 +3135,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   signin_legacy_policies.push_back(std::make_unique<SimplePolicyHandler>(
       key::kForceBrowserSignin, prefs::kForceBrowserSignin,
       base::Value::Type::BOOLEAN));
+#endif
 
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
-      std::make_unique<SimplePolicyHandler>(
-          key::kUserSecuritySignalsReporting,
-          enterprise_reporting::kUserSecuritySignalsReporting,
-          base::Value::Type::BOOLEAN)));
-  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
-      std::make_unique<SimplePolicyHandler>(
-          key::kUserSecurityAuthenticatedReporting,
-          enterprise_reporting::kUserSecurityAuthenticatedReporting,
-          base::Value::Type::BOOLEAN)));
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(
@@ -3170,6 +3159,17 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::move(signin_legacy_policies),
       std::make_unique<BrowserSigninPolicyHandler>(chrome_schema)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kUserSecuritySignalsReporting,
+          enterprise_reporting::kUserSecuritySignalsReporting,
+          base::Value::Type::BOOLEAN)));
+  handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
+      std::make_unique<SimplePolicyHandler>(
+          key::kUserSecurityAuthenticatedReporting,
+          enterprise_reporting::kUserSecurityAuthenticatedReporting,
+          base::Value::Type::BOOLEAN)));
 
 #if BUILDFLAG(IS_CHROMEOS)
   std::vector<std::unique_ptr<ConfigurationPolicyHandler>>

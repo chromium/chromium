@@ -114,7 +114,7 @@ ProfileCloudManagementStatusProvider::FetchAuthority() {
   // This session's primary user may also have policies, and those policies may
   // not have per-profile support.
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (primary_user &&
+  if (primary_user && g_browser_process->profile_manager() &&
       IsProfileManaged(
           ash::ProfileHelper::Get()->GetProfileByUser(primary_user))) {
     return EnterpriseManagementAuthority::CLOUD;

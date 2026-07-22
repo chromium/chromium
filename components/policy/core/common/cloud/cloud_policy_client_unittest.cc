@@ -499,6 +499,8 @@ class CloudPolicyClientTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS)
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   "fake_serial_number");
+    fake_statistics_provider_.SetLoadingState(
+        ash::system::StatisticsProvider::LoadingState::kFinished);
 #endif
 
     CreateClient();

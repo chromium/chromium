@@ -236,12 +236,10 @@ void ReportScheduler::OnReportEnabledPrefChanged() {
   // For Chrome OS, it needn't register the cloud policy client here. The
   // |dm_token| and |client_id| should have already existed after the client is
   // initialized, and will keep valid during whole life-cycle.
-#if !BUILDFLAG(IS_CHROMEOS)
   if (!SetupBrowserPolicyClientRegistration()) {
     Stop();
     return;
   }
-#endif
 
   // Start the periodic report timer.
   RestartReportTimer();
@@ -285,6 +283,14 @@ bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
   if (cloud_policy_client_->is_registered()) {
     return true;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!profile_request_generator_) {
+    // Browser reporting uses the device-level CloudPolicyClient which is
+    // initialized and registered outside of this class on ChromeOS.
+    return true;
+  }
+#endif
 
   auto dm_token = GetDMToken();
   std::string client_id;
@@ -373,7 +379,9 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
 
   if (delegate_->AreSecurityReportsEnabled()) {
     // Does nothing if client is already registered.
-    SetupBrowserPolicyClientRegistration();
+    if (!SetupBrowserPolicyClientRegistration()) {
+      return;
+    }
   }
 
   if (active_report_generation_config_.report_trigger != kTriggerNone) {
@@ -740,14 +748,13 @@ ReportType ReportScheduler::TriggerToReportType(ReportTrigger trigger) {
 }
 
 policy::DMToken ReportScheduler::GetDMToken() {
+  if (profile_request_generator_) {
+    return delegate_->GetProfileDMToken();
+  }
 #if BUILDFLAG(IS_CHROMEOS)
   return policy::DMToken::CreateValidToken(cloud_policy_client_->dm_token());
 #else
-  if (profile_request_generator_) {
-    return delegate_->GetProfileDMToken();
-  } else {
-    return policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
-  }
+  return policy::BrowserDMTokenStorage::Get()->RetrieveDMToken();
 #endif
 }
 

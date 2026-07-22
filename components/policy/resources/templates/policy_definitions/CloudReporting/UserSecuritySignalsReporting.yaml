@@ -20,6 +20,7 @@ supported_on:
 - chrome.*:137-
 future_on:
 - ios
+- chrome_os
 owners:
 - seblalancette@chromium.org
 - cbe-device-trust-eng@google.com

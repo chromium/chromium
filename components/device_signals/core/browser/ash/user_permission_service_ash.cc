@@ -43,7 +43,11 @@ UserPermission UserPermissionServiceAsh::CanCollectSignals() const {
 }
 
 UserPermission UserPermissionServiceAsh::CanCollectReportSignals() const {
-  // Ash/ChromeOS are out of scope for signals reporting for now.
+  if (IsDeviceCloudManaged() && user_delegate_->IsManagedUser() &&
+      user_delegate_->IsAffiliated()) {
+    return UserPermission::kGranted;
+  }
+
   return UserPermission::kUnsupported;
 }
 

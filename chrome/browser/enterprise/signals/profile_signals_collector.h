@@ -43,13 +43,16 @@ class ProfileSignalsCollector : public BaseSignalsCollector {
                          SignalsAggregationResponse& response,
                          base::OnceClosure done_closure);
 
-  const raw_ptr<PolicyBlocklistService> policy_blocklist_service_;
-  const raw_ptr<PrefService> profile_prefs_;
-  const raw_ptr<policy::CloudPolicyManager> policy_manager_;
+  // These objects are owned directly by the Profile. During the interleaved teardown of
+  // ChromeOS multi-user tests, the memory for these profile-owned services might get freed
+  // before the SignalsAggregator (and this collector) is fully destroyed.
+  const raw_ptr<PolicyBlocklistService, DisableDanglingPtrDetection> policy_blocklist_service_;
+  const raw_ptr<PrefService, DisableDanglingPtrDetection> profile_prefs_;
+  const raw_ptr<policy::CloudPolicyManager, DisableDanglingPtrDetection> policy_manager_;
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
-  const raw_ptr<enterprise_connectors::ConnectorsService> connectors_service_;
+  const raw_ptr<enterprise_connectors::ConnectorsService, DisableDanglingPtrDetection> connectors_service_;
 #endif
-  const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
+  const raw_ptr<enterprise::ProfileIdService, DisableDanglingPtrDetection> profile_id_service_;
   base::WeakPtrFactory<ProfileSignalsCollector> weak_factory_{this};
 };
 

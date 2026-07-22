@@ -223,6 +223,10 @@ em::Channel ConvertToProtoChannel(version_info::Channel channel) {
 
 std::string GetDeviceName() {
 #if BUILDFLAG(IS_CHROMEOS)
+  if (ash::system::StatisticsProvider::GetInstance()->GetLoadingState() ==
+      ash::system::StatisticsProvider::LoadingState::kNotStarted) {
+    return std::string();
+  }
   return std::string(
       ash::system::StatisticsProvider::GetInstance()->GetMachineID().value_or(
           ""));

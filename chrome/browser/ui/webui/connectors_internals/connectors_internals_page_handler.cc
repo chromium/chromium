@@ -77,8 +77,6 @@ std::string ConvertPolicyLevelToString(DTCPolicyLevel level) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID)
 std::string GetStringFromTimestamp(base::Time timestamp) {
   using base::i18n::DateTimeFormatterOptions;
   using base::i18n::GetKnownLanguageTag;
@@ -93,8 +91,6 @@ std::string GetStringFromTimestamp(base::Time timestamp) {
                        YMDT::Short().with_time_precision(
                            DateTimeFormatterOptions::TimePrecision::kMinute)));
 }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -207,8 +203,6 @@ void ConnectorsInternalsPageHandler::GetClientCertificateState(
 
 void ConnectorsInternalsPageHandler::GetSignalsReportingState(
     GetSignalsReportingStateCallback callback) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID)
   auto* profile_prefs = profile_->GetPrefs();
 
   std::string last_upload_attempt_time_string =
@@ -298,18 +292,6 @@ void ConnectorsInternalsPageHandler::GetSignalsReportingState(
       base::BindOnce(&ConnectorsInternalsPageHandler::OnReportGenerated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(state)));
-#else
-  std::move(callback).Run(
-      connectors_internals::mojom::SignalsReportingState::New(
-          /*error_info=*/"User signals reporting is unsupported on the current "
-                         "platform",
-          /*status_report_enabled=*/false, /*signals_report_enabled=*/false,
-          /*last_upload_attempt_timestamp=*/std::string(),
-          /*last_upload_success_timestamp=*/std::string(),
-          /*last_signals_upload_config=*/std::string(),
-          /*can_collect_all_fields=*/false, /*signals_json=*/std::nullopt));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -348,8 +330,6 @@ void ConnectorsInternalsPageHandler::OnSignalsCollected(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_ANDROID)
 void ConnectorsInternalsPageHandler::OnReportGenerated(
     GetSignalsReportingStateCallback callback,
     connectors_internals::mojom::SignalsReportingStatePtr state,
@@ -379,6 +359,5 @@ void ConnectorsInternalsPageHandler::OnReportGenerated(
   std::move(callback).Run(std::move(state));
   request_generator_.reset();
 }
-#endif
 
 }  // namespace enterprise_connectors

@@ -17370,8 +17370,8 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Open Anyway
     </message>
 
-    <if expr="is_win or is_macosx or is_linux">
-      <message name="IDS_UTILITY_PROCESS_SYSTEM_SIGNALS_NAME" desc="The name of the utility process used to collect system signals. Only spawned on Windows, Mac or Linux.">
+    <if expr="is_win or is_macosx or is_linux or is_chromeos">
+      <message name="IDS_UTILITY_PROCESS_SYSTEM_SIGNALS_NAME" desc="The name of the utility process used to collect system signals. Only spawned on Windows, Mac, Linux or ChromeOS.">
         System Signals Utilities
       </message>
     </if>

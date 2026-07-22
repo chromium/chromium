@@ -26,6 +26,8 @@ source_set("enterprise") {
     "identifiers/profile_id_delegate_impl.h",
     "identifiers/profile_id_service_factory.h",
     "profile_management/saml_response_parser.h",
+    "reporting/cloud_profile_reporting_service.h",
+    "reporting/cloud_profile_reporting_service_factory.h",
     "reporting/legacy_tech/legacy_tech_report_generator.h",
     "reporting/legacy_tech/legacy_tech_report_policy_handler.h",
     "reporting/legacy_tech/legacy_tech_service.h",
@@ -161,6 +163,8 @@ source_set("enterprise") {
       "connectors/device_trust/signals/ash/ash_signals_filterer.h",
       "connectors/device_trust/signals/decorators/ash/ash_signals_decorator.h",
       "reporting/android_app_info_generator.h",
+      "signals/signals_aggregator_factory.h",
+      "signals/system_signals_service_host_factory.h",
     ]
   } else {
     public_deps += [
@@ -175,8 +179,6 @@ source_set("enterprise") {
       "remote_commands/user_remote_commands_factory.h",
       "remote_commands/user_remote_commands_service.h",
       "remote_commands/user_remote_commands_service_factory.h",
-      "reporting/cloud_profile_reporting_service.h",
-      "reporting/cloud_profile_reporting_service_factory.h",
     ]
   }
 
@@ -451,6 +453,8 @@ source_set("impl") {
     "identifiers/profile_id_delegate_impl.cc",
     "identifiers/profile_id_service_factory.cc",
     "profile_management/saml_response_parser.cc",
+    "reporting/cloud_profile_reporting_service.cc",
+    "reporting/cloud_profile_reporting_service_factory.cc",
     "reporting/legacy_tech/legacy_tech_report_generator.cc",
     "reporting/legacy_tech/legacy_tech_report_policy_handler.cc",
     "reporting/legacy_tech/legacy_tech_service.cc",
@@ -523,6 +527,8 @@ source_set("impl") {
     "//components/image_fetcher/core",
     "//components/policy/proto",
     "//components/pref_registry",
+    "//components/reporting/storage:storage_configuration",
+    "//components/reporting/storage:storage_module",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
@@ -602,7 +608,10 @@ source_set("impl") {
       "connectors/device_trust/signals/ash/ash_signals_filterer.cc",
       "connectors/device_trust/signals/decorators/ash/ash_signals_decorator.cc",
       "reporting/android_app_info_generator.cc",
+      "signals/signals_aggregator_factory.cc",
+      "signals/system_signals_service_host_factory.cc",
     ]
+    deps += [ "//chrome/services/system_signals/public/cpp/browser" ]
     deps += [
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/arc:arc_util",
@@ -634,12 +643,6 @@ source_set("impl") {
       "remote_commands/user_remote_commands_factory.cc",
       "remote_commands/user_remote_commands_service.cc",
       "remote_commands/user_remote_commands_service_factory.cc",
-      "reporting/cloud_profile_reporting_service.cc",
-      "reporting/cloud_profile_reporting_service_factory.cc",
-    ]
-    deps += [
-      "//components/reporting/storage:storage_configuration",
-      "//components/reporting/storage:storage_module",
     ]
   }
 

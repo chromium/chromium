@@ -316,6 +316,8 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
       // constructed below.
       fake_statistics_provider->SetMachineStatistic(
           ash::system::kSerialNumberKey, "fake_serial_number");
+      fake_statistics_provider->SetLoadingState(
+          ash::system::StatisticsProvider::LoadingState::kFinished);
     }
   };
   ScopedFakeSerialNumber fake_serial_number_;

@@ -19,6 +19,8 @@
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/buildflags/buildflags.h"
+
 #include "components/device_signals/core/browser/certificate_signals_collector.h"
 #include "components/device_signals/core/browser/file_system_signals_collector.h"
 #include "components/device_signals/core/browser/settings_signals_collector.h"
@@ -32,6 +34,13 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/browser_context.h"
 #include "net/ssl/client_cert_store.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
+#include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/device_signals/core/browser/android/android_os_signals_collector.h"
@@ -93,7 +102,8 @@ SignalsAggregatorFactory::SignalsAggregatorFactory()
 #endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(UserPermissionServiceFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   DependsOn(ProfileNetworkContextServiceFactory::GetInstance());
 #endif
 }
@@ -132,7 +142,8 @@ SignalsAggregatorFactory::BuildServiceInstanceForBrowserContext(
           CreateSettingsClient()));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   if (enterprise_signals::features::IsCertificateCollectionEnabled()) {
     auto* profile_network_service =
         ProfileNetworkContextServiceFactory::GetForContext(profile);
@@ -147,7 +158,8 @@ SignalsAggregatorFactory::BuildServiceInstanceForBrowserContext(
     }
   }
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
   collectors.push_back(
@@ -165,8 +177,19 @@ SignalsAggregatorFactory::BuildServiceInstanceForBrowserContext(
         g_browser_process->browser_policy_connector();
 
     if (browser_policy_connector) {
+#if BUILDFLAG(IS_CHROMEOS)
+      // Only fetch the device-level CloudPolicyManager if the user is
+      // affiliated, as we should only expose device-level signals (like
+      // the enrollment domain) to affiliated users.
+      if (enterprise_util::IsProfileAffiliated(profile)) {
+        browser_policy_manager = g_browser_process->platform_part()
+                                     ->browser_policy_connector_ash()
+                                     ->GetDeviceCloudPolicyManager();
+      }
+#else
       browser_policy_manager =
           browser_policy_connector->machine_level_user_cloud_policy_manager();
+#endif
     }
   }
 

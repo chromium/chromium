@@ -93,9 +93,8 @@ void ProfileSignalsCollector::GetProfileSignals(
       connectors_service_->GetAppliedRealTimeUrlCheck();
   signal_response.security_event_providers =
       connectors_service_->GetReportingServiceProviderNames();
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   signal_response.file_downloaded_providers =
       connectors_service_->GetAnalysisServiceProviderNames(
           enterprise_connectors::FILE_DOWNLOADED);
@@ -108,7 +107,8 @@ void ProfileSignalsCollector::GetProfileSignals(
   signal_response.print_providers =
       connectors_service_->GetAnalysisServiceProviderNames(
           enterprise_connectors::PRINT);
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 
   response.profile_signals_response = std::move(signal_response);
 

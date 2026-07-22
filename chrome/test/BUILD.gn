@@ -1161,6 +1161,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/browsing_data:platform_browser_tests",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/enterprise/net:platform_browser_tests",
+    "//chrome/browser/enterprise/reporting:platform_browser_tests",
     "//chrome/browser/gcm",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/history",
@@ -1271,10 +1272,6 @@ source_set("platform_browser_tests") {
   if (enable_webui_ntp) {
     # For web_request_apitest.cc.
     deps += [ "//chrome/browser/new_tab_page" ]
-  }
-
-  if (is_win || is_linux || is_mac || is_android) {
-    deps += [ "//chrome/browser/enterprise/reporting:platform_browser_tests" ]
   }
 
   if (!is_android) {
