@@ -80,7 +80,7 @@ enum class MemoryPressureListenerTag {
   kLruRendererCache = 47,
   // kCastMemoryPressureControllerImpl = 48,
   kFontGlobalContext = 49,
-  kClientDiscardableSharedMemoryManager = 50,
+  // kClientDiscardableSharedMemoryManager = 50,
   kMemoryReclaimerPressureListener = 51,
   kSkiaGraphicsPressureListener = 52,
   kBlinkIsolatesPressureListener = 53,

@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/discardable_memory/client/client_discardable_shared_memory_manager.h"
+
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/page_size.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
+#include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -80,8 +84,22 @@ class ClientDiscardableSharedMemoryManagerTest : public testing::Test {
       : task_env_(base::test::TaskEnvironment::MainThreadType::UI,
                   base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  void NotifyUpdateMemoryLimitAndRun(int percentage) {
+    base::RunLoop run_loop;
+    test_registry_.NotifyUpdateMemoryLimitAsync(percentage,
+                                                run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void NotifyReleaseMemoryAndRun() {
+    base::RunLoop run_loop;
+    test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   const size_t page_size_ = base::GetPageSize();
   base::test::TaskEnvironment task_env_;
+  base::TestMemoryConsumerRegistry test_registry_;
 };
 
 // This test allocates a single piece of memory, then verifies that calling
@@ -448,6 +466,33 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest,
   task_env_.FastForwardBy(
       ClientDiscardableSharedMemoryManager::kScheduledPurgeInterval);
   EXPECT_FALSE(client->IsPurgeScheduled());
+}
+
+TEST_F(ClientDiscardableSharedMemoryManagerTest, OnReleaseMemory) {
+  auto client =
+      base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
+
+  ASSERT_EQ(client->GetBytesAllocated(), 0u);
+  ASSERT_EQ(client->GetFreelistSize(), 0u);
+
+  auto mem1 = client->AllocateLockedDiscardableMemory(page_size_ * 3);
+  mem1 = nullptr;
+
+  // Because the manager allocates memory in larger chunks (e.g. 4MB) and carves
+  // out pages, the freelist already contains the rest of the chunk. We capture
+  // the exact size to assert that Moderate pressure frees absolutely nothing.
+  const size_t expected_freelist_size = client->GetFreelistSize();
+  EXPECT_GT(expected_freelist_size, 0u);
+
+  // At moderate pressure, memory should NOT be released.
+  NotifyUpdateMemoryLimitAndRun(base::kModerateMemoryPressureThreshold);
+  NotifyReleaseMemoryAndRun();
+  EXPECT_EQ(client->GetFreelistSize(), expected_freelist_size);
+
+  // At critical pressure, memory SHOULD be released.
+  NotifyUpdateMemoryLimitAndRun(base::kCriticalMemoryPressureThreshold);
+  NotifyReleaseMemoryAndRun();
+  EXPECT_EQ(client->GetFreelistSize(), 0u);
 }
 
 }  // namespace

@@ -13,6 +13,8 @@
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/page_size.h"
+#include "base/memory_coordinator/traits.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
@@ -75,6 +77,25 @@ void DeletedDiscardableSharedMemoryOnIO(
     int32_t id) {
   (*manager_mojo)->DeletedDiscardableSharedMemory(id);
 }
+
+constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
+    // Discardable memory caches unlocked regions (e.g., decoded images, fonts).
+    // The free list can hold tens or hundreds of megabytes depending on page
+    // complexity.
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+    // Releasing free segments unmaps shared memory regions, letting the OS
+    // reclaim pages directly without traversing memory contents.
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    // Unlocked discardable memory is a cache and can be regenerated on demand.
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    // Asynchronous because this class sometimes doesn't live on the main thread
+    // (single-process mode puts the Renderer main thread as a background
+    // sequence).
+    base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
+    // Does not enforce an internal capacity limit.
+    base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
+    // Stateless consumer. Performs one-shot eviction of current free segments.
+    base::MemoryConsumerTraits::IsStateful::kNo);
 
 }  // namespace
 
@@ -192,11 +213,11 @@ ClientDiscardableSharedMemoryManager::ClientDiscardableSharedMemoryManager(
       heap_(std::make_unique<DiscardableSharedMemoryHeap>()),
       io_task_runner_(std::move(io_task_runner)),
       manager_mojo_(nullptr),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::
-              kClientDiscardableSharedMemoryManager,
-          this) {
+      memory_consumer_registration_(
+          "ClientDiscardableSharedMemoryManager",
+          kMemoryConsumerTraits,
+          this,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ClientDiscardableSharedMemoryManager",
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -236,9 +257,13 @@ void ClientDiscardableSharedMemoryManager::OnBackgrounded() {
   foregrounded_ = false;
 }
 
-void ClientDiscardableSharedMemoryManager::OnMemoryPressure(
-    base::MemoryPressureLevel level) {
-  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+void ClientDiscardableSharedMemoryManager::OnUpdateMemoryLimit() {
+  // ClientDiscardableSharedMemoryManager allocates memory on demand for clients
+  // and does not maintain an internal capacity limit.
+}
+
+void ClientDiscardableSharedMemoryManager::OnReleaseMemory() {
+  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
     ReleaseFreeMemory();
   }
 }
