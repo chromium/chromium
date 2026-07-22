@@ -57,6 +57,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
     virtual void ClearSelection() = 0;
 
+    // Updates the action button label based on whether audio sharing is
+    // currently enabled.
+    virtual void SetAudioShared(bool audio_shared) {}
+
    protected:
     ListView() = default;
     ~ListView() override = default;
@@ -94,6 +98,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   bool SupportsReselectButton() const;
 
   void OnReselectRequested();
+
+  // Called when the user toggles the audio sharing checkbox.
+  // Propagates this update to the underlying view.
+  void OnAudioShareToggled(bool audio_shared);
 
   // Returns whether or not the reselect button (if supported), should be
   // enabled.

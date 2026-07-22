@@ -38,6 +38,7 @@ class DesktopMediaDelegatedSourceListView
   DesktopMediaListController::SourceListListener* GetSourceListListener()
       override;
   void ClearSelection() override;
+  void SetAudioShared(bool audio_shared) override;
 
   // DesktopMediaListController::SourceListListener:
   void OnSourceAdded(size_t index) override;
@@ -52,6 +53,8 @@ class DesktopMediaDelegatedSourceListView
   base::WeakPtr<DesktopMediaListController> controller_;
 
   std::optional<content::DesktopMediaID> selected_id_;
+
+  DesktopMediaList::Type type_;
 
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::MdTextButton> button_ = nullptr;

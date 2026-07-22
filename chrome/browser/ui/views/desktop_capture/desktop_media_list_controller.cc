@@ -113,6 +113,18 @@ void DesktopMediaListController::StartUpdatingInternal() {
   media_list_->StartUpdating(this);
 }
 
+void DesktopMediaListController::OnAudioShareToggled(bool audio_shared) {
+#if BUILDFLAG(IS_MAC)
+  // For delegated source lists on macOS (such as SCContentSharingPicker), the
+  // action button to launch the system picker is drawn within the delegated
+  // list view itself. We propagate the audio-shared state to dynamically update
+  // this button's label in sync with the user's toggle choice.
+  if (view_ && media_list_->IsSourceListDelegated()) {
+    view_->SetAudioShared(audio_shared);
+  }
+#endif
+}
+
 void DesktopMediaListController::FocusView() {
   if (view_) {
     view_->RequestFocus();

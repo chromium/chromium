@@ -129,6 +129,13 @@ std::u16string_view DesktopMediaContentPaneView::GetAudioLabelText() const {
                            : std::u16string_view();
 }
 
+views::ToggleButton*
+DesktopMediaContentPaneView::GetAudioToggleButtonForTesting() const {
+  return share_audio_view_
+             ? share_audio_view_->GetToggleButtonForTesting()  // IN-TEST
+             : nullptr;
+}
+
 #if BUILDFLAG(IS_MAC)
 void DesktopMediaContentPaneView::SetAudioWarningVisible(bool visible) {
   if (audio_warning_view_) {

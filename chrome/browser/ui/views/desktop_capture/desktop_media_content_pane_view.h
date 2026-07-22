@@ -16,6 +16,10 @@
 #include "chrome/browser/ui/views/desktop_capture/audio_permission_warning_view.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+namespace views {
+class ToggleButton;
+}
+
 class DesktopMediaContentPaneView : public views::View {
   METADATA_HEADER(DesktopMediaContentPaneView, views::View)
  public:
@@ -47,6 +51,10 @@ class DesktopMediaContentPaneView : public views::View {
   std::u16string_view GetAudioLabelText() const;
   bool IsAudioRecommendationVisible() const;
   void SetAudioRecommendationVisible(bool visible);
+
+  // Returns the audio sharing toggle button if it exists.
+  views::ToggleButton* GetAudioToggleButtonForTesting() const;
+
 #if BUILDFLAG(IS_MAC)
   void SetAudioWarningVisible(bool visible);
   bool IsAudioWarningVisible() const;
