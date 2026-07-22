@@ -7,6 +7,7 @@ import '//resources/cr_components/composebox/composebox_file_inputs.js';
 import '//resources/cr_components/composebox/composebox_input.js';
 import '//resources/cr_components/composebox/composebox_submit.js';
 import '//resources/cr_components/composebox/composebox_tool_chip.js';
+import '//resources/cr_components/composebox/composebox_voice_search.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import '//resources/cr_components/composebox/error_scrim.js';
 import '//resources/cr_components/composebox/file_carousel.js';
@@ -255,6 +256,13 @@ export class
     if (changedProperties.has('inputPlaceholderOverride') ||
         changedProperties.has('enableFileHint')) {
       this.updateInputPlaceholder();
+    }
+
+    if (!this.hasUpdated) {
+      // The mixin default reads the all-surfaces coherence key; Contextual
+      // Tasks must use the cobrowsing-specific key.
+      this.voiceSearchCoherenceEnabled = loadTimeData.getBoolean(
+          'voiceSearchCoherenceCobrowsingComposeboxEnabled');
     }
   }
 

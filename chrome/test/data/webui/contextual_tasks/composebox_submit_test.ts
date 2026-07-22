@@ -1027,8 +1027,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 // Submit behavior - both submit-before-autocomplete and selected-match submit -
 // is implemented by both the legacy <cr-composebox> and
 // the <contextual-tasks-inner-composebox>, so this suite runs on both paths.
-// Submit tests depending on behavior the fork does not implement yet (files,
-// voice) stay in the flag-off suites above.
+// Submit tests depending on behavior the fork does not implement yet
+// (files) stay in the flag-off suites above.
 // =============================================================================
 [true, false].forEach(useFork => {
   suite(

@@ -2,33 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// For composebox tests related to tools, secondary inputs (voice, drag/drop).
+// For composebox tests related to tools, secondary inputs (drag/drop).
 import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
-import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
-import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import type {ComposeboxFileThumbnailElement} from 'chrome://resources/cr_components/composebox/file_thumbnail.js';
-import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
-import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
-import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, FAKE_TOKEN_STRING, fixtureUrl, getSubmitContainer, installMock} from './contextual_tasks_test_utils.js';
+import {FAKE_TOKEN_STRING, fixtureUrl, getSubmitContainer} from './contextual_tasks_test_utils.js';
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN} from './test_searchbox_utils.js';
 
@@ -78,57 +73,6 @@ function createDragEvent(type: string, files: File[]): DragEvent {
   return event;
 }
 
-class MockSpeechRecognition {
-  voiceSearchInProgress: boolean = false;
-  onresult:
-      ((this: MockSpeechRecognition,
-        ev: SpeechRecognitionEvent) => void)|null = null;
-  onend: (() => void)|null = null;
-  onerror:
-      ((this: MockSpeechRecognition,
-        ev: SpeechRecognitionErrorEvent) => void)|null = null;
-  interimResults = true;
-  continuous = false;
-  constructor() {
-    mockSpeechRecognition = this;
-  }
-  start() {
-    this.voiceSearchInProgress = true;
-  }
-  stop() {
-    this.voiceSearchInProgress = false;
-  }
-  abort() {
-    this.voiceSearchInProgress = false;
-    if (this.onend) {
-      this.onend();
-    }
-  }
-}
-
-let mockSpeechRecognition: MockSpeechRecognition;
-
-function createResults(n: number): globalThis.SpeechRecognitionEvent {
-  return {
-    results: Array.from(Array(n)).map(() => {
-      return {
-        isFinal: false,
-        0: {
-          transcript: 'foo',
-          confidence: 1,
-        },
-      } as unknown as SpeechRecognitionResult;
-    }),
-    resultIndex: 0,
-  } as unknown as SpeechRecognitionEvent;
-}
-
-function getVoiceSearchButton(composeboxElement: ComposeboxElement):
-    HTMLElement|null {
-  return composeboxElement.shadowRoot.querySelector<HTMLElement>(
-      '#voiceSearchButton');
-}
-
 function disableAnimationsRecursively(element: Element) {
   const noAnimation = document.createElement('style');
   noAnimation.textContent = `
@@ -155,9 +99,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>;
   let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
-  let windowProxy: TestMock<WindowProxy>;
   let mockTimer: MockTimer;
-  let metrics: MetricsTracker;
 
   async function setActiveTool(tool: ToolMode) {
     searchboxCallbackRouterRemote.onInputStateChanged({
@@ -171,8 +113,6 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     mockTimer = new MockTimer();
-
-    metrics = fakeMetricsPrivate();
 
     loadTimeData.overrideValues({
       useContextualTasksComposeboxFork: false,
@@ -195,9 +135,6 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     mockSearchboxPageHandler.setResultFor(
         'getPageClassification',
         Promise.resolve({metricSource: 'CO_BROWSING_COMPOSEBOX'}));
-    mockSearchboxPageHandler.setResultFor(
-        'getPageClassification',
-        Promise.resolve({metricSource: 'CONTEXTUAL_SEARCHBOX'}));
 
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     searchboxCallbackRouterRemote =
@@ -215,19 +152,6 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     disableAnimationsRecursively(contextualTasksApp);
 
     composebox = contextualTasksApp.$.composebox.$.composebox;
-
-    windowProxy = installMock(WindowProxy);
-    windowProxy.setResultFor('setTimeout', 0);
-    windowProxy.setResultMapperFor('matchMedia', () => ({
-                                                   addListener() {},
-                                                   addEventListener() {},
-                                                   removeListener() {},
-                                                   removeEventListener() {},
-                                                 }));
-    windowProxy.setResultFor('hasWebkitSpeechRecognition', true);
-
-    window.webkitSpeechRecognition =
-        MockSpeechRecognition as unknown as typeof SpeechRecognition;
 
     searchboxCallbackRouterRemote.onInputStateChanged(new MockInputState());
     await microtasksFinished();
@@ -358,248 +282,6 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     contextualTasksApp.$.composebox.startExpandAnimation();
     await microtasksFinished();
     assertEquals('expanding', composebox.animationState);
-  });
-
-  test('voice search starts as hidden', async () => {
-    const composebox = contextualTasksApp.$.composebox.$.composebox;
-    const voiceSearchElement = (composebox as any).$.voiceSearch;
-    await microtasksFinished();
-    assertStyle(voiceSearchElement, 'display', 'none');
-  });
-
-  test(
-      'clicking voice search starts speech recognition, hides the composebox',
-      async () => {
-        const composeboxDiv =
-            contextualTasksApp.$.composebox.$.composebox.$.composebox;
-        const composebox = contextualTasksApp.$.composebox.$.composebox;
-        const voiceSearchButton = getVoiceSearchButton(composebox);
-        voiceSearchButton!.click();
-        await microtasksFinished();
-
-        assertTrue(mockSpeechRecognition.voiceSearchInProgress);
-        assertStyle(composeboxDiv, 'opacity', '0');
-        assertStyle(
-            $$(composebox, 'cr-composebox-voice-search'), 'display', 'inline');
-        assertEquals(composebox.animationState, GlowAnimationState.LISTENING);
-        assertEquals(
-            1,
-            metrics.count(
-                'ContextualTasks.VoiceSearch.StateV2',
-                /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
-            'Voice search button clicked metric count is incorrect');
-      });
-
-  test('on voice search result submits', async () => {
-    const voiceSearchButton = getVoiceSearchButton(composebox);
-    voiceSearchButton!.click();
-    await composebox.updateComplete;
-    await microtasksFinished();
-
-    assertTrue(
-        composebox.inVoiceSearchMode,
-        'Should be in voice search mode after clicking button');
-    assertEquals(
-        composebox.animationState, GlowAnimationState.LISTENING,
-        'Animation state should be LISTENING');
-    assertEquals(
-        1,
-        metrics.count(
-            'ContextualTasks.VoiceSearch.StateV2',
-            /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
-        'Voice search button clicked metric count is incorrect');
-    const [callback] = await windowProxy.whenCalled('setTimeout');
-
-    const result = createResults(2);
-    Object.assign(result.results[0]![0]!, {transcript: 'hello'});
-    Object.assign(result.results[1]![0]!, {transcript: 'world2'});
-
-    const voiceSearchElement = composebox.$.voiceSearch;
-    const voiceSearchInput = voiceSearchElement.$.input;
-
-    mockSpeechRecognition.onresult!(result);
-
-    await microtasksFinished();
-    await composebox.updateComplete;
-    await voiceSearchElement.updateComplete;
-    await voiceSearchInput.updateComplete;
-
-    assertEquals('helloworld2', voiceSearchInput.value);
-    assertEquals(
-        'helloworld2', voiceSearchElement.transcript_,
-        'Voice search transcript should be updated immediately on result');
-    assertEquals(
-        'helloworld2', composebox.transcript,
-        'Transcript should be updated immediately on result');
-
-    assertEquals(
-        '', composebox.input,
-        'Input should not be updated in composebox without final result');
-
-    callback();
-    await microtasksFinished();
-    await composebox.updateComplete;
-
-    assertEquals(
-        1,
-        metrics.count(
-            'ContextualTasks.VoiceSearch.StateV2',
-            /* VOICE_SEARCH_TRANSCRIPTION_SUCCESS */ 1),
-        'Voice transcription success metric count is wrong: helloworld2');
-    await new Promise(resolve => requestAnimationFrame(resolve));
-    assertEquals(
-        composebox.animationState, GlowAnimationState.SUBMITTING,
-        'Query is submitted via submitQuery_()');
-    assertEquals(composebox.input, '', 'Input should be cleared after submit');
-
-    assertEquals(
-        '', voiceSearchInput.value,
-        'Voice Search input should be cleared after submit');
-    assertEquals(
-        '', voiceSearchElement.transcript_,
-        'Voice Search transcript should be cleared after submit');
-
-    assertFalse(
-        composebox.inVoiceSearchMode,
-        'Should exit voice search mode after submit');
-    assertEquals(
-        composebox.transcript, '',
-        'Composebox transcript should be cleared after submit');
-  });
-
-  test('on error shows error container for NOT_ALLOWED', async () => {
-    const composeboxDiv =
-        contextualTasksApp.$.composebox.$.composebox.$.composebox;
-    const composebox = contextualTasksApp.$.composebox.$.composebox;
-    const voiceSearchButton = getVoiceSearchButton(composebox);
-    voiceSearchButton!.click();
-    await microtasksFinished();
-
-    mockSpeechRecognition.onerror!
-        ({error: 'not-allowed'} as SpeechRecognitionErrorEvent);
-    await microtasksFinished();
-    await composebox.updateComplete;
-
-    const voiceSearchElement = $$(composebox, 'cr-composebox-voice-search');
-    assertTrue(!!voiceSearchElement);
-    const errorContainer = $$(voiceSearchElement, '#error-container');
-    const inputElement = $$(voiceSearchElement, '#input');
-
-    assertTrue(!!errorContainer);
-    assertFalse(errorContainer.hidden);
-    assertFalse(errorContainer.hidden, 'Error container should not be hidden');
-    assertTrue(inputElement!.hidden);
-    assertStyle(composeboxDiv, 'opacity', '0');
-    assertStyle(
-        $$(composebox, 'cr-composebox-voice-search'), 'display', 'inline');
-    assertEquals(composebox.animationState, GlowAnimationState.LISTENING);
-
-    mockSpeechRecognition.onend!();
-    assertEquals(
-        1,
-        metrics.count(
-            'ContextualTasks.VoiceSearch.StateV2',
-            /* VOICE_SEARCH_ERROR */ 2),
-        'Voice search error metric count is incorrect');
-  });
-
-  test(
-      'on voice search error shows non-NOT-ALLOWED errors, \
-      and keeps overlay open',
-      async () => {
-        const composeboxDiv =
-            contextualTasksApp.$.composebox.$.composebox.$.composebox;
-        const composebox = contextualTasksApp.$.composebox.$.composebox;
-
-        // Act: Click the mic button to properly open the UI and trigger state
-        // changes.
-        const voiceSearchButton = getVoiceSearchButton(composebox);
-        assertTrue(!!voiceSearchButton);
-        voiceSearchButton.click();
-        await microtasksFinished();
-
-        // Assert: The button click metric should now be 1 since we actually
-        // clicked it.
-        assertEquals(
-            1,
-            metrics.count(
-                'ContextualTasks.VoiceSearch.StateV2',
-                /* VOICE_SEARCH_BUTTON_CLICKED */ 0),
-            'Voice search button clicked metric count is incorrect');
-
-        // Simulate a generic non-permission error (e.g., network).
-        mockSpeechRecognition.onerror!
-            ({error: 'network'} as SpeechRecognitionErrorEvent);
-        await composebox.updateComplete;
-        await microtasksFinished();
-
-        const voiceSearchElement = $$(composebox, 'cr-composebox-voice-search');
-        assertTrue(!!voiceSearchElement);
-        const errorContainer = $$(voiceSearchElement, '#error-container');
-        assertTrue(!!errorContainer);
-
-        // Assert: The error container should be visible for all errors now.
-        assertFalse(errorContainer.hidden);
-
-        // Flush the macrotask queue / event loop to ensure rendering is
-        // complete.
-        await new Promise(resolve => setTimeout(resolve, 0));
-        await microtasksFinished();
-
-        // Assert: The voice search UI remains open instead of auto-closing.
-        assertStyle(voiceSearchElement, 'display', 'inline');
-        assertStyle(composeboxDiv, 'opacity', '0');
-
-        mockSpeechRecognition.onend!();
-
-        // Assert: The recorded metric should be VOICE_SEARCH_ERROR (2),
-        // indicating the UI was kept open, rather than CANCELED (3).
-        assertEquals(
-            1,
-            metrics.count(
-                'ContextualTasks.VoiceSearch.StateV2',
-                /* VOICE_SEARCH_ERROR */ 2),
-            'Voice search error metric count is incorrect');
-      });
-
-  test('clicking cancel button cancels voice search', async () => {
-    const composeboxDiv =
-        contextualTasksApp.$.composebox.$.composebox.$.composebox;
-    const composebox = contextualTasksApp.$.composebox.$.composebox;
-    const voiceSearchButton = getVoiceSearchButton(composebox);
-    const voiceSearchElement = $$<ComposeboxVoiceSearchElement>(
-        composebox, 'cr-composebox-voice-search');
-    assertTrue(!!voiceSearchButton && !!voiceSearchElement);
-    voiceSearchButton.click();
-    await microtasksFinished();
-
-    const result = createResults(2);
-    Object.assign(result.results[0]![0]!, {transcript: 'hello'});
-    Object.assign(result.results[1]![0]!, {transcript: 'world'});
-    mockSpeechRecognition.onresult!(result);
-    await microtasksFinished();
-
-    const voiceSearchInput = voiceSearchElement.$.input;
-
-    assertEquals('helloworld', voiceSearchInput.value);
-
-    voiceSearchElement.$.closeButton.click();
-
-    await microtasksFinished();
-
-    assertStyle(
-        voiceSearchElement, 'display', 'none', 'Voice search should be hidden');
-    assertStyle(composeboxDiv, 'display', 'flex', 'Composebox should be shown');
-    assertEquals(
-        composebox.getInputElement().$.input.value, '',
-        'Input should be cleared');
-
-    assertEquals(
-        1,
-        metrics.count(
-            'ContextualTasks.VoiceSearch.StateV2',
-            /* VOICE_SEARCH_USER_CANCELED*/ 4),
-        'Voice search canceled metric count is incorrect');
   });
 
   interface ToolModeInfo {

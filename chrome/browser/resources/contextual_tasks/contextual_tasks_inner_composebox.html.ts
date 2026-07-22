@@ -14,10 +14,50 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
     <search-animated-glow id="animatedSearchElement"
         animation-state="${this.animationState}"
         entrypoint-name="ContextualTasks"
+        .coloredTicTacVoiceAnimationEnabled="${this.voiceSearchCoherenceEnabled}"
+        .isListening="${this.isListening}"
+        .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
+        .transcript="${this.transcript}"
+        .receivedSpeech="${this.receivedSpeech}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
         .isZeroState="${this.isZeroState}"
         .darkThemeColorsEnabled="${true}"
+        .showingOnlyCarouselOnTopOfInput="${this.showFileCarousel &&
+            !this.inToolMode && this.carouselOnTop_ &&
+            this.voiceSearchCoherenceEnabled}"
         exportparts="composebox-background">
+    ${this.showFileCarousel && this.shouldShowVoiceSearchAnimation() &&
+        this.voiceSearchCoherenceEnabled ? html`
+      <div id="voiceCarouselContainer"
+          slot="carousel"
+          part ="carousel-container">
+        <div id="voiceCarouselContainerInner"
+            class="carousel-container-inner">
+          <cr-composebox-file-carousel
+            id="voiceSearchCarousel"
+            class="${this.carouselOnTop_ ? 'top' : ''}"
+            .files="${this.getFilteredCarouselFiles()}"
+            enable-scrolling
+            @delete-file="${this.onDeleteFile}">
+          </cr-composebox-file-carousel>
+        </div>
+      </div>
+    ` : ''}
+    ${this.shouldShowVoiceSearchAnimation() &&
+        this.voiceSearchCoherenceEnabled && this.inToolMode ? html`
+      <div class="context-menu-container voice-context-menu-container"
+          id="voiceToolChipsContainer"
+          slot="tool-chip"
+          part="tool-chips-container">
+        <cr-composebox-tool-chip
+            exportparts="tool-chip-label"
+            .inputState="${this.inputState}"
+            .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
+            @tool-click="${this.onToolClick}"
+            part="tool-chip">
+        </cr-composebox-tool-chip>
+        </div>
+      ` : ''}
     </search-animated-glow>
     ${this.errorMessage ?
         html`<ntp-error-scrim id="errorScrim" part="error-scrim"
@@ -84,6 +124,13 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
               @match-click="${this.onMatchClick}">
           </cr-composebox-dropdown>
           ${this.contextMenuEnabled ? getContextMenuHtml.bind(this)() : ''}
+          ${this.shouldShowVoiceSearchAtBottom() ? html`
+            <cr-icon-button id="voiceSearchButton" class="voice-icon"
+                part="voice-icon"
+                iron-icon="cr:mic" @click="${this.onVoiceSearchButtonClick}"
+                title="${this.i18n('voiceSearchButtonLabel')}">
+            </cr-icon-button>
+          ` : ''}
         </cr-composebox-file-inputs>
       </div>
       ${this.showLensButton ? html`<cr-icon-button
@@ -104,6 +151,23 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
           @submit-focusin="${this.onSubmitFocusin}">
       </cr-composebox-submit>
     </div>
+    ${this.shouldShowVoiceSearch() ? html`
+      <cr-composebox-voice-search id="voiceSearch"
+          @voice-permission-changed="${this.onVoicePermissionChanged}"
+          @voice-search-cancel="${this.onVoiceSearchCancel}"
+          @voice-search-final-result="${this.onVoiceSearchFinalResult}"
+          @voice-search-error="${this.onVoiceSearchError}"
+          @transcript-update="${this.onTranscriptUpdate}"
+          @speech-received="${this.onSpeechReceived}"
+          @recording-stopped="${this.onRecordingStopped}"
+          .submitStopButtonsEnabled="${this.voiceSearchCoherenceEnabled}"
+          .liveTranscriptEnabled="${!this.voiceSearchCoherenceEnabled}"
+          .submitButtonIconType="${this.submitButtonIconType}"
+          .dynamicTimeoutEnabled="${false}"
+          .pageCallbackRouter="${this.getSearchboxCallbackRouter()}"
+          exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
+      </cr-composebox-voice-search>
+    ` : '' }
   <!--_html_template_end_-->`;
   // clang-format on
 }
