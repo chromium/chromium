@@ -158,12 +158,6 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         mNativeSidePanelCoordinatorAndroid = 0;
     }
 
-    @CalledByNativeForTesting
-    private void disableAnimationsForTesting() {
-        log(TAG, "disableAnimationsForTesting");
-        mDisableAnimationsForTesting = true;
-    }
-
     @CalledByNative
     private void startOpeningPanel(
             View sidePanelNativeView,
@@ -202,6 +196,24 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     private void endAnimations() {
         log(TAG, "endAnimations");
         mSidePanelContainerCoordinator.endAnimations();
+    }
+
+    @CalledByNative
+    private void completePendingContentReplacement() {
+        log(TAG, "completePendingContentReplacement");
+        mSidePanelContainerCoordinator.completePendingContentReplacement();
+    }
+
+    @CalledByNativeForTesting
+    private void configDeferredViewReplacementForTesting(boolean enable) {
+        log(TAG, "configDeferredViewReplacementForTesting", enable);
+        mSidePanelContainerCoordinator.configDeferredViewReplacementForTesting(enable); // IN-TEST
+    }
+
+    @CalledByNativeForTesting
+    private void disableAnimationsForTesting() {
+        log(TAG, "disableAnimationsForTesting");
+        mDisableAnimationsForTesting = true;
     }
 
     @CalledByNativeForTesting

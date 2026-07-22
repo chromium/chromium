@@ -99,6 +99,9 @@ public interface SidePanelContainerCoordinator {
      */
     void startReplacingPanelContent(SidePanelContent newContent);
 
+    /** Immediately completes any pending content replacement. */
+    void completePendingContentReplacement();
+
     /** Immediately ends all ongoing animations. */
     void endAnimations();
 
@@ -110,4 +113,22 @@ public interface SidePanelContainerCoordinator {
 
     /** Returns the main {@link View} for testing. */
     View getViewForTesting();
+
+    /**
+     * Enables or disables deferred content View replacement for testing.
+     *
+     * <p>When (1) this is enabled and (2) the new active tab during a tab switch requires replacing
+     * the side panel content View with a {@code ThinWebView}, the old content View won't be removed
+     * until the {@code ThinWebView} has rendered the first frame.
+     *
+     * <p>(2) is <i>always</i> enabled in production to prevent UI flickers during tab switches.
+     *
+     * <p>In tests, (2) needs to be explicitly enabled since tests covering the deferred content
+     * View replacement need to wait for the replacement to complete. Not all tests have the "wait"
+     * logic, and it's hard to add it since there are many existing cross-platform side panel
+     * browser tests that assume synchronous replacement.
+     *
+     * @param enable Whether deferred View replacement is enabled.
+     */
+    void configDeferredViewReplacementForTesting(boolean enable); // IN-TEST
 }

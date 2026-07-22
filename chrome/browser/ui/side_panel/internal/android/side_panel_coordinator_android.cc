@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums_utils.h"
 #include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 #include "chrome/browser/ui/side_panel/side_panel_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after headers that provide symbols used by @JniType.
@@ -228,8 +230,41 @@ void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
       AttachCurrentThread(), java_coordinator(), suppress_animations);
 }
 
-void SidePanelCoordinatorAndroid::OnTabReparented(tabs::TabInterface* tab) {
+void SidePanelCoordinatorAndroid::OnTabClosed(TabAndroid* tab) {
+  SPLOG("OnTabClosed - tab: " << tab);
+  CHECK(tab);
+
+  ClearDeferredEntryForTab(tab->GetHandle());
+
+  // During a tab switch (tab_1 -> tab_2), if tab_2's side panel View
+  // contains a ThinWebView, the Java side will delay removing tab_1's side
+  // panel View until tab_2's ThinWebView has rendered the first frame. This is
+  // to prevent UI flickers.
+  //
+  // This also means `OnPanelContentReplaced()` is called when tab_1 has become
+  // inactive.
+  //
+  // The following logic targets the case where a tab switch is triggered by
+  // _closing_ tab_1.
+  //
+  // In this case, we must _not_ delay removing tab_1's side panel View.
+  // Otherwise, when `OnPanelContentReplaced()` is called, the
+  // `pending_replaced_entry_` will be an invalid pointer since tab_1 is already
+  // destroyed.
+  if (auto* registry = SidePanelRegistry::From(tab)) {
+    if (pending_replaced_entry_ &&
+        registry->GetActiveEntry() == pending_replaced_entry_) {
+      Java_SidePanelCoordinatorAndroidImpl_completePendingContentReplacement(
+          AttachCurrentThread(), java_coordinator());
+    }
+  }
+}
+
+void SidePanelCoordinatorAndroid::OnTabReparented(TabAndroid* tab) {
   SPLOG("OnTabReparented - tab: " << tab);
+  CHECK(tab);
+
+  ClearDeferredEntryForTab(tab->GetHandle());
 
   if (auto* registry = SidePanelRegistry::From(tab)) {
     for (auto const& entry : registry->entries()) {
@@ -387,6 +422,19 @@ SidePanelState SidePanelCoordinatorAndroid::GetStateForTesting() {  // IN-TEST
 int SidePanelCoordinatorAndroid::GetContainerWidthForTesting() {  // IN-TEST
   return Java_SidePanelCoordinatorAndroidImpl_getContainerWidthForTesting(  // IN-TEST
       AttachCurrentThread(), java_coordinator());
+}
+
+void SidePanelCoordinatorAndroid::
+    ConfigDeferredViewReplacementForTesting(  // IN-TEST
+        bool enable) {
+  Java_SidePanelCoordinatorAndroidImpl_configDeferredViewReplacementForTesting(  // IN-TEST
+      AttachCurrentThread(), java_coordinator(), enable);
+}
+
+bool SidePanelCoordinatorAndroid::
+    HasPendingReplacedEntryForTesting()  // IN-TEST
+    const {
+  return pending_replaced_entry_ != nullptr;
 }
 
 void SidePanelCoordinatorAndroid::Show(

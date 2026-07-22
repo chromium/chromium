@@ -71,13 +71,10 @@ void SidePanelTabModelObserver::DidSelectTab(TabAndroid* tab,
 }
 
 void SidePanelTabModelObserver::DidRemoveTabForClosure(TabAndroid* tab) {
-  CHECK(tab);
-  coordinator_->ClearDeferredEntryForTab(tab->GetHandle());
+  coordinator_->OnTabClosed(tab);
 }
 
 void SidePanelTabModelObserver::TabRemoved(TabAndroid* tab) {
-  CHECK(tab);
-  coordinator_->ClearDeferredEntryForTab(tab->GetHandle());
   coordinator_->OnTabReparented(tab);
 }
 

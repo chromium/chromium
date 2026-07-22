@@ -19,6 +19,7 @@
 
 class BrowserWindowInterface;
 class SidePanelEntryWaiter;
+class TabAndroid;
 
 // Android implementation of `SidePanelUIBase`.
 //
@@ -71,13 +72,32 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void DisableAnimationsForTesting() override;
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
-  // Other public functions:
-  void ClearDeferredEntryForTab(const tabs::TabHandle& tab_handle);
+  /////////////////////////////////////////////////////////////////
+  //            Start of other public functions                  //
+  /////////////////////////////////////////////////////////////////
+
+  // Called when a tab is closed (destroyed).
+  void OnTabClosed(TabAndroid* tab);
+
   // Called when a tab is detached from this window's tab strip for reparenting
   // into another window.
-  void OnTabReparented(tabs::TabInterface* tab);
+  void OnTabReparented(TabAndroid* tab);
 
-  // Functions for testing:
+  /////////////////////////////////////////////////////////////////
+  //            End of other public functions                    //
+  /////////////////////////////////////////////////////////////////
+
+  /////////////////////////////////////////////////////////////////
+  //            Start of functions for testing                   //
+  /////////////////////////////////////////////////////////////////
+
+  // Enables/Disables deferred View replacement for testing.
+  //
+  // See the Java
+  // `SidePanelContainerCoordinator#configDeferredViewReplacementForTesting`
+  // for detailed documentation.
+  void ConfigDeferredViewReplacementForTesting(bool enable);
+
   SidePanelState GetStateForTesting();
   int GetContainerWidthForTesting();
   SidePanelEntryWaiter* GetWaiterForTesting() { return waiter(); }
@@ -85,6 +105,11 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
       const {
     return deferred_entry_tracker_;
   }
+  bool HasPendingReplacedEntryForTesting() const;
+
+  /////////////////////////////////////////////////////////////////
+  //            End of functions for testing                     //
+  /////////////////////////////////////////////////////////////////
 
  protected:
   // Implements `SidePanelUIBase`:
@@ -106,6 +131,8 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // `SidePanelRegistry` instances accessible from this class, including
   // the window-scoped registry and all contextual (tab-scoped) registries.
   void ClearCachedEntryViews();
+
+  void ClearDeferredEntryForTab(const tabs::TabHandle& tab_handle);
 
   UniqueKey GetCurrentKeyNonNull() const;
   SidePanelEntry* GetEntryForCurrentKeyNonNull() const;
