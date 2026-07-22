@@ -127,7 +127,7 @@ class SidePanelWebUIViewTest : public InProcessBrowserTest {
               return std::make_unique<TestSidePanelWebUIView>(
                   scope, std::make_unique<TestWebUIContentsWrapper>(profile));
             },
-            browser()->profile()),
+            browser()->GetProfile()),
         /*default_content_width_callback=*/base::NullCallback());
 
     SidePanelRegistry::From(browser())->Register(std::move(entry));
@@ -144,7 +144,7 @@ class SidePanelWebUIViewTest : public InProcessBrowserTest {
               return std::make_unique<TestSidePanelWebUIView>(
                   scope, std::make_unique<TestWebUIContentsWrapper>(profile));
             },
-            browser()->profile()),
+            browser()->GetProfile()),
         /*default_content_width_callback=*/base::NullCallback());
     auto* registry =
         SidePanelRegistry::From(browser()->GetActiveTabInterface());

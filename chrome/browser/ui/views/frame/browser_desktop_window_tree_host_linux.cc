@@ -101,7 +101,7 @@ void BrowserDesktopWindowTreeHostLinux::AddAdditionalInitProperties(
     ui::PlatformWindowInitProperties* properties) {
   views::DesktopWindowTreeHostLinux::AddAdditionalInitProperties(params,
                                                                  properties);
-  auto* profile = browser_view_->browser()->profile();
+  auto* profile = browser_view_->browser()->GetProfile();
   const auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   properties->prefer_dark_theme =
       linux_ui_theme && linux_ui_theme->PreferDarkTheme();

@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(
     PressOKButtonInIncogntoMode) {
   base::HistogramTester histogram_tester;
 
-  Profile* original_profile = browser()->profile();
+  Profile* original_profile = browser()->GetProfile();
   ASSERT_FALSE(original_profile->IsOffTheRecord());
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(original_profile);

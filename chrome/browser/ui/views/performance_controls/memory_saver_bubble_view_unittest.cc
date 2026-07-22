@@ -135,7 +135,8 @@ TEST_F(MemorySaverBubbleViewTest,
        ShowDialogWithoutExcludeSiteButtonInGuestMode) {
   AddNewTab(kMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
-  TestingProfile* const testprofile = browser()->profile()->AsTestingProfile();
+  TestingProfile* const testprofile =
+      browser()->GetProfile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
   testprofile->SetGuestSession(true);
 

@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
 #endif
 
   // Disable drag and drop.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSplitViewDragAndDropEnabled, false);
 
   RunTestSequence(

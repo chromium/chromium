@@ -4931,7 +4931,7 @@ void WebAppIntegrationTestDriver::LaunchAppStartupBrowserCreator(
   command_line.AppendSwitchASCII(switches::kTestType, "browser");
   ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+      {browser()->GetProfile(), StartupProfileMode::kBrowserWindow}, {}));
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
 }
 
@@ -5160,7 +5160,7 @@ const net::EmbeddedTestServer* WebAppIntegrationTest::EmbeddedTestServer()
 }
 
 Profile* WebAppIntegrationTest::GetDefaultProfile() {
-  return browser()->profile();
+  return browser()->GetProfile();
 }
 
 bool WebAppIntegrationTest::IsSyncTest() {

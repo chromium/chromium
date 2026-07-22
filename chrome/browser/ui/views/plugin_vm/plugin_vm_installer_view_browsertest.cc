@@ -178,7 +178,7 @@ class PluginVmInstallerViewBrowserTestWithFeatureEnabled
 
   void SetPluginVmPolicies() {
     // User policies.
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         plugin_vm::prefs::kPluginVmAllowed, true);
     // Device policies.
     policy::CachedDevicePolicyUpdater updater;

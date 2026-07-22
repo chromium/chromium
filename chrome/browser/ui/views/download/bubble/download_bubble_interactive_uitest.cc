@@ -385,8 +385,8 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(
     DownloadBubbleInteractiveUiTest,
     DangerousDownloadDoesNotShowEsbIphPromo_WhenSafeBrowsingDisabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                  false);
   RunTestSequence(
       Do(DownloadDangerousTestFile()),
       ObserveState(kDownloadsButtonVisible, GetContainerView()),
@@ -402,8 +402,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     DownloadBubbleInteractiveUiTest,
     DangerousDownloadDoesNotShowEsbIphPromo_WhenEnhancedSafeBrowsingEnabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
+                                                  true);
   RunTestSequence(
       Do(DownloadDangerousTestFile()),
       ObserveState(kDownloadsButtonVisible, GetContainerView()),

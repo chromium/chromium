@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
 
   std::wstring expected_app_id =
       shell_integration::win::GetAppUserModelIdForApp(
-          base::UTF8ToWide(app_name), browser()->profile()->GetPath());
+          base::UTF8ToWide(app_name), browser()->GetProfile()->GetPath());
 
   EXPECT_EQ(expected_app_id, prop_var.get().pwszVal);
 }

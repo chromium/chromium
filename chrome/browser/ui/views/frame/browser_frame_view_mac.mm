@@ -497,7 +497,7 @@ void BrowserFrameViewMac::OnPaint(gfx::Canvas* canvas) {
     canvas->DrawColor(frame_color);
 
     auto* theme_service = ThemeServiceFactory::GetForProfile(
-        GetBrowserView()->browser()->profile());
+        GetBrowserView()->browser()->GetProfile());
     if (!theme_service->UsingSystemTheme()) {
       PaintThemedFrame(canvas);
     }

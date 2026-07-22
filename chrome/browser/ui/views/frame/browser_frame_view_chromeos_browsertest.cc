@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameViewChromeOSTest,
                        RestoreMinimizedBrowserUpdatesCaption) {
   // Enable session service.
   SessionStartupPref pref(SessionStartupPref::LAST);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   SessionStartupPref::SetStartupPref(profile, pref);
 
   SessionServiceTestHelper helper(profile);
@@ -2119,7 +2119,7 @@ class BrowserFrameViewAshThemeChangeTest
   }
 
   // Returns the `Profile` associated with the web app under test.
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  private:
   ui::MockOsSettingsProvider os_settings_provider_;

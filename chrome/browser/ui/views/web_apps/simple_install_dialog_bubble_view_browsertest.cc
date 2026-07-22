@@ -93,7 +93,7 @@ class SimpleInstallDialogBubbleViewBrowserTest : public WebAppBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        ShowBubbleInPWAWindow) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   webapps::AppId app_id = test::InstallDummyWebApp(profile, "Test app",
                                                    GURL("https://example.com"));
   Browser* browser = ::web_app::LaunchWebAppBrowser(profile, app_id);

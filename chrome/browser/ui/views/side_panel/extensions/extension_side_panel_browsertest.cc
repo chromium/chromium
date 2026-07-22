@@ -2197,7 +2197,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, GetLayout) {
   const Extension* ext = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(ext);
 
-  auto* prefs = browser()->profile()->GetPrefs();
+  auto* prefs = browser()->GetProfile()->GetPrefs();
 
   // Helper that sets the side panel alignment preference and
   // then verifies that getLayout() returns the expected side.

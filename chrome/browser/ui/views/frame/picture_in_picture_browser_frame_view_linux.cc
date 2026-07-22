@@ -36,7 +36,7 @@ PictureInPictureBrowserFrameViewLinux::PictureInPictureBrowserFrameViewLinux(
     BrowserWidget* widget,
     BrowserView* browser_view)
     : PictureInPictureBrowserFrameView(widget, browser_view) {
-  auto* profile = browser_view->browser()->profile();
+  auto* profile = browser_view->browser()->GetProfile();
   auto* linux_ui_theme = ui::LinuxUiTheme::GetForProfile(profile);
   auto* theme_service_factory = ThemeServiceFactory::GetForProfile(profile);
   if (linux_ui_theme && theme_service_factory->UsingSystemTheme()) {

@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
       PressButton(MemorySaverBubbleView::kMemorySaverDialogCancelButton),
       WaitForHide(MemorySaverBubbleView::kMemorySaverDialogBodyElementId),
       Do(base::BindLambdaForTesting([=, this]() {
-        PrefService* const pref_service = browser()->profile()->GetPrefs();
+        PrefService* const pref_service = browser()->GetProfile()->GetPrefs();
         const base::DictValue& discard_exception =
             pref_service->GetDict(performance_manager::user_tuning::prefs::
                                       kTabDiscardingExceptionsWithTime);

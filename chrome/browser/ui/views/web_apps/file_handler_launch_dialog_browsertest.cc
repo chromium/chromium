@@ -96,7 +96,7 @@ class FileHandlerLaunchDialogTest : public WebAppBrowserTestBase {
 
     browser_creator.Start(
         command_line, profile_manager->user_data_dir(),
-        {browser()->profile(), StartupProfileMode::kBrowserWindow}, {});
+        {browser()->GetProfile(), StartupProfileMode::kBrowserWindow}, {});
   }
 
   void InstallTestWebApp() {

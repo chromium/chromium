@@ -372,7 +372,8 @@ void SidePanel::UpdateWidthOnEntryChanged() {
     return;
   }
 
-  PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
+  PrefService* pref_service =
+      browser_view_->browser()->GetProfile()->GetPrefs();
   const base::DictValue& dict =
       pref_service->GetDict(prefs::kSidePanelIdToWidth);
   std::string panel_id = SidePanelEntryIdToString(current_entry.value());
@@ -544,7 +545,8 @@ void SidePanel::OnAnimationProgressed(
 
 void SidePanel::UpdateSidePanelWidthPref(const std::string& panel_id,
                                          int width) {
-  PrefService* pref_service = browser_view_->browser()->profile()->GetPrefs();
+  PrefService* pref_service =
+      browser_view_->browser()->GetProfile()->GetPrefs();
   ScopedDictPrefUpdate update(pref_service, prefs::kSidePanelIdToWidth);
   base::DictValue& dict = update.Get();
 

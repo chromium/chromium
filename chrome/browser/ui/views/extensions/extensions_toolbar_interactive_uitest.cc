@@ -33,7 +33,7 @@ ExtensionsToolbarUITest::ExtensionsToolbarUITest() = default;
 ExtensionsToolbarUITest::~ExtensionsToolbarUITest() = default;
 
 Profile* ExtensionsToolbarUITest::profile() {
-  return browser()->profile();
+  return browser()->GetProfile();
 }
 
 scoped_refptr<const extensions::Extension>

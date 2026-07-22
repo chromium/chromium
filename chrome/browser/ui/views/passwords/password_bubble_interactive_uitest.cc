@@ -351,11 +351,11 @@ IN_PROC_BROWSER_TEST_P(
     BiometricAuthenticationForFillingPromo_ActorOperating_NoBubble) {
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   // Set up preferences to allow the promo to be shown.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, false);
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       password_manager::prefs::kBiometricAuthBeforeFillingPromoShownCounter, 0);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kBiometricAuthenticationBeforeFilling, false);
 
   AddActorTask();

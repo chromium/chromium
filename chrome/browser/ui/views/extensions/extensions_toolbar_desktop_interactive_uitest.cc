@@ -1786,7 +1786,7 @@ class ExtensionsPinnedByDefaultInteractiveTest
 
   void SetUpOnMainThread() override {
     InteractiveFeaturePromoTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kExtensionsPinnedByDefault, true);
   }
 
@@ -1803,7 +1803,7 @@ class ExtensionsPinnedByDefaultInteractiveTest
             })",
         name.c_str(), host_permission.c_str()));
     scoped_refptr<const extensions::Extension> extension =
-        extensions::ChromeTestExtensionLoader(browser()->profile())
+        extensions::ChromeTestExtensionLoader(browser()->GetProfile())
             .LoadExtension(extension_dir.UnpackedPath());
     return extension;
   }
@@ -1818,7 +1818,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultInteractiveTest,
       Do([this]() {
         scoped_refptr<const extensions::Extension> extension =
             InstallExtensionWithHostPermissions("Extension", "<all_urls>");
-        auto install_ui = ExtensionInstallUI::Create(browser()->profile());
+        auto install_ui = ExtensionInstallUI::Create(browser()->GetProfile());
         install_ui->OnInstallSuccess(extension, nullptr);
       }),
       // The extension install dialog pops up. Wait for it and close it.

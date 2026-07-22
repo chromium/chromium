@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppFrameToolbarBrowserTest,
   std::unique_ptr iwa =
       web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
 
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   web_app::IsolatedWebAppUrlInfo url_info =
       helper()->InstallAndLaunchIsolatedWebApp(profile, iwa.get());
 

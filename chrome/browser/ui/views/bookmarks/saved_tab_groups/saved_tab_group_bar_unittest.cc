@@ -81,7 +81,7 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
 
   void SetUp() override {
     TestWithBrowserView::SetUp();
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         tab_groups::prefs::kAutoPinNewTabGroups, true);
 
     TabGroupSyncService* service =

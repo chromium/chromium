@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(FooterInteractiveTest,
       WaitForShow(kNtpFooterViewElementId),
       // Disable extension attribution policy.
       Do([=, this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
             prefs::kNTPFooterExtensionAttributionEnabled, false);
       }),
       // Ensure footer hides.

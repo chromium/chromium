@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLegacyBookmarkBarTest,
                        AvoidUnnecessaryVisibilityChanges) {
   // Create two tabs, the first empty and the second the ntp. Make it so the
   // BookmarkBarView isn't shown.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowBookmarkBar, false);
   GURL new_tab_url = chrome::ChromeUINewTabURLAsGURL();
   chrome::AddTabAt(browser(), GURL(), -1, true);
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLegacyBookmarkBarTest,
   observer.clear_change_count();
 
   // Repeat with the bookmark bar always visible.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowBookmarkBar, true);
   browser()->tab_strip_model()->ActivateTabAt(
       0, TabStripUserGestureDetails(
@@ -707,7 +707,7 @@ class BrowserViewSimplifiedBookmarkBarTest : public BrowserViewTest {
 // when using the simplified bookmark bar feature.
 IN_PROC_BROWSER_TEST_F(BrowserViewSimplifiedBookmarkBarTest,
                        AvoidUnnecessaryVisibilityChanges) {
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       bookmarks::prefs::kBookmarkBarVisibilityState,
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kOnlyShowOnNtp));
   GURL new_tab_url = chrome::ChromeUINewTabURLAsGURL();
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewSimplifiedBookmarkBarTest,
   observer.clear_change_count();
 
   // Repeat with the bookmark bar always visible.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       bookmarks::prefs::kBookmarkBarVisibilityState,
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysShow));
   browser()->tab_strip_model()->ActivateTabAt(
@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewSimplifiedBookmarkBarTest,
   observer.clear_change_count();
 
   // Repeat with the bookmark bar always hidden.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       bookmarks::prefs::kBookmarkBarVisibilityState,
       static_cast<int>(bookmarks::BookmarkBarVisibilityState::kAlwaysHide));
   browser()->tab_strip_model()->ActivateTabAt(

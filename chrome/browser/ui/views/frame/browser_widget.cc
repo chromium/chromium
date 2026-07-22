@@ -447,7 +447,7 @@ void BrowserWidget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 ui::ColorProviderKey BrowserWidget::GetColorProviderKey() const {
   auto key = Widget::GetColorProviderKey();
 
-  Profile* profile = browser_view_->browser()->profile();
+  Profile* profile = browser_view_->browser()->GetProfile();
   const auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
   CHECK(theme_service);
 
@@ -567,5 +567,5 @@ bool BrowserWidget::RegenerateFrameOnThemeChange(
 }
 
 bool BrowserWidget::IsIncognitoBrowser() const {
-  return browser_view_->browser()->profile()->IsIncognitoProfile();
+  return browser_view_->browser()->GetProfile()->IsIncognitoProfile();
 }

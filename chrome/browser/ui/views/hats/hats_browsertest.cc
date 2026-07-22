@@ -160,7 +160,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   // Check that no record of a survey being shown is present.
   {
     const base::DictValue& pref_data =
-        browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
+        browser()->GetProfile()->GetPrefs()->GetDict(
+            prefs::kHatsSurveyMetadata);
     std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
     std::optional<int> last_major_version =
@@ -184,7 +185,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   // Check that a record of the survey being shown has been recorded.
   {
     const base::DictValue& pref_data =
-        browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
+        browser()->GetProfile()->GetPrefs()->GetDict(
+            prefs::kHatsSurveyMetadata);
     std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
     std::optional<int> last_major_version =
@@ -218,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
   // Check that no record of a survey being shown is present.
   {
     const base::DictValue& pref_data =
-        browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
+        browser()->GetProfile()->GetPrefs()->GetDict(
+            prefs::kHatsSurveyMetadata);
     std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
     std::optional<int> last_major_version =
@@ -242,7 +245,8 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
   // Check that a record of the survey being shown has been recorded.
   {
     const base::DictValue& pref_data =
-        browser()->profile()->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
+        browser()->GetProfile()->GetPrefs()->GetDict(
+            prefs::kHatsSurveyMetadata);
     std::optional<base::Time> last_survey_started_time =
         base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
     std::optional<int> last_major_version =
@@ -429,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, MaximumSize) {
 
 IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
   // Ensure that the dialog correctly resets the zoom level to default.
-  browser()->profile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
+  browser()->GetProfile()->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(
       blink::ZoomFactorToZoomLevel(5.0f));
 
   ScopedBrowserLocale browser_locale(kTestLocale);

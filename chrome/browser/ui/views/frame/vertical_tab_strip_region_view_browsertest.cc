@@ -105,7 +105,7 @@ class VerticalTabStripRegionViewTest
   content::WebContents* AppendBackgroundTab() {
     std::unique_ptr<content::WebContents> contents =
         content::WebContents::Create(
-            content::WebContents::CreateParams(browser()->profile()));
+            content::WebContents::CreateParams(browser()->GetProfile()));
     content::WebContents* raw_contents = contents.get();
     browser()->tab_strip_model()->AppendWebContents(std::move(contents), false);
     return raw_contents;
@@ -960,8 +960,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ImmersiveModeLock) {
   browser_view->OnImmersiveFullscreenEntered();
 
   // 2. Try to disable vertical tabs via pref.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                                  false);
 
   // 3. Verify vertical tabs are STILL enabled (deferred).
   EXPECT_TRUE(controller->ShouldDisplayVerticalTabs());
@@ -976,8 +976,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ImmersiveModeLock) {
   browser_view->OnImmersiveFullscreenEntered();
 
   // 7. Try to enable vertical tabs via pref.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                                  true);
 
   // 8. Verify vertical tabs are STILL disabled.
   EXPECT_FALSE(controller->ShouldDisplayVerticalTabs());
@@ -1215,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
       [&]() { return region_view()->is_expanded_on_hover(); }));
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsExpandOnHoverEnabled, false);
   EXPECT_FALSE(region_view()->is_expanded_on_hover());
   EXPECT_TRUE(IsAnimatingSize());
@@ -1225,7 +1225,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ModeChanged) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsExpandOnHoverEnabled, false);
 
   // Fully collapse the tabstrip.
@@ -1239,18 +1239,18 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ModeChanged) {
       prefs::kVerticalTabsExpandOnHoverEnabled));
   ASSERT_FALSE(region_view()->is_expanded_on_hover());
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsExpandOnHoverEnabled, true);
   region_view()->GetFocusManager()->SetFocusedView(region_view());
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return region_view()->is_expanded_on_hover(); }));
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                                  false);
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                                  true);
   EXPECT_FALSE(region_view()->is_expanded_on_hover());
   EXPECT_FALSE(IsAnimatingSize());
 }
@@ -1261,7 +1261,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   state_controller()->RequestCollapse(true);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return state_controller()->IsCollapsed(); }));
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsExpandOnHoverEnabled, true);
 
   region_view()->GetFocusManager()->SetFocusedView(region_view());
@@ -1318,9 +1318,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   controller2->SetUncollapsedWidth(200);
 
   // Simulate window activation by manually updating preferences.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsCollapsedState, state_controller()->IsCollapsed());
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kVerticalTabsUncollapsedWidth,
       state_controller()->GetUncollapsedWidth());
 
@@ -1363,9 +1363,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   }));
   state_controller()->SetUncollapsedWidth(100);
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsCollapsedState, true);
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kVerticalTabsUncollapsedWidth, 100);
 
   ui_test_utils::BrowserCreatedObserver observer;
@@ -1395,9 +1395,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   }));
   state_controller()->SetUncollapsedWidth(100);
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsCollapsedState, true);
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kVerticalTabsUncollapsedWidth, 100);
 
   ui_test_utils::BrowserCreatedObserver observer;
@@ -1505,7 +1505,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   ASSERT_EQ(0, scroll_view->GetVisibleRect().y());
 
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   browser()->tab_strip_model()->InsertWebContentsAt(
       kNewBackgroundTabIndex, std::move(contents), AddTabTypes::ADD_NONE);
 
@@ -1566,7 +1566,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   ASSERT_EQ(kInitialScrollPosition, scroll_view->GetVisibleRect().y());
 
   std::unique_ptr<content::WebContents> contents = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   browser()->tab_strip_model()->InsertWebContentsAt(
       kFarDistantBackgroundTabIndex, std::move(contents),
       AddTabTypes::ADD_NONE);

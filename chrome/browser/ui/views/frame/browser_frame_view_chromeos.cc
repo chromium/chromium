@@ -1018,7 +1018,7 @@ void BrowserFrameViewChromeOS::UpdateProfileIcons() {
     }
 
     gfx::Image image(
-        GetAvatarImageForContext(GetBrowserView()->browser()->profile()));
+        GetAvatarImageForContext(GetBrowserView()->browser()->GetProfile()));
     profile_indicator_icon_->SetSize(image.Size());
     profile_indicator_icon_->SetPreferredSize(image.Size());
     profile_indicator_icon_->SetIcon(image);

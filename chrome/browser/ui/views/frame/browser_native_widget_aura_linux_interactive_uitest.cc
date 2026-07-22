@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, UseCustomFrame) {
   const BrowserNativeWidgetAuraLinux* const native_widget =
       static_cast<BrowserNativeWidgetAuraLinux*>(
           browser_view->browser_widget()->browser_native_widget());
-  auto* pref_service = browser_view->browser()->profile()->GetPrefs();
+  auto* pref_service = browser()->GetProfile()->GetPrefs();
 
   // Try overriding the runtime platform property that indicates whether the
   // platform supports server-side window decorations.  For each variant,
@@ -119,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, UseCustomFrame) {
 IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetAuraLinuxTest, NewWindowSize) {
   // Ensure the first window is active before creating the second one.
   ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   Browser::CreateParams params(profile, true /* user_gesture */);
   Browser* browser2 = Browser::Create(params);
   browser2->GetWindow()->Show();

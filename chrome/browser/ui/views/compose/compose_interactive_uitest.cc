@@ -211,7 +211,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
 
   void SetUpAccount() {
     // Turn on MSBB.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
   }

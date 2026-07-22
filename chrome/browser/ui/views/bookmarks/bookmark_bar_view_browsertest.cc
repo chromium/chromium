@@ -59,7 +59,7 @@ namespace {
 class BookmarkBarTestBase : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         bookmarks::prefs::kShowBookmarkBar, true);
 
     test_helper_ = std::make_unique<BookmarkBarViewTestHelper>(bookmark_bar());

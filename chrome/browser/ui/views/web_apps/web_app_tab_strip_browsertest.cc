@@ -181,7 +181,7 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
   };
 
   webapps::AppId Install() {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     GURL start_url = embedded_test_server()->GetURL(kAppPath);
 
     auto web_app_info =
@@ -196,7 +196,7 @@ class WebAppTabStripBrowserTest : public WebAppBrowserTestBase,
   }
 
   App InstallAndLaunch() {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     webapps::AppId app_id = Install();
 
     Browser* app_browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, NewTabUrl) {
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, NonTabbedWebApp) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       embedded_test_server()->GetURL(kAppPath));

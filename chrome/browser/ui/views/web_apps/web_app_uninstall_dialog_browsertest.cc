@@ -388,7 +388,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUninstallDialogViewIwaBrowserTest,
     web_app_info->parent_app_id = parent_app_id;
     web_app_info->title = sub_app_name;
 
-    web_app::test::InstallWebApp(browser()->profile(), std::move(web_app_info),
+    web_app::test::InstallWebApp(browser()->GetProfile(),
+                                 std::move(web_app_info),
                                  /*overwrite_existing_manifest_fields=*/true,
                                  webapps::WebappInstallSource::SUB_APP);
   }

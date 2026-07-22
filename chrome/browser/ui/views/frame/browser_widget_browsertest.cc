@@ -218,7 +218,7 @@ class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
         BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
   ui::MockOsSettingsProvider& os_settings_provider() {
     return os_settings_provider_;
   }

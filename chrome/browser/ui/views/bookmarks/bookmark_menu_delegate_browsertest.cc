@@ -74,7 +74,7 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
 
     // Set managed bookmarks.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     ASSERT_FALSE(prefs->HasPrefPath(bookmarks::prefs::kManagedBookmarks));
     prefs->SetList(bookmarks::prefs::kManagedBookmarks,
                    base::ListValue().Append(
@@ -139,7 +139,7 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
 
   void NewAndBuildFullMenuWithBookmarksTitle() {
     // Remove the managed bookmarks node.
-    browser()->profile()->GetPrefs()->SetList(
+    browser()->GetProfile()->GetPrefs()->SetList(
         bookmarks::prefs::kManagedBookmarks, base::ListValue());
     root_menu_ = std::make_unique<views::MenuItemView>();
     root_menu_->CreateSubmenu();

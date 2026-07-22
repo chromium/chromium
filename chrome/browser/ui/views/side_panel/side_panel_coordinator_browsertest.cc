@@ -249,8 +249,8 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
     std::string args =
         base::StringPrintf(R"([{%s%s"enabled":%s}])", tab_id_arg.c_str(),
                            path_arg.c_str(), base::ToString(enabled));
-    EXPECT_TRUE(extensions::api_test_utils::RunFunction(function.get(), args,
-                                                        browser()->profile()))
+    EXPECT_TRUE(extensions::api_test_utils::RunFunction(
+        function.get(), args, browser()->GetProfile()))
         << function->GetError();
   }
 
@@ -1391,7 +1391,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, SidePanelWidthPreference) {
   ASSERT_TRUE(side_panel);
 
   PrefService* prefs =
-      browser()->GetBrowserView().browser()->profile()->GetPrefs();
+      browser()->GetBrowserView().browser()->GetProfile()->GetPrefs();
   auto& dict = prefs->GetDict(prefs::kSidePanelIdToWidth);
   const std::string bookmarks_side_panel_id =
       SidePanelEntryIdToString(SidePanelEntry::Id::kBookmarks);
@@ -1464,7 +1464,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   bookmarks_entry->SetDefaultContentWidthForTesting(kTestDefaultContentWidth);
 
   // Clear any existing preference for bookmarks.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   ScopedDictPrefUpdate update(prefs, prefs::kSidePanelIdToWidth);
   update->Remove(SidePanelEntryIdToString(SidePanelEntryId::kBookmarks));
 
@@ -1495,7 +1495,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   bookmarks_entry->SetDefaultContentWidthForTesting(kTestDefaultContentWidth);
 
   // Set a user preference for bookmarks.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   ScopedDictPrefUpdate update(prefs, prefs::kSidePanelIdToWidth);
   update->Set(SidePanelEntryIdToString(SidePanelEntryId::kBookmarks),
               base::Value(kUserPreferredWidth));
@@ -1525,7 +1525,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
       SidePanelEntry::kSidePanelDefaultContentWidth);
 
   // Clear any existing preference for bookmarks.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   ScopedDictPrefUpdate update(prefs, prefs::kSidePanelIdToWidth);
   update->Remove(SidePanelEntryIdToString(SidePanelEntryId::kBookmarks));
 

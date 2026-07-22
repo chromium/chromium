@@ -56,7 +56,7 @@ class SystemMenuModelBuilderGlicTest : public InProcessBrowserTest {
 // Check if the toggle tab search pinning option exists and has the right label
 // based on relevant prefs.
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, ToggleTabSearchPinning) {
-  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  PrefService* profile_prefs = browser()->GetProfile()->GetPrefs();
   ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
                             ->browser_widget()
                             ->GetSystemMenuModel();
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, ToggleTabSearchPinning) {
 // Check if the toggle glic pinning option exists and has the right label based
 // on relevant prefs.
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, ToggleGlicPinning) {
-  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  PrefService* profile_prefs = browser()->GetProfile()->GetPrefs();
   ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
                             ->browser_widget()
                             ->GetSystemMenuModel();
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest, ToggleGlicPinning) {
 // pref.
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderGlicTest,
                        ExecuteTabSearchToggleCommand) {
-  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  PrefService* profile_prefs = browser()->GetProfile()->GetPrefs();
 
   profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, false);
   chrome::ExecuteCommand(browser(), IDC_TAB_SEARCH_TOGGLE_PIN);

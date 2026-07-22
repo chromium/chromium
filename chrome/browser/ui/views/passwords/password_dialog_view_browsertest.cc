@@ -521,7 +521,7 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
   // After picking a credential, we should pass it back to the caller via the
   // callback, and pop up the autosignin prompt iff we should show it.
   EXPECT_CALL(*this, OnChooseCredential(Pointee(form)));
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin, false);
   controller()->ChooseCredential(
       form, password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD);
@@ -637,13 +637,13 @@ IN_PROC_BROWSER_TEST_P(PasswordDialogViewTest,
 
   // Successful login with the same form after block will not prompt if auto
   // sign-in is off:
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin, false);
   blocked_form = std::make_unique<password_manager::PasswordForm>(form);
   client()->NotifyUserCouldBeAutoSignedIn(std::move(blocked_form));
   client()->NotifySuccessfulLoginWithExistingPassword(WrapFormInManager(&form));
   ASSERT_FALSE(controller()->current_autosignin_prompt());
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       password_manager::prefs::kCredentialsEnableAutosignin, true);
 
   // Successful login with the same form after block will *prompt:

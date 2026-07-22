@@ -434,7 +434,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
   // which cannot intercepted by content::URLLoaderInterceptor.
   TranslateDownloadManager::GetInstance()->set_url_loader_factory(
       browser()
-          ->profile()
+          ->GetProfile()
           ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 

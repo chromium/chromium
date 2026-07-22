@@ -114,7 +114,7 @@ class BookmarkEditorViewBrowserTestMoveDialog
   // BookmarkEditorView dialog with a tree view.
   void ShowUi(const std::string& name) override {
     BookmarkEditor::Show(
-        browser()->GetWindow()->GetNativeWindow(), browser()->profile(),
+        browser()->GetWindow()->GetNativeWindow(), browser()->GetProfile(),
         BookmarkEditor::EditDetails::MoveNodes(bookmark_model(), nodes_),
         BookmarkEditor::SHOW_TREE);
   }

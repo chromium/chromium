@@ -170,7 +170,8 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, CallbackNotified) {
   EXPECT_TRUE(browser1_eligible);
 
   // Create a second browser, which becomes the active and eligible browser.
-  BrowserWindowInterface* const browser2 = CreateBrowser(browser()->profile());
+  BrowserWindowInterface* const browser2 =
+      CreateBrowser(browser()->GetProfile());
   bool browser2_eligible =
       glass_frame_service->IsBrowserWindowEligible(browser2);
   base::CallbackListSubscription sub2 =

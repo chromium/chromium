@@ -255,13 +255,13 @@ class BookmarkBarViewInWidgetTest : public BookmarkBarViewBaseTest {
 // Verify that in instant extended mode the visibility of the apps shortcut
 // button properly follows the pref value.
 TEST_F(BookmarkBarViewTest, AppsShortcutVisibility) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar, false);
   EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
 
   // Try to make the Apps shortcut visible. Its visibility depends on whether
   // the Apps shortcut is enabled.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar, true);
   if (chrome::IsAppsShortcutEnabled(browser()->GetProfile())) {
     EXPECT_TRUE(test_helper_->apps_page_shortcut()->GetVisible());
@@ -270,7 +270,7 @@ TEST_F(BookmarkBarViewTest, AppsShortcutVisibility) {
   }
 
   // Make sure we can also properly transition from true to false.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowAppsShortcutInBookmarkBar, false);
   EXPECT_FALSE(test_helper_->apps_page_shortcut()->GetVisible());
 }
@@ -280,12 +280,12 @@ TEST_F(BookmarkBarViewTest, TabGroupsBarVisibility) {
   EXPECT_TRUE(test_helper_->saved_tab_group_bar()->GetVisible());
 
   // Pref not to show hides tab group bar.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowTabGroupsInBookmarkBar, false);
   EXPECT_FALSE(test_helper_->saved_tab_group_bar()->GetVisible());
 
   // Pref to show displays tab group bar.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       bookmarks::prefs::kShowTabGroupsInBookmarkBar, true);
   EXPECT_TRUE(test_helper_->saved_tab_group_bar()->GetVisible());
 }

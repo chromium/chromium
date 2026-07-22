@@ -31,7 +31,7 @@ gfx::Rect FindBarOwnerViews::GetFindBarClippingBox() {
 }
 
 bool FindBarOwnerViews::IsOffTheRecord() const {
-  return browser_view_->browser()->profile()->IsOffTheRecord();
+  return browser_view_->browser()->GetProfile()->IsOffTheRecord();
 }
 
 views::Widget* FindBarOwnerViews::GetWidgetForAnchoring() {

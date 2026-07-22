@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest,
 
   Browser::CreateParams app_browser_params =
       Browser::CreateParams::CreateForApp("AppName", true, gfx::Rect(),
-                                          browser()->profile(), false);
+                                          browser()->GetProfile(), false);
   Browser* app_browser = Browser::Create(app_browser_params);
 
   EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(app_browser)
@@ -341,12 +341,12 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewBrowserTest, DragAndDropEnabledPref) {
   EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 
   // Disable drag and drop.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSplitViewDragAndDropEnabled, false);
   EXPECT_FALSE(multi_contents_view()->IsDragAndDropEnabled());
 
   // Enable drag and drop.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSplitViewDragAndDropEnabled, true);
   EXPECT_TRUE(multi_contents_view()->IsDragAndDropEnabled());
 }

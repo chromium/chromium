@@ -52,7 +52,7 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest {
 IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
                        TestShowingIPHOnSavedTabGroupBar) {
   // Show the SavedTabGroupBar and the BookmarkBar.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   const bool original_stgb_pref =
       prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
   prefs->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar, true);
@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
 IN_PROC_BROWSER_TEST_F(SavedTabGroupV2PromoTest,
                        TestShowingIPHWithoutSavedTabGroupBar) {
   // Show the SavedTabGroupBar and the BookmarkBar.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   const bool original_stgb_pref =
       prefs->GetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar);
   prefs->SetBoolean(bookmarks::prefs::kShowTabGroupsInBookmarkBar, false);

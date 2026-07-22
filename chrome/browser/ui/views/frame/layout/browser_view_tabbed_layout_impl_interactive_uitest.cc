@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTabbedLayoutImplUiTest,
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               "Test is screenshot-only."),
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
             prefs::kTabSearchPinnedToTabstrip, false);
       }),
       SelectTab(kBrowserViewElementId, 0),

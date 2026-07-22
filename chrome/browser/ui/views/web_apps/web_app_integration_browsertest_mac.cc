@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration,
   // the profile the app is installed in.
   profiles::SetLastUsedProfile(base::FilePath("Default"));
   EXPECT_EQ(g_browser_process->profile_manager()->GetLastUsedProfile(),
-            browser()->profile());
+            browser()->GetProfile());
 
   helper_.LaunchFromAppShimFallback(Site::kStandalone);
   helper_.CheckWindowCreated();

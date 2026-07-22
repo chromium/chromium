@@ -50,7 +50,7 @@ class WebUIWebAppBrowserTest : public WebAppBrowserTestBase {
   };
 
   App InstallAndLaunch() {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     std::string start_url = base::StrCat(
         {kWebUIScheme, password_manager::kChromeUIPasswordManagerHost});
 

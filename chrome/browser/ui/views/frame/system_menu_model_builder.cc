@@ -279,8 +279,8 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
     bool is_captive_portal_signin = false;
 #if BUILDFLAG(IS_CHROMEOS)
     is_captive_portal_signin =
-        browser()->profile()->IsOffTheRecord() &&
-        browser()->profile()->GetOTRProfileID().IsCaptivePortal();
+        browser()->GetProfile()->IsOffTheRecord() &&
+        browser()->GetProfile()->GetOTRProfileID().IsCaptivePortal();
 #endif
     if (!is_captive_portal_signin) {
       model->AddSeparator(ui::NORMAL_SEPARATOR);

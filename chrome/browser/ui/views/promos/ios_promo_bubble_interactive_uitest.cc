@@ -90,7 +90,7 @@ class IOSPromoBubbleBrowserTest
       // Explicitly set impression count to 0 before showing the promo.
       // This ensures that the first impression is recorded as 1.
       promos_utils::IOSPromoPrefsConfig promo_prefs(promo_type);
-      browser()->profile()->GetPrefs()->SetInteger(
+      browser()->GetProfile()->GetPrefs()->SetInteger(
           promo_prefs.promo_impressions_counter_pref_name, 0);
 
       switch (promo_type) {

@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarNtpSimplificationBrowserTest,
 
   EXPECT_TRUE(
       browser()
-          ->profile()
+          ->GetProfile()
           ->GetPrefs()
           ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
           ->IsDefaultValue());
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarNtpSimplificationBrowserTest,
 
   EXPECT_FALSE(
       browser()
-          ->profile()
+          ->GetProfile()
           ->GetPrefs()
           ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
           ->IsDefaultValue());
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarNtpSimplificationBrowserTest,
 
   EXPECT_TRUE(
       browser()
-          ->profile()
+          ->GetProfile()
           ->GetPrefs()
           ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
           ->IsDefaultValue());
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarNtpSimplificationBrowserTest,
 
   EXPECT_FALSE(
       browser()
-          ->profile()
+          ->GetProfile()
           ->GetPrefs()
           ->FindPreference(bookmarks::prefs::kBookmarkBarVisibilityState)
           ->IsDefaultValue());

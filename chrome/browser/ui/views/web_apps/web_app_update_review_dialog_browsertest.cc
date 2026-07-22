@@ -148,7 +148,7 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
                                           dialog_result_.GetCallback());
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   bool VerifyUi() override {
     if (!DialogBrowserTest::VerifyUi()) {
@@ -323,7 +323,7 @@ class WebAppUpdateDialogBrowserTests : public WebAppBrowserTestBase {
   WebAppUpdateDialogBrowserTests& operator=(
       const WebAppUpdateDialogBrowserTests&) = delete;
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   const webapps::AppId InstallAppAndTriggerAppUpdateDialog() {
     // Install the app and trigger a navigation.
