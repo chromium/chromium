@@ -10,21 +10,39 @@
 #include "base/feature_list.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_profile_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace metrics {
 
 // static
-bool MetricsReportingChoiceService::
-    IsMetricsConsentRestructureFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kRestructureMetricsConsentSettings);
+void MetricsReportingChoiceService::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kAdvancedReportingEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAdvancedReportingProfileMigrationDone,
+                                false);
+}
+
+// static
+void MetricsReportingChoiceService::SetAdvancedReportingEnabled(
+    PrefService* profile_prefs,
+    bool enabled) {
+  CHECK(profile_prefs);
+  profile_prefs->SetBoolean(prefs::kAdvancedReportingEnabled, enabled);
+}
+
+// static
+bool MetricsReportingChoiceService::IsAdvancedReportingEnabled(
+    const PrefService* profile_prefs) {
+  CHECK(profile_prefs);
+  return profile_prefs->GetBoolean(prefs::kAdvancedReportingEnabled);
 }
 
 // static
 bool MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure() {
-  return IsMetricsConsentRestructureFeatureEnabled();
+  return base::FeatureList::IsEnabled(
+      features::kRestructureMetricsConsentSettings);
 }
 
 // static

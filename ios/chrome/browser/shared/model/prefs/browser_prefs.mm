@@ -533,6 +533,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   LevelUpService::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);
+  metrics::MetricsReportingChoiceService::RegisterProfilePrefs(registry);
   ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   ntp_tiles::PopularSitesImpl::RegisterProfilePrefs(registry);

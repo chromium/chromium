@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_profile_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/synthetic_trial_registry.h"
@@ -31,6 +32,32 @@ class MetricsReportingChoiceServiceTest : public testing::Test {
   variations::SyntheticTrialRegistry registry_;
 };
 
+TEST_F(MetricsReportingChoiceServiceTest, RegisterProfilePrefs) {
+  TestingPrefServiceSimple prefs;
+  MetricsReportingChoiceService::RegisterProfilePrefs(prefs.registry());
+  EXPECT_FALSE(prefs.GetBoolean(prefs::kAdvancedReportingEnabled));
+  EXPECT_FALSE(prefs.GetBoolean(prefs::kAdvancedReportingProfileMigrationDone));
+}
+
+TEST_F(MetricsReportingChoiceServiceTest, AdvancedReportingEnabled) {
+  TestingPrefServiceSimple prefs;
+  MetricsReportingChoiceService::RegisterProfilePrefs(prefs.registry());
+
+  // Default value should be false.
+  EXPECT_FALSE(
+      MetricsReportingChoiceService::IsAdvancedReportingEnabled(&prefs));
+
+  // Set to true and verify.
+  MetricsReportingChoiceService::SetAdvancedReportingEnabled(&prefs, true);
+  EXPECT_TRUE(
+      MetricsReportingChoiceService::IsAdvancedReportingEnabled(&prefs));
+
+  // Set to false and verify.
+  MetricsReportingChoiceService::SetAdvancedReportingEnabled(&prefs, false);
+  EXPECT_FALSE(
+      MetricsReportingChoiceService::IsAdvancedReportingEnabled(&prefs));
+}
+
 TEST_F(MetricsReportingChoiceServiceTest, IsBasicMetricsReportingEnabled) {
   prefs_.SetBoolean(prefs::kMetricsReportingEnabled, true);
   EXPECT_TRUE(
@@ -46,8 +73,6 @@ TEST_F(MetricsReportingChoiceServiceTest, FeatureState) {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(
         features::kRestructureMetricsConsentSettings);
-    EXPECT_TRUE(MetricsReportingChoiceService::
-                    IsMetricsConsentRestructureFeatureEnabled());
     EXPECT_TRUE(
         MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure());
   }
@@ -55,8 +80,6 @@ TEST_F(MetricsReportingChoiceServiceTest, FeatureState) {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndDisableFeature(
         features::kRestructureMetricsConsentSettings);
-    EXPECT_FALSE(MetricsReportingChoiceService::
-                     IsMetricsConsentRestructureFeatureEnabled());
     EXPECT_FALSE(
         MetricsReportingChoiceService::ShouldUseMetricsConsentRestructure());
   }

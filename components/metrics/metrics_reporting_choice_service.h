@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_METRICS_METRICS_REPORTING_CHOICE_SERVICE_H_
 #define COMPONENTS_METRICS_METRICS_REPORTING_CHOICE_SERVICE_H_
 class PrefService;
+class PrefRegistrySimple;
 
 namespace metrics {
 
@@ -14,11 +15,18 @@ class MetricsReportingChoiceService {
  public:
   MetricsReportingChoiceService() = delete;
 
+  // Registers profile-level preferences used by this service.
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Sets the advanced metrics reporting choice.
+  static void SetAdvancedReportingEnabled(PrefService* profile_prefs,
+                                          bool enabled);
+
+  // Gets the current advanced metrics reporting choice.
+  static bool IsAdvancedReportingEnabled(const PrefService* profile_prefs);
+
   // Returns true if basic metrics reporting is enabled.
   static bool IsBasicMetricsReportingEnabled(const PrefService* local_state);
-
-  // Returns true if the metrics consent restructure feature is enabled.
-  static bool IsMetricsConsentRestructureFeatureEnabled();
 
   // Returns true if the metrics consent restructure should be used.
   static bool ShouldUseMetricsConsentRestructure();

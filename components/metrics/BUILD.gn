@@ -234,6 +234,7 @@ if (!is_cronet_build || is_ios) {
       "metrics_log_store.h",
       "metrics_log_uploader.h",
       "metrics_logs_event_manager.h",
+      "metrics_profile_pref_names.h",
       "metrics_provider.h",
       "metrics_reporting_choice_service.h",
       "metrics_reporting_default_state.h",
