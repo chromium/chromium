@@ -461,7 +461,7 @@ public class TabBottomSheetCoordinator {
             @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
                 if (mBottomSheetController.getSheetState() == SheetState.SCROLLING) {
-                    mMediator.updateCrossFadeAlpha(offsetPx);
+                    mMediator.onSheetOffsetChanged(offsetPx, isPastHalfAndLessThanFull(offsetPx));
                 }
             }
 
@@ -671,6 +671,20 @@ public class TabBottomSheetCoordinator {
             return SMALL_SCREEN_HEIGHT_RATIO;
         }
         return isKeyboardShowing() ? SMALL_SCREEN_HEIGHT_RATIO : FULL_HEIGHT_RATIO;
+    }
+
+    private boolean isPastHalfAndLessThanFull(float offsetPx) {
+        if (mSheetContent == null || mBottomSheetController == null) return false;
+
+        if (mBottomSheetController.isSmallScreen()) return false;
+
+        float halfRatio = mSheetContent.getHalfHeightRatio();
+        if (halfRatio == BottomSheetContent.HeightMode.DISABLED) return false;
+
+        float halfOffset = mBottomSheetController.getContainerHeight() * halfRatio;
+        float fullOffset = mBottomSheetController.getMaxOffset();
+
+        return offsetPx > halfOffset && offsetPx < fullOffset;
     }
 
     private void updateRoundingEdges() {

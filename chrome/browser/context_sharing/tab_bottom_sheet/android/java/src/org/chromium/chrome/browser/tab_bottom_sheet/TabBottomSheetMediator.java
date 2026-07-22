@@ -34,6 +34,8 @@ public class TabBottomSheetMediator extends GestureStateListener {
     private @SheetState int mCurrentSheetState = SheetState.HIDDEN;
     private int mPeekHeight;
     private @Nullable ResizeLock mResizeLock;
+    private boolean mLastIsBetweenDefaultAndFullHeight;
+    private boolean mIsResizing;
 
     public TabBottomSheetMediator(Context context, PropertyModel model) {
         mContext = context;
@@ -42,18 +44,53 @@ public class TabBottomSheetMediator extends GestureStateListener {
         mTouchArbitrator = new TouchArbitrator();
     }
 
+    /**
+     * Updates the offset height fraction for the sheet during scrolling/resizing.
+     *
+     * @param offsetPx The offset in pixels.
+     * @param isBetweenDefaultAndFullHeight Whether the current offset is between default and full
+     *     height.
+     */
+    public void onSheetOffsetChanged(float offsetPx, boolean isBetweenDefaultAndFullHeight) {
+        updateCrossFadeAlpha(offsetPx);
+        if (mIsResizing) {
+            updateResizingState(isBetweenDefaultAndFullHeight);
+        }
+    }
+
     /** Sets whether the sheet is resizing. */
     public void onSheetResizingStatusChanged(boolean isResizing) {
+        mIsResizing = isResizing;
+        if (!isResizing) {
+            if (mResizeLock != null) {
+                mResizeLock.unlock();
+                mResizeLock = null;
+            }
+            return;
+        }
+
+        updateResizingState(mLastIsBetweenDefaultAndFullHeight);
+    }
+
+    private void updateResizingState(boolean isBetweenDefaultAndFullHeight) {
         WebViewResizingHelper helper =
                 mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
-        if (helper != null && isResizing) {
+        if (helper == null || !mIsResizing) {
+            return;
+        }
+
+        if (isBetweenDefaultAndFullHeight) {
             if (mResizeLock == null) {
                 mResizeLock = helper.requestResize();
             }
         } else if (mResizeLock != null) {
+            // Suppress requestResize() when at or below default height (between peek and
+            // default height).
             mResizeLock.unlock();
             mResizeLock = null;
         }
+
+        mLastIsBetweenDefaultAndFullHeight = isBetweenDefaultAndFullHeight;
     }
 
     /** Updates the state used for resizing the sheet. */
@@ -86,6 +123,8 @@ public class TabBottomSheetMediator extends GestureStateListener {
         } else if (state == SheetState.FULL || state == SheetState.HALF) {
             mModel.set(TabBottomSheetProperties.PEEK_STATE_ALPHA, 0.0f);
             mModel.set(TabBottomSheetProperties.EXPANDED_STATE_ALPHA, 1.0f);
+        } else if (state == SheetState.HIDDEN) {
+            mLastIsBetweenDefaultAndFullHeight = false;
         }
     }
 
