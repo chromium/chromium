@@ -6,13 +6,18 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_ref.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/webid/flags.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/weak_document_ptr.h"
+#include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
@@ -141,12 +146,14 @@ NetworkRequestManager::NetworkRequestManager(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     network::mojom::ClientSecurityStatePtr client_security_state,
     network::mojom::RequestDestination destination,
-    FrameTreeNodeId frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id,
+    WeakDocumentPtr initiator_document)
     : relying_party_origin_(relying_party_origin),
       loader_factory_(loader_factory),
       client_security_state_(std::move(client_security_state)),
       destination_(destination),
-      frame_tree_node_id_(frame_tree_node_id) {}
+      frame_tree_node_id_(frame_tree_node_id),
+      initiator_document_(std::move(initiator_document)) {}
 
 NetworkRequestManager::~NetworkRequestManager() = default;
 
@@ -167,6 +174,26 @@ void NetworkRequestManager::DownloadUrl(
     DownloadCallback callback,
     size_t max_download_size,
     bool allow_http_error_results) {
+  // TODO(crbug.com/447954811): Implement the connection allowlist check.
+  if (!initiator_document_.AsRenderFrameHostIfValid()) {
+    // If the initiator frame of the invoking API has gone (e.g. user closes the
+    // tab). The request is aborted. This is because:
+    // 1. The connection allowlist is stored in the initiator frame's policy
+    //    container. Since the frame has been destroyed, there is no connection
+    //    allowlist to check.
+    // 2. It is safe to abort the requests because they are no longer useful
+    //    as the initiator frame owning the API that requires the requests has
+    //    been destroyed.
+    if (callback) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&NetworkRequestManager::OnRequestBlocked,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    std::move(callback), net::ERR_ABORTED));
+    }
+
+    return;
+  }
+
   if (url_encoded_post_data) {
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
@@ -262,6 +289,14 @@ void NetworkRequestManager::OnDownloadedUrl(
                           std::move(mime_type), cors_error);
 }
 
+void NetworkRequestManager::OnRequestBlocked(DownloadCallback callback,
+                                             int response_code) {
+  if (callback) {
+    std::move(callback).Run(/*response_body=*/std::nullopt, response_code,
+                            /*mime_type=*/"", /*cors_error=*/false);
+  }
+}
+
 std::unique_ptr<network::ResourceRequest>
 NetworkRequestManager::CreateUncredentialedResourceRequest(
     const GURL& target_url,
@@ -281,6 +316,10 @@ NetworkRequestManager::CreateUncredentialedResourceRequest(
                                         relying_party_origin_.Serialize());
     DCHECK(!follow_redirects);
   }
+
+  // TODO(crbug.com/447954811): Check whether the `render_frame_host`'s
+  // connection allowlist allows redirect. Set the `resource_request` to not
+  // following redirects if the allowlist does not allow redirects.
   if (follow_redirects) {
     resource_request->redirect_mode = network::mojom::RedirectMode::kFollow;
   } else {

@@ -37,6 +37,7 @@ namespace content {
 
 class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHostImpl;
+class WeakDocumentPtr;
 
 namespace webid {
 
@@ -278,7 +279,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       FederatedIdentityPermissionContextDelegate* permission_delegate,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      FrameTreeNodeId frame_tree_node_id);
+      FrameTreeNodeId frame_tree_node_id,
+      WeakDocumentPtr initiator_document);
 
   ~IdpNetworkRequestManager() override;
 

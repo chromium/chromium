@@ -15,6 +15,7 @@
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 #include "content/browser/webid/network_request_manager.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
@@ -42,7 +43,8 @@ class MockNetworkRequestManager : public EmailVerifierNetworkRequestManager {
       : EmailVerifierNetworkRequestManager(url::Origin(),
                                            nullptr,
                                            nullptr,
-                                           FrameTreeNodeId()) {}
+                                           FrameTreeNodeId(),
+                                           WeakDocumentPtr()) {}
   MOCK_METHOD(void,
               DownloadAndParseUncredentialedUrl,
               (const GURL& url, ParseJsonCallback callback),

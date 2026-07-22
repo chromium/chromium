@@ -21,6 +21,7 @@
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
@@ -65,7 +66,8 @@ class MockEmailVerifierNetworkRequestManager
       : EmailVerifierNetworkRequestManager(url::Origin(),
                                            nullptr,
                                            nullptr,
-                                           FrameTreeNodeId()) {}
+                                           FrameTreeNodeId(),
+                                           WeakDocumentPtr()) {}
   ~MockEmailVerifierNetworkRequestManager() override = default;
 
   MOCK_METHOD(void,

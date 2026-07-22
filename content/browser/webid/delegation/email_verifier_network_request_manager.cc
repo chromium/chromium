@@ -5,6 +5,7 @@
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -13,6 +14,7 @@
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/network_request_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
@@ -120,20 +122,23 @@ EmailVerifierNetworkRequestManager::Create(RenderFrameHostImpl* host) {
   return std::make_unique<EmailVerifierNetworkRequestManager>(
       host->GetLastCommittedOrigin(),
       host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),
-      host->BuildClientSecurityState(), host->GetFrameTreeNodeId());
+      host->BuildClientSecurityState(), host->GetFrameTreeNodeId(),
+      host->GetWeakDocumentPtr());
 }
 
 EmailVerifierNetworkRequestManager::EmailVerifierNetworkRequestManager(
     const url::Origin& relying_party_origin,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    FrameTreeNodeId frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id,
+    WeakDocumentPtr initiator_document)
     : NetworkRequestManager(
           relying_party_origin,
           loader_factory,
           std::move(client_security_state),
           network::mojom::RequestDestination::kEmailVerification,
-          frame_tree_node_id) {}
+          frame_tree_node_id,
+          std::move(initiator_document)) {}
 
 EmailVerifierNetworkRequestManager::~EmailVerifierNetworkRequestManager() =
     default;

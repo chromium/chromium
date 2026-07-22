@@ -11,6 +11,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -26,11 +27,13 @@
 #include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/common/features.h"
 #include "content/public/browser/manifest_icon_downloader.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
-#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/network_isolation_partition.h"
 #include "net/http/http_request_headers.h"
@@ -126,10 +129,11 @@ url::Origin GetOriginHeader(const network::ResourceRequest& request) {
                .value_or(std::string())));
 }
 
-class IdpNetworkRequestManagerTest : public ::testing::Test {
+class IdpNetworkRequestManagerTest : public RenderViewHostTestHarness {
  public:
   std::unique_ptr<IdpNetworkRequestManager> CreateTestManager(
       const char* top_level_origin = nullptr) {
+    CHECK(main_rfh());
     test_permission_delegate_ =
         std::make_unique<NiceMock<MockPermissionDelegate>>();
     url::Origin top_level_origin_obj;
@@ -141,7 +145,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         test_permission_delegate_.get(),
-        network::mojom::ClientSecurityState::New(), content::FrameTreeNodeId());
+        network::mojom::ClientSecurityState::New(),
+        main_rfh()->GetFrameTreeNodeId(), main_rfh()->GetWeakDocumentPtr());
   }
 
   void AddResponse(const GURL& url,
@@ -357,8 +362,6 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   std::optional<ErrorUrlType> error_url_type() { return error_url_type_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_{
-      content::BrowserTaskEnvironment::MainThreadType::UI};
   network::TestURLLoaderFactory test_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester_;
@@ -973,7 +976,8 @@ TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
       test_permission_delegate_.get(),
-      network::mojom::ClientSecurityState::New(), content::FrameTreeNodeId());
+      network::mojom::ClientSecurityState::New(), FrameTreeNodeId(),
+      WeakDocumentPtr());
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
@@ -2800,6 +2804,40 @@ TEST_F(IdpNetworkRequestManagerTest, DisconnectRequestInjection) {
   run_loop.Run();
 
   EXPECT_TRUE(called);
+}
+
+// If the frame is invalidated during the request initiation, the request is
+// aborted.
+TEST_F(IdpNetworkRequestManagerTest, RequestAbortedOnInvalidFrame) {
+  network::TestURLLoaderFactory test_url_loader_factory;
+  auto test_permission_delegate = std::make_unique<MockPermissionDelegate>();
+
+  // Simulate the initiator frame being invalidated by passing a default
+  // constructed `WeakDocumentPtr`.
+  auto network_manager = std::make_unique<IdpNetworkRequestManager>(
+      url::Origin::Create(GURL(kTestRpUrl)),
+      /*rp_embedding_origin=*/url::Origin(),
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory),
+      test_permission_delegate.get(),
+      network::mojom::ClientSecurityState::New(), FrameTreeNodeId(),
+      WeakDocumentPtr());
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&](FetchStatus fetch_status,
+          const IdpNetworkRequestManager::WellKnown& well_known) {
+        // The request should be aborted.
+        EXPECT_EQ(ParseStatus::kNoResponseError, fetch_status.parse_status);
+        EXPECT_EQ(net::ERR_ABORTED, fetch_status.response_code);
+        run_loop.Quit();
+      });
+
+  network_manager->FetchWellKnown(GURL("https://idp.example"),
+                                  std::move(callback));
+  run_loop.Run();
+
+  EXPECT_EQ(0, test_url_loader_factory.NumPending());
 }
 
 }  // namespace

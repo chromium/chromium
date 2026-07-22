@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -31,6 +32,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/webid/constants.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
@@ -984,7 +986,8 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
       host->GetMainFrame()->GetLastCommittedOrigin(),
       host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),
       host->GetBrowserContext()->GetFederatedIdentityPermissionContext(),
-      host->BuildClientSecurityState(), host->GetFrameTreeNodeId());
+      host->BuildClientSecurityState(), host->GetFrameTreeNodeId(),
+      host->GetWeakDocumentPtr());
 }
 
 IdpNetworkRequestManager::IdpNetworkRequestManager(
@@ -993,12 +996,14 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    FrameTreeNodeId frame_tree_node_id)
+    FrameTreeNodeId frame_tree_node_id,
+    WeakDocumentPtr initiator_document)
     : NetworkRequestManager(relying_party_origin,
                             loader_factory,
                             std::move(client_security_state),
                             network::mojom::RequestDestination::kWebIdentity,
-                            frame_tree_node_id),
+                            frame_tree_node_id,
+                            std::move(initiator_document)),
       rp_embedding_origin_(rp_embedding_origin),
       permission_delegate_(permission_delegate) {
   DCHECK(client_security_state_);
