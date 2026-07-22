@@ -317,6 +317,8 @@ source_set("webgpu_sources") {
       "dawn_client_memory_transfer_service.h",
       "dawn_client_serializer.cc",
       "dawn_client_serializer.h",
+      "dawn_wire_client.cc",
+      "dawn_wire_client.h",
     ]
   }
 }

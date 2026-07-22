@@ -74,11 +74,11 @@ void DawnWireServices::Disconnect() {
   memory_transfer_service_.Disconnect();
 }
 
-void DawnWireServices::HandleCommands(const cmds::DawnReturnCommandsInfo& info,
-                                      size_t size) {
+void DawnWireServices::HandleCommands(
+    uint64_t trace_id,
+    base::span<const volatile uint8_t> commands) {
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"), "DawnReturnCommands",
-              perfetto::TerminatingFlow::Global(
-                  info.header.return_data_header.trace_id));
+              perfetto::TerminatingFlow::Global(trace_id));
 
   base::AutoLockMaybe lock(OptionalToPtr(lock_));
   if (disconnected_) {
@@ -86,7 +86,7 @@ void DawnWireServices::HandleCommands(const cmds::DawnReturnCommandsInfo& info,
   }
 
   // Commands from the GPU process are expected to be well-formed.
-  CHECK(wire_client_.HandleCommands(info.deserialized_buffer, size));
+  CHECK(wire_client_.HandleCommands(commands));
 }
 
 void DawnWireServices::ProcessEvents() {
@@ -331,12 +331,10 @@ void WebGPUImplementation::OnGpuControlReturnData(
     case DawnReturnDataType::kDawnCommands: {
       CHECK_GE(data.size(), sizeof(cmds::DawnReturnCommandsInfo));
 
-      const cmds::DawnReturnCommandsInfo* dawn_return_commands_info =
-          reinterpret_cast<const cmds::DawnReturnCommandsInfo*>(data.data());
       dawn_wire_->HandleCommands(
-          *dawn_return_commands_info,
-          data.size() -
-              offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer));
+          dawnReturnDataHeader.trace_id,
+          data.subspan(
+              offsetof(cmds::DawnReturnCommandsInfo, deserialized_buffer)));
 
       // Call ProcessEvents now, always posting the task to do so to the
       // runner to handle the callbacks in a fresh call stack to avoid
