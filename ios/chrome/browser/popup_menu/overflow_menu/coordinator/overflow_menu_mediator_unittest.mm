@@ -586,12 +586,12 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
 }
 
 // Tests that the Report an Issue item is hidden when the capability is false.
-TEST_F(OverflowMenuMediatorTest, TestFeedbackItemHiddenWhenCapabilityFalse) {
+TEST_F(OverflowMenuMediatorTest, FeedbackItemHiddenWhenCapabilityFalse) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       kFeedbackEntryPointsRequireCanSubmitFeedbackCapability);
 
-  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(identity);
   AuthenticationServiceFactory::GetForProfile(profile_.get())
       ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
@@ -1013,6 +1013,28 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityButtonVisibleWhenSignedIn) {
   EXPECT_NSEQ(expectedName, identity_action.name);
   NSString* expectedSubtitle = identity.userEmail;
   EXPECT_NSEQ(expectedSubtitle, identity_action.subtitle);
+}
+
+// Tests that the identity button is hidden in incognito mode even when signed
+// in.
+TEST_F(OverflowMenuMediatorTest, TestIdentityButtonHiddenInIncognitoMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIdentityAwareness);
+
+  // Sign in user.
+  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentity(identity);
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
+      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
+
+  // Create mediator in incognito mode.
+  CreateMediator(/*incognito=*/YES);
+  mediator_.authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
+  mediator_.model = model_;
+
+  // Check the identity item is not present.
+  EXPECT_FALSE(HasItem(kToolsMenuIdentityId, /*enabled=*/YES));
 }
 
 // Tests that 1) the tools menu has an enabled 'Add to Bookmarks' button when

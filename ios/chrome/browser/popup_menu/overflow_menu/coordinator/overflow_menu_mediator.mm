@@ -1968,7 +1968,8 @@ void GetPresetNTPBackgroundPreview(
   NSMutableArray<OverflowMenuActionGroup*>* actionGroups =
       [[NSMutableArray alloc] init];
 
-  if (IsIdentityAwarenessEnabled() && self.authenticationService) {
+  if (IsIdentityAwarenessEnabled() && self.authenticationService &&
+      !self.incognito) {
     NSMutableArray<OverflowMenuAction*>* identityActions =
         [NSMutableArray array];
     if (self.authenticationService->GetPrimaryIdentity()) {
@@ -2080,7 +2081,7 @@ void GetPresetNTPBackgroundPreview(
 }
 
 - (void)updateIdentityAction {
-  if (!self.identityAction || !self.authenticationService ||
+  if (self.incognito || !self.identityAction || !self.authenticationService ||
       !self.authenticationService->HasPrimaryIdentity()) {
     return;
   }
