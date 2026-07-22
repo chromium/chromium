@@ -159,8 +159,13 @@ public class LaunchIntentDispatcher {
         Uri uri = Uri.parse(uriString);
 
         Intent newIntent = new Intent(intent);
-        newIntent.setAction(Intent.ACTION_VIEW);
-        newIntent.setData(uri);
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE)) {
+            newIntent.setDataAndType(uri, intent.getType());
+        } else {
+            newIntent.setAction(Intent.ACTION_VIEW);
+            newIntent.setData(uri);
+        }
         newIntent.setClassName(context, CustomTabActivity.class.getName());
         // Make sure the result of the CustomTabActivity is forwarded to the client.
         newIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);

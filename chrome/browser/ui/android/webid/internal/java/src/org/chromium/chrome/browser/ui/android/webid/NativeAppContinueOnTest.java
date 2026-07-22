@@ -45,6 +45,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
@@ -59,7 +60,10 @@ import java.lang.ref.WeakReference;
 /** Robolectric tests for native app continue_on flow in AccountSelectionCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ContentFeatures.FED_CM_NATIVE_ID_PS)
+@EnableFeatures({
+    ContentFeatures.FED_CM_NATIVE_ID_PS,
+    ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE
+})
 public class NativeAppContinueOnTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

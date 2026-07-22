@@ -104,6 +104,7 @@ BASE_DECLARE_FEATURE(kCCTBlockTouchesDuringEnterAnimation);
 BASE_DECLARE_FEATURE(kCCTClientDataHeader);
 BASE_DECLARE_FEATURE(kCCTContextualMenuItems);
 BASE_DECLARE_FEATURE(kCCTDestroyTabWhenModelIsEmpty);
+BASE_DECLARE_FEATURE(kCCTDontOverrideIntentMimeType);
 BASE_DECLARE_FEATURE(kCCTExtendTrustedCdnPublisher);
 BASE_DECLARE_FEATURE(kCCTFreInSameTask);
 BASE_DECLARE_FEATURE(kCCTGoogleBottomBar);

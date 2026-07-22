@@ -24,7 +24,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -33,7 +34,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link AutofillFallbackSurfaceLauncher}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Batch(Batch.UNIT_TESTS)
+@EnableFeatures(ChromeFeatureList.CCT_DONT_OVERRIDE_INTENT_MIME_TYPE)
 public class AutofillFallbackSurfaceLauncherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
