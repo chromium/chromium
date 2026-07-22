@@ -4,6 +4,7 @@
 
 #include "content/browser/webid/navigation_interceptor.h"
 
+#include "base/auto_reset.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -289,14 +290,23 @@ void NavigationInterceptor::OnHeaderParsed(
     return;
   }
 
-  callback_executed_ = false;
-  bool started = request_initiator_.Run(
-      rfh, std::move(*idp_get_params_vector),
-      password_manager::CredentialMediationRequirement::kOptional,
-      navigation_handle(), intercepted_url,
-      base::BindOnce(&NavigationInterceptor::OnTokenResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
-  if (!started && !callback_executed_) {
+  should_cancel_ = false;
+
+  bool started = false;
+  {
+    base::AutoReset<bool> inside_guard(&is_inside_onheaderparsed_, true);
+    started = request_initiator_.Run(
+        rfh, std::move(*idp_get_params_vector),
+        password_manager::CredentialMediationRequirement::kOptional,
+        navigation_handle(), intercepted_url,
+        base::BindOnce(&NavigationInterceptor::OnTokenResponse,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // If the synchronous callback requested a cancellation, perform it now.
+  if (should_cancel_) {
+    CancelDeferredNavigation(CANCEL);
+  } else if (!started) {
     Resume();
   }
 }
@@ -307,7 +317,23 @@ void NavigationInterceptor::OnTokenResponse(
     std::optional<base::Value> token,
     blink::mojom::TokenErrorPtr error,
     bool is_auto_selected) {
-  callback_executed_ = true;
+  if (status == blink::mojom::RequestTokenStatus::kErrorTooManyRequests) {
+    // A token request was not actually started, so we shouldn't cancel the
+    // original navigation. Let it proceed.
+    return;
+  }
+
+  if (is_inside_onheaderparsed_) {
+    // If the callback evaluates synchronously inside `Run()`, we cannot call
+    // `CancelDeferredNavigation(CANCEL)` immediately because that would
+    // synchronously destroy this `NavigationInterceptor` instance while
+    // `OnHeaderParsed` is still using the instance to continue its execution,
+    // leading to a UAF. Instead, signal an intent to cancel and let
+    // `OnHeaderParsed` perform the cancellation after `Run()` finishes.
+    should_cancel_ = true;
+    return;
+  }
+
   // The token response is not used in the navigation interception flow because
   // the IdP is expected to respond with a "redirect_to" field which is handled
   // in Request.
