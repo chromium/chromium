@@ -236,8 +236,8 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
       l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_EDIT_MENU_ENTRY);
   NSString* partialTranslateId = @"chromecommand.partialTranslate";
   return [UIAction actionWithTitle:title
-                             image:CustomSymbolWithPointSize(
-                                       kTranslateSymbol, kSymbolActionPointSize)
+                             image:SymbolWithPointSize(SymbolTranslate,
+                                                       kSymbolActionPointSize)
                         identifier:partialTranslateId
                            handler:handler];
 }

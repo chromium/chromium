@@ -112,8 +112,8 @@ constexpr CGFloat kShortcutSymbolImagePointSize = 20;
   }
   // If `_isShortcut` is YES then lazily initialize a nil `_shortcutImageView`.
   if (!_shortcutImageView) {
-    UIImage* shortcutImage = DefaultSymbolWithPointSize(
-        kArrowUTurnForwardCircleFillSymbol, kShortcutSymbolImagePointSize);
+    UIImage* shortcutImage = SymbolWithPointSize(
+        SymbolArrowUTurnForwardCircleFill, kShortcutSymbolImagePointSize);
     shortcutImage = SymbolWithPalette(shortcutImage, @[
       [UIColor colorNamed:kGrey600Color],
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor],

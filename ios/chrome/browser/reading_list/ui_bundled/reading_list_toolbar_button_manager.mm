@@ -97,8 +97,7 @@ NSString* GetMarkButtonTitleForSelectionState(ReadingListSelectionState state) {
         kReadingListNavigationBarDeselectAllButtonID;
 
     _deleteButton = [[UIBarButtonItem alloc]
-        initWithImage:DefaultSymbolWithPointSize(kDeleteActionSymbol,
-                                                 kSymbolSize)
+        initWithImage:SymbolWithPointSize(SymbolDeleteAction, kSymbolSize)
                 style:UIBarButtonItemStylePlain
                target:nil
                action:@selector(deleteSelectedReadingListItems)];
