@@ -24,9 +24,13 @@ static bool JNI_UserPrefs_AreNativePrefsLoaded(
 static base::android::ScopedJavaLocalRef<jobject> JNI_UserPrefs_Get(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& jbrowser_context_handle) {
-  return UserPrefs::Get(
-             content::BrowserContextFromJavaHandle(jbrowser_context_handle))
-      ->GetJavaObject();
+  content::BrowserContext* context =
+      content::BrowserContextFromJavaHandle(jbrowser_context_handle);
+  PrefService* pref_service = UserPrefs::Get(context);
+  if (!pref_service) {
+    return nullptr;
+  }
+  return pref_service->GetJavaObject();
 }
 
 }  // namespace user_prefs

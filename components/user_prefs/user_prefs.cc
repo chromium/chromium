@@ -33,8 +33,12 @@ bool UserPrefs::ArePrefsLoaded(base::SupportsUserData* context) {
   if (!context || !IsInitialized(context)) {
     return false;
   }
+  PrefService* pref_service = Get(context);
+  if (!pref_service) {
+    return false;
+  }
   PrefService::PrefInitializationStatus status =
-      Get(context)->GetInitializationStatus();
+      pref_service->GetInitializationStatus();
   // status 1 = SUCCESS, status 2 = CREATED_NEW_PREF_STORE. Both mean the store
   // is loaded and ready to use.
   return status == PrefService::INITIALIZATION_STATUS_SUCCESS ||
@@ -45,6 +49,9 @@ bool UserPrefs::ArePrefsLoaded(base::SupportsUserData* context) {
 PrefService* UserPrefs::Get(base::SupportsUserData* context) {
   DCHECK(context);
   DCHECK(IsInitialized(context));
+  if (!context || !IsInitialized(context)) {
+    return nullptr;
+  }
   return static_cast<UserPrefs*>(
       context->GetUserData(UserDataKey()))->prefs_;
 }
