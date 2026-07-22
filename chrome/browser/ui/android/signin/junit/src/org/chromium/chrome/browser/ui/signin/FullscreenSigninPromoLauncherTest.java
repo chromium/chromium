@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -144,6 +145,7 @@ public class FullscreenSigninPromoLauncherTest {
         when(mPrefServiceMock.getString(Pref.GOOGLE_SERVICES_LAST_SYNCING_USERNAME)).thenReturn("");
         mAutomotiveContextWrapperTestRule.setIsAutomotive(false);
         when(mContext.getString(anyInt())).thenReturn("string");
+        when(mSigninManagerMock.isSigninSupported(anyBoolean())).thenReturn(true);
     }
 
     @After
@@ -283,6 +285,16 @@ public class FullscreenSigninPromoLauncherTest {
                 .createFullscreenSigninIntent(any(), any(), any(), anyInt());
         Assert.assertEquals(
                 mTimeInPast, mPrefManager.getSigninPromoLastShownTimeWithRandomOffset());
+    }
+
+    @Test
+    public void whenSigninNotSupportedShouldReturnFalse() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        when(mSigninManagerMock.isSigninSupported(true)).thenReturn(false);
+
+        Assert.assertFalse(
+                FullscreenSigninPromoLauncher.launchPromoIfNeeded(
+                        mContext, mProfile, mFullscreenSigninLauncherMock, CURRENT_MAJOR_VERSION));
     }
 
     @Test

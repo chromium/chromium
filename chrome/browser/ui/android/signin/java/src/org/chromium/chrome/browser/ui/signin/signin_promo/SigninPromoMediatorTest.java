@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
@@ -101,6 +102,7 @@ public class SigninPromoMediatorTest {
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
         lenient().doReturn(true).when(mHistorySyncHelper).shouldDisplayHistorySync();
+        lenient().doReturn(true).when(mSigninManager).isSigninSupported(anyBoolean());
     }
 
     @Test

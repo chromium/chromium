@@ -253,7 +253,9 @@ public class NtpSigninPromoDelegate extends SigninPromoDelegate {
         assumeNonNull(identityManager);
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         assumeNonNull(signinManager);
-        if (identityManager.hasPrimaryAccount() || !signinManager.isSigninAllowed()) {
+        if (!signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ true)
+                || identityManager.hasPrimaryAccount()
+                || !signinManager.isSigninAllowed()) {
             return PromoState.NONE;
         }
 

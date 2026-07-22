@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.signin.signin_promo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -120,6 +121,7 @@ public class SigninPromoDelegateTest {
                 .when(mIdentityServicesProvider)
                 .getSigninManager(mProfile);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
+        lenient().doReturn(true).when(mSigninManager).isSigninSupported(anyBoolean());
     }
 
     @After
@@ -239,6 +241,14 @@ public class SigninPromoDelegateTest {
         setupDelegate(
                 SigninAccessPoint.NTP_FEED_TOP_PROMO,
                 TestDisplayableProfileData.profileDataOf(TestAccounts.ACCOUNT1));
+
+        assertFalse(mDelegate.canShowPromo());
+    }
+
+    @Test
+    public void testNtpPromoHidden_signinNotSupported() {
+        doReturn(false).when(mSigninManager).isSigninSupported(true);
+        setupDelegate(SigninAccessPoint.NTP_FEED_TOP_PROMO, /* visibleAccount= */ null);
 
         assertFalse(mDelegate.canShowPromo());
     }

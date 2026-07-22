@@ -14,6 +14,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -124,6 +126,12 @@ public final class FullscreenSigninPromoLauncher {
     private static boolean shouldLaunchPromo(
             Profile profile, SigninPreferencesManager prefManager, final int currentMajorVersion) {
         if (DeviceInfo.isAutomotive()) {
+            return false;
+        }
+
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        if (signinManager == null
+                || !signinManager.isSigninSupported(/* requireUpdatedPlayServices= */ true)) {
             return false;
         }
 
