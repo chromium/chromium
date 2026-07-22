@@ -324,6 +324,9 @@ class PopupViewViews : public PopupBaseView,
   // the non-footer suggestions are scrolled independently).
   bool IsFooterScrollable() const;
 
+  int GetPopupMinWidth() const;
+  int GetPopupMaxWidth() const;
+
   bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
 
   // Opens a sub-popup on a new row (and closes the open one if any), or just

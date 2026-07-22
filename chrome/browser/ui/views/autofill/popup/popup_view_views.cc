@@ -1280,8 +1280,8 @@ void PopupViewViews::CreateSuggestionViews() {
             .SetHorizontalScrollBarMode(
                 views::ScrollView::ScrollBarMode::kDisabled)
             .SetDrawOverflowIndicator(false)
-            .ClipHeightTo(
-                0, body_container->GetHeightForWidth(kAutofillPopupMaxWidth))
+            .ClipHeightTo(0,
+                          body_container->GetHeightForWidth(GetPopupMaxWidth()))
             .Build();
     body_container_ = scroll_view->SetContents(std::move(body_container));
     scroll_view_ = suggestions_container_->AddChildView(std::move(scroll_view));
@@ -1366,7 +1366,7 @@ void PopupViewViews::CreateSuggestionViews() {
   // after changes that can affect `body_container_`'s size.
   if (scroll_view_ && body_container_ && IsFooterScrollable()) {
     scroll_view_->ClipHeightTo(
-        0, body_container_->GetHeightForWidth(kAutofillPopupMaxWidth));
+        0, body_container_->GetHeightForWidth(GetPopupMaxWidth()));
   }
 }
 
@@ -1381,22 +1381,18 @@ gfx::Size PopupViewViews::CalculatePreferredSize(
     size.set_width(tabbed_pane_initial_width_.value());
   } else {
     size = views::View::CalculatePreferredSize(available_size);
-    if (size.width() > kAutofillPopupMaxWidth) {
+    const int max_width = GetPopupMaxWidth();
+    if (size.width() > max_width) {
       // TODO(crbug.com/40232718): When we set the vertical axis to stretch,
       // BoxLayout will occupy the entire vertical axis size. Two calculations
       // are needed to correct this.
       //
       // Following crrev.com/c/5828724, the dialog box will fit the text more
       // closely. But this will break the pixel test, so make it a fixed size.
-      size = views::View::CalculatePreferredSize(
-          views::SizeBounds(kAutofillPopupMaxWidth, {}));
-      size.set_width(kAutofillPopupMaxWidth);
+      size =
+          views::View::CalculatePreferredSize(views::SizeBounds(max_width, {}));
+      size.set_width(max_width);
     }
-  }
-
-  if (controller_ &&
-      controller_->GetMainFillingProduct() == FillingProduct::kAtMemory) {
-    size.set_width(kAtMemoryPopupWidth);
   }
 
   // This popup height limiting for popups with a search bar addresses a minor
@@ -1523,9 +1519,19 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
     // compensate.
     scroll_width = scroll_view_->GetScrollBarLayoutWidth();
   }
+
+  // Width clamping happens here because:
+  // 1. The exact width isn't known earlier since a scrollbar might still be
+  //    added, which impacts the width.
+  // 2. If the width is under `min_width`, the content fits without any
+  //    wrapping. Expanding it early in `CalculatePreferredSize()`
+  //    is not necessary since it doesn't impact the preferred height
+  //    calculation.
+  // 3. Clamping early in `CalculatePreferredSize()` would cause non-overlay
+  //    scrollbars (like on Windows) to be added on top of `min_width`, making
+  //    the popup wider than necessary.
   preferred_size.set_width(std::clamp(preferred_size.width() + scroll_width,
-                                      kAutofillPopupMinWidth,
-                                      kAutofillPopupMaxWidth));
+                                      GetPopupMinWidth(), GetPopupMaxWidth()));
 
   views::BubbleBorder* border = static_cast<views::BubbleBorder*>(
       GetWidget()->GetRootView()->GetBorder());
@@ -1598,6 +1604,22 @@ bool PopupViewViews::IsFooterScrollable() const {
   // `body_container_` is the container of regular suggestions, it must exist
   // to place the footer there and thus make it scrollable too.
   return parent_ && body_container_;
+}
+
+int PopupViewViews::GetPopupMinWidth() const {
+  if (controller_ &&
+      controller_->GetMainFillingProduct() == FillingProduct::kAtMemory) {
+    return kAtMemoryPopupWidth;
+  }
+  return kAutofillPopupMinWidth;
+}
+
+int PopupViewViews::GetPopupMaxWidth() const {
+  if (controller_ &&
+      controller_->GetMainFillingProduct() == FillingProduct::kAtMemory) {
+    return kAtMemoryPopupWidth;
+  }
+  return kAutofillPopupMaxWidth;
 }
 
 bool PopupViewViews::CanShowDropdownInBounds(
