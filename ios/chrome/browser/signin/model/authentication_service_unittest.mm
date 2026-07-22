@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/ios_device_management_error_details.h"
 #import "ios/chrome/browser/signin/model/refresh_access_token_error.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
@@ -893,4 +894,35 @@ TEST_F(AuthenticationServiceTest, TestAccountsForgetIdentityWhenSignedOut) {
   account_info_vector =
       identity_manager()->GetExtendedAccountInfoForAccountsWithRefreshToken();
   EXPECT_EQ(1ul, account_info_vector.size());
+}
+
+// Tests that ShowMDMErrorDialogForIdentity works correctly for cached
+// GoogleServiceAuthError MDM errors.
+TEST_F(AuthenticationServiceTest,
+       ShowMDMErrorDialogWithHandleMdmErrorsForDasherAccountsEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kHandleMdmErrorsForDasherAccounts);
+
+  authentication_service()->SignIn(identity(0),
+                                   signin_metrics::AccessPoint::kStartPage);
+
+  // ShowMDMErrorDialogForIdentity should do nothing as there is no error in
+  // IdentityManager.
+  EXPECT_FALSE(
+      authentication_service()->ShowMDMErrorDialogForIdentity(identity(0)));
+
+  auto details = std::make_unique<gaia::IOSDeviceManagementErrorDetails>(
+      @{@"info" : @"test"}, /*is_user_actionable=*/true);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromDeviceManagementError(std::move(details));
+
+  // Set the error on the account in IdentityManager.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      identity_manager(), GetAccountId(identity(0)), error);
+
+  // ShowMDMErrorDialogForIdentity should show the dialog using the error from
+  // IdentityManager.
+  EXPECT_TRUE(
+      authentication_service()->ShowMDMErrorDialogForIdentity(identity(0)));
 }
