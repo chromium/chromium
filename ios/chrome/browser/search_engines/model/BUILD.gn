@@ -97,7 +97,6 @@ source_set("unit_tests") {
     "ios_search_engine_choice_service_client_unittest.mm",
     "search_engine_js_unittest.mm",
     "search_engine_tab_helper_unittest.mm",
-    "search_engines_util_unittest.cc",
   ]
   deps = [
     ":extension_search_engine_data_updater",

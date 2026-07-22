@@ -5,13 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINES_UTIL_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINES_UTIL_H_
 
-class PrefService;
 class TemplateURLService;
 
 namespace search_engines {
 
-// Updates the current country code pref for the search engine.
-void UpdateSearchEngineCountryCodeIfNeeded(PrefService* preferences);
 
 // Checks whether the default url of the given template url supports searching
 // by image.

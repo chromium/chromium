@@ -21,7 +21,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       ::prefs::kDefaultSearchProviderChoiceScreenRandomShuffleSeed, 0);
   registry->RegisterIntegerPref(kCountryIDAtInstall,
                                 country_codes::CountryId().Serialize());
-  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry)) {
+  if (switches::IsDynamicProfileCountryEnabled()) {
     registry->RegisterIntegerPref(kCountryID,
                                   country_codes::CountryId().Serialize());
   }

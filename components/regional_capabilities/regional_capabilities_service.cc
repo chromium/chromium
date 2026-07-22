@@ -70,7 +70,7 @@ GetPersistedCountryIdAndSource(const PrefService& profile_prefs) {
 
   base::flat_set<CountryIdStoreStatus> sources;
 
-  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry) &&
+  if (switches::IsDynamicProfileCountryEnabled() &&
       profile_prefs.HasPrefPath(prefs::kCountryID)) {
     const CountryId persisted_dynamic_country_id =
         CountryId::Deserialize(profile_prefs.GetInteger(prefs::kCountryID));
@@ -199,12 +199,12 @@ std::pair<CountryId, LoadedCountrySource> SelectCountryId(
 
   // If the dynamic profile country feature is disabled, it's preferred
   // to return persisted country ID first.
-  if (!base::FeatureList::IsEnabled(switches::kDynamicProfileCountry)) {
+  if (!switches::IsDynamicProfileCountryEnabled()) {
     return {persisted_country, LoadedCountrySource::kPersistedPreferred};
   }
 
   // At this point the `kDynamicProfileCountry` feature is enabled.
-  DCHECK(base::FeatureList::IsEnabled(switches::kDynamicProfileCountry));
+  DCHECK(switches::IsDynamicProfileCountryEnabled());
 
   // Fetched current CountryID is preferred over persisted CountryID.
   if (!is_current_country_from_fallback) {
@@ -726,7 +726,7 @@ void RegionalCapabilitiesService::TrySetPersistedCountryId(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry)) {
+  if (switches::IsDynamicProfileCountryEnabled()) {
     profile_prefs_->SetInteger(prefs::kCountryID, country_id.Serialize());
   }
 

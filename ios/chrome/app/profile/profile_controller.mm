@@ -69,7 +69,6 @@
 #import "ios/chrome/browser/ntp/model/home_background_customization_promo_profile_agent.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
 #import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
-#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
@@ -622,7 +621,6 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
       ChromeIOSTranslateClient::CreateTranslatePrefs(prefs));
 
-  search_engines::UpdateSearchEngineCountryCodeIfNeeded(prefs);
 
   // Force desktop mode when racoon is enabled.
   if (ios::provider::IsRaccoonEnabled()) {

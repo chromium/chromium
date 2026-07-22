@@ -113,6 +113,8 @@ class ChromeMetricsServiceClientTest : public testing::Test {
         {metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry,
          features::kSystemPdhMetrics},
         {});
+#elif BUILDFLAG(IS_ANDROID)
+    scoped_feature_list_.InitWithFeatures({metrics::dwa::kDwaFeature}, {});
 #else
     scoped_feature_list_.InitWithFeatures(
         {metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry}, {});

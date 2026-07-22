@@ -69,8 +69,6 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
   std::unique_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kDynamicProfileCountry};
 };
 
 namespace {

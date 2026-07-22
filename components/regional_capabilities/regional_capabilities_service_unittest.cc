@@ -143,7 +143,9 @@ Program GetActiveProgram(RegionalCapabilitiesService& service) {
 class RegionalCapabilitiesServiceTest : public ::testing::Test {
  public:
   RegionalCapabilitiesServiceTest() {
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     feature_list_.InitWithFeatures({switches::kDynamicProfileCountry}, {});
+#endif
 
     prefs::RegisterProfilePrefs(pref_service_.registry());
   }
@@ -861,6 +863,7 @@ TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_PrefAlreadyWritten) {
       static_cast<int>(LoadedCountrySource::kCurrentPreferred), 1);
 }
 
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(RegionalCapabilitiesServiceTest,
        GetCountryId_PrefAlreadyWritten_DynamicProfileCountryIsDisabled) {
   base::test::ScopedFeatureList feature_list;
@@ -938,6 +941,7 @@ TEST_F(RegionalCapabilitiesServiceTest,
       "RegionalCapabilities.LoadedCountrySource",
       static_cast<int>(LoadedCountrySource::kPersistedPreferred), 1);
 }
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 TEST_F(RegionalCapabilitiesServiceTest, GetCountryId_PrefChangesAfterReading) {
   const auto kFallbackCountryId = CountryId("FR");

@@ -453,14 +453,9 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<IOSPushNotificationsMetricsProvider>());
 
-  // Only register the RegionalCapabilitiesMetricsProvider if the dynamic
-  // profile country feature is enabled. This is because that feature
-  // significantly changes the cases under which the "Mixed" bucket is emitted.
-  if (base::FeatureList::IsEnabled(switches::kDynamicProfileCountry)) {
-    metrics_service_->RegisterMetricsProvider(
-        std::make_unique<
-            regional_capabilities::IOSRegionalCapabilitiesMetricsProvider>());
-  }
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<
+          regional_capabilities::IOSRegionalCapabilitiesMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<tracing::IOSChromeBackgroundTracingMetricsProvider>(
