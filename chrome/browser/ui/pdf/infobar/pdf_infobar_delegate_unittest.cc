@@ -118,7 +118,7 @@ class PdfInfoBarDelegateMigratedTest : public testing::Test {
     // Enable kPdfInfoBar feature and centralized framework with migrated PDF.
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kPdfInfoBar, {}},
-         {infobars::kCentralizedInfoBarFramework, {{"kMigratedPdf", "true"}}}},
+         {infobars::kCentralizedInfoBarFramework, {{"MigratedPdf", "true"}}}},
         {});
   }
 
