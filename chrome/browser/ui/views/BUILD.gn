@@ -136,6 +136,20 @@ source_set("confirm_bubble") {
   ]
 }
 
+if (is_linux || is_chromeos) {
+  source_set("process_singleton_dialog_linux") {
+    sources = [ "process_singleton_dialog_linux.cc" ]
+    deps = [
+      "//base",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/ui:process_singleton_dialog_linux",
+      "//chrome/browser/ui:simple_message_box_headers",
+      "//ui/base",
+    ]
+  }
+}
+
 if (is_win) {
   source_set("uninstall_browser_prompt") {
     public = [ "uninstall_view.h" ]
@@ -155,4 +169,3 @@ if (is_win) {
     ]
   }
 }
-

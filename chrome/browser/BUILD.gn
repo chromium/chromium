@@ -533,9 +533,10 @@ if (!is_win && !is_android) {
       "//content/public/browser",
       "//ui/base",
     ]
+    if (is_linux || is_chromeos) {
+      deps += [ "//chrome/browser/ui:process_singleton_dialog_linux" ]
+    }
 
-    # process_singleton_posix.cc includes process_singleton_dialog_linux.h,
-    # still owned by //chrome/browser/ui (the ui target adds the back-edge).
     public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
