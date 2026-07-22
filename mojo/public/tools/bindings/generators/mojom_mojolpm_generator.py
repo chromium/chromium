@@ -126,6 +126,13 @@ class Generator(CppGenerator):
     for kind in self.module.enums + self.module.structs + self.module.unions:
       AddKind(kind)
 
+    parameters = (param for interface in self.module.interfaces
+                  for method in interface.methods
+                  for param in (method.parameters +
+                                (method.response_parameters or [])))
+    for parameter in parameters:
+      AddKind(parameter.kind)
+
     return all_typemaps
 
   def _ProtoImports(self):

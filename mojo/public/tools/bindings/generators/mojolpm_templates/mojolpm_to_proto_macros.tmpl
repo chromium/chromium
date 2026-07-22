@@ -335,11 +335,34 @@ bool ToProto(
   std::string* bytes = new_instance->mutable_native_bytes();
   bytes->assign(pickle.AsStringView());
   return true;
-{%-   elif struct|is_typemapped_kind %}
-  // TODO(markbrand): ToProto for typemapped struct kind
-  return false;
 {%-   elif struct.fields %}
-   {{struct_type}}* new_instance = output.mutable_new_();
+// If the struct is typemapped, then serialize the input (the C++ type) into a
+// Mojo message (bytes). Then deserialize the Mojo message into a struct pointer
+// to the generated Mojo class which has accessors for the struct fields.
+// This is the reverse flow of what happens in mojolpm_from_proto_macros.tmpl
+// when converting from StructPtr to C++ types.
+{%-     if struct|is_typemapped_kind %}
+{%-       set generated_mojom_type = struct|get_qualified_name_for_kind(flatten_nested_kind=true) %}
+{%-       set dataview_type = generated_mojom_type ~ "DataView" %}
+{%-       set data_type = (struct|get_qualified_name_for_kind(flatten_nested_kind=true, internal=true)) %}
+{%-       set user_type = struct|cpp_wrapper_type(add_same_module_namespaces=true) %}
+  ::mojo::Message mojolpm_message(0, 0, 0, 0, nullptr);
+  ::mojo::internal::MessageFragment<{{data_type}}> mojolpm_fragment(
+      mojolpm_message);
+  ::mojo::internal::Serializer<{{dataview_type}}, {{"" if struct|is_move_only_kind else "const"}} {{user_type}}>::Serialize(
+      input, mojolpm_fragment);
+  {{generated_mojom_type}}Ptr generated_input;
+  if (!::mojo::internal::DeserializeImpl<{{dataview_type}}>(
+      mojolpm_message, mojolpm_message.payload(), mojolpm_message.payload_num_bytes(),
+      &generated_input, &{{data_type}}::Validate)) {
+    return false;
+  }
+  auto& mojom_input = generated_input;
+{%-     else %}
+  auto& mojom_input = input;
+{%-     endif %}
+
+  {{struct_type}}* new_instance = output.mutable_new_();
   bool mojolpm_result = true;
 {%-     for field in struct.fields -%}
 {%-       set raw_name = field.name %}
@@ -347,28 +370,28 @@ bool ToProto(
 {%-       set kind = field.kind %}
 {%-       if kind|is_any_interface_kind %}
   {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
-  mojolpm_result &= ToProto(std::move(input->{{raw_name}}), tmp_{{name}});
+  mojolpm_result &= ToProto(std::move(mojom_input->{{raw_name}}), tmp_{{name}});
   new_instance->set_m_{{name}}(tmp_{{name}});
 {%-       elif kind|is_nullable_kind %}
-  if ({{util.not_null(kind, 'input->' ~ raw_name)}}) {
+  if ({{util.not_null(kind, 'mojom_input->' ~ raw_name)}}) {
 {%-         if kind|is_value_kind %}
     {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
-    mojolpm_result &= ToProto(*input->{{raw_name}}, tmp_{{name}});
+    mojolpm_result &= ToProto(*mojom_input->{{raw_name}}, tmp_{{name}});
     new_instance->set_m_{{name}}(tmp_{{name}});
 {%-         elif kind|is_move_only_kind %}
-    mojolpm_result &= ToProto(std::move({{util.value(kind, 'input->' ~ raw_name)}}), *new_instance->mutable_m_{{name}}());
+    mojolpm_result &= ToProto(std::move({{util.value(kind, 'mojom_input->' ~ raw_name)}}), *new_instance->mutable_m_{{name}}());
 {%-         else %}
-    mojolpm_result &= ToProto({{util.value(kind, 'input->' ~ raw_name)}}, *new_instance->mutable_m_{{name}}());
+    mojolpm_result &= ToProto({{util.value(kind, 'mojom_input->' ~ raw_name)}}, *new_instance->mutable_m_{{name}}());
 {%-         endif %}
   }
 {%-       elif kind|is_move_only_kind %}
-  mojolpm_result &= ToProto(std::move(input->{{raw_name}}), *new_instance->mutable_m_{{name}}());
+  mojolpm_result &= ToProto(std::move(mojom_input->{{raw_name}}), *new_instance->mutable_m_{{name}}());
 {%-       elif kind|is_value_kind %}
   {{kind|cpp_wrapper_proto_type(add_same_module_namespaces=true)}} tmp_{{name}};
-  mojolpm_result &= ToProto(input->{{raw_name}}, tmp_{{name}});
+  mojolpm_result &= ToProto(mojom_input->{{raw_name}}, tmp_{{name}});
   new_instance->set_m_{{name}}(tmp_{{name}});
 {%-       else %}
-  mojolpm_result &= ToProto(input->{{raw_name}}, *new_instance->mutable_m_{{name}}());
+  mojolpm_result &= ToProto(mojom_input->{{raw_name}}, *new_instance->mutable_m_{{name}}());
 {%-       endif %}
 {%-     endfor %}
   return mojolpm_result;
