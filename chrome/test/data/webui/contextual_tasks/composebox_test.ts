@@ -1049,6 +1049,14 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(1, files.length);
     // Reference should be exactly the same (no re-allocation or modification)
     assertEquals(updatedFile, files[0]);
+
+    // Passing null deletes the auto-suggested tab file when not in side panel
+    // OmniboxPageAction mode.
+    searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(null, null);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+    assertEquals(0, innerComposebox.files.size);
   });
 
   test('SingleAutoTabFileDoesNotUpdatePlaceholder', async () => {
@@ -1102,6 +1110,18 @@ suite('ContextualTasksComposeboxTest', () => {
       const args = mockSearchboxPageHandler.getArgs('addTabContext')[0];
       assertEquals(1, args[0]);  // tabId
       assertTrue(args[1]);       // delayUpload
+
+      const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+      await innerComposebox.updateComplete;
+      assertEquals(1, innerComposebox.files.size);
+
+      // Passing null deletes when feature flag is disabled.
+      searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+          null, 'OmniboxPageAction');
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      await innerComposebox.updateComplete;
+      assertEquals(0, innerComposebox.files.size);
     });
 
     test('ImmediateUploadWhenConditionsMet', async () => {
@@ -1119,6 +1139,32 @@ suite('ContextualTasksComposeboxTest', () => {
       const args = mockSearchboxPageHandler.getArgs('addTabContext')[0];
       assertEquals(1, args[0]);  // tabId
       assertFalse(args[1]);      // delayUpload
+
+      const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
+      await innerComposebox.updateComplete;
+      assertEquals(1, innerComposebox.files.size);
+
+      // Null should not delete when conditions are met.
+      searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+          null, 'OmniboxPageAction');
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      await innerComposebox.updateComplete;
+      assertEquals(1, innerComposebox.files.size);
+
+      // Mismatched tab deletes it.
+      const differentTab = {
+        ...tabInfo,
+        tabId: 2,
+        title: 'Different Tab',
+        url: 'https://different.com',
+      };
+      searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+          differentTab, 'OmniboxPageAction');
+      await searchboxCallbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      await innerComposebox.updateComplete;
+      assertEquals(0, innerComposebox.files.size);
     });
 
     test('DelayedUploadWhenNotPageAction', async () => {
