@@ -1227,29 +1227,40 @@ void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
                               kDecaySpanToPointerPrecedence));
 }
 
-clang::SourceLocation GetBinaryOperationOperatorLoc(
+struct BinaryOperationData {
+  const clang::Expr* lhs;
+  clang::SourceLocation operator_loc;
+};
+
+BinaryOperationData GetBinaryOperationDataOrCrash(
     const clang::Expr* expr,
     const MatchFinder::MatchResult& result) {
+  // Handles built-in binary operators (e.g., `a + b` for raw
+  // pointers/integers).
   if (auto* binary_op = clang::dyn_cast_or_null<clang::BinaryOperator>(expr)) {
-    return binary_op->getOperatorLoc();
+    return {binary_op->getLHS(), binary_op->getOperatorLoc()};
   }
 
+  // Handles overloaded operators (e.g., `a + b` where at least one operand is a
+  // class/enum).
   if (auto* binary_op =
           clang::dyn_cast_or_null<clang::CXXOperatorCallExpr>(expr)) {
-    return binary_op->getOperatorLoc();
+    return {binary_op->getArg(0), binary_op->getOperatorLoc()};
   }
 
+  // Handles C++20 rewritten binary operators (e.g., spaceship operator `<=>`
+  // rewrites).
   if (auto* binary_op =
           clang::dyn_cast_or_null<clang::CXXRewrittenBinaryOperator>(expr)) {
-    return binary_op->getOperatorLoc();
+    return {binary_op->getLHS(), binary_op->getOperatorLoc()};
   }
 
   // Not supposed to get here.
   llvm::errs()
       << "\n"
-         "Error: GetBinaryOperationOperatorLoc() encountered an unexpected "
+         "Error: GetBinaryOperationDataOrCrash() encountered an unexpected "
          "expression.\n"
-         "Expected on of clang::BinaryOperator, clang::CXXOperatorCallExpr, "
+         "Expected one of clang::BinaryOperator, clang::CXXOperatorCallExpr, "
          "clang::CXXRewrittenBinaryOperator \n";
   DumpMatchResult(result);
   assert(false && "Unexpected binaryOperation Node");
@@ -1406,24 +1417,34 @@ void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
     return;
   }
 
-  // C-style arrays are rewritten to `std::array`, not `base::span`, so
-  // a binary operation on the rewritten array must explicitly construct
-  // a `base::span` of it before calling `.subspan()`.
-  //
-  // Emit a replacement to that effect:
-  // `base::span( <binary operation lhs> `
-  // ...but leave the closing right-parenthesis for the `).subspan()` call.
+  BinaryOperationData bin_op_data =
+      GetBinaryOperationDataOrCrash(binary_operation, result);
+
   const auto* rhs_array_type =
       result.Nodes.getNodeAs<clang::ArrayTypeLoc>("rhs_array_type_loc");
   if (rhs_array_type) {
-    const auto* concrete_binary_operation =
-        GetNodeOrCrash<clang::BinaryOperator>(
-            result, "binary_operation",
-            "C-style array should not involve `CXXOperatorCallExpr` or "
-            "`CXXRewrittenBinaryOperator`");
+    // Built-in binary operators on C-style arrays (like `arr + 1`) decay
+    // the array to a pointer and perform pointer arithmetic. Overloaded
+    // operators (like `arr + val` where val is an enum/class) have custom
+    // logic. If we rewrite the array to `std::array` and the operation to
+    // `.subspan()`, we would bypass this custom overloaded operator logic.
+    // Therefore, we exclude the array from spanification if it is used with
+    // a non-built-in binary operator.
+    if (!clang::isa<clang::BinaryOperator>(binary_operation)) {
+      EmitExclusion(key);
+      return;
+    }
+
+    // C-style arrays are rewritten to `std::array`, not `base::span`, so
+    // a binary operation on the rewritten array must explicitly construct
+    // a `base::span` of it before calling `.subspan()`.
+    //
+    // Emit a replacement to that effect:
+    // `base::span( <binary operation lhs> `
+    // ...but leave the closing right-parenthesis for the `).subspan()` call.
     EmitReplacement(
         key, GetReplacementDirective(
-                 concrete_binary_operation->getLHS()->getBeginLoc(),
+                 bin_op_data.lhs->getBeginLoc(),
                  llvm::formatv("{0}<{1}>(",
                                GetProject()->GetSpanRelativePath(result),
                                GetTypeAsString(rhs_array_type->getInnerType(),
@@ -1455,8 +1476,7 @@ void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
   std::string subspan_opener =
       CreateSubspanOpener(prefix, &subspan_expr_replacement);
 
-  const clang::SourceLocation binary_operator_begin =
-      GetBinaryOperationOperatorLoc(binary_operation, result);
+  const clang::SourceLocation binary_operator_begin = bin_op_data.operator_loc;
   EmitReplacement(
       key,
       GetReplacementDirective(
