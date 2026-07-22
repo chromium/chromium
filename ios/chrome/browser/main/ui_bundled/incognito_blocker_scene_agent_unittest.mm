@@ -16,15 +16,9 @@ class IncognitoBlockerSceneAgentTest : public PlatformTest {
  public:
   IncognitoBlockerSceneAgentTest()
       : scene_state_([[SceneState alloc] init]),
-        scene_state_mock_(OCMPartialMock(scene_state_)),
         agent_([[IncognitoBlockerSceneAgent alloc] init]) {
-    scene_session_mock_ = OCMClassMock([UISceneSession class]);
-    OCMStub([scene_session_mock_ persistentIdentifier])
-        .andReturn([[NSUUID UUID] UUIDString]);
     scene_mock_ = OCMClassMock([UIWindowScene class]);
-    OCMStub([scene_mock_ session]).andReturn(scene_session_mock_);
     scene_state_.scene = scene_mock_;
-    OCMStub([scene_state_mock_ scene]).andReturn(scene_mock_);
     agent_.sceneState = scene_state_;
   }
 
@@ -37,10 +31,6 @@ class IncognitoBlockerSceneAgentTest : public PlatformTest {
   SceneState* scene_state_;
   // Mock for scene_state_'s underlying UIWindowScene.
   id scene_mock_;
-  // Mock for scene_mock_'s underlying UISceneSession.
-  id scene_session_mock_;
-  // Partial mock for stubbing scene_state_'s methods
-  id scene_state_mock_;
   // The tested agent
   IncognitoBlockerSceneAgent* agent_;
 };
