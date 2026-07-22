@@ -44,7 +44,8 @@ class InputStateModelTest : public testing::Test {
         static_cast<int>(
             contextual_search::SearchContentSharingSettingsValue::kEnabled));
     pref_service_.registry()->RegisterIntegerPref(
-        contextual_search::kDriveConsentState, 0);
+        contextual_search::kDriveConsentState,
+        static_cast<int>(DriveConsentState::kRestricted));
 
     input_state_model_ = std::make_unique<InputStateModel>(
         session_handle_, config_, active_url_, /*is_off_the_record=*/false,

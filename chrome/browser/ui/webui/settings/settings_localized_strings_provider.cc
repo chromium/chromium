@@ -561,6 +561,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
           chrome::kOnDeviceAiLearnMoreUrl,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 #endif
+  html_source->AddString("googleSearchAiModeRestrictedUrl",
+                         "https://myactivity.google.com/myactivity");
 }
 
 void AddAppearanceStrings(content::WebUIDataSource* html_source,
