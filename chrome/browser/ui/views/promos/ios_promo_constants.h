@@ -36,6 +36,24 @@ inline constexpr char kIOSPromoPriceTrackingQRCodeURL[] =
     "https://www.google.com/chrome/go-mobile/"
     "?ios-campaign=desktop-chr-price-track-1&android-campaign=desktop-chr-"
     "price-track-1";
+inline constexpr char kIOSPromoSafetyQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-safety-1&android-campaign=desktop-chr-safety-1";
+inline constexpr char kIOSPromoBestOfGoogleQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-best-of-google-1&android-campaign=desktop-chr-"
+    "best-of-google-1";
+inline constexpr char kIOSPromoAIQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-ai-1&android-campaign=desktop-chr-ai-1";
+inline constexpr char kIOSPromoYourChromeQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-your-chrome-1&android-campaign=desktop-chr-your-"
+    "chrome-1";
+inline constexpr char kIOSPromoShoppingQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-shopping-1&android-campaign=desktop-chr-"
+    "shopping-1";
 
 // Size of the image view (QR code or otherwise) in the promos.
 inline constexpr int kImageSize = 80;
