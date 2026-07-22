@@ -93,6 +93,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               GetDefaultAiPageUrlForTask,
               (const base::Uuid& task_id),
               (override));
+  MOCK_METHOD(std::optional<GURL>,
+              GetInitialUrlForTask,
+              (const base::Uuid& task_id),
+              (override));
 };
 
 class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
@@ -1009,6 +1013,36 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       /*transition_from_tab=*/true,
       omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
       /*use_no_animation=*/true);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       Show_LoadsInitialUrl_WithRearchitectureFlag) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      kContextualTasksSidePanelRearchitecture);
+
+  auto* mock_ui_service = static_cast<MockContextualTasksUiService*>(
+      ContextualTasksUiServiceFactory::GetForBrowserContext(profile_.get()));
+
+  ContextualTask expected_task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(expected_task));
+
+  GURL initial_url("https://www.google.com/search?udm=50&q=test");
+  ON_CALL(*mock_ui_service, GetInitialUrlForTask(expected_task.GetTaskId()))
+      .WillByDefault(Return(initial_url));
+
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(1);
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+
+  content::WebContents* cached_wc =
+      GetWebContentsForTaskForTesting(expected_task.GetTaskId());
+  ASSERT_TRUE(cached_wc);
+  EXPECT_EQ(cached_wc->GetVisibleURL(), initial_url);
 }
 
 }  // namespace contextual_tasks

@@ -558,11 +558,16 @@ ContextualTasksSidePanelCoordinator::DetachWebContentsForTask(
 void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     content::WebContents* web_contents,
     base::Uuid new_task_id) {
+  content::WebContents* target_web_contents = web_contents;
+  if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+    target_web_contents = GetActiveWebContents();
+  }
+
   std::unique_ptr<WebContentsCacheItem> cache_item;
   // Find the web_contents from cache.
   for (auto it = task_id_to_web_contents_cache_.begin();
        it != task_id_to_web_contents_cache_.end(); ++it) {
-    if (it->second->web_contents.get() == web_contents) {
+    if (it->second->web_contents.get() == target_web_contents) {
       cache_item = std::move(it->second);
       task_id_to_web_contents_cache_.erase(it);
       break;
@@ -586,7 +591,7 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
   // existing WebContents or a newly created one.
   UpdateContextualSearchWebContentsHelperForTask(
       contextual_search_service_, browser_window_, contextual_tasks_service_,
-      this, web_contents, new_task_id);
+      this, target_web_contents, new_task_id);
 }
 
 void ContextualTasksSidePanelCoordinator::OnAiInteraction() {
@@ -928,12 +933,22 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
   // Create new WebContents for the task.
   if (auto* ui_service = GetUiService()) {
     ui_service->SetInitialEntryPointForTask(task_id, entry_point);
+    GURL url;
+    if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+      url = ui_service->GetInitialUrlForTask(task_id).value_or(
+          ui_service->GetDefaultAiPageUrlForTask(task_id));
+    } else {
+      url = ui_service->GetContextualTaskUrlForTask(task_id);
+    }
+    std::unique_ptr<content::WebContents> wc =
+        CreateWebContents(browser_window_, url);
+    if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+      UpdateContextualSearchWebContentsHelperForTask(
+          contextual_search_service_, browser_window_,
+          contextual_tasks_service_, this, wc.get(), task_id);
+    }
     task_id_to_web_contents_cache_[task_id] =
-        std::make_unique<WebContentsCacheItem>(
-            CreateWebContents(
-                browser_window_,
-                ui_service->GetContextualTaskUrlForTask(task->GetTaskId())),
-            /*is_open=*/true);
+        std::make_unique<WebContentsCacheItem>(std::move(wc), /*is_open=*/true);
   }
 }
 
