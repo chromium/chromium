@@ -137,15 +137,12 @@ crbug.com/441743840 [ win amd ] WebCodecs_FrameSizeChange_avc1.42001E_sw_decoder
 
 # AVC, HEVC, and VP8 VBR seems to be unreliable on some Android devices
 crbug.com/1368785 [ android-14 android-pixel-6 arm graphite-enabled renderer-skia-gl target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
-crbug.com/1368785 [ android-14 android-pixel-6 arm renderer-skia-vulkan target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
 
 # Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
 crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
-crbug.com/371802469 [ intel sonoma ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
-# Same with prefer-hardware
-crbug.com/371802469 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/371802469 [ amd-0x7340 angle-metal graphite-enabled sonoma ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
 
 
 # Win11/AMD RDNA3/3.5 Failures
@@ -253,7 +250,6 @@ crbug.com/459560016 [ android android-brya ] WebCodecs_SVC_vp09.00.10.08_prefer-
 # Flaky failures that started when upgrading to Mac 15.4
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_*hvc*prefer-hardware* [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_detail [ Failure ]
-crbug.com/416294710 [ graphite-disabled intel-0x3e9b sequoia ] WebCodecs_ContentHint_hvc1.1.6.L123.00_motion [ Failure ]
 crbug.com/416294710 [ sequoia intel-0x3e9b ] WebCodecs_ContentHint_hvc1.1.6.L123.00_text [ Failure ]
 
 
