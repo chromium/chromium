@@ -80,7 +80,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   void SetDelegate(CanvasResourceProviderDelegate* delegate) {
     delegate_ = delegate;
   }
-  bool IsPrinting() const;
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
   std::optional<cc::PaintRecord> Flush(FlushReason = FlushReason::kOther);

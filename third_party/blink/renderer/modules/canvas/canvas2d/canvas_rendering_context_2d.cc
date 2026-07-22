@@ -576,7 +576,7 @@ void CanvasRenderingContext2D::FlushIfRecordingLimitExceeded() {
       FlushCanvas(FlushReason::kOther);
     }
   } else if (bitmap_provider_) {
-    if (bitmap_provider_->IsPrinting() && bitmap_provider_->clear_frame()) {
+    if (Host()->IsPrinting() && bitmap_provider_->clear_frame()) {
       return;
     }
     const MemoryManagedPaintRecorder* recorder = Recorder();
