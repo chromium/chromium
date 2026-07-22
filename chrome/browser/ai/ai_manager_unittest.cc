@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
@@ -18,14 +19,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_broker.h"
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
-#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -144,7 +147,13 @@ TEST_F(AIManagerTest, CanCreateSemanticEmbedderCrashLimit) {
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   service_launcher->RecordSuccessfulUse();
   service_launcher->controller()->MaybeUpdateModelInfo(
-      passage_embeddings::GetValidModelInfo());
+      optimization_guide::ModelInfo{
+          .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
+          .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
+          .version = 1,
+          .model_metadata = optimization_guide::AnyWrapProto(
+              optimization_guide::proto::PassageEmbeddingsModelMetadata()),
+      });
 
   // Ensure it's ready.
   EXPECT_TRUE(service_launcher->controller()->IsModelAvailable());

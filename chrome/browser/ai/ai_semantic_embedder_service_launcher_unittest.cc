@@ -8,17 +8,30 @@
 #include <string>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
-#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+optimization_guide::ModelInfo GetTestModelInfo() {
+  return optimization_guide::ModelInfo{
+      .model_file_path = base::FilePath(FILE_PATH_LITERAL("embeddings")),
+      .additional_files = {base::FilePath(FILE_PATH_LITERAL("sp"))},
+      .version = 1,
+      .model_metadata = optimization_guide::AnyWrapProto(
+          optimization_guide::proto::PassageEmbeddingsModelMetadata()),
+  };
+}
 
 class AISemanticEmbedderServiceLauncherForTest
     : public AISemanticEmbedderServiceLauncher {};
@@ -92,8 +105,7 @@ TEST_F(AISemanticEmbedderServiceLauncherTest,
   AISemanticEmbedderServiceLauncherForTest launcher;
 
   // Set the model to ready immediately.
-  launcher.controller()->MaybeUpdateModelInfo(
-      passage_embeddings::GetValidModelInfo());
+  launcher.controller()->MaybeUpdateModelInfo(GetTestModelInfo());
   EXPECT_TRUE(launcher.controller()->IsModelAvailable());
 
   // Callback should execute immediately (synchronously).
@@ -121,8 +133,7 @@ TEST_F(AISemanticEmbedderServiceLauncherTest,
   EXPECT_FALSE(future2.IsReady());
 
   // Simulate component updater successfully loading the model.
-  launcher.controller()->MaybeUpdateModelInfo(
-      passage_embeddings::GetValidModelInfo());
+  launcher.controller()->MaybeUpdateModelInfo(GetTestModelInfo());
 
   // Now they should have both executed immediately.
   EXPECT_TRUE(future1.IsReady());

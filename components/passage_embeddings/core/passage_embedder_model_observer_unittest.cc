@@ -10,10 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/passage_embeddings/core/passage_embeddings_service_controller.h"
 #include "components/passage_embeddings/core/passage_embeddings_service_launcher.h"
-#include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace passage_embeddings {
@@ -129,7 +129,7 @@ TEST_F(PassageEmbedderModelObserverTest, ObservesTargetAndNotifiesObserver) {
   EXPECT_TRUE(model_info_received_future_.IsReady());
   EXPECT_FALSE(model_info_received_future_.Take());
 
-  model_provider->SetModelInfo(GetValidModelInfo());
+  model_provider->SetModelInfo(optimization_guide::ModelInfo{});
   EXPECT_TRUE(model_info_received_future_.IsReady());
   EXPECT_TRUE(model_info_received_future_.Take());
 }

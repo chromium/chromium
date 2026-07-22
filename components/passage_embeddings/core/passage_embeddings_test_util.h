@@ -11,17 +11,11 @@
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace passage_embeddings {
 
 inline constexpr int64_t kEmbeddingsModelVersion = 1l;
-
-// Returns a model info builder preloaded with valid model info.
-optimization_guide::ModelInfo GetValidModelInfo();
-
-////////////////////////////////////////////////////////////////////////////////
 
 // An Embedder that generates Embeddings asynchronously.
 class TestEmbedder : public Embedder {

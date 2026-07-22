@@ -67,9 +67,6 @@ static_library("test_support") {
   deps = [
     ":core",
     "//base",
-    "//components/optimization_guide/core",
-    "//components/optimization_guide/core:test_support",
-    "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }
 
