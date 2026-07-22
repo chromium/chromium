@@ -18,17 +18,19 @@
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_ui_data.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
+#include "components/session_manager/test/test_user_session_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,6 +52,13 @@ constexpr const char kCloudflareDns[] =
 constexpr const char kMultipleTemplates[] =
     "https://dns.google/dns-query{?dns}  "
     "https://chrome.cloudflare-dns.com/dns-query ";
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test-user@testdomain.com",
+                                            GaiaId::Literal("1234567890"));
+
+TestingPrefServiceSimple* local_state() {
+  return TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+}
 
 class MockDoHTemplatesUriResolver
     : public dns_over_https::TemplatesUriResolver {
@@ -182,51 +191,30 @@ class SecureDnsManagerTest : public testing::Test {
 
   void SetUp() override {
     SecureDnsManager::RegisterProfilePrefs(profile_prefs_.registry());
-    SecureDnsManager::RegisterLocalStatePrefs(local_state_.registry());
-
-    local_state_.registry()->RegisterStringPref(
-        ash::chrome_prefs::kDnsOverHttpsMode, SecureDnsConfig::kModeOff);
-    local_state_.registry()->RegisterStringPref(
-        ash::chrome_prefs::kDnsOverHttpsTemplates, "");
-    local_state_.registry()->RegisterBooleanPref(
-        ::prefs::kDnsOverHttpsAutomaticModeFallbackToDoh, false);
-    local_state_.registry()->RegisterStringPref(
-        ash::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS, "");
-    local_state_.registry()->RegisterListPref(
-        prefs::kDnsOverHttpsExcludedDomains, base::ListValue());
-    local_state_.registry()->RegisterListPref(
-        prefs::kDnsOverHttpsIncludedDomains, base::ListValue());
-    local_state_.registry()->RegisterBooleanPref(
-        ::prefs::kBuiltInDnsClientEnabled, true);
-    local_state_.registry()->RegisterBooleanPref(
-        ::prefs::kAdditionalDnsQueryTypesEnabled, true);
-
-    // Add a user for test.
-    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
-    fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(&local_state_));
-    const AccountId account_id = AccountId::FromUserEmailGaiaId(
-        "test-user@testdomain.com", GaiaId("1234567890"));
-    user_ = fake_user_manager_->AddGaiaUser(account_id,
-                                            user_manager::UserType::kRegular);
-    ASSERT_TRUE(user_);
 
     network_handler_test_helper_.RegisterPrefs(profile_prefs_.registry(),
-                                               local_state_.registry());
+                                               nullptr);
     network_handler_test_helper_.InitializePrefs(&profile_prefs_,
-                                                 &local_state_);
+                                                 local_state());
     network_handler_test_helper_.AddDefaultProfiles();
 
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(local_state());
+
+    // Add a user for test.
+    user_ = test_user_session_manager_->AddRegularUser(kTestAccountId);
+    ASSERT_TRUE(user_);
+
     // Simulate login.
-    fake_user_manager_->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-    fake_user_manager_->OnUserProfileCreated(account_id, &profile_prefs_);
+    test_user_session_manager_->LogIn(kTestAccountId);
+    user_manager::UserManager::Get()->OnUserProfileCreated(kTestAccountId,
+                                                           &profile_prefs_);
 
     // SystemNetworkContextManager cannot be instantiated here,
     // which normally owns the StubResolverConfigReader instance, so
     // inject a StubResolverConfigReader instance here.
     stub_resolver_config_reader_ =
-        std::make_unique<StubResolverConfigReader>(&local_state_);
+        std::make_unique<StubResolverConfigReader>(local_state());
     SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
         stub_resolver_config_reader_.get());
 
@@ -238,18 +226,17 @@ class SecureDnsManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    NetworkHandler::Get()->ShutdownPrefServices();
     secure_dns_manager_observer_.reset();
     secure_dns_manager_.reset();
     SystemNetworkContextManager::set_stub_resolver_config_reader_for_testing(
         nullptr);
     stub_resolver_config_reader_.reset();
 
-    fake_user_manager_->OnUserProfileWillBeDestroyed(
-        AccountId::FromUserEmailGaiaId("test-user@testdomain.com",
-                                       GaiaId("1234567890")));
+    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+        kTestAccountId);
     user_ = nullptr;
-    fake_user_manager_.Reset();
+    test_user_session_manager_.reset();
+    NetworkHandler::Get()->ShutdownPrefServices();
   }
 
   void ChangeNetworkOncSource(const std::string& path,
@@ -265,7 +252,6 @@ class SecureDnsManagerTest : public testing::Test {
     secure_dns_manager_.reset();
   }
 
-  TestingPrefServiceSimple* local_state() { return &local_state_; }
   user_manager::User& user() { return *user_; }
   PrefService* profile_prefs() { return &profile_prefs_; }
   SecureDnsManager* secure_dns_manager() { return secure_dns_manager_.get(); }
@@ -276,10 +262,8 @@ class SecureDnsManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   NetworkHandlerTestHelper network_handler_test_helper_;
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
   std::unique_ptr<StubResolverConfigReader> stub_resolver_config_reader_;
-  TestingPrefServiceSimple local_state_;
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
   raw_ptr<user_manager::User> user_;
   TestingPrefServiceSimple profile_prefs_;
   std::unique_ptr<SecureDnsManager> secure_dns_manager_;

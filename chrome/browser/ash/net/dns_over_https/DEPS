@@ -17,3 +17,9 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/net",
 ]
+
+specific_include_rules = {
+  "templates_uri_resolver_impl_unittest\\.cc": [
+    "+chrome/test/base/testing_browser_process.h",
+  ],
+}
