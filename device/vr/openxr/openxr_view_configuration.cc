@@ -125,7 +125,10 @@ void OpenXrViewProperties::CalculateViewportScaledProperties() {
     }
   } else {
     // Limit max framebuffer scale on low-memory devices.
-    if (base::SysInfo::AmountOfTotalPhysicalMemory() <= kLowMemoryThreshold) {
+    // Note that `AmountOfTotalPhysicalMemory` also tries to query the command
+    // line and can crash on some configurations.
+    if (base::CommandLine::InitializedForCurrentProcess() &&
+        base::SysInfo::AmountOfTotalPhysicalMemory() <= kLowMemoryThreshold) {
       scale_factor = std::min(scale_factor, kLowMemoryDefaultMaxScaleFactor);
     }
   }
