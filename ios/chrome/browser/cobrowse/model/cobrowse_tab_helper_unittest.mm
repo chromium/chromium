@@ -72,18 +72,14 @@ class CobrowseTabHelperTest : public PlatformTest {
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
 
-    // Create a mock dispatcher and associate it with a mock scene commands
-    // handler.
-    mock_command_dispatcher_ = OCMClassMock([CommandDispatcher class]);
-    mock_scene_commands_handler_ = OCMProtocolMock(@protocol(SceneCommands));
-    OCMStub([mock_command_dispatcher_
-                strictCallableForProtocol:@protocol(SceneCommands)])
-        .andReturn(mock_scene_commands_handler_);
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()
+                                            sceneSessionID:"FakeScene"];
 
-    scene_state_ =
-        [[FakeSceneState alloc] initWithProfile:profile_.get()
-                                 sceneSessionID:"FakeScene"
-                              commandDispatcher:mock_command_dispatcher_];
+    // Create a mock command handler for SceneCommands and register it.
+    mock_scene_commands_handler_ = OCMProtocolMock(@protocol(SceneCommands));
+    [browser()->GetCommandDispatcher()
+        startDispatchingToTarget:mock_scene_commands_handler_
+                     forProtocol:@protocol(SceneCommands)];
 
     CobrowseBrowserAgent::CreateForBrowser(browser());
   }
@@ -174,7 +170,6 @@ class CobrowseTabHelperTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   FakeSceneState* scene_state_;
   id mock_scene_commands_handler_;
-  id mock_command_dispatcher_;
 };
 
 // Tests that showAssistant is called when navigating in a new tab if the opener
