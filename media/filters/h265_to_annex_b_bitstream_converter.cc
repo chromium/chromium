@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/containers/span_reader.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/hevc.h"
 #include "media/parsers/h265_nalu_parser.h"
@@ -77,7 +78,7 @@ uint32_t H265ToAnnexBBitstreamConverter::GetConfigSize(
 uint32_t H265ToAnnexBBitstreamConverter::CalculateNeededOutputBufferSize(
     base::span<const uint8_t> input,
     const mp4::HEVCDecoderConfigurationRecord* hevc_config) const {
-  uint32_t output_size = 0;
+  base::CheckedNumeric<uint32_t> output_size = 0;
   bool first_nal_in_this_access_unit = first_nal_unit_in_access_unit_;
 
   if (input.empty()) {
@@ -129,7 +130,7 @@ uint32_t H265ToAnnexBBitstreamConverter::CalculateNeededOutputBufferSize(
     input_reader.Skip(nal_unit_length);
     // No need for trailing zero bits
   }
-  return output_size;
+  return output_size.ValueOrDefault(0);
 }
 
 bool H265ToAnnexBBitstreamConverter::ConvertHEVCDecoderConfigToByteStream(
