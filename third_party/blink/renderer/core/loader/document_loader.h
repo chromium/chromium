@@ -502,6 +502,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   void ReportTotalTakenTimeToUpdateSubresourceLoadMetrics();
 
+  bool IsInCommitDataForTesting() const { return in_commit_data_; }
+
  protected:
   // Based on its MIME type, if the main document's response corresponds to an
   // MHTML archive, then every resources will be loaded from this archive.
