@@ -30,6 +30,9 @@ namespace omnibox {
 
 namespace {
 
+constexpr int kAimHintImpressionLimitTotal = 15;
+constexpr int kAimHintImpressionLimitDaily = 3;
+
 const AiModeButtonUiConfig* GetAiModeUiConfig(LocationBar& location_bar) {
   auto* service =
       AiModeButtonServiceFactory::GetForProfile(location_bar.GetProfile());
@@ -162,9 +165,6 @@ bool AreAimHintImpressionLimitsReached(LocationBar* location_bar,
   if (aim_hint_currently_shown) {
     return false;
   }
-
-  constexpr int kAimHintImpressionLimitTotal = 15;
-  constexpr int kAimHintImpressionLimitDaily = 3;
 
   PrefService* prefs = location_bar->GetProfile()->GetPrefs();
 
