@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] \\x00filler\\x00text (innerHTML in svg path)
+  assert_equals: expected "#document\\n| \\"\\ufffdfiller\\ufffdtext\\"" but got "#document\\n| \\"fillertext\\""
+[FAIL] \\x00x (innerHTML in math annotation-xml)
+  assert_equals: expected "#document\\n| \\"\\ufffdx\\"" but got "#document\\n| \\"x\\""
+Harness: the test ran to completion.
+

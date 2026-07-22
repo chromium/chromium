@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Reflects a zero startTime as a percentage on a progress-based timeline
+  Cannot read properties of undefined (reading 'unit')
+Harness: the test ran to completion.
+

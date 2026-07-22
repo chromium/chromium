@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed without any KeyframeEffectOptions object
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed by an empty KeyframeEffectOptions object
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed by a normal KeyframeEffectOptions object
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed by a double value
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed by +Infinity
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed by an Infinity duration
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed by an auto duration
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed by an Infinity iterations
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed by an auto fill
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] values of getComputedTiming() when a KeyframeEffect is constructed by a forwards fill
+  assert_equals: computed startTime expected (number) 0 but got (undefined) undefined
+[FAIL] getComputedTiming().startTime for an empty KeyframeEffectOptions object
+  assert_equals: expected (number) 0 but got (undefined) undefined
+[FAIL] getComputedTiming().startTime for a non-zero duration and delay
+  assert_equals: expected (number) 0 but got (undefined) undefined
+[FAIL] getComputedTiming().startTime for a negative delay
+  assert_equals: expected (number) 0 but got (undefined) undefined
+[FAIL] getComputedTiming().startTime for a non-default iteration count and iterationStart
+  assert_equals: expected (number) 0 but got (undefined) undefined
+[FAIL] getComputedTiming().startTime for an infinite duration
+  assert_equals: expected (number) 0 but got (undefined) undefined
+Harness: the test ran to completion.
+

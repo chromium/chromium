@@ -151,7 +151,7 @@ function compression_dictionary_promise_test(func, name, properties) {
 // complete. This is used in tests to confirm that another dictionary's
 // registration process has fully finished.
 async function registerAltDictionaryAndWait(t) {
-  const pattern = "%2Ffetch%2Fcompression-dictionary%2Fresources%2Fecho-headers2.py";
+  const pattern = encodeURIComponent("/fetch/compression-dictionary/resources/echo-headers2.py");
   await fetch(`${kRegisterDictionaryPath}?id=id2&match=${pattern}`);
   assert_equals(
       await waitUntilAvailableDictionaryHeader(t, {use_alt_path: true}),

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Test that HTML is pasted into EditContext as plain text
+  assert_true: Should fire textupdate. expected true got false
+Harness: the test ran to completion.
+
