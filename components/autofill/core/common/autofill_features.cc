@@ -351,10 +351,8 @@ BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kAutofillAiWalletPrivatePasses,
                                        base::FEATURE_ENABLED_FOR_COUNTRIES,
                                        WALLET_SUPPORTED_COUNTRIES);
 
-// When enabled, account-related eligibility criteria (minor status, location)
-// are determined based on a capability, rather than approximated through
-// signals that were readily available in Chrome prior to the Autofill-specific
-// capability (e.g., using geo-location).
+// When enabled, account location rather than geo-location is used to determine
+// the eligiblity to save Wallet private passes.
 BASE_FEATURE(kAutofillAiWalletPrivatePassesCapability,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

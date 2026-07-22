@@ -1110,11 +1110,8 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseForPrivatePassesForUnderagedUsers) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillAiWalletPrivatePasses},
-      /*disabled_features=*/{
-          features::kAutofillAiWalletPrivatePassesCapability});
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
   // Simulate that the can_use_model_execution_features() capability is false.
   signin::IdentityManager* identity_manager = client().GetIdentityManager();
   AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
