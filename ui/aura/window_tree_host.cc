@@ -437,7 +437,9 @@ void WindowTreeHost::LockMouse(Window* window) {
 
 void WindowTreeHost::UnlockMouse(Window* window) {
   Window* root_window = window->GetRootWindow();
+  CHECK_EQ(root_window, window_);
   DCHECK(root_window);
+  Window::ScopedDeleteBlocker blocker(root_window);
 
   if (window->HasCapture())
     window->ReleaseCapture();
