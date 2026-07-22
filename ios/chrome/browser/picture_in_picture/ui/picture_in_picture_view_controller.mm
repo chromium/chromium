@@ -222,7 +222,7 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
   _playPauseButton.tintColor = [UIColor whiteColor];
 
   UIImage* pauseImage =
-      DefaultSymbolWithPointSize(kPauseFillSymbol, kPlayPauseButtonPointSize);
+      SymbolWithPointSize(SymbolPauseFill, kPlayPauseButtonPointSize);
   [_playPauseButton setImage:pauseImage forState:UIControlStateNormal];
   _playPauseButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_PICTURE_IN_PICTURE_PAUSE);
@@ -313,14 +313,14 @@ NSString* accessibilityLabel(PictureInPictureFeature feature) {
   if (_player.timeControlStatus == AVPlayerTimeControlStatusPlaying) {
     [_player pause];
     UIImage* playImage =
-        DefaultSymbolWithPointSize(kPlayFillSymbol, kPlayPauseButtonPointSize);
+        SymbolWithPointSize(SymbolPlayFill, kPlayPauseButtonPointSize);
     [_playPauseButton setImage:playImage forState:UIControlStateNormal];
     _playPauseButton.accessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_PICTURE_IN_PICTURE_PLAY);
   } else {
     [_player play];
     UIImage* pauseImage =
-        DefaultSymbolWithPointSize(kPauseFillSymbol, kPlayPauseButtonPointSize);
+        SymbolWithPointSize(SymbolPauseFill, kPlayPauseButtonPointSize);
     [_playPauseButton setImage:pauseImage forState:UIControlStateNormal];
     _playPauseButton.accessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_PICTURE_IN_PICTURE_PAUSE);
