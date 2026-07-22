@@ -2024,8 +2024,10 @@ void MainThreadSchedulerImpl::WriteIntoTraceLocked(
 
   if (optional_now.is_null())
     optional_now = helper_.NowTicks();
+  perfetto::StaticString current_use_case =
+      UseCaseToString(main_thread_only().current_use_case);
   dict.Add("current_use_case",
-           UseCaseToString(main_thread_only().current_use_case));
+           current_use_case.value ? current_use_case : "none");
   dict.Add("compositor_will_send_main_frame_not_expected",
            main_thread_only().compositor_will_send_main_frame_not_expected);
   dict.Add("blocking_input_expected_soon",
@@ -2123,7 +2125,8 @@ void MainThreadSchedulerImpl::Policy::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("rail_mode", RAILModeToString(rail_mode));
-  dict.Add("use_case", UseCaseToString(use_case));
+  perfetto::StaticString use_case_string = UseCaseToString(use_case);
+  dict.Add("use_case", use_case_string.value ? use_case_string : "none");
   dict.Add("should_pause_task_queues", should_pause_task_queues);
   dict.Add("should_pause_task_queues_for_android_webview",
            should_pause_task_queues_for_android_webview);
