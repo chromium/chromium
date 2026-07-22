@@ -12,6 +12,8 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.BuildConfig;
@@ -56,6 +58,11 @@ public class IncognitoUtils {
      */
     public static boolean isIncognitoModeForced(Profile profile) {
         // TODO(b/509871328): Remove feature flag and combine with isIncognitoModeEnabled.
+        if (!FeatureList.isNativeInitialized()
+                && !FeatureOverrides.hasTestFeature(
+                        ChromeFeatureList.INCOGNITO_MODE_FORCED_ANDROID)) {
+            return false;
+        }
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_MODE_FORCED_ANDROID)) {
             return false;
         }

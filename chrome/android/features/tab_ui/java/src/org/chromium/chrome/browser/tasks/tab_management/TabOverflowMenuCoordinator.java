@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -489,9 +490,15 @@ public abstract class TabOverflowMenuCoordinator<T>
         }
         List<ListItem> submenuItems = new ArrayList<>();
         if (allowMoveToNewWindow) {
+            Profile profile = mTabModelSupplier.get().getProfile();
+            boolean isIncognitoForced = profile != null && IncognitoUtils.isIncognitoModeForced(profile);
             submenuItems.add(
                     new ListItemBuilder()
-                            .withTitleRes(R.string.menu_new_window)
+                            .withTitleRes(
+                                    isIncognitoForced
+                                            ? R.string.menu_new_incognito_window
+                                            : R.string.menu_new_window)
+                            .withStartIconRes(isIncognitoForced ? R.drawable.ic_domain : 0)
                             .withIsIncognito(isIncognito)
                             .withClickListener(v -> moveToNewWindow(id))
                             .build());

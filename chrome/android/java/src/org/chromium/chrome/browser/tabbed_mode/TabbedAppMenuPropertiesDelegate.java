@@ -343,11 +343,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         mUpdateMenuItemVisible = shouldShowUpdateMenuItem();
+        Profile profile = getProfileFromTabModel();
         if (mUpdateMenuItemVisible) {
             modelList.add(buildUpdateItem());
             mUpdateStateChangeObserver = buildUpdateStateChangedObserver();
-            UpdateMenuItemHelper.getInstance(getProfileFromTabModel())
-                    .registerObserver(mUpdateStateChangeObserver);
+            UpdateMenuItemHelper.getInstance(profile).registerObserver(mUpdateStateChangeObserver);
         }
 
         if (isSubmenusEnabled(mContext)) {
@@ -366,10 +366,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             boolean isNativePage,
             boolean isFileScheme,
             boolean isContentScheme) {
+        Profile profile = getProfileFromTabModel();
+        boolean isIncognitoForced = IncognitoUtils.isIncognitoModeForced(profile);
         boolean separateIncognitoWindow = IncognitoUtils.shouldOpenIncognitoAsWindow();
         boolean isIncognito = isIncognitoShowing();
-        if (!separateIncognitoWindow || !isIncognito) {
-            modelList.add(buildNewTabItem());
+        if (!separateIncognitoWindow || !isIncognito || isIncognitoForced) {
+            modelList.add(buildNewTabItem(isIncognitoForced));
         }
 
         if (!separateIncognitoWindow || isIncognito) {
@@ -384,7 +386,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // New Window
-        if (shouldShowNewWindow()) modelList.add(buildNewWindowItem());
+        if (shouldShowNewWindow()) {
+            modelList.add(buildNewWindowItem(isIncognitoForced));
+        }
 
         // New Incognito Window
         if (shouldShowNewIncognitoWindow()) modelList.add(buildNewIncognitoWindowItem());
@@ -587,10 +591,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             boolean isNativePage,
             boolean isFileScheme,
             boolean isContentScheme) {
+        Profile profile = getProfileFromTabModel();
+        boolean isIncognitoForced = IncognitoUtils.isIncognitoModeForced(profile);
         boolean separateIncognitoWindow = IncognitoUtils.shouldOpenIncognitoAsWindow();
         boolean isIncognito = isIncognitoShowing();
-        if (!separateIncognitoWindow || !isIncognito) {
-            modelList.add(buildNewTabItem());
+        if (!separateIncognitoWindow || !isIncognito || isIncognitoForced) {
+            modelList.add(buildNewTabItem(isIncognitoForced));
         }
 
         if (!separateIncognitoWindow || isIncognito) {
@@ -604,7 +610,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // New Window
         if (shouldShowNewWindow()) {
-            modelList.add(buildNewWindowItem());
+            modelList.add(buildNewWindowItem(isIncognitoForced));
         }
 
         // New Incognito Window
@@ -782,14 +788,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private void populateOverviewModeMenu(MVCListAdapter.ModelList modelList) {
-        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing()) {
-            modelList.add(buildNewTabItem());
+        Profile profile = getProfileFromTabModel();
+        boolean isIncognitoForced = IncognitoUtils.isIncognitoModeForced(profile);
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || !isIncognitoShowing() || isIncognitoForced) {
+            modelList.add(buildNewTabItem(isIncognitoForced));
         }
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow() || isIncognitoShowing()) {
             modelList.add(buildNewIncognitoTabItem());
         }
         if (shouldShowNewIncognitoWindow()) {
-            modelList.add(buildNewWindowItem());
+            modelList.add(buildNewWindowItem(isIncognitoForced));
             modelList.add(buildNewIncognitoWindowItem());
         }
         modelList.add(mTabGroupItemBuilder.buildNewTabGroupItemWithoutTab());
@@ -800,9 +808,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private void populateTabletEmptyModeMenu(MVCListAdapter.ModelList modelList) {
-        modelList.add(buildNewTabItem());
+        Profile profile = getProfileFromTabModel();
+        boolean isIncognitoForced = IncognitoUtils.isIncognitoModeForced(profile);
+
+        modelList.add(buildNewTabItem(isIncognitoForced));
+
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            modelList.add(buildNewWindowItem());
+            modelList.add(buildNewWindowItem(isIncognitoForced));
             modelList.add(buildNewIncognitoWindowItem());
         } else {
             modelList.add(buildNewIncognitoTabItem());
@@ -850,9 +862,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         model.set(AppMenuItemProperties.ENABLED, itemState.enabled);
     }
 
-    private ListItem buildNewTabItem() {
-        return new ListItem(
-                AppMenuHandler.AppMenuItemType.STANDARD,
+    private ListItem buildNewTabItem(boolean isIncognitoForced) {
+        PropertyModel model =
                 AppMenuItemUtils.buildModelForStandardMenuItem(
                         mContext,
                         getAppMenuItemTheme(),
@@ -861,7 +872,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_add_box_rounded_corner
                                 : Resources.ID_NULL,
-                        isMenuIconAtStart()));
+                        isMenuIconAtStart());
+        if (isIncognitoForced) {
+            model.set(AppMenuItemProperties.ENABLED, false);
+            model.set(AppMenuItemProperties.MANAGED, true);
+            return new ListItem(TabbedAppMenuItemType.NEW_INCOGNITO, model);
+        }
+        return new ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
     }
 
     private ListItem buildHomepageItem() {
@@ -907,17 +924,22 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return new ListItem(TabbedAppMenuItemType.NEW_INCOGNITO, model);
     }
 
-    private ListItem buildNewWindowItem() {
+    private ListItem buildNewWindowItem(boolean isIncognitoForced) {
         assert shouldShowNewWindow();
-        return new ListItem(
-                AppMenuHandler.AppMenuItemType.STANDARD,
+        PropertyModel model =
                 AppMenuItemUtils.buildModelForStandardMenuItem(
                         mContext,
                         getAppMenuItemTheme(),
                         R.id.new_window_menu_id,
                         R.string.menu_new_window,
                         shouldShowIconBeforeItem() ? R.drawable.ic_new_window : Resources.ID_NULL,
-                        isMenuIconAtStart()));
+                        isMenuIconAtStart());
+        if (isIncognitoForced) {
+            model.set(AppMenuItemProperties.ENABLED, false);
+            model.set(AppMenuItemProperties.MANAGED, true);
+            return new ListItem(TabbedAppMenuItemType.NEW_INCOGNITO, model);
+        }
+        return new ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
     }
 
     private ListItem buildNewIncognitoWindowItem() {

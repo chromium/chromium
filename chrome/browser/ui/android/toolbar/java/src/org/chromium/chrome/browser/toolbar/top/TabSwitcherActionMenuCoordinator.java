@@ -246,6 +246,7 @@ public class TabSwitcherActionMenuCoordinator {
 
     protected ListItem buildListItemByMenuItemType(@MenuItemType int type) {
         boolean enabled = IncognitoUtils.isIncognitoModeEnabled(mProfile);
+        boolean forced = IncognitoUtils.isIncognitoModeForced(mProfile);
         switch (type) {
             case MenuItemType.CLOSE_TAB:
                 return new ListItemBuilder()
@@ -254,14 +255,20 @@ public class TabSwitcherActionMenuCoordinator {
                         .withStartIconRes(R.drawable.btn_close)
                         .build();
             case MenuItemType.NEW_TAB:
-                return new ListItemBuilder()
-                        .withTitleRes(R.string.menu_new_tab)
-                        .withMenuId(R.id.new_tab_menu_id)
-                        .withStartIconRes(
-                                IncognitoUtils.shouldOpenIncognitoAsWindow()
-                                        ? R.drawable.ic_add_box_rounded_corner
-                                        : R.drawable.new_tab_icon)
-                        .build();
+                ListItemBuilder newTabBuilder =
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.menu_new_tab)
+                                .withMenuId(R.id.new_tab_menu_id);
+                if (forced) {
+                    newTabBuilder.withEnabled(false);
+                    newTabBuilder.withStartIconRes(R.drawable.ic_domain);
+                } else {
+                    newTabBuilder.withStartIconRes(
+                            IncognitoUtils.shouldOpenIncognitoAsWindow()
+                                    ? R.drawable.ic_add_box_rounded_corner
+                                    : R.drawable.new_tab_icon);
+                }
+                return newTabBuilder.build();
             case MenuItemType.NEW_INCOGNITO_TAB:
                 return new ListItemBuilder()
                         .withTitleRes(R.string.menu_new_incognito_tab)
@@ -294,11 +301,17 @@ public class TabSwitcherActionMenuCoordinator {
                         .withStartIconRes(R.drawable.ic_widgets)
                         .build();
             case MenuItemType.NEW_WINDOW:
-                return new ListItemBuilder()
-                        .withTitleRes(R.string.menu_new_window)
-                        .withMenuId(R.id.new_window_menu_id)
-                        .withStartIconRes(R.drawable.ic_new_window)
-                        .build();
+                ListItemBuilder newWindowBuilder =
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.menu_new_window)
+                                .withMenuId(R.id.new_window_menu_id);
+                if (forced) {
+                    newWindowBuilder.withEnabled(false);
+                    newWindowBuilder.withStartIconRes(R.drawable.ic_domain);
+                } else {
+                    newWindowBuilder.withStartIconRes(R.drawable.ic_new_window);
+                }
+                return newWindowBuilder.build();
             case MenuItemType.NEW_INCOGNITO_WINDOW:
                 return new ListItemBuilder()
                         .withTitleRes(R.string.menu_new_incognito_window)

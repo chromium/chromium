@@ -30,6 +30,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -354,9 +356,30 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             }
             return true;
         } else if (id == R.id.new_window_menu_id) {
+            TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
+            Profile profile = null;
+            if (tabModelOrchestrator != null) {
+                TabModelSelector tabModelSelector = tabModelOrchestrator.getTabModelSelector();
+                if (tabModelSelector != null) {
+                    profile = tabModelSelector.getCurrentModel().getProfile();
+                }
+            }
+            if (profile == null
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.INCOGNITO_MODE_FORCED_ANDROID)) {
+                // If the feature flag is active and we cannot determine the profile context (e.g.
+                // rapidly triggering shortcuts during early startup before profile initialization
+                // completes),
+                // abort the request to prevent potential policy bypass.
+                // Opening a normal window could violate incognito FORCED state, but opening an
+                // incognito window would only be valid under FORCED state.
+                return true;
+            }
+
+            boolean isIncognito = profile != null && IncognitoUtils.isIncognitoModeForced(profile);
             mMultiInstanceOrchestrator.createNewWindow(
                     mActivity,
-                    /* isIncognito= */ false,
+                    isIncognito,
                     /* additionalIntentExtras= */ null,
                     /* startActivityOptions= */ null,
                     appSource);

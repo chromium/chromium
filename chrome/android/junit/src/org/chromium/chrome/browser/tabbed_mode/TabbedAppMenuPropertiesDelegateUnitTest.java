@@ -168,6 +168,7 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -195,7 +196,8 @@ import java.util.Set;
     ChromeFeatureList.THREE_DOT_MENU_BACK_BUTTON,
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS,
     ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION,
-    ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF
+    ChromeFeatureList.SUBMENUS_IN_APP_MENU_LFF,
+    ChromeFeatureList.INCOGNITO_MODE_FORCED_ANDROID
 })
 @EnableFeatures({
     ChromeFeatureList.SUBMENUS_IN_APP_MENU,
@@ -1463,6 +1465,65 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                             R.id.reload_menu_id
                         };
         assertActionBarItemsAreEqual(modelList, expectedActionBarItems);
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @EnableFeatures(ChromeFeatureList.INCOGNITO_MODE_FORCED_ANDROID)
+    public void testNewTabAndNewWindowHiding_WhenIncognitoForced_Phone() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions().withAllSet().setNativePage(false));
+        doReturn(true).when(mIncognitoUtilsJniMock).getIncognitoModeForced(any());
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        MVCListAdapter.ListItem newTabItem = findItemById(modelList, R.id.new_tab_menu_id);
+        assertNotNull("New Tab item should be visible", newTabItem);
+        assertFalse(newTabItem.model.get(AppMenuItemProperties.ENABLED));
+        assertTrue(newTabItem.model.get(AppMenuItemProperties.MANAGED));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.INCOGNITO_MODE_FORCED_ANDROID)
+    public void testNewTabAndNewWindowHiding_WhenIncognitoForced_Tablet() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions().withAllSet().setNativePage(false));
+        doReturn(true).when(mIncognitoUtilsJniMock).getIncognitoModeForced(any());
+        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).shouldShowNewWindow();
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        MVCListAdapter.ListItem newTabItem = findItemById(modelList, R.id.new_tab_menu_id);
+        assertNotNull("New Tab item should be visible on Tablet", newTabItem);
+        assertFalse(newTabItem.model.get(AppMenuItemProperties.ENABLED));
+        assertTrue(newTabItem.model.get(AppMenuItemProperties.MANAGED));
+
+        MVCListAdapter.ListItem newWindowItem = findItemById(modelList, R.id.new_window_menu_id);
+        assertNotNull("New Window item should be visible on Tablet", newWindowItem);
+        assertFalse(newWindowItem.model.get(AppMenuItemProperties.ENABLED));
+        assertTrue(newWindowItem.model.get(AppMenuItemProperties.MANAGED));
+    }
+
+    @Test
+    @Config(qualifiers = "sw320dp")
+    @EnableFeatures(ChromeFeatureList.INCOGNITO_MODE_FORCED_ANDROID)
+    public void testNewTabAndNewWindowVisible_WhenIncognitoNotForced_Phone() {
+        testNewTabAndNewWindowVisible_WhenIncognitoNotForced();
+    }
+
+    private void testNewTabAndNewWindowVisible_WhenIncognitoNotForced() {
+        setUpMocksForPageMenu();
+        setMenuOptions(new MenuOptions().withAllSet().setNativePage(false));
+        doReturn(false).when(mIncognitoUtilsJniMock).getIncognitoModeForced(any());
+        doReturn(true).when(mTabbedAppMenuPropertiesDelegate).shouldShowNewWindow();
+
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+
+        assertNotNull(
+                "New Tab item should be visible", findItemById(modelList, R.id.new_tab_menu_id));
     }
 
     @Test
