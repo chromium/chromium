@@ -463,17 +463,6 @@ void PageLoadMetricsForwardObserver::OnCustomUserTimingMarkObserved(
   // observers.
 }
 
-void PageLoadMetricsForwardObserver::OnAdAuctionComplete(
-    bool is_server_auction,
-    bool is_on_device_auction,
-    content::AuctionResult result) {
-  if (!parent_observer_) {
-    return;
-  }
-  parent_observer_->OnAdAuctionComplete(is_server_auction, is_on_device_auction,
-                                        result);
-}
-
 void PageLoadMetricsForwardObserver::OnPrimaryPageRenderProcessGone() {
   DUMP_WILL_BE_NOTREACHED() << "Not supported.";
 }

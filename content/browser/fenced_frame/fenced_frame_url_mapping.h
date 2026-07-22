@@ -20,12 +20,7 @@
 #include "content/common/content_export.h"
 #include "url/gurl.h"
 
-namespace blink {
 
-struct AdDescriptor;
-struct AdSize;
-
-}  // namespace blink
 
 namespace content {
 
@@ -79,39 +74,13 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   void ImportPendingAdComponents(
       const std::vector<std::pair<GURL, FencedFrameConfig>>& components);
 
-  // Move pending mapped `urn_uuid` from `pending_urn_uuid_to_url_map_` to
-  // `urn_uuid_to_url_map_`. Then assign ad auction data as well as an ordered
-  // list of ad component URLs, provided by a bidder running an auction, to the
-  // entry associated with the `urn_uuid` and its associated
-  // `FencedFrameConfig`. These will to be made available to any fenced frame
-  // that gets navigated to the URN encapsulated inside the
-  // `RedactedFencedFrameConfig` that is returned from this method. Either this
-  // config or the internal URN inside of it is returned to script via the
-  // InterestGroup API. They used to perform the fenced frame navigation.
-  //
-  // `on_navigate_callback` should be run on navigation to `urn_uuid`.
-  //
-  // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-  blink::FencedFrame::RedactedFencedFrameConfig
-  AssignFencedFrameURLAndInterestGroupInfo(
-      const GURL& urn_uuid,
-      std::optional<blink::AdSize> container_size,
-      const blink::AdDescriptor& ad_descriptor,
-      AdAuctionData auction_data,
-      base::RepeatingClosure on_navigate_callback,
-      std::vector<blink::AdDescriptor> ad_component_descriptors,
-      scoped_refptr<FencedFrameReporter> fenced_frame_reporter = nullptr);
-
   // Generate a URN that is not yet mapped to a URL.
-  // * For Shared Storage, it will be returned by
-  // `sharedStorage.runURLSelectionOperation` before the URL selection decision
+  // For Shared Storage, it will be returned by
+  // `sharedStorage.selectURL()` before the URL selection decision
   // is made.
-  // * For FLEDGE, it will be moved from `pending_urn_uuid_to_url_map_` to
-  // `urn_uuid_to_url_map_` when ad auction completes. Info provided by auction
-  // bidder will be assigned using `AssignFencedFrameURLAndInterestGroupInfo`.
   //
   // This method will fail and return std::nullopt if number of
-  // mappings has reached limit. Ad auction and `selectURL()` will be terminated
+  // mappings has reached limit. `selectURL()` will be terminated
   // up front and an error will be reported.
   std::optional<GURL> GeneratePendingMappedURN();
 
@@ -171,16 +140,6 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // thus it's safe for a `NavigationRequest` to store a pointer to this.
   SharedStorageBudgetMetadata* GetSharedStorageBudgetMetadataForTesting(
       const GURL& urn_uuid);
-
-  // Modifies the true URL from a URN by replacing substrings specified in the
-  // replacements map. The true URLs for any component ads associated with this
-  // URN will also have substrings substituted. This function will be removed
-  // once all FLEDGE auctions switch to using fenced frames.
-  // TODO(crbug.com/40199055): Remove this function when we remove support for
-  // showing FLEDGE ads in iframes.
-  void SubstituteMappedURL(
-      const GURL& urn_uuid,
-      const std::vector<std::pair<std::string, std::string>>& substitutions);
 
  private:
   friend class FencedFrameURLMappingTestPeer;

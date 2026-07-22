@@ -341,38 +341,7 @@ HeapVector<Member<FencedFrameConfig>> Fence::getNestedConfigs(
 
 void Fence::reportPrivateAggregationEvent(const String& event,
                                           ExceptionState& exception_state) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
-      !blink::features::kPrivateAggregationApiEnabledInProtectedAudience
-           .Get()) {
-    exception_state.ThrowSecurityError(
-        "Private Aggregation in Protected Audience must be enabled to use "
-        "reportEvent() for private aggregation events.");
-    return;
-  }
-  if (!DomWindow()) {
-    exception_state.ThrowSecurityError(
-        "May not use a Fence object associated with a Document that is not "
-        "fully active.");
-    return;
-  }
-
-  if (event.starts_with(blink::kFencedFrameReservedPAEventPrefix)) {
-    AddConsoleMessage("Reserved events cannot be triggered manually.");
-    return;
-  }
-
-  LocalFrame* frame = DomWindow()->GetFrame();
-  DCHECK(frame->GetDocument());
-
-  const auto& properties =
-      frame->GetDocument()->Loader()->FencedFrameProperties();
-  if (!properties.has_value()) {
-    AddConsoleMessage("This frame was not loaded with a FencedFrameConfig.");
-    return;
-  }
-
-  frame->GetLocalFrameHostRemote()
-      .SendPrivateAggregationRequestsForFencedFrameEvent(event);
+  // Silent no-op. Private Aggregation in Protected Audience is deprecated.
 }
 
 void Fence::AddConsoleMessage(const String& message,

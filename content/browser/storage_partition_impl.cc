@@ -75,7 +75,6 @@
 #include "content/browser/guest_page_holder_impl.h"
 #include "content/browser/host_zoom_level_context.h"
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
-#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
 #include "content/browser/loader/reconnectable_url_loader_factory.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
@@ -150,6 +149,7 @@
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
+#include "sql/database.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_features.h"
@@ -887,7 +887,6 @@ class StoragePartitionImpl::DataDeletionHelper {
       storage::SpecialStoragePolicy* special_storage_policy,
       storage::FileSystemContext* filesystem_context,
       network::mojom::CookieManager* cookie_manager,
-      InterestGroupManagerImpl* interest_group_manager,
       AggregationService* aggregation_service,
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       CdmStorageManager* cdm_storage_manager,
@@ -917,7 +916,7 @@ class StoragePartitionImpl::DataDeletionHelper {
     kSharedStorage = 10,
     kGpuCache = 11,
     kPrivateAggregation = 12,  // Deprecated.
-    kInterestGroups = 13,
+    kInterestGroups = 13,      // Deprecated
     kCdmStorage = 14,
     kDeviceBoundSessions = 15,
     kDeclarativePerformanceObserver = 16,
@@ -1438,23 +1437,6 @@ void StoragePartitionImpl::Initialize(
 
   bucket_manager_ = std::make_unique<BucketManager>(this);
 
-  if (base::FeatureList::IsEnabled(network::features::kInterestGroupStorage)) {
-    // Auction worklets on non-Android use dedicated processes; on Android due
-    // to high cost of process launch they try to reuse renderers.
-    interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
-        path, is_in_memory(),
-#if BUILDFLAG(IS_ANDROID)
-        InterestGroupManagerImpl::ProcessMode::kInRenderer,
-#else
-        InterestGroupManagerImpl::ProcessMode::kDedicated,
-#endif
-        GetURLLoaderFactoryForBrowserProcess(),
-        base::BindRepeating(&BrowserContext::GetKAnonymityServiceDelegate,
-                            // This use of Unretained is safe since the browser
-                            // context owns this storage partition.
-                            base::Unretained(browser_context_)));
-  }
-
   // The Topics API is not available in Incognito mode.
   if (!is_in_memory() &&
       base::FeatureList::IsEnabled(network::features::kBrowsingTopics)) {
@@ -1814,11 +1796,6 @@ StoragePartitionImpl::GetDeviceBoundSessionManager() {
 #else
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-}
-
-InterestGroupManager* StoragePartitionImpl::GetInterestGroupManager() {
-  DCHECK(initialized_);
-  return interest_group_manager_.get();
 }
 
 BrowsingTopicsSiteDataManager*
@@ -2475,16 +2452,6 @@ void StoragePartitionImpl::OnSharedStorageHeaderReceived(
   std::move(callback).Run();
 }
 
-void StoragePartitionImpl::OnAdAuctionEventRecordHeaderReceived(
-    network::AdAuctionEventRecord event_record,
-    const std::optional<url::Origin>& top_frame_origin) {
-  DCHECK(browser_context());
-  interest_group_manager_->RecordViewClick(
-      *browser_context(),
-      url_loader_network_observers_.current_context().navigation_or_document(),
-      top_frame_origin, std::move(event_record));
-}
-
 void StoragePartitionImpl::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {
@@ -2769,7 +2736,7 @@ void StoragePartitionImpl::ClearDataImpl(
       std::move(cookie_deletion_filter), GetPath(), dom_storage_context_.get(),
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
-      interest_group_manager_.get(), aggregation_service_.get(),
+      aggregation_service_.get(),
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       cdm_storage_manager_.get(),
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -2870,7 +2837,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
     storage::SpecialStoragePolicy* special_storage_policy,
     storage::FileSystemContext* filesystem_context,
     network::mojom::CookieManager* cookie_manager,
-    InterestGroupManagerImpl* interest_group_manager,
     AggregationService* aggregation_service,
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     CdmStorageManager* cdm_storage_manager,
@@ -2973,31 +2939,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
          remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS);
   DCHECK(!(remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR) ||
          remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS);
-  if (remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS) {
-    if (interest_group_manager) {
-      // The internal interest group data is not specific to a site so it only
-      // makes sense to delete it for all sites (i.e. when
-      // generic_filter.is_null()).
-      if ((remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL) &&
-          generic_filter.is_null()) {
-        interest_group_manager->DeleteAllInterestGroupData(
-            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                CreateTaskCompletionClosure(TracingDataType::kInterestGroups)));
-      } else {
-        interest_group_manager->DeleteInterestGroupData(
-            generic_filter,
-            remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR,
-            mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                CreateTaskCompletionClosure(TracingDataType::kInterestGroups)));
-      }
-    }
-  }
 
-  if (remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE) {
-    if (interest_group_manager) {
-      interest_group_manager->ClearPermissionsCache();
-    }
-  }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if ((remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES)) {

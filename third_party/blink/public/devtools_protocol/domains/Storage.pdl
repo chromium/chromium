@@ -21,7 +21,6 @@ experimental domain Storage
       websql
       service_workers
       cache_storage
-      interest_groups
       shared_storage
       storage_buckets
       all

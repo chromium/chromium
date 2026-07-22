@@ -20,7 +20,6 @@
 #include "base/supports_user_data.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/k_anonymity_service_delegate.h"
 #include "content/public/browser/pre_prefetch_handle.h"
 #include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/prefetch_priority.h"
@@ -507,10 +506,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // nullptr otherwise.
   virtual FederatedIdentityPermissionContextDelegate*
   GetFederatedIdentityPermissionContext();
-
-  // Gets the KAnonymityServiceDelegate if supported. Returns nullptr if
-  // unavailable.
-  virtual KAnonymityServiceDelegate* GetKAnonymityServiceDelegate();
 
   // Returns the OriginTrialsControllerDelegate associated with the context if
   // any, nullptr otherwise.

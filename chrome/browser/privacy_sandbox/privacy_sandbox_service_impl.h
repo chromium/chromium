@@ -21,7 +21,6 @@
 #include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "content/public/browser/interest_group_manager.h"
 #include "net/base/schemeful_site.h"
 
 class PrefService;
@@ -45,7 +44,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       PrefService* pref_service,
-      content::InterestGroupManager* interest_group_manager,
       profile_metrics::BrowserProfileType profile_type,
       content::BrowsingDataRemover* browsing_data_remover,
       HostContentSettingsMap* host_content_settings_map,
@@ -146,13 +144,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   // Called once per profile startup.
   void LogPrivacySandboxState();
 
-  // Converts the provided list of |top_frames| into eTLD+1s for display, and
-  // provides those to |callback|.
-  void ConvertInterestGroupDataKeysForDisplay(
-      base::OnceCallback<void(std::vector<std::string>)> callback,
-      std::vector<content::InterestGroupManager::InterestGroupDataKey>
-          data_keys);
-
   // Checks to see if initialization of the user's RWS pref is required, and if
   // so, sets the default value based on the user's current cookie settings.
   void MaybeInitializeRelatedWebsiteSetsPref();
@@ -174,7 +165,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   raw_ptr<privacy_sandbox::PrivacySandboxSettings> privacy_sandbox_settings_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
-  raw_ptr<content::InterestGroupManager> interest_group_manager_;
   profile_metrics::BrowserProfileType profile_type_;
   raw_ptr<content::BrowsingDataRemover> browsing_data_remover_;
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;

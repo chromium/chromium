@@ -742,15 +742,7 @@ interface LocalFrameHost {
       bool once,
       bool cross_origin_exposed);
 
-  // See:
-  // https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md
-  //
-  // This implements the API:
-  // window.fence.reportEvent(eventType)
-  //
-  // A document in a fenced frame can invoke the reportEvent API to request the
-  // browser to send private aggregation requests associated with `event_type`.
-  SendPrivateAggregationRequestsForFencedFrameEvent(string event_type);
+
 
   // Sent by the frame in a renderer process that hosts/owns a <fencedframe>
   // element, to the browser process requesting the creation of a new fenced

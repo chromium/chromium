@@ -90,10 +90,6 @@ void TestURLLoaderNetworkObserver::OnSharedStorageHeaderReceived(
   std::move(callback).Run();
 }
 
-void TestURLLoaderNetworkObserver::OnAdAuctionEventRecordHeaderReceived(
-    network::AdAuctionEventRecord event_record,
-    const std::optional<url::Origin>& top_frame_origin) {}
-
 void TestURLLoaderNetworkObserver::Clone(
     mojo::PendingReceiver<URLLoaderNetworkServiceObserver> observer) {
   receivers_.Add(this, std::move(observer));

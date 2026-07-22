@@ -49,7 +49,6 @@ source_set("utility") {
     "//content/public/child:child_sources",
     "//content/public/common:common_sources",
     "//content/public/common:content_descriptor_keys",
-    "//content/services/auction_worklet",
     "//content/services/devtools_media_encoding_service",
     "//content/utility/on_device_model:on_device_model_sandbox_init",
     "//content/utility/webnn:webnn_sandbox_init",

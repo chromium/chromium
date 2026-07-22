@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="kSharedStorage"/>
   <int value="11" label="kGpuCache"/>
   <int value="12" label="kPrivateAggregation"/>
-  <int value="13" label="kInterestGroups"/>
+  <int value="13" label="kInterestGroups (deprecated)"/>
   <int value="14" label="kCdmStorage"/>
   <int value="15" label="kDeviceBoundSessions"/>
   <int value="16" label="kDeclarativePerformanceObserver"/>

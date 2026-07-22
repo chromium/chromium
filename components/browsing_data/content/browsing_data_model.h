@@ -18,7 +18,6 @@
 #include "components/browsing_data/content/shared_worker_info.h"
 #include "components/webid/federated_identity_data_model.h"
 #include "content/public/browser/cdm_storage_data_model.h"
-#include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/session_storage_usage_info.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/device_bound_sessions/session_key.h"
@@ -53,7 +52,6 @@ class BrowsingDataModel {
     kSharedStorage = 2,
     kLocalStorage,
     kSessionStorage,
-    kInterestGroup,
     kQuotaStorage,
     kSharedDictionary,
     kSharedWorker,
@@ -76,7 +74,6 @@ class BrowsingDataModel {
   // using this information.
   typedef std::variant<url::Origin,        // Single origin, e.g. Trust Tokens
                        blink::StorageKey,  // Partitioned JS storage
-                       content::InterestGroupManager::InterestGroupDataKey,
                        content::SessionStorageUsageInfo,
                        net::SharedDictionaryIsolationKey,
                        browsing_data::SharedWorkerInfo,

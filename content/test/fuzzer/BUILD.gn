@@ -32,17 +32,6 @@ source_set("fuzzer_support") {
   testonly = true
 }
 
-fuzzer_test("ad_auction_headers_util_fuzzer") {
-  sources = [ "ad_auction_headers_util_fuzzer.cc" ]
-  deps = [
-    ":fuzzer_support",
-    "//content/browser",
-    "//content/browser:for_content_tests",
-    "//content/public/browser:browser_sources",
-  ]
-  seed_corpus = "//content/test/data/fuzzer_corpus/ad_auction_headers_data/"
-}
-
 fuzzer_test("color_parser_fuzzer") {
   sources = [ "color_parser_fuzzer.cc" ]
   deps = [ ":fuzzer_support" ]
@@ -519,47 +508,6 @@ content_mojolpm_fuzzer_test("clipboard_host_mojolpm_fuzzer") {
   ]
 
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
-}
-
-proto_library("ad_auction_service_mojolpm_fuzzer_stringifiers_proto") {
-  proto_in_dir = "//"
-
-  sources = [ "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.proto" ]
-}
-
-content_mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
-  sources = [
-    "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer.cc",
-    "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.cc",
-    "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.h",
-  ]
-
-  proto_source =
-      "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer.proto"
-  testcase_proto_kind = "content.fuzzing.ad_auction_service.proto.Testcase"
-
-  deps = [
-    ":ad_auction_service_mojolpm_fuzzer_stringifiers_proto",
-    ":mojolpm_fuzzer_support",
-    "//content/browser",
-    "//content/browser:for_content_tests",
-    "//content/public/browser:browser_sources",
-    "//content/test:test_support",
-    "//services/data_decoder/public/cpp:test_support",
-    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
-    "//third_party/metrics_proto",
-  ]
-
-  proto_deps = [
-    ":ad_auction_service_mojolpm_fuzzer_stringifiers",
-    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
-  ]
-
-  seed_corpus_sources = [
-    "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_auction.textproto",
-    "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_join.textproto",
-    "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_update.textproto",
-  ]
 }
 
 if (enable_mojom_fuzzer) {

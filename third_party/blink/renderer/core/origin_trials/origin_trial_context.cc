@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
@@ -496,20 +495,8 @@ void OriginTrialContext::AddForceEnabledTrials(
 }
 
 bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
-  if (trial_name == "FledgeBiddingAndAuctionServer") {
-    return base::FeatureList::IsEnabled(
-               network::features::kInterestGroupStorage) &&
-           base::FeatureList::IsEnabled(
-               features::kFledgeBiddingAndAuctionServer);
-  }
-
   if (trial_name == "FencedFrames")
     return base::FeatureList::IsEnabled(features::kFencedFrames);
-
-  if (trial_name == "AdInterestGroupAPI") {
-    return base::FeatureList::IsEnabled(
-        network::features::kInterestGroupStorage);
-  }
 
   if (trial_name == "BackForwardCacheSendNotRestoredReasons") {
     return base::FeatureList::IsEnabled(

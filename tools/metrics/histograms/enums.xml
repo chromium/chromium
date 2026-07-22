@@ -179,54 +179,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(/chrome/browser/ui/android/toolbar/adaptive_toolbar_enums.h:AdaptiveToolbarButtonVariant) -->
 
-<!-- LINT.IfChange(AdAuctionPABaseValue) -->
-
-<enum name="AdAuctionPABaseValue">
-  <int value="0" label="kWinningBid"/>
-  <int value="1" label="kHighestScoringOtherBid"/>
-  <int value="2" label="kScriptRunTime"/>
-  <int value="3" label="kSignalsFetchTime"/>
-  <int value="4" label="kBidRejectReason"/>
-  <int value="5" label="kParticipatingInterestGroupCount"/>
-  <int value="6" label="kAverageCodeFetchTime"/>
-  <int value="7" label="kPercentScriptsTimeout"/>
-  <int value="8" label="kPercentInterestGroupsCumulativeTimeout"/>
-  <int value="9" label="kCumulativeBuyerTime"/>
-  <int value="10" label="kRegularInterestGroupsUsed"/>
-  <int value="11" label="kPercentRegularInterestGroupQuotaUsed"/>
-  <int value="12" label="kNegativeInterestGroupsUsed"/>
-  <int value="13" label="kPercentNegativeInterestGroupQuotaUsed"/>
-  <int value="14" label="kInterestGroupStorageUsed"/>
-  <int value="15" label="kPercentInterestGroupStorageQuotaUsed"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/services/auction_worklet/public/mojom/private_aggregation_request.mojom:BaseValue) -->
-
-<!-- LINT.IfChange(AdditionalBidHeaderType) -->
-
-<enum name="AdditionalBidHeaderType">
-  <int value="0" label="Auction Nonce"/>
-  <int value="1" label="Auction Nonce and Seller Nonce"/>
-  <int value="2" label="Malformed header (wrong number of colons)"/>
-  <int value="3" label="Malformed header (wrong auction nonce size)"/>
-  <int value="4" label="Malformed header (wrong seller nonce size)"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/interest_group/ad_auction_headers_util.cc:AdditionalBidHeaderType) -->
-
-<enum name="AdditionalBidResult">
-  <int value="0" label="Sent for Scoring"/>
-  <int value="1" label="Negative Targeted"/>
-  <int value="2" label="Rejected Due to Invalid Base64"/>
-  <int value="3" label="Rejected Due to Signed Bid JSON Parse Error"/>
-  <int value="4" label="Rejected Due to Signed Bid Decode Error"/>
-  <int value="5" label="Rejected Due to JSON Parse Error"/>
-  <int value="6" label="Rejected Due to Decode Error"/>
-  <int value="7" label="Rejected Due to Buyer Not Allowed"/>
-  <int value="8" label="Rejected Due to Currency Mismatch"/>
-  <int value="9" label="Rejected Due to Decoder Shutdown"/>
-</enum>
-
 <enum name="AdsInterventionStatus">
   <int value="0" label="Expired"/>
   <int value="1" label="Would Block"/>
@@ -499,28 +451,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(/chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.cc:AssistantNewEntryPointEligibility) -->
 
-<enum name="AuctionInvalidServerResponseReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Not Witnessed"/>
-  <int value="2" label="Unknown Request ID"/>
-  <int value="3" label="Seller mismatch"/>
-  <int value="4" label="Decryption failed"/>
-  <int value="5" label="Unframing failed"/>
-  <int value="6" label="Decompression failed"/>
-  <int value="7" label="CBOR Parser failed"/>
-  <int value="8" label="Unexpected Response Structure"/>
-  <int value="9" label="Not a Multi-level auction"/>
-  <int value="10" label="Top-level seller mismatch"/>
-  <int value="11" label="Not Single-level auction"/>
-  <int value="12" label="Invalid Bid"/>
-  <int value="13" label="Winning Group is not a bidder"/>
-  <int value="14" label="Winning group couldn't be loaded"/>
-  <int value="15" label="Winning group missing bidding URL"/>
-  <int value="16" label="Couldn't construct Bid"/>
-  <int value="17" label="Currency mismatch"/>
-  <int value="18" label="Decoder shut down"/>
-</enum>
-
 <enum name="AuctionResult">
   <int value="0" label="Success"/>
   <int value="1" label="Aborted"/>
@@ -538,14 +468,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="13" label="Invalid auction nonce"/>
   <int value="14" label="Abort signal"/>
   <int value="15" label="Document destruction"/>
-</enum>
-
-<enum name="AuctionState">
-  <int value="0" label="Not yet started"/>
-  <int value="1" label="Load interest groups"/>
-  <int value="2" label="Bidding and scoring"/>
-  <int value="3" label="Succeeded"/>
-  <int value="4" label="Failed"/>
 </enum>
 
 <enum name="AudioCodec">
@@ -905,12 +827,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="5" label="Error code immediate run ineligible"/>
 </enum>
 
-<enum name="BidderSignalsOriginRelation">
-  <int value="0" label="No trusted signals requested"/>
-  <int value="1" label="Same-origin trusted signals requested"/>
-  <int value="2" label="Cross-origin trusted signals requested"/>
-</enum>
-
 <enum name="BitsPerPixelExponential">
   <summary>
     The ratio of image size in bits to displayed size in pixels. Ranges are
@@ -1180,11 +1096,6 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="BooleanDelivered">
   <int value="0" label="Not delivered"/>
   <int value="1" label="Delivered"/>
-</enum>
-
-<enum name="BooleanDeprecatedJSEnumName">
-  <int value="0" label="Not deprecated enum name"/>
-  <int value="1" label="Deprecated enum name"/>
 </enum>
 
 <enum name="BooleanDetected">
@@ -3270,12 +3181,6 @@ shown properly on the user-facing crash UI.
   <int value="42" label="Unknown owner good key, no policy"/>
   <int value="43" label="Unknown owner malformed key, no policy"/>
   <int value="44" label="Unknown owner no key, no policy"/>
-</enum>
-
-<enum name="DirectFromSellerSignalsRequestType">
-  <int value="0" label="Network service fetch"/>
-  <int value="1" label="Cache"/>
-  <int value="2" label="Coalesced"/>
 </enum>
 
 <enum name="DiscoverFeedBackgroundRefreshOutcome">
@@ -6131,51 +6036,6 @@ shown properly on the user-facing crash UI.
   <int value="0" label="Intent picker icon shown in Omnibox"/>
   <int value="1" label="Intent picker icon clicked in Omnibox"/>
   <int value="2" label="Intent picker dialog shown automatically"/>
-</enum>
-
-<enum name="InterestGroupAdAuctionExecutionMode">
-  <int value="0" label="compatibility"/>
-  <int value="1" label="group-by-origin"/>
-  <int value="2" label="frozen-context"/>
-</enum>
-
-<enum name="InterestGroupAdAuctionUpdateResizeOperation">
-  <int value="0" label="No batch resizing"/>
-  <int value="1" label="Batch is resized with same head and tail origins"/>
-  <int value="2"
-      label="Batch is resized with different origins across the boundary"/>
-  <int value="3"
-      label="Batch is resized with same origins across the boundary"/>
-</enum>
-
-<enum name="InterestGroupAdAuctionUrlLoaderInterceptorStartRequestOutcome">
-  <int value="0" label="There was no initiator frame"/>
-  <int value="1" label="Start request in fenced frame is not allowed"/>
-  <int value="2" label="Start request in non-primary page is not allowed"/>
-  <int value="3"
-      label="Start request in non-outermost main frame is not allowed"/>
-  <int value="4"
-      label="Start request with opaque request origin is not allowed"/>
-  <int value="5"
-      label="Start request with not potentially-trustworty origin is not
-             allowed"/>
-  <int value="6" label="Start request disabled by permissions policy"/>
-  <int value="7" label="Start request API not allowed for selling"/>
-  <int value="8" label="Start request succeeded"/>
-</enum>
-
-<enum name="InterestGroupAuctionReporterState">
-  <int value="0" label="The ad was never used"/>
-  <int value="1" label="Running top-level seller reportResult()"/>
-  <int value="2" label="Running component seller reportResult()"/>
-  <int value="3" label="Running buyer reportWin()"/>
-  <int value="4" label="All worklets completed running"/>
-  <int value="5" label="Initial state"/>
-</enum>
-
-<enum name="InterestGroupJoinPermissionResult">
-  <int value="0" label="Permission granted"/>
-  <int value="1" label="Permission denied"/>
 </enum>
 
 <enum name="InterruptReason">
@@ -25526,12 +25386,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Finished"/>
 </enum>
 
-<enum name="ScoreAdInput">
-  <int value="0" label="Trusted signals"/>
-  <int value="1" label="Direct from seller signals"/>
-  <int value="2" label="Scoring script"/>
-</enum>
-
 <enum name="ScrollDepthQuartile">
   <int value="0" label="0%"/>
   <int value="25" label="25%"/>
@@ -25618,15 +25472,6 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="SHOW_ENHANCED_PROTECTION"/>
   <int value="13" label="OPEN_ENHANCED_PROTECTION"/>
   <int value="14" label="CLOSE_INTERSTITIAL_WITHOUT_UI"/>
-</enum>
-
-<enum name="SellerSignalsOriginRelation">
-  <int value="0" label="No trusted signals requested"/>
-  <int value="1" label="Same-origin trusted signals requested"/>
-  <int value="2"
-      label="Uknown cross-origin trusted signals. Should not occur here."/>
-  <int value="3" label="Permitted cross-origin trusted signals requested"/>
-  <int value="4" label="Forbidden cross-origin trusted signals requested"/>
 </enum>
 
 <enum name="SendTabToSelfDeviceCount">

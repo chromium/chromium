@@ -62,7 +62,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   bool IsFledgeAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& auction_party,
-      content::InterestGroupApiOperation interest_group_api_operation,
+      InterestGroupApiOperation interest_group_api_operation,
       content::RenderFrameHost* console_frame = nullptr) const override;
   bool IsEventReportingDestinationAttested(
       const url::Origin& destination_origin,
@@ -134,7 +134,7 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
 
   static void JoinHistogram(const char* name, Status status);
   static void JoinFledgeHistogram(
-      content::InterestGroupApiOperation interest_group_api_operation,
+      InterestGroupApiOperation interest_group_api_operation,
       Status status);
 
   // Get the Topics that are disabled by Finch.

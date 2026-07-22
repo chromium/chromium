@@ -191,8 +191,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void SendLegacyTechEvent(
       const String& type,
       mojom::blink::LegacyTechEventCodeLocationPtr code_location) override;
-  void SendPrivateAggregationRequestsForFencedFrameEvent(
-      const String& event_type) override;
+
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
       mojom::blink::RemoteFrameInterfacesFromRendererPtr

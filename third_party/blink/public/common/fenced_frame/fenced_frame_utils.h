@@ -23,6 +23,9 @@ const size_t kFencedFrameMaxBeaconLength = 64000;
 // When setting, longer strings are truncated to this length.
 const size_t kFencedFrameConfigSharedStorageContextMaxLength = 2048;
 
+// The maximum number of ad components a bid in an auction can have.
+const size_t kMaxAdAuctionAdComponents = 0;
+
 // Histogram names for fenced frame.
 inline constexpr char kFencedFrameCreationOrNavigationOutcomeHistogram[] =
     "Blink.FencedFrame.CreationOrNavigationOutcome";

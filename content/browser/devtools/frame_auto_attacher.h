@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
-#include "content/browser/interest_group/debuggable_auction_worklet_tracker.h"
 
 namespace content {
 
@@ -20,8 +19,7 @@ class RenderFrameHostImpl;
 class ServiceWorkerDevToolsAgentHost;
 
 class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
-                          public ServiceWorkerDevToolsManager::Observer,
-                          public DebuggableAuctionWorkletTracker::Observer {
+                          public ServiceWorkerDevToolsManager::Observer {
  public:
   explicit FrameAutoAttacher(DevToolsRendererChannel* renderer_channel);
   ~FrameAutoAttacher() override;
@@ -39,11 +37,6 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
                      bool* should_pause_on_start) override;
   void WorkerDestroyed(ServiceWorkerDevToolsAgentHost* host) override;
 
-  // DebuggableAuctionWorkletTracker::Observer implementation.
-  void AuctionWorkletCreated(DebuggableAuctionWorklet* worklet,
-                             bool& should_pause_on_start) override;
-
-
   void ReattachServiceWorkers();
   void UpdateFrames();
 
@@ -51,8 +44,6 @@ class FrameAutoAttacher : public protocol::RendererAutoAttacherBase,
   raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
   base::ScopedObservation<ServiceWorkerDevToolsManager, FrameAutoAttacher>
       service_worker_devtools_manager_observation_{this};
-  base::ScopedObservation<DebuggableAuctionWorkletTracker, FrameAutoAttacher>
-      debuggable_auction_worklet_worklet_devtools_manager_observation_{this};
 };
 
 }  // namespace content

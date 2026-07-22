@@ -3087,7 +3087,6 @@ _CONFIG = [
         'allowed': [
             'net::HttpCache',
             'network::features::kBrowsingTopics',
-            'network::features::kInterestGroupStorage',
             'network::features::kSharedStorageAPI',
         ]
     },

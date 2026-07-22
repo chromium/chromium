@@ -315,13 +315,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            kSetOnlyIfOverridden},
           {"FencedFramesLocalUnpartitionedDataAccess",
            raw_ref(blink::features::kFencedFramesLocalUnpartitionedDataAccess)},
-          {"Fledge", raw_ref(blink::features::kFledge)},
-          {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsOverride),
-           kSetOnlyIfOverridden},
-          {"Fledge", raw_ref(features::kPrivacySandboxAdsAPIsM1Override),
-           kSetOnlyIfOverridden},
-          {"FledgeBiddingAndAuctionServerAPI",
-           raw_ref(blink::features::kFledgeBiddingAndAuctionServer), kDefault},
+
 #if BUILDFLAG(IS_WIN)
           {"FontDataServiceForCSSLocalFonts",
            raw_ref(features::kFontDataServiceForCSSLocalFonts)},
@@ -586,16 +580,6 @@ void ResolveInvalidConfigurations() {
     WebRuntimeFeatures::EnableAttributionReporting(false);
   }
 
-  if (!base::FeatureList::IsEnabled(network::features::kInterestGroupStorage)) {
-    LOG_IF(WARNING,
-           WebRuntimeFeatures::IsAdInterestGroupAPIEnabledByRuntimeFlag())
-        << "AdInterestGroupAPI cannot be enabled in this "
-           "configuration. Use --"
-        << switches::kEnableFeatures << "="
-        << network::features::kInterestGroupStorage.name << " in addition.";
-    WebRuntimeFeatures::EnableAdInterestGroupAPI(false);
-    WebRuntimeFeatures::EnableFledge(false);
-  }
 
   // UserMediaElement cannot be enabled without the support of the
   // browser process.

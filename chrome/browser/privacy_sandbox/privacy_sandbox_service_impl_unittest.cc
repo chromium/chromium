@@ -51,7 +51,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/first_party_sets_handler.h"
-#include "content/public/browser/interest_group_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
@@ -134,39 +133,6 @@ class TestPrivacySandboxService
 
  private:
   raw_ptr<PrivacySandboxService> service_;
-};
-
-class TestInterestGroupManager : public content::InterestGroupManager {
- public:
-  void SetInterestGroupDataKeys(
-      const std::vector<InterestGroupDataKey>& data_keys) {
-    data_keys_ = data_keys;
-  }
-
-  // content::InterestGroupManager:
-  void GetAllInterestGroupJoiningOrigins(
-      base::OnceCallback<void(std::vector<url::Origin>)> callback) override {
-    NOTREACHED();
-  }
-  void GetAllInterestGroupDataKeys(
-      base::OnceCallback<void(std::vector<InterestGroupDataKey>)> callback)
-      override {
-    std::move(callback).Run(data_keys_);
-  }
-  void RemoveInterestGroupsByDataKey(InterestGroupDataKey data_key,
-                                     base::OnceClosure callback) override {
-    NOTREACHED();
-  }
-  void AddTrustedServerKeysDebugOverride(
-      TrustedServerAPIType api,
-      const url::Origin& coordinator,
-      std::string serialized_keys,
-      base::OnceCallback<void(std::optional<std::string>)> callback) override {
-    NOTREACHED();
-  }
-
- private:
-  std::vector<InterestGroupDataKey> data_keys_;
 };
 
 // Remove any user preference settings for Related Website Set related
@@ -441,9 +407,6 @@ class PrivacySandboxServiceTest : public testing::Test {
   content_settings::CookieSettings* cookie_settings() {
     return CookieSettingsFactory::GetForProfile(profile()).get();
   }
-  TestInterestGroupManager* test_interest_group_manager() {
-    return &test_interest_group_manager_;
-  }
   content::BrowsingDataRemover* browsing_data_remover() {
     return profile()->GetBrowsingDataRemover();
   }
@@ -495,10 +458,9 @@ class PrivacySandboxServiceTest : public testing::Test {
       content::BrowserContext* context) {
     return std::make_unique<PrivacySandboxServiceImpl>(
         profile(), privacy_sandbox_settings(), cookie_settings(),
-        profile()->GetPrefs(), test_interest_group_manager(), GetProfileType(),
-        browsing_data_remover(), host_content_settings_map(),
-        mock_browsing_topics_service(), first_party_sets_policy_service(),
-        mock_privacy_sandbox_countries());
+        profile()->GetPrefs(), GetProfileType(), browsing_data_remover(),
+        host_content_settings_map(), mock_browsing_topics_service(),
+        first_party_sets_policy_service(), mock_privacy_sandbox_countries());
   }
 
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -514,7 +476,6 @@ class PrivacySandboxServiceTest : public testing::Test {
 
   base::test::ScopedFeatureList outer_feature_list_;
   base::test::ScopedFeatureList inner_feature_list_;
-  TestInterestGroupManager test_interest_group_manager_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
 
   first_party_sets::ScopedMockFirstPartySetsHandler
@@ -660,98 +621,6 @@ TEST_F(PrivacySandboxShouldUsePrivacyPolicyChinaDomain,
   bool should_use_china_domain =
       privacy_sandbox_service()->ShouldUsePrivacyPolicyChinaDomain();
   ASSERT_EQ(should_use_china_domain, false);
-}
-
-TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
-  // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
-  // actions is correctly converted into a list of eTLD+1s.
-
-  using FledgeTestCase =
-      std::pair<std::vector<url::Origin>, std::vector<std::string>>;
-
-  // Items which map to the same eTLD+1 should be coalesced into a single entry.
-  FledgeTestCase test_case_1 = {
-      {url::Origin::Create(GURL("https://www.example.com")),
-       url::Origin::Create(GURL("https://example.com:8080")),
-       url::Origin::Create(GURL("http://www.example.com"))},
-      {"example.com"}};
-
-  // eTLD's should return the host instead, this is relevant for sites which
-  // are themselves on the PSL, e.g. github.io.
-  FledgeTestCase test_case_2 = {
-      {
-          url::Origin::Create(GURL("https://co.uk")),
-          url::Origin::Create(GURL("http://co.uk")),
-          url::Origin::Create(GURL("http://example.co.uk")),
-      },
-      {"co.uk", "example.co.uk"}};
-
-  // IP addresses should also return the host.
-  FledgeTestCase test_case_3 = {
-      {
-          url::Origin::Create(GURL("https://192.168.1.2")),
-          url::Origin::Create(GURL("https://192.168.1.2:8080")),
-          url::Origin::Create(GURL("https://192.168.1.3:8080")),
-      },
-      {"192.168.1.2", "192.168.1.3"}};
-
-  // Results should be alphabetically ordered.
-  FledgeTestCase test_case_4 = {{
-                                    url::Origin::Create(GURL("https://d.com")),
-                                    url::Origin::Create(GURL("https://b.com")),
-                                    url::Origin::Create(GURL("https://a.com")),
-                                    url::Origin::Create(GURL("https://c.com")),
-                                },
-                                {"a.com", "b.com", "c.com", "d.com"}};
-
-  std::vector<FledgeTestCase> test_cases = {test_case_1, test_case_2,
-                                            test_case_3, test_case_4};
-
-  for (const auto& [origins, expected] : test_cases) {
-    base::HistogramTester histogram_tester;
-    test_interest_group_manager()->SetInterestGroupDataKeys(
-        base::ToVector(origins, [](const auto& origin) {
-          return content::InterestGroupManager::InterestGroupDataKey{
-              url::Origin::Create(GURL("https://embedded.com")), origin};
-        }));
-
-    bool callback_called = false;
-    auto callback = base::BindLambdaForTesting(
-        [&](std::vector<std::string> items_for_display) {
-          ASSERT_EQ(items_for_display.size(), expected.size());
-          for (size_t i = 0; i < items_for_display.size(); i++) {
-            EXPECT_EQ(expected[i], items_for_display[i]);
-          }
-          callback_called = true;
-        });
-
-    privacy_sandbox_service()->GetFledgeJoiningEtldPlusOneForDisplay(callback);
-    EXPECT_TRUE(callback_called);
-    histogram_tester.ExpectUniqueSample(
-        "PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed", true,
-        origins.size());
-  }
-}
-
-TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne_InvalidTopFrame) {
-  // Confirm that when an invalid top frame is received, the appropriate metric
-  // is recorded, and the returned list is empty.
-  base::HistogramTester histogram_tester;
-  auto missing_top_frame = content::InterestGroupManager::InterestGroupDataKey{
-      url::Origin::Create(GURL("https://embedded.com")), url::Origin()};
-  test_interest_group_manager()->SetInterestGroupDataKeys({missing_top_frame});
-
-  bool callback_called = false;
-  auto callback = base::BindLambdaForTesting(
-      [&](std::vector<std::string> items_for_display) {
-        ASSERT_EQ(items_for_display.size(), 0u);
-        callback_called = true;
-      });
-
-  privacy_sandbox_service()->GetFledgeJoiningEtldPlusOneForDisplay(callback);
-  EXPECT_TRUE(callback_called);
-  histogram_tester.ExpectUniqueSample(
-      "PrivacySandbox.ProtectedAudience.JoiningTopFrameDisplayed", false, 1);
 }
 
 TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {

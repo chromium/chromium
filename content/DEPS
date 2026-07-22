@@ -9,7 +9,6 @@ include_rules = [
   "+content/grit",
   "+content/public/common",
   "+content/public/test",
-  "+content/services/auction_worklet/public",
   "+content/test",
   "+blink/public/resources/grit",
   "+cc",

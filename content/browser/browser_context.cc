@@ -495,10 +495,6 @@ BrowserContext::GetFederatedIdentityPermissionContext() {
   return impl()->GetFederatedPermissionContext();
 }
 
-KAnonymityServiceDelegate* BrowserContext::GetKAnonymityServiceDelegate() {
-  return nullptr;
-}
-
 OriginTrialsControllerDelegate*
 BrowserContext::GetOriginTrialsControllerDelegate() {
   return nullptr;

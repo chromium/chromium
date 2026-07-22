@@ -42,11 +42,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAIPageContentIncludePopupWindows);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kAIPageContentMissingSubframesFailSilently);
 
-// Controls the capturing of the Ad-Auction-Signals header, and the maximum
-// allowed Ad-Auction-Signals header value.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdAuctionSignals);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
-                                               kAdAuctionSignalsMaxSizeBytes);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAudioWorkletJSDenormalEnabler);
 
@@ -529,176 +524,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kFilteringScrollPredictionFilterParam);
 
-// FLEDGE ad serving runtime flag/JS API.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledge);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeBiddingAndAuctionServer);
-// Public key URL to use for the default bidding and auction Coordinator.
-// Overrides the JSON config for the default coordinator if both are specified.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
-                                               kFledgeBiddingAndAuctionKeyURL);
-// JSON config specifying supported coordinator origins and their public key
-// URLs.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kFledgeBiddingAndAuctionKeyConfig);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeOriginScopedKeys);
-// JSON config specifying supported coordinator origins and their public key
-// URLs.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
-                                               kFledgeOriginScopedKeyConfig);
 
 // Block partial responses (206, 416) for requests without a Range header.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlockPartialResponseWithoutRange);
-
-// Configures FLEDGE to consider k-anonymity. If both
-// kFledgeConsiderKAnonymity and kFledgeEnforceKAnonymity are on it will be
-// enforced; if only kFledgeConsiderKAnonymity is on it will be simulated.
-//
-// Turning on kFledgeEnforceKAnonymity alone does nothing.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeConsiderKAnonymity);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeEnforceKAnonymity);
-
-// Configures a limit on the number of `selectableBuyerAndSellerReportingIds`
-// per ad. This is implemented with two parameters, a hard limit and a soft
-// limit, intended to ensure that interest groups joined or updated before a
-// reduction in the limit don't immediately become unusable. The hard limit is
-// enforced both when an interest group is joined or updated, and also anytime
-// the interest group is deserialized. The soft limit is only enforced when an
-// interest group is joined or updated. To execute a reduction in the limit, the
-// soft limit would first be changed to reflect the new value, and only after
-// the "maximum interest group TTL" amount of time has passed, the hard limit
-// would be lowered to match. Except during such a reduction, the hard limit and
-// soft limits should always match. Increases in the limit can be applied to
-// both the hard and soft limits simultaneously. The hard limit should always be
-// greater than or equal to the soft limit. For each parameter, a negative value
-// indicates that that no limit should be enforced.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFledgeLimitSelectableBuyerAndSellerReportingIds);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeSelectableBuyerAndSellerReportingIdsHardLimit);
-
-// Controls the max interest group lifetime in milliseconds. If
-// kFledgeMaxGroupLifetimeFeature is enabled, then the max interest group
-// lifetime will be kFledgeMaxGroupLifetimeFeature; otherwise, it will be 30
-// days.
-//
-// *WARNING*: Some UMA histograms assume a particular max lifetime for the
-// purposes of choosing appropriate bucketing, such as
-// Ads.InterestGroup.Auction.GroupFreshness*. As bucketing should not be changed
-// for an existing metric, consider adding a new metric with new bucketing if
-// increasing this value.
-//
-// NOTE: This value is only enforced when interest groups are joined -- the
-// lifetimes of groups already in the database will not be affected.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeMaxGroupLifetimeFeature);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                                               kFledgeMaxGroupLifetime);
-// The join/bid/win metadata storage max history length is controlled by a
-// separate feature param. This is because metadata is included in B&A requests
-// sent to servers, so increasing the length of metadata history sent increases
-// the number of bytes sent over the network, necessitating special care.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kFledgeMaxGroupLifetimeForMetadata);
-
-// Decide whether to enable forDebuggingOnly report sampling based on user's
-// third party cookie setting.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFledgeEnableSampleDebugReportOnCookieSetting);
-
-// Run sampling of forDebuggingOnly reports and let generateBid() and scoreAd()
-// know fDO's lockout/cooldown status through their browser signals, to allow
-// ad techs experimenting with and adapting to the algorithm.
-// But whether sending all or only sampled forDebuggingOnly reports depends on
-// flag kFledgeEnableFilteringDebugReportStartingFrom.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                                               kFledgeDebugReportLockout);
-// Prevent ad techs who accidentally call the API repeatedly for all users,
-// from locking themselves out of sending any more debug reports for years.
-// This is accomplished by most of the time putting that ad tech in a shorter
-// cooldown period, and only some time (e.g., 10% of the time) putting it in a
-// restricted cooldown period.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kFledgeDebugReportRestrictedCooldown);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                                               kFledgeDebugReportShortCooldown);
-// Gives a 1/(kFledgeDebugReportSamplingRandomMax+1) chance of allowing sending
-// forDebuggingOnly reports.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeDebugReportSamplingRandomMax);
-// Gives a 1/(kFledgeDebugReportSamplingRestrictedCooldownRandomMax+1) chance of
-// putting an ad tech in a restricted cooldown period.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeDebugReportSamplingRestrictedCooldownRandomMax);
-// Sets the time when to enable filtering debug reports. It's the time delta
-// since windows epoch. Lockout and cooldown collected before this time will be
-// ignored. This avoids locking out ad techs who used forDebuggingOnly API
-// before filtering was enabled. Set to zero to disable filtering debug reports.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    base::TimeDelta,
-    kFledgeEnableFilteringDebugReportStartingFrom);
-
-// If kFledgeCustomMaxAuctionAdComponents is enabled, the limit on number of
-// component ads will be taken from `kFledgeCustomMaxAuctionAdComponentsValue`
-// (up to kMaxAdAuctionAdComponentsConfigLimit) rather than default.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeCustomMaxAuctionAdComponentsValue);
-
-// Feature params for feature kFledgeRealTimeReporting.
-// Epsilon of FLEDGE real time reporting's Rappor noise algorithm.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
-                                               kFledgeRealTimeReportingEpsilon);
-// Total number of buckets supported for FLEDGE real time reporting. Supported
-// buckets will be [0, kFledgeRealTimeReportingNumBuckets). Platform
-// contribution buckets will start from kFledgeRealTimeReportingNumBuckets.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeRealTimeReportingNumBuckets);
-// The priorityWeight of FLEDGE real time reporting's platform contributions.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    double,
-    kFledgeRealTimeReportingPlatformContributionPriority);
-// The number of FLEDGE real time reports (`kFledgeRealTimeReportingMaxReports`)
-// allowed to be sent per reporting origin per page per
-// `kFledgeRealTimeReportingWindow`.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                                               kFledgeRealTimeReportingWindow);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeRealTimeReportingMaxReports);
-
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFledgeEnforcePermissionPolicyContributeOnEvent);
-
-// Feature flag to disable locally hosted ad auction.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeDisableLocalAdsAuctions);
-
-// Feature flag to limit on the number of
-// `selectableBuyerAndSellerReportingIds` for which the browser fetches k-anon
-// keys.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    int,
-    kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit);
-
-// Feature flag to truncate the set of `selectableBuyerAndSellerReportingIds`
-// to only those for which k-anon status was fetched, as limited by the
-// kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit parameter
-// defined above.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
@@ -1633,12 +1461,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kPrivateAggregationApiEnabledInSharedStorage);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
-    kPrivateAggregationApiEnabledInProtectedAudience);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
     kPrivateAggregationApiDebugModeEnabledAtAll);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
 
 // If set, HTMLDocumentParser processes data immediately rather than after a
 // delay. This is further controlled by the feature params starting with the

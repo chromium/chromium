@@ -345,10 +345,6 @@ void NetworkServiceClient::OnSharedStorageHeaderReceived(
   std::move(callback).Run();
 }
 
-void NetworkServiceClient::OnAdAuctionEventRecordHeaderReceived(
-    network::AdAuctionEventRecord event_record,
-    const std::optional<url::Origin>& top_frame_origin) {}
-
 void NetworkServiceClient::Clone(
     mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
         observer) {

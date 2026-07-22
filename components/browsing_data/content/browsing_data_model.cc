@@ -39,7 +39,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -50,8 +49,6 @@ namespace {
 // imperceptible, but non-0 amount of space, such as Trust Tokens.
 constexpr int kSmallAmountOfDataInBytes = 100;
 
-// An estimate of storage size of an Interest Group object.
-constexpr int kModerateAmountOfDataInBytes = 1024;
 
 // Visitor which returns the appropriate data owner for a given `data_key`
 // and `storage_type`.
@@ -128,13 +125,6 @@ GetDataOwner::GetOwningOriginOrHost<content::SessionStorageUsageInfo>(
   return GetOwnerBasedOnScheme(session_storage_usage_info.storage_key.origin());
 }
 
-template <>
-BrowsingDataModel::DataOwner GetDataOwner::GetOwningOriginOrHost<
-    content::InterestGroupManager::InterestGroupDataKey>(
-    const content::InterestGroupManager::InterestGroupDataKey& data_key) const {
-  CHECK_EQ(BrowsingDataModel::StorageType::kInterestGroup, storage_type_);
-  return GetOwnerBasedOnScheme(data_key.owner);
-}
 
 template <>
 BrowsingDataModel::DataOwner
@@ -278,19 +268,6 @@ void StorageRemoverHelper::Visitor::operator()<browsing_data::SharedWorkerInfo>(
   }
 }
 
-template <>
-void StorageRemoverHelper::Visitor::operator()<
-    content::InterestGroupManager::InterestGroupDataKey>(
-    const content::InterestGroupManager::InterestGroupDataKey& data_key) {
-  CHECK(types.Has(BrowsingDataModel::StorageType::kInterestGroup));
-  helper->storage_partition_->GetInterestGroupManager()
-      ->RemoveInterestGroupsByDataKey(
-          data_key, base::BindOnce(
-                        [](base::OnceClosure complete_callback) {
-                          std::move(complete_callback).Run();
-                        },
-                        helper->GetCompleteCallback()));
-}
 
 template <>
 void StorageRemoverHelper::Visitor::operator()<
@@ -408,18 +385,6 @@ void OnTrustTokenIssuanceInfoLoaded(
 }
 
 
-void OnInterestGroupsLoaded(
-    BrowsingDataModel* model,
-    base::OnceClosure loaded_callback,
-    std::vector<content::InterestGroupManager::InterestGroupDataKey>
-        interest_groups) {
-  for (const auto& data_key : interest_groups) {
-    model->AddBrowsingData(data_key,
-                           BrowsingDataModel::StorageType::kInterestGroup,
-                           kModerateAmountOfDataInBytes);
-  }
-  std::move(loaded_callback).Run();
-}
 
 void OnQuotaStorageLoaded(
     BrowsingDataModel* model,
@@ -513,7 +478,6 @@ std::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
   std::visit(
       absl::Overload{
           [&](const url::Origin&) {},
-          [&](const content::InterestGroupManager::InterestGroupDataKey) {},
           [&](const blink::StorageKey& storage_key) {
             if (storage_key.IsThirdPartyContext()) {
               top_level_site = storage_key.top_level_site();
@@ -583,8 +547,6 @@ const url::Origin BrowsingDataModel::GetOriginForDataKey(
   return std::visit(
       absl::Overload{
           [](const url::Origin& origin) { return origin; },
-          [](const content::InterestGroupManager::InterestGroupDataKey
-                 interest_group_key) { return interest_group_key.owner; },
           [](const blink::StorageKey& storage_key) {
             return storage_key.origin();
           },
@@ -854,7 +816,6 @@ bool BrowsingDataModel::IsStorageTypeCookieLike(
 
   switch (storage_type) {
     case BrowsingDataModel::StorageType::kTrustTokens:
-    case BrowsingDataModel::StorageType::kInterestGroup:
     case BrowsingDataModel::StorageType::kSharedDictionary:
       return false;
     case BrowsingDataModel::StorageType::kSharedStorage:
@@ -893,8 +854,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
       network::features::kCompressionDictionaryTransport);
-  bool is_interest_group_enabled =
-      base::FeatureList::IsEnabled(network::features::kInterestGroupStorage);
 
   base::RepeatingClosure completion =
       base::BindRepeating([](const base::OnceClosure&) {},
@@ -926,15 +885,6 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
         base::BindOnce(&OnSharedDictionaryUsageLoaded, this, completion));
   }
 
-  // Interest Groups
-  if (is_interest_group_enabled) {
-    content::InterestGroupManager* manager =
-        storage_partition_->GetInterestGroupManager();
-    if (manager) {
-      manager->GetAllInterestGroupDataKeys(
-          base::BindOnce(&OnInterestGroupsLoaded, this, completion));
-    }
-  }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   storage_partition_->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(

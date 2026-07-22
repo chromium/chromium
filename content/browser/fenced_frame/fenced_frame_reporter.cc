@@ -40,7 +40,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
-#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -206,42 +205,15 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
   return reporter;
 }
 
-scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    BrowserContext* browser_context,
-    bool direct_seller_is_seller,
-    const url::Origin& main_frame_origin,
-    const std::optional<std::vector<url::Origin>>& allowed_reporting_origins) {
-  scoped_refptr<FencedFrameReporter> reporter =
-      base::MakeRefCounted<FencedFrameReporter>(
-          base::PassKey<FencedFrameReporter>(),
-          PrivacySandboxInvokingAPI::kProtectedAudience,
-          std::move(url_loader_factory), browser_context, main_frame_origin,
-          allowed_reporting_origins);
-  reporter->direct_seller_is_seller_ = direct_seller_is_seller;
-  reporter->reporting_metadata_.emplace(
-      blink::FencedFrame::ReportingDestination::kBuyer,
-      ReportingDestinationInfo());
-  reporter->reporting_metadata_.emplace(
-      blink::FencedFrame::ReportingDestination::kSeller,
-      ReportingDestinationInfo());
-  reporter->reporting_metadata_.emplace(
-      blink::FencedFrame::ReportingDestination::kComponentSeller,
-      ReportingDestinationInfo());
-  return reporter;
-}
-
 FencedFrameReporter::FencedFrameReporter(
     base::PassKey<FencedFrameReporter> pass_key,
     PrivacySandboxInvokingAPI invoking_api,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     BrowserContext* browser_context,
-    const url::Origin& main_frame_origin,
-    const std::optional<std::vector<url::Origin>>& allowed_reporting_origins)
+    const url::Origin& main_frame_origin)
     : url_loader_factory_(std::move(url_loader_factory)),
       browser_context_(browser_context),
       main_frame_origin_(main_frame_origin),
-      allowed_reporting_origins_(allowed_reporting_origins),
       invoking_api_(invoking_api) {
   DCHECK(url_loader_factory_);
   DCHECK(browser_context_);
@@ -290,16 +262,6 @@ bool FencedFrameReporter::SendReport(
     FrameTreeNodeId initiator_frame_tree_node_id,
     std::optional<int64_t> navigation_id) {
   DCHECK(request_initiator_frame);
-
-  if (reporting_destination ==
-      blink::FencedFrame::ReportingDestination::kDirectSeller) {
-    if (direct_seller_is_seller_) {
-      reporting_destination = blink::FencedFrame::ReportingDestination::kSeller;
-    } else {
-      reporting_destination =
-          blink::FencedFrame::ReportingDestination::kComponentSeller;
-    }
-  }
   auto it = reporting_metadata_.find(reporting_destination);
   // Check metadata registration for given destination. If there's no map, or
   // the map is empty, can't send a request. An entry with a null (not empty)
@@ -443,81 +405,6 @@ bool FencedFrameReporter::SendReportInternal(
           "This frame attempted to send a report to a custom destination URL "
           "with macro substitution, which is not supported by the API that "
           "created this frame's fenced frame config.";
-      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
-      return false;
-    }
-
-    // If there is no allowlist, or the allowlist is empty, provide a more
-    // specific error message.
-    if (!allowed_reporting_origins_.has_value() ||
-        allowed_reporting_origins_->empty()) {
-      error_message =
-          "This frame attempted to send a report to a custom destination URL "
-          "with macro substitution, but no origins are allowed by its "
-          "allowlist.";
-      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
-      return false;
-    }
-
-    // If the origin allowlist has previously been violated, this feature is
-    // disabled for the lifetime of the FencedFrameReporter. This prevents
-    // an interest group from encoding cross-site data about a user in binary
-    // with its choices of allowed/disallowed origins.
-    if (attempted_custom_url_report_to_disallowed_origin_) {
-      error_message =
-          "This frame attempted to send a report to a custom destination URL "
-          "with macro substitution, but this functionality is disabled because "
-          "a request was previously attempted to a disallowed origin.";
-      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
-      return false;
-    }
-
-    const GURL& original_url = std::get<DestinationURLEvent>(event_variant).url;
-    if (!original_url.is_valid() || !original_url.SchemeIs(url::kHttpsScheme)) {
-      attempted_custom_url_report_to_disallowed_origin_ = true;
-      error_message =
-          "This frame attempted to send a report to an invalid custom "
-          "destination URL. No further reports to custom destination URLs will "
-          "be allowed for this fenced frame config.";
-      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
-      return false;
-    }
-
-    // Substitute macros in the specified URL using the macros.
-    destination_url = GURL(SubstituteMappedStrings(
-        original_url.spec(),
-        reporting_destination_info.reporting_ad_macros.value()));
-    if (!destination_url.is_valid() ||
-        !destination_url.SchemeIs(url::kHttpsScheme)) {
-      attempted_custom_url_report_to_disallowed_origin_ = true;
-      error_message =
-          "This frame attempted to send a report to a custom destination URL "
-          "that is invalid after macro substitution. No further reports to "
-          "custom destination URLs will be allowed for this fenced frame "
-          "config.";
-      console_message_level = blink::mojom::ConsoleMessageLevel::kError;
-      return false;
-    }
-
-    // Check whether the destination URL has an allowed origin.
-    url::Origin destination_origin = url::Origin::Create(destination_url);
-    bool is_allowed_origin = false;
-    for (auto& origin : allowed_reporting_origins_.value()) {
-      if (origin.IsSameOriginWith(destination_origin)) {
-        is_allowed_origin = true;
-        break;
-      }
-    }
-
-    // If the destination URL has a disallowed origin, disable this feature for
-    // the lifetime of the FencedFrameReporter and return.
-    if (!is_allowed_origin) {
-      attempted_custom_url_report_to_disallowed_origin_ = true;
-      error_message =
-          "This frame attempted to send a report to a custom destination URL "
-          "with macro substitution to a disallowed origin. No further reports "
-          "to custom destination URLs will be allowed for this fenced frame "
-          "config.";
       console_message_level = blink::mojom::ConsoleMessageLevel::kError;
       return false;
     }

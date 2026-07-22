@@ -117,8 +117,7 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
     return;
   }
 
-  if (resource_request_in.ad_auction_headers &&
-      !base::FeatureList::IsEnabled(network::features::kInterestGroupStorage)) {
+  if (resource_request_in.ad_auction_headers) {
     loader_factory_receivers_.ReportBadMessage(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): "

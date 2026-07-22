@@ -581,23 +581,6 @@ component("shared_storage_support") {
   defines = [ "IS_NETWORK_CPP_SHARED_STORAGE_IMPL" ]
 }
 
-component("ad_auction_support") {
-  sources = [
-    "ad_auction/event_record.cc",
-    "ad_auction/event_record.h",
-    "ad_auction/event_record_mojom_traits.cc",
-    "ad_auction/event_record_mojom_traits.h",
-  ]
-  public_deps = [
-    "//base",
-    "//net",
-    "//services/network/public/mojom:mojom_ad_auction",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  defines = [ "IS_NETWORK_CPP_AD_AUCTION_IMPL" ]
-}
-
 # This component is separate from cpp_base as it is a dependency of
 # //services/network/public/mojom:cookies_mojom.
 component("schemeful_site_mojom_support") {
@@ -713,7 +696,6 @@ component("cpp_base") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
-    ":ad_auction_support",
     ":connection_allowlist",
     ":cookies_mojom_support",
     ":crash_keys",
@@ -818,8 +800,6 @@ source_set("tests") {
   testonly = true
 
   sources = [
-    "ad_auction/event_record_mojom_traits_unittest.cc",
-    "ad_auction/event_record_unittest.cc",
     "avail_language_header_parser_unittest.cc",
     "browsing_topics_parser_unittest.cc",
     "client_hints_unittest.cc",
@@ -923,7 +903,6 @@ source_set("tests") {
   }
 
   deps = [
-    ":ad_auction_support",
     ":cpp",
     ":shared_storage_support",
     ":test_interfaces",
@@ -936,7 +915,6 @@ source_set("tests") {
     "//services/network:network_service",
     "//services/network:test_support",
     "//services/network/public/cpp/cert_verifier:cert_verifier_tests",
-    "//services/network/public/mojom:mojom_ad_auction",
     "//services/network/public/mojom:mojom_permissions_policy",
     "//testing/gtest",
     "//third_party/fuzztest",

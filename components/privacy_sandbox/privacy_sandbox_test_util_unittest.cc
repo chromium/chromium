@@ -359,10 +359,10 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifyIsFledgeAllowedOutputKey) {
   url::Origin kFledgeAuctionPartyOrigin =
       url::Origin::Create(GURL("https://fledge.com"));
 
-  EXPECT_CALL(
-      *mock_privacy_sandbox_settings(),
-      IsFledgeAllowed(TopFrameOrigin(), kFledgeAuctionPartyOrigin,
-                      content::InterestGroupApiOperation::kJoin, nullptr))
+  EXPECT_CALL(*mock_privacy_sandbox_settings(),
+              IsFledgeAllowed(TopFrameOrigin(), kFledgeAuctionPartyOrigin,
+                              privacy_sandbox::InterestGroupApiOperation::kJoin,
+                              nullptr))
       .WillOnce(testing::Return(true));
 
   CheckOutput({{InputKey::kFledgeAuctionPartyOrigin, kFledgeAuctionPartyOrigin},

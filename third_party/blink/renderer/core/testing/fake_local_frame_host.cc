@@ -268,9 +268,6 @@ void FakeLocalFrameHost::SendLegacyTechEvent(
     const String& type,
     mojom::blink::LegacyTechEventCodeLocationPtr code_location) {}
 
-void FakeLocalFrameHost::SendPrivateAggregationRequestsForFencedFrameEvent(
-    const String& event_type) {}
-
 void FakeLocalFrameHost::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
     mojom::blink::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,

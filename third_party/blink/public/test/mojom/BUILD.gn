@@ -40,7 +40,6 @@ mojom("modules_test_automation") {
     "compute_pressure/web_pressure_manager_automation.test-mojom",
     "device_posture/device_posture_provider_automation.test-mojom",
     "permissions/permission_automation.test-mojom",
-    "privacy_sandbox/web_privacy_sandbox_automation.test-mojom",
     "sensor/web_sensor_provider_automation.test-mojom",
     "webid/federated_auth_request_automation.test-mojom",
   ]

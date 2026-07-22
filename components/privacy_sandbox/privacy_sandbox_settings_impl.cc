@@ -134,25 +134,25 @@ void PrivacySandboxSettingsImpl::JoinHistogram(const char* name,
 
 // static
 void PrivacySandboxSettingsImpl::JoinFledgeHistogram(
-    content::InterestGroupApiOperation interest_group_api_operation,
+    InterestGroupApiOperation interest_group_api_operation,
     Status status) {
   switch (interest_group_api_operation) {
-    case content::InterestGroupApiOperation::kJoin:
+    case InterestGroupApiOperation::kJoin:
       JoinHistogram(kIsFledgeJoinAllowedHistogram, status);
       break;
-    case content::InterestGroupApiOperation::kLeave:
+    case InterestGroupApiOperation::kLeave:
       JoinHistogram(kIsFledgeLeaveAllowedHistogram, status);
       break;
-    case content::InterestGroupApiOperation::kUpdate:
+    case InterestGroupApiOperation::kUpdate:
       JoinHistogram(kIsFledgeUpdateAllowedHistogram, status);
       break;
-    case content::InterestGroupApiOperation::kSell:
+    case InterestGroupApiOperation::kSell:
       JoinHistogram(kIsFledgeSellAllowedHistogram, status);
       break;
-    case content::InterestGroupApiOperation::kBuy:
+    case InterestGroupApiOperation::kBuy:
       JoinHistogram(kIsFledgeBuyAllowedHistogram, status);
       break;
-    case content::InterestGroupApiOperation::kRead:
+    case InterestGroupApiOperation::kRead:
       JoinHistogram(kIsFledgeReadAllowedHistogram, status);
       break;
   }
@@ -495,7 +495,7 @@ bool PrivacySandboxSettingsImpl::IsEventReportingDestinationAttested(
 bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& auction_party,
-    content::InterestGroupApiOperation interest_group_api_operation,
+    InterestGroupApiOperation interest_group_api_operation,
     content::RenderFrameHost* console_frame) const {
   // Check for attestation on the auction party's site. The auction party is a
   // variety of entities during the auction, all of which need to be attested.
@@ -514,8 +514,7 @@ bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
     return false;
   }
 
-  if (interest_group_api_operation ==
-          content::InterestGroupApiOperation::kJoin &&
+  if (interest_group_api_operation == InterestGroupApiOperation::kJoin &&
       !IsFledgeJoiningAllowed(top_frame_origin)) {
     JoinFledgeHistogram(interest_group_api_operation,
                         Status::kJoiningTopFrameBlocked);

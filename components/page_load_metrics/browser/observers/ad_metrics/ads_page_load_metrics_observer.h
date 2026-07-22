@@ -161,10 +161,6 @@ class AdsPageLoadMetricsObserver
   void OnMainFrameAdRectsChanged(
       const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) override;
   void OnSubFrameDeleted(content::FrameTreeNodeId frame_tree_node_id) override;
-  void OnAdAuctionComplete(bool is_server_auction,
-                           bool is_on_device_auction,
-                           content::AuctionResult result) override;
-
   base::TimeDelta GetTotalAdCpuTime() const;
   int64_t GetTotalAdNetworkBytes() const;
 

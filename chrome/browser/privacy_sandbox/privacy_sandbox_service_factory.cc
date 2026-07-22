@@ -83,7 +83,6 @@ PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<PrivacySandboxServiceImpl>(
       profile, PrivacySandboxSettingsFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs(),
-      profile->GetDefaultStoragePartition()->GetInterestGroupManager(),
       GetProfileType(profile),
       (!profile->IsGuestSession() || profile->IsOffTheRecord())
           ? profile->GetBrowsingDataRemover()

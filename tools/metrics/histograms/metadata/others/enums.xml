@@ -26,13 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AuctionReportingIdField">
-  <int value="0" label="None"/>
-  <int value="1" label="InterestGroupName"/>
-  <int value="2" label="BuyerReportingId"/>
-  <int value="3" label="BuyerAndSellerReportingId"/>
-</enum>
-
 <enum name="BooleanRelroAvailableImmediately">
   <int value="0" label="Available Later"/>
   <int value="1" label="Available Immediately"/>
@@ -288,17 +281,6 @@ chromium-metrics-reviews@google.com.
              RELRO"/>
   <int value="7" label="Using shared RELRO failed: invalid RELRO information"/>
   <int value="8" label="Using shared RELRO failed: load address was reset"/>
-</enum>
-
-<enum name="RequestWorkletServiceOutcome">
-  <summary>
-    The outcome of AuctionProcessManager::RequestWorkletService().
-  </summary>
-  <int value="0" label="Hit process limit"/>
-  <int value="1" label="Used shared process"/>
-  <int value="2" label="Used existing dedicated process"/>
-  <int value="3" label="Created new dedicated process"/>
-  <int value="4" label="Used idle process"/>
 </enum>
 
 <enum name="SalientImageUrlFetchResult">

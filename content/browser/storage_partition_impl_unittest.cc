@@ -59,9 +59,6 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
-#include "content/browser/interest_group/interest_group_manager_impl.h"
-#include "content/browser/interest_group/interest_group_permissions_cache.h"
-#include "content/browser/interest_group/interest_group_permissions_checker.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
@@ -81,7 +78,6 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
-#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
@@ -103,9 +99,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -210,114 +204,6 @@ class RemoveCookieTester {
   raw_ptr<StoragePartition> storage_partition_;
 };
 
-class RemoveInterestGroupTester {
- public:
-  explicit RemoveInterestGroupTester(StoragePartitionImpl* storage_partition)
-      : storage_partition_(storage_partition) {}
-
-  RemoveInterestGroupTester(const RemoveInterestGroupTester&) = delete;
-  RemoveInterestGroupTester& operator=(const RemoveInterestGroupTester&) =
-      delete;
-
-  // Returns true, if the given interest group owner has any interest groups in
-  // InterestGroupStorage.
-  bool ContainsInterestGroupOwner(const url::Origin& origin) {
-    get_interest_group_success_ = false;
-    EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
-    base::RunLoop loop;
-    static_cast<InterestGroupManagerImpl*>(
-        storage_partition_->GetInterestGroupManager())
-        ->GetInterestGroupsForOwner(
-            /*devtools_auction_id=*/std::nullopt, origin,
-            base::BindOnce(
-                &RemoveInterestGroupTester::GetInterestGroupsCallback,
-                base::Unretained(this), loop.QuitClosure()));
-    loop.Run();
-    return get_interest_group_success_;
-  }
-
-  bool ContainsInterestGroupKAnon(const url::Origin& origin) {
-    contains_kanon_ = false;
-    EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
-    base::RunLoop loop;
-    static_cast<InterestGroupManagerImpl*>(
-        storage_partition_->GetInterestGroupManager())
-        ->GetLastKAnonymityReported(
-            k_anon_key,
-            base::BindOnce(
-                &RemoveInterestGroupTester::GetLastKAnonymityReportedCallback,
-                base::Unretained(this), loop.QuitClosure()));
-    loop.Run();
-    return contains_kanon_;
-  }
-
-  void AddInterestGroup(const url::Origin& origin) {
-    EXPECT_TRUE(storage_partition_->GetInterestGroupManager());
-    blink::InterestGroup group;
-    group.owner = origin;
-    group.name = "Name";
-    group.expiry = base::Time::Now() + base::Days(30);
-    group.bidding_url = origin.GetURL().Resolve("/bidding.js");
-    group.ads.emplace();
-    group.ads->push_back(blink::InterestGroup::Ad(
-        GURL("https://owner.example.com/ad1"), "metadata"));
-
-    InterestGroupManagerImpl* interest_group_manager =
-        static_cast<InterestGroupManagerImpl*>(
-            storage_partition_->GetInterestGroupManager());
-    interest_group_manager->JoinInterestGroup(group, origin.GetURL());
-
-    // Update the K-anonymity so that we can tell when it gets removed.
-    k_anon_key = HashedKAnonKeyForAdBid(
-        group, GURL("https://owner.example.com/ad1").spec());
-    interest_group_manager->UpdateLastKAnonymityReported(k_anon_key);
-  }
-
-  void AddClick(const url::Origin& provider_origin,
-                const url::Origin& eligible_origin) {
-    ASSERT_TRUE(storage_partition_->GetInterestGroupManager());
-    network::AdAuctionEventRecord event;
-    event.type = network::AdAuctionEventRecord::Type::kClick;
-    event.providing_origin = provider_origin;
-    event.eligible_origins.push_back(eligible_origin);
-    InterestGroupManagerImpl* interest_group_manager =
-        static_cast<InterestGroupManagerImpl*>(
-            storage_partition_->GetInterestGroupManager());
-    interest_group_manager->RecordViewClickForTesting(std::move(event));
-  }
-
-  std::optional<bool> ClickInDb(const url::Origin& provider_origin,
-                                const url::Origin& eligible_origin) {
-    base::test::TestFuture<std::optional<bool>> future;
-    InterestGroupManagerImpl* interest_group_manager =
-        static_cast<InterestGroupManagerImpl*>(
-            storage_partition_->GetInterestGroupManager());
-    interest_group_manager->CheckViewClickInfoInDbForTesting(
-        /*provider_origin=*/provider_origin,
-        /*eligible_origin=*/eligible_origin, future.GetCallback());
-    return future.Get();
-  }
-
- private:
-  void GetInterestGroupsCallback(base::OnceClosure quit_closure,
-                                 scoped_refptr<StorageInterestGroups> groups) {
-    get_interest_group_success_ = groups->size() > 0;
-    std::move(quit_closure).Run();
-  }
-
-  void GetLastKAnonymityReportedCallback(
-      base::OnceClosure quit_closure,
-      std::optional<base::Time> last_reported) {
-    contains_kanon_ =
-        last_reported.has_value() && last_reported.value() > base::Time::Min();
-    std::move(quit_closure).Run();
-  }
-
-  bool get_interest_group_success_ = false;
-  bool contains_kanon_ = false;
-  std::string k_anon_key;
-  raw_ptr<StoragePartitionImpl> storage_partition_;
-};
 
 class RemoveLocalStorageTester {
  public:
@@ -706,57 +592,6 @@ bool FilterURL(const GURL& filter_url, const GURL& url) {
   return url == filter_url;
 }
 
-void ClearInterestGroups(content::StoragePartition* partition,
-                         const base::Time delete_begin,
-                         const base::Time delete_end,
-                         base::RunLoop* run_loop) {
-  partition->ClearData(StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS,
-                       blink::StorageKey(), delete_begin, delete_end,
-                       run_loop->QuitClosure());
-}
-
-void ClearInterestGroupsViewClick(content::StoragePartition* partition,
-                                  const url::Origin& origin,
-                                  bool user_action,
-                                  base::RunLoop* run_loop) {
-  partition->ClearData(
-      StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
-          (user_action
-               ? StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR
-               : 0),
-      blink::StorageKey::CreateFirstParty(origin), base::Time(),
-      base::Time::Max(), run_loop->QuitClosure());
-}
-
-void ClearInterestGroupsViewClickOnRunLoop(content::StoragePartition* partition,
-                                           const url::Origin& origin,
-                                           bool user_action) {
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ClearInterestGroupsViewClick, partition,
-                                origin, user_action, &run_loop));
-  run_loop.Run();
-}
-
-void ClearInterestGroupsAndKAnon(content::StoragePartition* partition,
-                                 const base::Time delete_begin,
-                                 const base::Time delete_end,
-                                 base::RunLoop* run_loop) {
-  partition->ClearData(
-      StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS |
-          StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL,
-      blink::StorageKey(), delete_begin, delete_end, run_loop->QuitClosure());
-}
-
-void ClearInterestGroupPermissionsCache(content::StoragePartition* partition,
-                                        const base::Time delete_begin,
-                                        const base::Time delete_end,
-                                        base::RunLoop* run_loop) {
-  partition->ClearData(
-      StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE,
-      blink::StorageKey(), delete_begin, delete_end, run_loop->QuitClosure());
-}
-
 bool FilterMatchesCookie(const CookieDeletionFilterPtr& filter,
                          const net::CanonicalCookie& cookie) {
   return network::DeletionFilterToInfo(filter.Clone())
@@ -772,7 +607,6 @@ class StoragePartitionImplTest : public testing::Test {
   explicit StoragePartitionImplTest(
       bool is_local_storage_sqlite_enabled = false) {
     std::vector<base::test::FeatureRef> enabled_features{
-        network::features::kInterestGroupStorage,
         network::features::kSharedStorageAPI,
         blink::features::kDeclarativePerformanceObserver};
     std::vector<base::test::FeatureRef> disabled_features;
@@ -1224,136 +1058,6 @@ TEST_F(StoragePartitionImplTest, RemoveCookieWithDeleteInfo) {
                                 CookieDeletionFilter::New(), &run_loop2));
   run_loop2.RunUntilIdle();
   EXPECT_FALSE(tester.ContainsCookie(kOrigin));
-}
-
-TEST_F(StoragePartitionImplTest, RemoveInterestGroupForever) {
-  const url::Origin kOrigin = url::Origin::Create(GURL("https://host1:1/"));
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-
-  RemoveInterestGroupTester tester(partition);
-  tester.AddInterestGroup(kOrigin);
-  ASSERT_TRUE(tester.ContainsInterestGroupOwner(kOrigin));
-
-  {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ClearInterestGroups, partition, base::Time(),
-                                  base::Time::Max(), &run_loop));
-    run_loop.Run();
-  }
-  EXPECT_FALSE(tester.ContainsInterestGroupOwner(kOrigin));
-  EXPECT_TRUE(tester.ContainsInterestGroupKAnon(kOrigin));
-
-  {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ClearInterestGroupsAndKAnon, partition,
-                                  base::Time(), base::Time::Max(), &run_loop));
-    run_loop.Run();
-  }
-  EXPECT_FALSE(tester.ContainsInterestGroupOwner(kOrigin));
-  EXPECT_FALSE(tester.ContainsInterestGroupKAnon(kOrigin));
-}
-
-TEST_F(StoragePartitionImplTest, RemoveInterestGroupClicks) {
-  const url::Origin kProvider1 =
-      url::Origin::Create(GURL("https://provider1.test"));
-  const url::Origin kProvider2 =
-      url::Origin::Create(GURL("https://provider2.test"));
-  const url::Origin kEligible1 =
-      url::Origin::Create(GURL("https://elig1.test"));
-  const url::Origin kEligible2 =
-      url::Origin::Create(GURL("https://elig2.test"));
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-
-  RemoveInterestGroupTester tester(partition);
-  tester.AddClick(kProvider1, kEligible1);
-  tester.AddClick(kProvider2, kEligible2);
-  EXPECT_EQ(true, tester.ClickInDb(kProvider1, kEligible1));
-  EXPECT_EQ(true, tester.ClickInDb(kProvider2, kEligible2));
-
-  // Deleting based on eligible origin doesn't match.
-  ClearInterestGroupsViewClickOnRunLoop(partition, kEligible1,
-                                        /*user_action=*/false);
-  EXPECT_EQ(true, tester.ClickInDb(kProvider1, kEligible1));
-  EXPECT_EQ(true, tester.ClickInDb(kProvider2, kEligible2));
-
-  // Provider origin does.
-  ClearInterestGroupsViewClickOnRunLoop(partition, kProvider2,
-                                        /*user_action=*/false);
-  EXPECT_EQ(true, tester.ClickInDb(kProvider1, kEligible1));
-  EXPECT_EQ(false, tester.ClickInDb(kProvider2, kEligible2));
-
-  ClearInterestGroupsViewClickOnRunLoop(partition, kProvider1,
-                                        /*user_action=*/false);
-  EXPECT_EQ(false, tester.ClickInDb(kProvider1, kEligible1));
-  EXPECT_EQ(false, tester.ClickInDb(kProvider2, kEligible2));
-}
-
-TEST_F(StoragePartitionImplTest, RemoveInterestGroupClicksUserAction) {
-  const url::Origin kProvider1 =
-      url::Origin::Create(GURL("https://provider1.test"));
-  const url::Origin kProvider2 =
-      url::Origin::Create(GURL("https://provider2.test"));
-  const url::Origin kEligible1 =
-      url::Origin::Create(GURL("https://elig1.test"));
-  const url::Origin kEligible2 =
-      url::Origin::Create(GURL("https://elig2.test"));
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-
-  RemoveInterestGroupTester tester(partition);
-  tester.AddClick(kProvider1, kEligible1);
-  tester.AddClick(kProvider2, kEligible2);
-  EXPECT_EQ(true, tester.ClickInDb(kProvider1, kEligible1));
-  EXPECT_EQ(true, tester.ClickInDb(kProvider2, kEligible2));
-
-  // If the delete is in response to a user request, it just clears everything.
-  ClearInterestGroupsViewClickOnRunLoop(partition, kEligible1,
-                                        /*user_action=*/true);
-  EXPECT_EQ(false, tester.ClickInDb(kProvider1, kEligible1));
-  EXPECT_EQ(false, tester.ClickInDb(kProvider2, kEligible2));
-}
-
-TEST_F(StoragePartitionImplTest, RemoveInterestGroupPermissionsCacheForever) {
-  const url::Origin kFrameOrigin =
-      url::Origin::Create(GURL("https://host1.test:1/"));
-  const url::Origin kInterestGroupOrigin =
-      url::Origin::Create(GURL("https://host2.test:2/"));
-  const net::SchemefulSite kFrameSite =
-      net::SchemefulSite(GURL("https://host1.test:1/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kFrameSite, kFrameSite);
-
-  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
-      browser_context()->GetDefaultStoragePartition());
-  ASSERT_TRUE(partition->GetInterestGroupManager());
-
-  InterestGroupPermissionsCache& permissions_cache =
-      static_cast<InterestGroupManagerImpl*>(
-          partition->GetInterestGroupManager())
-          ->permissions_checker_for_testing()
-          .cache_for_testing();
-
-  permissions_cache.CachePermissions(InterestGroupPermissionsCache::Permissions{
-                                         /*can_join=*/true, /*can_leave=*/true},
-                                     kFrameOrigin, kInterestGroupOrigin,
-                                     kNetworkIsolationKey);
-  EXPECT_TRUE(permissions_cache.GetPermissions(
-      kFrameOrigin, kInterestGroupOrigin, kNetworkIsolationKey));
-
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ClearInterestGroupPermissionsCache, partition,
-                                base::Time(), base::Time::Max(), &run_loop));
-  run_loop.Run();
-
-  EXPECT_FALSE(permissions_cache.GetPermissions(
-      kFrameOrigin, kInterestGroupOrigin, kNetworkIsolationKey));
 }
 
 TEST_P(LocalStoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {
@@ -2049,8 +1753,6 @@ TEST_F(StoragePartitionImplTest, RemoveDeviceBoundSessions) {
   run_loop.Run();
 }
 #endif
-
-
 
 // Local network access tests require there to be a (minimal) frame setup.
 using StoragePartitionImplLocalNetworkAccessTest = RenderViewHostTestHarness;

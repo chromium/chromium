@@ -14,7 +14,6 @@
 #include <string_view>
 
 #include "base/containers/span.h"
-#include "content/public/browser/interest_group_manager.h"
 #include "url/origin.h"
 
 namespace content {
@@ -50,17 +49,6 @@ constexpr std::uint8_t kTestPrivacySandboxCoordinatorId = 0x12;
 // This can then either be used as a simulated HTTP response or passed directly
 // to the key fetched.
 std::string CreateTestPrivacySandboxCoordinatorSerializedPublicKeys(
-    const url::Origin& coordinator,
-    base::span<const url::Origin> origins);
-
-// Convenience wrapper that calls
-// CreatePrivacySandboxCoordinatorSerializedPublicKeys() to create keys, and
-// then configures `interest_group_manager` to use them, and waits for them to
-// be applied. May only be called once per `coordinator` in a test, since it
-// sets up a single mock response for the coordinator.
-void ConfigureTestPrivacySandboxCoordinatorKeys(
-    InterestGroupManager* interest_group_manager,
-    InterestGroupManager::TrustedServerAPIType api_type,
     const url::Origin& coordinator,
     base::span<const url::Origin> origins);
 

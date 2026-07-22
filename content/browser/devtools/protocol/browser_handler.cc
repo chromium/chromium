@@ -33,7 +33,6 @@
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/gpu/gpu_process_host.h"
-#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
@@ -703,7 +702,6 @@ Response BrowserHandler::CrashGpuProcess() {
   }
   return Response::Success();
 }
-
 
 void BrowserHandler::OnDownloadUpdated(download::DownloadItem* item) {
   std::string state;

@@ -624,11 +624,6 @@ class PageLoadMetricsObserverInterface {
   virtual void OnCustomUserTimingMarkObserved(
       const std::vector<mojom::CustomUserTimingMarkPtr>& timings) = 0;
 
-  // Called when a Fledge auction completes.
-  virtual void OnAdAuctionComplete(bool is_server_auction,
-                                   bool is_on_device_auction,
-                                   content::AuctionResult result) = 0;
-
   // Called when the renderer process for the primary main frame is gone.
   virtual void OnPrimaryPageRenderProcessGone() = 0;
 

@@ -15,7 +15,6 @@
 #include "build/chromecast_buildflags.h"
 #include "net/http/http_cache.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace blink::features {
@@ -43,14 +42,6 @@ BASE_FEATURE(kAIPageContentIncludePopupWindows,
 BASE_FEATURE(kAIPageContentMissingSubframesFailSilently,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls the capturing of the Ad-Auction-Signals header, and the maximum
-// allowed Ad-Auction-Signals header value.
-BASE_FEATURE(kAdAuctionSignals, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kAdAuctionSignalsMaxSizeBytes,
-                   &kAdAuctionSignals,
-                   "ad-auction-signals-max-size-bytes",
-                   10000);
 
 // Controls whether JavaScript execution inside AudioWorkletProcessor::Process()
 // runs under strict IEEE-754 floating-point semantics (disabling FTZ/DAZ).
@@ -840,160 +831,9 @@ BASE_FEATURE_PARAM(std::string,
                    "filter",
                    "one_euro_filter");
 
-// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-// Enables FLEDGE implementation. See https://crbug.com/1186444.
-BASE_FEATURE(kFledge, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// See
-// https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
-BASE_FEATURE(kFledgeBiddingAndAuctionServer, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(std::string,
-                   kFledgeBiddingAndAuctionKeyURL,
-                   &kFledgeBiddingAndAuctionServer,
-                   "FledgeBiddingAndAuctionKeyURL",
-                   "");
-BASE_FEATURE_PARAM(std::string,
-                   kFledgeBiddingAndAuctionKeyConfig,
-                   &kFledgeBiddingAndAuctionServer,
-                   "FledgeBiddingAndAuctionKeyConfig",
-                   "");
-
-// See https://github.com/WICG/turtledove/issues/1334
-BASE_FEATURE(kFledgeOriginScopedKeys, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(std::string,
-                   kFledgeOriginScopedKeyConfig,
-                   &kFledgeOriginScopedKeys,
-                   "FledgeOriginScopedKeyConfig",
-                   "");
 
 BASE_FEATURE(kBlockPartialResponseWithoutRange,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// See in the header.
-BASE_FEATURE(kFledgeConsiderKAnonymity, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFledgeEnforceKAnonymity, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// See the header for more details.
-BASE_FEATURE(kFledgeLimitSelectableBuyerAndSellerReportingIds,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int,
-                   kFledgeSelectableBuyerAndSellerReportingIdsSoftLimit,
-                   &kFledgeLimitSelectableBuyerAndSellerReportingIds,
-                   "SelectableBuyerAndSellerReportingIdsSoftLimit",
-                   -1);
-BASE_FEATURE_PARAM(int,
-                   kFledgeSelectableBuyerAndSellerReportingIdsHardLimit,
-                   &kFledgeLimitSelectableBuyerAndSellerReportingIds,
-                   "SelectableBuyerAndSellerReportingIdsHardLimit",
-                   -1);
-
-BASE_FEATURE(kFledgeMaxGroupLifetimeFeature, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kFledgeMaxGroupLifetime,
-                   &kFledgeMaxGroupLifetimeFeature,
-                   "fledge_max_group_lifetime",
-                   base::Days(30));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kFledgeMaxGroupLifetimeForMetadata,
-                   &kFledgeMaxGroupLifetimeFeature,
-                   "fledge_max_group_lifetime_for_metadata",
-                   base::Days(30));
-
-BASE_FEATURE(kFledgeEnableSampleDebugReportOnCookieSetting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFledgeSampleDebugReports, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kFledgeDebugReportLockout,
-                   &kFledgeSampleDebugReports,
-                   "fledge_debug_report_lockout",
-                   base::Days(365 * 3));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kFledgeDebugReportRestrictedCooldown,
-                   &kFledgeSampleDebugReports,
-                   "fledge_debug_report_restricted_cooldown",
-                   base::Days(365));
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kFledgeDebugReportShortCooldown,
-                   &kFledgeSampleDebugReports,
-                   "fledge_debug_report_short_cooldown",
-                   base::Days(14));
-BASE_FEATURE_PARAM(int,
-                   kFledgeDebugReportSamplingRandomMax,
-                   &kFledgeSampleDebugReports,
-                   "fledge_debug_report_sampling_random_max",
-                   1000);
-BASE_FEATURE_PARAM(
-    int,
-    kFledgeDebugReportSamplingRestrictedCooldownRandomMax,
-    &kFledgeSampleDebugReports,
-    "fledge_debug_report_sampling_restricted_cooldown_random_max",
-    10);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kFledgeEnableFilteringDebugReportStartingFrom,
-                   &kFledgeSampleDebugReports,
-                   "fledge_enable_filtering_debug_report_starting_from",
-                   base::Milliseconds(0));
-
-BASE_FEATURE_PARAM(int,
-                   kFledgeCustomMaxAuctionAdComponentsValue,
-                   &kFledgeCustomMaxAuctionAdComponents,
-                   "FledgeAdComponentLimit",
-                   40);
-
-BASE_FEATURE_PARAM(int,
-                   kFledgeRealTimeReportingNumBuckets,
-                   &kFledgeRealTimeReporting,
-                   "FledgeRealTimeReportingNumBuckets",
-                   1024);
-BASE_FEATURE_PARAM(double,
-                   kFledgeRealTimeReportingEpsilon,
-                   &kFledgeRealTimeReporting,
-                   "FledgeRealTimeReportingEpsilon",
-                   1);
-BASE_FEATURE_PARAM(double,
-                   kFledgeRealTimeReportingPlatformContributionPriority,
-                   &kFledgeRealTimeReporting,
-                   "FledgeRealTimeReportingPlatformContributionPriority",
-                   1);
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kFledgeRealTimeReportingWindow,
-                   &kFledgeRealTimeReporting,
-                   "FledgeRealTimeReportingWindow",
-                   base::Seconds(20));
-BASE_FEATURE_PARAM(int,
-                   kFledgeRealTimeReportingMaxReports,
-                   &kFledgeRealTimeReporting,
-                   "FledgeRealTimeReportingMaxReports",
-                   10);
-
-// Enable enforcement of permission policy for
-// privateAggregation.contributeToHistogramOnEvent.
-BASE_FEATURE(kFledgeEnforcePermissionPolicyContributeOnEvent,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFledgeDisableLocalAdsAuctions, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Provides a configurable limit on the number of
-// `selectableBuyerAndSellerReportingIds` for which the browser fetches k-anon
-// keys. If the `SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit` is
-// negative, no limit is enforced.
-BASE_FEATURE(kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(
-    int,
-    kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit,
-    &kFledgeLimitSelectableBuyerAndSellerReportingIdsFetchedFromKAnon,
-    "SelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit",
-    -1);
-
-// Feature flag to truncate the set of `selectableBuyerAndSellerReportingIds`
-// to only those for which k-anon status was fetched, as limited by the
-// `kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit` parameter
-// defined above. This is only meaningful if
-// `kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit` is >= 0.
-BASE_FEATURE(kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceHighPerformanceGPUForWebGL,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2161,12 +2001,6 @@ BASE_FEATURE_PARAM(bool,
                    &kPrivateAggregationApi,
                    "enabled_in_shared_storage",
                    /*default_value=*/true);
-BASE_FEATURE_PARAM(bool,
-                   kPrivateAggregationApiEnabledInProtectedAudience,
-                   &kPrivateAggregationApi,
-                   "enabled_in_fledge",
-                   /*default_value=*/true);
-
 // Selectively allows the debug mode to be disabled while leaving the rest of
 // the API in place. If disabled, any `enableDebugMode()` calls will essentially
 // have no effect.
@@ -2176,11 +2010,6 @@ BASE_FEATURE_PARAM(bool,
                    "debug_mode_enabled_at_all",
                    /*default_value=*/true);
 
-// Adds some additional functionality (new reserved event types, base values)
-// to things enabled by
-// kPrivateAggregationApiEnabledInProtectedAudience.
-BASE_FEATURE(kPrivateAggregationApiProtectedAudienceAdditionalExtensions,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProcessHtmlDataImmediately, base::FEATURE_DISABLED_BY_DEFAULT);
 

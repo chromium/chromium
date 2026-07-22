@@ -1366,20 +1366,7 @@ void MetricsWebContentsObserver::OnSharedStorageSelectURLCalled(
   }
 }
 
-void MetricsWebContentsObserver::OnAdAuctionComplete(
-    content::RenderFrameHost* rfh,
-    bool is_server_auction,
-    bool is_on_device_auction,
-    content::AuctionResult result) {
-  if (!rfh) {
-    return;
-  }
 
-  if (PageLoadTracker* tracker = GetPageLoadTracker(rfh)) {
-    tracker->OnAdAuctionComplete(is_server_auction, is_on_device_auction,
-                                 result);
-  }
-}
 
 base::TimeTicks MetricsWebContentsObserver::GetCreated() {
   return created_;

@@ -44,8 +44,6 @@
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/generated_code_cache_settings.h"
-#include "content/public/browser/interest_group_api_operation.h"
-#include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/keep_alive_request_tracker.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 #include "content/public/browser/login_delegate.h"
@@ -1061,22 +1059,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       const std::vector<GlobalRenderFrameHostId>& render_frames,
       const blink::StorageKey& storage_key);
 
-  using InterestGroupApiOperation = content::InterestGroupApiOperation;
-
-  // Returns whether `api_origin` on `top_frame_origin` can perform `operation`
-  // within the interest group API.
-  //
-  // If `render_frame_host` is null (e.g., due to the initiator frame being
-  // destroyed for a keep-alive worklet), certain operations like console error
-  // will be skipped. However, the core permission check will still be
-  // performed.
-  virtual bool IsInterestGroupAPIAllowed(
-      content::BrowserContext* browser_context,
-      content::RenderFrameHost* render_frame_host,
-      InterestGroupApiOperation operation,
-      const url::Origin& top_frame_origin,
-      const url::Origin& api_origin);
-
   // Returns whether |destination_origin| can receive beacons sent through
   // window.fence.reportEvent() or automatic beacons. The reporting destination
   // is required to be attested for its invoking API.
@@ -1085,19 +1067,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& destination_origin,
       content::PrivacySandboxInvokingAPI invoking_api);
 
-  // Called when a Fledge auction is complete (without being aborted). If there
-  // is a winner, `winner_data_key` should be non-null. `is_server_auction`
-  // should be true if any component of the auction was a B&A server auction.
-  // `is_on_device_auction` should be true if any component of the auction was
-  // on-device. If the auction contained both B&A server and on-device auctions,
-  // both `is_server_auction` and `is_on_device_auction` should be true.
-  virtual void OnAuctionComplete(
-      RenderFrameHost* render_frame_host,
-      std::optional<content::InterestGroupManager::InterestGroupDataKey>
-          winner_data_key,
-      bool is_server_auction,
-      bool is_on_device_auction,
-      AuctionResult result);
 
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.

@@ -13,40 +13,13 @@
 #include "services/network/public/cpp/permissions_policy/fenced_frame_permissions_policies.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
-#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 
 namespace content {
 
 GURL GenerateUrnUuid() {
   return GURL(kUrnUuidPrefix +
               base::Uuid::GenerateRandomV4().AsLowercaseString());
-}
-
-std::string SubstituteMappedStrings(
-    const std::string& input,
-    const std::vector<std::pair<std::string, std::string>>& substitutions) {
-  std::vector<std::string> output_vec;
-  size_t input_idx = 0;
-  while (input_idx < input.size()) {
-    size_t replace_idx = input.size();
-    size_t replace_end_idx = input.size();
-    std::pair<std::string, std::string> const* next_replacement = nullptr;
-    for (const auto& substitution : substitutions) {
-      size_t found_idx = input.find(substitution.first, input_idx);
-      if (found_idx < replace_idx) {
-        replace_idx = found_idx;
-        replace_end_idx = found_idx + substitution.first.size();
-        next_replacement = &substitution;
-      }
-    }
-    output_vec.push_back(input.substr(input_idx, replace_idx - input_idx));
-    if (replace_idx < input.size()) {
-      output_vec.push_back(next_replacement->second);
-    }
-    // move input index to after what we replaced (or end of string).
-    input_idx = replace_end_idx;
-  }
-  return base::StrCat(output_vec);
 }
 
 namespace {
@@ -323,7 +296,7 @@ std::vector<std::pair<GURL, FencedFrameConfig>>
 FencedFrameProperties::GenerateURNConfigVectorForConfigs(
     const std::vector<FencedFrameConfig>& nested_configs) {
   std::vector<std::pair<GURL, FencedFrameConfig>> nested_urn_config_pairs;
-  const size_t kMaxAdAuctionAdComponents = blink::MaxAdAuctionAdComponents();
+  const size_t kMaxAdAuctionAdComponents = blink::kMaxAdAuctionAdComponents;
   DCHECK_LE(nested_configs.size(), kMaxAdAuctionAdComponents);
   for (const FencedFrameConfig& config : nested_configs) {
     // Give each config its own urn:uuid. This ensures that if the same config
@@ -335,7 +308,7 @@ FencedFrameProperties::GenerateURNConfigVectorForConfigs(
     nested_urn_config_pairs.emplace_back(urn_uuid, config_with_urn);
   }
 
-  // Pad `component_ads_` to contain exactly MaxAdAuctionAdComponents() ads, to
+  // Pad `component_ads_` to contain exactly kMaxAdAuctionAdComponents ads, to
   // avoid leaking any data to the fenced frame the component ads array is
   // exposed to.
   while (nested_urn_config_pairs.size() < kMaxAdAuctionAdComponents) {

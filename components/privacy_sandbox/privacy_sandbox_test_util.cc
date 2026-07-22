@@ -357,9 +357,10 @@ void CheckOutput(
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
-                                  top_frame_origin, fledge_auction_party_origin,
-                                  content::InterestGroupApiOperation::kJoin));
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsFledgeAllowed(
+                    top_frame_origin, fledge_auction_party_origin,
+                    privacy_sandbox::InterestGroupApiOperation::kJoin));
       return;
     }
     case (OutputKey::kIsFledgeLeaveAllowed): {
@@ -369,9 +370,10 @@ void CheckOutput(
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
-                                  top_frame_origin, fledge_auction_party_origin,
-                                  content::InterestGroupApiOperation::kLeave));
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsFledgeAllowed(
+                    top_frame_origin, fledge_auction_party_origin,
+                    privacy_sandbox::InterestGroupApiOperation::kLeave));
       return;
     }
     case (OutputKey::kIsFledgeUpdateAllowed): {
@@ -381,9 +383,10 @@ void CheckOutput(
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
-                                  top_frame_origin, fledge_auction_party_origin,
-                                  content::InterestGroupApiOperation::kUpdate));
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsFledgeAllowed(
+                    top_frame_origin, fledge_auction_party_origin,
+                    privacy_sandbox::InterestGroupApiOperation::kUpdate));
       return;
     }
     case (OutputKey::kIsFledgeSellAllowed): {
@@ -393,9 +396,10 @@ void CheckOutput(
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
-                                  top_frame_origin, fledge_auction_party_origin,
-                                  content::InterestGroupApiOperation::kSell));
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsFledgeAllowed(
+                    top_frame_origin, fledge_auction_party_origin,
+                    privacy_sandbox::InterestGroupApiOperation::kSell));
       return;
     }
     case (OutputKey::kIsFledgeBuyAllowed): {
@@ -405,9 +409,10 @@ void CheckOutput(
       auto fledge_auction_party_origin = GetItemValueForKey<url::Origin>(
           InputKey::kFledgeAuctionPartyOrigin, input);
       auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(return_value, privacy_sandbox_settings->IsFledgeAllowed(
-                                  top_frame_origin, fledge_auction_party_origin,
-                                  content::InterestGroupApiOperation::kBuy));
+      ASSERT_EQ(return_value,
+                privacy_sandbox_settings->IsFledgeAllowed(
+                    top_frame_origin, fledge_auction_party_origin,
+                    privacy_sandbox::InterestGroupApiOperation::kBuy));
       return;
     }
     case (OutputKey::kIsEventReportingDestinationAttestedForFledge): {
@@ -565,7 +570,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::InterestGroupApiOperation::kJoin);
+          privacy_sandbox::InterestGroupApiOperation::kJoin);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeJoinAllowed",
                                           histogram_value, 1);
@@ -580,7 +585,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::InterestGroupApiOperation::kLeave);
+          privacy_sandbox::InterestGroupApiOperation::kLeave);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeLeaveAllowed",
                                           histogram_value, 1);
@@ -595,7 +600,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::InterestGroupApiOperation::kUpdate);
+          privacy_sandbox::InterestGroupApiOperation::kUpdate);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample(
           "PrivacySandbox.IsFledgeUpdateAllowed", histogram_value, 1);
@@ -610,7 +615,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::InterestGroupApiOperation::kSell);
+          privacy_sandbox::InterestGroupApiOperation::kSell);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeSellAllowed",
                                           histogram_value, 1);
@@ -625,7 +630,7 @@ void CheckOutput(
           InputKey::kFledgeAuctionPartyOrigin, input);
       std::ignore = privacy_sandbox_settings->IsFledgeAllowed(
           top_frame_origin, fledge_auction_party_origin,
-          content::InterestGroupApiOperation::kBuy);
+          privacy_sandbox::InterestGroupApiOperation::kBuy);
       auto histogram_value = GetItemValue<int>(output_value);
       histogram_tester.ExpectUniqueSample("PrivacySandbox.IsFledgeBuyAllowed",
                                           histogram_value, 1);

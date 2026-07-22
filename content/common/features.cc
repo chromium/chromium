@@ -267,35 +267,7 @@ BASE_FEATURE(kFilterInstalledAppsWebAppMatching,
 BASE_FEATURE(kFilterInstalledAppsWinMatching, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-// If enabled, limits the number of FLEDGE auctions that can be run between page
-// load and unload -- any attempt to run more than this number of auctions will
-// fail (return null to JavaScript).
-BASE_FEATURE(kFledgeLimitNumAuctions,
-             "LimitNumFledgeAuctions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// The number of allowed auctions for each page load (load to unload).
-const base::FeatureParam<int> kFledgeLimitNumAuctionsParam{
-    &kFledgeLimitNumAuctions, "max_auctions_per_page", 8};
-
-// Enables a delay for the post-auction interest group update to avoid
-// immediately invalidating cached values.
-BASE_FEATURE(kFledgeDelayPostAuctionInterestGroupUpdate,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables multi-threaded seller worklet.
-BASE_FEATURE(kFledgeSellerWorkletThreadPool, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The number of seller worklet threads.
-const base::FeatureParam<int> kFledgeSellerWorkletThreadPoolSize{
-    &kFledgeSellerWorkletThreadPool, "seller_worklet_thread_pool_size", 1};
-
-// Enables multi-threaded bidder worklet.
-BASE_FEATURE(kFledgeBidderWorkletThreadPool, base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
-// Makes FLEDGE worklets on Android not use the main thread for their mojo.
-BASE_FEATURE(kFledgeAndroidWorkletOffMainThread,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // This is a kill switch for focusing the RenderWidgetHostViewAndroid on
 // MouseDown if not focused already, please see crbug.com/515000108. The root
 // view, RWHVA, is always focused for main tabs in Chrome, however this might
@@ -304,15 +276,6 @@ BASE_FEATURE(kFledgeAndroidWorkletOffMainThread,
 BASE_FEATURE(kFocusRenderWidgetHostViewAndroidOnMouseDown,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-
-// The scaling factor for calculating the number of bidder worklet threads based
-// on the number of Interest Groups.
-// Formula: #threads = 1 + scaling_factor * log10(#IGs)
-const base::FeatureParam<double>
-    kFledgeBidderWorkletThreadPoolSizeLogarithmicScalingFactor{
-        &kFledgeBidderWorkletThreadPool,
-        "bidder_worklet_thread_pool_size_logarithmic_scaling_factor", 2};
-
 // This feature controls whether the renderer should use FontDataManager to
 // fetch fonts from the Browser's FontDataService. It is currently scoped to
 // Windows and Linux (via separate features and experiments). See

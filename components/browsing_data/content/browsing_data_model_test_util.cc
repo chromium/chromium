@@ -34,18 +34,6 @@ std::string DataKeyDebugStringVisitor::operator()<blink::StorageKey>(
   return debug_string.str();
 }
 
-template <>
-std::string DataKeyDebugStringVisitor::operator()<
-    content::InterestGroupManager::InterestGroupDataKey>(
-    const content::InterestGroupManager::InterestGroupDataKey&
-        interest_group_data_key) {
-  std::stringstream debug_string;
-  debug_string << "InterestGroupDataKey: ";
-  debug_string << "{owner: " << interest_group_data_key.owner.Serialize();
-  debug_string << " joining_origin: ";
-  debug_string << interest_group_data_key.joining_origin.Serialize() << "}";
-  return debug_string.str();
-}
 
 template <>
 std::string

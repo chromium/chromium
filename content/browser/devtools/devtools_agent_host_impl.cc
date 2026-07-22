@@ -16,7 +16,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_view_util.h"
-#include "content/browser/devtools/auction_worklet_devtools_agent_host.h"
 #include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_http_handler.h"
 #include "content/browser/devtools/devtools_manager.h"
@@ -195,7 +194,6 @@ DevToolsAgentHost::List DevToolsAgentHost::GetOrCreateAll() {
   RenderFrameDevToolsAgentHost::AddAllAgentHosts(&result);
   WebContentsDevToolsAgentHost::AddAllAgentHosts(&result);
 
-  AuctionWorkletDevToolsAgentHostManager::GetInstance().GetAll(&result);
   MojomDevToolsAgentHost::GetAll(&result);
 
 #if DCHECK_IS_ON()

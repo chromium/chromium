@@ -220,9 +220,6 @@ class AssertPageLoadMetricsObserver final
   void OnCustomUserTimingMarkObserved(
       const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
           timings) override {}
-  void OnAdAuctionComplete(bool is_server_auction,
-                           bool is_on_device_auction,
-                           content::AuctionResult result) override {}
   void OnPrimaryPageRenderProcessGone() override {}
   void OnUserTimingMarkFullyLoaded(
       const page_load_metrics::mojom::PageLoadTiming& timing) override {}

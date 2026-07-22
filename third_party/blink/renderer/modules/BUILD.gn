@@ -230,8 +230,6 @@ source_set("modules_testing") {
   sources = [
     "accessibility/testing/internals_accessibility.cc",
     "accessibility/testing/internals_accessibility.h",
-    "ad_auction/testing/internals_protected_audience.cc",
-    "ad_auction/testing/internals_protected_audience.h",
     "content_extraction/testing/internals_content_extraction.cc",
     "content_extraction/testing/internals_content_extraction.h",
     "credentialmanagement/testing/internals_fed_cm.cc",
@@ -745,7 +743,6 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/core:unit_test_support",
     "//third_party/blink/renderer/core:unit_tests",
-    "//third_party/blink/renderer/modules/ad_auction:unit_tests",
     "//third_party/blink/renderer/modules/breakout_box:unit_tests",
     "//third_party/blink/renderer/modules/clipboard:unit_tests",
     "//third_party/blink/renderer/modules/file_system_access:unit_tests",

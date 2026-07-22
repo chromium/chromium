@@ -2638,8 +2638,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendLegacyTechEvent(
       const std::string& type,
       blink::mojom::LegacyTechEventCodeLocationPtr code_location) override;
-  void SendPrivateAggregationRequestsForFencedFrameEvent(
-      const std::string& event_type) override;
+
   void CreateFencedFrame(
       mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
           pending_receiver,
@@ -3280,15 +3279,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // beforeunload is currently in progress.
   RenderFrameHostImpl* GetBeforeUnloadInitiator();
 
-  const base::WeakPtr<PageImpl> auction_initiator_page() const {
-    return auction_initiator_page_;
-  }
-
-  void set_auction_initiator_page(base::WeakPtr<PageImpl> page_impl) {
-    auction_initiator_page_ = page_impl;
-  }
-
-  base::Uuid GetBaseAuctionNonce() const { return base_auction_nonce_; }
 
   void GetBoundInterfacesForTesting(std::vector<std::string>& out);
 
@@ -5611,27 +5601,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<webauthn::RemoteValidation> webauthn_remote_rp_id_validation_;
 #endif
 
-  // Tracks the page that initiates Protected Audience auction. This is set
-  // when AdAuctionServiceImpl is constructed, which is when the first call to
-  // Protected Audience API takes place on the frame.
-  //
-  // See crbug.com/1422301 for why this is needed.
-  //
-  // TODO(crbug.com/40615943): Once RenderDocument is launched, the `PageImpl`
-  // will not change. Remove this weak pointer and corresponding verification
-  // logics.
-  base::WeakPtr<PageImpl> auction_initiator_page_;
-
-  // The base auction nonce used to generate all auction nonces returned by
-  // `navigator.createAuctionNonce`. This base auction nonce is generated here
-  // in the browser process so that it can later verify that all auctions that
-  // provide a nonce in this frame provide a nonce based on this UUID, and
-  // // specifically, that all such auction nonces share the first 26
-  // hexadecimal digits (of UUIDv4's 32 hexadecimal digits) with this base
-  // auction nonce. The last six hexadecimal digits of this UUID are combined
-  // in the renderer process with a sequential value to guarantee that each
-  // nonce returned is unique.
-  base::Uuid base_auction_nonce_;
 
   // The default group for crash reports is `default`. However, if
   // `Reporting-Endpoints` response header specifies `crash-reporting`, crash

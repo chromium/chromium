@@ -38,7 +38,6 @@
 #include "content/browser/devtools/protocol/storage.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
-#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -57,7 +56,6 @@
 #include "storage/browser/quota/quota_override_handle.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "third_party/blink/public/common/interest_group/devtools_serialization.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-shared.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -422,7 +420,6 @@ void StorageHandler::SetRenderer(int process_host_id,
   RenderProcessHost* process = RenderProcessHost::FromID(process_host_id);
   StoragePartition* new_storage_partition =
       process ? process->GetStoragePartition() : nullptr;
-
   storage_partition_ = new_storage_partition;
   frame_host_ = frame_host;
 }
@@ -431,7 +428,6 @@ Response StorageHandler::Disable() {
   cache_storage_observer_.reset();
   indexed_db_observer_.reset();
   quota_override_handle_.reset();
-
   SetSharedStorageTracking(false);
   quota_manager_observer_.reset();
   return Response::Success();
@@ -622,9 +618,6 @@ uint32_t GetRemoveDataMask(const std::string& storage_types) {
   }
   if (set.contains(Storage::StorageTypeEnum::Cache_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_CACHE_STORAGE;
-  }
-  if (set.contains(Storage::StorageTypeEnum::Interest_groups)) {
-    remove_mask |= StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
   }
   if (set.contains(Storage::StorageTypeEnum::Shared_storage)) {
     remove_mask |= StoragePartition::REMOVE_DATA_MASK_SHARED_STORAGE;
@@ -1032,8 +1025,6 @@ void StorageHandler::ClearTrustTokens(
       url::Origin::Create(GURL(issuerOrigin)),
       base::BindOnce(&SendClearTrustTokensStatus, std::move(callback)));
 }
-
-
 
 void StorageHandler::GetSharedStorageMetadata(
     const std::string& owner_origin_string,

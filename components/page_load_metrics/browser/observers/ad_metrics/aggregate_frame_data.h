@@ -45,26 +45,8 @@ class AggregateFrameData {
   // the earliest FCP after main frame nav start.
   void UpdateFirstAdFCPSinceNavStart(base::TimeDelta time_since_nav_start);
 
-  // Called when a Fledge auction completes, this method tracks
-  // if an auction completes before the `first_ad_fcp_after_main_nav_start()`.
-  void OnAdAuctionComplete(bool is_server_auction,
-                           bool is_on_device_auction,
-                           content::AuctionResult result);
-
   std::optional<base::TimeDelta> first_ad_fcp_after_main_nav_start() const {
     return first_ad_fcp_after_main_nav_start_;
-  }
-
-  bool completed_fledge_server_auction_before_fcp() const {
-    return completed_fledge_server_auction_before_fcp_;
-  }
-
-  bool completed_fledge_on_device_auction_before_fcp() const {
-    return completed_fledge_on_device_auction_before_fcp_;
-  }
-
-  bool completed_only_winning_fledge_auctions() const {
-    return completed_only_winning_fledge_auctions_;
   }
 
   int peak_windowed_non_ad_cpu_percent() const {
@@ -145,14 +127,6 @@ class AggregateFrameData {
 
   // The first FCP of any ad frame on the page.
   std::optional<base::TimeDelta> first_ad_fcp_after_main_nav_start_;
-
-  // Whether an ad auction completed (without being aborted) before the first ad
-  // FCP.
-  bool completed_fledge_server_auction_before_fcp_ = false;
-  bool completed_fledge_on_device_auction_before_fcp_ = false;
-  // If only winning auctions completed before the first ad FCP. Aborted
-  // auctions do not count as completed.
-  bool completed_only_winning_fledge_auctions_ = true;
 };
 
 }  // namespace page_load_metrics

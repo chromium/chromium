@@ -38,13 +38,4 @@ bool ContentBrowserTestTpcBlockingBrowserClient::
   return true;
 }
 
-bool ContentBrowserTestTpcBlockingBrowserClient::IsInterestGroupAPIAllowed(
-    BrowserContext* browser_context,
-    RenderFrameHost* render_frame_host,
-    InterestGroupApiOperation operation,
-    const url::Origin& top_frame_origin,
-    const url::Origin& api_origin) {
-  return true;
-}
-
 }  // namespace content

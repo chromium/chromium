@@ -20,8 +20,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/utility/content_utility_client.h"
 #include "content/public/utility/utility_thread.h"
-#include "content/services/auction_worklet/auction_worklet_service_impl.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/devtools_media_encoding_service/devtools_media_encoding_service_impl.h"
 #include "content/services/devtools_media_encoding_service/public/mojom/devtools_media_encoding_service.mojom.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -196,13 +194,6 @@ auto RunNetworkService(
   return std::make_unique<network::NetworkService>(
       std::move(binders), std::move(receiver),
       /*delay_initialization_until_set_client=*/true);
-}
-
-auto RunAuctionWorkletService(
-    mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-        receiver) {
-  return auction_worklet::AuctionWorkletServiceImpl::CreateForService(
-      std::move(receiver));
 }
 
 auto RunDevToolsMediaEncodingService(
@@ -409,7 +400,6 @@ void RegisterIOThreadServices(mojo::ServiceFactory& services) {
 }
 
 void RegisterMainThreadServices(mojo::ServiceFactory& services) {
-  services.Add(RunAuctionWorkletService);
   services.Add(RunDevToolsMediaEncodingService);
   services.Add(RunAudio);
 

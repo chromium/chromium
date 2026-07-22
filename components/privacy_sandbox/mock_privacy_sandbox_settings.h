@@ -48,7 +48,7 @@ class MockPrivacySandboxSettings
               IsFledgeAllowed,
               (const url::Origin&,
                const url::Origin&,
-               content::InterestGroupApiOperation,
+               privacy_sandbox::InterestGroupApiOperation,
                content::RenderFrameHost*),
               (override, const));
   MOCK_METHOD(

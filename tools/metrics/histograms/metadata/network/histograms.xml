@@ -5354,17 +5354,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.SecAdAuctionHeaderSize" units="bytes"
-    expires_after="2026-10-01">
-  <owner>toyoshim@chromium.org</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    The size of Sec-Ad-Auction-* headers in bytes. Recorded when validating
-    renderer-initiated requests in the Network Service. This helps monitor the
-    impact of size limits imposed to protect the IPC boundary.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.SecCHHeaderSize" units="bytes"
     expires_after="2026-12-06">
   <owner>toyoshim@chromium.org</owner>
