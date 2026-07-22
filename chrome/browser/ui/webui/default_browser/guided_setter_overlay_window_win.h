@@ -33,11 +33,10 @@ class GuidedSetterOverlayWindowWin {
 
   void Hide();
 
-  // `bounds_screen` is the window rect (physical screen coords); `start_screen`
-  // and `end_screen` are the arrow endpoints (physical screen coords). They
-  // will be converted to DIPs for widget positioning and arrow rendering.
-  void UpdateAndShow(const gfx::Rect& bounds_screen,
-                     const gfx::Point& start_screen,
+  // Updates and shows the overlay window given the arrow endpoints (physical
+  // screen coords). The overlay window automatically calculates its bounds to
+  // fit the arrow geometry.
+  void UpdateAndShow(const gfx::Point& start_screen,
                      const gfx::Point& end_screen);
 
   void SetArrowColor(SkColor color);

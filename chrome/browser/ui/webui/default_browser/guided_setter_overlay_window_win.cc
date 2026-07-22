@@ -33,6 +33,59 @@ class OverlayArrowView : public views::View {
   OverlayArrowView& operator=(const OverlayArrowView&) = delete;
   ~OverlayArrowView() override = default;
 
+  static SkPath GetStemPath() {
+    return SkPathBuilder()
+        .moveTo(75.007f, 26.0467f)
+        .lineTo(76.8242f, 28.8725f)
+        .cubicTo(64.3189f, 37.2663f, 42.1f, 53.6201f, 7.63684f, 45.0465f)
+        .lineTo(8.35546f, 41.7782f)
+        .lineTo(9.07408f, 38.51f)
+        .cubicTo(40.5679f, 46.3449f, 60.6419f, 31.643f, 73.1897f, 23.2208f)
+        .lineTo(75.007f, 26.0467f)
+        .close()
+        .detach();
+  }
+
+  static SkPath GetHeadPath() {
+    return SkPathBuilder()
+        .moveTo(4.8164f, 42.8729f)
+        .lineTo(2.78675f, 45.1224f)
+        .lineTo(-0.000137253f, 42.4539f)
+        .lineTo(3.10647f, 40.2981f)
+        .lineTo(4.8164f, 42.8729f)
+        .close()
+        .moveTo(29.8877f, 66.8789f)
+        .lineTo(27.8581f, 69.1284f)
+        .lineTo(2.78675f, 45.1224f)
+        .lineTo(4.8164f, 42.8729f)
+        .lineTo(6.84604f, 40.6234f)
+        .lineTo(31.9173f, 64.6294f)
+        .lineTo(29.8877f, 66.8789f)
+        .close()
+        .moveTo(4.8164f, 42.8729f)
+        .lineTo(3.10647f, 40.2981f)
+        .lineTo(33.6391f, 19.1103f)
+        .lineTo(35.349f, 21.6851f)
+        .lineTo(37.0589f, 24.2599f)
+        .lineTo(6.52632f, 45.4477f)
+        .lineTo(4.8164f, 42.8729f)
+        .close()
+        .detach();
+  }
+
+  static gfx::Rect GetVisualBoundsDIP(const gfx::Point& end_dip) {
+    SkRect path_bounds = GetStemPath().getBounds();
+    path_bounds.join(GetHeadPath().getBounds());
+
+    gfx::RectF arrow_rect(path_bounds.fLeft + end_dip.x(),
+                          path_bounds.fTop + end_dip.y() - kArrowYOffsetDip,
+                          path_bounds.width(), path_bounds.height());
+
+    gfx::Rect bounds = gfx::ToEnclosingRect(arrow_rect);
+    bounds.Outset(kPaddingDip);
+    return bounds;
+  }
+
   void SetEndpoints(const gfx::Point& start, const gfx::Point& end) {
     start_ = start;
     end_ = end;
@@ -45,6 +98,11 @@ class OverlayArrowView : public views::View {
   }
 
   // views::View:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    return GetVisualBoundsDIP(end_).size();
+  }
+
   void OnPaint(gfx::Canvas* canvas) override {
     views::View::OnPaint(canvas);
 
@@ -58,52 +116,16 @@ class OverlayArrowView : public views::View {
         color_.value_or(GetColorProvider()->GetColor(ui::kColorAccent)));
     flags.setAntiAlias(true);
 
-    // Curved stem of the guidance arrow.
-    const SkPath path1 =
-        SkPathBuilder()
-            .moveTo(75.007f, 26.0467f)
-            .lineTo(76.8242f, 28.8725f)
-            .cubicTo(64.3189f, 37.2663f, 42.1f, 53.6201f, 7.63684f, 45.0465f)
-            .lineTo(8.35546f, 41.7782f)
-            .lineTo(9.07408f, 38.51f)
-            .cubicTo(40.5679f, 46.3449f, 60.6419f, 31.643f, 73.1897f, 23.2208f)
-            .lineTo(75.007f, 26.0467f)
-            .close()
-            .detach();
-
-    // Head of the guidance arrow.
-    const SkPath path2 = SkPathBuilder()
-                             .moveTo(4.8164f, 42.8729f)
-                             .lineTo(2.78675f, 45.1224f)
-                             .lineTo(-0.000137253f, 42.4539f)
-                             .lineTo(3.10647f, 40.2981f)
-                             .lineTo(4.8164f, 42.8729f)
-                             .close()
-                             .moveTo(29.8877f, 66.8789f)
-                             .lineTo(27.8581f, 69.1284f)
-                             .lineTo(2.78675f, 45.1224f)
-                             .lineTo(4.8164f, 42.8729f)
-                             .lineTo(6.84604f, 40.6234f)
-                             .lineTo(31.9173f, 64.6294f)
-                             .lineTo(29.8877f, 66.8789f)
-                             .close()
-                             .moveTo(4.8164f, 42.8729f)
-                             .lineTo(3.10647f, 40.2981f)
-                             .lineTo(33.6391f, 19.1103f)
-                             .lineTo(35.349f, 21.6851f)
-                             .lineTo(37.0589f, 24.2599f)
-                             .lineTo(6.52632f, 45.4477f)
-                             .lineTo(4.8164f, 42.8729f)
-                             .close()
-                             .detach();
-
     gfx::ScopedCanvas scoped_canvas(canvas);
-    canvas->Translate(gfx::Vector2d(end_.x(), end_.y() - 65));
-    canvas->DrawPath(path1, flags);
-    canvas->DrawPath(path2, flags);
+    canvas->Translate(gfx::Vector2d(end_.x(), end_.y() - kArrowYOffsetDip));
+    canvas->DrawPath(GetStemPath(), flags);
+    canvas->DrawPath(GetHeadPath(), flags);
   }
 
  private:
+  static constexpr int kArrowYOffsetDip = 65;
+  static constexpr int kPaddingDip = 15;
+
   gfx::Point start_;
   gfx::Point end_;
 
@@ -129,30 +151,20 @@ void GuidedSetterOverlayWindowWin::Hide() {
   widget_->Hide();
 }
 
-void GuidedSetterOverlayWindowWin::UpdateAndShow(const gfx::Rect& bounds_screen,
-                                                 const gfx::Point& start_screen,
+void GuidedSetterOverlayWindowWin::UpdateAndShow(const gfx::Point& start_screen,
                                                  const gfx::Point& end_screen) {
-  HWND hwnd = widget_->GetNativeWindow()
-                  ? views::HWNDForNativeWindow(widget_->GetNativeWindow())
-                  : nullptr;
+  const display::win::ScreenWin* screen_win = display::win::GetScreenWin();
 
-  gfx::Rect bounds_dip =
-      display::win::GetScreenWin()
-          ? display::win::GetScreenWin()->ScreenToDIPRect(hwnd, bounds_screen)
-          : bounds_screen;
+  const gfx::Point start_dip =
+      screen_win ? gfx::ToFlooredPoint(
+                       screen_win->ScreenToDIPPoint(gfx::PointF(start_screen)))
+                 : start_screen;
+  const gfx::Point end_dip =
+      screen_win ? gfx::ToFlooredPoint(
+                       screen_win->ScreenToDIPPoint(gfx::PointF(end_screen)))
+                 : end_screen;
 
-  gfx::Point start_dip =
-      display::win::GetScreenWin()
-          ? gfx::ToFlooredPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
-                gfx::PointF(start_screen)))
-          : start_screen;
-
-  gfx::Point end_dip =
-      display::win::GetScreenWin()
-          ? gfx::ToFlooredPoint(display::win::GetScreenWin()->ScreenToDIPPoint(
-                gfx::PointF(end_screen)))
-          : end_screen;
-
+  gfx::Rect bounds_dip = OverlayArrowView::GetVisualBoundsDIP(end_dip);
   widget_->SetBounds(bounds_dip);
 
   gfx::Point start_local = start_dip - bounds_dip.OffsetFromOrigin();
@@ -177,9 +189,8 @@ void GuidedSetterOverlayWindowWin::CreateWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.accept_events = false;
-  params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.show_state = ui::mojom::WindowShowState::kInactive;
-  params.context = parent_context;
+  params.parent = parent_context;
   params.name = "GuidedSetterOverlay";
 
   widget_->Init(std::move(params));

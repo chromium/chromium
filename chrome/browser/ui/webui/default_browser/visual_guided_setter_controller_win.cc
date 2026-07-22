@@ -504,25 +504,13 @@ void VisualGuidedSetterControllerWin::UpdateOverlay() {
     return;
   }
 
-  gfx::Rect overlay_bounds = *anchor_rect_screen;
-  overlay_bounds.Union(settings_rect);
-
-  int outset_px = 100;
-  if (display::win::GetScreenWin()) {
-    outset_px = display::win::GetScreenWin()
-                    ->DIPToScreenSize(chrome_hwnd_, gfx::Size(100, 0))
-                    .width();
-  }
-  overlay_bounds.Outset(outset_px);
-
   const gfx::Point start =
       visual_guided_setter::ComputeArrowStartPointFromAnchor(
           *anchor_rect_screen);
-
-  const gfx::Rect target_rect = settings_rect;
   const gfx::Point end =
-      visual_guided_setter::ComputeArrowEndPoint(target_rect);
-  overlay_->UpdateAndShow(overlay_bounds, start, end);
+      visual_guided_setter::ComputeArrowEndPoint(settings_rect);
+
+  overlay_->UpdateAndShow(start, end);
 }
 
 void VisualGuidedSetterControllerWin::UpdateOverlayColor() {

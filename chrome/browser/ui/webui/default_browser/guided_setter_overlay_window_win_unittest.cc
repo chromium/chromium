@@ -36,18 +36,17 @@ TEST_F(GuidedSetterOverlayWindowWinTest, Lifecycle) {
 TEST_F(GuidedSetterOverlayWindowWinTest, UpdateAndShow) {
   auto overlay = std::make_unique<GuidedSetterOverlayWindowWin>(GetContext());
 
-  gfx::Rect bounds(100, 100, 400, 300);
   gfx::Point start(120, 150);
   gfx::Point end(300, 250);
 
   // Update and show the overlay window.
-  overlay->UpdateAndShow(bounds, start, end);
+  overlay->UpdateAndShow(start, end);
 
   // Widget should be visible.
   views::Widget* widget = GetWidget(overlay.get());
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(widget->GetWindowBoundsInScreen(), bounds);
+  EXPECT_FALSE(widget->GetWindowBoundsInScreen().IsEmpty());
 
   // Hide the overlay window.
   overlay->Hide();
