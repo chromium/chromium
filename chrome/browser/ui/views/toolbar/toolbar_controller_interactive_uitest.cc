@@ -250,7 +250,7 @@ class ToolbarControllerUiTest : public InteractiveFeaturePromoTest,
 
   auto SetBooleanPref(const std::string& path, bool value) {
     return Do([this, path, value]() {
-      browser()->profile()->GetPrefs()->SetBoolean(path, value);
+      browser()->GetProfile()->GetPrefs()->SetBoolean(path, value);
     });
   }
 
@@ -808,7 +808,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest, MenuMatchesOverflowedElements) {
 // Tests that the home and overflow buttons are always hidden together, when
 // they're the two lowest priority hideable buttons.
 IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest, HomeForwardOverflowTogether) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
 
   RunTestSequence(
       InstrumentToolbarWebUiIfNeeded(),
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest, HomeForwardOverflowTogether) {
 }
 
 IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest, HomeForwardOverflowSeparately) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
 
   RunTestSequence(
       InstrumentToolbarWebUiIfNeeded(), PinBookmarkToToolbar(),
@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest, HomeForwardOverflowSeparately) {
 // Tests that unpinning and pinning the home button while it's overflowed
 // correctly shows/hides the forward and overflow buttons.
 IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest, HomePinUnpinWhileOverflowed) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
 
   RunTestSequence(
       InstrumentToolbarWebUiIfNeeded(),
@@ -932,8 +932,9 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest, HomePinUnpinWhileOverflowed) {
 // correctly shows/hides the home and overflow buttons.
 IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest,
                        ForwardPinUnpinWhileOverflowed) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
+                                                  true);
 
   RunTestSequence(
       InstrumentToolbarWebUiIfNeeded(),
@@ -1208,8 +1209,9 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerUiTest,
 // have already been observed to be shrunk, just in case shrinking a higher
 // priority button causes a lower priority one to no longer be shrunk.
 IN_PROC_BROWSER_TEST_P(ToolbarControllerOrderingUiTest, PriorityOrder) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
+                                                  true);
 
   RunTestSequence(
       InstrumentToolbarWebUiIfNeeded(),
@@ -1261,8 +1263,9 @@ IN_PROC_BROWSER_TEST_P(ToolbarControllerOrderingUiTest, PriorityOrder) {
 IN_PROC_BROWSER_TEST_P(
     ToolbarControllerOrderingOmniboxResizingPrioritizationUiTest,
     PriorityOrder) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
+                                                  true);
 
   RunTestSequence(
       InstrumentToolbarWebUiIfNeeded(),

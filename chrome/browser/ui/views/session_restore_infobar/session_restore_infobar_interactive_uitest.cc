@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
 // preferences are set to open the new tab page.
 IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                        InfobarNotShownForOtherSettings) {
-  browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 4);
+  browser()->GetProfile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 4);
 
   CreateInfobar(browser(), false);
   RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   // Change the pref to open the new tab page.
                   Do([this]() {
-                    browser()->profile()->GetPrefs()->SetInteger(
+                    browser()->GetProfile()->GetPrefs()->SetInteger(
                         prefs::kRestoreOnStartup, 4);
                   }),
                   WaitForHide(ConfirmInfoBar::kInfoBarElementId));
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
   RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
                   // Change the pref to continue where you left off.
                   Do([this]() {
-                    browser()->profile()->GetPrefs()->SetInteger(
+                    browser()->GetProfile()->GetPrefs()->SetInteger(
                         prefs::kRestoreOnStartup, 1);
                   }),
                   // The infobar should be hidden after the pref change.

@@ -233,7 +233,7 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   virtual void SetUpFeatureList() { feature_list_.InitWithFeatures({}, {}); }
 
   virtual void SetUpCookieControlMode() {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             content_settings::CookieControlsMode::kBlockThirdParty));
@@ -424,7 +424,7 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
                               apps::LaunchSource::kFromTest),
                           base::DoNothing());
                     },
-                    browser()->profile(), app_id))),
+                    browser()->GetProfile(), app_id))),
         WaitForWebContentsNavigation(section_id, target_app_url));
     AddDescriptionPrefix(
         steps, base::StrCat({"LaunchBrowserForWebAppInTab( ", app_id, " )"}));
@@ -593,7 +593,7 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
   }
 
   BrowserWindowInterface* InstallAndLaunchIsolatedWebApp() {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
     std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
         web_app::IsolatedWebAppBuilder(

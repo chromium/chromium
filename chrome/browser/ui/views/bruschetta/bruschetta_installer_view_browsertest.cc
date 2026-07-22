@@ -63,12 +63,12 @@ class BruschettaInstallerViewBrowserTest : public DialogBrowserTest {
     config.Set(prefs::kPolicyNameKey, "Config name");
 
     pref.Set("test-config", std::move(config));
-    browser()->profile()->GetPrefs()->SetDict(prefs::kBruschettaVMConfiguration,
-                                              std::move(pref));
+    browser()->GetProfile()->GetPrefs()->SetDict(
+        prefs::kBruschettaVMConfiguration, std::move(pref));
   }
 
   void SetBruschettaInstallerConfigurationPref() {
-    browser()->profile()->GetPrefs()->SetDict(
+    browser()->GetProfile()->GetPrefs()->SetDict(
         prefs::kBruschettaInstallerConfiguration, base::test::ParseJsonDict(R"(
       {
         "display_name": "Display name",
@@ -130,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(BruschettaInstallerViewBrowserTest,
                        ShowWithNoLearnMoreUrl) {
   // We set the learn_more link for test cases by default as that's the most
   // common case, but unset it here for this specific test.
-  browser()->profile()->GetPrefs()->SetDict(
+  browser()->GetProfile()->GetPrefs()->SetDict(
       prefs::kBruschettaInstallerConfiguration, base::DictValue());
   ShowUi("default");
   EXPECT_NE(nullptr, view_->GetOkButton());

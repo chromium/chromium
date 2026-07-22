@@ -106,7 +106,7 @@ class FirstRunDefaultBrowserPixelTest
                 -> std::unique_ptr<ProfileManagementStepController> {
               return CreateDefaultBrowserStep(host, profile, base::DoNothing());
             },
-            browser()->profile()));
+            browser()->GetProfile()));
     profile_picker_view_->views::View::AddObserver(this);
     profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
   }

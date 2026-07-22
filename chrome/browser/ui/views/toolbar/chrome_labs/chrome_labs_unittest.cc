@@ -570,7 +570,7 @@ TEST_F(ChromeLabsViewControllerTest, DISABLED_ShowFeedbackPage) {
 TEST_F(ChromeLabsViewControllerTest, CleanUpNewBadgePrefsTest) {
   const base::DictValue& new_badge_prefs =
 #if BUILDFLAG(IS_CHROMEOS)
-      browser_view()->browser()->profile()->GetPrefs()->GetDict(
+      browser_view()->browser()->GetProfile()->GetPrefs()->GetDict(
           chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
       g_browser_process->local_state()->GetDict(
@@ -591,7 +591,7 @@ TEST_F(ChromeLabsViewControllerTest, CleanUpNewBadgePrefsTest) {
 
   scoped_chrome_labs_model_data_.SetModelDataForTesting(test_experiments);
 
-  UpdateChromeLabsNewBadgePrefs(browser_view()->browser()->profile());
+  UpdateChromeLabsNewBadgePrefs(browser_view()->browser()->GetProfile());
   EXPECT_FALSE(new_badge_prefs.contains(kFirstTestFeatureId));
   EXPECT_FALSE(new_badge_prefs.contains(kTestFeatureWithVariationId));
 }

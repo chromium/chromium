@@ -901,7 +901,7 @@ TabGroupEditorBubbleView::BuildAskGeminiButton() {
 
 void TabGroupEditorBubbleView::AskGeminiPressed() {
   glic::GlicKeyedService* service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_->profile(),
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile(),
                                                          /*create=*/true);
   if (service) {
     service->instance_coordinator().ShowInstanceForTabGroup(group_);

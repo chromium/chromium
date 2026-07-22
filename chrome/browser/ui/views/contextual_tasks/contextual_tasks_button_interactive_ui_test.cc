@@ -226,7 +226,7 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
-  PrefService* GetPrefService() { return browser()->profile()->GetPrefs(); }
+  PrefService* GetPrefService() { return browser()->GetProfile()->GetPrefs(); }
 
   TestingContextualTasksUiService* GetTestingService() {
     return static_cast<TestingContextualTasksUiService*>(

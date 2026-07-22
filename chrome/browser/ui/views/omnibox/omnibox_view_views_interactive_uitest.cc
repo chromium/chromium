@@ -1409,10 +1409,10 @@ class OmniboxViewViewsOnFocusZpsTest : public OmniboxViewViewsTest {
             base::BindRepeating(&BuildMockHatsService)));
     ON_CALL(*mock_hats_service_, CanShowAnySurvey(_))
         .WillByDefault(Return(true));
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kSearchSuggestEnabled, true);
   }
 
   void TearDownOnMainThread() override { mock_hats_service_ = nullptr; }
@@ -1520,7 +1520,7 @@ class OmniboxViewViewsAIMBrowserTest : public OmniboxViewViewsTest {
         }));
   }
 
-  PrefService* prefs() { return browser()->profile()->GetPrefs(); }
+  PrefService* prefs() { return browser()->GetProfile()->GetPrefs(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2094,7 +2094,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsSendTabToSelfSubmenuEnabledTest,
                        SendTabToSelfContextMenuSubmenuEnabled) {
   auto* sync_service =
       static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
-          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+          SendTabToSelfSyncServiceFactory::GetForProfile(
+              browser()->GetProfile()));
   std::vector<send_tab_to_self::TargetDeviceInfo> devices;
   devices.emplace_back("Device 1", "guid1",
                        syncer::DeviceInfo::FormFactor::kDesktop,
@@ -2128,7 +2129,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsSendTabToSelfSubmenuDisabledTest,
                        SendTabToSelfContextMenuSubmenuDisabled) {
   auto* sync_service =
       static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
-          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+          SendTabToSelfSyncServiceFactory::GetForProfile(
+              browser()->GetProfile()));
   std::vector<send_tab_to_self::TargetDeviceInfo> devices;
   devices.emplace_back("Device 1", "guid1",
                        syncer::DeviceInfo::FormFactor::kDesktop,
@@ -2162,7 +2164,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsSendTabToSelfSubmenuEnabledTest,
                        SendTabToSelfContextMenuNotOffered) {
   auto* sync_service =
       static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
-          SendTabToSelfSyncServiceFactory::GetForProfile(browser()->profile()));
+          SendTabToSelfSyncServiceFactory::GetForProfile(
+              browser()->GetProfile()));
   sync_service->SetEntryPointDisplayReason(std::nullopt);
 
   OmniboxViewViews* omnibox =

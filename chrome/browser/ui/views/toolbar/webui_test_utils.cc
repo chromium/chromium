@@ -386,7 +386,7 @@ bool AvatarToolbarButtonTestAccessor::ShouldUseCppFallback(
   // the DOM at all when hidden. To allow these tests to pass without adding
   // ChromeOS-specific conditions to every test, we fall back to querying the
   // C++ state manager when the button is hidden.
-  Profile* profile = button->state_manager_->browser()->profile();
+  Profile* profile = button->state_manager_->browser()->GetProfile();
   return !AvatarToolbarButtonInterface::CanShowForProfile(profile);
 #else
   // On other platforms, the button is always visible for the profiles used in
@@ -419,7 +419,8 @@ bool AvatarToolbarButtonTestAccessor::GetEnabled() {
             }
             if (ShouldUseCppFallback(button)) {
 #if BUILDFLAG(IS_CHROMEOS)
-              Profile* profile = button->state_manager_->browser()->profile();
+              Profile* profile =
+                  button->state_manager_->browser()->GetProfile();
               return profile->IsOffTheRecord() && !profile->IsGuestSession() &&
                      !profile->GetOTRProfileID().IsCaptivePortal();
 #else

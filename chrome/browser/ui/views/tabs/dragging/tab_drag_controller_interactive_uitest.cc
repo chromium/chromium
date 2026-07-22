@@ -868,7 +868,7 @@ class DetachToBrowserTabDragControllerTest
     EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 #endif  // BUILDFLAG(IS_MAC)
         // Disable Split View drag and drop to avoid creating Split Views.
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kSplitViewDragAndDropEnabled, false);
   }
 
@@ -3577,8 +3577,8 @@ class VerticalTabsFullscreenDragTest
 
   void SetUpOnMainThread() override {
     DetachToBrowserTabDragControllerTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                                    true);
   }
 
  private:

@@ -2613,7 +2613,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 // profile is added.
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        PRE_ProfileNameChangesOnProfileAdded) {
-  Profile* default_profile = browser()->profile();
+  Profile* default_profile = browser()->GetProfile();
   AccountInfo default_account_info =
       FinishDiceSignIn(default_profile, "joe@gmail.com", "Joe");
   IdentityManagerFactory::GetForProfile(default_profile)
@@ -3081,7 +3081,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, DeleteProfile) {
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        DeleteProfileFromOwnTab) {
   // Open the picker in a tab.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL(chrome::kChromeUIProfilePickerUrl)));
 
@@ -3140,7 +3140,7 @@ class SupervisedProfilePickerHideGuestModeTest
 
 IN_PROC_BROWSER_TEST_F(SupervisedProfilePickerHideGuestModeTest,
                        DeleteSupervisedProfile) {
-  Profile* default_profile = browser()->profile();
+  Profile* default_profile = browser()->GetProfile();
   AccountInfo default_account_info =
       FinishDiceSignIn(default_profile, "adult@gmail.com", "Adult");
 
@@ -3187,7 +3187,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedProfilePickerHideGuestModeTest,
 
 IN_PROC_BROWSER_TEST_F(SupervisedProfilePickerHideGuestModeTest,
                        RegularProfile_GuestModeAvailable) {
-  Profile* default_profile = browser()->profile();
+  Profile* default_profile = browser()->GetProfile();
   AccountInfo default_account_info =
       FinishDiceSignIn(default_profile, "adult@gmail.com", "Adult");
 
@@ -4155,7 +4155,7 @@ IN_PROC_BROWSER_TEST_P(ProfilePickerWithGlicParamBrowserTest,
   ASSERT_TRUE(profile_entry);
   profile_entry->SetIsGlicEligible(GetParam().profiles_are_glic_eligible);
 
-  base::FilePath initial_profile_path = browser()->profile()->GetPath();
+  base::FilePath initial_profile_path = browser()->GetProfile()->GetPath();
   // Destroy the current profile to make sure no profiles are loaded.
   ProfileDestructionWaiter profile_destruction_waiter(browser()->GetProfile());
   CloseBrowserSynchronously(browser());

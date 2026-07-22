@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
                     "Reload this page, hold to see more options");
 
   // Verify appropriate accessibility properties for home button.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Home");
   find_criteria.name = "Home";
@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                        CheckHomeButtonColor) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
 
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
@@ -910,7 +910,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                        CheckSplitTabsButtonColor) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                  true);
 
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
@@ -2933,7 +2934,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarWebViewButtonVisibilityTest,
                                              find_criteria));
 
   // Disable the button via pref and wait for the tree to update.
-  browser()->profile()->GetPrefs()->SetBoolean(param.button_pref, false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(param.button_pref, false);
   content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
 
   // Verify it is gone.
@@ -3229,9 +3230,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLocationBarPriorityBrowserTest,
 
   // Unpin hideable buttons to measure baseline preferred size of non-hideable
   // controls + preferred location bar.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
-                                               false);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
+                                                  false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                  false);
 
   // Preferred width with neither of the overflowable buttons.
   const int no_buttons_width =
@@ -4702,7 +4704,7 @@ class WebUIToolbarWebViewHomeButtonBrowserTest : public InProcessBrowserTest {
     WaitForUndoBubble(webui_toolbar_view);
 
     // Verify the new home page was correctly set.
-    auto* prefs = browser()->profile()->GetPrefs();
+    auto* prefs = browser()->GetProfile()->GetPrefs();
     EXPECT_EQ(new_home_url, prefs->GetString(prefs::kHomePage));
     EXPECT_FALSE(prefs->GetBoolean(prefs::kHomePageIsNewTabPage));
 
@@ -4999,7 +5001,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        DragAndDropHomeButton) {
   std::string current_home_url =
-      browser()->profile()->GetPrefs()->GetString(prefs::kHomePage);
+      browser()->GetProfile()->GetPrefs()->GetString(prefs::kHomePage);
   std::string new_home_url = "https://www.example.test/";
   EXPECT_NE(current_home_url, new_home_url);
 
@@ -5010,7 +5012,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        DragAndDropHomeButton_BlockedJavascript) {
   WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   std::string default_homepage = prefs->GetString(prefs::kHomePage);
 
   // Directly call the drop URL method with a javascript: URL.
@@ -5030,7 +5032,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        DragAndDropHomeButtonAndUndo) {
-  auto* const prefs = browser()->profile()->GetPrefs();
+  auto* const prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetString(prefs::kHomePage, "https://www.url-a.test");
   prefs->SetBoolean(prefs::kHomePageIsNewTabPage, false);
   base::RunLoop().RunUntilIdle();
@@ -5046,7 +5048,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
                        DragAndDropHomeButtonAndUndoFromNTP) {
-  auto* const prefs = browser()->profile()->GetPrefs();
+  auto* const prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kHomePageIsNewTabPage, true);
   base::RunLoop().RunUntilIdle();
 
@@ -5076,7 +5078,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
   gfx::Point click_point =
       center - webui_toolbar_view->GetBoundsInScreen().OffsetFromOrigin();
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   GURL old_url = GURL(prefs->GetString(prefs::kHomePage));
   bool old_is_ntp = prefs->GetBoolean(prefs::kHomePageIsNewTabPage);
 

@@ -194,7 +194,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
       BubbleCoordinator()->Show(
           views::BubbleAnchor(tab_strip),
           browser()->tab_strip_model()->GetWebContentsAt(0), activity_log,
-          browser()->profile());
+          browser()->GetProfile());
     });
   }
 
@@ -204,7 +204,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
       BubbleCoordinator()->ShowForCurrentTab(
           views::BubbleAnchor(tab_strip),
           browser()->tab_strip_model()->GetWebContentsAt(0), {}, activity_log,
-          browser()->profile());
+          browser()->GetProfile());
     });
   }
 

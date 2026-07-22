@@ -95,7 +95,7 @@ TEST_F(MediaToolbarButtonContextualMenuTest, ShowMenu) {
 // Android.
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(MediaToolbarButtonContextualMenuTest, ToggleOtherSessionsItem) {
-  PrefService* pref_service = browser()->profile()->GetPrefs();
+  PrefService* pref_service = browser()->GetProfile()->GetPrefs();
   pref_service->SetBoolean(
       media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
       false);

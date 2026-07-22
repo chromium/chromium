@@ -232,7 +232,7 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
   // of the interface.
   arc::mojom::AppHost* app_host() { return app_prefs(); }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   // The handled intents list in the intent helper instance represents the arc
   // app that app service tried to launch.

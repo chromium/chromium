@@ -1661,9 +1661,10 @@ class WebUIToolbarFocusInteractiveUiTestBase
   void SetUpOnMainThread() override {
     WebUIAndViewsToolbarInteractiveUiTestBase::SetUpOnMainThread();
     // Enable/pin home and split-tabs buttons so they can be focused.
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                    true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                                    true);
     // Wait for the toolbar to load.
     ASSERT_TRUE(base::test::RunUntil([browser = browser()]() {
       InitialWebUIManager* manager = InitialWebUIManager::From(browser);

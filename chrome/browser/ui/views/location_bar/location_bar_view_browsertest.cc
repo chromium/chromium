@@ -774,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
                        MAYBE_PrefChangesAddContextButtonVisibility) {
   LocationBarView* location_bar_view = GetLocationBarView();
   OmniboxViewViews* omnibox_view = location_bar_view->omnibox_view();
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
 
   // pref is initially true to show the button.
   prefs->SetBoolean(omnibox::kShowAiModeOmniboxButton, true);

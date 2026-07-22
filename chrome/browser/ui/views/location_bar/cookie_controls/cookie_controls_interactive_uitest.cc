@@ -164,7 +164,7 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
   }
 
   void BlockThirdPartyCookies() {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             content_settings::CookieControlsMode::kBlockThirdParty));

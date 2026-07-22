@@ -104,7 +104,7 @@ class FeaturePromoDialogTest : public TestBase {
   }
 
   void TearDownOnMainThread() override {
-    Profile* const profile = browser()->profile();
+    Profile* const profile = browser()->GetProfile();
     web_app::WebAppRegistrar& registrar =
         web_app::WebAppProvider::GetForTest(profile)->registrar_unsafe();
     for (const auto& app_id : registrar.GetAppIds()) {

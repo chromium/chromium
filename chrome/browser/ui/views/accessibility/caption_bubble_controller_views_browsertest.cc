@@ -908,12 +908,12 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
                        UpdateCaptionStyleTextColor) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
-                                               true);
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                                  true);
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "en");
-  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
-                                              "fr");
+  browser()->GetProfile()->GetPrefs()->SetString(
+      prefs::kLiveCaptionLanguageCode, "fr");
 
   SkColor default_color =
       BrowserWindow::FromBrowser(browser())->GetColorProvider()->GetColor(
@@ -1447,12 +1447,12 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
   int line_height = 18;
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
-                                               false);
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                                  false);
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "en");
-  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
-                                              "en");
+  browser()->GetProfile()->GetPrefs()->SetString(
+      prefs::kLiveCaptionLanguageCode, "en");
 
   OnPartialTranscription("Penguins' feet change colors as they get older.");
   EXPECT_TRUE(IsWidgetVisible());
@@ -1464,8 +1464,8 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
     ASSERT_FALSE(GetScrollLockButton()->GetVisible());
   }
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                                  true);
   ASSERT_FALSE(GetSourceLanguageButton()->GetVisible());
   ASSERT_FALSE(GetTranslateIconAndText()->GetVisible());
   ASSERT_FALSE(GetTranslateArrowIcon()->GetVisible());
@@ -1475,8 +1475,8 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
     ASSERT_FALSE(GetScrollLockButton()->GetVisible());
   }
 
-  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
-                                              "fr");
+  browser()->GetProfile()->GetPrefs()->SetString(
+      prefs::kLiveCaptionLanguageCode, "fr");
   OnPartialTranscription(
       "Sea otters can hold their breath for over 5 minutes.");
   ASSERT_TRUE(GetSourceLanguageButton()->GetVisible());
@@ -1501,8 +1501,8 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
   EXPECT_EQ(line_height / 2, GetSourceLanguageLabel()->GetLineHeight());
   EXPECT_EQ(line_height / 2, GetTargetLanguageLabel()->GetLineHeight());
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                                  false);
   ASSERT_TRUE(GetSourceLanguageButton()->GetVisible());
 }
 
@@ -1647,8 +1647,8 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, HeaderView) {
   EXPECT_EQ(4u, translate_header_container->children().size());
   EXPECT_EQ(2u, GetTranslateIconAndText()->children().size());
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                                  false);
   auto* source_language_button = GetSourceLanguageButton();
   ASSERT_TRUE(source_language_button->GetVisible());
   ASSERT_FALSE(GetTranslateIconAndText()->GetVisible());
@@ -1672,12 +1672,12 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, HeaderView) {
   EXPECT_EQ(u"English", source_language_button->GetText());
 
   // Enable Live Translate.
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "en");
-  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
-                                              "fr");
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetString(
+      prefs::kLiveCaptionLanguageCode, "fr");
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                                  true);
 
   auto* translate_language_button = GetTargetLanguageButton();
   ASSERT_TRUE(source_language_button->GetVisible());
@@ -1730,12 +1730,12 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LabelTextDirection) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
-                                               true);
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                                  true);
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "en");
-  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
-                                              "fr");
+  browser()->GetProfile()->GetPrefs()->SetString(
+      prefs::kLiveCaptionLanguageCode, "fr");
 
   OnPartialTranscription(
       "Chipmunks are born blind and hairless, and they weigh only about 3 "
@@ -1746,7 +1746,7 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LabelTextDirection) {
   EXPECT_EQ(gfx::HorizontalAlignment::ALIGN_LEFT,
             GetLabel()->GetHorizontalAlignment());
 
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "iw");
   OnPartialTranscription("Sloths can sleep for up to 20 hours a day.");
   EXPECT_EQ(gfx::HorizontalAlignment::ALIGN_RIGHT,
@@ -1754,12 +1754,12 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, LabelTextDirection) {
 }
 
 IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, TranslateSynonyms) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
-                                               true);
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                                  true);
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "en");
-  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
-                                              "fr");
+  browser()->GetProfile()->GetPrefs()->SetString(
+      prefs::kLiveCaptionLanguageCode, "fr");
 
   OnPartialTranscription(
       "Chipmunks are born blind and hairless, and they weigh only about 3 "
@@ -1773,16 +1773,16 @@ IN_PROC_BROWSER_TEST_P(CaptionBubbleControllerViewsTest, TranslateSynonyms) {
   auto* target_language_label = GetTargetLanguageLabel();
   ASSERT_EQ(u"English", target_language_label->GetText());
 
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "he");
   ASSERT_EQ(u"Hebrew", target_language_label->GetText());
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "kok");
   ASSERT_EQ(u"Konkani", target_language_label->GetText());
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "jv");
   ASSERT_EQ(u"Javanese", target_language_label->GetText());
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetString(
       prefs::kLiveTranslateTargetLanguageCode, "fil");
   ASSERT_EQ(u"Filipino", target_language_label->GetText());
 

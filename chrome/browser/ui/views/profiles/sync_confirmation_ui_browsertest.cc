@@ -309,7 +309,7 @@ class SyncConfirmationUIWindowPixelTest
         ProfilePicker::Params::ForTesting(
             GetParam().is_first_run ? ProfilePicker::EntryPoint::kFirstRun
                                     : ProfilePicker::EntryPoint::kOnStartup,
-            browser()->profile()->GetPath()),
+            browser()->GetProfile()->GetPath()),
         ProfileManagementFlowController::Step::kPostSignInFlow,
         /*step_controller_factory=*/
         base::BindRepeating([](ProfilePickerWebContentsHost* host) {

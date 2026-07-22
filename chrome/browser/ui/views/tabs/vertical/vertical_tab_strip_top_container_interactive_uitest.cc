@@ -42,7 +42,7 @@ class VerticalTabStripTopContainerInteractiveUiTest
 
   auto SetPinned(const char* pref, bool pinned) {
     return Do([this, pref, pinned]() {
-      browser()->profile()->GetPrefs()->SetBoolean(pref, pinned);
+      browser()->GetProfile()->GetPrefs()->SetBoolean(pref, pinned);
     });
   }
 };

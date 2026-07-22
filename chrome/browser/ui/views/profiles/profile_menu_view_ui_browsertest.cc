@@ -747,13 +747,13 @@ class ProfileMenuViewPixelTest
     }
 
     if (GetParam().with_local_data == WithLocalData::kWithBookmarksLocalData) {
-      browser()->profile()->GetPrefs()->SetString(
+      browser()->GetProfile()->GetPrefs()->SetString(
           prefs::kGoogleServicesLastSyncingGaiaId,
           account_info.gaia.ToString());
     }
 
     if (GetParam().with_ai_avatar_ring) {
-      browser()->profile()->GetPrefs()->SetInteger(
+      browser()->GetProfile()->GetPrefs()->SetInteger(
           subscription_eligibility::prefs::kAiSubscriptionTier, 1);
     }
 

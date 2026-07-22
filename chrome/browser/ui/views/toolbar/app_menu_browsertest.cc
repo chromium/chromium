@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest,
                        InvokeUi_profile_menu_in_app_menu_signin_not_allowed) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   ShowAndVerifyUi();
 }
 
@@ -589,7 +589,7 @@ class AppMenuProfileGradientRingBrowserTest : public AppMenuBrowserTest {
   }
 
   void SetAiSubscriptionTierForProfile(int32_t subscription_tier) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         subscription_eligibility::prefs::kAiSubscriptionTier,
         subscription_tier);
   }

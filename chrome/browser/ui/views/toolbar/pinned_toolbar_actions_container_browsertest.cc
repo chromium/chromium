@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(PinnedToolbarActionsContainerBrowserTest,
   PinnedActionToolbarButton* button =
       container()->GetButtonFor(kActionQrCodeGenerator);
   EXPECT_EQ(button, nullptr);
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_EQ(true, prefs->GetBoolean(prefs::kDesktopSharingHubEnabled));
 
   PinnedToolbarActionsModel* const actions_model =

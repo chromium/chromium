@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        PartitionedCookiesAndAllowedThirdParty) {
   // Allow third-party cookies.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kOff));
 
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogBrowserTest,
                        PartitionedCookiesAndBlockedThirdParty) {
   // Block third-party cookies.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
 

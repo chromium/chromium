@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 
   std::unique_ptr<content::WebContents> initial_web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   delegate->SetWebContents(initial_web_contents.get());
 
   EXPECT_EQ(initial_web_contents->GetDelegate(), delegate);
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerDelegateViewsBrowserTest,
 
   std::unique_ptr<content::WebContents> new_web_contents =
       content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
+          content::WebContents::CreateParams(browser()->GetProfile()));
   delegate->SetWebContents(new_web_contents.get());
 
   EXPECT_EQ(initial_web_contents->GetDelegate(), nullptr);

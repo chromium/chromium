@@ -42,7 +42,7 @@ class TabStripComboButtonInteractiveUiTest
 
   auto SetPinned(const char* pref, bool pinned) {
     return Do([this, pref, pinned]() {
-      browser()->profile()->GetPrefs()->SetBoolean(pref, pinned);
+      browser()->GetProfile()->GetPrefs()->SetBoolean(pref, pinned);
     });
   }
 
@@ -163,30 +163,30 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest, UnpinTabSearch) {
-  RunTestSequence(
-      EnsureBothButtonsVisible(), ExecuteCommand(IDC_TAB_SEARCH_TOGGLE_PIN),
-      // Verify button is hidden and pref is updated.
-      WaitForHide(kTabSearchButtonElementId),
-      CheckResult(
-          [this]() {
-            return browser()->profile()->GetPrefs()->GetBoolean(
-                prefs::kTabSearchPinnedToTabstrip);
-          },
-          false));
+  RunTestSequence(EnsureBothButtonsVisible(),
+                  ExecuteCommand(IDC_TAB_SEARCH_TOGGLE_PIN),
+                  // Verify button is hidden and pref is updated.
+                  WaitForHide(kTabSearchButtonElementId),
+                  CheckResult(
+                      [this]() {
+                        return browser()->GetProfile()->GetPrefs()->GetBoolean(
+                            prefs::kTabSearchPinnedToTabstrip);
+                      },
+                      false));
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
                        UnpinProjectsPanel) {
-  RunTestSequence(
-      EnsureBothButtonsVisible(), ExecuteCommand(IDC_PROJECTS_PANEL_TOGGLE_PIN),
-      // Verify button is hidden and pref is updated.
-      WaitForHide(kVerticalTabStripProjectsButtonElementId),
-      CheckResult(
-          [this]() {
-            return browser()->profile()->GetPrefs()->GetBoolean(
-                prefs::kProjectsPanelPinnedToTabstrip);
-          },
-          false));
+  RunTestSequence(EnsureBothButtonsVisible(),
+                  ExecuteCommand(IDC_PROJECTS_PANEL_TOGGLE_PIN),
+                  // Verify button is hidden and pref is updated.
+                  WaitForHide(kVerticalTabStripProjectsButtonElementId),
+                  CheckResult(
+                      [this]() {
+                        return browser()->GetProfile()->GetPrefs()->GetBoolean(
+                            prefs::kProjectsPanelPinnedToTabstrip);
+                      },
+                      false));
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
@@ -233,7 +233,7 @@ class TabStripComboButtonEverythingMenuInteractiveUiTest
 
   auto SetPinned(const char* pref, bool pinned) {
     return Do([this, pref, pinned]() {
-      browser()->profile()->GetPrefs()->SetBoolean(pref, pinned);
+      browser()->GetProfile()->GetPrefs()->SetBoolean(pref, pinned);
     });
   }
 
@@ -276,17 +276,16 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonEverythingMenuInteractiveUiTest,
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonEverythingMenuInteractiveUiTest,
                        UnpinEverythingMenu) {
-  RunTestSequence(
-      EnsureBothButtonsVisible(),
-      ExecuteCommand(IDC_EVERYTHING_MENU_TOGGLE_PIN),
-      // Verify button is hidden and pref is updated.
-      WaitForHide(kSavedTabGroupButtonElementId),
-      CheckResult(
-          [this]() {
-            return browser()->profile()->GetPrefs()->GetBoolean(
-                prefs::kEverythingMenuPinnedToTabstrip);
-          },
-          false));
+  RunTestSequence(EnsureBothButtonsVisible(),
+                  ExecuteCommand(IDC_EVERYTHING_MENU_TOGGLE_PIN),
+                  // Verify button is hidden and pref is updated.
+                  WaitForHide(kSavedTabGroupButtonElementId),
+                  CheckResult(
+                      [this]() {
+                        return browser()->GetProfile()->GetPrefs()->GetBoolean(
+                            prefs::kEverythingMenuPinnedToTabstrip);
+                      },
+                      false));
 }
 
 class TabStripComboButtonHorizontalInteractiveUiTest
@@ -299,7 +298,7 @@ class TabStripComboButtonHorizontalInteractiveUiTest
 
   auto SetPinned(const char* pref, bool pinned) {
     return Do([this, pref, pinned]() {
-      browser()->profile()->GetPrefs()->SetBoolean(pref, pinned);
+      browser()->GetProfile()->GetPrefs()->SetBoolean(pref, pinned);
     });
   }
 

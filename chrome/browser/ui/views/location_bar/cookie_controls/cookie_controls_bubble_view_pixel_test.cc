@@ -147,7 +147,7 @@ class CookieControlsBubbleViewPixelTestBase : public DialogBrowserTest {
   }
 
   Profile* incognito_profile() {
-    return browser()->profile()->GetPrimaryOTRProfile(true);
+    return browser()->GetProfile()->GetPrimaryOTRProfile(true);
   }
 
  protected:
@@ -181,7 +181,7 @@ class CookieControlsBubbleViewPixelTest
       const CookieControlsBubbleViewPixelTest&) = delete;
 
   void BlockThirdPartyCookies() {
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             content_settings::CookieControlsMode::kBlockThirdParty));

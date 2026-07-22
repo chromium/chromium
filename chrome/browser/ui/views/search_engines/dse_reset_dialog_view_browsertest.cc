@@ -183,7 +183,7 @@ class DseResetDialogFeatureDisabledBrowserTest : public InProcessBrowserTest {
 // Verifies the dialog is not shown when the feature flag is disabled.
 IN_PROC_BROWSER_TEST_F(DseResetDialogFeatureDisabledBrowserTest,
                        DialogNotShown) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kUnacknowledgedDefaultSearchEngineResetOccurred, true);
 
   search_engines::MaybeShowSearchEngineResetNotification(
@@ -219,7 +219,7 @@ class DseResetDialogShouldShowTest
       public testing::WithParamInterface<ShowDialogTestParam> {};
 
 IN_PROC_BROWSER_TEST_P(DseResetDialogShouldShowTest, DialogShownLogic) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   ShowDialogTestParam param = GetParam();
 
   default_search_manager()->SetResetTimeForLastShownNotification(

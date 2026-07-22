@@ -55,8 +55,8 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   }
 
   void SetAlwaysShowActionPref(bool always_show) {
-    CastToolbarButtonController::SetAlwaysShowActionPref(browser()->profile(),
-                                                         always_show);
+    CastToolbarButtonController::SetAlwaysShowActionPref(
+        browser()->GetProfile(), always_show);
   }
 
  protected:
@@ -71,7 +71,8 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
   }
 
   CastToolbarButtonController* action_controller() {
-    return MediaRouterUIService::Get(browser()->profile())->action_controller();
+    return MediaRouterUIService::Get(browser()->GetProfile())
+        ->action_controller();
   }
 
   Issue issue_;
@@ -106,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterUIBrowserTest,
   // Opening and closing a window shouldn't affect the state of the ephemeral
   // icon. Creating and removing the icon with multiple windows open should
   // also work.
-  Browser* browser2 = CreateBrowser(browser()->profile());
+  Browser* browser2 = CreateBrowser(browser()->GetProfile());
   EXPECT_TRUE(ToolbarIconExists());
   action_controller()->OnRoutesUpdated(std::vector<MediaRoute>());
   EXPECT_FALSE(ToolbarIconExists());

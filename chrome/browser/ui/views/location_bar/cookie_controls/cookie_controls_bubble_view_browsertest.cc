@@ -54,7 +54,7 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
 
     // Block 3PC and navigate to a page which accesses 3PC, to ensure entry
     // point is available.
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             content_settings::CookieControlsMode::kBlockThirdParty));
@@ -152,7 +152,7 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
   }
 
   Profile* incognito_profile() {
-    return browser()->profile()->GetPrimaryOTRProfile(true);
+    return browser()->GetProfile()->GetPrimaryOTRProfile(true);
   }
 
  private:

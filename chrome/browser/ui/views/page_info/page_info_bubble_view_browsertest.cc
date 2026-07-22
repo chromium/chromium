@@ -1061,8 +1061,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 // warning. The reset decisions button should be shown.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        ResetWarningDecisionsButtonHttpsFirstMode) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                                  true);
 
   GURL http_url = embedded_test_server()->GetURL("foo.com", "/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
@@ -1077,8 +1077,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_DECISIONS_LABEL);
   EXPECT_TRUE(reset_decisions_label->GetVisible());
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                                  false);
 }
 
 // Navigate to an HTTP page with HTTPS-Upgrades enabled but not HTTPS-First
@@ -1086,8 +1086,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
 // shown.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        ResetWarningDecisionsButtonHttpsUpgrades) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled,
+                                                  false);
 
   GURL http_url = embedded_test_server()->GetURL("foo.com", "/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
@@ -1458,18 +1458,18 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
   }
 
   void SetCookieControlsMode(content_settings::CookieControlsMode mode) {
-    browser()->profile()->GetPrefs()->SetInteger(prefs::kCookieControlsMode,
-                                                 static_cast<int>(mode));
+    browser()->GetProfile()->GetPrefs()->SetInteger(prefs::kCookieControlsMode,
+                                                    static_cast<int>(mode));
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
   void EnableCookieSync() {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         chromeos::prefs::kFloatingSsoEnabled, true);
   }
 
   void SetBlockedDomainsForCookieSync(base::ListValue domains) {
-    browser()->profile()->GetPrefs()->SetList(
+    browser()->GetProfile()->GetPrefs()->SetList(
         chromeos::prefs::kFloatingSsoDomainBlocklist, std::move(domains));
   }
 #endif
@@ -1504,11 +1504,11 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
 
     // The preference should only be recorded when blocking 3P cookies.
     const bool block_third_party =
-        browser()->profile()->GetPrefs()->GetInteger(
+        browser()->GetProfile()->GetPrefs()->GetInteger(
             prefs::kCookieControlsMode) ==
             static_cast<int>(
                 content_settings::CookieControlsMode::kBlockThirdParty) ||
-        browser()->profile()->IsIncognitoProfile();
+        browser()->GetProfile()->IsIncognitoProfile();
     EXPECT_EQ(browser()->GetProfile()->GetPrefs()->GetBoolean(
                   prefs::kInContextCookieControlsOpened),
               block_third_party);

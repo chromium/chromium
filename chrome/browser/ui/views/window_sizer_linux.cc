@@ -45,7 +45,7 @@ void WindowSizerLinux::AdjustWorkAreaForPlatform(gfx::Rect& work_area) {
   if (browser() && (!ui::OzonePlatform::GetInstance()
                          ->GetPlatformRuntimeProperties()
                          .supports_server_side_window_decorations ||
-                    browser()->profile()->GetPrefs()->GetBoolean(
+                    browser()->GetProfile()->GetPrefs()->GetBoolean(
                         prefs::kUseCustomChromeFrame))) {
     work_area.Inset(gfx::ShadowValue::GetMargin(
         BrowserFrameViewLinux::GetShadowValues(true)));

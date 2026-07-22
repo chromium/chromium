@@ -435,7 +435,7 @@ class ProfilePickerUIPixelTest
           policy::ManagementServiceFactory::GetForProfile(
               browser()->GetProfile()),
           policy::EnterpriseManagementAuthority::CLOUD);
-      browser()->profile()->GetPrefs()->SetString(
+      browser()->GetProfile()->GetPrefs()->SetString(
           prefs::kEnterpriseCustomLabelForProfile, "Work");
     }
 #endif

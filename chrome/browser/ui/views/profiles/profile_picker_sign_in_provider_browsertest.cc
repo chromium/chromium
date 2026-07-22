@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
         signin_metrics::AccessPoint::kForYouFre,
         std::string(),
         signin_finished_callback.Get(),
-        browser()->profile()->GetPath()};
+        browser()->GetProfile()->GetPath()};
 
     EXPECT_CALL(*host(), ShowScreen(_, _, _))
         .WillOnce([&](content::WebContents* contents, const GURL& url,

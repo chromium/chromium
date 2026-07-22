@@ -179,20 +179,20 @@ IN_PROC_BROWSER_TEST_P(ForwardButtonAccessibilityTest,
   RunTestSequence(
       // Start visible
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
-                                                     true);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            prefs::kShowForwardButton, true);
       }),
       WaitForShow(kToolbarForwardButtonElementId),
       // Hide it
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
-                                                     false);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            prefs::kShowForwardButton, false);
       }),
       WaitForHide(kToolbarForwardButtonElementId),
       // Show it again
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton,
-                                                     true);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            prefs::kShowForwardButton, true);
       }),
       WaitForShow(kToolbarForwardButtonElementId));
 }

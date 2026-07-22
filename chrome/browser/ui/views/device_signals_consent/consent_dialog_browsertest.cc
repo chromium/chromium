@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ConsentDialogUiTest, MAYBE_GetConsentDialogBodyTest) {
   builder_with_domain.OverridePolicyConnectorIsManagedForTesting(true);
   auto profile_with_domain = builder_with_domain.Build();
 
-  auto* profile_with_hosted_domain = browser()->profile();
+  auto* profile_with_hosted_domain = browser()->GetProfile();
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()

@@ -64,8 +64,8 @@ IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest, DISABLED_LeftClickHome) {
   RunTestSequence(
       // Show the home button first to ensure it's available.
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
-                                                     true);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                        true);
       }),
       InstrumentTab(kWebContentsElementId),
       // Navigate away from home
@@ -103,8 +103,8 @@ IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest, MAYBE_MiddleClickHome) {
   RunTestSequence(
       // Show the home button first.
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
-                                                     true);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                        true);
       }),
       InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, url),
@@ -124,8 +124,8 @@ IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest, AccessibilityNode) {
 
   RunTestSequence(
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
-                                                     true);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                        true);
       }),
       WaitForShow(kToolbarHomeButtonElementId),
       // For WebUI, wait for the accessibility node to be ready.
@@ -171,20 +171,20 @@ IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest,
   RunTestSequence(
       // Start visible
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
-                                                     true);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                        true);
       }),
       WaitForShow(kToolbarHomeButtonElementId),
       // Hide it
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
-                                                     false);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                        false);
       }),
       WaitForHide(kToolbarHomeButtonElementId),
       // Show it again
       Do([this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
-                                                     true);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton,
+                                                        true);
       }),
       WaitForShow(kToolbarHomeButtonElementId));
 }

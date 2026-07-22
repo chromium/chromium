@@ -46,7 +46,7 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         bookmarks::prefs::kShowBookmarkBar, true);
   }
 

@@ -83,8 +83,8 @@ class MediaRouterUIInteractiveUITest : public InProcessBrowserTest {
   }
 
   void SetAlwaysShowActionPref(bool always_show) {
-    CastToolbarButtonController::SetAlwaysShowActionPref(browser()->profile(),
-                                                         always_show);
+    CastToolbarButtonController::SetAlwaysShowActionPref(
+        browser()->GetProfile(), always_show);
   }
 
  private:

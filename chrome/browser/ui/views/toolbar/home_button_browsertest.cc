@@ -29,7 +29,7 @@ class HomeButtonUiTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    auto* const prefs = browser()->profile()->GetPrefs();
+    auto* const prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(prefs::kShowHomeButton, true);
     HomePageUndoBubbleCoordinator coordinator(prefs);
     ui::TrackedElement* home_button_element = nullptr;

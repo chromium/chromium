@@ -1916,7 +1916,7 @@ class FirstRunWithHatsInteractiveUiTest
     FirstRunInteractiveUiBaseTest::SetUpOnMainThread();
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-            CHECK_DEREF(browser()).profile(),
+            CHECK_DEREF(browser()).GetProfile(),
             base::BindRepeating(&BuildMockHatsService)));
   }
 

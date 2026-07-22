@@ -195,7 +195,7 @@ class DeviceSignalsDisclaimerUIWindowPixelTest
     SignInWithAccount(AccountManagementStatus::kManaged);
 
     profile_picker_view_ = new ProfileManagementStepTestView(
-        ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
+        ProfilePicker::Params::ForFirstRun(browser()->GetProfile()->GetPath(),
                                            base::DoNothing()),
         ProfileManagementFlowController::Step::kDeviceSignalsDisclaimer,
         /*step_controller_factory=*/
@@ -395,7 +395,7 @@ class DeviceSignalsDisclaimerStartupInteractiveTest
                                                       true);
 
     // Reset permanent consent preference to false.
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         device_signals::prefs::kDeviceSignalsPermanentConsentReceived, false);
 
     ProfileManagementDisclaimerServiceFactory::GetForProfile(

@@ -118,7 +118,7 @@ class FirstRunFeatureShowcasePixelTest
                 -> std::unique_ptr<ProfileManagementStepController> {
               return CreateFeatureShowcaseStep(host, profile);
             },
-            browser()->profile()));
+            browser()->GetProfile()));
 
     profile_picker_view_->views::View::AddObserver(this);
     profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);

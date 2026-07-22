@@ -71,7 +71,7 @@ class GlicButtonTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, ContextMenuPinned) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicPinnedToTabstrip, true);
 
   glic_button()->ShowContextMenuForViewImpl(glic_button(), gfx::Point(),
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, ContextMenuPinned) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, ContextMenuUnpinned) {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       glic::prefs::kGlicPinnedToTabstrip, false);
 
   glic_button()->ShowContextMenuForViewImpl(glic_button(), gfx::Point(),
@@ -89,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, ContextMenuUnpinned) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, UnpinCommand) {
-  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  PrefService* profile_prefs = browser()->GetProfile()->GetPrefs();
   profile_prefs->SetBoolean(glic::prefs::kGlicPinnedToTabstrip, true);
 
   glic_button()->ExecuteCommand(IDC_GLIC_TOGGLE_PIN, ui::EF_NONE);

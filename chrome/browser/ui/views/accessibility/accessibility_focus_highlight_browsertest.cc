@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
   AccessibilityFocusHighlight::SkipActivationCheckForTesting();
   AccessibilityFocusHighlight::UseDefaultColorForTesting();
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityFocusHighlightEnabled, true);
 
   // The web page has a background with a specific color. Keep looping until we
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityFocusHighlightBrowserTest,
   AccessibilityFocusHighlight::SetNoFadeForTesting();
   AccessibilityFocusHighlight::SkipActivationCheckForTesting();
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityFocusHighlightEnabled, true);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),

@@ -1203,7 +1203,7 @@ void TabStrip::NewTabButtonPressed(const ui::Event& event) {
   new_tab_button_pressed_start_time_ = base::TimeTicks::Now();
 
   base::RecordAction(base::UserMetricsAction("NewTab_Button"));
-  GetBrowser()->profile()->SetUserData(
+  GetBrowser()->GetProfile()->SetUserData(
       NewTabGroupingUserData::kNewTabGroupingUserDataKey,
       std::make_unique<NewTabGroupingUserData>(
           GetBrowser()->tab_strip_model()->GetActiveTab()->GetGroup()));

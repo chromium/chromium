@@ -61,7 +61,7 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    PinnedToolbarActionsModel::Get(browser()->profile())
+    PinnedToolbarActionsModel::Get(browser()->GetProfile())
         ->UpdatePinnedState(kActionRouteMedia, true);
     CHECK(!features::IsWebUIPinnedToolbarActionsEnabled())
         << "Test needs modification to support WebUIPinnedToolbarActions";
@@ -73,7 +73,7 @@ class CastBrowserControllerTest : public InProcessBrowserTest {
     controller_ =
         browser()->browser_window_features()->cast_browser_controller();
     media_router_ =
-        MediaRouterFactory::GetApiForBrowserContext(browser()->profile());
+        MediaRouterFactory::GetApiForBrowserContext(browser()->GetProfile());
 
     const ui::ColorProvider* color_provider = button_->GetColorProvider();
     const int icon_size =
@@ -157,15 +157,15 @@ IN_PROC_BROWSER_TEST_F(CastBrowserControllerTest, UpdateIssues) {
 
 IN_PROC_BROWSER_TEST_F(CastBrowserControllerTest, PausedIcon) {
   // Enable the proper prefs.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled,
+                                                  true);
 
   controller_->UpdateIcon();
   EXPECT_TRUE(IsIdleIcon());
 
   static_cast<MediaRouterDesktop*>(
       media_router::MediaRouterFactory::GetApiForBrowserContext(
-          browser()->profile()))
+          browser()->GetProfile()))
       ->OnRoutesUpdated(mojom::MediaRouteProviderId::CAST,
                         local_display_route_list_);
 
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(CastBrowserControllerTest, PausedIcon) {
   status->can_play_pause = true;
   status->play_state = mojom::MediaStatus::PlayState::PAUSED;
   media_router::MediaRouterFactory::GetApiForBrowserContext(
-      browser()->profile())
+      browser()->GetProfile())
       ->GetMirroringMediaControllerHost("routeId1")
       ->OnMediaStatusUpdated(std::move(status));
 

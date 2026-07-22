@@ -166,11 +166,11 @@ class InlineLocationSignalingE2EInteractiveUiTest
     // subview focus checks
     ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSearchSuggestEnabled,
-                                                 true);
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kSearchSuggestEnabled, true);
     // Privacy Documentation: Anonymized data collection must be granted for
     // `SearchProvider` payload transmissions
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
     // Surgical Fix: Increase the global provider timeout specifically for this
@@ -204,7 +204,7 @@ class InlineLocationSignalingE2EInteractiveUiTest
 
 IN_PROC_BROWSER_TEST_P(InlineLocationSignalingE2EInteractiveUiTest,
                        VerifyE2EOrdering) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
