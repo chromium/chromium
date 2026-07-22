@@ -4,18 +4,10 @@
 
 #include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 
-#include <memory>
-#include <utility>
-
 #include "base/check.h"
-#include "base/check_deref.h"
-#include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/account_managed_status_finder.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
+#include "base/functional/callback.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder_outcome.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
@@ -27,31 +19,26 @@ namespace {
 
 using PreconditionState = syncer::DataTypeController::PreconditionState;
 
-// Determines if the `finder`'s account is eligible to use the CONTACT_INFO
+// Determines if the signed-in account is eligible to use the CONTACT_INFO
 // type based on its managed state. Dasher users are not supported.
 PreconditionState GetPreconditionStateFromAccountManagedStatus(
-    const signin::AccountManagedStatusFinder* finder) {
+    signin::AccountManagedStatusFinderOutcome account_managed_status) {
   // If the feature is enabled, all account types are supported.
   if (base::FeatureList::IsEnabled(
           syncer::kSyncEnableContactInfoDataTypeForDasherUsers)) {
     return PreconditionState::kPreconditionsMet;
   }
-  // The `finder` should generally exist. But since it is non-obvious when this
-  // code is exactly executed, its existence is checked as a safeguard.
-  if (!finder) {
-    return PreconditionState::kMustStopAndKeepData;
-  }
-  switch (finder->GetOutcome()) {
-    case signin::AccountManagedStatusFinder::Outcome::kConsumerGmail:
-    case signin::AccountManagedStatusFinder::Outcome::kConsumerWellKnown:
-    case signin::AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown:
-    case signin::AccountManagedStatusFinder::Outcome::kEnterpriseGoogleDotCom:
+  switch (account_managed_status) {
+    case signin::AccountManagedStatusFinderOutcome::kConsumerGmail:
+    case signin::AccountManagedStatusFinderOutcome::kConsumerWellKnown:
+    case signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown:
+    case signin::AccountManagedStatusFinderOutcome::kEnterpriseGoogleDotCom:
       return PreconditionState::kPreconditionsMet;
-    case signin::AccountManagedStatusFinder::Outcome::kEnterprise:
+    case signin::AccountManagedStatusFinderOutcome::kEnterprise:
       return PreconditionState::kMustStopAndClearData;
-    case signin::AccountManagedStatusFinder::Outcome::kPending:
-    case signin::AccountManagedStatusFinder::Outcome::kError:
-    case signin::AccountManagedStatusFinder::Outcome::kTimeout:
+    case signin::AccountManagedStatusFinderOutcome::kPending:
+    case signin::AccountManagedStatusFinderOutcome::kError:
+    case signin::AccountManagedStatusFinderOutcome::kTimeout:
       // If the account status cannot be determined (immediately), keep the data
       // to prevent redownloding once the status was determined.
       return PreconditionState::kMustStopAndKeepData;
@@ -62,27 +49,10 @@ PreconditionState GetPreconditionStateFromAccountManagedStatus(
 
 ContactInfoPreconditionChecker::ContactInfoPreconditionChecker(
     syncer::SyncService* sync_service,
-    signin::IdentityManager* identity_manager,
     base::RepeatingClosure on_precondition_changed)
-    : identity_manager_(CHECK_DEREF(identity_manager)),
-      on_precondition_changed_(std::move(on_precondition_changed)) {
+    : on_precondition_changed_(std::move(on_precondition_changed)) {
   CHECK(sync_service);
   sync_service_observation_.Observe(sync_service);
-  // When support for Dasher users is not enabled, the managed-status of the
-  // account needs to be determined.
-  // Note that the controller is instantiated even when there's no signed-in
-  // account.
-  CoreAccountInfo account = GetSyncService()->GetAccountInfo();
-  if (!account.IsEmpty() &&
-      !base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeForDasherUsers)) {
-    managed_status_finder_ =
-        std::make_unique<signin::AccountManagedStatusFinder>(
-            &identity_manager_.get(), GetSyncService()->GetAccountInfo(),
-            base::BindOnce(
-                &ContactInfoPreconditionChecker::AccountTypeDetermined,
-                base::Unretained(this)));
-  }
 }
 
 ContactInfoPreconditionChecker::~ContactInfoPreconditionChecker() = default;
@@ -101,34 +71,17 @@ PreconditionState ContactInfoPreconditionChecker::GetPreconditionState(
     return PreconditionState::kMustStopAndClearData;
   }
   // Exclude Dasher accounts.
-  // TODO(crbug.com/40897778): Use the account-managed status from `context`
-  // once it is always populated.
   return GetPreconditionStateFromAccountManagedStatus(
-      managed_status_finder_.get());
+      context.account_managed_status);
 }
 
 void ContactInfoPreconditionChecker::OnStateChanged(syncer::SyncService* sync) {
   CHECK_EQ(sync, GetSyncService());
-  // Recreate the status finder when the account has changed.
-  if (!managed_status_finder_ ||
-      managed_status_finder_->GetAccountInfo().account_id !=
-          GetSyncService()->GetAccountInfo().account_id) {
-    managed_status_finder_ =
-        std::make_unique<signin::AccountManagedStatusFinder>(
-            &identity_manager_.get(), GetSyncService()->GetAccountInfo(),
-            base::BindOnce(
-                &ContactInfoPreconditionChecker::AccountTypeDetermined,
-                base::Unretained(this)));
-  }
   on_precondition_changed_.Run();
 }
 
 void ContactInfoPreconditionChecker::OnSyncShutdown(syncer::SyncService* sync) {
   sync_service_observation_.Reset();
-}
-
-void ContactInfoPreconditionChecker::AccountTypeDetermined() {
-  on_precondition_changed_.Run();
 }
 
 const syncer::SyncService* ContactInfoPreconditionChecker::GetSyncService()

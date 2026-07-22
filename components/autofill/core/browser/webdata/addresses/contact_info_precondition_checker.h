@@ -5,13 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ADDRESSES_CONTACT_INFO_PRECONDITION_CHECKER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ADDRESSES_CONTACT_INFO_PRECONDITION_CHECKER_H_
 
-#include <memory>
-
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "components/signin/public/identity_manager/account_managed_status_finder.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
@@ -25,11 +20,9 @@ namespace autofill {
 class ContactInfoPreconditionChecker : public syncer::SyncServiceObserver {
  public:
   // `on_precondition_changed` is called whenever the result of
-  // `GetPreconditionState()` has possibly changed. Callers must ensure that
-  // `identity_manager` outlives this instance.
+  // `GetPreconditionState()` has possibly changed.
   ContactInfoPreconditionChecker(
       syncer::SyncService* sync_service,
-      signin::IdentityManager* identity_manager,
       base::RepeatingClosure on_precondition_changed);
   ~ContactInfoPreconditionChecker() override;
 
@@ -41,18 +34,13 @@ class ContactInfoPreconditionChecker : public syncer::SyncServiceObserver {
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
-  // Called by the `managed_status_finder_` when it determines the account type.
-  void AccountTypeDetermined();
-
   // Returns the SyncService, or `nullptr` after `OnSyncShutdown()`.
   const syncer::SyncService* GetSyncService() const;
 
-  const raw_ref<signin::IdentityManager> identity_manager_;
   const base::RepeatingClosure on_precondition_changed_;
 
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
-  std::unique_ptr<signin::AccountManagedStatusFinder> managed_status_finder_;
 };
 
 }  // namespace autofill

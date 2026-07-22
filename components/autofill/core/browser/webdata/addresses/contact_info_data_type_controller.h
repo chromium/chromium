@@ -13,10 +13,6 @@
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
 
-namespace signin {
-class IdentityManager;
-}
-
 namespace syncer {
 class DataTypeControllerDelegate;
 class DataTypeLocalDataBatchUploader;
@@ -33,7 +29,6 @@ class ContactInfoDataTypeController : public syncer::DataTypeController {
       std::unique_ptr<syncer::DataTypeControllerDelegate>
           delegate_for_transport_mode,
       syncer::SyncService* sync_service,
-      signin::IdentityManager* identity_manager,
       std::unique_ptr<syncer::DataTypeLocalDataBatchUploader> batch_uploader);
   ~ContactInfoDataTypeController() override;
 

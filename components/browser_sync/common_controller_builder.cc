@@ -679,7 +679,7 @@ CommonControllerBuilder::CreateContactInfoDataTypeController(
           base::BindRepeating(
               &ContactInfoDelegateFromDataService,
               base::RetainedRef(profile_autofill_web_data_service_.value()))),
-      sync_service, identity_manager_.value(),
+      sync_service,
       std::make_unique<autofill::ContactInfoLocalDataBatchUploader>(
           address_data_manager_getter_));
 }
