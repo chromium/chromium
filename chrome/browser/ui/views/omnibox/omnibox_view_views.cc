@@ -38,7 +38,6 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/ai_mode_button_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -83,7 +82,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/search.h"
-#include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/security_state/core/security_state.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -2379,15 +2377,6 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
       omnibox::ShouldUseDimPlaceholderColor(location_bar_view_)
           ? kColorOmniboxForegroundDisabled
           : kColorOmniboxText);
-}
-
-const AiModeButtonUiConfig* OmniboxViewViews::GetAiModeUiConfig() const {
-  if (!location_bar_view_) {
-    return nullptr;
-  }
-  auto* service = AiModeButtonServiceFactory::GetForProfile(
-      location_bar_view_->GetProfile());
-  return service ? service->GetCurrentConfig() : nullptr;
 }
 
 BEGIN_METADATA(OmniboxViewViews)
