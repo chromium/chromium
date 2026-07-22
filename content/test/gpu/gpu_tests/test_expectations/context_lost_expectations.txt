@@ -213,7 +213,6 @@ crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure
 crbug.com/329145823 [ win release nvidia ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
 crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal arch-x86_64 graphite-enabled mac memory_ge_16gb release ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
-crbug.com/329145823 [ asan graphite-disabled intel-0x3e9b arch-x86_64 no-clang-coverage release sonoma ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 # Flaky failure on Mac AMD - 3 GPU process crashes instead of 4
@@ -231,11 +230,9 @@ crbug.com/384605105 [ angle-metal debug graphite-enabled intel mac no-asan no-cl
 
 # Flaky Timed out while waiting 60s for IsJavaScriptExpressionTrue
 crbug.com/365565140 [ amd-0x7340 debug arch-x86_64 no-asan no-clang-coverage sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
-crbug.com/365565140 [ angle-metal asan graphite-enabled intel-0x3e9b arch-x86_64 no-clang-coverage release sonoma ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
 # Renderer Hung Possibly just Slow
 crbug.com/338574390 [ amd-0x7340 angle-metal debug graphite-enabled mac no-clang-coverage ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
-crbug.com/380088337 [ angle-metal asan graphite-enabled intel-0x3e9b sonoma ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
 
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] * [ RetryOnFailure ]
 crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
