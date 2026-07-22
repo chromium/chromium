@@ -64,10 +64,7 @@ export function getHtml(this: SettingsAppearancePageElement) {
       ` : ''}
     </div>
     <div id="colorSchemeModeRow" class="cr-row"
-<if expr="is_linux">
-        ?hidden="${!this.showColorSchemeMode_()}"
-</if>
-    >
+        ?hidden="${!this.showColorSchemeMode_()}">
       <div id="colorSchemeModeLabel" class="flex cr-padded-text"
           aria-hidden="true">
         $i18n{colorSchemeMode}

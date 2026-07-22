@@ -528,6 +528,12 @@ export class SettingsAppearancePageElement extends
   }
   // </if>
 
+  // <if expr="not is_linux">
+  protected showColorSchemeMode_(): boolean {
+    return true;
+  }
+  // </if>
+
   private themeChanged_() {
     if (this.themeIdPref_ === undefined || this.systemTheme_ === undefined) {
       return;
