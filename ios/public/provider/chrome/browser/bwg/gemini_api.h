@@ -68,6 +68,8 @@ enum class GeminiPageContextComputationState {
   kBlocked,
   // The page context is still being created.
   kPending,
+  // The page context computation failed because the user account is mismatched.
+  kMismatchedAccount,
 };
 
 // Enum representing the page context attachment state of the Gemini experience.
