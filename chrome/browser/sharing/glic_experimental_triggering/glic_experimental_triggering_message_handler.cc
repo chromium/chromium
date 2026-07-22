@@ -494,8 +494,15 @@ class ExperimentalTriggeringUpdatesHandler
     }
 #endif
 
-    instance_ = glic_service->InvokeWithAutoSubmit(
+    // TODO(crbug.com/537826509): Make on_error callback in instance coordinator
+    // consistently asynchronous. Until then, guard against synchronous
+    // destruction during InvokeWithAutoSubmit.
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
+    auto instance = glic_service->InvokeWithAutoSubmit(
         passkey_, std::move(options), std::move(auto_submit_options));
+    if (weak_this) {
+      weak_this->instance_ = std::move(instance);
+    }
 
     return response;
   }
