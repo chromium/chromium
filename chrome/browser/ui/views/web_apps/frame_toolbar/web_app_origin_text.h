@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -18,7 +17,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class Label;
@@ -32,7 +31,7 @@ class WebAppOriginText : public views::View,
   METADATA_HEADER(WebAppOriginText, views::View)
 
  public:
-  explicit WebAppOriginText(Browser* browser);
+  explicit WebAppOriginText(BrowserWindowInterface* browser);
   WebAppOriginText(const WebAppOriginText&) = delete;
   WebAppOriginText& operator=(const WebAppOriginText&) = delete;
   ~WebAppOriginText() override;
@@ -75,6 +74,8 @@ class WebAppOriginText : public views::View,
 
   void UpdateAccessibleName();
 
+  const raw_ptr<BrowserWindowInterface> browser_;
+
   // Disallow animation until the parent view animates for the first time. This
   // helps respect the animation start delay in WebAppToolbarButtonContainer.
   bool allowed_to_animate_ = false;
@@ -83,11 +84,9 @@ class WebAppOriginText : public views::View,
   std::u16string last_completed_animation_text_for_testing_;
 
   // Owned by the views hierarchy.
-  raw_ptr<views::Label, DanglingUntriaged> label_ = nullptr;
+  raw_ptr<views::Label> label_ = nullptr;
 
   base::CallbackListSubscription label_text_changed_callback_;
-
-  base::WeakPtrFactory<WebAppOriginText> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_ORIGIN_TEXT_H_

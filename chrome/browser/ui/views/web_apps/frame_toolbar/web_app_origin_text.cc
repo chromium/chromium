@@ -8,17 +8,14 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
@@ -27,7 +24,6 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/style/typography.h"
 #include "url/gurl.h"
 
 namespace {
@@ -36,19 +32,19 @@ constexpr gfx::Tween::Type kTweenType = gfx::Tween::FAST_OUT_SLOW_IN_2;
 
 }  // namespace
 
-WebAppOriginText::WebAppOriginText(Browser* browser) {
-  DCHECK(web_app::AppBrowserController::IsWebApp(browser));
+WebAppOriginText::WebAppOriginText(BrowserWindowInterface* browser)
+    : browser_(browser) {
+  CHECK(web_app::AppBrowserController::IsWebApp(browser_));
 
-  browser->tab_strip_model()->AddObserver(this);
-  Observe(browser->tab_strip_model()->GetActiveWebContents());
+  browser_->tab_strip_model()->AddObserver(this);
+  Observe(browser_->tab_strip_model()->GetActiveWebContents());
 
   SetID(VIEW_ID_WEB_APP_ORIGIN_TEXT);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  label_ = std::make_unique<views::Label>(
-               u"", ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
-               views::style::STYLE_EMPHASIZED)
-               .release();
+  label_ = AddChildView(std::make_unique<views::Label>(
+      u"", ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+      views::style::STYLE_EMPHASIZED));
   label_->SetElideBehavior(gfx::ELIDE_HEAD);
   label_->SetSubpixelRenderingEnabled(false);
   // Disable Label's auto readability to ensure consistent colors in the title
@@ -60,7 +56,6 @@ WebAppOriginText::WebAppOriginText(Browser* browser) {
   label_->layer()->GetAnimator()->AddObserver(this);
   label_->layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  AddChildViewRaw(label_.get());
 
   // Clip child views to this view.
   SetPaintToLayer();
@@ -173,13 +168,8 @@ void WebAppOriginText::MaybeUpdateAndShowText(
   if (!new_contents) {
     return;
   }
-  BrowserWindowInterface* const browser =
-      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(new_contents);
-  if (!browser) {
-    return;
-  }
   const web_app::AppBrowserController* const app_controller =
-      web_app::AppBrowserController::From(browser);
+      web_app::AppBrowserController::From(browser_);
   if (!app_controller) {
     return;
   }
