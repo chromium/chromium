@@ -1,0 +1,1 @@
+AXCheckBox AXTitle='This is a test' AXValue=0

@@ -1,0 +1,1 @@
+AXRadioButton AXTitle='fancy fruit' AXValue=0

@@ -1,0 +1,1 @@
+AXRadioButton AXDescription='foo' AXValue=0

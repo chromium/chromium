@@ -1,0 +1,1 @@
+AXCheckBox AXTitle='Flash the screen 1 times.' AXValue=0
