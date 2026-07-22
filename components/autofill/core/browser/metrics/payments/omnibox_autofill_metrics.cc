@@ -14,4 +14,8 @@ void LogOmniboxAutofillShowChipDecisionPart1(
       "Autofill.OmniboxAutofill.ShowChipDecisionPart1", metric);
 }
 
+void LogOmniboxAutofillEvents(OmniboxAutofillEvents metric) {
+  base::UmaHistogramEnumeration("Autofill.OmniboxAutofill.Events", metric);
+}
+
 }  // namespace autofill::autofill_metrics

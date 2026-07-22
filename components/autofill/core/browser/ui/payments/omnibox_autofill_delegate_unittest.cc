@@ -33,6 +33,7 @@ namespace autofill {
 
 namespace {
 
+using autofill_metrics::OmniboxAutofillEvents;
 using autofill_metrics::OmniboxAutofillShowChipDecisionPart1;
 using test::CreateFormDataForFrame;
 using test::CreateTestFormField;
@@ -788,12 +789,16 @@ TEST_F(OmniboxAutofillDelegateTest, OnFieldBecameVisible_LogsMetrics) {
 
   delegate->OnFieldBecameVisible();
 
-  // Verify that suggestions count and secure form are logged. `SetUp()` adds 1
-  // credit card, so count should be 1.
+  // Verify that suggestions count, secure form, and chip shown are logged.
+  // `SetUp()` adds 1 credit card, so count should be 1.
   histogram_tester.ExpectUniqueSample("Autofill.SuggestionsCount.CreditCard", 1,
                                       1);
   histogram_tester.ExpectUniqueSample("Autofill.QueriedCreditCardFormIsSecure",
                                       true, 1);
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kChipShown, 1);
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kChipShownOnce, 1);
 }
 
 TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_ForwardToObserver) {

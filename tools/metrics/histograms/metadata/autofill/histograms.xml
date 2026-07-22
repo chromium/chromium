@@ -5979,6 +5979,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OmniboxAutofill.Events" enum="OmniboxAutofillEvents"
+    expires_after="2027-04-30">
+  <owner>ferny@google.com</owner>
+  <owner>osaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs events related to the Omnibox Autofill payment chip and its suggestion
+    bubble. This includes when the chip is shown or clicked, and when a
+    suggestion is selected or filled.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OmniboxAutofill.ShowChipDecisionPart1"
     enum="OmniboxShowChipDecisionPart1" expires_after="2027-04-30">
   <owner>osaul@google.com</owner>

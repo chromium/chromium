@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
@@ -460,6 +461,8 @@ void OmniboxAutofillDelegate::OnFieldBecameVisible() {
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&OmniboxAutofillDelegate::DidAcceptSuggestion,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  manager->GetCreditCardFormEventLogger().OnOmniboxAutofillChipShown();
 }
 
 bool OmniboxAutofillDelegate::IsOutermostMainFrameActiveAutofillManager(

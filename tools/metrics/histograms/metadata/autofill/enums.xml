@@ -5560,6 +5560,15 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(//components/accessibility_annotator/core/annotation_reducer/memory_data_type.h:MemoryDataType) -->
 
+<!-- LINT.IfChange(OmniboxAutofillEvents) -->
+
+<enum name="OmniboxAutofillEvents">
+  <int value="0" label="Chip shown"/>
+  <int value="1" label="Chip shown (once per page load)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h:OmniboxAutofillEvents) -->
+
 <!-- LINT.IfChange(OmniboxAutofillShowChipDecisionPart1) -->
 
 <enum name="OmniboxShowChipDecisionPart1">

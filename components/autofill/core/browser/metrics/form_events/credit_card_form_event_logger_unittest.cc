@@ -20,6 +20,10 @@
 #include "base/android/device_info.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 namespace autofill::autofill_metrics {
 
 using ::autofill::test::CreateTestFormField;
@@ -2162,5 +2166,25 @@ TEST_F(CreditCardFormEventLoggerTest,
   histograms.ExpectBucketCount("Autofill.FormEvents.CreditCard",
                                FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, 1);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+TEST_F(CreditCardFormEventLoggerTest, OnOmniboxAutofillChipShown) {
+  base::HistogramTester histogram_tester;
+
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnOmniboxAutofillChipShown();
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnOmniboxAutofillChipShown();
+
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kChipShown, 2);
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kChipShownOnce, 1);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill::autofill_metrics
