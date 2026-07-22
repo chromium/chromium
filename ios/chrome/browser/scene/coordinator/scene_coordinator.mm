@@ -1391,6 +1391,13 @@ inline LayoutStateScenePassKey PassKey() {
   }];
 }
 
+- (void)showAutofillSettings {
+  __weak SceneCoordinator* weakSelf = self;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf showAutofillSettingsAfterModalDismiss];
+  }];
+}
+
 - (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID
     API_AVAILABLE(ios(26.0)) {
   if (!_settingsNavigationController) {
@@ -1981,6 +1988,23 @@ inline LayoutStateScenePassKey PassKey() {
   _settingsNavigationController = [SettingsNavigationController
       autofillAndPasswordsControllerForBrowser:_regularBrowser.get()
                                       delegate:self];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
+}
+
+// Shows the Autofill settings in the settings UI.
+- (void)showAutofillSettingsAfterModalDismiss {
+  DCHECK(!self.isSigninInProgress);
+
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showAutofillSettings];
+    return;
+  }
+  _settingsNavigationController = [SettingsNavigationController
+      autofillAndPasswordsControllerForBrowser:_regularBrowser.get()
+                                      delegate:self];
+  [_settingsNavigationController showAutofillSettings];
   [self.activeViewController presentViewController:_settingsNavigationController
                                           animated:YES
                                         completion:nil];

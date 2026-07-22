@@ -147,6 +147,9 @@ enum class PushNotificationClientId;
 - (void)showNotificationsSettingsAndHighlightClient:
     (std::optional<PushNotificationClientId>)clientID;
 
+// Shows the Autofill settings UI.
+- (void)showAutofillSettings;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SETTINGS_COMMANDS_H_
