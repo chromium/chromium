@@ -34,6 +34,9 @@ inline constexpr int kPaymentHandlerErrorIconSize = 24;
 // view.
 inline constexpr int kPaymentHandlerErrorRowTopInset = 24;
 
+// The top inset of the loading message in the payment app loading view.
+inline constexpr int kPaymentAppLoadingViewMessageTopInset = 120;
+
 }  // namespace payments
 
 #endif  // COMPONENTS_PAYMENTS_CORE_SIZES_H_

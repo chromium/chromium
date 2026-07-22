@@ -483,6 +483,12 @@
   <message name="IDS_PAYMENT_HANDLER_ICON" desc="The alt text for the payment handler icon. Used for accessibility.">
     Payment handler icon
   </message>
+  <if expr="not is_android">
+    <message name="IDS_PAYMENT_APP_LOADING_MESSAGE" desc="Informational text shown to the user while their selected payment handler application is loading.">
+      Loading <ph name="APP_ORIGIN">$1<ex>bobpay.com</ex></ph> to handle your payment on <ph name="MERCHANT_ORIGIN">$2<ex>example.com</ex></ph>.
+    </message>
+  </if> <!-- not is_android -->
+
 
   <!-- Secure Payment Confirmation strings -->
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_TITLE" desc="The title string on a payment confirmation dialog that shows the details of the payment that the user is about to verify. The user has the option to click 'Verify' to open the system interface to verify their identity, for example with their fingerprint." formatter_data="android_java">

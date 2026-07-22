@@ -220,3 +220,23 @@ source_set("browser_tests") {
     deps += [ "//chrome/browser/ash/system_web_apps" ]
   }
 }
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "payment_app_loading_view_interactive_uitest.cc" ]
+
+  deps = [
+    ":payments",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//skia",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events",
+    "//ui/views",
+    "//url",
+  ]
+}

@@ -231,6 +231,12 @@ void PaymentRequestDialogView::ShowLoadingView() {
       request_->state()->GetTopOrigin(),
       base::BindRepeating(&PaymentRequestDialogView::CloseDialog,
                           weak_ptr_factory_.GetWeakPtr())));
+  // loading_view_overlay_ paints to a layer, and currently layers don't clip to
+  // the bounds of the window opaque layer. Until this is fixed, we have to set
+  // rounded corners directly here.
+  // TODO(crbug.com/358379367): Remove once layers obey the clip by default.
+  loading_view_overlay_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(GetCornerRadius()));
 
   if (observer_for_testing_) {
     observer_for_testing_->OnLoadingViewShown();
