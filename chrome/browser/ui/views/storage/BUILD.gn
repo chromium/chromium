@@ -23,6 +23,7 @@ source_set("impl") {
   deps = [
     ":storage",
     "//chrome/app:generated_resources",
+    "//chrome/browser/ui:storage_pressure_bubble",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/views:layout_provider",

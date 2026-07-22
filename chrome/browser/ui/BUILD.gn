@@ -402,7 +402,6 @@ static_library("ui") {
     "managed_ui.cc",
     "managed_ui.h",
     "screen_capture_notification_ui.h",
-    "storage_pressure_bubble.h",
     "tab_dialogs.cc",
     "tab_dialogs.h",
     "tab_helpers.cc",
@@ -5748,6 +5747,11 @@ if (enable_dice_support) {
 }
 source_set("status_bubble") {
   public = [ "status_bubble.h" ]
+  public_deps = [ "//url" ]
+}
+
+source_set("storage_pressure_bubble") {
+  public = [ "storage_pressure_bubble.h" ]
   public_deps = [ "//url" ]
 }
 
