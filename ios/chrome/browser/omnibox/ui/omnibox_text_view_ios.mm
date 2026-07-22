@@ -133,9 +133,7 @@ const CGFloat kVerticalOffset = 1;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
     self.dataDetectorTypes = UIDataDetectorTypeNone;
     self.allowsEditingTextAttributes = NO;
-    if (@available(iOS 18, *)) {
-      self.writingToolsBehavior = UIWritingToolsBehaviorNone;
-    }
+    self.writingToolsBehavior = UIWritingToolsBehaviorNone;
     [self updateOmniboxTypingAttributes];
 
     // Disable drag on iPhone because there's nowhere to drag to
