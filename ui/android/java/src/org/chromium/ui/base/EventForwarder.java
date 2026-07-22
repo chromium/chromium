@@ -223,13 +223,17 @@ public class EventForwarder {
      * @see View#onTouchEvent(MotionEvent)
      */
     public boolean onTouchEvent(MotionEvent event) {
+        boolean requiresSpecialHandling = touchEventRequiresSpecialHandling(event);
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             mLastToolType = event.getToolType(0);
             logActionDown(event);
-            cancelPendingHoverExit();
+            if (!requiresSpecialHandling) {
+                sendPendingHoverExit();
+            }
         }
 
-        if (touchEventRequiresSpecialHandling(event)) {
+        if (requiresSpecialHandling) {
             return true;
         }
 

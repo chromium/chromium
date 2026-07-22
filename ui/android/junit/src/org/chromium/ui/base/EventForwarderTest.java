@@ -778,7 +778,7 @@ public class EventForwarderTest {
     }
 
     @Test
-    public void testHoverExitCancelledByTouchDown() {
+    public void testHoverExitFlushedByTouchDown() {
         EventForwarder eventForwarder =
                 new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
 
@@ -794,16 +794,28 @@ public class EventForwarderTest {
         eventForwarder.onHoverEvent(exitEvent);
 
         // 3. Touch down (before delay)
-        MotionEvent downEvent = MotionEventTestUtils.getTrackpadEvent(MotionEvent.ACTION_DOWN, 0);
+        MotionEvent downEvent =
+                MotionEvent.obtain(
+                        0,
+                        0,
+                        MotionEvent.ACTION_DOWN,
+                        1,
+                        MotionEventTestUtils.getToolTypeFingerProperties(1),
+                        MotionEventTestUtils.getPointerCoords(1),
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        InputDevice.SOURCE_TOUCHSCREEN,
+                        0);
         eventForwarder.onTouchEvent(downEvent);
 
-        // 4. Wait for delay (50ms)
-        ShadowLooper.idleMainLooper(50, java.util.concurrent.TimeUnit.MILLISECONDS);
-
-        // Exit should NEVER be sent.
-        verify(mNativeMock, never())
+        // Exit SHOULD be sent immediately when touch down occurs.
+        verify(mNativeMock, times(1))
                 .onMouseEvent(
-                        anyLong(),
+                        eq(NATIVE_EVENT_FORWARDER_ID),
                         any(MotionEvent.class),
                         anyLong(),
                         eq(MotionEvent.ACTION_HOVER_EXIT),
