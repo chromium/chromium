@@ -81,8 +81,7 @@ NSError* PrepareAutofillProfileWithValues(
   autofill::AutofillProfile profile(
       autofill::i18n_model_definition::kLegacyHierarchyCountryCode);
   autofill::CreditCard credit_card(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      "https://www.example.com/");
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   // For each type-value dictionary in the autofill profile list, validate it,
   // then add it to the appropriate profile.

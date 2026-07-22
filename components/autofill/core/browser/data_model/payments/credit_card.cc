@@ -236,9 +236,9 @@ CreditCard::BenefitSource CreditCard::GetEnumFromBenefitSourceString(
   return BenefitSource::kSourceUnknown;
 }
 
-CreditCard::CreditCard(const std::string& guid, const std::string& origin)
+CreditCard::CreditCard(const std::string& guid)
     : guid_(guid),
-      origin_(origin),
+      is_user_confirmed_(false),
       record_type_(RecordType::kLocalCard),
       network_(kGenericCard),
       expiration_month_(0),
@@ -267,8 +267,7 @@ CreditCard::CreditCard(RecordType type, int64_t instrument_id) : CreditCard() {
 }
 
 CreditCard::CreditCard()
-    : CreditCard(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                 std::string()) {}
+    : CreditCard(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
 CreditCard::CreditCard(const CreditCard& credit_card) = default;
 CreditCard::CreditCard(CreditCard&& credit_card) = default;
@@ -692,11 +691,11 @@ bool CreditCard::UpdateFromImportedCard(const CreditCard& imported_card,
     return false;
   }
 
-  // Heuristically aggregated data should never overwrite verified data, with
-  // the exception of expired verified cards. Instead, discard any heuristically
-  // aggregated credit cards that disagree with explicitly entered data, so that
-  // the UI is not cluttered with duplicate cards.
-  if (this->IsVerified() && !imported_card.IsVerified()) {
+  // Heuristically aggregated data should never overwrite user-confirmed data,
+  // with the exception of expired user-confirmed cards. Instead, discard any
+  // heuristically aggregated credit cards that disagree with explicitly entered
+  // data, so that the UI is not cluttered with duplicate cards.
+  if (this->is_user_confirmed() && !imported_card.is_user_confirmed()) {
     // If the original card is expired and the imported card is not, and the
     // name on the cards are identical, and the imported card's expiration date
     // is not empty, update the expiration date.
@@ -710,7 +709,7 @@ bool CreditCard::UpdateFromImportedCard(const CreditCard& imported_card,
     return true;
   }
 
-  set_origin(imported_card.origin());
+  set_is_user_confirmed(imported_card.is_user_confirmed());
 
   // Note that the card number is intentionally not updated, so as to preserve
   // any formatting (i.e. separator characters).  Since the card number is not
@@ -919,13 +918,10 @@ bool CreditCard::HasSameExpirationDateAs(const CreditCard& other) const {
 }
 
 bool CreditCard::operator==(const CreditCard& credit_card) const {
-  return guid() == credit_card.guid() && origin() == credit_card.origin() &&
+  return guid() == credit_card.guid() &&
+         is_user_confirmed() == credit_card.is_user_confirmed() &&
          record_type() == credit_card.record_type() &&
          Compare(credit_card) == 0;
-}
-
-bool CreditCard::IsVerified() const {
-  return !origin_.empty() && !GURL(origin_).is_valid();
 }
 
 bool CreditCard::IsEmpty(const std::string& app_locale) const {
@@ -1301,7 +1297,8 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << (credit_card.record_type() == CreditCard::RecordType::kLocalCard
                     ? credit_card.guid()
                     : base::HexEncode(credit_card.server_id()))
-            << " " << credit_card.origin() << " "
+            << " " << (credit_card.is_user_confirmed() ? "true" : "false")
+            << " "
             << base::UTF16ToUTF8(credit_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
             << " "
             << base::UTF16ToUTF8(credit_card.GetRawInfo(CREDIT_CARD_TYPE))

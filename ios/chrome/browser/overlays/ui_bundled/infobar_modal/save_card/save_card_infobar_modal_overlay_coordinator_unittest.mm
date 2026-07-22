@@ -28,8 +28,7 @@ class SaveCardInfobarModalOverlayCoordinatorTest : public PlatformTest {
         browser_(std::make_unique<TestBrowser>(profile_.get())),
         root_view_controller_([[UIViewController alloc] init]) {
     autofill::CreditCard credit_card(
-        base::Uuid::GenerateRandomV4().AsLowercaseString(),
-        "https://www.example.com/");
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate =
         MockAutofillSaveCardInfoBarDelegateMobileFactory::
             CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(

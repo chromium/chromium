@@ -52,8 +52,7 @@ class SaveCVCInfobarBannerOverlayMediatorTest : public PlatformTest {
 
   void InitInfobar(const bool for_upload) {
     autofill::CreditCard credit_card(
-        base::Uuid::GenerateRandomV4().AsLowercaseString(),
-        "https://www.example.com/");
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     SaveCreditCardOptions options;
     options.card_save_type =
         autofill::payments::PaymentsAutofillClient::CardSaveType::kCvcSaveOnly;

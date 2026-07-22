@@ -75,8 +75,7 @@ class AutofillCreditCardTableViewControllerTest
     LegacyChromeTableViewControllerTest::TearDown();
   }
 
-  void AddCreditCard(const std::string& origin,
-                     const std::string& card_holder_name,
+  void AddCreditCard(const std::string& card_holder_name,
                      const std::string& card_number,
                      const std::string& cvc = "") {
     autofill::PersonalDataManager* personal_data_manager =
@@ -84,7 +83,7 @@ class AutofillCreditCardTableViewControllerTest
     autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
 
     autofill::CreditCard credit_card(
-        base::Uuid::GenerateRandomV4().AsLowercaseString(), origin);
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
                            base::ASCIIToUTF16(card_holder_name));
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NUMBER,
@@ -167,7 +166,7 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestInitialization) {
 
 // Adding a single credit card results in a credit card section.
 TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCardWithoutCvc) {
-  AddCreditCard("https://www.example.com/", "John Doe", "378282246310005");
+  AddCreditCard("John Doe", "378282246310005");
   CreateController();
   CheckController();
 
@@ -189,7 +188,7 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCardWithoutCvc) {
 // Deleting the only credit card results in item deletion and section deletion.
 TEST_F(AutofillCreditCardTableViewControllerTest,
        TestOneCreditCardItemDeleted) {
-  AddCreditCard("https://www.example.com/", "John Doe", "378282246310005");
+  AddCreditCard("John Doe", "378282246310005");
   CreateController();
   CheckController();
 
@@ -267,8 +266,7 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestCVCStorageButtonExists) {
 
 // Tests that the CVC indicator is present when CVC is stored.
 TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCardWithCvc) {
-  AddCreditCard("https://www.example.com/", "John Doe", "378282246310005",
-                "123");
+  AddCreditCard("John Doe", "378282246310005", "123");
   CreateController();
   CheckController();
 
@@ -290,8 +288,7 @@ TEST_F(AutofillCreditCardTableViewControllerTest, TestOneCreditCardWithCvc) {
 TEST_F(AutofillCreditCardTableViewControllerTest,
        TestOneCreditCardWithCvcItemDeleted) {
   // Add a credit card with a CVC.
-  AddCreditCard("https://www.example.com/", "John Doe", "378282246310005",
-                "123");
+  AddCreditCard("John Doe", "378282246310005", "123");
   CreateController();
   CheckController();
 
@@ -319,7 +316,7 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
 TEST_F(AutofillCreditCardTableViewControllerTest,
        TestOneCreditCardWithoutCvcItemDeleted_MetricNotLogged) {
   // Add a credit card without a CVC.
-  AddCreditCard("https://www.example.com/", "John Doe", "378282246310005");
+  AddCreditCard("John Doe", "378282246310005");
   CreateController();
   CheckController();
 
@@ -471,9 +468,8 @@ class AutofillCreditCardEditTableViewControllerTest
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
-    autofill::CreditCard credit_card =
-        autofill::CreditCard(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                             "https://www.example.com/");
+    autofill::CreditCard credit_card = autofill::CreditCard(
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
 
     return [[AutofillCreditCardEditTableViewController alloc]
          initWithCreditCard:credit_card

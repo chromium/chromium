@@ -74,10 +74,6 @@ class PaymentsDataCleanerTest : public PaymentsDataManagerTestBase,
     return payments_data_cleaner_->DeleteDisusedCreditCards();
   }
 
-  void ClearCreditCardNonSettingsOrigins() {
-    payments_data_cleaner_->ClearCreditCardNonSettingsOrigins();
-  }
-
   PersonalDataManager& personal_data() { return *personal_data_.get(); }
 
   PaymentsDataManager& paydm() {
@@ -106,8 +102,7 @@ TEST_P(PaymentsDataCleanerTest,
   auto now = base::Time::Now();
 
   // Create a recently used local card, it is expected to remain.
-  CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          test::kEmptyOrigin);
+  CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card1, "Alice",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
@@ -115,8 +110,7 @@ TEST_P(PaymentsDataCleanerTest,
 
   // Create a local card that was expired 400 days ago, but recently used.
   // It is expected to remain.
-  CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          test::kEmptyOrigin);
+  CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card2, "Bob",
                           "378282246310006" /* American Express */, "04",
                           "1999", "1");
@@ -124,8 +118,7 @@ TEST_P(PaymentsDataCleanerTest,
 
   // Create a local card expired recently, and last used 400 days ago.
   // It is expected to remain.
-  CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          test::kEmptyOrigin);
+  CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString());
   const base::Time expiry_date = now - base::Days(32);
   base::Time::Exploded exploded;
   expiry_date.UTCExplode(&exploded);
@@ -137,8 +130,7 @@ TEST_P(PaymentsDataCleanerTest,
 
   // Create a local card expired 400 days ago, and last used 400 days ago.
   // It is expected to be deleted.
-  CreditCard credit_card4(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          test::kEmptyOrigin);
+  CreditCard credit_card4(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card4, "David",
                           "5105105105105100" /* Mastercard */, "04", "1999",
                           "1");
@@ -182,59 +174,6 @@ TEST_P(PaymentsDataCleanerTest,
   // Verify histograms are logged.
   histogram_tester.ExpectTotalCount(kHistogramName, 1);
   histogram_tester.ExpectBucketCount(kHistogramName, 1, 1);
-}
-
-// Tests that all the non settings origins of autofill credit cards are cleared
-// but that the settings origins are untouched.
-TEST_P(PaymentsDataCleanerTest, ClearCreditCardNonSettingsOrigins) {
-  // Create three cards with a non settings origin.
-  CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          "https://www.example.com");
-  test::SetCreditCardInfo(&credit_card0, "Bob0",
-                          "5105105105105100" /* Mastercard */, "04", "1999",
-                          "1");
-  credit_card0.usage_history().set_use_count(10000);
-  paydm().AddCreditCard(credit_card0);
-
-  CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card1, "Bob1",
-                          "5105105105105101" /* Mastercard */, "04", "1999",
-                          "1");
-  credit_card1.usage_history().set_use_count(1000);
-  paydm().AddCreditCard(credit_card1);
-
-  CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          "1234");
-  test::SetCreditCardInfo(&credit_card2, "Bob2",
-                          "5105105105105102" /* Mastercard */, "04", "1999",
-                          "1");
-  credit_card2.usage_history().set_use_count(100);
-  paydm().AddCreditCard(credit_card2);
-
-  // Create a card with a settings origin.
-  CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kSettingsOrigin);
-  test::SetCreditCardInfo(&credit_card3, "Bob3",
-                          "5105105105105103" /* Mastercard */, "04", "1999",
-                          "1");
-  credit_card3.usage_history().set_use_count(10);
-  paydm().AddCreditCard(credit_card3);
-
-  PersonalDataChangedWaiter(personal_data()).Wait();
-  ASSERT_EQ(4U, paydm().GetCreditCards().size());
-
-  ClearCreditCardNonSettingsOrigins();
-
-  PersonalDataChangedWaiter(personal_data()).Wait();
-  ASSERT_EQ(4U, paydm().GetCreditCards().size());
-
-  // The first three profiles' origin should be cleared and the fourth one still
-  // be the settings origin.
-  EXPECT_TRUE(GetCreditCardsToSuggest(paydm())[0]->origin().empty());
-  EXPECT_TRUE(GetCreditCardsToSuggest(paydm())[1]->origin().empty());
-  EXPECT_TRUE(GetCreditCardsToSuggest(paydm())[2]->origin().empty());
-  EXPECT_EQ(kSettingsOrigin, GetCreditCardsToSuggest(paydm())[3]->origin());
 }
 
 }  // namespace autofill

@@ -51,8 +51,7 @@ MockAutofillSaveCardInfoBarDelegateMobile::
 
 MockAutofillSaveCardInfoBarDelegateMobileFactory::
     MockAutofillSaveCardInfoBarDelegateMobileFactory()
-    : credit_card_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                   "https://www.example.com/") {}
+    : credit_card_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
 
 MockAutofillSaveCardInfoBarDelegateMobileFactory::
     ~MockAutofillSaveCardInfoBarDelegateMobileFactory() {}

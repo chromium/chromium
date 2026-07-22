@@ -100,7 +100,6 @@ using autofill::autofill_metrics::LogMandatoryReauthSettingsPageEditCardEvent;
 using autofill::autofill_metrics::MandatoryReauthAuthenticationFlowEvent;
 using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 
-static const char kSettingsOrigin[] = "Chrome settings";
 static const char kErrorPaymentMethodUnavailable[] =
     "Credit card data unavailable";
 static const char kErrorAutofillClientUnavailable[] =
@@ -483,11 +482,14 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
           {"Save credit card - ", kErrorPaymentMethodUnavailable})));
     }
   }
-  autofill::CreditCard credit_card =
-      existing_card ? *existing_card
-                    : autofill::CreditCard(
-                          base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kSettingsOrigin);
+  autofill::CreditCard credit_card;
+  if (existing_card) {
+    credit_card = *existing_card;
+  } else {
+    credit_card = autofill::CreditCard(
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
+    credit_card.set_is_user_confirmed(true);
+  }
 
   if (card->name) {
     credit_card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,

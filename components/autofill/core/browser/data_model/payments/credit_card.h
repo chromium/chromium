@@ -116,7 +116,7 @@ class CreditCard : public FormGroup {
   static BenefitSource GetEnumFromBenefitSourceString(
       std::string_view benefit_source);
 
-  CreditCard(const std::string& guid, const std::string& origin);
+  explicit CreditCard(const std::string& guid);
 
   // Creates a server card. The type must be RecordType::kMaskedServerCard or
   // RecordType::kFullServerCard.
@@ -136,8 +136,13 @@ class CreditCard : public FormGroup {
   std::string guid() const { return guid_; }
   void set_guid(std::string_view guid) { guid_ = guid; }
 
-  std::string origin() const { return origin_; }
-  void set_origin(const std::string& origin) { origin_ = origin; }
+  // A card is user-confirmed if the user saved the card in settings.
+  // Automatic updates of user-confirmed cards are conservatively only if the
+  // card has expired.
+  bool is_user_confirmed() const { return is_user_confirmed_; }
+  void set_is_user_confirmed(bool is_user_confirmed) {
+    is_user_confirmed_ = is_user_confirmed;
+  }
 
   // The user-visible issuer network of the card, e.g. 'Mastercard'.
   static std::u16string NetworkForDisplay(const std::string& network);
@@ -270,13 +275,10 @@ class CreditCard : public FormGroup {
   bool HasGreaterRankingThan(const CreditCard& other,
                              base::Time comparison_time) const;
 
-  // Equality operators compare GUIDs, origins, and the contents.
-  // Usage metadata (use count, use date, modification date) are NOT compared.
+  // Equality operators compare GUIDs, user-confirmation status, and the
+  // contents. Usage metadata (use count, use date, modification date) are NOT
+  // compared.
   bool operator==(const CreditCard& credit_card) const;
-
-  // Returns true if the data in this model was entered directly by the user,
-  // rather than automatically aggregated.
-  bool IsVerified() const;
 
   // How this card is stored.
   RecordType record_type() const { return record_type_; }
@@ -544,13 +546,7 @@ class CreditCard : public FormGroup {
   // only one of them should be populated based on the `record_type()`.
   std::string guid_;
 
-  // The origin of this data.  This should be
-  //   (a) a web URL for the domain of the form from which the data was
-  //       automatically aggregated, e.g. https://www.example.com/register,
-  //   (b) some other non-empty string, which cannot be interpreted as a web
-  //       URL, identifying the origin for non-aggregated data, or
-  //   (c) an empty string, indicating that the origin for this data is unknown.
-  std::string origin_;
+  bool is_user_confirmed_ = false;
 
   // See enum definition above.
   RecordType record_type_;

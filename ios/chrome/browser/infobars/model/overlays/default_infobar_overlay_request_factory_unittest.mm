@@ -102,8 +102,7 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, Confirm) {
 
 // Tests that the factory creates a save card request.
 TEST_F(DefaultInfobarOverlayRequestFactoryTest, SaveCard) {
-  autofill::CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                            "https://www.example.com/");
+  autofill::CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   InfoBarIOS infobar(
       InfobarType::kInfobarTypeSaveCard,

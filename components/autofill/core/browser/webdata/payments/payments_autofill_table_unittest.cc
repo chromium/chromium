@@ -221,7 +221,6 @@ TEST_F(PaymentsAutofillTableTest, MaskedServerIbanMetadataNotUpdated) {
 TEST_F(PaymentsAutofillTableTest, CreditCard) {
   // Add a 'Work' credit card.
   CreditCard work_creditcard;
-  work_creditcard.set_origin("https://www.example.com/");
   work_creditcard.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jack Torrance");
   work_creditcard.SetRawInfo(CREDIT_CARD_NUMBER, u"1234567890123456");
   work_creditcard.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"04");
@@ -262,7 +261,6 @@ TEST_F(PaymentsAutofillTableTest, CreditCard) {
 
   // Add a 'Target' credit card.
   CreditCard target_creditcard;
-  target_creditcard.set_origin(std::string());
   target_creditcard.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jack Torrance");
   target_creditcard.SetRawInfo(CREDIT_CARD_NUMBER, u"1111222233334444");
   target_creditcard.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"06");
@@ -300,7 +298,7 @@ TEST_F(PaymentsAutofillTableTest, CreditCard) {
   EXPECT_FALSE(s_cvc_target.Step());
 
   // Update the 'Target' credit card.
-  target_creditcard.set_origin("Interactive Autofill dialog");
+  target_creditcard.set_is_user_confirmed(true);
   target_creditcard.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Charles Grady");
   target_creditcard.SetNickname(u"Supermarket");
   target_creditcard.set_cvc(u"234");
@@ -580,7 +578,6 @@ TEST_F(PaymentsAutofillTableTest, AddServerCreditCardForTesting) {
   CreditCard credit_card;
   credit_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   credit_card.set_server_id("server_id");
-  credit_card.set_origin("https://www.example.com/");
   credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Jack Torrance");
   credit_card.SetRawInfo(CREDIT_CARD_NUMBER, u"3456");
   credit_card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"04");
@@ -698,7 +695,7 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCardOriginOnly) {
 
   // Now, update just the credit card's origin and save the update to the
   // database.  The modification date should change to reflect the update.
-  credit_card.set_origin("https://www.example.com/");
+  credit_card.set_is_user_confirmed(true);
   table_->UpdateCreditCard(credit_card);
 
   // Get the credit card.

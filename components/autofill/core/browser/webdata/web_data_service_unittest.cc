@@ -434,9 +434,9 @@ TEST_F(WebDataServiceAutofillTest, CreditCardRemove) {
 }
 
 TEST_F(WebDataServiceAutofillTest, CreditUpdate) {
-  CreditCard card1("E4D2662E-5E16-44F3-AF5A-5A77FAE4A6F3", std::string());
+  CreditCard card1("E4D2662E-5E16-44F3-AF5A-5A77FAE4A6F3");
   card1.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Abe");
-  CreditCard card2("B9C52112-BD5F-4080-84E1-C651D2CB90E2", std::string());
+  CreditCard card2("B9C52112-BD5F-4080-84E1-C651D2CB90E2");
   card2.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Alice");
 
   wds_->AddCreditCard(card1);

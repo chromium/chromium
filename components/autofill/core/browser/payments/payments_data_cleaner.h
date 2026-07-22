@@ -29,10 +29,6 @@ class PaymentsDataCleaner {
   // Tries to delete disused credit cards on startup.
   bool DeleteDisusedCreditCards();
 
-  // Clears the value of the origin field of cards that were not created from
-  // the settings page.
-  void ClearCreditCardNonSettingsOrigins();
-
   // The payments data manager, used to load and update the payments data
   // from/to the web database.
   const raw_ptr<PaymentsDataManager> payments_data_manager_;

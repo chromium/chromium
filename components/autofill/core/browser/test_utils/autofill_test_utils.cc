@@ -432,46 +432,30 @@ Iban GetServerIban3() {
 }
 
 CreditCard GetCreditCard() {
-  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                         kEmptyOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString());
   SetCreditCardInfo(&credit_card, "Test User", "4111111111111111" /* Visa */,
                     NextMonth().c_str(), NextYear().c_str(), "1");
   return credit_card;
 }
 
 CreditCard GetCreditCard2() {
-  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                         kEmptyOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString());
   SetCreditCardInfo(&credit_card, "Someone Else", "378282246310005" /* AmEx */,
                     NextMonth().c_str(), TenYearsFromNow().c_str(), "1");
   return credit_card;
 }
 
 CreditCard GetExpiredCreditCard() {
-  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                         kEmptyOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString());
   SetCreditCardInfo(&credit_card, "Test User", "4111111111111111" /* Visa */,
                     NextMonth().c_str(), LastYear().c_str(), "1");
   return credit_card;
 }
 
 CreditCard GetIncompleteCreditCard() {
-  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                         kEmptyOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString());
   SetCreditCardInfo(&credit_card, "", "4111111111111111" /* Visa */,
                     NextMonth().c_str(), NextYear().c_str(), "1");
-  return credit_card;
-}
-
-CreditCard GetVerifiedCreditCard() {
-  CreditCard credit_card(GetCreditCard());
-  credit_card.set_origin(kSettingsOrigin);
-  return credit_card;
-}
-
-CreditCard GetVerifiedCreditCard2() {
-  CreditCard credit_card(GetCreditCard2());
-  credit_card.set_origin(kSettingsOrigin);
   return credit_card;
 }
 
@@ -590,8 +574,7 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
 
   CreditCard credit_card =
       (record_type == CreditCard::RecordType::kLocalCard)
-          ? CreditCard(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                       kEmptyOrigin)
+          ? CreditCard(base::Uuid::GenerateRandomV4().AsLowercaseString())
           : CreditCard(
                 record_type,
                 base::Uuid::GenerateRandomV4().AsLowercaseString().substr(24));

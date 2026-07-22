@@ -66,10 +66,8 @@ class SaveCardInfobarBannerOverlayMediatorTest : public PlatformTest {
       autofill::payments::PaymentsAutofillClient::CardSaveType card_save_type =
           autofill::payments::PaymentsAutofillClient::CardSaveType::
               kCardSaveOnly) {
-
     autofill::CreditCard credit_card(
-        base::Uuid::GenerateRandomV4().AsLowercaseString(),
-        "https://www.example.com/");
+        base::Uuid::GenerateRandomV4().AsLowercaseString());
     std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile> delegate =
         MockAutofillSaveCardInfoBarDelegateMobileFactory::
             CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(

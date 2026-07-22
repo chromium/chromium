@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/browser/webdata/payments/server_cvc.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
@@ -288,7 +289,9 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   s->BindInt64(index++, credit_card.usage_history().use_count());
   s->BindInt64(index++, credit_card.usage_history().use_date().ToTimeT());
   s->BindInt64(index++, modification_date.ToTimeT());
-  s->BindString(index++, credit_card.origin());
+  s->BindString(index++, credit_card.is_user_confirmed()
+                             ? std::string(kSettingsOrigin)
+                             : std::string());
   s->BindString(index++, credit_card.billing_address_id());
   s->BindString16(index++, credit_card.nickname());
 }
@@ -432,7 +435,10 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
       base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
   credit_card->usage_history().set_modification_date(
       base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
-  credit_card->set_origin(card_statement.ColumnString(index++));
+
+  std::string origin = card_statement.ColumnString(index++);
+  credit_card->set_is_user_confirmed(origin == kSettingsOrigin);
+
   credit_card->set_billing_address_id(card_statement.ColumnString(index++));
   credit_card->SetNickname(card_statement.ColumnString16(index++));
   // Only set cvc if we retrieve cvc from local_stored_cvc table.

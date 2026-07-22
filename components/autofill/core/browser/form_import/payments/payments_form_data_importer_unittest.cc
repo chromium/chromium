@@ -590,8 +590,7 @@ TEST_F(PaymentsFormDataImporterTest,
   EXPECT_TRUE(extracted_credit_card);
   payments_data_manager().OnAcceptedLocalCreditCardSave(*extracted_credit_card);
 
-  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      test::kEmptyOrigin);
+  CreditCard expected(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&expected, "Biggie Smalls", "4111111111111111", "01",
                           "2998", "");  // Imported cards have no billing info.
   EXPECT_THAT(payments_data_manager().GetCreditCards(),
@@ -722,7 +721,7 @@ TEST_F(PaymentsFormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
   // Start with a single valid credit card stored via the preferences.
   // Note the empty name.
   CreditCard saved_credit_card(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&saved_credit_card, "", "4111111111111111" /* Visa */,
                           "01", "2998", "1");
   payments_data_manager().AddCreditCard(saved_credit_card);
@@ -760,7 +759,7 @@ TEST_F(PaymentsFormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
   // Start with a single valid credit card stored via the preferences.
   // Note the separators in the credit card number.
   CreditCard saved_credit_card(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&saved_credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
   payments_data_manager().AddCreditCard(saved_credit_card);
@@ -792,11 +791,11 @@ TEST_F(PaymentsFormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
 TEST_F(PaymentsFormDataImporterTest,
        ExtractCreditCard_ExistingVerifiedCardWithConflict) {
   // Start with a verified credit card.
-  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                         kSettingsOrigin);
+  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  credit_card.set_is_user_confirmed(true);
   test::SetCreditCardInfo(&credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2998", "");
-  EXPECT_TRUE(credit_card.IsVerified());
+  EXPECT_TRUE(credit_card.is_user_confirmed());
 
   payments_data_manager().AddCreditCard(credit_card);
   EXPECT_EQ(1U, payments_data_manager().GetCreditCards().size());
@@ -849,7 +848,7 @@ TEST_F(PaymentsFormDataImporterTest,
        ExtractFormData_SecondImportResetsCreditCardRecordType) {
   // Start with a single valid credit card stored via the preferences.
   CreditCard saved_credit_card(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&saved_credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
   payments_data_manager().AddCreditCard(saved_credit_card);
@@ -954,7 +953,7 @@ TEST_F(PaymentsFormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_LocalCard) {
   // Start with a single valid credit card stored via the preferences.
   CreditCard saved_credit_card(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+      base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&saved_credit_card, "Biggie Smalls",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
   payments_data_manager().AddCreditCard(saved_credit_card);

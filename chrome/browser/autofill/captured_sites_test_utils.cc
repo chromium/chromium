@@ -890,9 +890,7 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
 ProfileDataController::ProfileDataController()
     : profile_(autofill::test::GetIncompleteProfile2()),
       card_(autofill::CreditCard(
-          base::Uuid::GenerateRandomV4().AsLowercaseString(),
-          "http://www.example.com")) {
-
+          base::Uuid::GenerateRandomV4().AsLowercaseString())) {
   // Initialize the credit card with default values, in case the test recipe
   // file does not contain pre-saved credit card info.
   autofill::test::SetCreditCardInfo(&card_, "Buddy Holly", "5187654321098765",
