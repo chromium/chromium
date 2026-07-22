@@ -44,7 +44,7 @@ class PasswordCheckupTaskInfo : public TaskInfo {
     return base::BindRepeating(^(CommandDispatcher* dispatcher) {
       id<PopupMenuCommands> handler =
           HandlerForProtocol(dispatcher, PopupMenuCommands);
-      [handler showLevelUpWalkthroughIPH];
+      [handler showLevelUpPasswordCheckupWalkthroughIPH];
     });
   }
 };

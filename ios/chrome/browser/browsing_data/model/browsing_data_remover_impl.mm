@@ -744,6 +744,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
   UMA_HISTOGRAM_ENUMERATION(
       "History.ClearBrowsingData.UserDeletedCookieOrCache", choice);
+  base::RecordAction(
+      base::UserMetricsAction("ClearBrowsingData_UserDeletedCookieOrCache"));
 }
 
 void BrowsingDataRemoverImpl::RemoveDataFromWKWebsiteDataStore(

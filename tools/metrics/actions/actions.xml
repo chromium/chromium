@@ -9383,6 +9383,13 @@ should be able to be added at any place in this file.
   <description>Time period in CBD was changed to OlderThan30Days.</description>
 </action>
 
+<action name="ClearBrowsingData_UserDeletedCookieOrCache">
+  <owner>pabouchard@google.com</owner>
+  <description>
+    Logged when the user clears browsing data and deletes cookies or cache.
+  </description>
+</action>
+
 <action name="ClearSelection">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

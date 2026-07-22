@@ -573,8 +573,12 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
   [self.popupMenuHelpCoordinator displayPopupMenuTabRemindersIPH];
 }
 
-- (void)showLevelUpWalkthroughIPH {
-  [self.popupMenuHelpCoordinator showLevelUpWalkthroughIPH];
+- (void)showLevelUpPasswordCheckupWalkthroughIPH {
+  [self.popupMenuHelpCoordinator showLevelUpPasswordCheckupWalkthroughIPH];
+}
+
+- (void)showLevelUpQuickDeleteWalkthroughIPH {
+  [self.popupMenuHelpCoordinator showLevelUpQuickDeleteWalkthroughIPH];
 }
 
 #pragma mark - OverflowMenuCustomizationCommands
