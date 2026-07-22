@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/test/base/chrome_test_suite.h"
 
@@ -17,6 +13,8 @@
 #endif
 
 #include "base/command_line.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,14 +48,11 @@ namespace {
 
 bool IsCrosPythonProcess() {
 #if BUILDFLAG(IS_CHROMEOS)
-  char buf[80];
-  int num_read = readlink(base::kProcSelfExe, buf, sizeof(buf) - 1);
-  if (num_read == -1) {
+  base::FilePath target;
+  if (!base::ReadSymbolicLink(base::FilePath(base::kProcSelfExe), &target)) {
     return false;
   }
-  buf[num_read] = 0;
-  const char kPythonPrefix[] = "/python";
-  return !strncmp(strrchr(buf, '/'), kPythonPrefix, sizeof(kPythonPrefix) - 1);
+  return target.BaseName().value().starts_with("python");
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
