@@ -14,8 +14,5 @@ blink_modules_sources("ad_auction") {
     "protected_audience.h",
   ]
 
-  deps = [
-    "//components/aggregation_service",
-    "//third_party/blink/renderer/core",
-  ]
+  deps = [ "//third_party/blink/renderer/core" ]
 }
