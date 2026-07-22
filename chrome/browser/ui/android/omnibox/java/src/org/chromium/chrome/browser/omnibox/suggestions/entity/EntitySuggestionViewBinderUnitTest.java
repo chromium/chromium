@@ -16,9 +16,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -34,7 +36,10 @@ public class EntitySuggestionViewBinderUnitTest {
                 new BaseSuggestionView<>(
                         ContextUtils.getApplicationContext(), R.layout.omnibox_basic_suggestion);
         mModel = new PropertyModel(EntitySuggestionViewProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(mModel, mView, EntitySuggestionViewBinder::bind);
+        OmniboxResourceProvider resourceProvider =
+                new OmniboxResourceProvider(mView.getContext(), BrandedColorScheme.APP_DEFAULT);
+        PropertyModelChangeProcessor.create(
+                mModel, mView, new EntitySuggestionViewBinder(resourceProvider));
     }
 
     @Test

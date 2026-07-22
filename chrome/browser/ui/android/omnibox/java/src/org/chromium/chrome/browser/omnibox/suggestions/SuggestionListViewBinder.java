@@ -14,16 +14,26 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Handles property updates to the suggestion list component. */
 @NullMarked
-class SuggestionListViewBinder {
+class SuggestionListViewBinder
+        implements PropertyModelChangeProcessor.ViewBinder<
+                PropertyModel, SuggestionListViewBinder.SuggestionListViewHolder, PropertyKey> {
+    private final OmniboxResourceProvider mResourceProvider;
+
+    public SuggestionListViewBinder(OmniboxResourceProvider resourceProvider) {
+        mResourceProvider = resourceProvider;
+    }
+
     /** Holds the view components needed to renderer the suggestion list. */
     public static class SuggestionListViewHolder {
         public final OmniboxSuggestionsContainer container;
@@ -39,8 +49,8 @@ class SuggestionListViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    public static void bind(
-            PropertyModel model, SuggestionListViewHolder view, PropertyKey propertyKey) {
+    @Override
+    public void bind(PropertyModel model, SuggestionListViewHolder view, PropertyKey propertyKey) {
         if (SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED.equals(propertyKey)) {
             updateContainerVisibility(model, view);
         } else if (SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL.equals(propertyKey)) {
@@ -52,6 +62,8 @@ class SuggestionListViewBinder {
             view.dropdown.translateChildrenVertical(
                     model.get(SuggestionListProperties.CHILD_TRANSLATION_Y));
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
+            @BrandedColorScheme int scheme = model.get(SuggestionListProperties.COLOR_SCHEME);
+            view.dropdown.setBrandedColorScheme(scheme);
             updateColorScheme(model, view);
         } else if (SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE)) {
@@ -136,18 +148,11 @@ class SuggestionListViewBinder {
         }
     }
 
-    private static void updateColorScheme(PropertyModel model, SuggestionListViewHolder holder) {
+    private void updateColorScheme(PropertyModel model, SuggestionListViewHolder holder) {
         @FuseboxLayoutMode int layoutMode = model.get(SuggestionListProperties.FUSEBOX_LAYOUT_MODE);
-        @ColorInt
-        int backgroundColor =
-                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                        holder.dropdown.getContext(),
-                        model.get(SuggestionListProperties.COLOR_SCHEME));
+        @ColorInt int backgroundColor = mResourceProvider.getSuggestionsDropdownBackgroundColor();
         if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
-            backgroundColor =
-                    OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                            holder.dropdown.getContext(),
-                            model.get(SuggestionListProperties.COLOR_SCHEME));
+            backgroundColor = mResourceProvider.getStandardSuggestionBackgroundColor();
         }
 
         holder.dropdown.setBackgroundColor(backgroundColor);

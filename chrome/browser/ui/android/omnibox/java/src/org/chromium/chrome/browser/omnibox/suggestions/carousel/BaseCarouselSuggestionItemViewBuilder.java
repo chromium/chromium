@@ -45,11 +45,15 @@ public class BaseCarouselSuggestionItemViewBuilder {
      * Create standard Carousel Suggestion View capable of hosting any of the ViewTypes.
      *
      * @param parent ViewGroup that will host the Carousel view.
+     * @param resourceProvider Provider for omnibox resources.
      * @return BaseCarouselSuggestionView.
      */
-    public static BaseCarouselSuggestionView createView(ViewGroup parent) {
+    public static BaseCarouselSuggestionView createView(
+            ViewGroup parent, OmniboxResourceProvider resourceProvider) {
         if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-            return new BaseCarouselSuggestionView(parent.getContext(), createAdapter());
+            assert resourceProvider != null;
+            return new BaseCarouselSuggestionView(
+                    parent.getContext(), createAdapter(resourceProvider));
         }
 
         // Defer adapter creation to UI thread to avoid ThreadChecker crashes.
@@ -59,14 +63,16 @@ public class BaseCarouselSuggestionItemViewBuilder {
     /**
      * Create the adapter for the Carousel Suggestion View. Must be called on the UI thread.
      *
+     * @param resourceProvider Provider for omnibox resources.
      * @return SimpleRecyclerViewAdapter.
      */
-    public static SimpleRecyclerViewAdapter createAdapter() {
+    public static SimpleRecyclerViewAdapter createAdapter(
+            OmniboxResourceProvider resourceProvider) {
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(new ModelList());
         adapter.registerType(
                 ViewType.TILE_VIEW,
-                BaseCarouselSuggestionItemViewBuilder::createTileView,
-                MostVisitedTileViewBinder::bind);
+                (parent) -> createTileView(parent, resourceProvider),
+                new MostVisitedTileViewBinder(resourceProvider));
         return adapter;
     }
 
@@ -74,9 +80,11 @@ public class BaseCarouselSuggestionItemViewBuilder {
      * Create a standard TileView element.
      *
      * @param parent ViewGroup that will host the Tile.
+     * @param resourceProvider Provider for omnibox resources.
      * @return A TileView element for the individual URL suggestion.
      */
-    private static TileView createTileView(ViewGroup parent) {
+    private static TileView createTileView(
+            ViewGroup parent, OmniboxResourceProvider resourceProvider) {
         Context context = parent.getContext();
         TileView tile =
                 (TileView)
@@ -87,8 +95,7 @@ public class BaseCarouselSuggestionItemViewBuilder {
 
         // Update the background color of the solid circle around the icon (typically a favicon).
         Drawable modernizedBackground =
-                OmniboxResourceProvider.getDrawable(
-                        context, R.drawable.tile_view_icon_background_modern_updated);
+                resourceProvider.getDrawable(R.drawable.tile_view_icon_background_modern_updated);
         View iconBackground = tile.findViewById(R.id.tile_view_icon_background);
         iconBackground.setBackground(modernizedBackground);
 

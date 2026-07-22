@@ -17,7 +17,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -31,16 +33,17 @@ public class AnswerSuggestionViewBinderTest {
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
-
         mBaseView = spy(new BaseSuggestionView<>(new LinearLayout(mContext)));
-
         mModel = new PropertyModel(AnswerSuggestionViewProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(mModel, mBaseView, AnswerSuggestionViewBinder::bind);
+        OmniboxResourceProvider resourceProvider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        PropertyModelChangeProcessor.create(
+                mModel, mBaseView, new AnswerSuggestionViewBinder(resourceProvider));
     }
 
     @Test
     public void setPadding() {
         mModel.set(AnswerSuggestionViewProperties.RIGHT_PADDING, 13);
-        assertEquals(13, mBaseView.getPaddingRight());
+        assertEquals(13, mBaseView.contentView.getPaddingRight());
     }
 }

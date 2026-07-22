@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -42,16 +43,19 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -91,6 +95,9 @@ public class ClipboardSuggestionProcessorUnitTest {
     private TextView mTitleTextView;
     private TextView mContentTextView;
     private int mLastSetTextDirection = -1;
+    private OmniboxResourceProvider mResourceProvider;
+    private SuggestionViewViewBinder mBinder;
+    private BaseSuggestionView<View> mBaseView;
 
     @Before
     public void setUp() {
@@ -98,6 +105,7 @@ public class ClipboardSuggestionProcessorUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mBitmap = Bitmap.createBitmap(10, 5, Bitmap.Config.ARGB_8888);
+
         AutocompleteUIContext uiContext =
                 new AutocompleteUIContext(
                         mContext,
@@ -110,6 +118,7 @@ public class ClipboardSuggestionProcessorUnitTest {
                         ObservableSuppliers.createNonNull(ControlsPosition.TOP),
                         mActionDelegate);
         mProcessor = new ClipboardSuggestionProcessor(uiContext);
+
         mRootView = new LinearLayout(mContext);
         mTitleTextView = new TextView(mContext);
         mTitleTextView.setId(R.id.line_1);
@@ -124,6 +133,10 @@ public class ClipboardSuggestionProcessorUnitTest {
         mContentTextView.setId(R.id.line_2);
         mRootView.addView(mTitleTextView);
         mRootView.addView(mContentTextView);
+
+        mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        mBinder = new SuggestionViewViewBinder(mResourceProvider);
+        mBaseView = new BaseSuggestionView<>(mRootView);
     }
 
     /** Create clipboard suggestion for test, and click the reveal button. */
@@ -158,11 +171,10 @@ public class ClipboardSuggestionProcessorUnitTest {
                         .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
-        SuggestionViewViewBinder.bind(mModel, mRootView, SuggestionViewProperties.TEXT_LINE_1_TEXT);
-        SuggestionViewViewBinder.bind(mModel, mRootView, SuggestionCommonProperties.COLOR_SCHEME);
-        SuggestionViewViewBinder.bind(
-                mModel, mRootView, SuggestionViewProperties.IS_SEARCH_SUGGESTION);
-        SuggestionViewViewBinder.bind(mModel, mRootView, SuggestionViewProperties.TEXT_LINE_2_TEXT);
+        mBinder.bind(mModel, mBaseView, SuggestionViewProperties.TEXT_LINE_1_TEXT);
+        mBinder.bind(mModel, mBaseView, SuggestionCommonProperties.COLOR_SCHEME);
+        mBinder.bind(mModel, mBaseView, SuggestionViewProperties.IS_SEARCH_SUGGESTION);
+        mBinder.bind(mModel, mBaseView, SuggestionViewProperties.TEXT_LINE_2_TEXT);
     }
 
     @Test

@@ -32,6 +32,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -56,6 +57,7 @@ public class SuggestionListViewBinderUnitTest {
     private OmniboxSuggestionsContainer mContainer;
     private OmniboxSuggestionsDropdown mDropdown;
     private ModelList mSuggestionModels;
+    private OmniboxResourceProvider mResourceProvider;
     private final Activity mActivity = Robolectric.buildActivity(Activity.class).setup().get();
 
     @Before
@@ -65,15 +67,19 @@ public class SuggestionListViewBinderUnitTest {
                 new PropertyModel.Builder(SuggestionListProperties.ALL_KEYS)
                         .with(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels)
                         .build();
+
         mContainer =
                 (OmniboxSuggestionsContainer)
                         LayoutInflater.from(mActivity)
                                 .inflate(R.layout.suggestions_result_container, /* root= */ null);
         mDropdown = spy(mContainer.findViewById(R.id.omnibox_suggestions_dropdown));
+
+        mResourceProvider = new OmniboxResourceProvider(mActivity, BrandedColorScheme.APP_DEFAULT);
+
         PropertyModelChangeProcessor.create(
                 mListModel,
                 new SuggestionListViewHolder(mContainer, mDropdown),
-                SuggestionListViewBinder::bind);
+                new SuggestionListViewBinder(mResourceProvider));
     }
 
     @Test
@@ -146,6 +152,7 @@ public class SuggestionListViewBinderUnitTest {
     @Test
     public void suggestionsContainerNotVisible_colorScheme() {
         mListModel.set(SuggestionListProperties.IS_LARGE_SCREEN, true);
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         mListModel.set(SuggestionListProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
         mListModel.set(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE, false);
         assertEquals(0, ((ColorDrawable) mContainer.getBackground()).getAlpha());
@@ -153,6 +160,7 @@ public class SuggestionListViewBinderUnitTest {
 
     @Test
     public void suggestionsContainerVisible_incognitoColorScheme() {
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         mListModel.set(SuggestionListProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
         mListModel.set(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE, true);
 
@@ -164,6 +172,7 @@ public class SuggestionListViewBinderUnitTest {
 
     @Test
     public void suggestionsContainerVisible_nonIncognitoColorScheme() {
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         mListModel.set(SuggestionListProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
         mListModel.set(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE, true);
 

@@ -29,6 +29,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -48,6 +49,7 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private LocationBarEmbedder mLocationBarEmbedder;
     @Mock private OmniboxSuggestionsContainer mSuggestionsContainer;
     @Mock private ViewGroup mParentView;
+    @Mock private OmniboxResourceProvider mResourceProvider;
 
     @Before
     public void setUp() {
@@ -64,7 +66,8 @@ public class AutocompleteCoordinatorUnitTest {
                         mAutocompleteMediator,
                         mProfileObservableSupplier,
                         mLocationBarEmbedder,
-                        mModalDialogManagerSupplier);
+                        mModalDialogManagerSupplier,
+                        mResourceProvider);
 
         mAutocompleteCoordinator.setSuggestionsContainerForTest(mSuggestionsContainer);
     }

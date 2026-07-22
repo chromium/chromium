@@ -32,6 +32,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -65,6 +67,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final SuggestionLayoutScrollListener mLayoutScrollListener;
     private final RecyclerViewSelectionController mSelectionController;
     private final Handler mHandler;
+    private final OmniboxResourceProvider mResourceProvider;
     private final OmniboxViewHolderFactory mViewHolderFactory;
     private @Nullable PreWarmingRecycledViewPool mRecycledViewPool;
 
@@ -346,11 +349,22 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // scrollbar not dispatched to the underlying views.
             setVerticalScrollBarEnabled(false);
 
-            mViewHolderFactory = new OmniboxViewHolderFactory();
+            mResourceProvider =
+                    new OmniboxResourceProvider(context, BrandedColorScheme.APP_DEFAULT);
+            mViewHolderFactory = new OmniboxViewHolderFactory(mResourceProvider);
             if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
                 mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
             }
         }
+    }
+
+    /**
+     * Sets the branded color scheme for the dropdown.
+     *
+     * @param scheme The {@link BrandedColorScheme} to use.
+     */
+    public void setBrandedColorScheme(@BrandedColorScheme int scheme) {
+        mResourceProvider.setBrandedColorScheme(scheme);
     }
 
     /**

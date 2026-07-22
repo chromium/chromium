@@ -19,18 +19,28 @@ import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Binder for the Carousel suggestions. */
 @NullMarked
-public interface BaseCarouselSuggestionViewBinder {
+public class BaseCarouselSuggestionViewBinder
+        implements PropertyModelChangeProcessor.ViewBinder<
+                PropertyModel, BaseCarouselSuggestionView, PropertyKey> {
+    private final OmniboxResourceProvider mResourceProvider;
+
+    public BaseCarouselSuggestionViewBinder(OmniboxResourceProvider resourceProvider) {
+        mResourceProvider = resourceProvider;
+    }
+
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
+    @Override
+    public void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
         var adapter = (SimpleRecyclerViewAdapter) view.getAdapter();
         if (adapter == null) {
-            adapter = BaseCarouselSuggestionItemViewBuilder.createAdapter();
+            adapter = BaseCarouselSuggestionItemViewBuilder.createAdapter(mResourceProvider);
             view.setAdapter(adapter);
         }
 
@@ -68,11 +78,8 @@ public interface BaseCarouselSuggestionViewBinder {
             // Specific values to apply if background is enabled.
             if (useBackground) {
                 // Note: this assumes carousel is not showing in the incognito mode.
-                bgColor =
-                        OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                                view.getContext(),
-                                model.get(SuggestionCommonProperties.COLOR_SCHEME));
-                horizontalMargin = OmniboxResourceProvider.getSideSpacing(view.getContext());
+                bgColor = mResourceProvider.getStandardSuggestionBackgroundColor();
+                horizontalMargin = mResourceProvider.getSideSpacing();
                 outline =
                         new RoundedCornerOutlineProvider(
                                 view.getContext()

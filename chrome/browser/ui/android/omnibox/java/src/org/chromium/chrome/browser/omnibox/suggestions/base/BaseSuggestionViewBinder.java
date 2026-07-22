@@ -54,7 +54,7 @@ import java.util.List;
  * @param <T> The inner content view type being updated.
  */
 @NullMarked
-public final class BaseSuggestionViewBinder<T extends View>
+public abstract class BaseSuggestionViewBinder<T extends View>
         implements ViewBinder<PropertyModel, BaseSuggestionView<T>, PropertyKey> {
     /**
      * Holder of metadata about a view's current state w.r.t. a suggestion's visual properties. This
@@ -69,8 +69,6 @@ public final class BaseSuggestionViewBinder<T extends View>
 
     private static @BrandedColorScheme int sFocusableDrawableStateTheme;
     private static boolean sFocusableDrawableStateInNightMode;
-    private final ViewBinder<PropertyModel, T, PropertyKey> mContentBinder;
-
     private static boolean sDimensionsInitialized;
     private static int sEdgeSize;
     private static int sEdgeSizeLargeIcon;
@@ -78,19 +76,21 @@ public final class BaseSuggestionViewBinder<T extends View>
     private static int sLargeIconRoundingRadius;
     private static int sSmallIconRoundingRadius;
 
-    public BaseSuggestionViewBinder(ViewBinder<PropertyModel, T, PropertyKey> contentBinder) {
-        mContentBinder = contentBinder;
+    private final OmniboxResourceProvider mResourceProvider;
+
+    public BaseSuggestionViewBinder(OmniboxResourceProvider resourceProvider) {
+        mResourceProvider = resourceProvider;
     }
 
     @Override
     @SuppressLint("ClickableViewAccessibility")
     public void bind(PropertyModel model, BaseSuggestionView<T> view, PropertyKey propertyKey) {
         if (!sDimensionsInitialized) {
-            initializeDimensions(view.getContext());
+            initializeDimensions(view.getContext(), mResourceProvider);
             sDimensionsInitialized = true;
         }
 
-        mContentBinder.bind(model, view.contentView, propertyKey);
+        bindContent(model, view.contentView, propertyKey);
         ActionChipsBinder.bind(model, view.actionChipsView, propertyKey);
 
         if (BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING == propertyKey) {
@@ -201,12 +201,10 @@ public final class BaseSuggestionViewBinder<T extends View>
         }
     }
 
-    /** Update visual theme to reflect dark mode UI theme update. */
-    private static <T extends View> void updateColorScheme(
-            PropertyModel model, BaseSuggestionView<T> view) {
+    private void updateColorScheme(PropertyModel model, BaseSuggestionView<T> view) {
         maybeResetCachedFocusableDrawableState(model, view);
         updateSuggestionIcon(model, view);
-        applySelectableBackground(model, view);
+        applySelectableBackground(model, view, mResourceProvider);
 
         final List<Action> actions = model.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
         // Setting ACTION_BUTTONS and updating actionViews can happen later. Appropriate color
@@ -284,22 +282,19 @@ public final class BaseSuggestionViewBinder<T extends View>
      *
      * @param model A property model to look up relevant properties.
      * @param view A view that receives background.
+     * @param resourceProvider Provider for omnibox resources.
      */
-    public static void applySelectableBackground(PropertyModel model, View view) {
+    public static void applySelectableBackground(
+            PropertyModel model, View view, OmniboxResourceProvider resourceProvider) {
         // Use a throwaway metadata object if caching is off to simplify branching; the performance
         // difference will still manifest because it's not persisted.
         BaseSuggestionViewMetadata metadata = ensureViewMetadata(view);
         Drawable background;
 
         if (sFocusableDrawableState == null) {
-            var context = view.getContext();
-            @BrandedColorScheme int scheme = model.get(SuggestionCommonProperties.COLOR_SCHEME);
             background =
-                    OmniboxResourceProvider.getStatefulSuggestionBackground(
-                            context,
-                            OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                                    context, scheme),
-                            scheme);
+                    resourceProvider.getStatefulSuggestionBackground(
+                            resourceProvider.getStandardSuggestionBackgroundColor());
             sFocusableDrawableState = background.getConstantState();
         } else {
             if (sFocusableDrawableState == metadata.backgroundConstantState) return;
@@ -396,13 +391,13 @@ public final class BaseSuggestionViewBinder<T extends View>
     }
 
     @VisibleForTesting
-    static void initializeDimensions(Context context) {
+    static void initializeDimensions(Context context, OmniboxResourceProvider resourceProvider) {
         Resources resources = context.getResources();
 
         sEdgeSize = resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);
         sEdgeSizeLargeIcon =
                 resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_size);
-        sSideSpacing = OmniboxResourceProvider.getSideSpacing(context);
+        sSideSpacing = resourceProvider.getSideSpacing();
         sLargeIconRoundingRadius =
                 resources.getDimensionPixelSize(R.dimen.omnibox_large_icon_rounding_radius);
         sSmallIconRoundingRadius =
@@ -415,4 +410,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     public static @Nullable ConstantState getFocusableDrawableStateForTesting() {
         return sFocusableDrawableState;
     }
+
+    protected abstract void bindContent(
+            PropertyModel model, T contentView, PropertyKey propertyKey);
 }

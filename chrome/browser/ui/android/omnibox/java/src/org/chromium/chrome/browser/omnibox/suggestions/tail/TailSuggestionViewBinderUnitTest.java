@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.styles.SuggestionSpannable;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -34,18 +35,20 @@ public class TailSuggestionViewBinderUnitTest {
     private Context mContext;
 
     private TailSuggestionView mTailSuggestionView;
+    private BaseSuggestionView<TailSuggestionView> mBaseView;
+    private OmniboxResourceProvider mResourceProvider;
 
     @Before
     public void setUp() {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-
         mTailSuggestionView = spy(new TailSuggestionView(mContext));
-
+        mBaseView = new BaseSuggestionView<>(mTailSuggestionView);
         mModel = new PropertyModel(TailSuggestionViewProperties.ALL_KEYS);
+        mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
         PropertyModelChangeProcessor.create(
-                mModel, mTailSuggestionView, TailSuggestionViewBinder::bind);
+                mModel, mBaseView, new TailSuggestionViewBinder(mResourceProvider));
     }
 
     @Test
@@ -75,8 +78,8 @@ public class TailSuggestionViewBinderUnitTest {
     @Test
     public void tailSuggestionView_setTextColor() {
         final @BrandedColorScheme int colorScheme = BrandedColorScheme.LIGHT_BRANDED_THEME;
-        final @ColorInt int color =
-                OmniboxResourceProvider.getSuggestionPrimaryTextColor(mContext, colorScheme);
+        mResourceProvider.setBrandedColorScheme(colorScheme);
+        final @ColorInt int color = mResourceProvider.getSuggestionPrimaryTextColor();
 
         mModel.set(SuggestionCommonProperties.COLOR_SCHEME, colorScheme);
         verify(mTailSuggestionView, times(1)).setTextColor(color);

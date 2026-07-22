@@ -26,7 +26,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.PositionalMode;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -52,10 +54,12 @@ public class OmniboxSuggestionsDropdownAdapterUnitTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mContainer = new FrameLayout(mContext);
         mModel = new ModelList();
-        mAdapter = new OmniboxSuggestionsDropdownAdapter(mModel, new OmniboxViewHolderFactory());
+        OmniboxResourceProvider resourceProvider =
+                new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        mAdapter =
+                new OmniboxSuggestionsDropdownAdapter(
+                        mModel, new OmniboxViewHolderFactory(resourceProvider));
     }
-
-
 
     @Test
     public void onViewRecycled_deselectAnyPreviouslySelectedViews() {

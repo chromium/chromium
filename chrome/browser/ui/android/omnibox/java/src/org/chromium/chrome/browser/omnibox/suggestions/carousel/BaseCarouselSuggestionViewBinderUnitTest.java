@@ -50,17 +50,21 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     private ModelList mTiles;
     private SimpleRecyclerViewAdapter mAdapter;
     private PropertyModel mModel;
+    private BaseCarouselSuggestionViewBinder mBinder;
+    private OmniboxResourceProvider mResourceProvider;
 
     @Before
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
         mResources = mContext.getResources();
 
+        mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        mBinder = new BaseCarouselSuggestionViewBinder(mResourceProvider);
         mTiles = new ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(mTiles);
         mView = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
         mModel = new PropertyModel(BaseCarouselSuggestionViewProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
+        PropertyModelChangeProcessor.create(mModel, mView, mBinder);
     }
 
     @Test
@@ -104,7 +108,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         var view = mock(BaseCarouselSuggestionView.class);
         var model =
                 new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS).build();
-        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+        PropertyModelChangeProcessor.create(model, view, mBinder);
 
         verify(view, never()).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
     }
@@ -117,7 +121,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                         .with(BaseCarouselSuggestionViewProperties.TOP_PADDING, 13)
                         .with(BaseCarouselSuggestionViewProperties.BOTTOM_PADDING, 75)
                         .build();
-        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+        PropertyModelChangeProcessor.create(model, view, mBinder);
 
         verify(view, atLeastOnce()).setPaddingRelative(0, 13, 0, 75);
     }
@@ -134,7 +138,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                         .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, false)
                         .build();
 
-        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+        PropertyModelChangeProcessor.create(model, view, mBinder);
 
         verify(view).setBackgroundColor(Color.TRANSPARENT);
         verify(view).setOutlineProvider(null);
@@ -156,7 +160,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                         .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, true)
                         .build();
 
-        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+        PropertyModelChangeProcessor.create(model, view, mBinder);
 
         verify(view)
                 .setBackgroundColor(
@@ -183,7 +187,8 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                         .with(BaseCarouselSuggestionViewProperties.APPLY_BACKGROUND, true)
                         .build();
 
-        PropertyModelChangeProcessor.create(model, view, BaseCarouselSuggestionViewBinder::bind);
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        PropertyModelChangeProcessor.create(model, view, mBinder);
 
         verify(view)
                 .setBackgroundColor(
@@ -208,7 +213,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                 new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
                         .with(BaseCarouselSuggestionViewProperties.ITEM_DECORATION, decoration)
                         .build();
-        PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
+        PropertyModelChangeProcessor.create(mModel, mView, mBinder);
 
         assertEquals(1, mView.getItemDecorationCount());
         assertSame(decoration, mView.getItemDecorationAt(0));
@@ -221,7 +226,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                         .with(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION, null)
                         .build();
         mView = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
-        PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
+        PropertyModelChangeProcessor.create(mModel, mView, mBinder);
 
         verify(mView).setContentDescription(null);
     }
@@ -235,7 +240,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
                                 "description")
                         .build();
         mView = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
-        PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
+        PropertyModelChangeProcessor.create(mModel, mView, mBinder);
 
         verify(mView).setContentDescription("description");
     }

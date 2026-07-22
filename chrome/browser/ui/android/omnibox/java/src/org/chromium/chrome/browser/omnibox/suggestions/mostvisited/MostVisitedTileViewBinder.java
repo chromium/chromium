@@ -9,34 +9,37 @@ import android.graphics.drawable.Drawable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** ViewBinder for a single Most Visited Tile. */
 @NullMarked
-public class MostVisitedTileViewBinder {
+public class MostVisitedTileViewBinder
+        implements PropertyModelChangeProcessor.ViewBinder<PropertyModel, TileView, PropertyKey> {
+    private final OmniboxResourceProvider mResourceProvider;
+
+    public MostVisitedTileViewBinder(OmniboxResourceProvider resourceProvider) {
+        mResourceProvider = resourceProvider;
+    }
+
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    public static void bind(PropertyModel model, TileView view, PropertyKey propertyKey) {
+    @Override
+    public void bind(PropertyModel model, TileView view, PropertyKey propertyKey) {
         if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
-            updateColorScheme(model, view);
+            updateColorScheme(view);
         }
         TileViewBinder.bind(model, view, propertyKey);
     }
 
-    private static void updateColorScheme(PropertyModel model, TileView view) {
-        var context = view.getContext();
-        @BrandedColorScheme int scheme = model.get(SuggestionCommonProperties.COLOR_SCHEME);
+    private void updateColorScheme(TileView view) {
         Drawable background =
-                OmniboxResourceProvider.getStatefulSuggestionBackground(
-                        context,
-                        OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                                context, scheme),
-                        scheme);
+                mResourceProvider.getStatefulSuggestionBackground(
+                        mResourceProvider.getSuggestionsDropdownBackgroundColor());
         view.setBackground(background);
     }
 }

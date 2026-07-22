@@ -9,16 +9,20 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A mechanism binding AnswerSuggestion properties to its view. */
 @NullMarked
-public class AnswerSuggestionViewBinder {
-    /**
-     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
-     */
-    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
+public class AnswerSuggestionViewBinder extends BaseSuggestionViewBinder<View> {
+    public AnswerSuggestionViewBinder(OmniboxResourceProvider resourceProvider) {
+        super(resourceProvider);
+    }
+
+    @Override
+    protected void bindContent(PropertyModel model, View view, PropertyKey propertyKey) {
         if (AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT == propertyKey) {
             TextView tv = view.findViewById(R.id.omnibox_answer_line_1);
             tv.setText(model.get(AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT));

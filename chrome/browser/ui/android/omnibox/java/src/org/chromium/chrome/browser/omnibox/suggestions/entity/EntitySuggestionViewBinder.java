@@ -4,20 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
-import android.view.View;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
-import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** A mechanism binding EntitySuggestion properties to its view. */
 @NullMarked
-public class EntitySuggestionViewBinder {
-    /**
-     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
-     */
-    public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        SuggestionViewViewBinder.bind(model, view, propertyKey);
+public class EntitySuggestionViewBinder extends SuggestionViewViewBinder {
+    public EntitySuggestionViewBinder(OmniboxResourceProvider resourceProvider) {
+        super(resourceProvider);
     }
 }

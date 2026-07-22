@@ -18,6 +18,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
@@ -38,7 +40,10 @@ public class OmniboxViewHolderFactoryUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mContainer = new FrameLayout(context);
-        mFactory = new OmniboxViewHolderFactory();
+
+        OmniboxResourceProvider resourceProvider =
+                new OmniboxResourceProvider(context, BrandedColorScheme.APP_DEFAULT);
+        mFactory = new OmniboxViewHolderFactory(resourceProvider);
     }
 
     @Test

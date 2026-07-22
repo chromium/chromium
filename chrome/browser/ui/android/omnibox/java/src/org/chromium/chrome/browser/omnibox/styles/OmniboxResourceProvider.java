@@ -95,7 +95,7 @@ public class OmniboxResourceProvider {
         mBrandedColorScheme = brandedColorScheme;
     }
 
-    private @BrandedColorScheme int getBrandedColorScheme() {
+    public @BrandedColorScheme int getBrandedColorScheme() {
         return mBrandedColorScheme;
     }
 
