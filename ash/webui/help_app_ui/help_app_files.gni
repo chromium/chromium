@@ -5,7 +5,7 @@
 # Where files are staged for tsc. Only .ts and .d.ts files should be put here.
 ts_root_dir = "$root_gen_dir/ash/webui/help_app_ui/resources/stage_ts"
 
-# Testing .d.ts and .ts files that are staged and consumed by tsc.
+# Testing .ts files that are staged and consumed by tsc.
 help_app_test_ts = [
   "driver_api.ts",
   "driver.ts",
@@ -13,5 +13,3 @@ help_app_test_ts = [
   "help_app_guest_ui_browsertest.ts",
   "help_app_ui_browsertest.ts",
 ]
-
-help_app_test_defs = [ "test_api.d.ts" ]

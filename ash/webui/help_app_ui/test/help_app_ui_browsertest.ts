@@ -10,6 +10,8 @@
  * To add a new test to this file, add the test function to
  * `HelpAppUIBrowserTest` and then invoke in in gtest_browsertest.js.
  */
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 import {runTestInGuest} from './driver.js';
 
 const HOST_ORIGIN = 'chrome://help-app';
@@ -36,7 +38,6 @@ const HelpAppUIBrowserTest: TestSuite = {
 
 // Tests that chrome://help-app goes somewhere instead of 404ing or crashing.
 HelpAppUIBrowserTest['HasChromeSchemeURL'] = async () => {
-  const {assertEquals} = await import('//webui-test/chai_assert.js');
   const guest =
       /** @type {!HTMLIFrameElement} */ (document.querySelector('iframe'));
 
@@ -46,14 +47,12 @@ HelpAppUIBrowserTest['HasChromeSchemeURL'] = async () => {
 
 // Tests that we have localized information in the HTML like title and lang.
 HelpAppUIBrowserTest['HasTitleAndLang'] = async () => {
-  const {assertEquals} = await import('//webui-test/chai_assert.js');
   assertEquals(document.documentElement.lang, 'en');
   assertEquals(document.title, 'Explore');
 };
 
 // Check the body element's background color when the dark mode is enabled.
 HelpAppUIBrowserTest['BodyHasCorrectBackgroundColorInDarkMode'] = async () => {
-  const {assertEquals} = await import('//webui-test/chai_assert.js');
   const actualBackgroundColor = getComputedStyle(document.body).backgroundColor;
   assertEquals(actualBackgroundColor, 'rgb(32, 33, 36)');  // Grey 900.
 };

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Test suite for chrome-untrusted://help-app. */
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {GUEST_TEST} from './guest_query_receiver.js';
 
@@ -15,7 +15,7 @@ GUEST_TEST('GuestLoadsLoadTimeData', () => {
   // TODO(b/313562946): Add types for `sandboxed_load_time_data.js`.
   const loadTimeData = (window as any)['loadTimeData'];
   // Check `LoadTimeData` exists on the global window object.
-  chai.assert.isTrue(loadTimeData !== undefined);
+  assertTrue(loadTimeData !== undefined);
   assertEquals(loadTimeData.getString('appLocale'), 'en-US');
 });
 
@@ -171,7 +171,8 @@ GUEST_TEST('GuestCanSearchWithCategories', async () => {
 
   // Don't test the ordering of search results because they should have similar
   // relevance.
-  chai.assert.sameDeepMembers(response!.results, [
+  response!.results!.sort((a: any, b: any) => a.id.localeCompare(b.id));
+  assertDeepEquals(response!.results, [
     // This result only matches on the main category.
     {
       id: 'test-id-1',

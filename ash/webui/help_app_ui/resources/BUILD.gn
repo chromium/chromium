@@ -106,16 +106,18 @@ ts_library("test_build_ts") {
   root_dir = ts_root_dir
   testonly = true
   in_files = help_app_test_ts
-  definitions = [
-    "//ash/webui/help_app_ui/resources/js/help_app.d.ts",
-    "//ash/webui/help_app_ui/test/test_api.d.ts",
-  ]
+  definitions = [ "//ash/webui/help_app_ui/resources/js/help_app.d.ts" ]
   deps = [
     ":build_ts",
     "//chrome/test/data/webui:build_ts",
   ]
-  path_mappings = [ "//webui-test/*|" +
-                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
-                                target_gen_dir) ]
+  path_mappings = [
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+    "chrome-untrusted://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
   extra_deps = [ "//ash/webui/help_app_ui/test:stage_for_test_tsc" ]
 }

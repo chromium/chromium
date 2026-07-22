@@ -37,7 +37,14 @@ void CreateAndAddHelpAppUntrustedDataSource(
   // Add all resources from chromeos_help_app_bundle.pak.
   source->AddResourcePaths(kChromeosHelpAppBundleResources);
 
-  MaybeConfigureTestableDataSource(source, "help_app/untrusted");
+  // Allow loading test scripts from chrome-untrusted://webui-test when running
+  // under browser tests.
+  if (MaybeConfigureTestableDataSource(source, "help_app/untrusted")) {
+    source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ScriptSrc,
+        "script-src chrome-untrusted://resources chrome-untrusted://webui-test "
+        "'self';");
+  }
 
   // Add device and feature flags.
   populate_load_time_data_callback.Run(source);
