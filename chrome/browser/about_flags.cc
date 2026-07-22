@@ -240,7 +240,7 @@
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
 #include "media/media_buildflags.h"
-#include "media/midi/midi_switches.h"
+#include "media/midi/midi_features.h"
 #include "media/webrtc/webrtc_features.h"
 #include "mojo/core/embedder/features.h"
 #include "net/base/features.h"

@@ -12,7 +12,6 @@
 #include "media/midi/midi_device_android.h"
 #include "media/midi/midi_output_port_android.h"
 #include "media/midi/midi_service.h"
-#include "media/midi/midi_switches.h"
 #include "media/midi/task_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

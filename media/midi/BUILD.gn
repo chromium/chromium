@@ -60,19 +60,39 @@ if (is_android) {
   }
 }
 
+source_set("midi_export") {
+  sources = [ "midi_export.h" ]
+}
+
+# Helper target for UMP utilities.
+# On Apple platforms, this is linked into the "midi" component.
+# On other platforms, it is only linked into tests and fuzzers to avoid
+# increasing the production binary size.
+source_set("ump_helper") {
+  sources = [
+    "ump_message_util.cc",
+    "ump_message_util.h",
+  ]
+  configs += [ ":midi_config" ]
+  defines = [ "MIDI_IMPLEMENTATION" ]
+  public_deps = [
+    ":midi_export",
+    "//base",
+  ]
+}
+
 component("midi") {
   sources = [
     "message_util.cc",
     "message_util.h",
-    "midi_export.h",
+    "midi_features.cc",
+    "midi_features.h",
     "midi_manager.cc",
     "midi_manager.h",
     "midi_message_queue.cc",
     "midi_message_queue.h",
     "midi_service.cc",
     "midi_service.h",
-    "midi_switches.cc",
-    "midi_switches.h",
     "task_service.cc",
     "task_service.h",
   ]
@@ -80,7 +100,10 @@ component("midi") {
   configs += [ ":midi_config" ]
 
   defines = [ "MIDI_IMPLEMENTATION" ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    ":midi_export",
+    "//base",
+  ]
   deps = [ ":mojo" ]
   libs = []
 
@@ -104,6 +127,7 @@ component("midi") {
   }
 
   if (is_apple) {
+    public_deps += [ ":ump_helper" ]
     if (is_ios && target_platform == "tvos") {
       sources += [ "midi_manager_tvos.cc" ]
     } else {
@@ -164,6 +188,7 @@ test("midi_unittests") {
     "midi_manager_unittest.cc",
     "midi_message_queue_unittest.cc",
     "task_service_unittest.cc",
+    "ump_message_util_unittest.cc",
   ]
 
   configs += [ ":midi_config" ]
@@ -174,6 +199,9 @@ test("midi_unittests") {
     "//base/test/:test_support",
     "//testing/gtest",
   ]
+  if (!is_apple) {
+    deps += [ ":ump_helper" ]
+  }
 
   if (is_android) {
     deps += [ ":midi_java" ]
@@ -193,8 +221,14 @@ test("midi_unittests") {
   if (use_alsa && use_udev) {
     sources += [ "midi_manager_alsa_unittest.cc" ]
   }
+
+  fuzztests = [
+    "UmpMessageUtilFuzzTest.DispatchMidiFromUmpWordsDoesNotCrash",
+    "UmpMessageUtilFuzzTest.TranslateMidiToUmpWordsDoesNotCrash",
+  ]
 }
 
+# TODO(crbug.com/327611574): Migrate legacy fuzzer_test targets to FUZZ_TEST.
 fuzzer_test("midi_webmidi_data_validator_fuzzer") {
   sources = [ "midi_webmidi_data_validator_fuzzer.cc" ]
   seed_corpus = "fuzz/corpus"

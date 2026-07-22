@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/midi/midi_manager.h"
-#include "media/midi/midi_switches.h"
 #include "media/midi/task_service.h"
 
 namespace midi {

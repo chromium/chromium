@@ -2,23 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Defines all the "midi" command-line switches.
+#include "media/midi/midi_features.h"
 
-#ifndef MEDIA_MIDI_MIDI_SWITCHES_H_
-#define MEDIA_MIDI_MIDI_SWITCHES_H_
-
-#include "base/feature_list.h"
 #include "build/build_config.h"
-#include "media/midi/midi_export.h"
 
 namespace midi {
 namespace features {
 
 #if BUILDFLAG(IS_WIN)
-MIDI_EXPORT BASE_DECLARE_FEATURE(kMidiManagerWinrt);
+BASE_FEATURE(kMidiManagerWinrt, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kMidiMacUmp, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features
 }  // namespace midi
-
-#endif  // MEDIA_MIDI_MIDI_SWITCHES_H_

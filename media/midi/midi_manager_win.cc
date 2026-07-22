@@ -35,10 +35,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/midi/message_util.h"
+#include "media/midi/midi_features.h"
 #include "media/midi/midi_manager_winrt.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/midi_service.mojom.h"
-#include "media/midi/midi_switches.h"
 #include "services/device/public/cpp/usb/usb_ids.h"
 
 namespace midi {

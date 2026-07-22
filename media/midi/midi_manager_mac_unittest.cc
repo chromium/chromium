@@ -24,8 +24,6 @@ namespace {
 using mojom::PortState;
 using mojom::Result;
 
-void Noop(const MIDIPacketList*, void*, void*) {}
-
 class FakeMidiManagerClient : public MidiManagerClient {
  public:
   FakeMidiManagerClient()
@@ -148,8 +146,10 @@ TEST_F(MidiManagerMacTest, MidiNotification) {
   EXPECT_EQ(noErr, status);
 
   MIDIEndpointRef ep = 0;
-  status = MIDIDestinationCreate(
-      midi_client, CFSTR("DestinationTest"), Noop, nullptr, &ep);
+  status = MIDIDestinationCreateWithProtocol(
+      midi_client, CFSTR("DestinationTest"), kMIDIProtocol_1_0, &ep,
+      ^(const MIDIEventList* evtlist, void* srcConnRefCon){
+      });
   EXPECT_EQ(noErr, status);
   SInt32 id;
   status = MIDIObjectGetIntegerProperty(ep, kMIDIPropertyUniqueID, &id);
