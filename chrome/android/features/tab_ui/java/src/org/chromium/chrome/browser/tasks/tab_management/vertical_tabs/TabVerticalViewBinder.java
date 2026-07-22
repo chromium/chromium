@@ -704,10 +704,10 @@ class TabVerticalViewBinder {
                     boolean isSelected = model.get(TabProperties.IS_SELECTED);
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_HOVER_ENTER:
+                            // TODO(crbug.com/533531896): Handle clearing all backgrounds before
+                            // showing tab background.
                             // TODO(crbug.com/527641177): Maybe show a darker background color for
                             // action button when it's being hovered?
-                            // TODO(crbug.com/533531896): Action button hovering is not stable when
-                            // there are pinned tabs.
                             if (!isSelected) {
                                 ViewCompat.setBackgroundTintList(
                                         view,
@@ -717,22 +717,17 @@ class TabVerticalViewBinder {
                                                         /* isIncognito= */ false)));
                             }
                             updateIcons(model, view, /* isHovered= */ true);
-                            break;
+                            return true;
                         case MotionEvent.ACTION_HOVER_EXIT:
-                            if (actionButton != null
-                                    && (actionButton.isHovered()
-                                            || isPointWithinChild(
-                                                    actionButton,
-                                                    motionEvent.getX(),
-                                                    motionEvent.getY()))) {
-                                break;
+                            float x = motionEvent.getX();
+                            float y = motionEvent.getY();
+                            if (x < 0 || x >= view.getWidth() || y < 0 || y >= view.getHeight()) {
+                                if (!isSelected) {
+                                    ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
+                                }
+                                updateIcons(model, view, /* isHovered= */ false);
                             }
-
-                            if (!isSelected) {
-                                ViewCompat.setBackgroundTintList(view, defaultBackgroundColor);
-                            }
-                            updateIcons(model, view, /* isHovered= */ false);
-                            break;
+                            return true;
                     }
                     return false;
                 });
@@ -740,7 +735,21 @@ class TabVerticalViewBinder {
         if (actionButton != null) {
             actionButton.setOnHoverListener(
                     (v, motionEvent) -> {
-                        if (motionEvent.getAction() == MotionEvent.ACTION_HOVER_EXIT) {
+                        int action = motionEvent.getAction();
+                        if (action == MotionEvent.ACTION_HOVER_ENTER) {
+                            v.setHovered(true);
+                            if (!model.get(TabProperties.IS_SELECTED)) {
+                                ViewCompat.setBackgroundTintList(
+                                        view,
+                                        ColorStateList.valueOf(
+                                                TabUiThemeUtil.getHoveredTabContainerColor(
+                                                        view.getContext(),
+                                                        /* isIncognito= */ false)));
+                            }
+                            updateIcons(model, view, /* isHovered= */ true);
+                            return true;
+                        } else if (action == MotionEvent.ACTION_HOVER_EXIT) {
+                            v.setHovered(false);
                             float xInView = v.getLeft() + motionEvent.getX();
                             float yInView = v.getTop() + motionEvent.getY();
                             if (xInView < 0
@@ -752,19 +761,10 @@ class TabVerticalViewBinder {
                                 }
                                 updateIcons(model, view, /* isHovered= */ false);
                             }
+                            return true;
                         }
                         return false;
                     });
         }
-    }
-
-    private static boolean isPointWithinChild(
-            @Nullable View child, float xInParent, float yInParent) {
-        return child != null
-                && child.getVisibility() == View.VISIBLE
-                && xInParent >= child.getLeft()
-                && xInParent < child.getRight()
-                && yInParent >= child.getTop()
-                && yInParent < child.getBottom();
     }
 }

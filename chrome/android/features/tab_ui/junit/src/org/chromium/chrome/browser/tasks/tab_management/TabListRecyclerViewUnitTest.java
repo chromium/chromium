@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -163,5 +165,30 @@ public class TabListRecyclerViewUnitTest {
 
         assertEquals(800, mRecyclerView.computeVerticalScrollRange());
         verify(mLayoutManager, never()).computeVerticalScrollRange(any());
+    }
+
+    @Test
+    public void testIsVerticalTabList_InsideVerticalTabRailLayout() {
+        assertTrue(mRecyclerView.isVerticalTabList());
+    }
+
+    @Test
+    public void testIsVerticalTabList_OutsideVerticalTabRailLayout() {
+        FrameLayout standardParent = new FrameLayout(mContext);
+        TabListRecyclerView standardRecyclerView = new TabListRecyclerView(mContext, null);
+        standardRecyclerView.setId(R.id.tab_list_recycler_view);
+        standardParent.addView(standardRecyclerView);
+
+        assertFalse(standardRecyclerView.isVerticalTabList());
+    }
+
+    @Test
+    public void testIsVerticalTabList_WrongId() {
+        VerticalTabRailLayout parentRailLayout = new VerticalTabRailLayout(mContext, null);
+        TabListRecyclerView customRecyclerView = new TabListRecyclerView(mContext, null);
+        customRecyclerView.setId(View.NO_ID);
+        parentRailLayout.addView(customRecyclerView);
+
+        assertFalse(customRecyclerView.isVerticalTabList());
     }
 }

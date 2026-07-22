@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +28,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -87,6 +89,14 @@ public class TabListRecyclerView extends RecyclerView
         if (mBlockTouchInput) return true;
 
         return super.dispatchTouchEvent(e);
+    }
+
+    @Override
+    public boolean onInterceptHoverEvent(MotionEvent event) {
+        if (ChromeFeatureList.sAndroidVerticalTabs.isEnabled() && isVerticalTabList()) {
+            return false;
+        }
+        return super.onInterceptHoverEvent(event);
     }
 
     @Override
@@ -492,7 +502,9 @@ public class TabListRecyclerView extends RecyclerView
         mIsSmoothScrolling = isSmoothScrolling;
     }
 
-    private boolean isVerticalTabList() {
+    /** Returns whether this view is attached as the main recycler view in VerticalTabRailLayout. */
+    @VisibleForTesting
+    public boolean isVerticalTabList() {
         return getId() == R.id.tab_list_recycler_view
                 && getParent() instanceof VerticalTabRailLayout;
     }
