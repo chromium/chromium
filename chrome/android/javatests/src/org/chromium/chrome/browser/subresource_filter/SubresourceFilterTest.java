@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -33,8 +34,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
@@ -64,10 +65,11 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public final class SubresourceFilterTest {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private EmbeddedTestServer mTestServer;
 
@@ -79,6 +81,7 @@ public final class SubresourceFilterTest {
             "{\"matches\":[{\"threat_type\":\"13\",\"sf_bas\":\"\"}]}";
     private static final String METADATA_FOR_WARNING =
             "{\"matches\":[{\"threat_type\":\"13\",\"sf_bas\":\"warn\"}]}";
+    private static boolean sRulesetPublished;
     private WebPageStation mPage;
 
     private void createAndPublishRulesetDisallowingSuffix(String suffix) {
@@ -99,8 +102,11 @@ public final class SubresourceFilterTest {
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
         mPage = mActivityTestRule.startOnBlankPage();
 
-        // Disallow all jpgs.
-        createAndPublishRulesetDisallowingSuffix(".jpg");
+        if (!sRulesetPublished) {
+            // Disallow all jpgs.
+            createAndPublishRulesetDisallowingSuffix(".jpg");
+            sRulesetPublished = true;
+        }
     }
 
     @After
