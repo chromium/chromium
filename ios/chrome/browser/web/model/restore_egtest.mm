@@ -157,13 +157,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 // Navigates to a set of cross-domains, chrome URLs and error pages, and then
 // tests that they are properly restored in airplane mode.
-// TODO(crbug.com/435144099): Reenable test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testRestoreNoNetwork testRestoreNoNetwork
-#else
-#define MAYBE_testRestoreNoNetwork FLAKY_testRestoreNoNetwork
-#endif
-- (void)MAYBE_testRestoreNoNetwork {
+- (void)testRestoreNoNetwork {
   [self setUpRestoreServers];
   [self loadTestPages];
   self.serverRespondsWithContent = false;
@@ -336,6 +330,14 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
     [[EarlGrey selectElementWithMatcher:ToolsMenuButton()]
         performAction:grey_tap()];
+  }
+  // TODO(crbug.com/530841942): On iOS 27 beta 2 and 3 frequently failed without
+  // loadURL waits.  Beta 4 seems to fixed most, but introduced this one.  This
+  // is a temporary fix until we find a better solution. It's possible this is a
+  // iOS 27 beta bug, or that we need a different wait, but so far this wait is
+  // the best approach we've found.
+  if (@available(iOS 27, *)) {
+    base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   }
   [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
