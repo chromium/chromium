@@ -49,7 +49,7 @@ crbug.com/414691618 virtual/webnn-service-with-gpu/external/wpt/webnn/conformanc
 crbug.com/414691618 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu [ Crash ]
 crbug.com/414691618 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gru.https.any.html?gpu [ Crash ]
 crbug.com/414691618 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/linear.https.any.html?gpu [ Crash ]
-crbug.com/414691618 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/lstm_cell.https.any.html?gpu [ Skip ]
+crbug.com/414691618 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/lstm_cell.https.any.html?gpu [ Crash ]
 crbug.com/414691618 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/prelu.https.any.html?gpu [ Crash ]
 crbug.com/414691618 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?gpu [ Crash ]
 crbug.com/414691618 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Crash ]
