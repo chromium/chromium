@@ -220,7 +220,6 @@ _ALL_LOCALES = [
     ("th", "THAI"),
     ("ti", "TIGRINYA"),
     ("tk", "TURKMEN"),
-    ("tl", "TAGALOG"),
     ("tn", "TSWANA"),
     ("to", "TONGA"),
     ("tr", "TURKISH"),

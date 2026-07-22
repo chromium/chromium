@@ -212,8 +212,7 @@ TEST_F(LanguageSettingsPrivateApiTest, GetAlwaysTranslateLanguagesListTest) {
   EXPECT_TRUE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());
 
   translate_prefs_->AddLanguagePairToAlwaysTranslateList("af", "es");
-  // Use 'tl' as the translate language which is 'fil' as a Chrome language.
-  translate_prefs_->AddLanguagePairToAlwaysTranslateList("tl", "es");
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("fil", "es");
   std::vector<std::string> always_translate_languages =
       translate_prefs_->GetAlwaysTranslateLanguages();
   ASSERT_EQ(std::vector<std::string>({"af", "ak", "fil"}),

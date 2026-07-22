@@ -22,9 +22,9 @@ _LANGUAGES = [
     "mn", "mni", "mr", "ms", "mt", "my", "nb", "ne", "nl", "nn", "no", "nso",
     "ny", "oc", "om", "or", "pa", "pl", "ps", "pt", "qu", "rm", "ro", "ru",
     "rw", "sa", "sd", "sh", "si", "sk", "sl", "sm", "sn", "so", "sq", "sr",
-    "st", "su", "sv", "sw", "ta", "te", "tg", "th", "ti", "tk", "tl", "tn",
-    "to", "tr", "ts", "tt", "ug", "uk", "und", "ur", "uz", "vi", "wa", "wo",
-    "xh", "yi", "yo", "yue", "zh", "zu"
+    "st", "su", "sv", "sw", "ta", "te", "tg", "th", "ti", "tk", "tn", "to",
+    "tr", "ts", "tt", "ug", "uk", "und", "ur", "uz", "vi", "wa", "wo", "xh",
+    "yi", "yo", "yue", "zh", "zu"
 ]
 
 _SCRIPTS = ["Cyrl", "Hans", "Hant", "Latn", "Mtei"]

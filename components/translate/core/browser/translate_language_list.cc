@@ -80,6 +80,7 @@ constexpr auto kDefaultSupportedLanguages =
         GetKnownLanguageTag("eu"),        // Basque
         GetKnownLanguageTag("fa"),        // Persian
         GetKnownLanguageTag("fi"),        // Finnish
+        GetKnownLanguageTag("fil"),       // Filipino
         GetKnownLanguageTag("fr"),        // French
         GetKnownLanguageTag("fy"),        // Frisian
         GetKnownLanguageTag("ga"),        // Irish
@@ -165,7 +166,6 @@ constexpr auto kDefaultSupportedLanguages =
         GetKnownLanguageTag("th"),        // Thai
         GetKnownLanguageTag("ti"),        // Tigrinya
         GetKnownLanguageTag("tk"),        // Turkmen
-        GetKnownLanguageTag("tl"),        // Tagalog
         GetKnownLanguageTag("tr"),        // Turkish
         GetKnownLanguageTag("ts"),        // Tsonga
         GetKnownLanguageTag("tt"),        // Tatar

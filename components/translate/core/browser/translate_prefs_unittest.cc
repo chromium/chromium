@@ -293,7 +293,7 @@ TEST_F(TranslatePrefsTest, BlockDifferentTranslateCodes) {
   translate_prefs_->BlockLanguage("he");
   translate_prefs_->BlockLanguage("fil");
   translate_prefs_->BlockLanguage("mni-Mtei");
-  ExpectBlockedLanguageListContent({"en", "iw", "tl", "mni-Mtei"});
+  ExpectBlockedLanguageListContent({"en", "he", "fil", "mni-Mtei"});
 }
 
 TEST_F(TranslatePrefsTest, BlockNonAcceptLanguage) {
@@ -1138,16 +1138,16 @@ TEST_F(TranslatePrefsTest, SetRecentTargetLanguage) {
   EXPECT_EQ("en", translate_prefs_->GetRecentTargetLanguage());
 
   translate_prefs_->SetRecentTargetLanguage("fil");
-  EXPECT_EQ("tl", translate_prefs_->GetRecentTargetLanguage());
+  EXPECT_EQ("fil", translate_prefs_->GetRecentTargetLanguage());
 
   translate_prefs_->SetRecentTargetLanguage("nb");
   EXPECT_EQ("no", translate_prefs_->GetRecentTargetLanguage());
 
   translate_prefs_->SetRecentTargetLanguage("jv");
-  EXPECT_EQ("jw", translate_prefs_->GetRecentTargetLanguage());
+  EXPECT_EQ("jv", translate_prefs_->GetRecentTargetLanguage());
 
   translate_prefs_->SetRecentTargetLanguage("he");
-  EXPECT_EQ("iw", translate_prefs_->GetRecentTargetLanguage());
+  EXPECT_EQ("he", translate_prefs_->GetRecentTargetLanguage());
 
   // The only translate languages to have a country code are variants of "zh".
   translate_prefs_->SetRecentTargetLanguage("zh-TW");
@@ -1199,8 +1199,7 @@ TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
 
   // GetAlwaysTranslateLanguages
   translate_prefs_->AddLanguagePairToAlwaysTranslateList("ak", "es");
-  // Use 'tl' as the translate language which is 'fil' as a Chrome language.
-  translate_prefs_->AddLanguagePairToAlwaysTranslateList("tl", "es");
+  translate_prefs_->AddLanguagePairToAlwaysTranslateList("fil", "es");
   std::vector<std::string> always_translate_languages =
       translate_prefs_->GetAlwaysTranslateLanguages();
   EXPECT_EQ(std::vector<std::string>({"af", "ak", "am", "fil"}),
@@ -1214,7 +1213,7 @@ TEST_F(TranslatePrefsTest, AlwaysTranslateLanguages) {
             always_translate_languages);
   translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("ak");
   translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("am");
-  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("tl");
+  translate_prefs_->RemoveLanguagePairFromAlwaysTranslateList("fil");
 
   // AlwaysTranslateList should be empty now
   EXPECT_FALSE(translate_prefs_->HasLanguagePairsToAlwaysTranslate());

@@ -37,18 +37,6 @@ const LanguageCodePair kTranslateOnlySynonyms[] = {
     {"id", "in"},
 };
 
-// Some languages have changed codes over the years and sometimes the older
-// codes are used, so we must see them as synonyms.
-//
-// If this table is updated, please sync this with the synonym table in
-// chrome/browser/resources/settings/languages_page/languages.ts.
-const LanguageCodePair kLanguageCodeSynonyms[] = {
-    {"gom", "kok"},
-    {"iw", "he"},
-    {"jw", "jv"},
-    {"tl", "fil"},
-};
-
 // Some Chinese language codes are compatible with zh-TW or zh-CN in terms of
 // Translate.
 //
@@ -138,14 +126,6 @@ void ToTranslateLanguageSynonym(std::string* language) {
     }
   }
 
-  // Apply linear search here because number of items in the list is just three.
-  for (const auto& language_pair : kLanguageCodeSynonyms) {
-    if (main_part == language_pair.chrome_language) {
-      *language = language_pair.translate_language;
-      return;
-    }
-  }
-
   // By default use the base language as the translate synonym.
   *language = std::string(main_part);
 }
@@ -154,14 +134,6 @@ void ToChromeLanguageSynonym(std::string* language) {
   auto [main_part, tail_part] = language::SplitIntoMainAndTail(*language);
   if (main_part.empty()) {
     return;
-  }
-
-  // Apply linear search here because number of items in the list is just three.
-  for (const auto& language_pair : kLanguageCodeSynonyms) {
-    if (main_part == language_pair.translate_language) {
-      main_part = language_pair.chrome_language;
-      break;
-    }
   }
 
   *language = base::StrCat({main_part, tail_part});

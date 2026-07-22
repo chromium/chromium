@@ -351,14 +351,14 @@ class TranslateManagerRenderViewHostNoOverrideTest
 // display names in English locale. To save space, Chrome's copy of ICU
 // does not have the display name for a language unless it's in the
 // Accept-Language list.
-constexpr auto kServerLanguageList = std::to_array<const char*>({
+constexpr auto kServerLanguageList = std::to_array<std::string_view>({
     "ak",
     "af",
     "en-CA",
     "zh",
     "yi",
     "fr-FR",
-    "tl",
+    "fil",
     "he",
     "hz",
     "xx",

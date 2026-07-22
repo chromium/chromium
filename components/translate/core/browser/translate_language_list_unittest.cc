@@ -25,8 +25,9 @@
 #include "url/gurl.h"
 
 namespace translate {
-
 namespace {
+
+using ::testing::ElementsAre;
 
 class DummyTranslateUrlFetcher : public TranslateUrlFetcher {
  public:
@@ -76,9 +77,7 @@ TEST_F(TranslateLanguageListTest, SetSupportedLanguages) {
   manager->language_list()->GetSupportedLanguages(true /* translate_allowed */,
                                                   &results);
   ASSERT_EQ(3u, results.size());
-  EXPECT_EQ("en", results[0]);
-  EXPECT_EQ("ja", results[1]);
-  EXPECT_EQ("tl", results[2]);
+  EXPECT_THAT(results, ElementsAre("en", "fil", "ja"));
   manager->ResetForTesting();
 }
 
@@ -176,6 +175,7 @@ TEST_F(TranslateLanguageListTest, SanityCheckAllLanguages) {
       "eu",        // Basque
       "fa",        // Persian
       "fi",        // Finnish
+      "fil",       // Filipino
       "fr",        // French
       "fy",        // Frisian
       "ga",        // Irish
@@ -261,7 +261,6 @@ TEST_F(TranslateLanguageListTest, SanityCheckAllLanguages) {
       "th",        // Thai
       "ti",        // Tigrinya
       "tk",        // Turkmen
-      "tl",        // Tagalog - Chrome uses "fil"
       "tr",        // Turkish
       "ts",        // Tsonga
       "tt",        // Tatar

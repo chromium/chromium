@@ -59,10 +59,10 @@ TEST(LanguageStateTest, SetPredefinedTargetLanguage) {
 
   // Language codes that have Translate synonyms.
   language_state.SetPredefinedTargetLanguage("fil", false);
-  EXPECT_EQ("tl", language_state.GetPredefinedTargetLanguage());
+  EXPECT_EQ("fil", language_state.GetPredefinedTargetLanguage());
 
   language_state.SetPredefinedTargetLanguage("he", false);
-  EXPECT_EQ("iw", language_state.GetPredefinedTargetLanguage());
+  EXPECT_EQ("he", language_state.GetPredefinedTargetLanguage());
 }
 
 TEST(LanguageStateTest, Driver) {

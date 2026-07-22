@@ -33,7 +33,7 @@ bool ShouldSkipCanonicalization(std::string_view tag) {
   size_t dash_pos = tag.find('-');
   std::string_view lang = tag.substr(0, dash_pos);
   static constexpr auto kLanguagesToSkipCanonicalization =
-      base::MakeFixedFlatSet<std::string_view>({"tl", "sh"});
+      base::MakeFixedFlatSet<std::string_view>({"sh"});
   return kLanguagesToSkipCanonicalization.contains(base::ToLowerASCII(lang));
 }
 
