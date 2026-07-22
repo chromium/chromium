@@ -56,6 +56,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/os_feedback_dialog",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/browser/web_applications/isolated_web_apps:iwa_runtime_data_provider_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/browser_context_helper",
