@@ -734,6 +734,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.ChildURLLoaderFactoryBundle.CloneTime"
+    units="microseconds" expires_after="2027-01-22">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time spent in ChildURLLoaderFactoryBundle::Clone() in microseconds. Recorded
+    when ChildURLLoaderFactoryBundle::Clone() is called to clone a loader
+    factory bundle (e.g., when initializing workers, subresource loaders, or
+    frame navigations).
+
+    Note: This metric is only reported for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Clipboard.EagerRead.TotalBlobSizeKB" units="KB"
     expires_after="2027-04-01">
   <owner>rbyers@chromium.org</owner>

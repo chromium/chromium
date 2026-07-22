@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
@@ -267,6 +268,9 @@ void ChildURLLoaderFactoryBundle::CreateLoaderAndStart(
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 ChildURLLoaderFactoryBundle::Clone() {
+  base::ScopedUmaHistogramTimer timer(
+      "Blink.ChildURLLoaderFactoryBundle.CloneTime",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       default_factory_pending_remote;
   if (default_factory_) {
