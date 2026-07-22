@@ -4,6 +4,7 @@
 
 #include "media/gpu/h265_decoder.h"
 
+#include <array>
 #include <cstring>
 #include <memory>
 #include <string>
@@ -126,6 +127,14 @@ class MockH265Accelerator : public H265Decoder::H265Accelerator {
   MOCK_METHOD2(SetStream,
                Status(base::span<const uint8_t> stream,
                       const DecryptConfig* decrypt_config));
+  MOCK_METHOD(void,
+              ProcessSPS,
+              (const H265SPS* sps, base::span<const uint8_t> data),
+              (override));
+  MOCK_METHOD(void,
+              ProcessPPS,
+              (const H265PPS* pps, base::span<const uint8_t> data),
+              (override));
   bool IsChromaSamplingSupported(VideoChromaSampling format) override {
     return format == VideoChromaSampling::k420;
   }
@@ -749,6 +758,127 @@ TEST_F(H265DecoderTest, DependentSliceLongTermRefPics) {
   // parser). It should be rejected as a decode error.
   auto res2 = decoder_->Decode();
   EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, res2);
+}
+
+TEST_F(H265DecoderTest, AlphaLayerSpsPpsMidPicture) {
+  H26xAnnexBBitstreamBuilder builder;
+
+  // VPS with alpha layer enabled
+  constexpr auto kVpsWithAlpha = std::to_array<uint8_t>({
+      0x40, 0x01, 0x0c, 0x11, 0xff, 0xff, 0x01, 0x60, 0x00, 0x00,
+      0x03, 0x00, 0xb0, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00,
+      0x3e, 0x19, 0x40, 0xbf, 0x3e, 0x08, 0x00, 0x08, 0x30, 0x20,
+      0xa4, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0xc5, 0x20,
+  });
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  for (uint8_t b : kVpsWithAlpha) {
+    builder.AppendBits(8, b);
+  }
+  builder.Flush();
+
+  // Base layer SPS
+  H265SPS sps = {};
+  sps.sps_video_parameter_set_id = 0;
+  sps.sps_max_sub_layers_minus1 = 0;
+  sps.sps_temporal_id_nesting_flag = true;
+  sps.profile_tier_level.general_profile_idc = 1;
+  sps.profile_tier_level.general_level_idc = 120;
+  sps.sps_seq_parameter_set_id = 0;
+  sps.chroma_format_idc = 1;
+  sps.pic_width_in_luma_samples = 320;
+  sps.pic_height_in_luma_samples = 184;
+  sps.log2_min_luma_coding_block_size_minus3 = 0;
+  sps.log2_diff_max_min_luma_coding_block_size = 1;
+  sps.log2_min_luma_transform_block_size_minus2 = 0;
+  sps.log2_diff_max_min_luma_transform_block_size = 0;
+  sps.max_transform_hierarchy_depth_inter = 0;
+  sps.max_transform_hierarchy_depth_intra = 0;
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.sps_max_dec_pic_buffering_minus1[0] = 1;
+  sps.sps_max_num_reorder_pics[0] = 0;
+  sps.sps_max_latency_increase_plus1[0] = 0;
+  BuildPackedH265SPS(builder, sps);
+
+  // Base layer PPS
+  H265PPS pps = {};
+  pps.pps_pic_parameter_set_id = 0;
+  pps.pps_seq_parameter_set_id = 0;
+  BuildPackedH265PPS(builder, pps);
+
+  // Base layer Slice (nuh_layer_id = 0)
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);                  // forbidden_zero_bit
+  builder.AppendBits(6, H265NALU::CRA_NUT);  // nal_unit_type
+  builder.AppendBits(6, 0);                  // nuh_layer_id = 0
+  builder.AppendBits(3, 1);                  // nuh_temporal_id_plus1 = 1
+
+  builder.AppendBool(true);   // first_slice_segment_in_pic_flag
+  builder.AppendBool(false);  // no_output_of_prior_pics_flag (for IRAP)
+  builder.AppendUE(0);        // slice_pic_parameter_set_id
+  builder.AppendUE(2);        // slice_type = I (2)
+  builder.AppendBits(8, 0);   // slice_pic_order_cnt_lsb
+  builder.AppendBool(false);  // short_term_ref_pic_set_sps_flag
+  builder.AppendUE(0);        // num_negative_pics
+  builder.AppendUE(0);        // num_positive_pics
+  builder.AppendSE(0);        // slice_qp_delta
+  builder.AppendBool(true);   // byte alignment bit
+  builder.Flush();
+
+  // Alpha layer SPS (nuh_layer_id = 1)
+  H26xAnnexBBitstreamBuilder alpha_sps_builder;
+  BuildPackedH265SPS(alpha_sps_builder, sps);
+  std::vector<uint8_t> alpha_sps_data(alpha_sps_builder.data().begin(),
+                                      alpha_sps_builder.data().end());
+  alpha_sps_data[5] = 0x09;  // nuh_layer_id = 1
+  builder.AppendBits(32, 0x00000001);
+  builder.Flush();
+  for (size_t i = 4; i < alpha_sps_data.size(); ++i) {
+    builder.AppendBits(8, alpha_sps_data[i]);
+  }
+  builder.Flush();
+
+  // Alpha layer PPS (nuh_layer_id = 1)
+  H26xAnnexBBitstreamBuilder alpha_pps_builder;
+  BuildPackedH265PPS(alpha_pps_builder, pps);
+  std::vector<uint8_t> alpha_pps_data(alpha_pps_builder.data().begin(),
+                                      alpha_pps_builder.data().end());
+  alpha_pps_data[5] = 0x09;  // nuh_layer_id = 1
+  builder.AppendBits(32, 0x00000001);
+  builder.Flush();
+  for (size_t i = 4; i < alpha_pps_data.size(); ++i) {
+    builder.AppendBits(8, alpha_pps_data[i]);
+  }
+  builder.Flush();
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+
+  EXPECT_CALL(*accelerator_, SetStream(_, _))
+      .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).WillRepeatedly([]() {
+    return base::MakeRefCounted<H265Picture>();
+  });
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+
+  {
+    InSequence sequence;
+    EXPECT_CALL(*accelerator_, ProcessSPS(_, _));
+    EXPECT_CALL(*accelerator_, ProcessPPS(_, _));
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+        .WillOnce(Return(H265Decoder::H265Accelerator::Status::kOk));
+    EXPECT_CALL(*accelerator_, SubmitDecode(_))
+        .WillOnce(Return(H265Decoder::H265Accelerator::Status::kOk));
+    EXPECT_CALL(*accelerator_, OutputPicture(_)).WillOnce(Return(true));
+    EXPECT_CALL(*accelerator_, ProcessSPS(_, _));
+    EXPECT_CALL(*accelerator_, ProcessPPS(_, _));
+  }
+
+  decoder_->SetStream(1, buffer);
+
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
 }
 
 }  // namespace media
