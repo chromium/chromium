@@ -19212,7 +19212,21 @@
                 "chromeos",
                 "linux",
                 "mac",
-                "windows",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PaymentHandlerDialogUseInitiatorInUrlLoad"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PaymentHandlerDialogUseInitiatorInUrlLoadForAndroid": [
+        {
+            "platforms": [
                 "android",
                 "android_webview"
             ],
