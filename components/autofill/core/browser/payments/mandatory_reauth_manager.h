@@ -99,6 +99,10 @@ class MandatoryReauthManager {
       NonInteractivePaymentMethodType non_interactive_payment_method_type,
       base::OnceCallback<void(bool)> authentication_complete_callback);
 
+  // Returns true if we have supported auth method on the device, false
+  // otherwise.
+  virtual bool IsDeviceAuthenticationSupported();
+
   // Returns true if the user conditions denote that we should offer opt-in for
   // this user, false otherwise.
   // `card_record_type_if_non_interactive_authentication_flow_completed` will be

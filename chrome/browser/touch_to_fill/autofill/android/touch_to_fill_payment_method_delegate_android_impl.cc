@@ -469,13 +469,14 @@ void TouchToFillPaymentMethodDelegateAndroidImpl::IbanSuggestionSelected(
           base::BindOnce(
               [](base::WeakPtr<TouchToFillPaymentMethodDelegateAndroidImpl>
                      delegate,
-                 const std::u16string& value) {
-                if (delegate) {
+                 base::expected<std::u16string,
+                                IbanAccessManager::FailureReason> result) {
+                if (delegate && result.has_value()) {
                   delegate->manager_->FillOrPreviewField(
                       mojom::ActionPersistence::kFill,
                       mojom::FieldActionType::kReplaceAll,
                       delegate->query_form_.global_id(),
-                      delegate->query_field_.global_id(), value,
+                      delegate->query_field_.global_id(), *result,
                       FillingProduct::kIban, IBAN_VALUE);
                 }
               },

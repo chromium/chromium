@@ -636,8 +636,15 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfIban(
       ->GetIbanAccessManager()
       ->FetchValue(
           payload,
-          base::BindOnce(&PaymentMethodAccessoryControllerImpl::ApplyToField,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(
+              [](base::WeakPtr<PaymentMethodAccessoryControllerImpl> controller,
+                 base::expected<std::u16string,
+                                IbanAccessManager::FailureReason> result) {
+                if (controller && result.has_value()) {
+                  controller->ApplyToField(result.value());
+                }
+              },
+              weak_ptr_factory_.GetWeakPtr()));
   return true;
 }
 

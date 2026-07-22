@@ -1512,12 +1512,13 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
               base::BindOnce(
                   [](base::WeakPtr<BrowserAutofillManager> manager,
                      const FormGlobalId& form_id, const FieldGlobalId& field_id,
-                     const std::u16string& value) {
-                    if (manager) {
+                     base::expected<std::u16string,
+                                    IbanAccessManager::FailureReason> result) {
+                    if (manager && result.has_value()) {
                       manager->FillOrPreviewField(
                           mojom::ActionPersistence::kFill,
                           mojom::FieldActionType::kReplaceAll, form_id,
-                          field_id, value, FillingProduct::kIban, IBAN_VALUE);
+                          field_id, *result, FillingProduct::kIban, IBAN_VALUE);
                     }
                   },
                   manager_->GetBrowserAutofillManagerWeakPtr(),

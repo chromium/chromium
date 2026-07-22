@@ -1689,21 +1689,19 @@ void CreditCardAccessManager::StartDeviceAuthenticationForFilling(
     const CreditCard* card) {
   is_authentication_in_progress_ = true;
 
-  payments::MandatoryReauthAuthenticationMethod authentication_method =
+  payments::MandatoryReauthManager* mandatory_reauth_manager =
       autofill_client()
           .GetPaymentsAutofillClient()
-          ->GetOrCreatePaymentsMandatoryReauthManager()
-          ->GetAuthenticationMethod();
+          ->GetOrCreatePaymentsMandatoryReauthManager();
+  payments::MandatoryReauthAuthenticationMethod authentication_method =
+      mandatory_reauth_manager->GetAuthenticationMethod();
 
   // If there is no supported auth method on the device, we should skip re-auth
   // and fill the form. Otherwise the user removing authentication on the
   // device will prevent them from using payments autofill. In the settings
   // page, we signal to the user through various means that they need to turn
   // the device's authentication on in order to use re-auth.
-  if (authentication_method ==
-          payments::MandatoryReauthAuthenticationMethod::kUnknown ||
-      authentication_method ==
-          payments::MandatoryReauthAuthenticationMethod::kUnsupportedMethod) {
+  if (!mandatory_reauth_manager->IsDeviceAuthenticationSupported()) {
     LogMandatoryReauthCheckoutFlowUsageEvent(
         payments::MandatoryReauthManager::GetNonInteractivePaymentMethodType(
             card->record_type()),

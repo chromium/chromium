@@ -1300,13 +1300,13 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
   MockIbanAccessManager* mock_iban_access_manager =
       autofill_client().GetPaymentsAutofillClient()->GetIbanAccessManager();
 
-  base::OnceCallback<void(const std::u16string& value)> fetch_callback;
+  IbanAccessManager::OnIbanFetchedCallback fetch_callback;
   EXPECT_CALL(*mock_iban_access_manager, FetchValue)
-      .WillOnce(
-          [&](const Suggestion::Payload& payload,
-              base::OnceCallback<void(const std::u16string& value)> callback) {
-            fetch_callback = std::move(callback);
-          });
+      .WillOnce([&](const Suggestion::Payload& payload,
+                    IbanAccessManager::OnIbanFetchedCallback callback) {
+        fetch_callback = std::move(callback);
+        return IsAsync(true);
+      });
 
   // 2. Accept async suggestion on Popup 1.
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,

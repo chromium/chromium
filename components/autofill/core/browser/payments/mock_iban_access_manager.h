@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -19,10 +20,10 @@ class MockIbanAccessManager : public IbanAccessManager {
   MockIbanAccessManager& operator=(const MockIbanAccessManager&) = delete;
   ~MockIbanAccessManager() override;
 
-  MOCK_METHOD(void,
+  MOCK_METHOD(IsAsync,
               FetchValue,
               (const Suggestion::Payload&,
-               (base::OnceCallback<void(const std::u16string& value)>)),
+               IbanAccessManager::OnIbanFetchedCallback),
               (override));
 };
 

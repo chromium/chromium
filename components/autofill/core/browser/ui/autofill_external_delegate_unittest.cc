@@ -2175,6 +2175,7 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsIbanEntry) {
       .WillByDefault([iban](const Suggestion::Payload& payload,
                             IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
+        return IsAsync(false);
       });
 
   external_delegate().DidAcceptSuggestion(
@@ -3827,6 +3828,7 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillFieldWithValue_Iban) {
       .WillByDefault([iban](const Suggestion::Payload& payload,
                             IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
+        return IsAsync(false);
       });
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kIbanEntry,
@@ -4128,6 +4130,7 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsIban) {
       .WillOnce([iban](const Suggestion::Payload& payload,
                        IbanAccessManager::OnIbanFetchedCallback callback) {
         std::move(callback).Run(iban.value());
+        return IsAsync(false);
       });
 
   EXPECT_CALL(

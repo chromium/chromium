@@ -1098,8 +1098,12 @@ void AtMemoryManager::FillIban(
              const Suggestion& suggestion,
              std::unique_ptr<AtMemoryMetricsRecorder> metrics,
              std::variant<Iban::Guid, Iban::InstrumentId> identifier,
-             const std::u16string& unmasked_value) {
+             base::expected<std::u16string, IbanAccessManager::FailureReason>
+                 unmasked_value) {
             if (!manager) {
+              return;
+            }
+            if (!unmasked_value.has_value()) {
               return;
             }
             if (metrics) {
@@ -1126,7 +1130,7 @@ void AtMemoryManager::FillIban(
             manager->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
                 mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id,
-                field_id, unmasked_value, FillingProduct::kAtMemory,
+                field_id, *unmasked_value, FillingProduct::kAtMemory,
                 /*field_type_used=*/std::nullopt);
           },
           fill_weak_ptr_factory_.GetWeakPtr(), form_id, field_id, suggestion,

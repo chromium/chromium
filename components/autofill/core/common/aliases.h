@@ -24,6 +24,8 @@ using AutofillSuggestionsIgnoreFocusLoss =
 using AutofillSuggestionTriggerSource =
     ::autofill::mojom::AutofillSuggestionTriggerSource;
 
+using IsAsync = base::StrongAlias<struct IsAsyncTag, bool>;
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_ALIASES_H_
