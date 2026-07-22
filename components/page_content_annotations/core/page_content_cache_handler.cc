@@ -4,7 +4,6 @@
 
 #include "components/page_content_annotations/core/page_content_cache_handler.h"
 
-#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"

@@ -5,11 +5,8 @@
 #include "components/page_content_annotations/content/embeddings_candidate_generator.h"
 
 #include <string>
-#include <utility>
-#include <variant>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"

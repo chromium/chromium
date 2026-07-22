@@ -6,22 +6,15 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/content_extraction/content/browser/inner_text.h"
 #include "components/continuous_search/browser/search_result_extractor_client.h"
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
 #include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
-#include "components/pdf/common/constants.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 
 namespace page_content_annotations {
 

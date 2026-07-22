@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/functional/bind.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
@@ -22,7 +21,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
 
 namespace page_content_annotations {
 

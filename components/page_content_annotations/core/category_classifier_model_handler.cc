@@ -5,7 +5,6 @@
 #include "components/page_content_annotations/core/category_classifier_model_handler.h"
 
 #include <algorithm>
-#include <iterator>
 #include <optional>
 
 #include "base/containers/extend.h"

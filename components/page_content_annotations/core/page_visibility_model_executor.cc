@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "components/page_content_annotations/core/page_visibility_op_resolver.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/proto/nl_classifier_options.pb.h"

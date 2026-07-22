@@ -4,15 +4,12 @@
 
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 
-#include <limits>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace page_content_annotations {

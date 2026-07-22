@@ -8,17 +8,14 @@
 #include <optional>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/category_classifier_metadata.pb.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
-#include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -5,15 +5,12 @@
 #include "components/page_content_annotations/content/renderer/paint_stability_monitor.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
-#include "content/public/renderer/render_frame.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"

@@ -7,9 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
-#include "components/optimization_guide/proto/models.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace page_content_annotations {

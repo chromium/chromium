@@ -4,7 +4,6 @@
 
 #include "components/page_content_annotations/core/page_content_annotation_job.h"
 
-#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace page_content_annotations {

@@ -4,21 +4,18 @@
 
 #include "components/page_content_annotations/core/page_content_store.h"
 
-#include <functional>
 #include <set>
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/database_utils/url_converter.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "sql/error_delegate_util.h"
-#include "sql/init_status.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"

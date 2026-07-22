@@ -5,7 +5,6 @@
 #include "components/page_content_annotations/core/page_content_annotation_job_executor.h"
 
 #include "base/barrier_closure.h"
-#include "base/check_op.h"
 
 namespace page_content_annotations {
 
