@@ -123,9 +123,18 @@
 }
 
 #inlineAutocomplete {
-  /* This is only for sizing */
+  color: var(--color-omnibox-text);
+  background-color: var(--color-location-bar-background);
+  height: var(--omnibox-height);
+  line-height: var(--omnibox-height);
+  /* If [composing] isn't set, this is used only for positioning the additional
+   * text. */
   visibility: hidden;
   white-space: pre;
+}
+
+#inlineAutocomplete[composing] {
+  visibility: visible;
 }
 
 #additionalText {

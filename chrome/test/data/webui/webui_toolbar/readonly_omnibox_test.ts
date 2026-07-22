@@ -370,6 +370,73 @@ suite('ReadonlyOmnibox', function() {
     assertEquals(2, omnibox.omniboxViewState.uiVersion);
   });
 
+  test('Render inline completion w/IME active', async () => {
+    getTextInput().dispatchEvent(new CompositionEvent('compositionstart'));
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [
+        {
+          text: 'example.com',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+        {
+          text: '/artic',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxTextDimmed,
+        },
+      ],
+      inlineAutocompletion: 'les/1/',
+      selection: {start: 17, end: 17},
+      textIsUrl: true,
+    };
+    await microtasksFinished();
+
+    // Since IME is active, inline autocomplete gets rendered separately...
+    assertEquals('example.com/artic', omnibox.$.textContainer.textContent);
+    assertEquals('example.com/artic', omnibox.$.textInput.value);
+    assertEquals('', getStringSelection());
+
+    assertEquals('les/1/', omnibox.$.inlineAutocomplete.textContent);
+    // And it should be visible.
+    let style = omnibox.$.inlineAutocomplete.computedStyleMap();
+    assertEquals('visible', style.get('visibility')?.toString());
+
+    getTextInput().dispatchEvent(new CompositionEvent('compositionend'));
+
+    // Now try with IME uninvolved.
+    omnibox.browserOmniboxState = {
+      ...initialState,
+      textPieces: [
+        {
+          text: 'example.com',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+        {
+          text: '/articl',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxTextDimmed,
+        },
+      ],
+      inlineAutocompletion: 'es/1/',
+      selection: {start: 18, end: 18},
+      textIsUrl: true,
+    };
+    await microtasksFinished();
+
+    // Now this should show up as selection
+    assertEquals('example.com/articl', omnibox.$.textContainer.textContent);
+    assertEquals('example.com/articles/1/', omnibox.$.textInput.value);
+    assertEquals('es/1/', getStringSelection());
+
+    // The separate inline autocomplete label should be hidden
+    // (but still set, for positioning).
+    assertEquals('es/1/', omnibox.$.inlineAutocomplete.textContent);
+    style = omnibox.$.inlineAutocomplete.computedStyleMap();
+    assertEquals('hidden', style.get('visibility')?.toString());
+  });
+
   test('Additional text', async () => {
     omnibox.browserOmniboxState = {
       ...initialState,

@@ -68,6 +68,9 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
       // Current state on this side.
       omniboxViewState: {type: Object},
+
+      // True if the IME is currently active.
+      isComposing: {type: Boolean},
     };
   }
 
@@ -88,6 +91,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   accessor omniboxViewState: OmniboxViewState =
       Object.assign(this.browserOmniboxState);
+
+  accessor isComposing: boolean = false;
 
   private focusRequestHandle_: FocusRequestHandle =
       INVALID_FOCUS_REQUEST_HANDLE;
@@ -194,6 +199,10 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     textInput.addEventListener('keyup', this.onInputKeyUp.bind(this));
     textInput.addEventListener('copy', this.onInputCopy_.bind(this));
     textInput.addEventListener('cut', this.onInputCut_.bind(this));
+    textInput.addEventListener(
+        'compositionstart', this.onInputCompositionstart_.bind(this));
+    textInput.addEventListener(
+        'compositionend', this.onInputCompositionend_.bind(this));
 
     this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
     this.addEventListener('dragstart', this.onDragStart_.bind(this));
@@ -215,9 +224,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
       // If there is an inline autocompletion, render it as selected text
       // after the input.
-      // TODO(crbug.com/500653057): We will likely need to do something
-      // different when IME is popped up.
-      if (this.omniboxViewState.inlineAutocompletion.length > 0) {
+      if (this.omniboxViewState.inlineAutocompletion.length > 0 &&
+          !this.isComposing) {
         selection = {
           start: this.userText.length,
           end: this.userText.length +
@@ -225,8 +233,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         };
       }
 
-      const allText =
-          this.userText + this.omniboxViewState.inlineAutocompletion;
+      const allText = this.userText +
+          (this.isComposing ? '' : this.omniboxViewState.inlineAutocompletion);
       if (this.$.textInput.value !== allText) {
         this.$.textInput.value = allText;
       }
@@ -542,7 +550,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
 
     const inlineAutocompletion = this.omniboxViewState.inlineAutocompletion;
-    if (inlineAutocompletion.length > 0) {
+    if (inlineAutocompletion.length > 0 && !this.isComposing) {
       // If the current input state (its value and selection) matches its last
       // state (text and inline autocompletion) and the user types the next
       // character in the inline autocompletion, stop the keydown event. Just
@@ -705,6 +713,14 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       document.execCommand('delete');
       this.onInputInput();
     }
+  }
+
+  private onInputCompositionstart_(): void {
+    this.isComposing = true;
+  }
+
+  private onInputCompositionend_(): void {
+    this.isComposing = false;
   }
 
   private onSelectionChange_(): void {

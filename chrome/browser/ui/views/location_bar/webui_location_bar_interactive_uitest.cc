@@ -44,10 +44,13 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/ime/init/input_method_factory.h"
+#include "ui/base/ime/mock_input_method.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/mouse_constants.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
 
 namespace {
@@ -62,6 +65,8 @@ const WebContentsInteractionTestUtil::DeepQuery kOmniboxInputDeepQuery = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#textInput"};
 const WebContentsInteractionTestUtil::DeepQuery kOmniboxAdditionalText = {
     "toolbar-app", "location-bar", "readonly-omnibox", "#additionalText"};
+const WebContentsInteractionTestUtil::DeepQuery kOmniboxInlineAutocomplete = {
+    "toolbar-app", "location-bar", "readonly-omnibox", "#inlineAutocomplete"};
 const WebContentsInteractionTestUtil::DeepQuery kSearchKeywordText = {
     "toolbar-app", "location-bar", "selected-keyword", "#long"};
 const WebContentsInteractionTestUtil::DeepQuery kAIMButton = {
@@ -153,6 +158,45 @@ class NotifyWhenShortcutsLoadedObserver
 
  private:
   base::OnceClosure on_loaded_;
+};
+
+// A pretend IME that composes some text in response to 'Z' and 'X' key presses.
+class PretendComposeInputMethod : public ui::MockInputMethod {
+ public:
+  PretendComposeInputMethod()
+      : ui::MockInputMethod(/*ime_key_event_dispatcher=*/nullptr) {}
+
+  ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) override {
+    auto* text_input_client = GetTextInputClient();
+    if (event->type() == ui::EventType::kKeyPressed &&
+        event->GetDomKey() == ui::DomKey::FromCharacter('z')) {
+      ui::CompositionText ct;
+      ct.text = u"loc";
+      ct.ime_text_spans = {
+          ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0u, 3u)};
+      ct.selection = gfx::Range(3);
+      text_input_client->SetCompositionText(ct);
+      return ui::EventDispatchDetails();
+    }
+    if (event->type() == ui::EventType::kKeyPressed &&
+        event->GetDomKey() == ui::DomKey::FromCharacter('x')) {
+      ui::CompositionText ct;
+      ct.text = u"local.t";
+      ct.ime_text_spans = {
+          ui::ImeTextSpan(ui::ImeTextSpan::Type::kComposition, 0u, 7u)};
+      ct.selection = gfx::Range(7);
+      text_input_client->SetCompositionText(ct);
+      return ui::EventDispatchDetails();
+    }
+    return ui::MockInputMethod::DispatchKeyEvent(event);
+  }
+
+  base::WeakPtr<PretendComposeInputMethod> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<PretendComposeInputMethod> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -343,6 +387,8 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
     return WaitForStateChange(kWebUIToolbarId, text_matches);
   }
 
+  // This checks for inline completion rendered as selection.
+  // This is available if not IME-composing.
   auto WaitTillInlineComplete(std::string_view expected_text,
                               std::string_view expected_completion) {
     // Inline completion is expected to be rendered as selection after the
@@ -366,6 +412,24 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
     text_matches.where = kOmniboxInputDeepQuery;
     text_matches.test_function =
         content::JsReplace(kTemplate, expected_text, expected_completion);
+    return WaitForStateChange(kWebUIToolbarId, text_matches);
+  }
+
+  // This checks for inline completion in a separate widget.
+  // This is always available, but only visible when IME-composing.
+  auto WaitTillStandaloneInlineComplete(std::string_view expected_completion) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kStandaloneInlineCompleteOK);
+    const char kTemplate[] = R"(
+      (el) => {
+        return el.textContent === $1;
+      }
+    )";
+
+    WebContentsInteractionTestUtil::StateChange text_matches;
+    text_matches.event = kStandaloneInlineCompleteOK;
+    text_matches.where = kOmniboxInlineAutocomplete;
+    text_matches.test_function =
+        content::JsReplace(kTemplate, expected_completion);
     return WaitForStateChange(kWebUIToolbarId, text_matches);
   }
 
@@ -495,6 +559,37 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+class WebUILocationBarIMEInteractiveUiTest
+    : public WebUILocationBarInteractiveUiTest {
+ public:
+  WebUILocationBarIMEInteractiveUiTest() {
+    auto* ime = new PretendComposeInputMethod();
+    ime_ = ime->GetWeakPtr();
+    ui::SetUpInputMethodForTesting(ime);
+  }
+
+  void SetUpOnMainThread() override {
+    WebUILocationBarInteractiveUiTest::SetUpOnMainThread();
+
+    // We need to set the proper IME dispatcher on the input method we created
+    // since we didn't have it yet when allocating it.
+    views::Widget* widget = GetToolbarWebView()->GetWidget();
+    widget->GetInputMethod()->SetImeKeyEventDispatcher(
+        views::test::WidgetTest::GetImeKeyEventDispatcherForWidget(widget));
+  }
+
+  void TearDownOnMainThread() override {
+    if (ime_) {
+      // Make sure there aren't dangling pointers on CrOS.
+      ime_->SetImeKeyEventDispatcher(nullptr);
+    }
+    WebUILocationBarInteractiveUiTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::WeakPtr<PretendComposeInputMethod> ime_;
 };
 
 // Show and hide the omnibox popup.
@@ -733,6 +828,51 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
       DoWaitForTime(base::Milliseconds(500)),
       CheckJsResultAt(kWebUIToolbarId, kOmniboxAdditionalText,
                       "el => el.textContent === ''"));
+}
+
+// Faking composing the way PretendComposeInputMethod does doesn't appear to
+// work on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InlineSuggestionIME DISABLED_InlineSuggestionIME
+#else
+#define MAYBE_InlineSuggestionIME InlineSuggestionIME
+#endif
+IN_PROC_BROWSER_TEST_F(WebUILocationBarIMEInteractiveUiTest,
+                       MAYBE_InlineSuggestionIME) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(this->browser()->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  GURL url("https://local.test/");
+  history_service->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+  ui_test_utils::WaitForHistoryToLoad(history_service);
+
+  RunTestSequence(
+      InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+      InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      FocusWebContents(kWebUIToolbarId),
+      ExecuteJsAt(kWebUIToolbarId, kOmniboxInputDeepQuery, "el => el.focus()"),
+      // Shouldn't have a popup visible yet.
+      InAnyContext(
+          EnsureNotPresent(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+      // Clear the box.
+      EnterText(kOmniboxElementId, u""),
+
+      // 'z' composes "loc", which should kick off completion (if we give it
+      // a chance).
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_Z), WaitTillOmniboxViewText("loc"),
+      WaitTillStandaloneInlineComplete("al.test"),
+
+      // 'x' composes to local.t'
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_X),
+      WaitTillOmniboxViewText("local.t"),
+      WaitTillStandaloneInlineComplete("est"),
+
+      // Accept it.
+      SendKeyPress(kWebUIToolbarId, ui::VKEY_RETURN),
+      WaitForWebContentsNavigation(kTabId, GURL("https://local.test")),
+      WaitTillOmniboxViewText("local.test"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, AdditionalText) {

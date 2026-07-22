@@ -33,10 +33,16 @@ export function getHtml(this: ReadonlyOmniboxElement) {
       item => html`<span
           class="${ReadonlyOmniboxElement.getTextPieceClasses(item)}">${item.text}</span>`)
   }</div>
-  <!-- #inlineAutocomplete is used to position #additionalText to the
-    right of both the text and the inline completion within the
-    #textInput -->
-  <span id="inlineAutocomplete">${
+  <!-- #inlineAutocomplete has two possible uses:
+    1. If the inline suggestion is rendered by <input>, it's is used to position
+       #additionalText to the right of both the text and the inline completion.
+       In that case, it's invisible.
+    2. In case there is an IME composition going on, it does actually render
+       the suggestion; this is done since trying to render it with selection
+       would mess up the IME.
+
+    The composing attribute distinguishes the two cases. -->
+  <span id="inlineAutocomplete" ?composing="${this.isComposing}">${
         this.omniboxViewState.inlineAutocompletion}</span>
   <span id="additionalText">${this.omniboxViewState.additionalText}</span>
 </div>
