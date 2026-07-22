@@ -457,13 +457,14 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
     auto curit = it;
     ++it;
 
-    if (now >= curit->second->expiry_date()) {
+    const auto& [session_key, session] = *curit;
+    if (now >= session->expiry_date()) {
       // Since this deletion is not due to a request, we do not need to
       // provide a per-request callback here.
       DeleteSessionAndNotifyInternal(DeletionReason::kExpired, curit,
                                      base::NullCallback());
     } else {
-      curit->second->RecordAccess();
+      session->RecordAccess();
     }
   }
 
@@ -1201,6 +1202,18 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
                 bool is_proactive_refresh_candidate =
                     IsProactiveRefreshCandidate(
                         *existing_session, *existing_session, stored_cookies);
+
+                // Update the session expiry date and persist updated
+                // timestamp to store.
+                existing_session->RecordAccess();
+                if (session_store_ &&
+                    base::FeatureList::IsEnabled(
+                        features::kDeviceBoundSessionsPersistExpiryOnRefresh)) {
+                  session_store_->SaveSession(
+                      session_key.site, *existing_session,
+                      SessionStore::SaveSessionMode::kRefresh);
+                }
+
                 SessionError::ErrorType success_result = SessionError::kSuccess;
                 UnblockDeferredRequests(
                     session_key, RefreshResult::kRefreshed,
