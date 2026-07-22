@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -67,17 +68,131 @@ using ::accessibility_annotator::MemoryDataType;
 using ::accessibility_annotator::MemoryEntrySourceType;
 using ::accessibility_annotator::MemorySearchResult;
 
-SuggestionType GetManageSuggestionType(MemoryDataType type) {
-  std::optional<AtMemoryDataType> data_type = ToAtMemoryDataType(type);
-  if (data_type) {
-    if (const auto* field_type = std::get_if<FieldType>(&*data_type)) {
-      if (*field_type == IBAN_VALUE) {
-        return SuggestionType::kManageIban;
+std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
+  auto create_suggestion = [](SuggestionType suggestion_type, int string_id) {
+    Suggestion suggestion(l10n_util::GetStringUTF16(string_id),
+                          suggestion_type);
+    suggestion.icon = Suggestion::Icon::kSettings;
+    suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+    return suggestion;
+  };
+
+  switch (type) {
+    case MemoryDataType::kNameFull:
+    case MemoryDataType::kAddressFull:
+    case MemoryDataType::kAddressStreetAddress:
+    case MemoryDataType::kAddressCity:
+    case MemoryDataType::kAddressState:
+    case MemoryDataType::kAddressZip:
+    case MemoryDataType::kAddressCountry:
+    case MemoryDataType::kPhone:
+    case MemoryDataType::kEmail:
+    case MemoryDataType::kCompanyName:
+      return create_suggestion(SuggestionType::kManageAddress,
+                               IDS_AUTOFILL_AT_MEMORY_MANAGE_CONTACT_INFO);
+
+    case MemoryDataType::kCreditCardNumber:
+    case MemoryDataType::kCreditCardExpirationDate:
+    case MemoryDataType::kCreditCardSecurityCode:
+    case MemoryDataType::kCreditCardNameOnCard:
+    case MemoryDataType::kCreditCardNickname:
+      return create_suggestion(SuggestionType::kManageCreditCard,
+                               IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
+
+    case MemoryDataType::kIban:
+    case MemoryDataType::kIbanNickname:
+      return create_suggestion(SuggestionType::kManageIban,
+                               IDS_AUTOFILL_MANAGE_PAYMENT_METHODS);
+
+    case MemoryDataType::kPassportFull:
+    case MemoryDataType::kPassportName:
+    case MemoryDataType::kPassportCountry:
+    case MemoryDataType::kPassportNumber:
+    case MemoryDataType::kPassportIssueDate:
+    case MemoryDataType::kPassportExpirationDate:
+    case MemoryDataType::kNationalIdCardFull:
+    case MemoryDataType::kNationalIdCardName:
+    case MemoryDataType::kNationalIdCardCountry:
+    case MemoryDataType::kNationalIdCardNumber:
+    case MemoryDataType::kNationalIdCardIssueDate:
+    case MemoryDataType::kNationalIdCardExpirationDate:
+    case MemoryDataType::kDriversLicenseFull:
+    case MemoryDataType::kDriversLicenseName:
+    case MemoryDataType::kDriversLicenseState:
+    case MemoryDataType::kDriversLicenseNumber:
+    case MemoryDataType::kDriversLicenseIssueDate:
+    case MemoryDataType::kDriversLicenseExpirationDate:
+      if (base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
+        return create_suggestion(
+            SuggestionType::kManageAutofillAiIdentityDocs,
+            IDS_AUTOFILL_AI_MANAGE_IDENTITY_DOCS_SUGGESTION_MAIN_TEXT);
+      } else {
+        return create_suggestion(SuggestionType::kManageAutofillAi,
+                                 IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT);
       }
-      return SuggestionType::kManageAddress;
-    }
+
+    case MemoryDataType::kFlightReservationFull:
+    case MemoryDataType::kFlightReservationFlightNumber:
+    case MemoryDataType::kFlightReservationTicketNumber:
+    case MemoryDataType::kFlightReservationConfirmationCode:
+    case MemoryDataType::kFlightReservationPassengerName:
+    case MemoryDataType::kFlightReservationDepartureAirport:
+    case MemoryDataType::kFlightReservationArrivalAirport:
+    case MemoryDataType::kFlightReservationDepartureDate:
+    case MemoryDataType::kFlightReservationArrivalDate:
+    case MemoryDataType::kRedressNumberFull:
+    case MemoryDataType::kRedressNumberName:
+    case MemoryDataType::kRedressNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberFull:
+    case MemoryDataType::kKnownTravelerNumberName:
+    case MemoryDataType::kKnownTravelerNumberNumber:
+    case MemoryDataType::kKnownTravelerNumberExpirationDate:
+    case MemoryDataType::kVehicle:
+    case MemoryDataType::kVehicleMake:
+    case MemoryDataType::kVehicleModel:
+    case MemoryDataType::kVehicleYear:
+    case MemoryDataType::kVehicleOwner:
+    case MemoryDataType::kVehiclePlateNumber:
+    case MemoryDataType::kVehiclePlateState:
+    case MemoryDataType::kVehicleVin:
+      if (base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
+        return create_suggestion(
+            SuggestionType::kManageAutofillAiTravel,
+            IDS_AUTOFILL_AI_MANAGE_TRAVEL_SUGGESTION_MAIN_TEXT);
+      } else {
+        return create_suggestion(SuggestionType::kManageAutofillAi,
+                                 IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT);
+      }
+
+    case MemoryDataType::kOrderFull:
+    case MemoryDataType::kOrderId:
+    case MemoryDataType::kOrderAccount:
+    case MemoryDataType::kOrderDate:
+    case MemoryDataType::kOrderMerchantName:
+    case MemoryDataType::kOrderMerchantDomain:
+    case MemoryDataType::kOrderProductNames:
+    case MemoryDataType::kOrderGrandTotal:
+    case MemoryDataType::kShipmentFull:
+    case MemoryDataType::kShipmentTrackingNumber:
+    case MemoryDataType::kShipmentAssociatedOrderId:
+    case MemoryDataType::kShipmentDeliveryAddress:
+    case MemoryDataType::kShipmentDeliveryZipCode:
+    case MemoryDataType::kShipmentCarrierName:
+    case MemoryDataType::kShipmentCarrierDomain:
+    case MemoryDataType::kShipmentEstimatedDeliveryDate:
+    case MemoryDataType::kShipmentShippedDate:
+      if (base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage)) {
+        return create_suggestion(
+            SuggestionType::kManageAutofillAiShopping,
+            IDS_AUTOFILL_AI_MANAGE_SHOPPING_SUGGESTION_MAIN_TEXT);
+      } else {
+        return create_suggestion(SuggestionType::kManageAutofillAi,
+                                 IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT);
+      }
+
+    case MemoryDataType::kUnknown:
+      return std::nullopt;
   }
-  return SuggestionType::kManageAutofillAi;
 }
 
 // Returns the primary type name label for `entry`. For AutofillAi
@@ -391,13 +506,10 @@ std::vector<Suggestion> CreateFooterSuggestions(
     const MemorySearchResult& entry) {
   std::vector<Suggestion> suggestions;
   if (IsMemorySearchResultAutofillSourced(entry)) {
-    Suggestion manage_information(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_MANAGE_SUGGESTION_MAIN_TEXT),
-        GetManageSuggestionType(entry.type));
-    manage_information.icon = Suggestion::Icon::kSettings;
-    manage_information.filtration_policy =
-        Suggestion::FiltrationPolicy::kStatic;
-    suggestions.emplace_back(std::move(manage_information));
+    if (std::optional<Suggestion> suggestion =
+            CreateManageSuggestion(entry.type)) {
+      suggestions.emplace_back(std::move(*suggestion));
+    }
   } else {
     Suggestion separator(SuggestionType::kSeparator);
     separator.filtration_policy = Suggestion::FiltrationPolicy::kStatic;

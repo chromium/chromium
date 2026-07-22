@@ -959,7 +959,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryFlyoutChildrenAutofillSource) {
               testing::AllOf(HasMainText(u"CA"), HasLabel(u"State")),
               testing::Field(&Suggestion::type, SuggestionType::kSeparator),
               testing::AllOf(
-                  HasMainText(u"Manage information"),
+                  HasMainText(l10n_util::GetStringUTF16(
+                      IDS_AUTOFILL_AT_MEMORY_MANAGE_CONTACT_INFO)),
                   testing::Field(&Suggestion::type,
                                  SuggestionType::kManageAddress))))));
 

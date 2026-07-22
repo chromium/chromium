@@ -529,6 +529,66 @@ TEST_F(AtMemoryManagerTest,
                   MemoryDataType::kAddressFull)));
 }
 
+TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
+  base::test::ScopedFeatureList feature_list{
+      features::kYourSavedInfoSettingsPage};
+
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         /*parent_suggestion_metadata=*/std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  std::vector<MemorySearchResult> entries;
+  MemorySearchResult entry(MemoryDataType::kFlightReservationFull, u"Label",
+                           u"Value");
+  entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+  entries.push_back(std::move(entry));
+
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
+
+  manager().OnSearchSubmitted(u"query");
+
+  EXPECT_THAT(
+      final_suggestions,
+      ElementsAre(EqualsAtMemorySuggestion(
+          MemoryDataType::kFlightReservationFull,
+          ElementsAre(EqualsSuggestion(
+              SuggestionType::kManageAutofillAiTravel,
+              l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_AI_MANAGE_TRAVEL_SUGGESTION_MAIN_TEXT))))));
+}
+
+// Tests that Autofill-sourced data of unknown type does not display any manage
+// information footer suggestion.
+TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Unknown_NoFooter) {
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         /*parent_suggestion_metadata=*/std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  std::vector<MemorySearchResult> entries;
+  MemorySearchResult entry(MemoryDataType::kUnknown, u"Label", u"Value");
+  entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+  entries.push_back(std::move(entry));
+
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
+
+  manager().OnSearchSubmitted(u"query");
+
+  EXPECT_THAT(final_suggestions, ElementsAre(EqualsAtMemorySuggestion(
+                                     MemoryDataType::kUnknown, IsEmpty())));
+}
+
 // Tests that Personal Context-sourced data (e.g. from Gmail) displays the
 // attribution info, separator, and the "Manage enhanced autofill" footer (but
 // not local settings).
