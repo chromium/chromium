@@ -8,6 +8,7 @@
 // This is a umbrella header to make the imports easier. See
 // http://go/chrome-ios-symbols for usages.
 #import "ios/chrome/browser/shared/ui/symbols/symbol_configurations.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbol_enums.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbol_helpers.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbol_names.h"
 

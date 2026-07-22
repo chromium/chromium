@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/symbols/symbol_enums.h"
+
 /// *******
 /// Import `symbols.h` and not this file directly.
 /// *******
@@ -73,6 +75,25 @@ UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name);
 // UIImageSymbolWeightRegular.
 UIImage* DefaultAccessorySymbolConfigurationWithRegularWeight(
     NSString* symbol_name);
+
+// Returns a symbol configured with the given `configuration`.
+UIImage* SymbolWithConfiguration(Symbol symbol,
+                                 UIImageConfiguration* configuration);
+
+// Returns a symbol configured with the default configuration and the given
+// `point_size`.
+UIImage* SymbolWithPointSize(Symbol symbol, CGFloat point_size);
+
+// Returns a symbol as a template image, configured with the default
+// configuration and the given `point_size`.
+UIImage* SymbolTemplateWithPointSize(Symbol symbol, CGFloat point_size);
+
+// Returns a symbol configured for the Settings root screen.
+UIImage* SettingsRootSymbol(Symbol symbol);
+
+// Returns a symbol configured for the Settings root screen with multicolor
+// enabled.
+UIImage* SettingsRootMulticolorSymbol(Symbol symbol);
 
 #ifdef __cplusplus
 }  // extern "C"

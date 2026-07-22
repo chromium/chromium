@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbol_configurations.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbol_info.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbol_names.h"
 
 namespace {
@@ -23,24 +24,26 @@ UIImageConfiguration* DefaultSymbolConfigurationWithPointSize(
                            scale:UIImageSymbolScaleMedium];
 }
 
-// Returns a symbol named `symbol_name` configured with the given
-// `configuration`. `system_symbol` is used to specify if it is a SFSymbol or a
-// custom symbol.
-UIImage* SymbolWithConfiguration(NSString* symbol_name,
-                                 UIImageConfiguration* configuration,
-                                 BOOL system_symbol) {
-  UIImage* symbol;
-  if (system_symbol) {
-    symbol = [UIImage systemImageNamed:symbol_name
-                     withConfiguration:configuration];
-  } else {
-    symbol = [UIImage imageNamed:symbol_name
-                        inBundle:nil
-               withConfiguration:configuration];
+// Returns a symbol named `symbol.name` configured with the given
+// `configuration`. `symbol.type` is used to specify if it is a system symbol or
+// a custom symbol.
+UIImage* SymbolWithConfiguration(SymbolInfo symbol,
+                                 UIImageConfiguration* configuration) {
+  UIImage* image;
+  switch (symbol.type) {
+    case SymbolType::kSystem:
+      image = [UIImage systemImageNamed:symbol.name
+                      withConfiguration:configuration];
+      break;
+    case SymbolType::kCustom:
+      image = [UIImage imageNamed:symbol.name
+                         inBundle:nil
+                withConfiguration:configuration];
+      break;
   }
-  DCHECK(symbol) << " symbol_name: " << base::SysNSStringToUTF8(symbol_name)
-                 << " is_system_symbol: " << system_symbol;
-  return symbol;
+  DCHECK(image) << " symbol_name: " << base::SysNSStringToUTF8(symbol.name)
+                << " type: " << static_cast<int>(symbol.type);
+  return image;
 }
 
 }  // namespace
@@ -57,12 +60,14 @@ UIImage* DefaultCloseButtonForToolbar() {
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
                                         UIImageConfiguration* configuration) {
-  return SymbolWithConfiguration(symbol_name, configuration, true);
+  return SymbolWithConfiguration({symbol_name, SymbolType::kSystem},
+                                 configuration);
 }
 
 UIImage* CustomSymbolWithConfiguration(NSString* symbol_name,
                                        UIImageConfiguration* configuration) {
-  return SymbolWithConfiguration(symbol_name, configuration, false);
+  return SymbolWithConfiguration({symbol_name, SymbolType::kCustom},
+                                 configuration);
 }
 
 UIImage* DefaultSymbolWithPointSize(NSString* symbol_name, CGFloat point_size) {
@@ -127,6 +132,29 @@ UIImage* DefaultAccessorySymbolConfigurationWithRegularWeight(
                        configurationWithPointSize:kSymbolAccessoryPointSize
                                            weight:UIImageSymbolWeightRegular
                                             scale:UIImageSymbolScaleMedium]);
+}
+
+UIImage* SymbolWithConfiguration(Symbol symbol,
+                                 UIImageConfiguration* configuration) {
+  return SymbolWithConfiguration(InfoForSymbol(symbol), configuration);
+}
+
+UIImage* SymbolWithPointSize(Symbol symbol, CGFloat point_size) {
+  return SymbolWithConfiguration(
+      symbol, DefaultSymbolConfigurationWithPointSize(point_size));
+}
+
+UIImage* SymbolTemplateWithPointSize(Symbol symbol, CGFloat point_size) {
+  return [SymbolWithPointSize(symbol, point_size)
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+}
+
+UIImage* SettingsRootSymbol(Symbol symbol) {
+  return SymbolWithPointSize(symbol, kSettingsRootSymbolImagePointSize);
+}
+
+UIImage* SettingsRootMulticolorSymbol(Symbol symbol) {
+  return MakeSymbolMulticolor(SettingsRootSymbol(symbol));
 }
 
 }  // extern "C"

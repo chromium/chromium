@@ -9,8 +9,11 @@ source_set("symbols") {
   sources = [
     "symbol_configurations.h",
     "symbol_configurations.mm",
+    "symbol_enums.h",
     "symbol_helpers.h",
     "symbol_helpers.mm",
+    "symbol_info.h",
+    "symbol_info.mm",
     "symbol_names.h",
     "symbol_names.mm",
   ]
