@@ -81,6 +81,7 @@ struct BrokerStateInfo {
   array<BrokerModelInfo> models;
   int32? model_crash_count;
   int32? max_model_crash_count;
+  bool is_asset_manager_initialized;
 };
 
 // Observer for ModelBrokerDebug.

@@ -137,7 +137,8 @@ export function getHtml(this: OnDeviceInternalsBrokerStateElement) {
     </div>
 
     <div class="card">
-      <cr-button @click="${this.onUninstallModelsClick_}">
+      <cr-button @click="${this.onUninstallModelsClick_}"
+          ?disabled="${!this.state_.isAssetManagerInitialized}">
         Uninstall Models
       </cr-button>
     </div>

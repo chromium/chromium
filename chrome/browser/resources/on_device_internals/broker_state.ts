@@ -49,6 +49,7 @@ export class OnDeviceInternalsBrokerStateElement extends CrLitElement {
     models: [],
     modelCrashCount: null,
     maxModelCrashCount: null,
+    isAssetManagerInitialized: false,
   };
 
   protected get manifestCriteria() {
