@@ -3749,6 +3749,22 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.services_webnn_unittests.filter",
                 ],
             ),
+            "webcodecs_tests": targets.per_test_modification(
+                mixins = targets.mixin(
+                    args = [
+                        # TODO(crbug.com/414723481): Remove this when the test
+                        # that is flakily killing machines is found and skipped.
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    args = {
+                        # Magic substitution happens after regular replacement, so remove it
+                        # now since we are manually applying the number of jobs above.
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
             "xr_browser_tests": targets.remove(
                 reason = "No Windows arm64 devices currently support XR features, so don't bother running related tests.",
             ),
