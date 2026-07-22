@@ -862,8 +862,8 @@ class AutofillClient {
   // Notifies the user that an Autofill AI operation save to Wallet failed.
   virtual void ShowAutofillAiSaveToWalletFailureNotification();
 
-  // Notifies the user that operation to fetch data from Wallet failed.
-  virtual void ShowAutofillAiFetchFromWalletFailureNotification();
+  // Notifies the user that operation to fetch data failed.
+  virtual void ShowAutofillAiFetchEntityFailureNotification();
 
   // Notifies the user that prefetching Autofill AI entities failed.
   virtual void ShowAutofillAiPreFetchFailureNotification();

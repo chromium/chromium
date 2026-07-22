@@ -1324,7 +1324,7 @@ void AtMemoryManager::OnAutofillAiFetched(
   if (!result.has_value()) {
     if (result.error() ==
         AutofillAiAccessManager::FailureReason::kFetchFailed) {
-      owner_->client().ShowAutofillAiFetchFromWalletFailureNotification();
+      owner_->client().ShowAutofillAiFetchEntityFailureNotification();
     }
     return;
   }

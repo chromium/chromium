@@ -413,7 +413,7 @@ void AutofillClient::ShowAutofillAiSaveToWalletFailureNotification() {
   NOTIMPLEMENTED();
 }
 
-void AutofillClient::ShowAutofillAiFetchFromWalletFailureNotification() {
+void AutofillClient::ShowAutofillAiFetchEntityFailureNotification() {
   NOTIMPLEMENTED();
 }
 

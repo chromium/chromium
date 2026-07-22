@@ -298,7 +298,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void CloseEntityImportBubble() final;
   void ShowAutofillAiLocalSaveNotification() final;
   void ShowAutofillAiSaveToWalletFailureNotification() final;
-  void ShowAutofillAiFetchFromWalletFailureNotification() final;
+  void ShowAutofillAiFetchEntityFailureNotification() final;
   void ShowAutofillAiPreFetchFailureNotification() final;
   void ShowAutofillAiPrivateInferenceNotice() final;
   void ShowEmailVerifiedToast(const GURL& issuer) final;

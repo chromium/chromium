@@ -320,7 +320,7 @@ TEST_F(AutofillAiSaveUpdateEntityFlowManagerTest, ShowLocalSaveNotification) {
       IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_DESCRIPTION,
       google_wallet);
   const std::u16string button = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_CONFIRMATION_BUTTON_LABEL);
+      IDS_AUTOFILL_AI_SNACK_BAR_CONFIRMATION_BUTTON_LABEL);
 
   EXPECT_CALL(autofill_dialog_controller(),
               Show(title, description, button, _));

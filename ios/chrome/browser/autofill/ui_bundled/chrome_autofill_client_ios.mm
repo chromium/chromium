@@ -728,10 +728,9 @@ void ChromeAutofillClientIOS::ShowAutofillAiSaveToWalletFailureNotification() {
   [commands_handler_ showAutofillAiErrorDialog:std::move(errorContext)];
 }
 
-void ChromeAutofillClientIOS::
-    ShowAutofillAiFetchFromWalletFailureNotification() {
+void ChromeAutofillClientIOS::ShowAutofillAiFetchEntityFailureNotification() {
   AutofillAiErrorDialogContext errorContext;
-  errorContext.type = AutofillAiErrorDialogType::kTypeFetchFromWalletFailure;
+  errorContext.type = AutofillAiErrorDialogType::kTypeFetchEntityFailure;
   [commands_handler_ showAutofillAiErrorDialog:std::move(errorContext)];
 }
 

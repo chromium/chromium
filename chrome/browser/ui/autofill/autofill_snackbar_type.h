@@ -37,7 +37,7 @@ enum class AutofillSnackbarType {
   kAutofillAiSaveToWalletFailure = 8,
 
   // Used when the server request to fetch entity data failed.
-  kAutofillAiFetchFromWalletFailure = 9,
+  kAutofillAiFetchEntityFailure = 9,
 };
 
 }  // namespace autofill

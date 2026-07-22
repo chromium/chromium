@@ -136,7 +136,7 @@ void OnEntityInstanceFetched(
                                /*blocked_fields=*/{});
   } else if (result.error() ==
              AutofillAiAccessManager::FailureReason::kFetchFailed) {
-    manager->client().ShowAutofillAiFetchFromWalletFailureNotification();
+    manager->client().ShowAutofillAiFetchEntityFailureNotification();
   }
 
   manager->client().HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,

@@ -442,16 +442,21 @@ void ToastService::RegisterToasts(
           .Build());
 
   if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAiWalletPrivatePasses)) {
+          autofill::features::kAutofillAiWalletPrivatePasses) ||
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAmbientAutofill)) {
     toast_registry_->RegisterToast(
-        ToastId::kAutofillAiFetchFromWalletErrorMessage,
+        ToastId::kAutofillAiFetchEntityErrorMessage,
         ToastSpecification::Builder(
             features::IsRoundedIconsEnabled()
                 ? vector_icons::kPersonTextIcon
                 : vector_icons::kPersonTextOldIcon,
-            IDS_AUTOFILL_AI_WALLET_FETCH_FAILURE_NOTIFICATION)
+            IDS_AUTOFILL_AI_FETCH_ENTITY_FAILURE_NOTIFICATION)
             .AddGlobalScoped()
             .Build());
+  }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAiWalletPrivatePasses)) {
     toast_registry_->RegisterToast(
         ToastId::kAutofillAiSaveToWalletErrorMessage,
         ToastSpecification::Builder(

@@ -38,7 +38,7 @@ void AutofillAiErrorDialogMediator::Show() {
       message =
           l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_WALLET_CONNECTION_FAILURE);
       break;
-    case autofill::AutofillAiErrorDialogType::kTypeFetchFromWalletFailure:
+    case autofill::AutofillAiErrorDialogType::kTypeFetchEntityFailure:
       title = l10n_util::GetNSString(
           IDS_IOS_AUTOFILL_AI_WALLET_FETCH_FAILURE_TITLE);
       message =

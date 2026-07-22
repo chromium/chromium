@@ -95,7 +95,7 @@ class MockAutofillClient : public TestAutofillClient {
   ~MockAutofillClient() override = default;
 
   MOCK_METHOD(void,
-              ShowAutofillAiFetchFromWalletFailureNotification,
+              ShowAutofillAiFetchEntityFailureNotification,
               (),
               (override));
 };
@@ -929,7 +929,7 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
       });
 
   EXPECT_CALL(autofill_client(),
-              ShowAutofillAiFetchFromWalletFailureNotification());
+              ShowAutofillAiFetchEntityFailureNotification());
   EXPECT_CALL(autofill_manager(), FillOrPreviewField).Times(0);
 
   manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,

@@ -280,7 +280,7 @@ class MockAutofillClient : public TestAutofillClient {
               (),
               (override));
   MOCK_METHOD(void,
-              ShowAutofillAiFetchFromWalletFailureNotification,
+              ShowAutofillAiFetchEntityFailureNotification,
               (),
               (override));
 
@@ -3039,8 +3039,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(suggestions));
 
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillAiFetchFromWalletFailureNotification)
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
       .Times(0);
   {
     InSequence s;
@@ -3085,8 +3084,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   EXPECT_CALL(wallet_manager(),
               GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
       .Times(0);
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillAiFetchFromWalletFailureNotification)
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
       .Times(0);
   EXPECT_CALL(
       autofill_manager(),
@@ -3129,8 +3127,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
               GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
       .WillOnce(RunOnceCallback<1>(std::nullopt));
   EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillAiFetchFromWalletFailureNotification);
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification);
   EXPECT_CALL(autofill_client(),
               HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
                               std::optional(FillingProduct::kAutofillAi)));
@@ -3179,8 +3176,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   EXPECT_CALL(wallet_manager(),
               GetUnmaskedWalletEntityInstance(masked_passport.guid(), _))
       .Times(0);
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillAiFetchFromWalletFailureNotification)
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
       .Times(0);
   EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
   EXPECT_CALL(autofill_client(),
@@ -3251,8 +3247,7 @@ TEST_F(AutofillExternalDelegateWithAmbientAutofillTest,
   ON_CALL(autofill_client(), GetAutofillSuggestions)
       .WillByDefault(Return(suggestions));
 
-  EXPECT_CALL(autofill_client(),
-              ShowAutofillAiFetchFromWalletFailureNotification)
+  EXPECT_CALL(autofill_client(), ShowAutofillAiFetchEntityFailureNotification)
       .Times(0);
 
   auto is_loading = Field(&Suggestion::is_loading, Suggestion::IsLoading(true));

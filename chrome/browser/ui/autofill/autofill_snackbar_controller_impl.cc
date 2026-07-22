@@ -124,9 +124,9 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
     case AutofillSnackbarType::kAutofillAiSaveToWalletFailure:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_WALLET_UPDATE_OR_MIGRATE_FAILURE_NOTIFICATION);
-    case AutofillSnackbarType::kAutofillAiFetchFromWalletFailure:
+    case AutofillSnackbarType::kAutofillAiFetchEntityFailure:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_WALLET_FETCH_FAILURE_NOTIFICATION);
+          IDS_AUTOFILL_AI_FETCH_ENTITY_FAILURE_NOTIFICATION);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -151,10 +151,10 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
           IDS_AUTOFILL_SAVE_SERVER_IBAN_SUCCESS_SNACKBAR_BUTTON_TEXT);
     case AutofillSnackbarType::kAutofillAiSaveToWalletFailure:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_CONFIRMATION_BUTTON_LABEL);
-    case AutofillSnackbarType::kAutofillAiFetchFromWalletFailure:
+          IDS_AUTOFILL_AI_SNACK_BAR_CONFIRMATION_BUTTON_LABEL);
+    case AutofillSnackbarType::kAutofillAiFetchEntityFailure:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_CONFIRMATION_BUTTON_LABEL);
+          IDS_AUTOFILL_AI_SNACK_BAR_CONFIRMATION_BUTTON_LABEL);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -194,7 +194,7 @@ std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() {
       return "BnplVirtualCard";
     case AutofillSnackbarType::kAutofillAiSaveToWalletFailure:
       return "AutofillAiSaveToWalletFailure";
-    case AutofillSnackbarType::kAutofillAiFetchFromWalletFailure:
+    case AutofillSnackbarType::kAutofillAiFetchEntityFailure:
       return "AutofillAiFetchFromWalletFailure";
     case AutofillSnackbarType::kUnspecified:
       return "Unspecified";

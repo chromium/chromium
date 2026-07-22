@@ -1618,14 +1618,13 @@ void ChromeAutofillClient::ShowAutofillAiSaveToWalletFailureNotification() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void ChromeAutofillClient::ShowAutofillAiFetchFromWalletFailureNotification() {
+void ChromeAutofillClient::ShowAutofillAiFetchEntityFailureNotification() {
 #if BUILDFLAG(IS_ANDROID)
   GetAutofillSnackbarController()->Show(
-      AutofillSnackbarType::kAutofillAiFetchFromWalletFailure,
-      base::DoNothing());
+      AutofillSnackbarType::kAutofillAiFetchEntityFailure, base::DoNothing());
 #else
   if (ToastController* toast_controller = GetToastController()) {
-    ToastParams params(ToastId::kAutofillAiFetchFromWalletErrorMessage);
+    ToastParams params(ToastId::kAutofillAiFetchEntityErrorMessage);
     toast_controller->MaybeShowToast(std::move(params));
   }
 #endif  // BUILDFLAG(IS_ANDROID)

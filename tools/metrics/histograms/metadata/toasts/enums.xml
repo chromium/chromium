@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="User migrated into enhanced security settings bundle"/>
   <int value="24" label="Saved Skill"/>
   <int value="25" label="Deleted Skill"/>
-  <int value="26" label="Showed Autofill AI Wallet error message on fetch"/>
+  <int value="26" label="Showed Autofill AI error message on fetch"/>
   <int value="27" label="Translate"/>
   <int value="28"
       label="Showed Autofill AI Wallet error message (update or migrate

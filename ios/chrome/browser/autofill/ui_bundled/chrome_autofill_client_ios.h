@@ -174,7 +174,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   void CloseEntityImportBubble() override;
   void ShowAutofillAiLocalSaveNotification() override;
   void ShowAutofillAiSaveToWalletFailureNotification() override;
-  void ShowAutofillAiFetchFromWalletFailureNotification() override;
+  void ShowAutofillAiFetchEntityFailureNotification() override;
   void ShowAutofillAiPreFetchFailureNotification() override;
 
   // Searches infobars managed by the infobar_manager_ for infobar of the type

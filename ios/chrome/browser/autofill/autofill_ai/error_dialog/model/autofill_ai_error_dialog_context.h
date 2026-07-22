@@ -16,7 +16,7 @@ namespace autofill {
 enum class AutofillAiErrorDialogType {
   kTypeLocalSave = 0,
   kTypeSaveToWalletFailure = 1,
-  kTypeFetchFromWalletFailure = 2,
+  kTypeFetchEntityFailure = 2,
 };
 
 // The context for the autofill ai error dialog.
