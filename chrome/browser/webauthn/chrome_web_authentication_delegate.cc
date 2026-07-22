@@ -205,8 +205,7 @@ void HideAndRestorePasskeys(
           webauthn::PasskeyModel::ShadowedCredentials::kExclude);
   const auto passkey_it =
       std::ranges::find_if(passkeys, [&user_id](const auto& passkey) {
-        return std::vector<uint8_t>(passkey.user_id().begin(),
-                                    passkey.user_id().end()) == user_id;
+        return base::as_byte_span(passkey.user_id()) == user_id;
       });
   if (passkey_it == passkeys.end()) {
     LogSignalAllAcceptedCredentials(
@@ -214,10 +213,9 @@ void HideAndRestorePasskeys(
             kNoPasskeyChanged);
     return;
   }
-  bool passkey_in_list = std::ranges::contains(
-      all_accepted_credentials_ids,
-      std::vector<uint8_t>(passkey_it->credential_id().begin(),
-                           passkey_it->credential_id().end()));
+  bool passkey_in_list =
+      std::ranges::contains(all_accepted_credentials_ids,
+                            base::as_byte_span(passkey_it->credential_id()));
   if ((passkey_in_list && !passkey_it->hidden()) ||
       (!passkey_in_list && passkey_it->hidden())) {
     LogSignalAllAcceptedCredentials(
