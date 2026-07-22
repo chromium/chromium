@@ -671,9 +671,6 @@ TEST_F(PointerEventFactoryTest, MousePointerKeyStates) {
 
 class PointerEventFactoryDeviceIdTest : public SimTest {
  protected:
-  PointerEventFactoryDeviceIdTest() {
-    feature_list_.InitAndEnableFeature(features::kPointerEventDeviceId);
-  }
   PointerEvent* CreatePointerEvent(
       WebPointerProperties::PointerType pointer_type,
       int raw_id,

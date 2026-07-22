@@ -4762,10 +4762,6 @@
       public: true,
     },
     {
-      name: "PointerEventDeviceId",
-      status: "stable",
-    },
-    {
       // Flag for enabling the pointer lock API on Android
       name: "PointerLockOnAndroid",
       "status": "stable",
