@@ -9686,8 +9686,6 @@ if (!is_android) {
       "../browser/sync/test/integration/performance/extensions_sync_perf_test.cc",
       "../browser/sync/test/integration/performance/passwords_sync_perf_test.cc",
       "../browser/sync/test/integration/performance/sessions_sync_perf_test.cc",
-      "../browser/sync/test/integration/performance/sync_timing_helper.cc",
-      "../browser/sync/test/integration/performance/sync_timing_helper.h",
       "base/browser_perf_tests_main.cc",
     ]
 

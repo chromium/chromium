@@ -439,6 +439,8 @@ source_set("sync_integration_test_support") {
     "password_sharing_invitation_helper.h",
     "passwords_helper.cc",
     "passwords_helper.h",
+    "performance/sync_timing_helper.cc",
+    "performance/sync_timing_helper.h",
     "preferences_helper.cc",
     "preferences_helper.h",
     "quiesce_status_change_checker.cc",
