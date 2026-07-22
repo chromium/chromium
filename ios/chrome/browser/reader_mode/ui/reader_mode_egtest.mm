@@ -6,7 +6,6 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
 #import "components/dom_distiller/core/dom_distiller_features.h"
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "components/dom_distiller/core/pref_names.h"
@@ -511,12 +510,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 
   // Open Reader Mode UI.
   [self openReaderModeWithBadgeEntrypoint];
-  // TODO(crbug.com/530841942): On iOS 27, tests frequently fail without this
-  // wait before navigating forward after session restoration.
-  if (@available(iOS 27, *)) {
-    base::test::ios::SpinRunLoopWithMaxDelay(
-        base::test::ios::kWaitForActionTimeout);
-  }
   [self assertReaderModePageIsVisible];
 
   // Check that the chip is a button with the expected accessibility label.

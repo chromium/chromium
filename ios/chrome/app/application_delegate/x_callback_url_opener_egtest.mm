@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
-#import "base/test/ios/wait_util.h"
-#import "base/time/time.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
@@ -73,15 +71,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 @implementation XCallbackURLEGTest
 
-- (base::TimeDelta)pageLoadTimeout {
-  if (@available(iOS 27.0, *)) {
-    // TODO(crbug.com/530841942): Decrease this timeout and find a better
-    // solution to fix tests on iOS 27.
-    return base::Seconds(30);
-  }
-  return base::test::ios::kWaitForPageLoadTimeout;
-}
-
 - (void)addIdentityAndSetDSE:(FakeSystemIdentity*)identity
                      managed:(BOOL)managed {
   [SigninEarlGrey addFakeIdentity:identity];
@@ -123,10 +112,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GURL gurl(url_string);
   [ChromeEarlGrey sceneOpenURL:gurl];
 
-  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"
-                                        timeout:[self pageLoadTimeout]];
-  [ChromeEarlGrey waitForWebStateContainingText:"some text"
-                                        timeout:[self pageLoadTimeout]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
+  [ChromeEarlGrey waitForWebStateContainingText:"some text"];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
 }
@@ -147,10 +134,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GURL gurl(url_string);
   [ChromeEarlGrey sceneOpenURL:gurl];
 
-  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"
-                                        timeout:[self pageLoadTimeout]];
-  [ChromeEarlGrey waitForWebStateContainingText:"some text"
-                                        timeout:[self pageLoadTimeout]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
+  [ChromeEarlGrey waitForWebStateContainingText:"some text"];
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
 
@@ -182,10 +167,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GURL gurl(url_string);
   [ChromeEarlGrey sceneOpenURL:gurl];
 
-  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"
-                                        timeout:[self pageLoadTimeout]];
-  [ChromeEarlGrey waitForWebStateContainingText:"some text"
-                                        timeout:[self pageLoadTimeout]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
+  [ChromeEarlGrey waitForWebStateContainingText:"some text"];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
@@ -215,10 +198,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GURL gurl(url_string);
   [ChromeEarlGrey sceneOpenURL:gurl];
 
-  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"
-                                        timeout:[self pageLoadTimeout]];
-  [ChromeEarlGrey waitForWebStateContainingText:"some text"
-                                        timeout:[self pageLoadTimeout]];
+  [ChromeEarlGrey waitForWebStateContainingText:"Search Result"];
+  [ChromeEarlGrey waitForWebStateContainingText:"some text"];
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
 
