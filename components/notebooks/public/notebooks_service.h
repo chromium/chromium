@@ -5,8 +5,13 @@
 #ifndef COMPONENTS_NOTEBOOKS_PUBLIC_NOTEBOOKS_SERVICE_H_
 #define COMPONENTS_NOTEBOOKS_PUBLIC_NOTEBOOKS_SERVICE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+namespace syncer {
+class DataTypeControllerDelegate;
+}  // namespace syncer
 
 namespace notebooks {
 
@@ -38,6 +43,12 @@ class NotebooksService : public KeyedService {
 
   // Returns true if the service is still determining eligibility.
   virtual bool IsEligibilityLoading() const = 0;
+
+  // Serves as the plumbing entry point for Chrome Sync, bridging the Sync
+  // engine to the internal sync bridge to manage lifecycle events (e.g.,
+  // startup, stop) and propagate sync updates.
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetSyncControllerDelegate() = 0;
 };
 
 }  // namespace notebooks

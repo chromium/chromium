@@ -26,6 +26,8 @@ class EmptyNotebooksService : public NotebooksService {
   bool IsEmptyForTesting() const override;
   bool IsUserEligible() const override;
   bool IsEligibilityLoading() const override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate()
+      override;
 };
 
 }  // namespace notebooks

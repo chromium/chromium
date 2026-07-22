@@ -5,13 +5,20 @@
 #include "chrome/browser/notebooks/notebooks_service_factory.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/notebooks/internal/empty_notebooks_service.h"
 #include "components/notebooks/internal/notebooks_service_impl.h"
 #include "components/notebooks/public/features.h"
 #include "components/notebooks/public/notebooks_service.h"
+#include "components/sync/base/report_unrecoverable_error.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_type_store_service.h"
 
 namespace notebooks {
 
@@ -32,7 +39,9 @@ NotebooksServiceFactory::NotebooksServiceFactory()
           "NotebooksService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              .Build()) {}
+              .Build()) {
+  DependsOn(DataTypeStoreServiceFactory::GetInstance());
+}
 
 NotebooksServiceFactory::~NotebooksServiceFactory() = default;
 
@@ -48,7 +57,15 @@ NotebooksServiceFactory::BuildServiceInstanceForBrowserContext(
     return std::make_unique<EmptyNotebooksService>();
   }
 
-  return std::make_unique<NotebooksServiceImpl>();
+  auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+      syncer::NOTEBOOK, base::BindRepeating(&syncer::ReportUnrecoverableError,
+                                            chrome::GetChannel()));
+
+  syncer::OnceDataTypeStoreFactory store_factory =
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
+
+  return std::make_unique<NotebooksServiceImpl>(std::move(processor),
+                                                std::move(store_factory));
 }
 
 }  // namespace notebooks

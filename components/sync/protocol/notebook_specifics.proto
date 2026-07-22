@@ -17,6 +17,7 @@ package sync_pb;
 // Sync representation of a Notebook.
 message Notebook {}
 
+// LINT.IfChange(NotebookSpecifics)
 // Specifics for NOTEBOOK.
 message NotebookSpecifics {
   // A unique identifier for this sync entity.
@@ -33,3 +34,4 @@ message NotebookSpecifics {
   // Version tracking to aid backward compatibility.
   optional int32 schema_version = 6;
 }
+// LINT.ThenChange(//components/notebooks/internal/notebook_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

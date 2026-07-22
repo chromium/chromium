@@ -4,9 +4,14 @@
 
 #include "components/notebooks/internal/notebooks_service_impl.h"
 
+#include <utility>
+
 namespace notebooks {
 
-NotebooksServiceImpl::NotebooksServiceImpl() = default;
+NotebooksServiceImpl::NotebooksServiceImpl(
+    std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
+    syncer::OnceDataTypeStoreFactory store_factory)
+    : bridge_(std::move(change_processor), std::move(store_factory)) {}
 
 NotebooksServiceImpl::~NotebooksServiceImpl() = default;
 
@@ -32,4 +37,8 @@ bool NotebooksServiceImpl::IsEligibilityLoading() const {
   return false;
 }
 
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+NotebooksServiceImpl::GetSyncControllerDelegate() {
+  return bridge_.change_processor()->GetControllerDelegate();
+}
 }  // namespace notebooks

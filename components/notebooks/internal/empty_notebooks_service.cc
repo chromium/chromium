@@ -4,6 +4,8 @@
 
 #include "components/notebooks/internal/empty_notebooks_service.h"
 
+#include "base/notreached.h"
+
 namespace notebooks {
 
 EmptyNotebooksService::EmptyNotebooksService() = default;
@@ -26,4 +28,8 @@ bool EmptyNotebooksService::IsEligibilityLoading() const {
   return false;
 }
 
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+EmptyNotebooksService::GetSyncControllerDelegate() {
+  NOTREACHED();
+}
 }  // namespace notebooks

@@ -16,9 +16,12 @@ source_set("factory") {
 
   deps = [
     "//base",
+    "//chrome/browser/sync",
     "//components/keyed_service/content",
     "//components/notebooks/internal",
     "//components/notebooks/public",
+    "//components/sync/base",
+    "//components/sync/model",
     "//content/public/browser",
   ]
 }
