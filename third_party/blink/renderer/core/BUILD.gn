@@ -1689,6 +1689,7 @@ source_set("perf_tests") {
     "layout/inline/inline_node_data_perftest.cc",
     "layout/svg/svg_hit_test_perftest.cc",
     "layout/visual_rect_mapping_perftest.cc",
+    "paint/timing/container_timing_perftest.cc",
     "testing/no_network_url_loader.h",
   ]
 
@@ -1704,6 +1705,7 @@ source_set("perf_tests") {
     "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/platform:test_support",
   ]
 }
