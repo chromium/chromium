@@ -100,9 +100,9 @@ dependencies {
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
-    pathToBuildGradle 'third_party/android_deps/autorolled'
-    cipdPackagePrefix 'chromium/third_party/android_deps/autorolled'
+    pathToBuildGradle = 'third_party/android_deps/autorolled'
+    cipdPackagePrefix = 'chromium/third_party/android_deps/autorolled'
     internalTargetVisibility = [ '//third_party/androidx:*', ':*' ]
-    ignoreDEPS true
-    writeBoM true
+    ignoreDEPS = true
+    writeBoM = true
 }

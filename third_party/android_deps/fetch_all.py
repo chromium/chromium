@@ -372,7 +372,7 @@ def _InitSubprojects(android_deps_dir, build_android_deps_dir,
             version = fetch_util.get_current_androidx_version()
             repo_url = fetch_util.make_androidx_maven_url(version)
             data = data.replace('// <ANDROIDX_REPO>',
-                                f'maven {{ url "{repo_url}" }}')
+                                f'maven {{ url = "{repo_url}" }}')
         dst_path = pathlib.Path(build_android_deps_dir) / build_gradle
         dst_path.parent.mkdir(exist_ok=using_build_dir)
         dst_path.write_text(data)
@@ -381,6 +381,7 @@ def _InitSubprojects(android_deps_dir, build_android_deps_dir,
         subdirs,
         os.path.join(_PRIMARY_ANDROID_DEPS_DIR, 'settings.gradle.template'),
         os.path.join(build_android_deps_dir, 'settings.gradle'))
+
 
 def _BuildGradleCmd(build_android_deps_dir, task):
     return [
