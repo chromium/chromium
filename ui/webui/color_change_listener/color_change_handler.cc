@@ -41,6 +41,14 @@ void ColorChangeHandler::Bind(
 void ColorChangeHandler::SetPage(
     mojo::PendingRemote<color_change_listener::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
+  // Fire an event immediately to ensure the page has the most up-to-date color.
+  // This handles the race condition where the WebContents' ColorProvider
+  // changes before the WebUI Javascript has finished loading and bound the
+  // page.
+  // TODO(crbug.com/532226039): Investigate whether we can improve the
+  // performance, such as creating ColorChangeHandler earlier than the mojo
+  // binding.
+  page_->OnColorProviderChanged();
 }
 
 void ColorChangeHandler::OnColorProviderChanged() {

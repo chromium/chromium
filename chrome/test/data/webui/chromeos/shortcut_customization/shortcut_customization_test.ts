@@ -99,7 +99,7 @@ suite('shortcutCustomizationAppTest', function() {
     }
     page = null;
     if (linkEl) {
-      document.head.removeChild(linkEl);
+      linkEl.remove();
     }
     linkEl = null;
   });
