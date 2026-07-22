@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
+#include "components/autofill/core/browser/data_quality/addresses/address_import_requirement_utils.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"

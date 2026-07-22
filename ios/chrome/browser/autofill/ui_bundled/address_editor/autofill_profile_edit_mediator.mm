@@ -10,7 +10,7 @@
 #import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#import "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
+#import "components/autofill/core/browser/data_quality/addresses/address_import_requirement_utils.h"
 #import "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #import "components/autofill/core/browser/geo/autofill_country.h"
 #import "components/autofill/core/browser/ui/addresses/autofill_address_util.h"

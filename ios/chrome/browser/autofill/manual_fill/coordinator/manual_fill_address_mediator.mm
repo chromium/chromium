@@ -11,7 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#import "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
+#import "components/autofill/core/browser/data_quality/addresses/address_import_requirement_utils.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_address+AutofillProfile.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_address.h"
