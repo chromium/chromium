@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
+#include "base/test/allow_check_is_test_for_testing.h"
 #include "base/test/test_timeouts.h"
 #include "content/public/test/blink_test_environment.h"
 #include "content/public/test/setup_field_trials.h"
@@ -19,6 +20,8 @@ BlinkFuzzerTestSupport::BlinkFuzzerTestSupport()
     : BlinkFuzzerTestSupport(0, nullptr) {}
 
 BlinkFuzzerTestSupport::BlinkFuzzerTestSupport(int argc, char** argv) {
+  base::test::AllowCheckIsTestForTesting();
+
   // Note: we don't tear anything down here after an iteration of the fuzzer
   // is complete, this is for efficiency. We rerun the fuzzer with the same
   // environment as the previous iteration.
