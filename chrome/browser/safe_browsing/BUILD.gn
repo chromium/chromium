@@ -1099,3 +1099,51 @@ source_set("test_support") {
     ]
   }
 }
+
+if (safe_browsing_mode != 0) {
+  # Separate leaf target because this browser-test helper depends on
+  # //chrome/test:test_support, which reaches safe_browsing:test_support via
+  # //chrome/browser:test_support and would form a cycle.
+  source_set("blocking_page_platform_test_support") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    public = [ "safe_browsing_blocking_page_platform_test_helper.h" ]
+
+    sources = [ "safe_browsing_blocking_page_platform_test_helper.cc" ]
+
+    public_deps = [
+      ":safe_browsing",
+      "//chrome/test:test_support",
+      "//components/safe_browsing:buildflags",
+      "//components/safe_browsing/content/browser",
+    ]
+
+    if (is_android) {
+      public_deps += [ "//chrome/test:test_support_ui_android" ]
+    } else {
+      public_deps += [ "//chrome/test:test_support_ui" ]
+    }
+
+    deps = [
+      "//base",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/enterprise",
+      "//chrome/browser/history",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/safe_browsing:metrics_collector",
+      "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+      "//components/safe_browsing/core/browser:verdict_cache_manager",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//content/test:test_support",
+    ]
+
+    # mock_trust_safety_sentiment_service.h is only included under
+    # BUILDFLAG(FULL_SAFE_BROWSING) (safe_browsing_mode == 1), and
+    # ui/hats:test_support only exists on non-Android.
+    if (safe_browsing_mode == 1) {
+      public_deps += [ "//chrome/browser/ui/hats:test_support" ]
+    }
+  }
+}
