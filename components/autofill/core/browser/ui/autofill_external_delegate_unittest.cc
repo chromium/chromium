@@ -1380,7 +1380,8 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_NoConnection) {
                               IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))))),
                 Field(&Suggestion::icon, Suggestion::Icon::kSadTab),
                 Field(&Suggestion::acceptability,
-                      Suggestion::Acceptability::kUnacceptable))));
+                      Suggestion::Acceptability::
+                          kUnacceptableWithDeactivatedStyle))));
       });
 
   external_delegate().OnSearchSubmitted(u"shoe size");
