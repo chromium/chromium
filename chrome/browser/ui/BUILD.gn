@@ -376,6 +376,11 @@ if (!is_android) {
     ]
   }
 }
+source_set("enterprise_startup_dialog") {
+  public = [ "enterprise_startup_dialog.h" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("uninstall_browser_prompt") {
   public = [ "uninstall_browser_prompt.h" ]
 }
@@ -393,7 +398,6 @@ source_set("view_ids") {
 static_library("ui") {
   sources = [
     "crypto_module_password_dialog.h",
-    "enterprise_startup_dialog.h",
     "idle_bubble.h",
     "managed_ui.cc",
     "managed_ui.h",
@@ -433,6 +437,7 @@ static_library("ui") {
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to //chrome/browser:browser_generated_files.
     ":accelerator_utils_headers",
+    ":enterprise_startup_dialog",
     ":simple_message_box_headers",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
@@ -4902,8 +4907,6 @@ static_library("ui") {
         "views/chrome_views_delegate_mac.cc",
         "views/permissions/permission_prompt_notifications_mac.cc",
         "views/permissions/permission_prompt_notifications_mac.h",
-        "views/policy/enterprise_startup_dialog_mac_util.h",
-        "views/policy/enterprise_startup_dialog_mac_util.mm",
         "views/user_education/browser_help_bubble_event_relay_mac.mm",
       ]
       deps += [
@@ -4962,8 +4965,6 @@ static_library("ui") {
         "views/frame/opaque_browser_frame_view_layout.h",
         "views/frame/opaque_browser_frame_view_layout_delegate.cc",
         "views/frame/opaque_browser_frame_view_layout_delegate.h",
-        "views/policy/enterprise_startup_dialog_view.cc",
-        "views/policy/enterprise_startup_dialog_view.h",
         "views/policy/idle_dialog_view.cc",
         "views/policy/idle_dialog_view.h",
         "views/screen_capture_notification_ui_views.cc",
@@ -4974,6 +4975,7 @@ static_library("ui") {
       ]
       deps += [
         "//chrome/browser/shortcuts",
+        "//chrome/browser/ui/views/policy:enterprise_startup_dialog",
         "//ui/views/window/vector_icons",
       ]
     }

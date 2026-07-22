@@ -1330,7 +1330,10 @@ source_set("impl") {
         "cloud/user_policy_signin_service.cc",
         "file_selection_dialogs_policy_handler.cc",
       ]
-      deps += [ "//chrome/browser/enterprise:browser_launch_reporting" ]
+      deps += [
+        "//chrome/browser/enterprise:browser_launch_reporting",
+        "//chrome/browser/ui:enterprise_startup_dialog",
+      ]
     }
   }
 
