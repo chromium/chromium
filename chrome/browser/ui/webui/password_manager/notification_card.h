@@ -17,6 +17,7 @@ namespace password_manager {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. Needs to stay in sync with the
 // PasswordManagerNotificationCard enum in enums.xml.
+// LINT.IfChange(NotificationCardType)
 enum class NotificationCardType {
   // Password Checkup promo bubble.
   kCheckup = 0,
@@ -33,6 +34,7 @@ enum class NotificationCardType {
   // kScreenlockReauth = 6, Obsolete
   kMaxValue = kMovePasswords,
 };
+// LINT.ThenChange(//chrome/browser/resources/password_manager/notification_cards/notification_card.ts:NotificationCardMetricId)
 
 // This is the base class for all password manager notification cards. It has a
 // basic implementation to read/write to PrefService as well as basic properties

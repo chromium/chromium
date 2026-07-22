@@ -202,7 +202,7 @@ TEST_F(NotificationCardsHandlerTest, GetAvailableNotificationCard) {
   EXPECT_CALL(*second_card(), GetDescription)
       .WillRepeatedly(Return(u"Description"));
 
-  web_ui()->ProcessWebUIMessage(GURL(), "getAvailablePromoCard",
+  web_ui()->ProcessWebUIMessage(GURL(), "getAvailableNotificationCard",
                                 std::move(args));
 
   // Verify that notification card was shown and content returned matches card
@@ -234,7 +234,7 @@ TEST_F(NotificationCardsHandlerTest, TheOldestCardReturned) {
   EXPECT_CALL(*first_card(), ShouldShowCard).WillRepeatedly(Return(true));
   EXPECT_CALL(*second_card(), ShouldShowCard).WillRepeatedly(Return(true));
 
-  web_ui()->ProcessWebUIMessage(GURL(), "getAvailablePromoCard",
+  web_ui()->ProcessWebUIMessage(GURL(), "getAvailableNotificationCard",
                                 std::move(args));
 
   // Verify that notification card was shown.
@@ -255,7 +255,7 @@ TEST_F(NotificationCardsHandlerTest, NoAvailableCard) {
   EXPECT_CALL(*first_card(), ShouldShowCard).WillRepeatedly(Return(false));
   EXPECT_CALL(*second_card(), ShouldShowCard).WillRepeatedly(Return(false));
 
-  web_ui()->ProcessWebUIMessage(GURL(), "getAvailablePromoCard",
+  web_ui()->ProcessWebUIMessage(GURL(), "getAvailableNotificationCard",
                                 std::move(args));
   VerifyLastRequestRejected();
   EXPECT_EQ(0, first_card()->number_of_times_shown());
@@ -269,7 +269,7 @@ TEST_F(NotificationCardsHandlerTest, RecordCardDismissed) {
   base::ListValue args;
   args.Append(first_card()->GetCardID());
 
-  web_ui()->ProcessWebUIMessage(GURL(), "recordPromoDismissed",
+  web_ui()->ProcessWebUIMessage(GURL(), "recordNotificationDismissed",
                                 std::move(args));
 
   EXPECT_TRUE(first_card()->was_dismissed());
@@ -293,7 +293,7 @@ TEST_F(NotificationCardsHandlerTest,
   EXPECT_CALL(*relaunch_chrome_card, GetNotificationCardType)
       .WillRepeatedly(Return(NotificationCardType::kRelauchChrome));
 
-  web_ui()->ProcessWebUIMessage(GURL(), "getAvailablePromoCard",
+  web_ui()->ProcessWebUIMessage(GURL(), "getAvailableNotificationCard",
                                 std::move(args));
 
   // Verify that notification card was shown.

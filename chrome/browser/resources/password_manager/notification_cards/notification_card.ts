@@ -19,12 +19,12 @@ import {Page, Router, UrlParam} from '../router.js';
 import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl} from '../sync_browser_proxy.js';
 
 import {getTemplate} from './notification_card.html.js';
-import type {PromoCard} from './notification_cards_browser_proxy.js';
-import {PromoCardsProxyImpl} from './notification_cards_browser_proxy.js';
+import type {NotificationCard} from './notification_cards_browser_proxy.js';
+import {NotificationCardsProxyImpl} from './notification_cards_browser_proxy.js';
 
 // WARNING: Keep synced with
-// chrome/browser/ui/webui/password_manager/promo_cards_handler.cc.
-export enum PromoCardId {
+// chrome/browser/ui/webui/password_manager/notification_cards_handler.cc.
+export enum NotificationCardId {
   CHECKUP = 'password_checkup_promo',
   WEB_PASSWORD_MANAGER = 'passwords_on_web_promo',
   SHORTCUT = 'password_shortcut_promo',
@@ -38,9 +38,10 @@ export enum PromoCardId {
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  *
- * Needs to stay in sync with PromoCardType in promo_card.h
+ * Needs to stay in sync with NotificationCardType in notification_card.h
  */
-enum PromoCardMetricId {
+// LINT.IfChange(NotificationCardMetricId)
+enum NotificationCardMetricId {
   CHECKUP = 0,
   UNUSED_WEB_PASSWORD_MANAGER = 1,
   SHORTCUT = 2,
@@ -51,14 +52,15 @@ enum PromoCardMetricId {
   // Must be last.
   COUNT = 7,
 }
+// LINT.ThenChange(//chrome/browser/ui/webui/password_manager/notification_card.h:NotificationCardType)
 
-function recordPromoCardAction(card: PromoCardMetricId) {
+function recordNotificationCardAction(card: NotificationCardMetricId) {
   chrome.metricsPrivate.recordEnumerationValue(
       'PasswordManager.PromoCard.ActionButtonClicked', card,
-      PromoCardMetricId.COUNT);
+      NotificationCardMetricId.COUNT);
 }
 
-export interface PromoCardElement {
+export interface NotificationCardElement {
   $: {
     actionButton: CrButtonElement,
     closeButton: CrIconButtonElement,
@@ -69,9 +71,9 @@ export interface PromoCardElement {
 
 const isOpenedAsShortcut = window.matchMedia('(display-mode: standalone)');
 
-const PromoCardElementBase = I18nMixin(PolymerElement);
+const NotificationCardElementBase = I18nMixin(PolymerElement);
 
-export class PromoCardElement extends PromoCardElementBase {
+export class NotificationCardElement extends NotificationCardElementBase {
   static get is() {
     return 'notification-card';
   }
@@ -82,18 +84,18 @@ export class PromoCardElement extends PromoCardElementBase {
 
   static get properties() {
     return {
-      promoCard: Object,
+      card: Object,
     };
   }
 
-  declare promoCard: PromoCard;
+  declare card: NotificationCard;
 
   override connectedCallback() {
     super.connectedCallback();
     // If this is a shortcut promo we should listen to display mode changes to
     // close it automatically when shortcut is installed from another place.
     // Check crbug.com/40075033 for more details when it can happen.
-    if (this.promoCard.id === PromoCardId.SHORTCUT) {
+    if (this.card.id === NotificationCardId.SHORTCUT) {
       isOpenedAsShortcut.addEventListener('change', this.close_.bind(this));
     }
   }
@@ -101,35 +103,35 @@ export class PromoCardElement extends PromoCardElementBase {
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    if (this.promoCard.id === PromoCardId.SHORTCUT) {
+    if (this.card.id === NotificationCardId.SHORTCUT) {
       isOpenedAsShortcut.removeEventListener('change', this.close_.bind(this));
     }
   }
 
   private getDescription_(): TrustedHTML {
-    return sanitizeInnerHtml(this.promoCard.description);
+    return sanitizeInnerHtml(this.card.description);
   }
 
   private onActionButtonClick_() {
-    switch (this.promoCard.id) {
-      case PromoCardId.CHECKUP:
+    switch (this.card.id) {
+      case NotificationCardId.CHECKUP:
         const params = new URLSearchParams();
         params.set(UrlParam.START_CHECK, 'true');
         Router.getInstance().navigateTo(Page.CHECKUP, null, params);
-        recordPromoCardAction(PromoCardMetricId.CHECKUP);
+        recordNotificationCardAction(NotificationCardMetricId.CHECKUP);
         break;
-      case PromoCardId.SHORTCUT:
+      case NotificationCardId.SHORTCUT:
         PasswordManagerImpl.getInstance().showAddShortcutDialog();
-        recordPromoCardAction(PromoCardMetricId.SHORTCUT);
+        recordNotificationCardAction(NotificationCardMetricId.SHORTCUT);
         break;
-      case PromoCardId.RELAUNCH_CHROME:
+      case NotificationCardId.RELAUNCH_CHROME:
         chrome.send('restartBrowser');
-        recordPromoCardAction(PromoCardMetricId.RELAUNCH_CHROME);
+        recordNotificationCardAction(NotificationCardMetricId.RELAUNCH_CHROME);
         break;
-      case PromoCardId.MOVE_PASSWORDS:
+      case NotificationCardId.MOVE_PASSWORDS:
         SyncBrowserProxyImpl.getInstance().openBatchUpload(
             BatchUploadPasswordsEntryPoint.PROMO_CARD);
-        recordPromoCardAction(PromoCardMetricId.MOVE_PASSWORDS);
+        recordNotificationCardAction(NotificationCardMetricId.MOVE_PASSWORDS);
         break;
       default:
         assertNotReached();
@@ -138,20 +140,21 @@ export class PromoCardElement extends PromoCardElementBase {
   }
 
   private onCloseClick_() {
-    PromoCardsProxyImpl.getInstance().recordPromoDismissed(this.promoCard.id);
+    NotificationCardsProxyImpl.getInstance().recordNotificationDismissed(
+        this.card.id);
     this.close_();
   }
 
   private close_() {
     this.dispatchEvent(
-        new CustomEvent('promo-closed', {bubbles: true, composed: true}));
+        new CustomEvent('card-closed', {bubbles: true, composed: true}));
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'notification-card': PromoCardElement;
+    'notification-card': NotificationCardElement;
   }
 }
 
-customElements.define(PromoCardElement.is, PromoCardElement);
+customElements.define(NotificationCardElement.is, NotificationCardElement);

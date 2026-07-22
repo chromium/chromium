@@ -4,42 +4,43 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-export interface PromoCard {
+export interface NotificationCard {
   id: string;
   title: string;
   description: string;
   actionButtonText?: string;
 }
 
-export interface PromoCardsProxy {
+export interface NotificationCardsProxy {
   /**
    * Returns promo card to show, or null if there are no available promo cards.
    */
-  getAvailablePromoCard(): Promise<PromoCard|null>;
+  getAvailableNotificationCard(): Promise<NotificationCard|null>;
 
   /**
    * Records dismissal of a promo card. This is important to determine whether
    * promo should be shown in the future.
    */
-  recordPromoDismissed(id: string): void;
+  recordNotificationDismissed(id: string): void;
 }
 
-export class PromoCardsProxyImpl implements PromoCardsProxy {
-  getAvailablePromoCard() {
-    return sendWithPromise<PromoCard|null>('getAvailablePromoCard');
+export class NotificationCardsProxyImpl implements NotificationCardsProxy {
+  getAvailableNotificationCard() {
+    return sendWithPromise<NotificationCard|null>(
+        'getAvailableNotificationCard');
   }
 
-  recordPromoDismissed(id: string) {
-    chrome.send('recordPromoDismissed', [id]);
+  recordNotificationDismissed(id: string) {
+    chrome.send('recordNotificationDismissed', [id]);
   }
 
-  static getInstance(): PromoCardsProxy {
-    return instance || (instance = new PromoCardsProxyImpl());
+  static getInstance(): NotificationCardsProxy {
+    return instance || (instance = new NotificationCardsProxyImpl());
   }
 
-  static setInstance(obj: PromoCardsProxy) {
+  static setInstance(obj: NotificationCardsProxy) {
     instance = obj;
   }
 }
 
-let instance: PromoCardsProxy|null = null;
+let instance: NotificationCardsProxy|null = null;

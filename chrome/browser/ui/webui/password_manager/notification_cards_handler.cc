@@ -99,12 +99,12 @@ NotificationCardsHandler::~NotificationCardsHandler() = default;
 
 void NotificationCardsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "getAvailablePromoCard",
+      "getAvailableNotificationCard",
       base::BindRepeating(
           &NotificationCardsHandler::HandleGetAvailableNotificationCard,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "recordPromoDismissed",
+      "recordNotificationDismissed",
       base::BindRepeating(
           &NotificationCardsHandler::HandleRecordNotificationDismissed,
           base::Unretained(this)));

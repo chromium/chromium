@@ -5,19 +5,19 @@
 import 'chrome://password-manager/password_manager.js';
 
 import type {PasswordsSectionElement} from 'chrome://password-manager/password_manager.js';
-import {BatchUploadPasswordsEntryPoint, Page, PasswordManagerImpl, PromoCardsProxyImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {BatchUploadPasswordsEntryPoint, NotificationCardsProxyImpl, Page, PasswordManagerImpl, Router, SyncBrowserProxyImpl, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestPromoCardsProxy} from './test_notification_cards_browser_proxy.js';
+import {TestNotificationCardsProxy} from './test_notification_cards_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createAffiliatedDomain, createCredentialGroup, createPasswordEntry} from './test_util.js';
 
 suite('PasswordsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
-  let promoCardsProxy: TestPromoCardsProxy;
+  let notificationCardsProxy: TestNotificationCardsProxy;
   let syncProxy: TestSyncBrowserProxy;
 
   async function createPasswordsSection(): Promise<PasswordsSectionElement> {
@@ -34,53 +34,52 @@ suite('PasswordsSectionTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
-    promoCardsProxy = new TestPromoCardsProxy();
-    PromoCardsProxyImpl.setInstance(promoCardsProxy);
+    notificationCardsProxy = new TestNotificationCardsProxy();
+    NotificationCardsProxyImpl.setInstance(notificationCardsProxy);
     syncProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncProxy);
     Router.getInstance().updateRouterParams(new URLSearchParams());
     return flushTasks();
   });
 
-  test('promo card shown', async function() {
-    promoCardsProxy.promo = {
+  test('notification card shown', async function() {
+    notificationCardsProxy.card = {
       id: 'test_promo',
       title: 'Hello there',
-      description: 'This is a promo card.',
+      description: 'This is a notification card.',
     };
 
     const section = await createPasswordsSection();
-    let promoCardElement =
-        section.shadowRoot!.querySelector('notification-card');
+    let cardElement = section.shadowRoot!.querySelector('notification-card');
 
-    // Verify promo card is shown.
-    assertTrue(!!promoCardElement);
+    // Verify notification card is shown.
+    assertTrue(!!cardElement);
     assertEquals(
-        promoCardsProxy.promo.title,
-        promoCardElement.$.title.textContent.trim());
+        notificationCardsProxy.card.title,
+        cardElement.$.title.textContent.trim());
     assertEquals(
-        promoCardsProxy.promo.description,
-        promoCardElement.$.description.textContent.trim());
-    assertFalse(isVisible(promoCardElement.$.actionButton));
-    const shownImage = promoCardElement.shadowRoot!.querySelector('img');
+        notificationCardsProxy.card.description,
+        cardElement.$.description.textContent.trim());
+    assertFalse(isVisible(cardElement.$.actionButton));
+    const shownImage = cardElement.shadowRoot!.querySelector('img');
     assertTrue(!!shownImage);
     assertEquals(
         'chrome://password-manager/images/test_promo.svg', shownImage.src);
 
     // Click close button.
-    promoCardElement.$.closeButton.click();
+    cardElement.$.closeButton.click();
     assertEquals(
-        promoCardsProxy.promo?.id,
-        await promoCardsProxy.whenCalled('recordPromoDismissed'));
+        notificationCardsProxy.card?.id,
+        await notificationCardsProxy.whenCalled('recordNotificationDismissed'));
     await flushTasks();
 
-    // Verify that the promo card is hidden.
-    promoCardElement = section.shadowRoot!.querySelector('notification-card');
-    assertFalse(!!promoCardElement);
+    // Verify that the notification card is hidden.
+    cardElement = section.shadowRoot!.querySelector('notification-card');
+    assertFalse(!!cardElement);
   });
 
-  test('password checkup promo', async function() {
-    promoCardsProxy.promo = {
+  test('password checkup card', async function() {
+    notificationCardsProxy.card = {
       id: 'password_checkup_promo',
       title: 'Checkup promo',
       description: 'Checkup promo description.',
@@ -88,16 +87,15 @@ suite('PasswordsSectionTest', function() {
     };
 
     const section = await createPasswordsSection();
-    let promoCardElement =
-        section.shadowRoot!.querySelector('notification-card');
+    let cardElement = section.shadowRoot!.querySelector('notification-card');
 
-    // Verify promo card is shown.
-    assertTrue(!!promoCardElement);
-    assertTrue(isVisible(promoCardElement.$.actionButton));
+    // Verify notification card is shown.
+    assertTrue(!!cardElement);
+    assertTrue(isVisible(cardElement.$.actionButton));
 
     // Click action button button and verify we navigated to checkup page and
     // started password checkup.
-    promoCardElement.$.actionButton.click();
+    cardElement.$.actionButton.click();
     assertEquals(Page.CHECKUP, Router.getInstance().currentRoute.page);
     assertEquals(
         'true',
@@ -105,13 +103,13 @@ suite('PasswordsSectionTest', function() {
             UrlParam.START_CHECK)));
     await flushTasks();
 
-    // Verify that the promo card is hidden.
-    promoCardElement = section.shadowRoot!.querySelector('notification-card');
-    assertFalse(!!promoCardElement);
+    // Verify that the notification card is hidden.
+    cardElement = section.shadowRoot!.querySelector('notification-card');
+    assertFalse(!!cardElement);
   });
 
-  test('shortcut promo', async function() {
-    promoCardsProxy.promo = {
+  test('shortcut card', async function() {
+    notificationCardsProxy.card = {
       id: 'password_shortcut_promo',
       title: 'Shortcut promo',
       description: 'Shortcut promo description.',
@@ -119,26 +117,25 @@ suite('PasswordsSectionTest', function() {
     };
 
     const section = await createPasswordsSection();
-    let promoCardElement =
-        section.shadowRoot!.querySelector('notification-card');
+    let cardElement = section.shadowRoot!.querySelector('notification-card');
 
-    // Verify promo card is shown.
-    assertTrue(!!promoCardElement);
-    assertTrue(isVisible(promoCardElement.$.actionButton));
+    // Verify notification card is shown.
+    assertTrue(!!cardElement);
+    assertTrue(isVisible(cardElement.$.actionButton));
 
     // Click action button button and verify we navigated to checkup page and
     // started password checkup.
-    promoCardElement.$.actionButton.click();
+    cardElement.$.actionButton.click();
     await passwordManager.whenCalled('showAddShortcutDialog');
     await flushTasks();
 
-    // Verify that the promo card is hidden.
-    promoCardElement = section.shadowRoot!.querySelector('notification-card');
-    assertFalse(!!promoCardElement);
+    // Verify that the notification card is hidden.
+    cardElement = section.shadowRoot!.querySelector('notification-card');
+    assertFalse(!!cardElement);
   });
 
-  test('move passwords promo hidden if no local passwords', async function() {
-    promoCardsProxy.promo = {
+  test('move passwords card hidden if no local passwords', async function() {
+    notificationCardsProxy.card = {
       id: 'move_passwords_promo',
       title: 'Move passwords promo',
       description: 'Move passwords description.',
@@ -159,13 +156,12 @@ suite('PasswordsSectionTest', function() {
     };
 
     const section = await createPasswordsSection();
-    const promoCardElement =
-        section.shadowRoot!.querySelector('notification-card');
-    assertFalse(!!promoCardElement);
+    const cardElement = section.shadowRoot!.querySelector('notification-card');
+    assertFalse(!!cardElement);
   });
 
-  test('move passwords promo hidden if butter disabled', async function() {
-    promoCardsProxy.promo = {
+  test('move passwords card hidden if butter disabled', async function() {
+    notificationCardsProxy.card = {
       id: 'move_passwords_promo',
       title: 'Move passwords promo',
       description: 'Move passwords description.',
@@ -182,13 +178,12 @@ suite('PasswordsSectionTest', function() {
     };
 
     const section = await createPasswordsSection();
-    const promoCardElement =
-        section.shadowRoot!.querySelector('notification-card');
-    assertFalse(!!promoCardElement);
+    const cardElement = section.shadowRoot!.querySelector('notification-card');
+    assertFalse(!!cardElement);
   });
 
-  test('move passwords promo visible opens batch upload', async function() {
-    promoCardsProxy.promo = {
+  test('move passwords card visible opens batch upload', async function() {
+    notificationCardsProxy.card = {
       id: 'move_passwords_promo',
       title: 'Move passwords promo',
       description: 'Move passwords description.',
@@ -215,12 +210,11 @@ suite('PasswordsSectionTest', function() {
     passwordManager.setRequestCredentialsDetailsResponse([password]);
 
     const section = await createPasswordsSection();
-    const promoCardElement =
-        section.shadowRoot!.querySelector('notification-card');
-    assertTrue(!!promoCardElement);
-    assertTrue(isVisible(promoCardElement.$.actionButton));
+    const cardElement = section.shadowRoot!.querySelector('notification-card');
+    assertTrue(!!cardElement);
+    assertTrue(isVisible(cardElement.$.actionButton));
 
-    promoCardElement.$.actionButton.click();
+    cardElement.$.actionButton.click();
     await flushTasks();
 
     const entryPoint = await syncProxy.whenCalled('openBatchUpload');

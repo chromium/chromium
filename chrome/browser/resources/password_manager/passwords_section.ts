@@ -25,9 +25,9 @@ import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/ir
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {FocusConfig} from './focus_config.js';
-import {PromoCardId} from './notification_cards/notification_card.js';
-import type {PromoCard} from './notification_cards/notification_cards_browser_proxy.js';
-import {PromoCardsProxyImpl} from './notification_cards/notification_cards_browser_proxy.js';
+import {NotificationCardId} from './notification_cards/notification_card.js';
+import type {NotificationCard} from './notification_cards/notification_cards_browser_proxy.js';
+import {NotificationCardsProxyImpl} from './notification_cards/notification_cards_browser_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
 import type {Route} from './router.js';
@@ -106,7 +106,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         computed: 'computeShowPasswordsDescription_(groups_, searchTerm_)',
       },
 
-      promoCard_: {
+      notificationCard_: {
         type: Object,
         value: null,
       },
@@ -118,10 +118,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
             'prefs.credentials_enable_service.value)',
       },
 
-      shouldShowPromoCard_: {
+      shouldShowNotificationCard_: {
         type: Boolean,
-        computed: 'computeShouldShowPromoCard_(' +
-            'promoCard_, isAccountStoreUser, passwordsOnDevice_)',
+        computed: 'computeShouldShowNotificationCard_(' +
+            'notificationCard_, isAccountStoreUser, passwordsOnDevice_)',
       },
 
       /**
@@ -153,9 +153,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   declare private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[];
   declare private showPasswordsDescription_: boolean;
   declare private movePasswordsText_: string;
-  declare private promoCard_: PromoCard|null;
+  declare private notificationCard_: NotificationCard|null;
   declare private passwordManagerDisabled_: boolean;
-  declare private shouldShowPromoCard_: boolean;
+  declare private shouldShowNotificationCard_: boolean;
   declare private activeListItem_: HTMLElement|null;
 
   private setSavedPasswordsListener_: (
@@ -171,8 +171,8 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
     this.setSavedPasswordsListener_ = _passwordList => {
       if (_passwordList.length === 0 &&
-          this.promoCard_?.id === PromoCardId.CHECKUP) {
-        this.promoCard_ = null;
+          this.notificationCard_?.id === NotificationCardId.CHECKUP) {
+        this.notificationCard_ = null;
       }
       updateGroups();
     };
@@ -180,8 +180,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     updateGroups();
     PasswordManagerImpl.getInstance().addSavedPasswordListChangedListener(
         this.setSavedPasswordsListener_);
-    PromoCardsProxyImpl.getInstance().getAvailablePromoCard().then(
-        promo => this.promoCard_ = promo);
+    NotificationCardsProxyImpl.getInstance()
+        .getAvailableNotificationCard()
+        .then(card => this.notificationCard_ = card);
 
     this.authTimedOutListener_ = this.onAuthTimedOut_.bind(this);
     window.addEventListener('auth-timed-out', this.authTimedOutListener_);
@@ -318,8 +319,8 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     });
   }
 
-  private onPromoClosed_() {
-    this.promoCard_ = null;
+  private onCardClosed_() {
+    this.notificationCard_ = null;
   }
 
   private computePasswordManagerDisabled_(): boolean {
@@ -386,11 +387,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     };
   }
 
-  private computeShouldShowPromoCard_(): boolean {
-    if (!this.promoCard_) {
+  private computeShouldShowNotificationCard_(): boolean {
+    if (!this.notificationCard_) {
       return false;
     }
-    if (this.promoCard_.id !== PromoCardId.MOVE_PASSWORDS) {
+    if (this.notificationCard_.id !== NotificationCardId.MOVE_PASSWORDS) {
       return true;
     }
 

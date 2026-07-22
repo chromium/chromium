@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Test implementation of PromoCardsProxy. */
+/** @fileoverview Test implementation of NotificationCardsProxy. */
 
-import type {PromoCard, PromoCardsProxy} from 'chrome://password-manager/password_manager.js';
+import type {NotificationCard, NotificationCardsProxy} from 'chrome://password-manager/password_manager.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 /**
  * Test implementation
  */
-export class TestPromoCardsProxy extends TestBrowserProxy implements
-    PromoCardsProxy {
-  promo: PromoCard|null;
+export class TestNotificationCardsProxy extends TestBrowserProxy implements
+    NotificationCardsProxy {
+  card: NotificationCard|null;
 
   constructor() {
     super([
-      'getAvailablePromoCard',
-      'recordPromoDismissed',
+      'getAvailableNotificationCard',
+      'recordNotificationDismissed',
     ]);
 
-    this.promo = null;
+    this.card = null;
   }
 
-  getAvailablePromoCard() {
-    this.methodCalled('getAvailablePromoCard');
-    return Promise.resolve(this.promo);
+  getAvailableNotificationCard() {
+    this.methodCalled('getAvailableNotificationCard');
+    return Promise.resolve(this.card);
   }
 
-  recordPromoDismissed(id: string) {
-    this.methodCalled('recordPromoDismissed', id);
+  recordNotificationDismissed(id: string) {
+    this.methodCalled('recordNotificationDismissed', id);
   }
 }
