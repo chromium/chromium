@@ -529,12 +529,12 @@ BASE_FEATURE(kIdbSqliteOnDiskRollout, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether we ignore duplicate navigations or not, in favor of
 // preserving the already ongoing navigation.
-BASE_FEATURE(kIgnoreDuplicateNavs, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIgnoreDuplicateNavs, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kDuplicateNavThreshold,
                    &kIgnoreDuplicateNavs,
                    "duplicate_nav_threshold",
-                   base::Milliseconds(2000));
+                   base::Milliseconds(3000));
 BASE_FEATURE_PARAM(bool,
                    kSkipIgnoreBrowserInitiatedNavs,
                    &kIgnoreDuplicateNavs,
