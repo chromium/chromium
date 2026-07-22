@@ -401,5 +401,35 @@ TEST_F(ProvisioningDomainFetcherTest, ConcurrentFetchesQueueCallbacks) {
   EXPECT_EQ(kTestDomain, result2->pvd_id);
 }
 
+TEST_F(ProvisioningDomainFetcherTest,
+       DelegateGetExtraHeadersResolvesConfigHeaders) {
+  EnterpriseNetworkAuthService auth_service(
+      identity_test_env_.identity_manager(), &pref_service_,
+      &profile_id_service_);
+
+  ProvisioningDomainConfig policy;
+  policy.pvd_id = kTestDomain;
+  policy.extra_headers = {
+      ProxyExtraHeader("X-Constant-Header", "constant_value",
+                       ProxyExtraHeader::HeaderType::kConstant),
+      ProxyExtraHeader("X-Variable-Profile-Id", "pid-${profile_id}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+      ProxyExtraHeader("X-Variable-Lang", "${accept_language}",
+                       ProxyExtraHeader::HeaderType::kVariable),
+  };
+
+  ProvisioningDomainFetcher fetcher(policy, &auth_service,
+                                    GetURLLoaderFactory());
+
+  net::HttpRequestHeaders headers = fetcher.GetExtraHeaders();
+
+  EXPECT_EQ("constant_value",
+            headers.GetHeader("X-Constant-Header").value_or(""));
+  EXPECT_EQ("pid-test_profile_id",
+            headers.GetHeader("X-Variable-Profile-Id").value_or(""));
+  EXPECT_EQ("en-US,en;q=0.9",
+            headers.GetHeader("X-Variable-Lang").value_or(""));
+}
+
 }  // namespace
 }  // namespace enterprise_net

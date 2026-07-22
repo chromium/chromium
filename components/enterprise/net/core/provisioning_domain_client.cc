@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/enterprise/net/core/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -98,16 +99,23 @@ void RecordFetchResultMetrics(const ProvisioningDomainClientResult& result) {
 }  // namespace
 
 ProvisioningDomainClient::ProvisioningDomainClient(
+    const GURL& url,
+    Delegate* delegate,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {}
+    : url_(url),
+      delegate_(delegate),
+      url_loader_factory_(std::move(url_loader_factory)) {
+  CHECK(delegate_);
+  CHECK(url_loader_factory_);
+}
 
 ProvisioningDomainClient::~ProvisioningDomainClient() = default;
 
-void ProvisioningDomainClient::Fetch(const GURL& url,
-                                     net::HttpRequestHeaders headers,
-                                     FetchCallback callback) {
+void ProvisioningDomainClient::Fetch(
+    const std::optional<std::string>& access_token,
+    FetchCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!url.is_valid()) {
+  if (!url_.is_valid()) {
     ProvisioningDomainClientResult result =
         base::unexpected(ProvisioningDomainClientError{
             .net_error = net::ERR_INVALID_URL, .response_code = -1});
@@ -116,32 +124,28 @@ void ProvisioningDomainClient::Fetch(const GURL& url,
     return;
   }
 
-  // If a request is already in-flight, check if it's for the same URL.
+  pending_callbacks_.push_back(std::move(callback));
+
+  // If a request is already in-flight, queue the callback and reuse the fetch.
   if (is_fetching()) {
-    // TODO(crbug.com/536069760): Use constructor to enforce the URL and headers
-    // instead of this check.
-    if (url != in_flight_url_) {
-      ProvisioningDomainClientResult result =
-          base::unexpected(ProvisioningDomainClientError{
-              .net_error = net::ERR_FAILED, .response_code = -1});
-      RecordFetchResultMetrics(result);
-      std::move(callback).Run(std::move(result));
-      return;
-    }
-    pending_callbacks_.push_back(std::move(callback));
     return;
   }
 
-  in_flight_url_ = url;
-  pending_callbacks_.push_back(std::move(callback));
-
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url;
+  request->url = url_;
   request->method = "GET";
   // Bypass proxy to avoid deadlock with network traffic pauses.
   request->load_flags = net::LOAD_BYPASS_PROXY;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  request->headers.MergeFrom(headers);
+
+  if (delegate_) {
+    request->headers.MergeFrom(delegate_->GetExtraHeaders());
+  }
+
+  if (access_token.has_value() && !access_token->empty()) {
+    request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                               base::StrCat({"Bearer ", *access_token}));
+  }
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(request),
                                                  kPvdTrafficAnnotation);
@@ -159,7 +163,6 @@ void ProvisioningDomainClient::Fetch(const GURL& url,
 
 void ProvisioningDomainClient::Cancel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  in_flight_url_ = GURL();
   url_loader_.reset();
   pending_callbacks_.clear();
 }
@@ -187,7 +190,6 @@ void ProvisioningDomainClient::OnURLLoaderComplete(
 
   RecordFetchResultMetrics(result);
 
-  in_flight_url_ = GURL();
   url_loader_.reset();
 
   // Move pending callbacks to a local vector before execution to prevent

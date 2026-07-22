@@ -29,6 +29,15 @@ constexpr char kTestCustomHeaderKey[] = "x-custom-header";
 constexpr char kTestCustomHeaderValue[] = "custom-val";
 constexpr char kTestJsonResponse1[] = R"({"identifier": "example.com"})";
 
+class FakeDelegate : public ProvisioningDomainClient::Delegate {
+ public:
+  net::HttpRequestHeaders extra_headers;
+
+  net::HttpRequestHeaders GetExtraHeaders() const override {
+    return extra_headers;
+  }
+};
+
 class ProvisioningDomainClientTest : public testing::Test {
  protected:
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() {
@@ -38,14 +47,16 @@ class ProvisioningDomainClientTest : public testing::Test {
 
   // Helper method to initiate an HTTP fetch and simulate a network response.
   ProvisioningDomainClientResult FetchWithSimulatedResponse(
-      ProvisioningDomainClient& client,
       const GURL& url,
-      net::HttpRequestHeaders headers,
+      ProvisioningDomainClient::Delegate* delegate,
+      const std::optional<std::string>& access_token,
       const std::string& response_body,
       net::HttpStatusCode status_code = net::HTTP_OK) {
+    ProvisioningDomainClient client(url, delegate ? delegate : &fake_delegate_,
+                                    GetURLLoaderFactory());
     base::test::TestFuture<ProvisioningDomainClientResult> future;
 
-    client.Fetch(url, std::move(headers), future.GetCallback());
+    client.Fetch(access_token, future.GetCallback());
 
     if (url.is_valid() && test_url_loader_factory_.NumPending() > 0) {
       test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -57,19 +68,20 @@ class ProvisioningDomainClientTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
+  FakeDelegate fake_delegate_;
 };
 
 TEST_F(ProvisioningDomainClientTest, SuccessfulFetchWithHeaders) {
   base::HistogramTester histogram_tester;
-  ProvisioningDomainClient client(GetURLLoaderFactory());
+  FakeDelegate delegate;
+  delegate.extra_headers.SetHeader(kTestCustomHeaderKey,
+                                   kTestCustomHeaderValue);
 
-  net::HttpRequestHeaders headers;
-  headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
-                    kTestAuthHeaderValue);
-  headers.SetHeader(kTestCustomHeaderKey, kTestCustomHeaderValue);
+  ProvisioningDomainClient client(GURL(kTestUrl1), &delegate,
+                                  GetURLLoaderFactory());
 
   base::test::TestFuture<ProvisioningDomainClientResult> future;
-  client.Fetch(GURL(kTestUrl1), headers, future.GetCallback());
+  client.Fetch("token123", future.GetCallback());
 
   EXPECT_TRUE(client.is_fetching());
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
@@ -99,13 +111,11 @@ TEST_F(ProvisioningDomainClientTest, SuccessfulFetchWithHeaders) {
 
 TEST_F(ProvisioningDomainClientTest, Http201CreatedReturnsSuccess) {
   base::HistogramTester histogram_tester;
-  ProvisioningDomainClient client(GetURLLoaderFactory());
 
   ProvisioningDomainClientResult result = FetchWithSimulatedResponse(
-      client, GURL(kTestUrl1), net::HttpRequestHeaders(), kTestJsonResponse1,
-      net::HTTP_CREATED);
+      GURL(kTestUrl1), /*delegate=*/nullptr, /*access_token=*/std::nullopt,
+      kTestJsonResponse1, net::HTTP_CREATED);
 
-  EXPECT_FALSE(client.is_fetching());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(kTestJsonResponse1, *result);
   histogram_tester.ExpectUniqueSample(
@@ -115,13 +125,11 @@ TEST_F(ProvisioningDomainClientTest, Http201CreatedReturnsSuccess) {
 
 TEST_F(ProvisioningDomainClientTest, Http404ErrorWithBodyReturnsError) {
   base::HistogramTester histogram_tester;
-  ProvisioningDomainClient client(GetURLLoaderFactory());
 
   ProvisioningDomainClientResult result = FetchWithSimulatedResponse(
-      client, GURL(kTestUrl1), net::HttpRequestHeaders(),
+      GURL(kTestUrl1), /*delegate=*/nullptr, /*access_token=*/std::nullopt,
       R"({"error": "not_found"})", net::HTTP_NOT_FOUND);
 
-  EXPECT_FALSE(client.is_fetching());
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(net::HTTP_NOT_FOUND, result.error().response_code);
   histogram_tester.ExpectUniqueSample(
@@ -133,11 +141,11 @@ TEST_F(ProvisioningDomainClientTest, Http404ErrorWithBodyReturnsError) {
 
 TEST_F(ProvisioningDomainClientTest, NetworkErrorReturnsNetError) {
   base::HistogramTester histogram_tester;
-  ProvisioningDomainClient client(GetURLLoaderFactory());
+  ProvisioningDomainClient client(GURL(kTestUrl1), &fake_delegate_,
+                                  GetURLLoaderFactory());
 
   base::test::TestFuture<ProvisioningDomainClientResult> future;
-  client.Fetch(GURL(kTestUrl1), net::HttpRequestHeaders(),
-               future.GetCallback());
+  client.Fetch(/*access_token=*/std::nullopt, future.GetCallback());
 
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
   network::URLLoaderCompletionStatus status(net::ERR_CONNECTION_FAILED);
@@ -158,11 +166,11 @@ TEST_F(ProvisioningDomainClientTest, NetworkErrorReturnsNetError) {
 
 TEST_F(ProvisioningDomainClientTest, Http500RetriesAndSucceeds) {
   base::HistogramTester histogram_tester;
-  ProvisioningDomainClient client(GetURLLoaderFactory());
+  ProvisioningDomainClient client(GURL(kTestUrl1), &fake_delegate_,
+                                  GetURLLoaderFactory());
 
   base::test::TestFuture<ProvisioningDomainClientResult> future;
-  client.Fetch(GURL(kTestUrl1), net::HttpRequestHeaders(),
-               future.GetCallback());
+  client.Fetch(/*access_token=*/std::nullopt, future.GetCallback());
 
   // Simulate 500 Internal Server Error for initial request -> triggers retry.
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
@@ -185,11 +193,11 @@ TEST_F(ProvisioningDomainClientTest, Http500RetriesAndSucceeds) {
 
 TEST_F(ProvisioningDomainClientTest, InvalidUrlReturnsErrorImmediately) {
   base::HistogramTester histogram_tester;
-  ProvisioningDomainClient client(GetURLLoaderFactory());
+  ProvisioningDomainClient client(GURL("invalid_url"), &fake_delegate_,
+                                  GetURLLoaderFactory());
 
   base::test::TestFuture<ProvisioningDomainClientResult> future;
-  client.Fetch(GURL("invalid_url"), net::HttpRequestHeaders(),
-               future.GetCallback());
+  client.Fetch(/*access_token=*/std::nullopt, future.GetCallback());
 
   ProvisioningDomainClientResult result = future.Take();
   EXPECT_FALSE(client.is_fetching());
@@ -204,21 +212,20 @@ TEST_F(ProvisioningDomainClientTest, InvalidUrlReturnsErrorImmediately) {
 }
 
 TEST_F(ProvisioningDomainClientTest, ConcurrentFetchesReuseInFlightRequest) {
-  ProvisioningDomainClient client(GetURLLoaderFactory());
+  ProvisioningDomainClient client(GURL(kTestUrl1), &fake_delegate_,
+                                  GetURLLoaderFactory());
 
   base::test::TestFuture<ProvisioningDomainClientResult> future1;
   base::test::TestFuture<ProvisioningDomainClientResult> future2;
 
-  client.Fetch(GURL(kTestUrl1), net::HttpRequestHeaders(),
-               future1.GetCallback());
+  client.Fetch(/*access_token=*/std::nullopt, future1.GetCallback());
 
   EXPECT_TRUE(client.is_fetching());
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
 
   // Second fetch while first is in progress queues callback without creating
   // another network loader.
-  client.Fetch(GURL(kTestUrl1), net::HttpRequestHeaders(),
-               future2.GetCallback());
+  client.Fetch(/*access_token=*/std::nullopt, future2.GetCallback());
 
   EXPECT_TRUE(client.is_fetching());
   ASSERT_EQ(1, test_url_loader_factory_.NumPending());
@@ -234,34 +241,6 @@ TEST_F(ProvisioningDomainClientTest, ConcurrentFetchesReuseInFlightRequest) {
   EXPECT_EQ(kTestJsonResponse1, *result1);
   ASSERT_TRUE(result2.has_value());
   EXPECT_EQ(kTestJsonResponse1, *result2);
-}
-
-TEST_F(ProvisioningDomainClientTest, MismatchedUrlFetchReturnsError) {
-  ProvisioningDomainClient client(GetURLLoaderFactory());
-
-  base::test::TestFuture<ProvisioningDomainClientResult> future1;
-  base::test::TestFuture<ProvisioningDomainClientResult> future2;
-
-  client.Fetch(GURL(kTestUrl1), net::HttpRequestHeaders(),
-               future1.GetCallback());
-
-  EXPECT_TRUE(client.is_fetching());
-
-  // Second fetch with a different URL while a fetch is in progress should fail.
-  client.Fetch(GURL("https://different.example.com/pvd"),
-               net::HttpRequestHeaders(), future2.GetCallback());
-
-  ProvisioningDomainClientResult result2 = future2.Take();
-  ASSERT_FALSE(result2.has_value());
-  EXPECT_EQ(net::ERR_FAILED, result2.error().net_error);
-
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kTestUrl1, kTestJsonResponse1, net::HTTP_OK);
-
-  ProvisioningDomainClientResult result1 = future1.Take();
-  EXPECT_FALSE(client.is_fetching());
-  ASSERT_TRUE(result1.has_value());
-  EXPECT_EQ(kTestJsonResponse1, *result1);
 }
 
 }  // namespace

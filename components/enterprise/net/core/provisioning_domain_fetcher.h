@@ -75,7 +75,7 @@ using ProvisioningDomainFetchResult =
 // fetch lifecycle, from PvD authentication, to PvD GET call and finally
 // JSON response parsing. Also provides detailed error information should one
 // occur.
-class ProvisioningDomainFetcher {
+class ProvisioningDomainFetcher : public ProvisioningDomainClient::Delegate {
  public:
   using FetchCompleteCallback =
       base::OnceCallback<void(ProvisioningDomainFetchResult result)>;
@@ -87,7 +87,10 @@ class ProvisioningDomainFetcher {
   ProvisioningDomainFetcher(const ProvisioningDomainFetcher&) = delete;
   ProvisioningDomainFetcher& operator=(const ProvisioningDomainFetcher&) =
       delete;
-  ~ProvisioningDomainFetcher();
+  ~ProvisioningDomainFetcher() override;
+
+  // ProvisioningDomainClient::Delegate:
+  net::HttpRequestHeaders GetExtraHeaders() const override;
 
   // Initiates the fetch workflow for `policy_config_`.
   // If a fetch is already in-flight, queues `callback` to receive the result
@@ -105,8 +108,7 @@ class ProvisioningDomainFetcher {
   }
 
  private:
-  void OnAccessTokenFetched(net::HttpRequestHeaders fetch_request_headers,
-                            AccessTokenResult access_token_result);
+  void OnAccessTokenFetched(AccessTokenResult access_token_result);
   void OnHttpFetchComplete(ProvisioningDomainClientResult client_result);
   void CompleteFetch(const ProvisioningDomainFetchResult& result);
 

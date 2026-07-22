@@ -46,14 +46,16 @@ ProvisioningDomainFetcher::ProvisioningDomainFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : policy_config_(policy_config),
       auth_service_(auth_service),
-      url_loader_factory_(std::move(url_loader_factory)),
-      client_(std::make_unique<ProvisioningDomainClient>(url_loader_factory_)) {
+      url_loader_factory_(std::move(url_loader_factory)) {
   CHECK(auth_service_);
   CHECK(url_loader_factory_);
-  CHECK(client_);
 }
 
 ProvisioningDomainFetcher::~ProvisioningDomainFetcher() = default;
+
+net::HttpRequestHeaders ProvisioningDomainFetcher::GetExtraHeaders() const {
+  return auth_service_->ResolveExtraHeaders(policy_config_.extra_headers);
+}
 
 void ProvisioningDomainFetcher::Start(FetchCompleteCallback callback) {
   pending_callbacks_.push_back(std::move(callback));
@@ -73,8 +75,6 @@ void ProvisioningDomainFetcher::Start(FetchCompleteCallback callback) {
     return;
   }
 
-  net::HttpRequestHeaders fetch_request_headers =
-      auth_service_->ResolveExtraHeaders(policy_config_.extra_headers);
   // Unsupported `AuthType`s are not configurable by the policy, so we don't
   // need to handle it here.
   if (policy_config_.auth_config.has_value() &&
@@ -84,25 +84,28 @@ void ProvisioningDomainFetcher::Start(FetchCompleteCallback callback) {
     auth_service_->FetchAccessToken(
         policy_config_.auth_config->scope,
         base::BindOnce(&ProvisioningDomainFetcher::OnAccessTokenFetched,
-                       weak_factory_.GetWeakPtr(),
-                       std::move(fetch_request_headers)));
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
   // No OAuth authentication required; proceed directly to HTTP fetch.
-  client_->Fetch(url, std::move(fetch_request_headers),
-                 base::BindOnce(&ProvisioningDomainFetcher::OnHttpFetchComplete,
-                                weak_factory_.GetWeakPtr()));
+  client_ = std::make_unique<ProvisioningDomainClient>(url, this,
+                                                       url_loader_factory_);
+  client_->Fetch(
+      /*access_token=*/std::nullopt,
+      base::BindOnce(&ProvisioningDomainFetcher::OnHttpFetchComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ProvisioningDomainFetcher::Cancel() {
   weak_factory_.InvalidateWeakPtrs();
   pending_callbacks_.clear();
-  client_->Cancel();
+  if (client_) {
+    client_->Cancel();
+  }
 }
 
 void ProvisioningDomainFetcher::OnAccessTokenFetched(
-    net::HttpRequestHeaders fetch_request_headers,
     AccessTokenResult access_token_result) {
   if (!access_token_result.has_value()) {
     ProvisioningDomainFetchError error(
@@ -112,15 +115,11 @@ void ProvisioningDomainFetcher::OnAccessTokenFetched(
     return;
   }
 
-  if (!access_token_result->empty()) {
-    fetch_request_headers.SetHeader(
-        net::HttpRequestHeaders::kAuthorization,
-        base::StrCat({"Bearer ", *access_token_result}));
-  }
-
   GURL base_url(base::StrCat({"https://", policy_config_.pvd_id}));
   GURL url = base_url.Resolve(kWellKnownPvdPath);
-  client_->Fetch(url, std::move(fetch_request_headers),
+  client_ = std::make_unique<ProvisioningDomainClient>(url, this,
+                                                       url_loader_factory_);
+  client_->Fetch(*access_token_result,
                  base::BindOnce(&ProvisioningDomainFetcher::OnHttpFetchComplete,
                                 weak_factory_.GetWeakPtr()));
 }

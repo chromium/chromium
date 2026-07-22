@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -49,22 +50,36 @@ using ProvisioningDomainClientResult =
 // Provisioning Domain (PvD) JSON configurations over HTTPS.
 class ProvisioningDomainClient {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Returns any resolved extra HTTP request headers that should be attached
+    // when fetching the Provisioning Domain JSON configuration.
+    virtual net::HttpRequestHeaders GetExtraHeaders() const = 0;
+  };
+
   using FetchCallback =
       base::OnceCallback<void(ProvisioningDomainClientResult result)>;
 
-  explicit ProvisioningDomainClient(
+  // Constructs a ProvisioningDomainClient.
+  // - `url`: The target Provisioning Domain endpoint URL to fetch.
+  // - `delegate`: Optional delegate to provide request customization such as
+  //   extra headers.
+  // - `url_loader_factory`: Factory used to instantiate network loader.
+  ProvisioningDomainClient(
+      const GURL& url,
+      Delegate* delegate,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ProvisioningDomainClient(const ProvisioningDomainClient&) = delete;
   ProvisioningDomainClient& operator=(const ProvisioningDomainClient&) = delete;
   ~ProvisioningDomainClient();
 
-  // Initiates an HTTP GET request to `url` with `headers`.
-  // If a request for the same `url` is already in-flight, queues `callback`
-  // to receive the result when the current in-flight fetch completes.
-  // Returns an error if a fetch for a different URL is initiated while a fetch
-  // is in-flight.
-  void Fetch(const GURL& url,
-             net::HttpRequestHeaders headers,
+  // Initiates an HTTP GET request to `url_` with headers from `delegate_` and
+  // optional `access_token`.
+  // If a fetch is already in-flight, queues `callback` to receive the result
+  // when complete.
+  void Fetch(const std::optional<std::string>& access_token,
              FetchCallback callback);
 
   // Cancels any in-flight HTTP request and clears pending callbacks.
@@ -78,9 +93,10 @@ class ProvisioningDomainClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const GURL url_;
+  const raw_ptr<Delegate> delegate_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
-  GURL in_flight_url_;
   std::vector<FetchCallback> pending_callbacks_;
 
   base::WeakPtrFactory<ProvisioningDomainClient> weak_factory_{this};
