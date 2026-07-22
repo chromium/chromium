@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -15,6 +17,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.view.WindowManager;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +47,7 @@ public class ActorTaskHelperTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private OffscreenRenderingManager mOffscreenRenderingManager;
 
     private Activity mActivity;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -63,6 +67,7 @@ public class ActorTaskHelperTest {
         when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
         when(mActorTask.getTabs()).thenReturn(Collections.singleton(1));
         ActorKeyedServiceFactory.setForTesting(mActorService);
+        OffscreenRenderingManager.setInstanceForTesting(mOffscreenRenderingManager);
 
         mActorTaskHelper =
                 new ActorTaskHelper(
@@ -70,6 +75,11 @@ public class ActorTaskHelperTest {
                         mProfileSupplier,
                         mSelectorSupplier,
                         mActivityLifecycleDispatcher);
+    }
+
+    @After
+    public void tearDown() {
+        OffscreenRenderingManager.setInstanceForTesting(null);
     }
 
     @Test
@@ -218,5 +228,95 @@ public class ActorTaskHelperTest {
 
         verify(mActorService).stopTask(101, StoppedReason.SHUTDOWN);
         verify(mActorService, never()).stopTask(102, StoppedReason.SHUTDOWN);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testOnStop_Tablet_StartsOffscreenRendering() {
+        when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
+
+        mActivity.findViewById(android.R.id.content).layout(0, 0, 800, 1200);
+
+        mActorTaskHelper.onStopWithNative();
+
+        verify(mOffscreenRenderingManager).startOffscreenRendering(mTab, 800, 1200);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testOnStop_Tablet_NoActingTab_NoOffscreenRendering() {
+        when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.emptySet());
+
+        mActorTaskHelper.onStopWithNative();
+
+        verify(mOffscreenRenderingManager, never())
+                .startOffscreenRendering(any(), anyInt(), anyInt());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testOnStart_StopsOffscreenRendering() {
+        when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
+        mActivity.findViewById(android.R.id.content).layout(0, 0, 800, 1200);
+
+        mActorTaskHelper.onStopWithNative();
+        verify(mOffscreenRenderingManager).startOffscreenRendering(mTab, 800, 1200);
+
+        mActorTaskHelper.onStartWithNative();
+
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testOnTaskStateChanged_CompletedState_StopsOffscreenRendering() {
+        when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
+        mActivity.findViewById(android.R.id.content).layout(0, 0, 800, 1200);
+
+        mActorTaskHelper.onStopWithNative();
+        verify(mOffscreenRenderingManager).startOffscreenRendering(mTab, 800, 1200);
+
+        mActorTaskHelper.onTaskStateChanged(1, ActorTaskState.FINISHED);
+
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testOnTaskStateChanged_NonCompletedState_DoesNotStopOffscreenRendering() {
+        when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
+        mActivity.findViewById(android.R.id.content).layout(0, 0, 800, 1200);
+
+        mActorTaskHelper.onStopWithNative();
+        verify(mOffscreenRenderingManager).startOffscreenRendering(mTab, 800, 1200);
+
+        mActorTaskHelper.onTaskStateChanged(1, ActorTaskState.ACTING);
+
+        verify(mOffscreenRenderingManager, never()).stopOffscreenRendering(mTab);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    public void testDestroy_StopsOffscreenRendering() {
+        when(mActorService.getCurrentActiveTask()).thenReturn(mActorTask);
+        when(mActorTask.getLastActedTabs()).thenReturn(Collections.singleton(1));
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
+        mActivity.findViewById(android.R.id.content).layout(0, 0, 800, 1200);
+
+        mActorTaskHelper.onStopWithNative();
+        verify(mOffscreenRenderingManager).startOffscreenRendering(mTab, 800, 1200);
+
+        mActorTaskHelper.destroy();
+
+        verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
     }
 }
