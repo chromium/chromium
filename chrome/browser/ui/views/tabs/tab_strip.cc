@@ -1242,6 +1242,10 @@ void TabStrip::SetTabStripObserver(TabStripObserver* observer) {
   observer_ = observer;
 }
 
+void TabStrip::SetIsGlassFrame(bool is_glass) {
+  is_glass_ = is_glass;
+}
+
 bool TabStrip::IsRectInWindowCaption(const gfx::Rect& rect) {
   if (!tab_container_) {
     return true;
@@ -2058,6 +2062,10 @@ bool TabStrip::CanPaintThrobberToLayer() const {
   const views::Widget* widget = GetWidget();
   return widget && !dragging && !IsAnimatingInTabStrip() &&
          !widget->IsFullscreen();
+}
+
+bool TabStrip::IsGlassFrame() const {
+  return is_glass_;
 }
 
 SkColor TabStrip::GetTabSeparatorColor() const {

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -87,6 +88,9 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
 
   BrowserView* GetBrowserView() const { return browser_view_; }
 
+  bool IsGlassFrame() const { return is_glass_; }
+  void OnGlassFrameEligibilityChanged(bool is_eligible);
+
   TabDragHandler& GetDragHandler() { return drag_handler_.get(); }
   const TabDragHandler& GetDragHandler() const { return drag_handler_.get(); }
 
@@ -140,6 +144,9 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   raw_ptr<BrowserView> browser_view_;
   const raw_ref<TabDragHandler> drag_handler_;
   raw_ptr<TabHoverCardController> hover_card_controller_;
+
+  bool is_glass_ = false;
+  base::CallbackListSubscription glass_frame_service_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_STRIP_COLLECTION_CONTROLLER_H_

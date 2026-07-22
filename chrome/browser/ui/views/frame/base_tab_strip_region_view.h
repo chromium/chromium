@@ -79,6 +79,7 @@ class BaseTabStripRegionView : public TabStripRegionView {
   void OnDragExited() override;
   void SetTabStripObserver(TabStripObserver* observer) override;
   views::View* GetTabStripView() override;
+  void OnGlassFrameEligibilityChanged(bool is_eligible) override;
   bool TraverseUsingUpDownKeys() override;
   std::unique_ptr<ExpandOnHoverLock> GetExpandOnHoverLock(
       ExpandOnHoverLockType lock_type) override;

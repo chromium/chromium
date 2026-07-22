@@ -77,6 +77,8 @@ class TabView : public views::View,
   bool IsHoverAnimationActive() const;
 
   std::optional<SkColor> GetBackgroundColor();
+  SkColor GetCurrentTabBackgroundColor(
+      TabStyle::TabSelectionState selection_state) const;
   SkPath GetPath() const;
 
   const TabCollectionNode* collection_node() const { return collection_node_; }

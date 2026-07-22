@@ -100,6 +100,8 @@ class TabStrip : public views::View,
   // Sets the observer to be notified of changes within this TabStrip.
   void SetTabStripObserver(TabStripObserver* observer);
 
+  void SetIsGlassFrame(bool is_glass);
+
   // Returns true if the specified rect (in TabStrip coordinates) intersects
   // the window caption area of the browser window.
   bool IsRectInWindowCaption(const gfx::Rect& rect);
@@ -296,6 +298,7 @@ class TabStrip : public views::View,
   void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override;
   int GetStrokeThickness() const override;
   bool CanPaintThrobberToLayer() const override;
+  bool IsGlassFrame() const override;
   SkColor GetTabSeparatorColor() const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
   float GetHoverOpacityForTab(float range_parameter) const override;
@@ -460,6 +463,8 @@ class TabStrip : public views::View,
 
   // If false simulates a non-editable tab strip for testing.
   bool tab_strip_editable_for_testing_ = true;
+
+  bool is_glass_ = false;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

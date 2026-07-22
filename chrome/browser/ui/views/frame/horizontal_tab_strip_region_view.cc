@@ -271,6 +271,7 @@ HorizontalTabStripRegionViewOld::HorizontalTabStripRegionViewOld(
   }
   UpdateTabStripMargin();
 }
+
 HorizontalTabStripRegionViewOld::~HorizontalTabStripRegionViewOld() {
   // These objects have pointers to TabStripController, which is also destoroyed
   // by this class. Remove child views that hold raw_ptr to TabStripController.
@@ -734,6 +735,12 @@ void HorizontalTabStripRegionViewOld::AdjustViewBoundsRect(View* view,
   const gfx::Rect new_bounds =
       gfx::Rect(gfx::Point(x, GetInsets().top()), view_size);
   view->SetBoundsRect(new_bounds);
+}
+
+void HorizontalTabStripRegionViewOld::OnGlassFrameEligibilityChanged(
+    bool is_eligible) {
+  tab_strip_->SetIsGlassFrame(is_eligible);
+  SchedulePaint();
 }
 
 BEGIN_METADATA(HorizontalTabStripRegionViewOld)

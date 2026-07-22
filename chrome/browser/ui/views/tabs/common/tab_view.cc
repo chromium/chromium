@@ -280,11 +280,22 @@ bool TabView::IsHoverAnimationActive() const {
 std::optional<SkColor> TabView::GetBackgroundColor() {
   if (active_ || IsHoverAnimationActive() ||
       should_fill_background_tab_color_) {
-    return tab_style_->GetCurrentTabBackgroundColor(
-        GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
-        IsFrameActive(), GetColorProvider());
+    return GetCurrentTabBackgroundColor(GetSelectionState());
   }
   return std::nullopt;
+}
+
+SkColor TabView::GetCurrentTabBackgroundColor(
+    TabStyle::TabSelectionState selection_state) const {
+  const bool frame_active = IsFrameActive();
+  const ui::ColorProvider* color_provider = GetColorProvider();
+  const auto* controller =
+      collection_node_ ? collection_node_->GetController() : nullptr;
+  const bool frame_glass = controller && controller->IsGlassFrame();
+
+  return tab_style_->GetCurrentTabBackgroundColor(
+      selection_state, IsHoverAnimationActive(), GetHoverAnimationValue(),
+      frame_active, frame_glass, color_provider);
 }
 
 SkPath TabView::GetPath() const {
@@ -582,9 +593,7 @@ void TabView::PaintTabBackgroundFill(
                                     hovered)) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
-        GetSelectionState(), IsHoverAnimationActive(), GetHoverAnimationValue(),
-        IsFrameActive(), GetColorProvider()));
+    flags.setColor(GetCurrentTabBackgroundColor(selection_state));
     canvas->DrawRect(GetContentsBounds(), flags);
   }
 
@@ -888,7 +897,7 @@ bool TabView::IsApparentlyActive() const {
   if (active_) {
     return true;
   }
-  if (!features::IsGlassFrameEnabled() && hovered_) {
+  if (hovered_) {
     return GetHoverOpacity() > 0.5f;
   }
   return selected_;
@@ -1141,10 +1150,8 @@ void TabView::UpdateThemeColors() {
 
   active_tab_fill_id_ = active_tab_fill_id;
   inactive_tab_fill_id_ = inactive_tab_fill_id;
-  if (!features::IsGlassFrameEnabled()) {
-    should_fill_background_tab_color_ = theme_provider->GetDisplayProperty(
-        ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
-  }
+  should_fill_background_tab_color_ = theme_provider->GetDisplayProperty(
+      ThemeProperties::SHOULD_FILL_BACKGROUND_TAB_COLOR);
 }
 
 void TabView::UpdateColors() {

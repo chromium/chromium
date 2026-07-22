@@ -79,6 +79,10 @@ bool FakeTabSlotController::CanPaintThrobberToLayer() const {
   return paint_throbber_to_layer_;
 }
 
+bool FakeTabSlotController::IsGlassFrame() const {
+  return is_glass_;
+}
+
 SkColor FakeTabSlotController::GetTabSeparatorColor() const {
   return SK_ColorBLACK;
 }

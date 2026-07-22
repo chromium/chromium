@@ -45,10 +45,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-// The alpha to use when painting a background for a non active tab
-// in the glass frame. Note that we do not paint a background
-// for inactive tabs unless they are hovered.
-static constexpr float kGlassTabBackgroundAlpha = 0.5f;
 
 class TabStyleViewsImpl : public TabStyleViews {
  public:
@@ -839,9 +835,7 @@ bool TabStyleViewsImpl::ShouldPaintTabBackgroundColor(
     return false;
   }
 
-  // In glass frame we will not show a background for inactive tabs.
-  // But we will have a hover effect.
-  if (features::IsGlassFrameEnabled()) {
+  if (tab()->controller()->IsGlassFrame()) {
     return false;
   }
 
@@ -866,11 +860,10 @@ SkColor TabStyleViewsImpl::GetCurrentTabBackgroundColor(
     bool hovered) const {
   const bool frame_active =
       tab()->GetWidget() ? tab()->GetWidget()->ShouldPaintAsActive() : true;
-  const ui::ColorProvider* color_provider = tab()->GetColorProvider();
-
+  const bool frame_glass = tab()->controller()->IsGlassFrame();
   return tab_style()->GetCurrentTabBackgroundColor(
       selection_state, hovered, GetHoverAnimationValue(), frame_active,
-      color_provider);
+      frame_glass, tab()->GetColorProvider());
 }
 
 TabStyle::TabSelectionState TabStyleViewsImpl::GetSelectionState() const {
@@ -921,14 +914,7 @@ void TabStyleViewsImpl::PaintTabBackgroundFill(
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
 
-    SkColor color = GetCurrentTabBackgroundColor(selection_state, hovered);
-    if (features::IsGlassFrameEnabled() &&
-        selection_state == TabStyle::TabSelectionState::kSelected) {
-      color =
-          SkColorSetA(color, static_cast<int>(255 * kGlassTabBackgroundAlpha));
-    }
-
-    flags.setColor(color);
+    flags.setColor(GetCurrentTabBackgroundColor(selection_state, false));
     canvas->DrawRect(gfx::ScaleToEnclosingRect(tab_->GetLocalBounds(), scale),
                      flags);
   }
@@ -957,15 +943,6 @@ void TabStyleViewsImpl::PaintBackgroundHover(gfx::Canvas* canvas,
 
   SkColor hover_color =
       GetCurrentTabBackgroundColor(GetSelectionState(), /*hovered=*/true);
-
-  if (features::IsGlassFrameEnabled() &&
-      GetSelectionState() != TabStyle::TabSelectionState::kActive) {
-    hover_color = SkColorSetA(
-        hover_color, static_cast<uint8_t>(SkColorGetA(hover_color) *
-                                          gfx::Tween::FloatValueBetween(
-                                              GetHoverAnimationValue(), 0.0f,
-                                              kGlassTabBackgroundAlpha)));
-  }
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);

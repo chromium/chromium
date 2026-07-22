@@ -77,6 +77,9 @@ class TabStripRegionView : public views::AccessiblePaneView,
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id) = 0;
 
+  // --- Glass Frame --
+  virtual void OnGlassFrameEligibilityChanged(bool is_eligible) = 0;
+
   // -- Drag and drop --
   virtual TabDragContext* GetDragContext() = 0;
   virtual TabDragTarget* GetTabDragTarget(

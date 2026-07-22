@@ -31,6 +31,10 @@ constexpr int kTabHorizontalPadding = 8;
 // The standard tab width is 232 DIP, excluding separators and overlap.
 constexpr int kTabWidth = 232;
 
+// Used in glass frame in cases where we want the tab background colors to
+// have some transparency, to show the frame underneath.
+constexpr float kAlphaForUnhoveredTransparentTabBackground = 0.5f;
+
 }  // namespace
 
 TabStyle::~TabStyle() = default;
@@ -250,20 +254,59 @@ SkColor TabStyle::GetTabBackgroundColor(
   }
 }
 
+SkColor TabStyle::GetTabBackgroundColor(
+    const TabSelectionState state,
+    const bool hovered,
+    const bool frame_active,
+    const bool frame_glass,
+    const ui::ColorProvider* color_provider) const {
+  if (!color_provider) {
+    return gfx::kPlaceholderColor;
+  }
+
+  SkColor color =
+      GetTabBackgroundColor(state, hovered, frame_active, color_provider);
+  if (!frame_glass) {
+    return color;
+  }
+
+  switch (state) {
+    case TabStyle::TabSelectionState::kActive:
+      return color;
+    case TabStyle::TabSelectionState::kSelected: {
+      const float alpha =
+          hovered ? 1.0f : kAlphaForUnhoveredTransparentTabBackground;
+      return SkColorSetA(color, SK_AlphaOPAQUE * alpha);
+    }
+    case TabStyle::TabSelectionState::kInactive: {
+      // When the frame is transparent, using the unhovered color
+      // as the background can produce jarring effects. So we just use the
+      // hovered color.
+      SkColor inactive_color = GetTabBackgroundColor(
+          state, /*hovered=*/true, frame_active, color_provider);
+      const float alpha = hovered ? 1.0f : 0;
+      return SkColorSetA(inactive_color, SK_AlphaOPAQUE * alpha);
+    }
+    default:
+      NOTREACHED();
+  }
+}
+
 SkColor TabStyle::GetCurrentTabBackgroundColor(
     const TabSelectionState state,
     const bool hovered,
     float hover_animation_value,
     const bool frame_active,
+    const bool frame_glass,
     const ui::ColorProvider* color_provider) const {
-  const SkColor color =
-      GetTabBackgroundColor(state, hovered, frame_active, color_provider);
+  const SkColor color = GetTabBackgroundColor(state, hovered, frame_active,
+                                              frame_glass, color_provider);
   if (!hovered) {
     return color;
   }
 
   const SkColor unhovered_color = GetTabBackgroundColor(
-      state, /*hovered=*/false, frame_active, color_provider);
+      state, /*hovered=*/false, frame_active, frame_glass, color_provider);
   return color_utils::AlphaBlend(color, unhovered_color, hover_animation_value);
 }
 

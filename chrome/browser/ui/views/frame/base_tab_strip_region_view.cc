@@ -599,5 +599,9 @@ gfx::Rect BaseTabStripRegionView::GetLinkDropBoundsFromPosition(
   return gfx::Rect(position, gfx::Size(DropArrow::kSize, DropArrow::kSize));
 }
 
+void BaseTabStripRegionView::OnGlassFrameEligibilityChanged(bool is_eligible) {
+  SchedulePaint();
+}
+
 BEGIN_METADATA(BaseTabStripRegionView)
 END_METADATA

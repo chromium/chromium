@@ -12,8 +12,14 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/glass_frame_service.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -21,11 +27,35 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
+#include "ui/views/view_utils.h"
 
 class GlassFrameServiceInteractiveTest : public InProcessBrowserTest {
  public:
   GlassFrameServiceInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kGlassFrame);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlassFrame, tabs::kVerticalTabs}, {});
+  }
+
+  bool GlassFrameEligibilityMatchesTabStrip(BrowserWindowInterface* browser) {
+    bool is_eligible =
+        GlassFrameService::GetInstance()->IsBrowserWindowEligible(browser);
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    TabStripRegionView* tab_strip_region_view = browser_view->tab_strip_view();
+
+    if (auto* base_region =
+            views::AsViewClass<BaseTabStripRegionView>(tab_strip_region_view)) {
+      if (TabStripCollectionController* controller =
+              base_region->GetTabStripCollectionController()) {
+        return controller->IsGlassFrame() == is_eligible;
+      }
+    }
+
+    if (TabStrip* tab_strip = views::AsViewClass<TabStrip>(
+            tab_strip_region_view->GetTabStripView())) {
+      return tab_strip->IsGlassFrame() == is_eligible;
+    }
+
+    return false;
   }
 
  private:
@@ -63,6 +93,10 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
   EXPECT_FALSE(
       GlassFrameService::GetInstance()->IsBrowserWindowEligible(browser2));
 
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser2));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser3));
+
   // Activate window 1.
   browser1->GetWindow()->Activate();
   ASSERT_TRUE(base::test::RunUntil([&] {
@@ -76,6 +110,10 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
       GlassFrameService::GetInstance()->IsBrowserWindowEligible(browser2));
   EXPECT_FALSE(
       GlassFrameService::GetInstance()->IsBrowserWindowEligible(browser3));
+
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser2));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser3));
 }
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
@@ -106,6 +144,8 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
       GlassFrameService::GetInstance()->IsBrowserWindowEligible(browser3));
   EXPECT_FALSE(
       GlassFrameService::GetInstance()->IsBrowserWindowEligible(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser3));
 }
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, CallbackNotified) {
@@ -149,12 +189,15 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, CallbackNotified) {
   browser1->GetWindow()->Activate();
   ASSERT_TRUE(base::test::RunUntil([&] { return browser1_eligible; }));
   EXPECT_FALSE(browser2_eligible);
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser2));
 
   // Close window 1 (the currently active/eligible window).
   CloseBrowserSynchronously(browser1);
 
   // The remaining window (browser2) should become eligible.
   ASSERT_TRUE(base::test::RunUntil([&] { return browser2_eligible; }));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser2));
 }
 
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, LocalStatePref) {
@@ -175,10 +218,74 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, LocalStatePref) {
   local_state->SetBoolean(prefs::kGlassFrameEnabled, false);
   EXPECT_FALSE(local_state->GetBoolean(prefs::kGlassFrameEnabled));
   EXPECT_FALSE(glass_frame_service->IsBrowserWindowEligible(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
 
   local_state->SetBoolean(prefs::kGlassFrameEnabled, true);
   EXPECT_TRUE(local_state->GetBoolean(prefs::kGlassFrameEnabled));
   EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser1));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser1));
+}
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
+                       SwitchTabOrientationPreservesGlassState) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  BrowserWindowInterface* const browser_window = browser();
+  auto* const controller =
+      tabs::VerticalTabStripStateController::From(browser_window);
+  ASSERT_TRUE(controller);
+
+  // Initially in horizontal tabs mode and eligible for glass frame.
+  GlassFrameService* glass_frame_service = GlassFrameService::GetInstance();
+  EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser_window));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser_window));
+
+  // Switch to vertical tabs mode.
+  controller->SetVerticalTabsEnabled(true);
+  EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser_window));
+  EXPECT_TRUE(controller->ShouldDisplayVerticalTabs());
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser_window));
+
+  // Switch back to horizontal tabs mode.
+  controller->SetVerticalTabsEnabled(false);
+  EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser_window));
+  EXPECT_FALSE(controller->ShouldDisplayVerticalTabs());
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser_window));
+}
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
+                       SwitchTabOrientationPreservesDisabledGlassState) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  PrefService* const local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+  local_state->SetBoolean(prefs::kGlassFrameEnabled, false);
+
+  BrowserWindowInterface* const browser_window = browser();
+  auto* const controller =
+      tabs::VerticalTabStripStateController::From(browser_window);
+  ASSERT_TRUE(controller);
+
+  GlassFrameService* glass_frame_service = GlassFrameService::GetInstance();
+  // Initially in horizontal tabs mode and not eligible for glass frame.
+  EXPECT_FALSE(glass_frame_service->IsBrowserWindowEligible(browser_window));
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser_window));
+
+  // Switch to vertical tabs mode while glass frame is disabled.
+  controller->SetVerticalTabsEnabled(true);
+  EXPECT_FALSE(glass_frame_service->IsBrowserWindowEligible(browser_window));
+  EXPECT_TRUE(controller->ShouldDisplayVerticalTabs());
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser_window));
+
+  // Switch back to horizontal tabs mode while glass frame is disabled.
+  controller->SetVerticalTabsEnabled(false);
+  EXPECT_FALSE(glass_frame_service->IsBrowserWindowEligible(browser_window));
+  EXPECT_FALSE(controller->ShouldDisplayVerticalTabs());
+  EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser_window));
 }
 
 #if !BUILDFLAG(IS_MAC)

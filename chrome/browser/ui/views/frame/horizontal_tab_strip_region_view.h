@@ -101,6 +101,7 @@ class HorizontalTabStripRegionViewOld : public TabStripRegionView {
   views::View* GetTabStripView() override;
   std::unique_ptr<ExpandOnHoverLock> GetExpandOnHoverLock(
       ExpandOnHoverLockType lock_type) override;
+  void OnGlassFrameEligibilityChanged(bool is_eligible) override;
 
   bool HasLeadingButtons() const;
 

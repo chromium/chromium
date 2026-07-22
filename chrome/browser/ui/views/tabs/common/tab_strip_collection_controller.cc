@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
@@ -57,10 +58,23 @@ TabStripCollectionController::TabStripCollectionController(
       browser_view_(browser_view),
       drag_handler_(drag_handler),
       hover_card_controller_(hover_card_controller) {
+  CHECK(browser_view_);
+
   if (menu_model_factory_override) {
     menu_model_factory_ = std::move(menu_model_factory_override);
   } else {
     menu_model_factory_ = std::make_unique<TabMenuModelFactory>();
+  }
+
+  if (GlassFrameService* service = GlassFrameService::GetInstance()) {
+    glass_frame_service_subscription_ =
+        service->RegisterGlassFrameEligibilityChangedCallback(
+            browser_view_->browser(),
+            base::BindRepeating(
+                &TabStripCollectionController::OnGlassFrameEligibilityChanged,
+                base::Unretained(this)));
+    OnGlassFrameEligibilityChanged(
+        service->IsBrowserWindowEligible(browser_view_->browser()));
   }
 }
 
@@ -671,4 +685,10 @@ void TabStripCollectionController::AnnounceTabRemovedFromGroup(
           : l10n_util::GetStringFUTF16(
                 IDS_TAB_AX_ANNOUNCE_TAB_REMOVED_FROM_NAMED_GROUP, group_title,
                 contents_string));
+}
+
+void TabStripCollectionController::OnGlassFrameEligibilityChanged(
+    bool is_eligible) {
+  is_glass_ = is_eligible;
+  browser_view_->tab_strip_view()->OnGlassFrameEligibilityChanged(is_eligible);
 }

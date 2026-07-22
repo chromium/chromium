@@ -177,6 +177,12 @@ class TabStyle {
                                 const bool frame_active,
                                 const ui::ColorProvider* color_provider) const;
 
+  SkColor GetTabBackgroundColor(const TabSelectionState state,
+                                const bool hovered,
+                                const bool frame_active,
+                                const bool frame_glass,
+                                const ui::ColorProvider* color_provider) const;
+
   // Returns the background color of a tab with selection state `state` and
   // hover state `hovered`. If `hovered`, this blends the hovered and unhovered
   // background colors according to the `hover_animation_value`.
@@ -186,6 +192,14 @@ class TabStyle {
       const bool hovered,
       float hover_animation_value,
       const bool frame_active,
+      const ui::ColorProvider* color_provider) const;
+
+  SkColor GetCurrentTabBackgroundColor(
+      const TabSelectionState state,
+      const bool hovered,
+      float hover_animation_value,
+      const bool frame_active,
+      const bool frame_glass,
       const ui::ColorProvider* color_provider) const;
 
   // Opacity of the active tab background painted over inactive selected tabs.
