@@ -39,6 +39,9 @@ class GlicExperimentalOptInDialogView : public views::DialogDelegate,
 
   views::WebView* GetWebViewForTesting();
 
+  // views::WidgetDelegate:
+  views::View* GetInitiallyFocusedView() override;
+
   // views::ViewObserver:
   void OnViewAddedToWidget(views::View* observed_view) override;
   void OnViewIsDeleting(views::View* observed_view) override;

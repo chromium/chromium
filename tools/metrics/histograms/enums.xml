@@ -7821,6 +7821,7 @@ from previous Chrome versions.
       label="OmniboxUseExistingAutocompleteClient:enabled"/>
   <int value="-2104746066" label="EnableAccountPreviewEntityPreviews:enabled"/>
   <int value="-2104240590" label="TimeOfDayDlc:disabled"/>
+  <int value="-2104082369" label="GlicOptInDialogA11yFix:disabled"/>
   <int value="-2103692632" label="EnhancedNetworkVoices:disabled"/>
   <int value="-2102286055" label="WebViewVulkanIntermediateBuffer:disabled"/>
   <int value="-2101760176" label="AccessibilityAndroidMath:enabled"/>
@@ -15813,6 +15814,7 @@ from previous Chrome versions.
   <int value="414403270" label="PrivacyGuide:disabled"/>
   <int value="414780410" label="SyncTrustedVaultPassphraseRecovery:enabled"/>
   <int value="414937629" label="MediaNotificationsCounter:enabled"/>
+  <int value="415032209" label="GlicOptInDialogA11yFix:enabled"/>
   <int value="415154056" label="enable-physical-keyboard-autocorrect"/>
   <int value="415395210" label="TrimOnMemoryPressure:enabled"/>
   <int value="416116189" label="DeprecateLowUsageCodecs:enabled"/>

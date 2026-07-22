@@ -5654,6 +5654,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-opt-in-dialog-a11y-fix",
+    "owners": [
+      "rosiey@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-opt-in-dialog-link-a11y-fix",
     "owners": [
       "rosiey@google.com",

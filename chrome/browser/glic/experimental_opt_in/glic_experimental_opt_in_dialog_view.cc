@@ -8,15 +8,18 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_ui.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -74,6 +77,12 @@ GlicExperimentalOptInDialogView::GlicExperimentalOptInDialogView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetModalType(ui::mojom::ModalType::kChild);
   set_esc_should_cancel_dialog_override(true);
+
+  if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)) {
+    SetAccessibleWindowRole(ax::mojom::Role::kDialog);
+    SetAccessibleTitle(
+        l10n_util::GetStringUTF16(IDS_GLIC_EXPERIMENTAL_OPT_IN_TITLE));
+  }
 
   auto web_view = std::make_unique<GlicWebView>(profile, tab_interface);
   web_view_ = web_view.get();
@@ -140,6 +149,13 @@ void GlicExperimentalOptInDialogView::OnViewIsDeleting(
     view_observation_.Reset();
     web_view_ = nullptr;
   }
+}
+
+views::View* GlicExperimentalOptInDialogView::GetInitiallyFocusedView() {
+  if (base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)) {
+    return GetContentsView();
+  }
+  return views::DialogDelegate::GetInitiallyFocusedView();
 }
 
 }  // namespace glic

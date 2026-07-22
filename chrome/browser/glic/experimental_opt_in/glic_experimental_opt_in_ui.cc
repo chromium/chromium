@@ -132,6 +132,9 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
   source->AddBoolean(
       "glicOptInDialogLinkA11yFixEnabled",
       base::FeatureList::IsEnabled(features::kGlicOptInDialogLinkA11yFix));
+  source->AddBoolean(
+      "glicOptInDialogA11yFixEnabled",
+      base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix));
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"offlineNoticeHeader", IDS_GLIC_OFFLINE_NOTICE_HEADER},
@@ -149,6 +152,11 @@ GlicExperimentalOptInUI::GlicExperimentalOptInUI(content::WebUI* web_ui)
        IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_CONSIDER_REVIEW_RISKS_LINK_LABEL_SPARK},
   };
   source->AddLocalizedStrings(kStrings);
+  source->AddLocalizedString(
+      "glicWindowTitle",
+      base::FeatureList::IsEnabled(features::kGlicOptInDialogA11yFix)
+          ? IDS_GLIC_EXPERIMENTAL_OPT_IN_TITLE
+          : IDS_GLIC_WINDOW_TITLE);
 }
 
 GlicExperimentalOptInUI::~GlicExperimentalOptInUI() = default;
