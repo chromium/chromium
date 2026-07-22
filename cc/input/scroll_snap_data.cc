@@ -417,10 +417,21 @@ SnapPositionData SnapContainerData::FindSnapPosition(
     return result;
   }
 
-  if (selected_x.has_value() && selected_y.has_value() &&
-      !IsMutualVisible(selected_x.value(), selected_y.value())) {
-    SnapAxis axis_to_follow = SelectAxisToFollowForMutualVisibility(
-        strategy, selected_x.value(), selected_y.value());
+  // If snapping on both axes, ensure we find mutually visible targets. If one
+  // axis failed to find a target during the initial independent pass (e.g.
+  // because the target was out of bounds along the cross axis), re-search
+  // that axis using the found target as a cross-axis constraint.
+  if (should_snap_on_x && should_snap_on_y &&
+      (!selected_x.has_value() || !selected_y.has_value() ||
+       !IsMutualVisible(selected_x.value(), selected_y.value()))) {
+    SnapAxis axis_to_follow = SnapAxis::kX;
+    if (selected_x.has_value() && selected_y.has_value()) {
+      axis_to_follow = SelectAxisToFollowForMutualVisibility(
+          strategy, selected_x.value(), selected_y.value());
+    } else if (selected_y.has_value()) {
+      axis_to_follow = SnapAxis::kY;
+    }
+
     if (axis_to_follow == SnapAxis::kX) {
       selected_y =
           FindClosestValidArea(SearchAxis::kY, strategy, selected_x.value());

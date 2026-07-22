@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<title>CSS Scroll Snap: Snap to different targets on X and Y axes</title>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#snap-scope"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+#parent {
+  width: 200px;
+  height: 200px;
+  overflow: auto;
+  scroll-snap-type: both mandatory;
+  scrollbar-width: none;
+}
+
+#space {
+  width: 600px;
+  height: 600px;
+  background: red;
+  display: grid;
+  grid-template-columns: auto auto;
+  place-content: center;
+  gap: 16px;
+}
+
+#target1 {
+  width: 100px;
+  height: 100px;
+  background: blue;
+  color: white;
+  scroll-snap-align: center none;
+}
+
+#target2 {
+  width: 100px;
+  height: 100px;
+  background: blue;
+  color: white;
+  scroll-snap-align: none center;
+}
+</style>
+<div id="parent">
+  <div id="space">
+    <div id="target1"></div>
+    <div id="target2"></div>
+  </div>
+</div>
+<script>
+test(t => {
+  const parent = document.getElementById("parent");
+  assert_equals(parent.scrollLeft, 258, "scrollLeft should snap to target2 center");
+  assert_equals(parent.scrollTop, 200, "scrollTop should snap to target1 center");
+}, "Snaps to different targets on X and Y axes when targets specify snap-align on one axis only");
+</script>

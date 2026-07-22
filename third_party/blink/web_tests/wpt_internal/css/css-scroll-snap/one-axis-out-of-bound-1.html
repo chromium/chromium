@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<title>CSS Scroll Snap: Snap to area when initial search on one axis is out of bounds</title>
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#snap-scope"/>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.parent {
+  width: 200px;
+  height: 200px;
+  overflow: auto;
+  scroll-snap-type: both mandatory;
+  scrollbar-width: none;
+}
+
+.space-x {
+  width: 600px;
+  height: 400px;
+  background: red;
+  display: grid;
+  place-items: center;
+}
+
+.target-x {
+  width: 100px;
+  height: 100px;
+  background: blue;
+  scroll-snap-align: start center;
+}
+
+.space-y {
+  width: 400px;
+  height: 600px;
+  background: red;
+  display: grid;
+  place-items: center;
+}
+
+.target-y {
+  width: 100px;
+  height: 100px;
+  background: blue;
+  scroll-snap-align: center start;
+}
+</style>
+<div id="parent-x" class="parent">
+  <div class="space-x">
+    <div class="target-x"></div>
+  </div>
+</div>
+<div id="parent-y" class="parent">
+  <div class="space-y">
+    <div class="target-y"></div>
+  </div>
+</div>
+<script>
+test(t => {
+  const parent = document.getElementById("parent-x");
+  assert_equals(parent.scrollLeft, 200, "scrollLeft should snap to target center");
+  assert_equals(parent.scrollTop, 150, "scrollTop should snap to target start");
+}, "Snaps to target area along both axes when target is initially out of bounds on X axis");
+
+test(t => {
+  const parent = document.getElementById("parent-y");
+  assert_equals(parent.scrollLeft, 150, "scrollLeft should snap to target start");
+  assert_equals(parent.scrollTop, 200, "scrollTop should snap to target center");
+}, "Snaps to target area along both axes when target is initially out of bounds on Y axis");
+</script>
