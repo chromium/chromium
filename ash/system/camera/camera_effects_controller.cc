@@ -23,6 +23,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -212,6 +213,19 @@ base::FilePath WriteImageToBackgroundDir(
   return base::FilePath();
 }
 
+// Copies `source` to `destination` without overwriting an existing file at
+// `destination` -- such a file is deleted, if present.
+bool CopyWithoutOverwrite(const base::FilePath& source,
+                          const base::FilePath& destination) {
+  base::File infile(source, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  if (!infile.IsValid() || !base::DeleteFile(destination)) {
+    return false;
+  }
+  base::File outfile(destination,
+                     base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  return outfile.IsValid() && base::CopyFileContents(infile, outfile);
+}
+
 // Copies image file from `background_image_filepath` to
 // `background_run_filepath`.
 bool CopyBackgroundImageFile(const base::FilePath& background_image_filepath,
@@ -219,8 +233,11 @@ bool CopyBackgroundImageFile(const base::FilePath& background_image_filepath,
   const base::FilePath background_run_dir = background_run_filepath.DirName();
   const base::FilePath basename = background_run_filepath.BaseName();
 
+  // The run directory is shared with the camera service, so always create the
+  // destination as a fresh regular file rather than opening an existing path.
   if (base::CreateDirectory(background_run_dir) &&
-      base::CopyFile(background_image_filepath, background_run_filepath)) {
+      CopyWithoutOverwrite(background_image_filepath,
+                           background_run_filepath)) {
     base::File::Info file_info;
     base::GetFileInfo(background_image_filepath, &file_info);
     base::TouchFile(background_image_filepath, base::Time::Now(),

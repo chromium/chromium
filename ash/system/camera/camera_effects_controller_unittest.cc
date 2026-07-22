@@ -31,6 +31,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -634,6 +635,51 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
 
   // Check the background blur is not changed.
   EXPECT_EQ(GetBackgroundBlurPref(), state);
+}
+
+TEST_F(CameraEffectsControllerTest,
+       SetBackgroundImageReplacesExistingDestination) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kVcBackgroundReplace};
+
+  SimulateUserLogin({kTestAccount});
+  camera_effects_controller()->set_camera_background_img_dir_for_testing(
+      camera_background_img_dir_);
+  camera_effects_controller()->set_camera_background_run_dir_for_testing(
+      camera_background_run_dir_);
+
+  // Create the source image in the image dir.
+  const std::string image_contents = "image-contents";
+  ASSERT_TRUE(base::WriteFile(camera_background_img_dir_.Append(filename1_),
+                              image_contents));
+
+  // Create an unrelated file outside the run dir and point a symlink at it
+  // from where the destination image would be written. The copy should
+  // replace the symlink with a regular file rather than writing through it.
+  const std::string unrelated_contents = "unrelated-contents";
+  const base::FilePath unrelated_file =
+      file_tmp_dir_.GetPath().AppendASCII("unrelated_file");
+  ASSERT_TRUE(base::WriteFile(unrelated_file, unrelated_contents));
+  const base::FilePath run_filepath =
+      camera_background_run_dir_.Append(filename1_);
+  ASSERT_TRUE(base::CreateSymbolicLink(unrelated_file, run_filepath));
+
+  // Set background image.
+  base::test::TestFuture<bool> future_copy_succeeded;
+  camera_effects_controller()->SetBackgroundImage(
+      filename1_, future_copy_succeeded.GetCallback());
+  EXPECT_TRUE(future_copy_succeeded.Get());
+
+  // The destination should now be a regular file containing the image.
+  EXPECT_FALSE(base::IsLink(run_filepath));
+  std::string run_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(run_filepath, &run_file_contents));
+  EXPECT_EQ(run_file_contents, image_contents);
+
+  // The unrelated file must be unchanged.
+  std::string unrelated_file_contents;
+  ASSERT_TRUE(base::ReadFileToString(unrelated_file, &unrelated_file_contents));
+  EXPECT_EQ(unrelated_file_contents, unrelated_contents);
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
