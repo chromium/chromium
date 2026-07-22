@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
 }
 
 // TODO(crbug.com/487147580): Re-enable the test
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Composebox_Submit DISABLED_Composebox_Submit
 #else
 #define MAYBE_Composebox_Submit Composebox_Submit
