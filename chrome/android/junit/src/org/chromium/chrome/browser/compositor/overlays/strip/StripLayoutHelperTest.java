@@ -1551,8 +1551,8 @@ public class StripLayoutHelperTest {
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
         assertEquals(
-                "TouchableRect does not match. Strip is full, touch size should match the strip.",
-                new RectF(PADDING_LEFT, 0, STRIP_WIDTH - PADDING_RIGHT, STRIP_HEIGHT),
+                "TouchableRect does not match. Strip is full, touch size should match tab bounds.",
+                new RectF(PADDING_LEFT, 0, 740.f, STRIP_HEIGHT),
                 mStripLayoutHelper.getTouchableRect());
     }
 
@@ -1596,9 +1596,10 @@ public class StripLayoutHelperTest {
                 18.f,
                 mStripLayoutHelper.getNewTabButton().getDrawX(),
                 EPSILON);
+        // ntbX(18) + ntbWidth(32) = 50. TouchableRect excludes the New Tab Button.
         assertEquals(
-                "TouchableRect does not match. Strip is full, touch size should match the strip.",
-                new RectF(PADDING_LEFT, 0, STRIP_WIDTH - PADDING_RIGHT, STRIP_HEIGHT),
+                "TouchableRect does not match. Strip is full, touch size should match tab bounds.",
+                new RectF(50.f, 0, STRIP_WIDTH - PADDING_RIGHT, STRIP_HEIGHT),
                 mStripLayoutHelper.getTouchableRect());
     }
 

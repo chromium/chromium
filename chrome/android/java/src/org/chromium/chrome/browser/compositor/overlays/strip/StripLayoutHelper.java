@@ -2329,7 +2329,7 @@ public class StripLayoutHelper
     private void updateTouchableRect() {
         // Make the entire strip touchable when during dragging / reordering mode.
         boolean isTabDraggingInProgress = isViewDraggingInProgress();
-        if (isTabStripFull() || mReorderDelegate.getInReorderMode() || isTabDraggingInProgress) {
+        if (mReorderDelegate.getInReorderMode() || isTabDraggingInProgress) {
             mTouchableRect.set(
                     getVisibleLeftBound(/* clampToUnpinnedViews= */ false),
                     0,
@@ -2349,15 +2349,20 @@ public class StripLayoutHelper
 
         float leftBound = firstStripView.getDrawX();
         float rightBound = lastStripView.getDrawX() + lastStripView.getWidth();
+        float minLeft = getVisibleLeftBound(/* clampToUnpinnedViews= */ false);
+        float maxRight = mWidth - mRightMargin;
 
         if (LocalizationUtils.isLayoutRtl()) {
             leftBound = lastStripView.getDrawX();
             rightBound = firstStripView.getDrawX() + firstStripView.getWidth();
+            minLeft = mLeftMargin;
+            maxRight = getVisibleRightBound(/* clampToUnpinnedViews= */ false);
         }
 
-        // Clamp the bounding box to the visible area.
-        float left = Math.max(leftBound, getVisibleLeftBound(/* clampToUnpinnedViews= */ false));
-        float right = Math.min(rightBound, getVisibleRightBound(/* clampToUnpinnedViews= */ false));
+        // Clamp the bounding box to the visible area (excluding reserved margins for the NTB and
+        // trailing buttons).
+        float left = Math.max(leftBound, minLeft);
+        float right = Math.min(rightBound, maxRight);
 
         // Ensure left is not greater than right, which can happen if all tabs are off-screen.
         if (left > right) {
@@ -2851,6 +2856,7 @@ public class StripLayoutHelper
                 interactingView,
                 new PointF(x, y),
                 reorderType);
+        updateTouchableRect();
     }
 
     /**
@@ -5991,6 +5997,7 @@ public class StripLayoutHelper
     public void stopReorderMode(boolean isDragCancelled) {
         if (mReorderDelegate.getInReorderMode()) {
             mReorderDelegate.stopReorderMode(mStripViews, mStripGroupTitles, isDragCancelled);
+            updateTouchableRect();
         }
     }
 
