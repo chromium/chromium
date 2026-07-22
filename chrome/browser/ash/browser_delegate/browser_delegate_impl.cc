@@ -289,6 +289,8 @@ void BrowserDelegateImpl::SetTabSwitchCommandsEnabled(bool enabled) {
       browser_->command_controller();
   command_controller->UpdateCommandEnabled(IDC_SELECT_NEXT_TAB, enabled);
   command_controller->UpdateCommandEnabled(IDC_SELECT_PREVIOUS_TAB, enabled);
+  command_controller->UpdateCommandEnabled(IDC_CYCLE_TO_NEXT_TAB, enabled);
+  command_controller->UpdateCommandEnabled(IDC_CYCLE_TO_PREV_TAB, enabled);
   command_controller->UpdateCommandEnabled(IDC_SELECT_TAB_0, enabled);
   command_controller->UpdateCommandEnabled(IDC_SELECT_TAB_1, enabled);
   command_controller->UpdateCommandEnabled(IDC_SELECT_TAB_2, enabled);

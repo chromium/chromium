@@ -1418,22 +1418,6 @@ bool CanResetZoom(content::WebContents* contents) {
 void SelectNextTab(BrowserWindowInterface* browser,
                    TabStripUserGestureDetails gesture_detail) {
   base::RecordAction(UserMetricsAction("SelectNextTab"));
-
-  if (base::FeatureList::IsEnabled(features::kCtrlTabMru) &&
-      browser->GetProfile()->GetPrefs()->GetBoolean(prefs::kCtrlTabMru)) {
-    auto mru_result = GetGlobalMruTab(
-        ProfileBrowserCollection::GetForProfile(browser->GetProfile()),
-        browser);
-    if (mru_result) {
-      if (mru_result->browser != browser) {
-        mru_result->browser->GetWindow()->Activate();
-      }
-      ActivateTab(mru_result->browser->GetTabStripModel(), mru_result->index,
-                  gesture_detail);
-      return;
-    }
-  }
-
   browser->GetTabStripModel()->SelectNextTab(gesture_detail);
 }
 
@@ -1441,6 +1425,24 @@ void SelectPreviousTab(BrowserWindowInterface* browser,
                        TabStripUserGestureDetails gesture_detail) {
   base::RecordAction(UserMetricsAction("SelectPrevTab"));
   browser->GetTabStripModel()->SelectPreviousTab(gesture_detail);
+}
+
+bool IsCtrlTabMruEnabled(BrowserWindowInterface* browser) {
+  return base::FeatureList::IsEnabled(features::kCtrlTabMru) &&
+         browser->GetProfile()->GetPrefs()->GetBoolean(prefs::kCtrlTabMru);
+}
+
+void CycleToMruTab(BrowserWindowInterface* browser,
+                   TabStripUserGestureDetails gesture_detail) {
+  auto mru_result = GetGlobalMruTab(
+      ProfileBrowserCollection::GetForProfile(browser->GetProfile()), browser);
+  if (mru_result) {
+    if (mru_result->browser != browser) {
+      mru_result->browser->GetWindow()->Activate();
+    }
+    ActivateTab(mru_result->browser->GetTabStripModel(), mru_result->index,
+                gesture_detail);
+  }
 }
 
 void MoveTabNext(BrowserWindowInterface* browser) {

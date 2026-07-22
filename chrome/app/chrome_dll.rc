@@ -89,9 +89,9 @@ BEGIN
     VK_NEXT,        IDC_MOVE_TAB_NEXT,          VIRTKEY, CONTROL, SHIFT
     VK_PRIOR,       IDC_MOVE_TAB_PREVIOUS,      VIRTKEY, CONTROL, SHIFT
     VK_NEXT,        IDC_SELECT_NEXT_TAB,        VIRTKEY, CONTROL
-    VK_TAB,         IDC_SELECT_NEXT_TAB,        VIRTKEY, CONTROL
+    VK_TAB,         IDC_CYCLE_TO_NEXT_TAB,      VIRTKEY, CONTROL
     VK_PRIOR,       IDC_SELECT_PREVIOUS_TAB,    VIRTKEY, CONTROL
-    VK_TAB,         IDC_SELECT_PREVIOUS_TAB,    VIRTKEY, CONTROL, SHIFT
+    VK_TAB,         IDC_CYCLE_TO_PREV_TAB,      VIRTKEY, CONTROL, SHIFT
     // NOTE: IDC_SELECT_TAB_N is bound to the key ctrl-(N+1), and selects the
     // tab at index N. For example, IDC_SELECT_TAB_0 is bound to ctrl-1, and
     // selects the tab at index 0.

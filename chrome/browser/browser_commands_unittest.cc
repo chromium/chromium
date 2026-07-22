@@ -101,8 +101,8 @@ TEST_F(BrowserCommandsTest, TabNavigationAccelerators) {
   ASSERT_EQ(2, browser()->tab_strip_model()->active_index());
 }
 
-// Tests IDC_SELECT_NEXT_TAB with MRU enabled.
-TEST_F(BrowserCommandsTest, SelectNextTab_MRU) {
+// Tests IDC_CYCLE_TO_NEXT_TAB and IDC_CYCLE_TO_PREV_TAB with MRU enabled.
+TEST_F(BrowserCommandsTest, CycleToMruTab) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kCtrlTabMru);
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
@@ -139,7 +139,41 @@ TEST_F(BrowserCommandsTest, SelectNextTab_MRU) {
   CommandUpdater* updater = browser()->command_controller();
 
   // If MRU is active, the most recently used tab before 2 is 0.
+  updater->ExecuteCommand(IDC_CYCLE_TO_NEXT_TAB);
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+}
+
+// Tests that IDC_SELECT_NEXT_TAB and IDC_SELECT_PREVIOUS_TAB perform
+// linear/adjacent tab selection even when MRU feature is enabled.
+TEST_F(BrowserCommandsTest, DirectionalTabSelectionIgnoresMru) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kCtrlTabMru);
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
+
+  GURL about_blank(url::kAboutBlankURL);
+
+  AddTab(browser(), about_blank);
+  AddTab(browser(), about_blank);
+  AddTab(browser(), about_blank);
+
+  for (int i = 0; i < browser()->tab_strip_model()->count(); ++i) {
+    content::WebContents* contents =
+        browser()->tab_strip_model()->GetWebContentsAt(i);
+    resource_coordinator::ResourceCoordinatorTabHelper::CreateForWebContents(
+        contents);
+  }
+
+  // Start at tab 0.
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  CommandUpdater* updater = browser()->command_controller();
+
+  // Directional IDC_SELECT_NEXT_TAB should move to tab 1.
   updater->ExecuteCommand(IDC_SELECT_NEXT_TAB);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Directional IDC_SELECT_PREVIOUS_TAB should move back to tab 0.
+  updater->ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
 }
 

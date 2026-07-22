@@ -553,9 +553,9 @@ NSMenuItem* BuildTabMenu(NSApplication* nsapp,
                           : IDS_TAB_CXMENU_NEWTABTORIGHT)
                   .command_id(IDC_NEW_TAB_TO_RIGHT),
               Item(IDS_NEXT_TAB_MAC)
-                  .command_id(IDC_SELECT_NEXT_TAB),
+                  .command_id(IDC_CYCLE_TO_NEXT_TAB),
               Item(IDS_PREV_TAB_MAC)
-                  .command_id(IDC_SELECT_PREVIOUS_TAB),
+                  .command_id(IDC_CYCLE_TO_PREV_TAB),
               Item(IDS_DUPLICATE_TAB_MAC)
                   .command_id(IDC_DUPLICATE_TAB),
               Item(IDS_DUPLICATE_TARGET_TAB_MAC)

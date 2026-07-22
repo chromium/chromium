@@ -88,10 +88,10 @@ const AcceleratorMapping kAcceleratorMap[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     // Control modifier is rarely used on Mac, so we allow it only in several
     // specific cases.
-    {ui::VKEY_TAB, ui::EF_CONTROL_DOWN, IDC_SELECT_NEXT_TAB},
+    {ui::VKEY_TAB, ui::EF_CONTROL_DOWN, IDC_CYCLE_TO_NEXT_TAB},
     {ui::VKEY_NEXT, ui::EF_CONTROL_DOWN, IDC_SELECT_NEXT_TAB},
     {ui::VKEY_TAB, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
-     IDC_SELECT_PREVIOUS_TAB},
+     IDC_CYCLE_TO_PREV_TAB},
     {ui::VKEY_PRIOR, ui::EF_CONTROL_DOWN, IDC_SELECT_PREVIOUS_TAB},
     {ui::VKEY_1, ui::EF_PLATFORM_ACCELERATOR, IDC_SELECT_TAB_0},
     {ui::VKEY_NUMPAD1, ui::EF_PLATFORM_ACCELERATOR, IDC_SELECT_TAB_0},
@@ -299,7 +299,8 @@ constexpr AcceleratorMapping kUIDebugAcceleratorMap[] = {
 const int kRepeatableCommandIds[] = {
     IDC_FIND_NEXT,           IDC_FIND_PREVIOUS,       IDC_FOCUS_NEXT_PANE,
     IDC_FOCUS_PREVIOUS_PANE, IDC_MOVE_TAB_NEXT,       IDC_MOVE_TAB_PREVIOUS,
-    IDC_SELECT_NEXT_TAB,     IDC_SELECT_PREVIOUS_TAB,
+    IDC_SELECT_NEXT_TAB,     IDC_SELECT_PREVIOUS_TAB, IDC_CYCLE_TO_NEXT_TAB,
+    IDC_CYCLE_TO_PREV_TAB,
 };
 
 std::vector<AcceleratorMapping>* GetAcceleratorsPointer() {

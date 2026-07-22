@@ -501,7 +501,9 @@ bool BrowserCommandController::IsReservedCommandOrKey(
          command_id == IDC_NEW_INCOGNITO_WINDOW || command_id == IDC_NEW_TAB ||
          command_id == IDC_NEW_WINDOW || command_id == IDC_RESTORE_TAB ||
          command_id == IDC_SELECT_NEXT_TAB ||
-         command_id == IDC_SELECT_PREVIOUS_TAB || command_id == IDC_EXIT;
+         command_id == IDC_SELECT_PREVIOUS_TAB ||
+         command_id == IDC_CYCLE_TO_NEXT_TAB ||
+         command_id == IDC_CYCLE_TO_PREV_TAB || command_id == IDC_EXIT;
 }
 
 void BrowserCommandController::TabStateChanged() {
@@ -753,6 +755,36 @@ void BrowserCommandController::HandleCommandWithDisposition(
           browser_,
           TabStripUserGestureDetails(
               TabStripUserGestureDetails::GestureType::kKeyboard, time_stamp));
+      break;
+    case IDC_CYCLE_TO_NEXT_TAB:
+      if (IsCtrlTabMruEnabled(browser_)) {
+        base::RecordAction(base::UserMetricsAction("Accel_CycleToNextTab"));
+        CycleToMruTab(browser_,
+                      TabStripUserGestureDetails(
+                          TabStripUserGestureDetails::GestureType::kKeyboard,
+                          time_stamp));
+      } else {
+        base::RecordAction(base::UserMetricsAction("Accel_SelectNextTab"));
+        SelectNextTab(browser_,
+                      TabStripUserGestureDetails(
+                          TabStripUserGestureDetails::GestureType::kKeyboard,
+                          time_stamp));
+      }
+      break;
+    case IDC_CYCLE_TO_PREV_TAB:
+      if (IsCtrlTabMruEnabled(browser_)) {
+        base::RecordAction(base::UserMetricsAction("Accel_CycleToPrevTab"));
+        CycleToMruTab(browser_,
+                      TabStripUserGestureDetails(
+                          TabStripUserGestureDetails::GestureType::kKeyboard,
+                          time_stamp));
+      } else {
+        base::RecordAction(base::UserMetricsAction("Accel_SelectPreviousTab"));
+        SelectPreviousTab(
+            browser_, TabStripUserGestureDetails(
+                          TabStripUserGestureDetails::GestureType::kKeyboard,
+                          time_stamp));
+      }
       break;
     case IDC_MOVE_TAB_NEXT:
       MoveTabNext(browser_);
@@ -1917,6 +1949,8 @@ void BrowserCommandController::InitCommandState() {
   command_updater_->UpdateCommandEnabled(IDC_SELECT_NEXT_TAB, supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_SELECT_PREVIOUS_TAB,
                                          supports_tabs);
+  command_updater_->UpdateCommandEnabled(IDC_CYCLE_TO_NEXT_TAB, supports_tabs);
+  command_updater_->UpdateCommandEnabled(IDC_CYCLE_TO_PREV_TAB, supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_MOVE_TAB_NEXT, supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_MOVE_TAB_PREVIOUS, supports_tabs);
   command_updater_->UpdateCommandEnabled(IDC_SELECT_TAB_0, supports_tabs);
@@ -2457,6 +2491,10 @@ void BrowserCommandController::UpdateCommandsForLockedFullscreenMode() {
       command_updater_->UpdateCommandEnabled(IDC_SELECT_NEXT_TAB,
                                              supports_tabs);
       command_updater_->UpdateCommandEnabled(IDC_SELECT_PREVIOUS_TAB,
+                                             supports_tabs);
+      command_updater_->UpdateCommandEnabled(IDC_CYCLE_TO_NEXT_TAB,
+                                             supports_tabs);
+      command_updater_->UpdateCommandEnabled(IDC_CYCLE_TO_PREV_TAB,
                                              supports_tabs);
       UpdateCommandsForFind();
     }

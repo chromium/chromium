@@ -1563,6 +1563,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Accel_CycleToNextTab">
+  <owner>markchang@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Logged when the user activates the accelerator for cycling to the next tab.
+  </description>
+</action>
+
+<action name="Accel_CycleToPrevTab">
+  <owner>markchang@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    Logged when the user activates the accelerator for cycling to the previous
+    tab.
+  </description>
+</action>
+
 <action name="Accel_Desks_ActivateLeft">
   <owner>afakhry@chromium.org</owner>
   <description>

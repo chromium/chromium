@@ -28,7 +28,7 @@ constexpr char kChromeAcceleratorsHash[] =
 constexpr int kChromeAcceleratorsTotalNum = 104;
 // The hash of Chrome accelerators (available on Chrome OS).
 constexpr char kChromeAcceleratorsHash[] =
-    "3ae543badb254c92a5d83d420deba5da4d1af718cc655849e59be6c579a55827";
+    "c8cd89b8191075d72ad52852b54d9c6d54bee7f280c7386a414f7e8bf749c733";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 const char kCommonMessage[] =

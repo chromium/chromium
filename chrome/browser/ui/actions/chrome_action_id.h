@@ -35,6 +35,8 @@
   E(kActionCloseTab, IDC_CLOSE_TAB) \
   E(kActionSelectNextTab, IDC_SELECT_NEXT_TAB) \
   E(kActionSelectPreviousTab, IDC_SELECT_PREVIOUS_TAB) \
+  E(kActionCycleToNextTab, IDC_CYCLE_TO_NEXT_TAB) \
+  E(kActionCycleToPrevTab, IDC_CYCLE_TO_PREV_TAB) \
   E(kActionSelectTab0, IDC_SELECT_TAB_0) \
   E(kActionSelectTab1, IDC_SELECT_TAB_1) \
   E(kActionSelectTab2, IDC_SELECT_TAB_2) \

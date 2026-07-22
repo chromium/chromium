@@ -324,6 +324,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       boca_app_browser->command_controller();
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_NEXT_TAB));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_PREVIOUS_TAB));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_CYCLE_TO_NEXT_TAB));
+  EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_CYCLE_TO_PREV_TAB));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_0));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_1));
   EXPECT_FALSE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_2));
@@ -387,6 +389,8 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       boca_app_browser->command_controller();
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_NEXT_TAB));
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_PREVIOUS_TAB));
+  EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_CYCLE_TO_NEXT_TAB));
+  EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_CYCLE_TO_PREV_TAB));
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_0));
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_1));
   EXPECT_TRUE(command_controller->IsCommandEnabled(IDC_SELECT_TAB_2));

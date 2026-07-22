@@ -69,8 +69,8 @@ NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
     if ([item.keyEquivalent isEqual:key_equivalent]) {
       // We don't want to ignore shift for [cmd + shift + tab] and [cmd + tab],
       // which are special.
-      if (item.tag == IDC_SELECT_NEXT_TAB ||
-          item.tag == IDC_SELECT_PREVIOUS_TAB) {
+      if (item.tag == IDC_CYCLE_TO_NEXT_TAB ||
+          item.tag == IDC_CYCLE_TO_PREV_TAB) {
         if (modifier_mask == item.keyEquivalentModifierMask) {
           return item;
         }

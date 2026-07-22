@@ -427,6 +427,8 @@ TEST_F(BrowserCommandControllerFullscreenTest,
     { IDC_NEW_WINDOW,              true,     true,      true,      false    },
     { IDC_SELECT_NEXT_TAB,         true,     true,      true,      false    },
     { IDC_SELECT_PREVIOUS_TAB,     true,     true,      true,      false    },
+    { IDC_CYCLE_TO_NEXT_TAB,       true,     true,      true,      false    },
+    { IDC_CYCLE_TO_PREV_TAB,       true,     true,      true,      false    },
     { IDC_EXIT,                    true,     true,      true,      true     },
     { IDC_SHOW_AS_TAB,             false,    false,     false,     false    },
       // clang-format on

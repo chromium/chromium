@@ -55,6 +55,8 @@
 #define IDC_CLOSE_TAB                   34015
 #define IDC_SELECT_NEXT_TAB             34016
 #define IDC_SELECT_PREVIOUS_TAB         34017
+#define IDC_CYCLE_TO_NEXT_TAB           34062
+#define IDC_CYCLE_TO_PREV_TAB           34063
 #define IDC_SELECT_TAB_0                34018
 #define IDC_SELECT_TAB_1                34019
 #define IDC_SELECT_TAB_2                34020

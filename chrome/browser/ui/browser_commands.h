@@ -143,6 +143,11 @@ void SelectPreviousTab(
     BrowserWindowInterface* browser,
     TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
         TabStripUserGestureDetails::GestureType::kOther));
+bool IsCtrlTabMruEnabled(BrowserWindowInterface* browser);
+void CycleToMruTab(
+    BrowserWindowInterface* browser,
+    TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
+        TabStripUserGestureDetails::GestureType::kOther));
 void MoveTabNext(BrowserWindowInterface* browser);
 void MoveTabPrevious(BrowserWindowInterface* browser);
 void SelectNumberedTab(

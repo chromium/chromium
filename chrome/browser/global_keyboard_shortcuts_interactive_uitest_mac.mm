@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(GlobalKeyboardShortcutsTest, MenuCommandPriority) {
   NSMenuItem* tab_menu = [main_menu itemWithTitle:@"Tab"];
   ASSERT_NE(nil, tab_menu);
   ASSERT_TRUE(tab_menu.hasSubmenu);
-  NSMenuItem* next_item = [tab_menu.submenu itemWithTag:IDC_SELECT_NEXT_TAB];
+  NSMenuItem* next_item = [tab_menu.submenu itemWithTag:IDC_CYCLE_TO_NEXT_TAB];
   ASSERT_NE(nil, next_item);
   [next_item setKeyEquivalent:@"2"];
   [next_item setKeyEquivalentModifierMask:NSEventModifierFlagCommand];
