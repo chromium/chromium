@@ -53,7 +53,6 @@ source_set("print_preview") {
     ]
     public_deps += [
       "//chrome/browser/ash/printing",
-      "//chromeos/crosapi/mojom",
       "//chromeos/printing",
     ]
   } else {
@@ -159,7 +158,6 @@ source_set("impl") {
       "//chrome/browser/ui/ash/holding_space",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/experiences/settings_ui",
-      "//chromeos/crosapi/mojom",
       "//chromeos/printing",
       "//components/session_manager/core",
       "//components/signin/public/identity_manager",
@@ -243,7 +241,6 @@ source_set("unit_tests") {
       "//chrome/browser/ash/printing:test_support",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/login/login_state",
-      "//chromeos/crosapi/mojom",
       "//chromeos/printing",
       "//components/account_id:test_support",
       "//components/session_manager/core",

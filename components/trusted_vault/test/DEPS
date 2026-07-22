@@ -1,5 +1,4 @@
 include_rules = [
-  "+chromeos/crosapi/mojom",
   "+components/account_manager_core",
   "+mojo/public/cpp/bindings",
 ]

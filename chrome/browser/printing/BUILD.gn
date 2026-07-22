@@ -47,10 +47,6 @@ if (enable_printing) {
       public += [ "pdf_to_emf_converter.h" ]
     }
 
-    if (is_chromeos) {
-      public_deps += [ "//chromeos/crosapi/mojom" ]
-    }
-
     if (enable_oop_printing) {
       public += [
         "oop_features.h",

@@ -59,7 +59,6 @@ component("kcer") {
     "//chromeos/ash/components/chaps_util",
     "//chromeos/ash/components/dbus/chaps",
     "//chromeos/constants",
-    "//chromeos/crosapi/mojom",
     "//content/public/browser",
     "//net",
   ]
@@ -126,7 +125,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/chaps",
     "//chromeos/constants",
-    "//chromeos/crosapi/mojom",
     "//content/public/browser",
     "//content/test:test_support",
     "//crypto:test_support",

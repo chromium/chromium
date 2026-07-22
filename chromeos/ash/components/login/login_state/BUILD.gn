@@ -12,6 +12,7 @@ component("login_state") {
     "//components/device_event_log",
     "//components/user_manager",
   ]
+  public_deps = [ "//base" ]
   sources = [
     "login_state.cc",
     "login_state.h",

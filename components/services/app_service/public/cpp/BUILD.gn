@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Component for the core data structures and types used by App Service. Large
-# parts of the codebase are dependent on this target (via
-# //chromeos/crosapi/mojom), so this must have minimal deps to avoid circular
-# chains.
+# Component for the core data structures and types used by App Service.
 component("app_types") {
   output_name = "APP_TYPES"
   sources = [
@@ -325,12 +322,6 @@ source_set("app_shortcut_image") {
     "//skia",
     "//ui/gfx",
   ]
-
-  visibility = [ "//components/services/app_service/*" ]
-}
-
-source_set("crosapi_utils") {
-  sources = [ "crosapi_utils.h" ]
 
   visibility = [ "//components/services/app_service/*" ]
 }

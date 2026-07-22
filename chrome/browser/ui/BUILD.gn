@@ -5206,10 +5206,7 @@ static_library("ui") {
         [ "//chrome/browser/ui/webui/print_preview:impl" ]
 
     if (is_chromeos) {
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/printing",
-      ]
+      deps += [ "//chromeos/printing" ]
     }
   }
 

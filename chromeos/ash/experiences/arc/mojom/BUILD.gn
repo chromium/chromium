@@ -80,6 +80,7 @@ mojom("mojom") {
     "//components/payments/mojom",
     "//media/capture/video/chromeos/mojom:cros_camera",
     "//mojo/public/mojom/base",
+    "//printing/backend/mojom",
     "//printing/mojom",
     "//sandbox/policy/mojom",
     "//services/accessibility/android/public/mojom",

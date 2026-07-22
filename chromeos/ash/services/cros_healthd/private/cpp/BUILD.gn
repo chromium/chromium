@@ -22,7 +22,10 @@ source_set("cpp") {
     "//ui/events/devices",
     "//ui/events/ozone/evdev:event_device_info",
   ]
-  public_deps = [ "//chromeos/ash/services/cros_healthd/private/mojom" ]
+  public_deps = [
+    "//chromeos/ash/services/cros_healthd/private/mojom",
+    "//chromeos/components/sensors/mojom",
+  ]
   data_deps = [ ":mojo_service_manager_policy" ]
   defines = []
   if (is_chromeos_device) {

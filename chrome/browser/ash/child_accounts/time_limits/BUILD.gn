@@ -54,7 +54,6 @@ static_library("time_limits") {
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chromeos/ash/experiences/arc:arc_app_constants",
-    "//chromeos/crosapi/mojom",
     "//chromeos/ui/vector_icons",
     "//components/app_constants",
     "//extensions/browser",

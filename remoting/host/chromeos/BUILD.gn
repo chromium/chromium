@@ -171,6 +171,7 @@ source_set("unit_tests") {
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",
+    "//remoting/host/mojom",
     "//remoting/proto",
     "//remoting/resources",
     "//services/network:test_support",

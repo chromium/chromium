@@ -117,8 +117,6 @@ include_rules = [
   "+chromeos/components/sensors",
   "+chromeos/components/webauthn",
   "+chromeos/constants",
-  # crosapi is an API to support lacros.
-  "+chromeos/crosapi",
   # //ash can access all D-Bus client libraries. The mustash project previously
   # limit D-Bus communication to a subset of OS daemons, but that project
   # stopped in 2019. See //ash/README.md.

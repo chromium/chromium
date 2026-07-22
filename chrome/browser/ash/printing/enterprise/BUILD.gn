@@ -38,7 +38,6 @@ static_library("enterprise") {
     "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//chromeos/ash/components/settings",
-    "//chromeos/crosapi/mojom",
     "//chromeos/printing",
     "//components/device_event_log",
     "//components/policy:policy_code_generate",

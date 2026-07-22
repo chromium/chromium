@@ -2556,7 +2556,6 @@ source_set("browser") {
     ]
     deps += [
       "//chromeos/components/firewall_hole",
-      "//chromeos/crosapi/mojom",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
       "//components/value_store",

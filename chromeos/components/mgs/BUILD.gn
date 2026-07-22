@@ -9,10 +9,7 @@ static_library("mgs") {
     "managed_guest_session_utils.cc",
     "managed_guest_session_utils.h",
   ]
-  deps = [
-    "//chromeos/ash/components/login/login_state",
-    "//chromeos/crosapi/mojom",
-  ]
+  deps = [ "//chromeos/ash/components/login/login_state" ]
 }
 
 static_library("test_support") {
@@ -21,8 +18,5 @@ static_library("test_support") {
     "managed_guest_session_test_utils.cc",
     "managed_guest_session_test_utils.h",
   ]
-  deps = [
-    "//chromeos/ash/components/login/login_state",
-    "//chromeos/crosapi/mojom",
-  ]
+  deps = [ "//chromeos/ash/components/login/login_state" ]
 }

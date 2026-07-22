@@ -94,7 +94,10 @@ component("settings") {
     "print_settings.h",
   ]
 
-  public_deps = [ ":printing_base" ]
+  public_deps = [
+    ":printing_base",
+    "//printing/mojom",
+  ]
 
   deps = [
     "//base",
@@ -102,10 +105,6 @@ component("settings") {
   ]
 
   defines = [ "IS_PRINTING_SETTINGS_IMPL" ]
-
-  if (is_chromeos) {
-    deps += [ "//chromeos/crosapi/mojom" ]
-  }
 }
 
 if (enable_oop_printing && (is_linux || is_chromeos)) {
@@ -308,10 +307,7 @@ component("printing") {
       "print_settings_conversion_chromeos.h",
     ]
 
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//third_party/re2",
-    ]
+    deps += [ "//third_party/re2" ]
   }
 
   if (use_cups) {
