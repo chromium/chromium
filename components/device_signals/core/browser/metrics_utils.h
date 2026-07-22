@@ -27,6 +27,20 @@ enum class SignalsParsingError {
   kMaxValue = kMissingRequiredProperty
 };
 
+// Set of possible errors encountered when collecting certificates.
+// Do not reorder the values. Also change
+// DeviceSignalsCertificateCollectionError in enums.xml if adding new values
+// here.
+// LINT.IfChange(CertificateCollectionError)
+enum class CertificateCollectionError {
+  kPrivateKeyAcquisitionFailed = 0,
+  kSerializationFailed = 1,
+  kSigningFailed = 2,
+  kNoSupportedAlgorithm = 3,
+  kMaxValue = kNoSupportedAlgorithm
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:DeviceSignalsCertificateCollectionError)
+
 // Records that `permission` was the outcome of a permission check.
 void LogUserPermissionChecked(UserPermission permission);
 
@@ -64,6 +78,9 @@ void LogSignalCollectionSucceeded(
 // Records that an error occurred when trying to parse signals from the
 // CrowdStrike data.zta file.
 void LogCrowdStrikeParsingError(SignalsParsingError error);
+
+// Records a failure encountered while collecting certificates.
+void LogCertificateCollectionError(CertificateCollectionError error);
 
 // Records that the system signals service was disconnected with a given number
 // of `pending_requests`.

@@ -141,6 +141,12 @@ void LogCrowdStrikeParsingError(SignalsParsingError error) {
   base::UmaHistogramEnumeration(kCrowdStrikeErrorHistogram, error);
 }
 
+void LogCertificateCollectionError(CertificateCollectionError error) {
+  static constexpr char kCertErrorHistogram[] =
+      "Enterprise.DeviceSignals.Collection.Certificates.Error";
+  base::UmaHistogramEnumeration(kCertErrorHistogram, error);
+}
+
 void LogSystemSignalCollectionDisconnect(size_t pending_requests) {
   static constexpr char kSystemSignalsServiceDisconnectCountHistogram[] =
       "Enterprise.DeviceSignals.SystemSignalsService.Disconnect.ItemsCount";

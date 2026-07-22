@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
+#include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -221,6 +222,11 @@ class CertificateSignalsCollectorTest : public testing::Test {
     histogram_tester_.ExpectUniqueSample(
         "Enterprise.DeviceSignals.Collection.Success",
         SignalName::kCertificates, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "Enterprise.DeviceSignals.Collection.Success.Certificates.Items",
+        expected_count, 1);
+    histogram_tester_.ExpectTotalCount(
+        "Enterprise.DeviceSignals.Collection.Success.Certificates.Latency", 1);
 
     for (size_t i = 0; i < expected_count; ++i) {
       const std::string& serialized_response =
@@ -252,6 +258,24 @@ class CertificateSignalsCollectorTest : public testing::Test {
       ASSERT_TRUE(parsed_cert);
       EXPECT_EQ(parsed_cert->subject().common_name, cert_cn);
     }
+  }
+
+  void VerifyFailureResponse(const SignalsAggregationResponse& response,
+                             SignalCollectionError expected_error) {
+    ASSERT_TRUE(response.certificate_signals_response.has_value());
+    EXPECT_TRUE(
+        response.certificate_signals_response->collection_error.has_value());
+    EXPECT_EQ(response.certificate_signals_response->collection_error.value(),
+              expected_error);
+    histogram_tester_.ExpectUniqueSample(
+        "Enterprise.DeviceSignals.Collection.Failure",
+        SignalName::kCertificates, 1);
+    histogram_tester_.ExpectUniqueSample(
+        "Enterprise.DeviceSignals.Collection.Failure.Certificates."
+        "CollectionLevelError",
+        expected_error, 1);
+    histogram_tester_.ExpectTotalCount(
+        "Enterprise.DeviceSignals.Collection.Failure.Certificates.Latency", 1);
   }
 
   void InitializeCollector() {
@@ -287,6 +311,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_MissingConsent) {
 
   EXPECT_FALSE(response.top_level_error.has_value());
   EXPECT_FALSE(response.certificate_signals_response.has_value());
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_MissingParameters) {
@@ -300,11 +326,9 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_MissingParameters) {
                         request, response, run_loop.QuitClosure());
   run_loop.Run();
 
-  ASSERT_TRUE(response.certificate_signals_response.has_value());
-  EXPECT_TRUE(
-      response.certificate_signals_response->collection_error.has_value());
-  EXPECT_EQ(response.certificate_signals_response->collection_error.value(),
-            SignalCollectionError::kMissingParameters);
+  VerifyFailureResponse(response, SignalCollectionError::kMissingParameters);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_MissingChallengeParameter) {
@@ -322,11 +346,9 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_MissingChallengeParameter) {
                         request, response, run_loop.QuitClosure());
   run_loop.Run();
 
-  ASSERT_TRUE(response.certificate_signals_response.has_value());
-  EXPECT_TRUE(
-      response.certificate_signals_response->collection_error.has_value());
-  EXPECT_EQ(response.certificate_signals_response->collection_error.value(),
-            SignalCollectionError::kMissingParameters);
+  VerifyFailureResponse(response, SignalCollectionError::kMissingParameters);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_CorruptCertificate) {
@@ -345,6 +367,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_CorruptCertificate) {
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/0u, /*cert_cn=*/"");
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_NullCertStore) {
@@ -362,6 +386,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_NullCertStore) {
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/0u, /*cert_cn=*/"");
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_PrivateKeyMissing) {
@@ -380,6 +406,9 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_PrivateKeyMissing) {
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/0u, /*cert_cn=*/"");
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error",
+      CertificateCollectionError::kPrivateKeyAcquisitionFailed, 1);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_SigningFails) {
@@ -398,6 +427,9 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_SigningFails) {
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/0u, /*cert_cn=*/"");
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error",
+      CertificateCollectionError::kSigningFailed, 1);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_Success) {
@@ -416,6 +448,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_Success) {
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/1u, cert_cn);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_FiltersOutMismatchedIssuer) {
@@ -435,6 +469,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_FiltersOutMismatchedIssuer) {
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/0u, /*cert_cn=*/"");
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_FiltersOutMismatchedSubject) {
@@ -454,6 +490,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_FiltersOutMismatchedSubject) {
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/0u, /*cert_cn=*/"");
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_Success_TruncatesCerts) {
@@ -473,6 +511,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_Success_TruncatesCerts) {
 
   VerifySuccessResponse(response, /*expected_count=*/50u, cert_cn,
                         /*expected_truncated=*/true);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest,
@@ -502,6 +542,8 @@ TEST_F(CertificateSignalsCollectorTest,
 
   VerifySuccessResponse(response, /*expected_count=*/50u, newer_cn,
                         /*expected_truncated=*/true);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest,
@@ -521,6 +563,8 @@ TEST_F(CertificateSignalsCollectorTest,
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/0u, /*cert_cn=*/"");
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_Success_FiltersMixedCerts) {
@@ -543,6 +587,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_Success_FiltersMixedCerts) {
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/1u, match_cn);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_ConsumerUser) {
@@ -559,6 +605,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_ConsumerUser) {
 
   EXPECT_FALSE(response.top_level_error.has_value());
   EXPECT_FALSE(response.certificate_signals_response.has_value());
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_UnknownUser) {
@@ -574,6 +622,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_UnknownUser) {
 
   EXPECT_FALSE(response.top_level_error.has_value());
   EXPECT_FALSE(response.certificate_signals_response.has_value());
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_MultipleChallenges) {
@@ -641,6 +691,8 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_MultipleChallenges) {
   }
   EXPECT_TRUE(found_a);
   EXPECT_TRUE(found_b);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error", 0);
 }
 
 TEST_F(CertificateSignalsCollectorTest, GetSignal_NoSupportedAlgorithm) {
@@ -661,6 +713,9 @@ TEST_F(CertificateSignalsCollectorTest, GetSignal_NoSupportedAlgorithm) {
   run_loop.Run();
 
   VerifySuccessResponse(response, /*expected_count=*/0u, /*cert_cn=*/"");
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.DeviceSignals.Collection.Certificates.Error",
+      CertificateCollectionError::kNoSupportedAlgorithm, 1);
 }
 
 }  // namespace device_signals

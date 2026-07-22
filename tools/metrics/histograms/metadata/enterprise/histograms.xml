@@ -1402,6 +1402,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.Collection.Certificates.Error"
+    enum="DeviceSignalsCertificateCollectionError" expires_after="2027-07-14">
+  <owner>hmare@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Captures specific errors encountered when collecting certificates during the
+    device signals collection flow. Recorded for each matched certificate that
+    fails at a specific step. Successful collection events are not recorded in
+    this histogram.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceSignals.Collection.CrowdStrike.Error"
     enum="DeviceSignalsParsingError" expires_after="2027-01-02">
   <owner>seblalancette@chromium.org</owner>

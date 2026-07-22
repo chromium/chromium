@@ -117,8 +117,8 @@ void CertificateSignalsCollector::GetCertificateSignal(
   if (request.certificate_signal_parameters.empty() || missing_challenge) {
     CertificateSignalsResponse cert_response;
     cert_response.collection_error = SignalCollectionError::kMissingParameters;
-    response.certificate_signals_response = std::move(cert_response);
-    std::move(done_closure).Run();
+    OnSignalsCollected(base::TimeTicks::Now(), response,
+                       std::move(done_closure), std::move(cert_response));
     return;
   }
   if (!client_cert_store_) {
@@ -204,6 +204,8 @@ void CertificateSignalsCollector::OnPrivateKeyAcquired(
     scoped_refptr<net::SSLPrivateKey> private_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!private_key) {
+    LogCertificateCollectionError(
+        CertificateCollectionError::kPrivateKeyAcquisitionFailed);
     barrier_callback.Run(std::nullopt);
     return;
   }
@@ -218,6 +220,8 @@ void CertificateSignalsCollector::OnPrivateKeyAcquired(
     }
   }
   if (!algorithm.has_value()) {
+    LogCertificateCollectionError(
+        CertificateCollectionError::kNoSupportedAlgorithm);
     barrier_callback.Run(std::nullopt);
     return;
   }
@@ -227,7 +231,12 @@ void CertificateSignalsCollector::OnPrivateKeyAcquired(
   proto_details.set_challenge(challenge);
   proto_details.set_algorithm(ToProtoSignatureAlgorithm(chosen_algorithm));
   std::string serialized_details;
-  proto_details.SerializeToString(&serialized_details);
+  if (!proto_details.SerializeToString(&serialized_details)) {
+    LogCertificateCollectionError(
+        CertificateCollectionError::kSerializationFailed);
+    barrier_callback.Run(std::nullopt);
+    return;
+  }
 
   auto data_to_sign = std::make_unique<std::vector<uint8_t>>();
   auto prefix_span = base::as_byte_span(kCertificatePrefix);
@@ -256,7 +265,8 @@ void CertificateSignalsCollector::OnCertificateDetailsSigned(
     net::Error error,
     const std::vector<uint8_t>& signature) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (error != net::OK) {
+  if (error != net::OK || signature.empty()) {
+    LogCertificateCollectionError(CertificateCollectionError::kSigningFailed);
     barrier_callback.Run(std::nullopt);
     return;
   }
@@ -280,9 +290,12 @@ void CertificateSignalsCollector::OnAllCertificatesProcessed(
   for (auto& result : results) {
     if (result.has_value()) {
       std::string serialized;
-      if (result->SerializeToString(&serialized)) {
-        cert_response.serialized_caa_responses.push_back(std::move(serialized));
+      if (!result->SerializeToString(&serialized)) {
+        LogCertificateCollectionError(
+            CertificateCollectionError::kSerializationFailed);
+        continue;
       }
+      cert_response.serialized_caa_responses.push_back(std::move(serialized));
     }
   }
   OnSignalsCollected(start_time, response, std::move(done_closure),

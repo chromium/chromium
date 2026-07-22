@@ -182,6 +182,17 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="STORE_KEY_UNAVAILABLE_MANAGED"/>
 </enum>
 
+<!-- LINT.IfChange(DeviceSignalsCertificateCollectionError) -->
+
+<enum name="DeviceSignalsCertificateCollectionError">
+  <int value="0" label="Private Key Acquisition Failed"/>
+  <int value="1" label="Serialization Failed"/>
+  <int value="2" label="Signing Failed"/>
+  <int value="3" label="No Supported Algorithm"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/device_signals/core/browser/metrics_utils.h:CertificateCollectionError) -->
+
 <enum name="DeviceSignalsHarmfulAppsStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Timeout"/>
