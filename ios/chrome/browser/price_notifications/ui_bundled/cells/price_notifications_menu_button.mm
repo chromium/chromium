@@ -30,8 +30,7 @@ const CGFloat kMenuSymbolPointSize = 17;
     self.clipsToBounds = YES;
 
     self.tintColor = [UIColor colorNamed:kBlueColor];
-    [self setImage:DefaultSymbolTemplateWithPointSize(kMenuSymbol,
-                                                      kMenuSymbolPointSize)
+    [self setImage:SymbolTemplateWithPointSize(SymbolMenu, kMenuSymbolPointSize)
           forState:UIControlStateNormal];
 
     [NSLayoutConstraint activateConstraints:@[

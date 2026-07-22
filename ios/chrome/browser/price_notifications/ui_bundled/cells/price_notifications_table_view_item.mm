@@ -59,7 +59,7 @@ UIMenu* CreateOptionMenu(void (^completion_handler)(UIAction* action)) {
                           weight:UIImageSymbolWeightSemibold
                            scale:UIImageSymbolScaleMedium];
 
-  UIImage* icon = DefaultSymbolWithConfiguration(kBellSymbol, configuration);
+  UIImage* icon = SymbolWithConfiguration(SymbolBell, configuration);
 
   UIAction* stop_tracking = [UIAction
       actionWithTitle:
