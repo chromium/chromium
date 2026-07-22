@@ -154,9 +154,10 @@ class SimpleFeature : public Feature {
     disallow_for_service_workers_ = disallow;
   }
   void set_location(Location location) { location_ = location; }
-  // set_matches() is an exception to pass-by-value since we construct an
-  // URLPatternSet from the vector of strings.
-  // TODO(devlin): Pass in an URLPatternSet directly.
+  // set_matches() is an exception to pass-by-value since we intentionally store
+  // a copy as strings. They are parsed into a transient URLPattern on demand in
+  // MatchesURL() to reduce memory consumption of the process-lifetime
+  // SimpleFeature.
   void set_matches(std::initializer_list<const char* const> matches);
   void set_max_manifest_version(int max_manifest_version) {
     max_manifest_version_ = max_manifest_version;
@@ -196,7 +197,9 @@ class SimpleFeature : public Feature {
   bool component_extensions_auto_granted() const {
     return component_extensions_auto_granted_;
   }
-  const URLPatternSet& matches() const { return matches_; }
+  const std::vector<std::string>& match_patterns() const {
+    return match_patterns_;
+  }
 
   std::string GetAvailabilityMessage(
       AvailabilityResult result,
@@ -295,6 +298,9 @@ class SimpleFeature : public Feature {
       bool check_developer_mode,
       const ContextData& context_data) const;
 
+  // Returns true if `url` matches any of `match_patterns_`.
+  bool MatchesURL(const GURL& url) const;
+
   // For clarity and consistency, we handle the default value of each of these
   // members the same way: it matches everything. It is up to the higher level
   // code that reads Features out of static data to validate that data and set
@@ -306,7 +312,9 @@ class SimpleFeature : public Feature {
   std::vector<mojom::FeatureSessionType> session_types_;
   std::optional<std::vector<mojom::ContextType>> contexts_;
   std::vector<Platform> platforms_;
-  URLPatternSet matches_;
+  // The feature's URL match patterns, as raw pattern strings. Parsed into a
+  // transient URLPattern on demand.
+  std::vector<std::string> match_patterns_;
 
   std::optional<Location> location_;
   std::optional<int> min_manifest_version_;

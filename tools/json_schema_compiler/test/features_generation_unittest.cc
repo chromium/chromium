@@ -65,7 +65,7 @@ struct FeatureComparator {
   std::optional<std::vector<mojom::ContextType>> contexts;
   std::vector<Feature::Platform> platforms;
 
-  URLPatternSet matches;
+  std::vector<std::string> match_patterns;
 
   std::optional<SimpleFeature::Location> location;
   std::optional<int> min_manifest_version;
@@ -99,7 +99,7 @@ void FeatureComparator::CompareFeature(const SimpleFeature* feature) {
   ExpectVectorsEqual(extension_types, feature->extension_types(), name);
   ExpectOptionalVectorsEqual(contexts, feature->contexts(), name);
   ExpectVectorsEqual(platforms, feature->platforms(), name);
-  EXPECT_EQ(matches, feature->matches()) << name;
+  ExpectVectorsEqual(match_patterns, feature->match_patterns(), name);
   EXPECT_EQ(location, feature->location()) << name;
   EXPECT_EQ(min_manifest_version, feature->min_manifest_version()) << name;
   EXPECT_EQ(max_manifest_version, feature->max_manifest_version()) << name;
@@ -221,8 +221,7 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
     comparator.contexts = std::vector<mojom::ContextType>(
         {mojom::ContextType::kPrivilegedExtension, mojom::ContextType::kWebUi});
     comparator.channel = version_info::Channel::DEV;
-    comparator.matches.AddPattern(
-        URLPattern(URLPattern::SCHEME_ALL, "*://example.com/*"));
+    comparator.match_patterns = {"*://example.com/*"};
     comparator.min_manifest_version = 2;
     comparator.CompareFeature(feature);
   }
@@ -232,8 +231,7 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
     comparator.contexts =
         std::vector<mojom::ContextType>({mojom::ContextType::kUntrustedWebUi});
     comparator.channel = version_info::Channel::STABLE;
-    comparator.matches.AddPattern(
-        URLPattern(URLPattern::SCHEME_ALL, "chrome-untrusted://foo/*"));
+    comparator.match_patterns = {"chrome-untrusted://foo/*"};
     comparator.CompareFeature(feature);
   }
   {

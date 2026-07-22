@@ -1248,6 +1248,95 @@ TEST(SimpleFeatureUnitTest, TestChannelsWithoutExtension) {
   }
 }
 
+// Verifies matches are evaluated correctly and that repeated checks against the
+// same feature are stable (patterns are parsed transiently per check).
+TEST(SimpleFeatureUnitTest, MatchesEvaluation) {
+  SimpleFeature feature;
+  feature.set_contexts({mojom::ContextType::kWebPage});
+  feature.set_matches({"https://example.com/*"});
+
+  const GURL kMatch("https://example.com/path");
+  const GURL kNoMatch("https://other.example/path");
+
+  // Repeated checks must be stable across matching and non-matching URLs.
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_EQ(
+        Feature::AvailabilityResult::kIsAvailable,
+        feature
+            .IsAvailableToContext(nullptr, mojom::ContextType::kWebPage, kMatch,
+                                  kUnspecifiedContextId, TestContextData())
+            .result());
+    EXPECT_EQ(Feature::AvailabilityResult::kInvalidUrl,
+              feature
+                  .IsAvailableToContext(nullptr, mojom::ContextType::kWebPage,
+                                        kNoMatch, kUnspecifiedContextId,
+                                        TestContextData())
+                  .result());
+  }
+}
+
+// A web-exposed feature with no matches set is never available to a web
+// context, regardless of URL (default-deny), whether matches is left unset or
+// explicitly cleared.
+TEST(SimpleFeatureUnitTest, MatchesEmptyDenies) {
+  for (bool call_empty : {false, true}) {
+    SimpleFeature feature;
+    feature.set_contexts({mojom::ContextType::kWebPage});
+    if (call_empty) {
+      feature.set_matches({});
+    }
+    EXPECT_EQ(
+        Feature::AvailabilityResult::kInvalidUrl,
+        feature
+            .IsAvailableToContext(nullptr, mojom::ContextType::kWebPage,
+                                  GURL("https://example.com/"),
+                                  kUnspecifiedContextId, TestContextData())
+            .result());
+  }
+}
+
+// The last set_matches() call wins (a later call replaces earlier patterns).
+TEST(SimpleFeatureUnitTest, MatchesOverride) {
+  SimpleFeature feature;
+  feature.set_contexts({mojom::ContextType::kWebPage});
+  feature.set_matches({"https://first.example/*"});
+  feature.set_matches({"https://second.example/*"});
+
+  EXPECT_EQ(Feature::AvailabilityResult::kInvalidUrl,
+            feature
+                .IsAvailableToContext(nullptr, mojom::ContextType::kWebPage,
+                                      GURL("https://first.example/x"),
+                                      kUnspecifiedContextId, TestContextData())
+                .result());
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+            feature
+                .IsAvailableToContext(nullptr, mojom::ContextType::kWebPage,
+                                      GURL("https://second.example/x"),
+                                      kUnspecifiedContextId, TestContextData())
+                .result());
+}
+
+// Regression guard: the pattern strings passed to set_matches() need not
+// outlive the feature. set_matches() must take owned copies, not dangling
+// pointers into the caller's (possibly temporary) strings. Under ASAN this
+// would fail if raw pointers were stored.
+TEST(SimpleFeatureUnitTest, MatchesPatternStringLifetime) {
+  SimpleFeature feature;
+  feature.set_contexts({mojom::ContextType::kWebPage});
+  {
+    // `pattern` is destroyed at the end of this block, before the availability
+    // check below parses the stored pattern.
+    std::string pattern = "https://example.com/*";
+    feature.set_matches({pattern.c_str()});
+  }
+  EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+            feature
+                .IsAvailableToContext(nullptr, mojom::ContextType::kWebPage,
+                                      GURL("https://example.com/path"),
+                                      kUnspecifiedContextId, TestContextData())
+                .result());
+}
+
 TEST(SimpleFeatureUnitTest, TestAvailableToEnvironment) {
   {
     // Test with no environment restrictions, but with other restrictions. The

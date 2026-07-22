@@ -32,6 +32,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/switches.h"
+#include "extensions/common/url_pattern.h"
 
 using crx_file::id_util::HashedIdInHex;
 using extensions::mojom::ManifestLocation;
@@ -628,9 +629,20 @@ void SimpleFeature::set_session_types(
 
 void SimpleFeature::set_matches(
     std::initializer_list<const char* const> matches) {
-  matches_.ClearPatterns();
-  for (const auto* pattern : matches)
-    matches_.AddPattern(URLPattern(URLPattern::SCHEME_ALL, pattern));
+  // Store owned copies of the pattern strings so callers need not keep their
+  // strings alive.
+  match_patterns_.assign(matches.begin(), matches.end());
+}
+
+bool SimpleFeature::MatchesURL(const GURL& url) const {
+  // Create the URLPattern per call to avoid the memory overhead of storing it
+  // for the feature's process lifetime.
+  for (const std::string& pattern : match_patterns_) {
+    if (URLPattern(URLPattern::SCHEME_ALL, pattern).MatchesURL(url)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void SimpleFeature::set_platforms(std::initializer_list<Platform> platforms) {
@@ -758,7 +770,8 @@ Feature::Availability SimpleFeature::GetContextAvailability(
   if (contexts_ && !std::ranges::contains(*contexts_, context))
     return CreateAvailability(AvailabilityResult::kInvalidContext, context);
 
-  // TODO(kalman): Consider checking |matches_| regardless of context type.
+  // TODO(kalman): Consider checking `match_patterns_` regardless of context
+  // type.
   // Fewer surprises, and if the feature configuration wants to isolate
   // "matches" from say "privileged_extension" then they can use complex
   // features.
@@ -766,7 +779,7 @@ Feature::Availability SimpleFeature::GetContextAvailability(
       context == mojom::ContextType::kWebPage ||
       context == mojom::ContextType::kWebUi ||
       context == mojom::ContextType::kUntrustedWebUi;
-  if (supports_url_matching && !matches_.MatchesURL(url)) {
+  if (supports_url_matching && !MatchesURL(url)) {
     return CreateAvailability(AvailabilityResult::kInvalidUrl, url);
   }
 
