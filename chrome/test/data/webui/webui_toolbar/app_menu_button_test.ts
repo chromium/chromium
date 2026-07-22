@@ -71,8 +71,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Mouse Down Triggers Menu', function() {
-    const button = appMenuButton.shadowRoot.querySelector('#button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // Simulate mouse pointerdown (detail: 1 is required to be treated as mouse
     // click)
@@ -89,8 +88,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Touch Down Does Not Trigger Menu', function() {
-    const button = appMenuButton.shadowRoot.querySelector('#button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // Simulate touch pointerdown
     button.dispatchEvent(new PointerEvent('pointerdown', {
@@ -102,8 +100,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Touch Click Triggers Menu', function() {
-    const button = appMenuButton.shadowRoot.querySelector('#button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // Simulate touch click (detail > 0, pointerType: touch)
     button.dispatchEvent(new PointerEvent('click', {
@@ -118,8 +115,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Keyboard Click Triggers Menu', function() {
-    const button = appMenuButton.shadowRoot.querySelector('#button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // Simulate keyboard click (detail == 0)
     button.dispatchEvent(new PointerEvent('click', {
@@ -133,8 +129,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Mouse Click Ignored (Handled on Down)', function() {
-    const button = appMenuButton.shadowRoot.querySelector('#button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // Simulate mouse click (detail > 0, pointerType: mouse)
     button.dispatchEvent(new PointerEvent('click', {
@@ -146,8 +141,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Non-Left Clicks Ignored on Down', function() {
-    const button = appMenuButton.shadowRoot.querySelector('#button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // Simulate middle click pointerdown
     button.dispatchEvent(new PointerEvent('pointerdown', {
@@ -165,17 +159,18 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Attribute Bindings', async function() {
-    const button =
-        appMenuButton.shadowRoot.querySelector('toolbar-chip-button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // 1. Verify Default State
+    const innerButton = button.$.button;
     assertEquals('', button.ariaLabel);
     assertEquals('', button.tooltip);
     assertEquals('menu', button.ariaHasPopup);
+    assertEquals('false', button.ariaExpanded);
+    assertEquals('false', innerButton.getAttribute('aria-expanded'));
     assertFalse(button.hasAttribute('is-menu-open'));
     assertFalse(button.hasAttribute('has-label'));
-    assertFalse(!!appMenuButton.shadowRoot.querySelector('#button span'));
+    assertFalse(!!button.querySelector('span'));
 
     // 2. Set Non-Default State 1
     appMenuButton.state = {
@@ -191,10 +186,12 @@ suite('AppMenuButtonTest', function() {
 
     assertEquals('App Menu accessibility', button.ariaLabel);
     assertEquals('App Menu tooltip', button.tooltip);
+    assertEquals('true', button.ariaExpanded);
+    assertEquals('true', innerButton.getAttribute('aria-expanded'));
     assertTrue(button.hasAttribute('is-menu-open'));
     assertTrue(button.hasAttribute('has-label'));
 
-    let labelSpan = appMenuButton.shadowRoot.querySelector('#button span');
+    let labelSpan = button.querySelector('span');
     assertTrue(!!labelSpan);
     assertEquals('Menu', labelSpan.textContent);
 
@@ -210,10 +207,12 @@ suite('AppMenuButtonTest', function() {
 
     assertEquals('New A11y', button.ariaLabel);
     assertEquals('New Tooltip', button.tooltip);
+    assertEquals('false', button.ariaExpanded);
+    assertEquals('false', innerButton.getAttribute('aria-expanded'));
     assertFalse(button.hasAttribute('is-menu-open'));
     assertTrue(button.hasAttribute('has-label'));
 
-    labelSpan = appMenuButton.shadowRoot.querySelector('#button span');
+    labelSpan = button.querySelector('span');
     assertTrue(!!labelSpan);
     assertEquals('New Label', labelSpan.textContent);
 
@@ -224,12 +223,11 @@ suite('AppMenuButtonTest', function() {
     };
     await microtasksFinished();
     assertFalse(button.hasAttribute('has-label'));
-    assertFalse(!!appMenuButton.shadowRoot.querySelector('#button span'));
+    assertFalse(!!button.querySelector('span'));
   });
 
   test('Severity Highlight Class', async function() {
-    const button = appMenuButton.shadowRoot.querySelector('#button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // Default: no severity, no class
     assertFalse(button.classList.contains('has-severity'));
@@ -262,8 +260,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Focusin/Focusout Reporting', function() {
-    const button = appMenuButton.shadowRoot?.querySelector('#button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // Focus the button
     button?.dispatchEvent(new FocusEvent('focusin'));
@@ -279,9 +276,7 @@ suite('AppMenuButtonTest', function() {
   });
 
   test('Trailing Margin', async function() {
-    const button =
-        appMenuButton.shadowRoot.querySelector('toolbar-chip-button');
-    assertTrue(!!button);
+    const button = appMenuButton.$.button;
 
     // Default is 0px
     assertEquals(

@@ -15,12 +15,13 @@ import {getHtml} from './app_menu_button.html.js';
 import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import type {FocusRequestHandle} from './browser_proxy.js';
 import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, HelpBubbleAnchorMixin} from './toolbar_button.js';
+import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 const AppMenuButtonElementBase = HelpBubbleAnchorMixin(CrLitElement);
 
 export interface AppMenuButtonElement {
   $: {
-    button: HTMLElement,
+    button: ToolbarChipButtonElement,
   };
 }
 

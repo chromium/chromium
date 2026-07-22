@@ -14,6 +14,7 @@ export function getHtml(this: ToolbarChipButtonElement) {
       aria-label="${this.ariaLabel}"
       aria-description="${this.ariaDescription}"
       aria-haspopup="${this.ariaHasPopup || nothing}"
+      aria-expanded="${this.ariaExpanded || nothing}"
       title="${this.tooltip || ''}">
       <slot name="prefix-icon" @slotchange="${this.onPrefixIconSlotchange_}">
       </slot>

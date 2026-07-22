@@ -44,6 +44,10 @@ export class ToolbarChipButtonElement extends CrLitElement {
         type: String,
         attribute: 'aria-haspopup',
       },
+      ariaExpanded: {
+        type: String,
+        attribute: 'aria-expanded',
+      },
       disabled: {
         type: Boolean,
         reflect: true,
@@ -55,6 +59,7 @@ export class ToolbarChipButtonElement extends CrLitElement {
   override accessor ariaDescription: string = '';
   accessor tooltip: string = '';
   override accessor ariaHasPopup: string|null = null;
+  override accessor ariaExpanded: string|null = null;
   accessor disabled: boolean = false;
 
   override focus() {

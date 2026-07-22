@@ -63,13 +63,18 @@ toolbar_ui_api::mojom::AppMenuControlStatePtr WebUIAppMenuControl::GetState()
   state->is_context_menu_visible = IsMenuShowing();
   state->trailing_margin = trailing_margin_;
 
+  const std::u16string descriptive_name =
+      AppMenuIconController::GetIconAccessibleName(type_and_severity_.type);
+
   if (type_and_severity_.severity != AppMenuIconController::Severity::kNone) {
-    state->label_text = AppMenuIconController::GetIconLabel(
+    const std::u16string label = AppMenuIconController::GetIconLabel(
         type_and_severity_.type, type_and_severity_.severity);
+    state->label_text = label;
+    state->accessibility_text = label.empty() ? descriptive_name : label;
+  } else {
+    state->accessibility_text = descriptive_name;
   }
 
-  state->accessibility_text =
-      AppMenuIconController::GetIconAccessibleName(type_and_severity_.type);
   state->tooltip = AppMenuIconController::GetIconTooltip(
       type_and_severity_.type, type_and_severity_.severity);
 

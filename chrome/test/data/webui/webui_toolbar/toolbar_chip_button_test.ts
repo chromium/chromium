@@ -23,7 +23,7 @@ suite('ToolbarChipButtonTest', function() {
   });
 
   test('ForwardAriaLabel', async function() {
-    const button = element.shadowRoot.querySelector('#button')!;
+    const button = element.$.button;
 
     // Default is empty
     assertEquals('', button.getAttribute('aria-label'));
@@ -40,7 +40,7 @@ suite('ToolbarChipButtonTest', function() {
   });
 
   test('ForwardAriaHasPopup', async function() {
-    const button = element.shadowRoot.querySelector('#button')!;
+    const button = element.$.button;
 
     // Default is null (not present)
     assertFalse(button.hasAttribute('aria-haspopup'));
@@ -61,8 +61,31 @@ suite('ToolbarChipButtonTest', function() {
     assertFalse(button.hasAttribute('aria-haspopup'));
   });
 
+  test('ForwardAriaExpanded', async function() {
+    const button = element.$.button;
+
+    // Default is null (not present)
+    assertFalse(button.hasAttribute('aria-expanded'));
+
+    // Set attribute
+    element.setAttribute('aria-expanded', 'true');
+    await microtasksFinished();
+    assertEquals('true', button.getAttribute('aria-expanded'));
+
+    // Set property
+    element.ariaExpanded = 'false';
+    await microtasksFinished();
+    assertEquals('false', button.getAttribute('aria-expanded'));
+
+    // Clear property
+    element.ariaExpanded = null;
+    await microtasksFinished();
+    assertFalse(button.hasAttribute('aria-expanded'));
+  });
+
+
   test('ForwardTooltip', async function() {
-    const button = element.shadowRoot.querySelector('#button')!;
+    const button = element.$.button;
 
     // Default is empty
     assertEquals('', button.getAttribute('title'));

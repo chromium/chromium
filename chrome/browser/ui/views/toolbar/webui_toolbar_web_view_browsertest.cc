@@ -2469,6 +2469,21 @@ IN_PROC_BROWSER_TEST_F(WebUIAppMenuBrowserTest, AppMenuState) {
   EXPECT_FALSE(state->tooltip.empty());
 }
 
+// Test that accessibility text matches label text when severity is not none,
+// aligning with native Views behavior.
+IN_PROC_BROWSER_TEST_F(WebUIAppMenuBrowserTest, AppMenuStateWithSeverity) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  webui_toolbar_view->GetAppMenuControl()->SetTypeAndSeverity(
+      {AppMenuIconController::IconType::kGlobalError,
+       AppMenuIconController::Severity::kLow});
+  const auto state = webui_toolbar_view->GetAppMenuControl()->GetState();
+  ASSERT_TRUE(state);
+  EXPECT_EQ(state->severity, toolbar_ui_api::mojom::AppMenuSeverity::kLow);
+  ASSERT_TRUE(state->label_text.has_value());
+  EXPECT_EQ(state->accessibility_text, *state->label_text);
+}
+
 // Verifies the bidirectional state synchronization between the WebUI app menu
 // button and the native menu controller via Mojo. This ensures the WebUI button
 // correctly reflects whether the native menu is currently open or closed.
@@ -2712,7 +2727,9 @@ IN_PROC_BROWSER_TEST_P(WebUIAppMenuButtonStateTest, VerifyState) {
     // on the inner button inside its shadow DOM to avoid redundant attributes
     // on the host.
     std::u16string expected_aria_label =
-        AppMenuIconController::GetIconAccessibleName(param.type);
+        expected_label.empty()
+            ? AppMenuIconController::GetIconAccessibleName(param.type)
+            : expected_label;
     std::string actual_aria_label =
         content::EvalJs(web_contents,
                         base::StrCat({icon_button_js,

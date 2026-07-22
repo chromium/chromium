@@ -22,9 +22,15 @@ toolbar-chip-button {
   --toolbar-chip-font-weight: var(--toolbar-button-font-weight);
 }
 
-/* Highlight coloring for the wrapped toolbar-chip-button when severity is present */
+/* Highlight coloring for the wrapped toolbar-chip-button when severity is
+ * present. Note: Despite the variable name containing "expanded", native
+ * Views (BrowserAppMenuButton) applies this high-contrast foreground color
+ * specifically when a severity label is visible. When no label is present and
+ * the menu is open (.anchor-highlight), standard toolbar button text coloring
+ * is preserved in parity with native behavior. */
 toolbar-chip-button.has-severity {
   --toolbar-chip-bg-color: var(--color-app-menu-highlight-default);
+  --toolbar-chip-fg-color: var(--color-app-menu-expanded-foreground-default);
 }
 
 :host(.anchor-highlight) toolbar-chip-button {
