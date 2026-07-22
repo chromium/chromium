@@ -5,8 +5,9 @@
 import 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 import type {InkTextBoxElement, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
-import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
+import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertPositionAndSize, dragHandleWithKeyboard, getTestAnnotation, initializeBox, reactivateBox, setupTextBoxTest, verifyFinishTextAnnotationMessage} from './ink2_text_box_test_utils.js';
@@ -327,6 +328,67 @@ chrome.test.runTests([
     }
 
     window.removeEventListener('keydown', listener);
+    chrome.test.succeed();
+  },
+
+  async function testA11yAnnouncements() {
+    const {textbox} = await setupTextBoxTest();
+    initializeBox(100, 200, 400, 300);
+    await microtasksFinished();
+
+    const modifiers: Parameters<typeof keyDownOn>[2] =
+        isMac ? ['meta', 'ctrl'] : ['ctrl', 'alt'];
+
+    // Resize via keyboard shortcut.
+    let whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    keyDownOn(textbox, 0, modifiers, 'b');
+    await microtasksFinished();
+    keyUpOn(textbox, 0, modifiers, 'b');
+    let event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationResized')));
+
+    // Move up via arrow keys.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    await dragHandleWithKeyboard(textbox, 'ArrowUp', 5);
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationMovedUp')));
+
+    // Move down via arrow keys.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    await dragHandleWithKeyboard(textbox, 'ArrowDown', 5);
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationMovedDown')));
+
+    // Move left via arrow keys.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    await dragHandleWithKeyboard(textbox, 'ArrowLeft', 5);
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationMovedLeft')));
+
+    // Move right via arrow keys.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    await dragHandleWithKeyboard(textbox, 'ArrowRight', 5);
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationMovedRight')));
+
+    // Delete via keyboard shortcut.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    keyDownOn(textbox, 0, [], 'Delete');
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationDeleted')));
+
     chrome.test.succeed();
   },
 ]);

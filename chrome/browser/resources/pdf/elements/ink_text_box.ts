@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -47,6 +49,11 @@ function getStyleForTypeface(typeface: TextTypeface): string {
     default:
       assertNotReachedCase(typeface);
   }
+}
+
+function isArrowKey(key: string|null): boolean {
+  return key !== null &&
+      ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(key);
 }
 
 const InkTextBoxElementBase = InkTextObserverMixin(CrLitElement);
@@ -105,8 +112,9 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   accessor annotation: TextAnnotation|null = null;
   accessor pageDimensions: ViewportRect|null = null;
 
+  private activeKey_: string|null = null;
+  private arrowKeyDownCount_: number = -1;
   private attributes_?: TextAttributes;
-  private currentArrowKey_: string|null = null;
   private dragTarget_: HTMLElement|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   // Whether this is an existing textbox. Tracked so that the textbox can
@@ -115,15 +123,14 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   // committed where an empty new annotation would not be committed).
   private existing_: boolean = false;
   private id_: number = -1;
-  private keyDownCount_: number = -1;
   private pageIndex_: number = -1;
   private pageHeight_: number = 0;
   private pageWidth_: number = 0;
   private pageX_: number = 0;
   private pageY_: number = 0;
   private pointerStart_: {x: number, y: number}|null = null;
-  private startPosition_: TextBoxRect|null = null;
   private promiseResolver_: PromiseResolver<void>|null = null;
+  private startPosition_: TextBoxRect|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -272,17 +279,29 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.eventTracker_.remove(this.dragTarget_, 'keyup');
     this.eventTracker_.remove(this.dragTarget_, 'focusout');
     this.dragTarget_ = null;
-    this.currentArrowKey_ = null;
-    this.keyDownCount_ = -1;
+    this.activeKey_ = null;
+    this.arrowKeyDownCount_ = -1;
   }
 
-  // Removes any drag listeners and resets location to the start position.
+  private addKeyDragListeners_() {
+    this.dragTarget_ = this;
+    this.startPosition_ = {
+      locationX: this.locationX_,
+      locationY: this.locationY_,
+      width: this.width_,
+      height: this.height_,
+    };
+    this.eventTracker_.add(this, 'keyup', () => this.onHandleKeyUp_());
+    this.eventTracker_.add(this, 'focusout', () => this.onHandleKeyUp_());
+  }
+
+  // Removes any drag listeners and resets location and dimensions to the start
+  // position.
   private resetDrag_() {
     if (this.dragTarget_ === null) {
       return;
     }
 
-    // Reset location to the start position.
     assert(this.startPosition_);
     this.locationX_ = this.startPosition_.locationX;
     this.locationY_ = this.startPosition_.locationY;
@@ -292,7 +311,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
     if (this.pointerStart_ !== null) {
       this.removePointerDragListeners_();
-    } else if (this.currentArrowKey_ !== null) {
+    } else if (this.activeKey_ !== null) {
       this.removeKeyDragListeners_();
     }
   }
@@ -498,7 +517,10 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (e.key === 'Backspace' || e.key === 'Delete') {
       this.textValue_ = '';
       this.textBoxEdited_();
-      this.commitTextAnnotation();
+      this.commitTextAnnotation().then(() => {
+        getAnnouncerInstance().announce(
+            loadTimeData.getString('ink2TextAnnotationDeleted'));
+      });
       return;
     }
 
@@ -514,7 +536,12 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
 
     // Ignore all other keys except arrows.
-    if (!['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+    if (!isArrowKey(e.key)) {
+      return;
+    }
+
+    // Ignore arrow key dragging if keyboard resize shortcut is already active.
+    if (this.activeKey_ !== null && !isArrowKey(this.activeKey_)) {
       return;
     }
 
@@ -522,39 +549,31 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     e.stopPropagation();
 
     // Reset state if this is a new arrow key.
-    if (this.currentArrowKey_ !== null && this.currentArrowKey_ !== e.key) {
+    if (this.activeKey_ !== null && this.activeKey_ !== e.key) {
       this.onHandleKeyUp_();
     }
-    this.currentArrowKey_ = e.key;
+    this.activeKey_ = e.key;
 
-    if (this.keyDownCount_ === -1) {
-      this.dragTarget_ = this;
-      this.eventTracker_.add(this, 'keyup', () => this.onHandleKeyUp_());
-      this.eventTracker_.add(this, 'focusout', () => this.onHandleKeyUp_());
-      this.keyDownCount_ = 0;
-      this.startPosition_ = {
-        locationX: this.locationX_,
-        locationY: this.locationY_,
-        width: this.width_,
-        height: this.height_,
-      };
+    if (this.arrowKeyDownCount_ === -1) {
+      this.addKeyDragListeners_();
+      this.arrowKeyDownCount_ = 0;
     }
-    this.keyDownCount_++;
+    this.arrowKeyDownCount_++;
 
     let moveX = 0;
     let moveY = 0;
     switch (e.key) {
       case 'ArrowDown':
-        moveY = this.keyDownCount_;
+        moveY = this.arrowKeyDownCount_;
         break;
       case 'ArrowUp':
-        moveY = -1 * this.keyDownCount_;
+        moveY = -1 * this.arrowKeyDownCount_;
         break;
       case 'ArrowLeft':
-        moveX = -1 * this.keyDownCount_;
+        moveX = -1 * this.arrowKeyDownCount_;
         break;
       case 'ArrowRight':
-        moveX = this.keyDownCount_;
+        moveX = this.arrowKeyDownCount_;
         break;
       default:
         break;
@@ -562,7 +581,35 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     this.onMove_(this, moveX, moveY);
   }
 
+  private announceMoveOrResize_() {
+    if (!this.startPosition_) {
+      return;
+    }
+
+    if (this.width_ !== this.startPosition_.width ||
+        this.height_ !== this.startPosition_.height) {
+      getAnnouncerInstance().announce(
+          loadTimeData.getString('ink2TextAnnotationResized'));
+      return;
+    }
+
+    const deltaX = this.locationX_ - this.startPosition_.locationX;
+    if (deltaX !== 0) {
+      const stringId = deltaX > 0 ? 'ink2TextAnnotationMovedRight' :
+                                    'ink2TextAnnotationMovedLeft';
+      getAnnouncerInstance().announce(loadTimeData.getString(stringId));
+    }
+
+    const deltaY = this.locationY_ - this.startPosition_.locationY;
+    if (deltaY !== 0) {
+      const stringId = deltaY > 0 ? 'ink2TextAnnotationMovedDown' :
+                                    'ink2TextAnnotationMovedUp';
+      getAnnouncerInstance().announce(loadTimeData.getString(stringId));
+    }
+  }
+
   private onHandleKeyUp_() {
+    this.announceMoveOrResize_();
     this.startPosition_ = null;
     this.removeKeyDragListeners_();
     this.textBoxEdited_();
@@ -641,6 +688,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   }
 
   private onHandlePointerUp_() {
+    this.announceMoveOrResize_();
     this.startPosition_ = null;
     this.removePointerDragListeners_();
     this.textBoxEdited_();
@@ -677,7 +725,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
   }
 
   private handleResizeShortcut_(e: KeyboardEvent): boolean {
-    if (this.state_ === TextBoxState.INACTIVE) {
+    if (this.state_ === TextBoxState.INACTIVE || this.pointerStart_ !== null ||
+        isArrowKey(this.activeKey_)) {
       return false;
     }
 
@@ -688,7 +737,21 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
       return false;
     }
 
-    switch (e.key.toLowerCase()) {
+    const key = e.key.toLowerCase();
+    if (!['b', 'w', 'i', '9', 'k', 'j'].includes(key)) {
+      return false;
+    }
+
+    if (this.activeKey_ !== null && this.activeKey_ !== key) {
+      this.onHandleKeyUp_();
+    }
+
+    if (this.activeKey_ === null) {
+      this.activeKey_ = key;
+      this.addKeyDragListeners_();
+    }
+
+    switch (key) {
       case 'b':
         this.resizeBy_(KEYBOARD_RESIZE_STEP_PX, 0);
         return true;
@@ -708,7 +771,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         this.resizeProportionally_(0.9);
         return true;
       default:
-        return false;
+        assertNotReached();
     }
   }
 
@@ -723,7 +786,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (newWidth !== this.width_ || newHeight !== this.height_) {
       this.width_ = newWidth;
       this.height_ = newHeight;
-      this.textBoxEdited_();
     }
   }
 
@@ -742,7 +804,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (newWidth !== this.width_ || newHeight !== this.height_) {
       this.width_ = newWidth;
       this.height_ = newHeight;
-      this.textBoxEdited_();
     }
   }
 

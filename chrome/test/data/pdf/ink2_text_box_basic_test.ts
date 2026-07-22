@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {hexToColor, MIN_TEXTBOX_SIZE_PX, TEXT_COLORS, TextAlignment, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertPositionAndSize, dragHandle, initializeBox, setupTextBoxTest} from './ink2_text_box_test_utils.js';
@@ -405,6 +406,49 @@ chrome.test.runTests([
     chrome.test.assertEq(300, event.detail.locationY);
     chrome.test.assertEq(100, event.detail.width);
     chrome.test.assertEq(100, event.detail.height);
+
+    chrome.test.succeed();
+  },
+
+  async function testA11yAnnouncements() {
+    const {textbox} = await setupTextBoxTest();
+    initializeBox(100, 100, 400, 300);
+    await microtasksFinished();
+
+    // Resize via pointer drag on a resize handle.
+    let whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    const bottomRight = getRequiredElement(textbox, '.handle.bottom.right');
+    await dragHandle(bottomRight, 20, 20);
+    let event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationResized')));
+
+    // Move up via pointer drag on the box body.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    await dragHandle(textbox, 0, -50);
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationMovedUp')));
+
+    // Move right via pointer drag on the box body.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    await dragHandle(textbox, 50, 0);
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationMovedRight')));
+
+    // Move diagonally via pointer drag on the box body.
+    whenAnnounced = eventToPromise<CustomEvent<{messages: string[]}>>(
+        'cr-a11y-announcer-messages-sent', document.body);
+    await dragHandle(textbox, -30, 40);
+    event = await whenAnnounced;
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationMovedLeft')));
+    chrome.test.assertTrue(event.detail.messages.includes(
+        loadTimeData.getString('ink2TextAnnotationMovedDown')));
 
     chrome.test.succeed();
   },
