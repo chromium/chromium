@@ -1,35 +1,72 @@
 #!/usr/bin/env vpython3
-# Copyright 2025 The Chromium Authors
+# Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
-Reads glic.mojom and other referenced mojom files, and outputs generated code to
-glic_api.ts.
+Entry point for generating glic_api_generated.ts and updating glic_api.ts.
+Runs the mojo parser and then the TypeScript generator.
 
-Translates enums, structs, and unions with a "// @generate glic_api" comment
-above them and copies them into glic_api.ts. Comments from mojom files are
-copied over, but are ignored if they have a '///' prefix, allowing for internal
-documentation to be filtered out.
+### Special Mojom Comment Annotations
 
-Supports the following annotations on mojom fields:
-- "@glic_type <type>": Overrides the generated TypeScript type.
-- "@glic_optional": Marks a property as optional (appending '?').
-- "@glic_ignore": Excludes a property from the generated interface.
+The generator parses special annotations in Mojom comments to customize the
+TypeScript generation. These annotations should be placed in comments
+immediately preceding the struct, enum, field, or interface definition.
 
-Ideally, we would output generated code to a new file, but this way is
-less likely to break downstream users of glic_api.
+#### `@generate glic_api`
+Marks a struct, enum, or interface for generation.
+*   **For structs/enums**: Generates intermediate `Base` transport types.
+*   **For interfaces**: Generates postMessage bridges. Must be combined with
+    `bridge=<BridgeName>` parameter (e.g., `@generate glic_api bridge=PocHost`).
+
+#### `@glic_type <TypeScriptType>`
+Overrides the generated TypeScript type for a field.
+Useful when a Mojom type maps to a custom type or a public API type rather than
+the default generated base type.
+Example:
+```mojom
+// @glic_type glicApi.Point
+gfx.mojom.Point point;
+```
+If the type ends with `?` (e.g., `@glic_type MyType?`), it also implies
+`@glic_optional`.
+
+#### `@glic_optional`
+Marks a field as optional in the generated TS interface (appending `?`
+to the field name), even if the field is not nullable in Mojom.
+
+#### `@glic_ignore`
+Ignores the field in the generated TS base interface.
 """
+
 import os
 import sys
+import subprocess
+import tempfile
 
 # Add the directory containing the 'generate_impl' package to sys.path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-import generate_impl.gen_sources
+from generate_impl import parse
 
 
 def Main():
-    generate_impl.gen_sources.Main()
+    source_dir = parse.SOURCE_DIR
+    if not source_dir:
+        print("Error: Could not find source directory.", file=sys.stderr)
+        sys.exit(1)
+
+    # Script paths
+    this_dir = os.path.dirname(os.path.abspath(__file__))
+    gen_sources_ts = os.path.join(this_dir, 'generate_impl', 'gen_sources.ts')
+    node_py = os.path.join(source_dir, 'third_party', 'node', 'node.py')
+
+    # Run gen_sources.ts using node.py
+    node_cmd = [sys.executable, node_py, gen_sources_ts]
+    # Pass through --check-only or other args
+    node_cmd += sys.argv[1:]
+
+    result = subprocess.run(node_cmd)
+    sys.exit(result.returncode)
 
 
 if __name__ == '__main__':

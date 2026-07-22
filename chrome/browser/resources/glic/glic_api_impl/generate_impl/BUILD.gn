@@ -1,0 +1,63 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/python.gni")
+import("//third_party/node/node.gni")
+
+generator_ts_sources = [
+  "code_writer.ts",
+  "converter.ts",
+  "gen_enum_conversions.ts",
+  "gen_sources.ts",
+  "mojom_types.ts",
+  "ts_types.ts",
+]
+
+action_with_pydeps("parse_mojom") {
+  script = "parse.py"
+  inputs = [
+    "//chrome/browser/glic/host/glic.mojom",
+    "//chrome/common/actor_webui.mojom",
+    "//chrome/common/glic_enums.mojom",
+    "//third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom",
+  ]
+  outputs = [ "$target_gen_dir/mojom_ast.json" ]
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
+action_with_pydeps("check_generator_types") {
+  script = "run_tsc.py"
+  inputs = [
+             "tsconfig.json",
+             "//third_party/node/node.py",
+             "//third_party/node/node_modules/typescript/lib/tsc.js",
+           ] + generator_ts_sources
+  outputs = [ "$target_gen_dir/check_generator_types.stamp" ]
+  args = [
+    rebase_path(outputs[0], root_build_dir),
+    rebase_path("//third_party/node/node.py", root_build_dir),
+    rebase_path("//third_party/node/node_modules/typescript/lib/tsc.js",
+                root_build_dir),
+    "--project",
+    rebase_path("tsconfig.json", root_build_dir),
+  ]
+}
+
+node("generate_enum_conversions") {
+  script = "//third_party/node/node.py"
+  inputs = [ "$target_gen_dir/mojom_ast.json" ] + generator_ts_sources
+  outputs = [ "$target_gen_dir/enum_conversions.ts" ]
+  args = [
+    rebase_path("gen_enum_conversions.ts", root_build_dir),
+    rebase_path("$target_gen_dir/mojom_ast.json", root_build_dir),
+    rebase_path(outputs[0], root_build_dir),
+  ]
+  deps = [
+    ":check_generator_types",
+    ":parse_mojom",
+  ]
+}

@@ -2645,7 +2645,8 @@ _GENERIC_PYDEPS_FILES = [
     'build/fuchsia/starview/run_cuttlefish_test.pydeps',
     'build/fuchsia/test/component_storage_test.pydeps',
     'build/protoc_java.pydeps',
-    'chrome/browser/resources/glic/glic_api_impl/generate_impl/gen_conversions.pydeps',
+    'chrome/browser/resources/glic/glic_api_impl/generate_impl/parse.pydeps',
+    'chrome/browser/resources/glic/glic_api_impl/generate_impl/run_tsc.pydeps',
     'chrome/test/chromedriver/log_replay/client_replay_unittest.pydeps',
     'chrome/test/chromedriver/test/run_py_tests.pydeps',
     'chrome/test/media/performance/openscreen_cast_performance_test.pydeps',
@@ -3068,6 +3069,7 @@ def CheckNoOzonePlatformMacrosInTests(input_api, output_api):
     These are compile-time macros and do not reflect the runtime environment.
     Tests should use runtime checks instead.
     """
+
     def FilterFile(affected_file):
         res = input_api.FilterSourceFile(
             affected_file,
@@ -3082,8 +3084,7 @@ def CheckNoOzonePlatformMacrosInTests(input_api, output_api):
     for f in input_api.AffectedSourceFiles(FilterFile):
         for line_num, line in f.ChangedContents():
             if ozone_macro_pattern.search(line):
-                problems.append(
-                    f'{f.LocalPath()}:{line_num}: {line.strip()}')
+                problems.append(f'{f.LocalPath()}:{line_num}: {line.strip()}')
 
     if not problems:
         return []
@@ -3096,8 +3097,7 @@ def CheckNoOzonePlatformMacrosInTests(input_api, output_api):
             'check if the\n'
             'test is running on Wayland or X11 at runtime. Please '
             'use runtime checks\n'
-            'instead (e.g., checking the ozone platform).',
-            problems)
+            'instead (e.g., checking the ozone platform).', problems)
     ]
 
 
@@ -4026,7 +4026,8 @@ def CheckAddedDepsHaveTargetApprovals(input_api, output_api):
             # Skip OWNERS check when Owners-Override label is approved. This is
             # intended for global owners, trusted bots, and on-call sheriffs.
             # Review is still required for these changes.
-            if input_api.gerrit.IsOwnersOverrideApproved(input_api.change.issue):
+            if input_api.gerrit.IsOwnersOverrideApproved(
+                    input_api.change.issue):
                 return []
         except Exception as e:
             return [
