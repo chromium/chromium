@@ -832,8 +832,10 @@ function createAuthenticatorAttestationResponse(
 type ResolveFunction<T> = (value: T|PromiseLike<T>) => void;
 type RejectFunction = (reason?: any) => void;
 
-// Default timeout for deferred public key credential promises.
-const DEFAULT_TIMEOUT_MS = 300000;
+// Timeouts for deferred public key credential promises.
+const DEFAULT_TIMEOUT_MS = 300000;  // 5 mins
+const MIN_TIMEOUT_MS = 180000;      // 3 mins
+const MAX_TIMEOUT_MS = 72000000;    // 20 hours
 
 // Class containing a promise and access to its resolve and reject method for
 // later use.
@@ -855,6 +857,10 @@ class DeferredPublicKeyCredentialPromise {
     // Assign a unique ID for this object.
     this.id = generateRandomId();
 
+    // Adjust the timeout, so that it is within [MIN_TIMEOUT_MS, MAX_TIMEOUT_MS].
+    const adjustedTimeoutMs =
+        Math.max(MIN_TIMEOUT_MS, Math.min(timeoutMs, MAX_TIMEOUT_MS));
+
     let timerId: ReturnType<typeof setTimeout>;
     this.promise =
         Promise
@@ -866,9 +872,9 @@ class DeferredPublicKeyCredentialPromise {
               new Promise<PublicKeyCredential|null>((_, reject) => {
                 timerId = setTimeout(() => {
                   reject(new DOMException(
-                      `Promise timed out after ${timeoutMs}ms`,
+                      `Promise timed out after ${adjustedTimeoutMs}ms`,
                       'NotAllowedError'));
-                }, timeoutMs);
+                }, adjustedTimeoutMs);
               }),
             ])
             .finally(() => {
