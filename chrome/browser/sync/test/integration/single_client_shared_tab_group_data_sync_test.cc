@@ -780,6 +780,79 @@ IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
   EXPECT_TRUE(SharedTabGroupDataErrorChecker(GetSyncService(0)).Wait());
 }
 
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
+                       ShouldIgnoreCrossCollaborationGroupDeletion) {
+  ASSERT_TRUE(SetupSync());
+
+  const base::Uuid kGroupGuid = base::Uuid::GenerateRandomV4();
+  const syncer::CollaborationId kCollaborationId1("collaboration_1");
+  const syncer::CollaborationId kCollaborationId2("collaboration_2");
+  RegisterCollaboration(kCollaborationId1);
+  RegisterCollaboration(kCollaborationId2);
+
+  const sync_pb::SharedTabGroupDataSpecifics shared_group_specifics =
+      MakeSharedTabGroupSpecifics(
+          kGroupGuid,
+          /*originating_saved_group_guid=*/base::Uuid::GenerateRandomV4(),
+          "title", sync_pb::SharedTabGroup_Color_CYAN);
+  AddSpecificsToFakeServer(shared_group_specifics, kCollaborationId1);
+
+  const sync_pb::SharedTabGroupDataSpecifics shared_tab_specifics =
+      MakeSharedTabGroupTabSpecifics(base::Uuid::GenerateRandomV4(), kGroupGuid,
+                                     "tab 1", GURL("http://google.com/1"));
+  AddSpecificsToFakeServer(shared_tab_specifics, kCollaborationId1);
+
+  ASSERT_TRUE(SavedTabOrGroupExistsChecker(GetTabGroupSyncService(), kGroupGuid)
+                  .Wait());
+  ASSERT_THAT(GetAllTabGroups(), SizeIs(1));
+
+  // Simulate an injected tombstone for the group from a different
+  // collaboration.
+  InjectTombstoneToFakeServer(shared_group_specifics, kCollaborationId2);
+
+  ASSERT_TRUE(AwaitQuiescence());
+
+  // Group and tab should remain intact.
+  ASSERT_THAT(GetAllTabGroups(), SizeIs(1));
+  EXPECT_THAT(GetAllTabGroups().front().saved_tabs(), SizeIs(1));
+}
+
+IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,
+                       ShouldIgnoreCrossCollaborationTabDeletion) {
+  ASSERT_TRUE(SetupSync());
+
+  const base::Uuid kGroupGuid = base::Uuid::GenerateRandomV4();
+  const syncer::CollaborationId kCollaborationId1("collaboration_1");
+  const syncer::CollaborationId kCollaborationId2("collaboration_2");
+  RegisterCollaboration(kCollaborationId1);
+  RegisterCollaboration(kCollaborationId2);
+
+  const sync_pb::SharedTabGroupDataSpecifics shared_group_specifics =
+      MakeSharedTabGroupSpecifics(
+          kGroupGuid,
+          /*originating_saved_group_guid=*/base::Uuid::GenerateRandomV4(),
+          "title", sync_pb::SharedTabGroup_Color_CYAN);
+  AddSpecificsToFakeServer(shared_group_specifics, kCollaborationId1);
+
+  const sync_pb::SharedTabGroupDataSpecifics shared_tab_specifics =
+      MakeSharedTabGroupTabSpecifics(base::Uuid::GenerateRandomV4(), kGroupGuid,
+                                     "tab 1", GURL("http://google.com/1"));
+  AddSpecificsToFakeServer(shared_tab_specifics, kCollaborationId1);
+
+  ASSERT_TRUE(SavedTabOrGroupExistsChecker(GetTabGroupSyncService(), kGroupGuid)
+                  .Wait());
+  ASSERT_THAT(GetAllTabGroups(), SizeIs(1));
+
+  // Simulate an injected tombstone for the tab from a different collaboration.
+  InjectTombstoneToFakeServer(shared_tab_specifics, kCollaborationId2);
+
+  ASSERT_TRUE(AwaitQuiescence());
+
+  // Group and tab should remain intact.
+  ASSERT_THAT(GetAllTabGroups(), SizeIs(1));
+  EXPECT_THAT(GetAllTabGroups().front().saved_tabs(), SizeIs(1));
+}
+
 // Android doesn't support PRE_ tests.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(SingleClientSharedTabGroupDataSyncTest,

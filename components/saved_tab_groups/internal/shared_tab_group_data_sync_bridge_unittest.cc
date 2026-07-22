@@ -374,8 +374,12 @@ std::unique_ptr<syncer::EntityChange> CreateUpdateEntityChange(
 }
 
 std::unique_ptr<syncer::EntityChange> CreateDeleteEntityChange(
-    const std::string& storage_key) {
-  return syncer::EntityChange::CreateDelete(storage_key, syncer::EntityData());
+    const std::string& storage_key,
+    const CollaborationId& collaboration_id) {
+  return syncer::EntityChange::CreateDelete(
+      storage_key, CreateEntityData(sync_pb::SharedTabGroupDataSpecifics(),
+                                    collaboration_id, kDefaultGaiaId,
+                                    /*updated_by=*/kDefaultGaiaId));
 }
 
 std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
@@ -900,8 +904,9 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
           .SetCollaborationId(CollaborationId("collaboration 2")));
   ASSERT_EQ(model()->Count(), 2);
 
-  ApplySingleEntityChange(CreateDeleteEntityChange(
-      group_to_delete.saved_guid().AsLowercaseString()));
+  ApplySingleEntityChange(
+      CreateDeleteEntityChange(group_to_delete.saved_guid().AsLowercaseString(),
+                               CollaborationId("collaboration")));
 
   EXPECT_THAT(
       model()->saved_tab_groups(),
@@ -927,7 +932,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(2));
 
   ApplySingleEntityChange(CreateDeleteEntityChange(
-      tab_to_delete.saved_tab_guid().AsLowercaseString()));
+      tab_to_delete.saved_tab_guid().AsLowercaseString(),
+      CollaborationId("collaboration")));
 
   ASSERT_EQ(model()->Count(), 1);
   EXPECT_THAT(
@@ -1857,8 +1863,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   syncer::EntityChangeList change_list;
   change_list.push_back(
       CreateUpdateEntityChange(tab_1_specifics, kCollaborationId));
-  change_list.push_back(
-      CreateDeleteEntityChange(StorageKeyForTab(group.saved_tabs()[0])));
+  change_list.push_back(CreateDeleteEntityChange(
+      StorageKeyForTab(group.saved_tabs()[0]), kCollaborationId));
 
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(change_list));
@@ -1927,8 +1933,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Put).Times(0);
 
   syncer::EntityChangeList change_list;
-  change_list.push_back(
-      CreateDeleteEntityChange(StorageKeyForTab(group.saved_tabs()[0])));
+  change_list.push_back(CreateDeleteEntityChange(
+      StorageKeyForTab(group.saved_tabs()[0]), kCollaborationId));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(change_list));
 
@@ -2265,7 +2271,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldKeepGroupWhenAllTabsAreUpdated) {
       MakeTabSpecifics("Tab 2", GURL("http://google.com/2"), group.saved_guid(),
                        GenerateRandomUniquePosition());
   syncer::EntityChangeList change_list;
-  change_list.push_back(CreateDeleteEntityChange(StorageKeyForTab(tab)));
+  change_list.push_back(
+      CreateDeleteEntityChange(StorageKeyForTab(tab), kCollaborationId));
   change_list.push_back(
       CreateUpdateEntityChange(new_tab_specifics, kCollaborationId));
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
@@ -2448,6 +2455,130 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, UntrackEntitiesForCollaboration) {
         run_loop2.Quit();
       }));
   run_loop2.Run();
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldIgnoreCrossCollaborationGroupDeletion) {
+  const CollaborationId kCollaborationId1("collaboration 1");
+  const CollaborationId kCollaborationId2("collaboration 2");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  // Add a group and a tab in collaboration 1.
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  const base::Uuid group_id =
+      base::Uuid::ParseLowercase(group_specifics.guid());
+  sync_pb::SharedTabGroupDataSpecifics tab_specifics =
+      MakeTabSpecifics("tab title 1", GURL("https://google.com/1"), group_id,
+                       GenerateRandomUniquePosition());
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateAddEntityChange(group_specifics, kCollaborationId1));
+  change_list.push_back(
+      CreateAddEntityChange(tab_specifics, kCollaborationId1));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  ASSERT_THAT(model()->saved_tab_groups(), SizeIs(1));
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(1));
+
+  // Try to delete the group from collaboration 2 (cross-collaboration
+  // deletion).
+  syncer::EntityChangeList delete_group_list;
+  delete_group_list.push_back(syncer::EntityChange::CreateDelete(
+      group_specifics.guid(),
+      CreateEntityData(group_specifics, kCollaborationId2, kDefaultGaiaId,
+                       /*updated_by=*/kDefaultGaiaId)));
+  EXPECT_FALSE(
+      bridge()
+          ->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(delete_group_list))
+          .has_value());
+
+  // Group and tab should remain intact.
+  ASSERT_THAT(model()->saved_tab_groups(), SizeIs(1));
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(1));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldIgnoreCrossCollaborationTabDeletion) {
+  const CollaborationId kCollaborationId1("collaboration 1");
+  const CollaborationId kCollaborationId2("collaboration 2");
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  // Add a group and a tab in collaboration 1.
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
+  const base::Uuid group_id =
+      base::Uuid::ParseLowercase(group_specifics.guid());
+  sync_pb::SharedTabGroupDataSpecifics tab_specifics =
+      MakeTabSpecifics("tab title 1", GURL("https://google.com/1"), group_id,
+                       GenerateRandomUniquePosition());
+
+  syncer::EntityChangeList change_list;
+  change_list.push_back(
+      CreateAddEntityChange(group_specifics, kCollaborationId1));
+  change_list.push_back(
+      CreateAddEntityChange(tab_specifics, kCollaborationId1));
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(change_list));
+
+  ASSERT_THAT(model()->saved_tab_groups(), SizeIs(1));
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(1));
+
+  // Try to delete the tab from collaboration 2 (cross-collaboration deletion).
+  syncer::EntityChangeList delete_tab_list;
+  delete_tab_list.push_back(syncer::EntityChange::CreateDelete(
+      tab_specifics.guid(),
+      CreateEntityData(tab_specifics, kCollaborationId2, kDefaultGaiaId,
+                       /*updated_by=*/kDefaultGaiaId)));
+  EXPECT_FALSE(
+      bridge()
+          ->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(delete_tab_list))
+          .has_value());
+
+  // Group and tab should still remain intact.
+  ASSERT_THAT(model()->saved_tab_groups(), SizeIs(1));
+  ASSERT_THAT(model()->saved_tab_groups().front().saved_tabs(), SizeIs(1));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldIgnoreCrossCollaborationTabMissingGroupDeletion) {
+  const CollaborationId kCollaborationId1("collaboration 1");
+  const CollaborationId kCollaborationId2("collaboration 2");
+  const base::Uuid kMissingGroupGuid = base::Uuid::GenerateRandomV4();
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  // Add a tab missing group in collaboration 1.
+  sync_pb::SharedTabGroupDataSpecifics tab_specifics =
+      MakeTabSpecifics("tab title", GURL("http://google.com/1"),
+                       kMissingGroupGuid, GenerateRandomUniquePosition());
+
+  ApplySingleEntityChange(
+      CreateAddEntityChange(tab_specifics, kCollaborationId1));
+
+  // Verify that the tab missing group is present.
+  ASSERT_THAT(ExtractEntityDataFromBatch(bridge()->GetAllDataForDebugging()),
+              SizeIs(1));
+
+  // Try to delete the tab missing group from collaboration 2
+  // (cross-collaboration deletion).
+  syncer::EntityChangeList delete_tab_list;
+  delete_tab_list.push_back(syncer::EntityChange::CreateDelete(
+      tab_specifics.guid(),
+      CreateEntityData(tab_specifics, kCollaborationId2, kDefaultGaiaId,
+                       /*updated_by=*/kDefaultGaiaId)));
+  EXPECT_FALSE(
+      bridge()
+          ->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(delete_tab_list))
+          .has_value());
+
+  // The tab missing group should still remain intact.
+  EXPECT_THAT(ExtractEntityDataFromBatch(bridge()->GetAllDataForDebugging()),
+              SizeIs(1));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest,

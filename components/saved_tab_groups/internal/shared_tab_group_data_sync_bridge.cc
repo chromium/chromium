@@ -644,14 +644,15 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
 
   // Process group and tab deletions first.
   for (const std::unique_ptr<syncer::EntityChange>& change : delete_changes) {
-    GaiaId last_updated_by;
-    if (change->data().collaboration_metadata) {
-      last_updated_by =
-          change->data().collaboration_metadata->last_updated_by();
+    if (!change->data().collaboration_metadata.has_value()) {
+      // This should never happen. Skip deletion in this case for safety.
+      continue;
     }
-    DeleteDataFromLocalStorage(change->storage_key(),
-                               std::move(last_updated_by),
-                               *ongoing_write_batch_);
+    GaiaId last_updated_by =
+        change->data().collaboration_metadata->last_updated_by();
+    DeleteDataFromLocalStorage(
+        change->storage_key(), *change->data().collaboration_metadata,
+        std::move(last_updated_by), *ongoing_write_batch_);
   }
 
   // Sort tab updates and creations in the reversed order. This is required to
@@ -1361,10 +1362,9 @@ SharedTabGroupDataSyncBridge::ApplyRemoteTabUpdate(
 
 void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
     const std::string& storage_key,
+    const syncer::CollaborationMetadata& collaboration_metadata,
     GaiaId removed_by,
     syncer::DataTypeStore::WriteBatch& write_batch) {
-  write_batch.DeleteData(storage_key);
-
   base::Uuid guid = base::Uuid::ParseLowercase(storage_key);
   if (!guid.is_valid()) {
     return;
@@ -1372,7 +1372,13 @@ void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
 
   // Check if the model contains the group guid. If so, remove that group and
   // all of its tabs.
-  if (model_wrapper_->GetGroup(guid)) {
+  if (const SavedTabGroup* group = model_wrapper_->GetGroup(guid)) {
+    if (group->collaboration_id() !=
+        collaboration_metadata.collaboration_id()) {
+      DVLOG(1) << "Ignoring deletion of group from a different collaboration";
+      return;
+    }
+    write_batch.DeleteData(storage_key);
     std::erase(tab_groups_waiting_for_commit_, guid);
     model_wrapper_->RemoveGroup(guid);
     return;
@@ -1380,9 +1386,31 @@ void SharedTabGroupDataSyncBridge::DeleteDataFromLocalStorage(
 
   if (const SavedTabGroup* group_containing_tab =
           model_wrapper_->GetGroupContainingTab(guid)) {
+    if (group_containing_tab->collaboration_id() !=
+        collaboration_metadata.collaboration_id()) {
+      DVLOG(1) << "Ignoring deletion of tab from a different collaboration";
+      return;
+    }
+    write_batch.DeleteData(storage_key);
     model_wrapper_->RemoveTabFromGroup(group_containing_tab->saved_guid(), guid,
                                        std::move(removed_by));
+    return;
   }
+
+  auto it = tabs_missing_groups_.find(guid);
+  if (it != tabs_missing_groups_.end()) {
+    if (it->second.collaboration_metadata.collaboration_id() !=
+        collaboration_metadata.collaboration_id()) {
+      DVLOG(1) << "Ignoring deletion of tab missing group from a different "
+                  "collaboration";
+      return;
+    }
+    write_batch.DeleteData(storage_key);
+    tabs_missing_groups_.erase(it);
+    return;
+  }
+
+  write_batch.DeleteData(storage_key);
 }
 
 void SharedTabGroupDataSyncBridge::SendToSync(
