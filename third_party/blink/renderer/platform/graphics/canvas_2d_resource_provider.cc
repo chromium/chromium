@@ -523,11 +523,10 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
 }
 
 std::optional<cc::PaintRecord> Canvas2DResourceProvider::Flush(
-    bool want_to_print) {
+    bool preserve_recording) {
   if (!Recorder().HasReleasableDrawOps()) {
     return std::nullopt;
   }
-  bool preserve_recording = want_to_print && clear_frame_;
 
   clear_frame_ = false;
   cc::PaintRecord recording;
