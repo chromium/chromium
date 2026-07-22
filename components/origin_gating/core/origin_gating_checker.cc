@@ -209,6 +209,12 @@ void OriginGatingChecker::EvaluatePredicates(
                   decision = EvaluateRequireHttpsOrHttp(input.destination);
                   break;
                 }
+                case DecisionSource::kActorContainerConfig: {
+                  decision = EvaluateActorContainerConfig(
+                      input.event, input.source_origin,
+                      input.destination_origin);
+                  break;
+                }
                 case DecisionSource::kNoVerdict:
                   // This is an internal/fallback decision source and is not an
                   // executable predicate. OriginGatingConfiguration's
@@ -354,6 +360,23 @@ Decision OriginGatingChecker::IsCachedWithUserConfirmation(
     const url::Origin& origin) const {
   return cache_.IsNavigationConfirmedByUser(origin) ? Decision::kAllowed
                                                     : Decision::kNoDecision;
+}
+
+Decision OriginGatingChecker::EvaluateActorContainerConfig(
+    GateableEvent event,
+    const url::Origin& source,
+    const url::Origin& destination) const {
+  if (!actor_container_config_slot_.has_value()) {
+    return Decision::kNoDecision;
+  }
+  const ActorContainerConfig& config = actor_container_config_slot_.value();
+  if (event == GateableEvent::kPageAction) {
+    return config.IsActuationAllowed(destination) ? Decision::kAllowed
+                                                  : Decision::kBlocked;
+  }
+
+  return config.IsNavigationAllowed(source, destination) ? Decision::kAllowed
+                                                         : Decision::kBlocked;
 }
 
 }  // namespace origin_gating

@@ -23,9 +23,8 @@ class ActorContainerConfigSlot {
   ~ActorContainerConfigSlot();
 
   // Assigns the `config` to this instance. This method is a no-op except for
-  // the first time it is called. Returns true if the assignment succeeded,
-  // false otherwise.
-  bool Assign(ActorContainerConfig config);
+  // the first time it is called.
+  void Assign(ActorContainerConfig config);
 
   bool has_value() const { return config_.has_value(); }
 

@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "components/origin_gating/core/actor_container_config_slot.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/origin_gating_configuration.h"
 #include "components/origin_gating/core/types.h"
@@ -105,6 +106,16 @@ class OriginGatingChecker {
 
   const OriginGatingCache& cache() const { return cache_; }
 
+  // Returns references to the container config slot.
+  const ActorContainerConfigSlot& actor_container_config_slot() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return actor_container_config_slot_;
+  }
+  ActorContainerConfigSlot& actor_container_config_slot() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return actor_container_config_slot_;
+  }
+
  private:
   // Holds various inputs provided by the delegate (and data derived thereof),
   // to avoid needless recomputations.
@@ -170,10 +181,17 @@ class OriginGatingChecker {
   Decision IsCachedWithUserConfirmation(const url::Origin& origin) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  Decision EvaluateActorContainerConfig(GateableEvent event,
+                                        const url::Origin& source,
+                                        const url::Origin& destination) const
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   SEQUENCE_CHECKER(sequence_checker_);
   const raw_ref<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   OriginGatingConfiguration config_ GUARDED_BY_CONTEXT(sequence_checker_);
   OriginGatingCache cache_ GUARDED_BY_CONTEXT(sequence_checker_);
+  ActorContainerConfigSlot actor_container_config_slot_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   base::WeakPtrFactory<OriginGatingChecker> weak_ptr_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

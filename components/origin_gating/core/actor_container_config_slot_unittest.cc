@@ -45,14 +45,14 @@ TEST_F(ActorContainerConfigSlotTest, InitialState) {
 
 TEST_F(ActorContainerConfigSlotTest, Assign_EmptyConfig) {
   ActorContainerConfigSlot slot;
-  EXPECT_TRUE(slot.Assign(ActorContainerConfig()));
+  slot.Assign(ActorContainerConfig());
   EXPECT_TRUE(slot.has_value());
   EXPECT_FALSE(slot.value().IsActuationAllowed(kExampleOrigin));
 }
 
 TEST_F(ActorContainerConfigSlotTest, Assign_NonemptyConfig) {
   ActorContainerConfigSlot slot;
-  EXPECT_TRUE(slot.Assign(CreateConfigAllowingNavigation(kExampleHost)));
+  slot.Assign(CreateConfigAllowingNavigation(kExampleHost));
   EXPECT_TRUE(slot.has_value());
   EXPECT_TRUE(slot.value().IsActuationAllowed(kExampleOrigin));
 }
@@ -60,11 +60,12 @@ TEST_F(ActorContainerConfigSlotTest, Assign_NonemptyConfig) {
 TEST_F(ActorContainerConfigSlotTest,
        Assign_PresentConfigThenIgnoresSecondCall) {
   ActorContainerConfigSlot slot;
-  EXPECT_TRUE(slot.Assign(CreateConfigAllowingNavigation(kExampleHost)));
+  slot.Assign(CreateConfigAllowingNavigation(kExampleHost));
 
-  EXPECT_FALSE(slot.Assign(CreateConfigAllowingNavigation(kOtherHost)));
+  slot.Assign(CreateConfigAllowingNavigation(kOtherHost));
   ASSERT_TRUE(slot.has_value());
   EXPECT_FALSE(slot.value().IsActuationAllowed(kOtherOrigin));
+  EXPECT_TRUE(slot.value().IsActuationAllowed(kExampleOrigin));
 }
 
 }  // namespace origin_gating

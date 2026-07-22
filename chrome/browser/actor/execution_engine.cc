@@ -434,6 +434,10 @@ ExecutionEngine::GatingDecision MapGatingDecisionToEngineDecision(
       switch (decision.attribution.Source()) {
         case origin_gating::DecisionSource::kAllowSameOrigin:
           return ExecutionEngine::GatingDecision::kAllowSameOrigin;
+        case origin_gating::DecisionSource::kActorContainerConfig:
+          return decision.is_allowed
+                     ? ExecutionEngine::GatingDecision::kAllowByContainerConfig
+                     : ExecutionEngine::GatingDecision::kBlockByContainerConfig;
         case origin_gating::DecisionSource::kCacheWithUserConfirmation:
         case origin_gating::DecisionSource::kCacheWithoutUserConfirmation:
         case origin_gating::DecisionSource::kNoVerdict:
@@ -481,6 +485,9 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
                   ProfileIOData::IsHandledURL(url)
                       ? MayActOnUrlBlockReason::kWrongScheme
                       : MayActOnUrlBlockReason::kExternalProtocol};
+        case origin_gating::DecisionSource::kActorContainerConfig:
+          return {"Blocked by actor container config",
+                  MayActOnUrlBlockReason::kBlockedByContainerConfig};
         default:
           NOTREACHED() << "Unexpected decision source: "
                        << static_cast<int>(decision.attribution.Source());
@@ -615,6 +622,8 @@ ExecutionEngine::ExecutionEngine(
           *this,
           origin_gating::OriginGatingConfiguration(
               {
+                  {origin_gating::DecisionSource::kActorContainerConfig,
+                   {origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::CustomPredicate(
                        base::BindRepeating(&EvaluateTabErrorDocument),
                        kTabErrorDocumentPredicateName),
@@ -665,6 +674,8 @@ ExecutionEngine::ExecutionEngine(
                        kLookalikeUrlPredicateName),
                    {origin_gating::GateableEvent::kNavigationRequest,
                     origin_gating::GateableEvent::kPageAction}},
+                  {origin_gating::DecisionSource::kActorContainerConfig,
+                   {origin_gating::GateableEvent::kNavigationResponse}},
                   {CreateSafetyListPredicate(),
                    {origin_gating::GateableEvent::kNavigationResponse}},
                   {origin_gating::DecisionSource::kCacheWithUserConfirmation,
@@ -889,14 +900,6 @@ ExecutionEngine::GatingDecision ExecutionEngine::DetermineGatingDecision(
       return GatingDecision::kAllowByStaticList;
     case EnterprisePolicyChecker::UrlBlockReason::kExplicitlyBlocked:
       return GatingDecision::kBlockByStaticList;
-  }
-
-  if (actor_container_config_slot_.has_value()) {
-    return actor_container_config_slot_.value().IsNavigationAllowed(
-               url::Origin::Create(source_url),
-               url::Origin::Create(destination_url))
-               ? GatingDecision::kAllowByContainerConfig
-               : GatingDecision::kBlockByContainerConfig;
   }
 
   return GatingDecision::kNeedsAsyncCheck;
@@ -1335,21 +1338,9 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   const GURL& url =
       tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedURL();
 
-  if (actor_container_config_slot_.has_value()) {
-    bool navigation_allowed =
-        actor_container_config_slot_.value().IsActuationAllowed(
-            url::Origin::Create(url));
-    OnMayActOnTabDecision(
-        tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-        navigation_allowed ? MayActOnUrlBlockReason::kAllowed
-                           : MayActOnUrlBlockReason::kBlockedByContainerConfig);
-    return;
-  }
-
-  const SafetyListManager& safety_list_manager =
-      *SafetyListManager::GetInstance();
-  if (safety_list_manager.Find(url, url) ==
-      SafetyListManager::Decision::kBlock) {
+  if (!origin_gating_checker_.actor_container_config_slot().has_value() &&
+      SafetyListManager::GetInstance()->Find(url, url) ==
+          SafetyListManager::Decision::kBlock) {
     OnMayActOnTabDecision(
         tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
         MayActOnUrlBlockReason::kBlockedByStaticList);

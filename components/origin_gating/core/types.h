@@ -70,6 +70,9 @@ enum class DecisionSource {
   // Predicate that blocks if the destination's scheme is neither https nor
   // http.
   kRequireHttpsOrHttp,
+  // Predicate that evaluates the destination against the actor container
+  // configuration.
+  kActorContainerConfig,
   // No decision was reached before the OriginGating framework ran out of
   // predicates to run.
   kNoVerdict,

@@ -305,6 +305,9 @@ class ExecutionEngine : public ToolDelegate,
     return origin_gating_checker_.cache();
   }
 
+  const origin_gating::OriginGatingChecker& origin_gating_checker() const {
+    return origin_gating_checker_;
+  }
   origin_gating::OriginGatingChecker& origin_gating_checker() {
     return origin_gating_checker_;
   }
@@ -319,10 +322,6 @@ class ExecutionEngine : public ToolDelegate,
   // https://crbug.com/420669167 ). In some cases we need to drop this
   // restriction for certain tools to function.
   bool TabsCanOpenNewWebContents() const;
-
-  origin_gating::ActorContainerConfigSlot& actor_container_config_slot() {
-    return actor_container_config_slot_;
-  }
 
   // origin_gating::OriginGatingChecker::Delegate
   void DoesOriginRequireUserConfirmation(
@@ -501,9 +500,6 @@ class ExecutionEngine : public ToolDelegate,
   origin_gating::OriginGatingCache dark_launch_origin_gating_cache_;
 
   TabObservationStrategy observation_strategy_;
-
-  // Manages the container config settings that have been sent by the server.
-  origin_gating::ActorContainerConfigSlot actor_container_config_slot_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the

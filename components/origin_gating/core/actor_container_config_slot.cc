@@ -14,12 +14,11 @@ namespace origin_gating {
 ActorContainerConfigSlot::ActorContainerConfigSlot() = default;
 ActorContainerConfigSlot::~ActorContainerConfigSlot() = default;
 
-bool ActorContainerConfigSlot::Assign(ActorContainerConfig config) {
+void ActorContainerConfigSlot::Assign(ActorContainerConfig config) {
   if (config_.has_value()) {
-    return false;
+    return;
   }
   config_.emplace(std::move(config));
-  return true;
 }
 
 }  // namespace origin_gating
