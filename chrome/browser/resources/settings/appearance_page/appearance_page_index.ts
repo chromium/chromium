@@ -10,6 +10,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {routes} from '../route.js';
 import type {Route, SettingsRoutes} from '../router.js';
+import {RouteObserverMixinLit} from '../router.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 import {SearchableViewContainerMixinLit} from '../settings_page/searchable_view_container_mixin_lit.js';
 
@@ -24,7 +25,7 @@ export interface SettingsAppearancePageIndexElement {
 }
 
 const SettingsAppearancePageIndexElementBase =
-    SearchableViewContainerMixinLit(CrLitElement);
+    SearchableViewContainerMixinLit(RouteObserverMixinLit(CrLitElement));
 
 export class SettingsAppearancePageIndexElement extends
     SettingsAppearancePageIndexElementBase implements SettingsPlugin {

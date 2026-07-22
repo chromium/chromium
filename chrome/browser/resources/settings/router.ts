@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {dedupingMixin as litDedupingMixin} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin as polymerDedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from './i18n_setup.js';
 
@@ -485,7 +486,7 @@ export class Router {
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const RouteObserverMixin = dedupingMixin(
+export const RouteObserverMixin = polymerDedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<RouteObserverMixinInterface> => {
       class RouteObserverMixin extends superClass implements
@@ -515,7 +516,7 @@ export const RouteObserverMixin = dedupingMixin(
       return RouteObserverMixin;
     });
 
-export const RouteObserverMixinLit =
+export const RouteObserverMixinLit = litDedupingMixin(
     <T extends Constructor<CrLitElement>>(superClass: T): T&
     Constructor<RouteObserverMixinInterface> => {
       class RouteObserverMixinLit extends superClass implements
@@ -543,7 +544,7 @@ export const RouteObserverMixinLit =
         }
       }
       return RouteObserverMixinLit;
-    };
+    });
 
 export interface RouteObserverMixinInterface {
   currentRouteChanged(newRoute: Route, oldRoute?: Route): void;

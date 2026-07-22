@@ -31,6 +31,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrLitElement) {
   RunTest("cr_elements/cr_lit_element_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, DedupingMixin) {
+  RunTest("cr_elements/deduping_mixin_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrRipple) {
   RunTest("cr_elements/cr_ripple_test.js", "mocha.run()");
 }

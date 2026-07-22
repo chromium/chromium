@@ -9,6 +9,7 @@
  */
 
 import {assert} from '//resources/js/assert.js';
+import {dedupingMixin} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
@@ -26,10 +27,10 @@ const HIDDEN_BY_SEARCH: string = 'hidden-by-search';
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const SearchableViewContainerMixinLit =
+export const SearchableViewContainerMixinLit = dedupingMixin(
     <T extends Constructor<CrLitElement>>(superClass: T): T&
     Constructor<SearchableViewContainerMixinLitInterface> => {
-      const superClassBase = RouteObserverMixinLit(superClass) as unknown as T;
+      const superClassBase = RouteObserverMixinLit(superClass);
 
       class SearchableViewContainerMixinLit extends superClassBase implements
           SearchableViewContainerMixinLitInterface {
@@ -61,7 +62,7 @@ export const SearchableViewContainerMixinLit =
           return viewManager;
         }
 
-        currentRouteChanged(route: Route) {
+        override currentRouteChanged(route: Route) {
           this.currentRoute = route;
         }
 
@@ -129,7 +130,7 @@ export const SearchableViewContainerMixinLit =
       }
 
       return SearchableViewContainerMixinLit;
-    };
+    });
 
 export interface SearchableViewContainerMixinLitInterface extends
     RouteObserverMixinInterface, SettingsPlugin {

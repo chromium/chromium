@@ -177,8 +177,9 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   composite = true
   in_files = [
-    "lit.ts",
     "cr_lit_element.ts",
+    "deduping_mixin.ts",
+    "lit.ts",
   ]
 
   node_modules = "//third_party/node/node_modules"
