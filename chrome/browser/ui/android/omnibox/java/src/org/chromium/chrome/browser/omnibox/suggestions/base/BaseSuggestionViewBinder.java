@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
@@ -394,9 +395,18 @@ public abstract class BaseSuggestionViewBinder<T extends View>
     static void initializeDimensions(Context context, OmniboxResourceProvider resourceProvider) {
         Resources resources = context.getResources();
 
-        sEdgeSize = resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);
-        sEdgeSizeLargeIcon =
-                resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_size);
+        if (OmniboxCapabilities.isDesktopPlatform()) {
+            sEdgeSize =
+                    resources.getDimensionPixelSize(
+                            R.dimen.omnibox_desktop_small_decoration_icon_size);
+            sEdgeSizeLargeIcon =
+                    resources.getDimensionPixelSize(
+                            R.dimen.omnibox_desktop_large_decoration_icon_size);
+        } else {
+            sEdgeSize = resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_24dp_icon_size);
+            sEdgeSizeLargeIcon =
+                    resources.getDimensionPixelSize(R.dimen.omnibox_suggestion_36dp_icon_size);
+        }
         sSideSpacing = resourceProvider.getSideSpacing();
         sLargeIconRoundingRadius =
                 resources.getDimensionPixelSize(R.dimen.omnibox_large_icon_rounding_radius);

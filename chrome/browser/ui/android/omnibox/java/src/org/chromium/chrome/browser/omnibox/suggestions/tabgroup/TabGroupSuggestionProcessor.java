@@ -71,7 +71,6 @@ public class TabGroupSuggestionProcessor extends BaseSuggestionViewProcessor {
         OmniboxDrawableState state =
                 new OmniboxDrawableState(
                         ContextCompat.getDrawable(mContext, R.drawable.ic_grid_view_24dp),
-                        mContext,
                         /* useRoundedCorners= */ false,
                         /* isLarge= */ false,
                         /* allowTint= */ true);

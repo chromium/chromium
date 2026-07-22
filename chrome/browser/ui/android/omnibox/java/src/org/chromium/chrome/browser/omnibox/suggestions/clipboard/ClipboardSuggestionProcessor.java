@@ -140,7 +140,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                     setOmniboxDrawableState(
                             model,
                             OmniboxDrawableState.forImage(
-                                    new BitmapDrawable(mContext.getResources(), bitmap), mContext));
+                                    new BitmapDrawable(mContext.getResources(), bitmap)));
                 }
             }
         } else if (!suggestion.isSearchSuggestion()) {

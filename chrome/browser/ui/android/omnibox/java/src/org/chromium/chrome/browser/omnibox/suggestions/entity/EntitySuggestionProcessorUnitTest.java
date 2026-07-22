@@ -21,7 +21,6 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.DrawableWrapper;
 import android.graphics.drawable.VectorDrawable;
 
 import androidx.test.filters.SmallTest;
@@ -188,7 +187,7 @@ public class EntitySuggestionProcessorUnitTest {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", SEARCH_URL);
         processSuggestion(suggHelper);
 
-        assertThat(suggHelper.getIcon(), instanceOf(DrawableWrapper.class));
+        assertThat(suggHelper.getIcon(), instanceOf(VectorDrawable.class));
     }
 
     @Test
