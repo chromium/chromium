@@ -151,9 +151,9 @@ constexpr CGFloat kLogoSize = 22;
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* icon = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
+      SymbolWithPointSize(SymbolMulticolorChromeball, kLogoSize));
 #else
-  UIImage* icon = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
+  UIImage* icon = SymbolWithPointSize(SymbolChromeProduct, kLogoSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   NSString* subtitle;
