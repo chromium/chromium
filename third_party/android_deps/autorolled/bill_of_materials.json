@@ -1467,7 +1467,7 @@
     {
         "name": "play-services-identity-credentials",
         "group": "com.google.android.gms",
-        "version": "16.0.0-alpha11"
+        "version": "16.0.0-alpha12"
     },
     {
         "name": "play-services-iid",
@@ -1842,7 +1842,7 @@
     {
         "name": "okio-jvm",
         "group": "com.squareup.okio",
-        "version": "3.17.0"
+        "version": "3.18.0"
     },
     {
         "name": "wire-runtime",
@@ -1877,12 +1877,12 @@
     {
         "name": "grpc-api",
         "group": "io.grpc",
-        "version": "1.82.2"
+        "version": "1.83.0"
     },
     {
         "name": "grpc-stub",
         "group": "io.grpc",
-        "version": "1.82.2"
+        "version": "1.83.0"
     },
     {
         "name": "rxandroid",
@@ -2152,17 +2152,17 @@
     {
         "name": "annotations",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "junit",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "nativeruntime",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "nativeruntime-dist-compat",
@@ -2172,47 +2172,47 @@
     {
         "name": "pluginapi",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "plugins-maven-dependency-resolver",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "resources",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "robolectric",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "sandbox",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "shadowapi",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "shadows-framework",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "utils",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "utils-reflector",
         "group": "org.robolectric",
-        "version": "4.17-beta-1"
+        "version": "4.17-beta-2"
     },
     {
         "name": "snakeyaml",
