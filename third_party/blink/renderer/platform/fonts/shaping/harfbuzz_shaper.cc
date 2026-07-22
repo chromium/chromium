@@ -555,75 +555,6 @@ void HarfBuzzShaper::CommitGlyphs(RangeContext* range_data,
   }
 }
 
-static inline bool CodepointIsNotDef(hb_codepoint_t codepoint) {
-  return codepoint == 0 || codepoint == kUnmatchedVSGlyphId;
-}
-
-template <class CharType>
-static inline bool ContainsNotDefOrIdeographicSpace(
-    const hb_glyph_info_t* glyph_info,
-    unsigned num_glyphs,
-    base::span<const CharType> text) {
-  const size_t unroll_limit = std::min<size_t>(num_glyphs, text.size());
-  const CharType* textptr = text.data();
-
-  // We unroll the loop manually because Clang steadfastly refuses to,
-  // even with #pragma unroll, and we use pointer arithmetic because Clang
-  // again refuses to do that conversion. (This is also why the loop has not
-  // been spanified; we should revisit this when the optimizer is able to
-  // generate the expected code. Similarly, do not blindly spanify without
-  // actually running e.g. Speedometer and checking that there is
-  // no regression.)
-  //
-  // SAFETY: At any point, 0 <= 3 <= i + 3 < unroll_limit, and
-  // unroll_limit <= num_glyphs as well as unroll_limit <= text.size().
-  // This means that glyph_info[0..3] and textptr[0..3] all within
-  // the allowed range.
-  size_t i;
-  for (i = 0; i + 3 < unroll_limit; i += 4) {
-    const hb_codepoint_t glyph0 = UNSAFE_BUFFERS(glyph_info++)->codepoint;
-    const hb_codepoint_t glyph1 = UNSAFE_BUFFERS(glyph_info++)->codepoint;
-    const hb_codepoint_t glyph2 = UNSAFE_BUFFERS(glyph_info++)->codepoint;
-    const hb_codepoint_t glyph3 = UNSAFE_BUFFERS(glyph_info++)->codepoint;
-    const CharType ch0 = UNSAFE_BUFFERS(*textptr++);
-    const CharType ch1 = UNSAFE_BUFFERS(*textptr++);
-    const CharType ch2 = UNSAFE_BUFFERS(*textptr++);
-    const CharType ch3 = UNSAFE_BUFFERS(*textptr++);
-    if (CodepointIsNotDef(glyph0) || CodepointIsNotDef(glyph1) ||
-        CodepointIsNotDef(glyph2) || CodepointIsNotDef(glyph3) ||
-        ch0 == uchar::kIdeographicSpace || ch1 == uchar::kIdeographicSpace ||
-        ch2 == uchar::kIdeographicSpace || ch3 == uchar::kIdeographicSpace) {
-      return true;
-    }
-  }
-  for (size_t glyph_index = i; glyph_index < num_glyphs; ++glyph_index) {
-    // SAFETY: At any point, 0 <= glyph_index < num_glyphs.
-    if (CodepointIsNotDef(UNSAFE_BUFFERS(glyph_info++)->codepoint)) {
-      return true;
-    }
-  }
-  for (size_t pos = i; pos < text.size(); ++pos) {
-    // SAFETY: At any point, 0 <= pos < text.size().
-    if (UNSAFE_BUFFERS(*textptr++) == uchar::kIdeographicSpace) {
-      return true;
-    }
-  }
-  return false;
-}
-
-static inline bool ContainsNotDefOrIdeographicSpace(
-    const hb_glyph_info_t* glyph_info,
-    unsigned num_glyphs,
-    const String& text) {
-  if (text.Is8Bit()) {
-    return ContainsNotDefOrIdeographicSpace(glyph_info, num_glyphs,
-                                            text.Span8());
-  } else {
-    return ContainsNotDefOrIdeographicSpace(glyph_info, num_glyphs,
-                                            text.Span16());
-  }
-}
-
 void HarfBuzzShaper::ExtractShapeResults(
     RangeContext* range_data,
     bool& font_cycle_queued,
@@ -633,40 +564,23 @@ void HarfBuzzShaper::ExtractShapeResults(
     CanvasRotationInVertical canvas_rotation,
     FallbackFontStage& fallback_stage,
     ShapeResult* shape_result) const {
-  unsigned num_glyphs = hb_buffer_get_length(range_data->buffer.Get());
-  hb_glyph_info_t* glyph_info =
-      hb_buffer_get_glyph_infos(range_data->buffer.Get(), nullptr);
-
-  if (!num_glyphs) {
-    return;
-  }
-
-  // Find first notdef glyph in buffer.
-
-  // Fast path: If all glyphs are known to be shaped (none have ID zero,
-  // none are kUnmatchedVSGlyphId, and the text does not contain any
-  // ideographic spaces), we know that we have a single segment and can
-  // commit that straight away without further glyph run analysis.
-  if (num_glyphs >= 64 &&
-      !ContainsNotDefOrIdeographicSpace(glyph_info, num_glyphs, text_)) {
-    BufferSlice slice =
-        ComputeSlice(range_data, current_queue_item, glyph_info, num_glyphs,
-                     /*old_glyph_index=*/0, num_glyphs);
-    CommitGlyphs(range_data, current_font, current_run_script, canvas_rotation,
-                 fallback_stage, slice, shape_result);
-    return;
-  }
-
-  // Regular path below.
-
   enum ClusterResult { kShaped, kNotDef, kUnknown };
   ClusterResult current_cluster_result = kUnknown;
   ClusterResult previous_cluster_result = kUnknown;
   unsigned previous_cluster = 0;
   unsigned current_cluster = 0;
 
+  // Find first notdef glyph in buffer.
+  unsigned num_glyphs = hb_buffer_get_length(range_data->buffer.Get());
+  hb_glyph_info_t* glyph_info =
+      hb_buffer_get_glyph_infos(range_data->buffer.Get(), nullptr);
+
   unsigned last_change_glyph_index = 0;
   unsigned previous_cluster_start_glyph_index = 0;
+
+  if (!num_glyphs) {
+    return;
+  }
 
   const Glyph space_glyph = current_font->SpaceGlyph();
   for (unsigned glyph_index = 0; glyph_index < num_glyphs; ++glyph_index) {
