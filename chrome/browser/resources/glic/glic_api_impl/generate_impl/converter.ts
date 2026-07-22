@@ -276,6 +276,12 @@ export class MojomModel {
       return itemType ? `${itemType}[]` : null;
     }
     if (mojomType.kind === 'map') {
+      const keyTs = this.mapMojomTypeToTs(
+          {kind: 'primitive', name: mojomType.keyType}, typeMappings);
+      const valTs = this.mapMojomTypeToTs(mojomType.valueType, typeMappings);
+      if (keyTs && valTs) {
+        return `Record<${keyTs}, ${valTs}>`;
+      }
       return null;
     }
     if (mojomType.kind !== 'named' && mojomType.kind !== 'primitive') {

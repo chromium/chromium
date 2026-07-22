@@ -23,6 +23,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -243,6 +244,102 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                 .task_metadata()
                 .last_seen_sequence_number(),
             101);
+}
+
+class GlicExperimentalTriggeringMetadataEnabledBrowserTest
+    : public GlicExperimentalTriggeringMessageHandlerBrowserTest {
+ public:
+  GlicExperimentalTriggeringMetadataEnabledBrowserTest() {
+    metadata_feature_list_.InitAndEnableFeature(
+        features::kGlicStructuredYieldMetadata);
+  }
+
+ private:
+  base::test::ScopedFeatureList metadata_feature_list_;
+};
+
+class GlicExperimentalTriggeringMetadataDisabledBrowserTest
+    : public GlicExperimentalTriggeringMessageHandlerBrowserTest {
+ public:
+  GlicExperimentalTriggeringMetadataDisabledBrowserTest() {
+    metadata_feature_list_.InitAndDisableFeature(
+        features::kGlicStructuredYieldMetadata);
+  }
+
+ private:
+  base::test::ScopedFeatureList metadata_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMetadataEnabledBrowserTest,
+                       testRelaysUpdatesWithMetadataEnabled) {
+  OptIn();
+
+  auto message = CreateTriggeringMessage(101);
+  message.mutable_glic_experimental_triggering()
+      ->mutable_request()
+      ->mutable_trigger_actuation_request();
+
+  base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
+                         components_sharing_message::SharingMessage>
+      future;
+  SetupMessageSenderMock(&future);
+
+  SendMessageAndWait(std::move(message));
+
+  ExecuteJsTest();
+
+  auto [server_channel, received_message] = future.Take();
+  EXPECT_TRUE(received_message.has_glic_experimental_triggering());
+  EXPECT_TRUE(received_message.glic_experimental_triggering().has_response());
+  EXPECT_TRUE(received_message.glic_experimental_triggering()
+                  .response()
+                  .has_task_update());
+  const auto& task_update =
+      received_message.glic_experimental_triggering().response().task_update();
+  EXPECT_EQ(task_update.state(),
+            components_sharing_message::GlicExperimentalTriggering::
+                ExperimentalTriggeringResponse::TaskUpdate::RUNNING);
+  EXPECT_EQ(task_update.data(), "test_update_with_metadata");
+
+  // Verify that metadata is populated.
+  EXPECT_EQ(task_update.metadata_size(), 2);
+  EXPECT_EQ(task_update.metadata().at("key1"), "value1");
+  EXPECT_EQ(task_update.metadata().at("key2"), "value2");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMetadataDisabledBrowserTest,
+                       testRelaysUpdatesWithMetadataDisabled) {
+  OptIn();
+
+  auto message = CreateTriggeringMessage(101);
+  message.mutable_glic_experimental_triggering()
+      ->mutable_request()
+      ->mutable_trigger_actuation_request();
+
+  base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
+                         components_sharing_message::SharingMessage>
+      future;
+  SetupMessageSenderMock(&future);
+
+  SendMessageAndWait(std::move(message));
+
+  ExecuteJsTest();
+
+  auto [server_channel, received_message] = future.Take();
+  EXPECT_TRUE(received_message.has_glic_experimental_triggering());
+  EXPECT_TRUE(received_message.glic_experimental_triggering().has_response());
+  EXPECT_TRUE(received_message.glic_experimental_triggering()
+                  .response()
+                  .has_task_update());
+  const auto& task_update =
+      received_message.glic_experimental_triggering().response().task_update();
+  EXPECT_EQ(task_update.state(),
+            components_sharing_message::GlicExperimentalTriggering::
+                ExperimentalTriggeringResponse::TaskUpdate::RUNNING);
+  EXPECT_EQ(task_update.data(), "test_update_with_metadata");
+
+  // Verify that metadata is empty.
+  EXPECT_EQ(task_update.metadata_size(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,

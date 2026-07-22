@@ -40,6 +40,7 @@ import {linkPipeClosure} from './host_utils.js';
 export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
   // Undefined until the web client is initialized.
   private receiver: WebClientReceiver|undefined;
+  private enableStructuredYieldMetadata: boolean|null = null;
 
   // Reminder: Don't add more state here! See `HostMessageHandler`'s comment.
   constructor(
@@ -152,10 +153,17 @@ export class HostMessageHandler implements PostMessageHandler<WebClientHost> {
     const handler = this.host.getExperimentalTriggeringUpdatesHandler(
         payload.observationId);
     if (handler) {
+      if (this.enableStructuredYieldMetadata === null) {
+        this.enableStructuredYieldMetadata =
+            loadTimeData.getBoolean('enableStructuredYieldMetadata');
+      }
       handler.onUpdate(
           payload.update ? {
             type: enumFromClient(payload.update.type),
             data: payload.update.data,
+            metadata: this.enableStructuredYieldMetadata ?
+                optionalFromClient(payload.update.metadata) :
+                null,
           } :
                            null,
           subscriberObservationTypeFromClient(payload.observation));

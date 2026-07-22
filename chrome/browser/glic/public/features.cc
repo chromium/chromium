@@ -231,4 +231,5 @@ BASE_FEATURE(kGlicSparkSettingsAccessibleLabels,
 BASE_FEATURE(kGlicOptInDialogLinkA11yFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicOptInDialogA11yFix, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicStructuredYieldMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features

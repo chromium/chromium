@@ -145,6 +145,30 @@ class TriggeringUpdatesTest extends ApiTestFixtureBase {
       data: 'ready_for_screenshot',
     });
   }
+
+  async testRelaysUpdatesWithMetadataEnabled() {
+    await runUntil(() => client.isSubscribed);
+    client.triggeringUpdatesSubject.next({
+      type: ExperimentalTriggeringUpdateType.WORKLOG,
+      data: 'test_update_with_metadata',
+      metadata: {
+        'key1': 'value1',
+        'key2': 'value2',
+      },
+    });
+  }
+
+  async testRelaysUpdatesWithMetadataDisabled() {
+    await runUntil(() => client.isSubscribed);
+    client.triggeringUpdatesSubject.next({
+      type: ExperimentalTriggeringUpdateType.WORKLOG,
+      data: 'test_update_with_metadata',
+      metadata: {
+        'key1': 'value1',
+        'key2': 'value2',
+      },
+    });
+  }
 }
 
 testMain([TriggeringUpdatesTest]);

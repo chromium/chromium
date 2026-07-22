@@ -1077,6 +1077,9 @@ export declare interface ExperimentalTriggeringUpdate {
   // The human-readable text associated with the update, such as response text
   // or status message.
   data: string;
+  // Optional structured metadata associated with the update (e.g., choice
+  // options for interactive yields).
+  metadata?: Record<string, string>;
 }
 
 // Information extracted from a tab.

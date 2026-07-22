@@ -362,6 +362,9 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean(
       "glicPopupWindowsEnabled",
       base::FeatureList::IsEnabled(features::kGlicPopupWindowsEnabled));
+  source->AddBoolean(
+      "enableStructuredYieldMetadata",
+      base::FeatureList::IsEnabled(features::kGlicStructuredYieldMetadata));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

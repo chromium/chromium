@@ -22,6 +22,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -314,37 +315,43 @@ class ExperimentalTriggeringUpdatesHandler
       case glic::mojom::SubscriberObservationType::kError:
         SendTaskUpdateMessage(TaskUpdate::FAILED);
         break;
-      case glic::mojom::SubscriberObservationType::kUpdate:
+      case glic::mojom::SubscriberObservationType::kUpdate: {
         if (!update) {
           DLOG(ERROR) << "Received kUpdate observation with null update";
           return;
         }
+        base::flat_map<std::string, std::string> metadata;
+        if (base::FeatureList::IsEnabled(
+                features::kGlicStructuredYieldMetadata) &&
+            update->metadata.has_value()) {
+          metadata = std::move(*update->metadata);
+        }
         switch (update->type) {
           case glic::mojom::ExperimentalTriggeringUpdateType::kWorklog:
             SendTaskUpdateMessage(TaskUpdate::RUNNING, TaskUpdate::WORKLOG,
-                                  std::move(update->data));
+                                  std::move(update->data), std::move(metadata));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kPaused:
             SendTaskUpdateMessage(TaskUpdate::PAUSED, std::nullopt,
-                                  std::move(update->data));
+                                  std::move(update->data), std::move(metadata));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::
               kTerminalCompletion:
             SendTaskUpdateMessage(TaskUpdate::COMPLETE,
                                   TaskUpdate::FINAL_RESPONSE,
-                                  std::move(update->data));
+                                  std::move(update->data), std::move(metadata));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalStopped:
             SendTaskUpdateMessage(TaskUpdate::STOPPED, std::nullopt,
-                                  std::move(update->data));
+                                  std::move(update->data), std::move(metadata));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalFailed:
             SendTaskUpdateMessage(TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
-                                  std::move(update->data));
+                                  std::move(update->data), std::move(metadata));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kYieldToUser:
             SendTaskUpdateMessage(TaskUpdate::YIELD, std::nullopt,
-                                  std::move(update->data));
+                                  std::move(update->data), std::move(metadata));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kResumed:
             SendTaskUpdateMessage(TaskUpdate::RESUMED, std::nullopt,
@@ -352,10 +359,11 @@ class ExperimentalTriggeringUpdatesHandler
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kUnknown:
             SendTaskUpdateMessage(TaskUpdate::UNKNOWN_STATE, std::nullopt,
-                                  std::move(update->data));
+                                  std::move(update->data), std::move(metadata));
             break;
         }
         break;
+      }
     }
   }
 
@@ -746,7 +754,8 @@ class ExperimentalTriggeringUpdatesHandler
   void SendTaskUpdateMessage(
       TaskUpdate::State state,
       std::optional<TaskUpdate::DataType> data_type = std::nullopt,
-      std::optional<std::string> data = std::nullopt) {
+      std::optional<std::string> data = std::nullopt,
+      base::flat_map<std::string, std::string> metadata = {}) {
     components_sharing_message::SharingMessage message = CreateBaseResponse();
     auto* triggering = message.mutable_glic_experimental_triggering();
     auto* task_update = triggering->mutable_response()->mutable_task_update();
@@ -756,6 +765,14 @@ class ExperimentalTriggeringUpdatesHandler
     }
     if (data.has_value()) {
       task_update->set_data(std::move(*data));
+    }
+
+    // If the feature is enabled, copy metadata key-value pairs into the proto
+    // task_update metadata map field.
+    if (base::FeatureList::IsEnabled(features::kGlicStructuredYieldMetadata)) {
+      for (auto& [key, val] : metadata) {
+        (*task_update->mutable_metadata())[key] = std::move(val);
+      }
     }
 
     SendResponse(std::move(message), "experimental triggering update");
