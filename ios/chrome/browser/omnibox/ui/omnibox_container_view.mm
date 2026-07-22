@@ -132,7 +132,7 @@ UIButton* CreateClearButton(OmniboxPresentationContext presentationContext) {
       presentationContext == OmniboxPresentationContext::kComposebox
           ? kComposeboxClearButtonImageSize
           : kClearButtonImageSize;
-  conf.image = DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, imageSize);
+  conf.image = SymbolWithPointSize(SymbolXMarkCircleFill, imageSize);
   conf.contentInsets =
       NSDirectionalEdgeInsetsMake(kClearButtonInset, kClearButtonInset,
                                   kClearButtonInset, kClearButtonInset);

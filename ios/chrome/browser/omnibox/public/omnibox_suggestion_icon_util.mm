@@ -12,68 +12,60 @@ const CGFloat kSymbolSize = 18;
 }  // namespace
 
 UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon_type) {
-  NSString* symbol_name = kGlobeSymbol;
-  bool default_symbol = true;
+  Symbol symbol = SymbolGlobe;
   switch (icon_type) {
     case OmniboxSuggestionIconType::kCalculator:
-      symbol_name = kEqualSymbol;
+      symbol = SymbolEqual;
       break;
     case OmniboxSuggestionIconType::kDefaultFavicon:
-      symbol_name = kGlobeAmericasSymbol;
+      symbol = SymbolGlobeAmericas;
       break;
     case OmniboxSuggestionIconType::kSearch:
-      symbol_name = kSearchSymbol;
+      symbol = SymbolSearch;
       break;
     case OmniboxSuggestionIconType::kSearchHistory:
-      symbol_name = kHistorySymbol;
+      symbol = SymbolHistory;
       break;
     case OmniboxSuggestionIconType::kConversion:
-      symbol_name = kSyncEnabledSymbol;
+      symbol = SymbolSyncEnabled;
       break;
     case OmniboxSuggestionIconType::kDictionary:
-      symbol_name = kBookClosedSymbol;
+      symbol = SymbolBookClosed;
       break;
     case OmniboxSuggestionIconType::kStock:
-      symbol_name = kSortSymbol;
+      symbol = SymbolSort;
       break;
     case OmniboxSuggestionIconType::kSunrise:
-      symbol_name = kSunFillSymbol;
+      symbol = SymbolSunFill;
       break;
     case OmniboxSuggestionIconType::kWhenIs:
-      symbol_name = kCalendarSymbol;
+      symbol = SymbolCalendar;
       break;
     case OmniboxSuggestionIconType::kTranslation:
-      symbol_name = kTranslateSymbol;
-      default_symbol = false;
+      symbol = SymbolTranslate;
       break;
     case OmniboxSuggestionIconType::kFallbackAnswer:
-      symbol_name = kSearchSymbol;
+      symbol = SymbolSearch;
       break;
     case OmniboxSuggestionIconType::kSearchTrend:
-      symbol_name = kUpTrendSymbol;
-      default_symbol = false;
+      symbol = SymbolUpTrend;
       break;
     case OmniboxSuggestionIconType::kSearchWithSparkle:
-      symbol_name = kMagnifyingglassSparkSymbol;
-      default_symbol = false;
+      symbol = SymbolMagnifyingglassSpark;
       break;
     case OmniboxSuggestionIconType::kNotesSpark:
-      symbol_name = kLineThreeSparkSymbol;
-      default_symbol = false;
+      symbol = SymbolLineThreeSpark;
       break;
     case OmniboxSuggestionIconType::kCount:
       NOTREACHED();
   }
 
-  if (default_symbol) {
-    return DefaultSymbolWithPointSize(symbol_name, kSymbolSize);
-  }
-  return CustomSymbolWithPointSize(symbol_name, kSymbolSize);
+  return SymbolWithPointSize(symbol, kSymbolSize);
 }
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 UIImage* GetBrandedGoogleIconForOmnibox() {
   return MakeSymbolMonochrome(
-      CustomSymbolWithPointSize(kGoogleIconSymbol, kSymbolSize));
+      SymbolWithPointSize(SymbolGoogleIcon, kSymbolSize));
 }
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)

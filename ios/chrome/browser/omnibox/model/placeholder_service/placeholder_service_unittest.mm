@@ -36,7 +36,7 @@ namespace {
 // Whether the image is the placeholder image used in the `placeholder_service`.
 bool IsPlaceholderImage(UIImage* image, CGFloat image_point_size) {
   UIImage* placeholder_image =
-      DefaultSymbolWithPointSize(kSearchSymbol, image_point_size);
+      SymbolWithPointSize(SymbolSearch, image_point_size);
   return UIImagesAreEqual(placeholder_image, image);
 }
 
@@ -73,7 +73,7 @@ class PlaceholderServiceTest : public PlatformTest {
 
   // Helper to create a UIImage from an SF Symbol for testing.
   UIImage* CreateTestSymbolImage(CGFloat size = 16.0) {
-    return DefaultSymbolWithPointSize(kInfoCircleSymbol, size);
+    return SymbolWithPointSize(SymbolInfoCircle, size);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -115,8 +115,8 @@ TEST_F(PlaceholderServiceTest, TestFetchingBundledIcon) {
   run_loop->Run();
 
   ASSERT_NE(received_icon_final, nil);
-  UIImage* expected_bundled_icon = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kGoogleIconSymbol, icon_size));
+  UIImage* expected_bundled_icon =
+      MakeSymbolMulticolor(SymbolWithPointSize(SymbolGoogleIcon, icon_size));
   EXPECT_TRUE(UIImagesAreEqual(received_icon_final, expected_bundled_icon));
   // Callback is invoked once with bundled icon.
   EXPECT_EQ(callback_count, 1);

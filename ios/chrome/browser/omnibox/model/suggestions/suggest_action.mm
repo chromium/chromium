@@ -45,11 +45,11 @@
                           size:(CGFloat)size {
   switch (suggestAction.type) {
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
-      return DefaultSymbolWithPointSize(kPhoneFillSymbol, size);
+      return SymbolWithPointSize(SymbolPhoneFill, size);
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
-      return DefaultSymbolWithPointSize(kTurnUpRightDiamondFillSymbol, size);
+      return SymbolWithPointSize(SymbolTurnUpRightDiamondFill, size);
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
-      return DefaultSymbolWithPointSize(kStarBubbleFillSymbol, size);
+      return SymbolWithPointSize(SymbolStarBubbleFill, size);
     default:
       return nil;
   }

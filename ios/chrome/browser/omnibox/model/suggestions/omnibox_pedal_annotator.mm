@@ -62,7 +62,7 @@ const CGFloat kSymbolSize = 18;
 
   switch (pedalId) {
     case OmniboxPedalId::PLAY_CHROME_DINO_GAME: {
-      UIImage* image = CustomSymbolWithPointSize(kDinoSymbol, kSymbolSize);
+      UIImage* image = SymbolWithPointSize(SymbolDino, kSymbolSize);
       NSString* urlStr = [NSString
           stringWithFormat:@"%s://%s", kChromeUIScheme, kChromeUIDinoHost];
       GURL url(base::SysNSStringToUTF8(urlStr));
@@ -83,8 +83,7 @@ const CGFloat kSymbolSize = 18;
                      }];
     }
     case OmniboxPedalId::CLEAR_BROWSING_DATA: {
-      UIImage* image =
-          DefaultSymbolTemplateWithPointSize(kTrashSymbol, kSymbolSize);
+      UIImage* image = SymbolTemplateWithPointSize(SymbolTrash, kSymbolSize);
       auto completion = ^{
         [quickDeleteHandler
             showQuickDeleteAndCanPerformRadialWipeAnimation:YES];
@@ -108,10 +107,10 @@ const CGFloat kSymbolSize = 18;
     case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
       UIImage* image = MakeSymbolMulticolor(
-          CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kSymbolSize));
+          SymbolWithPointSize(SymbolMulticolorChromeball, kSymbolSize));
 #else
-      UIImage* image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
-                                                          kSymbolSize);
+      UIImage* image =
+          SymbolTemplateWithPointSize(SymbolDefaultBrowser, kSymbolSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
       DefaultBrowserSettingsPageSource source =
           DefaultBrowserSettingsPageSource::kOmnibox;
@@ -141,7 +140,7 @@ const CGFloat kSymbolSize = 18;
                      action:action];
     }
     case OmniboxPedalId::MANAGE_PASSWORDS: {
-      UIImage* image = CustomSymbolWithPointSize(kPasswordSymbol, kSymbolSize);
+      UIImage* image = SymbolWithPointSize(SymbolPassword, kSymbolSize);
       auto completion = ^{
         [settingsHandler showSavedPasswordsSettingsFromViewController:nil];
       };
@@ -162,7 +161,7 @@ const CGFloat kSymbolSize = 18;
     }
     case OmniboxPedalId::UPDATE_CREDIT_CARD: {
       UIImage* image =
-          DefaultSymbolTemplateWithPointSize(kCreditCardSymbol, kSymbolSize);
+          SymbolTemplateWithPointSize(SymbolCreditCard, kSymbolSize);
       auto completion = ^{
         [settingsHandler showCreditCardSettings];
       };
@@ -183,7 +182,7 @@ const CGFloat kSymbolSize = 18;
                      action:action];
     }
     case OmniboxPedalId::LAUNCH_INCOGNITO: {
-      UIImage* image = CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolSize);
+      UIImage* image = SymbolWithPointSize(SymbolIncognito, kSymbolSize);
       auto completion = ^{
         [sceneHandler openURLInNewTab:[OpenNewTabCommand incognitoTabCommand]];
       };
@@ -203,8 +202,7 @@ const CGFloat kSymbolSize = 18;
                      action:action];
     }
     case OmniboxPedalId::RUN_CHROME_SAFETY_CHECK: {
-      UIImage* image =
-          CustomSymbolWithPointSize(kSafetyCheckSymbol, kSymbolSize);
+      UIImage* image = SymbolWithPointSize(SymbolSafetyCheck, kSymbolSize);
       NSString* subtitle = l10n_util::GetNSString(
           IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_RUN_CHROME_SAFETY_CHECK);
       auto completion = ^{
@@ -227,8 +225,7 @@ const CGFloat kSymbolSize = 18;
                      action:action];
     }
     case OmniboxPedalId::MANAGE_CHROME_SETTINGS: {
-      UIImage* image =
-          DefaultSymbolTemplateWithPointSize(kSettingsSymbol, kSymbolSize);
+      UIImage* image = SymbolTemplateWithPointSize(SymbolSettings, kSymbolSize);
       NSString* subtitle = l10n_util::GetNSString(
           IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_MANAGE_CHROME_SETTINGS);
       auto completion = ^{
@@ -249,8 +246,7 @@ const CGFloat kSymbolSize = 18;
                      action:action];
     }
     case OmniboxPedalId::VIEW_CHROME_HISTORY: {
-      UIImage* image =
-          DefaultSymbolTemplateWithPointSize(kHistorySymbol, kSymbolSize);
+      UIImage* image = SymbolTemplateWithPointSize(SymbolHistory, kSymbolSize);
       auto completion = ^{
         [sceneHandler showHistory];
       };

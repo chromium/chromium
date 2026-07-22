@@ -15,16 +15,16 @@
   self.view.backgroundColor = UIColor.systemBackgroundColor;
 
   UIButton* copyRequestURL = [UIButton
-      systemButtonWithImage:DefaultSymbolWithPointSize(kCopyActionSymbol,
-                                                       kSymbolActionPointSize)
+      systemButtonWithImage:SymbolWithPointSize(SymbolCopyAction,
+                                                kSymbolActionPointSize)
                      target:self
                      action:@selector(didTapCopyRequestURLButton)];
   copyRequestURL.translatesAutoresizingMaskIntoConstraints = NO;
   [copyRequestURL setTitle:@"Copy Request URL" forState:UIControlStateNormal];
 
   UIButton* copyResponseBodyButton = [UIButton
-      systemButtonWithImage:DefaultSymbolWithPointSize(kCopyActionSymbol,
-                                                       kSymbolActionPointSize)
+      systemButtonWithImage:SymbolWithPointSize(SymbolCopyAction,
+                                                kSymbolActionPointSize)
                      target:self
                      action:@selector(didTapCopyResponseBodyButton)];
   copyResponseBodyButton.translatesAutoresizingMaskIntoConstraints = NO;

@@ -57,7 +57,7 @@ void PlaceholderService::FetchDefaultSearchEngineIcon(
 
   // Return the placeholder icon if there is no default search provider.
   UIImage* placeholder_icon =
-      DefaultSymbolWithPointSize(kSearchSymbol, icon_point_size);
+      SymbolWithPointSize(SymbolSearch, icon_point_size);
   const TemplateURL* default_provider =
       template_url_service_ ? template_url_service_->GetDefaultSearchProvider()
                             : nullptr;
@@ -99,7 +99,7 @@ UIImage* PlaceholderService::GetDefaultSearchEngineIcon(
 
   // Return the placeholder icon if there is no default search provider.
   UIImage* placeholder_icon =
-      DefaultSymbolWithPointSize(kSearchSymbol, icon_point_size);
+      SymbolWithPointSize(SymbolSearch, icon_point_size);
   const TemplateURL* default_provider =
       template_url_service_ ? template_url_service_->GetDefaultSearchProvider()
                             : nullptr;
@@ -188,7 +188,7 @@ UIImage* PlaceholderService::GetBundledIconForTemplateURL(
       SEARCH_ENGINE_GOOGLE) {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     return MakeSymbolMulticolor(
-        CustomSymbolWithPointSize(kGoogleIconSymbol, icon_point_size));
+        SymbolWithPointSize(SymbolGoogleIcon, icon_point_size));
 #endif
   }
   return nil;

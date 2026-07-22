@@ -69,7 +69,7 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
 
     // X Symbol.
     UIImage* xSymbolImage = SymbolWithPalette(
-        DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize),
+        SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize),
         @[ [UIColor whiteColor] ]);
     [xSymbolImage
         drawInRect:CGRectMake((imageWidth - xSymbolImage.size.width) / 2,

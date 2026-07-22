@@ -67,7 +67,7 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
                             weight:UIImageSymbolWeightSemibold
                              scale:UIImageSymbolScaleMedium];
     UIImage* debuggerIcon =
-        DefaultSymbolWithConfiguration(kSettingsSymbol, configuration);
+        SymbolWithConfiguration(SymbolSettings, configuration);
 
     UIButton* debuggerButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [debuggerButton setImage:debuggerIcon forState:UIControlStateNormal];
