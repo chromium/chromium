@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/keyed_service",
+  "+components/page_content_annotations/core",
+  "+ios/chrome/browser/intelligence/proto_wrappers",
+  "+ios/chrome/browser/shared/model/profile",
+  "+ios/web/public",
+]
