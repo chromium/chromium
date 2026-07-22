@@ -6993,7 +6993,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos" enum="IOSSaveToPhotosType"
-    expires_after="2026-10-25">
+    expires_after="2027-07-22">
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -7005,7 +7005,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.AccountPicker"
-    enum="IOSSaveToPhotosAccountPickerType" expires_after="2026-10-25">
+    enum="IOSSaveToPhotosAccountPickerType" expires_after="2027-07-22">
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -7017,7 +7017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.ContextMenu"
-    enum="IOSSaveToPhotosContextMenuType" expires_after="2026-12-27">
+    enum="IOSSaveToPhotosContextMenuType" expires_after="2027-07-22">
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -7027,7 +7027,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.GTLRErrorObjectDomainErrorCode"
-    enum="HttpResponseCode" expires_after="2026-08-21">
+    enum="HttpResponseCode" expires_after="2027-07-22">
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -7038,7 +7038,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.Settings" enum="IOSSaveToPhotosSettingsType"
-    expires_after="2026-12-27">
+    expires_after="2027-07-22">
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -7051,7 +7051,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.SignIn.Result"
-    enum="IOSSaveToPhotosSignInResultType" expires_after="2027-06-03">
+    enum="IOSSaveToPhotosSignInResultType" expires_after="2027-07-22">
   <owner>josephlanza@google.com</owner>
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
@@ -7062,7 +7062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.SignIn.Status"
-    enum="IOSSaveToPhotosSignInStatusType" expires_after="2027-06-03">
+    enum="IOSSaveToPhotosSignInStatusType" expires_after="2027-07-22">
   <owner>josephlanza@google.com</owner>
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
@@ -7074,7 +7074,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.UploadFailureLatency" units="ms"
-    expires_after="2026-08-21">
+    expires_after="2027-07-22">
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -7089,7 +7089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.UploadFailureType"
-    enum="IOSPhotosServiceUploadFailureType" expires_after="2026-08-21">
+    enum="IOSPhotosServiceUploadFailureType" expires_after="2027-07-22">
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -7099,7 +7099,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.UploadSuccessLatency" units="ms"
-    expires_after="2026-10-25">
+    expires_after="2027-07-22">
   <owner>qpubert@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
