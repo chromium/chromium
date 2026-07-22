@@ -220,6 +220,8 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<std::string> conversation_id() const override;
   std::string conversation_title() const override;
   std::optional<int> task_id() const override;
+  std::optional<mojom::InvocationSource> GetInitialInvocationSource()
+      const override;
   std::vector<tabs::TabInterface*> GetBoundTabs() const;
   tabs::TabInterface* GetGlicTab() const;
 

@@ -111,6 +111,10 @@ class GlicInstance {
   // has been submitted yet.
   virtual base::TimeDelta GetTimeSinceLastPromptSubmission() const = 0;
 
+  // Returns the initial invocation source for this instance if one was set.
+  virtual std::optional<mojom::InvocationSource> GetInitialInvocationSource()
+      const = 0;
+
   virtual GlicActorTaskManager* GetActorTaskManager() = 0;
   virtual GlicExperimentalTriggeringManager*
   GetExperimentalTriggeringManager() = 0;

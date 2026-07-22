@@ -109,6 +109,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when this instance is shown in the side panel.
   void OnShowInSidePanel(tabs::TabInterface* tab);
 
+  // Called when this instance is shown in an inactive side panel.
+  void OnShowInactiveSidePanel(mojom::InvocationSource invocation_source);
+
   // Called when this instance is shown in a floaty.
   void OnShowInFloaty(const ShowOptions& options);
 
@@ -235,8 +238,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   GlicMetricsSessionManager& session_manager() { return session_manager_; }
 
-  std::optional<mojom::InvocationSource> initial_invocation_source_for_testing()
-      const {
+  std::optional<mojom::InvocationSource> initial_invocation_source() const {
     return initial_invocation_source_;
   }
 
@@ -302,6 +304,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
       mojom::InvocationSource::kUnsupported;
   std::optional<mojom::InvocationSource> initial_invocation_source_ =
       std::nullopt;
+  bool did_open_ = false;
   // Timestamp of last show start.
   base::TimeTicks invocation_start_time_;
   base::TimeTicks web_ui_load_start_time_;

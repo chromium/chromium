@@ -469,6 +469,7 @@ void GlicInstanceImpl::Show(ShowOptions options) {
           std::get_if<SidePanelShowOptions>(&options.embedder_options);
       side_panel_options) {
     if (ShouldShowInactiveSidePanel(*side_panel_options)) {
+      instance_metrics().OnShowInactiveSidePanel(options.invocation_source);
       ShowInactiveSidePanelEmbedderFor(*side_panel_options);
       return;
     }
@@ -1020,6 +1021,11 @@ std::string GlicInstanceImpl::conversation_title() const {
 std::optional<int> GlicInstanceImpl::task_id() const {
   return actor_task_manager_ ? actor_task_manager_->current_task_id()
                              : std::nullopt;
+}
+
+std::optional<mojom::InvocationSource>
+GlicInstanceImpl::GetInitialInvocationSource() const {
+  return instance_metrics_.initial_invocation_source();
 }
 
 std::vector<tabs::TabInterface*> GlicInstanceImpl::GetBoundTabs() const {

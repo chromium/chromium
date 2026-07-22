@@ -53,6 +53,10 @@ class MockGlicInstance : public GlicInstance {
               GetTimeSinceLastPromptSubmission,
               (),
               (const, override));
+  MOCK_METHOD(std::optional<mojom::InvocationSource>,
+              GetInitialInvocationSource,
+              (),
+              (const, override));
   MOCK_METHOD(GlicActorTaskManager*, GetActorTaskManager, (), (override));
   MOCK_METHOD(GlicExperimentalTriggeringManager*,
               GetExperimentalTriggeringManager,

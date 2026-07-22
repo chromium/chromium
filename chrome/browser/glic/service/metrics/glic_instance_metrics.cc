@@ -457,6 +457,13 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
   }
 }
 
+void GlicInstanceMetrics::OnShowInactiveSidePanel(
+    mojom::InvocationSource invocation_source) {
+  if (!initial_invocation_source_.has_value()) {
+    initial_invocation_source_ = invocation_source;
+  }
+}
+
 void GlicInstanceMetrics::OnShowInFloaty(const ShowOptions& options) {
   if (!floaty_open_time_.is_null()) {
     base::UmaHistogramEnumeration(
@@ -701,10 +708,15 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
   LogEvent(GlicInstanceEvent::kOpen);
 
   // 2. Log Initial Invocation Source
-  if (!initial_invocation_source_.has_value()) {
-    initial_invocation_source_ = source;
+  if (!did_open_) {
+    did_open_ = true;
+    // Don't overwrite initial invocation source if it was set due to being
+    // invoked in the background.
+    if (!initial_invocation_source_.has_value()) {
+      initial_invocation_source_ = source;
+    }
     base::UmaHistogramEnumeration("Glic.Instance.InitialInvocationSource",
-                                  source);
+                                  *initial_invocation_source_);
   }
 
   // 3. Record Actions
