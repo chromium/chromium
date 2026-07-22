@@ -29,6 +29,7 @@
 #include "components/enterprise/client_certificates/core/ash/kcer_private_key_factory.h"
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/metrics_util.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/store_error.h"
 #include "components/prefs/pref_service.h"
@@ -146,9 +147,8 @@ void KcerCertificateStore::OnCertImported(
     base::OnceCallback<void(std::optional<StoreError>)> callback,
     base::expected<void, kcer::Error> result) {
   if (!result.has_value()) {
-    // TODO(crbug.com/517117656): Convert this log into a histogram.
-    LOG(ERROR) << "Failed to import certificate via Kcer (error: "
-               << static_cast<int>(result.error()) << ").";
+    // Track how often certificate import fails at an aggregate level.
+    RecordKcerCertificateImportError(result.error());
     std::move(callback).Run(StoreError::kSaveKeyFailed);
     return;
   }
@@ -275,9 +275,8 @@ void KcerCertificateStore::DeleteIdentities(
         kcer::PrivateKeyHandle(kcer::Token::kUser, std::move(spki)),
         base::BindOnce([](base::expected<void, kcer::Error> result) {
           if (!result.has_value()) {
-            // TODO(crbug.com/517117656): Convert this log into a histogram.
-            LOG(WARNING) << "Failed to remove key/certs from Kcer (error: "
-                         << static_cast<int>(result.error()) << ").";
+            // Track how often key/cert removal fails at an aggregate level.
+            RecordKcerKeyRemovalError(result.error());
           }
         }));
   }
@@ -340,10 +339,8 @@ void KcerCertificateStore::OnBrowserEnterpriseTagCheckedForDeletion(
         kcer::PrivateKeyHandle(kcer::Token::kUser, std::move(spki)),
         base::BindOnce([](base::expected<void, kcer::Error> result) {
           if (!result.has_value()) {
-            // TODO(crbug.com/517117656): Convert this log into a histogram
-            LOG(WARNING) << "Failed to remove browser enterprise client "
-                            "certificate key from Kcer (error: "
-                         << static_cast<int>(result.error()) << ").";
+            // Track how often key/cert removal fails at an aggregate level.
+            RecordKcerKeyRemovalError(result.error());
           }
         }));
   }

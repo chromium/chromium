@@ -767,6 +767,54 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.ClientCertificate.Ash.CertificateImportError"
+    enum="KcerError" expires_after="2028-01-02">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the Kcer error returned when importing a managed client certificate
+    into the ChromeOS (Kcer) user token fails. Recorded on ChromeOS each time a
+    certificate commit fails during client certificate provisioning.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ClientCertificate.Ash.HardwareKeyGenerationError"
+    enum="KcerError" expires_after="2028-01-02">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the Kcer error returned when hardware-backed (TPM) key generation
+    fails and the ChromeOS client certificate provisioning flow falls back to a
+    software key. Recorded on ChromeOS each time the hardware-backed generation
+    attempt fails.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ClientCertificate.Ash.KeyRemovalError"
+    enum="KcerError" expires_after="2028-01-02">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the Kcer error returned when removing a managed client certificate
+    key (and its certificates) from the ChromeOS (Kcer) user token fails. Covers
+    both the SPKI-targeted deletion and the browser enterprise client
+    certificate key sweep. Recorded on ChromeOS each time a removal fails.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ClientCertificate.Ash.KeyTaggingError"
+    enum="KcerError" expires_after="2028-01-02">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures the Kcer error returned when tagging a freshly generated key as a
+    browser enterprise client certificate key fails. Tagging is best-effort and
+    does not abort provisioning, so this tracks how often the ownership metadata
+    used for later cleanup/auditing ends up missing. Recorded on ChromeOS each
+    time a tag write fails.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.ClientCertificate.{Level}.CreateCertificate.Success.HasCert"
     enum="BooleanSuccess" expires_after="2027-01-02">

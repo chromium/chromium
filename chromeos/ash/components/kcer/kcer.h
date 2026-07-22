@@ -47,6 +47,7 @@ using DigestWithPrefix =
     base::StrongAlias<class TypeTagDigestWithPrefix, std::vector<uint8_t>>;
 
 // Values should not be reused or renumbered.
+// LINT.IfChange(Error)
 enum class COMPONENT_EXPORT(KCER) Error {
   kUnknownError = 0,
   kNotImplemented = 1,
@@ -99,6 +100,7 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kAlreadyExists = 48,
   kMaxValue = kAlreadyExists,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:KcerError)
 
 // Handles for tokens on ChromeOS.
 enum class COMPONENT_EXPORT(KCER) Token {

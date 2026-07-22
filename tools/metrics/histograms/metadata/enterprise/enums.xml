@@ -2750,6 +2750,66 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Fully managed"/>
 </enum>
 
+<!-- LINT.IfChange(KcerError) -->
+
+<enum name="KcerError">
+  <summary>
+    Error codes reported by Kcer, the ChromeOS key and certificate store. Mirror
+    of kcer::Error in //chromeos/ash/components/kcer/kcer.h.
+  </summary>
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Not implemented"/>
+  <int value="2" label="Not supported"/>
+  <int value="3" label="Token is not available"/>
+  <int value="4" label="Token initialization failed"/>
+  <int value="5" label="Failed to generate key"/>
+  <int value="6" label="Failed to export public key"/>
+  <int value="7" label="Failed to encode public key"/>
+  <int value="8" label="Failed to import key"/>
+  <int value="9" label="Invalid certificate"/>
+  <int value="10" label="Failed to import certificate"/>
+  <int value="11" label="Failed to remove certificate"/>
+  <int value="12" label="Key not found"/>
+  <int value="13" label="Unknown key type"/>
+  <int value="14" label="Failed to get key ID"/>
+  <int value="15" label="Failed to read attribute"/>
+  <int value="16" label="Failed to write attribute"/>
+  <int value="17" label="Failed to parse key permissions"/>
+  <int value="18" label="Unexpected signing scheme"/>
+  <int value="19" label="Key does not support signing scheme"/>
+  <int value="20" label="Failed to sign: failed to digest"/>
+  <int value="21" label="Failed to sign: failed to add prefix"/>
+  <int value="22" label="Failed to sign: failed to get signature length"/>
+  <int value="23" label="Failed to sign"/>
+  <int value="24" label="Failed to sign: bad signature length"/>
+  <int value="25" label="Failed to DER-encode"/>
+  <int value="26" label="Input too long"/>
+  <int value="27" label="Failed to list keys"/>
+  <int value="28" label="Failed to remove private key"/>
+  <int value="29" label="Failed to remove public key"/>
+  <int value="30" label="Failed to remove objects"/>
+  <int value="31" label="Failed to create SPKI"/>
+  <int value="32" label="Failed to get PKCS#11 ID"/>
+  <int value="33" label="Failed to search for objects"/>
+  <int value="34" label="PKCS#11 session failure"/>
+  <int value="35" label="Bad key params"/>
+  <int value="36" label="Unexpected find result"/>
+  <int value="37" label="Failed to decode key attributes"/>
+  <int value="38" label="Failed to retrieve mechanism list"/>
+  <int value="39" label="Failed to parse key"/>
+  <int value="40" label="Failed to get issuer name"/>
+  <int value="41" label="Failed to get subject name"/>
+  <int value="42" label="Failed to get serial number"/>
+  <int value="43" label="Failed to parse PKCS#12"/>
+  <int value="44" label="Invalid PKCS#12"/>
+  <int value="45" label="PKCS#12 wrong password"/>
+  <int value="46" label="PKCS#12 invalid MAC"/>
+  <int value="47" label="Failed to make cert nickname"/>
+  <int value="48" label="Already exists"/>
+</enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/kcer/kcer.h:Error) -->
+
 <!-- LINT.IfChange(LocalAuthFactorsComplexity) -->
 
 <enum name="LocalAuthFactorsComplexity">

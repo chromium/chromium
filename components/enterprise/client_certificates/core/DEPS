@@ -10,3 +10,11 @@ include_rules = [
   "+services/network/test",
   "+third_party/boringssl/src/include",
 ]
+
+specific_include_rules = {
+  # Kcer error codes are recorded as UMA histograms on ChromeOS (guarded by
+  # BUILDFLAG(IS_CHROMEOS)).
+  "metrics_util\.(cc|h)": [
+    "+chromeos/ash/components/kcer",
+  ],
+}

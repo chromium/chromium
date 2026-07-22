@@ -17,6 +17,10 @@
 #include "components/enterprise/client_certificates/android/browser_binding/browser_key.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/kcer/kcer.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace client_certificates {
 
 // Captures terminal failure states of the certificate provisioning flow. Do not
@@ -72,6 +76,28 @@ void LogLevelDBInitStatus(leveldb_proto::Enums::InitStatus status,
 #if BUILDFLAG(IS_ANDROID)
 void RecordClankKeySecurityLevel(BrowserKey::SecurityLevel security_level);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Records the `kcer::Error` reported when hardware-backed key generation fails
+// and the ChromeOS client certificate provisioning flow falls back to a
+// software key. Lets us track how often (and why) the TPM path is unavailable
+// at an aggregate level.
+void RecordKcerHardwareKeyGenerationError(kcer::Error error);
+
+// Records the `kcer::Error` reported when tagging a freshly generated key as a
+// browser enterprise client certificate key fails. Tagging is best-effort, so
+// this tracks how often the ownership metadata ends up missing.
+void RecordKcerKeyTaggingError(kcer::Error error);
+
+// Records the `kcer::Error` reported when importing a client certificate into
+// Kcer fails.
+void RecordKcerCertificateImportError(kcer::Error error);
+
+// Records the `kcer::Error` reported when removing a key (and its certificates)
+// from Kcer fails. Covers both the SPKI-targeted deletion and the browser
+// enterprise client certificate key sweep.
+void RecordKcerKeyRemovalError(kcer::Error error);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace client_certificates
 

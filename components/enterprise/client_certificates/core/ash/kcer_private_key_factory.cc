@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/kcer/kcer.h"
 #include "components/enterprise/client_certificates/core/ash/kcer_private_key.h"
 #include "components/enterprise/client_certificates/core/constants.h"
+#include "components/enterprise/client_certificates/core/metrics_util.h"
 #include "components/enterprise/client_certificates/core/private_key_types.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
@@ -111,11 +112,9 @@ void KcerPrivateKeyFactory::OnKeyGenerated(
 
 void KcerPrivateKeyFactory::OnHardwareKeyFailed(PrivateKeyCallback callback,
                                                 kcer::Error error) {
-  // TODO(crbug.com/517117656): Convert this log into a histogram so we can
-  // track how often hardware-backed key generation falls back to software at
-  // an aggregate level.
-  LOG(WARNING) << "Hardware-backed key generation failed (error: "
-               << static_cast<int>(error) << "), falling back to software key.";
+  // Track how often (and why) hardware-backed key generation falls back to
+  // software at an aggregate level.
+  RecordKcerHardwareKeyGenerationError(error);
   if (!kcer_) {
     std::move(callback).Run(nullptr);
     return;
@@ -176,12 +175,7 @@ void KcerPrivateKeyFactory::OnBrowserEnterpriseClientCertTagSet(
     // Non-blocking: a failure to persist the ownership tag must not abort
     // provisioning. The key itself is valid and usable; only the metadata used
     // for future cleanup/auditing is missing.
-    // TODO(crbug.com/517117656): Convert this log into a histogram so we can
-    // track how often tagging fails at an aggregate level.
-    LOG(WARNING) << "Failed to tag browser enterprise client certificate key "
-                    "(error: "
-                 << static_cast<int>(result.error())
-                 << "); delivering the key without the ownership tag.";
+    RecordKcerKeyTaggingError(result.error());
   }
   std::move(callback).Run(base::MakeRefCounted<KcerPrivateKey>(
       kcer_, std::move(spki), kcer_task_runner_, source));
