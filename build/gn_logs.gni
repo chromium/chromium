@@ -57,3 +57,12 @@ if (target_os == "fuchsia") {
 }
 
 build_gn_logs += [ "#### get_concurrent_links.py ####" ] + concurrent_links_logs
+
+if (defined(build_with_chromium) && build_with_chromium) {
+  import("//third_party/blink/renderer/config.gni")
+  build_gn_logs += [
+    "### blink ###",
+    "blink_enable_generated_code_formatting=$blink_enable_generated_code_formatting",
+    "",
+  ]
+}

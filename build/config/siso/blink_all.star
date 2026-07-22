@@ -7,6 +7,7 @@
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 load("./config.star", "config")
+load("./gn_logs.star", "gn_logs")
 load("./platform.star", "platform")
 
 def __filegroups(ctx):
@@ -17,6 +18,11 @@ __handlers = {
 
 def __step_config(ctx, step_config):
     remote_run = config.get(ctx, "googlechrome")
+
+    # crbug.com/461609630: Remote exec fails when blink enabled.
+    if gn_logs.read(ctx).get("blink_enable_generated_code_formatting") == "true":
+        remote_run = False
+
     step_config["rules"].extend([
         {
             "name": "blink/generate_bindings",
