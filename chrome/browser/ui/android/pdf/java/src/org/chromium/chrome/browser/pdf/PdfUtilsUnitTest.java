@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.os.ext.SdkExtensions;
 import android.text.TextUtils;
 
@@ -31,7 +32,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowParcelFileDescriptor;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -42,8 +45,24 @@ import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
 
+import java.io.File;
+import java.io.IOException;
+
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(
+        manifest = Config.NONE,
+        shadows = {PdfUtilsUnitTest.CustomShadowParcelFileDescriptor.class})
 public class PdfUtilsUnitTest {
+    @Implements(ParcelFileDescriptor.class)
+    public static class CustomShadowParcelFileDescriptor extends ShadowParcelFileDescriptor {
+        @Implementation
+        protected static ParcelFileDescriptor fromFd(int fd) throws IOException {
+            File tempFile = File.createTempFile("shadow_pfd", ".pdf");
+            tempFile.deleteOnExit();
+            return ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY);
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private LoadUrlParams mLoadUrlParams;
     @Mock private NativePage mNativePage;
@@ -287,6 +306,43 @@ public class PdfUtilsUnitTest {
     public void testGetEncodedContentUri_Https() {
         String encodedUrl = PdfUtils.getEncodedContentUri(PDF_LINK, mContext);
         Assert.assertTrue("The encoded url should not exist", TextUtils.isEmpty(encodedUrl));
+    }
+
+    @Test
+    public void testGetContentUri_NonIncognito() {
+        Uri uri = PdfUtils.getContentUri(FILE_PATH, FILE_NAME, "tab_id", false);
+        Assert.assertNotNull("Uri should not be null", uri);
+        // Should be a file URI or content URI from ChromeFileProvider (which is mocked to
+        // CONTENT_URL)
+        Assert.assertEquals(CONTENT_URL, uri.toString());
+    }
+
+    @Test
+    public void testGetContentUri_Incognito() {
+        ContextUtils.initApplicationContextForTests(mContext);
+        when(mContext.getPackageName()).thenReturn("com.example.app");
+
+        String incognitoPath = "/proc/self/fd/123";
+        Uri uri = PdfUtils.getContentUri(incognitoPath, FILE_NAME, "tab_id", true);
+        Assert.assertNotNull("Uri should not be null", uri);
+        Assert.assertTrue(uri.getAuthority().endsWith(".PdfContentProvider"));
+        Assert.assertNotEquals("tab_id", uri.getLastPathSegment());
+
+        // Reuse test
+        Uri uri2 = PdfUtils.getContentUri(incognitoPath, FILE_NAME, "tab_id", true);
+        Assert.assertEquals("Should reuse the same URI for same tab and path", uri, uri2);
+
+        // Different path test (should NOT reuse, should return a new URI)
+        String incognitoPath2 = "/proc/self/fd/124";
+        Uri uri3 = PdfUtils.getContentUri(incognitoPath2, FILE_NAME, "tab_id", true);
+        Assert.assertNotNull("Uri should not be null", uri3);
+        Assert.assertNotEquals("Should not reuse URI for different path", uri, uri3);
+    }
+
+    @Test
+    public void testGetContentUri_Incognito_InvalidPath() {
+        Uri uri = PdfUtils.getContentUri("/invalid/path", FILE_NAME, "tab_id", true);
+        Assert.assertNull("Uri should be null for invalid path in Incognito", uri);
     }
 
     @Test

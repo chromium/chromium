@@ -36,7 +36,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,23 +45,18 @@ import java.io.IOException;
         manifest = Config.NONE,
         shadows = {PdfContentProviderUnitTest.CustomShadowParcelFileDescriptor.class})
 public class PdfContentProviderUnitTest {
-    private static final String TEST_FILE_PATH = "/proc/5202/fd/344";
-    private static final String TEST_FILE_NAME = "test_pdf.pdf";
-
-    /**
-     * A custom shadow is required to override {@link adoptFd(int)} which calls {@code setFdInt}.
-     * {@code setFdInt} changed from a silent no-op, to a {@link RuntimeException} in robolectric
-     * 4.14.1.
-     */
     @Implements(ParcelFileDescriptor.class)
     public static class CustomShadowParcelFileDescriptor extends ShadowParcelFileDescriptor {
         @Implementation
-        protected static ParcelFileDescriptor adoptFd(int fd) {
-            FileDescriptor fdesc = new FileDescriptor();
-
-            return new ParcelFileDescriptor(fdesc);
+        protected static ParcelFileDescriptor fromFd(int fd) throws IOException {
+            File tempFile = File.createTempFile("shadow_pfd", ".pdf");
+            tempFile.deleteOnExit();
+            return ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY);
         }
     }
+
+    private static final String TEST_UNIQUE_ID = "test_tab_id";
+    private static final String TEST_FILE_NAME = "test_pdf.pdf";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private PdfContentProvider mProvider;
@@ -78,44 +72,54 @@ public class PdfContentProviderUnitTest {
 
     @After
     public void tearDown() {
-        // Ensure the test file is deleted
         PdfContentProvider.cleanUpForTesting();
     }
 
+    private ParcelFileDescriptor createMockPfd() throws IOException {
+        File tempFile = createTempFile();
+        return ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY);
+    }
+
     @Test(expected = FileNotFoundException.class)
-    public void testCreateAndRemoveContentUri() throws FileNotFoundException {
-        Uri uri = PdfContentProvider.createContentUri(TEST_FILE_PATH, TEST_FILE_NAME);
+    public void testCreateAndRemoveContentUri() throws IOException, FileNotFoundException {
+        ParcelFileDescriptor pfd = createMockPfd();
+        Uri uri =
+                PdfContentProvider.createContentUri(
+                        TEST_UNIQUE_ID, "dummy_path", pfd, TEST_FILE_NAME);
         assertNotNull("Content URI should not be null", uri);
         assertTrue(
                 "Content URI should have the correct authority",
                 uri.getAuthority().endsWith(".PdfContentProvider"));
+
+
         PdfContentProvider.removeContentUri(uri.toString());
         mProvider.openFile(uri, "r");
     }
 
     @Test
-    public void testCreateInvalidFilePath() throws FileNotFoundException {
-        Uri uri = PdfContentProvider.createContentUri("/xyz/abc.pdf", TEST_FILE_NAME);
-        assertNull(uri);
-    }
-
-    @Test
     public void testGetType() throws Exception {
-        Uri uri = PdfContentProvider.createContentUri(TEST_FILE_PATH, TEST_FILE_NAME);
+        ParcelFileDescriptor pfd1 = createMockPfd();
+        Uri uri =
+                PdfContentProvider.createContentUri(
+                        TEST_UNIQUE_ID, "dummy_path_1", pfd1, TEST_FILE_NAME);
         String type = mProvider.getType(uri);
         assertEquals("Mime type should be application/pdf", MimeTypeUtils.PDF_MIME_TYPE, type);
 
         // Create another uri.
         Thread.sleep(1);
-        Uri uri2 = PdfContentProvider.createContentUri(TEST_FILE_PATH, "xyzs");
+        ParcelFileDescriptor pfd2 = createMockPfd();
+        Uri uri2 = PdfContentProvider.createContentUri("another_id", "dummy_path_2", pfd2, "xyzs");
         type = mProvider.getType(uri2);
         assertEquals("Mime type should be application/pdf", MimeTypeUtils.PDF_MIME_TYPE, type);
         assertNotEquals("Content Uris should be different", uri, uri2);
     }
 
     @Test
-    public void testGetStreamTypes() {
-        Uri uri = PdfContentProvider.createContentUri(TEST_FILE_PATH, TEST_FILE_NAME);
+    public void testGetStreamTypes() throws IOException {
+        ParcelFileDescriptor pfd = createMockPfd();
+        Uri uri =
+                PdfContentProvider.createContentUri(
+                        TEST_UNIQUE_ID, "dummy_path", pfd, TEST_FILE_NAME);
         String[] types = mProvider.getStreamTypes(uri, "*/*");
         assertNotNull("Stream types should not be null", types);
         assertEquals("There should be one stream type", 1, types.length);
@@ -134,34 +138,46 @@ public class PdfContentProviderUnitTest {
     }
 
     @Test
-    public void testOpenFile() throws FileNotFoundException {
-        Uri uri = PdfContentProvider.createContentUri(TEST_FILE_PATH, TEST_FILE_NAME);
-        File tempFile = createTempFile();
-        PdfContentProvider.setPdfFileInfoForTesting(
-                uri,
-                new PdfContentProvider.PdfFileInfo(
-                        TEST_FILE_PATH,
-                        TEST_FILE_NAME,
-                        ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)));
-        ParcelFileDescriptor pfd = mProvider.openFile(uri, "r");
-        assertNotNull("ParcelFileDescriptor should not be null", pfd);
+    public void testOpenFile() throws IOException, FileNotFoundException {
+        ParcelFileDescriptor pfd = createMockPfd();
+        Uri uri =
+                PdfContentProvider.createContentUri(
+                        TEST_UNIQUE_ID, "dummy_path", pfd, TEST_FILE_NAME);
+        ParcelFileDescriptor openedPfd = mProvider.openFile(uri, "r");
+        assertNotNull("ParcelFileDescriptor should not be null", openedPfd);
+        assertNotEquals("Should return a duplicated PFD, not the same instance", pfd, openedPfd);
     }
 
     @Test(expected = FileNotFoundException.class)
     public void testOpenFile_FileNotFound() throws FileNotFoundException {
-        mProvider.openFile(Uri.parse("content://nonexistent"), "r");
+        mProvider.openFile(
+                Uri.parse("content://com.example.app.PdfContentProvider/nonexistent"), "r");
+    }
+
+    @Test(expected = FileNotFoundException.class)
+    public void testOpenFile_WriteModeRejected() throws IOException, FileNotFoundException {
+        ParcelFileDescriptor pfd = createMockPfd();
+        Uri uri =
+                PdfContentProvider.createContentUri(
+                        TEST_UNIQUE_ID, "dummy_path", pfd, TEST_FILE_NAME);
+        mProvider.openFile(uri, "w");
+    }
+
+    @Test(expected = FileNotFoundException.class)
+    public void testOpenFile_WriteTextModeRejected() throws IOException, FileNotFoundException {
+        ParcelFileDescriptor pfd = createMockPfd();
+        Uri uri =
+                PdfContentProvider.createContentUri(
+                        TEST_UNIQUE_ID, "dummy_path", pfd, TEST_FILE_NAME);
+        mProvider.openFile(uri, "wt");
     }
 
     @Test
-    public void testQuery() throws FileNotFoundException {
-        Uri uri = PdfContentProvider.createContentUri(TEST_FILE_PATH, TEST_FILE_NAME);
-        File tempFile = createTempFile();
-        PdfContentProvider.setPdfFileInfoForTesting(
-                uri,
-                new PdfContentProvider.PdfFileInfo(
-                        TEST_FILE_PATH,
-                        TEST_FILE_NAME,
-                        ParcelFileDescriptor.open(tempFile, ParcelFileDescriptor.MODE_READ_ONLY)));
+    public void testQuery() throws IOException, FileNotFoundException {
+        ParcelFileDescriptor pfd = createMockPfd();
+        Uri uri =
+                PdfContentProvider.createContentUri(
+                        TEST_UNIQUE_ID, "dummy_path", pfd, TEST_FILE_NAME);
 
         Cursor cursor = mProvider.query(uri, null, null, null, null);
         assertNotNull("Cursor should not be null", cursor);
@@ -175,12 +191,44 @@ public class PdfContentProviderUnitTest {
         assertTrue("File size should be greater than 0", cursor.getLong(sizeIndex) > 0);
     }
 
+    @Test
+    public void testRegisterStream_Success() {
+        String incognitoPath = "/proc/self/fd/123";
+        Uri uri = PdfContentProvider.registerStream(TEST_UNIQUE_ID, incognitoPath, TEST_FILE_NAME);
+        assertNotNull("Uri should not be null", uri);
+        assertTrue(
+                "Uri should have PdfContentProvider authority",
+                uri.getAuthority().endsWith(".PdfContentProvider"));
+
+        // Test reuse for same tab and path
+        Uri uri2 = PdfContentProvider.registerStream(TEST_UNIQUE_ID, incognitoPath, TEST_FILE_NAME);
+        assertEquals("Should reuse URI for same tab and path", uri, uri2);
+
+        // Different path should return a new URI
+        String incognitoPath2 = "/proc/self/fd/124";
+        Uri uri3 =
+                PdfContentProvider.registerStream(TEST_UNIQUE_ID, incognitoPath2, TEST_FILE_NAME);
+        assertNotNull("Uri for different path should not be null", uri3);
+        assertNotEquals("Should not reuse URI for different path", uri, uri3);
+    }
+
+    @Test
+    public void testRegisterStream_InvalidPath() {
+        Uri uri =
+                PdfContentProvider.registerStream(TEST_UNIQUE_ID, "/invalid/path", TEST_FILE_NAME);
+        assertNull("Uri should be null for invalid path", uri);
+
+        Uri uriNull = PdfContentProvider.registerStream(TEST_UNIQUE_ID, null, TEST_FILE_NAME);
+        assertNull("Uri should be null for null path", uriNull);
+    }
+
     private File createTempFile() {
         try {
             File tempFile = File.createTempFile("test_pdf", ".pdf");
             tempFile.deleteOnExit();
             FileOutputStream outputStream = new FileOutputStream(tempFile);
             outputStream.write(1234);
+            outputStream.close();
             return tempFile;
         } catch (IOException e) {
             throw new AssertionError("Cannot create temporary file.", e);

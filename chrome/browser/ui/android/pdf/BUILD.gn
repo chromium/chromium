@@ -12,6 +12,7 @@ android_library("pdf_provider_java") {
       [ "java/src/org/chromium/chrome/browser/pdf/PdfContentProvider.java" ]
   deps = [
     "//base:base_java",
+    "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -32,6 +33,7 @@ android_library("pdf_utils_java") {
   deps = [
     ":java",
     ":pdf_info_java",
+    ":pdf_provider_java",
     "//base:base_java",
     "//base:content_uri_utils_java",
     "//chrome/android/modules/on_demand:provider_java",
@@ -51,7 +53,10 @@ android_library("pdf_utils_java") {
 }
 
 android_library("pdf_page_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/pdf/PdfPage.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/pdf/PdfPage.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfTabHelper.java",
+  ]
   deps = [
     ":java",
     ":pdf_info_java",
@@ -60,9 +65,12 @@ android_library("pdf_page_java") {
     "//base:base_java",
     "//chrome/android/modules/on_demand:provider_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/embedder_support/android:util_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
   ]
 }
 

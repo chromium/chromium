@@ -154,6 +154,7 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(mPdfView);
         ViewGroup contentView = mActivity.findViewById(android.R.id.content);
         contentView.addView(mPdfCoordinator.getView());
+        ShadowLooper.idleMainLooper();
         if (mPdfCoordinator.getUri() != null) {
             mPdfCoordinator.mChromePdfViewerFragment.setDocumentUri(mPdfCoordinator.getUri());
         }
@@ -601,6 +602,7 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(qualifiers = "w800dp")
     public void testToolBoxViewVisibility() {
         createPdfCoordinator();
 
@@ -737,6 +739,22 @@ public class PdfCoordinatorUnitTest {
         assertTrue(restorePositionPending);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testOnDownloadComplete_WhenLoaded_ReloadsWithContentUri() {
+        createPdfCoordinator();
+        assertTrue(mPdfCoordinator.getIsPdfLoadedForTesting());
+
+        String newFilePath = "/data/user/10/com.google.android.apps.chrome/cache/pdfs/new_fw4.pdf";
+        String newFileName = "new_fw4.pdf";
+        mPdfCoordinator.onDownloadComplete(newFilePath, newFileName);
+
+        assertEquals(newFilePath, mPdfCoordinator.getFilepath());
+        Uri expectedUri =
+                PdfUtils.getContentUri(newFilePath, newFileName, String.valueOf(TAB_ID), false);
+        assertEquals(expectedUri, mPdfCoordinator.getUri());
+    }
+
     public static class TestModalDialogActivity extends org.chromium.ui.base.TestActivity
             implements org.chromium.ui.modaldialog.ModalDialogManagerHolder {
         private org.chromium.ui.modaldialog.ModalDialogManager mModalDialogManager;
@@ -809,6 +827,9 @@ public class PdfCoordinatorUnitTest {
                                     return null;
                                 });
         shadowPdfView.mPdfDocument = mockPdfDocument;
+
+        // Run posted tasks (loadPdfFile) before showing properties
+        ShadowLooper.idleMainLooper();
 
         mPdfCoordinator.showDocumentProperties();
 
@@ -907,6 +928,9 @@ public class PdfCoordinatorUnitTest {
                                         return null;
                                     });
             shadowPdfView.mPdfDocument = mockPdfDocument;
+
+            // Run posted tasks (loadPdfFile) before showing properties
+            ShadowLooper.idleMainLooper();
 
             pdfCoordinator.showDocumentProperties();
 

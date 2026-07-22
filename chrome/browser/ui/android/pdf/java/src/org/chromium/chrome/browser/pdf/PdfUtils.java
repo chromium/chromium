@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 import org.jni_zero.CalledByNative;
@@ -293,7 +294,35 @@ public class PdfUtils {
         sShouldOpenPdfInlineForTesting = shouldOpenPdfInlineForTesting;
     }
 
-    public static @Nullable Uri getUriFromFilePath(String pdfFilePath) {
+    /**
+     * Generates a content URI for accessing the PDF. For Incognito mode, it creates a secure,
+     * thread-safe in-memory stream URI.
+     *
+     * @param pdfFilePath Path to the PDF file (might be a /proc/ path in Incognito).
+     * @param pdfFileName Name of the PDF file.
+     * @param tabId Unique identifier for the tab.
+     * @param isIncognito Whether the request is in Incognito mode.
+     * @return A Uri to access the PDF.
+     */
+    public static @Nullable Uri getContentUri(
+            String pdfFilePath, String pdfFileName, String tabId, boolean isIncognito) {
+        if (isIncognito) {
+            Uri uri = Uri.parse(pdfFilePath);
+            String scheme = uri.getScheme();
+            if (UrlConstants.CONTENT_SCHEME.equals(scheme)
+                    || UrlConstants.FILE_SCHEME.equals(scheme)) {
+                // PDF androidx library accepts file or content URI for local PDF opened in
+                // incognito.
+                return uri;
+            }
+            return PdfContentProvider.registerStream(tabId, pdfFilePath, pdfFileName);
+        } else {
+            return getUriFromFilePath(pdfFilePath);
+        }
+    }
+
+    @VisibleForTesting
+    static @Nullable Uri getUriFromFilePath(String pdfFilePath) {
         Uri uri = Uri.parse(pdfFilePath);
         String scheme = uri.getScheme();
         try {

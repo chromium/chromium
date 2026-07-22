@@ -12,21 +12,26 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
-import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.MimeTypeUtils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /** ContentProvider for incognito PDF file by taking a file path and returning a content URI. */
 @NullMarked
@@ -35,79 +40,185 @@ public class PdfContentProvider extends ContentProvider {
             new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE};
     private static final String TAG = "PdfProvider";
     private static final String URI_AUTHORITY_SUFFIX = ".PdfContentProvider";
-    private static final String PDF_FILE_PREFIX = "/proc/";
-    private static final Object LOCK = new Object();
     private static final String PDF_MIMETYPE = MimeTypeUtils.PDF_MIME_TYPE;
 
     static class PdfFileInfo {
+        public final String tabId;
         public final String filePath;
         public final String fileName;
         public final ParcelFileDescriptor pfd;
 
-        public PdfFileInfo(String filePath, String fileName, ParcelFileDescriptor pfd) {
+        public PdfFileInfo(
+                String tabId, String filePath, String fileName, ParcelFileDescriptor pfd) {
+            this.tabId = tabId;
             this.filePath = filePath;
             this.fileName = fileName;
             this.pfd = pfd;
         }
     }
 
-    // Map from content URI to PdfFileInfo
-    private static final Map<Uri, PdfFileInfo> sPdfUriMap = new HashMap<>();
+    // Map from unique ID to PdfFileInfo
+    private static final Map<String, PdfFileInfo> sStreamRegistry =
+            Collections.synchronizedMap(new HashMap<>());
 
     public PdfContentProvider() {}
 
     /**
-     * Creates a content URI for a given file.
+     * Registers a stream for a given tab, extracting the file descriptor from the path. Reuses an
+     * existing content URI if one is already registered for the given tab and path.
      *
-     * @param filePath Path to the file.
+     * @param tabId Unique identifier for the tab.
+     * @param filePath Path to the PDF file (e.g. /proc/self/fd/...).
      * @param fileName Display name of the file.
-     * @return A content Uri to access the file by other apps.
+     * @return A content Uri to access the file, or null if registration fails.
      */
-    public static @Nullable Uri createContentUri(String filePath, String fileName) {
-        synchronized (LOCK) {
-            for (Map.Entry<Uri, PdfFileInfo> entry : sPdfUriMap.entrySet()) {
-                PdfFileInfo info = entry.getValue();
-                if (TextUtils.equals(filePath, info.filePath)
-                        && TextUtils.equals(fileName, info.fileName)) {
-                    return entry.getKey();
-                }
-            }
-
-            PdfFileInfo info = getPdfFileInfo(filePath, fileName);
-            if (info != null) {
-                Uri uri =
-                        new Uri.Builder()
-                                .scheme(ContentResolver.SCHEME_CONTENT)
-                                .authority(
-                                        ContextUtils.getApplicationContext().getPackageName()
-                                                + URI_AUTHORITY_SUFFIX)
-                                .path(String.valueOf(System.currentTimeMillis()))
-                                .build();
-                sPdfUriMap.put(uri, info);
-                return uri;
-            }
-            return null;
+    public static @Nullable Uri registerStream(String tabId, String filePath, String fileName) {
+        Uri existingUri = getUriForStream(tabId, filePath);
+        if (existingUri != null) {
+            Log.d(
+                    TAG,
+                    "Stream already registered for Tab: %s, Path: %s, reusing it.",
+                    tabId,
+                    filePath);
+            return existingUri;
         }
+        int fd = extractFd(filePath);
+        ParcelFileDescriptor pfd = null;
+        try {
+            if (fd != -1) {
+                pfd = ParcelFileDescriptor.fromFd(fd);
+            } else if (filePath != null) {
+                pfd =
+                        ParcelFileDescriptor.open(
+                                new File(filePath), ParcelFileDescriptor.MODE_READ_ONLY);
+            }
+            if (pfd != null) {
+                return createContentUri(tabId, filePath, pfd, fileName);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to open ParcelFileDescriptor for path: " + filePath, e);
+        }
+        return null;
+    }
+
+    private static int extractFd(@Nullable String filePath) {
+        if (filePath == null) return -1;
+        if (!filePath.startsWith("/proc/")) {
+            Log.e(TAG, "File path may not contain a valid file descriptor: " + filePath);
+            return -1;
+        }
+        String fd = filePath.substring(filePath.lastIndexOf('/') + 1);
+        try {
+            return Integer.parseInt(fd);
+        } catch (NumberFormatException ex) {
+            Log.e(TAG, "File path is invalid: " + filePath, ex);
+        }
+        return -1;
+    }
+
+    /**
+     * Creates a content URI for a given file descriptor.
+     *
+     * @param tabId Unique identifier for the tab.
+     * @param filePath Path to the PDF file.
+     * @param pfd The ParcelFileDescriptor of the PDF.
+     * @param fileName Display name of the file.
+     * @return A content Uri to access the file.
+     */
+    public static @Nullable Uri createContentUri(
+            String tabId, String filePath, ParcelFileDescriptor pfd, String fileName) {
+        removeStreamsForTab(tabId);
+
+        String streamId = UUID.randomUUID().toString();
+        PdfFileInfo info = new PdfFileInfo(tabId, filePath, fileName, pfd);
+        sStreamRegistry.put(streamId, info);
+        return getUriForUniqueId(streamId);
     }
 
     /**
      * Removes a content Uri so that it is no longer valid for future access.
      *
-     * @param uri Uri to be removed.
+     * @param streamId Unique stream identifier or URI string to be removed.
      */
-    public static void removeContentUri(@Nullable String uri) {
-        if (uri == null) {
+    public static void removeContentUri(@Nullable String streamId) {
+        if (streamId == null) {
             return;
         }
+        String id = streamId;
+        if (streamId.startsWith(UrlConstants.CONTENT_URL_PREFIX)) {
+            Uri uri = Uri.parse(streamId);
+            id = uri.getLastPathSegment();
+        }
 
-        Uri contentUri = Uri.parse(uri);
-        PdfFileInfo info;
-        synchronized (LOCK) {
-            info = sPdfUriMap.remove(contentUri);
-        }
+        PdfFileInfo info = sStreamRegistry.remove(id);
         if (info != null) {
-            StreamUtil.closeQuietly(info.pfd);
+            PostTask.postTask(
+                    TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    () -> {
+                        StreamUtil.closeQuietly(info.pfd);
+                    });
         }
+    }
+
+    /**
+     * Removes all streams associated with a tab.
+     *
+     * @param tabId Unique identifier for the tab.
+     */
+    public static void removeStreamsForTab(String tabId) {
+        synchronized (sStreamRegistry) {
+            List<String> keysToRemove = new ArrayList<>();
+            for (Map.Entry<String, PdfFileInfo> entry : sStreamRegistry.entrySet()) {
+                if (entry.getValue().tabId.equals(tabId)) {
+                    keysToRemove.add(entry.getKey());
+                }
+            }
+            for (String key : keysToRemove) {
+                PdfFileInfo info = sStreamRegistry.remove(key);
+                if (info != null) {
+                    PostTask.postTask(
+                            TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                            () -> {
+                                StreamUtil.closeQuietly(info.pfd);
+                            });
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets the content URI for a registered stream that matches the tab ID and file path.
+     *
+     * @param tabId Unique identifier for the tab.
+     * @param filePath Path to the PDF file.
+     * @return The content URI, or null if not found.
+     */
+    public static @Nullable Uri getUriForStream(String tabId, String filePath) {
+        synchronized (sStreamRegistry) {
+            for (Map.Entry<String, PdfFileInfo> entry : sStreamRegistry.entrySet()) {
+                PdfFileInfo info = entry.getValue();
+                if (info.tabId.equals(tabId) && info.filePath.equals(filePath)) {
+                    return getUriForUniqueId(entry.getKey());
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Helper to reconstruct the content URI for a given unique ID.
+     *
+     * @param uniqueId Unique identifier.
+     * @return The content URI.
+     */
+    private static Uri getUriForUniqueId(String uniqueId) {
+        return new Uri.Builder()
+                .scheme(ContentResolver.SCHEME_CONTENT)
+                .authority(
+                        ContextUtils.getApplicationContext().getPackageName()
+                                + URI_AUTHORITY_SUFFIX)
+                .path(uniqueId)
+                .build();
     }
 
     @Override
@@ -120,12 +231,12 @@ public class PdfContentProvider extends ContentProvider {
      */
     @Override
     public @Nullable String getType(Uri uri) {
-        synchronized (LOCK) {
-            if (uri == null || !sPdfUriMap.containsKey(uri)) {
-                return null;
-            }
-            return PDF_MIMETYPE;
+        if (uri == null) return null;
+        String uniqueId = uri.getLastPathSegment();
+        if (uniqueId == null || !sStreamRegistry.containsKey(uniqueId)) {
+            return null;
         }
+        return PDF_MIMETYPE;
     }
 
     /**
@@ -133,10 +244,10 @@ public class PdfContentProvider extends ContentProvider {
      */
     @Override
     public String @Nullable [] getStreamTypes(Uri uri, String mimeTypeFilter) {
-        synchronized (LOCK) {
-            if (uri == null || !sPdfUriMap.containsKey(uri)) {
-                return null;
-            }
+        if (uri == null) return null;
+        String uniqueId = uri.getLastPathSegment();
+        if (uniqueId == null || !sStreamRegistry.containsKey(uniqueId)) {
+            return null;
         }
 
         if (matchMimeTypeFilter(mimeTypeFilter)) {
@@ -151,24 +262,31 @@ public class PdfContentProvider extends ContentProvider {
      */
     @Override
     public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+        if (mode != null && (mode.contains("w") || mode.contains("wt"))) {
+            throw new FileNotFoundException("Write mode not supported.");
+        }
         if (uri == null) {
             throw new FileNotFoundException("Cannot open an empty Uri.");
         }
 
-        synchronized (LOCK) {
-            PdfFileInfo info = sPdfUriMap.get(uri);
-            if (info != null) {
-                try {
-                    // Duplicate so each caller owns an independent descriptor; closing one
-                    // does not invalidate descriptors held by other callers.
-                    return info.pfd.dup();
-                } catch (IOException e) {
-                    throw new FileNotFoundException(
-                            "Failed to duplicate file descriptor: " + e.getMessage());
-                }
+        String uniqueId = uri.getLastPathSegment();
+        if (uniqueId == null) {
+            throw new FileNotFoundException("Invalid URI: no path segment.");
+        }
+
+        PdfFileInfo info = sStreamRegistry.get(uniqueId);
+        if (info != null) {
+            try {
+                // Duplicate so each caller owns an independent descriptor; closing one
+                // does not invalidate descriptors held by other callers.
+                return info.pfd.dup();
+            } catch (IOException e) {
+                throw new FileNotFoundException(
+                        "Failed to duplicate file descriptor: " + e.getMessage());
             }
         }
-        throw new FileNotFoundException("Uri has expired or doesn't exist.");
+        throw new FileNotFoundException(
+                "The requested Incognito PDF stream has expired or does not exist.");
     }
 
     /**
@@ -181,16 +299,18 @@ public class PdfContentProvider extends ContentProvider {
             @Nullable String selection,
             String @Nullable [] selectionArgs,
             @Nullable String sortOrder) {
-        String fileName;
-        long fileSize = 0;
-        synchronized (LOCK) {
-            if (uri == null || !sPdfUriMap.containsKey(uri)) {
-                return new MatrixCursor(COLUMNS, 0);
-            }
-            PdfFileInfo info = sPdfUriMap.get(uri);
-            fileSize = info.pfd.getStatSize();
-            fileName = info.fileName;
+        if (uri == null) return new MatrixCursor(COLUMNS, 0);
+        String uniqueId = uri.getLastPathSegment();
+        if (uniqueId == null || !sStreamRegistry.containsKey(uniqueId)) {
+            return new MatrixCursor(COLUMNS, 0);
         }
+        PdfFileInfo info = sStreamRegistry.get(uniqueId);
+        if (info == null) {
+            return new MatrixCursor(COLUMNS, 0);
+        }
+        long fileSize = info.pfd.getStatSize();
+        String fileName = info.fileName;
+
         if (projection == null) {
             projection = COLUMNS;
         }
@@ -244,21 +364,6 @@ public class PdfContentProvider extends ContentProvider {
         throw new UnsupportedOperationException();
     }
 
-    private static @Nullable PdfFileInfo getPdfFileInfo(String filePath, String fileName) {
-        if (!filePath.startsWith(PDF_FILE_PREFIX)) {
-            Log.e(TAG, "File path may not contain a valid file descriptor.");
-        } else {
-            String fd = filePath.substring(filePath.lastIndexOf('/') + 1);
-            try {
-                int intFd = Integer.parseInt(fd);
-                return new PdfFileInfo(filePath, fileName, ParcelFileDescriptor.adoptFd(intFd));
-            } catch (NumberFormatException ex) {
-                Log.e(TAG, "File path is invalid.", ex);
-            }
-        }
-        return null;
-    }
-
     private static boolean matchMimeTypeFilter(String mimeTypeFilter) {
         if (mimeTypeFilter == null) {
             return false;
@@ -283,18 +388,17 @@ public class PdfContentProvider extends ContentProvider {
     }
 
     static void setPdfFileInfoForTesting(Uri uri, PdfFileInfo pdfFileInfo) {
-        synchronized (LOCK) {
-            sPdfUriMap.put(uri, pdfFileInfo);
+        String uniqueId = uri.getLastPathSegment();
+        if (uniqueId != null) {
+            sStreamRegistry.put(uniqueId, pdfFileInfo);
         }
     }
 
     static void cleanUpForTesting() {
-        synchronized (LOCK) {
-            List<Uri> uris = new ArrayList<>(sPdfUriMap.keySet());
-            for (Uri uri : uris) {
-                removeContentUri(uri.toString());
-            }
-            assert sPdfUriMap.isEmpty();
+        List<String> keys = new ArrayList<>(sStreamRegistry.keySet());
+        for (String key : keys) {
+            removeContentUri(key);
         }
+        assert sStreamRegistry.isEmpty();
     }
 }

@@ -622,13 +622,11 @@ public class NativePageFactory {
         }
         return new PdfPage(
                 new TabShim(tab, browserControlsManager, tabModelSelector, null),
-                tab.getProfile(),
-                tab.getProfile().isOffTheRecord(),
+                tab,
                 activity,
                 url,
                 pdfInfo,
                 activity.getString(R.string.pdf_transient_tab_title),
-                tab.getId(),
                 pdfFragmentViewTracker);
     }
 

@@ -28,7 +28,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -36,6 +38,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -56,8 +59,10 @@ public class PdfPageUnitTest {
     @Mock private Profile mMockProfile;
     @Mock private Destroyable mMarginSupplier;
     @Mock private PdfFragmentViewTracker mPdfFragmentViewTracker;
+    @Mock private Tab mMockTab;
 
     private Activity mActivity;
+    private UserDataHost mUserDataHost;
     private PdfInfo mPdfInfo;
     private String mPdfPageUrl;
     private String mPdfPageBlobUrl;
@@ -87,6 +92,10 @@ public class PdfPageUnitTest {
         PdfCoordinator.skipLoadPdfForTesting(true);
         mPdfPageUrl = PdfUtils.encodePdfPageUrl(PDF_LINK);
         mPdfPageBlobUrl = PdfUtils.encodePdfPageUrl(PDF_BLOB_URL);
+        mUserDataHost = new UserDataHost();
+        doReturn(mUserDataHost).when(mMockTab).getUserDataHost();
+        doReturn(mMockProfile).when(mMockTab).getProfile();
+        doReturn(TAB_ID).when(mMockTab).getId();
     }
 
     @After
@@ -105,13 +114,11 @@ public class PdfPageUnitTest {
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
-                        mMockProfile,
-                        false,
+                        mMockTab,
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID,
                         mPdfFragmentViewTracker);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals(
@@ -125,6 +132,7 @@ public class PdfPageUnitTest {
         View view = pdfPage.mPdfCoordinator.getView();
         ViewGroup contentView = mActivity.findViewById(android.R.id.content);
         contentView.addView(view);
+        ShadowLooper.idleMainLooper();
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
@@ -172,13 +180,11 @@ public class PdfPageUnitTest {
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
-                        mMockProfile,
-                        false,
+                        mMockTab,
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID,
                         mPdfFragmentViewTracker);
         Assert.assertNotNull(pdfPage);
 
@@ -186,6 +192,7 @@ public class PdfPageUnitTest {
         View view = pdfPage.mPdfCoordinator.getView();
         ViewGroup contentView = mActivity.findViewById(android.R.id.content);
         contentView.addView(view);
+        ShadowLooper.idleMainLooper();
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
@@ -211,13 +218,11 @@ public class PdfPageUnitTest {
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
-                        mMockProfile,
-                        false,
+                        mMockTab,
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID,
                         mPdfFragmentViewTracker);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals("Pdf page title should match.", FILE_NAME, pdfPage.getTitle());
@@ -232,6 +237,7 @@ public class PdfPageUnitTest {
         View view = pdfPage.mPdfCoordinator.getView();
         ViewGroup contentView = mActivity.findViewById(android.R.id.content);
         contentView.addView(view);
+        ShadowLooper.idleMainLooper();
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());
@@ -259,13 +265,11 @@ public class PdfPageUnitTest {
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
-                        mMockProfile,
-                        false,
+                        mMockTab,
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID,
                         mPdfFragmentViewTracker);
         assertTrue(
                 "Entering a local pdf URL should reuse the page",
@@ -296,13 +300,11 @@ public class PdfPageUnitTest {
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
-                        mMockProfile,
-                        false,
+                        mMockTab,
                         mActivity,
                         encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID,
                         mPdfFragmentViewTracker);
         assertTrue(
                 "Entering a local pdf URL should reuse the page",
@@ -330,13 +332,11 @@ public class PdfPageUnitTest {
         PdfPage pdfPage =
                 new PdfPage(
                         mMockNativePageHost,
-                        mMockProfile,
-                        false,
+                        mMockTab,
                         mActivity,
                         pdfPageUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID,
                         mPdfFragmentViewTracker);
         Assert.assertNotNull(pdfPage);
         Assert.assertFalse(
@@ -360,6 +360,7 @@ public class PdfPageUnitTest {
         View view = pdfPage.mPdfCoordinator.getView();
         ViewGroup contentView = mActivity.findViewById(android.R.id.content);
         contentView.addView(view);
+        ShadowLooper.idleMainLooper();
         Assert.assertTrue(
                 "Pdf should be loaded when the view is attached to window.",
                 ((PdfCoordinator) pdfPage.mPdfCoordinator).getIsPdfLoadedForTesting());

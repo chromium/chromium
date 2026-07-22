@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.modules.on_demand.OnDemandModule;
@@ -43,16 +44,21 @@ public class PdfPage extends BasicNativePage {
      */
     public PdfPage(
             NativePageHost host,
-            Profile profile,
-            boolean isIncognito,
+            Tab tab,
             Activity activity,
             String url,
             PdfInfo pdfInfo,
             String defaultTitle,
-            int tabId,
             PdfFragmentViewTracker pdfFragmentViewTracker) {
         super(host);
 
+        Profile profile = tab.getProfile();
+        mIsIncognito = profile.isOffTheRecord();
+        int tabId = tab.getId();
+        if (mIsIncognito) {
+            // Bind the PDF stream lifetime to the Tab instead of the transient PdfPage view.
+            PdfTabHelper.from(tab).setPdfUrl(url);
+        }
         mIsDownloadSafe = pdfInfo.isDownloadSafe;
         String decodedUrl = PdfUtils.decodePdfPageUrl(url);
         String filepath =
@@ -76,7 +82,6 @@ public class PdfPage extends BasicNativePage {
                                 mTitle,
                                 tabId,
                                 pdfFragmentViewTracker);
-        mIsIncognito = isIncognito;
         initWithView(mPdfCoordinator.getView());
         // PDF is downloading when the filepath is null.
         if (filepath == null) {
@@ -134,10 +139,8 @@ public class PdfPage extends BasicNativePage {
     @Override
     public void destroy() {
         super.destroy();
-        // TODO(b/348701300): check if pdf should be opened inline.
-        if (mIsIncognito) {
-            PdfContentProvider.removeContentUri(mPdfCoordinator.getFilepath());
-        }
+        // Stream cleanup is now managed by PdfTabHelper based on Tab lifecycle
+        // to support window swapping (drag and drop) without timers.
         mPdfCoordinator.destroy();
     }
 
@@ -197,15 +200,6 @@ public class PdfPage extends BasicNativePage {
         mIsDownloadSafe = isDownloadSafe;
         PdfUtils.recordPdfTransientDownloadTime(
             SystemClock.elapsedRealtime() - mTransientDownloadStartTimestamp);
-        // TODO(b/348701300): check if pdf should be opened inline.
-        if (mIsIncognito) {
-            Uri uri = PdfContentProvider.createContentUri(pdfFilePath, pdfFileName);
-            if (uri == null) {
-                // TODO(b/348712628): show some error UI when content URI is null.
-                return;
-            }
-            pdfFilePath = uri.toString();
-        }
         mPdfCoordinator.onDownloadComplete(pdfFilePath, pdfFileName);
     }
 
