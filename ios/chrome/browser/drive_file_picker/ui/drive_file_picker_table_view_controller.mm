@@ -698,16 +698,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   cell.contentConfiguration = driveFilePickerContentConfiguration;
 
   // Set up background.
-  UIBackgroundConfiguration* backgroundConfiguration;
-  if (@available(iOS 18.0, *)) {
-    backgroundConfiguration = [UIBackgroundConfiguration listCellConfiguration];
-  }
-#if !defined(__IPHONE_18_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_18_0
-  else {
-    backgroundConfiguration =
-        [UIBackgroundConfiguration listGroupedCellConfiguration];
-  }
-#endif
+  UIBackgroundConfiguration* backgroundConfiguration =
+      [UIBackgroundConfiguration listCellConfiguration];
   backgroundConfiguration.backgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   cell.backgroundConfiguration = backgroundConfiguration;
