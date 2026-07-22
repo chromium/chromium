@@ -59,6 +59,8 @@ def BuildTestTargets(out_dir: str, targets: list[str], dry_run: bool,
         before, _, after = completed_process.stdout.partition('stdout:')
       output = after or before
       print(output)
+      if completed_process.stderr:
+        print(completed_process.stderr)
     _log_failure("\n<<< Build failed\n")
 
   return is_successful
