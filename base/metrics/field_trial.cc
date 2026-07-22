@@ -286,6 +286,13 @@ FieldTrial* FieldTrial::CreateSimulatedFieldTrial(
 bool FieldTrial::ParseFieldTrialsString(std::string_view trials_string,
                                         bool override_trials,
                                         std::vector<State>& entries) {
+  // Each trial consumes two separator-delimited tokens (name and group), so
+  // this is an upper bound on the number of entries that will be parsed.
+  entries.reserve(static_cast<size_t>(std::ranges::count(
+                      trials_string, kPersistentStringSeparator)) /
+                      2 +
+                  1);
+
   size_t next_item = 0;
   while (next_item < trials_string.length()) {
     // Parse one entry. Entries have the format
@@ -510,6 +517,7 @@ std::vector<FieldTrial::State> FieldTrialList::GetAllFieldTrialStates(
   }
 
   AutoLock auto_lock(global_->lock_);
+  states.reserve(global_->registered_.size());
   for (const auto& registered : global_->registered_) {
     FieldTrial::PickleState trial;
     registered.second->GetStateWhileLocked(&trial);
