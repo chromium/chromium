@@ -70,7 +70,7 @@ NSString* const kBellIconAccessibilityLabel =
 
   // Configure image.
   self.image = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kBellBadgeSymbol, kBellBadgeSymbolPointSize),
+      SymbolWithPointSize(SymbolBellBadge, kBellBadgeSymbolPointSize),
       @[ [UIColor whiteColor] ]);
   self.imageBackgroundColor = [UIColor colorNamed:kBlue500Color];
   self.imageViewAccessibilityLabel = kBellIconAccessibilityLabel;
