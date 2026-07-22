@@ -29,29 +29,26 @@ using FetchFileCallback =
 // Makes network requests to fetch web app origin association files.
 class WebAppOriginAssociationFetcher {
  public:
-  WebAppOriginAssociationFetcher();
+  explicit WebAppOriginAssociationFetcher(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
   virtual ~WebAppOriginAssociationFetcher();
   WebAppOriginAssociationFetcher(const WebAppOriginAssociationFetcher&) =
       delete;
   WebAppOriginAssociationFetcher& operator=(
       const WebAppOriginAssociationFetcher&) = delete;
 
-  virtual void FetchWebAppOriginAssociationFile(
-      const url::Origin& origin,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      FetchFileCallback callback);
+  virtual void FetchWebAppOriginAssociationFile(const url::Origin& origin,
+                                                FetchFileCallback callback);
 
   void SetRetryOptionsForTest(int max_retry,
                               network::SimpleURLLoader::RetryMode retry_mode);
 
  private:
-  void SendRequest(
-      const GURL& url,
-      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      FetchFileCallback callback);
+  void SendRequest(const GURL& url, FetchFileCallback callback);
   void OnResponse(FetchFileCallback callback,
                   std::optional<std::string> response_body);
 
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   base::WeakPtrFactory<WebAppOriginAssociationFetcher> weak_ptr_factory_{this};
 };

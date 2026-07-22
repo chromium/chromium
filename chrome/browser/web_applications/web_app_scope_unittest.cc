@@ -30,7 +30,7 @@ class WebAppScopeTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
     auto fake_association_manager =
-        std::make_unique<FakeWebAppOriginAssociationManager>();
+        std::make_unique<FakeWebAppOriginAssociationManager>(*profile());
     fake_association_manager->set_pass_through(true);
     fake_provider().SetOriginAssociationManager(
         std::move(fake_association_manager));

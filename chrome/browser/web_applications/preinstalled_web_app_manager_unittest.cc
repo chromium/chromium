@@ -849,7 +849,7 @@ TEST_F(PreinstalledWebAppManagerChatUpdate, UpdateOccursForChat) {
   // Fake out the association fetcher, so we don't have to handle those
   // requests.
   auto fake_association_manager =
-      std::make_unique<FakeWebAppOriginAssociationManager>();
+      std::make_unique<FakeWebAppOriginAssociationManager>(*profile());
   fake_association_manager->set_pass_through(true);
   fake_provider().SetOriginAssociationManager(
       std::move(fake_association_manager));

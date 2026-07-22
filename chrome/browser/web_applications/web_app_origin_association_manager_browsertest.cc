@@ -26,6 +26,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/test/browser_test.h"
+#include "net/ssl/ssl_server_config.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -68,15 +70,20 @@ namespace web_app {
 
 class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
  public:
-  WebAppOriginAssociationManagerTest() {
-    manager_ = std::make_unique<WebAppOriginAssociationManager>();
-    SetUpFetcher();
-    CreateScopeExtensions();
-  }
+  WebAppOriginAssociationManagerTest() { CreateScopeExtensions(); }
 
   ~WebAppOriginAssociationManagerTest() override = default;
-  void RunTestOnMainThread() override {}
-  void TestBody() override {}
+
+  void SetUpOnMainThread() override {
+    WebAppBrowserTestBase::SetUpOnMainThread();
+    manager_ = std::make_unique<WebAppOriginAssociationManager>(*profile());
+    SetUpFetcher();
+  }
+
+  void TearDownOnMainThread() override {
+    manager_.reset();
+    WebAppBrowserTestBase::TearDownOnMainThread();
+  }
 
   void SetUpFetcher() {
     fetcher_ = std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
@@ -221,6 +228,89 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, RunTasks) {
           &WebAppOriginAssociationManagerTest::VerifyValidAndInvalidAppsResult,
           base::Unretained(this), task_count, future.GetCallback()));
   EXPECT_TRUE(future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
+                       ManagerDestroyedWithPendingTasks) {
+  OriginAssociations origin_associations1;
+  origin_associations1.scope_extensions = {*valid_app_scope_extension_};
+
+  OriginAssociations origin_associations2;
+  origin_associations2.scope_extensions = {
+      *valid_and_invalid_app_scope_extension_};
+
+  bool callback1_called = false;
+  OriginAssociations result1;
+
+  bool callback2_called = false;
+  OriginAssociations result2;
+
+  manager_->GetWebAppOriginAssociations(
+      GURL(kWebAppIdentity), std::move(origin_associations1),
+      base::BindLambdaForTesting([&](OriginAssociations result) {
+        callback1_called = true;
+        result1 = std::move(result);
+      }));
+
+  manager_->GetWebAppOriginAssociations(
+      GURL(kWebAppIdentity), std::move(origin_associations2),
+      base::BindLambdaForTesting([&](OriginAssociations result) {
+        callback2_called = true;
+        result2 = std::move(result);
+      }));
+
+  manager_.reset();
+
+  EXPECT_TRUE(callback1_called);
+  EXPECT_TRUE(result1.scope_extensions.empty());
+  EXPECT_TRUE(result1.migration_sources.empty());
+
+  EXPECT_TRUE(callback2_called);
+  EXPECT_TRUE(result2.scope_extensions.empty());
+  EXPECT_TRUE(result2.migration_sources.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
+                       FetchWithStoragePartitionURLLoaderFactory) {
+  // Use the real fetcher instead of the test fetcher.
+  manager_ = std::make_unique<WebAppOriginAssociationManager>(*profile());
+
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+
+  https_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/.well-known/web-app-origin-association") {
+          auto http_response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          http_response->set_code(net::HTTP_OK);
+          http_response->set_content_type("application/json");
+          http_response->set_content(
+              R"({
+                "https://foo.com/index": {}
+              })");
+          return http_response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(https_server.Start());
+
+  GURL server_url = https_server.base_url();
+  ScopeExtensionInfo scope_extension =
+      ScopeExtensionInfo::CreateForOrigin(url::Origin::Create(server_url));
+
+  OriginAssociations origin_associations;
+  origin_associations.scope_extensions = {scope_extension};
+
+  base::test::TestFuture<OriginAssociations> future;
+  manager_->GetWebAppOriginAssociations(GURL("https://foo.com/index"),
+                                        std::move(origin_associations),
+                                        future.GetCallback());
+
+  const OriginAssociations result = future.Get();
+  EXPECT_EQ(result.scope_extensions.size(), 1u);
+  EXPECT_EQ((*result.scope_extensions.begin()).origin, scope_extension.origin);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,

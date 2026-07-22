@@ -71,7 +71,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
     WebAppTest::SetUp();
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
     provider->SetOriginAssociationManager(
-        std::make_unique<FakeWebAppOriginAssociationManager>());
+        std::make_unique<FakeWebAppOriginAssociationManager>(*profile()));
     provider->StartWithSubsystems();
     test::WaitUntilWebAppProviderAndSubsystemsReady(provider);
 

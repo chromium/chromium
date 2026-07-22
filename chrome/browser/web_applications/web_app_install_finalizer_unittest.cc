@@ -129,7 +129,7 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
     provider->SetInstallFinalizer(
         std::make_unique<WebAppInstallFinalizer>(profile()));
     provider->SetOriginAssociationManager(
-        std::make_unique<FakeWebAppOriginAssociationManager>());
+        std::make_unique<FakeWebAppOriginAssociationManager>(*profile()));
 
     auto mock_scheduler =
         std::make_unique<MockWebAppCommandScheduler>(*profile());

@@ -61,7 +61,7 @@ class InstallAppLocallyCommandTest : public WebAppTest {
     fake_provider().SetOsIntegrationManager(std::move(os_integration_manager));
 
     auto origin_association_manager =
-        std::make_unique<FakeWebAppOriginAssociationManager>();
+        std::make_unique<FakeWebAppOriginAssociationManager>(*profile());
     origin_association_manager->set_pass_through(true);
     fake_provider().SetOriginAssociationManager(
         std::move(origin_association_manager));

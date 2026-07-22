@@ -49,7 +49,8 @@ class WebAppOriginAssociationFetcherTest : public testing::Test {
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>(
             network::NetworkService::GetNetworkServiceForTesting());
 
-    fetcher_ = std::make_unique<WebAppOriginAssociationFetcher>();
+    fetcher_ = std::make_unique<WebAppOriginAssociationFetcher>(
+        shared_url_loader_factory_);
 
     // Do not retry, otherwise TestSharedURLLoaderFactory.Clone() will be
     // called, which is not implemented.
@@ -89,8 +90,7 @@ class WebAppOriginAssociationFetcherTest : public testing::Test {
 TEST_F(WebAppOriginAssociationFetcherTest, FileExists) {
   base::test::TestFuture<std::optional<std::string>> future;
   fetcher_->FetchWebAppOriginAssociationFile(
-      url::Origin::Create(GURL(server_.base_url())),
-      shared_url_loader_factory_.get(), future.GetCallback());
+      url::Origin::Create(GURL(server_.base_url())), future.GetCallback());
 
   auto file_content = future.Take();
   ASSERT_FALSE(!file_content);
@@ -105,7 +105,6 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileDoesNotExist) {
   GURL url = server_.GetURL("foo.com", "/");
 
   fetcher_->FetchWebAppOriginAssociationFile(url::Origin::Create(url),
-                                             shared_url_loader_factory_.get(),
                                              future.GetCallback());
   auto file_content = future.Take();
 
@@ -119,8 +118,7 @@ TEST_F(WebAppOriginAssociationFetcherTest, FileDoesNotExist) {
 TEST_F(WebAppOriginAssociationFetcherTest, FileUrlIsInvalid) {
   base::test::TestFuture<std::optional<std::string>> future;
   fetcher_->FetchWebAppOriginAssociationFile(
-      url::Origin::Create(GURL("https://co.uk")),
-      shared_url_loader_factory_.get(), future.GetCallback());
+      url::Origin::Create(GURL("https://co.uk")), future.GetCallback());
 
   auto file_content = future.Take();
   ASSERT_TRUE(!file_content);
@@ -136,7 +134,8 @@ class WebAppOriginAssociationFetcherTimeoutTest : public testing::Test {
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_factory_)) {
-    fetcher_ = std::make_unique<WebAppOriginAssociationFetcher>();
+    fetcher_ = std::make_unique<WebAppOriginAssociationFetcher>(
+        shared_url_loader_factory_);
     fetcher_->SetRetryOptionsForTest(0, network::SimpleURLLoader::RETRY_NEVER);
   }
 
@@ -152,7 +151,6 @@ TEST_F(WebAppOriginAssociationFetcherTimeoutTest, FetchTimeout) {
   base::test::TestFuture<std::optional<std::string>> future;
   GURL url("https://example.com");
   fetcher_->FetchWebAppOriginAssociationFile(url::Origin::Create(url),
-                                             shared_url_loader_factory_.get(),
                                              future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());

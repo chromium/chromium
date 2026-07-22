@@ -20,7 +20,7 @@ namespace web_app {
 class FakeWebAppOriginAssociationManager
     : public WebAppOriginAssociationManager {
  public:
-  FakeWebAppOriginAssociationManager();
+  explicit FakeWebAppOriginAssociationManager(Profile& profile);
   ~FakeWebAppOriginAssociationManager() override;
 
   // Sends back preset data.

@@ -64,7 +64,7 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
     provider->UseRealOsIntegrationManager();
     auto origin_association_manager =
-        std::make_unique<FakeWebAppOriginAssociationManager>();
+        std::make_unique<FakeWebAppOriginAssociationManager>(*profile());
     association_manager_ = origin_association_manager.get();
     provider->SetOriginAssociationManager(
         std::move(origin_association_manager));

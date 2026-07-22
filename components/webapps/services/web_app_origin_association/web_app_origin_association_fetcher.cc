@@ -101,7 +101,9 @@ bool ShouldFetchAssociationFile(const GURL& resource_url) {
 
 namespace webapps {
 
-WebAppOriginAssociationFetcher::WebAppOriginAssociationFetcher() = default;
+WebAppOriginAssociationFetcher::WebAppOriginAssociationFetcher(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : shared_url_loader_factory_(std::move(shared_url_loader_factory)) {}
 
 WebAppOriginAssociationFetcher::~WebAppOriginAssociationFetcher() = default;
 
@@ -114,7 +116,6 @@ void WebAppOriginAssociationFetcher::SetRetryOptionsForTest(
 
 void WebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
     const url::Origin& origin,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     FetchFileCallback callback) {
   const GURL resource_url = origin.GetURL().Resolve(association_file_name);
   if (!ShouldFetchAssociationFile(resource_url)) {
@@ -126,17 +127,15 @@ void WebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
     return;
   }
 
-  SendRequest(resource_url, std::move(shared_url_loader_factory),
-              std::move(callback));
+  SendRequest(resource_url, std::move(callback));
 }
 
 void WebAppOriginAssociationFetcher::SendRequest(
     const GURL& url,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     FetchFileCallback callback) {
   url_loader_ = CreateRequester(url);
   url_loader_->DownloadToString(
-      shared_url_loader_factory.get(),
+      shared_url_loader_factory_.get(),
       base::BindOnce(&WebAppOriginAssociationFetcher::OnResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       kMaxJsonSize);

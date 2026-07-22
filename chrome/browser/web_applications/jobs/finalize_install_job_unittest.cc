@@ -155,7 +155,7 @@ class FinalizeInstallJobTest : public WebAppTest {
         std::make_unique<WebAppInstallManager>(profile()->GetPrefs());
     provider->SetInstallManager(std::move(install_manager));
     provider->SetOriginAssociationManager(
-        std::make_unique<FakeWebAppOriginAssociationManager>());
+        std::make_unique<FakeWebAppOriginAssociationManager>(*profile()));
 
     auto mock_scheduler =
         std::make_unique<MockWebAppCommandScheduler>(*profile());

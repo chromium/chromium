@@ -437,7 +437,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   command_scheduler_ = std::make_unique<WebAppCommandScheduler>(*profile);
 
   origin_association_manager_ =
-      std::make_unique<WebAppOriginAssociationManager>();
+      std::make_unique<WebAppOriginAssociationManager>(*profile);
 
 #if BUILDFLAG(IS_CHROMEOS)
   web_app_run_on_os_login_manager_ =
