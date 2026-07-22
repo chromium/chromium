@@ -372,11 +372,6 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       const ::user_data_auth::GetArcDiskFeaturesRequest& request,
       GetArcDiskFeaturesCallback callback) = 0;
 
-  // Retrieve LSKF-wrapped key material for upload to a remote recovery service.
-  virtual void GetRecoverableKeyStores(
-      const ::user_data_auth::GetRecoverableKeyStoresRequest& request,
-      GetRecoverableKeyStoresCallback callback) = 0;
-
   // Enable/disable write access permissions to MyFiles directory.
   virtual void SetUserDataStorageWriteEnabled(
       const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,

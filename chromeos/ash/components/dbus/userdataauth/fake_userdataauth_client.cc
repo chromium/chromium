@@ -36,7 +36,6 @@
 #include "chromeos/ash/components/cryptohome/error_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
-#include "chromeos/ash/components/dbus/cryptohome/recoverable_key_store.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 
 namespace ash {
@@ -259,30 +258,6 @@ FakeAuthFactorToAuthFactorWithStatus(std::string label,
                 smart_card.public_key_spki_der);
             return result;
           }),
-      factor);
-}
-
-std::optional<cryptohome::RecoverableKeyStore>
-FakeAuthFactorToRecoverableKeyStore(const FakeAuthFactor& factor) {
-  return std::visit(
-      Overload<std::optional<cryptohome::RecoverableKeyStore>>(
-          [&](const PasswordFactor& password) {
-            cryptohome::RecoverableKeyStore store;
-            store.mutable_key_store_metadata()->set_knowledge_factor_type(
-                cryptohome::KNOWLEDGE_FACTOR_TYPE_PASSWORD);
-            store.mutable_wrapped_security_domain_key()->set_key_name(
-                "security_domain_member_key_encrypted_locally");
-            return store;
-          },
-          [&](const PinFactor& pin) {
-            cryptohome::RecoverableKeyStore store;
-            store.mutable_key_store_metadata()->set_knowledge_factor_type(
-                cryptohome::KNOWLEDGE_FACTOR_TYPE_PIN);
-            store.mutable_wrapped_security_domain_key()->set_key_name(
-                "security_domain_member_key_encrypted_locally");
-            return store;
-          },
-          [&](const auto&) { return std::nullopt; }),
       factor);
 }
 
@@ -1939,38 +1914,6 @@ void FakeUserDataAuthClient::SetUserDataDir(base::FilePath path) {
 
     // This does intentionally not override existing entries.
     users_.insert({std::move(account_id), UserCryptohomeState()});
-  }
-}
-
-void FakeUserDataAuthClient::GetRecoverableKeyStores(
-    const ::user_data_auth::GetRecoverableKeyStoresRequest& request,
-    GetRecoverableKeyStoresCallback callback) {
-  ::user_data_auth::GetRecoverableKeyStoresReply reply;
-  ReplyOnReturn auto_reply(&reply, std::move(callback));
-  RememberRequest<Operation::kGetRecoverableKeyStores>(request);
-
-  if (auto error = TakeOperationError(Operation::kGetRecoverableKeyStores);
-      cryptohome::HasError(error)) {
-    SetErrorWrapperToReply(reply, error);
-    return;
-  }
-
-  const auto user_it = users_.find(request.account_id());
-  const bool user_exists = user_it != std::end(users_);
-  if (!user_exists) {
-    SetErrorWrapperToReply(
-        reply, cryptohome::ErrorWrapper::CreateFromErrorCodeOnly(
-                   CryptohomeErrorCode::CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND));
-    return;
-  }
-
-  const UserCryptohomeState& user_state = user_it->second;
-  for (const auto& [label, factor] : user_state.auth_factors) {
-    std::optional<cryptohome::RecoverableKeyStore> store =
-        FakeAuthFactorToRecoverableKeyStore(factor);
-    if (store) {
-      *reply.add_key_stores() = std::move(*store);
-    }
   }
 }
 

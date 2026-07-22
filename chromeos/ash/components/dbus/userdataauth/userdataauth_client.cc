@@ -352,14 +352,6 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
-  void GetRecoverableKeyStores(
-      const ::user_data_auth::GetRecoverableKeyStoresRequest& request,
-      GetRecoverableKeyStoresCallback callback) override {
-    CallProtoMethod(::user_data_auth::kGetRecoverableKeyStores,
-                    ::user_data_auth::kUserDataAuthInterface, request,
-                    std::move(callback));
-  }
-
   void SetUserDataStorageWriteEnabled(
       const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
       SetUserDataStorageWriteEnabledCallback callback) override {
