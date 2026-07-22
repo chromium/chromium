@@ -14,6 +14,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/history_clusters/history_clusters_internals/webui/url_constants.h"
 #include "components/optimization_guide/optimization_guide_internals/webui/url_constants.h"
+#include "components/private_ai/private_ai_internals/webui/url_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/buildflags.h"
@@ -88,7 +89,8 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == history_clusters_internals::
                      kChromeUIHistoryClustersInternalsHost ||
          host == optimization_guide_internals::
-                     kChromeUIOptimizationGuideInternalsHost;
+                     kChromeUIOptimizationGuideInternalsHost ||
+         host == private_ai_internals::kChromeUIPrivateAiInternalsHost;
 }
 
 }  // namespace

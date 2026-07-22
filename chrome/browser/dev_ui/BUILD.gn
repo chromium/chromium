@@ -30,6 +30,7 @@ if (is_android && dfmify_dev_ui) {
       "//components/commerce/core:commerce_constants",
       "//components/history_clusters/history_clusters_internals/webui:constants",
       "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
+      "//components/private_ai/private_ai_internals/webui:url_constants",
       "//components/strings:components_strings_grit",
       "//content/public/common",
       "//device/vr/buildflags",
