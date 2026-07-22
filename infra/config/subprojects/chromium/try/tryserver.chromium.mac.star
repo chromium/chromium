@@ -963,6 +963,9 @@ gpu.try_.optional_tests_builder(
     cq_settings = try_.cq_settings(
         location_filters = gpu.try_.optional_trybot_location_filters.MAC,
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 3,
+    },
     main_list_view = "try",
     max_concurrent_builds = 7,
 )
@@ -990,6 +993,9 @@ gpu.try_.optional_tests_builder(
     cq_settings = try_.cq_settings(
         location_filters = gpu.try_.optional_trybot_location_filters.MAC,
     ),
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 3,
+    },
     main_list_view = "try",
     max_concurrent_builds = 7,
 )
