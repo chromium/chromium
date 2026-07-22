@@ -1340,6 +1340,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return base::FeatureList::IsEnabled(kTestFeature);
 }
 
++ (BOOL)isOverflowMenuHomeCustomizationEntrypointEnabled {
+  return base::FeatureList::IsEnabled(kOverflowMenuHomeCustomizationEntrypoint);
+}
+
 + (BOOL)isFullscreenSmoothScrollingSupported {
   return ios::provider::IsFullscreenSmoothScrollingSupported();
 }

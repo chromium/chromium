@@ -569,6 +569,9 @@ enum class TipsNotificationType;
 // Returns YES if kTestFeature is enabled.
 + (BOOL)isTestFeatureEnabled;
 
+// Returns YES if kOverflowMenuHomeCustomizationEntrypoint is enabled.
++ (BOOL)isOverflowMenuHomeCustomizationEntrypointEnabled;
+
 // Returns YES if Fullscreen smooth scrolling is supported.
 + (BOOL)isFullscreenSmoothScrollingSupported;
 

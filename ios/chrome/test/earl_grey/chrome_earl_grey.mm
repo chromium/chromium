@@ -1588,6 +1588,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isTestFeatureEnabled];
 }
 
+- (BOOL)isOverflowMenuHomeCustomizationEntrypointEnabled {
+  return [ChromeEarlGreyAppInterface
+      isOverflowMenuHomeCustomizationEntrypointEnabled];
+}
+
 - (BOOL)isFullscreenSmoothScrollingSupported {
   return [ChromeEarlGreyAppInterface isFullscreenSmoothScrollingSupported];
 }
