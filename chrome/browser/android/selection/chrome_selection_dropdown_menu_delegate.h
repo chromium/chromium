@@ -18,7 +18,7 @@ class RenderFrameHost;
 namespace android {
 
 // Delegate to create a menu model containing selected-text context menu items
-// from extensions.
+// from extensions and printing.
 class ChromeSelectionDropdownMenuDelegate final
     : public content::SelectionPopupDelegate {
  public:

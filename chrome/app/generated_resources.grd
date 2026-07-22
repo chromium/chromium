@@ -617,6 +617,11 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_INSPECT_ELEMENT_ANDROID" desc="The name of the Inspect Element command in the context menu for Android.">
         Inspect
       </message>
+      <if expr="is_android">
+        <message name="IDS_CONTEXTMENU_PRINT_SELECTION_DROPDOWN" desc="The name of the Print command in the text selection dropdown menu on Android. Prints the currently selected text.">
+          Print
+        </message>
+      </if>
 
        <!-- content area context menus. Android does not use it -->
       <if expr="not is_android">
