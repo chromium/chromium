@@ -1797,9 +1797,6 @@ config("tot_warnings") {
   # but may have additional constraints as well (e.g. only some OSes)
   if (is_clang && llvm_force_head_revision) {
     cflags += [
-      # TODO(crbug.com/533040708): Figure out what to do about this.
-      "-Wno-deprecated-attributes",
-
       # TODO(crbug.com/526996813): Figure out what to do about this.
       "-Wno-stringop-overread",
     ]
