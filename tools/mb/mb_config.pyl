@@ -227,6 +227,7 @@
       'linux-pgo': 'official_linux_pgo_with_symbols',
       'mac-arm-pgo': 'official_mac_arm_pgo_with_symbols',
       'mac-pgo': 'official_mac_pgo_with_symbols',
+      'webview-arm64-pgo': 'official_webview_arm64_pgo',
       'win-arm64-pgo': 'official_win_arm64_pgo_with_symbols',
       'win32-pgo': 'official_x86_pgo_with_symbols',
       'win64-pgo': 'official_x64_pgo_with_symbols',
