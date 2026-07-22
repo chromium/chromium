@@ -192,6 +192,11 @@ void EmailVerifierDelegate::OnEmailVerificationDecision(
         update->Set(email_utf8, std::move(email_dict));
       }
 
+      // We set the state to none while the dialog was shown, so set it back
+      // to loading here.
+      manager->driver().UpdateEmailVerificationState(
+          email_field_id, mojom::EmailVerificationState::kLoading);
+
       Verify(manager, email_field_id, email_utf8, token_field_id, nonce,
              result);
 
@@ -253,6 +258,11 @@ void EmailVerifierDelegate::OnIsVerifiable(
            nonce, *result);
     return;
   }
+
+  // We don't want the loading indicator to show while waiting for user input,
+  // so set the state to none.
+  manager->driver().UpdateEmailVerificationState(
+      email_field_id, mojom::EmailVerificationState::kNone);
 
   net::SchemefulSite issuer_site = result->issuer_site;
   manager->client().ShowEmailVerificationPopup(
