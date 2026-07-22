@@ -1007,10 +1007,10 @@ class TabImpl implements Tab, TabInternal {
         if (getActivity(/* withLogs= */ true) == null) {
             Log.e(
                     TAG,
-                    "Tab couldn't be loaded because Context was null. mIsArchived: "
-                            + mIsArchived
-                            + ", mInitializedWithWindowAndroid: "
-                            + mInitializedWithWindowAndroid);
+                    "Tab couldn't be loaded because getActivity() was null. mIsArchived: %b,"
+                            + " mInitializedWithWindowAndroid: %b",
+                    mIsArchived,
+                    mInitializedWithWindowAndroid);
             return false;
         }
 
@@ -1366,21 +1366,42 @@ class TabImpl implements Tab, TabInternal {
      */
     @Deprecated
     @Nullable ChromeActivity getActivity(boolean withLogs) {
-        if (getWindowAndroid() == null) {
+        WindowAndroid windowAndroid = getWindowAndroid();
+        if (windowAndroid == null) {
             if (withLogs) {
                 Log.e(TAG, "WindowAndroid is null when requesting activity.");
             }
             return null;
         }
-        Activity activity = ContextUtils.activityFromContext(getWindowAndroid().getContext().get());
+        WeakReference<Context> contextRef = windowAndroid.getContext();
+        Context context = contextRef == null ? null : contextRef.get();
+        Activity activity = ContextUtils.activityFromContext(context);
         if (activity instanceof ChromeActivity chromeActivity) {
             return chromeActivity;
         }
         if (withLogs) {
-            if (activity == null) {
-                Log.e(TAG, "Activity is null when requesting activity.");
+            if (contextRef == null) {
+                Log.e(
+                        TAG,
+                        "Context weak reference in WindowAndroid is null when requesting"
+                                + " activity.");
+            } else if (context == null) {
+                Log.e(
+                        TAG,
+                        "Context weak reference target in WindowAndroid is null when requesting"
+                                + " activity (host Activity was destroyed / GC'd).");
+            } else if (activity == null) {
+                Log.e(
+                        TAG,
+                        "Context is not an Activity when requesting activity (e.g."
+                                + " ApplicationContext or detached tab). Context class: %s",
+                        context.getClass().getName());
             } else {
-                Log.e(TAG, "Activity is not a ChromeActivity when requesting activity.");
+                Log.e(
+                        TAG,
+                        "Activity is not a ChromeActivity when requesting activity. Activity"
+                                + " class: %s",
+                        activity.getClass().getName());
             }
         }
         return null;
