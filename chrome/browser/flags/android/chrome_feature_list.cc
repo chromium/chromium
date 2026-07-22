@@ -167,8 +167,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &data_sharing::features::kDataSharingEnableUpdateChromeUI,
     &data_sharing::features::kDataSharingFeature,
     &data_sharing::features::kDataSharingJoinOnly,
-    &data_sharing::features::kDataSharingNonProductionEnvironment,
-    &data_sharing::features::kSharedDataTypesKillSwitch,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
     &download::features::kEnableDownloadSaveAsContextMenu,
     &download::features::kEnableSavePackageForOffTheRecord,
@@ -218,7 +216,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kXsurfaceMetricsReporting,
     &finds::features::kChromeFinds,
     &history::kOrganicRepeatableQueries,
-    &history_clusters::internal::kJourneys,
     &kAccountForSuppressedKeyboardInsets,
     &kActivateHistoryNavigationCoordinatorInGestureNavMode,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
@@ -446,7 +443,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSettingsSingleActivity,
     &kShareCustomActionsInCCT,
     &kShortCircuitUnfocusAnimation,
-    &kShowCloseAllIncognitoTabsButton,
     &kShowTabListAnimations,
     &kSmallerTabStripTitleLimit,
     &kStartSurfaceReturnTime,
@@ -482,7 +478,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUmaSessionCorrectnessFixes,
     &kUniversalKeyboardHandling,
     &kUnparcelIntentFileDescriptors,
-    &kUpdateCompositorForSurfaceControl,
     &kUseActivityManagerForTabActivation,
     &kUseAppTaskForCustomTabActivation,
     &kUseInitialNetworkStateAtStartup,
@@ -524,7 +519,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &plus_addresses::features::kPlusAddressAndroidOpenGmsCoreManagementPage,
     &plus_addresses::features::kPlusAddressesEnabled,
     &privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation,
-    &privacy_sandbox::kPrivacySandboxSettings4,
     &privacy_sandbox::kRelatedWebsiteSetsUi,
     &safe_browsing::kAutoRevokeSuspiciousNotification,
     &safe_browsing::kExtendedReportingRemovePrefDependency,
@@ -568,7 +562,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &tab_groups::kUseAlternateHistorySyncIllustration,
     &themes::kCrossDeviceThemeTracker,
     &visited_url_ranking::features::kGroupSuggestionService,
-    &visited_url_ranking::features::kVisitedURLRankingService,
     &webapps::features::kAndroidAutoMintedTWA,
     &webapps::features::kWebApkInstallFailureNotification,
 // go/keep-sorted end
@@ -833,7 +826,6 @@ BASE_FEATURE(kSettingsMultiColumn, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsSingleActivity, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kShareCustomActionsInCCT, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShortCircuitUnfocusAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kShowCloseAllIncognitoTabsButton, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowTabListAnimations, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSmallerTabStripTitleLimit, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kStartSurfaceReturnTime, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -871,8 +863,6 @@ BASE_FEATURE(kUmaBackgroundSessions,"UMABackgroundSessions", base::FEATURE_ENABL
 BASE_FEATURE(kUmaSessionCorrectnessFixes, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kUniversalKeyboardHandling, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUnparcelIntentFileDescriptors, base::FEATURE_ENABLED_BY_DEFAULT);
-// Actively update the compositor surface when surface control is enabled.
-BASE_FEATURE(kUpdateCompositorForSurfaceControl, base::FEATURE_ENABLED_BY_DEFAULT);
 // Activate tab with moveTaskToFront() which works in multi-window mode.
 BASE_FEATURE(kUseActivityManagerForTabActivation, base::FEATURE_ENABLED_BY_DEFAULT);
 // Use AppTask.startActivity to bypass Background Activity Launch (BAL) restrictions.
