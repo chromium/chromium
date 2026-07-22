@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/page_action/multi_icon_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/branded_strings.h"
@@ -148,7 +149,8 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
                            true),
       menu_model_(model.GetAnchoredMessageMenuModel()),
       delegate_(delegate) {
-  set_close_on_deactivate(false);
+  set_close_on_deactivate(base::FeatureList::IsEnabled(
+      features::kPageActionAnchoredMessageEasyDismiss));
   SetProperty(views::kElementIdentifierKey, kAnchoredMessageBubbleId);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetBackgroundColor(ui::kColorSysSurface);

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_util.h"
@@ -574,7 +575,13 @@ void PageActionView::CreateAndShowAnchoredMessage(
 }
 void PageActionView::OnAnchoredMessageWidgetClose(
     views::Widget::ClosedReason closed_reason) {
-  CHECK(anchored_message_);
+  // If `anchored_message_` is already null, it means we are in the middle of
+  // programmatically destroying the widget (e.g. from
+  // OnPageActionModelChanged). In this case, early return to avoid re-entrancy
+  // crashes.
+  if (!anchored_message_) {
+    return;
+  }
   CHECK(anchored_message_widget_);
   anchored_message_ = nullptr;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -583,6 +590,11 @@ void PageActionView::OnAnchoredMessageWidgetClose(
                                 anchored_message_widget_->GetWeakPtr()));
   UpdateTooltipText();
   anchored_message_visibility_changed_callbacks_.Notify(this);
+
+  if (observation_.IsObserving() &&
+      observation_.GetSource()->ShouldShowAnchoredMessage()) {
+    CloseAnchoredMessage();
+  }
 }
 
 void PageActionView::UpdateTooltipText() {

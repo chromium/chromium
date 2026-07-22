@@ -290,6 +290,10 @@ BASE_DECLARE_FEATURE(kEnableManagementPromotionBanner);
 // LensOverlayHomeworkPageActionController.
 BASE_DECLARE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization);
 
+// Enables the anchored message bubble to close when deactivated (e.g. when
+// losing focus).
+BASE_DECLARE_FEATURE(kPageActionAnchoredMessageEasyDismiss);
+
 // Controls whether the new page actions framework should be displaying page
 // actions.
 BASE_DECLARE_FEATURE(kPageActionsMigration);
