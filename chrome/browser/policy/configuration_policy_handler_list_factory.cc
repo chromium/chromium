@@ -3685,10 +3685,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
           {{0, 0}, {1, 0}, {2, 1}}));
 #if !BUILDFLAG(IS_ANDROID)
-  gen_ai_default_policies.emplace_back(
-      key::kGeminiChromeFileUploadSettings, glic::prefs::kGlicFileUploadAllowed,
-      GenAiDefaultSettingsPolicyHandler::PolicyValueToPrefMap(
-          {{0, 0}, {1, 0}, {2, 1}}));
   gen_ai_default_policies.emplace_back(key::kVoiceTypingSettings,
                                        prefs::kVoiceTypingSettings);
   gen_ai_default_policies.emplace_back(key::kIndigo,

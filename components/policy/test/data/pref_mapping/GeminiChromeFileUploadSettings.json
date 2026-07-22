@@ -12,8 +12,7 @@
       "values_to_test": [
         0,
         1
-      ],
-      "default_for_enterprise_users": 0
+      ]
     }
   }
 ]
