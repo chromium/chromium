@@ -59,10 +59,28 @@ optimization_guide::PageEligibilityResult MockCheckPageEligibility(
       .meta_tag_names_affecting_eligibility = {.data = nullptr, .size = 0}};
 }
 
+bool MockIsEligible(
+    const std::string& host,
+    const std::string& path,
+    const std::vector<optimization_guide::FrameMetadata>& frame_metadata) {
+  if (path.find("ineligible") != std::string::npos ||
+      host.find("ineligible") != std::string::npos) {
+    return false;
+  }
+  return true;
+}
+
+bool MockShouldReextractPageContext(
+    const std::string& host,
+    const std::string& path,
+    const std::vector<std::string>& updated_meta_tags) {
+  return false;
+}
+
 optimization_guide::PageContextEligibilityAPI g_test_api = {
-    .IsPageContextEligible = nullptr,
+    .IsPageContextEligible = &MockIsEligible,
     .IsPageContextEligibleWithAccount = &MockIsEligibleWithAccount,
-    .ShouldReextractPageContext = nullptr,
+    .ShouldReextractPageContext = &MockShouldReextractPageContext,
     .GetMetaTagNamesAffectingEligibility = &MockGetMeta,
     .CheckPageEligibility = &MockCheckPageEligibility,
 };
