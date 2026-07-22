@@ -7,11 +7,28 @@
 #include <memory>
 #include <numeric>
 
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
+namespace {
+
+std::unique_ptr<tflite::FlatBufferModel> GetTestModelBuffer() {
+  base::FilePath source_root;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
+  source_root = source_root.AppendASCII("media")
+                    .AppendASCII("webrtc")
+                    .AppendASCII("voice_isolation")
+                    .AppendASCII("test_model_1_2_160_2.tflite");
+  return tflite::FlatBufferModel::BuildFromFile(
+      source_root.AsUTF8Unsafe().c_str());
+}
+
+}  // namespace
 
 TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
   // Configure the audio parameters to the same internal parameters of
@@ -22,8 +39,10 @@ TEST(VoiceIsolationTest, ProcessAudioDownmixesAndUpmixes) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Stereo(), kSampleRate,
                          kFrameSize);
+
+  std::unique_ptr<tflite::FlatBufferModel> model = GetTestModelBuffer();
   std::unique_ptr<VoiceIsolation> voice_isolation =
-      VoiceIsolation::Create(nullptr, params);
+      VoiceIsolation::Create(model.get(), params);
   ASSERT_NE(voice_isolation, nullptr);
 
   // Use a 2-channel bus to match the AudioParameters.
@@ -61,8 +80,10 @@ TEST(VoiceIsolationTest, VoiceIsolationCanAdaptToAudioParameters) {
   AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
                          ChannelLayoutConfig::Stereo(), kSampleRate,
                          kFrameSize);
+
+  std::unique_ptr<tflite::FlatBufferModel> model = GetTestModelBuffer();
   std::unique_ptr<VoiceIsolation> voice_isolation =
-      VoiceIsolation::Create(nullptr, params);
+      VoiceIsolation::Create(model.get(), params);
   ASSERT_NE(voice_isolation, nullptr);
 
   // Use a 3-channel bus to ensure copying happens to all other channels.
