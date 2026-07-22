@@ -813,7 +813,8 @@ class ReadAnythingAppModel {
 
   // The tree size arguments are used to determine if distillation of a PDF is
   // necessary.
-  void ProcessGeneratedEvents(const ui::AXEventGenerator& event_generator,
+  void ProcessGeneratedEvents(const ui::AXTreeID& tree_id,
+                              const ui::AXEventGenerator& event_generator,
                               size_t prev_tree_size,
                               size_t tree_size);
 

@@ -1805,6 +1805,58 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
   ASSERT_FALSE(model().reset_distillation_delay_timer());
 }
 
+TEST_F(ReadAnythingAppModelTest,
+       PdfEvents_InactiveTree_DoesNotSetRequiresDistillation) {
+  model().set_is_pdf(true);
+
+  // Set the active tree ID to be tree_id_ (which is default active tree in
+  // SetUp). Now, create an inactive tree.
+  ui::AXTreeID inactive_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  // Create simple AXTreeUpdate with a root node and 2 nodes for the inactive
+  // tree.
+  ui::AXTreeUpdate initial_update;
+  test::SetUpdateTreeID(&initial_update, inactive_tree_id);
+  initial_update.root_id = 1;
+  ui::AXNodeData embedded_node;
+  embedded_node.id = 2;
+  embedded_node.role = ax::mojom::Role::kEmbeddedObject;
+
+  ui::AXNodeData pdf_root_node;
+  pdf_root_node.id = 1;
+  pdf_root_node.role = ax::mojom::Role::kPdfRoot;
+  pdf_root_node.child_ids = {embedded_node.id};
+  initial_update.nodes = {std::move(pdf_root_node), std::move(embedded_node)};
+  ApplyAccessibilityUpdates(inactive_tree_id, {std::move(initial_update)});
+
+  // Verify that distillation is false for the active tree.
+  ASSERT_FALSE(model().requires_distillation());
+
+  // Apply a subtree creation event (with size increase) to the inactive tree.
+  ui::AXTreeUpdate update2;
+  test::SetUpdateTreeID(&update2, inactive_tree_id);
+  update2.root_id = 1;
+  ui::AXNodeData static_text_node1 = test::TextNode(/* id= */ 1);
+
+  ui::AXNodeData updated_embedded_node;
+  updated_embedded_node.id = 2;
+  updated_embedded_node.role = ax::mojom::Role::kEmbeddedObject;
+  static_text_node1.child_ids = {updated_embedded_node.id};
+
+  ui::AXNodeData static_text_node2 = test::TextNode(/* id= */ 3);
+  updated_embedded_node.child_ids = {static_text_node2.id};
+  update2.nodes = {std::move(static_text_node1),
+                   std::move(updated_embedded_node),
+                   std::move(static_text_node2)};
+
+  ApplyAccessibilityUpdates(inactive_tree_id, {std::move(update2)});
+
+  // Distillation and timer reset should still be false, because the update was
+  // on an inactive tree!
+  ASSERT_FALSE(model().requires_distillation());
+  ASSERT_FALSE(model().reset_distillation_delay_timer());
+}
+
 TEST_F(ReadAnythingAppModelTest, Expand_NodeDoesNotExist_Redistills) {
   ui::AXTreeUpdate initial_update;
   test::SetUpdateTreeID(&initial_update, tree_id_);

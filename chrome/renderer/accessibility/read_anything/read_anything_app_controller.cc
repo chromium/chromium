@@ -475,6 +475,9 @@ void ReadAnythingAppController::OnDestruct() {
 
 void ReadAnythingAppController::OnNodeWillBeDeleted(ui::AXTree* tree,
                                                     ui::AXNode* node) {
+  if (tree->GetAXTreeID() != model_.active_tree_id()) {
+    return;
+  }
   ui::AXNodeID node_id = CHECK_DEREF(node).id();
   if (model_.GetCurrentlyVisibleNodes()->contains(node_id)) {
     displayed_nodes_pending_deletion_.insert(node_id);

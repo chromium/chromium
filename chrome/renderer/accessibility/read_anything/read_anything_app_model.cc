@@ -668,7 +668,8 @@ void ReadAnythingAppModel::UnserializeUpdates(const Updates& updates,
   // Set URL info if it hasn't already been set.
   SetTreeInfoUrlInformation(*it->second);
 
-  ProcessGeneratedEvents(event_generator, prev_tree_size, tree->size());
+  ProcessGeneratedEvents(tree_id, event_generator, prev_tree_size,
+                         tree->size());
 }
 
 void ReadAnythingAppModel::PrepareForAXTreeUpdates(
@@ -715,7 +716,11 @@ void ReadAnythingAppModel::UpdateActiveTreeIfNeeded(
   // in case there has been a delay in receiving valid accessibility tree
   // updates.
   if (root_tree_id_ == tree_id) {
-    SetRootTreeId(root_tree_id_);
+    // For PDFs, the active tree should remain the child tree containing the PDF
+    // content, rather than falling back to the root PDF viewer frame tree.
+    if (!is_pdf_) {
+      SetRootTreeId(root_tree_id_);
+    }
   } else if (active_tree_id_ != ui::AXTreeIDUnknown() &&
              active_tree_id_ != tree_id &&
              child_tree_ids_.find(tree_id) != child_tree_ids_.end()) {
@@ -1115,6 +1120,7 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
 }
 
 void ReadAnythingAppModel::ProcessGeneratedEvents(
+    const ui::AXTreeID& tree_id,
     const ui::AXEventGenerator& event_generator,
     size_t prev_tree_size,
     size_t tree_size) {
@@ -1181,7 +1187,8 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         // displaying). To avoid distilling and causing RM to flicker, only
         // distill if the size of the updated tree is larger than before (to
         // capture the complete PDF load mentioned earlier).
-        if (is_pdf_ && prev_tree_size < tree_size) {
+        if (is_pdf_ && tree_id == active_tree_id_ &&
+            prev_tree_size < tree_size) {
           requires_distillation_ = true;
           reset_distillation_delay_timer_ = true;
         }
