@@ -11,12 +11,8 @@
 
 namespace trusted_vault {
 
-
 // TODO(crug.com/425990763): Complete MD5 -> SHA256 migration.
 BASE_DECLARE_FEATURE(kEnableTrustedVaultSHA256);
-
-// Enables the security fix for E2EE rotation proof bypass in Trusted Vault.
-BASE_DECLARE_FEATURE(kE2eeRotationProofBypassFix);
 
 }  // namespace trusted_vault
 
