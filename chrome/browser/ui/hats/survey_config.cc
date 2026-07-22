@@ -833,17 +833,17 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForDownloadJourney,
       metrics::kHatsSurveyTriggerDownloadJourney,
-      /*presupplied_trigger_id=*/"Y2We4jMf70ugnJ3q1cK0QFVzpBEr");
+      /*presupplied_trigger_id=*/"mL46CjHkE0ugnJ3q1cK0NsAQJpTP");
 
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForPinExtensionJourney,
       metrics::kHatsSurveyTriggerPinExtensionJourney,
-      /*presupplied_trigger_id=*/"ZPGYEfdNz0ugnJ3q1cK0WdJNwYC3");
+      /*presupplied_trigger_id=*/"8RJXcn5t20ugnJ3q1cK0VLDGHPAz");
 
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForClearBrowsingHistory,
       metrics::kHatsSurveyTriggerClearBrowsingHistory,
-      /*presupplied_trigger_id=*/"uAmt8ZyqJ0ugnJ3q1cK0PAWUdnZB");
+      /*presupplied_trigger_id=*/"R8iDTcjjT0ugnJ3q1cK0TiRRjjy4");
 
   // Lens overlay surveys.
   survey_configs.emplace_back(
