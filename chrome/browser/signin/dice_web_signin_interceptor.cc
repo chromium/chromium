@@ -548,6 +548,13 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
         kAbortUserDeclinedProfileForAccount;
   }
 
+  // When Gaia explicitly states that the account is not connected (kFalse),
+  // immediately enforce multi-user interception to prevent unconnected accounts
+  // from mixing in the same profile, even if given names match later.
+  if (primary_is_connected == signin::Tribool::kFalse) {
+    return SigninInterceptionHeuristicOutcome::kInterceptMultiUser;
+  }
+
   return std::nullopt;
 }
 
@@ -840,6 +847,14 @@ bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;
   }
+
+  if (state_->primary_is_connected_ == signin::Tribool::kFalse) {
+    // When Gaia explicitly states the account is not connected (kFalse),
+    // we must intercept to prevent unconnected accounts from mixing in the same
+    // profile, even if the given names match.
+    return true;
+  }
+
   // Check if the account has the same name as another account in the profile.
   for (const auto& account_info :
        identity_manager_->GetExtendedAccountInfoForAccountsWithRefreshToken()) {
