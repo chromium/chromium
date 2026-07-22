@@ -34,9 +34,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="GoogleLens"/>
   <int value="2" label="PasswordManager"/>
   <int value="3" label="ThemesAndCustomization"/>
+  <int value="4" label="Gemini"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/first_run_flow_controller.h:FeatureShowcaseStep) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h:FeatureShowcaseStep) -->
 
 <!-- LINT.IfChange(FeatureShowcaseStepUserAction) -->
 

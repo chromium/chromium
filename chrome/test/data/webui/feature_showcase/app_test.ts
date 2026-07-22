@@ -4,6 +4,7 @@
 
 import 'chrome://feature-showcase/app.js';
 import 'chrome://feature-showcase/feature_showcase_stepper.js';
+import 'chrome://feature-showcase/gemini/gemini_step.js';
 import 'chrome://feature-showcase/password_manager/password_manager_step.js';
 import 'chrome://feature-showcase/themes_and_customization/themes_and_customization_step.js';
 
@@ -12,6 +13,8 @@ import {browserProxyFactory as defaultBrowserProxyFactory, DefaultBrowserPageHan
 import type {FeatureShowcaseDefaultBrowserStepElement} from 'chrome://feature-showcase/default_browser/default_browser_step.js';
 import {browserProxyFactory as featureShowcaseProxyFactory, FeatureShowcasePageHandlerRemote} from 'chrome://feature-showcase/feature_showcase.mojom-webui.js';
 import type {FeatureShowcaseStepperElement} from 'chrome://feature-showcase/feature_showcase_stepper.js';
+import {browserProxyFactory as geminiProxyFactory, GeminiPageHandlerRemote} from 'chrome://feature-showcase/gemini.mojom-webui.js';
+import type {FeatureShowcaseGeminiStepElement} from 'chrome://feature-showcase/gemini/gemini_step.js';
 import {browserProxyFactory as passwordManagerProxyFactory, PasswordManagerPageHandlerRemote} from 'chrome://feature-showcase/password_manager.mojom-webui.js';
 import type {FeatureShowcasePasswordManagerStepElement} from 'chrome://feature-showcase/password_manager/password_manager_step.js';
 import {browserProxyFactory as themesAndCustomizationProxyFactory, ThemesAndCustomizationPageHandlerRemote} from 'chrome://feature-showcase/themes_and_customization.mojom-webui.js';
@@ -352,5 +355,55 @@ suite('FeatureShowcaseThemesAndCustomizationStepTest', function() {
     await testHandler.whenCalled('revertTheme');
     await stepCompletedEvent;
     assertEquals(0, testHandler.getCallCount('acceptTheme'));
+  });
+});
+
+suite('FeatureShowcaseGeminiStepTest', function() {
+  let stepElement: FeatureShowcaseGeminiStepElement;
+  let testHandler: TestMock<GeminiPageHandlerRemote>&GeminiPageHandlerRemote;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    testHandler = TestMock.fromClass(GeminiPageHandlerRemote);
+    geminiProxyFactory.setInstance({handler: testHandler});
+
+    stepElement = document.createElement('feature-showcase-gemini-step');
+    document.body.appendChild(stepElement);
+  });
+
+  test('confirm button clicked', async function() {
+    await microtasksFinished();
+
+    const button =
+        stepElement.shadowRoot.querySelector<HTMLElement>('#confirm-button');
+    assertTrue(!!button);
+
+    const stepCompletedEvent = new Promise((resolve) => {
+      stepElement.addEventListener('step-completed', resolve);
+    });
+
+    button.click();
+
+    await testHandler.whenCalled('acceptConsent');
+    await stepCompletedEvent;
+  });
+
+  test('skip button clicked', async function() {
+    await microtasksFinished();
+
+    const button =
+        stepElement.shadowRoot.querySelector<HTMLElement>('#skip-button');
+    assertTrue(!!button);
+
+    const stepCompletedEvent = new Promise((resolve) => {
+      stepElement.addEventListener('step-completed', resolve);
+    });
+
+    button.click();
+
+    await testHandler.whenCalled('skipConsent');
+    await stepCompletedEvent;
+    assertEquals(0, testHandler.getCallCount('acceptConsent'));
   });
 });

@@ -30,6 +30,17 @@ export function getHtml(this: FeatureShowcaseAppElement) {
       </feature-showcase-default-browser-step>
   ` : ''}
 
+  ${this.hasStep_('gemini') ? html`
+      <feature-showcase-gemini-step id="gemini" slot="view"
+          @step-completed="${this.onStepCompleted_}"
+          ?buttons-disabled="${this.areButtonsDisabled_}">
+        <feature-showcase-stepper slot="stepper"
+            .steps="${this.steps}"
+            .activeIndex="${this.activeStepIndex}">
+        </feature-showcase-stepper>
+      </feature-showcase-gemini-step>
+  ` : ''}
+
   ${this.hasStep_('password-manager') ? html`
       <feature-showcase-password-manager-step id="password-manager" slot="view"
           @step-completed="${this.onStepCompleted_}"

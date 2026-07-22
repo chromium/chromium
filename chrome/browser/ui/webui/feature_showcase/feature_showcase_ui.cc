@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/default_browser_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase_handler.h"
+#include "chrome/browser/ui/webui/feature_showcase/gemini_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/google_lens_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/password_manager_handler.h"
 #include "chrome/browser/ui/webui/feature_showcase/themes_and_customization_handler.h"
@@ -75,6 +76,19 @@ void AddGoogleLensStepResources(content::WebUIDataSource* source) {
   source->AddResourcePath("images/lens_overlay_illustration_dark.png",
                           IDR_FEATURE_SHOWCASE_GOOGLE_LENS_ILLUSTRATION_DARK);
 #endif
+}
+
+void AddGeminiStepResources(content::WebUIDataSource* source) {
+  // TODO(crbug.com/506845213): Handle different regions.
+  source->AddLocalizedStrings({
+      {"geminiTitle", IDS_FEATURE_SHOWCASE_GEMINI_TITLE},
+      {"geminiSubtitle", IDS_FEATURE_SHOWCASE_GEMINI_SUBTITLE},
+      {"geminiDisclosure1", IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_1},
+      {"geminiDisclosure2", IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_2},
+      {"geminiDisclosure3", IDS_FEATURE_SHOWCASE_GEMINI_DISCLOSURE_3},
+      {"geminiYesImIn", IDS_FEATURE_SHOWCASE_GEMINI_YES_IM_IN},
+      {"geminiNoThanks", IDS_FEATURE_SHOWCASE_GEMINI_NO_THANKS},
+  });
 }
 
 void AddPasswordManagerStepResources(content::WebUIDataSource* source) {
@@ -152,6 +166,7 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
                              IDS_FEATURE_SHOWCASE_STEPPER_A11Y_LABEL);
 
   AddDefaultBrowserStepResources(source);
+  AddGeminiStepResources(source);
   AddGoogleLensStepResources(source);
   AddPasswordManagerStepResources(source);
   AddThemesAndCustomizationStepResources(source);
@@ -200,6 +215,13 @@ void FeatureShowcaseUI::BindInterface(
         feature_showcase::mojom::DefaultBrowserPageHandlerFactory> receiver) {
   default_browser_page_factory_receiver_.reset();
   default_browser_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void FeatureShowcaseUI::BindInterface(
+    mojo::PendingReceiver<feature_showcase::mojom::GeminiPageHandlerFactory>
+        receiver) {
+  gemini_factory_receiver_.reset();
+  gemini_factory_receiver_.Bind(std::move(receiver));
 }
 
 void FeatureShowcaseUI::BindInterface(
@@ -257,6 +279,11 @@ void FeatureShowcaseUI::CreatePageHandler(
   default_browser_page_handler_ =
       std::make_unique<DefaultBrowserHandler>(std::move(handler));
   default_browser_page_handler_->SetCanPin(can_pin_);
+}
+
+void FeatureShowcaseUI::CreateGeminiPageHandler(
+    mojo::PendingReceiver<feature_showcase::mojom::GeminiPageHandler> handler) {
+  gemini_handler_ = std::make_unique<GeminiHandler>(std::move(handler));
 }
 
 void FeatureShowcaseUI::CreateGoogleLensPageHandler(

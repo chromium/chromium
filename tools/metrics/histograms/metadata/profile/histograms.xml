@@ -1004,6 +1004,7 @@ chromium-metrics-reviews@google.com.
 
   <token key="FeatureShowcaseStep">
     <variant name="DefaultBrowser" summary="Default Browser"/>
+    <variant name="Gemini" summary="Gemini"/>
     <variant name="GoogleLens" summary="Google Lens"/>
     <variant name="PasswordManager" summary="Password Manager"/>
     <variant name="ThemesAndCustomization" summary="Themes and Customization"/>

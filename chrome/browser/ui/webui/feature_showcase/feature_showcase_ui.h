@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/webui/feature_showcase/default_browser.mojom.h"
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase.mojom.h"
+#include "chrome/browser/ui/webui/feature_showcase/gemini.mojom.h"
 #include "chrome/browser/ui/webui/feature_showcase/google_lens.mojom.h"
 #include "chrome/browser/ui/webui/feature_showcase/password_manager.mojom.h"
 #include "chrome/browser/ui/webui/feature_showcase/themes_and_customization.mojom.h"
@@ -24,6 +25,7 @@
 
 class FeatureShowcaseHandler;
 class DefaultBrowserHandler;
+class GeminiHandler;
 class GoogleLensHandler;
 class PasswordManagerHandler;
 class ThemesAndCustomizationHandler;
@@ -47,6 +49,7 @@ class FeatureShowcaseUI
     : public ui::MojoWebUIController,
       public feature_showcase::mojom::DefaultBrowserPageHandlerFactory,
       public feature_showcase::mojom::FeatureShowcasePageHandlerFactory,
+      public feature_showcase::mojom::GeminiPageHandlerFactory,
       public feature_showcase::mojom::GoogleLensPageHandlerFactory,
       public feature_showcase::mojom::PasswordManagerPageHandlerFactory,
       public feature_showcase::mojom::ThemesAndCustomizationPageHandlerFactory,
@@ -77,6 +80,13 @@ class FeatureShowcaseUI
   void BindInterface(
       mojo::PendingReceiver<
           feature_showcase::mojom::DefaultBrowserPageHandlerFactory> receiver);
+
+  // Instantiates the implementor of the
+  // feature_showcase::mojom::GeminiPageHandlerFactory mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<feature_showcase::mojom::GeminiPageHandlerFactory>
+          receiver);
 
   // Instantiates the implementor of the
   // feature_showcase::mojom::GoogleLensPageHandlerFactory mojo interface
@@ -125,6 +135,11 @@ class FeatureShowcaseUI
       mojo::PendingReceiver<feature_showcase::mojom::DefaultBrowserPageHandler>
           handler) override;
 
+  // feature_showcase::mojom::GeminiPageHandlerFactory:
+  void CreateGeminiPageHandler(
+      mojo::PendingReceiver<feature_showcase::mojom::GeminiPageHandler> handler)
+      override;
+
   // feature_showcase::mojom::GoogleLensPageHandlerFactory:
   void CreateGoogleLensPageHandler(
       mojo::PendingReceiver<feature_showcase::mojom::GoogleLensPageHandler>
@@ -165,6 +180,7 @@ class FeatureShowcaseUI
   base::RepeatingClosure next_step_shown_callback_;
   std::unique_ptr<FeatureShowcaseHandler> page_handler_;
   std::unique_ptr<DefaultBrowserHandler> default_browser_page_handler_;
+  std::unique_ptr<GeminiHandler> gemini_handler_;
   std::unique_ptr<GoogleLensHandler> google_lens_handler_;
   std::unique_ptr<PasswordManagerHandler> password_manager_handler_;
   std::unique_ptr<ThemesAndCustomizationHandler>
@@ -177,6 +193,8 @@ class FeatureShowcaseUI
       page_factory_receiver_{this};
   mojo::Receiver<feature_showcase::mojom::DefaultBrowserPageHandlerFactory>
       default_browser_page_factory_receiver_{this};
+  mojo::Receiver<feature_showcase::mojom::GeminiPageHandlerFactory>
+      gemini_factory_receiver_{this};
   mojo::Receiver<feature_showcase::mojom::GoogleLensPageHandlerFactory>
       google_lens_factory_receiver_{this};
   mojo::Receiver<feature_showcase::mojom::PasswordManagerPageHandlerFactory>

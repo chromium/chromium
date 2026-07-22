@@ -11,6 +11,7 @@ mojom("mojo_bindings") {
   sources = [
     "default_browser.mojom",
     "feature_showcase.mojom",
+    "gemini.mojom",
     "google_lens.mojom",
     "password_manager.mojom",
     "themes_and_customization.mojom",
@@ -26,6 +27,8 @@ source_set("feature_showcase") {
     "feature_showcase_handler.h",
     "feature_showcase_ui.cc",
     "feature_showcase_ui.h",
+    "gemini_handler.cc",
+    "gemini_handler.h",
     "google_lens_handler.cc",
     "google_lens_handler.h",
     "password_manager_handler.cc",

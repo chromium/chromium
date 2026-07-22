@@ -1257,7 +1257,18 @@
       Yes, I'm in
     </message>
 
-    <!-- Feature Showcase - Stepper -->
+    <!-- Feature Showcase - Gemini -->
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_SUBTITLE" desc="" translateable="false">
+      Get more relevant answers by sharing your tabs
+    </message>
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_NO_THANKS" desc="" translateable="false">
+      Not now
+    </message>
+    <message name="IDS_FEATURE_SHOWCASE_GEMINI_YES_IM_IN" desc="" translateable="false">
+      Yes, I'm in
+    </message>
+
+    <!-- Enterprise profile welcome -->
     <message name="IDS_FEATURE_SHOWCASE_STEPPER_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="The accessible text for the feature showcase progress stepper, conveying the current step and total steps.">
       Step <ph name="STEP_NUMBER">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>3</ex></ph>
     </message>

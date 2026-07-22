@@ -212,6 +212,7 @@
 #include "chrome/browser/ui/webui/feature_showcase/default_browser.mojom.h"
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase.mojom.h"
 #include "chrome/browser/ui/webui/feature_showcase/feature_showcase_ui.h"
+#include "chrome/browser/ui/webui/feature_showcase/gemini.mojom.h"
 #include "chrome/browser/ui/webui/feature_showcase/google_lens.mojom.h"
 #include "chrome/browser/ui/webui/feature_showcase/password_manager.mojom.h"
 #include "chrome/browser/ui/webui/signin/signout_confirmation/signout_confirmation_ui.h"
@@ -380,6 +381,9 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<
       feature_showcase::mojom::ThemesAndCustomizationPageHandlerFactory,
       FeatureShowcaseUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      feature_showcase::mojom::GeminiPageHandlerFactory, FeatureShowcaseUI>(
+      map);
   RegisterWebUIControllerInterfaceBinder<
       feature_showcase::mojom::GoogleLensPageHandlerFactory, FeatureShowcaseUI>(
       map);

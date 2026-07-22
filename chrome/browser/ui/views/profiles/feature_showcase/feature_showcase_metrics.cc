@@ -24,6 +24,9 @@ void RecordStepUserAction(FeatureShowcaseStep step,
     case FeatureShowcaseStep::kDefaultBrowser:
       suffix = "DefaultBrowser";
       break;
+    case FeatureShowcaseStep::kGemini:
+      suffix = "Gemini";
+      break;
     case FeatureShowcaseStep::kGoogleLens:
       suffix = "GoogleLens";
       break;
@@ -52,6 +55,7 @@ FeatureShowcaseStep GetFeatureShowcaseStep(std::string_view step_id) {
            FeatureShowcaseStep::kPasswordManager},
           {kFeatureShowcaseThemesAndCustomizationStepIdentifier,
            FeatureShowcaseStep::kThemesAndCustomization},
+          {kFeatureShowcaseGeminiStepIdentifier, FeatureShowcaseStep::kGemini},
       });
   if (const auto it = kStepMap->find(step_id); it != kStepMap->end()) {
     return it->second;

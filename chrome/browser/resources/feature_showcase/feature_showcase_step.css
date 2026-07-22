@@ -97,6 +97,7 @@
   line-height: 16px;
   margin: 0;
   max-width: var(--text-max-width_);
+  white-space: pre-line;
 }
 
 #button-container {

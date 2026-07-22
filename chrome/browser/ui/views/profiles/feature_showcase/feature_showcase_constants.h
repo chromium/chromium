@@ -8,6 +8,8 @@
 inline constexpr char kFeatureShowcaseDefaultBrowserStepIdentifier[] =
     "default-browser";
 
+inline constexpr char kFeatureShowcaseGeminiStepIdentifier[] = "gemini";
+
 inline constexpr char kFeatureShowcaseGoogleLensStepIdentifier[] =
     "google-lens";
 

@@ -554,6 +554,16 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFirstRunDesktopRevampSurvey);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// This feature controls whether Gemini step can be shown in the feature
+// showcase. This feature is no-op if IsFirstRunDesktopRevamp() equals false.
+//
+// Note: This flag can be bypassed via the command line switch
+// --force-fre-feature-showcase-steps (which should be used only for testing).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kFirstRunFeatureShowcaseGeminiStep);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForceHistoryOptInScreen);

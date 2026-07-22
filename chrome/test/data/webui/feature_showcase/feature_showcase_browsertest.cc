@@ -14,7 +14,8 @@ class FeatureShowcaseBrowserTest : public WebUIMochaBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {switches::kFirstRunDesktopRefresh,
          switches::kFirstRunDesktopChoiceScreenRefresh,
-         switches::kFirstRunDesktopRevamp},
+         switches::kFirstRunDesktopRevamp,
+         switches::kFirstRunFeatureShowcaseGeminiStep},
         {});
     set_test_loader_host(chrome::kChromeUIFeatureShowcaseHost);
   }

@@ -9,6 +9,7 @@ import '/strings.m.js';
 import './feature_showcase_step.js';
 import './feature_showcase_stepper.js';
 import './default_browser/default_browser_step.js';
+import './gemini/gemini_step.js';
 import './google_lens/google_lens_step.js';
 import './themes_and_customization/themes_and_customization_step.js';
 import './password_manager/password_manager_step.js';
