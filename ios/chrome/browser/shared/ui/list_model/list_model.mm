@@ -451,8 +451,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
       [defaults dictionaryForKey:kListModelCollapsedKey];
   NSMutableDictionary* newCollapsedSection =
       [NSMutableDictionary dictionaryWithDictionary:collapsedSections];
-  NSNumber* value = [NSNumber numberWithBool:collapsed];
-  [newCollapsedSection setValue:value forKey:sectionKey];
+  newCollapsedSection[sectionKey] = @(collapsed);
   [defaults setObject:newCollapsedSection forKey:kListModelCollapsedKey];
 }
 
@@ -460,7 +459,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* collapsedSections =
       [defaults dictionaryForKey:kListModelCollapsedKey];
-  NSNumber* value = (NSNumber*)[collapsedSections valueForKey:sectionKey];
+  NSNumber* value = (NSNumber*)collapsedSections[sectionKey];
   return [value boolValue];
 }
 

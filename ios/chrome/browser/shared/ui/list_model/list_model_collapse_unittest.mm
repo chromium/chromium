@@ -192,4 +192,14 @@ TEST_F(ListModelCollapseTest, CollapsedSectionMode) {
   EXPECT_FALSE([model sectionIsCollapsed:SectionIdentifierBar]);
 }
 
+// Tests that `@`-prefixed collapsed keys (e.g., `@count` or `@self`) round-trip
+// correctly without Key-Value Coding (KVC) dynamic selector dispatch.
+TEST_F(ListModelCollapseTest, CollapsedKeyWithAtPrefix) {
+  [model setSectionIdentifier:SectionIdentifierFoo collapsedKey:@"@count"];
+  [model setSection:SectionIdentifierFoo collapsed:YES];
+  EXPECT_TRUE([model sectionIsCollapsed:SectionIdentifierFoo]);
+  [model setSection:SectionIdentifierFoo collapsed:NO];
+  EXPECT_FALSE([model sectionIsCollapsed:SectionIdentifierFoo]);
+}
+
 }  // namespace
