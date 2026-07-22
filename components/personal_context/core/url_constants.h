@@ -7,9 +7,15 @@
 
 namespace personal_context {
 
+// This URL should be used when a user has not opted in to personal
+// intelligence and leads to a comprehensive PI Help Center page.
 inline constexpr char kPersonalContextLearnMoreURL[] =
     "https://support.google.com/chrome?p=chrome_pi";
 
+// This URL should be used when a user has already opted in to personal
+// intelligence but may want to learn more about associated features.
+inline constexpr char kPersonalContextOptedInLearnMoreURL[] =
+    "https://support.google.com/chrome?p=chrome_pi_recall";
 
 inline constexpr char kPersonalContextTriggerText[] = "@@";
 

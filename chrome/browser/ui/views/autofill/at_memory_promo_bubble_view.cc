@@ -115,7 +115,7 @@ void AtMemoryPromoBubbleView::OnLearnMoreClicked() {
                          NavigateParams params(
                              browser.get(),
                              GURL(personal_context::
-                                      kPersonalContextLearnMoreURL),
+                                      kPersonalContextOptedInLearnMoreURL),
                              ui::PAGE_TRANSITION_LINK);
                          params.disposition =
                              WindowOpenDisposition::NEW_FOREGROUND_TAB;
