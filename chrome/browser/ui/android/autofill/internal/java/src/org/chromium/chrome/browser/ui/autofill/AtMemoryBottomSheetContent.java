@@ -8,11 +8,14 @@ import android.content.Context;
 import android.view.View;
 import android.view.View.MeasureSpec;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** Implements the content for the @memory bottom sheet. */
 @NullMarked
@@ -106,6 +109,11 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
     public int getSheetClosedAccessibilityStringId() {
         // TODO(crbug.com/502801668): Implement a string.
         return R.string.done;
+    }
+
+    @Override
+    public @ColorInt int getSheetBackgroundColorOverride() {
+        return SemanticColorUtils.getDefaultBgColor(getContentView().getContext());
     }
 
     // Measures the content height to achieve a wrap-content effect for the bottom sheet.
