@@ -175,10 +175,6 @@ source_set("signin") {
       ]
     }
   }
-
-  if (is_mac || is_linux) {
-    public += [ "before_fre_refresh_hats_field_trial.h" ]
-  }
 }
 
 source_set("impl") {
@@ -430,10 +426,6 @@ source_set("impl") {
         "bound_session_credentials/dice_bound_session_cookie_service_factory.cc",
       ]
     }
-  }
-
-  if (is_mac || is_linux) {
-    sources += [ "before_fre_refresh_hats_field_trial.cc" ]
   }
 }
 
