@@ -1091,16 +1091,25 @@ public class KeyboardShortcuts {
                         R.id.open_recently_closed_tab, false);
                 return true;
             case KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB:
-                menuOrKeyboardActionController.onMenuOrKeyboardAction(
-                        currentTabModel.isIncognito()
-                                ? R.id.new_incognito_tab_menu_id
-                                : R.id.new_tab_menu_id,
-                        false);
-                return true;
+                {
+                    boolean forced =
+                            IncognitoUtils.isIncognitoModeForced(
+                                    tabModelSelector.getCurrentModel().getProfile());
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            (forced || currentTabModel.isIncognito())
+                                    ? R.id.new_incognito_tab_menu_id
+                                    : R.id.new_tab_menu_id,
+                            false);
+                    return true;
+                }
             case KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW:
                 if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+                    boolean forced =
+                            IncognitoUtils.isIncognitoModeForced(
+                                    tabModelSelector.getCurrentModel().getProfile());
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
-                            R.id.new_window_menu_id, false);
+                            forced ? R.id.new_incognito_window_menu_id : R.id.new_window_menu_id,
+                            false);
                     return true;
                 } else {
                     break;
