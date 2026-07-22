@@ -482,6 +482,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "android/aaudio_stream_wrapper_unittest.cc",
       "android/audio_android_unittest.cc",
       "android/audio_device_id_unittest.cc",
       "android/audio_device_type_unittest.cc",

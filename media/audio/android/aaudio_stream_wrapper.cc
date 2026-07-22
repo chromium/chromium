@@ -13,6 +13,7 @@
 #include "base/android/device_info.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +34,11 @@
 namespace media {
 
 namespace {
+
+constexpr base::TimeDelta kCloseDelay = base::Seconds(1);
+// Delay destruction of the helper slightly longer than the close delay, to
+// ensure callbacks have stopped after close.
+constexpr base::TimeDelta kDestructionDelay = kCloseDelay + base::Milliseconds(250);
 
 constexpr char kAAudioBufferSizeInFramesMetricsPrefix[] =
     "Media.Audio.Android.AAudioBufferSizeInFrames.";
@@ -181,8 +187,19 @@ class LOCKABLE AAudioDestructionHelper {
 
   ~AAudioDestructionHelper() {
     CHECK(is_closing_);
-    if (aaudio_stream_) {
-      AAudioStream_close(aaudio_stream_);
+    // Fallback if the delayed close task was dropped during shutdown.
+    CloseDeferredStream();
+  }
+
+  void CloseDeferredStream() {
+    raw_ptr<AAudioStream> stream_to_close = nullptr;
+    {
+      base::AutoLock al(lock_);
+      stream_to_close = aaudio_stream_;
+      aaudio_stream_ = nullptr;
+    }
+    if (stream_to_close) {
+      AAudioStream_close(stream_to_close);
     }
   }
 
@@ -425,9 +442,10 @@ AAudioStreamWrapper::~AAudioStreamWrapper() {
 
   CHECK(!aaudio_stream_);
 
-  // On Android S+, |destruction_helper_| can be destroyed as part of the
+  // On Android S+, `destruction_helper_` can be destroyed as part of the
   // normal class teardown.
   if (__builtin_available(android 31, *)) {
+    destruction_helper_->CloseDeferredStream();
     return;
   }
 
@@ -435,11 +453,26 @@ AAudioStreamWrapper::~AAudioStreamWrapper() {
   // after calling AAudioStream_close(). The code below is a mitigation to
   // work around this issue. See crbug.com/1183255.
 
-  // Keep |destruction_helper_| alive longer than |this|, so the |user_data|
+  // Keep `destruction_helper_` alive longer than `this`, so the `user_data`
   // bound to the callback stays valid, until the callbacks stop.
+  //
+  // We post two tasks:
+  // 1. A task to close the stream (at T+1s).
+  // 2. A task to destroy the helper (at T+1.25s).
+  //
+  // The helper raw pointer is safe to use in the first task because the helper
+  // is guaranteed to be kept alive by the second task which has a longer delay
+  // on the same sequence.
+  auto* helper_raw = destruction_helper_.get();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AAudioDestructionHelper::CloseDeferredStream,
+                     base::Unretained(helper_raw)),
+      kCloseDelay);
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::DoNothingWithBoundArgs(std::move(destruction_helper_)),
-      base::Seconds(1));
+      kDestructionDelay);
 }
 
 bool AAudioStreamWrapper::Open() {
