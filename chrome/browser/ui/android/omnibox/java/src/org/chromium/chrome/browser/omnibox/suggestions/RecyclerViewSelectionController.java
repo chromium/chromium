@@ -57,7 +57,7 @@ public class RecyclerViewSelectionController extends SelectionController
     }
 
     @Override
-    boolean setPosition(int newPosition) {
+    protected boolean setPosition(int newPosition) {
         boolean retVal = super.setPosition(newPosition);
         if (isParkedAtSentinel()) {
             mLastSelectedItemLogicalIndex = RecyclerView.NO_POSITION;

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -230,8 +229,7 @@ public abstract class SelectionController {
      * @param newPosition - new value to apply to the mPosition
      * @return whether selection was applied to the new element.
      */
-    @VisibleForTesting
-    boolean setPosition(int newPosition) {
+    protected boolean setPosition(int newPosition) {
         // Compute new position.
         int itemCount = getItemCount();
         switch (mMode) {

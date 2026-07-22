@@ -2560,25 +2560,35 @@ class LocationBarMediator
 
     @VisibleForTesting
     boolean handleKeyNavigationEvent(int keyCode, KeyEvent event) {
+        boolean isBackwardsTab = KeyNavigationUtil.isTabBackward(event);
+        boolean isForwardTab = KeyNavigationUtil.isTabForward(event);
+        boolean isUpKey = KeyNavigationUtil.isGoUp(event);
+        boolean isDownKey = KeyNavigationUtil.isGoDown(event);
+        boolean isActivation = KeyNavigationUtil.isButtonActivate(event);
+
+        boolean isHandledKey =
+                isBackwardsTab || isForwardTab || isUpKey || isDownKey || isActivation;
+
         if (mAutocompleteCoordinator == null
                 || !KeyNavigationUtil.isActionDown(event)
-                || (keyCode != KeyEvent.KEYCODE_DPAD_UP
-                        && keyCode != KeyEvent.KEYCODE_DPAD_DOWN
-                        && !KeyNavigationUtil.isTabNavigation(event)
-                        && !KeyNavigationUtil.isButtonActivate(event))) {
+                || !isHandledKey) {
             return false;
         }
 
-        if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
-                && mCurrentInput != null
-                && mCurrentInput.getAutocompleteState() == AutocompleteState.STANDBY) {
-            mCurrentInput.setAutocompleteState(AutocompleteState.ENABLED);
-            return true;
-        }
+        if (isDownKey || isUpKey) {
+            if (mCurrentInput != null
+                    && mCurrentInput.getAutocompleteState() == AutocompleteState.STANDBY) {
+                mCurrentInput.setAutocompleteState(AutocompleteState.ENABLED);
+                return true;
+            }
 
-        boolean isBackwardsTab = KeyNavigationUtil.isTabBackward(event);
-        boolean isForwardTab = KeyNavigationUtil.isTabForward(event);
-        boolean isActivation = KeyNavigationUtil.isButtonActivate(event);
+            // Move selection focus to the autocomplete list so the delegated handling logic below
+            // will route to suggestions, avoiding intermediate toolbar components (e.g. action
+            // chips or buttons).
+            if (!mSelectionController.isAutocompleteListSelected()) {
+                mSelectionController.selectAutocompleteList();
+            }
+        }
 
         if (isForwardTab
                 && mSelectionController.getSelectedView() == mUrlBarSelectableView
@@ -2590,7 +2600,7 @@ class LocationBarMediator
                 mCurrentInput != null
                         && !mCurrentInput.isInZeroPrefixContext()
                         && mCurrentInput.isConventionalRequestType();
-        if (mSelectionController.isAutocompleteSelected()) {
+        if (mSelectionController.isAutocompleteListSelected()) {
             if (isActivation) {
                 return mAutocompleteCoordinator.handleKeyEvent(keyCode, event);
             }
@@ -2633,14 +2643,14 @@ class LocationBarMediator
 
         if (isBackwardsTab) {
             mSelectionController.selectPreviousItem();
-            if (mSelectionController.isAutocompleteSelected()) {
+            if (mSelectionController.isAutocompleteListSelected()) {
                 // We just moved backwards to the autocomplete list. The last item of that list
                 // should be selected.
                 mAutocompleteCoordinator.selectLastItem();
             }
-        } else {
+        } else if (isForwardTab) {
             mSelectionController.selectNextItem();
-            if (mSelectionController.isAutocompleteSelected()) {
+            if (mSelectionController.isAutocompleteListSelected()) {
                 // We just moved forwards to the autocomplete list. The first item of that list
                 // should be selected.
                 mAutocompleteCoordinator.selectFirstItem();
