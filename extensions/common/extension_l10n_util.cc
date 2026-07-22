@@ -45,6 +45,9 @@ namespace keys = extensions::manifest_keys;
 
 namespace {
 
+using ::base::i18n::LanguageTag;
+using ::base::i18n::LanguageTagConverter;
+
 bool g_allow_gzipped_messages_for_test = false;
 
 // Loads contents of the messages file for given locale. If file is not found,
@@ -152,22 +155,19 @@ bool LocalizeManifestListValue(const std::string& key,
   return true;
 }
 
-std::optional<base::i18n::LanguageTag>& GetProcessLocale() {
-  static base::NoDestructor<std::optional<base::i18n::LanguageTag>>
-      process_locale;
+std::optional<LanguageTag>& GetProcessLocale() {
+  static base::NoDestructor<std::optional<LanguageTag>> process_locale;
   return *process_locale;
 }
 
-std::optional<base::i18n::LanguageTag>& GetPreferredLocale() {
-  static base::NoDestructor<std::optional<base::i18n::LanguageTag>>
-      preferred_locale;
+std::optional<LanguageTag>& GetPreferredLocale() {
+  static base::NoDestructor<std::optional<LanguageTag>> preferred_locale;
   return *preferred_locale;
 }
 
 // Returns the desired locale to use for localization.
 std::string LocaleForLocalization() {
-  const std::optional<base::i18n::LanguageTag>& preferred_tag =
-      GetPreferredLocale();
+  const std::optional<LanguageTag>& preferred_tag = GetPreferredLocale();
   std::string preferred_locale =
       preferred_tag ? preferred_tag->ToLegacyICUFormat() : "";
   if (!preferred_locale.empty())
@@ -200,13 +200,11 @@ base::AutoReset<bool> AllowGzippedMessagesAllowedForTest() {
 }
 
 void SetProcessLocale(const std::string& locale) {
-  GetProcessLocale() =
-      base::i18n::LanguageTagConverter::GetInstance().FromString(locale);
+  GetProcessLocale() = LanguageTagConverter::GetInstance().FromString(locale);
 }
 
 void SetPreferredLocale(const std::string& locale) {
-  GetPreferredLocale() =
-      base::i18n::LanguageTagConverter::GetInstance().FromString(locale);
+  GetPreferredLocale() = LanguageTagConverter::GetInstance().FromString(locale);
 }
 
 std::string GetDefaultLocaleFromManifest(const base::DictValue& manifest,
@@ -414,12 +412,21 @@ bool AddLocale(const std::set<std::string>& chrome_locales,
 }
 
 std::string CurrentLocaleOrDefault() {
-  const std::optional<base::i18n::LanguageTag>& current_tag =
-      GetProcessLocale();
+  const std::optional<LanguageTag>& current_tag = GetProcessLocale();
   if (current_tag) {
     return current_tag->ToLegacyICUFormat();
   }
   return "en";
+}
+
+std::vector<std::string> GetParentLocales(const std::string& locale) {
+  std::vector<std::string> parents;
+  for (std::optional<LanguageTag> tag =
+           LanguageTagConverter::GetInstance().FromString(locale);
+       tag; tag = tag->GetParentTag()) {
+    parents.push_back(tag->ToLegacyICUFormat());
+  }
+  return parents;
 }
 
 void GetAllLocales(std::set<std::string>* all_locales) {
@@ -428,7 +435,7 @@ void GetAllLocales(std::set<std::string>* all_locales) {
   // Add all parents of the current locale to the available locales set.
   // I.e. for sr_Cyrl_RS we add sr_Cyrl_RS, sr_Cyrl and sr.
   for (const auto& locale : available_locales) {
-    std::vector<std::string> result = l10n_util::GetParentLocales(locale);
+    std::vector<std::string> result = GetParentLocales(locale);
     all_locales->insert(result.begin(), result.end());
   }
 }
@@ -442,8 +449,7 @@ void GetAllFallbackLocales(const std::string& default_locale,
   // application locale or the application locale's parent locales. Thus, a
   // preferred locale of "en_CA" with an application locale of "en_GB" will
   // first try to use an en_CA locale folder, followed by en_GB, followed by en.
-  const std::optional<base::i18n::LanguageTag>& preferred_tag =
-      GetPreferredLocale();
+  const std::optional<LanguageTag>& preferred_tag = GetPreferredLocale();
   std::string preferred_locale =
       preferred_tag ? preferred_tag->ToLegacyICUFormat() : "";
   if (!preferred_locale.empty() && preferred_locale != default_locale &&
@@ -452,8 +458,7 @@ void GetAllFallbackLocales(const std::string& default_locale,
   }
 
   if (!application_locale.empty() && application_locale != default_locale) {
-    base::Extend(*all_fallback_locales,
-                 l10n_util::GetParentLocales(application_locale));
+    base::Extend(*all_fallback_locales, GetParentLocales(application_locale));
   }
   all_fallback_locales->push_back(default_locale);
 }
@@ -615,8 +620,7 @@ ScopedLocaleForTest::~ScopedLocaleForTest() {
 }
 
 std::string GetPreferredLocaleForTest() {
-  const std::optional<base::i18n::LanguageTag>& preferred_tag =
-      GetPreferredLocale();
+  const std::optional<LanguageTag>& preferred_tag = GetPreferredLocale();
   return preferred_tag ? std::string(preferred_tag->tag_string()) : "";
 }
 
