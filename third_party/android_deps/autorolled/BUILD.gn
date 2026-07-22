@@ -2255,6 +2255,7 @@ template("define_autorolled_targets") {
         "//third_party/androidx:*",
       ]
       testonly = true
+      deps = [ "//third_party/android_deps:org_jspecify_jspecify_java" ]
     }
 
     # This is generated, do not edit. Update BuildConfigGenerator.groovy
@@ -2454,7 +2455,6 @@ template("define_autorolled_targets") {
         "//third_party/android_deps:com_google_auto_value_auto_value_annotations_java",
         "//third_party/android_deps:org_robolectric_annotations_java",
         "//third_party/android_deps:org_robolectric_nativeruntime_java",
-        "//third_party/android_deps:org_robolectric_pluginapi_java",
         "//third_party/android_deps:org_robolectric_resources_java",
         "//third_party/android_deps:org_robolectric_sandbox_java",
         "//third_party/android_deps:org_robolectric_shadowapi_java",

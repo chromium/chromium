@@ -1,7 +1,7 @@
 Name: org.conscrypt:conscrypt-openjdk-uber
 Short Name: conscrypt-openjdk-uber
-URL: https://repo.maven.apache.org/maven2/org/conscrypt/conscrypt-openjdk-uber/2.5.2/conscrypt-openjdk-uber-2.5.2.jar
-Version: 2.5.2
+URL: https://repo.maven.apache.org/maven2/org/conscrypt/conscrypt-openjdk-uber/2.6.0/conscrypt-openjdk-uber-2.6.0.jar
+Version: 2.6.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

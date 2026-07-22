@@ -632,11 +632,11 @@ public class AccessibilityStateTest {
         public static int sNumAnimatorDurationGets;
 
         @Implementation
-        protected static float getFloat(ContentResolver cr, String name, float def) {
+        protected static String getString(ContentResolver cr, String name) {
             if (Settings.Global.ANIMATOR_DURATION_SCALE.equals(name)) {
                 ++sNumAnimatorDurationGets;
             }
-            return ShadowSettings.ShadowGlobal.getFloat(cr, name, def);
+            return ShadowSettings.ShadowGlobal.getString(cr, name);
         }
     }
 }

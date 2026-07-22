@@ -46,9 +46,7 @@ import org.chromium.ui.widget.UiWidgetFactory;
 
 /** Unit test for {@link ContextMenuDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowPhoneWindow.class})
+@Config(manifest = Config.NONE)
 public class ContextMenuDialogUnitTest {
     private static final int DIALOG_SIZE_DIP = 50;
 

@@ -125,6 +125,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         '--add-opens=java.base/java.io=ALL-UNNAMED',
         '--add-opens=java.base/java.lang=ALL-UNNAMED',
         '--add-opens=java.base/java.util=ALL-UNNAMED',
+        '--add-opens=java.base/jdk.internal.access=ALL-UNNAMED',
         # Disable warning about mockito/bytebuddy dynamically adding an agent.
         '-XX:+EnableDynamicAgentLoading',
         '-Drobolectric.dependency.dir=%s' %
