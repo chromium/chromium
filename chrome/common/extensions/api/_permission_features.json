@@ -875,17 +875,6 @@
       "0EEDFC0EED87871237213F34EBC7B4982A195C95"   // http://crbug.com/40364348
     ]
   }],
-  "proxy": [{
-    "channel": "stable",
-    "extension_types": [
-      "extension",
-      "legacy_packaged_app"
-    ]
-  }, {
-    "channel": "stable",
-    "extension_types": ["platform_app"],
-    "platforms": ["chromeos"]
-  }],
   "proxyOverrideRulesPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],

@@ -50,7 +50,6 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/permissions",
     "//chrome/browser/extensions/api/preference",
     "//chrome/browser/extensions/api/processes",
-    "//chrome/browser/extensions/api/proxy",
     "//chrome/browser/extensions/api/reading_list",
     "//chrome/browser/extensions/api/runtime",
     "//chrome/browser/extensions/api/search",

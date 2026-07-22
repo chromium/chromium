@@ -8,6 +8,7 @@ include_rules = [
   "+components/media_device_salt",
   "+components/permissions",
   "+components/policy/core/common",
+  "+components/proxy_config",
   "+components/safe_browsing/core/common",
   "+components/ukm",
   "+components/viz/common",

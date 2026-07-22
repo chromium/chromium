@@ -11,7 +11,7 @@
 // caught this error before. In all other cases we are dealing with internal
 // errors and log to LOG(ERROR).
 
-#include "chrome/browser/extensions/api/proxy/proxy_api_helpers.h"
+#include "extensions/browser/api/proxy/proxy_api_helpers.h"
 
 #include <stddef.h>
 
@@ -25,8 +25,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
+#include "extensions/browser/api/proxy/proxy_api_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "net/base/data_url.h"
@@ -39,7 +39,6 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 
 namespace proxy_api_helpers {
-
 
 std::string CreateDataURLFromPACScript(const std::string& pac_script) {
   // Prefix that identifies PAC-script encoding urls.
@@ -136,8 +135,9 @@ bool GetPacUrlFromExtensionPref(const base::DictValue& proxy_config,
     pac_url = pac_url_val->GetString();
   }
   if (!base::IsStringASCII(pac_url)) {
-    *error = "'pacScript.url' supports only ASCII URLs "
-             "(encode URLs in Punycode format).";
+    *error =
+        "'pacScript.url' supports only ASCII URLs "
+        "(encode URLs in Punycode format).";
     return false;
   }
   *out = std::move(pac_url);
@@ -167,8 +167,9 @@ bool GetPacDataFromExtensionPref(const base::DictValue& proxy_config,
   }
 
   if (!base::IsStringASCII(pac_data)) {
-    *error = "'pacScript.data' supports only ASCII code"
-             "(encode URLs in Punycode format).";
+    *error =
+        "'pacScript.data' supports only ASCII code"
+        "(encode URLs in Punycode format).";
     return false;
   }
   *out = std::move(pac_data);
@@ -314,8 +315,9 @@ bool JoinUrlList(const base::ListValue& list,
       return false;
     }
     if (!base::IsStringASCII(*entry)) {
-      *error = "'rules.bypassList' supports only ASCII URLs "
-               "(encode URLs in Punycode format).";
+      *error =
+          "'rules.bypassList' supports only ASCII URLs "
+          "(encode URLs in Punycode format).";
       return false;
     }
     result.append(*entry);

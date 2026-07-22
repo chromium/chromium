@@ -4,15 +4,15 @@
 
 // Unit tests for helper functions for the Chrome Extensions Proxy Settings API.
 
-#include "chrome/browser/extensions/api/proxy/proxy_api_helpers.h"
+#include "extensions/browser/api/proxy/proxy_api_helpers.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/values.h"
-#include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "extensions/browser/api/proxy/proxy_api_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -29,8 +29,7 @@ namespace {
 const char kSamplePacScript[] = "test";
 const char kSamplePacScriptAsDataUrl[] =
     "data:application/x-ns-proxy-autoconfig;base64,dGVzdA==";
-const char kSamplePacScriptAsDataUrl2[] =
-    "data:;base64,dGVzdA==";
+const char kSamplePacScriptAsDataUrl2[] = "data:;base64,dGVzdA==";
 const char kSamplePacScriptUrl[] = "http://wpad/wpad.dat";
 
 // Helper function to create a ProxyServer dictionary as defined in the

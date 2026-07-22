@@ -5,8 +5,8 @@
 // Defines the Chrome Extensions Proxy Settings API relevant classes to realize
 // the API as specified in the extension API JSON.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_H_
-#define CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_H_
+#ifndef EXTENSIONS_BROWSER_API_PROXY_PROXY_API_H_
+#define EXTENSIONS_BROWSER_API_PROXY_PROXY_API_H_
 
 #include <string>
 
@@ -41,4 +41,4 @@ class ProxyEventRouter {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_H_
+#endif  // EXTENSIONS_BROWSER_API_PROXY_PROXY_API_H_

@@ -23,7 +23,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/extensions/api/proxy/proxy_api.h"
+#include "extensions/browser/api/proxy/proxy_api.h"
 #endif // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 using content::BrowserThread;

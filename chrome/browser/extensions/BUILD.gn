@@ -148,12 +148,6 @@ source_set("extensions") {
     "api/preference/privacy_sandbox_transformer.h",
     "api/preference/protected_content_enabled_transformer.cc",
     "api/preference/protected_content_enabled_transformer.h",
-    "api/proxy/proxy_api_constants.cc",
-    "api/proxy/proxy_api_constants.h",
-    "api/proxy/proxy_api_helpers.cc",
-    "api/proxy/proxy_api_helpers.h",
-    "api/proxy/proxy_pref_transformer.cc",
-    "api/proxy/proxy_pref_transformer.h",
     "api/sessions/session_id.cc",
     "api/sessions/session_id.h",
     "api/sessions/sessions_api.cc",
@@ -1845,6 +1839,7 @@ source_set("chrome_extensions_browser_client") {
     "//extensions/browser:crx_installer",
     "//extensions/browser:keepalive",
     "//extensions/browser/api/content_settings",
+    "//extensions/browser/api/proxy",
     "//extensions/browser/updater",
   ]
 
@@ -1960,7 +1955,6 @@ source_set("unit_tests") {
     "api/permissions/permissions_api_helpers_unittest.cc",
     "api/preference/autofill_settings_transformer_unittest.cc",
     "api/preference/preference_api_prefs_unittest.cc",
-    "api/proxy/proxy_api_helpers_unittest.cc",
     "api/runtime/chrome_runtime_api_delegate_unittest.cc",
     "api/storage/managed_value_store_cache_unittest.cc",
     "api/storage/policy_value_store_unittest.cc",

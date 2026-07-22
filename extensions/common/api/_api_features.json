@@ -584,6 +584,10 @@
     "dependencies": ["permission:printerProvider"],
     "contexts": ["privileged_extension"]
   },
+  "proxy": {
+    "dependencies": ["permission:proxy"],
+    "contexts": ["privileged_extension"]
+  },
   "runtime": {
     "channel": "stable",
     "extension_types": [

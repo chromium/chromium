@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/proxy/proxy_pref_transformer.h"
+#include "extensions/browser/api/proxy/proxy_pref_transformer.h"
 
 #include <optional>
 #include <string>
@@ -10,10 +10,10 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/api/proxy/proxy_api_constants.h"
-#include "chrome/browser/extensions/api/proxy/proxy_api_helpers.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "extensions/browser/api/proxy/proxy_api_constants.h"
+#include "extensions/browser/api/proxy/proxy_api_helpers.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));

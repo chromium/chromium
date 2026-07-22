@@ -42,6 +42,7 @@ group("api_implementations") {
     "//extensions/browser/api/metrics_private",
     "//extensions/browser/api/offscreen",
     "//extensions/browser/api/power",
+    "//extensions/browser/api/proxy:proxy_api",
     "//extensions/browser/api/runtime",
     "//extensions/browser/api/scripting",
     "//extensions/browser/api/storage",

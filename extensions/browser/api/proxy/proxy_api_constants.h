@@ -4,8 +4,8 @@
 
 // Constants for the Chrome Extensions Proxy Settings API.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_CONSTANTS_H_
-#define CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_CONSTANTS_H_
+#ifndef EXTENSIONS_BROWSER_API_PROXY_PROXY_API_CONSTANTS_H_
+#define EXTENSIONS_BROWSER_API_PROXY_PROXY_API_CONSTANTS_H_
 
 #include "extensions/buildflags/buildflags.h"
 
@@ -29,4 +29,4 @@ extern const char kProxyConfigBypassList[];
 }  // namespace proxy_api_constants
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_CONSTANTS_H_
+#endif  // EXTENSIONS_BROWSER_API_PROXY_PROXY_API_CONSTANTS_H_

@@ -864,10 +864,6 @@
     "dependencies": ["permission:processes"],
     "contexts": ["privileged_extension"]
   },
-  "proxy": {
-    "dependencies": ["permission:proxy"],
-    "contexts": ["privileged_extension"]
-  },
   "imageWriterPrivate": {
     "dependencies": ["permission:imageWriterPrivate"],
     "contexts": ["privileged_extension"]

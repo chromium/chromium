@@ -4,8 +4,8 @@
 
 // Definition of helper functions for the Chrome Extensions Proxy Settings API.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_HELPERS_H_
-#define CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_HELPERS_H_
+#ifndef EXTENSIONS_BROWSER_API_PROXY_PROXY_API_HELPERS_H_
+#define EXTENSIONS_BROWSER_API_PROXY_PROXY_API_HELPERS_H_
 
 #include <array>
 #include <optional>
@@ -161,4 +161,4 @@ base::ListValue TokenizeToStringList(const std::string& in,
 }  // namespace proxy_api_helpers
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_HELPERS_H_
+#endif  // EXTENSIONS_BROWSER_API_PROXY_PROXY_API_HELPERS_H_

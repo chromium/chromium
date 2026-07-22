@@ -1,0 +1,43 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core)
+
+source_set("proxy") {
+  sources = [
+    "proxy_api_constants.cc",
+    "proxy_api_constants.h",
+    "proxy_api_helpers.cc",
+    "proxy_api_helpers.h",
+    "proxy_pref_transformer.cc",
+    "proxy_pref_transformer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/proxy_config",
+    "//extensions/browser:browser_sources",
+    "//extensions/buildflags",
+    "//extensions/common",
+    "//net",
+  ]
+}
+
+source_set("proxy_api") {
+  sources = [
+    "proxy_api.cc",
+    "proxy_api.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//content/public/browser",
+    "//extensions/browser:browser_sources",
+    "//extensions/buildflags",
+    "//net",
+  ]
+}

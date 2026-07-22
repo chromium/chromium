@@ -213,9 +213,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
          APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermissionID::kPageCapture, "pageCapture",
      APIPermissionInfo::kFlagImpliesFullURLAccess},
-    {APIPermissionID::kProxy, "proxy",
-     APIPermissionInfo::kFlagImpliesFullURLAccess |
-         APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kTabCapture, "tabCapture",
      APIPermissionInfo::kFlagImpliesFullURLAccess},
     {APIPermissionID::kTabCaptureForTab, "tabCaptureForTab",

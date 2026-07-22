@@ -275,7 +275,7 @@ source_set("impl") {
   }
 
   if (enable_extensions_core) {
-    deps += [ "//chrome/browser/extensions/api/proxy" ]
+    deps += [ "//extensions/browser/api/proxy:proxy_api" ]
   }
 
   if (enable_offline_pages) {

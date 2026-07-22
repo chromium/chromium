@@ -4,7 +4,7 @@
 
 // Implementation of the Chrome Extensions Proxy Settings API.
 
-#include "chrome/browser/extensions/api/proxy/proxy_api.h"
+#include "extensions/browser/api/proxy/proxy_api.h"
 
 #include <memory>
 #include <optional>
