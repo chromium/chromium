@@ -433,5 +433,73 @@ TEST_F(PopupPersonalContextNoticeViewTest, NavigateFromNoticeViewButton) {
   EXPECT_FALSE(button_focus_ring->ShouldPaintForTesting());
 }
 
+// Tests that pressing the Return key when the "Settings" link is focused
+// triggers `OnSettingsLinkClicked`.
+TEST_F(PopupPersonalContextNoticeViewTest, PressReturnOnSettingsLinkFocused) {
+  ShowView();
+
+  // Focus the "Settings" link.
+  view().SetSelectedCell(PopupInteractiveRowView::CellType::kContent);
+  ASSERT_TRUE(view().is_link_focused_for_testing());
+
+  // Since `chrome::ShowSettingsSubPageForProfile` is not mockable, we verify
+  // that `OnSettingsLinkClicked` was triggered by checking the only other thing
+  // in the method - that the controller was queried for its WebContents.
+  EXPECT_CALL(controller(), GetWebContents()).Times(testing::AtLeast(1));
+
+  input::NativeWebKeyboardEvent return_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  return_event.windows_key_code = ui::VKEY_RETURN;
+  EXPECT_TRUE(view().HandleKeyPressEvent(return_event));
+}
+
+// Tests that pressing the Return key when the "Got it" button is focused
+// triggers `OnGotItButtonClicked`.
+TEST_F(PopupPersonalContextNoticeViewTest, PressReturnOnGotItButtonFocused) {
+  ShowView();
+
+  // Focus the "Settings" link first, then navigate to the "Got it" button.
+  view().SetSelectedCell(PopupInteractiveRowView::CellType::kContent);
+  input::NativeWebKeyboardEvent right_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  right_event.windows_key_code = ui::VKEY_RIGHT;
+  EXPECT_TRUE(view().HandleKeyPressEvent(right_event));
+  ASSERT_TRUE(view().is_button_focused_for_testing());
+
+  EXPECT_CALL(
+      controller(),
+      RemoveSuggestion(
+          kNoticePosition,
+          AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked))
+      .WillOnce(testing::Return(true));
+
+  input::NativeWebKeyboardEvent return_event = right_event;
+  return_event.windows_key_code = ui::VKEY_RETURN;
+  EXPECT_TRUE(view().HandleKeyPressEvent(return_event));
+}
+
+// Tests that pressing the Return key when no notice element is focused does not
+// trigger any action.
+TEST_F(PopupPersonalContextNoticeViewTest, PressReturnOnNoFocusedElement) {
+  ShowView();
+
+  EXPECT_FALSE(view().is_link_focused_for_testing());
+  EXPECT_FALSE(view().is_button_focused_for_testing());
+
+  EXPECT_CALL(controller(), GetWebContents()).Times(0);
+  EXPECT_CALL(controller(), RemoveSuggestion).Times(0);
+
+  input::NativeWebKeyboardEvent return_event(
+      blink::WebInputEvent::Type::kRawKeyDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  return_event.windows_key_code = ui::VKEY_RETURN;
+  EXPECT_FALSE(view().HandleKeyPressEvent(return_event));
+}
+
 }  // namespace
 }  // namespace autofill

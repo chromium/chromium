@@ -188,6 +188,18 @@ bool PopupPersonalContextNoticeView::HandleKeyPressEvent(
     FocusLink();
     return true;
   }
+
+  if (event.windows_key_code == ui::VKEY_RETURN) {
+    if (is_link_focused_) {
+      OnSettingsLinkClicked();
+      return true;
+    }
+    if (is_button_focused_) {
+      OnGotItButtonClicked();
+      return true;
+    }
+  }
+
   return false;
 }
 
