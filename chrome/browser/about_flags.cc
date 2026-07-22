@@ -13502,6 +13502,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"notebook-home-url", flag_descriptions::kNotebookHomeURLName,
      flag_descriptions::kNotebookHomeURLDescription, kOsDesktop,
      STRING_VALUE_TYPE(switches::kNotebookHomeURL, "")},
+    {"export-platform-policies-json",
+     flag_descriptions::kExportPlatformPoliciesJsonName,
+     flag_descriptions::kExportPlatformPoliciesJsonDescription,
+     kOsWin | kOsMac | kOsLinux,
+     FEATURE_VALUE_TYPE(policy::features::kExportPlatformPoliciesJson)},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

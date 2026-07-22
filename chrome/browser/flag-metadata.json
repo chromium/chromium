@@ -4748,6 +4748,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "export-platform-policies-json",
+    "owners": [
+      "janzarzycki@google.com",
+      "cbe-eng@google.com"
+    ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "extension-disable-unsupported-developer-mode-extensions",
     "owners": [ "richche@google.com" ],
     "expiry_milestone": 143

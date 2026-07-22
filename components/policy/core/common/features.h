@@ -98,6 +98,9 @@ POLICY_EXPORT extern const base::FeatureParam<bool>
 // even if they are in the incognito allowlist.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kURLBlocklistOverridesIncognitoAllowlist);
 
+// Enables the export of platform policies as JSON on the chrome://policy page.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kExportPlatformPoliciesJson);
+
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_

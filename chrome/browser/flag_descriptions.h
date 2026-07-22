@@ -2435,6 +2435,13 @@ inline constexpr char kExperimentalOmniboxLabsName[] =
 inline constexpr char kExperimentalOmniboxLabsDescription[] =
     "Allows extensions to request permission omnibox.directInput, which "
     "enables unscoped mode in the Omnibox";
+
+inline constexpr char kExportPlatformPoliciesJsonName[] =
+    "Export Platform Policies as JSON";
+inline constexpr char kExportPlatformPoliciesJsonDescription[] =
+    "Enables a button on chrome://policy to export platform-source policies in "
+    "a custom flat JSON configuration schema.";
+
 inline constexpr char kExtensionAiDataCollectionName[] =
     "Enables AI Data collection via extension";
 inline constexpr char kExtensionAiDataCollectionDescription[] =
