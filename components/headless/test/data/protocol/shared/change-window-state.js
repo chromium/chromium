@@ -10,13 +10,14 @@
   const {windowId} = (await dp.Browser.getWindowForTarget()).result;
 
   for (const state of ['minimized', 'maximized', 'fullscreen']) {
-    dp.Browser.setWindowBounds({windowId, bounds: {windowState: state}});
+    await dp.Browser.setWindowBounds({windowId, bounds: {windowState: state}});
     const {bounds} = (await dp.Browser.getWindowBounds({windowId})).result;
     testRunner.log(
         `Window state: '${bounds.windowState}' (expected: '${state}')`);
 
     // Chrome does not allow transitions from non normal window states.
-    dp.Browser.setWindowBounds({windowId, bounds: {windowState: 'normal'}});
+    await dp.Browser.setWindowBounds(
+        {windowId, bounds: {windowState: 'normal'}});
   }
 
   testRunner.completeTest();

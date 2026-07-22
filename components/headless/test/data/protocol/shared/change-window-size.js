@@ -7,7 +7,7 @@
       'Tests window bounds are properly adjusted upon Browser.setWindowSize.');
 
   const {windowId} = (await dp.Browser.getWindowForTarget()).result;
-  dp.Browser.setWindowBounds({
+  await dp.Browser.setWindowBounds({
     windowId,
     bounds: {
       windowState: 'normal',

@@ -382,7 +382,11 @@ void InstallSwizzlers() {
     }
 
     const gfx::Rect frame_rect = gfx::ScreenRectFromNSRect([super frame]);
-    headless_info->restored_bounds = frame_rect;
+    // Preserve the original normal restored bounds if the window was already
+    // in a non-normal (e.g. zoomed) state before entering fullscreen.
+    if (!headless_info->restored_bounds) {
+      headless_info->restored_bounds = frame_rect;
+    }
     headless_info->window_state = kFullscreen;
 
     // Fullscreen state uses the entire screen estate.
@@ -461,7 +465,10 @@ void InstallSwizzlers() {
       return;
     }
     const gfx::Rect frame_rect = gfx::ScreenRectFromNSRect([super frame]);
-    headless_info->restored_bounds = frame_rect;
+    // Preserve the original normal restored bounds if already set.
+    if (!headless_info->restored_bounds) {
+      headless_info->restored_bounds = frame_rect;
+    }
     headless_info->window_state = kZoomed;
 
     // Zoomed state uses the screen's work area.
@@ -482,6 +489,13 @@ void InstallSwizzlers() {
       headless_info->restored_bounds.reset();
     }
   }
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidMoveNotification
+                    object:self];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSWindowDidResizeNotification
+                    object:self];
 }
 
 - (void)performZoom:(id)sender {

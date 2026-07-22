@@ -42,11 +42,12 @@
 
   await logWindowState('Initial', windowId);
 
-  dp.Browser.setWindowBounds({windowId, bounds: {windowState: 'minimized'}});
+  await dp.Browser.setWindowBounds(
+      {windowId, bounds: {windowState: 'minimized'}});
   await waitForVisibilityChange();
   await logWindowState('Minimized', windowId);
 
-  dp.Browser.setWindowBounds({windowId, bounds: {windowState: 'normal'}});
+  await dp.Browser.setWindowBounds({windowId, bounds: {windowState: 'normal'}});
   await waitForVisibilityChange();
   await logWindowState('Restored', windowId);
 
