@@ -47,6 +47,7 @@
 #include "media/audio/audio_features.h"
 #include "media/base/media_switches.h"
 #include "sandbox/policy/features.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 #endif
@@ -266,6 +267,9 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // Enable graceful tab shutdown.
   // TODO(crbug.com/532514154): Remove when experiment is complete.
   feature_overrides.EnableFeature(chrome::android::kTabAndroidGracefulShutdown);
+
+  // Enable desktop fling curve.
+  feature_overrides.EnableFeature(features::kDesktopFlingCurveOnAndroid);
 
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
   // Desktop-first features which are past incubation should either end up here,
