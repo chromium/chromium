@@ -41,9 +41,4 @@ std::string_view ImmutableString::HeapString::AsString() const {
   return std::string_view(storage_.data(), storage_.size());
 }
 
-ImmutableString::ImmutableString(base::span<const std::string_view> parts)
-    : storage_((TotalSize(parts) <= ImmutableString::kSmallBufferSize)
-                   ? StorageVariantType(StackString(parts))
-                   : StorageVariantType(HeapString(parts))) {}
-
 }  // namespace base::i18n_internal

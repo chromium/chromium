@@ -633,6 +633,61 @@ TEST(LanguageTagTest, GetRegionSubtag) {
   EXPECT_TRUE(lt_script_ext_no_region.region_subtag().empty());
 }
 
+TEST(LanguageTagTest, GetParentEnUs) {
+  ASSERT_OK_AND_ASSIGN(LanguageTag lt,
+                       LanguageTagConverter::GetInstance().FromString("en-US"));
+  EXPECT_THAT(lt.GetParentTag(), OptionalToString("en"));
+  EXPECT_EQ(lt.GetParentTag()->GetParentTag(), std::nullopt);
+}
+
+TEST(LanguageTagTest, GetParentSrLatnRs) {
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt,
+      LanguageTagConverter::GetInstance().FromString("sr-Latn-RS"));
+  ASSERT_OK_AND_ASSIGN(LanguageTag parent1, lt.GetParentTag());
+  EXPECT_EQ(parent1.tag_string(), "sr-Latn");
+  ASSERT_OK_AND_ASSIGN(LanguageTag parent2, parent1.GetParentTag());
+  EXPECT_EQ(parent2.tag_string(), "sr");
+  EXPECT_EQ(parent2.GetParentTag(), std::nullopt);
+}
+
+TEST(LanguageTagTest, GetParentWithExtension) {
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt,
+      LanguageTagConverter::GetInstance().FromString("en-US-u-ca-gregory"));
+  EXPECT_THAT(lt.GetParentTag(), OptionalToString("en-US"));
+}
+
+TEST(LanguageTagTest, GetParentWithMultipleExtensions) {
+  ASSERT_OK_AND_ASSIGN(LanguageTag lt,
+                       LanguageTagConverter::GetInstance().FromString(
+                           "en-US-a-abcdef-u-ca-gregory"));
+  EXPECT_THAT(lt.GetParentTag(), OptionalToString("en-US"));
+}
+
+TEST(LanguageTagTest, GetParentWithVariantsAndExtension) {
+  ASSERT_OK_AND_ASSIGN(LanguageTag lt,
+                       LanguageTagConverter::GetInstance().FromString(
+                           "en-GB-oxendict-u-ca-gregory"));
+  EXPECT_THAT(lt.GetParentTag(), OptionalToString("en-GB-oxendict"));
+  EXPECT_THAT(lt.GetParentTag()->GetParentTag(), OptionalToString("en-GB"));
+  EXPECT_THAT(lt.GetParentTag()->GetParentTag()->GetParentTag(),
+              OptionalToString("en"));
+}
+
+TEST(LanguageTagTest, GetParentConstexpr) {
+  static_assert(GetKnownLanguageTag("es-MX").GetParentTag().value() ==
+                GetKnownLanguageTag("es"));
+  static_assert(!GetKnownLanguageTag("es").GetParentTag().has_value());
+}
+
+TEST(LanguageTagTest, GetParentWithPrivateUseSubtags) {
+  ASSERT_OK_AND_ASSIGN(
+      LanguageTag lt,
+      LanguageTagConverter::GetInstance().FromString("en-US-x-test"));
+  EXPECT_THAT(lt.GetParentTag(), OptionalToString("en-US"));
+}
+
 struct LanguageTestData {
   std::string_view tag;
   std::string_view name;

@@ -97,7 +97,11 @@ class BASE_I18N_EXPORT ImmutableString {
   inline constexpr ~ImmutableString() = default;
 
   // Constructs the string by joining multiple string_views.
-  explicit ImmutableString(base::span<const std::string_view> parts);
+  template <typename = void>
+  constexpr explicit ImmutableString(base::span<const std::string_view> parts)
+      : storage_((TotalSize(parts) <= ImmutableString::kSmallBufferSize)
+                     ? StorageVariantType(StackString(parts))
+                     : StorageVariantType(HeapString(parts))) {}
 
   // Compile-time constructor for `ImmutableString`, it needs a first argument
   // the ForceStackString for the compiler to identify which constructor

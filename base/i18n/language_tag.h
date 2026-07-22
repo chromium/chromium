@@ -112,6 +112,18 @@ class BASE_I18N_EXPORT LanguageTag {
         .region;
   }
 
+  // Returns the parent language tag of this language tag by stripping the most
+  // specific subtag. The parent hierarchy traversal order is:
+  //   1. Private-use subtags (e.g., "en-US-x-test" -> "en-US")
+  //   2. Extensions (e.g., "en-US-u-ca-gregory" -> "en-US")
+  //   3. Variants (e.g., "en-GB-oxendict" -> "en-GB")
+  //   4. Region (e.g., "sr-Latn-RS" -> "sr-Latn")
+  //   5. Script (e.g., "sr-Latn" -> "sr")
+  //
+  // If the language tag only consists of the base language subtag (e.g., "en"),
+  // it has no parent and `std::nullopt` is returned.
+  constexpr std::optional<LanguageTag> GetParentTag() const;
+
   // Retrieves the singleton and subtag(s) for an extension to a BCP47 language
   // tag.
   //
@@ -176,10 +188,6 @@ BASE_I18N_EXPORT std::ostream& operator<<(
     std::ostream& os,
     const std::optional<LanguageTag>& opt);
 
-}  // namespace base::i18n
-
-namespace base::i18n {
-
 // Returns a LanguageTag checked at compile time. does not compile if tag is
 // not one of the predefined supported language tags.
 consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
@@ -203,6 +211,30 @@ consteval LanguageTag GetKnownLanguageTag(std::string_view tag) {
   }
 
   return LanguageTag(base::span<const std::string_view>({tag}));
+}
+
+constexpr std::optional<LanguageTag> LanguageTag::GetParentTag() const {
+  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
+      i18n_internal::ParseBcp47Tag(tag_string());
+  if (!parsed) {
+    return std::nullopt;
+  }
+
+  if (!parsed->private_use.empty()) {
+    parsed->private_use.clear();
+  } else if (!parsed->extensions.empty()) {
+    parsed->extensions.clear();
+  } else if (!parsed->variants.empty()) {
+    parsed->variants.pop_back();
+  } else if (!parsed->region.empty()) {
+    parsed->region = std::string_view();
+  } else if (!parsed->script.empty()) {
+    parsed->script = std::string_view();
+  } else {
+    return std::nullopt;
+  }
+
+  return LanguageTag(i18n_internal::GetBcp47TagPieces(*parsed));
 }
 
 }  // namespace base::i18n

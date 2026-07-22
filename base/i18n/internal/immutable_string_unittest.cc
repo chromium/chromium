@@ -27,6 +27,11 @@ TEST(ImmutableStringTest, ConstevalConstructorEmpty) {
   EXPECT_EQ(str.AsString(), "");
 }
 
+TEST(ImmutableStringTest, ConstexprConstructor) {
+  constexpr ImmutableString str = ImmutableString({"ab", "-", "cd"});
+  EXPECT_EQ(str.AsString(), "ab-cd");
+}
+
 TEST(ImmutableStringTest, ConstevalConstructorSmall) {
   constexpr ImmutableString str =
       ImmutableString(ImmutableString::ForceStackString(), {"hello"});

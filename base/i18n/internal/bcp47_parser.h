@@ -262,6 +262,47 @@ constexpr std::optional<ParsedBcp47Tag> ParseBcp47Tag(
   return ParseBcp47Tag(base::span<const std::string_view>(subtags));
 }
 
+// Reconstructs the BCP47 tag's individual subtags and hyphen separators from
+// the parsed tag representation into a vector of string_views. This is useful
+// for reconstructing or modifying parts of a BCP47 tag before re-assembling it.
+constexpr std::vector<std::string_view> GetBcp47TagPieces(
+    const ParsedBcp47Tag& tag) {
+  std::vector<std::string_view> result{tag.language};
+  if (!tag.script.empty()) {
+    result.push_back("-");
+    result.push_back(tag.script);
+  }
+  if (!tag.region.empty()) {
+    result.push_back("-");
+    result.push_back(tag.region);
+  }
+  if (!tag.variants.empty()) {
+    for (const std::string_view& variant : tag.variants) {
+      result.push_back("-");
+      result.push_back(variant);
+    }
+  }
+  if (!tag.extensions.empty()) {
+    for (const auto& extension : tag.extensions) {
+      result.push_back("-");
+      result.emplace_back(&extension.first, 1);
+      for (const std::string_view& subtag : extension.second) {
+        result.push_back("-");
+        result.push_back(subtag);
+      }
+    }
+  }
+  if (!tag.private_use.empty()) {
+    result.push_back("-");
+    result.push_back("x");
+    for (const std::string_view& subtag : tag.private_use) {
+      result.push_back("-");
+      result.push_back(subtag);
+    }
+  }
+  return result;
+}
+
 }  // namespace base::i18n_internal
 
 #endif  // BASE_I18N_INTERNAL_BCP47_PARSER_H_
