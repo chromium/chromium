@@ -48,7 +48,7 @@ enum MenuScenarioHistogram {
   kMenuScenarioHistogramReaderModeContextMenuImage = 34,
   kMenuScenarioHistogramReaderModeContextMenuImageLink = 35,
   kMenuScenarioHistogramReaderModeContextMenuLink = 36,
-  kMenuScenarioHistogramTabGroupOverflowMenu = 37,
+  kMenuScenarioHistogramTabGroupOverflowMenu = 37,  // Obsolete
   kMenuScenarioHistogramSadTab = 38,
   kMenuScenarioHistogramCount,
 };

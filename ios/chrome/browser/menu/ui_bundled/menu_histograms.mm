@@ -80,8 +80,7 @@ const char kContextMenuReaderModeImageLinkActionsHistogram[] =
     "Mobile.ContextMenu.ReaderModeImageLink.Actions";
 const char kContextMenuReaderModeLinkActionsHistogram[] =
     "Mobile.ContextMenu.ReaderModeLink.Actions";
-const char kContextMenuTabGroupOverflowMenuHistogram[] =
-    "Mobile.ContextMenu.TabGroupOverflowMenu.Actions";
+
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/histograms.xml)
 }  // namespace
 
@@ -165,7 +164,7 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
     case kMenuScenarioHistogramReaderModeContextMenuLink:
       return kContextMenuReaderModeLinkActionsHistogram;
     case kMenuScenarioHistogramTabGroupOverflowMenu:
-      return kContextMenuTabGroupOverflowMenuHistogram;
+      NOTREACHED();
     case kMenuScenarioHistogramSadTab:
       return KContextMenuLinkActionsHistogram;
     case kMenuScenarioHistogramCount:
