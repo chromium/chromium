@@ -1256,6 +1256,20 @@ bool CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
   // it's a transient backing that needs to be initialized. We must find the
   // permanent element that currently holds the latest content and copy from it.
   ElementHolder* latest_content_element = GetElementWithLatestContent();
+  if (!latest_content_element) {
+    // No permanent element holds the most recent content, so the destination
+    // backing cannot be synchronized. This can happen if a transient backing
+    // was written to but its content could not be copied back to a permanent
+    // element on end access. Do not advance versioning so access can recover if
+    // an element re-establishes the latest content (e.g. via Update() for SHM
+    // backings). Note that if there is no SHM backing (e.g. GPU-only backings)
+    // or no Update() occurs, subsequent access calls (including writes) will
+    // continue to fail, requiring client-level context/resource re-creation.
+    LOG(ERROR) << "No element with latest content available for sync to "
+               << backing->GetName();
+    return false;
+  }
+
   bool updated_backing = false;
   bool copy_succeeded = false;
 
