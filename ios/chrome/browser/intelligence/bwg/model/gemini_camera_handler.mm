@@ -15,6 +15,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -40,6 +41,9 @@ NSString* const kGeminiCameraHandlerErrorDomain = @"GeminiCameraHandler";
 
   // The presenting view controller for the camera picker and alerts.
   __weak UIViewController* _presentingViewController;
+
+  // The active first responder prior to camera presentation, if any.
+  __weak UIResponder* _activeResponder;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
@@ -58,6 +62,15 @@ NSString* const kGeminiCameraHandlerErrorDomain = @"GeminiCameraHandler";
   CHECK(!_completion && !_presentingViewController, base::NotFatalUntil::M150);
   _completion = completion;
   _presentingViewController = presentingViewController;
+
+  // Resign active first responder (e.g. Gemini prompt text field) to prevent
+  // the software keyboard from appearing over the camera preview/review
+  // screen.
+  UIResponder* firstResponder = GetFirstResponder();
+  if (firstResponder) {
+    [firstResponder resignFirstResponder];
+    _activeResponder = firstResponder;
+  }
 
   RecordGeminiCameraFlowBegan();
 
@@ -174,6 +187,13 @@ NSString* const kGeminiCameraHandlerErrorDomain = @"GeminiCameraHandler";
                               error:(NSError*)error {
   if (_completion) {
     _completion(images, error);
+  }
+
+  // Restore focus to the text input that was active prior to presenting the
+  // camera.
+  if (_activeResponder) {
+    [_activeResponder becomeFirstResponder];
+    _activeResponder = nil;
   }
 
   _completion = nil;
