@@ -260,7 +260,7 @@
       Switch between two most recently used tabs with Ctrl+Tab
     </message>
     <message name="IDS_SETTINGS_TAB_STYLING" desc="Label for the dropdown menu for choosing browser frame styling.">
-      Tab Styling
+      Tab styling
     </message>
     <message name="IDS_SETTINGS_TAB_STYLING_CLASSIC" desc="Option for classic appearance without glass effect.">
       Classic
