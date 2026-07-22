@@ -703,6 +703,7 @@ bool ContentAnalysisDelegate::ShowFinalResultInDialog() {
   }
 
   if (access_point_ == DeepScanAccessPoint::ACTOR && web_contents_ &&
+      !web_contents_->IsBeingDestroyed() &&
       final_result_ != FinalContentAnalysisResult::SUCCESS) {
     // TODO(crbug.com/473047343): Add browsertests to validate surfacing works.
     if (web_contents_->GetDelegate()) {
