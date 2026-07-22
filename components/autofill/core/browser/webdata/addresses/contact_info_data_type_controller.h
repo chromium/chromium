@@ -7,21 +7,22 @@
 
 #include <memory>
 
-#include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
+#include "base/scoped_observation.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_service_observer.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
 class DataTypeLocalDataBatchUploader;
-class SyncService;
 }  // namespace syncer
 
 namespace autofill {
 
-class ContactInfoDataTypeController : public syncer::DataTypeController {
+class ContactInfoDataTypeController : public syncer::DataTypeController,
+                                      public syncer::SyncServiceObserver {
  public:
   ContactInfoDataTypeController(
       std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -36,6 +37,7 @@ class ContactInfoDataTypeController : public syncer::DataTypeController {
   ContactInfoDataTypeController& operator=(
       const ContactInfoDataTypeController&) = delete;
 
+ private:
   // DataTypeController overrides.
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
@@ -43,9 +45,13 @@ class ContactInfoDataTypeController : public syncer::DataTypeController {
       const PreconditionContext& context) const override;
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
 
- private:
-  ContactInfoPreconditionChecker precondition_checker_;
+  // syncer::SyncServiceObserver overrides.
+  void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
+
   syncer::SyncMode sync_mode_ = syncer::SyncMode::kFull;
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 };
 
 }  // namespace autofill

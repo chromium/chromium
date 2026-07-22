@@ -881,8 +881,6 @@ static_library("browser") {
     "webdata/addresses/contact_info_data_type_controller.h",
     "webdata/addresses/contact_info_local_data_batch_uploader.cc",
     "webdata/addresses/contact_info_local_data_batch_uploader.h",
-    "webdata/addresses/contact_info_precondition_checker.cc",
-    "webdata/addresses/contact_info_precondition_checker.h",
     "webdata/addresses/contact_info_sync_bridge.cc",
     "webdata/addresses/contact_info_sync_bridge.h",
     "webdata/addresses/contact_info_sync_util.cc",
