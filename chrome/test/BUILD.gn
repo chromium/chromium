@@ -224,8 +224,6 @@ static_library("test_support") {
     "../app/startup_timestamps.h",
     "../browser/performance_manager/test_support/page_discarding_utils.cc",
     "../browser/performance_manager/test_support/page_discarding_utils.h",
-    "../browser/policy/messaging_layer/public/report_client_test_util.cc",
-    "../browser/policy/messaging_layer/public/report_client_test_util.h",
     "../browser/profiles/profile_test_util.cc",
     "../browser/profiles/profile_test_util.h",
     "../browser/safe_browsing/test_safe_browsing_database_helper.cc",

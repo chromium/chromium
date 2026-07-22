@@ -95,6 +95,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/policy:test_support",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/support_tool:support_tool_proto",
     "//chrome/test:test_support",
