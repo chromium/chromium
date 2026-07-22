@@ -58,7 +58,8 @@ UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
       is_custom_symbol = YES;
       break;
     case EntityTypeName::kFlightReservation:
-      symbol_name = kAirplaneUpSymbol;
+      symbol_name =
+          is_personal_context ? kAirplaneUpSparkSymbol : kAirplaneUpSymbol;
       // The flight reservation symbol is a custom symbol.
       is_custom_symbol = YES;
       break;

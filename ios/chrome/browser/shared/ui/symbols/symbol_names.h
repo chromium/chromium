@@ -97,6 +97,8 @@ extern NSString* const kLineThreeSparkSymbol;
 extern NSString* const kDocumentBadgeSpark;
 extern NSString* const kBagSparkSymbol;
 extern NSString* const kTruckBoxSparkSymbol;
+extern NSString* const kAirplaneUpSparkSymbol;
+extern NSString* const kCreditCardSparkSymbol;
 extern NSString* const kAirplaneUpSymbol;
 extern NSString* const kCarSparkSymbol;
 extern NSString* const kLocationSparkSymbol;
