@@ -806,6 +806,36 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SamplingVideoTexture) {
                            kUFillValue, kVFillValue);
 }
 
+// Tests that sizes larger than max texture size will be rejected by
+// IsSupported().
+TEST_F(IOSurfaceImageBackingFactoryTest, SizeLargerThanMaxTextueSize) {
+  const int max_texture_size = context_state_->GetMaxTextureSize();
+
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const SharedImageUsageSet usage = {SHARED_IMAGE_USAGE_GLES2_READ,
+                                     SHARED_IMAGE_USAGE_SCANOUT};
+  const GrContextType gr_context_type = GrContextType::kGraphiteDawn;
+
+  {
+    // Verify that size not larger than max texture size is supported first.
+    gfx::Size size(max_texture_size, max_texture_size);
+    bool supported = backing_factory_->CanCreateSharedImage(
+        usage, format, size, /*is_thread_safe=*/false,
+        gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER, gr_context_type,
+        /*pixel_data=*/{});
+    EXPECT_TRUE(supported);
+  }
+
+  {
+    gfx::Size size(max_texture_size + 1, max_texture_size);
+    bool supported = backing_factory_->CanCreateSharedImage(
+        usage, format, size, /*is_thread_safe=*/false,
+        gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER, gr_context_type,
+        /*pixel_data=*/{});
+    EXPECT_FALSE(supported);
+  }
+}
+
 // Test that Skia trying to access uninitialized SharedImage will fail
 TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
   // Create a mailbox.

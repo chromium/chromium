@@ -318,6 +318,10 @@ bool IOSurfaceImageBackingFactory::IsSupported(
     return false;
   }
 
+  if (!IsValidSize(size, max_texture_size_)) {
+    return false;
+  }
+
   // Creation from pixel data is not supported for multiplanar formats.
   if (format.is_multi_plane() && !pixel_data.empty()) {
     return false;
@@ -356,8 +360,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   const auto size = si_info.size;
   const auto usage = si_info.usage;
 
-  if (!IsValidSize(size, max_texture_size_) ||
-      !IsPixelDataValid(format, size, pixel_data)) {
+  if (!IsPixelDataValid(format, size, pixel_data)) {
     return nullptr;
   }
 
