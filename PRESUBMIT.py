@@ -6092,6 +6092,66 @@ def CheckFuzzTargetsOnUpload(input_api, output_api):
     ]
 
 
+def CheckNewLLVMStyleFuzzersOnUpload(input_api, output_api):
+    """Nudges developers to use FUZZ_TEST instead of legacy LLVM-style fuzzers for new targets."""
+    fuzzer_targets = []
+    fuzzer_sources = []
+
+    # Regex to match fuzzer_test target definition in BUILD.gn
+    fuzzer_test_re = input_api.re.compile(r'^\s*fuzzer_test\s*\(')
+    # Regex to match LLVMFuzzerTestOneInput or
+    # DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN in C++ files.
+    # TODO(crbug.com/505034799): Add LPM fuzzers once we fully support using
+    # FuzzTests with protos.
+    llvm_fuzzer_re = input_api.re.compile(
+        r'\b(LLVMFuzzerTestOneInput|'
+        r'DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN)\b')
+
+    for f in input_api.AffectedFiles(include_deletes=False):
+        filename = f.LocalPath()
+        if filename.endswith('BUILD.gn'):
+            for line_num, line in f.ChangedContents():
+                if fuzzer_test_re.match(line):
+                    fuzzer_targets.append(f"{filename}:{line_num}")
+        elif filename.endswith(('.cc', '.cpp', '.h')):
+            for line_num, line in f.ChangedContents():
+                if llvm_fuzzer_re.search(line):
+                    fuzzer_sources.append(f"{filename}:{line_num}")
+
+    results = []
+    if fuzzer_targets or fuzzer_sources:
+        message = (
+            "You are adding a new LLVM Style Fuzzer (detected via "
+            "LLVMFuzzerTestOneInput, DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN, "
+            "or fuzzer_test in BUILD.gn).\n\n"
+            "FuzzTest is now recommended for all new fuzzers in Chromium.\n\n"
+            "Please consider using FUZZ_TEST instead of an LLVM-style fuzzer. "
+            "FuzzTest integrates with GTest and can be written in _unittest.cc "
+            "files next to existing unit tests. They are easier to write and maintain.\n\n"
+            "See the Getting Started with FuzzTest guide for details on how to "
+            "write a FuzzTest and configure the GN build target:\n"
+            "https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/getting_started.md\n\n"
+            "If you need to use MojoLPM, or are modifying an existing fuzzer, "
+            "you may bypass this warning."
+        )
+        items = []
+        if fuzzer_targets:
+            items.append("GN targets:")
+            items.extend(fuzzer_targets)
+        if fuzzer_sources:
+            items.append("C++ sources:")
+            items.extend(fuzzer_sources)
+
+        results.append(
+            output_api.PresubmitPromptWarning(
+                message=message,
+                items=items
+            )
+        )
+
+    return results
+
+
 def _CheckNewImagesWarning(input_api, output_api):
     """
     Warns authors who add images into the repo to make sure their images are

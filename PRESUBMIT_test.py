@@ -4775,39 +4775,131 @@ class ForgettingMAYBEInTests(unittest.TestCase):
 
 class CheckFuzzTargetsTest(unittest.TestCase):
 
-    def _check(self, files):
-        mock_input_api = MockInputApi()
-        mock_input_api.files = []
-        for fname, contents in files.items():
-            mock_input_api.files.append(MockFile(fname, contents.splitlines()))
-        return PRESUBMIT.CheckFuzzTargetsOnUpload(mock_input_api,
-                                                  MockOutputApi())
-
     def testLibFuzzerSourcesIgnored(self):
-        results = self._check({
-            'third_party/lib/Fuzzer/FuzzerDriver.cpp':
-            'LLVMFuzzerInitialize',
-        })
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('third_party/lib/Fuzzer/FuzzerDriver.cpp',
+                     ['LLVMFuzzerInitialize']),
+        ]
+        results = PRESUBMIT.CheckFuzzTargetsOnUpload(mock_input_api,
+                                                      MockOutputApi())
         self.assertEqual(results, [])
 
     def testNonCodeFilesIgnored(self):
-        results = self._check({
-            'README.md': 'LLVMFuzzerInitialize',
-        })
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('README.md', ['LLVMFuzzerInitialize']),
+        ]
+        results = PRESUBMIT.CheckFuzzTargetsOnUpload(mock_input_api,
+                                                      MockOutputApi())
         self.assertEqual(results, [])
 
     def testNoErrorHeaderPresent(self):
-        results = self._check({
-            'fuzzer.cc':
-            ('#include \"testing/libfuzzer/libfuzzer_exports.h\"\n' +
-             'LLVMFuzzerInitialize')
-        })
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('fuzzer.cc', [
+                '#include "testing/libfuzzer/libfuzzer_exports.h"',
+                'LLVMFuzzerInitialize',
+            ]),
+        ]
+        results = PRESUBMIT.CheckFuzzTargetsOnUpload(mock_input_api,
+                                                      MockOutputApi())
         self.assertEqual(results, [])
 
     def testErrorMissingHeader(self):
-        results = self._check({'fuzzer.cc': 'LLVMFuzzerInitialize'})
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('fuzzer.cc', ['LLVMFuzzerInitialize']),
+        ]
+        results = PRESUBMIT.CheckFuzzTargetsOnUpload(mock_input_api,
+                                                      MockOutputApi())
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].items, ['fuzzer.cc'])
+
+
+class CheckNewLLVMStyleFuzzersTest(unittest.TestCase):
+
+    def testNoWarningForNormalFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/test.cc', ['void MyTest() {}']),
+            MockFile('base/BUILD.gn',
+                     ['test("my_unittests") { sources = [ "test.cc" ] }']),
+        ]
+        results = PRESUBMIT.CheckNewLLVMStyleFuzzersOnUpload(mock_input_api,
+                                                         MockOutputApi())
+        self.assertEqual(results, [])
+
+    def testWarningForNewFuzzerTestInGN(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/BUILD.gn',
+                     ['fuzzer_test("my_fuzzer") { sources = [ "fuzzer.cc" ] }']),
+        ]
+        results = PRESUBMIT.CheckNewLLVMStyleFuzzersOnUpload(mock_input_api,
+                                                         MockOutputApi())
+        self.assertEqual(len(results), 1)
+        self.assertIn('base/BUILD.gn:1', results[0].items)
+
+    def testWarningForNewLLVMFuzzerTestOneInput(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/fuzzer.cc', [
+                'extern "C" int LLVMFuzzerTestOneInput(',
+                'const uint8_t* data, size_t size) {}'
+            ]),
+        ]
+        results = PRESUBMIT.CheckNewLLVMStyleFuzzersOnUpload(mock_input_api,
+                                                         MockOutputApi())
+        self.assertEqual(len(results), 1)
+        self.assertIn('base/fuzzer.cc:1', results[0].items)
+
+    def testWarningForNewLLVMFuzzerSpan(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockFile('base/fuzzer.cc', [
+                'DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(',
+                'base::span<const uint8_t> data) {}'
+            ]),
+        ]
+        results = PRESUBMIT.CheckNewLLVMStyleFuzzersOnUpload(mock_input_api,
+                                                         MockOutputApi())
+        self.assertEqual(len(results), 1)
+        self.assertIn('base/fuzzer.cc:1', results[0].items)
+
+    def testNoWarningForModifyingExistingFuzzer(self):
+        # LLVMFuzzerTestOneInput is in the file, but not in changed contents
+        file = MockFile(
+            'base/fuzzer.cc',
+            ['// existing fuzzer',
+             'extern "C" int LLVMFuzzerTestOneInput(',
+             'const uint8_t* data, size_t size) {',
+             '  // modified line',
+             '}'],
+            action='M')
+        file._changed_contents = [(4, '  // modified line')]
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [file]
+        results = PRESUBMIT.CheckNewLLVMStyleFuzzersOnUpload(mock_input_api,
+                                                         MockOutputApi())
+        self.assertEqual(results, [])
+
+    def testWarningForModifyingFuzzerAddingKeyword(self):
+        # LLVMFuzzerTestOneInput is added in a modification
+        file = MockFile(
+            'base/fuzzer.cc',
+            ['// modified fuzzer',
+             'extern "C" int LLVMFuzzerTestOneInput(',
+             'const uint8_t* data, size_t size) {',
+             '}'],
+            action='M')
+        file._changed_contents = [(2, 'extern "C" int LLVMFuzzerTestOneInput(')]
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [file]
+        results = PRESUBMIT.CheckNewLLVMStyleFuzzersOnUpload(mock_input_api,
+                                                         MockOutputApi())
+        self.assertEqual(len(results), 1)
+        self.assertIn('base/fuzzer.cc:2', results[0].items)
 
 
 class SetNoParentTest(unittest.TestCase):
