@@ -32,14 +32,16 @@ using sync_pb::CommitResponse_EntryResponse;
 }  // namespace
 
 // Builds a ClientToServerResponse with some data type ids, including
-// invalid ones.  GetTypesToMigrate() should return only the valid
-// data types.
+// invalid ones and NIGORI. GetTypesToMigrate() should return only the valid
+// data types excluding NIGORI.
 TEST(SyncerProtoUtil, GetTypesToMigrate) {
   sync_pb::ClientToServerResponse response;
   response.add_migrated_data_type_id(
       GetSpecificsFieldNumberFromDataType(BOOKMARKS));
   response.add_migrated_data_type_id(
       GetSpecificsFieldNumberFromDataType(HISTORY_DELETE_DIRECTIVES));
+  response.add_migrated_data_type_id(
+      GetSpecificsFieldNumberFromDataType(NIGORI));
   response.add_migrated_data_type_id(-1);
   EXPECT_EQ(DataTypeSet({BOOKMARKS, HISTORY_DELETE_DIRECTIVES}),
             GetTypesToMigrate(response));

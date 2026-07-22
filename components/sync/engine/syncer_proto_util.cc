@@ -238,8 +238,10 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
 }  // namespace
 
 DataTypeSet GetTypesToMigrate(const ClientToServerResponse& response) {
-  return GetDataTypeSetFromSpecificsFieldNumberList(
+  DataTypeSet types = GetDataTypeSetFromSpecificsFieldNumberList(
       response.migrated_data_type_id());
+  types.Remove(NIGORI);
+  return types;
 }
 
 SyncProtocolError ConvertErrorPBToSyncProtocolError(
