@@ -1586,9 +1586,13 @@ class ChromePasswordProtectionServiceTrustSafetySentimentServiceBrowserTest
                 ProtectResetOrCheckPasswordClicked(ui_type));
   }
 
+  void TearDownOnMainThread() override {
+    mock_sentiment_service_ = nullptr;
+    ChromePasswordProtectionServiceBrowserTest::TearDownOnMainThread();
+  }
+
  private:
-  raw_ptr<MockTrustSafetySentimentService, DanglingUntriaged>
-      mock_sentiment_service_;
+  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(
