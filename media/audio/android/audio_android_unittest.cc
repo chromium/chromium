@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/android/device_info.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -465,12 +464,6 @@ class AudioAndroidOutputTest : public testing::TestWithParam<AudioApi> {
         break;
       case AudioApi::OpenSLES:
         break;
-    }
-
-    if (enable_aaudio_per_stream_device_selection &&
-        !base::android::device_info::is_desktop()) {
-      GTEST_SKIP()
-          << "Per-stream device selection is only supported on desktop.";
     }
 
     if (!enable_aaudio) {
@@ -1222,15 +1215,6 @@ TEST_P(AudioAndroidInputTest, OpenAndCloseInputStream) {
 // closed, emitting a histogram value for successfully setting the
 // device ID if AAudioWithPerStreamDeviceSelection is enabled.
 TEST_P(AudioAndroidInputTest, OpenAndCloseInputStreamWithDevice) {
-  const bool is_per_stream_selection_enabled =
-      GetParam() == AudioApi::AAudioWithPerStreamDeviceSelection;
-
-  if (is_per_stream_selection_enabled &&
-      !base::android::device_info::is_desktop()) {
-    GTEST_SKIP() << "Per-stream device selection is only supported on "
-                 << "desktop.";
-  }
-
   std::optional<AudioDeviceDescription> device =
       GetFirstNonDefaultInputDevice();
   if (!device.has_value()) {
@@ -1242,7 +1226,7 @@ TEST_P(AudioAndroidInputTest, OpenAndCloseInputStreamWithDevice) {
   base::HistogramTester histogram_tester;
   OpenAudioInputStreamOnAudioThread();
 
-  if (is_per_stream_selection_enabled) {
+  if (GetParam() == AudioApi::AAudioWithPerStreamDeviceSelection) {
     constexpr std::string_view kHistogramPrefix =
         "Media.Audio.Android.AAudioSetDeviceId.Input.";
     const std::string kSuccessHistogram =
