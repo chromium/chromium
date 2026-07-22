@@ -303,6 +303,7 @@ class KeyboardAccessoryMediator
             case SuggestionType.MANAGE_CREDIT_CARD:
             case SuggestionType.MANAGE_IBAN:
             case SuggestionType.MANAGE_LOYALTY_CARD:
+            case SuggestionType.AUTOFILL_AI_OTHER_SHIPMENTS:
                 return false;
             case SuggestionType.AUTOCOMPLETE_ENTRY:
             case SuggestionType.PASSWORD_ENTRY:
