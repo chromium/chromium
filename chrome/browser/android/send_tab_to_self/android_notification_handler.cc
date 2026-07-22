@@ -79,23 +79,64 @@ bool IsTabModelViable(TabModel* tab_model) {
 // `require_visible` is set to true to ensure entries only auto-open if actively
 // browsing.
 content::WebContents* GetActiveWebContents(bool require_visible) {
+  // Track candidate WebContents across decreasing priority tiers:
+  // Priority 1: Active tab of the active TabModel (returned immediately).
+  // Priority 2: Active tab of an inactive TabModel.
+  // Priority 3: First tab of the active TabModel (fallback for delayed tab
+  // initialization).
+  // Priority 4: First tab of an inactive TabModel (last fallback).
+  content::WebContents* inactive_model_active_tab = nullptr;
+  content::WebContents* active_model_fallback_tab = nullptr;
+  content::WebContents* inactive_model_fallback_tab = nullptr;
+
   for (TabModel* model : TabModelList::models()) {
-    // Exclude OTR models and non-standard models (e.g., kEmpty, kArchived).
-    // kEmpty represents stub models which never have an active WebContents.
-    if (!IsTabModelViable(model)) {
+    if (!IsTabModelViable(model) || model->GetTabCount() == 0) {
       continue;
     }
-    content::WebContents* wc = model->GetActiveWebContents();
-    if (!wc) {
+
+    // Check if the model has a viable active tab.
+    content::WebContents* active_tab = model->GetActiveWebContents();
+    if (active_tab && (!require_visible || active_tab->GetVisibility() ==
+                                               content::Visibility::VISIBLE)) {
+      if (model->IsActiveModel()) {
+        // Priority 1: Best target found. Return immediately.
+        return active_tab;
+      }
+      if (!inactive_model_active_tab) {
+        // Priority 2 candidate.
+        inactive_model_active_tab = active_tab;
+      }
       continue;
     }
-    if (require_visible &&
-        wc->GetVisibility() != content::Visibility::VISIBLE) {
+
+    // Fallback for delayed tab initialization where tabs are added to the model
+    // before active tab selection is updated.
+    content::WebContents* fallback_tab = model->GetWebContentsAt(0);
+    if (!fallback_tab ||
+        (require_visible &&
+         fallback_tab->GetVisibility() != content::Visibility::VISIBLE)) {
       continue;
     }
-    return wc;
+
+    if (model->IsActiveModel()) {
+      if (!active_model_fallback_tab) {
+        // Priority 3 candidate.
+        active_model_fallback_tab = fallback_tab;
+      }
+    } else if (!inactive_model_fallback_tab) {
+      // Priority 4 candidate.
+      inactive_model_fallback_tab = fallback_tab;
+    }
   }
-  return nullptr;
+
+  // Return the highest-priority candidate found among lower tiers.
+  if (inactive_model_active_tab) {
+    return inactive_model_active_tab;
+  }
+  if (active_model_fallback_tab) {
+    return active_model_fallback_tab;
+  }
+  return inactive_model_fallback_tab;
 }
 
 }  // namespace
@@ -239,12 +280,24 @@ void AndroidNotificationHandler::OnModelReady() {
 void AndroidNotificationHandler::OnTabModelAdded(TabModel* tab_model) {
   // When a regular browser window is created (e.g., during cold start), check
   // for and open any pending tab notifications.
-  if (IsTabModelViable(tab_model)) {
+  if (!IsTabModelViable(tab_model)) {
+    return;
+  }
+
+  if (tab_model->GetTabCount() > 0) {
     CheckAndOpenPendingEntries();
+  } else {
+    // If the model is empty (e.g. during delayed initialization), observe it
+    // to trigger auto-open when the first tab is added.
+    tab_model_observations_.AddObservation(tab_model);
   }
 }
 
-void AndroidNotificationHandler::OnTabModelRemoved(TabModel* tab_model) {}
+void AndroidNotificationHandler::OnTabModelRemoved(TabModel* tab_model) {
+  if (tab_model_observations_.IsObservingSource(tab_model)) {
+    tab_model_observations_.RemoveObservation(tab_model);
+  }
+}
 
 void AndroidNotificationHandler::HandleApplicationStateChange(
     base::android::ApplicationState state) {
@@ -333,6 +386,18 @@ void AndroidNotificationHandler::ShowMessageBanner(
     std::string_view device_name,
     content::WebContents* web_contents) {
   send_tab_to_self::ShowMessageBanner(web_contents, device_name);
+}
+
+void AndroidNotificationHandler::DidAddTab(TabAndroid* tab,
+                                           TabModel::TabLaunchType type) {
+  // Stop observing immediately to avoid recursive DidAddTab calls if
+  // CheckAndOpenPendingEntries() opens new background tabs synchronously.
+  if (TabModel* model = TabModelList::GetTabModelForTabAndroid(tab)) {
+    if (tab_model_observations_.IsObservingSource(model)) {
+      tab_model_observations_.RemoveObservation(model);
+    }
+  }
+  CheckAndOpenPendingEntries();
 }
 
 }  // namespace send_tab_to_self

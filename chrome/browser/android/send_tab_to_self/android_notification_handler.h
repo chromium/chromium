@@ -13,8 +13,10 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #include "components/send_tab_to_self/receiving_ui_handler.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 
@@ -36,7 +38,8 @@ class SendTabToSelfModel;
 // entries.
 class AndroidNotificationHandler : public ReceivingUiHandler,
                                    public TabModelListObserver,
-                                   public SendTabToSelfModelObserver {
+                                   public SendTabToSelfModelObserver,
+                                   public TabModelObserver {
  public:
   explicit AndroidNotificationHandler(
       SendTabToSelfModel* send_tab_to_self_model);
@@ -63,6 +66,9 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* tab_model) override;
   void OnTabModelRemoved(TabModel* tab_model) override;
+
+  // TabModelObserver:
+  void DidAddTab(TabAndroid* tab, TabModel::TabLaunchType type) override;
 
   void OnNavigationStarted(
       const std::string& guid,
@@ -91,6 +97,9 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
 
   base::ScopedObservation<SendTabToSelfModel, SendTabToSelfModelObserver>
       model_observation_{this};
+
+  base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
+      tab_model_observations_{this};
 
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
