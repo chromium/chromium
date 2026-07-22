@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
@@ -65,6 +66,7 @@ public class BookmarkPopupCoordinator {
                         .setFocusable(true)
                         .setMaxWidth(popupWidth)
                         .setDesiredContentWidth(popupWidth)
+                        .setDismissOnScreenSizeChange(true)
                         .build();
 
         BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
@@ -100,5 +102,10 @@ public class BookmarkPopupCoordinator {
     /** Destroys the coordinator, dismissing the popup. */
     public void destroy() {
         mPopupWindow.dismiss();
+    }
+
+    @VisibleForTesting
+    public AnchoredPopupWindow getPopupWindowForTesting() {
+        return mPopupWindow;
     }
 }
