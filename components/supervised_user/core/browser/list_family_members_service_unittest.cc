@@ -48,6 +48,7 @@ class ListFamilyMembersServiceTest : public ::testing::Test {
                 &test_url_loader_factory_),
             pref_service_);
   }
+  void TearDown() override { test_list_family_members_service_->Shutdown(); }
 
  protected:
   void SimulateErrorResponseForPendingRequest() {
@@ -96,8 +97,6 @@ TEST_F(ListFamilyMembersServiceTest, FamilyFlowsFromFetcherToPreferences) {
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserCustodianName),
             "username_hoh");
-
-  test_list_family_members_service_->Shutdown();
 }
 
 TEST_F(ListFamilyMembersServiceTest, FamilyRolePrefReflectsAccountCapability) {
@@ -121,8 +120,6 @@ TEST_F(ListFamilyMembersServiceTest, FamilyRolePrefReflectsAccountCapability) {
             "username_hoh");
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
             "family_manager");
-
-  test_list_family_members_service_->Shutdown();
 }
 
 TEST_F(ListFamilyMembersServiceTest,
@@ -159,8 +156,6 @@ TEST_F(ListFamilyMembersServiceTest,
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserCustodianName),
             "another_username_hoh");
-
-  test_list_family_members_service_->Shutdown();
 }
 
 TEST_F(ListFamilyMembersServiceTest, IneligibleAccountForFamilyFetch) {
@@ -171,8 +166,6 @@ TEST_F(ListFamilyMembersServiceTest, IneligibleAccountForFamilyFetch) {
 
   // No requests made for ineligible account.
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
-
-  test_list_family_members_service_->Shutdown();
 }
 
 TEST_F(ListFamilyMembersServiceTest, AccountEligibilityUpdated) {
@@ -199,8 +192,6 @@ TEST_F(ListFamilyMembersServiceTest, AccountEligibilityUpdated) {
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserCustodianName),
             "username_hoh");
-
-  test_list_family_members_service_->Shutdown();
 }
 
 // Tests that the Family Info is correctly fetched if the supervised account
@@ -239,8 +230,6 @@ TEST_F(ListFamilyMembersServiceTest,
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserCustodianName),
             "username_hoh");
-
-  test_list_family_members_service_->Shutdown();
 }
 
 TEST_F(ListFamilyMembersServiceTest,
@@ -261,8 +250,6 @@ TEST_F(ListFamilyMembersServiceTest,
   SimulateErrorResponseForPendingRequest();
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole), "");
-
-  test_list_family_members_service_->Shutdown();
 }
 
 // Data cleanup is only available for Windows, Mac and Linux
@@ -292,8 +279,6 @@ TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherClearsResponseOnSignout) {
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserCustodianName), "");
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
             kDefaultEmptyFamilyMemberRole);
-
-  test_list_family_members_service_->Shutdown();
 }
 
 TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherResetsPrefOnSignout) {
@@ -321,8 +306,6 @@ TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherResetsPrefOnSignout) {
   EXPECT_EQ(pref_service_.GetString(prefs::kSupervisedUserCustodianName), "");
   EXPECT_EQ(pref_service_.GetString(prefs::kFamilyLinkUserMemberRole),
             kDefaultEmptyFamilyMemberRole);
-
-  test_list_family_members_service_->Shutdown();
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
