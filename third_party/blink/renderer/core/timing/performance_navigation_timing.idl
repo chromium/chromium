@@ -25,7 +25,7 @@ enum NavigationTimingType {
     readonly attribute NavigationTimingType type;
     readonly attribute unsigned short redirectCount;
     [RuntimeEnabled=BackForwardCacheNotRestoredReasons, MeasureAs="WebDXFeature::kBfcacheBlockingReasons"] readonly attribute NotRestoredReasons? notRestoredReasons;
-    [RuntimeEnabled=PerformanceNavigationTimingConfidence] readonly attribute PerformanceTimingConfidence confidence;
+    readonly attribute PerformanceTimingConfidence confidence;
     [MeasureAs="CriticalCHRestartNavigationTiming"] readonly attribute DOMHighResTimeStamp criticalCHRestart;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

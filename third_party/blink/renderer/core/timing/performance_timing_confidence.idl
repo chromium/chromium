@@ -8,8 +8,7 @@ enum PerformanceTimingConfidenceValue {
 };
 
 [
-    Exposed=Window,
-    RuntimeEnabled=PerformanceNavigationTimingConfidence
+    Exposed=Window
 ] interface PerformanceTimingConfidence {
     readonly attribute double randomizedTriggerRate;
     readonly attribute PerformanceTimingConfidenceValue value;

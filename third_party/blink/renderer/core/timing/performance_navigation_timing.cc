@@ -394,13 +394,10 @@ void PerformanceNavigationTiming::BuildJSONValue(
         ->CountUse(WebFeature::kBackForwardCacheNotRestoredReasons);
   }
 
-  if (RuntimeEnabledFeatures::PerformanceNavigationTimingConfidenceEnabled(
-          ExecutionContext::From(builder.GetScriptState()))) {
-    if (auto* confidence_value = GetConfidence()) {
-      builder.Add("confidence", confidence_value);
-    } else {
-      builder.AddNull("confidence");
-    }
+  if (auto* confidence_value = GetConfidence()) {
+    builder.Add("confidence", confidence_value);
+  } else {
+    builder.AddNull("confidence");
   }
 }
 
