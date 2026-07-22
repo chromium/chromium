@@ -19,6 +19,7 @@
 #include "base/memory/shared_memory_tracker.h"
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/traits.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/memory.h"
@@ -215,6 +216,13 @@ uint64_t GetDefaultMaxBytes() {
 
 const int kEnforceMemoryPolicyDelayMs = 1000;
 
+constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
+    base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
+    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::InformationRetention::kLossless,
+    base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+    base::MemoryConsumerTraits::IsStateful::kYes);
+
 // Global atomic to generate unique discardable shared memory IDs.
 base::AtomicSequenceNumber g_next_discardable_shared_memory_id;
 
@@ -232,19 +240,18 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
     : next_client_id_(1),
       default_max_bytes_(GetDefaultMaxBytes()),
       max_bytes_(default_max_bytes_),
+      effective_max_bytes_(default_max_bytes_),
       bytes_allocated_(0),
       // Current thread might not have a task runner in tests.
       enforce_memory_policy_task_runner_(
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       enforce_memory_policy_pending_(false),
       mojo_thread_message_loop_(base::CurrentThread::GetNull()),
-      memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kDiscardableSharedMemoryManager,
-          this),
-      memory_limit_(base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)
-                        ? GetMemoryLimit()
-                        : base::MemoryConsumer::kDefaultMemoryLimit),
+      memory_consumer_registration_(
+          "DiscardableSharedMemoryManager",
+          kMemoryConsumerTraits,
+          this,
+          base::MemoryConsumerRegistration::CheckUnregister::kDisabled),
       memory_pressure_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::WithBaseSyncPrimitives()})) {
   DCHECK(!g_instance)
@@ -435,6 +442,7 @@ void DiscardableSharedMemoryManager::SetMaxBytes(size_t bytes) {
   base::AutoLock lock(lock_);
 
   max_bytes_ = bytes;
+  effective_max_bytes_ = base::ScaleByMemoryLimit(max_bytes_, memory_limit());
   ReduceMemoryUsageUntilWithinMaxBytes();
 }
 
@@ -637,7 +645,7 @@ void DiscardableSharedMemoryManager::BytesAllocatedChanged(
 
 size_t DiscardableSharedMemoryManager::GetEffectiveMaxBytes() const {
   lock_.AssertAcquired();
-  return base::ScaleByMemoryLimit(max_bytes_, memory_limit_);
+  return effective_max_bytes_;
 }
 
 void DiscardableSharedMemoryManager::ScheduleEnforceMemoryPolicy() {
@@ -663,68 +671,43 @@ void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(
     event->Signal();
 }
 
-void DiscardableSharedMemoryManager::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
+void DiscardableSharedMemoryManager::OnUpdateMemoryLimit() {
   memory_pressure_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::MemoryPressureLevel memory_pressure_level) {
-            // It is safe to access the global instance because memory pressure
-            // worker thread will be flushed in destructor if the thread is
-            // still running.
-            if (DiscardableSharedMemoryManager::Get()) {
-              DiscardableSharedMemoryManager::Get()
-                  ->HandleMemoryPressureOnSequence(memory_pressure_level);
-            }
-          },
-          memory_pressure_level));
+          &DiscardableSharedMemoryManager::HandleUpdateMemoryLimitOnSequence,
+          base::Unretained(this), memory_limit()));
 }
 
-void DiscardableSharedMemoryManager::HandleMemoryPressureOnSequence(
-    base::MemoryPressureLevel memory_pressure_level) {
+void DiscardableSharedMemoryManager::HandleUpdateMemoryLimitOnSequence(
+    int limit) {
   DCHECK(memory_pressure_task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock lock(lock_);
-
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    switch (memory_pressure_level) {
-      case base::MEMORY_PRESSURE_LEVEL_NONE:
-        memory_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
-        break;
-      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-        memory_limit_ = base::kModerateMemoryPressureThreshold;
-        break;
-      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-        memory_limit_ = base::kCriticalMemoryPressureThreshold;
-        break;
-    }
-    ReduceMemoryUsageUntilWithinMaxBytes();
-    return;
-  }
-
-  switch (memory_pressure_level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      // Purge memory until usage is within half of |max_bytes_|.
-      ReduceMemoryUsageUntilWithinBytes(max_bytes_ / 2);
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      // Purge everything possible when pressure is critical.
-      ReduceMemoryUsageUntilWithinBytes(0);
-      break;
-  }
+  effective_max_bytes_ =
+      std::max(bytes_allocated_, base::ScaleByMemoryLimit(max_bytes_, limit));
 }
 
-void DiscardableSharedMemoryManager::NotifyMemoryPressureAsyncForTesting(
-    base::MemoryPressureLevel level,
-    base::OnceClosure closure) {
-  memory_pressure_task_runner_->PostTaskAndReply(
+void DiscardableSharedMemoryManager::OnReleaseMemory() {
+  memory_pressure_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &DiscardableSharedMemoryManager::HandleMemoryPressureOnSequence,
-          base::Unretained(this), level),
-      std::move(closure));
+          &DiscardableSharedMemoryManager::HandleReleaseMemoryOnSequence,
+          base::Unretained(this), memory_limit()));
+}
+
+void DiscardableSharedMemoryManager::HandleReleaseMemoryOnSequence(int limit) {
+  DCHECK(memory_pressure_task_runner_->RunsTasksInCurrentSequence());
+
+  base::AutoLock lock(lock_);
+  effective_max_bytes_ = base::ScaleByMemoryLimit(max_bytes_, limit);
+  ReduceMemoryUsageUntilWithinMaxBytes();
+}
+
+void DiscardableSharedMemoryManager::FlushMemoryPressureTaskRunnerForTesting(
+    base::OnceClosure closure) {
+  memory_pressure_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                                 std::move(closure));
 }
 
 }  // namespace discardable_memory
