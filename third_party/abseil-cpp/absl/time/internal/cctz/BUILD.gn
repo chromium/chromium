@@ -10,7 +10,7 @@ absl_source_set("civil_time") {
     "include/cctz/civil_time.h",
     "include/cctz/civil_time_detail.h",
   ]
-  public_deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
 }
 
 absl_source_set("time_zone") {
@@ -49,12 +49,12 @@ absl_source_set("time_zone") {
     # Work-around for https://github.com/llvm/llvm-project/issues/117630
     defines += [ "_XOPEN_SOURCE=700" ]
   }
-  public_deps = [
+  deps = [
     ":civil_time",
     "//third_party/abseil-cpp/absl/base:config",
   ]
   if (is_fuchsia) {
-    deps = [
+    deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl:fuchsia.intl_hlcpp",
       "//third_party/fuchsia-sdk/sdk/pkg/async",
       "//third_party/fuchsia-sdk/sdk/pkg/async-loop-cpp",

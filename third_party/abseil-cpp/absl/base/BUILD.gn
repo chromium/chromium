@@ -22,26 +22,24 @@ absl_source_set("errno_saver") {
 absl_source_set("cpu_detect") {
   public = [ "internal/cpu_detect.h" ]
   sources = [ "internal/cpu_detect.cc" ]
-  public_deps = [ ":config" ]
-
+  deps = [ ":config" ]
   visibility = [ "//third_party/abseil-cpp/absl/*" ]
 }
 
 absl_source_set("hardening") {
   public = [ "internal/hardening.h" ]
   sources = [ "internal/hardening.cc" ]
-  public_deps = [
+  deps = [
     ":config",
     ":core_headers",
   ]
-
   visibility = [ "//third_party/abseil-cpp/absl/*" ]
 }
 
 absl_source_set("log_severity") {
   sources = [ "log_severity.cc" ]
   public = [ "log_severity.h" ]
-  public_deps = [
+  deps = [
     ":config",
     ":core_headers",
   ]
@@ -72,14 +70,13 @@ absl_source_set("nullability_traits_internal") {
 absl_source_set("raw_logging_internal") {
   sources = [ "internal/raw_logging.cc" ]
   public = [ "internal/raw_logging.h" ]
-
-  public_deps = [
+  deps = [
     ":atomic_hook",
     ":config",
     ":core_headers",
+    ":errno_saver",
     ":log_severity",
   ]
-  deps = [ ":errno_saver" ]
   visibility = [
     "//third_party/abseil-cpp:absl_component_deps",
     "//third_party/abseil-cpp/absl/*",
@@ -95,9 +92,8 @@ absl_source_set("spinlock_wait") {
     "internal/spinlock_win32.inc",
   ]
   public = [ "internal/spinlock_wait.h" ]
-
-  public_deps = [ ":base_internal" ]
   deps = [
+    ":base_internal",
     ":core_headers",
     ":errno_saver",
   ]
@@ -157,14 +153,11 @@ absl_source_set("malloc_internal") {
     "internal/direct_mmap.h",
     "internal/low_level_alloc.h",
   ]
-
-  public_deps = [
-    ":config",
-    ":core_headers",
-  ]
   deps = [
     ":base",
     ":base_internal",
+    ":config",
+    ":core_headers",
     ":dynamic_annotations",
     ":raw_logging_internal",
   ]
@@ -207,7 +200,8 @@ absl_source_set("base") {
   # TODO(mbonadei): The bazel file has:
   #   "-DEFAULTLIB:advapi32.lib"
   # understand if this is needed here as well.
-  public_deps = [
+  deps = [
+    ":atomic_hook",
     ":base_internal",
     ":config",
     ":core_headers",
@@ -217,7 +211,6 @@ absl_source_set("base") {
     ":spinlock_wait",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
-  deps = [ ":atomic_hook" ]
 }
 
 absl_test("attributes_test") {
@@ -242,9 +235,10 @@ if (absl_build_tests) {
 absl_source_set("throw_delegate") {
   sources = [ "throw_delegate.cc" ]
   public = [ "throw_delegate.h" ]
-
-  public_deps = [ ":config" ]
-  deps = [ ":raw_logging_internal" ]
+  deps = [
+    ":config",
+    ":raw_logging_internal",
+  ]
 }
 
 absl_source_set("exception_testing") {
@@ -300,9 +294,8 @@ absl_source_set("scoped_set_env") {
 absl_source_set("strerror") {
   sources = [ "internal/strerror.cc" ]
   public = [ "internal/strerror.h" ]
-
-  public_deps = [ ":config" ]
   deps = [
+    ":config",
     ":core_headers",
     ":errno_saver",
   ]
@@ -366,9 +359,10 @@ absl_test("iterator_traits_test") {
 absl_source_set("tracing_internal") {
   public = [ "internal/tracing.h" ]
   sources = [ "internal/tracing.cc" ]
-
-  public_deps = [ ":config" ]
-  deps = [ ":core_headers" ]
+  deps = [
+    ":config",
+    ":core_headers",
+  ]
 }
 
 absl_source_set("iterator_traits_test_helper") {

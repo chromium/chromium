@@ -16,15 +16,12 @@ absl_source_set("path_util") {
 absl_source_set("program_name") {
   sources = [ "internal/program_name.cc" ]
   public = [ "internal/program_name.h" ]
-
-  public_deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/strings:string_view",
-  ]
   deps = [
     ":path_util",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:no_destructor",
+    "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/synchronization",
   ]
   visibility = [
@@ -47,17 +44,14 @@ absl_source_set("config") {
     "config.h",
     "usage_config.h",
   ]
-
-  public_deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/strings:string_view",
-  ]
   deps = [
     ":path_util",
     ":program_name",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/synchronization",
   ]
 }
@@ -65,18 +59,15 @@ absl_source_set("config") {
 absl_source_set("marshalling") {
   sources = [ "marshalling.cc" ]
   public = [ "marshalling.h" ]
-
-  public_deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/numeric:int128",
-    "//third_party/abseil-cpp/absl/strings:string_view",
-    "//third_party/abseil-cpp/absl/types:optional",
-  ]
   deps = [
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:log_severity",
+    "//third_party/abseil-cpp/absl/numeric:int128",
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:str_format",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+    "//third_party/abseil-cpp/absl/types:optional",
   ]
 }
 
@@ -84,7 +75,7 @@ absl_source_set("commandlineflag_internal") {
   visibility = [ ":*" ]
   public = [ "internal/commandlineflag.h" ]
   sources = [ "internal/commandlineflag.cc" ]
-  public_deps = [
+  deps = [
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:fast_type_id",
   ]
@@ -93,7 +84,7 @@ absl_source_set("commandlineflag_internal") {
 absl_source_set("commandlineflag") {
   sources = [ "commandlineflag.cc" ]
   public = [ "commandlineflag.h" ]
-  public_deps = [
+  deps = [
     ":commandlineflag_internal",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:fast_type_id",
@@ -106,13 +97,12 @@ absl_source_set("commandlineflag") {
 absl_source_set("private_handle_accessor") {
   sources = [ "internal/private_handle_accessor.cc" ]
   public = [ "internal/private_handle_accessor.h" ]
-  public_deps = [
+  deps = [
     ":commandlineflag",
     ":commandlineflag_internal",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/strings:string_view",
   ]
-
   visibility = [ ":*" ]
 }
 
@@ -122,21 +112,18 @@ absl_source_set("reflection") {
     "internal/registry.h",
     "reflection.h",
   ]
-
-  public_deps = [
+  deps = [
     ":commandlineflag",
     ":commandlineflag_internal",
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/base:fast_type_id",
-    "//third_party/abseil-cpp/absl/container:flat_hash_map",
-    "//third_party/abseil-cpp/absl/strings:string_view",
-  ]
-  deps = [
     ":config",
     ":private_handle_accessor",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:fast_type_id",
     "//third_party/abseil-cpp/absl/base:no_destructor",
+    "//third_party/abseil-cpp/absl/container:flat_hash_map",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/synchronization",
   ]
 }
@@ -147,8 +134,7 @@ absl_source_set("flag_internal") {
     "internal/flag.h",
     "internal/sequence_lock.h",
   ]
-
-  public_deps = [
+  deps = [
     ":commandlineflag",
     ":commandlineflag_internal",
     ":config",
@@ -157,17 +143,15 @@ absl_source_set("flag_internal") {
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/meta:type_traits",
-    "//third_party/abseil-cpp/absl/strings:string_view",
-    "//third_party/abseil-cpp/absl/synchronization",
-    "//third_party/abseil-cpp/absl/utility",
-  ]
-  deps = [
     "//third_party/abseil-cpp/absl/base:dynamic_annotations",
     "//third_party/abseil-cpp/absl/base:fast_type_id",
     "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/memory",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
+    "//third_party/abseil-cpp/absl/synchronization",
+    "//third_party/abseil-cpp/absl/utility",
   ]
   visibility = [
     ":*",
@@ -195,13 +179,8 @@ absl_source_set("flag") {
 absl_source_set("usage_internal") {
   sources = [ "internal/usage.cc" ]
   public = [ "internal/usage.h" ]
-
-  public_deps = [
-    ":commandlineflag",
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/strings:string_view",
-  ]
   deps = [
+    ":commandlineflag",
     ":config",
     ":flag",
     ":flag_internal",
@@ -209,9 +188,11 @@ absl_source_set("usage_internal") {
     ":private_handle_accessor",
     ":program_name",
     ":reflection",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/synchronization",
   ]
   visibility = [ ":*" ]
@@ -220,15 +201,12 @@ absl_source_set("usage_internal") {
 absl_source_set("usage") {
   sources = [ "usage.cc" ]
   public = [ "usage.h" ]
-
-  public_deps = [
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/strings:string_view",
-  ]
   deps = [
     ":usage_internal",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/synchronization",
   ]
 }
@@ -239,26 +217,23 @@ absl_source_set("parse") {
     "internal/parse.h",
     "parse.h",
   ]
-
-  public_deps = [
-    ":flag",
-    ":usage_internal",
-    "//third_party/abseil-cpp/absl/base:config",
-    "//third_party/abseil-cpp/absl/strings:string_view",
-  ]
   deps = [
     ":commandlineflag",
     ":commandlineflag_internal",
     ":config",
+    ":flag",
     ":flag_internal",
     ":private_handle_accessor",
     ":program_name",
     ":reflection",
     ":usage",
+    ":usage_internal",
     "//third_party/abseil-cpp/absl/algorithm:container",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/strings",
+    "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/synchronization",
   ]
 }

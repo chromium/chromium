@@ -94,9 +94,8 @@ absl_source_set("spy_hash_state") {
 absl_source_set("city") {
   public = [ "internal/city.h" ]
   sources = [ "internal/city.cc" ]
-
-  public_deps = [ "//third_party/abseil-cpp/absl/base:config" ]
   deps = [
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
     "//third_party/abseil-cpp/absl/base:endian",
     "//third_party/abseil-cpp/absl/numeric:bits",

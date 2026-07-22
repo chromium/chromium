@@ -357,22 +357,19 @@ absl_source_set("hashtablez_sampler") {
     "internal/hashtablez_sampler.cc",
     "internal/hashtablez_sampler_force_weak_definition.cc",
   ]
-
-  public_deps = [
+  deps = [
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
-    "//third_party/abseil-cpp/absl/profiling:sample_recorder",
-    "//third_party/abseil-cpp/absl/synchronization",
-    "//third_party/abseil-cpp/absl/time",
-    "//third_party/abseil-cpp/absl/utility",
-  ]
-  deps = [
     "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/base:raw_logging_internal",
     "//third_party/abseil-cpp/absl/debugging:stacktrace",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/profiling:exponential_biased",
+    "//third_party/abseil-cpp/absl/profiling:sample_recorder",
+    "//third_party/abseil-cpp/absl/synchronization",
+    "//third_party/abseil-cpp/absl/time",
+    "//third_party/abseil-cpp/absl/utility",
   ]
 }
 
@@ -437,8 +434,7 @@ absl_test("raw_hash_set_resize_impl_test") {
 absl_source_set("raw_hash_set") {
   sources = [ "internal/raw_hash_set.cc" ]
   public = [ "internal/raw_hash_set.h" ]
-
-  public_deps = [
+  deps = [
     ":common",
     ":common_policy_traits",
     ":compressed_tuple",
@@ -448,9 +444,11 @@ absl_source_set("raw_hash_set") {
     ":hashtable_control_bytes",
     ":hashtable_debug_hooks",
     ":hashtablez_sampler",
+    ":raw_hash_set_resize_impl",
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:dynamic_annotations",
     "//third_party/abseil-cpp/absl/base:endian",
     "//third_party/abseil-cpp/absl/base:iterator_traits_internal",
     "//third_party/abseil-cpp/absl/base:prefetch",
@@ -462,10 +460,6 @@ absl_source_set("raw_hash_set") {
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/numeric:bits",
     "//third_party/abseil-cpp/absl/utility",
-  ]
-  deps = [
-    ":raw_hash_set_resize_impl",
-    "//third_party/abseil-cpp/absl/base:dynamic_annotations",
   ]
 }
 
