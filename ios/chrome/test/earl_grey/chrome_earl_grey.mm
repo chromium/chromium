@@ -2016,6 +2016,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   // Dismiss the Activity View by tapping outside its bounds.
   [[EarlGrey selectElementWithMatcher:grey_keyWindow()]
       performAction:grey_tap()];
+
+  [self verifyActivitySheetNotVisible];
 }
 
 #pragma mark - Unified consent utilities

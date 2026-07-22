@@ -960,4 +960,32 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 }
 
+// Tests that sharing a bookmark from the context menu twice in a row does not
+// cause a crash. This verifies that when a new SharingCoordinator is created,
+// the old one is stopped properly to prevent dangling WebStateList observers.
+- (void)testContextMenuRepeatedShare {
+  [BookmarkEarlGrey
+      setupStandardBookmarksInStorage:BookmarkStorageType::kLocalOrSyncable];
+  [ChromeCoordinatorAppInterface startBookmarksCoordinator];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  const GURL expectedURL = GURL("http://www.url1.com");
+
+  // First sharing attempt.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
+      performAction:grey_longPress()];
+  [ChromeEarlGrey verifyShareActionWithURL:expectedURL pageTitle:@"First URL"];
+
+  // Second sharing attempt.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
+      performAction:grey_longPress()];
+  [ChromeEarlGrey verifyShareActionWithURL:expectedURL pageTitle:@"First URL"];
+
+  // Close Bookmarks by tapping the Done/Exit button.
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
+}
+
 @end

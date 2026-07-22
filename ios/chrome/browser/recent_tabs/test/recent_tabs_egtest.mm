@@ -970,6 +970,33 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
                                  pageTitle:kTitleOfTestPage];
 }
 
+// Tests that sharing an item from the context menu twice in a row does not
+// cause a crash. This verifies that when a new SharingCoordinator is created,
+// the old one is stopped properly to prevent dangling WebStateList observers.
+- (void)testContextMenuRepeatedShare {
+  [self loadTestURL];
+  OpenRecentTabsPanel();
+
+  const GURL testPageURL = self.testServer->GetURL(kPageURL);
+
+  // First sharing attempt.
+  [self longPressTestURLTab];
+  [ChromeEarlGrey verifyShareActionWithURL:testPageURL
+                                 pageTitle:kTitleOfTestPage];
+
+  // Second sharing attempt.
+  [self longPressTestURLTab];
+  [ChromeEarlGrey verifyShareActionWithURL:testPageURL
+                                 pageTitle:kTitleOfTestPage];
+
+  // Close the recent tabs panel.
+  [self closeRecentTabs];
+
+  // Perform an action that mutates the WebStateList (e.g. open a new tab) to
+  // trigger any potential crash if dangling WebStateList observers exist.
+  [ChromeEarlGrey openNewTab];
+}
+
 #pragma mark Helper Methods
 
 // Opens a new tab and closes it, to make sure it appears as a recently closed

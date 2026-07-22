@@ -456,6 +456,33 @@ void ExpectContextMenuHistoryEntryActionsHistogram(int count,
       /*count=*/1, /*action=*/MenuActionType::Share);
 }
 
+// Tests that sharing an item from the context menu twice in a row does not
+// cause a crash. This verifies that when a new SharingCoordinator is created,
+// the old one is stopped properly to prevent dangling WebStateList observers.
+- (void)testContextMenuRepeatedShare {
+  [self addTestURLsToHistory];
+  [ChromeCoordinatorAppInterface startHistoryCoordinator];
+
+  // First sharing attempt.
+  [[EarlGrey selectElementWithMatcher:HistoryEntry(_URL1, kTitle1)]
+      performAction:grey_longPress()];
+  [ChromeEarlGrey
+      verifyShareActionWithURL:_URL1
+                     pageTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  // Second sharing attempt.
+  [[EarlGrey selectElementWithMatcher:HistoryEntry(_URL1, kTitle1)]
+      performAction:grey_longPress()];
+  [ChromeEarlGrey
+      verifyShareActionWithURL:_URL1
+                     pageTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  // Close History (tap the Done button / Exit button).
+  id<GREYMatcher> exitMatcher =
+      grey_accessibilityID(kHistoryNavigationControllerDoneButtonIdentifier);
+  [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
+}
+
 // Tests the Delete context menu action for a History entry.
 - (void)testContextMenuDelete {
   // Assert that the DeleteBrowsingData histogram is empty at the beginning of
