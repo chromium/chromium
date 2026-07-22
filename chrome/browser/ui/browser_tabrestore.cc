@@ -129,9 +129,9 @@ void LoadRestoredTabIfVisible(Browser* browser,
     DCHECK(!BrowserWindow::FromBrowser(browser)->GetContentsSize().IsEmpty() ||
            (browser->GetWindow()->GetBounds().IsEmpty() &&
             browser->GetWindow()->GetRestoredBounds().IsEmpty()));
+    DCHECK_EQ(web_contents->GetSize(),
+              BrowserWindow::FromBrowser(browser)->GetContentsSize());
   }
-  DCHECK_EQ(web_contents->GetSize(),
-            BrowserWindow::FromBrowser(browser)->GetContentsSize());
 
   web_contents->GetController().LoadIfNecessary();
 }
