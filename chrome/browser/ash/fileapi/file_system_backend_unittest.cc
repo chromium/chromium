@@ -10,8 +10,10 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -147,8 +149,29 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
       storage::OperationType::kCopy,
       CreateFileSystemURL(extension, "removable/foo", mount_points.get())));
 
-  // ImageLoader has access to all files GetMetadata(), GetFileStreamReader().
-  std::string image_loader("pmfjbimdmchhbnneeidfognadeopoehp");
+  // ImageLoader has access only to paths that have been explicitly granted.
+  const std::string& image_loader = file_manager::kImageLoaderExtensionId;
+  url::Origin image_loader_origin =
+      url::Origin::Create(file_manager::util::GetImageLoaderBaseURL());
+  EXPECT_FALSE(backend.IsAccessAllowed(
+      ash::BackendFunction::kCreateFileSystemOperation,
+      storage::OperationType::kGetMetadata,
+      CreateFileSystemURL(image_loader, "removable/foo", mount_points.get())));
+  EXPECT_FALSE(backend.IsAccessAllowed(
+      ash::BackendFunction::kCreateFileStreamReader,
+      storage::OperationType::kNone,
+      CreateFileSystemURL(image_loader, "removable/foo", mount_points.get())));
+  EXPECT_FALSE(backend.IsAccessAllowed(
+      ash::BackendFunction::kCreateFileSystemOperation,
+      storage::OperationType::kCopy,
+      CreateFileSystemURL(image_loader, "removable/foo", mount_points.get())));
+  EXPECT_FALSE(backend.IsAccessAllowed(
+      ash::BackendFunction::kCreateFileStreamWriter,
+      storage::OperationType::kNone,
+      CreateFileSystemURL(image_loader, "removable/foo", mount_points.get())));
+
+  backend.GrantFileAccessToOrigin(image_loader_origin,
+                                  base::FilePath(FPL("removable/foo")));
   EXPECT_TRUE(backend.IsAccessAllowed(
       ash::BackendFunction::kCreateFileSystemOperation,
       storage::OperationType::kGetMetadata,
@@ -157,6 +180,18 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
       ash::BackendFunction::kCreateFileStreamReader,
       storage::OperationType::kNone,
       CreateFileSystemURL(image_loader, "removable/foo", mount_points.get())));
+  EXPECT_FALSE(backend.IsAccessAllowed(
+      ash::BackendFunction::kCreateFileStreamReader,
+      storage::OperationType::kNone,
+      CreateFileSystemURL(image_loader, "removable/bar", mount_points.get())));
+  EXPECT_FALSE(
+      backend.IsAccessAllowed(ash::BackendFunction::kCreateFileStreamReader,
+                              storage::OperationType::kNone,
+                              CreateFileSystemURL(image_loader, "system/foo",
+                                                  system_mount_points.get())));
+
+  // Even after granting file access, non-read operations must be denied for
+  // ImageLoader.
   EXPECT_FALSE(backend.IsAccessAllowed(
       ash::BackendFunction::kCreateFileSystemOperation,
       storage::OperationType::kCopy,

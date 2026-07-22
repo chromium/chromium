@@ -6,6 +6,20 @@ import {LruCache} from 'chrome://file-manager/common/js/lru_cache.js';
 
 import {cacheKey, type CacheValue, createCancel, type LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.js';
 
+// This client runs inside the Files app, which provides
+// chrome.fileManagerPrivate. Only the subset used here is declared so this
+// file can be type-checked standalone.
+declare global {
+  namespace chrome.fileManagerPrivate {
+    interface GrantAccessOptions {
+      forThumbnailing?: boolean;
+    }
+    function grantAccess(
+        entryUrls: string[], options: GrantAccessOptions,
+        callback: () => void): void;
+  }
+}
+
 let instance: ImageLoaderClient|null = null;
 
 /**
@@ -91,24 +105,47 @@ export class ImageLoaderClient {
     this.lastTaskId_++;
     request.taskId = this.lastTaskId_;
 
-    ImageLoaderClient.sendMessage_(request, (resultData) => {
-      if (chrome.runtime.lastError) {
-        console.warn(chrome.runtime.lastError.message);
-        callback(new LoadImageResponse(
-            LoadImageResponseStatus.ERROR, request.taskId!));
-        return;
+    const hasHandledError = (error: {message?: string}|undefined): boolean => {
+      if (!error) {
+        return false;
       }
-      const result = resultData;
-      // Save to cache.
-      if (key && request.cache) {
-        const value: CacheValue|null =
-            LoadImageResponse.cacheValue(result, request.timestamp);
-        if (value) {
-          this.cache_.put(key, value, value.data.length);
+      if (error.message) {
+        console.warn(error.message);
+      }
+      callback(new LoadImageResponse(
+          LoadImageResponseStatus.ERROR, request.taskId!));
+      return true;
+    };
+    const send = () => {
+      ImageLoaderClient.sendMessage_(request, (resultData) => {
+        if (hasHandledError(chrome.runtime.lastError)) {
+          return;
         }
+        const result = resultData;
+        // Save to cache.
+        if (key && request.cache) {
+          const value: CacheValue|null =
+              LoadImageResponse.cacheValue(result, request.timestamp);
+          if (value) {
+            this.cache_.put(key, value, value.data.length);
+          }
+        }
+        callback(result);
+      });
+    };
+
+    // The image loader extension fetches filesystem: URLs itself, so make sure
+    // it has been granted access to the requested path before forwarding the
+    // request.
+    if (request.url.startsWith(IMAGE_LOADER_URL)) {
+      chrome.fileManagerPrivate.grantAccess(
+          [request.url], {forThumbnailing: true}, send);
+      if (hasHandledError(chrome.runtime.lastError)) {
+        return null;
       }
-      callback(result);
-    });
+    } else {
+      send();
+    }
     return request.taskId;
   }
 

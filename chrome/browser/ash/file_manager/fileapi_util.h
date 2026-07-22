@@ -91,6 +91,9 @@ typedef base::OnceCallback<void(FileChooserFileInfoList)>
 // TODO(crbug.com/40752851): Replace with dynamic listener URL.
 const GURL GetFileManagerURL();
 
+// Returns the base URL of the ImageLoader extension.
+const GURL GetImageLoaderBaseURL();
+
 // Returns whether the given URL identifies the File Manager as a source. This
 // can be used to see if a private API calls come from the File Manager or not.
 bool IsFileManagerURL(const GURL& source_url);

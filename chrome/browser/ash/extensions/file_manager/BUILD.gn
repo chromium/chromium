@@ -128,6 +128,7 @@ static_library("file_manager") {
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/drivefs",
     "//chromeos/ash/components/file_manager",
+    "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",

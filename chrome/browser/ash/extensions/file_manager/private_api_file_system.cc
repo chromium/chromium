@@ -82,6 +82,7 @@
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/drive/event_logger.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/enterprise/data_controls/core/browser/component.h"
@@ -97,6 +98,7 @@
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/common/extension.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -324,12 +326,25 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
   const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  bool for_thumbnailing = params->options &&
+                          params->options->for_thumbnailing.has_value() &&
+                          params->options->for_thumbnailing.value();
+
   scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
           Profile::FromBrowserContext(browser_context()), render_frame_host());
 
   auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
   DCHECK(backend);
+
+  // The ImageLoader extension reads files on behalf of the Files app to
+  // generate thumbnails, so grant it access to the same paths in its own
+  // FileSystemBackend.
+  const GURL image_loader_url = file_manager::util::GetImageLoaderBaseURL();
+  const url::Origin image_loader_origin = url::Origin::Create(image_loader_url);
+  auto* const image_loader_backend = ash::FileSystemBackend::Get(
+      *file_manager::util::GetFileSystemContextForSourceURL(
+          Profile::FromBrowserContext(browser_context()), image_loader_url));
 
   const std::vector<Profile*>& profiles =
       g_browser_process->profile_manager()->GetLoadedProfiles();
@@ -349,12 +364,17 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
           file_system_url.mount_type() != storage::kFileSystemTypeExternal) {
         continue;
       }
-      backend->GrantFileAccessToOrigin(url::Origin::Create(source_url()),
-                                       file_system_url.virtual_path());
-      content::ChildProcessSecurityPolicy::GetInstance()
-          ->GrantCreateReadWriteFile(
-              render_frame_host()->GetProcess()->GetDeprecatedID(),
-              file_system_url.path());
+      if (!for_thumbnailing) {
+        backend->GrantFileAccessToOrigin(url::Origin::Create(source_url()),
+                                         file_system_url.virtual_path());
+        content::ChildProcessSecurityPolicy::GetInstance()
+            ->GrantCreateReadWriteFile(
+                render_frame_host()->GetProcess()->GetDeprecatedID(),
+                file_system_url.path());
+      } else if (image_loader_backend) {
+        image_loader_backend->GrantFileAccessToOrigin(
+            image_loader_origin, file_system_url.virtual_path());
+      }
     }
   }
   return RespondNow(NoArguments());

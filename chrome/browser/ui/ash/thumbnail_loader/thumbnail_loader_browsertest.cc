@@ -10,21 +10,15 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/ash/components/file_manager/app_id.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/extension.h"
 #include "storage/browser/file_system/external_mount_points.h"
-#include "storage/browser/file_system/file_system_context.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "url/origin.h"
 
 namespace {
 
@@ -47,12 +41,10 @@ void CopyBitmapAndRunClosure(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
-// Utility class that registers an external file system mount point, and grants
-// file manager app access permission for the mount point.
+// Utility class that registers an external file system mount point.
 class ScopedExternalMountPoint {
  public:
-  ScopedExternalMountPoint(Profile* profile, const std::string& name)
-      : name_(name) {
+  explicit ScopedExternalMountPoint(const std::string& name) : name_(name) {
     if (!temp_dir_.CreateUniqueTempDir()) {
       return;
     }
@@ -60,13 +52,6 @@ class ScopedExternalMountPoint {
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         name_, storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         temp_dir_.GetPath());
-    GURL image_loader_url = extensions::Extension::GetBaseURLFromExtensionId(
-        file_manager::kImageLoaderExtensionId);
-    ash::FileSystemBackend::Get(
-        *file_manager::util::GetFileSystemContextForSourceURL(profile,
-                                                              image_loader_url))
-        ->GrantFileAccessToOrigin(url::Origin::Create(image_loader_url),
-                                  base::FilePath(name_));
   }
 
   ~ScopedExternalMountPoint() {
@@ -98,8 +83,8 @@ class ThumbnailLoaderTest : public InProcessBrowserTest {
   }
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    test_mount_point_ = std::make_unique<ScopedExternalMountPoint>(
-        browser()->GetProfile(), "test_downloads");
+    test_mount_point_ =
+        std::make_unique<ScopedExternalMountPoint>("test_downloads");
     thumbnail_loader_ =
         std::make_unique<ash::ThumbnailLoader>(browser()->GetProfile());
     ASSERT_TRUE(test_mount_point_->IsValid());
