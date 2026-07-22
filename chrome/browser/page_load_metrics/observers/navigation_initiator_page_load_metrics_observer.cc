@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/navigation_initiator_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -18,11 +19,11 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
   auto* navigation_handle_user_data =
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
           navigation_handle);
-  page_load_metrics::NavigationHandleUserData::InitiatorLocation
-      initiator_location = navigation_handle_user_data
-                               ? navigation_handle_user_data->navigation_type()
-                               : page_load_metrics::NavigationHandleUserData::
-                                     InitiatorLocation::kOther;
+  ChromeInitiatorLocation initiator_location = GetChromeInitiatorLocation(
+      navigation_handle_user_data
+          ? navigation_handle_user_data->navigation_type()
+          : page_load_metrics::NavigationHandleUserData::
+                kInitiatorLocationOther);
 
   base::UmaHistogramEnumeration("Navigation.InitiatorType.All",
                                 initiator_location);

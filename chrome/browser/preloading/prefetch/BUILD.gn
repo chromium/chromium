@@ -67,6 +67,7 @@ source_set("platform_browser_tests") {
     ":test_support",
     "//chrome/browser:browser_features",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/page_load_metrics",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:test_support",
     "//chrome/browser/preloading/prefetch/search_prefetch",

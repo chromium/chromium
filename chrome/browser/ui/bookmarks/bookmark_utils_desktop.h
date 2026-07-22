@@ -87,7 +87,7 @@ void OpenAllIfAllowed(
         bookmarks::OpenAllBookmarksContext::kNone,
     page_load_metrics::NavigationHandleUserData::InitiatorLocation
         navigation_type = page_load_metrics::NavigationHandleUserData::
-            InitiatorLocation::kOther,
+            kInitiatorLocationOther,
     std::optional<BookmarkLaunchAction> launch_action = std::nullopt);
 
 // Returns the count of bookmarks that would be opened by OpenAll. If

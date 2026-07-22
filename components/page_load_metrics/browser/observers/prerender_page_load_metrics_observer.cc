@@ -162,7 +162,7 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
   }
 
   auto prerender_trigger_type =
-      page_load_metrics::NavigationHandleUserData::InitiatorLocation::kOther;
+      page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther;
   auto* navigation_userdata =
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
           *navigation_handle);

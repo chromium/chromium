@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -173,20 +174,6 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
                   .empty());
 }
 
-void AttachBookmarkBarNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle, page_load_metrics::NavigationHandleUserData::
-                             InitiatorLocation::kBookmarkBar);
-}
-
-void AttachNewTabPageNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle, page_load_metrics::NavigationHandleUserData::
-                             InitiatorLocation::kNewTabPage);
-}
-
 IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
                        NavigationHandleUserDataTypeMetrics_BookmarkBar) {
   base::RepeatingCallback<void(content::NavigationHandle&)>
@@ -209,8 +196,7 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
       GetUkmMetricEntryValues(PageLoad::kEntryName,
                               PageLoad::kNavigation_InitiatorLocationName),
       testing::ElementsAre(
-          static_cast<int>(page_load_metrics::NavigationHandleUserData::
-                               InitiatorLocation::kBookmarkBar)));
+          GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar)));
 }
 
 IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
@@ -235,8 +221,7 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
       GetUkmMetricEntryValues(PageLoad::kEntryName,
                               PageLoad::kNavigation_InitiatorLocationName),
       testing::ElementsAre(
-          static_cast<int>(page_load_metrics::NavigationHandleUserData::
-                               InitiatorLocation::kNewTabPage)));
+          GetInitiatorLocation(ChromeInitiatorLocation::kNewTabPage)));
 }
 
 }  // namespace

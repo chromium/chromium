@@ -16,6 +16,7 @@ source_set("most_visited") {
     "//chrome/browser/new_tab_page",
     "//chrome/browser/ntp_tiles",
     "//chrome/browser/ntp_tiles:impl",
+    "//chrome/browser/page_load_metrics",
     "//chrome/browser/predictors",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading/new_tab_page_preload",

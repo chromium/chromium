@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -2665,8 +2666,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   EXPECT_TRUE(omnibox_observer.navigation_type().has_value());
   EXPECT_EQ(omnibox_observer.navigation_type().value(),
-            page_load_metrics::NavigationHandleUserData::InitiatorLocation::
-                kOmniboxDefaultSearchEngine);
+            GetInitiatorLocation(
+                ChromeInitiatorLocation::kOmniboxDefaultSearchEngine));
 }
 
 }  // namespace

@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/headless/headless_mode_util.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -237,9 +238,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       &preloading_attempt,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/
-      base::BindRepeating(
-          &page_load_metrics::NavigationHandleUserData::
-              AttachOmniboxDirectUrlInputNavigationHandleUserData),
+      base::BindRepeating(&AttachOmniboxDirectUrlInputNavigationHandleUserData),
       /*allow_reuse=*/false);
 
   if (direct_url_input_prerender_handle_) {
@@ -402,8 +401,7 @@ void PrerenderManager::StartPrerenderSearchResult(
           preloading_attempt.get(), std::move(url_match_predicate),
           /*prerender_navigation_handle_callback=*/
           base::BindRepeating(
-              &page_load_metrics::NavigationHandleUserData::
-                  AttachOmniboxDefaultSearchEngineNavigationHandleUserData),
+              &AttachOmniboxDefaultSearchEngineNavigationHandleUserData),
           features::kPrerender2ReuseSearchResultHost.Get());
 
   if (prerender_handle) {

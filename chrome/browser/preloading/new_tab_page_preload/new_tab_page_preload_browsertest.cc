@@ -15,6 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
@@ -115,8 +116,7 @@ class NewTabPagePreloadBrowserTest : public PlatformBrowserTest {
             url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
             /*is_renderer_initiated=*/false),
-        base::BindRepeating(&page_load_metrics::NavigationHandleUserData::
-                                AttachNewTabPageNavigationHandleUserData));
+        base::BindRepeating(&AttachNewTabPageNavigationHandleUserData));
   }
 
  private:

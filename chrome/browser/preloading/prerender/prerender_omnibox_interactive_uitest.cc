@@ -18,6 +18,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -120,13 +121,13 @@ class TestOmniboxNavigationObserver : public content::WebContentsObserver {
           page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
               *navigation_handle);
       if (user_data) {
-        navigation_type_ = user_data->navigation_type();
+        navigation_type_ =
+            GetChromeInitiatorLocation(user_data->navigation_type());
       }
     }
   }
 
-  std::optional<page_load_metrics::NavigationHandleUserData::InitiatorLocation>
-      navigation_type_;
+  std::optional<ChromeInitiatorLocation> navigation_type_;
 };
 
 // This is a browser test for Omnibox triggered prerendering. This is
@@ -333,8 +334,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
 
   EXPECT_TRUE(omnibox_observer.navigation_type_.has_value());
   EXPECT_EQ(omnibox_observer.navigation_type_.value(),
-            page_load_metrics::NavigationHandleUserData::InitiatorLocation::
-                kOmniboxDirectUrlInput);
+            ChromeInitiatorLocation::kOmniboxDirectUrlInput);
 
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDirectUrlInput,

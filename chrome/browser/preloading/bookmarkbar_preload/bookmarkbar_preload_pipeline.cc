@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/preloading_utils.h"
@@ -25,13 +26,6 @@ namespace {
 
 constexpr char kHistogramPrerenderBookmarkBarIsPrerenderingSrpUrl[] =
     "Prerender.IsPrerenderingSRPUrl.Embedder_BookmarkBar";
-
-void AttachBookmarkBarNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle, page_load_metrics::NavigationHandleUserData::
-                             InitiatorLocation::kBookmarkBar);
-}
 
 bool IsSearchUrl(content::WebContents& web_contents, const GURL& url) {
   auto* profile = Profile::FromBrowserContext(web_contents.GetBrowserContext());

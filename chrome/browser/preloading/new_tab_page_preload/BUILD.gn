@@ -24,6 +24,7 @@ source_set("impl") {
   deps = [
     ":new_tab_page_preload",
     "//chrome/browser:browser_features",
+    "//chrome/browser/page_load_metrics",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading/prerender",
     "//chrome/browser/profiles:profile",

@@ -374,8 +374,8 @@ class UkmPageLoadMetricsObserver
   // The type of initiator starts the navigation, for more details, please refer
   // to `page_load_metrics::NavigationHandleUserData::InitiatorLocation`.
   page_load_metrics::NavigationHandleUserData::InitiatorLocation
-      navigation_trigger_type_ = page_load_metrics::NavigationHandleUserData::
-          InitiatorLocation::kOther;
+      navigation_trigger_type_ =
+          page_load_metrics::NavigationHandleUserData::kInitiatorLocationOther;
 
   // Counts the soft navigations since the beginning of the page load.
   int64_t soft_navigation_count_ = 0;

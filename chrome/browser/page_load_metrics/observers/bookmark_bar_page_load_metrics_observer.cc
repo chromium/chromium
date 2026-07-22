@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -70,9 +71,9 @@ BookmarkBarMetricsObserver::OnCommit(
   auto* navigation_userdata =
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
           *navigation_handle);
-  if (!navigation_userdata || navigation_userdata->navigation_type() !=
-                                  page_load_metrics::NavigationHandleUserData::
-                                      InitiatorLocation::kBookmarkBar) {
+  if (!navigation_userdata ||
+      navigation_userdata->navigation_type() !=
+          GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar)) {
     return STOP_OBSERVING;
   }
   return CONTINUE_OBSERVING;

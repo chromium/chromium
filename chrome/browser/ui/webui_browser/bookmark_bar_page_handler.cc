@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
@@ -138,8 +139,7 @@ void WebUIBrowserBookmarkBarPageHandler::OpenInNewTab(int64_t node_id) {
   bookmarks::OpenAllIfAllowed(
       browser_, {node}, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       bookmarks::OpenAllBookmarksContext::kNone,
-      page_load_metrics::NavigationHandleUserData::InitiatorLocation::
-          kBookmarkBar,
+      GetInitiatorLocation(ChromeInitiatorLocation::kBookmarkBar),
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
 }
 

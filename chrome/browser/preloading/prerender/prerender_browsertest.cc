@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
@@ -754,8 +755,7 @@ class PrerenderNewTabPageBrowserTest
             url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
             /*is_renderer_initiated=*/false),
-        base::BindRepeating(&page_load_metrics::NavigationHandleUserData::
-                                AttachNewTabPageNavigationHandleUserData));
+        base::BindRepeating(&AttachNewTabPageNavigationHandleUserData));
   }
 
   void ExpectPrerenderPageLoad(
@@ -832,9 +832,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderNewTabPageBrowserTest,
   histogram_tester.ExpectTotalCount(
       "NewTabPage.PrerenderNavigationToActivation", 1);
 
-  ExpectPrerenderPageLoad(prerender_url,
-                          page_load_metrics::NavigationHandleUserData::
-                              InitiatorLocation::kNewTabPage);
+  ExpectPrerenderPageLoad(
+      prerender_url,
+      GetInitiatorLocation(ChromeInitiatorLocation::kNewTabPage));
   histogram_tester.ExpectUniqueSample(
       "Prerender.IsPrerenderingSRPUrl.Embedder_NewTabPage", false, 1);
 }
@@ -1044,8 +1044,7 @@ class PrerenderPrewarmDefaultSearchEngineTest
             WindowOpenDisposition::NEW_FOREGROUND_TAB,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
             /*is_renderer_initiated=*/false),
-        base::BindRepeating(&page_load_metrics::NavigationHandleUserData::
-                                AttachNewTabPageNavigationHandleUserData));
+        base::BindRepeating(&AttachNewTabPageNavigationHandleUserData));
     content::WebContents* new_web_contents = GetActiveWebContents();
     EXPECT_TRUE(new_web_contents);
     EXPECT_NE(new_web_contents, original_web_contents);

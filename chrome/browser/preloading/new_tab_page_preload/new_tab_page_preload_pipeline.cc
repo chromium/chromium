@@ -7,6 +7,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/preloading_utils.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
@@ -129,7 +130,6 @@ void NewTabPagePreloadPipeline::StartPrerender(
       content::PreloadingHoldbackStatus::kUnspecified, pipeline_info_,
       preloading_attempt,
       /*url_match_predicate=*/{},
-      base::BindRepeating(&page_load_metrics::NavigationHandleUserData::
-                              AttachNewTabPageNavigationHandleUserData),
+      base::BindRepeating(&AttachNewTabPageNavigationHandleUserData),
       /*allow_reuse=*/false);
 }

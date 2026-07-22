@@ -13,31 +13,4 @@ NavigationHandleUserData::NavigationHandleUserData(
     InitiatorLocation navigation_type)
     : navigation_type_(navigation_type) {}
 
-// static
-void NavigationHandleUserData::AttachNewTabPageNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle,
-      page_load_metrics::NavigationHandleUserData::InitiatorLocation::
-      kNewTabPage);
-}
-
-// static
-void NavigationHandleUserData::
-    AttachOmniboxDirectUrlInputNavigationHandleUserData(
-        content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle, page_load_metrics::NavigationHandleUserData::
-                             InitiatorLocation::kOmniboxDirectUrlInput);
-}
-
-// static
-void NavigationHandleUserData::
-    AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
-        content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle, page_load_metrics::NavigationHandleUserData::
-                             InitiatorLocation::kOmniboxDefaultSearchEngine);
-}
-
 }  // namespace page_load_metrics

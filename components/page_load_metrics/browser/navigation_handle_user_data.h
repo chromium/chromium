@@ -30,32 +30,12 @@ namespace page_load_metrics {
 class NavigationHandleUserData
     : public content::NavigationHandleUserData<NavigationHandleUserData> {
  public:
-  // The enum is used for identifying the source of a navigation.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // LINT.IfChange(NavigationInitiatorType)
-  enum class InitiatorLocation {
-    kOther = 0,
-    kBookmarkBar = 1,
-    kNewTabPage = 2,
-    kOmniboxDirectUrlInput = 3,
-    kOmniboxDefaultSearchEngine = 4,
-    kMaxValue = kOmniboxDefaultSearchEngine
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationInitiatorType)
+  using InitiatorLocation = int16_t;
+  static constexpr InitiatorLocation kInitiatorLocationOther = 0;
 
   ~NavigationHandleUserData() override = default;
 
   InitiatorLocation navigation_type() const { return navigation_type_; }
-
-  static void AttachNewTabPageNavigationHandleUserData(
-      content::NavigationHandle& navigation_handle);
-
-  static void AttachOmniboxDirectUrlInputNavigationHandleUserData(
-      content::NavigationHandle& navigation_handle);
-
-  static void AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
-      content::NavigationHandle& navigation_handle);
 
  private:
   NavigationHandleUserData(content::NavigationHandle& navigation,
