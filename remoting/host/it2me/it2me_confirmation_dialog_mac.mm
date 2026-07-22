@@ -168,9 +168,10 @@ It2MeConfirmationDialogFactory::Create() {
   NSWindow* confirmation_window = _confirmation_alert.window;
   [confirmation_window center];
   confirmation_window.title = l10n_util::GetNSString(IDS_PRODUCT_NAME);
-  confirmation_window.level = NSNormalWindowLevel;
+  confirmation_window.level = NSModalPanelWindowLevel;
   [confirmation_window orderFrontRegardless];
   [confirmation_window makeKeyWindow];
+  [NSApp activateIgnoringOtherApps:YES];
 }
 
 - (void)hide {
