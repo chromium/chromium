@@ -14,7 +14,7 @@ import './app_menu_button.js';
 import './avatar_button.js';
 import '/shared/icon_table.js';
 import '/shared/icon_from_table.js';
-import './icons.html.js';
+import './icons.js';
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';

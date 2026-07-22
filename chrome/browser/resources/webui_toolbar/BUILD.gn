@@ -97,7 +97,7 @@ build_webui("build") {
     "page_action_icons.ts",
     "home_button.html.ts",
     "home_button.ts",
-    "icons.html.ts",
+    "icons.ts",
     "location_bar.ts",
     "location_bar.html.ts",
     "location_icon.ts",
@@ -129,7 +129,7 @@ build_webui("build") {
   ]
 
   if (is_chrome_branded) {
-    ts_files += [ "internal/icons.html.ts" ]
+    ts_files += [ "internal/icons.ts" ]
   }
 
   css_files = [

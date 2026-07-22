@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // <if expr="_google_chrome">
-import './internal/icons.html.js';
+import './internal/icons.js';
 // </if>
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
