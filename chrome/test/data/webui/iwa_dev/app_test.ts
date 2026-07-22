@@ -224,4 +224,25 @@ suite('<iwa-dev-app>', () => {
     items = getListItems();
     assertEquals(0, items.length);
   });
+
+  test('calls uninstallApp when uninstall button is clicked', async () => {
+    const appInfo = createProxyInstalledAppInfo();
+    handler.setResultFor(
+        'getInstalledAppsInfo', Promise.resolve({apps: [appInfo]}));
+    createApp(/*devModeEnabled=*/ true);
+
+    await handler.whenCalled('getInstalledAppsInfo');
+    await microtasksFinished();
+
+    const items = getListItems();
+    assertEquals(1, items.length);
+
+    const uninstallButton =
+        items[0]!.shadowRoot.querySelector<HTMLElement>('#uninstall-btn');
+    assertTrue(!!uninstallButton);
+    uninstallButton.click();
+
+    const appId = await handler.whenCalled('uninstallApp');
+    assertEquals('test-app-id', appId);
+  });
 });

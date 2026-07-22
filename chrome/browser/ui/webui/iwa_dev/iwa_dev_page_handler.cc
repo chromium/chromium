@@ -90,6 +90,7 @@ IwaDevPageHandler::IwaDevPageHandler(
     : profile_(CHECK_DEREF(Profile::FromWebUI(web_ui))),
       provider_(
           CHECK_DEREF(web_app::WebAppProvider::GetForWebApps(&profile_.get()))),
+      web_contents_(CHECK_DEREF(web_ui->GetWebContents())),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
   install_observation_.Observe(&provider_->install_manager());
@@ -107,6 +108,22 @@ void IwaDevPageHandler::GetInstalledAppsInfo(
   }
 
   std::move(callback).Run(std::move(dev_mode_apps));
+}
+
+void IwaDevPageHandler::UninstallApp(const std::string& app_id,
+                                     UninstallAppCallback callback) {
+  // If the app is no longer installed (e.g. uninstalled via another window),
+  // or the webui compromised, this should be ignored.
+  if (!provider_->registrar_unsafe().GetAppById(
+          app_id, web_app::WebAppFilter::IsDevModeIsolatedApp())) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  provider_->ui_manager().PresentUserUninstallDialog(
+      app_id, webapps::WebappUninstallSource::kAppsPage,
+      web_contents_->GetTopLevelNativeWindow(),
+      base::BindOnce(&webapps::UninstallSucceeded).Then(std::move(callback)));
 }
 
 void IwaDevPageHandler::OnWebAppInstalled(const webapps::AppId& app_id) {

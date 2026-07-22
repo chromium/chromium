@@ -41,6 +41,10 @@ export class IwaDevAppElement extends CrLitElement {
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private listenerIds_: number[] = [];
 
+  protected async onRequestUninstall(e: CustomEvent<{app: IwaDevModeAppInfo}>) {
+    await this.browserProxy_.handler.uninstallApp(e.detail.app.appId);
+  }
+
   override async connectedCallback() {
     super.connectedCallback();
 

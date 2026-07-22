@@ -33,6 +33,9 @@ struct IwaDevModeAppInfo {
 interface PageHandler {
   // Returns information about installed dev mode IWAs.
   GetInstalledAppsInfo() => (array<IwaDevModeAppInfo> apps);
+
+  // Uninstalls an IWA with a given ID.
+  UninstallApp(string app_id) => (bool success);
 };
 
 // Interface for the browser to push events to the WebUI page.

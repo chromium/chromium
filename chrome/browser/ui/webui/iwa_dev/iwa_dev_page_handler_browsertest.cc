@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev_page_handler.h"
 
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,6 +28,7 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,7 +136,6 @@ class IwaDevHandlerBrowserTest
   IwaDevPageHandler* GetHandler() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-
     IwaDevUI* controller =
         static_cast<IwaDevUI*>(web_contents->GetWebUI()->GetController());
     CHECK(controller);
@@ -145,6 +149,14 @@ class IwaDevHandlerBrowserTest
         future;
     GetHandler()->GetInstalledAppsInfo(future.GetCallback());
     return future.Take();
+  }
+
+  bool UninstallApp(const std::string& app_id) {
+    extensions::ScopedTestDialogAutoConfirm auto_accept(
+        extensions::ScopedTestDialogAutoConfirm::ACCEPT);
+    base::test::TestFuture<bool> future;
+    GetHandler()->UninstallApp(app_id, future.GetCallback());
+    return future.Get();
   }
 
   web_app::IsolatedWebAppUrlInfo InstallBundle(std::string_view name,
@@ -292,3 +304,39 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerObserverBrowserTest, IgnoresNormalWebApps) {
   mock_page().FlushForTesting();
   EXPECT_FALSE(mock_page().uninstalled_future().IsReady());
 }
+
+struct IwaDevAppTestCase {
+  const char* name;
+  web_app::IsolatedWebAppUrlInfo (IwaDevHandlerBrowserTest::*installer)();
+};
+
+class IwaDevHandlerAppTypeBrowserTest
+    : public IwaDevHandlerBrowserTest,
+      public ::testing::WithParamInterface<IwaDevAppTestCase> {};
+
+IN_PROC_BROWSER_TEST_P(IwaDevHandlerAppTypeBrowserTest, UninstallApp) {
+  web_app::IsolatedWebAppUrlInfo app = (this->*GetParam().installer)();
+
+  auto apps_before = GetInstalledAppsInfo();
+  ASSERT_EQ(apps_before.size(), 1u);
+  EXPECT_EQ(apps_before[0]->app_id, app.app_id());
+
+  EXPECT_TRUE(UninstallApp(app.app_id()));
+
+  auto apps_after = GetInstalledAppsInfo();
+  EXPECT_TRUE(apps_after.empty());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IwaDevHandlerAppTypeBrowserTest,
+    ::testing::Values(
+        IwaDevAppTestCase{"ProxyApp",
+                          &IwaDevHandlerBrowserTest::InstallProxyApp},
+        IwaDevAppTestCase{"LocalBundleApp",
+                          &IwaDevHandlerBrowserTest::InstallBundleApp},
+        IwaDevAppTestCase{"ManifestApp",
+                          &IwaDevHandlerBrowserTest::InstallUpdateManifestApp}),
+    [](const testing::TestParamInfo<IwaDevAppTestCase>& info) {
+      return info.param.name;
+    });

@@ -18,6 +18,7 @@ class Profile;
 
 namespace content {
 class WebUI;
+class WebContents;
 }  // namespace content
 
 namespace web_app {
@@ -42,6 +43,8 @@ class IwaDevPageHandler : public iwa_dev::mojom::PageHandler,
 
   // iwa_dev::mojom::PageHandler:
   void GetInstalledAppsInfo(GetInstalledAppsInfoCallback callback) override;
+  void UninstallApp(const std::string& app_id,
+                    UninstallAppCallback callback) override;
 
   // web_app::WebAppInstallManagerObserver:
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
@@ -52,6 +55,7 @@ class IwaDevPageHandler : public iwa_dev::mojom::PageHandler,
  private:
   const raw_ref<Profile> profile_;
   const raw_ref<web_app::WebAppProvider> provider_;
+  const raw_ref<content::WebContents> web_contents_;
   mojo::Receiver<iwa_dev::mojom::PageHandler> receiver_;
   mojo::Remote<iwa_dev::mojom::Page> page_;
   base::ScopedObservation<web_app::WebAppInstallManager,

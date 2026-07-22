@@ -31,10 +31,13 @@ ${!this.devModeEnabled_ ? html`
         </div>
       ` : html`
         <div id="iwa-list" role="list">
-          ${this.installedApps_.map(item => html`
-            <installed-app-list-item .app="${item}" role="listitem">
-            </installed-app-list-item>
-          `)}
+        ${this.installedApps_.map(item => html`
+          <installed-app-list-item
+              .app="${item}"
+              role="listitem"
+              @request-uninstall="${this.onRequestUninstall}">
+          </installed-app-list-item>
+        `)}
         </div>
       `}
     `}
