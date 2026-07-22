@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "components/cast/message_port/platform_message_port.h"
-#include "components/cast_receiver/browser/application_client.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
 #include "components/cast_receiver/browser/public/message_port_service.h"
 #include "components/cast_receiver/browser/streaming_input_observer.h"
@@ -18,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace cast_receiver {
 namespace {
@@ -83,31 +83,31 @@ void StreamingRuntimeApplication::Launch(StatusCallback callback) {
       /* supports_video= */ true);
   receiver_session_client_->LaunchStreamingReceiverAsync();
 
+  // If extended input is supported, also start bootstrap in parallel.
   if (config().is_extended_input_supported) {
-    LOG(INFO) << "Extended input is supported, setting up input channels.";
-
-    streaming_receiver_channel_ =
-        std::make_unique<StreamingReceiverChannel>(message_port_service);
-
-    // Instantiate observers.
-    streaming_input_observer_ = std::make_unique<StreamingInputObserver>(
-        embedder_application().GetWebContents(),
-        base::BindRepeating(&StreamingRuntimeApplication::OnInputEvent,
-                            weak_factory_.GetWeakPtr()));
-
-    if (ui::DeviceDataManager::HasInstance()) {
-      streaming_input_capabilities_observer_ =
-          std::make_unique<StreamingInputCapabilitiesObserver>(
-              ui::DeviceDataManager::GetInstance(),
-              base::BindRepeating(
-                  &StreamingRuntimeApplication::OnInputCapabilitiesChanged,
-                  weak_factory_.GetWeakPtr()));
-    } else {
-      LOG(INFO) << "DeviceDataManager instance is unavailable. "
-                   "StreamingInputCapabilitiesObserver will not be created.";
+    // Get display info.
+    content::WebContents* web_contents =
+        embedder_application().GetWebContents();
+    CHECK(web_contents);
+    gfx::Rect bounds = web_contents->GetContainerBounds();
+    int width = bounds.width();
+    int height = bounds.height();
+    if (width <= 0 || height <= 0) {
+      width = 1920;
+      height = 1080;
     }
-  } else {
-    LOG(INFO) << "Extended input is not supported.";
+    DisplayInfo display_info;
+    display_info.set_width_px(width);
+    display_info.set_height_px(height);
+    display_info.set_orientation(DisplayInfo::DEGREES_0);
+    display_info.set_dpi(160);
+    display_info.set_resizable(false);
+
+    // Start bootstrap and initialize channel.
+    streaming_receiver_channel_ = std::make_unique<StreamingReceiverChannel>(
+        message_port_service, std::move(display_info),
+        base::BindOnce(&StreamingRuntimeApplication::OnBootstrapComplete,
+                       weak_factory_.GetWeakPtr()));
   }
 
   // Application is initialized now - we can load the URL.
@@ -151,6 +151,34 @@ void StreamingRuntimeApplication::OnInputCapabilitiesChanged(
     const cast_receiver::InputCapabilities& caps) {
   if (streaming_receiver_channel_) {
     streaming_receiver_channel_->SendInputCapabilities(caps);
+  }
+}
+
+void StreamingRuntimeApplication::OnBootstrapComplete(
+    ExoBootstrapMessage request) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "Bootstrap complete";
+
+  // Instantiate observers if input is supported.
+  if (config().is_extended_input_supported) {
+    LOG(INFO) << "Extended input is supported, setting up input observers.";
+
+    streaming_input_observer_ = std::make_unique<StreamingInputObserver>(
+        embedder_application().GetWebContents(),
+        base::BindRepeating(&StreamingRuntimeApplication::OnInputEvent,
+                            weak_factory_.GetWeakPtr()));
+
+    if (ui::DeviceDataManager::HasInstance()) {
+      streaming_input_capabilities_observer_ =
+          std::make_unique<StreamingInputCapabilitiesObserver>(
+              ui::DeviceDataManager::GetInstance(),
+              base::BindRepeating(
+                  &StreamingRuntimeApplication::OnInputCapabilitiesChanged,
+                  weak_factory_.GetWeakPtr()));
+    } else {
+      LOG(INFO) << "DeviceDataManager instance is unavailable. "
+                   "StreamingInputCapabilitiesObserver will not be created.";
+    }
   }
 }
 

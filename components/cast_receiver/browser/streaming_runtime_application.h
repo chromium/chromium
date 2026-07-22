@@ -9,6 +9,7 @@
 #include "components/cast_receiver/browser/public/application_config.h"
 #include "components/cast_receiver/browser/runtime_application_base.h"
 #include "components/cast_receiver/browser/streaming_input_capabilities_observer.h"
+#include "components/cast_receiver/browser/streaming_receiver_channel.h"
 #include "components/cast_receiver/browser/streaming_receiver_session_client.h"
 #include "components/cast_receiver/proto/input_event.pb.h"
 #include "net/base/net_errors.h"
@@ -46,6 +47,8 @@ class StreamingRuntimeApplication final
   // StreamingReceiverSessionClient::Handler implementation:
   void OnStreamingSessionStarted() override;
   void OnError() override;
+
+  void OnBootstrapComplete(ExoBootstrapMessage request);
 
   // Returns the network context used by |receiver_session_client_|.
   const network::NetworkContextGetter network_context_getter_;

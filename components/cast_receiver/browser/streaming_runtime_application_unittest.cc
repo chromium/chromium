@@ -105,18 +105,10 @@ TEST_F(StreamingRuntimeApplicationTest, LaunchWithoutExtendedInput) {
   app.SetEmbedderApplication(embedder_app_);
 
   // We expect only Cast Transport to be connected.
+  EXPECT_CALL(message_port_service_, ConnectToPortAsync(_, _)).Times(0);
   EXPECT_CALL(message_port_service_,
               ConnectToPortAsync("cast.__platform__.cast_transport", _))
       .Times(1);
-  EXPECT_CALL(message_port_service_,
-              ConnectToPortAsync(
-                  StreamingReceiverChannel::kInputEventChannelNamespace, _))
-      .Times(0);
-  EXPECT_CALL(
-      message_port_service_,
-      ConnectToPortAsync(
-          StreamingReceiverChannel::kInputCapabilitiesChannelNamespace, _))
-      .Times(0);
 
   base::MockCallback<RuntimeApplication::StatusCallback> callback;
   EXPECT_CALL(callback, Run(_));
@@ -133,19 +125,14 @@ TEST_F(StreamingRuntimeApplicationTest, LaunchWithExtendedInput) {
                                   app_client_);
   app.SetEmbedderApplication(embedder_app_);
 
-  // We expect Cast Transport, Input Event, and Input Capabilities to be
-  // connected.
+  // We expect both Cast Transport and Exo Bootstrap to be connected during
+  // Launch.
+  EXPECT_CALL(message_port_service_, ConnectToPortAsync(_, _)).Times(0);
   EXPECT_CALL(message_port_service_,
               ConnectToPortAsync("cast.__platform__.cast_transport", _))
       .Times(1);
   EXPECT_CALL(message_port_service_,
-              ConnectToPortAsync(
-                  StreamingReceiverChannel::kInputEventChannelNamespace, _))
-      .Times(1);
-  EXPECT_CALL(
-      message_port_service_,
-      ConnectToPortAsync(
-          StreamingReceiverChannel::kInputCapabilitiesChannelNamespace, _))
+              ConnectToPortAsync("urn:x-cast:com.google.cast.exo.bootstrap", _))
       .Times(1);
 
   base::MockCallback<RuntimeApplication::StatusCallback> callback;
@@ -163,19 +150,14 @@ TEST_F(StreamingRuntimeApplicationTest, LaunchWithExtendedInputNoDataManager) {
                                   app_client_);
   app.SetEmbedderApplication(embedder_app_);
 
-  // We still expect Cast Transport, Input Event, and Input Capabilities to be
-  // connected, and no crash should occur despite the missing DeviceDataManager.
+  // We expect both Cast Transport and Exo Bootstrap to be connected during
+  // Launch.
+  EXPECT_CALL(message_port_service_, ConnectToPortAsync(_, _)).Times(0);
   EXPECT_CALL(message_port_service_,
               ConnectToPortAsync("cast.__platform__.cast_transport", _))
       .Times(1);
   EXPECT_CALL(message_port_service_,
-              ConnectToPortAsync(
-                  StreamingReceiverChannel::kInputEventChannelNamespace, _))
-      .Times(1);
-  EXPECT_CALL(
-      message_port_service_,
-      ConnectToPortAsync(
-          StreamingReceiverChannel::kInputCapabilitiesChannelNamespace, _))
+              ConnectToPortAsync("urn:x-cast:com.google.cast.exo.bootstrap", _))
       .Times(1);
 
   base::MockCallback<RuntimeApplication::StatusCallback> callback;
