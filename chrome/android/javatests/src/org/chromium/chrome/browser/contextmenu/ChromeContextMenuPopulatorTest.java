@@ -2604,17 +2604,16 @@ public class ChromeContextMenuPopulatorTest {
 
         int[][] expected = {
             {
-                R.id.contextmenu_back,
-                R.id.contextmenu_forward,
-                R.id.contextmenu_reload,
+                R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload,
+            },
+            {
                 R.id.contextmenu_save_page,
-                R.id.contextmenu_share_page,
                 R.id.contextmenu_print_page,
+                R.id.contextmenu_share_page,
                 R.id.contextmenu_search_tab_with_google_lens,
                 R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self,
-                R.id.contextmenu_create_qr_code
             },
+            {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
         };
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -2635,15 +2634,15 @@ public class ChromeContextMenuPopulatorTest {
 
         int[][] expected = {
             {
-                R.id.contextmenu_back,
-                R.id.contextmenu_forward,
-                R.id.contextmenu_reload,
-                R.id.contextmenu_save_page,
-                R.id.contextmenu_share_page,
-                R.id.contextmenu_print_page,
-                R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_create_qr_code
+                R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload,
             },
+            {
+                R.id.contextmenu_save_page,
+                R.id.contextmenu_print_page,
+                R.id.contextmenu_share_page,
+                R.id.contextmenu_open_in_reading_mode,
+            },
+            {R.id.contextmenu_create_qr_code},
         };
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -2660,16 +2659,15 @@ public class ChromeContextMenuPopulatorTest {
 
         int[][] expected = {
             {
-                R.id.contextmenu_back,
-                R.id.contextmenu_forward,
-                R.id.contextmenu_reload,
-                R.id.contextmenu_save_page,
-                R.id.contextmenu_share_page,
-                R.id.contextmenu_print_page,
-                R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self,
-                R.id.contextmenu_create_qr_code
+                R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload,
             },
+            {
+                R.id.contextmenu_save_page,
+                R.id.contextmenu_print_page,
+                R.id.contextmenu_share_page,
+                R.id.contextmenu_open_in_reading_mode,
+            },
+            {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
         };
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -2689,16 +2687,15 @@ public class ChromeContextMenuPopulatorTest {
 
         int[][] expected = {
             {
-                R.id.contextmenu_back,
-                R.id.contextmenu_forward,
-                R.id.contextmenu_reload,
-                R.id.contextmenu_save_page,
-                R.id.contextmenu_share_page,
-                R.id.contextmenu_print_page,
-                R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self,
-                R.id.contextmenu_create_qr_code
+                R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload,
             },
+            {
+                R.id.contextmenu_save_page,
+                R.id.contextmenu_print_page,
+                R.id.contextmenu_share_page,
+                R.id.contextmenu_open_in_reading_mode,
+            },
+            {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
             {R.id.contextmenu_translate},
         };
 
@@ -2720,16 +2717,15 @@ public class ChromeContextMenuPopulatorTest {
 
         int[][] expected = {
             {
-                R.id.contextmenu_back,
-                R.id.contextmenu_forward,
-                R.id.contextmenu_reload,
-                R.id.contextmenu_save_page,
-                R.id.contextmenu_share_page,
-                R.id.contextmenu_print_page,
-                R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self,
-                R.id.contextmenu_create_qr_code
+                R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload,
             },
+            {
+                R.id.contextmenu_save_page,
+                R.id.contextmenu_print_page,
+                R.id.contextmenu_share_page,
+                R.id.contextmenu_open_in_reading_mode,
+            },
+            {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
         };
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -2758,16 +2754,15 @@ public class ChromeContextMenuPopulatorTest {
 
         int[][] expected = {
             {
-                R.id.contextmenu_back,
-                R.id.contextmenu_forward,
-                R.id.contextmenu_reload,
-                R.id.contextmenu_save_page,
-                R.id.contextmenu_share_page,
-                R.id.contextmenu_print_page,
-                R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self,
-                R.id.contextmenu_create_qr_code
+                R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload,
             },
+            {
+                R.id.contextmenu_save_page,
+                R.id.contextmenu_print_page,
+                R.id.contextmenu_share_page,
+                R.id.contextmenu_open_in_reading_mode,
+            },
+            {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
         };
 
         // All items are present and enabled.
@@ -2802,16 +2797,15 @@ public class ChromeContextMenuPopulatorTest {
 
         int[][] expected = {
             {
-                R.id.contextmenu_back,
-                R.id.contextmenu_forward,
-                R.id.contextmenu_reload,
-                R.id.contextmenu_save_page,
-                R.id.contextmenu_share_page,
-                R.id.contextmenu_print_page,
-                R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self,
-                R.id.contextmenu_create_qr_code
+                R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload,
             },
+            {
+                R.id.contextmenu_save_page,
+                R.id.contextmenu_print_page,
+                R.id.contextmenu_share_page,
+                R.id.contextmenu_open_in_reading_mode,
+            },
+            {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
             {R.id.contextmenu_view_page_source, R.id.contextmenu_inspect_element},
         };
 
@@ -2853,16 +2847,17 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params = getPageParams();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(true);
 
-        int[] expectedPage = {
-            R.id.contextmenu_back,
-            R.id.contextmenu_forward,
-            R.id.contextmenu_reload,
-            R.id.contextmenu_save_page,
-            R.id.contextmenu_share_page,
-            R.id.contextmenu_print_page,
-            R.id.contextmenu_open_in_reading_mode,
-            R.id.contextmenu_send_tab_to_self,
-            R.id.contextmenu_create_qr_code
+        int[][] expectedPage = {
+            {
+                R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload,
+            },
+            {
+                R.id.contextmenu_save_page,
+                R.id.contextmenu_print_page,
+                R.id.contextmenu_share_page,
+                R.id.contextmenu_open_in_reading_mode,
+            },
+            {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
         };
         List<Integer> expectedDisabled = Arrays.asList(R.id.contextmenu_save_page);
 
@@ -2878,7 +2873,7 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params);
         checkMenuOptions(expectedDisabled, expectedPage);
 
-        int[] expectedPageThinWebView = {R.id.contextmenu_reload, R.id.contextmenu_print_page};
+        int[][] expectedPageThinWebView = {{R.id.contextmenu_reload, R.id.contextmenu_print_page}};
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params);
         checkMenuOptions(expectedPageThinWebView);
     }
@@ -2892,15 +2887,14 @@ public class ChromeContextMenuPopulatorTest {
 
         int[][] expected = {
             {
-                R.id.contextmenu_back,
-                R.id.contextmenu_forward,
-                R.id.contextmenu_reload,
+                R.id.contextmenu_back, R.id.contextmenu_forward, R.id.contextmenu_reload,
+            },
+            {
                 R.id.contextmenu_save_page,
                 R.id.contextmenu_share_page,
                 R.id.contextmenu_open_in_reading_mode,
-                R.id.contextmenu_send_tab_to_self,
-                R.id.contextmenu_create_qr_code
             },
+            {R.id.contextmenu_send_tab_to_self, R.id.contextmenu_create_qr_code},
         };
 
         initializePopulator(
