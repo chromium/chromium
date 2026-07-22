@@ -232,7 +232,9 @@ origin_gating::CustomPredicate CreateSafetyListPredicate() {
       base::BindRepeating([](const origin_gating::GatingDecisionContext*,
                              const GURL& source_url,
                              const GURL& destination_url) {
-        switch (SafetyListManager::GetInstance()->Find(source_url,
+        const GURL& effective_source =
+            source_url.is_empty() ? destination_url : source_url;
+        switch (SafetyListManager::GetInstance()->Find(effective_source,
                                                        destination_url)) {
           case SafetyListManager::Decision::kNone:
             return origin_gating::Decision::kNoDecision;
@@ -493,6 +495,10 @@ MayActOnUrlBlockResult MapGatingDecisionToBlockResult(
                        << static_cast<int>(decision.attribution.Source());
       }
     case origin_gating::DecisionAttribution::Type::kCustomPredicate:
+      if (decision.attribution == kSafetyListPredicateName) {
+        return {"Blocked by static safety list",
+                MayActOnUrlBlockReason::kBlockedByStaticList};
+      }
       if (decision.attribution == kSensitiveUrlPredicateName) {
         return {kSensitiveUrlPredicateName,
                 MayActOnUrlBlockReason::kOptimizationGuideBlock};
@@ -623,6 +629,8 @@ ExecutionEngine::ExecutionEngine(
           origin_gating::OriginGatingConfiguration(
               {
                   {origin_gating::DecisionSource::kActorContainerConfig,
+                   {origin_gating::GateableEvent::kPageAction}},
+                  {CreateSafetyListPredicate(),
                    {origin_gating::GateableEvent::kPageAction}},
                   {origin_gating::CustomPredicate(
                        base::BindRepeating(&EvaluateTabErrorDocument),
@@ -1332,18 +1340,6 @@ void ExecutionEngine::SafetyChecksForNextAction() {
                                /*requires_page_stabilization=*/false,
                                "The tab is no longer present."),
                     next_action_index_);
-    return;
-  }
-
-  const GURL& url =
-      tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedURL();
-
-  if (!origin_gating_checker_.actor_container_config_slot().has_value() &&
-      SafetyListManager::GetInstance()->Find(url, url) ==
-          SafetyListManager::Decision::kBlock) {
-    OnMayActOnTabDecision(
-        tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
-        MayActOnUrlBlockReason::kBlockedByStaticList);
     return;
   }
 
