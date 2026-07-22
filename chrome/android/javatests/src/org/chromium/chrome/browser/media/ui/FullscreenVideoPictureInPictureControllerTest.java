@@ -8,12 +8,15 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -35,8 +38,8 @@ import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureControll
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -63,15 +66,34 @@ public class FullscreenVideoPictureInPictureControllerTest {
     private static final long PIP_TIMEOUT_MS = 10000L;
 
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private ChromeTabbedActivity mActivity;
 
     @Before
     public void setUp() {
-        mActivityTestRule.startOnTestServerUrl(TEST_PATH);
+        mActivityTestRule.startOnWebPage(mActivityTestRule.getTestServer().getURL(TEST_PATH));
         mActivity = mActivityTestRule.getActivity();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        if (mActivity != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        if (mActivity.isInPictureInPictureMode()
+                                || mActivity.getLastPictureInPictureModeForTesting()) {
+                            mActivity.onPictureInPictureModeChanged(
+                                    false, mActivity.getResources().getConfiguration());
+                        }
+                    });
+            int state = ApplicationStatus.getStateForActivity(mActivity);
+            // Restores the PAUSED/STOPPED activity back to RESUMED state.
+            if (state == ActivityState.PAUSED || state == ActivityState.STOPPED) {
+                mActivityTestRule.launchMainActivityFromLauncher();
+            }
+        }
     }
 
     /** Tests that we can detect when a video is playing fullscreen, a prerequisite for PiP. */
