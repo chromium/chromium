@@ -133,8 +133,12 @@ static gfx::RectF DefaultFilterPrimitiveSubregion(FilterEffect* filter_effect) {
     // ... the default subregion is 0%, 0%, 100%, 100%, where as a
     // special-case the percentages are relative to the dimensions of the
     // filter region..."
-    if (input_effect->GetFilterEffectType() == kFilterEffectTypeSourceInput)
+    // A non-clipping input (e.g. a CSS filter function) has no real
+    // subregion either, so treat it like a standard input too.
+    if (input_effect->GetFilterEffectType() == kFilterEffectTypeSourceInput ||
+        !input_effect->ClipsToBounds()) {
       return filter_effect->GetFilter()->FilterRegion();
+    }
     subregion_union.Union(input_effect->FilterPrimitiveSubregion());
   }
   return subregion_union;
