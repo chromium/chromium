@@ -307,7 +307,7 @@ HEADLESS_PROTOCOL_TEST(ClipboardApiCopyPaste,
                        "input/clipboard-api-copy-paste.js")
 
 HEADLESS_PROTOCOL_TEST(FocusBlurNotifications,
-                       "input/focus-blur-notifications.js")
+                       "shared/focus-blur-notifications.js")
 
 HEADLESS_PROTOCOL_TEST(HeadlessSessionBasicsTest,
                        "sessions/headless-session-basics.js")

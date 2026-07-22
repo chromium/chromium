@@ -1,9 +1,0 @@
-Tests focus/blur notifications.
-onfocus button1
-onblur  button1
-onfocus button2
-onblur  button2
-onfocus button1
-onblur  button1
-onfocus button2
-quit
