@@ -31,6 +31,7 @@
 #header {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -49,9 +50,7 @@
 
 #source {
   color: var(--cr-link-color);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: break-all;
 }
 
 #source-text {
@@ -67,6 +66,7 @@
 
 #id {
   font-family: monospace;
+  word-break: break-all;
 }
 
 #icon-circle {

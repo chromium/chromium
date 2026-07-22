@@ -34,7 +34,6 @@
 namespace {
 
 iwa_dev::mojom::IwaDevModeSourcePtr MapToMojomIwaDevModeSource(
-    const base::FilePath& profile_path,
     const web_app::IsolationData& isolation_data) {
   if (isolation_data.update_manifest_url()) {
     return iwa_dev::mojom::IwaDevModeSource::NewUpdateInfo(
@@ -45,30 +44,32 @@ iwa_dev::mojom::IwaDevModeSourcePtr MapToMojomIwaDevModeSource(
                 .ToString()));
   }
 
-  ASSIGN_OR_RETURN(
-      auto source,
-      web_app::IwaSourceDevMode::FromStorageLocation(profile_path,
-                                                     isolation_data.location()),
-      [](const auto&) -> iwa_dev::mojom::IwaDevModeSourcePtr { NOTREACHED(); });
-
   return std::visit(
       absl::Overload{
-          [](const web_app::IwaSourceBundleDevMode& bundle_source)
+          [](const web_app::IwaStorageOwnedBundle& location)
               -> iwa_dev::mojom::IwaDevModeSourcePtr {
             return iwa_dev::mojom::IwaDevModeSource::NewBundlePath(
-                bundle_source.path());
+                base::FilePath(FILE_PATH_LITERAL("..."))
+                    .AppendASCII(location.dir_name_ascii())
+                    .Append(web_app::kMainSwbnFileName));
           },
-          [](const web_app::IwaSourceProxy& proxy_source)
+          [](const web_app::IwaStorageUnownedBundle& location)
+              -> iwa_dev::mojom::IwaDevModeSourcePtr {
+            return iwa_dev::mojom::IwaDevModeSource::NewBundlePath(
+                base::FilePath(FILE_PATH_LITERAL("..."))
+                    .Append(location.path().DirName().BaseName())
+                    .Append(location.path().BaseName()));
+          },
+          [](const web_app::IwaStorageProxy& location)
               -> iwa_dev::mojom::IwaDevModeSourcePtr {
             return iwa_dev::mojom::IwaDevModeSource::NewProxyOrigin(
-                proxy_source.proxy_url());
+                location.proxy_url());
           },
       },
-      source.variant());
+      isolation_data.location().variant());
 }
 
 iwa_dev::mojom::IwaDevModeAppInfoPtr MapToMojomIwaDevModeAppInfo(
-    const base::FilePath& profile_path,
     const web_app::WebApp& app) {
   auto iwa_origin = web_app::IwaOrigin::Create(app.start_url()).value();
   std::string web_bundle_id = iwa_origin.web_bundle_id().id();
@@ -77,7 +78,7 @@ iwa_dev::mojom::IwaDevModeAppInfoPtr MapToMojomIwaDevModeAppInfo(
 
   return iwa_dev::mojom::IwaDevModeAppInfo::New(
       app.app_id(), std::move(web_bundle_id), app.untranslated_name(),
-      MapToMojomIwaDevModeSource(profile_path, isolation_data),
+      MapToMojomIwaDevModeSource(isolation_data),
       isolation_data.version().GetString());
 }
 
@@ -101,10 +102,9 @@ IwaDevPageHandler::~IwaDevPageHandler() = default;
 void IwaDevPageHandler::GetInstalledAppsInfo(
     GetInstalledAppsInfoCallback callback) {
   std::vector<iwa_dev::mojom::IwaDevModeAppInfoPtr> dev_mode_apps;
-  base::FilePath profile_path = profile_->GetPath();
   for (const web_app::WebApp& app : provider_->registrar_unsafe().GetApps(
            web_app::WebAppFilter::IsDevModeIsolatedApp())) {
-    dev_mode_apps.push_back(MapToMojomIwaDevModeAppInfo(profile_path, app));
+    dev_mode_apps.push_back(MapToMojomIwaDevModeAppInfo(app));
   }
 
   std::move(callback).Run(std::move(dev_mode_apps));
@@ -129,15 +129,14 @@ void IwaDevPageHandler::UninstallApp(const std::string& app_id,
 void IwaDevPageHandler::OnWebAppInstalled(const webapps::AppId& app_id) {
   if (const web_app::WebApp* app = provider_->registrar_unsafe().GetAppById(
           app_id, web_app::WebAppFilter::IsDevModeIsolatedApp())) {
-    page_->OnAppInstalled(
-        MapToMojomIwaDevModeAppInfo(profile_->GetPath(), *app));
+    page_->OnAppInstalled(MapToMojomIwaDevModeAppInfo(*app));
   }
 }
 
 void IwaDevPageHandler::OnWebAppManifestUpdated(const webapps::AppId& app_id) {
   if (const web_app::WebApp* app = provider_->registrar_unsafe().GetAppById(
           app_id, web_app::WebAppFilter::IsDevModeIsolatedApp())) {
-    page_->OnAppUpdated(MapToMojomIwaDevModeAppInfo(profile_->GetPath(), *app));
+    page_->OnAppUpdated(MapToMojomIwaDevModeAppInfo(*app));
   }
 }
 

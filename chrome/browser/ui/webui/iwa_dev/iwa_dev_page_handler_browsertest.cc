@@ -171,10 +171,9 @@ class IwaDevHandlerBrowserTest
     return result.value();
   }
 
-  void ExpectBundleInstalledAtProfileDir(const base::FilePath& bundle_path) {
-    base::FilePath expected_parent =
-        profile()->GetPath().Append(FILE_PATH_LITERAL("iwa"));
-    EXPECT_EQ(bundle_path.DirName().DirName(), expected_parent);
+  void ExpectBundleInstalledAtTruncatedPath(const base::FilePath& bundle_path) {
+    EXPECT_EQ(bundle_path.DirName().DirName().value(),
+              FILE_PATH_LITERAL("..."));
     EXPECT_EQ(bundle_path.BaseName().value(), FILE_PATH_LITERAL("main.swbn"));
   }
 
@@ -210,7 +209,7 @@ IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
   EXPECT_EQ(app_info->name, kLocalBundleName);
   EXPECT_EQ(app_info->installed_version, kAppBaseVersion);
   ASSERT_TRUE(app_info->source->is_bundle_path());
-  ExpectBundleInstalledAtProfileDir(app_info->source->get_bundle_path());
+  ExpectBundleInstalledAtTruncatedPath(app_info->source->get_bundle_path());
 }
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
