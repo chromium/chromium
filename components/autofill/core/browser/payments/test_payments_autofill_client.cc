@@ -487,7 +487,7 @@ TestPaymentsAutofillClient::GetOmniboxAutofillDelegate() {
   return omnibox_autofill_delegate_.get();
 }
 
-void TestPaymentsAutofillClient::ShowOmniboxAutofillChip(
+void TestPaymentsAutofillClient::ShowExpandedOmniboxAutofillChip(
     std::vector<Suggestion> suggestions,
     base::RepeatingCallback<void(base::span<const Suggestion>)>
         on_suggestions_shown,

@@ -7,6 +7,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/payments/omnibox_autofill_page_action_controller.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -163,6 +164,14 @@ void OmniboxAutofillBubbleController::OnBubbleClosed(
 
   if (actions::ActionItem* action_item = GetActionItem()) {
     action_item->SetIsShowingBubble(false);
+  }
+
+  // When the bubble is closed (whether after interaction, dismissal, or
+  // selection), collapse the expanded text chip down to icon-only mode so
+  // the omnibox stays uncluttered while keeping the page action active.
+  if (OmniboxAutofillPageActionController* page_action_controller =
+          OmniboxAutofillPageActionController::From(*tab_interface_)) {
+    page_action_controller->ShowCollapsedChip();
   }
 
   ResetBubbleViewAndInformBubbleManager();

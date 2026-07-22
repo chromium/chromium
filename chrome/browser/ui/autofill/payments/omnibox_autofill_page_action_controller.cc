@@ -48,12 +48,18 @@ void OmniboxAutofillPageActionController::OnPageActionChipShown(
   }
 }
 
-void OmniboxAutofillPageActionController::Show() {
+void OmniboxAutofillPageActionController::ShowExpandedChip() {
   page_action_controller_->Show(kActionAutofillPayment);
-  page_action_controller_->ShowSuggestionChip(kActionAutofillPayment);
+  page_action_controller_->ShowSuggestionChip(kActionAutofillPayment,
+                                              {.should_animate = true});
 }
 
-void OmniboxAutofillPageActionController::Hide() {
+void OmniboxAutofillPageActionController::ShowCollapsedChip() {
+  page_action_controller_->Show(kActionAutofillPayment);
+  page_action_controller_->HideSuggestionChip(kActionAutofillPayment);
+}
+
+void OmniboxAutofillPageActionController::HideChip() {
   page_action_controller_->HideSuggestionChip(kActionAutofillPayment);
   page_action_controller_->Hide(kActionAutofillPayment);
 }

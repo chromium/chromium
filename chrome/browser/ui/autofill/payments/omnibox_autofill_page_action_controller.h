@@ -40,11 +40,14 @@ class OmniboxAutofillPageActionController final
   void OnPageActionChipShown(
       const page_actions::PageActionState& page_action) override;
 
-  // Shows the omnibox autofill page action icon.
-  void Show();
+  // Shows the expanded omnibox autofill page action chip with icon and label.
+  void ShowExpandedChip();
 
-  // Hides the omnibox autofill page action icon.
-  void Hide();
+  // Shows the collapsed omnibox autofill page action chip with icon only.
+  void ShowCollapsedChip();
+
+  // Hides the entire omnibox autofill page action chip.
+  void HideChip();
 
  private:
   const raw_ref<tabs::TabInterface> tab_interface_;

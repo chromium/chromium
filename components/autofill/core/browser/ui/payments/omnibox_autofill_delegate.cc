@@ -436,7 +436,7 @@ void OmniboxAutofillDelegate::OnFieldBecameVisible() {
   AutofillMetrics::LogIsQueriedCreditCardFormSecure(client_->IsContextSecure());
 
   // Shows the "Autofill payment" chip and initializes the bubble.
-  client_->GetPaymentsAutofillClient()->ShowOmniboxAutofillChip(
+  client_->GetPaymentsAutofillClient()->ShowExpandedOmniboxAutofillChip(
       std::move(suggestions),
       base::BindRepeating(
           [](base::WeakPtr<OmniboxAutofillDelegate> delegate,

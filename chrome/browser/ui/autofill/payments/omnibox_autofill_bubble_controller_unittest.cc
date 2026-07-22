@@ -10,6 +10,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/autofill/payments/omnibox_autofill_page_action_controller.h"
+#include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -204,6 +207,20 @@ TEST_P(OmniboxAutofillBubbleControllerClosedReasonTest, OnBubbleClosed) {
 
   EXPECT_CALL(on_suggestions_hidden_callback, Run(mapping.hiding_reason));
   controller_->OnBubbleClosed(mapping.closed_reason);
+}
+
+TEST_F(OmniboxAutofillBubbleControllerTest, OnBubbleClosed_CollapsesChip) {
+  page_actions::MockPageActionController mock_page_action_controller;
+  OmniboxAutofillPageActionController page_action_controller(
+      mock_tab_interface_, mock_page_action_controller);
+
+  EXPECT_CALL(mock_page_action_controller, Show(kActionAutofillPayment))
+      .Times(1);
+  EXPECT_CALL(mock_page_action_controller,
+              HideSuggestionChip(kActionAutofillPayment))
+      .Times(1);
+
+  controller_->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -1262,7 +1262,7 @@ ChromePaymentsAutofillClient::GetOmniboxAutofillDelegate() {
   return omnibox_autofill_delegate_.get();
 }
 
-void ChromePaymentsAutofillClient::ShowOmniboxAutofillChip(
+void ChromePaymentsAutofillClient::ShowExpandedOmniboxAutofillChip(
     std::vector<Suggestion> suggestions,
     base::RepeatingCallback<void(base::span<const Suggestion>)>
         on_suggestions_shown,
@@ -1287,16 +1287,16 @@ void ChromePaymentsAutofillClient::ShowOmniboxAutofillChip(
   }
   if (OmniboxAutofillPageActionController* page_action_controller =
           OmniboxAutofillPageActionController::From(*tab_interface)) {
-    page_action_controller->Show();
+    page_action_controller->ShowExpandedChip();
   }
 }
 
 void ChromePaymentsAutofillClient::HideOmniboxAutofillChip() {
   if (tabs::TabInterface* tab_interface =
           tabs::TabInterface::MaybeGetFromContents(web_contents())) {
-    if (OmniboxAutofillPageActionController* controller =
+    if (OmniboxAutofillPageActionController* page_action_controller =
             OmniboxAutofillPageActionController::From(*tab_interface)) {
-      controller->Hide();
+      page_action_controller->HideChip();
     }
   }
 }

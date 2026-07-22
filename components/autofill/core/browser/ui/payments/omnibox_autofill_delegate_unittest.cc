@@ -537,7 +537,7 @@ TEST_F(OmniboxAutofillDelegateTest,
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
-  payments_autofill_client().ShowOmniboxAutofillChip(
+  payments_autofill_client().ShowExpandedOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
@@ -597,7 +597,7 @@ TEST_F(OmniboxAutofillDelegateTest,
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
-  payments_autofill_client().ShowOmniboxAutofillChip(
+  payments_autofill_client().ShowExpandedOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
@@ -625,7 +625,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnAfterFormsSeen_FormRemoved_HidesChip) {
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
-  payments_autofill_client().ShowOmniboxAutofillChip(
+  payments_autofill_client().ShowExpandedOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
@@ -677,7 +677,7 @@ TEST_F(OmniboxAutofillDelegateTest,
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
 
-  payments_autofill_client().ShowOmniboxAutofillChip(
+  payments_autofill_client().ShowExpandedOmniboxAutofillChip(
       /*suggestions=*/{},
       /*on_suggestions_shown=*/base::DoNothing(),
       /*on_suggestions_hidden=*/base::DoNothing(),
