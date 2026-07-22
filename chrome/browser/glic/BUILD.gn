@@ -304,6 +304,7 @@ source_set("impl") {
     "common/panel_focus_dependent_hotkey_manager.h",
     "common/panel_visibility_dependent_hotkey_manager.cc",
     "common/panel_visibility_dependent_hotkey_manager.h",
+    "common/view_scoped_registration_delegate.h",
     "experimental_triggering/glic_experimental_triggering_manager.cc",
     "experimental_triggering/glic_experimental_triggering_manager.h",
     "gemini_act_on_web_settings_policy_handler.cc",
@@ -507,6 +508,7 @@ source_set("impl") {
     # TODO(b/470059315): Make these work on Android, or move them to the
     # desktop-only section.
     sources += [
+      "common/view_scoped_registration_delegate_impl.cc",
       "experimental_opt_in/glic_experimental_opt_in_controller.cc",
       "experimental_opt_in/glic_experimental_opt_in_controller.h",
       "experimental_opt_in/glic_experimental_opt_in_dialog_view.cc",

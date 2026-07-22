@@ -6,12 +6,9 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/glic/common/view_scoped_registration_delegate.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_features.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/widget/glic_view.h"
-#endif
 
 namespace glic {
 
@@ -28,50 +25,7 @@ static constexpr std::array kSupportedCommands = {
 #endif
 };
 
-#if !BUILDFLAG(IS_ANDROID)
-class GlicPanelScopedHotkeyRegistration
-    : public LocalHotkeyManager::ScopedHotkeyRegistration {
- public:
-  GlicPanelScopedHotkeyRegistration(ui::Accelerator accelerator,
-                                    base::WeakPtr<views::View> glic_view)
-      : accelerator_(accelerator), glic_view_(glic_view) {
-    CHECK(!accelerator.IsEmpty());
-    CHECK(glic_view_);
-    glic_view_->AddAccelerator(accelerator_);
-  }
-
-  ~GlicPanelScopedHotkeyRegistration() override {
-    if (!glic_view_) {
-      return;
-    }
-    glic_view_->RemoveAccelerator(accelerator_);
-  }
-
- private:
-  ui::Accelerator accelerator_;
-  base::WeakPtr<views::View> glic_view_;
-};
-#endif
-
 }  // namespace
-
-ViewScopedRegistrationDelegate::ViewScopedRegistrationDelegate(
-    base::WeakPtr<LocalHotkeyManager::Panel> panel)
-    : panel_(panel) {}
-
-ViewScopedRegistrationDelegate::~ViewScopedRegistrationDelegate() = default;
-
-#if !BUILDFLAG(IS_ANDROID)
-std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
-ViewScopedRegistrationDelegate::CreateScopedHotkeyRegistration(
-    ui::Accelerator accelerator,
-    base::WeakPtr<ui::AcceleratorTarget> target) {
-  CHECK(panel_);
-  CHECK(panel_->GetView());
-  return std::make_unique<GlicPanelScopedHotkeyRegistration>(accelerator,
-                                                             panel_->GetView());
-}
-#endif
 
 PanelFocusDependentHotkeyManager::PanelFocusDependentHotkeyManager(
     base::WeakPtr<LocalHotkeyManager::Panel> panel)

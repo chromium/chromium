@@ -9,24 +9,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
+#include "chrome/browser/glic/common/view_scoped_registration_delegate.h"
 
 namespace glic {
-
-class ViewScopedRegistrationDelegate
-    : public LocalHotkeyManager::RegistrationDelegate {
- public:
-  explicit ViewScopedRegistrationDelegate(
-      base::WeakPtr<LocalHotkeyManager::Panel> panel);
-  ~ViewScopedRegistrationDelegate() override;
-
-  std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
-  CreateScopedHotkeyRegistration(
-      ui::Accelerator accelerator,
-      base::WeakPtr<ui::AcceleratorTarget> target) override;
-
- private:
-  base::WeakPtr<LocalHotkeyManager::Panel> panel_;
-};
 
 // Manages hotkeys that are active ONLY when the Glic panel itself has focus.
 // These hotkeys are registered locally within the Glic view/panel scope
