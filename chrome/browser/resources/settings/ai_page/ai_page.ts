@@ -260,6 +260,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         loadTimeData.getString('onDeviceAiLearnMoreUrl'));
   }
 
+  private onOnDeviceAiSendFeedback_(e: Event) {
+    e.stopPropagation();
+    this.onDeviceAiBrowserProxy_.openFeedbackDialog();
+  }
+
   private onOnDeviceAiSettingsBooleanControlChange_(e: Event) {
     const enabled = (e.target as SettingsToggleButtonElement).checked;
     this.onDeviceAiBrowserProxy_.setOnDeviceAiEnabled(enabled);
