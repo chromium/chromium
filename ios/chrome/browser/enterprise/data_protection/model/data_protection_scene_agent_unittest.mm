@@ -745,10 +745,6 @@ TEST_F(DataProtectionSceneAgentTransitionTest, MultiWindowProtection) {
 
   // Mock the scene to return both windows.
   id mock_scene = OCMClassMock([UIWindowScene class]);
-  // Scene state requires its scene to have a session identifier.
-  id mock_session = OCMClassMock([UISceneSession class]);
-  OCMStub([mock_session persistentIdentifier]).andReturn(@"fake_identifier");
-  OCMStub([mock_scene session]).andReturn(mock_session);
   NSArray<UIWindow*>* windows = @[ window1, window2 ];
   OCMStub([mock_scene windows]).andReturn(windows);
   scene_state_.scene = mock_scene;
