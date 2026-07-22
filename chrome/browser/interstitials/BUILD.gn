@@ -82,6 +82,36 @@ source_set("test_support") {
   ]
 }
 
+if (!is_android) {
+  # Separate from :test_support because this browser-test helper depends on
+  # //chrome/test:test_support, which transitively depends on :test_support
+  # via //chrome/browser:test_support; keeping it in its own leaf target that
+  # //chrome/browser:test_support does not depend on avoids that cycle.
+  source_set("idn_test_support") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    public = [ "security_interstitial_idn_test.h" ]
+
+    sources = [ "security_interstitial_idn_test.cc" ]
+
+    public_deps = [
+      "//components/security_interstitials/content:security_interstitial_page",
+    ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/public/browser",
+      "//content/test:test_support",
+    ]
+  }
+}
+
 if (enterprise_cloud_content_analysis || is_android) {
   source_set("unit_tests") {
     testonly = true

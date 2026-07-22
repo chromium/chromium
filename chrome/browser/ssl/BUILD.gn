@@ -318,6 +318,7 @@ if (!is_android) {
       "//base",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/captive_portal",
+      "//chrome/browser/interstitials:idn_test_support",
       "//chrome/browser/interstitials:test_support",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/preloading/prerender",

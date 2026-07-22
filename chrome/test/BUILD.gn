@@ -2192,6 +2192,7 @@ if (!is_android) {
       "//chrome/browser/indigo:browser_tests",
       "//chrome/browser/indigo:test_support",
       "//chrome/browser/indigo/onboarding:browser_tests",
+      "//chrome/browser/interstitials:idn_test_support",
       "//chrome/browser/language",
       "//chrome/browser/language_detection:browser_tests",
       "//chrome/browser/launch_time_navigation_signal:browser_tests",
@@ -8125,8 +8126,6 @@ if (!is_android) {
     testonly = true
 
     sources = [
-      "../browser/interstitials/security_interstitial_idn_test.cc",
-      "../browser/interstitials/security_interstitial_idn_test.h",
       "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.cc",
       "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.h",
       "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.cc",
