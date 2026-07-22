@@ -51,16 +51,26 @@ std::u16string AttributeType::GetNameForI18n() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME);
     case AttributeTypeName::kFlightReservationFlightNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATION_FLIGHT_NUMBER_ATTRIBUTE_NAME);
     case AttributeTypeName::kFlightReservationTicketNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATION_TICKET_NUMBER_ATTRIBUTE_NAME);
     case AttributeTypeName::kFlightReservationConfirmationCode:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATION_CONFIRMATION_CODE_ATTRIBUTE_NAME);
     case AttributeTypeName::kFlightReservationPassengerName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATION_PASSENGER_NAME_ATTRIBUTE_NAME);
     case AttributeTypeName::kFlightReservationDepartureAirport:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATION_DEPARTURE_AIRPORT_ATTRIBUTE_NAME);
     case AttributeTypeName::kFlightReservationArrivalAirport:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ARRIVAL_AIRPORT_ATTRIBUTE_NAME);
     case AttributeTypeName::kFlightReservationDepartureDate:
-      // TODO(crbug.com/501351119): Add attribute strings for flight
-      // reservations.
-      // Flight reservations are read-only and do not use attribute strings.
-      return u"";
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATION_DEPARTURE_DATE_ATTRIBUTE_NAME);
     case AttributeTypeName::kOrderDate:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_ORDER_DATE_ATTRIBUTE_NAME);

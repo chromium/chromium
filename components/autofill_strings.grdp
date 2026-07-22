@@ -1091,6 +1091,32 @@
     Product names
   </message>
 
+  <!-- Attributes of the flight reservation entity -->
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_FLIGHT_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation flight number attribute.">
+    Flight number
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_TICKET_NUMBER_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation ticket number attribute.">
+    Flight ticket
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_CONFIRMATION_CODE_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation confirmation code attribute.">
+    Booking code
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_PASSENGER_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation passenger name attribute.">
+    Passenger
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_DEPARTURE_AIRPORT_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation departure airport attribute.">
+    Departure airport
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ARRIVAL_AIRPORT_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation arrival airport attribute.">
+    Arrival airport
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_DEPARTURE_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation departure date attribute.">
+    Departure date
+  </message>
+  <message name="IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ARRIVAL_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the flight reservation arrival date attribute.">
+    Arrival date
+  </message>
+
   <!-- Attributes of the driver's license entity -->
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license name attribute.">
     Name

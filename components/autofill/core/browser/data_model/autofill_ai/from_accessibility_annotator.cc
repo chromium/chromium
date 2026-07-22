@@ -8,6 +8,8 @@
 
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 
@@ -115,6 +117,12 @@ std::u16string GetMemoryDataTypeNameForI18n(aa::MemoryDataType type) {
       return u"Name on card";
     case aa::MemoryDataType::kCreditCardNickname:
       return u"Card Nickname";
+    // Special handling for arrival date because it is present in
+    // `MemoryDataType` but does not have a corresponding AutofillAi
+    // `AttributeType`.
+    case aa::MemoryDataType::kFlightReservationArrivalDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_FLIGHT_RESERVATION_ARRIVAL_DATE_ATTRIBUTE_NAME);
     // Entity types:
     case aa::MemoryDataType::kVehicle:
     case aa::MemoryDataType::kPassportFull:
@@ -150,7 +158,6 @@ std::u16string GetMemoryDataTypeNameForI18n(aa::MemoryDataType type) {
     case aa::MemoryDataType::kFlightReservationDepartureAirport:
     case aa::MemoryDataType::kFlightReservationArrivalAirport:
     case aa::MemoryDataType::kFlightReservationDepartureDate:
-    case aa::MemoryDataType::kFlightReservationArrivalDate:
     case aa::MemoryDataType::kNationalIdCardName:
     case aa::MemoryDataType::kNationalIdCardCountry:
     case aa::MemoryDataType::kNationalIdCardNumber:
