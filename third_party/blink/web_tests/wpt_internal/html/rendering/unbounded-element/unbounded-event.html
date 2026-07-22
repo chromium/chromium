@@ -36,9 +36,9 @@ promise_test(async t => {
   let showPromise = element.showUnboundedElement();
   assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on show call');
   await showPromise;
-  assert_equals(toggleEvents.length, 0, 'Should not fire synchronously when show promise resolves');
-  await new Promise(resolve => t.step_timeout(resolve, 0));
-  assert_equals(toggleEvents.length, 1, 'Should have fired one event');
+  // Because the show promise is resolved asynchronously after surface allocation,
+  // the event task has already run.
+  assert_equals(toggleEvents.length, 1, 'Should have fired one event when show promise resolves');
   assert_equals(toggleEvents[0].oldState, 'closed');
   assert_equals(toggleEvents[0].newState, 'open');
 
@@ -59,7 +59,8 @@ promise_test(async t => {
   showPromise = element.showUnboundedElement();
   hidePromise = element.hideUnboundedElement();
   assert_equals(toggleEvents.length, 0, 'Should not fire synchronously on show/hide');
-  await showPromise;
+  // showPromise should be rejected with AbortError because show was aborted by hide.
+  await promise_rejects_dom(t, 'AbortError', showPromise);
   await hidePromise;
   await new Promise(resolve => t.step_timeout(resolve, 0));
   assert_equals(toggleEvents.length, 1, 'Should have fired one coalesced event');
@@ -78,7 +79,6 @@ promise_test(async t => {
   showPromise = element.showUnboundedElement();
   await hidePromise;
   await showPromise;
-  await new Promise(resolve => t.step_timeout(resolve, 0));
   assert_equals(toggleEvents.length, 1, 'Should have fired one coalesced event');
   assert_equals(toggleEvents[0].oldState, 'open');
   assert_equals(toggleEvents[0].newState, 'open');

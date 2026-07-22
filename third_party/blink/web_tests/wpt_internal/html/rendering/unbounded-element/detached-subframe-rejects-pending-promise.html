@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/524030528">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+let iframe_loaded_promise = new Promise(resolve => {
+  window.iframeLoaded = resolve;
+});
+</script>
+
+<iframe id="iframe"
+        srcdoc="
+          <div id='div'
+               unbounded
+               style='width: 100px; height: 100px;'>
+          </div>"
+        onload="iframeLoaded()"></iframe>
+
+<script>
+promise_test(async t => {
+  await iframe_loaded_promise;
+  const div = iframe.contentDocument.getElementById('div');
+
+  await test_driver.bless("show unbounded element");
+  const p = HTMLElement.prototype.showUnboundedElement.call(div);
+
+  // Detach the iframe.
+  iframe.remove();
+
+  // Wait one frame to ensure no crash occurs.
+  await new Promise(r => requestAnimationFrame(r));
+}, 'Detaching subframe while showUnboundedElement is pending should not crash.');
+</script>

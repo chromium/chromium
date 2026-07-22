@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel="help" href="https://crbug.com/524030528">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<script>
+let iframe_loaded_promise = new Promise(resolve => {
+  window.iframeLoaded = resolve;
+});
+</script>
+
+<iframe id="iframe"
+        srcdoc="
+          <div id='div'
+               unbounded
+               style='width: 100px; height: 100px;'>
+          </div>"
+        onload="iframeLoaded()"></iframe>
+<div id="main_div" unbounded style="width: 100px; height: 100px;"></div>
+
+<script>
+promise_test(async t => {
+  await iframe_loaded_promise;
+  const div = iframe.contentDocument.getElementById('div');
+
+  // Call both showUnboundedElement methods synchronously back-to-back.
+  await test_driver.bless("show both unbounded elements");
+  const p1 = HTMLElement.prototype.showUnboundedElement.call(div);
+  const p2 = main_div.showUnboundedElement();
+
+  // The first promise should be rejected with AbortError due to being dismissed by the second element.
+  let rejected = false;
+  try {
+    await p1;
+  } catch (e) {
+    rejected = true;
+    assert_equals(e.name, 'AbortError', "The first element's promise should reject with AbortError.");
+  }
+  assert_true(rejected, "The first element's promise should have rejected.");
+
+  // The second promise should resolve successfully.
+  await p2;
+}, 'Showing a second unbounded element should dismiss the first one and reject its promise with AbortError.');
+</script>

@@ -1676,10 +1676,9 @@ ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
   auto client_remote = client_receiver.InitWithNewEndpointAndPassRemote();
 
   widget->RegisterActiveUnboundedElement(this, std::move(client_receiver),
-                                         std::move(host_remote));
+                                         std::move(host_remote), resolver);
   frame->GetLocalFrameHostRemote().RequestUnboundedSurface(
       std::move(host_receiver), std::move(client_remote), bounds);
-  resolver->Resolve();
   return promise;
 }
 
