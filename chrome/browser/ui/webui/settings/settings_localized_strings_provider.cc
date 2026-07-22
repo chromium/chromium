@@ -548,6 +548,19 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddString("googleSearchAiModeWorkspaceUrl",
                          chrome::kMyActivitySearchServicesAppsUrl);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  html_source->AddLocalizedString(
+      "onDeviceAiEnabledLabel",
+      IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL);
+  html_source->AddString("onDeviceAiLearnMoreUrl",
+                         chrome::kOnDeviceAiLearnMoreUrl);
+  html_source->AddString(
+      "onDeviceAiEnabledSubLabel",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_SUB_LABEL,
+          chrome::kOnDeviceAiLearnMoreUrl,
+          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
+#endif
 }
 
 void AddAppearanceStrings(content::WebUIDataSource* html_source,
@@ -4292,10 +4305,6 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
       {"featureNotificationsLabel",
        IDS_SETTINGS_SYSTEM_FEATURE_NOTIFICATIONS_LABEL},
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      {"onDeviceAiEnabledLabel",
-       IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL},
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -4334,17 +4343,6 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
           IDS_SETTINGS_SYSTEM_ISOLATION_STATE_SUBLABEL,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME)));
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  html_source->AddString("onDeviceAiLearnMoreUrl",
-                         chrome::kOnDeviceAiLearnMoreUrl);
-  html_source->AddString(
-      "onDeviceAiEnabledSubLabel",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_SUB_LABEL,
-          chrome::kOnDeviceAiLearnMoreUrl,
-          l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
-#endif
 
   // TODO(dbeam): we should probably rename anything involving "localized
   // strings" to "load time data" as all primitive types are used now.

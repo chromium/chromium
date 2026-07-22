@@ -67,5 +67,17 @@
         sub-label="$i18n{googleSearchAiModeWorkspaceSublabel}"
         on-click="onGoogleSearchAiModeWorkspaceRowClick_" external>
     </cr-link-row>
+<if expr="_google_chrome">
+    <template is="dom-if" if="[[showOnDeviceAiSettings_]]">
+      <settings-toggle-button id="onDeviceAiToggle" class="hr"
+          pref="[[onDeviceAiPref_]]"
+          label="$i18n{onDeviceAiEnabledLabel}"
+          sub-label-with-link="$i18n{onDeviceAiEnabledSubLabel}"
+          on-sub-label-link-clicked="onOnDeviceAiSubLabelLinkClicked_"
+          on-settings-boolean-control-change=
+              "onOnDeviceAiSettingsBooleanControlChange_">
+      </settings-toggle-button>
+    </template>
+</if>
   </div>
 </settings-section>

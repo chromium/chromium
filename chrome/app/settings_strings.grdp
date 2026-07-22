@@ -4094,7 +4094,7 @@
         Browser proxy settings are controlled by multiple sources
       </message>
     </if>
-    <if expr="not is_chromeos and _google_chrome">
+    <if expr="_google_chrome">
       <message name="IDS_SETTINGS_SYSTEM_FEATURE_ON_DEVICE_AI_ENABLED_LABEL" desc="Label for the toggle that allows or prevents chrome to download on device GenAI models to local disk.">
         On-device AI
       </message>

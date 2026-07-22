@@ -413,9 +413,10 @@ build_webui("build") {
       "system_page/system_page.ts",
       "system_page/system_page_browser_proxy.ts",
     ]
-    if (is_chrome_branded) {
-      ts_files += [ "system_page/on_device_ai_browser_proxy.ts" ]
-    }
+  }
+
+  if (is_chrome_branded) {
+    ts_files += [ "ai_page/on_device_ai_browser_proxy.ts" ]
   }
 
   if (is_linux) {

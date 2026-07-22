@@ -358,7 +358,7 @@ inline constexpr char16_t kMyActivityAiModeUrl[] =
 inline constexpr char16_t kMyActivitySearchServicesAppsUrl[] =
     u"https://myactivity.google.com/search-services/apps";
 
-#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // "Learn more" URL for On-Device AI.
 inline constexpr char16_t kOnDeviceAiLearnMoreUrl[] =
     u"https://support.google.com/chrome?p=on_device_genAI";

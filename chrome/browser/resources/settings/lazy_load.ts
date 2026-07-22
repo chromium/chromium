@@ -169,6 +169,10 @@ export {SettingsAiSuggestionsPageElement} from './ai_page/ai_suggestions_page.js
 export {AiEnterpriseFeaturePrefName, AiPageActions, FeatureOptInState, SettingsAiPageFeaturePrefName} from './ai_page/constants.js';
 export {SettingsHistorySearchPageElement} from './ai_page/history_search_page.js';
 export {COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF, COMPOSE_PROACTIVE_NUDGE_PREF, SettingsOfferWritingHelpPageElement} from './ai_page/offer_writing_help_page.js';
+// <if expr="_google_chrome">
+export type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './ai_page/on_device_ai_browser_proxy.js';
+export {OnDeviceAiBrowserProxyImpl} from './ai_page/on_device_ai_browser_proxy.js';
+// </if>
 export {SettingsSkillsPageElement} from './ai_page/skills_page.js';
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
 export {SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';
@@ -347,10 +351,6 @@ export {WebPrintingPageElement} from './site_settings/web_printing_page.js';
 export {WebsiteUsageBrowserProxyImpl} from './site_settings/website_usage_browser_proxy.js';
 export type {WebsiteUsageBrowserProxy} from './site_settings/website_usage_browser_proxy.js';
 export {ZoomLevelsElement} from './site_settings/zoom_levels.js';
-// <if expr="not is_chromeos and _google_chrome">
-export type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './system_page/on_device_ai_browser_proxy.js';
-export {OnDeviceAiBrowserProxyImpl} from './system_page/on_device_ai_browser_proxy.js';
-// </if>
 // <if expr="not is_chromeos">
 export {SettingsSystemPageElement} from './system_page/system_page.js';
 export {SystemPageBrowserProxyImpl} from './system_page/system_page_browser_proxy.js';

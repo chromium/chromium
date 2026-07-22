@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://settings/lazy_load.js';
+import 'chrome://settings/settings.js';
 
-import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled, SettingsSystemPageElement} from 'chrome://settings/lazy_load.js';
+import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from 'chrome://settings/lazy_load.js';
 import {OnDeviceAiBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
-import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {SettingsAiPageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -45,14 +46,14 @@ class TestOnDeviceAiBrowserProxy extends TestBrowserProxy implements
   }
 }
 
-suite('settings system page official', function() {
+suite('settings ai page official', function() {
   let testBrowserProxy: TestOnDeviceAiBrowserProxy;
-  let systemPage: SettingsSystemPageElement;
+  let aiPage: SettingsAiPageElement;
 
   function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    systemPage = document.createElement('settings-system-page');
-    document.body.appendChild(systemPage);
+    aiPage = document.createElement('settings-ai-page');
+    document.body.appendChild(aiPage);
   }
 
   setup(function() {
@@ -65,9 +66,8 @@ suite('settings system page official', function() {
   });
 
   function queryOnDeviceAiToggle(): SettingsToggleButtonElement|null {
-    // Toggle is conditionally rendered, so retrieve it via `querySelector`
-    // (`systemPage.$` only contains static DOM children).
-    return systemPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
+    // Toggle is conditionally rendered, so retrieve it via `querySelector`.
+    return aiPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
         '#onDeviceAiToggle');
   }
 

@@ -137,24 +137,6 @@ export function getHtml(this: SettingsSystemPageElement) {
     </relaunch-confirmation-dialog>
   ` : ''}
 </settings-section>
-
-<if expr="_google_chrome">
-<!-- On device AI settings -->
-${this.showOnDeviceAiSettings_ ? html`
-  <settings-section page-title="$i18n{onDeviceAiEnabledLabel}"
-      show-send-feedback-button
-      @send-feedback="${this.onOnDeviceAiSendFeedback_}"
-      class="cr-centered-card-container">
-    <settings-toggle-button id="onDeviceAiToggle"
-        .pref="${this.onDeviceAiPref_}"
-        label="$i18n{onDeviceAiEnabledLabel}"
-        sub-label-with-link="$i18n{onDeviceAiEnabledSubLabel}"
-        @sub-label-link-clicked="${this.onOnDeviceAiSubLabelLinkClicked_}"
-        @settings-boolean-control-change="${this.onOnDeviceAiSettingsBooleanControlChange_}">
-    </settings-toggle-button>
-  </settings-section>
-` : ''}
-</if>
 <!--_html_template_end_-->`;
   // clang-format on
 }

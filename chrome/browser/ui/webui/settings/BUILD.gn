@@ -108,11 +108,14 @@ source_set("settings") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "on_device_ai_settings_handler.h",
       "settings_default_browser_handler.h",
       "settings_manage_profile_handler.h",
       "system_handler.h",
     ]
+  }
+
+  if (is_chrome_branded) {
+    sources += [ "on_device_ai_settings_handler.h" ]
   }
 
   if (is_mac) {
@@ -318,7 +321,6 @@ source_set("impl") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
-      "on_device_ai_settings_handler.cc",
       "settings_default_browser_handler.cc",
       "settings_manage_profile_handler.cc",
       "system_handler.cc",
@@ -327,6 +329,10 @@ source_set("impl") {
       "//chrome/browser/default_browser",
       "//chrome/browser/ui/startup/default_browser_prompt",
     ]
+  }
+
+  if (is_chrome_branded) {
+    sources += [ "on_device_ai_settings_handler.cc" ]
   }
 
   if (is_mac) {
@@ -647,7 +653,7 @@ if (!is_android) {
       ]
     }
 
-    if (!is_chromeos && is_chrome_branded) {
+    if (is_chrome_branded) {
       sources += [ "on_device_ai_settings_handler_unittest.cc" ]
       deps += [ "//components/optimization_guide/core:features" ]
     }

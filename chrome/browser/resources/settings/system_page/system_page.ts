@@ -19,7 +19,6 @@ import '../settings_page/settings_section.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -32,10 +31,6 @@ import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
 import {getSearchManager} from '../search_settings.js';
 import type {SettingsPlugin} from '../settings_main/settings_plugin.js';
 
-// <if expr="_google_chrome">
-import type {OnDeviceAiBrowserProxy, OnDeviceAiEnabled} from './on_device_ai_browser_proxy.js';
-import {OnDeviceAiBrowserProxyImpl} from './on_device_ai_browser_proxy.js';
-// </if>
 import {getCss} from './system_page.css.js';
 import {getHtml} from './system_page.html.js';
 import {SystemPageBrowserProxyImpl} from './system_page_browser_proxy.js';
@@ -57,9 +52,6 @@ export interface SettingsSystemPageElement {
     proxy: HTMLElement,
     proxyMultipleSources: HTMLElement,
     hardwareAcceleration: SettingsToggleButtonElement,
-    // <if expr="_google_chrome">
-    onDeviceAiToggle: SettingsToggleButtonElement,
-    // </if>
   };
 }
 
@@ -82,11 +74,6 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
 
   static override get properties() {
     return {
-      // <if expr="_google_chrome">
-      showOnDeviceAiSettings_: {type: Boolean},
-      onDeviceAiPref_: {type: Object},
-      // </if>
-
       isProxyEnforcedByPolicy_: {type: Boolean},
       isProxyDefault_: {type: Boolean},
       isProxyEnforcedByMultipleSources_: {type: Boolean},
@@ -106,19 +93,6 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
       // </if>
     };
   }
-
-  // <if expr="_google_chrome">
-  protected accessor showOnDeviceAiSettings_: boolean =
-      loadTimeData.getBoolean('showOnDeviceAiSettings');
-  protected accessor onDeviceAiPref_:
-      chrome.settingsPrivate.PrefObject<boolean> = {
-    key: 'settings.on_device_ai_enabled',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: true,
-  };
-  private onDeviceAiBrowserProxy_: OnDeviceAiBrowserProxy =
-      OnDeviceAiBrowserProxyImpl.getInstance();
-  // </if>
 
   protected accessor isProxyEnforcedByPolicy_: boolean = false;
   protected accessor isProxyDefault_: boolean = false;
@@ -178,16 +152,6 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
       this.observeProxyPrefChanged_();
     }
   }
-
-  // <if expr="_google_chrome">
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    const setOnDeviceAiPref = (onDeviceAiEnabled: OnDeviceAiEnabled) =>
-        this.setOnDeviceAiPref_(onDeviceAiEnabled);
-    this.addWebUiListener('on-device-ai-enabled-changed', setOnDeviceAiPref);
-    this.onDeviceAiBrowserProxy_.getOnDeviceAiEnabled().then(setOnDeviceAiPref);
-  }
-  // </if>
 
   private observeProxyPrefChanged_() {
     if (!this.proxyPref_ || !this.proxyOverrideRulesPref_) {
@@ -261,39 +225,6 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
     e.stopPropagation();
     this.performRestart(RestartType.RESTART);
   }
-
-  // <if expr="_google_chrome">
-  protected onOnDeviceAiSubLabelLinkClicked_() {
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('onDeviceAiLearnMoreUrl'));
-  }
-
-  protected onOnDeviceAiSendFeedback_(e: Event) {
-    e.stopPropagation();
-    this.onDeviceAiBrowserProxy_.openFeedbackDialog();
-  }
-
-  protected onOnDeviceAiSettingsBooleanControlChange_(e: Event) {
-    const enabled = (e.target as SettingsToggleButtonElement).checked;
-    this.onDeviceAiBrowserProxy_.setOnDeviceAiEnabled(enabled);
-  }
-
-  private setOnDeviceAiPref_(onDeviceAiEnabled: OnDeviceAiEnabled) {
-    const pref: chrome.settingsPrivate.PrefObject<boolean> = {
-      key: 'settings.on_device_ai_enabled',
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: onDeviceAiEnabled.enabled,
-    };
-
-    if (!onDeviceAiEnabled.allowedByPolicy) {
-      pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-      pref.controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
-      pref.value = false;
-    }
-
-    this.onDeviceAiPref_ = pref;
-  }
-  // </if>
 
   /**
    * @param enabled Whether hardware acceleration is currently enabled.

@@ -1304,19 +1304,19 @@ class SettingsSystemPageTest : public SettingsBrowserTest {
 IN_PROC_BROWSER_TEST_F(SettingsSystemPageTest, SystemPage) {
   RunTest("settings/system_page_test.js", "mocha.run()");
 }
+#endif  //! BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-class SettingsSystemPageOfficialTest : public SettingsBrowserTest {
+class SettingsAiPageOfficialTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kShowOnDeviceAiSettings};
 };
 
-IN_PROC_BROWSER_TEST_F(SettingsSystemPageOfficialTest, SystemPageOfficial) {
-  RunTest("settings/system_page_official_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsAiPageOfficialTest, AiPageOfficial) {
+  RunTest("settings/ai_page_official_test.js", "mocha.run()");
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#endif  //! BUILDFLAG(IS_CHROMEOS)
 
 using SettingsAboutPageTest = SettingsBrowserTest;
 
