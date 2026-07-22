@@ -510,9 +510,12 @@ OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
   const ml::ModelBackendType backend_type =
       GetBackendType(model_metadata_->performance_hint());
 
-  if (backend_type == ml::ModelBackendType::kCpuBackend) {
-    // Weights cache is used for CPU backend (XNNPACK) only and re-built when
-    // it's deemed stale by version compatibility (see crbug.com/400998489).
+  if (backend_type == ml::ModelBackendType::kCpuBackend ||
+      base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelGpuWeightCache)) {
+    // Weights cache is used for CPU backend (XNNPACK) only (or enabled
+    // explicitly through feature flag) and re-built when it's deemed stale by
+    // version compatibility (see crbug.com/400998489).
     model_paths.cache = model_metadata_->model_path().Append(kWeightCacheFile);
   }
   model_paths.encoder_cache =
@@ -522,7 +525,7 @@ OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
   // TODO(crbug.com/461547475): GPU cache is experimental for now, remove
   // once feature flag is no longer needed.
   if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelGpuCache) &&
+          on_device_model::features::kOnDeviceModelGpuProgramCache) &&
       backend_type == ml::ModelBackendType::kGpuBackend) {
     // Program cache will be used for GPU backend only.
     model_paths.program_cache =

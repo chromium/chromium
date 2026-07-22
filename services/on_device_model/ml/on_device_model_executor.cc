@@ -776,9 +776,12 @@ LoadModelResult OnDeviceModelExecutor::Init(
     data.sentencepiece_model_path = sp_model_path_str.data();
   }
   // TODO(crbug.com/461547475): Determine whether weight caches should be used
-  // for GPU or just CPU only.
-  data.cache_file = params->backend_type == ml::ModelBackendType::kCpuBackend &&
-                            assets.cache.IsValid()
+  // for GPU or just CPU only (right now GPU weight cache is behind a flag).
+  bool enable_cache_file =
+      params->backend_type == ml::ModelBackendType::kCpuBackend ||
+      base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelGpuWeightCache);
+  data.cache_file = enable_cache_file && assets.cache.IsValid()
                         ? assets.cache.TakePlatformFile()
                         : base::kInvalidPlatformFile;
   if (assets.encoder_cache.IsValid()) {
@@ -790,7 +793,7 @@ LoadModelResult OnDeviceModelExecutor::Init(
   // TODO(crbug.com/461547475): GPU cache is experimental for now, remove
   // once feature flag is no longer needed.
   if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelGpuCache) &&
+          on_device_model::features::kOnDeviceModelGpuProgramCache) &&
       params->backend_type == ml::ModelBackendType::kGpuBackend &&
       assets.program_cache.IsValid()) {
     data.program_cache_file = assets.program_cache.TakePlatformFile();

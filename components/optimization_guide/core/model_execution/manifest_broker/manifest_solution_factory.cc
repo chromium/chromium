@@ -601,7 +601,9 @@ void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
   on_device_model::ModelAssetPaths paths;
   // We should not get here unless the asset is available.
   paths.weights = *ResolveFile(recipe.weights_file());
-  if (recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_CPU) {
+  if (recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_CPU ||
+      base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelGpuWeightCache)) {
     paths.cache = paths.weights.DirName().Append(kWeightCacheFile);
   }
   paths.encoder_cache = paths.weights.DirName().Append(kEncoderCacheFile);
@@ -609,7 +611,7 @@ void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,
   // TODO(crbug.com/461547475): GPU cache is experimental for now, remove
   // once feature flag is no longer needed.
   if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelGpuCache) &&
+          on_device_model::features::kOnDeviceModelGpuProgramCache) &&
       recipe.backend_type() == proto::BaseModelRecipe::BACKEND_TYPE_GPU) {
     // Program cache will be used for GPU backend only.
     paths.program_cache = paths.weights.DirName().Append(kProgramCacheFile);

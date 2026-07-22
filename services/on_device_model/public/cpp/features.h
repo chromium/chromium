@@ -26,9 +26,13 @@ BASE_DECLARE_FEATURE(kOnDeviceModelCpuBackend);
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
 BASE_DECLARE_FEATURE(kOnDeviceModelLitertLmBackend);
 
-// Whether the GPU cache is enabled for the on-device model.
+// Whether the GPU program cache is enabled for the on-device model.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
-BASE_DECLARE_FEATURE(kOnDeviceModelGpuCache);
+BASE_DECLARE_FEATURE(kOnDeviceModelGpuProgramCache);
+
+// Whether the GPU weight cache is enabled for the on-device model.
+COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)
+BASE_DECLARE_FEATURE(kOnDeviceModelGpuWeightCache);
 
 // Whether speculative decoding / MTP is enabled for the on-device model.
 COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP)

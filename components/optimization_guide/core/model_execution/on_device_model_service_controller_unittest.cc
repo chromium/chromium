@@ -459,7 +459,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   feature_list.InitWithFeaturesAndParameters(
       {{features::kOptimizationGuideOnDeviceModel,
         {{"on_device_model_topk", "1"}, {"on_device_model_temperature", "0"}}},
-       {on_device_model::features::kOnDeviceModelGpuCache, {}}},
+       {on_device_model::features::kOnDeviceModelGpuProgramCache, {}}},
       {});
 
   broker_.InstallBaseModel(std::make_unique<FakeBaseModelAsset>(
