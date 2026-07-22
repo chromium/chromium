@@ -164,7 +164,8 @@ class AutofillAiPersonalContextAccessManagerImpl
   // - Scheduling eviction of the prefetched types.
   // - Scheduling eviction of spii presence signals.
   // - Notifying observers.
-  void ProcessPrefetchedEntities(std::vector<EntityType> requested_types,
+  void ProcessPrefetchedEntities(std::vector<EntityType> prefetched_types,
+                                 std::vector<EntityType> requested_types,
                                  std::vector<ParsedEntity> parsed_entities);
 
   // Evaluates the prefetch trigger outcome for a requested entity type.

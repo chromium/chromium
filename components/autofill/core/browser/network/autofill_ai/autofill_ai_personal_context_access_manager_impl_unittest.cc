@@ -291,6 +291,45 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest, PrefetchContextSuccess) {
                                         u"Amazon"))));
 }
 
+// Tests that PrefetchContext ignores entity types in the response that were
+// not requested.
+TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
+       PrefetchContextFiltersUnrequestedTypes) {
+  personal_context::proto::ContextMemoryAmbientAutofillResponse response;
+  // Add the requested kOrder entity.
+  personal_context::proto::Entity* order_entity = response.add_entities();
+  order_entity->mutable_order()->set_order_id("12345");
+  order_entity->mutable_order()->set_merchant_name("Amazon");
+
+  // Add an unrequested kPassport presence signal.
+  personal_context::proto::Entity* passport_presence = response.add_entities();
+  passport_presence->mutable_sensitive_pii_presence()->set_type(
+      SensitivePiiPresence::PASSPORT);
+
+  std::vector<EntityInstance> entities;
+  EXPECT_CALL(mock_observer(), OnPrefetchContextComplete)
+      .WillOnce(SaveOptSpanToVector<1>(&entities));
+  PrefetchContextSync({EntityType(EntityTypeName::kOrder)}, {}, response);
+
+  // The requested type should be marked as prefetched.
+  EXPECT_TRUE(
+      access_manager().IsTypePrefetched(EntityType(EntityTypeName::kOrder)));
+
+  // The unrequested kPassport presence signal should NOT be cached.
+  EXPECT_FALSE(
+      test_api(access_manager())
+          .IsPresenceSignalCached(EntityType(EntityTypeName::kPassport)));
+
+  // The returned entities should only contain the requested kOrder.
+  EXPECT_THAT(entities,
+              UnorderedElementsAre(AllOf(
+                  Property(&EntityInstance::type,
+                           Property(&EntityType::name, EntityTypeName::kOrder)),
+                  HasAttributeWithValue(AttributeTypeName::kOrderId, u"12345"),
+                  HasAttributeWithValue(AttributeTypeName::kOrderMerchantName,
+                                        u"Amazon"))));
+}
+
 // Tests that PrefetchContext filters out and only requests entity types that
 // don't have a valid prefetching result available.
 TEST_F(AutofillAiPersonalContextAccessManagerImplTest,

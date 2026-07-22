@@ -225,6 +225,7 @@ void AutofillAiPersonalContextAccessManagerImpl::
   }
 
   ProcessPrefetchedEntities(std::move(prefetched_types),
+                            std::move(requested_types),
                             std::move(*parsed_entities));
 }
 
@@ -382,10 +383,11 @@ void AutofillAiPersonalContextAccessManagerImpl::ResetStateForType(
 }
 
 void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
+    std::vector<EntityType> prefetched_types,
     std::vector<EntityType> requested_types,
     std::vector<ParsedEntity> parsed_entities) {
-  // Evict existing entities for the `requested_types`.
-  for (const EntityType& type : requested_types) {
+  // Evict existing entities for the `prefetched_types`.
+  for (const EntityType& type : prefetched_types) {
     LogPrefetchTotalLatency(type);
     ResetStateForType(type);
     SetTypeStatus(type, RequestStatus::kSuccess);
@@ -405,11 +407,17 @@ void AutofillAiPersonalContextAccessManagerImpl::ProcessPrefetchedEntities(
   for (ParsedEntity& entity : parsed_entities) {
     if (const EntityInstance* e_instance =
             std::get_if<EntityInstance>(&entity.instance)) {
-      prefetched_proto_cache_.emplace(e_instance->guid(),
-                                      std::move(entity.proto));
-      entities.push_back(std::move(*e_instance));
+      if (std::ranges::contains(requested_types, e_instance->type())) {
+        prefetched_proto_cache_.emplace(e_instance->guid(),
+                                        std::move(entity.proto));
+        entities.push_back(std::move(*e_instance));
+      }
     } else {
-      CachePresenceSignal(std::get<SpiiEntityPresenceSignal>(entity.instance));
+      const SpiiEntityPresenceSignal signal =
+          std::get<SpiiEntityPresenceSignal>(entity.instance);
+      if (std::ranges::contains(requested_types, signal)) {
+        CachePresenceSignal(signal);
+      }
     }
   }
 
