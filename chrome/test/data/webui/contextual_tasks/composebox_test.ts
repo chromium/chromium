@@ -928,11 +928,11 @@ suite('ContextualTasksComposeboxTest', () => {
     if (!toolChipWithRc) {
       return;
     }
-    assertTrue(
+    assertFalse(
         toolChipWithRc.classList.contains('unremovable'),
-        'Canvas chip should be unremovable after query context');
+        'Canvas chip should be removable');
 
-    // Verify cannot remove.
+    // Verify chip can be removed by clicking.
     let eventFired = false;
     innerComposebox.addEventListener('tool-click', () => {
       eventFired = true;
@@ -940,7 +940,8 @@ suite('ContextualTasksComposeboxTest', () => {
 
     getChip()!.click();
     await microtasksFinished();
-    assertFalse(eventFired, 'Event should not be fired for unremovable chip');
+    assertTrue(
+        eventFired, 'Event should be fired when clicking chip to remove');
 
     // Reset to zero state.
     testProxy.callbackRouterRemote.onZeroStateChange(true);

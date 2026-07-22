@@ -31,11 +31,6 @@
   padding-inline-start: 12px;
 }
 
-#toolEnabledButton.unremovable {
-  cursor: default;
-  opacity: 0.3;
-}
-
 #toolEnabledButton:focus {
   outline-offset: -2px;
 }
@@ -61,18 +56,18 @@
   opacity: 0;
 }
 
-#toolEnabledButton:not(.unremovable):hover #leftCloseIcon,
-#toolEnabledButton:not(.unremovable):focus #leftCloseIcon {
+#toolEnabledButton:hover #leftCloseIcon,
+#toolEnabledButton:focus #leftCloseIcon {
   opacity: 1;
 }
 
-#toolEnabledButton:not(.unremovable):hover .tool-icon,
-#toolEnabledButton:not(.unremovable):focus .tool-icon {
+#toolEnabledButton:hover .tool-icon,
+#toolEnabledButton:focus .tool-icon {
   opacity: 0;
 }
 
-:host-context([energy-effect-enabled_]) #toolEnabledButton:not(.unremovable):hover .tool-icon,
-:host-context([energy-effect-enabled_]) #toolEnabledButton:not(.unremovable):focus .tool-icon {
+:host-context([energy-effect-enabled_]) #toolEnabledButton:hover .tool-icon,
+:host-context([energy-effect-enabled_]) #toolEnabledButton:focus .tool-icon {
   opacity: 1;
 }
 
@@ -94,10 +89,6 @@
 
 :host-context([energy-effect-enabled_]) #rightCloseIcon {
   display: block;
-}
-
-#toolEnabledButton.unremovable #rightCloseIcon {
-  display: none;
 }
 
 :host-context([energy-effect-enabled_]) .tool-label {
