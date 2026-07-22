@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
-#include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
@@ -43,10 +42,12 @@ std::unique_ptr<HostEventLogger> HostEventFileLogger::Create() {
     return nullptr;
   }
 
-  base::FilePath log_file_path =
-      directory.AppendASCII(base::UnlocalizedTimeFormatWithPattern(
-          base::Time::Now(),
-          "'chrome_remote_desktop'_yyyyMMdd_HHmmss_SSS.'log'"));
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  base::FilePath log_file_path = directory.AppendASCII(base::StringPrintf(
+      "chrome_remote_desktop_%04d%02d%02d_%02d%02d%02d_%03d.log", exploded.year,
+      exploded.month, exploded.day_of_month, exploded.hour, exploded.minute,
+      exploded.second, exploded.millisecond));
 
   // Create the log_file and set the write mode to append.
   base::File log_file(log_file_path, base::File::Flags::FLAG_APPEND |
@@ -75,8 +76,12 @@ std::unique_ptr<HostEventLogger> HostEventFileLogger::Create() {
 void HostEventFileLogger::LogEvent(const EventTraceData& data) {
   // Log format is:
   // [YYYYMMDD/HHMMSS.sss:pid:tid:severity:file_name(line)] <message>
-  const std::string timestamp = base::UnlocalizedTimeFormatWithPattern(
-      data.time_stamp, "yyyyMMdd/HHmmss.SSS");
+  base::Time::Exploded exploded;
+  data.time_stamp.LocalExplode(&exploded);
+  const std::string timestamp = base::StringPrintf(
+      "%04d%02d%02d/%02d%02d%02d.%03d", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second,
+      exploded.millisecond);
   std::string message = base::StringPrintf(
       "[%s:%05d:%05d:%s:%s(%d)] %s", timestamp.c_str(), data.process_id,
       data.thread_id, EventTraceData::SeverityToString(data.severity).c_str(),
