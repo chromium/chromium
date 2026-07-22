@@ -466,9 +466,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 tab, tab, tab.GetContents());
   }
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableResurrectingPaymentsUsers) &&
-      page_action_controller_->ActionExists(
+  if (page_action_controller_->ActionExists(
           kActionShowPaymentsChurnedUsersBubble)) {
     payments_churned_users_page_action_controller_ =
         std::make_unique<autofill::PaymentsChurnedUsersPageActionController>(
