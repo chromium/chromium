@@ -77,11 +77,15 @@ bool IsExtentOutOfBounds(const void* ptr,
                          size_t extent_bytes,
                          size_t type_size) {
 #if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-  const uintptr_t address = partition_alloc::UntagPtr(ptr);
+  if (!extent_bytes) {
+    return false;
+  }
 
+  const uintptr_t address = partition_alloc::UntagPtr(ptr);
   if (!partition_alloc::IsManagedByPartitionAlloc(address)) {
     return false;
   }
+
   const auto pool = partition_alloc::internal::GetPool(address);
   auto reservation_offset_table =
       partition_alloc::internal::ReservationOffsetTable::Get(pool);

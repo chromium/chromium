@@ -530,10 +530,8 @@ class GSL_POINTER span {
       : span(unchecked, first, count) {
 #if PA_BUILDFLAG(CHECKED_SPAN)
     if (!std::is_constant_evaluated()) {
-      if (data() || size()) {
-        CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
-                                                    sizeof(element_type)));
-      }
+      CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
+                                                  sizeof(element_type)));
     }
 #endif  // PA_BUILDFLAG(CHECKED_SPAN)
   }
@@ -566,10 +564,8 @@ class GSL_POINTER span {
       : UNSAFE_BUFFERS(span(unchecked, first, last)) {
 #if PA_BUILDFLAG(CHECKED_SPAN)
     if (!std::is_constant_evaluated()) {
-      if (data() || size()) {
-        CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
-                                                    sizeof(element_type)));
-      }
+      CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
+                                                  sizeof(element_type)));
     }
 #endif  // PA_BUILDFLAG(CHECKED_SPAN)
   }
@@ -1079,10 +1075,8 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
       : span(unchecked, first, count) {
 #if PA_BUILDFLAG(CHECKED_SPAN)
     if (!std::is_constant_evaluated()) {
-      if (data() || size()) {
-        CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
-                                                    sizeof(element_type)));
-      }
+      CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
+                                                  sizeof(element_type)));
     }
 #endif  // PA_BUILDFLAG(CHECKED_SPAN)
   }
@@ -1113,10 +1107,8 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
       : UNSAFE_BUFFERS(span(unchecked, first, last)) {
 #if PA_BUILDFLAG(CHECKED_SPAN)
     if (!std::is_constant_evaluated()) {
-      if (data() || size()) {
-        CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
-                                                    sizeof(element_type)));
-      }
+      CHECK(!partition_alloc::IsExtentOutOfBounds(data(), size_bytes(),
+                                                  sizeof(element_type)));
     }
 #endif  // PA_BUILDFLAG(CHECKED_SPAN)
   }

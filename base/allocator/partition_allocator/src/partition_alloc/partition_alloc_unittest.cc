@@ -6629,6 +6629,18 @@ TEST_P(PartitionAllocTest, MultipleThreadCachePerThread) {
       internal::SlotStart::Unchecked(ptr2).Untag(), bucket_index, pos2));
   EXPECT_EQ(pos2, 0u);
 }
+
+// Documentation tests demonstrating the behavior of `IsExtentOutOfBounds()`.
+// This test passes if it doesn't crash.
+TEST_P(PartitionAllocTest, BoundsChecksDontCrash) {
+  EXPECT_FALSE(IsExtentOutOfBounds(static_cast<const void*>(nullptr), 1024u,
+                                   sizeof(char)));
+
+  void* object = allocator.root()->Alloc(32u);
+  EXPECT_FALSE(IsExtentOutOfBounds(object, 0u, sizeof(char)));
+  allocator.root()->Free(object);
+}
+
 }  // namespace partition_alloc::internal
 
 #endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
