@@ -297,7 +297,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
+    @DisabledTest(message = "crbug.com/494245361")
     public void testTypedSuggestions_OpenSuggestionWithEnter() {
         List<String> urlsToOpen =
                 List.of(
