@@ -139,21 +139,31 @@ void SendTabPushNotificationClient::LoadSendTabUrlInNewTab(
       sync_service->GetSendTabToSelfModel();
 
   const send_tab_to_self::SendTabToSelfEntry* entry =
-      send_tab_model->GetEntryByGUID(std::string(identifier));
+      send_tab_model->GetEntryByGUID(identifier);
 
   OpenNewTabCommand* command = nil;
   if (entry) {
     command = send_tab_to_self::CreateOpenNewTabCommand(entry);
   } else {
     command = [OpenNewTabCommand commandWithURLFromChrome:url];
+    if (!identifier.empty()) {
+      // Attach the entry GUID even if the entry is not in the model yet so that
+      // navigation tracking attributes the tab to the Send Tab to Self entry.
+      command.sendTabToSelfEntryGUID = base::SysUTF8ToNSString(identifier);
+    }
   }
 
   id<SceneCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
   [handler openURLInNewTab:command];
 
-  if (entry) {
-    send_tab_model->MarkEntryOpened(std::string(identifier));
+  if (!identifier.empty()) {
+    // Mark the entry opened and activated even if `entry` is null (not yet in
+    // the model). The underlying bridge buffers these IDs in
+    // `unknown_opened_entries_` / `unknown_activated_entries_`, preventing the
+    // auto-open logic from opening a duplicate tab when sync later finishes
+    // receiving the entry.
+    send_tab_model->MarkEntryOpened(identifier);
     send_tab_model->MarkEntryActivated(
         identifier,
         send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);

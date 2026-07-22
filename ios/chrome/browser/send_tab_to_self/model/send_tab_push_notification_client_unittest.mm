@@ -170,6 +170,40 @@ TEST_F(SendTabPushNotificationClientTest, TestNotificationInteraction) {
 }
 
 TEST_F(SendTabPushNotificationClientTest,
+       TestNotificationInteraction_EntryNotInModelYet) {
+  base::HistogramTester histogram_tester;
+  std::string guid = "guid_not_in_model_yet";
+
+  // Do NOT add the entry to `model_` prior to interaction to simulate the race
+  // condition where notification arrives/is tapped before sync completes.
+
+  // Set up expectation BEFORE the action.
+  OCMExpect([application_handler_
+      openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
+        EXPECT_EQ(GURL("https://www.example.com/"), command.URL);
+        EXPECT_NSEQ(base::SysUTF8ToNSString(guid),
+                    command.sendTabToSelfEntryGUID);
+        return YES;
+      }]]);
+
+  // Trigger the interaction.
+  bool handle_interaction = client_->HandleNotificationInteraction(
+      MockRequestResponse(/*is_send_tab_notification=*/true, guid));
+  EXPECT_TRUE(handle_interaction);
+
+  // Assert that the entry was marked opened and activated on the model despite
+  // not being in the model yet.
+  EXPECT_EQ(guid, model_->last_opened_guid());
+  EXPECT_EQ(guid, model_->last_activated_guid());
+  EXPECT_EQ(model_->last_activated_entry_point(),
+            send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
+}
+
+TEST_F(SendTabPushNotificationClientTest,
        TestNotificationInteraction_NotSendTabNotification) {
   base::HistogramTester histogram_tester;
   bool handle_interaction = client_->HandleNotificationInteraction(
