@@ -7788,12 +7788,10 @@ const CSSValue* OverflowClipMargin::ParseSingleValue(
   if (stream.Peek().GetType() == kIdentToken) {
     reference_box = css_parsing_utils::ConsumeVisualBox(stream);
     length = css_parsing_utils::ConsumeLength(
-        stream, context, local_context,
-        CSSPrimitiveValue::ValueRange::kNonNegative);
+        stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
   } else {
     length = css_parsing_utils::ConsumeLength(
-        stream, context, local_context,
-        CSSPrimitiveValue::ValueRange::kNonNegative);
+        stream, context, local_context, CSSPrimitiveValue::ValueRange::kAll);
     reference_box = css_parsing_utils::ConsumeVisualBox(stream);
   }
 
