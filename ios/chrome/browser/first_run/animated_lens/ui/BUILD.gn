@@ -10,10 +10,12 @@ source_set("ui") {
   deps = [
     "//ios/chrome/app/strings:ios_branded_strings_grit",
     "//ios/chrome/app/strings:ios_strings",
-    "//ios/chrome/browser/first_run/animated_lens/resources:animation_files",
+    "//ios/chrome/browser/first_run/best_features/resources:animation_files",
     "//ios/chrome/browser/first_run/public:constants",
+    "//ios/chrome/browser/shared/ui/animated_promo:utils",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",

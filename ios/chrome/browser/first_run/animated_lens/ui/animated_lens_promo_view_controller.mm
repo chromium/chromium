@@ -5,8 +5,10 @@
 #import "ios/chrome/browser/first_run/animated_lens/ui/animated_lens_promo_view_controller.h"
 
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -17,21 +19,15 @@
 
 namespace {
 // Video asset names.
-NSString* const kLensTutorialAnimation = @"lens_tutorial_promo";
-NSString* const kLensTutorialAnimationDarkomode =
-    @"lens_tutorial_promo_darkmode";
+NSString* const kLensTutorialAnimation = @"search_with_lens_promo";
 
 // Accessibility IDs.
 NSString* const kLensTutorialAnimationViewId = @"LensTutorialAnimationViewId";
-NSString* const kLensTutorialAnimationDarkViewId =
-    @"LensTutorialAnimationDarkViewId";
 }  // namespace
 
 @implementation AnimatedLensPromoViewController {
   // Animation view.
   id<LottieAnimation> _animationViewWrapper;
-  // Animation view in dark mode.
-  id<LottieAnimation> _animationViewWrapperDarkMode;
 }
 
 #pragma mark - UIViewController
@@ -55,24 +51,22 @@ NSString* const kLensTutorialAnimationDarkViewId =
 
   [self createAnimationViews];
 
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                     withAction:@selector(configureAnimationColors)];
+  [self configureAnimationColors];
+
   [super viewDidLoad];
 }
 
 #pragma mark - Private
 
-// Creates the animation views. Sets `_animationViewWrapper` and
-// `_animationViewWrapperDarkMode`.
+// Creates the animation views. Sets `_animationViewWrapper`
 - (void)createAnimationViews {
   NSString* animationAssetName = kLensTutorialAnimation;
-  NSString* animationAssetNameDarkMode = kLensTutorialAnimationDarkomode;
 
   _animationViewWrapper = [self createAnimation:animationAssetName];
-  _animationViewWrapperDarkMode =
-      [self createAnimation:animationAssetNameDarkMode];
 
   _animationViewWrapper.animationView
-      .translatesAutoresizingMaskIntoConstraints = NO;
-  _animationViewWrapperDarkMode.animationView
       .translatesAutoresizingMaskIntoConstraints = NO;
 
   [self selectAnimationForCurrentStyle];
@@ -89,55 +83,78 @@ NSString* const kLensTutorialAnimationDarkViewId =
 
 // Selects regular or dark mode animation based on the given style.
 - (void)selectAnimationForStyle:(UIUserInterfaceStyle)style {
-  if (style == UIUserInterfaceStyleDark) {
-    _animationViewWrapper.animationView.hidden = YES;
-    [_animationViewWrapper stop];
-    _animationViewWrapperDarkMode.animationView.hidden = NO;
-    [_animationViewWrapperDarkMode play];
-    [self.specificContentView
-        addSubview:_animationViewWrapperDarkMode.animationView];
+  _animationViewWrapper.animationView.hidden = NO;
+  [_animationViewWrapper play];
+  [self.specificContentView addSubview:_animationViewWrapper.animationView];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [_animationViewWrapperDarkMode.animationView.centerXAnchor
-          constraintEqualToAnchor:self.specificContentView.centerXAnchor
-                         constant:-12],
-      [_animationViewWrapperDarkMode.animationView.topAnchor
-          constraintEqualToAnchor:self.specificContentView.topAnchor],
-      [_animationViewWrapperDarkMode.animationView.bottomAnchor
-          constraintEqualToAnchor:self.specificContentView.bottomAnchor
-                         constant:50],
-    ]];
-  } else {
-    _animationViewWrapperDarkMode.animationView.hidden = YES;
-    [_animationViewWrapperDarkMode stop];
-    _animationViewWrapper.animationView.hidden = NO;
-    [_animationViewWrapper play];
-    [self.specificContentView addSubview:_animationViewWrapper.animationView];
+  [NSLayoutConstraint activateConstraints:@[
+    [_animationViewWrapper.animationView.centerXAnchor
+        constraintEqualToAnchor:self.specificContentView.centerXAnchor
+                       constant:-12],
+    [_animationViewWrapper.animationView.topAnchor
+        constraintEqualToAnchor:self.specificContentView.topAnchor],
+    [_animationViewWrapper.animationView.bottomAnchor
+        constraintEqualToAnchor:self.specificContentView.bottomAnchor
+                       constant:50],
+  ]];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [_animationViewWrapper.animationView.centerXAnchor
-          constraintEqualToAnchor:self.specificContentView.centerXAnchor
-                         constant:-12],
-      [_animationViewWrapper.animationView.topAnchor
-          constraintEqualToAnchor:self.specificContentView.topAnchor],
-      [_animationViewWrapper.animationView.bottomAnchor
-          constraintEqualToAnchor:self.specificContentView.bottomAnchor
-                         constant:50],
-    ]];
-
-    // Set low compression resistance priority for the animation views to make
-    // their height dynamic.
-    [_animationViewWrapper.animationView
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                        forAxis:UILayoutConstraintAxisVertical];
-    [_animationViewWrapperDarkMode.animationView
-        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                        forAxis:UILayoutConstraintAxisVertical];
-  }
+  // Set low compression resistance priority for the animation views to make
+  // their height dynamic.
+  [_animationViewWrapper.animationView
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisVertical];
 }
 
 // Selects the animation based on current dark mode settings.
 - (void)selectAnimationForCurrentStyle {
   [self selectAnimationForStyle:self.traitCollection.userInterfaceStyle];
 }
+
+// Configures the animation with semantic and custom colors.
+- (void)configureAnimationColors {
+  NSDictionary<NSString*, UIColor*>* lightModeColorProvider =
+      SearchWithLensColorProvider(
+          /*ntp_background_color=*/0xEDF4FE,
+          /*card_background_color=*/0xFFFFFF,
+          /*omnibox_background_color=*/0x022771,
+          /*lens_icon_background_color=*/0xFFFFFF,
+          /*magic_stack_content_color=*/0xE8F0FE,
+          /*results_inner_card_color=*/0xEFF4FE);
+  NSDictionary<NSString*, UIColor*>* darkModeColorProvider =
+      SearchWithLensColorProvider(
+          /*ntp_background_color=*/0x35363A,
+          /*card_background_color=*/0x3E4042,
+          /*omnibox_background_color=*/0x80868B,
+          /*lens_icon_background_color=*/0x3E4042,
+          /*magic_stack_content_color=*/0x4A4D50,
+          /*results_inner_card_color=*/0x35363A);
+  for (NSString* key in lightModeColorProvider.allKeys) {
+    UIColor* lightColor = lightModeColorProvider[key];
+    UIColor* darkColor = darkModeColorProvider[key];
+
+    ConfigureAnimationCustomColor(_animationViewWrapper, key, lightColor,
+                                  darkColor);
+  }
+}
+
+// Returns the color provider for the Search With Lens animation.
+NSDictionary<NSString*, UIColor*>* SearchWithLensColorProvider(
+    int ntp_background_color,
+    int card_background_color,
+    int omnibox_background_color,
+    int lens_icon_background_color,
+    int magic_stack_content_color,
+    int results_inner_card_color) {
+  return @{
+    @"ntp_background_color" : UIColorFromRGB(ntp_background_color),
+    @"card_background_color" : UIColorFromRGB(card_background_color),
+    @"omnibox_background_color" : UIColorFromRGB(omnibox_background_color),
+    @"lens_icon_background_color" : UIColorFromRGB(lens_icon_background_color),
+    @"shadow_background_color" : [UIColor colorNamed:kTertiaryBackgroundColor],
+    @"omnibox_text_color" : [UIColor colorNamed:kTextSecondaryColor],
+    @"magic_stack_content_color" : UIColorFromRGB(magic_stack_content_color),
+    @"results_inner_card_color" : UIColorFromRGB(results_inner_card_color),
+  };
+}
+
 @end
