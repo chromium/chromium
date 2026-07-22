@@ -151,7 +151,6 @@ public class LauncherShortcutActivity extends Activity {
                     boolean incognitoShortcutAdded =
                             preferences.readBoolean(
                                     ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
-
                     // Re-add the shortcut regardless of whether it was previously added, in
                     // case the locale has changed since the last addition.
                     // TODO(crbug.com/40125673): Investigate better locale change handling.

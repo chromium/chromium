@@ -1709,15 +1709,44 @@ public class IntentHandler {
      * @return The {@link Intent} to launch.
      */
     public static Intent createTrustedOpenNewWindowIntent(Context context, boolean incognito) {
-        Intent newIntent = new Intent();
-        newIntent.setClass(context, ChromeLauncherActivity.class);
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        newIntent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        newIntent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
-        newIntent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, incognito);
-        IntentUtils.addTrustedIntentExtras(newIntent);
+        return createBaseTrustedNewWindowIntent(context, incognito, null);
+    }
 
-        return newIntent;
+    /**
+     * Creates a trusted {@link Intent} that redirects or converts an existing source intent
+     * to launch in a new Incognito ChromeTabbedActivity window.
+     *
+     * If the source intent contains data, it is cloned to preserve the payload, and
+     * the necessary Incognito content routing flags are applied. Otherwise, a clean new Incognito
+     * window intent is returned.
+     *
+     * @param context A {@link Context} to access class and package information.
+     * @param sourceIntent The original {@link Intent} to redirect, or null.
+     * @return The trusted {@link Intent} to launch.
+     */
+    public static Intent createTrustedRedirectToIncognitoWindowIntent(
+            Context context, @Nullable Intent sourceIntent) {
+        Intent intent = createBaseTrustedNewWindowIntent(context, /*incognito=*/ true, sourceIntent);
+        if (sourceIntent != null && sourceIntent.getData() != null) {
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
+        }
+        return intent;
+    }
+
+    private static Intent createBaseTrustedNewWindowIntent(
+            Context context, boolean incognito, @Nullable Intent sourceIntent) {
+        Intent intent = (sourceIntent != null && sourceIntent.getData() != null)
+                ? new Intent(sourceIntent)
+                : new Intent();
+
+        intent.setClass(context, ChromeLauncherActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.putExtra(IntentHandler.EXTRA_PREFER_NEW, true);
+        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, incognito);
+
+        IntentUtils.addTrustedIntentExtras(intent);
+        return intent;
     }
 
     /**
