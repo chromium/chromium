@@ -1,14 +1,49 @@
 # Test Expectations File.
 #
 # Format:
-# [crbug.com/BUG] [ [Tags] ] TestClassName[/TestMethodName] [ [Expectations] ]
+# crbug.com/<###> [ [Tags] ] TestName [Expectations]
 #
-# Tags: iOS, iOS18, iOS26, 24A5355p, Simulator, Device, etc.
-# Expectations: Failure
+# Tag Matching Semantics:
+# - OS and Device tags use ANY (OR) matching semantics: If an expectation
+#   specifies multiple OS tags (e.g., [ iOS17 iOS18 ]) or multiple device tags
+#   (e.g., [ iPhone iPad ]), matching ANY tag within that category satisfies the
+#   category requirement.
+# - Other tags use ALL (AND) matching semantics: EVERY tag belonging to the
+#   "Other" category (e.g., [ Simulator Debug ASan ]) present in the expectation
+#   must be active for the expectation to apply.
+#
+# Supported Tags (case-insensitive):
+# - OS Version (supports hierarchical and partial version strings):
+#   - Major version: e.g., iOS18, iOS26
+#   - Major.Minor version: e.g., iOS18.1
+#   - Full version: e.g., iOS18.1.2
+#   - Build number: e.g., build-24A5355p (prefixed with 'build-')
+#
+# - Device Family and Model (supports hierarchical and partial model strings):
+#   - Family: iPhone, iPad
+#   - Model prefix (without revision suffix): e.g., iPhone16, iPad14
+#   - Exact hardware model: e.g., iPhone16,1, iPad14,3
+#
+# - Other Supported Tags:
+#   - Environment: Simulator, Device
+#   - Build configuration: Debug, Release
+#   - Sanitizer: ASan
+#   - Platform: Catalyst
+#
+# Expectations: Failure, Pass, Skip, Crash
+# (Multiple expectations can be combined, e.g., [ Pass Failure ] denotes a flaky
+# test that sometimes passes and sometimes fails.)
 #
 # Examples:
-# crbug.com/123456 [ iOS26 Simulator ] MyTestCase/testAppStoreSearch [ Failure ]
-# crbug.com/789101 [ iOS18 ] FlakyTestCase [ Failure ]
+# crbug.com/123456 [ iOS26 Simulator Debug ] MyTestCase/testAppStoreSearch [ Failure ]
+#     -> Expects MyTestCase/testAppStoreSearch to fail every time on debug builds on an iOS26
+#        Simulator.
+# crbug.com/789101 [ iOS17 iOS18 iPhone ] FlakyTestCase [ Pass Failure ]
+#     -> Expects FlakyTestCase to pass or fail (but never crash) on iPhone devices and
+#        simulators running iOS versions 17 or 18.
+# crbug.com/234567 [ iPhone16,1 ASan ] CrashingTestCase/testMethod [ Crash ]
+#     -> Expects CrashingTestCase/testMethod to crash every time on ASAN builds running on
+#        iPhone16,1 (iPhone 15 Pro) devices and simulators.
 #
 
 # Smoke test to verify expectations functionality. Do not remove.
