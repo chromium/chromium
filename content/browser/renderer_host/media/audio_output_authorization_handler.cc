@@ -167,14 +167,6 @@ void AudioOutputAuthorizationHandler::RequestDeviceAuthorization(
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
   auto trace_scope = std::make_unique<TraceScope>(device_id);
 
-  if (!IsValidDeviceId(device_id)) {
-    trace_scope->SimpleEvent("Invalid device id");
-    std::move(cb).Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND,
-                      media::AudioParameters::UnavailableDeviceParams(),
-                      std::string(), std::string());
-    return;
-  }
-
   // If |session_id| should be used for output device selection and such an
   // output device is found, reuse the input device permissions.
   if (media::AudioDeviceDescription::UseSessionIdToSelectDevice(session_id,
@@ -283,6 +275,14 @@ void AudioOutputAuthorizationHandler::AccessChecked(
                    ? true
                    : has_access;
 
+  if (has_access && !IsValidDeviceId(device_id)) {
+    trace_scope->SimpleEvent("Invalid device id");
+    std::move(cb).Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND,
+                      media::AudioParameters::UnavailableDeviceParams(),
+                      std::string(), std::string());
+    return;
+  }
+
   if (!has_access) {
     std::move(cb).Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED,
                       media::AudioParameters::UnavailableDeviceParams(),
@@ -291,8 +291,8 @@ void AudioOutputAuthorizationHandler::AccessChecked(
   }
 
   MediaDevicesManager::BoolDeviceTypes devices_to_enumerate;
-  devices_to_enumerate[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
-      true;
+  devices_to_enumerate[static_cast<size_t>(
+      MediaDeviceType::kMediaAudioOutput)] = true;
   media_stream_manager_->media_devices_manager()->EnumerateDevices(
       devices_to_enumerate,
       base::BindOnce(&AudioOutputAuthorizationHandler::TranslateDeviceID,

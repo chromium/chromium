@@ -18,6 +18,7 @@
 #include "media/base/output_device_info.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
@@ -565,8 +566,8 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
   audio_context->MaybeAllowAutoplayWithUnlockType(
       AutoplayUnlockType::kContextConstructor);
   if (audio_context->IsAllowedToStart(/*should_suppress_warning=*/true)) {
-    TRACE_EVENT1("webaudio", "AudioContext::Create - allowed to start",
-                 "UUID", audio_context->Uuid());
+    TRACE_EVENT1("webaudio", "AudioContext::Create - allowed to start", "UUID",
+                 audio_context->Uuid());
     audio_context->StartRendering();
     audio_context->ScheduleInitialTransitionToRunning();
   } else {
@@ -1216,8 +1217,8 @@ void AudioContext::StopRendering() {
 void AudioContext::SuspendRendering() {
   DCHECK(destination());
   SendLogMessage(__func__, "");
-  TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(),
-               "state", static_cast<int>(ContextState()));
+  TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(), "state",
+               static_cast<int>(ContextState()));
 
   // Cancel any pending transitions to "running" and stop rendering regardless
   // of current state. This addresses a race condition when suspend() is called
@@ -1319,6 +1320,14 @@ ScriptPromise<IDLUndefined> AudioContext::setSinkId(
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "Cannot proceed setSinkId on a closed AudioContext."));
+  }
+
+  if (!GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kSpeakerSelection)) {
+    return ScriptPromise<IDLUndefined>::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kNotAllowedError,
+                          "Permissions-Policy disallows speaker selection."));
   }
 
   SetSinkIdResolver* resolver =
@@ -2106,8 +2115,8 @@ void AudioContext::OnRenderError() {
 
 void AudioContext::ResumeOnPrerenderActivation() {
   CHECK(blocked_by_prerendering_);
-  TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(),
-               "state", static_cast<int>(ContextState()));
+  TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(), "state",
+               static_cast<int>(ContextState()));
   blocked_by_prerendering_ = false;
 
   // Re-evaluate autoplay policy on activation.
@@ -2148,8 +2157,8 @@ int AudioContext::PendingDeviceListUpdates() {
 
 void AudioContext::StartContextInterruption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
-  TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(),
-               "state", static_cast<int>(ContextState()));
+  TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(), "state",
+               static_cast<int>(ContextState()));
   SendLogMessage(__func__, "");
   V8AudioContextState::Enum context_state = ContextState();
   if (context_state == V8AudioContextState::Enum::kClosed ||
@@ -2173,8 +2182,8 @@ void AudioContext::StartContextInterruption() {
 
 void AudioContext::EndContextInterruption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
-  TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(),
-               "state", static_cast<int>(ContextState()));
+  TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(), "state",
+               static_cast<int>(ContextState()));
   SendLogMessage(__func__, "");
   is_interrupted_while_suspended_ = false;
   if (ContextState() == V8AudioContextState::Enum::kClosed) {

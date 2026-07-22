@@ -166,14 +166,13 @@ class AudioOutputAuthorizationHandlerTest : public RenderViewHostTestHarness {
         base::BindOnce(
             [](std::string* out, const MediaDeviceEnumeration& result) {
               // Index 0 is default, so use 1.
-              CHECK(
-                  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
-                      .size() > 1)
+              CHECK(result[static_cast<size_t>(
+                               MediaDeviceType::kMediaAudioOutput)]
+                        .size() > 1)
                   << "Expected to have a nondefault device.";
-              *out =
-                  result[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
-                        [1]
-                            .device_id;
+              *out = result[static_cast<size_t>(
+                  MediaDeviceType::kMediaAudioOutput)][1]
+                         .device_id;
             },
             base::Unretained(out)));
   }
@@ -310,6 +309,12 @@ TEST_F(AudioOutputAuthorizationHandlerTest, AuthorizeInvalidDeviceId_NotFound) {
       std::make_unique<AudioOutputAuthorizationHandler>(
           GetAudioSystem(), GetMediaStreamManager(),
           process()->GetDeprecatedID());
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AudioOutputAuthorizationHandler::OverridePermissionsForTesting,
+          base::Unretained(handler.get()), true));
+  SyncWithAllThreads();
 
   EXPECT_CALL(listener, Run(media::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND, _,
                             std::string(), std::string()))
