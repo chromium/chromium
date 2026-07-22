@@ -1,4 +1,0 @@
-include_rules = [
-  "+content/shell/browser/shell.h",
-  "+content/shell/common/shell_switches.h"
-]
