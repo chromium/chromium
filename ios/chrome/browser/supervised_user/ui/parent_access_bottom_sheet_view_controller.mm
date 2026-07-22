@@ -40,8 +40,8 @@ UIImage* CloseButtonImage(BOOL highlighted) {
     palette = [transparentPalette copy];
   }
 
-  return SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, 30), palette);
+  return SymbolWithPalette(SymbolWithPointSize(SymbolXMarkCircleFill, 30),
+                           palette);
 }
 
 }  // namespace
