@@ -7687,7 +7687,7 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-    {"read-anything-read-aloud-phrase-highlighting",
+    {"read-anything-read-aloud-phrase-highlighting-v2",
      flag_descriptions::kReadAnythingReadAloudPhraseHighlightingName,
      flag_descriptions::kReadAnythingReadAloudPhraseHighlightingDescription,
      kOsDesktop,

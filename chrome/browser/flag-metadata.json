@@ -8421,7 +8421,7 @@
     "expiry_milestone": 156
   },
   {
-    "name": "read-anything-read-aloud-phrase-highlighting",
+    "name": "read-anything-read-aloud-phrase-highlighting-v2",
     "owners": [
       "lwinston@google.com",
       "ajitnarayanan@google.com",
