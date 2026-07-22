@@ -21,6 +21,7 @@
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -179,6 +180,36 @@ TEST_F(OneGoogleBarLoaderImplTest, RequestUrlWithAdditionalQueryParams) {
   one_google_bar_loader()->SetAdditionalQueryParams(
       {{"test", ""}, {"async", ""}});
   EXPECT_EQ(base::StringPrintf("hl=%s&async=&test=", kApplicationLocale),
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
+}
+
+TEST_F(OneGoogleBarLoaderImplTest, AsyncParamInjectionIsNeutralized) {
+  one_google_bar_loader()->SetAdditionalQueryParams(
+      {{"hl", ""}, {"async", "fixed:0&authuser=1&INJECTED_PARAM=1"}});
+
+  GURL url = one_google_bar_loader()->GetLoadURLForTesting();
+
+  std::string value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "authuser", &value));
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "INJECTED_PARAM", &value));
+
+  EXPECT_EQ("async=fixed:0%26authuser%3D1%26INJECTED_PARAM%3D1&hl=",
+            url.GetQuery());
+}
+
+TEST_F(OneGoogleBarLoaderImplTest, AsyncParamPreservesColonAndComma) {
+  one_google_bar_loader()->SetAdditionalQueryParams(
+      {{"hl", ""}, {"async", "fixed:0,abp:1"}});
+
+  EXPECT_EQ("async=fixed:0,abp:1&hl=",
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
+}
+
+TEST_F(OneGoogleBarLoaderImplTest, NonAsyncParamColonStaysEscaped) {
+  one_google_bar_loader()->SetAdditionalQueryParams(
+      {{"hl", ""}, {"async", "fixed:0"}, {"foo", "a:b"}});
+
+  EXPECT_EQ("async=fixed:0&foo=a%3Ab&hl=",
             one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
 }
 
