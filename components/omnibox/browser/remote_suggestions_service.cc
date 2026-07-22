@@ -439,10 +439,12 @@ GURL RemoteSuggestionsService::EndpointUrl(
                                                "chrome-multimodal");
       break;
     }
+    case metrics::OmniboxEventProto::COMPOSEBOX_EVERYWHERE:
     case metrics::OmniboxEventProto::NTP_REALBOX:
     case metrics::OmniboxEventProto::NTP_COMPOSEBOX:
     case metrics::OmniboxEventProto::CO_BROWSING_COMPOSEBOX:
     case metrics::OmniboxEventProto::NTP_OMNIBOX_COMPOSEBOX:
+    case metrics::OmniboxEventProto::OMNIBOX_EVERYWHERE:
     case metrics::OmniboxEventProto::SRP_OMNIBOX_COMPOSEBOX:
     case metrics::OmniboxEventProto::OTHER_OMNIBOX_COMPOSEBOX:
       if (search_terms_args.lens_overlay_suggest_inputs.has_value() &&
