@@ -211,8 +211,11 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
                               value:kTestAddressFieldValue
                       userInitiated:YES];
   NSString* focus_script =
-      [NSString stringWithFormat:@"document.getElementById('%@').focus();",
-                                 kTestAddressFieldID];
+      [NSString stringWithFormat:
+                    @"var el = document.getElementById('%@');"
+                    @"el.focus();"
+                    @"el.dispatchEvent(new Event('focus', {bubbles: true}));",
+                    kTestAddressFieldID];
   NSError* focus_error = nil;
   test::EvaluateJavaScript(web_view_, focus_script, &focus_error);
   ASSERT_FALSE(focus_error);
@@ -325,8 +328,11 @@ TEST_F(WebViewAutofillTest, TestSuggestionFetchFillClear) {
                               value:[OCMArg any]
                       userInitiated:YES];
   NSString* focus_script =
-      [NSString stringWithFormat:@"document.getElementById('%@').focus()",
-                                 kTestAddressFieldID];
+      [NSString stringWithFormat:
+                    @"var el = document.getElementById('%@');"
+                    @"el.focus();"
+                    @"el.dispatchEvent(new Event('focus', {bubbles: true}));",
+                    kTestAddressFieldID];
   NSError* focus_error = nil;
   test::EvaluateJavaScript(web_view_, focus_script, &focus_error);
   ASSERT_TRUE(!focus_error);

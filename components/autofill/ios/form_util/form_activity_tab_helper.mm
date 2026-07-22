@@ -381,6 +381,9 @@ void FormActivityTabHelper::HandleFormActivity(
   if (!FormActivityParams::FromMessage(message, &params)) {
     return;
   }
+  if (force_submitted_by_user_for_testing_ && params.type == "focus") {
+    params.has_user_gesture = true;
+  }
 
   web::WebFramesManager* frames_manager =
       GetWebFramesManagerForAutofill(web_state);
