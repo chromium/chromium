@@ -846,12 +846,14 @@ Status WebViewImpl::SendBidiCommand(base::DictValue command,
 
 Status WebViewImpl::SendCommand(const std::string& cmd,
                                 const base::DictValue& params) {
+  WebViewImplHolder target_holder(this);
   return client_->SendCommand(cmd, params);
 }
 
 Status WebViewImpl::SendCommandFromWebSocket(const std::string& cmd,
                                              const base::DictValue& params,
                                              const int client_cmd_id) {
+  WebViewImplHolder target_holder(this);
   return client_->SendCommandFromWebSocket(cmd, params, client_cmd_id);
 }
 
@@ -859,6 +861,7 @@ Status WebViewImpl::SendCommandAndGetResult(
     const std::string& cmd,
     const base::DictValue& params,
     std::unique_ptr<base::Value>* value) {
+  WebViewImplHolder target_holder(this);
   base::DictValue result;
   Status status = client_->SendCommandAndGetResult(cmd, params, &result);
   if (status.IsError())

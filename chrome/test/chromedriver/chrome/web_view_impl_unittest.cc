@@ -577,6 +577,71 @@ TEST(TabTargets, TabNoPageAcquiredInitially) {
   ASSERT_EQ(kNoActivePage, tab_view.GetActivePage(&page).code());
 }
 
+namespace {
+
+class LockStateCapturingClient : public StubDevToolsClient {
+ public:
+  Status SendCommand(const std::string& method,
+                     const base::DictValue& params) override {
+    owner_locked_during_send_ = owner_ != nullptr && owner_->IsLocked();
+    return Status(kOk);
+  }
+
+  Status SendCommandFromWebSocket(const std::string& method,
+                                  const base::DictValue& params,
+                                  const int client_cmd_id) override {
+    owner_locked_during_send_ = owner_ != nullptr && owner_->IsLocked();
+    return Status(kOk);
+  }
+
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictValue& params,
+                                 base::DictValue* result) override {
+    owner_locked_during_send_ = owner_ != nullptr && owner_->IsLocked();
+    return Status(kOk);
+  }
+
+  bool OwnerLockedDuringSend() const { return owner_locked_during_send_; }
+
+  void Reset() { owner_locked_during_send_ = false; }
+
+ private:
+  bool owner_locked_during_send_ = false;
+};
+
+}  // namespace
+
+TEST(SendCommand, OwnerIsLockedWhileSending) {
+  // The owning WebView must remain locked for the entire duration of
+  // SendCommand and friends, so that it cannot be deleted by PageTracker if a
+  // primary page swap detaches the page while the command is awaiting its
+  // response.
+  std::unique_ptr<LockStateCapturingClient> client_uptr =
+      std::make_unique<LockStateCapturingClient>();
+  LockStateCapturingClient* client_ptr = client_uptr.get();
+  BrowserInfo browser_info;
+  WebViewImpl view(client_ptr->GetId(), true, nullptr, nullptr, &browser_info,
+                   std::move(client_uptr), std::nullopt,
+                   PageLoadStrategy::kEager, true);
+
+  base::DictValue params;
+  EXPECT_TRUE(StatusOk(view.SendCommand("method", params)));
+  EXPECT_TRUE(client_ptr->OwnerLockedDuringSend());
+  EXPECT_FALSE(view.IsLocked());
+
+  client_ptr->Reset();
+  EXPECT_TRUE(StatusOk(view.SendCommandFromWebSocket("method", params, 1)));
+  EXPECT_TRUE(client_ptr->OwnerLockedDuringSend());
+  EXPECT_FALSE(view.IsLocked());
+
+  client_ptr->Reset();
+  std::unique_ptr<base::Value> result;
+  EXPECT_TRUE(
+      StatusOk(view.SendCommandAndGetResult("method", params, &result)));
+  EXPECT_TRUE(client_ptr->OwnerLockedDuringSend());
+  EXPECT_FALSE(view.IsLocked());
+}
+
 TEST(CreateChild, IsPendingNavigation_NoErrors) {
   std::unique_ptr<MockSyncWebSocket> socket_uptr =
       std::make_unique<MockSyncWebSocket>(SyncWebSocket::StatusCode::kOk);
