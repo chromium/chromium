@@ -31,6 +31,8 @@ struct COMPONENT_EXPORT(AUTOFILL) DropdownKeyValueAndroid {
   DropdownKeyValueAndroid(DropdownKeyValueAndroid&&) = default;
   DropdownKeyValueAndroid& operator=(const DropdownKeyValueAndroid&) = default;
   DropdownKeyValueAndroid& operator=(DropdownKeyValueAndroid&&) = default;
+  friend bool operator==(const DropdownKeyValueAndroid&,
+                         const DropdownKeyValueAndroid&) = default;
 
   std::string key;
   std::u16string value;

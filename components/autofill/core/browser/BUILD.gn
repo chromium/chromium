@@ -979,6 +979,8 @@ static_library("browser") {
       "ui/addresses/android/autofill_address_ui_component_android.h",
       "ui/addresses/android/dropdown_key_value_android.cc",
       "ui/addresses/android/dropdown_key_value_android.h",
+      "ui/addresses/android/supported_countries_cache.cc",
+      "ui/addresses/android/supported_countries_cache.h",
     ]
   }
 
@@ -1864,6 +1866,7 @@ source_set("unit_tests") {
     sources += [
       "payments/android_bnpl_strategy_unittest.cc",
       "payments/autofill_save_iban_ui_info_unittest.cc",
+      "ui/addresses/android/supported_countries_cache_unittest.cc",
     ]
   }
 
