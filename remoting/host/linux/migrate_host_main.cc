@@ -331,13 +331,8 @@ bool MigrateToMultiProcess(const base::CommandLine& command_line) {
         std::cerr << "Failed to delete old pairing directory.\n";
         return false;
       }
-      // Ideally we should delete the old host config file, but an internal
-      // service will re-provision the host if it detects that the config file
-      // no longer exists. For now we just clear its content to prevent the
-      // single-process host from accidentally running.
-      // TODO: b/495898776 - just delete the file once the tooling is fixed.
-      if (base::PathExists(config_file) && !base::WriteFile(config_file, "")) {
-        std::cerr << "Failed to clear old host config file.\n";
+      if (base::PathExists(config_file) && !base::DeleteFile(config_file)) {
+        std::cerr << "Failed to delete old host config file.\n";
         return false;
       }
     }
