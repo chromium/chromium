@@ -218,11 +218,12 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
 
   // Having ARC Terms accepted automatically bypasses TOS stage.
   // Set it before |arc::SetArcPlayStoreEnabledForProfile|
-  browser()->profile()->GetPrefs()->SetBoolean(arc::prefs::kArcTermsAccepted,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(arc::prefs::kArcTermsAccepted,
+                                                  true);
   arc::SetArcPlayStoreEnabledForProfile(profile(), true);
   // Provisioning is completed.
-  browser()->profile()->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(arc::prefs::kArcSignedIn,
+                                                  true);
   // Start ARC
   arc::ArcSessionManager::Get()->StartArcForTesting();
 
@@ -331,7 +332,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
                        HoldingSpaceAPITest) {
-  auto* prefs = browser()->profile()->GetPrefs();
+  auto* prefs = browser()->GetProfile()->GetPrefs();
 
   ash::holding_space_prefs::SetPreviewsEnabled(prefs, false);
   ash::holding_space_prefs::MarkTimeOfFirstAdd(prefs);
@@ -780,7 +781,7 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateApiTestWithContextType,
   ASSERT_TRUE(
       RunAutotestPrivateExtensionTest("setDeviceLanguage", std::move(args)))
       << message_;
-  std::string cur_locale = browser()->profile()->GetPrefs()->GetString(
+  std::string cur_locale = browser()->GetProfile()->GetPrefs()->GetString(
       language::prefs::kApplicationLocale);
   EXPECT_EQ(cur_locale, target_locale);
 }

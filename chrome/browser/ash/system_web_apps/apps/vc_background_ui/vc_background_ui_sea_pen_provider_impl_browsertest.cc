@@ -92,10 +92,10 @@ class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
     camera_effects_controller->bypass_set_camera_effects_for_testing(true);
 
     const base::FilePath camera_background_img_dir =
-        browser()->profile()->GetPath().AppendASCII(
+        browser()->GetProfile()->GetPath().AppendASCII(
             "camera_background_img_dir");
     const base::FilePath camera_background_run_dir =
-        browser()->profile()->GetPath().AppendASCII(
+        browser()->GetProfile()->GetPath().AppendASCII(
             "camera_background_run_dir");
     ASSERT_TRUE(base::CreateDirectory(camera_background_img_dir));
     ASSERT_TRUE(base::CreateDirectory(camera_background_run_dir));
@@ -243,10 +243,10 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest, ObserverTests) {
 IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest,
                        ManagedUsersTests) {
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetProfilePolicyConnector()
       ->OverrideIsManagedForTesting(true);
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       ash::prefs::kGenAIVcBackgroundSettings,
       static_cast<int>(
           ash::personalization_app::ManagedSeaPenSettings::kAllowed));
@@ -257,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest,
       << " SeaPen VC Background feedback should be enabled for managed users "
          "with setting kAllowed";
 
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       ash::prefs::kGenAIVcBackgroundSettings,
       static_cast<int>(ash::personalization_app::ManagedSeaPenSettings::
                            kAllowedWithoutLogging));
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(VcBackgroundUISeaPenProviderImplTest,
          "users with setting kAllowedWithoutLogging";
   ;
 
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       ash::prefs::kGenAIVcBackgroundSettings,
       static_cast<int>(
           ash::personalization_app::ManagedSeaPenSettings::kDisabled));

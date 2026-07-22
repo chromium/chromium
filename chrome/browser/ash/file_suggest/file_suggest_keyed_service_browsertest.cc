@@ -78,7 +78,7 @@ class FileSuggestKeyedServiceBrowserTest
   // drive::DriveIntegrationServiceBrowserTestBase:
   void SetUpOnMainThread() override {
     drive::DriveIntegrationServiceBrowserTestBase::SetUpOnMainThread();
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
 
     WaitUntilFileSuggestServiceReady(
         FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile));
@@ -150,7 +150,7 @@ class FileSuggestKeyedServiceBrowserTest
 
   void NotifyFilesCreated(const std::vector<std::string>& file_ids) {
     std::vector<drivefs::mojom::FileChangePtr> changes;
-    Profile* const profile = browser()->profile();
+    Profile* const profile = browser()->GetProfile();
     for (const auto& file_id : file_ids) {
       base::FilePath drive_path("/");
       base::FilePath absolute_path = GetTestFilePath(file_id);
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
                        RespondToDriveRecentFilesUpdate) {
   base::HistogramTester histogram_tester;
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   FileSuggestKeyedService* service =
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile);
 
@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
                        RespondToDriveRecentFilesInvalidUpdate) {
   base::HistogramTester histogram_tester;
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   FileSuggestKeyedService* service =
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile);
 
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(FileSuggestKeyedServiceBrowserTest,
                        RespondToDriveRecentFilesPartiallyInvalidUpdate) {
   base::HistogramTester histogram_tester;
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   FileSuggestKeyedService* service =
       FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile);
 

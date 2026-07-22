@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerBrowserTestBasicInstall, Install) {
   EXPECT_EQ(GetManager().GetAppIdForSystemApp(GetAppType()), app_id);
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
-  Profile* profile = app_browser->profile();
+  Profile* profile = app_browser->GetProfile();
   web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(profile)->registrar_unsafe();
 
@@ -721,7 +721,7 @@ class SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
     LaunchFromFileSystemProvider_ReadFiles) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   WaitForTestSystemAppInstall();
   InstallTestFileSystemProvider(profile);
@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
     LaunchFromFileSystemProvider_WriteFileFails) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   WaitForTestSystemAppInstall();
   InstallTestFileSystemProvider(profile);
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
     LaunchFromFileSystemProvider_DeleteFileFails) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   WaitForTestSystemAppInstall();
   InstallTestFileSystemProvider(profile);
@@ -1229,7 +1229,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerChromeUntrustedTest, Install) {
   EXPECT_EQ(app_id, web_app::AppBrowserController::From(app_browser)->app_id());
   EXPECT_TRUE(GetManager().IsSystemWebApp(app_id));
 
-  Profile* profile = app_browser->profile();
+  Profile* profile = app_browser->GetProfile();
   web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(profile)->registrar_unsafe();
 

@@ -33,7 +33,7 @@ class SystemWebAppIntegrationTest
                                const GURL& url,
                                const std::string& title);
 
-  // Helper to obtain browser()->profile().
+  // Helper to obtain browser()->GetProfile().
   Profile* profile();
 
   // Launch the given System App |type| with the given |file_path| as a launch

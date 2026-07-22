@@ -662,7 +662,7 @@ class FileSystemExtensionApiTestWithApps
 
   // FileManagerPrivateApiTest:
   void SetUpOnMainThread() override {
-    Profile* profile = browser()->profile();
+    Profile* profile = browser()->GetProfile();
     file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile);
     ash::SystemWebAppManager::GetForTest(profile)
         ->InstallSystemAppsForTesting();

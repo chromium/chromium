@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest,
 // profiles.
 IN_PROC_BROWSER_TEST_F(KcerFactoryAshNoNssTest,
                        OffTheRecordProfileIsRedirected) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   auto* otr_profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
   base::WeakPtr<Kcer> kcer = KcerFactoryAsh::GetKcer(profile);

@@ -248,7 +248,7 @@ class FloatingSsoTest : public policy::PolicyTest {
     return CHECK_DEREF(floating_sso_session_cookies_pref).IsManaged();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   FloatingSsoService& floating_sso_service() {
     return CHECK_DEREF(FloatingSsoServiceFactory::GetForProfile(profile()));

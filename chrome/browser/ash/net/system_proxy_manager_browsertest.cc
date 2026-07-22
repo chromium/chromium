@@ -553,8 +553,8 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
   auto proxy_config = base::DictValue()
                           .Set("mode", ProxyPrefs::kPacScriptProxyModeName)
                           .Set("pac_url", "http://proxy");
-  browser()->profile()->GetPrefs()->SetDict(::proxy_config::prefs::kProxy,
-                                            std::move(proxy_config));
+  browser()->GetProfile()->GetPrefs()->SetDict(::proxy_config::prefs::kProxy,
+                                               std::move(proxy_config));
   RunUntilIdle();
   EXPECT_EQ(++set_auth_details_call_count,
             client_test_interface()->GetSetAuthenticationDetailsCallCount());
@@ -649,8 +649,8 @@ class SystemProxyCredentialsReuseBrowserTest
         base::DictValue()
             .Set("mode", ProxyPrefs::kFixedServersProxyModeName)
             .Set("server", proxy_server_.host_port_pair().ToString());
-    browser()->profile()->GetPrefs()->SetDict(::proxy_config::prefs::kProxy,
-                                              std::move(proxy_config));
+    browser()->GetProfile()->GetPrefs()->SetDict(::proxy_config::prefs::kProxy,
+                                                 std::move(proxy_config));
     RunUntilIdle();
   }
 
@@ -676,7 +676,10 @@ class SystemProxyCredentialsReuseBrowserTest
                                  const std::string& expected_username,
                                  const std::string& expected_password) {
     network::mojom::NetworkContext* network_context =
-        browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
+        browser()
+            ->GetProfile()
+            ->GetDefaultStoragePartition()
+            ->GetNetworkContext();
     std::string username;
     std::string password;
     base::RunLoop loop;

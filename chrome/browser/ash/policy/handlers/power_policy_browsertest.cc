@@ -224,8 +224,8 @@ void PowerPolicyBrowserTestBase::StoreAndReloadUserPolicy() {
   // take effect.
   RunClosureAndWaitForUserPolicyUpdate(
       base::BindOnce(&PowerPolicyBrowserTestBase::ReloadUserPolicy,
-                     base::Unretained(this), browser()->profile()),
-      browser()->profile());
+                     base::Unretained(this), browser()->GetProfile()),
+      browser()->GetProfile());
 }
 
 void PowerPolicyBrowserTestBase::

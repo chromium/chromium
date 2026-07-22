@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
                        DisableDrivePolicyTest) {
   // First make sure the pref is set to its default value which should permit
   // drive.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kDisableDrive, false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kDisableDrive, false);
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
   EXPECT_TRUE(integration_service->is_enabled());
 
   // ...next try to disable drive.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kDisableDrive, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kDisableDrive, true);
 
   EXPECT_EQ(integration_service,
             drive::DriveIntegrationServiceFactory::FindForProfile(
@@ -242,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceWithGaiaDisabledBrowserTest,
                        DriveDisabled) {
   // First make sure the pref is set to its default value which would normally
   // permit drive.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kDisableDrive, false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kDisableDrive, false);
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest, GetMetadata) {
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceBrowserTest,
                        LocateFilesByItemIds) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   InitTestFileMountRoot(profile);
   AddDriveFileWithRelativePath(profile, /*drive_file_id=*/"abc123",
                                /*directory_path=*/base::FilePath(""),
@@ -332,7 +332,7 @@ class DriveIntegrationServiceWithPrefDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationServiceWithPrefDisabledBrowserTest,
                        RenableAndDisableDrive) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   auto* drive_service = DriveIntegrationServiceFactory::FindForProfile(profile);
   EXPECT_FALSE(drive_service->is_enabled());
 
@@ -425,7 +425,7 @@ class DriveIntegrationBrowserTestWithMirrorSyncEnabled
   void SetUpOnMainThread() override { MockGetSyncingPaths(); }
 
   void ToggleMirrorSync(bool status, bool expect_fail = false) {
-    Profile* const profile = browser()->profile();
+    Profile* const profile = browser()->GetProfile();
     DriveMirrorSyncStatusObserver observer(
         DriveIntegrationServiceFactory::FindForProfile(profile),
         expect_fail ? !status : status);
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
 
 IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
                        EnableMirrorSyncWithNonExistMyFiles) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto* drive_service = DriveIntegrationServiceFactory::FindForProfile(profile);
 
   // Replace MyFiles mount point to something not exist.

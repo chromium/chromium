@@ -83,7 +83,7 @@ class SpotlightCrdManagerImplTest : public InProcessBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<SpotlightCrdManagerImpl> manager_;

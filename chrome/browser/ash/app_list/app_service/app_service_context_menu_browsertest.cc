@@ -45,7 +45,7 @@ class AppServiceContextMenuBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AppServiceContextMenuBrowserTest,
                        LaunchNewMenuItemDynamicallyChanges) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto web_app_install_info =
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
           GURL("https://example.org"));

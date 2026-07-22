@@ -51,7 +51,7 @@ class MigrationNotificationManagerTest : public InProcessBrowserTest {
   }
 
  protected:
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   MigrationNotificationManager* manager() {
     return MigrationNotificationManagerFactory::GetInstance()

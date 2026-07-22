@@ -147,7 +147,7 @@ WebTimeCalculationBrowserTest::GetChromeAppActivityState() {
 }
 
 Profile* WebTimeCalculationBrowserTest::GetProfile() {
-  return browser()->profile();
+  return browser()->GetProfile();
 }
 
 void WebTimeCalculationBrowserTest::UpdatePolicy() {

@@ -79,7 +79,7 @@ class AccessibilityFeaturesApiTest
  protected:
   // Returns pref service to be used to initialize and later verify
   // accessibility preference values.
-  PrefService* GetPrefs() { return browser()->profile()->GetPrefs(); }
+  PrefService* GetPrefs() { return browser()->GetProfile()->GetPrefs(); }
 
   // Returns the path of the extension that should be used in a parameterized
   // test.

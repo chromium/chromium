@@ -102,7 +102,7 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
                               true /* is_complete */,
                               -1 /* percent_complete */);
 
-    browser()->profile()->GetPrefs()->SetInteger(
+    browser()->GetProfile()->GetPrefs()->SetInteger(
         prefs::kQuickUnlockFingerprintRecord, 1);
   }
 
@@ -114,7 +114,7 @@ class FingerprintUnlockTest : public InProcessBrowserTest {
   }
 
   base::TimeDelta GetExpirationTime() {
-    int frequency = browser()->profile()->GetPrefs()->GetInteger(
+    int frequency = browser()->GetProfile()->GetPrefs()->GetInteger(
         prefs::kQuickUnlockTimeout);
     return quick_unlock::PasswordConfirmationFrequencyToTimeDelta(
         static_cast<quick_unlock::PasswordConfirmationFrequency>(frequency));
@@ -338,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
   // Emulate another biod restart giving us a different number of records so
   // `ScreenLocker::UpdateFingerprintStateForUser` can be triggered and so we
   // can check that the state indeed remains the same.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kQuickUnlockFingerprintRecord, 2);
   base::RunLoop().RunUntilIdle();
 
@@ -375,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest,
   EXPECT_EQ(state_after_bad_session, FingerprintState::UNAVAILABLE);
 
   // Emulate another biod restart, giving a record this time.
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       prefs::kQuickUnlockFingerprintRecord, 1);
 
   FingerprintState state_after_restart =
@@ -387,13 +387,13 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, PRE_FingerprintRecordsGone) {
   // Pretend that user has a fingerprint enrolled. Number of enrolled
   // fingerprints is cached in the prefs. But the actual fingerprint records
   // are gone.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   profile->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, FingerprintRecordsGone) {
   base::RunLoop().RunUntilIdle();
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   EXPECT_EQ(
       profile->GetPrefs()->GetInteger(prefs::kQuickUnlockFingerprintRecord), 0);
 }

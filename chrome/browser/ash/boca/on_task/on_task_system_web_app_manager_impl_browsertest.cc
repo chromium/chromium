@@ -115,7 +115,7 @@ class OnTaskSystemWebAppManagerImplBrowserTest : public InProcessBrowserTest {
                     : nullptr;
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -209,7 +209,7 @@ class ChromeOsFeedbackDelegateTest : public InProcessBrowserTest {
                      bool preload_system_logs = false) {
     // Will be called when preloading system logs is done.
     base::test::TestFuture<bool> fetch_future;
-    auto* profile_ = browser()->profile();
+    auto* profile_ = browser()->GetProfile();
     auto mock_private_delegate = std::make_unique<FakeFeedbackPrivateDelegate>(
         fetch_future.GetRepeatingCallback());
     auto mock_feedback_service =
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, GetSignedInUserEmail) {
 // - UserFeedbackWithLowLevelDebugDataAllowed = ["all"].
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        WifiDebugLogsAllowed_True_For_All) {
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("all"));
   auto feedback_delegate =
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - UserFeedbackWithLowLevelDebugDataAllowed = ["wifi"].
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        WifiDebugLogsAllowed_True_For_Wifi) {
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("wifi"));
   auto feedback_delegate =
@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - UserFeedbackWithLowLevelDebugDataAllowed = ["wifi", "bluetooth"].
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        WifiDebugLogsAllowed_True_For_Wifi_And_Bluetooth) {
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("wifi").Append("bluetooth"));
   auto feedback_delegate =
@@ -408,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - UserFeedbackWithLowLevelDebugDataAllowed = [].
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        WifiDebugLogsAllowed_False_For_Empty) {
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed, base::ListValue());
   auto feedback_delegate =
       ChromeOsFeedbackDelegate::CreateForTesting(browser()->GetProfile());
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // - UserFeedbackWithLowLevelDebugDataAllowed = ["other"].
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        WifiDebugLogsAllowed_False_For_Other) {
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("other"));
   auto feedback_delegate =
@@ -901,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 //   The flag passed to FeedbackParams is true.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        SendWifiDebugLogs_True_WhenAllowed) {
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("all"));
   ReportPtr report = Report::New();
@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 //   The flag passed to FeedbackParams is false.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
                        SendWifiDebugLogs_True_WhenNotAllowed) {
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed, base::ListValue());
   ReportPtr report = Report::New();
   report->description = kDescription;
@@ -958,7 +958,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest,
 // Test that when send_wifi_debug_logs is false:
 //   The flag passed to FeedbackParams is false.
 IN_PROC_BROWSER_TEST_F(ChromeOsFeedbackDelegateTest, SendWifiDebugLogs_False) {
-  browser()->profile()->GetPrefs()->SetList(
+  browser()->GetProfile()->GetPrefs()->SetList(
       prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
       base::ListValue().Append("all"));
   ReportPtr report = Report::New();

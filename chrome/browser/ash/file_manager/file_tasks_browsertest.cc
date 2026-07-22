@@ -242,7 +242,7 @@ class TestController {
   ~TestController() = default;
 
   void SetUpOnMainThread(InProcessBrowserTest* test_class_obj) {
-    profile_ = test_class_obj->browser()->profile();
+    profile_ = test_class_obj->browser()->GetProfile();
     test::AddDefaultComponentExtensionsOnMainThread(profile());
   }
 
@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
   Expectation test = {"gif", kMediaAppId};
   int remaining_expectations = 1;
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   base::WeakPtr<Volume> volume = test::InstallFileSystemProviderChromeApp(
       profile,
       base::BindOnce(base::IgnoreResult(&TestController::InstallExtension),
@@ -597,7 +597,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
   handler.accept.push_back(accept_entry2);
   web_app_info->file_handlers.push_back(std::move(handler));
 
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
 
   // Install a PWA.
   webapps::AppId app_id =
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteChromeApp) {
   apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
       extension_id);
 
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   std::vector<storage::FileSystemURL> files =
       test::CopyTestFilesIntoMyFiles(profile, {"test_small.tiff"});
 
@@ -700,7 +700,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackSucceedsWithQuickOffice) {
   }
 
   storage::FileSystemURL test_url;
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
 
   // GetUserFallbackChoice() returns `True` because the Fallback dialog can be
   // shown.
@@ -726,7 +726,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
   }
 
   // Uninstall QuickOffice.
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   extensions::ExtensionRegistrar::Get(profile)->RemoveComponentExtension(
       extension_misc::kQuickOfficeComponentExtensionId);
 
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
     return;
   }
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
       profile,
@@ -977,7 +977,7 @@ class WithEnterpriseFlagAndPrefs
 // list of file tasks if the corresponding prefs allow it.
 IN_PROC_BROWSER_TEST_P(WithEnterpriseFlagAndPrefs,
                        GoogleWorkspaceAndMicrosoft365Tasks) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
 
   auto [google_workspace_cloud_upload, microsoft_office_cloud_upload,
         odfs_extension_installed, is_managed] = GetParam();
@@ -1234,7 +1234,7 @@ class DriveTest : public TestAccountBrowserTest {
         fake_drivefs_helpers_[profile]->CreateFakeDriveFsListenerFactory());
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   mojo::Remote<drivefs::mojom::DriveFsDelegate>& drivefs_delegate() {
     return fake_drivefs_helpers_[profile()]->fake_drivefs().delegate();
@@ -1772,7 +1772,7 @@ class OneDriveTest : public TestAccountBrowserTest,
     SetNetworkConnected(connect_to_network);
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   // A file path on ODFS which represents the fake file 1 in OneDrive. This file
   // path can be used to open a file directly from ODFS using

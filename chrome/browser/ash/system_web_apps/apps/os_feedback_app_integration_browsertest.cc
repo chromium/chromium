@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, OpenFeedbackByHotKey) {
 IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, UserFeedbackNotAllowed) {
   WaitForTestSystemAppInstall();
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ash::chrome_prefs::kUserFeedbackAllowed, false);
   GURL old_url = FindActiveUrl(browser());
 
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, FeedbackAppAttributes) {
 IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest,
                        HideInLauncherAndSearchWhenUserFeedbackNotAllowed) {
   WaitForTestSystemAppInstall();
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ash::chrome_prefs::kUserFeedbackAllowed, false);
 
   // Check the correct attributes for Feedback App.

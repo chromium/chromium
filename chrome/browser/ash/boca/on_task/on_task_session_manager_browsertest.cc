@@ -156,7 +156,7 @@ class OnTaskSessionManagerBrowserTestBase : public InProcessBrowserTest {
     content::RunAllTasksUntilIdle();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 

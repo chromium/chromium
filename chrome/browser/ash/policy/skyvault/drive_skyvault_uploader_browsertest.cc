@@ -431,8 +431,8 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailsWhenDriveDisabled) {
       SetUpSourceFile(test_file_name, my_files_dir());
 
   // Disable drive.
-  browser()->profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive,
+                                                  true);
 
   base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
       future;

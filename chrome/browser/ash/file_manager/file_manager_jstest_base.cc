@@ -173,7 +173,7 @@ void FileManagerJsTestBase::SetUpOnMainThread() {
           ChromeWebUIControllerFactory::GetInstance());
   webui_controller_factory_->AddFactoryOverride(TestResourceUrl().GetHost(),
                                                 test_webui_provider_.Pointer());
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile);
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

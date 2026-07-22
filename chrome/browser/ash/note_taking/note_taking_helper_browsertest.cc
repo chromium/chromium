@@ -28,7 +28,7 @@ class NoteTakingHelperBrowserTest : public InProcessBrowserTest {
 
   static NoteTakingHelper* helper() { return NoteTakingHelper::Get(); }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 };
 
 IN_PROC_BROWSER_TEST_F(NoteTakingHelperBrowserTest, LaunchWebApp) {

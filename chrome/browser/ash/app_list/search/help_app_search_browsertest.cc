@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(HelpAppSwaSearchBrowserTest, Launch) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
   const webapps::AppId app_id = ash::kHelpAppId;
 

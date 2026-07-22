@@ -94,7 +94,7 @@ ChromeSearchResult* AppListSearchBrowserTest::FindResult(
 }
 
 Profile* AppListSearchBrowserTest::GetProfile() {
-  return browser()->profile();
+  return browser()->GetProfile();
 }
 
 }  // namespace app_list

@@ -55,7 +55,7 @@ class ArcUsbHostPermissionTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    profile_ = browser()->profile();
+    profile_ = browser()->GetProfile();
     arc::SetArcPlayStoreEnabledForProfile(profile_, true);
 
     arc_app_list_pref_ = ArcAppListPrefs::Get(profile_);

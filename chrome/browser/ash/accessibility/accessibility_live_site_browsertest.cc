@@ -52,7 +52,7 @@ class AccessibilityLiveSiteTest : public InProcessBrowserTest {
 
     // Pretend that enhanced network voices dialog has been accepted so that the
     // dialog does not block.
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kAccessibilitySelectToSpeakEnhancedVoicesDialogShown, true);
 
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();

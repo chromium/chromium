@@ -119,7 +119,7 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
     policy::PolicyTest::SetUpOnMainThread();
 
     browser()
-        ->profile()
+        ->GetProfile()
         ->GetProfilePolicyConnector()
         ->OverrideIsManagedForTesting(true);
     SetOneDrivePolicy("allowed");

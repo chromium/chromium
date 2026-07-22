@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenNewTabs) {
 // Flaky. https://crbug.com/331433886.
 IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, DISABLED_CtrlClickHomeButton) {
   // Show home page button.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   int tab_count = 1;
   EXPECT_EQ(tab_count, tab_strip_model->count());

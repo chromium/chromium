@@ -27,7 +27,7 @@ SystemWebAppIntegrationTest::SystemWebAppIntegrationTest() = default;
 SystemWebAppIntegrationTest::~SystemWebAppIntegrationTest() = default;
 
 Profile* SystemWebAppIntegrationTest::profile() {
-  return browser()->profile();
+  return browser()->GetProfile();
 }
 
 void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(

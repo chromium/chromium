@@ -133,7 +133,7 @@ void CrostiniBrowserTestBase::CreatedBrowserMainParts(
 }
 
 void CrostiniBrowserTestBase::SetUpOnMainThread() {
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       crostini::prefs::kCrostiniEnabled, true);
 }
 

@@ -121,7 +121,7 @@ class OpenWithBrowserBrowserTest
 
   Profile* profile() const {
     if (browser()) {
-      return browser()->profile();
+      return browser()->GetProfile();
     }
     return ProfileManager::GetActiveUserProfile();
   }
@@ -193,7 +193,7 @@ class OpenHostedFileWithAppBrowserBaseTest : public InProcessBrowserTest {
 
   Profile* profile() const {
     if (browser()) {
-      return browser()->profile();
+      return browser()->GetProfile();
     }
     return ProfileManager::GetActiveUserProfile();
   }

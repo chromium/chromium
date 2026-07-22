@@ -149,7 +149,7 @@ class OnTaskLockedSessionWindowTrackerBrowserTestBase
                     : nullptr;
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   OnTaskSystemWebAppManagerImpl* system_web_app_manager() {
     return system_web_app_manager_.get();

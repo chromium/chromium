@@ -26,7 +26,7 @@ class KerberosCredentialsManagerFactoryBrowserTest
 
 IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
                        GetServiceForPrimaryProfile) {
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   ASSERT_TRUE(ProfileHelper::IsPrimaryProfile(profile));
 
   KerberosCredentialsManager* manager =
@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
                        GetServiceForIncognitoProfile) {
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   Browser* incognito_browser = CreateIncognitoBrowser(profile);
   ASSERT_TRUE(incognito_browser);
 
@@ -54,7 +54,7 @@ IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(KerberosCredentialsManagerFactoryBrowserTest,
                        GetServiceForOtherProfile) {
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   ASSERT_TRUE(ProfileHelper::IsPrimaryProfile(profile));
 
   Profile* const other_profile = ProfileHelper::GetSigninProfile();

@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
 using AppServiceSystemWebAppItemBrowserTest = AppServiceAppItemBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(AppServiceSystemWebAppItemBrowserTest, Activate) {
-  Profile* const profile = browser()->profile();
+  Profile* const profile = browser()->GetProfile();
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
   const webapps::AppId app_id = ash::kHelpAppId;
 

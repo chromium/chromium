@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   AppListControllerDelegate* controller = client;
   ASSERT_TRUE(controller);
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   Profile* profile_otr =
       profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 

@@ -93,7 +93,7 @@ class CloudFileSystemBrowserTest : public InProcessBrowserTest {
  public:
   CloudFileSystemBrowserTest() = default;
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;

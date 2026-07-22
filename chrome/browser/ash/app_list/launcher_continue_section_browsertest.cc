@@ -151,7 +151,7 @@ class LauncherContinueSectionTest
 
     ash::ShellTestApi().SetTabletModeEnabledForTest(IsTabletMode());
 
-    Profile* const profile = browser()->profile();
+    Profile* const profile = browser()->GetProfile();
 
     ash::SystemWebAppManager::GetForTest(profile)
         ->InstallSystemAppsForTesting();

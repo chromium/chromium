@@ -25,7 +25,7 @@ using StartupSettingsCacheTest = InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(StartupSettingsCacheTest, PRE_RendererLocale) {
   // Simulate the user changing the browser's language setting. The setting
   // takes effect after restart.
-  browser()->profile()->GetPrefs()->SetString(
+  browser()->GetProfile()->GetPrefs()->SetString(
       language::prefs::kApplicationLocale, kSpanishLocale);
 }
 

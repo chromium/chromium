@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(HatsBluetoothRevampTriggerTest,
                        ShowSurveyNotCalledIfPrefIsFalse) {
   const user_manager::User& user = GetUserForProfile(browser()->GetProfile());
   const std::string notification_id = GetHatsNotificationId(user);
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ash::prefs::kUserPairedWithFastPair, true);
   EXPECT_FALSE(message_center()->FindVisibleNotificationById(notification_id));
 

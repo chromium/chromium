@@ -70,7 +70,7 @@ class OnTaskPodControllerImplBrowserTestBase : public InProcessBrowserTest {
                     : nullptr;
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   LockedSessionWindowTracker* window_tracker() {
     return LockedSessionWindowTrackerFactory::GetInstance()

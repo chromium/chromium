@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuActivation) {
   // Listener for IME menu event ready.
   ExtensionTestMessageListener event_listener("event_ready");
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ash::prefs::kLanguageImeMenuActivated, true);
 
   // Test the initial state and add listener for IME menu activation change.
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuActivation) {
   ASSERT_TRUE(config_listener.WaitUntilSatisfied()) << message_;
 
   // Trigger chrome.inputMethodPrivate.onImeMenuActivationChanged() event.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ash::prefs::kLanguageImeMenuActivated, false);
   // Test that the extension gets the IME activation change event properly.
   ASSERT_TRUE(event_listener.WaitUntilSatisfied()) << message_;
@@ -145,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
   ExtensionTestMessageListener activated_listener("activated");
   ExtensionTestMessageListener menu_listener("get_menu_update");
   ExtensionTestMessageListener list_listenter("list_change");
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       ash::prefs::kLanguageImeMenuActivated, true);
   ASSERT_TRUE(
       LoadExtension(test_data_dir_.AppendASCII("input_method/ime_menu2")));

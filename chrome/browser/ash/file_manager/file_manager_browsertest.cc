@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(QuickOfficeForceFileDownloadEnabledBrowserTest,
       embedded_test_server()->GetURL("/chromeos/file_manager/text.docx");
 
   content::DownloadManager* download_manager =
-      browser()->profile()->GetDownloadManager();
+      browser()->GetProfile()->GetDownloadManager();
   std::unique_ptr<content::DownloadTestObserver> download_observer(
       new content::DownloadTestObserverTerminal(
           download_manager, /*num_downloads=*/1,

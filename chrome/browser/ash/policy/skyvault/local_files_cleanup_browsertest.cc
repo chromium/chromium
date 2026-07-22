@@ -47,7 +47,7 @@ class LocalFilesCleanupTest : public policy::PolicyTest {
 IN_PROC_BROWSER_TEST_F(LocalFilesCleanupTest, Cleanup) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath my_files_path =
-      browser()->profile()->GetPath().AppendASCII("MyFiles");
+      browser()->GetProfile()->GetPath().AppendASCII("MyFiles");
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDirUnderPath(my_files_path));
   ASSERT_TRUE(base::DirectoryExists(temp_dir.GetPath()));

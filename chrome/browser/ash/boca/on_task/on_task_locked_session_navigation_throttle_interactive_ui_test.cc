@@ -212,7 +212,7 @@ class OnTaskLockedSessionNavigationThrottleInteractiveUITestBase
     content::RunAllTasksUntilIdle();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   boca::OnTaskSystemWebAppManagerImpl* system_web_app_manager() const {
     return system_web_app_manager_.get();

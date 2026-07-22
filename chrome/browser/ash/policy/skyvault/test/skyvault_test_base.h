@@ -37,7 +37,7 @@ class SkyvaultTestBase : public InProcessBrowserTest {
   void TearDown() override;
 
  protected:
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   const base::FilePath& my_files_dir() { return my_files_dir_; }
 

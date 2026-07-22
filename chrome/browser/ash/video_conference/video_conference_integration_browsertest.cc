@@ -182,9 +182,9 @@ class VideoConferenceIntegrationTest
     // Enable test mode to mock the SetCameraEffects calls.
     camera_effects_controller()->bypass_set_camera_effects_for_testing(true);
 
-    camera_background_img_dir_ = browser()->profile()->GetPath().AppendASCII(
+    camera_background_img_dir_ = browser()->GetProfile()->GetPath().AppendASCII(
         "camera_background_img_dir");
-    camera_background_run_dir_ = browser()->profile()->GetPath().AppendASCII(
+    camera_background_run_dir_ = browser()->GetProfile()->GetPath().AppendASCII(
         "camera_background_run_dir");
     camera_effects_controller()->set_camera_background_img_dir_for_testing(
         camera_background_img_dir_);
