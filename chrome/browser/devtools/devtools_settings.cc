@@ -134,6 +134,41 @@ void DevToolsSettings::Clear() {
                                 base::DictValue());
 }
 
+using devtools::DockSide;
+
+// static
+DockSide DevToolsSettings::GetDockSide(Profile* profile) {
+  if (!profile) {
+    return DockSide::kRight;
+  }
+
+  PrefService* prefs = profile->GetPrefs();
+  for (const char* dict_name : {GetDictionaryNameForSyncedPrefs(profile),
+                                prefs::kDevToolsPreferences}) {
+    const base::DictValue& dict = prefs->GetDict(dict_name);
+    const std::string* value = dict.FindString("currentDockState");
+    if (value) {
+      if (*value == "\"right\"") {
+        return DockSide::kRight;
+      }
+      if (*value == "\"left\"") {
+        return DockSide::kLeft;
+      }
+      if (*value == "\"bottom\"") {
+        return DockSide::kBottom;
+      }
+      if (*value == "\"undocked\"") {
+        return DockSide::kNone;
+      }
+    }
+  }
+  return DockSide::kRight;
+}
+
+DockSide DevToolsSettings::GetDockSide() const {
+  return GetDockSide(profile_);
+}
+
 const char* DevToolsSettings::GetDictionaryNameForSettingsName(
     const std::string& name) const {
   return synced_setting_names_.contains(name)
@@ -141,11 +176,17 @@ const char* DevToolsSettings::GetDictionaryNameForSettingsName(
              : prefs::kDevToolsPreferences;
 }
 
-const char* DevToolsSettings::GetDictionaryNameForSyncedPrefs() const {
+// static
+const char* DevToolsSettings::GetDictionaryNameForSyncedPrefs(
+    Profile* profile) {
   const bool isDevToolsSyncEnabled =
-      profile_->GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences);
+      profile->GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences);
   return isDevToolsSyncEnabled ? prefs::kDevToolsSyncedPreferencesSyncEnabled
                                : prefs::kDevToolsSyncedPreferencesSyncDisabled;
+}
+
+const char* DevToolsSettings::GetDictionaryNameForSyncedPrefs() const {
+  return GetDictionaryNameForSyncedPrefs(profile_);
 }
 
 void DevToolsSettings::DevToolsSyncPreferencesChanged() {

@@ -173,6 +173,7 @@ static_library("devtools") {
       "devtools_contents_resizing_strategy.h",
       "devtools_dispatch_http_request_params.cc",
       "devtools_dispatch_http_request_params.h",
+      "devtools_dock_side.h",
       "devtools_embedder_message_dispatcher.cc",
       "devtools_embedder_message_dispatcher.h",
       "devtools_eye_dropper.cc",
@@ -539,6 +540,7 @@ source_set("unit_tests") {
   if (enable_devtools_frontend) {
     sources += [
       "aida_client_unittest.cc",
+      "devtools_contents_resizing_strategy_unittest.cc",
       "devtools_file_helper_unittest.cc",
       "devtools_file_system_indexer_unittest.cc",
       "devtools_file_watcher_unittest.cc",

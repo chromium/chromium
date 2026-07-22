@@ -11,6 +11,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using devtools::DockSide;
+
 class DevToolsSettingsTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -256,4 +258,38 @@ TEST_F(DevToolsSettingsTest, GetPreference) {
   EXPECT_EQ(settings.Get("setting_unsynced")->GetString(), "unsynced value");
   EXPECT_EQ(settings.Get("setting_synced")->GetString(), "synced value");
   EXPECT_EQ(settings.Get("nonexistent"), std::nullopt);
+}
+
+TEST_F(DevToolsSettingsTest, GetDockSide) {
+  DevToolsSettings settings(&profile_);
+  settings.Register("currentDockState", {RegisterOptions::SyncMode::kDontSync});
+
+  // Default when unset is kRight.
+  EXPECT_EQ(settings.GetDockSide(), DockSide::kRight);
+
+  settings.Set("currentDockState", "\"right\"");
+  EXPECT_EQ(settings.GetDockSide(), DockSide::kRight);
+
+  settings.Set("currentDockState", "\"left\"");
+  EXPECT_EQ(settings.GetDockSide(), DockSide::kLeft);
+
+  settings.Set("currentDockState", "\"bottom\"");
+  EXPECT_EQ(settings.GetDockSide(), DockSide::kBottom);
+
+  settings.Set("currentDockState", "\"undocked\"");
+  EXPECT_EQ(settings.GetDockSide(), DockSide::kNone);
+}
+
+TEST_F(DevToolsSettingsTest, GetDockSideStaticAndSynced) {
+  // 1) Enable sync and store currentDockState in synced preferences
+  // dictionary.
+  profile_.GetPrefs()->SetBoolean(prefs::kDevToolsSyncPreferences, true);
+  {
+    ScopedDictPrefUpdate update(profile_.GetPrefs(),
+                                prefs::kDevToolsSyncedPreferencesSyncEnabled);
+    update->Set("currentDockState", "\"bottom\"");
+  }
+
+  // 2) Static call without calling Register() on a DevToolsSettings instance.
+  EXPECT_EQ(DevToolsSettings::GetDockSide(&profile_), DockSide::kBottom);
 }

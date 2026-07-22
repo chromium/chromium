@@ -1712,7 +1712,12 @@ void DevToolsWindow::Inspect(scoped_refptr<content::DevToolsAgentHost> host) {
 }
 
 void DevToolsWindow::SetInspectedPageBounds(const gfx::Rect& rect) {
-  DevToolsContentsResizingStrategy strategy(rect);
+  devtools::DockSide dock_side = devtools::DockSide::kNone;
+  if (is_docked_) {
+    dock_side = DevToolsSettings::GetDockSide(profile_);
+  }
+
+  DevToolsContentsResizingStrategy strategy(dock_side, rect);
   if (contents_resizing_strategy_.Equals(strategy)) {
     return;
   }
@@ -1794,14 +1799,16 @@ int DevToolsWindow::GetDockStateForLogging() {
     return kUndocked;
   }
 
-  gfx::Rect inspected_page_bounds = contents_resizing_strategy_.bounds();
-  if (inspected_page_bounds.x() > 0) {
-    return kLeft;
+  switch (contents_resizing_strategy_.dock_side()) {
+    case devtools::DockSide::kLeft:
+      return kLeft;
+    case devtools::DockSide::kBottom:
+      return kBottom;
+    case devtools::DockSide::kRight:
+      return kRight;
+    case devtools::DockSide::kNone:
+      return kUndocked;
   }
-  gfx::Rect devtools_bounds =
-      main_web_contents_->GetRenderWidgetHostView()->GetViewBounds();
-  return inspected_page_bounds.width() == devtools_bounds.width() ? kBottom
-                                                                  : kRight;
 }
 
 int DevToolsWindow::GetOpenedByForLogging() {

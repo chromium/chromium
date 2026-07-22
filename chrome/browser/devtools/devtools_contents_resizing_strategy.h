@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_CONTENTS_RESIZING_STRATEGY_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_CONTENTS_RESIZING_STRATEGY_H_
 
+#include "chrome/browser/devtools/devtools_dock_side.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -14,8 +15,8 @@
 class DevToolsContentsResizingStrategy {
  public:
   DevToolsContentsResizingStrategy();
-  explicit DevToolsContentsResizingStrategy(
-      const gfx::Rect& bounds);
+  DevToolsContentsResizingStrategy(devtools::DockSide dock_side,
+                                   const gfx::Rect& bounds);
 
   DevToolsContentsResizingStrategy(const DevToolsContentsResizingStrategy&) =
       delete;
@@ -27,8 +28,11 @@ class DevToolsContentsResizingStrategy {
 
   const gfx::Rect& bounds() const { return bounds_; }
   bool hide_inspected_contents() const { return hide_inspected_contents_; }
+  devtools::DockSide dock_side() const { return dock_side_; }
 
  private:
+  devtools::DockSide dock_side_ = devtools::DockSide::kNone;
+
   // Contents bounds. When non-empty, used instead of insets.
   gfx::Rect bounds_;
 
