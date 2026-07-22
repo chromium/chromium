@@ -25,6 +25,9 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
+#include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -115,6 +118,29 @@ void KeyDispatcher::Cancel() {
   Finish(MakeResult(mojom::ActionResultCode::kToolTimeout));
 }
 
+bool KeyDispatcher::ShouldRestartOnFocusSwap(
+    const WebElement& focused_element) const {
+  if (!features::kGlicActorIncrementalTypingWaitForEditableElement.Get()) {
+    return false;
+  }
+
+  if (!focused_element || !focused_element.IsEditable()) {
+    return false;
+  }
+
+  // Use flat tree containment to check if the target node is the same as or
+  // contained within the currently focused element (or vice versa). This
+  // avoids false-positive retries when the target is a text node inside a
+  // contenteditable container or a shadow DOM host whose focus moves
+  // internally.
+  bool is_original_target =
+      !resolved_target_->node.IsNull() &&
+      (resolved_target_->node.ContainsViaFlatTree(&focused_element) ||
+       focused_element.ContainsViaFlatTree(&resolved_target_->node));
+
+  return !is_original_target && !has_retried_;
+}
+
 void KeyDispatcher::PrepareIncrementalTyping(base::TimeTicks start_time,
                                              base::TimeDelta last_input_delay,
                                              bool started_in_editing_context) {
@@ -165,8 +191,60 @@ void KeyDispatcher::ContinueIncrementalTyping() {
                       "No widget during incremental typing"));
     return;
   }
-
   if (!is_key_down_) {
+    WebElement focused_element = FindFocusedElement(*type_tool_->frame());
+    if (ShouldRestartOnFocusSwap(focused_element)) {
+      // When a website opens an overlay or search popover upon initial typing,
+      // focus often shifts to a newly spawned input element. We retry the
+      // typing sequence on the new target once.
+      ACTOR_LOG() << "Element swapped to a new editable element during "
+                     "typing. Retrying sequence.";
+      has_retried_ = true;
+      has_cleared_auto_selection_ = false;
+      current_key_ = 0;
+
+      // Execute SelectAll on the new element before restarting. If the webpage
+      // copied over already typed characters to the new input box, selecting
+      // all ensures the restarted typing sequence overwrites the copied text
+      // rather than duplicating it. This also handles cases where a fresh
+      // overlay box is shown.
+      if (focused_element.GetDocument().GetFrame()) {
+        focused_element.GetDocument().GetFrame()->ExecuteCommand(
+            blink::WebString("SelectAll"));
+      }
+
+      base::TimeDelta input_delay = features::kGlicActorKeyUpDuration.Get();
+      task_runner_->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&KeyDispatcher::ContinueIncrementalTyping,
+                         weak_ptr_factory_.GetWeakPtr()),
+          input_delay);
+      return;
+    }
+
+    // When typing into search boxes or overlay inputs, website scripts or
+    // autocomplete handlers may automatically trigger full text selection (e.g.
+    // via delayed select() calls or in response to initial key events).
+    // Once auto-selection is detected and cleared,
+    // `has_cleared_auto_selection_` is set so we do not perform this check
+    // again during the remaining typing sequence.
+    if (current_key_ > 0 && !has_cleared_auto_selection_ &&
+        features::kGlicActorIncrementalTypingClearAutoSelection.Get()) {
+      if (focused_element && focused_element.ContainsFrameSelection() &&
+          focused_element.GetDocument().GetFrame()) {
+        blink::WebLocalFrame* frame = focused_element.GetDocument().GetFrame();
+        blink::WebRange range = frame->SelectionRange();
+        // Only clear the selection if it starts at index 0 (e.g. a full
+        // selectAll). This preserves inline autocomplete highlights (which
+        // start at index > 0).
+        if (!range.IsNull() && range.length() > 0 && range.StartOffset() == 0) {
+          frame->SetEditableSelectionOffsets(range.EndOffset(),
+                                             range.EndOffset());
+          has_cleared_auto_selection_ = true;
+        }
+      }
+    }
+
     base::WeakPtr<KeyDispatcher> weak_this = weak_ptr_factory_.GetWeakPtr();
     WebInputEventResult down_result = CreateAndDispatchKeyEvent(
         *widget, WebInputEvent::Type::kRawKeyDown, params);

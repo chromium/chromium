@@ -82,6 +82,11 @@ class KeyDispatcher {
   // Proceed to the next key event in the sequence.
   void ContinueIncrementalTyping();
 
+  // Checks if the focused element has shifted to a new editable element during
+  // typing, indicating that the typing sequence should restart on the new
+  // element.
+  bool ShouldRestartOnFocusSwap(const blink::WebElement& focused_element) const;
+
   // Wait for the page to stabilize so that incremental typing can start.
   void PrepareIncrementalTyping(base::TimeTicks start_time,
                                 base::TimeDelta last_input_delay,
@@ -125,6 +130,14 @@ class KeyDispatcher {
 
   TaskId task_id_;
   base::raw_ref<Journal> journal_;
+
+  // Tracks if we have already retried the typing sequence due to a focused
+  // element change.
+  bool has_retried_ = false;
+
+  // Tracks if we have already cleared an automatically created selection
+  // during typing.
+  bool has_cleared_auto_selection_ = false;
 
   base::WeakPtrFactory<KeyDispatcher> weak_ptr_factory_{this};
 };
