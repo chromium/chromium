@@ -24,14 +24,27 @@
   cr-policy-pref-indicator {
     margin-inline-end: var(--cr-controlled-by-spacing);
   }
+
+  a {
+    color: var(--cr-link-color);
+  }
 </style>
-<div id="outerRow" noSubLabel$="[[!subLabel]]">
+<div id="outerRow" noSubLabel$="[[!hasSubLabel_(subLabel, subLabelWithLink)]]">
   <div id="labelWrapper">
     <div class="label" aria-hidden="true">[[label]]</div>
-    <div class="cr-secondary-text label" id="sub-label" hidden="[[!subLabel]]">
-      <span id="sub-label-text" aria-hidden="true">
-        [[subLabel]]
-      </span>
+    <div class="cr-secondary-text label" id="sub-label"
+        hidden="[[!hasSubLabel_(subLabel, subLabelWithLink)]]">
+      <template is="dom-if" if="[[subLabel]]">
+        <span id="sub-label-text" aria-hidden="true">
+          [[subLabel]]
+        </span>
+      </template>
+      <template is="dom-if" if="[[subLabelWithLink]]">
+        <div id="sub-label-text-with-link"
+            inner-h-t-m-l="[[getSubLabelWithLinkContent_(subLabelWithLink)]]"
+            on-click="onSubLabelTextWithLinkClick_">
+        </div>
+      </template>
     </div>
   </div>
   <template is="dom-if" if="[[hasPrefPolicyIndicator_(pref.*)]]">
@@ -41,6 +54,6 @@
   <cr-toggle id="control" checked="{{checked}}"
       disabled="[[controlDisabled_(pref.*, disabled)]]"
       on-change="onToggleClick_"
-      aria-label="[[getAriaLabel_(label, subLabel)]]">
+      aria-label$="[[getAriaLabel_(label, subLabel, ariaLabel)]]">
   </cr-toggle>
 </div>
