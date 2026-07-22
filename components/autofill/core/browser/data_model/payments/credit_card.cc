@@ -692,39 +692,32 @@ bool CreditCard::UpdateFromImportedCard(const CreditCard& imported_card,
   }
 
   // Heuristically aggregated data should never overwrite user-confirmed data,
-  // with the exception of expired user-confirmed cards. Instead, discard any
-  // heuristically aggregated credit cards that disagree with explicitly entered
-  // data, so that the UI is not cluttered with duplicate cards.
-  if (this->is_user_confirmed() && !imported_card.is_user_confirmed()) {
-    // If the original card is expired and the imported card is not, and the
-    // name on the cards are identical, and the imported card's expiration date
-    // is not empty, update the expiration date.
-    if (this->IsExpired(AutofillClock::Now()) &&
-        !imported_card.IsExpired(AutofillClock::Now()) &&
-        (name_on_card_ == imported_card.name_on_card_) &&
-        (imported_card.expiration_month_ && imported_card.expiration_year_)) {
-      expiration_month_ = imported_card.expiration_month_;
-      expiration_year_ = imported_card.expiration_year_;
-    }
-    return true;
+  // with the exception of expired user-confirmed cards.
+  //
+  // The card number is intentionally not updated, so as to preserve any
+  // formatting (i.e. separator characters).  Since the card number is not
+  // updated, there is no reason to update the card type, either.
+
+  const bool may_update_all =
+      !is_user_confirmed_ || imported_card.is_user_confirmed_;
+  const bool may_update_expired_fields =
+      may_update_all || (IsExpired(AutofillClock::Now()) &&
+                         !imported_card.IsExpired(AutofillClock::Now()) &&
+                         name_on_card_ == imported_card.name_on_card_);
+
+  if (may_update_all) {
+    set_is_user_confirmed(imported_card.is_user_confirmed());
   }
 
-  set_is_user_confirmed(imported_card.is_user_confirmed());
-
-  // Note that the card number is intentionally not updated, so as to preserve
-  // any formatting (i.e. separator characters).  Since the card number is not
-  // updated, there is no reason to update the card type, either.
-  if (!imported_card.name_on_card_.empty()) {
+  if (may_update_all && !imported_card.name_on_card_.empty()) {
     name_on_card_ = imported_card.name_on_card_;
   }
 
-  // If |imported_card| has an expiration date, overwrite |this|'s expiration
-  // date with its value.
-  if (imported_card.expiration_month_ && imported_card.expiration_year_) {
+  if (may_update_expired_fields && imported_card.expiration_month_ &&
+      imported_card.expiration_year_) {
     expiration_month_ = imported_card.expiration_month_;
     expiration_year_ = imported_card.expiration_year_;
   }
-
   return true;
 }
 
