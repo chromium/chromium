@@ -952,7 +952,7 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   // P1: Profile 1 Menu Item
   // P2: Profile 2 Menu Item
   // CE: Component Extension Menu Item
-  // CEO: Component Extenison with Options Menu Item
+  // CEO: Component Extension with Options Menu Item
   // RE: Regular Extension Menu Item
   // REO: Regular Extension with Options Menu Item
   EXPECT_FALSE(IsCommandEnabled(context_menu, 0));  // P1 - CE
