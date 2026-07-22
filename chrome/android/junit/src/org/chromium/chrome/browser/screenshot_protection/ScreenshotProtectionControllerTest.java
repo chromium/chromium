@@ -271,6 +271,50 @@ public class ScreenshotProtectionControllerTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
+    public void testLayoutChange_Hub_Enterprise() {
+        when(mDataProtectionBridgeJniMock.hasBlockingScreenshotRule(mProfile)).thenReturn(true);
+        createController(/* isCustomTab= */ false);
+
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
+
+        LayoutStateObserver observer = mLayoutStateObserverCaptor.getValue();
+
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.HUB)).thenReturn(true);
+        observer.onStartedShowing(LayoutType.HUB);
+        assertTrue(mController.isScreenshotBlocked());
+        assertTrue(isWindowSecure());
+
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.HUB)).thenReturn(false);
+        observer.onFinishedHiding(LayoutType.HUB);
+        assertFalse(mController.isScreenshotBlocked());
+        assertFalse(isWindowSecure());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
+    public void testLayoutChange_ToolbarSwipe() {
+        when(mDataProtectionBridgeJniMock.hasBlockingScreenshotRule(mProfile)).thenReturn(true);
+        createController(/* isCustomTab= */ false);
+
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
+
+        LayoutStateObserver observer = mLayoutStateObserverCaptor.getValue();
+
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TOOLBAR_SWIPE)).thenReturn(true);
+        observer.onStartedShowing(LayoutType.TOOLBAR_SWIPE);
+        assertTrue(mController.isScreenshotBlocked());
+        assertTrue(isWindowSecure());
+
+        when(mLayoutStateProvider.isLayoutVisible(LayoutType.TOOLBAR_SWIPE)).thenReturn(false);
+        observer.onFinishedHiding(LayoutType.TOOLBAR_SWIPE);
+        assertFalse(mController.isScreenshotBlocked());
+        assertFalse(isWindowSecure());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.INCOGNITO_SCREENSHOT)
     public void testCustomTab_NoObservation() {
         createController(/* isCustomTab= */ true);

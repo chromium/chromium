@@ -23,7 +23,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.layouts.FilterLayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -148,7 +147,15 @@ public class ScreenshotProtectionController
         if (currentModel.isIncognito() && !ChromeFeatureList.sIncognitoScreenshot.isEnabled()) {
             return true;
         }
-        return mHasEnterpriseScreenshotRules ? mActiveTabBlocked : false;
+        if (mHasEnterpriseScreenshotRules) {
+            if (mLayoutStateProvider != null
+                    && (mLayoutStateProvider.isLayoutVisible(LayoutType.HUB)
+                            || mLayoutStateProvider.isLayoutVisible(LayoutType.TOOLBAR_SWIPE))) {
+                return true;
+            }
+            return mActiveTabBlocked;
+        }
+        return false;
     }
 
     private void maybeClearActiveTabCallback() {
@@ -217,21 +224,17 @@ public class ScreenshotProtectionController
         assertNonNull(layoutStateProvider);
         mLayoutStateProvider = layoutStateProvider;
         mLayoutStateObserver =
-                new FilterLayoutStateObserver(
-                        LayoutType.HUB,
-                        new LayoutStateObserver() {
-                            @Override
-                            public void onStartedShowing(int layoutType) {
-                                assert layoutType == LayoutType.HUB;
-                                updateScreenshotProtectionState();
-                            }
+                new LayoutStateObserver() {
+                    @Override
+                    public void onStartedShowing(int layoutType) {
+                        updateScreenshotProtectionState();
+                    }
 
-                            @Override
-                            public void onStartedHiding(int layoutType) {
-                                assert layoutType == LayoutType.HUB;
-                                updateScreenshotProtectionState();
-                            }
-                        });
+                    @Override
+                    public void onFinishedHiding(int layoutType) {
+                        updateScreenshotProtectionState();
+                    }
+                };
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
         mLayoutStateProviderSupplier.removeObserver(mOnLayoutStateProviderAvailableCallback);
     }
