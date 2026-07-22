@@ -193,6 +193,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     textInput.addEventListener('keydown', this.onInputKeyDown.bind(this));
     textInput.addEventListener('keyup', this.onInputKeyUp.bind(this));
     textInput.addEventListener('copy', this.onInputCopy_.bind(this));
+    textInput.addEventListener('cut', this.onInputCut_.bind(this));
 
     this.addEventListener('contextmenu', this.onContextMenu_.bind(this));
     this.addEventListener('dragstart', this.onDragStart_.bind(this));
@@ -694,6 +695,15 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   private onInputCopy_(e: ClipboardEvent): void {
     if (e.clipboardData && this.populateDataTransfer_(e.clipboardData)) {
       e.preventDefault();
+    }
+  }
+
+  private onInputCut_(e: ClipboardEvent): void {
+    if (e.clipboardData && this.populateDataTransfer_(e.clipboardData)) {
+      e.preventDefault();
+      // Go via execCommand to keep Ctrl-Z happy.
+      document.execCommand('delete');
+      this.onInputInput();
     }
   }
 
