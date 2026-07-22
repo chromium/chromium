@@ -525,6 +525,9 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
 }
 
 - (void)setShareEnabled:(BOOL)enabled {
+  if (enabled == _shareButton.isEnabled) {
+    return;
+  }
   _shareButton.enabled = enabled;
 }
 
@@ -559,6 +562,10 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
     _isLoading = !mustHideLoadingUI;
     _reloadButton.forceHidden = !mustHideLoadingUI;
     _stopButton.forceHidden = mustHideLoadingUI;
+    if (self.isViewLoaded) {
+      [self updateButtons:@[ _reloadButton, _stopButton ]
+          forFullscreenProgress:_fullscreenProgress];
+    }
 
     if (loadingStateChanged && isLoading) {
       [_progressBar setProgress:0.0 animated:NO];
@@ -1041,6 +1048,7 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
   for (UIView* button in buttons) {
     if (button.hidden) {
       button.alpha = 0;
+      button.transform = CGAffineTransformMakeScale(0.01, 0.01);
       continue;
     }
     if (progress > kFullscreenProgressThreshold) {
@@ -1782,6 +1790,10 @@ constexpr CGFloat kGlassShadowOpacity = 0.09;
   _leadingStackView.hidden = !_visible;
   _locationBarContainer.hidden = !_visible;
   _trailingStackView.hidden = !_visible;
+  [self updateButtons:_leadingStackView.arrangedSubviews
+      forFullscreenProgress:_fullscreenProgress];
+  [self updateButtons:_trailingStackView.arrangedSubviews
+      forFullscreenProgress:_fullscreenProgress];
   _progressBarContainer.hidden = !_visible || CanShowTabStrip(self);
   if (IsGlassToolbarEnabled()) {
     _glassBackgroundContainer.hidden = !_visible;
