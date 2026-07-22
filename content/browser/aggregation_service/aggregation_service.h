@@ -27,7 +27,6 @@ namespace content {
 
 class AggregationServiceObserver;
 class AggregatableReportRequest;
-class BrowserContext;
 
 // External interface for the aggregation service.
 class CONTENT_EXPORT AggregationService {
@@ -41,11 +40,6 @@ class CONTENT_EXPORT AggregationService {
   static constexpr int kMaxStoredReportsPerReportingOrigin = 1000;
 
   virtual ~AggregationService() = default;
-
-  // Gets the AggregationService that should be used for handling aggregations
-  // in the given `browser_context`. Returns nullptr if aggregation service is
-  // not enabled.
-  static AggregationService* GetService(BrowserContext* browser_context);
 
   // Constructs an AggregatableReport from the information in `report_request`.
   // `callback` will be run once completed which returns the assembled report

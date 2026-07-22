@@ -49,8 +49,6 @@
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/storage_service_impl.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "content/browser/aggregation_service/aggregation_service.h"
-#include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -887,7 +885,6 @@ class StoragePartitionImpl::DataDeletionHelper {
       storage::SpecialStoragePolicy* special_storage_policy,
       storage::FileSystemContext* filesystem_context,
       network::mojom::CookieManager* cookie_manager,
-      AggregationService* aggregation_service,
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -909,10 +906,10 @@ class StoragePartitionImpl::DataDeletionHelper {
     kQuota = 3,
     kLocalStorage = 4,
     kSessionStorage = 5,
-    kShaderCache = 6,    // Deprecated in favor of using kGpuCache.
-    kPluginPrivate = 7,  // Deprecated.
-    kConversions = 8,    // Deprecated.
-    kAggregationService = 9,
+    kShaderCache = 6,         // Deprecated in favor of using kGpuCache.
+    kPluginPrivate = 7,       // Deprecated.
+    kConversions = 8,         // Deprecated.
+    kAggregationService = 9,  // Deprecated.
     kSharedStorage = 10,
     kGpuCache = 11,
     kPrivateAggregation = 12,  // Deprecated.
@@ -1471,9 +1468,6 @@ void StoragePartitionImpl::Initialize(
 
   font_access_manager_ = FontAccessManager::Create();
 
-  aggregation_service_ =
-      std::make_unique<AggregationServiceImpl>(is_in_memory(), path, this);
-
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (is_in_memory()) {
     // Pass an empty path if in_memory so that CdmStorage.db is not stored on
@@ -1807,11 +1801,6 @@ StoragePartitionImpl::GetBrowsingTopicsSiteDataManager() {
 ContentIndexContextImpl* StoragePartitionImpl::GetContentIndexContext() {
   DCHECK(initialized_);
   return content_index_context_.get();
-}
-
-AggregationService* StoragePartitionImpl::GetAggregationService() {
-  DCHECK(initialized_);
-  return aggregation_service_.get();
 }
 
 leveldb_proto::ProtoDatabaseProvider*
@@ -2736,7 +2725,6 @@ void StoragePartitionImpl::ClearDataImpl(
       std::move(cookie_deletion_filter), GetPath(), dom_storage_context_.get(),
       quota_manager_.get(), special_storage_policy_.get(),
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
-      aggregation_service_.get(),
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
       cdm_storage_manager_.get(),
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -2837,7 +2825,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
     storage::SpecialStoragePolicy* special_storage_policy,
     storage::FileSystemContext* filesystem_context,
     network::mojom::CookieManager* cookie_manager,
-    AggregationService* aggregation_service,
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     CdmStorageManager* cdm_storage_manager,
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -3010,21 +2997,6 @@ void StoragePartitionImpl::DataDeletionHelper::ClearData(
             base::BindOnce(&ClearedGpuCache, barrier));
       }
     }
-  }
-
-  if (aggregation_service &&
-      (remove_mask_ & REMOVE_DATA_MASK_AGGREGATION_SERVICE)) {
-    // Currently the aggregation service only stores public keys and we don't
-    // have information on the page/context that uses the public key origin,
-    // therefore we don't check origins and instead just delete all rows in the
-    // given time range.
-    // TODO(crbug.com/40210305): Consider fine-grained deletion of public keys.
-    // TODO(crbug.com/40815455): Consider adding aggregation service origins to
-    // `CookiesTreeModel`.
-    aggregation_service->ClearData(
-        begin, end, generic_filter,
-        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-            CreateTaskCompletionClosure(TracingDataType::kAggregationService)));
   }
 
   if (remove_mask_ & REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS &&
@@ -3346,13 +3318,6 @@ void StoragePartitionImpl::OverrideSharedWorkerServiceForTesting(
     std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service) {
   DCHECK(initialized_);
   shared_worker_service_ = std::move(shared_worker_service);
-}
-
-
-void StoragePartitionImpl::OverrideAggregationServiceForTesting(
-    std::unique_ptr<AggregationService> aggregation_service) {
-  DCHECK(initialized_);
-  aggregation_service_ = std::move(aggregation_service);
 }
 
 void StoragePartitionImpl::OverrideDeviceBoundSessionManagerForTesting(

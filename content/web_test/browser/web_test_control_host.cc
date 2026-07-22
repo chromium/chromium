@@ -45,7 +45,6 @@
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -776,20 +775,12 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   }
 #endif  // BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 
-  // Delete all cookies and Aggregation service data
+  // Delete all cookies.
   {
     StoragePartition* storage_partition =
         browser_context->GetDefaultStoragePartition();
     storage_partition->GetCookieManagerForBrowserProcess()->DeleteCookies(
         network::mojom::CookieDeletionFilter::New(), base::DoNothing());
-
-    if (auto* aggregation_service =
-            AggregationService::GetService(browser_context)) {
-      aggregation_service->ClearData(
-          /*delete_begin=*/base::Time::Min(), /*delete_end=*/base::Time::Max(),
-          /*filter=*/StoragePartition::StorageKeyMatcherFunction(),
-          /*done=*/base::DoNothing());
-    }
   }
 
   ui::SelectFileDialog::SetFactory(nullptr);

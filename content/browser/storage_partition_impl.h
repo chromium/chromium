@@ -87,7 +87,6 @@ namespace indexed_db {
 class IndexedDBControlWrapper;
 }
 
-class AggregationService;
 class BackgroundFetchContext;
 class BlobRegistryWrapper;
 class BluetoothAllowedDevicesMap;
@@ -150,8 +149,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       BackgroundSyncContextImpl* background_sync_context);
   void OverrideSharedWorkerServiceForTesting(
       std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service);
-  void OverrideAggregationServiceForTesting(
-      std::unique_ptr<AggregationService> aggregation_service);
   void OverrideDeviceBoundSessionManagerForTesting(
       std::unique_ptr<network::mojom::DeviceBoundSessionManager>
           device_bound_session_manager);
@@ -273,7 +270,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   void SetFontAccessManagerForTesting(
       std::unique_ptr<FontAccessManager> font_access_manager);
   const std::string& GetPartitionDomain() const;
-  AggregationService* GetAggregationService();
   FontAccessManager* GetFontAccessManager();
 
   // blink::mojom::DomStorage interface.
@@ -803,7 +799,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<FontAccessManager> font_access_manager_;
   std::unique_ptr<BrowsingTopicsSiteDataManager>
       browsing_topics_site_data_manager_;
-  std::unique_ptr<AggregationService> aggregation_service_;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   std::unique_ptr<CdmStorageManager> cdm_storage_manager_;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
