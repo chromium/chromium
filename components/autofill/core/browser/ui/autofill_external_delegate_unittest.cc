@@ -1371,9 +1371,12 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_NoConnection) {
         EXPECT_THAT(
             suggestions,
             ElementsAre(AllOf(
-                HasMainText(l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION)),
+                HasMainText(u"shoe size"),
                 Field(&Suggestion::type, SuggestionType::kAtMemoryNoConnection),
+                Field(&Suggestion::labels,
+                      ElementsAre(ElementsAre(
+                          Suggestion::Text(l10n_util::GetStringUTF16(
+                              IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))))),
                 Field(&Suggestion::icon, Suggestion::Icon::kSadTab),
                 Field(&Suggestion::acceptability,
                       Suggestion::Acceptability::kUnacceptable))));

@@ -55,6 +55,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -484,12 +485,12 @@ Suggestion CreateNoDataSuggestion() {
 
 // Creates a suggestion to display when AtMemory search fails to connect to the
 // server.
-Suggestion CreateNoConnectionSuggestion() {
-  Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION),
-      SuggestionType::kAtMemoryNoConnection);
-  suggestion.acceptability =
-      Suggestion::Acceptability::kUnacceptable;
+Suggestion CreateNoConnectionSuggestion(std::u16string query) {
+  Suggestion suggestion(std::move(query),
+                        SuggestionType::kAtMemoryNoConnection);
+  suggestion.labels = {{Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))}};
+  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
   suggestion.icon = Suggestion::Icon::kSadTab;
   return suggestion;
@@ -610,7 +611,11 @@ bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
     return true;
   }
   std::vector<Suggestion> suggestions;
-  suggestions.push_back(CreateSearchAffordanceSuggestion(filter));
+  if (net::NetworkChangeNotifier::IsOffline()) {
+    suggestions.push_back(CreateNoConnectionSuggestion(filter));
+  } else {
+    suggestions.push_back(CreateSearchAffordanceSuggestion(filter));
+  }
 
   if (!owner_->client().ShouldShowPersonalContextAtMemoryNotice()) {
     suggestions.emplace_back(SuggestionType::kSeparator);
@@ -1051,7 +1056,7 @@ void AtMemoryManager::OnSearchResultsReceived(
     case accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess:
       break;
     case accessibility_annotator::MemorySearchStatus::kNoConnectionFailure:
-      suggestions.push_back(CreateNoConnectionSuggestion());
+      suggestions.push_back(CreateNoConnectionSuggestion(query));
       break;
     case accessibility_annotator::MemorySearchStatus::kInferenceFailure:
     case accessibility_annotator::MemorySearchStatus::kInternalFailure:

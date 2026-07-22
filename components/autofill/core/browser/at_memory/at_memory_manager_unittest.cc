@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/base/mock_network_change_notifier.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -303,6 +304,43 @@ TEST_F(AtMemoryManagerTest, OnFilterChanged_GeneratesSearchAffordance) {
   EXPECT_EQ(suggestions[0].labels[0][0].value,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_AT_MEMORY_SEARCH_AFFORDANCE_SUBTITLE));
+}
+
+// Tests that `OnFilterChanged` when offline generates the no connection
+// suggestion.
+TEST_F(AtMemoryManagerTest,
+       OnFilterChanged_Offline_GeneratesNoConnectionSuggestion) {
+  net::test::ScopedMockNetworkChangeNotifier notifier;
+  notifier.mock_network_change_notifier()->SetConnectionType(
+      net::NetworkChangeNotifier::CONNECTION_NONE);
+
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  autofill_client().set_should_show_personal_context_at_memory_notice(false);
+
+  std::vector<Suggestion> suggestions;
+  EXPECT_CALL(update_callback_,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillOnce(SaveArg<0>(&suggestions));
+
+  manager().OnFilterChanged(u"query");
+
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          AllOf(EqualsSuggestion(SuggestionType::kAtMemoryNoConnection,
+                                 u"query", Suggestion::Icon::kSadTab,
+                                 {{Suggestion::Text(l10n_util::GetStringUTF16(
+                                     IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION))}}),
+                Field(&Suggestion::acceptability,
+                      Suggestion::Acceptability::kUnacceptable)),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kAtMemoryAiDisclosure)));
 }
 
 // Tests that OnFilterChanged with a non-empty filter generates an AI disclosure
@@ -569,8 +607,11 @@ TEST_F(AtMemoryManagerTest,
 
   ASSERT_EQ(final_suggestions.size(), 1u);
   EXPECT_EQ(final_suggestions[0].type, SuggestionType::kAtMemoryNoConnection);
-  EXPECT_EQ(final_suggestions[0].main_text.value,
+  EXPECT_EQ(final_suggestions[0].main_text.value, u"query");
+  EXPECT_EQ(final_suggestions[0].labels[0][0].value,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION));
+  EXPECT_EQ(final_suggestions[0].acceptability,
+            Suggestion::Acceptability::kUnacceptable);
 }
 
 // Tests that when filling an attribute (e.g. Passport Number), the manager
