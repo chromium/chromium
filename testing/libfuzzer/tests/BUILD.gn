@@ -29,6 +29,7 @@ test("fuzzing_unittests") {
 
   deps = [
     "//base/test:run_all_unittests",
+    "//base/test:test_support",
     "//testing/gtest",
     "//third_party/fuzztest",
   ]
@@ -56,6 +57,13 @@ test("fuzzing_unittests") {
       "//testing/libfuzzer/fuzzers:string_compare_fuzzer",
       "//testing/libfuzzer/fuzzers:string_compare_proto_fuzzer",
     ]
+
+    # The __generate targets (the wrappers) are only generated on Linux, Mac,
+    # and Windows (see _building_fuzztest_fuzzer in testing/test.gni).
+    if (use_fuzztest_wrapper && (is_linux || is_mac || is_win)) {
+      data_deps += [ ":stub_fuzztest_StubFuzzer_Stub_fuzzer__generate" ]
+      defines += [ "USING_FUZZTEST_WRAPPER" ]
+    }
 
     # TODO(crbug.com/526667982): Fix when Mac Arm64 builds are fixed.
     # The fuzzer depends on //content/public/browser, which is not supported in
@@ -168,4 +176,14 @@ fuzzer_test("stacktrace_test_fuzzer") {
 
   # TODO(crbug.com/509668952): Remove this when FuzzTest is supported by tests.
   is_fuzztest_compatible = false
+}
+
+# A stub fuzztest target used by
+# FuzzerSmokeTest.WrapperDoesNotLeakChildOnSIGTERM to verify that the fuzztest
+# wrapper does not leak child processes on SIGTERM.
+test("stub_fuzztest") {
+  sources = [ "stub_fuzztest.cc" ]
+  fuzztests = [ "StubFuzzer.Stub" ]
+  deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
+  configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
 }

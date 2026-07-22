@@ -22,8 +22,12 @@
 #include "testing/libfuzzer/buildflags.h"
 
 #if BUILDFLAG(IS_POSIX)
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
+#include "base/posix/eintr_wrapper.h"
 #include "base/posix/safe_strerror.h"
 #endif
 
@@ -66,9 +70,42 @@ void HandleReplayMode(auto& args) {
 
 #endif  // BUILDFLAG(USE_CENTIPEDE)
 
+base::ProcessId g_child_pid = 0;
+
+// Setup signal handlers so we can propagate signals, i.e. SIGTERM and SIGINT,
+// to the underlying fuzzer.
+void SetupSignalHandlers() {
+#if BUILDFLAG(IS_POSIX)
+  auto* signal_handler = +[](int signum) {
+    if (g_child_pid > 0) {
+      kill(g_child_pid, signum);
+      int status;
+      HANDLE_EINTR(waitpid(g_child_pid, &status, /*options=*/0));
+    }
+
+    struct sigaction action;
+    action.sa_handler = SIG_DFL;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = 0;
+
+    sigaction(signum, &action, /*oldact=*/nullptr);
+    kill(getpid(), signum);
+  };
+
+  struct sigaction action;
+  action.sa_handler = signal_handler;
+  sigemptyset(&action.sa_mask);
+  action.sa_flags = 0;
+
+  sigaction(SIGTERM, &action, /*oldact=*/nullptr);
+  sigaction(SIGINT, &action, /*oldact=*/nullptr);
+#endif
+}
+
 }  // namespace
 
 int main(int argc, const char* const* argv) {
+  SetupSignalHandlers();
   base::CommandLine::Init(argc, argv);
   base::FilePath fuzzer_path;
   if (!base::PathService::Get(base::DIR_EXE, &fuzzer_path)) {
@@ -131,6 +168,7 @@ int main(int argc, const char* const* argv) {
            "errors above.\n";
     return kErrorExitCode;
   }
+  g_child_pid = p.Pid();
   int exit_code;
   if (!p.WaitForExit(&exit_code)) {
     std::cerr
