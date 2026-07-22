@@ -254,43 +254,33 @@ fn to_map(
     depth: usize,
     config: &Config,
 ) -> Result<Value, Error> {
-    let mut ret = BTreeMap::new();
-    let mut previous_key: &[u8] = &[];
+    let mut ret: BTreeMap<MapKey, Value> = BTreeMap::new();
 
     for _ in 0..num_elements {
-        let key_slice = *input;
+        // TODO(crbug.com/259749095): Validate key type + order (and possibly return
+        // early) before attempting to parse the value.
         let key_value = parse_value(input, depth, config)?;
-        let key_bytes = &key_slice[..key_slice.len() - input.len()];
+        let after_key_len = input.len();
+        let value = parse_value(input, depth, config)?;
 
-        // CTAP2 canonical CBOR sorting rules (and cbor::Value::Less in Chromium):
-        // 1. If major types differ, lower numerical major type sorts earlier
-        //    (key_bytes[0] >> 5).
-        // 2. If lengths differ, shorter encoded byte length sorts earlier
-        //    (key_bytes.len()).
-        // 3. If major type and length are equal, lower byte-wise lexical order sorts
-        //    earlier.
-        if !previous_key.is_empty() {
-            let key_order = (key_bytes[0] >> 5, key_bytes.len(), key_bytes).cmp(&(
-                previous_key[0] >> 5,
-                previous_key.len(),
-                previous_key,
-            ));
-            match key_order {
-                Ordering::Equal => return Err(Error::DuplicateMapKey(input.len(), key_value)),
-                Ordering::Less => return Err(Error::MapKeysOutOfOrder(input.len(), key_value)),
-                Ordering::Greater => {}
+        let key = match MapKey::try_from(key_value) {
+            Ok(key) => key,
+            Err(Value::InvalidUtf8(_)) => return Err(Error::InvalidUTF8(after_key_len)),
+            Err(value) => return Err(Error::UnsupportedMapKeyType(after_key_len, value)),
+        };
+
+        if let Some((previous, _)) = ret.last_key_value() {
+            match previous.cmp(&key) {
+                Ordering::Equal => {
+                    return Err(Error::DuplicateMapKey(after_key_len, Value::from(key)))
+                }
+                Ordering::Greater => {
+                    return Err(Error::MapKeysOutOfOrder(after_key_len, Value::from(key)))
+                }
+                Ordering::Less => {}
             }
         }
-        previous_key = key_bytes;
 
-        let key = match key_value {
-            Value::Int(i) => MapKey::Int(i),
-            Value::Bytestring(b) => MapKey::Bytestring(b),
-            Value::String(s) => MapKey::String(s),
-            Value::InvalidUtf8(_) => return Err(Error::InvalidUTF8(input.len())),
-            _ => return Err(Error::UnsupportedMapKeyType(input.len(), key_value)),
-        };
-        let value = parse_value(input, depth, config)?;
         ret.insert(key, value);
     }
     Ok(Value::Map(ret))

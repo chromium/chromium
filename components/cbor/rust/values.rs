@@ -136,6 +136,16 @@ impl Value {
     }
 }
 
+impl From<MapKey> for Value {
+    fn from(key: MapKey) -> Self {
+        match key {
+            MapKey::Int(val) => Value::Int(val),
+            MapKey::Bytestring(bytes) => Value::Bytestring(bytes),
+            MapKey::String(text) => Value::String(text),
+        }
+    }
+}
+
 #[repr(C)]
 #[derive(Debug, PartialEq, Clone)]
 pub struct MapEntryRef<'a> {
@@ -204,6 +214,19 @@ impl MapKey {
         match self {
             MapKey::String(s) => Some(s.as_str()),
             _ => None,
+        }
+    }
+}
+
+impl TryFrom<Value> for MapKey {
+    type Error = Value;
+
+    fn try_from(value: Value) -> Result<Self, Value> {
+        match value {
+            Value::Int(val) => Ok(MapKey::Int(val)),
+            Value::Bytestring(bytes) => Ok(MapKey::Bytestring(bytes)),
+            Value::String(text) => Ok(MapKey::String(text)),
+            _ => Err(value),
         }
     }
 }

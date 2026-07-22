@@ -1417,6 +1417,38 @@ TEST_P(CBORReaderTest, TestUnsupportedSimpleValue) {
   }
 }
 
+TEST_P(CBORReaderTest, TestMapKeyIsUnsupportedSimpleValue) {
+  static const std::vector<uint8_t> kMapWithUnsupportedSimpleValueKey = {
+      // clang-format off
+      0xa1,        // map of 1 pair
+        0xf0,      // key : simple value 16 (unassigned/unsupported)
+        0x02,      // value : 2
+      // clang-format on
+  };
+
+  Reader::DecoderError error_code;
+  std::optional<Value> cbor =
+      DoRead(kMapWithUnsupportedSimpleValueKey, &error_code);
+  EXPECT_FALSE(cbor.has_value());
+  EXPECT_EQ(error_code, Reader::DecoderError::UNSUPPORTED_SIMPLE_VALUE);
+}
+
+TEST_P(CBORReaderTest, TestMapValueIsUnsupportedSimpleValue) {
+  static const std::vector<uint8_t> kMapWithUnsupportedSimpleValueValue = {
+      // clang-format off
+      0xa1,        // map of 1 pair
+        0x02,      // key : 2
+        0xf0,      // value : simple value 16 (unassigned/unsupported)
+      // clang-format on
+  };
+
+  Reader::DecoderError error_code;
+  std::optional<Value> cbor =
+      DoRead(kMapWithUnsupportedSimpleValueValue, &error_code);
+  EXPECT_FALSE(cbor.has_value());
+  EXPECT_EQ(error_code, Reader::DecoderError::UNSUPPORTED_SIMPLE_VALUE);
+}
+
 TEST_P(CBORReaderTest, TestSuperLongContentDontCrash) {
   static const std::vector<uint8_t> kTestCases[] = {
       // CBOR array of 0xffffffff length.

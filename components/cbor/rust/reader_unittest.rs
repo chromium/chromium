@@ -183,3 +183,14 @@ fn test_corner_cases() {
         assert_eq!(result, test.1, "{}", test.0);
     }
 }
+
+#[gtest(CBORReaderRustTest, TestMapKeyIsUnsupportedSimpleValue)]
+fn test_map_unsupported_simple_values() {
+    let bytes_key = hex::decode("a1f002").unwrap();
+    let result_key = parse_bytes(&bytes_key);
+    assert!(matches!(result_key, Err(Error::UnsupportedSimpleValue(16))));
+
+    let bytes_value = hex::decode("a102f0").unwrap();
+    let result_value = parse_bytes(&bytes_value);
+    assert!(matches!(result_value, Err(Error::UnsupportedSimpleValue(16))));
+}
