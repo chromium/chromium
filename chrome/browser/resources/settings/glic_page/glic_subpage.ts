@@ -9,6 +9,7 @@ import 'chrome://resources/cr_components/cr_shortcut_input/cr_shortcut_input.js'
 import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
 import '../settings_page/settings_subpage.js';
@@ -57,6 +58,7 @@ export enum SettingsGlicPageFeaturePrefName {
   EXPERIMENTAL_TRIGGERING_ENABLED = 'glic.experimental_triggering_enabled',
   KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED =
       'glic.keep_sidepanel_open_on_new_tabs_enabled',
+  HOTKEY_GLOBAL_SCOPE_ENABLED = 'glic.hotkey_global_scope_enabled',
 }
 
 // browser_element_identifiers constants
@@ -86,6 +88,12 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       disallowedByAdmin_: {
         type: Boolean,
         value: false,
+      },
+
+      selectedScope_: {
+        type: String,
+        computed: 'computeSelectedScope_(' +
+            'prefs.glic.hotkey_global_scope_enabled.value)',
       },
 
       registeredShortcut_: {
@@ -148,6 +156,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       glicSelectionFeatureEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('glicSelectionFeatureEnabled'),
+      },
+
+      glicHotkeyLocalScopeEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('glicHotkeyLocalScopeEnabled'),
       },
 
       showGlicDefaultTabContextSetting_: {
@@ -347,6 +360,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   private selectionShortcutInput_: string;
   private removedShortcut_: string|null = null;
   declare private disallowedByAdmin_: boolean;
+  declare private selectedScope_: string;
   declare private registeredShortcut_: string;
   declare private registeredFocusToggleShortcut_: string;
   declare private registeredSelectionShortcut_: string;
@@ -361,6 +375,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private glicExtensionsFeatureEnabled_: boolean;
   declare private glicUserStatusCheckFeatureEnabled_: boolean;
   declare private glicSelectionFeatureEnabled_: boolean;
+  declare private glicHotkeyLocalScopeEnabled_: boolean;
   declare private showGlicDefaultTabContextSetting_: boolean;
   declare private showGlicExperimentalTriggering_: boolean;
   declare private showGlicPersonalContextLink_: boolean;
@@ -466,6 +481,24 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         'GlicOsEntrypoint.Settings.Toggle' +
         (enabled ? '.Enabled' : '.Disabled'));
     this.hideHelpBubble(OS_WIDGET_TOGGLE_ELEMENT_ID);
+  }
+
+  private computeSelectedScope_(globalEnabled: boolean): string {
+    return globalEnabled ? 'GLOBAL' : 'CHROME';
+  }
+
+  private computeMainShortcutOpened_(
+      launcherEnabled: boolean, localScopeEnabled: boolean): boolean {
+    return launcherEnabled || localScopeEnabled;
+  }
+
+  private onScopeChanged_(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const isGlobal = select.value === 'GLOBAL';
+    this.setPrefValue(
+        SettingsGlicPageFeaturePrefName.HOTKEY_GLOBAL_SCOPE_ENABLED, isGlobal);
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.HotkeyScope.' + (isGlobal ? 'Global' : 'Chrome'));
   }
 
   private onGeolocationToggleChange_(event: Event) {

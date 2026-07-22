@@ -16113,6 +16113,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Settings.HotkeyScope.Chrome">
+  <owner>andreaxg@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged when the user changes the Glic hotkey scope setting to 'In Chrome'
+    (local scope) on the Glic settings page.
+  </description>
+</action>
+
+<action name="Glic.Settings.HotkeyScope.Global">
+  <owner>andreaxg@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged when the user changes the Glic hotkey scope setting to 'Global' on
+    the Glic settings page.
+  </description>
+</action>
+
 <action name="Glic.Settings.KeepSidepanelOpenOnNewTabs.Disabled">
   <owner>andreaxg@google.com</owner>
   <owner>iwells@chromium.org</owner>

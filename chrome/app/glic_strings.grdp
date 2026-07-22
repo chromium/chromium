@@ -415,6 +415,9 @@
   <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_REMOVE_ERROR" desc="Toast message to show when a login permission was unable to be removed.">
     Couldn't remove permission. Try again later.
   </message>
+  <message name="IDS_SETTINGS_GLIC_HOTKEY_SCOPE_GLOBAL" desc="Label for the 'Global' option in the shortcut invocation scope dropdown.">
+    Global
+  </message>
 
   <!-- Glic button and tab strip context menu -->
   <message name="IDS_GLIC_PIN" desc="Name of the context menu item for toggling Gemini pinning, when Gemini is unpinned." formatter_data="android_java">

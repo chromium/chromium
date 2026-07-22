@@ -1,6 +1,15 @@
-<style include="cr-icons cr-shared-style settings-columned-section settings-shared">
+<style include="cr-icons cr-shared-style settings-columned-section
+    settings-shared md-select">
   .keyboard-shortcut-setting {
-    align-items: start;
+    align-items: center;
+  }
+
+  .keyboard-shortcut-setting .md-select {
+    line-height: 22px;
+    margin-inline-start: var(--cr-section-padding);
+    margin-inline-end: var(--cr-section-padding);
+    --md-select-width: fit-content;
+    min-width: 120px;
   }
 
   #mainShortcutSetting {
@@ -65,12 +74,13 @@
           sub-label="$i18n{glicOsWidgetToggleSublabel}"
           learn-more-url="$i18n{glicLauncherToggleLearnMoreUrl}"
           on-learn-more-clicked="onLauncherToggleLearnMoreClick_"
-          checked="{{launcherToggleOn_}}"
           on-settings-boolean-control-change="onLauncherToggleChange_">
       </settings-toggle-button>
-      <cr-collapse opened="[[launcherToggleOn_]]">
+      <cr-collapse opened="[[computeMainShortcutOpened_(
+          prefs.glic.launcher_enabled.value,
+          glicHotkeyLocalScopeEnabled_)]]">
         <div class="cr-row keyboard-shortcut-setting"
-             id="mainShortcutSetting">
+            id="mainShortcutSetting">
           <div class="flex cr-padded-text">
             <div class="shortcut-label" aria-hidden>
               $i18n{glicKeyboardShortcut}
@@ -87,6 +97,17 @@
               </a>
             </div>
           </div>
+          <select id="scopeSelector" class="md-select"
+              value="[[selectedScope_]]"
+              on-change="onScopeChanged_"
+              hidden="[[!glicHotkeyLocalScopeEnabled_]]">
+            <option value="CHROME">
+              $i18n{glicHotkeyScopeChrome}
+            </option>
+            <option value="GLOBAL">
+              $i18n{glicHotkeyScopeGlobal}
+            </option>
+          </select>
           <cr-shortcut-input class="cr-padded-text shortcut-input"
               input-aria-label="$i18n{glicKeyboardShortcut}"
               edit-button-aria-label="$i18n{glicKeyboardShortcutEditLabel}"

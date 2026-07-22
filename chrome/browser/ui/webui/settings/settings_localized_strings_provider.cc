@@ -1000,13 +1000,18 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"glicMediaUnderstandingToggle", IDS_SETTINGS_GLIC_MEDIA_UNDERSTANDING},
       {"glicMediaUnderstandingToggleSublabel",
        IDS_SETTINGS_GLIC_MEDIA_UNDERSTANDING_SUBLABEL},
+      {"glicHotkeyScopeChrome", IDS_SETTINGS_GLIC_HOTKEY_SCOPE_CHROME},
+      {"glicHotkeyScopeGlobal", IDS_SETTINGS_GLIC_HOTKEY_SCOPE_GLOBAL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("glicActivityButtonUrl", chrome::kGlicActivityUrl);
 
-  html_source->AddLocalizedString("glicOsWidgetToggle",
-                                  IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE);
+  html_source->AddLocalizedString(
+      "glicOsWidgetToggle",
+      base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope)
+          ? IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SHORTCUT_EXCLUDED
+          : IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE);
   html_source->AddLocalizedString(
       "glicDefaultTabAccessWhenOn2",
       glic::GlicEnabling::EnablementForProfile(profile).EligibleForLive()
@@ -1144,6 +1149,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean(
       "glicSelectionFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicCaptureRegion));
+  html_source->AddBoolean(
+      "glicHotkeyLocalScopeEnabled",
+      base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope));
   html_source->AddBoolean(
       "showGlicExperimentalTriggering",
       GlicHandler::ShouldShowExperimentalTriggeringToggle(profile));

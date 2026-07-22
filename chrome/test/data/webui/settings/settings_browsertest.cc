@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -482,6 +483,27 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpageExperimentalTriggeringToggle) {
 IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpageWebActuation) {
   RunTest("settings/glic_subpage_test.js",
           "runMochaSuite('GlicSubpage WebActuationSettingFeatureEnabled')");
+}
+
+class SettingsGlicHotkeyLocalScopeEnabledTest : public SettingsBrowserTest {
+ public:
+  SettingsGlicHotkeyLocalScopeEnabledTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicHotkeyLocalScope);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsGlicHotkeyLocalScopeEnabledTest,
+                       GlicSubpageHotkeyLocalScopeEnabled) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage HotkeyLocalScopeEnabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, GlicSubpageHotkeyLocalScopeDisabled) {
+  RunTest("settings/glic_subpage_test.js",
+          "runMochaSuite('GlicSubpage HotkeyLocalScopeDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, GlicLoginPermissionsPage) {

@@ -160,7 +160,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
       ui::Command::AcceleratorToString(
           LocalHotkeyManager::GetDefaultAccelerator(
               LocalHotkeyManager::Command::kFocusToggle)));
-  registry->RegisterBooleanPref(prefs::kGlicHotkeyGlobalScopeEnabled, true);
+  registry->RegisterBooleanPref(prefs::kGlicHotkeyGlobalScopeEnabled, false);
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetAutopush, "");
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetStaging, "");
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetPreprod, "");
