@@ -243,12 +243,17 @@ void OriginGatingChecker::EvaluatePredicates(
           DelegateInputs& input, GatingDecisionCallback& callback)
           VALID_CONTEXT_REQUIRED(sequence_checker_) {
             GatingDecisionContext* raw_context = context.get();
+            GateableEvent event = input.event;
+            GURL source = input.source;
+            GURL destination = input.destination;
+            bool requires_user_confirmation =
+                input.requires_user_confirmation.value();
             delegate_->OnNoVerdict(
-                raw_context, input.event, input.source, input.destination,
-                input.requires_user_confirmation.value(),
+                raw_context, event, source, destination,
+                requires_user_confirmation,
                 base::BindOnce(&OriginGatingChecker::OnNoVerdictAnswer,
                                weak_ptr_factory_.GetWeakPtr(),
-                               std::move(context), input.destination,
+                               std::move(context), std::move(input),
                                std::move(callback)));
             return true;
           });
@@ -301,13 +306,13 @@ void OriginGatingChecker::OnUserConfirmationRequiredAnswer(
 
 void OriginGatingChecker::OnNoVerdictAnswer(
     std::unique_ptr<GatingDecisionContext> context,
-    const GURL& destination,
+    DelegateInputs input,
     GatingDecisionCallback callback,
     Delegate::NoVerdictResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result.is_allowed && !result.bypass_cache) {
-    AllowNavigationTo(url::Origin::Create(destination), result.did_prompt_user);
+    AllowNavigationTo(input.destination_origin, result.did_prompt_user);
   }
 
   ResolveGatingDecision(

@@ -147,7 +147,7 @@ class OriginGatingChecker {
       bool requires_user_confirmation);
 
   void OnNoVerdictAnswer(std::unique_ptr<GatingDecisionContext> context,
-                         const GURL& destination,
+                         DelegateInputs input,
                          GatingDecisionCallback callback,
                          Delegate::NoVerdictResult result);
 
