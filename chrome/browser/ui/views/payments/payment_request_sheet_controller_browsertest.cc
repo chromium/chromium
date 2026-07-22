@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -42,13 +43,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
 
-  EXPECT_TRUE(dialog_view()->throbber_overlay_for_testing()->GetVisible());
-  EXPECT_FALSE(dialog_view()
-                   ->throbber_overlay_for_testing()
+  EXPECT_TRUE(test_api(dialog_view()).throbber_overlay()->GetVisible());
+  EXPECT_FALSE(test_api(dialog_view())
+                   .throbber_overlay()
                    ->GetViewAccessibility()
                    .GetIsIgnored());
-  EXPECT_FALSE(dialog_view()
-                   ->throbber_overlay_for_testing()
+  EXPECT_FALSE(test_api(dialog_view())
+                   .throbber_overlay()
                    ->GetViewAccessibility()
                    .IsLeaf());
 
@@ -72,13 +73,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSheetControllerTest,
                               "});"));
   ASSERT_TRUE(WaitForObservedEvent());
 
-  EXPECT_FALSE(dialog_view()->throbber_overlay_for_testing()->GetVisible());
-  EXPECT_TRUE(dialog_view()
-                  ->throbber_overlay_for_testing()
+  EXPECT_FALSE(test_api(dialog_view()).throbber_overlay()->GetVisible());
+  EXPECT_TRUE(test_api(dialog_view())
+                  .throbber_overlay()
                   ->GetViewAccessibility()
                   .GetIsIgnored());
-  EXPECT_TRUE(dialog_view()
-                  ->throbber_overlay_for_testing()
+  EXPECT_TRUE(test_api(dialog_view())
+                  .throbber_overlay()
                   ->GetViewAccessibility()
                   .IsLeaf());
 }

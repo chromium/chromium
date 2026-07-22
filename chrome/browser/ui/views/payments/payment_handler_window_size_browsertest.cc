@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -33,7 +34,7 @@ class PaymentHandlerWindowSizeTest : public PaymentRequestBrowserTestBase {
   }
 
   gfx::Size DialogViewSize() {
-    return dialog_view()->CalculatePreferredSize({});
+    return test_api(dialog_view()).CalculatePreferredSize({});
   }
 
   const gfx::Size expected_payment_request_dialog_size_;

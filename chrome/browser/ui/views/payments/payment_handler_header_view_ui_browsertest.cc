@@ -6,6 +6,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/payments/content/icon/icon_size.h"
@@ -52,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
   // We always push the initial browser sheet to the stack, even if it isn't
   // shown. Since it also defines a SHEET_TITLE, we have to explicitly test the
   // front PaymentHandler view here.
-  ViewStack* view_stack = dialog_view()->view_stack_for_testing();
+  ViewStack* view_stack = test_api(dialog_view()).view_stack();
 
   EXPECT_TRUE(IsViewVisible(DialogViewID::CANCEL_BUTTON, view_stack->top()));
   EXPECT_FALSE(IsViewVisible(DialogViewID::BACK_BUTTON, view_stack->top()));
@@ -176,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
           content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
   ASSERT_TRUE(WaitForObservedEvent());
 
-  ViewStack* view_stack = dialog_view()->view_stack_for_testing();
+  ViewStack* view_stack = test_api(dialog_view()).view_stack();
   int header_height_with_title =
       view_stack->top()
           ->GetViewByID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER))
@@ -203,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest,
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Expect the dialog and header height with a title to be the same as before.
-  view_stack = dialog_view()->view_stack_for_testing();
+  view_stack = test_api(dialog_view()).view_stack();
   EXPECT_EQ(dialog_height_with_title, view_stack->top()->height());
   EXPECT_EQ(
       header_height_with_title,
@@ -240,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerHeaderViewUITest, LargeIcon) {
   // We always push the initial browser sheet to the stack, even if it isn't
   // shown. Since it also defines a SHEET_TITLE, we have to explicitly test the
   // front PaymentHandler view here.
-  ViewStack* view_stack = dialog_view()->view_stack_for_testing();
+  ViewStack* view_stack = test_api(dialog_view()).view_stack();
   EXPECT_TRUE(
       IsViewVisible(DialogViewID::PAYMENT_APP_HEADER_ICON, view_stack->top()));
   EXPECT_EQ(

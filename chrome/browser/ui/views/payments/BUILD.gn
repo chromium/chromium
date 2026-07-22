@@ -107,11 +107,13 @@ source_set("test_support") {
   testonly = true
 
   public = [
+    "payment_request_dialog_view_test_api.h",
     "test_chrome_payment_request_delegate.h",
     "test_secure_payment_confirmation_payment_request_delegate.h",
   ]
 
   sources = [
+    "payment_request_dialog_view_test_api.cc",
     "test_chrome_payment_request_delegate.cc",
     "test_secure_payment_confirmation_payment_request_delegate.cc",
   ]

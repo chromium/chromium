@@ -87,9 +87,8 @@ std::unique_ptr<views::View> CreateViewAndInstallController(
 
 // static
 base::WeakPtr<PaymentRequestDialogView> PaymentRequestDialogView::Create(
-    base::WeakPtr<PaymentRequest> request,
-    base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer) {
-  return (new PaymentRequestDialogView(request, observer))
+    base::WeakPtr<PaymentRequest> request) {
+  return (new PaymentRequestDialogView(request, /*observer=*/nullptr))
       ->weak_ptr_factory_.GetWeakPtr();
 }
 

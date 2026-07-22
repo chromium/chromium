@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -62,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(PaymentSheetViewControllerTest,
   views::View* sheet_view =
       GetByDialogViewID(DialogViewID::PAYMENT_REQUEST_SHEET);
   static_cast<PaymentSheetViewController*>(
-      dialog_view()->controller_map_for_testing()->at(sheet_view).get())
+      test_api(dialog_view()).controller_map()->at(sheet_view).get())
       ->SetInputEventActivationProtectorForTesting(std::move(input_protector));
 
   // Because of the input protector, the first press of the button should be

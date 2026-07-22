@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "components/webauthn/content/browser/internal_authenticator_impl.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -71,7 +72,8 @@ void TestChromePaymentRequestDelegate::OverrideBrowserWindowActive(
 void TestChromePaymentRequestDelegate::ShowDialog(
     base::WeakPtr<PaymentRequest> request) {
   if (dialog_type_ == DialogType::PAYMENT_REQUEST) {
-    shown_dialog_ = PaymentRequestDialogView::Create(request, observer_);
+    shown_dialog_ =
+        PaymentRequestDialogViewTestApi::CreateDialogView(request, observer_);
     shown_dialog_->ShowDialog();
   } else {
     ChromePaymentRequestDelegate::ShowDialog(request);

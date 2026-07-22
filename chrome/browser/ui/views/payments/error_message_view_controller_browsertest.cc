@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/payments/core/features.h"
 #include "content/public/test/browser_test.h"
@@ -41,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest, CompleteFail) {
   ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_HIDDEN,
                                DialogEvent::ERROR_MESSAGE_SHOWN});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
-  EXPECT_FALSE(dialog_view()->throbber_overlay_for_testing()->GetVisible());
+  EXPECT_FALSE(test_api(dialog_view()).throbber_overlay()->GetVisible());
 
   // The user can only close the dialog at this point.
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
@@ -102,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestErrorMessageTest,
   // We always push the initial browser sheet to the stack, even if it isn't
   // shown. Since it also defines a CONTENT_VIEW, we have to explicitly test the
   // front PaymentHandler view here.
-  views::View* top_view = dialog_view()->view_stack_for_testing()->top();
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
 
   views::View* sheet_view =
       GetChildByDialogViewID(top_view, DialogViewID::ERROR_SHEET);

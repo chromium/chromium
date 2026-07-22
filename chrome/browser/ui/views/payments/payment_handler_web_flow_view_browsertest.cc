@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "chrome/browser/ui/views/payments/payment_request_dialog_view_test_api.h"
 #include "components/payments/content/payment_request_state.h"
 #include "components/payments/core/features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -64,7 +65,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
   // We always push the initial browser sheet to the stack, even if it isn't
   // shown. Since it also defines a CONTENT_VIEW, we have to explicitly test the
   // front PaymentHandler view here.
-  views::View* top_view = dialog_view()->view_stack_for_testing()->top();
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
 
   views::View* sheet_view = GetChildByDialogViewID(
       top_view, DialogViewID::PAYMENT_APP_OPENED_WINDOW_SHEET);
@@ -151,9 +152,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest, UserInteractionRecorded) {
   EXPECT_FALSE(request_state->user_interaction_in_web_payment_app());
 
   // Get the payment handler web contents.
-  views::View* top_view = dialog_view()->view_stack_for_testing()->top();
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
   auto* sheet_controller =
-      dialog_view()->controller_map_for_testing()->at(top_view).get();
+      test_api(dialog_view()).controller_map()->at(top_view).get();
   auto* web_flow_controller =
       static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
   content::WebContents* payment_handler_contents =
@@ -212,8 +213,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowCloseTest, WindowCloseIsIgnored) {
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Get the controller of the top view on the stack.
-  views::View* top_view = dialog_view()->view_stack_for_testing()->top();
-  auto* controller_map = dialog_view()->controller_map_for_testing();
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* controller_map = test_api(dialog_view()).controller_map();
   auto it = controller_map->find(top_view);
   ASSERT_NE(it, controller_map->end());
   auto* controller =
@@ -241,7 +242,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowCloseTest, WindowCloseIsIgnored) {
   // Verify that the payment handler sheet is still the top view (it did not
   // close).
   views::View* top_view_after_window_close =
-      dialog_view()->view_stack_for_testing()->top();
+      test_api(dialog_view()).view_stack()->top();
   EXPECT_EQ(top_view, top_view_after_window_close);
 
   switch (params.post_window_close_action) {
@@ -338,9 +339,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
   EXPECT_FALSE(request_state->user_interaction_in_web_payment_app());
 
   // Get the payment handler web contents.
-  views::View* top_view = dialog_view()->view_stack_for_testing()->top();
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
   auto* sheet_controller =
-      dialog_view()->controller_map_for_testing()->at(top_view).get();
+      test_api(dialog_view()).controller_map()->at(top_view).get();
   auto* web_flow_controller =
       static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
   content::WebContents* payment_handler_contents =
@@ -382,9 +383,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Get the payment handler web contents.
-  views::View* top_view = dialog_view()->view_stack_for_testing()->top();
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
   auto* sheet_controller =
-      dialog_view()->controller_map_for_testing()->at(top_view).get();
+      test_api(dialog_view()).controller_map()->at(top_view).get();
   auto* web_flow_controller =
       static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
   content::WebContents* payment_handler_contents =
@@ -509,9 +510,9 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiDisabledTest,
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Get the payment handler web contents.
-  views::View* top_view = dialog_view()->view_stack_for_testing()->top();
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
   auto* sheet_controller =
-      dialog_view()->controller_map_for_testing()->at(top_view).get();
+      test_api(dialog_view()).controller_map()->at(top_view).get();
   auto* web_flow_controller =
       static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
   content::WebContents* payment_handler_contents =

@@ -4041,6 +4041,7 @@ if (!is_android) {
       sources += [ "../browser/ui/views/payments/payment_handler_header_view_ui_browsertest.cc" ]
       deps += [
         "//chrome/browser/ui/views/payments",
+        "//chrome/browser/ui/views/payments:test_support",
         "//components/payments/content/icon",
       ]
     }
