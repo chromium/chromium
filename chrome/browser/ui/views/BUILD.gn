@@ -136,6 +136,25 @@ source_set("confirm_bubble") {
   ]
 }
 
+source_set("status_bubble") {
+  public = [ "status_bubble_views.h" ]
+  sources = [ "status_bubble_views.cc" ]
+  deps = [
+    "//base",
+    "//cc/paint",
+    "//chrome/browser/ui:status_bubble",
+    "//chrome/browser/ui/color:color_headers",
+    ":views",
+    "//components/url_formatter",
+    "//skia",
+    "//ui/base",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
 if (is_linux || is_chromeos) {
   source_set("process_singleton_dialog_linux") {
     sources = [ "process_singleton_dialog_linux.cc" ]

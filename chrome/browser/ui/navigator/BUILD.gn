@@ -90,6 +90,7 @@ source_set("impl") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/link_capturing",
+      "//chrome/browser/ui:status_bubble",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/web_applications",

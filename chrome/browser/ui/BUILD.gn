@@ -402,7 +402,6 @@ static_library("ui") {
     "managed_ui.cc",
     "managed_ui.h",
     "screen_capture_notification_ui.h",
-    "status_bubble.h",
     "storage_pressure_bubble.h",
     "tab_dialogs.cc",
     "tab_dialogs.h",
@@ -471,6 +470,7 @@ static_library("ui") {
     ":recently_audible_helper",
     ":session_crashed_bubble",
     ":simple_message_box_internal",
+    ":status_bubble",
     ":tab_modal_confirm_dialog_delegate",
     ":ui_features",
     ":uninstall_browser_prompt",
@@ -4150,8 +4150,6 @@ static_library("ui") {
       "views/simple_web_view_dialog.h",
       "views/ssl_client_certificate_selector.cc",
       "views/ssl_client_certificate_selector.h",
-      "views/status_bubble_views.cc",
-      "views/status_bubble_views.h",
       "views/sub_apps_permission_explanation.cc",
       "views/sub_apps_permission_explanation.h",
       "views/tab_dialogs_views.cc",
@@ -4436,6 +4434,7 @@ static_library("ui") {
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views:layout_provider_impl",
       "//chrome/browser/ui/views:screen_sharing_util",
+      "//chrome/browser/ui/views:status_bubble",
       "//chrome/browser/ui/views/accessibility",
       "//chrome/browser/ui/views/accessibility:impl",
       "//chrome/browser/ui/views/animations",
@@ -5746,6 +5745,10 @@ if (enable_dice_support) {
     ]
     deps = [ "//base" ]
   }
+}
+source_set("status_bubble") {
+  public = [ "status_bubble.h" ]
+  public_deps = [ "//url" ]
 }
 
 if (is_linux || is_chromeos) {
