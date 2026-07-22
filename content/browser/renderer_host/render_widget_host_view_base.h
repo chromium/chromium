@@ -472,6 +472,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // any transforms that might be applied.
   virtual gfx::Rect GetBoundsInScreenWithoutTransform();
 
+  // Gets the bounds of the View, in screen coordinates, ignoring any transforms
+  // that might be applied.
+  virtual gfx::Rect GetViewBoundsWithoutTransform();
+
   // Increments the LocalSurfaceId associated with this view when a commit IPC
   // is being sent to change the Document for the root RenderFrameHost rendering
   // to this view.

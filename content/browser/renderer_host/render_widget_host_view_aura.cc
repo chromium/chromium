@@ -852,6 +852,10 @@ gfx::Rect RenderWidgetHostViewAura::GetViewBounds() {
   return window_->GetBoundsInScreen();
 }
 
+gfx::Rect RenderWidgetHostViewAura::GetViewBoundsWithoutTransform() {
+  return window_->GetBoundsInScreenWithoutTransform();
+}
+
 void RenderWidgetHostViewAura::UpdateBackgroundColor() {
   CHECK(GetBackgroundColor());
 

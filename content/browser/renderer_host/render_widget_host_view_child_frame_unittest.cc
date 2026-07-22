@@ -122,16 +122,42 @@ class MockFrameConnector : public CrossProcessFrameConnector {
     root_host_view_ = root;
   }
 
-  RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override {
-    return nullptr;
+  void SetParentRenderWidgetHostView(RenderWidgetHostViewBase* parent) {
+    parent_host_view_ = parent;
   }
 
   RenderWidgetHostViewBase* GetRootRenderWidgetHostView() override {
     return root_host_view_;
   }
 
+  RenderWidgetHostViewBase* GetParentRenderWidgetHostView() override {
+    return parent_host_view_;
+  }
+
   viz::SurfaceInfo last_surface_info_;
   raw_ptr<RenderWidgetHostViewBase> root_host_view_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> parent_host_view_ = nullptr;
+};
+
+class MockParentRenderWidgetHostView : public TestRenderWidgetHostView {
+ public:
+  explicit MockParentRenderWidgetHostView(RenderWidgetHost* rwh)
+      : TestRenderWidgetHostView(rwh) {}
+
+  gfx::Rect GetViewBounds() override { return bounds_; }
+  gfx::Rect GetViewBoundsWithoutTransform() override {
+    return bounds_without_transform_;
+  }
+
+  void SetBoundsWithAndWithoutTransform(const gfx::Rect& bounds,
+                                        const gfx::Rect& bounds_without) {
+    bounds_ = bounds;
+    bounds_without_transform_ = bounds_without;
+  }
+
+ private:
+  gfx::Rect bounds_;
+  gfx::Rect bounds_without_transform_;
 };
 
 class TestTouchSelectionControllerClientManager
@@ -433,6 +459,27 @@ TEST_F(RenderWidgetHostViewChildFrameTest, CompositorViewportPixelSize) {
   test_frame_connector_->SetRectInParentView(rect_in_parent_view);
   EXPECT_EQ(local_frame_size, view_->GetCompositorViewportPixelSize());
   EXPECT_EQ(gfx::Point(115, 131), view_->GetViewBounds().origin());
+}
+
+TEST_F(RenderWidgetHostViewChildFrameTest, GetViewBoundsWithoutTransform) {
+  testing::NiceMock<MockParentRenderWidgetHostView> parent_view(
+      widget_host_.get());
+  test_frame_connector_->SetParentRenderWidgetHostView(&parent_view);
+
+  gfx::Size local_frame_size(800, 600);
+  test_frame_connector_->SetLocalFrameSize(local_frame_size);
+
+  gfx::Rect rect_in_parent_view(local_frame_size);
+  rect_in_parent_view.set_origin(gfx::Point(0, 0));
+  test_frame_connector_->SetRectInParentView(rect_in_parent_view);
+
+  parent_view.SetBoundsWithAndWithoutTransform(gfx::Rect(50, 50, 300, 200),
+                                               gfx::Rect(0, 0, 300, 200));
+
+  EXPECT_EQ(gfx::Point(50, 50), view_->GetViewBounds().origin());
+  EXPECT_EQ(gfx::Point(0, 0), view_->GetViewBoundsWithoutTransform().origin());
+
+  test_frame_connector_->SetParentRenderWidgetHostView(nullptr);
 }
 
 // Tests that SynchronizeVisualProperties is called only once and all the

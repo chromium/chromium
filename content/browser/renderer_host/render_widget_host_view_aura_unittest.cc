@@ -1225,6 +1225,25 @@ TEST_F(RenderWidgetHostViewAuraTest, ParentMovementUpdatesScreenRect) {
             widget_host_->screen_rects().at(0).second);
 }
 
+TEST_F(RenderWidgetHostViewAuraTest, GetViewBoundsWithoutTransform) {
+  parent_view_->SetBounds(gfx::Rect(0, 0, 800, 600));
+  InitViewForPopup(parent_view_, gfx::Rect(50, 50, 100, 100));
+
+  gfx::Rect initial_bounds = view_->GetViewBounds();
+  EXPECT_EQ(gfx::Rect(50, 50, 100, 100), initial_bounds);
+  EXPECT_EQ(initial_bounds, view_->GetViewBoundsWithoutTransform());
+
+  gfx::Transform transform;
+  transform.Translate(100, 100);
+  view_->GetNativeView()->SetTransform(transform);
+
+  // The transformed bounds should be different after translation.
+  EXPECT_NE(initial_bounds, view_->GetViewBounds());
+
+  // The bounds without transform should not be changed.
+  EXPECT_EQ(initial_bounds, view_->GetViewBoundsWithoutTransform());
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Checks that a popup view is destroyed when a user clicks outside of the popup
 // view and focus does not change. This is the case when the user clicks on the

@@ -662,12 +662,12 @@ void RenderWidgetHostImpl::SendScreenRects() {
     return;
   }
 
-  if (last_view_screen_rect_ == view_->GetViewBounds() &&
+  if (last_view_screen_rect_ == view_->GetViewBoundsWithoutTransform() &&
       last_window_screen_rect_ == view_->GetBoundsInScreenWithoutTransform()) {
     return;
   }
 
-  last_view_screen_rect_ = view_->GetViewBounds();
+  last_view_screen_rect_ = view_->GetViewBoundsWithoutTransform();
   last_window_screen_rect_ = view_->GetBoundsInScreenWithoutTransform();
   blink_widget_->UpdateScreenRects(
       last_view_screen_rect_, last_window_screen_rect_,
@@ -2940,7 +2940,7 @@ void RenderWidgetHostImpl::OnUpdateScreenRectsAck() {
 
   view_->SendInitialPropertiesIfNeeded();
 
-  if (view_->GetViewBounds() == last_view_screen_rect_ &&
+  if (view_->GetViewBoundsWithoutTransform() == last_view_screen_rect_ &&
       view_->GetBoundsInScreenWithoutTransform() == last_window_screen_rect_) {
     return;
   }

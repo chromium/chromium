@@ -508,6 +508,10 @@ gfx::Rect RenderWidgetHostViewBase::GetBoundsInScreenWithoutTransform() {
   return GetBoundsInScreen();
 }
 
+gfx::Rect RenderWidgetHostViewBase::GetViewBoundsWithoutTransform() {
+  return GetViewBounds();
+}
+
 gfx::AcceleratedWidget
     RenderWidgetHostViewBase::AccessibilityGetAcceleratedWidget() {
   return gfx::kNullAcceleratedWidget;

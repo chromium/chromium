@@ -314,19 +314,27 @@ void RenderWidgetHostViewChildFrame::WasOccluded() {
   Hide();
 }
 
-gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
+gfx::Rect RenderWidgetHostViewChildFrame::GetViewBoundsHelper(
+    bool without_transform) {
   gfx::Rect screen_space_rect;
   if (frame_connector_) {
     screen_space_rect = frame_connector_->GetRectInParentViewInDip();
 
-    RenderWidgetHostView* parent_view =
+    RenderWidgetHostViewBase* parent_view =
         frame_connector_->GetParentRenderWidgetHostView();
 
     // The parent_view can be null in tests when using a TestWebContents.
     if (parent_view) {
       // Translate screen_space_rect by the parent's RenderWidgetHostView
       // offset.
-      screen_space_rect.Offset(parent_view->GetViewBounds().OffsetFromOrigin());
+      gfx::Vector2d offset;
+      if (without_transform) {
+        offset =
+            parent_view->GetViewBoundsWithoutTransform().OffsetFromOrigin();
+      } else {
+        offset = parent_view->GetViewBounds().OffsetFromOrigin();
+      }
+      screen_space_rect.Offset(offset);
     }
     // TODO(wjmaclean): GetViewBounds is a bit of a mess. It's used to determine
     // the size of the renderer content and where to place context menus and so
@@ -336,6 +344,14 @@ gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
     screen_space_rect.set_size(frame_connector_->GetLocalFrameSizeInDip());
   }
   return screen_space_rect;
+}
+
+gfx::Rect RenderWidgetHostViewChildFrame::GetViewBounds() {
+  return GetViewBoundsHelper(/*without_transform=*/false);
+}
+
+gfx::Rect RenderWidgetHostViewChildFrame::GetViewBoundsWithoutTransform() {
+  return GetViewBoundsHelper(/*without_transform=*/true);
 }
 
 gfx::Size RenderWidgetHostViewChildFrame::GetVisibleViewportSize() {

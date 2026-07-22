@@ -133,6 +133,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool IsShowing() override;
   void WasOccluded() override;
   gfx::Rect GetViewBounds() override;
+  gfx::Rect GetViewBoundsWithoutTransform() override;
   bool IsPointerLocked() override;
   gfx::Size GetVisibleViewportSize() override;
   gfx::Size GetVisibleViewportSizeDevicePx() override;
