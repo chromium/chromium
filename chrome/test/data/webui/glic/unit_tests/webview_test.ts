@@ -218,6 +218,7 @@ suite('WebviewZoomTest', () => {
   test('ZoomResetReturnsOne', () => {
     let lastSetZoom = 1.5;
     const webview = controller.webview;
+    webview.getZoom = (cb: (z: number) => void) => cb(lastSetZoom);
     webview.setZoom = (currentZoom: number) => {
       lastSetZoom = currentZoom;
     };
@@ -247,6 +248,25 @@ suite('WebviewZoomTest', () => {
     assertFalse(setZoomCalled);
   });
 
+  test('ZoomImperfectFloatingPointFactor', () => {
+    let lastSetZoom = 1.09;
+    const webview = controller.webview;
+    webview.getZoom = (cb: (z: number) => void) => cb(lastSetZoom);
+    webview.setZoom = (z: number) => {
+      lastSetZoom = z;
+    };
+
+    // From 1.09 (e.g. Android float rounding around 1.1), ZoomOut should step
+    // down to 1.0.
+    controller.zoom(ZoomAction.kZoomOut);
+    assertEquals(1.0, lastSetZoom);
+
+    // From 1.09, ZoomIn should step up to 1.1 (and not skip to 1.25).
+    lastSetZoom = 1.09;
+    controller.zoom(ZoomAction.kZoomIn);
+    assertEquals(1.1, lastSetZoom);
+  });
+
   test('ZoomAnnouncementMade', async () => {
     const announcementPromise =
         eventToPromise<CrA11yAnnouncerMessagesSentEvent>(
@@ -261,6 +281,77 @@ suite('WebviewZoomTest', () => {
 
     const event = await announcementPromise;
     assertDeepEquals(event.detail.messages, ['Zoom: 125%']);
+  });
+
+  test('ZoomChangeEventUpdatesPageHandler', () => {
+    let notifiedZoomFactor: number|undefined;
+    const fakeProxy = new FakeBrowserProxy();
+    fakeProxy.pageHandler.onZoomLevelChange = (zoomFactor: number) => {
+      notifiedZoomFactor = zoomFactor;
+    };
+
+    const container = document.createElement('div');
+    const customController = new WebviewController(
+        container,
+        fakeProxy,
+        new FakeWebviewDelegate(),
+        new FakeApiHostEmbedder(),
+        new WebviewPersistentState(),
+    );
+
+    const zoomEvent = Object.assign(
+                          new Event('zoomchange'),
+                          {oldZoomFactor: 1.0, newZoomFactor: 1.5}) as
+        chrome.webviewTag.ZoomChangeEvent;
+    customController.webview.dispatchEvent(zoomEvent);
+
+    assertEquals(1.5, notifiedZoomFactor);
+  });
+
+  test('ZoomWithDeviceDisplayScaleMultiplier', () => {
+    // Simulate a device with a 1.09x display scale factor (e.g. Android high
+    // DPI).
+    const DISPLAY_SCALE = 1.09;
+    let configuredZoomFactor = 1.0;
+
+    const webview = controller.webview;
+    webview.getZoom = (cb: (z: number) => void) => {
+      // webview.getZoom() returns configuredZoomFactor * DISPLAY_SCALE
+      cb(configuredZoomFactor * DISPLAY_SCALE);
+    };
+    webview.setZoom = (z: number) => {
+      const oldZoomFactor = configuredZoomFactor;
+      configuredZoomFactor = z;
+      // Dispatch zoomchange event with the exact configuredZoomFactor
+      const zoomEvent =
+          Object.assign(
+              new Event('zoomchange'), {oldZoomFactor, newZoomFactor: z}) as
+          chrome.webviewTag.ZoomChangeEvent;
+      webview.dispatchEvent(zoomEvent);
+    };
+
+    // Initialize display scale multiplier via a zoomchange event
+    const initEvent = Object.assign(
+                          new Event('zoomchange'),
+                          {oldZoomFactor: 1.0, newZoomFactor: 1.0}) as
+        chrome.webviewTag.ZoomChangeEvent;
+    webview.dispatchEvent(initEvent);
+
+    // Zoom in from 1.0 -> 1.1
+    controller.zoom(ZoomAction.kZoomIn);
+    assertEquals(1.1, configuredZoomFactor);
+
+    // Zoom in from 1.1 -> 1.25
+    controller.zoom(ZoomAction.kZoomIn);
+    assertEquals(1.25, configuredZoomFactor);
+
+    // Zoom out from 1.25 -> 1.1 (Verify ZoomOut does not get trapped at 1.25!)
+    controller.zoom(ZoomAction.kZoomOut);
+    assertEquals(1.1, configuredZoomFactor);
+
+    // Zoom out from 1.1 -> 1.0
+    controller.zoom(ZoomAction.kZoomOut);
+    assertEquals(1.0, configuredZoomFactor);
   });
 });
 

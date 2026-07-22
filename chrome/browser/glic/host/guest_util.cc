@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/host/guest_util.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -39,6 +41,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/skills/features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -53,6 +56,7 @@
 #include "pdf/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
@@ -386,7 +390,18 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
         top->GetOrCreateWebPreferences().default_font_size;
     top->SetWebPreferences(prefs);
 #else
-    // TODO(b/470059315): What do we do for Android?
+    // Apply the persisted zoom level to the guest WebContents.
+    if (Profile* profile =
+            Profile::FromBrowserContext(top->GetBrowserContext())) {
+      // LINT.IfChange(GlicZoomFactors)
+      int zoom_percent = std::clamp(
+          profile->GetPrefs()->GetInteger(prefs::kGlicZoomLevel), 100, 200);
+      double zoom_factor = zoom_percent / 100.0;
+      // LINT.ThenChange(//chrome/browser/resources/glic/webview.ts:GlicZoomFactors,
+      // //chrome/browser/glic/host/glic_page_handler.cc:GlicZoomFactors)
+      double zoom_level = blink::ZoomFactorToZoomLevel(zoom_factor);
+      content::HostZoomMap::SetZoomLevel(guest_contents, zoom_level);
+    }
 #endif
   }
 

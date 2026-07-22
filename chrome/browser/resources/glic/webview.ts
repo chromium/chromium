@@ -8,10 +8,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {OriginCheckParams} from '/shared/guest_view/request_throttlers.js';
 // </if>
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
-// <if expr="not is_android">
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-
-// </if>
 
 import type {BrowserProxy} from './browser_proxy.js';
 import {ZoomAction} from './glic.mojom-webui.js';
@@ -53,6 +50,44 @@ const WEBVIEW_EXIT_REASON_MAP = {
 function webviewExitReasonStringToEnum(reason: chrome.webviewTag.ExitReason):
     WebviewExitReason {
   return WEBVIEW_EXIT_REASON_MAP[reason] ?? WebviewExitReason.UNKNOWN;
+}
+
+// LINT.IfChange(GlicZoomFactors)
+// Any changes to the range of supported zoom factors must be mirrored in
+// GlicPageHandler.OnZoomLevelChange and guest_util.cc.
+const ZOOM_FACTORS = [
+  1.0,
+  1.1,
+  1.25,
+  1.5,
+  1.75,
+  2.0,
+];
+// LINT.ThenChange(//chrome/browser/glic/host/glic_page_handler.cc:GlicZoomFactors,
+// //chrome/browser/glic/host/guest_util.cc:GlicZoomFactors)
+
+const ZOOM_DELTA_THRESHOLD = 0.01;
+
+/**
+ * Finds the next higher zoom factor from ZOOM_FACTORS relative to currentZoom.
+ * Scans left-to-right to find the smallest factor strictly greater than
+ * currentZoom. ZOOM_DELTA_THRESHOLD handles floating point representation
+ * precision (e.g. 1.09 vs 1.1). Returns undefined if currentZoom is at or above
+ * the maximum zoom factor.
+ */
+function findNextZoomInFactor(currentZoom: number): number|undefined {
+  return ZOOM_FACTORS.find(f => f - currentZoom >= ZOOM_DELTA_THRESHOLD);
+}
+
+/**
+ * Finds the next lower zoom factor from ZOOM_FACTORS relative to currentZoom.
+ * Scans right-to-left to find the largest factor strictly smaller than
+ * currentZoom. ZOOM_DELTA_THRESHOLD handles floating point representation
+ * precision (e.g. 1.09 vs 1.1). Returns undefined if currentZoom is at or below
+ * the minimum zoom factor.
+ */
+function findNextZoomOutFactor(currentZoom: number): number|undefined {
+  return ZOOM_FACTORS.findLast(f => currentZoom - f >= ZOOM_DELTA_THRESHOLD);
 }
 
 export type PageType =
@@ -135,6 +170,7 @@ export class WebviewController {
       ObservableValue.withValue(WebClientState.UNINITIALIZED);
   private oneMinuteTimer = new OneShotTimer(1000 * 60);
   private glicRequestHeaderInjector?: GlicRequestHeaderInjector;
+  private displayScaleMultiplier = 1.0;
 
   constructor(
       private readonly container: HTMLElement,
@@ -192,7 +228,6 @@ export class WebviewController {
     this.eventTracker.add(
         this.webview, 'unresponsive', this.onUnresponsive.bind(this));
     this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this));
-    // <if expr="not is_android">
     if (isFullWebView(this.webview)) {
       this.eventTracker.add(
           this.webview, 'zoomchange',
@@ -201,11 +236,15 @@ export class WebviewController {
             const message =
                 loadTimeData.getStringF('zoomLabel', percentage + '%');
             getAnnouncerInstance().announce(message);
+            if (e.newZoomFactor > 0) {
+              this.webview.getZoom((reportedZoom: number) => {
+                this.displayScaleMultiplier = reportedZoom / e.newZoomFactor;
+              });
+            }
             this.browserProxy.pageHandler.onZoomLevelChange(e.newZoomFactor);
             this.host?.onZoomLevelChanged(e.newZoomFactor);
           });
     }
-    // </if>
     this.eventTracker.add(
         this.webview, 'loadstart', this.onLoadStart.bind(this));
     this.eventTracker.add(
@@ -288,13 +327,6 @@ export class WebviewController {
   }
 
   zoom(zoomAction: ZoomAction) {
-    // `WebViewType` is a union of `chrome.webviewTag.WebView` and
-    // `SlimWebviewElement`. Only full webviews support zoom.
-    // TODO(crbug.com/500052160): Support zoom for slim webviews.
-    if (!isFullWebView(this.webview)) {
-      return;
-    }
-
     const webview = this.webview;
 
     if (zoomAction === ZoomAction.kReset) {
@@ -302,23 +334,11 @@ export class WebviewController {
       return;
     }
 
-    // Any changes to the range of supported zoom factors must be mirrored in
-    // GlicPageHandler.OnZoomLevelChange.
-    const zoomFactors = [
-      1.0,
-      1.1,
-      1.25,
-      1.5,
-      1.75,
-      2.0,
-    ];
-
-    webview.getZoom((currentZoom: number) => {
-      // Find the closest standard zoom level to move to given the current zoom
-      // level and zoom action.
+    webview.getZoom((reportedZoom: number) => {
+      const activeZoom = reportedZoom / (this.displayScaleMultiplier || 1.0);
       const newFactor = zoomAction === ZoomAction.kZoomIn ?
-          zoomFactors.find(f => f - currentZoom >= 0.01) :
-          zoomFactors.findLast(f => currentZoom - f >= 0.01);
+          findNextZoomInFactor(activeZoom) :
+          findNextZoomOutFactor(activeZoom);
 
       if (newFactor !== undefined) {
         webview.setZoom(newFactor);

@@ -1845,6 +1845,7 @@ void GlicPageHandler::WebviewCommitted(const GURL& url) {
 }
 
 void GlicPageHandler::OnZoomLevelChange(double zoom_factor) {
+  // LINT.IfChange(GlicZoomFactors)
   // Ignore values outside of the supported range (defined in glic/webview.ts).
   if (zoom_factor < 1.0 || zoom_factor > 2.0) {
     LOG(ERROR) << "Glic [PageHandler] Invalid zoom level: " << zoom_factor;
@@ -1860,6 +1861,7 @@ void GlicPageHandler::OnZoomLevelChange(double zoom_factor) {
     pref_service->SetInteger(prefs::kGlicZoomLevel, zoom_percent);
     host().instance_metrics().OnZoomLevelChange();
   }
+  // LINT.ThenChange(//chrome/browser/resources/glic/webview.ts:GlicZoomFactors,//chrome/browser/glic/host/guest_util.cc:GlicZoomFactors)
 }
 
 void GlicPageHandler::NotifyWindowIntentToShow() {
