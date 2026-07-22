@@ -52,6 +52,8 @@
 #include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals.mojom.h"
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals_ui.h"
+#include "chrome/browser/ui/webui/iwa_dev/iwa_dev.mojom.h"
+#include "chrome/browser/ui/webui/iwa_dev/iwa_dev_ui.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals.mojom.h"
 #include "chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals_ui.h"
@@ -550,6 +552,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 
   RegisterWebUIControllerInterfaceBinder<::mojom::PageHandlerFactory,
                                          WebAppInternalsUI>(map);
+  RegisterWebUIControllerInterfaceBinder<::iwa_dev::mojom::PageHandlerFactory,
+                                         IwaDevUI>(map);
   if (base::FeatureList::IsEnabled(multistep_filter::kMultistepFilter)) {
     RegisterWebUIControllerInterfaceBinder<
         multistep_filter_internals::mojom::PageHandlerFactory,

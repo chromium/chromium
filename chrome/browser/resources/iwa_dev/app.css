@@ -4,18 +4,35 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
 :host {
+  color: var(--cr-primary-text-color);
   display: block;
-}
-
-.container {
-  max-width: 800px;
+  max-width: var(--cr-centered-card-max-width);
   margin: 40px auto;
   padding: 0 24px;
 }
 
 h1 {
   font-size: 1.75rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+}
+
+#iwa-list {
+  display: flex;
+  flex-direction: column;
+}
+
+#iwa-list-message:not(:empty) {
+  border: 1px dashed var(--google-grey-300);
+  border-radius: var(--cr-card-border-radius);
+  color: var(--cr-secondary-text-color);
+  font-style: italic;
+  padding: 24px;
+  text-align: center;
 }

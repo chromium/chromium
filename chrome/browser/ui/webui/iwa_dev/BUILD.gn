@@ -2,22 +2,55 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 assert(!is_android)
+
+mojom("mojo_bindings") {
+  sources = [ "iwa_dev.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  webui_module_path = "/"
+}
 
 source_set("iwa_dev") {
   sources = [
+    "iwa_dev_page_handler.cc",
+    "iwa_dev_page_handler.h",
     "iwa_dev_ui.cc",
     "iwa_dev_ui.h",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
+    ":mojo_bindings",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/iwa_dev:resources",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//components/webapps/isolated_web_apps",
     "//content/public/browser",
     "//ui/base",
     "//ui/webui",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "iwa_dev_page_handler_browsertest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":iwa_dev",
+    "//base/test:test_support",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
   ]
 }

@@ -2506,6 +2506,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/customize_buttons:browser_tests",
       "//chrome/browser/ui/webui/extensions_zero_state_promo:browser_tests",
       "//chrome/browser/ui/webui/image:browser_tests",
+      "//chrome/browser/ui/webui/iwa_dev:browser_tests",
       "//chrome/browser/ui/webui/new_tab_footer:browser_tests",
       "//chrome/browser/ui/webui/new_tab_page",
       "//chrome/browser/ui/webui/new_tab_page:browser_tests",
