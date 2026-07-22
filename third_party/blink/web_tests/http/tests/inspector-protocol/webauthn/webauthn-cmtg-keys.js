@@ -94,5 +94,39 @@
   testRunner.log(`Assertion key matches key A: ${assertResult.cmtgKey?.cmtgKey === keyA}`);
   testRunner.log(`Assertion signature present: ${assertResult.cmtgKey?.signature ? "yes" : "no"}`);
 
+  // Inject a credential with pre-configured CMTG keys.
+  testRunner.log('Injecting credential with CMTG keys...');
+  const injectedKeyA = await session.evaluateAsync('generateBase64Key()');
+  const injectedKeyB = await session.evaluateAsync('generateBase64Key()');
+  const injectedCredId = btoa('injected-cmtg-cred');
+  await dp.WebAuthn.addCredential({
+    authenticatorId,
+    credential: {
+      credentialId: injectedCredId,
+      rpId: 'devtools.test',
+      privateKey: await session.evaluateAsync('generateBase64Key()'),
+      signCount: 0,
+      isResidentCredential: true,
+      userHandle: btoa('nina'),
+      cmtgKeys: [injectedKeyA, injectedKeyB],
+      activeCmtgKeyIndex: 1,
+    }
+  });
+
+  // Verify injected credential state.
+  testRunner.log('Retrieving credentials after injection...');
+  credentials =
+      (await dp.WebAuthn.getCredentials({authenticatorId})).result.credentials;
+  const injectedCred = credentials.find(c => c.credentialId === injectedCredId);
+  testRunner.log(`Injected credential found: ${injectedCred !== undefined}`);
+  testRunner.log(
+      `Injected credential cmtgKeys count: ${injectedCred?.cmtgKeys?.length}`);
+  testRunner.log(`Injected credential activeCmtgKeyIndex: ${
+      injectedCred?.activeCmtgKeyIndex}`);
+  testRunner.log(`Injected key 0 matches: ${
+      injectedCred?.cmtgKeys?.[0] === injectedKeyA}`);
+  testRunner.log(`Injected key 1 matches: ${
+      injectedCred?.cmtgKeys?.[1] === injectedKeyB}`);
+
   testRunner.completeTest();
 })

@@ -33,12 +33,16 @@
 namespace content::protocol {
 
 namespace {
+static constexpr char kActiveCmtgKeyIndexOutOfBounds[] =
+    "activeCmtgKeyIndex out of bounds";
 static constexpr char kAlreadyHasInternalAuthenticator[] =
     "Chrome only supports one internal authenticator per environment";
 static constexpr char kAuthenticatorNotFound[] =
     "Could not find a Virtual Authenticator matching the ID";
 static constexpr char kCableNotSupportedOnU2f[] =
     "U2F only supports the \"usb\", \"ble\" and \"nfc\" transports";
+static constexpr char kCmtgNotSupported[] =
+    "CMTG is not supported by this authenticator";
 static constexpr char kCouldNotCreateCredential[] =
     "An error occurred trying to create the credential";
 static constexpr char kCouldNotStoreLargeBlob[] =
@@ -51,6 +55,7 @@ static constexpr char kErrorCreatingAuthenticator[] =
     "An error occurred when trying to create the authenticator";
 static constexpr char kHandleRequiredForResidentCredential[] =
     "The User Handle is required for Resident Credentials";
+static constexpr char kInvalidCmtgKey[] = "Invalid CMTG key";
 static constexpr char kInvalidCtapVersion[] = "Invalid CTAP version.";
 static constexpr char kInvalidProtocol[] = "The protocol is not valid";
 static constexpr char kInvalidTransport[] = "The transport is not valid";
@@ -364,6 +369,32 @@ void WebAuthnHandler::AddCredential(
     return;
   }
 
+  std::vector<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>> cmtg_keys;
+  if (authenticator->has_cmtg_key()) {
+    if (credential->HasCmtgKeys()) {
+      for (const Binary& key : *credential->GetCmtgKeys()) {
+        auto parsed_key = device::VirtualFidoDevice::PrivateKey::FromPKCS8(key);
+        if (!parsed_key) {
+          callback->sendFailure(Response::InvalidParams(kInvalidCmtgKey));
+          return;
+        }
+        cmtg_keys.push_back(std::move(*parsed_key));
+      }
+    }
+    if (credential->HasActiveCmtgKeyIndex()) {
+      int index = *credential->GetActiveCmtgKeyIndex();
+      if (index < 0 || static_cast<size_t>(index) >= cmtg_keys.size()) {
+        callback->sendFailure(
+            Response::InvalidParams(kActiveCmtgKeyIndexOutOfBounds));
+        return;
+      }
+    }
+  } else if (credential->HasCmtgKeys() || credential->HasActiveCmtgKeyIndex() ||
+             credential->HasGenerateCmtgKeyOnNextOperation()) {
+    callback->sendFailure(Response::InvalidParams(kCmtgNotSupported));
+    return;
+  }
+
   Binary user_handle = credential->GetUserHandle(Binary());
   if (credential->HasUserHandle() &&
       user_handle.size() > device::kUserHandleMaxLength) {
@@ -411,6 +442,16 @@ void WebAuthnHandler::AddCredential(
   if (!credential_created) {
     callback->sendFailure(Response::ServerError(kCouldNotCreateCredential));
     return;
+  }
+
+  if (authenticator->has_cmtg_key()) {
+    for (auto& key : cmtg_keys) {
+      CHECK(authenticator->AddCmtgKey(credential_id, std::move(key)));
+    }
+    CHECK(authenticator->SetSelectedCmtgKeyIndex(
+        credential_id, credential->GetActiveCmtgKeyIndex(0)));
+    CHECK(authenticator->SetGenerateCmtgKeyOnNextOperation(
+        credential_id, credential->GetGenerateCmtgKeyOnNextOperation(false)));
   }
 
   if (credential->HasLargeBlob()) {

@@ -66,5 +66,61 @@
   credentialOptions.credential.isResidentCredential = false;
   testRunner.log(await dp.WebAuthn.addCredential(credentialOptions));
 
+  // Try with CMTG keys on a non-CMTG authenticator.
+  const cmtgOnNonCmtgAuthOptions = {
+    authenticatorId: credentialOptions.authenticatorId,
+    credential: {
+      credentialId: btoa('cmtg-on-non-cmtg'),
+      rpId: 'devtools.test',
+      privateKey: await session.evaluateAsync('generateBase64Key()'),
+      signCount: 0,
+      isResidentCredential: true,
+      userHandle: btoa('nina'),
+      cmtgKeys: [await session.evaluateAsync('generateBase64Key()')],
+    }
+  };
+  testRunner.log(await dp.WebAuthn.addCredential(cmtgOnNonCmtgAuthOptions));
+
+  // Create a CMTG-enabled authenticator.
+  const cmtgAuthId = (await dp.WebAuthn.addVirtualAuthenticator({
+                       options: {
+                         protocol: 'ctap2',
+                         transport: 'usb',
+                         hasResidentKey: true,
+                         hasUserVerification: false,
+                         hasCmtgKey: true,
+                       }
+                     })).result.authenticatorId;
+
+  // Try with an invalid CMTG key on CMTG authenticator.
+  const invalidCmtgKeyOptions = {
+    authenticatorId: cmtgAuthId,
+    credential: {
+      credentialId: btoa('cmtg-cred-invalid-key'),
+      rpId: 'devtools.test',
+      privateKey: await session.evaluateAsync('generateBase64Key()'),
+      signCount: 0,
+      isResidentCredential: true,
+      userHandle: btoa('nina'),
+      cmtgKeys: [btoa('invalid cmtg key')],
+    }
+  };
+  testRunner.log(await dp.WebAuthn.addCredential(invalidCmtgKeyOptions));
+
+  // Try with activeCmtgKeyIndex out of bounds on CMTG authenticator.
+  const cmtgCredentialOptions = {
+    authenticatorId: cmtgAuthId,
+    credential: {
+      credentialId: btoa('cmtg-cred-error'),
+      rpId: 'devtools.test',
+      privateKey: await session.evaluateAsync('generateBase64Key()'),
+      signCount: 0,
+      isResidentCredential: true,
+      userHandle: btoa('nina'),
+      activeCmtgKeyIndex: 0,
+    }
+  };
+  testRunner.log(await dp.WebAuthn.addCredential(cmtgCredentialOptions));
+
   testRunner.completeTest();
 })

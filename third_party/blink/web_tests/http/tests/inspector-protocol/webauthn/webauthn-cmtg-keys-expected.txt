@@ -16,4 +16,11 @@ Getting assertion...
 Assertion status: OK
 Assertion key matches key A: true
 Assertion signature present: yes
+Injecting credential with CMTG keys...
+Retrieving credentials after injection...
+Injected credential found: true
+Injected credential cmtgKeys count: 2
+Injected credential activeCmtgKeyIndex: 1
+Injected key 0 matches: true
+Injected key 1 matches: true
 
