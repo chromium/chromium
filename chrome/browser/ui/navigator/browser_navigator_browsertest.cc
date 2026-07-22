@@ -21,11 +21,14 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -73,6 +76,7 @@
 #include "net/test/scoped_mutually_exclusive_feature_list.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/display/screen_base.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
@@ -130,6 +134,7 @@ BrowserNavigatorTest::BrowserNavigatorTest() {
 }
 
 void BrowserNavigatorTest::SetUpOnMainThread() {
+  InteractiveBrowserTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
 }
 
@@ -711,44 +716,41 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 #endif
 
-// TODO(crbug.com/535063373): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Disposition_NewPopupTabModal DISABLED_Disposition_NewPopupTabModal
-#else
-#define MAYBE_Disposition_NewPopupTabModal Disposition_NewPopupTabModal
-#endif
 // This test verifies that navigating with WindowOpenDisposition = NEW_POPUP
 // and is_tab_modal_popup_deprecated = true results in a new WebContents that is
 // a popup and behaves like a tab modal.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       MAYBE_Disposition_NewPopupTabModal) {
-  auto handle = BrowserNavigatorTabModal::ShowForTesting(
-      GetGoogleURL(), *browser()->GetActiveTabInterface()->GetContents(),
-      gfx::Size(200, 200));
-  ASSERT_TRUE(handle);
-  content::WebContents* const contents = handle->GetWebContents();
-  ASSERT_NE(nullptr, contents);
-  content::WaitForLoadStop(contents);
-  const auto* const popup =
-      tabs::TabModel::GetFromContents(contents)->GetBrowserWindowInterface();
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTabModal) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupPage);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondPage);
+  BrowserWindowInterface* popup = nullptr;
+  RunTestSequence(
+      InstrumentNextTab(kPopupPage, AnyBrowser()), Do([this, &popup] {
+        auto handle = BrowserNavigatorTabModal::ShowForTesting(
+            GetGoogleURL(), *browser()->GetActiveTabInterface()->GetContents(),
+            gfx::Size(200, 200));
+        ASSERT_TRUE(handle);
+        content::WebContents* const contents = handle->GetWebContents();
+        ASSERT_NE(nullptr, contents);
+        popup = tabs::TabModel::GetFromContents(contents)
+                    ->GetBrowserWindowInterface();
+      }),
+      WaitForWebContentsReady(kPopupPage),
+      InSameContextAs(
+          kPopupPage, WaitForShow(kBrowserViewElementId),
+          Check([&popup] { return popup->IsTabModalPopup(); },
+                "Popup is a tab modal popup."),
+          CheckResult([&popup] { return popup; }, testing::Ne(browser()),
+                      "Popup contents is not in main browser.")),
 
-  // Add a new tab.
-  chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
-
-  // Switch to the new tab.
-  browser()->tab_strip_model()->ActivateTabAt(1);
-
-  // Verify the popup window is hidden.
-  EXPECT_FALSE(popup->GetWindow()->IsVisible());
-
-  // Switch back to the original tab.
-  browser()->tab_strip_model()->ActivateTabAt(0);
-
-  // Verify the popup window is visible again.
-  EXPECT_TRUE(popup->GetWindow()->IsVisible());
-
-  // Verify the popup window is set as tab model popup.
-  EXPECT_TRUE(popup->IsTabModalPopup());
+      // Add a second tab and switch back and forth. The popup should go away
+      // when the original tab isn't active.
+      AddInstrumentedTab(kSecondPage, GURL("about:blank")),
+      SelectTab(kBrowserViewElementId, 1),
+      InSameContextAs(kPopupPage, WaitForHide(kBrowserViewElementId)),
+      SelectTab(kBrowserViewElementId, 0),
+      InSameContextAs(kPopupPage, WaitForShow(kBrowserViewElementId),
+                      Check([&popup] { return popup->IsTabModalPopup(); },
+                            "Popup is still a tab modal popup.")));
 }
 
 // This test verifies that navigating with WindowOpenDisposition = NEW_WINDOW

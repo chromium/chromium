@@ -12,7 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 
 class Profile;
 
@@ -23,7 +23,7 @@ class WebContents;
 // Browsertest class for testing the browser navigation. It is also a base class
 // for the |BrowserGuestModeNavigation| which tests navigation while in guest
 // mode.
-class BrowserNavigatorTest : public InProcessBrowserTest {
+class BrowserNavigatorTest : public InteractiveBrowserTest {
  public:
   BrowserNavigatorTest();
 
