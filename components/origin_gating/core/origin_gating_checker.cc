@@ -167,7 +167,8 @@ void OriginGatingChecker::EvaluatePredicates(
                 }
                 case DecisionSource::kCacheWithoutUserConfirmation: {
                   return RunActionOrGetUserConfirmationInfo(
-                      context, pending_predicates, input, callback,
+                      context, pending_predicates.subspan(/*offset=*/i), input,
+                      callback,
                       [&](std::unique_ptr<GatingDecisionContext>& context,
                           DelegateInputs& input,
                           GatingDecisionCallback& callback)
@@ -238,7 +239,7 @@ void OriginGatingChecker::EvaluatePredicates(
   }
 
   RunActionOrGetUserConfirmationInfo(
-      context, pending_predicates, input, callback,
+      context, /*pending_predicates=*/{}, input, callback,
       [&](std::unique_ptr<GatingDecisionContext>& context,
           DelegateInputs& input, GatingDecisionCallback& callback)
           VALID_CONTEXT_REQUIRED(sequence_checker_) {
