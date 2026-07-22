@@ -855,6 +855,10 @@ source_set("extensions") {
     }
 
     allow_circular_includes_from += [
+      # autofill generated pref includes
+      # extensions/api/settings_private/generated_pref.h.
+      "//chrome/browser/autofill:generated_find_and_fill_with_gemini_pref",
+
       # TODO(b/40251079): Remove this circular dependency.
       "//chrome/browser/apps/app_service/app_icon",
 
@@ -963,7 +967,7 @@ source_set("extensions") {
 
       # Only for allow_circular_includes_from
       "//chrome/browser/apps/app_service/app_icon",
-      "//chrome/browser/autofill",
+      "//chrome/browser/autofill:generated_find_and_fill_with_gemini_pref",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/devtools",
       "//chrome/browser/image_decoder",

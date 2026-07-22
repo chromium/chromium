@@ -45,7 +45,7 @@ suite('SuggestionsFromGeminiSubpage', function() {
     page.prefs = settingsPrefs.prefs!;
     page.setPrefValue(
         'autofill.at_memory.trigger_info', {is_shortcut: false, trigger: '@@'});
-    page.setPrefValue('autofill.personal_context.settings_toggle_status', true);
+    page.setPrefValue('generated.find_and_fill_with_gemini', true);
 
     document.body.appendChild(page);
     await flushTasks();
@@ -118,8 +118,7 @@ suite('SuggestionsFromGeminiSubpage', function() {
     assertTrue(
         isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
 
-    subpage.set(
-        'prefs.autofill.personal_context.settings_toggle_status.value', false);
+    subpage.set('prefs.generated.find_and_fill_with_gemini.value', false);
     await flushTasks();
 
     assertFalse(

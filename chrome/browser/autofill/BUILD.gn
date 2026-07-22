@@ -409,6 +409,7 @@ source_set("unit_tests") {
   sources = [ "automated_tests/cache_replayer_unittest.cc" ]
 
   deps = [
+    ":autofill",
     ":test_support",
     "//base",
     "//chrome/test:test_support",
@@ -421,10 +422,11 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [
       "autofill_ai_personal_context_access_manager_factory_unittest.cc",
+      "generated_find_and_fill_with_gemini_pref_unittest.cc",
       "ui/autofill_image_fetcher_impl_unittest.cc",
     ]
     deps += [
-      ":autofill",
+      ":generated_find_and_fill_with_gemini_pref",
       "//chrome/browser/personal_context",
       "//components/autofill/core/browser",
       "//components/autofill/core/common",
@@ -445,9 +447,25 @@ source_set("unit_tests") {
       "android/save_update_address_profile_prompt_controller_unittest.cc",
     ]
     deps += [
-      "//chrome/browser/autofill",
       "//chrome/browser/sync",
       "//chrome/browser/ui/autofill",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("generated_find_and_fill_with_gemini_pref") {
+    sources = [
+      "generated_find_and_fill_with_gemini_pref.cc",
+      "generated_find_and_fill_with_gemini_pref.h",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common/extensions/api",
+      "//components/optimization_guide/core",
+      "//components/personal_context/core",
+      "//components/prefs",
     ]
   }
 }
