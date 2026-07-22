@@ -91,8 +91,31 @@ void ReadAloudService::Seek(base::TimeDelta absolute_time) {}
 void ReadAloudService::SeekRelative(base::TimeDelta offset) {}
 void ReadAloudService::SetPlaybackRate(float rate) {}
 void ReadAloudService::SetVoice(std::string_view voice_id) {}
-void ReadAloudService::PreviewVoice(std::string_view voice_id) {}
-void ReadAloudService::StopVoicePreview() {}
+void ReadAloudService::PreviewVoice(std::string_view voice_id) {
+  // Pause active article playback while previewing a voice.
+  Pause();
+
+  // TODO(b/522835686): Implement actual voice preview audio synthesis via the
+  // utility process player.
+
+  // Notify the UI/client delegate that voice preview playback has started.
+  if (delegate_) {
+    delegate_->OnVoicePreviewPlaybackStateChanged(voice_id,
+                                                  PlaybackState::kPlaying);
+  }
+}
+
+void ReadAloudService::StopVoicePreview() {
+  // TODO(b/522835686): Stop actual voice preview audio playback in the utility
+  // process player.
+
+  // Notify the UI/client delegate that voice preview playback has stopped.
+  // Passing an empty string indicates that any active voice preview is stopped.
+  if (delegate_) {
+    delegate_->OnVoicePreviewPlaybackStateChanged(/*voice_id=*/"",
+                                                  PlaybackState::kStopped);
+  }
+}
 void ReadAloudService::SetPlaybackMode(PlaybackMode mode) {}
 void ReadAloudService::SetHighlightingEnabled(bool enabled) {}
 void ReadAloudService::SendFeedback(FeedbackType feedback_type) {}

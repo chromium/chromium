@@ -333,4 +333,79 @@ TEST_F(ReadAloudServiceTest,
   EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
 }
 
+TEST_F(ReadAloudServiceTest, VoicePreviewDispatchesPlayingAndStoppedStates) {
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  EXPECT_CALL(*delegate_ptr,
+              OnVoicePreviewPlaybackStateChanged(
+                  "msf00006", ReadAloudService::PlaybackState::kPlaying))
+      .Times(1);
+  service()->PreviewVoice("msf00006");
+
+  EXPECT_CALL(*delegate_ptr, OnVoicePreviewPlaybackStateChanged(
+                                 "", ReadAloudService::PlaybackState::kStopped))
+      .Times(1);
+  service()->StopVoicePreview();
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, PreviewVoicePausesActivePlayback) {
+  std::unique_ptr<content::WebContents> test_contents = CreateTestWebContents();
+  service()->Play(test_contents.get());
+  EXPECT_EQ(test_contents.get(), service()->web_contents());
+
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  testing::InSequence s;
+  // PreviewVoice should pause active article playback and start the requested
+  // voice preview.
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kPaused))
+      .Times(1);
+  EXPECT_CALL(*delegate_ptr,
+              OnVoicePreviewPlaybackStateChanged(
+                  "msf00006", ReadAloudService::PlaybackState::kPlaying))
+      .Times(1);
+  service()->PreviewVoice("msf00006");
+
+  // Stopping playback returns article state to stopped before teardown.
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kStopped))
+      .Times(1);
+  service()->Stop();
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
+TEST_F(ReadAloudServiceTest, PlayResumesPlaybackAfterVoicePreview) {
+  std::unique_ptr<content::WebContents> test_contents = CreateTestWebContents();
+  service()->Play(test_contents.get());
+  service()->PreviewVoice("msf00006");
+
+  auto delegate = std::make_unique<testing::StrictMock<MockDelegate>>();
+  MockDelegate* delegate_ptr = delegate.get();
+  service()->SetDelegate(std::move(delegate));
+
+  testing::InSequence s;
+  // Starting article playback again resumes article playback.
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kPlaying))
+      .Times(1);
+  service()->Play(test_contents.get());
+
+  // Explicitly stopping playback returns article state to stopped before
+  // teardown.
+  EXPECT_CALL(*delegate_ptr,
+              OnPlaybackStateChanged(ReadAloudService::PlaybackState::kStopped))
+      .Times(1);
+  service()->Stop();
+
+  EXPECT_CALL(*delegate_ptr, OnNativeDestroyed()).Times(1);
+}
+
 }  // namespace readaloud
