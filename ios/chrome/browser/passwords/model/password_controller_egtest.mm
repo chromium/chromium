@@ -140,10 +140,8 @@ void WaitForBottomSheetAndOpenKeyboard(NSString* username) {
 // Types `text` on an input field with `fieldID`. Dismisses the credential
 // bottom sheet if `dismissBottomSheet` is true.
 void TypeTextOnField(NSString* text, const std::string& fieldID) {
-  [ChromeEarlGrey
-      evaluateJavaScriptForSideEffect:
-          [NSString stringWithFormat:@"document.getElementById('%@').focus();",
-                                     base::SysUTF8ToNSString(fieldID)]];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(fieldID)];
   TypeText(text);
   // Wait for the current input field to contain the `text` (i.e. typing from
   // SimulatePhysicalKeyboardEvent finished) before proceeding to next step.
