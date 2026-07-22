@@ -1042,7 +1042,7 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButtonWithSync() {
       signin_util::SignedInState::kSyncing) {
     // Indicates clearly that Sync is ON.
     message_id = IDS_PROFILES_OPEN_SYNC_SETTINGS_BUTTON;
-    icon = &(features::IsRoundedIconsEnabled()   ? kSyncIcon
+    icon = &(features::IsRoundedIconsEnabled()   ? vector_icons::kSyncIcon
              : features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
                                                  : kSyncChromeRefreshOldIcon);
   }

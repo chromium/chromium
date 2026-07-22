@@ -31,6 +31,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
@@ -141,10 +142,11 @@ class ScrollButton : public views::ImageButton {
                                                  ? kKeyboardArrowLeftIcon
                                                  : kLeadingScrollOldIcon,
                                              ui::kColorIcon)
-            : ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                                 ? kKeyboardArrowRightIcon
-                                                 : kTrailingScrollOldIcon,
-                                             ui::kColorIcon));
+            : ui::ImageModel::FromVectorIcon(
+                  features::IsRoundedIconsEnabled()
+                      ? vector_icons::kKeyboardArrowRightFlippableIcon
+                      : kTrailingScrollOldIcon,
+                  ui::kColorIcon));
 
     views::InkDrop::Get(this)->SetBaseColor(
         views::TypographyProvider::Get().GetColorId(

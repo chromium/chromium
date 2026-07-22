@@ -205,7 +205,7 @@ void WebAppMenuModel::Build() {
   }
   AddItemWithStringIdAndVectorIcon(this, IDC_COPY_URL, IDS_COPY_URL,
                                    features::IsRoundedIconsEnabled()
-                                       ? kLinkIcon
+                                       ? vector_icons::kLinkIcon
                                        : kLinkChromeRefreshOldIcon);
 
   if (ShouldAllowOpenInChrome(browser())) {

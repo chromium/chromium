@@ -97,6 +97,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/search_engines/util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
@@ -572,9 +573,10 @@ ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
 }
 
 ui::ImageModel OmniboxEditModel::GetAddContextIcon(int image_size) const {
-  return ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kAdd2Icon : kAddChromeRefreshOldIcon,
-      ui::kColorSysPrimary, image_size);
+  return ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                            ? vector_icons::kAdd2Icon
+                                            : kAddChromeRefreshOldIcon,
+                                        ui::kColorSysPrimary, image_size);
 }
 
 gfx::Image OmniboxEditModel::GetAgentspaceIcon(bool dark_mode) const {

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -104,10 +105,11 @@ class ScrollButton : public views::ImageButton {
                                                  ? kKeyboardArrowLeftIcon
                                                  : kLeadingScrollOldIcon,
                                              ui::kColorIcon)
-            : ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                                 ? kKeyboardArrowRightIcon
-                                                 : kTrailingScrollOldIcon,
-                                             ui::kColorIcon));
+            : ui::ImageModel::FromVectorIcon(
+                  features::IsRoundedIconsEnabled()
+                      ? vector_icons::kKeyboardArrowRightFlippableIcon
+                      : kTrailingScrollOldIcon,
+                  ui::kColorIcon));
 
     views::InkDrop::Get(this)->SetBaseColor(
         views::TypographyProvider::Get().GetColorId(

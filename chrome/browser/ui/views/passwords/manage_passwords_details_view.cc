@@ -532,7 +532,7 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
   if (on_back_clicked_callback) {
     auto back_button = views::CreateVectorImageButtonWithNativeTheme(
         *on_back_clicked_callback,
-        features::IsRoundedIconsEnabled()   ? kArrowBackIcon
+        features::IsRoundedIconsEnabled()   ? vector_icons::kArrowBackIcon
         : features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
                                             : vector_icons::kArrowBackOldIcon);
     back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
@@ -588,7 +588,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
         : features::IsRoundedIconsEnabled() ? vector_icons::kAccountCircleIcon
                                             : kAccountCircleOldIcon,
         std::move(username_label),
-        features::IsRoundedIconsEnabled() ? kContentCopyIcon : kCopyOldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kContentCopyIcon
+                                          : kCopyOldIcon,
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
         std::move(copy_username_button_callback),
         ManagePasswordsViewIDs::kCopyUsernameButton));
@@ -646,7 +647,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                                         : vector_icons::kPasswordManagerOldIcon,
       CreatePasswordLabelWithEyeIconView(std::move(password_label),
                                          on_activity_callback_),
-      features::IsRoundedIconsEnabled() ? kContentCopyIcon : kCopyOldIcon,
+      features::IsRoundedIconsEnabled() ? vector_icons::kContentCopyIcon
+                                        : kCopyOldIcon,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD),
       std::move(copy_password_button_callback),
       ManagePasswordsViewIDs::kCopyPasswordButton));

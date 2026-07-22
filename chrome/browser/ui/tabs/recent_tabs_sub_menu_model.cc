@@ -587,7 +587,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
       AddItemWithStringIdAndIcon(
           IDC_RECENT_TABS_SEE_DEVICE_TABS, IDS_RECENT_TABS_SEE_DEVICE_TABS,
           ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kSyncIcon
+              features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
                                                 : kSyncRefreshOldIcon,
               ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
     } else {
@@ -595,7 +595,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
           IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
           IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
           ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kSyncIcon
+              features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
                                                 : kSyncRefreshOldIcon,
               ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
     }

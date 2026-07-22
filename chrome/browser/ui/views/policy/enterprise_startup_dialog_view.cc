@@ -19,6 +19,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -209,7 +210,7 @@ void EnterpriseStartupDialogView::DisplayErrorMessage(
   std::unique_ptr<views::Label> text = CreateText(error_message);
   auto error_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kErrorFilledIcon
+          features::IsRoundedIconsEnabled() ? vector_icons::kErrorFilledIcon
                                             : kBrowserToolsErrorOldIcon,
           ui::kColorAlertHighSeverity, kIconSize));
 

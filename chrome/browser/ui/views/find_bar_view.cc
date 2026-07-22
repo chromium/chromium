@@ -31,6 +31,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/clipboard_types.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -275,19 +276,19 @@ FindBarView::FindBarView(FindBarHost* host) {
   // Theme-aware image models.
   views::SetImageFromVectorIconWithColor(
       find_previous_button_,
-      features::IsRoundedIconsEnabled() ? kKeyboardArrowUpIcon
+      features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardArrowUpIcon
                                         : kKeyboardArrowUpChromeRefreshOldIcon,
       {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
   find_previous_button_->SetImageModel(
       views::Button::STATE_HOVERED,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kKeyboardArrowUpIcon
+                                         ? vector_icons::kKeyboardArrowUpIcon
                                          : kKeyboardArrowUpChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
   find_previous_button_->SetImageModel(
       views::Button::STATE_PRESSED,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kKeyboardArrowUpIcon
+                                         ? vector_icons::kKeyboardArrowUpIcon
                                          : kKeyboardArrowUpChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
 

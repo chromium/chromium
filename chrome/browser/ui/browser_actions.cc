@@ -722,7 +722,7 @@ void BrowserActions::InitializePageActionIconActions() {
               IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled()
-                  ? kShoppingmodeIcon
+                  ? vector_icons::kShoppingmodeIcon
                   : kLocalOfferFlippedRefreshOldIcon,
               ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
           .Build());
@@ -1533,9 +1533,8 @@ void BrowserActions::InitializeChromeMenuActions() {
                 },
                 bwi),
             kActionShowChromeLabs, IDS_CHROMELABS, IDS_CHROMELABS,
-            features::IsRoundedIconsEnabled()   ? kScienceIcon
-            : features::IsRoundedIconsEnabled() ? vector_icons::kScienceIcon
-                                                : kScienceOldIcon)
+            features::IsRoundedIconsEnabled() ? vector_icons::kScienceIcon
+                                              : vector_icons::kScienceOldIcon)
             .SetVisible(ShouldShowChromeLabsUI(profile))
             .Build());
   }
@@ -1799,7 +1798,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               },
               bwi, tab_strip_model),
           kActionCopyUrl, IDS_APP_MENU_COPY_LINK, IDS_APP_MENU_COPY_LINK,
-          features::IsRoundedIconsEnabled() ? kLinkIcon
+          features::IsRoundedIconsEnabled() ? vector_icons::kLinkIcon
                                             : kLinkChromeRefreshOldIcon)
           .SetEnabled(chrome::CanCopyUrl(bwi))
           .SetVisible(!sharing_hub::SharingIsDisabledByPolicy(profile))
@@ -2097,7 +2096,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionInstallPwa)
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled()
-                  ? kInstallDesktopIcon
+                  ? vector_icons::kInstallDesktopIcon
                   : kInstallDesktopChromeRefreshOldIcon,
               ui::kColorIcon))
           .SetProperty(actions::kActionItemPinnableKey, false)
@@ -2178,8 +2177,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
                 l10n_util::GetStringUTF16(
                     IDS_TAB_GROUP_HEADER_CXMENU_UNFOCUS_GROUP)))
             .SetImage(ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled() ? kArrowBackIcon
-                : features::IsRoundedIconsEnabled()
+                features::IsRoundedIconsEnabled()
                     ? vector_icons::kArrowBackIcon
                     : vector_icons::kArrowBackOldIcon,
                 ui::kColorIcon))

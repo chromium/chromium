@@ -90,7 +90,7 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kLinkCopied,
       ToastSpecification::Builder(features::IsRoundedIconsEnabled()
-                                      ? kLinkIcon
+                                      ? vector_icons::kLinkIcon
                                       : kLinkChromeRefreshOldIcon,
                                   IDS_LINK_COPIED_TOAST_BODY)
           .Build());
@@ -98,14 +98,14 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kImageCopied,
       ToastSpecification::Builder(features::IsRoundedIconsEnabled()
-                                      ? kContentCopyIcon
+                                      ? vector_icons::kContentCopyIcon
                                       : kCopyMenuOldIcon,
                                   IDS_IMAGE_COPIED_TOAST_BODY)
           .Build());
   toast_registry_->RegisterToast(
       ToastId::kVideoFrameCopied,
       ToastSpecification::Builder(features::IsRoundedIconsEnabled()
-                                      ? kContentCopyIcon
+                                      ? vector_icons::kContentCopyIcon
                                       : kCopyMenuOldIcon,
                                   IDS_VIDEO_FRAME_COPIED_TOAST_BODY)
           .Build());
@@ -113,7 +113,7 @@ void ToastService::RegisterToasts(
   toast_registry_->RegisterToast(
       ToastId::kLinkToHighlightCopied,
       ToastSpecification::Builder(features::IsRoundedIconsEnabled()
-                                      ? kLinkIcon
+                                      ? vector_icons::kLinkIcon
                                       : kLinkChromeRefreshOldIcon,
                                   IDS_LINK_COPIED_TO_HIGHLIGHT_TOAST_BODY)
           .Build());

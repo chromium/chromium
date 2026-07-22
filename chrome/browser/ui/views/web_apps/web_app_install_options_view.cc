@@ -17,6 +17,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -189,7 +190,7 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(OptionsData options_data) {
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
                           features::IsRoundedIconsEnabled()
-                              ? kArrowForwardIcon
+                              ? vector_icons::kArrowForwardIcon
                               : kArrowForwardOldIcon,
                           ui::kColorIcon))
                       .SetPreferredSize(

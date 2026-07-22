@@ -98,7 +98,8 @@ void SharingHubModel::PopulateFirstPartyActions() {
 
   first_party_action_list_.emplace_back(
       IDC_COPY_URL, l10n_util::GetStringUTF16(IDS_SHARING_HUB_COPY_LINK_LABEL),
-      &(features::IsRoundedIconsEnabled() ? kContentCopyIcon : kCopyOldIcon),
+      &(features::IsRoundedIconsEnabled() ? vector_icons::kContentCopyIcon
+                                          : kCopyOldIcon),
       "SharingHubDesktop.CopyURLSelected", IDS_LINK_COPIED);
 
   if (DesktopScreenshotsFeatureEnabled(context_)) {

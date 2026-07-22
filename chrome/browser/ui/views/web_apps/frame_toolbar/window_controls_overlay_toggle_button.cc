@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
@@ -41,11 +42,11 @@ void WindowControlsOverlayToggleButton::UpdateState() {
   // If you update the features::IsRoundedIconsEnabled() ?
   // kKeyboardArrowDownIcon : kKeyboardArrowDownOldIcon, please update
   // kKeyboardArrowLeftIcon defined in `ash/resources/vector_icons` as well.
-  SetVectorIcon(enabled ? features::IsRoundedIconsEnabled()
-                              ? kKeyboardArrowDownIcon
-                              : kKeyboardArrowDownOldIcon
-                : features::IsRoundedIconsEnabled() ? kKeyboardArrowUpIcon
-                                                    : kKeyboardArrowUpOldIcon);
+  SetVectorIcon(
+      enabled ? features::IsRoundedIconsEnabled() ? kKeyboardArrowDownIcon
+                                                  : kKeyboardArrowDownOldIcon
+      : features::IsRoundedIconsEnabled() ? vector_icons::kKeyboardArrowUpIcon
+                                          : kKeyboardArrowUpOldIcon);
   SetTooltipText(l10n_util::GetStringUTF16(
       enabled ? IDS_WEB_APP_DISABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP
               : IDS_WEB_APP_ENABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP));

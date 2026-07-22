@@ -271,7 +271,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
           kSidePanelShowReadAnything;
     case kActionCopyUrl:
       CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
-                           ? kLinkIcon
+                           ? vector_icons::kLinkIcon
                            : kLinkChromeRefreshOldIcon));
       return toolbar_ui_api::mojom::PinnedToolbarAction::kCopyUrl;
     case kActionSendTabToSelf:

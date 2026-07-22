@@ -20,6 +20,7 @@
 #include "components/data_sharing/public/features.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
@@ -173,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupViewTest,
                 .vector_icon()
                 ->name,
             features::IsRoundedIconsEnabled()
-                ? kKeyboardArrowUpIcon.name
+                ? vector_icons::kKeyboardArrowUpIcon.name
                 : kKeyboardArrowUpChromeRefreshOldIcon.name);
 
   // Collapse the tab group and verify the collapse icon is correctly updated.

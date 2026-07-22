@@ -22,6 +22,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -555,7 +556,7 @@ void TabGroupHeaderView::OnDataChanged(
                     ? kKeyboardArrowDownIcon
                     : kKeyboardArrowDownChromeRefreshOldIcon
           : features::IsRoundedIconsEnabled()
-              ? kKeyboardArrowUpIcon
+              ? vector_icons::kKeyboardArrowUpIcon
               : kKeyboardArrowUpChromeRefreshOldIcon,
           foreground_color, kIconSize));
     }

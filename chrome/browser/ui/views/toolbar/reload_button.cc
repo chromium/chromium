@@ -69,7 +69,7 @@ ReloadButton::ReloadButton(
                        ? vector_icons::kRefreshIcon
                        : vector_icons::kReloadChromeRefreshOldIcon),
       reload_touch_icon_(features::IsRoundedIconsEnabled()
-                             ? kRefreshIcon
+                             ? vector_icons::kRefreshIcon
                              : kReloadTouchOldIcon),
       stop_icon_(features::IsRoundedIconsEnabled()
                      ? kCloseIcon

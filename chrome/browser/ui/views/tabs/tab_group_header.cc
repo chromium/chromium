@@ -39,6 +39,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -635,7 +636,7 @@ void TabGroupHeader::UpdateSyncIconView() {
     sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         use_share_icon ? features::IsRoundedIconsEnabled() ? kGroupCustomIcon
                                                            : kPeopleGroupOldIcon
-        : features::IsRoundedIconsEnabled() ? kSyncIcon
+        : features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
                                             : kTabGroupsSyncOldIcon,
         color_utils::GetColorWithMaxContrast(color_),
         group_style_->GetSyncIconWidth()));

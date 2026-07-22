@@ -418,7 +418,7 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                  ? &(features::IsRoundedIconsEnabled()
                          ? vector_icons::kSyncDisabledIcon
                          : vector_icons::kSyncOffChromeRefreshOldIcon)
-                 : &(features::IsRoundedIconsEnabled() ? kSyncIcon
+                 : &(features::IsRoundedIconsEnabled() ? vector_icons::kSyncIcon
                      : features::IsRoundedIconsEnabled()
                          ? vector_icons::kSyncIcon
                          : vector_icons::kSyncChromeRefreshOldIcon);

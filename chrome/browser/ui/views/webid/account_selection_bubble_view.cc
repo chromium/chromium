@@ -522,7 +522,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView() {
       header->AddChildView(views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&FedCmAccountSelectionView::OnBackButtonClicked,
                               base::Unretained(owner_)),
-          features::IsRoundedIconsEnabled() ? kArrowBackIcon
+          features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
           : features::IsRoundedIconsEnabled()
               ? vector_icons::kArrowBackIcon
               : vector_icons::kArrowBackOldIcon));

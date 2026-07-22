@@ -138,11 +138,11 @@ class SignInBackButton : public ProfilePickerToolbarButton {
  public:
   explicit SignInBackButton(PressedCallback callback)
       : ProfilePickerToolbarButton(std::move(callback)) {
-    SetVectorIcons(features::IsRoundedIconsEnabled()
-                       ? vector_icons::kArrowBackIcon
-                       : vector_icons::kBackArrowOldIcon,
-                   features::IsRoundedIconsEnabled() ? kArrowBackIcon
-                                                     : kBackArrowTouchOldIcon);
+    SetVectorIcons(
+        features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
+                                          : vector_icons::kBackArrowOldIcon,
+        features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
+                                          : kBackArrowTouchOldIcon);
     SetTooltipText(l10n_util::GetStringUTF16(
         IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL));
   }
