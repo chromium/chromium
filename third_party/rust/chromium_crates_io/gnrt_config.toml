@@ -868,7 +868,10 @@ allow_unsafe = false
 allow_unsafe = false
 
 [crate.subtle.extra_kv]
-allow_unsafe = false
+# subtle contains a reviewed unconditional `unsafe` (repr(i8) Ordering cast in
+# `ConditionallySelectable for cmp::Ordering`). Required by the first consumer
+# (third_party/anonymous_tokens:athm).
+allow_unsafe = true
 
 [crate.symphonia.extra_kv]
 allow_unsafe = false

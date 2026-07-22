@@ -95,6 +95,10 @@ if (enable_rust) {
 
     visibility = [
       ":*",  # private, should only be exposed through bssl_crypto
+
+      # TODO: eventually rely on safe primitives instead of the unsafe ones.
+      "//third_party/anonymous_tokens:athm",
+      "//third_party/anonymous_tokens:athm_clippy",
     ]
 
     bindgen_deps = [ ":raw_bssl_sys_bindings" ]

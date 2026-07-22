@@ -1,3 +1,4 @@
+import("//build/config/rust.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 config("anonymous_tokens_config") {
@@ -325,5 +326,38 @@ source_set("anonymous_tokens_tests") {
   ]
   if (is_ios) {
     deps += [ ":test_data" ]
+  }
+}
+
+# Anonymous Tokens with Hidden Metadata (ATHM), built from the autorolled
+# upstream mirror at src/athm. We build the `boringssl` backend so the elliptic
+# curve / hashing primitives come from Chromium's in-tree BoringSSL (via the
+# bssl_sys FFI bindings) rather than a pure-Rust crypto stack. The crate's Cargo
+# `default = ["rustcrypto"]` feature is irrelevant here: rust_static_library
+# does not run Cargo, so only the explicitly listed features are enabled.
+if (enable_rust) {
+  import("//build/rust/rust_static_library.gni")
+
+  rust_static_library("athm") {
+    crate_name = "athm"
+    crate_root = "src/athm/src/lib.rs"
+    sources = [
+      "src/athm/src/backend/boringssl.rs",
+      "src/athm/src/backend/mod.rs",
+      "src/athm/src/lib.rs",
+    ]
+    edition = "2021"
+    allow_unsafe = true  # Raw bssl_sys FFI; reviewed per-call SAFETY blocks.
+    features = [ "boringssl" ]
+
+    # athm is upstream third-party code (autorolled mirror), so cap its lints to
+    # `allow` the way Cargo does for dependencies, rather than enforcing
+    # Chromium's first-party `-D warnings`.
+    rustflags = [ "--cap-lints=allow" ]
+    deps = [
+      "//third_party/boringssl:bssl_sys",
+      "//third_party/rust/subtle/v2:lib",
+      "//third_party/rust/zeroize/v1:lib",
+    ]
   }
 }

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/rust.gni")
+
 source_set("private_verification_tokens_public_key") {
   sources = [
     "private_verification_tokens_public_key.cc",
@@ -180,4 +182,42 @@ source_set("private_verification_tokens_issuer_config_unittest") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+# ATHM (Anonymous Tokens with Hidden Metadata): a cxx bridge over
+# //third_party/anonymous_tokens:athm and the C++ that calls it.
+if (enable_rust) {
+  import("//build/rust/rust_static_library.gni")
+
+  rust_static_library("athm_ffi") {
+    crate_root = "athm_ffi.rs"
+    sources = [ "athm_ffi.rs" ]
+    cxx_bindings = [ "athm_ffi.rs" ]
+    allow_unsafe = true  # Required for the cxx FFI layer.
+    deps = [ "//third_party/anonymous_tokens:athm" ]
+    visibility = [ ":*" ]
+  }
+
+  # Test issuer modeled on network::TestTrustTokenIssuer: holds the secret ATHM
+  # key material and exposes issuer-side (Issue/Verify) and client-side
+  # (request/finalize) operations over the cxx bridge.
+  source_set("athm_test_issuer") {
+    testonly = true
+    sources = [
+      "athm_test_issuer.cc",
+      "athm_test_issuer.h",
+    ]
+    public_deps = [ "//base" ]
+    deps = [ ":athm_ffi" ]
+  }
+
+  source_set("athm_test_issuer_unittest") {
+    testonly = true
+    sources = [ "athm_test_issuer_unittest.cc" ]
+    deps = [
+      ":athm_test_issuer",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
 }
