@@ -384,6 +384,8 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
         autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
         autofill_metrics::UkmEventsAre(
             {event_metrics(autofill_metrics::FORM_EVENT_DID_PARSE_FORM),
+             event_metrics(autofill_metrics::FORM_EVENT_DID_PARSE_FORM),
+             event_metrics(autofill_metrics::FORM_EVENT_DID_PARSE_FORM),
              event_metrics(autofill_metrics::FORM_EVENT_INTERACTED_ONCE),
              event_metrics(autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN),
              event_metrics(autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE),
@@ -469,13 +471,13 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
       CalculateFormSignature(otp_form));
   SeeForm(otp_form);
 
+  // Trigger field type determination to start OTP retrieval.
+  test_api(autofill_manager()).OnFormsParsed({otp_form});
+
   // This line marks the form as interacted with which is a prerequisite for key
   // metrics to be emitted.
   autofill_manager().OnAskForValuesToFillTest(
       otp_form, otp_form.fields().front().global_id());
-
-  // Trigger field type determination to start OTP retrieval.
-  test_api(autofill_manager()).OnFormsParsed({otp_form});
 
   // Simulate that the suggestions are actually shown.
   DidShowAutofillSuggestions(otp_form, /*field_index=*/0);
@@ -538,8 +540,10 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
     EXPECT_THAT(
         autofill_metrics::GetUkmEvents(test_ukm_recorder(), Ukm::kEntryName),
         autofill_metrics::UkmEventsAre(
-            {event_metrics(autofill_metrics::FORM_EVENT_INTERACTED_ONCE),
+            {event_metrics(autofill_metrics::FORM_EVENT_DID_PARSE_FORM),
              event_metrics(autofill_metrics::FORM_EVENT_DID_PARSE_FORM),
+             event_metrics(autofill_metrics::FORM_EVENT_DID_PARSE_FORM),
+             event_metrics(autofill_metrics::FORM_EVENT_INTERACTED_ONCE),
              event_metrics(autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN),
              event_metrics(autofill_metrics::FORM_EVENT_SUGGESTIONS_SHOWN_ONCE),
              event_metrics(

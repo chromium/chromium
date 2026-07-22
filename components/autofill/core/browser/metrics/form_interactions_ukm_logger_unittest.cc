@@ -574,7 +574,7 @@ TEST_F(FieldLogUkmMetricTest, AutofillFieldInfoMetricsFieldType) {
        FormGlobalIdToHash64Bit(form.global_id())},
       {UFST::kFormSignatureName,
        Collapse(CalculateFormSignature(form)).value()},
-      {UFST::kAutofillFormEventsName, 0},
+      {UFST::kAutofillFormEventsName, 1LL << FORM_EVENT_DID_PARSE_FORM},
       {UFST::kAutofillFormEvents2Name, 0},
       {UFST::kSampleRateName, 1},
       {UFST::kWasSubmittedName, true},

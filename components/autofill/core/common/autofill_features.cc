@@ -830,7 +830,7 @@ BASE_FEATURE(kAutofillServerExperimentalSignatures,
 // Enables querying the server for predictions before the form has been parsed
 // locally.
 BASE_FEATURE(kAutofillServerQueryPredictionsEarly,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables uploading of more data to the Autofill server to use for computing
 // signatures: go/autofill-signatures-more-data.

@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/translate/core/common/language_detection_details.h"
@@ -120,10 +121,12 @@ auto HaveSameFormIdsAs(const std::vector<FormData>& forms) {
 }
 
 // Expects the calls triggered by OnFormsSeen().
-void OnFormsSeenWithExpectations(MockAutofillManager& autofill_manager,
-                                 const std::vector<FormData>& updated_forms,
-                                 const std::vector<FormGlobalId>& removed_forms,
-                                 const std::vector<FormData>& expectation) {
+void OnFormsSeenWithExpectations(
+    MockAutofillManager& autofill_manager,
+    const std::vector<FormData>& updated_forms,
+    const std::vector<FormGlobalId>& removed_forms,
+    const std::vector<FormData>& expectation,
+    std::optional<size_t> expected_form_processed_calls = std::nullopt) {
   const size_t num =
       std::min(updated_forms.size(),
                kAutofillManagerMaxFormCacheSize -
@@ -132,7 +135,11 @@ void OnFormsSeenWithExpectations(MockAutofillManager& autofill_manager,
       .Times(1)
       .WillOnce(Return(true));
   EXPECT_CALL(autofill_manager, OnBeforeProcessParsedForms()).Times(num > 0);
-  EXPECT_CALL(autofill_manager, OnFormProcessed).Times(num);
+  // By default, `num` assumes each form is processed exactly once via local
+  // parsing. However, tests that simulate server parsing will override this
+  // expectation to expect additional calls.
+  EXPECT_CALL(autofill_manager, OnFormProcessed)
+      .Times(expected_form_processed_calls.value_or(num));
   TestAutofillManagerWaiter waiter(autofill_manager,
                                    {AutofillManagerEvent::kFormsSeen});
   autofill_manager.OnFormsSeen(updated_forms, removed_forms,
@@ -402,9 +409,9 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
     EXPECT_CALL(observer(), OnBeforeFormsSeen(m, ElementsAre(f, g),
                                               ElementsAre(id_to_remove)));
     EXPECT_CALL(observer(), OnBeforeLoadedServerPredictions(m));
+    EXPECT_CALL(observer(), OnAfterLoadedServerPredictions(m));
     autofill_manager().OnFormsSeen(forms, {id_to_remove},
                                    AutofillManagerTestApi::pass_key());
-    EXPECT_CALL(observer(), OnAfterLoadedServerPredictions(m));
     EXPECT_CALL(observer(), OnAfterFormsSeen(m, ElementsAre(f, g),
                                              ElementsAre(id_to_remove)))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
@@ -418,6 +425,8 @@ TEST_F(AutofillManagerTest_ObserverCalls, CallsEvents) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(observer(), OnBeforeLanguageDetermined(m));
+    EXPECT_CALL(observer(), OnBeforeLoadedServerPredictions(m));
+    EXPECT_CALL(observer(), OnAfterLoadedServerPredictions(m));
     autofill_manager().OnLanguageDetermined([] {
       translate::LanguageDetectionDetails details;
       details.adopted_language = "en";
@@ -875,19 +884,21 @@ TEST_F(
                   Eq(autofill_client().IsTabInActorMode())));
   EXPECT_CALL(crowdsourcing_manager(), StartQueryRequest)
       .WillOnce(
-          [&](const auto&, const auto&,
+          [&](const std::vector<FormData>& forms_passed, const auto&,
               base::OnceCallback<void(std::optional<QueryResponse>)> callback) {
             std::move(callback).Run(
                 // Server responses always have non-empty form signatures.
-                QueryResponse("", {autofill_manager()
-                                       .FindCachedFormById(forms[0].global_id())
-                                       ->form_signature()}));
+                QueryResponse("", {CalculateFormSignature(forms_passed[0])}));
             return true;
           });
   EXPECT_CALL(observer_,
               OnAfterLoadedServerPredictions(Ref(autofill_manager())))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
-  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms);
+  // We expect 2 calls to OnFormProcessed() here: the first is triggered by the
+  // local heuristics parsing during OnFormsSeen(), and the second is triggered
+  // immediately after when the mocked server predictions arrive.
+  OnFormsSeenWithExpectations(autofill_manager(), forms, {}, forms,
+                              /*expected_form_processed_calls=*/2);
   std::move(run_loop).Run();
 }
 
