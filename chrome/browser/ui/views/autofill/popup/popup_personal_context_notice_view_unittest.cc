@@ -22,6 +22,7 @@
 #include "ui/color/color_id.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/link.h"
@@ -130,7 +131,8 @@ TEST_F(PopupPersonalContextNoticeViewTest, InitialStateOnAmbientAutofill) {
   // Check that the description contains a link with a correct text.
   views::Link* settings_link = description->GetFirstLinkForTesting();
   EXPECT_TRUE(settings_link);
-  EXPECT_EQ(expected_link, settings_link->GetText());
+  EXPECT_EQ(expected_link,
+            settings_link->GetViewAccessibility().GetCachedName());
 
   // Check that the "Got it" button is visible and has the correct text.
   views::MdTextButton* got_it_button = view().got_it_button_for_testing();
@@ -167,7 +169,8 @@ TEST_F(PopupPersonalContextNoticeViewTest, InitialStateAtMemorySource) {
   // underline style.
   views::Link* settings_link = description->GetFirstLinkForTesting();
   EXPECT_TRUE(settings_link);
-  EXPECT_EQ(expected_link, settings_link->GetText());
+  EXPECT_EQ(expected_link,
+            settings_link->GetViewAccessibility().GetCachedName());
   EXPECT_NE(settings_link->font_list().GetFontStyle() & gfx::Font::UNDERLINE,
             0);
 

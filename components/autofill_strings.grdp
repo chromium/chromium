@@ -1699,10 +1699,10 @@
     Now you can find and fill info from Gmail and more.
   </message>
   <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT" translateable="false" desc="Context text for the personal context notice in AtMemory popup.">
-    Powered by Personal Intelligence with Gemini. Page titles and URLs are sent to Google and may be reviewed by humans. More about enhanced autofill in
+    Powered by Personal Intelligence with Gemini. Page titles and URLs are sent to Google and may be reviewed by humans.
   </message>
   <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT" translateable="false" desc="Link text for the personal context notice in AtMemory popup.">
-    settings.
+    Manage settings
   </message>
   <message name="IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON" translateable="false" desc="Got it button text in AtMemory popup personal context notice.">
     OK
