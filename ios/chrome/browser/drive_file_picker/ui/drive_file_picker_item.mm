@@ -46,7 +46,8 @@ const CGFloat kBiggerIconPointSize = 22;
                    title:l10n_util::GetNSString(
                              IDS_IOS_DRIVE_FILE_PICKER_MY_DRIVE)
                 subtitle:nil
-                    icon:SymbolWithPointSize(SymbolMyDrive, kIconPointSize)
+                    icon:CustomSymbolWithPointSize(kMyDriveSymbol,
+                                                   kIconPointSize)
                     type:DriveItemType::kMyDrive];
 }
 
@@ -56,7 +57,8 @@ const CGFloat kBiggerIconPointSize = 22;
                    title:l10n_util::GetNSString(
                              IDS_IOS_DRIVE_FILE_PICKER_SHARED_DRIVES)
                 subtitle:nil
-                    icon:SymbolWithPointSize(SymbolSharedDrives, kIconPointSize)
+                    icon:CustomSymbolWithPointSize(kSharedDrivesSymbol,
+                                                   kIconPointSize)
                     type:DriveItemType::kSharedDrives];
 }
 
@@ -66,8 +68,8 @@ const CGFloat kBiggerIconPointSize = 22;
                    title:l10n_util::GetNSString(
                              IDS_IOS_DRIVE_FILE_PICKER_STARRED)
                 subtitle:nil
-                    icon:SymbolWithPointSize(SymbolAddBookmarkAction,
-                                             kIconPointSize)
+                    icon:DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
+                                                    kIconPointSize)
                     type:DriveItemType::kStarred];
 }
 
@@ -77,7 +79,8 @@ const CGFloat kBiggerIconPointSize = 22;
                    title:l10n_util::GetNSString(
                              IDS_IOS_DRIVE_FILE_PICKER_RECENT)
                 subtitle:nil
-                    icon:SymbolWithPointSize(SymbolClock, kIconPointSize)
+                    icon:DefaultSymbolWithPointSize(kClockSymbol,
+                                                    kIconPointSize)
                     type:DriveItemType::kRecent];
 }
 
@@ -86,8 +89,8 @@ const CGFloat kBiggerIconPointSize = 22;
       configurationWithPointSize:kBiggerIconPointSize
                           weight:UIImageSymbolWeightSemibold
                            scale:UIImageSymbolScaleMedium];
-  UIImage* drive_symbol =
-      SymbolWithConfiguration(SymbolPersonTwo, drive_symbol_configuration);
+  UIImage* drive_symbol = DefaultSymbolWithConfiguration(
+      kPersonTwoSymbol, drive_symbol_configuration);
 
   return [[DriveFilePickerItem alloc]
       initWithIdentifier:kDriveFilePickerSharedWithMeItemIdentifier

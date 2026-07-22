@@ -132,12 +132,13 @@ UIButton* CreateActionButton(NSString* title,
 }
 
 // Creates an icon to be added in the center of the radial progress view.
-UIImageView* CreateProgressIcon(Symbol symbol) {
+UIImageView* CreateProgressIcon(NSString* symbol_name) {
   UIImageConfiguration* image_configuration = [UIImageSymbolConfiguration
       configurationWithPointSize:kSymbolDownloadInfobarPointSize
                           weight:UIImageSymbolWeightBold
                            scale:UIImageSymbolScaleSmall];
-  UIImage* image = SymbolWithConfiguration(symbol, image_configuration);
+  UIImage* image;
+  image = DefaultSymbolWithConfiguration(symbol_name, image_configuration);
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
   icon.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
@@ -520,8 +521,8 @@ UIImageView* CreateProgressIcon(Symbol symbol) {
     [_leadingIconNotStarted
         setContentHuggingPriority:UILayoutPriorityRequired
                           forAxis:UILayoutConstraintAxisHorizontal];
-    _leadingIconNotStarted.image = SymbolTemplateWithPointSize(
-        SymbolOpenInDownloads, kSymbolDownloadInfobarPointSize);
+    _leadingIconNotStarted.image = DefaultSymbolTemplateWithPointSize(
+        kOpenInDownloadsSymbol, kSymbolDownloadInfobarPointSize);
   }
 
   return _leadingIconNotStarted;
@@ -603,7 +604,7 @@ UIImageView* CreateProgressIcon(Symbol symbol) {
 
 - (UIImageView*)filesProgressIcon {
   if (!_filesProgressIcon) {
-    _filesProgressIcon = CreateProgressIcon(SymbolArrowDown);
+    _filesProgressIcon = CreateProgressIcon(kArrowDownSymbol);
   }
 
   return _filesProgressIcon;
@@ -611,7 +612,7 @@ UIImageView* CreateProgressIcon(Symbol symbol) {
 
 - (UIImageView*)driveProgressIcon {
   if (!_driveProgressIcon) {
-    _driveProgressIcon = CreateProgressIcon(SymbolArrowUp);
+    _driveProgressIcon = CreateProgressIcon(kArrowUpSymbol);
   }
 
   return _driveProgressIcon;
@@ -696,11 +697,13 @@ UIImageView* CreateProgressIcon(Symbol symbol) {
 
 - (UIButton*)closeButton {
   if (!_closeButton) {
-    UIImage* closeButtonImage = SymbolWithPalette(
-        SymbolWithPointSize(SymbolXMarkCircleFill, kCloseButtonIconSize), @[
-          [UIColor colorNamed:kGrey600Color],
-          [UIColor colorNamed:kGrey200Color],
-        ]);
+    UIImage* closeButtonImage =
+        SymbolWithPalette(DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
+                                                     kCloseButtonIconSize),
+                          @[
+                            [UIColor colorNamed:kGrey600Color],
+                            [UIColor colorNamed:kGrey200Color],
+                          ]);
     UIButtonConfiguration* closeButtonConf =
         [UIButtonConfiguration plainButtonConfiguration];
     closeButtonConf.image = closeButtonImage;

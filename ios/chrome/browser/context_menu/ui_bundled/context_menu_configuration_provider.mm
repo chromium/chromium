@@ -910,8 +910,8 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   [imageSavingElements addObject:saveImageToPhotosAction];
 
   // Save Image Menu.
-  UIImage* image =
-      SymbolWithPointSize(SymbolPhotoBadgeArrowDown, kSymbolActionPointSize);
+  UIImage* image = DefaultSymbolWithPointSize(kPhotoBadgeArrowDownSymbol,
+                                              kSymbolActionPointSize);
   UIMenu* saveImageInMenu = [UIMenu
       menuWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SAVE_IMAGE_IN)
               image:image

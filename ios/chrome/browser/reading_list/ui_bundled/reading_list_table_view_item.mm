@@ -69,9 +69,10 @@ namespace {
   if (self.showCloudSlashIcon) {
     ImageContentConfiguration* imageConfiguration =
         [[ImageContentConfiguration alloc] init];
-    imageConfiguration.image = SymbolWithPalette(
-        SymbolWithPointSize(SymbolCloudSlash, kCloudSlashSymbolPointSize),
-        @[ CloudSlashTintColor() ]);
+    imageConfiguration.image =
+        SymbolWithPalette(CustomSymbolWithPointSize(kCloudSlashSymbol,
+                                                    kCloudSlashSymbolPointSize),
+                          @[ CloudSlashTintColor() ]);
     imageConfiguration.accessibilityID = kReadingListLocalImageID;
 
     configuration.trailingConfiguration = imageConfiguration;

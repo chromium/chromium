@@ -105,27 +105,28 @@ UIImage* DefaultIconForType(FormSuggestion* suggestion,
     case autofill::SuggestionType::kUndoOrClear:
       if (suggestion.suggestionIconType == SuggestionIconType::kUndoAutofill &&
           base::FeatureList::IsEnabled(kAutofillUndoIos)) {
-        return SymbolWithPalette(SymbolWithPointSize(SymbolArrowUTurnBackward,
-                                                     kSymbolActionPointSize),
-                                 @[
-                                   [UIColor colorNamed:kTextPrimaryColor],
-                                 ]);
+        return SymbolWithPalette(
+            DefaultSymbolWithPointSize(kArrowUTurnBackwardSymbol,
+                                       kSymbolActionPointSize),
+            @[
+              [UIColor colorNamed:kTextPrimaryColor],
+            ]);
       } else {
         return nil;
       }
     case autofill::SuggestionType::kGeneratePasswordEntry:
       return MakeSymbolMulticolor(
-          SymbolWithPointSize(SymbolPasswordManager, kSymbolPointSize));
+          CustomSymbolWithPointSize(kPasswordManagerSymbol, kSymbolPointSize));
     case autofill::SuggestionType::kAddressEntry: {
       switch (suggestion.suggestionIconType) {
         case SuggestionIconType::kAccountHome:
           return SymbolWithPalette(
-              SymbolWithPointSize(SymbolHome, kSymbolPointSize), @[
+              DefaultSymbolWithPointSize(kHomeSymbol, kSymbolPointSize), @[
                 [UIColor colorNamed:kTextPrimaryColor],
               ]);
         case SuggestionIconType::kAccountWork:
           return SymbolWithPalette(
-              SymbolWithPointSize(SymbolWork, kSymbolPointSize), @[
+              DefaultSymbolWithPointSize(kWorkSymbol, kSymbolPointSize), @[
                 [UIColor colorNamed:kTextPrimaryColor],
               ]);
         default:
@@ -159,9 +160,10 @@ UIImage* DefaultIconForType(FormSuggestion* suggestion,
           /*tint_color=*/nil);
     }
     case autofill::SuggestionType::kAutocompleteAtMemoryButton:
-      return SymbolWithPalette(SymbolWithPointSize(SymbolMagnifyingglassSpark,
-                                                   kSymbolActionPointSize),
-                               @[ [UIColor colorNamed:kTextPrimaryColor] ]);
+      return SymbolWithPalette(
+          CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol,
+                                    kSymbolActionPointSize),
+          @[ [UIColor colorNamed:kTextPrimaryColor] ]);
     case autofill::SuggestionType::kAutocompleteEntry:
     default:
       return nil;

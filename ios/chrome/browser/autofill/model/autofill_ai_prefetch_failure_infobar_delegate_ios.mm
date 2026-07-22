@@ -18,11 +18,11 @@ constexpr CGFloat kAutofillAiInfobarSymbolPointSize = 24.0;
 // Returns the image model for the prefetch failure infobar icon.
 ui::ImageModel GetPrefetchFailureIcon() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  UIImage* image = MakeSymbolMulticolor(SymbolWithPointSize(
-      SymbolMulticolorChromeball, kAutofillAiInfobarSymbolPointSize));
+  UIImage* image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
+      kMulticolorChromeballSymbol, kAutofillAiInfobarSymbolPointSize));
 #else
-  UIImage* image = SymbolWithPointSize(SymbolChromeProduct,
-                                       kAutofillAiInfobarSymbolPointSize);
+  UIImage* image = CustomSymbolWithPointSize(kChromeProductSymbol,
+                                             kAutofillAiInfobarSymbolPointSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return image ? ui::ImageModel::FromImage(gfx::Image(image))
                : ui::ImageModel();

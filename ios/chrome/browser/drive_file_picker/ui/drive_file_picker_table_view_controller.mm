@@ -53,8 +53,8 @@ BrandedNavigationItemTitleView* CreateGoogleDriveImageView(BOOL dark_mode) {
   title_view.title =
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE);
 
-  UIImage* google_symbol = SymbolWithPointSize(
-      SymbolGoogleFull, UIFont.labelFontSize * kLogoTitleFontMultiplier);
+  UIImage* google_symbol = CustomSymbolWithPointSize(
+      kGoogleFullSymbol, UIFont.labelFontSize * kLogoTitleFontMultiplier);
   if (dark_mode) {
     title_view.imageLogo =
         SymbolWithPalette(google_symbol, @[ [UIColor whiteColor] ]);
@@ -384,8 +384,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 // Initializes the toolbar filter, account and sort buttons.
 - (void)initToolbarItems {
   // Init filter button.
-  UIImage* filterIcon =
-      SymbolTemplateWithPointSize(SymbolFilter, kSymbolAccessoryPointSize);
+  UIImage* filterIcon = DefaultSymbolTemplateWithPointSize(
+      kFilterSymbol, kSymbolAccessoryPointSize);
   UIMenu* filterButtonMenu = [self createFilterButtonMenu];
   _filterButton = [[UIBarButtonItem alloc] initWithImage:filterIcon
                                                     menu:filterButtonMenu];
@@ -400,8 +400,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   _accountButton.accessibilityIdentifier = kDriveFilePickerIdentityIdentifier;
 
   // Init sort button.
-  UIImage* sortIcon =
-      SymbolTemplateWithPointSize(SymbolSort, kSymbolAccessoryPointSize);
+  UIImage* sortIcon = DefaultSymbolTemplateWithPointSize(
+      kSortSymbol, kSymbolAccessoryPointSize);
   UIMenu* sortButtonMenu = [self createSortButtonMenu];
   _sortButton = [[UIBarButtonItem alloc] initWithImage:sortIcon
                                                   menu:sortButtonMenu];
@@ -546,9 +546,9 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 // Initializes the sorting direction symbols.
 - (void)initSortDirectionSymbols {
   _sortAscendingSymbol =
-      SymbolWithPointSize(SymbolChevronUp, kSymbolAccessoryPointSize);
+      DefaultSymbolWithPointSize(kChevronUpSymbol, kSymbolAccessoryPointSize);
   _sortDescendingSymbol =
-      SymbolWithPointSize(SymbolChevronDown, kSymbolAccessoryPointSize);
+      DefaultSymbolWithPointSize(kChevronDownSymbol, kSymbolAccessoryPointSize);
 }
 
 // Initializes background views.
@@ -989,9 +989,9 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
       break;
   }
   BOOL filterSelected = filter != DriveFilePickerFilter::kShowAllFiles;
-  Symbol symbol = filterSelected ? SymbolSelectedFilter : SymbolFilter;
+  NSString* symbol = filterSelected ? kSelectedFilterSymbol : kFilterSymbol;
   UIImage* filterIcon =
-      SymbolTemplateWithPointSize(symbol, kSymbolAccessoryPointSize);
+      DefaultSymbolTemplateWithPointSize(symbol, kSymbolAccessoryPointSize);
   _filterButton.image = filterIcon;
   // The menu needs to be reset for the new state to appear.
   _filterButton.menu = [self createFilterButtonMenu];

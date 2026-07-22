@@ -464,11 +464,13 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
       cancelButton =
           [[ChromeButton alloc] initWithStyle:ChromeButtonStyleSecondary];
       cancelButton.translatesAutoresizingMaskIntoConstraints = YES;
-      UIImage* cancelButtonImage = SymbolWithPalette(
-          SymbolWithPointSize(SymbolXMarkCircleFill, kCancelButtonIconSize), @[
-            [UIColor colorNamed:kGrey600Color],
-            [UIColor colorNamed:kGrey200Color],
-          ]);
+      UIImage* cancelButtonImage =
+          SymbolWithPalette(DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
+                                                       kCancelButtonIconSize),
+                            @[
+                              [UIColor colorNamed:kGrey600Color],
+                              [UIColor colorNamed:kGrey200Color],
+                            ]);
       [cancelButton setImage:cancelButtonImage forState:UIControlStateNormal];
       cancelButton.frame =
           CGRectMake(0, 0, kCancelButtonIconSize, kCancelButtonIconSize);
@@ -552,15 +554,15 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 
   // Check if "Open in Files App" action is available.
   if (availableActions & DownloadListItemActionOpenInFiles) {
-    UIAction* openInFilesAction =
-        [UIAction actionWithTitle:l10n_util::GetNSString(
-                                      IDS_IOS_OPEN_IN_FILES_APP_ACTION_TITLE)
-                            image:SymbolWithPointSize(SymbolOpenImageAction,
-                                                      kSymbolActionPointSize)
-                       identifier:nil
-                          handler:^(UIAction* action) {
-                            [weakSelf.actionDelegate openDownloadInFiles:item];
-                          }];
+    UIAction* openInFilesAction = [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_OPEN_IN_FILES_APP_ACTION_TITLE)
+                  image:DefaultSymbolWithPointSize(kOpenImageActionSymbol,
+                                                   kSymbolActionPointSize)
+             identifier:nil
+                handler:^(UIAction* action) {
+                  [weakSelf.actionDelegate openDownloadInFiles:item];
+                }];
     [actions addObject:openInFilesAction];
   }
 
@@ -568,7 +570,8 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   if (availableActions & DownloadListItemActionDelete) {
     UIAction* deleteAction = [UIAction
         actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)
-                  image:SymbolWithPointSize(SymbolTrash, kSymbolActionPointSize)
+                  image:DefaultSymbolWithPointSize(kTrashSymbol,
+                                                   kSymbolActionPointSize)
              identifier:nil
                 handler:^(UIAction* action) {
                   [weakSelf.mutator deleteDownloadItem:item];
@@ -604,7 +607,8 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
                         }];
 
   // Set delete action icon.
-  deleteAction.image = SymbolWithPointSize(SymbolTrash, kSymbolActionPointSize);
+  deleteAction.image =
+      DefaultSymbolWithPointSize(kTrashSymbol, kSymbolActionPointSize);
 
   return
       [UISwipeActionsConfiguration configurationWithActions:@[ deleteAction ]];

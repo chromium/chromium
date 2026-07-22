@@ -94,15 +94,16 @@ bool DriveItem::CanBeBrowsed() const {
 
 UIImage* DriveItem::GetPlaceholderImage() const {
   if (is_shared_drive) {
-    return SymbolWithPointSize(SymbolSharedDrives,
-                               kDriveFilePickerItemIconSize);
+    return CustomSymbolWithPointSize(kSharedDrivesSymbol,
+                                     kDriveFilePickerItemIconSize);
   } else if (is_folder) {
-    return SymbolWithPointSize(SymbolFolder, kDriveFilePickerItemIconSize);
+    return DefaultSymbolWithPointSize(kFolderSymbol,
+                                      kDriveFilePickerItemIconSize);
   } else if (is_shortcut) {
-    return SymbolWithPointSize(SymbolArrowUTurnForward,
-                               kDriveFilePickerItemIconSize);
+    return DefaultSymbolWithPointSize(kArrowUTurnForwardSymbol,
+                                      kDriveFilePickerItemIconSize);
   } else {
-    return SymbolWithPointSize(SymbolDoc, kDriveFilePickerItemIconSize);
+    return DefaultSymbolWithPointSize(kDocSymbol, kDriveFilePickerItemIconSize);
   }
 }
 
