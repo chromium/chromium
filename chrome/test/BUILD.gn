@@ -315,8 +315,6 @@ static_library("test_support") {
     # TODO(crbug.com/521960574): Move these into build files closer to the
     # sources.
     sources += [
-      "../browser/policy/extension_force_install_mixin.cc",
-      "../browser/policy/extension_force_install_mixin.h",
       "../browser/ui/web_applications/test/isolated_web_app_test_utils.cc",
       "../browser/ui/web_applications/test/isolated_web_app_test_utils.h",
       "../browser/ui/web_applications/test/ssl_test_utils.cc",

@@ -59,6 +59,7 @@ source_set("test_support") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser/policy:extension_force_install_mixin",
     "//chrome/test:test_support_ui",
     "//crypto",
     "//extensions:test_support",

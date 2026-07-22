@@ -178,6 +178,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/enterprise/connectors/device_trust/common",
+    "//chrome/browser/policy:extension_force_install_mixin",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

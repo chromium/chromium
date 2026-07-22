@@ -2623,6 +2623,7 @@ source_set("browser_tests") {
       "//chrome/browser/ash/net",
       "//chrome/browser/ash/test:test_support",
       "//chrome/browser/chromeos/policy/dlp/test:test_support",
+      "//chrome/browser/policy:extension_force_install_mixin",
       "//chrome/browser/ui/webui/ash/parent_access:test_support",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/services/tts",

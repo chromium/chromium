@@ -187,6 +187,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/accessibility:test_support",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/extensions",
+    "//chrome/browser/policy:extension_force_install_mixin",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/keyboard",
