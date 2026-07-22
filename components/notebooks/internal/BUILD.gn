@@ -13,17 +13,28 @@ static_library("internal") {
     "empty_notebooks_service.h",
     "notebook_sync_bridge.cc",
     "notebook_sync_bridge.h",
+    "notebooks_network_service_impl.cc",
+    "notebooks_network_service_impl.h",
     "notebooks_service_impl.cc",
     "notebooks_service_impl.h",
+  ]
+
+  public_deps = [
+    "//components/endpoint_fetcher",
+    "//components/notebooks/public",
+    "//services/network/public/cpp",
   ]
 
   deps = [
     "//base",
     "//components/keyed_service/core",
     "//components/notebooks/public",
+    "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/sync/model",
     "//components/sync/protocol",
+    "//net",
+    "//url",
   ]
 }
 
@@ -35,6 +46,7 @@ source_set("unit_tests") {
   sources = [
     "empty_notebooks_service_unittest.cc",
     "notebook_sync_bridge_unittest.cc",
+    "notebooks_network_service_impl_unittest.cc",
     "notebooks_service_impl_unittest.cc",
   ]
 
@@ -42,8 +54,12 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
+    "//net:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
