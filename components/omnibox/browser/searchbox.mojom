@@ -237,6 +237,14 @@ struct OmniboxPopupSelection {
   uint8 action_index;
 };
 
+// Modifier keys pressed when the action was triggered.
+struct ActionModifiers {
+  bool alt_key = false;
+  bool ctrl_key = false;
+  bool meta_key = false;
+  bool shift_key = false;
+};
+
 // Directions for stepping through selections. These may apply for going
 // up/down by lines or cycling left/right through states within a line.
 enum SelectionDirection {
@@ -359,10 +367,7 @@ interface PageHandler {
                         url.mojom.Url url,
                         bool are_matches_showing,
                         uint8 mouse_button,
-                        bool alt_key,
-                        bool ctrl_key,
-                        bool meta_key,
-                        bool shift_key,
+                        ActionModifiers modifiers,
                         bool via_keyboard);
 
   // Sets the Smart Compose stats to be passed during the next navigation.

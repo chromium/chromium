@@ -1897,8 +1897,14 @@ export const ComposeboxEmbedderMixin =
             const viaKeyboard = !!e && e instanceof KeyboardEvent;
             this.getSearchboxHandler().openAutocompleteMatch(
                 this.selectedMatchIndex, match.destinationUrl,
-                /* are_matches_showing */ true, mouseButton, altKey, ctrlKey,
-                metaKey, shiftKey, viaKeyboard);
+                /*areMatchesShowing=*/ true,
+                /*mouseButton=*/ mouseButton, {
+                  altKey: altKey,
+                  ctrlKey: ctrlKey,
+                  metaKey: metaKey,
+                  shiftKey: shiftKey,
+                },
+                /*viaKeyboard=*/ viaKeyboard);
           } else {
             this.getSearchboxHandler().submitQuery(
                 this.input.trim(), mouseButton, altKey, ctrlKey, metaKey,

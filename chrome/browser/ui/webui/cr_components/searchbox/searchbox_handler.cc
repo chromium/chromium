@@ -1238,15 +1238,13 @@ void SearchboxHandler::OpenMatch(OmniboxPopupSelection selection,
                        metrics::OmniboxEventProto::INVALID, u"");
 }
 
-void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
-                                             const GURL& url,
-                                             bool are_matches_showing,
-                                             uint8_t mouse_button,
-                                             bool alt_key,
-                                             bool ctrl_key,
-                                             bool meta_key,
-                                             bool shift_key,
-                                             bool via_keyboard) {
+void SearchboxHandler::OpenAutocompleteMatch(
+    uint8_t line,
+    const GURL& url,
+    bool are_matches_showing,
+    uint8_t mouse_button,
+    searchbox::mojom::ActionModifiersPtr modifiers,
+    bool via_keyboard) {
   const AutocompleteMatch* match = GetMatchWithUrl(line, url);
   if (!match) {
     // This can happen due to asynchronous updates changing the result while
@@ -1256,7 +1254,8 @@ void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
   const OmniboxPopupSelection selection(line);
   const base::TimeTicks timestamp = base::TimeTicks::Now();
   const WindowOpenDisposition disposition = ComputeWindowOpenDisposition(
-      mouse_button, alt_key, ctrl_key, meta_key, shift_key, via_keyboard);
+      mouse_button, modifiers->alt_key, modifiers->ctrl_key,
+      modifiers->meta_key, modifiers->shift_key, via_keyboard);
   if (base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
     OpenMatch(selection, *match, disposition, timestamp);

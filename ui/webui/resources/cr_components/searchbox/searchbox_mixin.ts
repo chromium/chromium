@@ -221,9 +221,15 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       const match = this.result!.matches[matchIndex];
       assert(match);
       this.pageHandler().openAutocompleteMatch(
-          matchIndex, match.destinationUrl, this.dropdownIsVisible,
-          (e as MouseEvent).button || 0, e.altKey, e.ctrlKey, e.metaKey,
-          e.shiftKey, e instanceof KeyboardEvent);
+          matchIndex, match.destinationUrl,
+          /*areMatchesShowing=*/ this.dropdownIsVisible,
+          /*mouseButton=*/ (e as MouseEvent).button || 0, {
+            altKey: e.altKey,
+            ctrlKey: e.ctrlKey,
+            metaKey: e.metaKey,
+            shiftKey: e.shiftKey,
+          },
+          /*viaKeyboard=*/ e instanceof KeyboardEvent);
       this.getInputElement().setInput({
         text: match.fillIntoEdit,
         inline: '',

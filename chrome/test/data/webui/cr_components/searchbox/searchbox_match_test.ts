@@ -76,10 +76,10 @@ suite('CrComponentsRealboxMatchTest', () => {
           clickArgs.url,
           clickArgs.areMatchesShowing,
           clickArgs.mouseButton,
-          clickArgs.altKey,
-          clickArgs.ctrlKey,
-          clickArgs.metaKey,
-          clickArgs.shiftKey,
+          clickArgs.modifiers.altKey,
+          clickArgs.modifiers.ctrlKey,
+          clickArgs.modifiers.metaKey,
+          clickArgs.modifiers.shiftKey,
         ]);
     testProxy.handler.reset();
 

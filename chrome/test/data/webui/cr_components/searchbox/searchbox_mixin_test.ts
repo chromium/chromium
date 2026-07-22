@@ -1471,7 +1471,7 @@ suite('SearchboxMixinTest', () => {
         assertEquals(0, args.line);
         assertEquals(matches[0]!.destinationUrl, args.url);
         assertFalse(args.areMatchesShowing);
-        assertTrue(args.shiftKey);
+        assertTrue(args.modifiers.shiftKey);
         assertEquals(
             1, testProxy.handler.getCallCount('openAutocompleteMatch'));
       });
@@ -1600,7 +1600,7 @@ suite('SearchboxMixinTest', () => {
     assertEquals(0, args.line);
     assertEquals(matches[0]!.destinationUrl, args.url);
     assertTrue(args.areMatchesShowing);
-    assertTrue(args.shiftKey);
+    assertTrue(args.modifiers.shiftKey);
     assertTrue(args.viaKeyboard);
     assertEquals(1, testProxy.handler.getCallCount('openAutocompleteMatch'));
   });

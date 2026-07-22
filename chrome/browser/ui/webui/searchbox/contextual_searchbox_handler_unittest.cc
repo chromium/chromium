@@ -2087,9 +2087,10 @@ TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
             GetMetricsRecorderPtr(),
             &MockContextualSearchMetricsRecorder::RecordZeroSuggestClickBase));
 
+    auto modifiers = searchbox::mojom::ActionModifiers::New();
     handler().OpenAutocompleteMatch(0, GURL("https://www.google.com"),
-                                    /*are_matches_showing=*/true, 0, false,
-                                    false, false, false,
+                                    /*are_matches_showing=*/true,
+                                    /*mouse_button=*/0, std::move(modifiers),
                                     /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
@@ -2122,9 +2123,10 @@ TEST_F(ContextualSearchboxHandlerTest, OpenAutocompleteMatch_ZeroSuggestClick) {
             GetMetricsRecorderPtr(),
             &MockContextualSearchMetricsRecorder::RecordZeroSuggestClickBase));
 
+    auto modifiers = searchbox::mojom::ActionModifiers::New();
     handler().OpenAutocompleteMatch(0, GURL("https://www.contextual.com"),
-                                    /*are_matches_showing=*/true, 0, false,
-                                    false, false, false,
+                                    /*are_matches_showing=*/true,
+                                    /*mouse_button=*/0, std::move(modifiers),
                                     /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
@@ -2170,9 +2172,10 @@ TEST_F(ContextualSearchboxHandlerTest,
                                   &MockContextualSearchMetricsRecorder::
                                       RecordTypedSuggestNavigationBase));
 
+    auto modifiers = searchbox::mojom::ActionModifiers::New();
     handler().OpenAutocompleteMatch(0, GURL("https://www.google.com"),
-                                    /*are_matches_showing=*/true, 0, false,
-                                    false, false, false,
+                                    /*are_matches_showing=*/true,
+                                    /*mouse_button=*/0, std::move(modifiers),
                                     /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(
@@ -2209,9 +2212,10 @@ TEST_F(ContextualSearchboxHandlerTest,
                                   &MockContextualSearchMetricsRecorder::
                                       RecordTypedSuggestNavigationBase));
 
+    auto modifiers = searchbox::mojom::ActionModifiers::New();
     handler().OpenAutocompleteMatch(
         1, GURL("https://www.google.com/search?q=suggestion"),
-        /*are_matches_showing=*/true, 0, false, false, false, false,
+        /*are_matches_showing=*/true, /*mouse_button=*/0, std::move(modifiers),
         /*via_keyboard=*/false);
 
     histogram_tester().ExpectBucketCount(

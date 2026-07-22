@@ -502,11 +502,12 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
           /*line=*/ index,
           /*url=*/ match.destinationUrl,
           /*areMatchesShowing=*/ true,
-          /*mouseButton=*/ 0,
-          /*altKey=*/ false,
-          /*ctrlKey=*/ false,
-          /*metaKey=*/ false,
-          /*shiftKey=*/ false,
+          /*mouseButton=*/ 0, {
+            altKey: false,
+            ctrlKey: false,
+            metaKey: false,
+            shiftKey: false,
+          },
           /*viaKeyboard=*/ viaKeyboard);
     }
     this.clearInputAndFocus(/* querySubmitted= */ true);

@@ -981,11 +981,11 @@ TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_KeyboardModifiers) {
                                    _, _, _, _, _, _, _))
       .Times(1);
 
-  handler_->OpenAutocompleteMatch(0, GURL("https://example.com"), false, 0,
-                                  /*alt_key=*/false,
-                                  /*ctrl_key=*/false,
-                                  /*meta_key=*/false,
-                                  /*shift_key=*/true,
+  auto modifiers = searchbox::mojom::ActionModifiers::New();
+  modifiers->shift_key = true;
+  handler_->OpenAutocompleteMatch(0, GURL("https://example.com"),
+                                  /*are_matches_showing=*/false,
+                                  /*mouse_button=*/0, std::move(modifiers),
                                   /*via_keyboard=*/true);
 }
 
