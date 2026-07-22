@@ -6607,6 +6607,8 @@ data/accessibility/mac/parameterized-attributes/ax-attributed-string-for-range-e
 data/accessibility/mac/parameterized-attributes/ax-attributed-string-for-range.html
 data/accessibility/mac/parameterized-attributes/ax-attributed-string-for-text-marker-range-expected.txt
 data/accessibility/mac/parameterized-attributes/ax-attributed-string-for-text-marker-range.html
+data/accessibility/mac/parameterized-attributes/ax-line-for-index-and-range-for-line-expected.txt
+data/accessibility/mac/parameterized-attributes/ax-line-for-index-and-range-for-line.html
 data/accessibility/mac/parameterized-attributes/ax-string-for-range-expected.txt
 data/accessibility/mac/parameterized-attributes/ax-string-for-range.html
 data/accessibility/mac/selection/selectall-textarea-expected.txt

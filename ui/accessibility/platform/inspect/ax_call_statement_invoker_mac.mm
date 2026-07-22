@@ -486,7 +486,7 @@ AXOptionalNSObject AXCallStatementInvoker::ParamFrom(
   }
 
   // Otherwise parse argument node value.
-  if (attribute == "AXLineForIndex" ||
+  if (attribute == "AXLineForIndex" || attribute == "AXRangeForLine" ||
       attribute == "AXTextMarkerForIndex") {  // Int
     return AXOptionalNSObject::NotNullOrError(PropertyNodeToInt(argument));
   }

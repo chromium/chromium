@@ -1,0 +1,4 @@
+textarea.accessibilityParameterizedAttributeNames.has(AXLineForIndex)='yes'
+textarea.accessibilityParameterizedAttributeNames.has(AXRangeForLine)='yes'
+line=1
+textarea.AXRangeForLine(line)={loc: 10, len: 9}

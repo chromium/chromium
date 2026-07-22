@@ -2583,12 +2583,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return nil;
   }
 
-  int lineIndex = [lineNumber intValue];
-  if (lineIndex != 0) {
-    return nil;
-  }
-
-  return [NSValue valueWithRange:[self accessibilityRangeForLine:lineIndex]];
+  return [NSValue
+      valueWithRange:[self accessibilityRangeForLine:[lineNumber intValue]]];
 }
 
 - (id)AXStringForRange:(id)parameter {

@@ -1,0 +1,11 @@
+<!--
+@SCRIPT:
+  textarea.accessibilityParameterizedAttributeNames.has(AXLineForIndex)
+  textarea.accessibilityParameterizedAttributeNames.has(AXRangeForLine)
+  line:= textarea.AXLineForIndex(14)
+  textarea.AXRangeForLine(line)
+-->
+<!DOCTYPE html>
+<textarea id="textarea" rows="5" cols="15" wrap="off">line zero
+line one
+line two</textarea>

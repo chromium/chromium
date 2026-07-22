@@ -741,6 +741,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXStringForRange) {
   RunTypedTest<kMacParameterizedAttributes>("ax-string-for-range.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXLineForIndexAndRangeForLine) {
+  RunTypedTest<kMacParameterizedAttributes>(
+      "ax-line-for-index-and-range-for-line.html");
+}
+
 // Text Operation
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXTextOperationSelect) {

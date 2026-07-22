@@ -1976,10 +1976,19 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 }
 
 - (NSInteger)accessibilityLineForIndex:(NSInteger)index {
+  if (index < 0 ||
+      index >= static_cast<int>(_owner->GetValueForControl().size())) {
+    return NSNotFound;
+  }
+
   const std::vector<int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
-  auto iterator = std::lower_bound(lineStarts.begin(), lineStarts.end(), index);
-  return std::distance(lineStarts.begin(), iterator);
+  auto iterator = std::upper_bound(lineStarts.begin(), lineStarts.end(), index);
+  if (iterator == lineStarts.begin()) {
+    return 0;
+  }
+
+  return std::distance(lineStarts.begin(), iterator) - 1;
 }
 
 - (NSRange)accessibilityRangeForLine:(NSInteger)lineIndex {
