@@ -111,9 +111,6 @@ struct CastWebViewParams {
   // will fall back to the platform default.
   BackgroundColor background_color = BackgroundColor.NONE;
 
-  // Enable WebSQL database for this CastWebContents.
-  bool enable_websql = false;
-
   // Enable mixer audio support for this CastWebContents.
   bool enable_mixer_audio = false;
 
