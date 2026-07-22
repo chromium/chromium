@@ -150,6 +150,7 @@ mojom::ActionResultPtr AttemptFormFillingTool::TimeOfUseValidation(
                           "Trigger field not found.");
       }
       field_ids.push_back(current_field_id);
+      trigger_field_map_.emplace(current_field_id, trigger_field);
     }
     if (field_ids.empty()) {
       return MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
@@ -300,7 +301,7 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
     return;
   }
   tool_delegate().GetActorFormFillingService().FillSuggestions(
-      *client, std::move(selection_response),
+      *client, std::move(selection_response), trigger_field_map_,
       base::BindOnce([](base::expected<void, ActorFormFillingError> result) {
         return result.has_value() ? MakeOkResult()
                                   : FromServiceError(result.error());

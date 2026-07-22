@@ -8,9 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "components/actor/core/shared_types.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -74,11 +76,16 @@ class ActorFormFillingService {
   // sections. The suggestions must have been obtained from a prior call to
   // GetSuggestions().
   //
+  // For each trigger field in the filling request, `trigger_field_map` is a
+  // reverse map, pointing from the resolved FieldGlobalId to the PageTarget
+  // that describes the FieldGlobalId.
+  //
   // If successful, the callback will be invoked with a void value. If an error
   // occurs, the callback will be invoked with an ActorFormFillingError.
   virtual void FillSuggestions(
       AutofillClient& client,
       base::span<const ActorFormFillingSelection> chosen_suggestions,
+      base::flat_map<FieldGlobalId, ::actor::PageTarget> trigger_field_map,
       base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
           callback) = 0;
 

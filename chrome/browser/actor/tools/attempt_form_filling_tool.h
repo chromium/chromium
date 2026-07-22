@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/autofill_selection_dialog_event_handler.h"
@@ -93,6 +94,9 @@ class AttemptFormFillingTool : public Tool,
   // been split.
   std::vector<autofill::ActorFormFillingService::FillRequest>
       service_fill_requests_;
+  // Maps the FieldGlobalId for each trigger field to the originating
+  // PageTarget.
+  base::flat_map<autofill::FieldGlobalId, PageTarget> trigger_field_map_;
   base::WeakPtrFactory<AttemptFormFillingTool> weak_factory_{this};
 };
 

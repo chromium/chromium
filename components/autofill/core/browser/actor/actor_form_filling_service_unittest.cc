@@ -778,7 +778,7 @@ TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
+      /*trigger_field_map=*/{}, fill_future.GetCallback());
 
   ASSERT_GT(ActorFillingObserver::GetMaximumTimeout(), base::Seconds(1));
   task_environment()->FastForwardBy(ActorFillingObserver::GetMaximumTimeout() -
@@ -829,7 +829,7 @@ TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
   FillSuggestionsFuture fill_future;
   service().FillSuggestions(
       client(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
-      fill_future.GetCallback());
+      /*trigger_field_map=*/{}, fill_future.GetCallback());
 
   ASSERT_GT(ActorFillingObserver::GetMaximumTimeout(), base::Seconds(2));
   task_environment()->FastForwardBy(base::Seconds(1));
