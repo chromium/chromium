@@ -28,11 +28,12 @@ class ScrollTool : public WebActorTool {
  public:
   ~ScrollTool() override;
 
-  static base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
-  Create(base::WeakPtr<web::WebState> web_state,
-         const optimization_guide::proto::ScrollAction& action);
+  static std::unique_ptr<ScrollTool> Create(
+      base::WeakPtr<web::WebState> web_state,
+      const optimization_guide::proto::ScrollAction& action);
 
   // ActorTool:
+  void Validate(ToolExecutionCallback callback) override;
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;

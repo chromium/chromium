@@ -42,15 +42,22 @@ class ScrollToToolTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 
-  base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> CreateTool(
-      const optimization_guide::proto::ScrollToAction& action,
-      web::WebState* web_state) {
-    return ScrollToTool::Create(web_state ? web_state->GetWeakPtr() : nullptr,
-                                action);
+  base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult>
+  CreateToolAndValidate(const optimization_guide::proto::ScrollToAction& action,
+                        web::WebState* web_state) {
+    std::unique_ptr<ScrollToTool> tool = ScrollToTool::Create(
+        web_state ? web_state->GetWeakPtr() : nullptr, action);
+    CHECK(tool);
+    base::test::TestFuture<ToolExecutionResult> validate_future;
+    tool->Validate(validate_future.GetCallback());
+    if (!validate_future.Get().IsOk()) {
+      return base::unexpected(validate_future.Get());
+    }
+    return tool;
   }
 };
 
-TEST_F(ScrollToToolTest, Create_MissingTarget) {
+TEST_F(ScrollToToolTest, Validate_MissingTarget) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_ptr = web_state.get();
@@ -63,13 +70,13 @@ TEST_F(ScrollToToolTest, Create_MissingTarget) {
   action.mutable_scroll_to()->set_tab_id(tab_id);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to(), web_state_ptr);
+      CreateToolAndValidate(action.scroll_to(), web_state_ptr);
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
-TEST_F(ScrollToToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
+TEST_F(ScrollToToolTest, Validate_NodeIdWithoutDocumentIdentifier_Invalid) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_ptr = web_state.get();
@@ -87,13 +94,13 @@ TEST_F(ScrollToToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
   // Omit document_identifier
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to(), web_state_ptr);
+      CreateToolAndValidate(action.scroll_to(), web_state_ptr);
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
-TEST_F(ScrollToToolTest, Create_BothTargetingTypes_Invalid) {
+TEST_F(ScrollToToolTest, Validate_BothTargetingTypes_Invalid) {
   optimization_guide::proto::Action action;
   auto web_state = std::make_unique<web::FakeWebState>();
   web::WebState* web_state_ptr = web_state.get();
@@ -113,7 +120,7 @@ TEST_F(ScrollToToolTest, Create_BothTargetingTypes_Invalid) {
   target->mutable_document_identifier()->set_serialized_token("dummy");
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to(), web_state_ptr);
+      CreateToolAndValidate(action.scroll_to(), web_state_ptr);
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
@@ -136,7 +143,8 @@ TEST_F(ScrollToToolTest, Execute_WebStateDestroyed_ReturnsError) {
   scroll_to_action->mutable_target()->mutable_coordinate()->set_y(50);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult>
-      create_result = CreateTool(action.scroll_to(), inserted_web_state);
+      create_result =
+          CreateToolAndValidate(action.scroll_to(), inserted_web_state);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollToTool> tool = std::move(create_result.value());
 
@@ -171,7 +179,8 @@ TEST_F(ScrollToToolTest, Execute_NoWebFramesManager_ReturnsError) {
   scroll_to_action->mutable_target()->mutable_coordinate()->set_y(50);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult>
-      create_result = CreateTool(action.scroll_to(), inserted_web_state);
+      create_result =
+          CreateToolAndValidate(action.scroll_to(), inserted_web_state);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollToTool> tool = std::move(create_result.value());
 
@@ -213,7 +222,8 @@ TEST_F(ScrollToToolTest, Execute_NoMainFrame_ReturnsError) {
   scroll_to_action->mutable_target()->mutable_coordinate()->set_y(50);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult>
-      create_result = CreateTool(action.scroll_to(), inserted_web_state);
+      create_result =
+          CreateToolAndValidate(action.scroll_to(), inserted_web_state);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<ScrollToTool> tool = std::move(create_result.value());
 
@@ -240,7 +250,7 @@ TEST_F(ScrollToToolTest, GetToolType) {
   action.mutable_scroll_to()->mutable_target()->mutable_coordinate()->set_y(50);
 
   base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult> result =
-      CreateTool(action.scroll_to(), web_state_ptr);
+      CreateToolAndValidate(action.scroll_to(), web_state_ptr);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->GetToolType(), ToolType::kScrollTo);
 }

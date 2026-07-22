@@ -21,14 +21,14 @@ class ActorTool {
  public:
   virtual ~ActorTool() = default;
 
+  // Validates the tool before execution.
+  virtual void Validate(ToolExecutionCallback callback) = 0;
+
   // Executes the tool.
   virtual void Execute(ToolExecutionCallback callback) = 0;
 
   // Cancels the tool execution.
   virtual void Cancel();
-
-  // Validates the tool before execution.
-  virtual void Validate(ToolExecutionCallback callback);
 
   // Returns the target WebState for this tool, if any.
   virtual base::WeakPtr<web::WebState> GetTargetWebState() const = 0;

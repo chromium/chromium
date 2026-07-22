@@ -60,18 +60,34 @@ class HistoryToolTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 
-  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> CreateTool(
+  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
+  CreateToolAndValidate(
       const optimization_guide::proto::HistoryBackAction& action,
       web::WebState* web_state) {
-    return HistoryTool::Create(web_state ? web_state->GetWeakPtr() : nullptr,
-                               action);
+    std::unique_ptr<HistoryTool> tool = HistoryTool::Create(
+        web_state ? web_state->GetWeakPtr() : nullptr, action);
+    CHECK(tool);
+    base::test::TestFuture<ToolExecutionResult> validate_future;
+    tool->Validate(validate_future.GetCallback());
+    if (!validate_future.Get().IsOk()) {
+      return base::unexpected(validate_future.Get());
+    }
+    return tool;
   }
 
-  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> CreateTool(
+  base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
+  CreateToolAndValidate(
       const optimization_guide::proto::HistoryForwardAction& action,
       web::WebState* web_state) {
-    return HistoryTool::Create(web_state ? web_state->GetWeakPtr() : nullptr,
-                               action);
+    std::unique_ptr<HistoryTool> tool = HistoryTool::Create(
+        web_state ? web_state->GetWeakPtr() : nullptr, action);
+    CHECK(tool);
+    base::test::TestFuture<ToolExecutionResult> validate_future;
+    tool->Validate(validate_future.GetCallback());
+    if (!validate_future.Get().IsOk()) {
+      return base::unexpected(validate_future.Get());
+    }
+    return tool;
   }
 };
 
@@ -84,7 +100,7 @@ TEST_F(HistoryToolTest, Execute_TabRemovedBeforeExecution) {
   optimization_guide::proto::Action action;
   action.mutable_back()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.back(), web_state);
+      CreateToolAndValidate(action.back(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
 
@@ -107,7 +123,7 @@ TEST_F(HistoryToolTest, Execute_Back_Success) {
   optimization_guide::proto::Action action;
   action.mutable_back()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.back(), web_state);
+      CreateToolAndValidate(action.back(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
@@ -128,7 +144,7 @@ TEST_F(HistoryToolTest, Execute_Back_NotPossible) {
   optimization_guide::proto::Action action;
   action.mutable_back()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.back(), web_state);
+      CreateToolAndValidate(action.back(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
@@ -149,7 +165,7 @@ TEST_F(HistoryToolTest, Execute_Forward_Success) {
   optimization_guide::proto::Action action;
   action.mutable_forward()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.forward(), web_state);
+      CreateToolAndValidate(action.forward(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
@@ -170,7 +186,7 @@ TEST_F(HistoryToolTest, Execute_Forward_NotPossible) {
   optimization_guide::proto::Action action;
   action.mutable_forward()->set_tab_id(tab_id);
   base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult> maybe_tool =
-      CreateTool(action.forward(), web_state);
+      CreateToolAndValidate(action.forward(), web_state);
   EXPECT_TRUE(maybe_tool.has_value());
 
   std::unique_ptr<HistoryTool> tool = std::move(maybe_tool.value());
@@ -192,7 +208,7 @@ TEST_F(HistoryToolTest, GetToolType) {
     optimization_guide::proto::Action action;
     action.mutable_back()->set_tab_id(tab_id);
     base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-        maybe_tool = CreateTool(action.back(), web_state);
+        maybe_tool = CreateToolAndValidate(action.back(), web_state);
     ASSERT_TRUE(maybe_tool.has_value());
     EXPECT_EQ(maybe_tool.value()->GetToolType(), ToolType::kBack);
   }
@@ -201,7 +217,7 @@ TEST_F(HistoryToolTest, GetToolType) {
     optimization_guide::proto::Action action;
     action.mutable_forward()->set_tab_id(tab_id);
     base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-        maybe_tool = CreateTool(action.forward(), web_state);
+        maybe_tool = CreateToolAndValidate(action.forward(), web_state);
     ASSERT_TRUE(maybe_tool.has_value());
     EXPECT_EQ(maybe_tool.value()->GetToolType(), ToolType::kForward);
   }

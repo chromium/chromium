@@ -24,36 +24,44 @@ namespace actor {
 ScrollTool::~ScrollTool() = default;
 
 // static
-base::expected<std::unique_ptr<ScrollTool>, ToolExecutionResult>
-ScrollTool::Create(base::WeakPtr<web::WebState> web_state,
-                   const optimization_guide::proto::ScrollAction& action) {
-  if (!action.has_direction() || !action.has_distance()) {
-    return base::unexpected(
+std::unique_ptr<ScrollTool> ScrollTool::Create(
+    base::WeakPtr<web::WebState> web_state,
+    const optimization_guide::proto::ScrollAction& action) {
+  return std::unique_ptr<ScrollTool>(new ScrollTool(web_state, action));
+}
+
+void ScrollTool::Validate(ToolExecutionCallback callback) {
+  if (!action_.has_direction() || !action_.has_distance()) {
+    std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
   }
 
-  if (action.has_target()) {
-    const optimization_guide::proto::ActionTarget& target = action.target();
+  if (action_.has_target()) {
+    const optimization_guide::proto::ActionTarget& target = action_.target();
+    // TODO(crbug.com/537772128): Share common target validation logic.
     // Callers must either target by coordinate or (document_identifier,
     // node_id).
     if (target.has_content_node_id() && !target.has_document_identifier()) {
-      return base::unexpected(
+      std::move(callback).Run(
           ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+      return;
     }
     bool can_target_by_coordinate = target.has_coordinate();
     bool can_target_by_node_id =
         target.has_content_node_id() && target.has_document_identifier();
     if (!can_target_by_coordinate && !can_target_by_node_id) {
-      return base::unexpected(
+      std::move(callback).Run(
           ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+      return;
     }
     if (can_target_by_coordinate && can_target_by_node_id) {
-      return base::unexpected(
+      std::move(callback).Run(
           ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+      return;
     }
   }
-
-  return std::unique_ptr<ScrollTool>(new ScrollTool(web_state, action));
+  std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 void ScrollTool::Execute(ToolExecutionCallback callback) {

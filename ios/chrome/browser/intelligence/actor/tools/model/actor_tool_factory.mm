@@ -119,7 +119,6 @@ ActorToolFactory::CreateTool(const ActorToolRequest& request,
           tool_delegate);
     case optimization_guide::proto::Action::kCloseTab:
       return TabManagementTool::CreateCloseTabTool(target_web_state,
-                                                   request.action().close_tab(),
                                                    target_web_state_list);
     default:
       return base::unexpected(

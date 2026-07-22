@@ -46,38 +46,45 @@ class SelectToolTest : public PlatformTest {
   raw_ptr<web::WebState> web_state_;
   int32_t tab_id_;
 
-  base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> CreateTool(
-      const optimization_guide::proto::SelectAction& action,
-      web::WebState* web_state) {
-    return SelectTool::Create(web_state ? web_state->GetWeakPtr() : nullptr,
-                              action);
+  base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
+  CreateToolAndValidate(const optimization_guide::proto::SelectAction& action,
+                        web::WebState* web_state) {
+    std::unique_ptr<SelectTool> tool = SelectTool::Create(
+        web_state ? web_state->GetWeakPtr() : nullptr, action);
+    CHECK(tool);
+    base::test::TestFuture<ToolExecutionResult> validate_future;
+    tool->Validate(validate_future.GetCallback());
+    if (!validate_future.Get().IsOk()) {
+      return base::unexpected(validate_future.Get());
+    }
+    return tool;
   }
 };
 
-TEST_F(SelectToolTest, Create_MissingValueField) {
+TEST_F(SelectToolTest, Validate_MissingValueField) {
   optimization_guide::proto::SelectAction action;
   action.set_tab_id(tab_id_);
   action.mutable_target()->mutable_coordinate()->set_x(1);
   action.mutable_target()->mutable_coordinate()->set_y(1);
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateTool(action, web_state_);
+      CreateToolAndValidate(action, web_state_);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
-TEST_F(SelectToolTest, Create_MissingTarget) {
+TEST_F(SelectToolTest, Validate_MissingTarget) {
   optimization_guide::proto::SelectAction action;
   action.set_tab_id(tab_id_);
   action.set_value("v1");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateTool(action, web_state_);
+      CreateToolAndValidate(action, web_state_);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
-TEST_F(SelectToolTest, Create_ByCoordinates_Success) {
+TEST_F(SelectToolTest, Validate_ByCoordinates_Success) {
   optimization_guide::proto::SelectAction action;
   action.set_tab_id(tab_id_);
   action.set_value("v1");
@@ -85,11 +92,11 @@ TEST_F(SelectToolTest, Create_ByCoordinates_Success) {
   action.mutable_target()->mutable_coordinate()->set_y(1);
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateTool(action, web_state_);
+      CreateToolAndValidate(action, web_state_);
   EXPECT_TRUE(result.has_value());
 }
 
-TEST_F(SelectToolTest, Create_ByIdentifiers_Success) {
+TEST_F(SelectToolTest, Validate_ByIdentifiers_Success) {
   optimization_guide::proto::SelectAction action;
   action.set_tab_id(tab_id_);
   action.set_value("v1");
@@ -98,11 +105,11 @@ TEST_F(SelectToolTest, Create_ByIdentifiers_Success) {
       "fake_id");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateTool(action, web_state_);
+      CreateToolAndValidate(action, web_state_);
   EXPECT_TRUE(result.has_value());
 }
 
-TEST_F(SelectToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
+TEST_F(SelectToolTest, Validate_NodeIdWithoutDocumentIdentifier_Invalid) {
   optimization_guide::proto::SelectAction action;
   action.set_tab_id(tab_id_);
   action.set_value("v1");
@@ -112,12 +119,12 @@ TEST_F(SelectToolTest, Create_NodeIdWithoutDocumentIdentifier_Invalid) {
   // Omit document_identifier
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateTool(action, web_state_);
+      CreateToolAndValidate(action, web_state_);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
 
-TEST_F(SelectToolTest, Create_BothTargetingTypes_Invalid) {
+TEST_F(SelectToolTest, Validate_BothTargetingTypes_Invalid) {
   optimization_guide::proto::SelectAction action;
   action.set_tab_id(tab_id_);
   action.set_value("v1");
@@ -129,7 +136,7 @@ TEST_F(SelectToolTest, Create_BothTargetingTypes_Invalid) {
   target->mutable_document_identifier()->set_serialized_token("fake_id");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateTool(action, web_state_);
+      CreateToolAndValidate(action, web_state_);
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().code(), mojom::ActionResultCode::kArgumentsInvalid);
 }
@@ -142,7 +149,7 @@ TEST_F(SelectToolTest, Execute_WebStateDestroyed_ReturnsError) {
   select_action.set_value("v1");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
-      create_result = CreateTool(select_action, web_state_);
+      create_result = CreateToolAndValidate(select_action, web_state_);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<SelectTool> tool = std::move(create_result.value());
 
@@ -179,7 +186,7 @@ TEST_F(SelectToolTest, Execute_NoWebFramesManager_ReturnsError) {
   select_action.set_value("v1");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
-      create_result = CreateTool(select_action, inserted_web_state);
+      create_result = CreateToolAndValidate(select_action, inserted_web_state);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<SelectTool> tool = std::move(create_result.value());
 
@@ -220,7 +227,7 @@ TEST_F(SelectToolTest, Execute_NoMainFrame_ReturnsError) {
   select_action.set_value("v1");
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
-      create_result = CreateTool(select_action, inserted_web_state);
+      create_result = CreateToolAndValidate(select_action, inserted_web_state);
   ASSERT_TRUE(create_result.has_value());
   std::unique_ptr<SelectTool> tool = std::move(create_result.value());
 
@@ -240,7 +247,7 @@ TEST_F(SelectToolTest, GetToolType) {
   action.mutable_target()->mutable_coordinate()->set_y(1);
 
   base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult> result =
-      CreateTool(action, web_state_);
+      CreateToolAndValidate(action, web_state_);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->GetToolType(), ToolType::kSelect);
 }

@@ -11,8 +11,7 @@
 namespace actor {
 
 // static
-base::expected<std::unique_ptr<AttemptFormFillingTool>, ToolExecutionResult>
-AttemptFormFillingTool::Create(
+std::unique_ptr<AttemptFormFillingTool> AttemptFormFillingTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::AttemptFormFillingAction& action,
     ToolDelegate* tool_delegate) {

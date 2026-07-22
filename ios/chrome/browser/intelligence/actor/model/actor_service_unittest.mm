@@ -12,8 +12,10 @@
 #import "base/functional/callback_helpers.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/gtest_util.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
 #import "base/test/values_test_util.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -52,6 +54,22 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace actor {
+
+class ObservingFakeWebState : public web::FakeWebState {
+ public:
+  void AddObserver(web::WebStateObserver* observer) override {
+    web::FakeWebState::AddObserver(observer);
+    has_observer_ = true;
+  }
+  void RemoveObserver(web::WebStateObserver* observer) override {
+    web::FakeWebState::RemoveObserver(observer);
+    has_observer_ = false;
+  }
+  bool has_observer() const { return has_observer_; }
+
+ private:
+  bool has_observer_ = false;
+};
 
 class MockActorTask : public ActorTask {
  public:
@@ -456,20 +474,13 @@ TEST_F(ActorServiceTest, PerformActions_NoLoading_InstantCompletion) {
   actions.push_back(
       MakeSuccessfulActorAction(fake_web_state_ptr->GetUniqueIdentifier()));
 
-  bool callback_called = false;
-  service->PerformActions(
-      task_id, actions, "Update",
-      base::BindOnce(
-          [](bool* called, PerformActionsResult result) { *called = true; },
-          base::Unretained(&callback_called)));
+  base::test::TestFuture<PerformActionsResult> future;
+  service->PerformActions(task_id, actions, "Update", future.GetCallback());
 
-  // Run the queued tasks (tool execution and completion) deterministically.
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-
-  EXPECT_TRUE(callback_called);
+  // This will run the loop until the PerformActions callback executes.
+  const PerformActionsResult& result = future.Get();
+  ASSERT_EQ(1u, result.action_results.size());
+  EXPECT_TRUE(result.action_results[0].tool_result.IsOk());
 
   browser_list->RemoveBrowser(test_browser.get());
 }
@@ -490,7 +501,7 @@ TEST_F(ActorServiceTest, PerformActions_Loading_DeferredUntilStopLoading) {
   auto test_browser = std::make_unique<TestBrowser>(profile_.get());
   browser_list->AddBrowser(test_browser.get());
 
-  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  auto fake_web_state = std::make_unique<ObservingFakeWebState>();
   auto* fake_web_state_ptr = fake_web_state.get();
   test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
 
@@ -501,28 +512,25 @@ TEST_F(ActorServiceTest, PerformActions_Loading_DeferredUntilStopLoading) {
   actions.push_back(
       MakeSuccessfulActorAction(fake_web_state_ptr->GetUniqueIdentifier()));
 
-  bool callback_called = false;
-  service->PerformActions(
-      task_id, actions, "Update",
-      base::BindOnce(
-          [](bool* called, PerformActionsResult result) { *called = true; },
-          base::Unretained(&callback_called)));
+  base::test::TestFuture<PerformActionsResult> future;
+  service->PerformActions(task_id, actions, "Update", future.GetCallback());
 
-  // Run the queued execution tasks.
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  // Wait until the task has deferred the completion callback (i.e. started
+  // observing the loading web state).
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_web_state_ptr->has_observer(); }));
 
   // Gating: The callback should not be executed yet because the page is
   // loading.
-  EXPECT_FALSE(callback_called);
+  EXPECT_FALSE(future.IsReady());
 
   // Stop the load.
   fake_web_state_ptr->SetLoading(false);
 
   // Now the callback should execute successfully.
-  EXPECT_TRUE(callback_called);
+  const PerformActionsResult& result = future.Get();
+  ASSERT_EQ(1u, result.action_results.size());
+  EXPECT_TRUE(result.action_results[0].tool_result.IsOk());
 
   browser_list->RemoveBrowser(test_browser.get());
 }
@@ -544,7 +552,7 @@ TEST_F(ActorServiceMockTimeTest,
   auto test_browser = std::make_unique<TestBrowser>(profile_.get());
   browser_list->AddBrowser(test_browser.get());
 
-  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  auto fake_web_state = std::make_unique<ObservingFakeWebState>();
   auto* fake_web_state_ptr = fake_web_state.get();
   test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
 
@@ -555,27 +563,21 @@ TEST_F(ActorServiceMockTimeTest,
   actions.push_back(
       MakeSuccessfulActorAction(fake_web_state_ptr->GetUniqueIdentifier()));
 
-  bool callback_called = false;
-  service->PerformActions(
-      task_id, actions, "Update",
-      base::BindOnce(
-          [](bool* called, PerformActionsResult result) { *called = true; },
-          base::Unretained(&callback_called)));
+  base::test::TestFuture<PerformActionsResult> future;
+  service->PerformActions(task_id, actions, "Update", future.GetCallback());
 
-  // Run the queued execution tasks.
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  task_environment_.FastForwardBy(base::Seconds(0));
 
   // Callback should be deferred.
-  EXPECT_FALSE(callback_called);
+  EXPECT_FALSE(future.IsReady());
 
   // Fast forward the environment by 7 seconds to trigger the load timeout.
   task_environment_.FastForwardBy(base::Seconds(7));
 
   // The callback must be resolved now due to the timeout.
-  EXPECT_TRUE(callback_called);
+  const PerformActionsResult& result = future.Get();
+  ASSERT_EQ(1u, result.action_results.size());
+  EXPECT_TRUE(result.action_results[0].tool_result.IsOk());
 
   browser_list->RemoveBrowser(test_browser.get());
 }
@@ -643,16 +645,11 @@ TEST_F(ActorServiceTest, TracksOnlyLatestCreatedTaskObserver) {
       }]
               additionalBottomOffset:kGeminiActorSnackbarBottomOffset];
 
-  std::vector<optimization_guide::proto::Action> actions2;
-  service->PerformActions(task_id1, actions2, "Updating first again",
-                          base::BindOnce(^(PerformActionsResult result){
-                              // Do nothing.
-                          }));
-
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  std::vector<optimization_guide::proto::Action> actions;
+  base::test::TestFuture<PerformActionsResult> future;
+  service->PerformActions(task_id1, actions, "Updating first again",
+                          future.GetCallback());
+  (void)future.Get();
 
   [snackbar_commands verify];
 

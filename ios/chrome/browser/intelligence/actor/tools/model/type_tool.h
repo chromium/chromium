@@ -28,11 +28,12 @@ class TypeTool : public WebActorTool {
  public:
   ~TypeTool() override;
 
-  static base::expected<std::unique_ptr<TypeTool>, ToolExecutionResult> Create(
+  static std::unique_ptr<TypeTool> Create(
       base::WeakPtr<web::WebState> web_state,
       const optimization_guide::proto::TypeAction& action);
 
   // ActorTool:
+  void Validate(ToolExecutionCallback callback) override;
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;

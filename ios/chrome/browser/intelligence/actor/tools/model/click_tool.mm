@@ -18,9 +18,9 @@ namespace actor {
 ClickTool::~ClickTool() = default;
 
 // static
-base::expected<std::unique_ptr<ClickTool>, ToolExecutionResult>
-ClickTool::Create(base::WeakPtr<web::WebState> web_state,
-                  const optimization_guide::proto::ClickAction& action) {
+std::unique_ptr<ClickTool> ClickTool::Create(
+    base::WeakPtr<web::WebState> web_state,
+    const optimization_guide::proto::ClickAction& action) {
   return std::unique_ptr<ClickTool>(new ClickTool(web_state, action));
 }
 
@@ -38,6 +38,7 @@ void ClickTool::Validate(ToolExecutionCallback callback) {
   }
 
   const optimization_guide::proto::ActionTarget& target = action_.target();
+  // TODO(crbug.com/537772128): Share common target validation logic.
   // Callers must either target by coordinate or (document_identifier, node_id).
   if (target.has_content_node_id() && !target.has_document_identifier()) {
     std::move(callback).Run(

@@ -22,19 +22,18 @@ class WebState;
 
 namespace actor {
 
-struct ToolExecutionResult;
-
 // Tool to wait for a duration.
 class WaitTool : public ActorTool {
  public:
   ~WaitTool() override;
 
   // Creates the tool using the given `action`.
-  static base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> Create(
+  static std::unique_ptr<WaitTool> Create(
       base::WeakPtr<web::WebState> web_state,
       const optimization_guide::proto::WaitAction& action);
 
   // ActorTool:
+  void Validate(ToolExecutionCallback callback) override;
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;

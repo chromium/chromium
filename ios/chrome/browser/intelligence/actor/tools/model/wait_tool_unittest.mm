@@ -21,11 +21,18 @@ class WaitToolTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> CreateTool(
-      const optimization_guide::proto::WaitAction& action,
-      web::WebState* web_state) {
-    return WaitTool::Create(web_state ? web_state->GetWeakPtr() : nullptr,
-                            action);
+  base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult>
+  CreateToolAndValidate(const optimization_guide::proto::WaitAction& action,
+                        web::WebState* web_state) {
+    auto tool =
+        WaitTool::Create(web_state ? web_state->GetWeakPtr() : nullptr, action);
+    CHECK(tool);
+    base::test::TestFuture<ToolExecutionResult> validate_future;
+    tool->Validate(validate_future.GetCallback());
+    if (!validate_future.Get().IsOk()) {
+      return base::unexpected(validate_future.Get());
+    }
+    return tool;
   }
 };
 
@@ -34,7 +41,7 @@ class WaitToolTest : public PlatformTest {
 TEST_F(WaitToolTest, Create_DefaultDuration) {
   optimization_guide::proto::WaitAction action;
   base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
-      CreateTool(action, nullptr);
+      CreateToolAndValidate(action, nullptr);
 
   EXPECT_TRUE(result.has_value());
 
@@ -54,7 +61,7 @@ TEST_F(WaitToolTest, Create_SpecifiedDuration) {
   optimization_guide::proto::WaitAction action;
   action.set_wait_time_ms(5000);
   base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
-      CreateTool(action, nullptr);
+      CreateToolAndValidate(action, nullptr);
 
   EXPECT_TRUE(result.has_value());
 
@@ -77,7 +84,7 @@ TEST_F(WaitToolTest, GetToolType) {
   {
     optimization_guide::proto::WaitAction action;
     base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
-        CreateTool(action, nullptr);
+        CreateToolAndValidate(action, nullptr);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result.value()->GetToolType(), ToolType::kWait);
   }
@@ -87,7 +94,7 @@ TEST_F(WaitToolTest, GetToolType) {
     optimization_guide::proto::WaitAction action;
     action.set_wait_time_ms(5000);
     base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
-        CreateTool(action, nullptr);
+        CreateToolAndValidate(action, nullptr);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result.value()->GetToolType(), ToolType::kWait);
   }
@@ -97,7 +104,7 @@ TEST_F(WaitToolTest, GetToolType) {
     optimization_guide::proto::WaitAction action;
     action.set_wait_time_ms(0);
     base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
-        CreateTool(action, nullptr);
+        CreateToolAndValidate(action, nullptr);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result.value()->GetToolType(), ToolType::kWaitZeroDuration);
   }
@@ -107,7 +114,7 @@ TEST_F(WaitToolTest, GetToolType) {
     optimization_guide::proto::WaitAction action;
     action.set_wait_time_ms(-1000);
     base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
-        CreateTool(action, nullptr);
+        CreateToolAndValidate(action, nullptr);
     ASSERT_TRUE(result.has_value());
     EXPECT_EQ(result.value()->GetToolType(), ToolType::kWaitZeroDuration);
   }

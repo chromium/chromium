@@ -23,8 +23,7 @@
 namespace actor {
 
 // static
-base::expected<std::unique_ptr<AttemptLoginTool>, ToolExecutionResult>
-AttemptLoginTool::Create(
+std::unique_ptr<AttemptLoginTool> AttemptLoginTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::AttemptLoginAction& action,
     ToolDelegate* tool_delegate) {
@@ -50,6 +49,10 @@ void AttemptLoginTool::Cancel() {
   selected_credential_.reset();
   ActorTool::Cancel();
   weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void AttemptLoginTool::Validate(ToolExecutionCallback callback) {
+  std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 void AttemptLoginTool::Execute(ToolExecutionCallback callback) {

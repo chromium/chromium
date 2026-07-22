@@ -20,24 +20,22 @@ class WebState;
 namespace actor {
 
 class ToolDelegate;
-struct ToolExecutionResult;
 
 // Tool to attempt form filling on iOS.
 class AttemptFormFillingTool : public ActorTool {
  public:
-  static base::expected<std::unique_ptr<AttemptFormFillingTool>,
-                        ToolExecutionResult>
-  Create(base::WeakPtr<web::WebState> web_state,
-         const optimization_guide::proto::AttemptFormFillingAction& action,
-         ToolDelegate* tool_delegate);
+  static std::unique_ptr<AttemptFormFillingTool> Create(
+      base::WeakPtr<web::WebState> web_state,
+      const optimization_guide::proto::AttemptFormFillingAction& action,
+      ToolDelegate* tool_delegate);
 
   ~AttemptFormFillingTool() override;
 
   // ActorTool:
+  void Validate(ToolExecutionCallback callback) override;
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
-  void Validate(ToolExecutionCallback callback) override;
 
  private:
   AttemptFormFillingTool(

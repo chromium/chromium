@@ -16,16 +16,18 @@
 namespace actor {
 
 // static
-base::expected<std::unique_ptr<TabManagementTool>, ToolExecutionResult>
-TabManagementTool::CreateCloseTabTool(
+std::unique_ptr<TabManagementTool> TabManagementTool::CreateCloseTabTool(
     base::WeakPtr<web::WebState> web_state,
-    const optimization_guide::proto::CloseTabAction& action,
     base::WeakPtr<WebStateList> web_state_list) {
   return std::unique_ptr<TabManagementTool>(
       new TabManagementTool(web_state, ActionType::kClose, web_state_list));
 }
 
 TabManagementTool::~TabManagementTool() = default;
+
+void TabManagementTool::Validate(ToolExecutionCallback callback) {
+  std::move(callback).Run(ToolExecutionResult::Ok());
+}
 
 void TabManagementTool::Execute(ToolExecutionCallback callback) {
   callback_ = std::move(callback);

@@ -19,19 +19,23 @@ namespace actor {
 HistoryTool::~HistoryTool() = default;
 
 // static
-base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-HistoryTool::Create(
+std::unique_ptr<HistoryTool> HistoryTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::HistoryBackAction& action) {
-  return CreateInternal(web_state, action);
+  return std::unique_ptr<HistoryTool>(
+      new HistoryTool(web_state, /*is_back_action=*/true));
 }
 
 // static
-base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-HistoryTool::Create(
+std::unique_ptr<HistoryTool> HistoryTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::HistoryForwardAction& action) {
-  return CreateInternal(web_state, action);
+  return std::unique_ptr<HistoryTool>(
+      new HistoryTool(web_state, /*is_back_action=*/false));
+}
+
+void HistoryTool::Validate(ToolExecutionCallback callback) {
+  std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 void HistoryTool::Execute(ToolExecutionCallback callback) {
@@ -69,18 +73,6 @@ base::WeakPtr<web::WebState> HistoryTool::GetTargetWebState() const {
 
 ToolType HistoryTool::GetToolType() const {
   return is_back_action_ ? ToolType::kBack : ToolType::kForward;
-}
-
-// static
-template <typename HistoryAction>
-base::expected<std::unique_ptr<HistoryTool>, ToolExecutionResult>
-HistoryTool::CreateInternal(base::WeakPtr<web::WebState> web_state,
-                            const HistoryAction& action) {
-  constexpr bool is_back_action =
-      std::is_same_v<HistoryAction,
-                     optimization_guide::proto::HistoryBackAction>;
-  return std::unique_ptr<HistoryTool>(
-      new HistoryTool(web_state, is_back_action));
 }
 
 HistoryTool::HistoryTool(base::WeakPtr<web::WebState> web_state,

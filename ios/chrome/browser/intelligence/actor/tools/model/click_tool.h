@@ -25,15 +25,15 @@ class ClickTool : public WebActorTool {
  public:
   ~ClickTool() override;
 
-  static base::expected<std::unique_ptr<ClickTool>, ToolExecutionResult> Create(
+  static std::unique_ptr<ClickTool> Create(
       base::WeakPtr<web::WebState> web_state,
       const optimization_guide::proto::ClickAction& action);
 
   // ActorTool:
+  void Validate(ToolExecutionCallback callback) override;
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
-  void Validate(ToolExecutionCallback callback) override;
 
  private:
   void OnTargetFrameResolved(

@@ -5,20 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_NAVIGATE_TOOL_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_NAVIGATE_TOOL_H_
 
+#import <optional>
 #import <string>
 
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 
 class UrlLoadingBrowserAgent;
 struct UrlLoadParams;
-
-namespace optimization_guide {
-namespace proto {
-class NavigateAction;
-}  // namespace proto
-}  // namespace optimization_guide
 
 namespace web {
 class WebState;
@@ -26,29 +22,28 @@ class WebState;
 
 namespace actor {
 
-struct ToolExecutionResult;
-
 // Command to navigate to a URL.
 class NavigateTool : public ActorTool {
  public:
-  static base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-  Create(base::WeakPtr<web::WebState> web_state,
-         const optimization_guide::proto::NavigateAction& action,
-         base::WeakPtr<UrlLoadingBrowserAgent> url_loader);
+  static std::unique_ptr<NavigateTool> Create(
+      base::WeakPtr<web::WebState> web_state,
+      const optimization_guide::proto::NavigateAction& action,
+      base::WeakPtr<UrlLoadingBrowserAgent> url_loader);
 
   ~NavigateTool() override;
 
   // ActorTool:
+  void Validate(ToolExecutionCallback callback) override;
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
 
  private:
   NavigateTool(base::WeakPtr<web::WebState> web_state,
-               const std::string& url,
+               std::optional<std::string> url,
                base::WeakPtr<UrlLoadingBrowserAgent> url_loader);
 
-  const std::string url_;
+  std::optional<std::string> url_;
   base::WeakPtr<web::WebState> web_state_;
   base::WeakPtr<UrlLoadingBrowserAgent> url_loader_;
 };

@@ -33,19 +33,19 @@ class WebState;
 namespace actor {
 
 class ToolDelegate;
-struct ToolExecutionResult;
 
 // Tool to attempt login on a page.
 class AttemptLoginTool : public ActorTool, public web::WebStateObserver {
  public:
-  static base::expected<std::unique_ptr<AttemptLoginTool>, ToolExecutionResult>
-  Create(base::WeakPtr<web::WebState> web_state,
-         const optimization_guide::proto::AttemptLoginAction& action,
-         ToolDelegate* tool_delegate);
+  static std::unique_ptr<AttemptLoginTool> Create(
+      base::WeakPtr<web::WebState> web_state,
+      const optimization_guide::proto::AttemptLoginAction& action,
+      ToolDelegate* tool_delegate);
 
   ~AttemptLoginTool() override;
 
   // ActorTool:
+  void Validate(ToolExecutionCallback callback) override;
   void Execute(ToolExecutionCallback callback) override;
   void Cancel() override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;

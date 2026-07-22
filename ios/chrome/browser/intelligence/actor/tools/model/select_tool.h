@@ -26,11 +26,12 @@ class SelectTool : public WebActorTool {
   ~SelectTool() override;
 
   // Validates and creates a SelectTool instance.
-  static base::expected<std::unique_ptr<SelectTool>, ToolExecutionResult>
-  Create(base::WeakPtr<web::WebState> web_state,
-         const optimization_guide::proto::SelectAction& action);
+  static std::unique_ptr<SelectTool> Create(
+      base::WeakPtr<web::WebState> web_state,
+      const optimization_guide::proto::SelectAction& action);
 
   // ActorTool:
+  void Validate(ToolExecutionCallback callback) override;
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;

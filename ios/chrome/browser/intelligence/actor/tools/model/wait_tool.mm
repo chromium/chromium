@@ -26,7 +26,7 @@ constexpr base::TimeDelta kDefaultWaitDuration = base::Seconds(3);
 WaitTool::~WaitTool() = default;
 
 // static
-base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> WaitTool::Create(
+std::unique_ptr<WaitTool> WaitTool::Create(
     base::WeakPtr<web::WebState> web_state,
     const optimization_guide::proto::WaitAction& action) {
   base::TimeDelta wait_duration = kDefaultWaitDuration;
@@ -35,6 +35,10 @@ base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> WaitTool::Create(
   }
   return std::unique_ptr<WaitTool>(
       new WaitTool(wait_duration, /*observe_web_state=*/web_state));
+}
+
+void WaitTool::Validate(ToolExecutionCallback callback) {
+  std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 void WaitTool::Execute(ToolExecutionCallback callback) {

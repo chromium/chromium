@@ -132,10 +132,18 @@ class AttemptLoginToolTest : public PlatformTest {
   }
 
   base::expected<std::unique_ptr<AttemptLoginTool>, ToolExecutionResult>
-  CreateTool(const optimization_guide::proto::AttemptLoginAction& action,
-             web::WebState* web_state) {
-    return AttemptLoginTool::Create(web_state->GetWeakPtr(), action,
-                                    &delegate_);
+  CreateToolAndValidate(
+      const optimization_guide::proto::AttemptLoginAction& action,
+      web::WebState* web_state) {
+    std::unique_ptr<AttemptLoginTool> tool =
+        AttemptLoginTool::Create(web_state->GetWeakPtr(), action, &delegate_);
+    CHECK(tool);
+    base::test::TestFuture<ToolExecutionResult> validate_future;
+    tool->Validate(validate_future.GetCallback());
+    if (!validate_future.Get().IsOk()) {
+      return base::unexpected(validate_future.Get());
+    }
+    return tool;
   }
 
   // Retrieves the web state list for the current test browser.
@@ -187,7 +195,7 @@ TEST_F(AttemptLoginToolTest, Create_Success) {
   action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
 
   base::expected<std::unique_ptr<AttemptLoginTool>, ToolExecutionResult>
-      result = CreateTool(action, web_state);
+      result = CreateToolAndValidate(action, web_state);
 
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->GetToolType(), ToolType::kAttemptLogin);
@@ -202,7 +210,7 @@ TEST_F(AttemptLoginToolTest, Execute_NoWebState) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
   action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
 
-  auto result = CreateTool(action, web_state);
+  auto result = CreateToolAndValidate(action, web_state);
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
@@ -221,7 +229,7 @@ TEST_F(AttemptLoginToolTest, Execute_GetCredentialsError) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
   action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
 
-  auto result = CreateTool(action, web_state);
+  auto result = CreateToolAndValidate(action, web_state);
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
@@ -241,7 +249,7 @@ TEST_F(AttemptLoginToolTest, Execute_GetCredentialsEmpty) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
   action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
 
-  auto result = CreateTool(action, web_state);
+  auto result = CreateToolAndValidate(action, web_state);
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
@@ -260,7 +268,7 @@ TEST_F(AttemptLoginToolTest, Execute_UserDeclinesCredential) {
   web::FakeWebState* web_state_ptr = CreateAndInsertWebState();
   action.set_tab_id(web_state_ptr->GetUniqueIdentifier().identifier());
 
-  auto result = CreateTool(action, web_state_ptr);
+  auto result = CreateToolAndValidate(action, web_state_ptr);
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
@@ -288,7 +296,7 @@ TEST_F(AttemptLoginToolTest, Execute_PersistentCredentialDirectSelect_Success) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
   action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
 
-  auto result = CreateTool(action, web_state);
+  auto result = CreateToolAndValidate(action, web_state);
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
@@ -315,7 +323,7 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_Shown_Retry_Success) {
   web::FakeWebState* web_state_ptr = CreateAndInsertWebState();
   action.set_tab_id(web_state_ptr->GetUniqueIdentifier().identifier());
 
-  auto result = CreateTool(action, web_state_ptr);
+  auto result = CreateToolAndValidate(action, web_state_ptr);
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
@@ -355,7 +363,7 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_WebStateDestroyed) {
   web::FakeWebState* web_state = CreateAndInsertWebState();
   action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
 
-  auto result = CreateTool(action, web_state);
+  auto result = CreateToolAndValidate(action, web_state);
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
@@ -388,7 +396,7 @@ TEST_F(AttemptLoginToolTest, Execute_DeviceReauthRequired_Cancel) {
   web::FakeWebState* web_state_ptr = CreateAndInsertWebState();
   action.set_tab_id(web_state_ptr->GetUniqueIdentifier().identifier());
 
-  auto result = CreateTool(action, web_state_ptr);
+  auto result = CreateToolAndValidate(action, web_state_ptr);
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 
@@ -424,7 +432,7 @@ TEST_F(AttemptLoginToolTest, Execute_PageChangedDuringSelection) {
   web::FakeWebState* web_state_ptr = CreateAndInsertWebState();
   action.set_tab_id(web_state_ptr->GetUniqueIdentifier().identifier());
 
-  auto result = CreateTool(action, web_state_ptr);
+  auto result = CreateToolAndValidate(action, web_state_ptr);
   ASSERT_TRUE(result.has_value());
   std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
 

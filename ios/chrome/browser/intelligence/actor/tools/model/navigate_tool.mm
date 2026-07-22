@@ -18,20 +18,29 @@
 namespace actor {
 
 // static
-base::expected<std::unique_ptr<NavigateTool>, ToolExecutionResult>
-NavigateTool::Create(base::WeakPtr<web::WebState> web_state,
-                     const optimization_guide::proto::NavigateAction& action,
-                     base::WeakPtr<UrlLoadingBrowserAgent> url_loader) {
-  if (!action.has_url()) {
-    return base::unexpected(ToolExecutionResult(
-        InternalToolErrorCode::kCreationMissingRequiredFields));
+std::unique_ptr<NavigateTool> NavigateTool::Create(
+    base::WeakPtr<web::WebState> web_state,
+    const optimization_guide::proto::NavigateAction& action,
+    base::WeakPtr<UrlLoadingBrowserAgent> url_loader) {
+  std::optional<std::string> url = std::nullopt;
+  if (action.has_url()) {
+    url = action.url();
   }
   return std::unique_ptr<NavigateTool>(
-      new NavigateTool(web_state, action.url(), url_loader));
+      new NavigateTool(web_state, url, url_loader));
+}
+
+void NavigateTool::Validate(ToolExecutionCallback callback) {
+  if (!url_.has_value()) {
+    std::move(callback).Run(ToolExecutionResult(
+        InternalToolErrorCode::kCreationMissingRequiredFields));
+    return;
+  }
+  std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 NavigateTool::NavigateTool(base::WeakPtr<web::WebState> web_state,
-                           const std::string& url,
+                           std::optional<std::string> url,
                            base::WeakPtr<UrlLoadingBrowserAgent> url_loader)
     : url_(url), web_state_(web_state), url_loader_(url_loader) {}
 
@@ -46,7 +55,7 @@ void NavigateTool::Execute(ToolExecutionCallback callback) {
     return;
   }
 
-  GURL url(url_);
+  GURL url(url_.value_or(""));
   if (!url.is_valid()) {
     std::move(callback).Run(
         ToolExecutionResult(InternalToolErrorCode::kNavigationInvalidURL));

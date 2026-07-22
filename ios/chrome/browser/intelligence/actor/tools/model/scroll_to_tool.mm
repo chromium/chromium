@@ -23,33 +23,40 @@ namespace actor {
 ScrollToTool::~ScrollToTool() = default;
 
 // static
-base::expected<std::unique_ptr<ScrollToTool>, ToolExecutionResult>
-ScrollToTool::Create(base::WeakPtr<web::WebState> web_state,
-                     const optimization_guide::proto::ScrollToAction& action) {
-  if (!action.has_target()) {
-    return base::unexpected(
-        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
-  }
+std::unique_ptr<ScrollToTool> ScrollToTool::Create(
+    base::WeakPtr<web::WebState> web_state,
+    const optimization_guide::proto::ScrollToAction& action) {
+  return std::unique_ptr<ScrollToTool>(new ScrollToTool(web_state, action));
+}
 
-  const optimization_guide::proto::ActionTarget& target = action.target();
+void ScrollToTool::Validate(ToolExecutionCallback callback) {
+  if (!action_.has_target()) {
+    std::move(callback).Run(
+        ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
+  }
+  const optimization_guide::proto::ActionTarget& target = action_.target();
+  // TODO(crbug.com/537772128): Share common target validation logic.
   // Callers must either target by coordinate or (document_identifier, node_id).
   if (target.has_content_node_id() && !target.has_document_identifier()) {
-    return base::unexpected(
+    std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
   }
   bool can_target_by_coordinate = target.has_coordinate();
   bool can_target_by_node_id =
       target.has_content_node_id() && target.has_document_identifier();
   if (!can_target_by_coordinate && !can_target_by_node_id) {
-    return base::unexpected(
+    std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
   }
   if (can_target_by_coordinate && can_target_by_node_id) {
-    return base::unexpected(
+    std::move(callback).Run(
         ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid));
+    return;
   }
-
-  return std::unique_ptr<ScrollToTool>(new ScrollToTool(web_state, action));
+  std::move(callback).Run(ToolExecutionResult::Ok());
 }
 
 void ScrollToTool::Execute(ToolExecutionCallback callback) {
