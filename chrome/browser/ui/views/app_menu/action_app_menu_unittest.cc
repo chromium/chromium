@@ -11,10 +11,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_action_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/widget/widget.h"
@@ -26,6 +29,24 @@ class ActionAppMenuTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    actions::ActionManager::Get().ResetActions();
+
+    // Create test ActionItems as children of a root ActionItem.
+    auto root = actions::ActionItem::Builder().Build();
+    root->AddChild(actions::ActionItem::Builder(base::DoNothing())
+                       .SetActionId(kActionNewTab)
+                       .SetText(u"New tab")
+                       .SetEnabled(true)
+                       .SetVisible(true)
+                       .Build());
+    root->AddChild(actions::ActionItem::Builder(base::DoNothing())
+                       .SetActionId(kActionClearBrowsingData)
+                       .SetText(u"Delete browsing data")
+                       .SetEnabled(true)
+                       .SetVisible(true)
+                       .Build());
+    actions::ActionManager::Get().AddAction(std::move(root));
+
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     button_ = widget_->SetContentsView(std::make_unique<views::MenuButton>(
         views::Button::PressedCallback(), u"Menu"));
@@ -34,6 +55,7 @@ class ActionAppMenuTest : public ChromeViewsTestBase {
   void TearDown() override {
     button_ = nullptr;
     widget_.reset();
+    actions::ActionManager::Get().ResetActions();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -45,7 +67,11 @@ class ActionAppMenuTest : public ChromeViewsTestBase {
 
 TEST_F(ActionAppMenuTest, RunAndCloseMenu) {
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
-  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  auto action_manager = std::make_unique<AppMenuActionManager>();
+  action_manager->Initialize();
+
+  ActionAppMenu menu(&mock_window_interface_, std::move(action_manager),
+                     on_menu_closed.Get());
 
   EXPECT_FALSE(menu.IsShowing());
 

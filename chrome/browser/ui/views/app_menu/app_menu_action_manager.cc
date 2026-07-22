@@ -41,7 +41,7 @@ const MenuEntry& AppMenuActionManager::GetMenuHierarchy() {
        // TODO(crbug.com/535705944): Localize ChroMenu headers.
        .children = {{.text = u"Your Chrome",
                      .children = {
-                         {.action_id = kActionShowDownloads},
+                         {.action_id = kActionNewTab},
                          {.action_id = kActionClearBrowsingData},
                      }}}});
   return *hierarchy;
