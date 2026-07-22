@@ -2349,7 +2349,17 @@ bool AIPageContentAgent::ContentBuilder::ShouldSkipSingleNode(
     const LayoutObject& object,
     const mojom::blink::AIPageContentAttributes& attributes) const {
   if (object.StyleRef().GetPosition() == EPosition::kFixed) {
-    return false;
+    // Fixed elements may implement blocking UI such as paywalls, so APC
+    // normally preserves them. When enabled, the feature lets
+    // pointer-transparent fixed wrappers be skipped via the normal rules for
+    // containers.
+    const bool should_preserve_as_fixed_overlay =
+        !RuntimeEnabledFeatures::
+            AIPageContentSkipUnclickableFixedOverlaysEnabled() ||
+        object.StyleRef().UsedPointerEvents() != EPointerEvents::kNone;
+    if (should_preserve_as_fixed_overlay) {
+      return false;
+    }
   }
 
   if (object.StyleRef().GetPosition() == EPosition::kSticky) {

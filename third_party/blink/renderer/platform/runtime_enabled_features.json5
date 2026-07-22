@@ -385,6 +385,12 @@
       name: "AIPageContentPaidContentAnnotation",
       status: "stable"
     },
+    // Let fixed wrappers with pointer-events: none use normal APC container
+    // skipping instead of preserving them automatically.
+    {
+      name: "AIPageContentSkipUnclickableFixedOverlays",
+      status: "stable",
+    },
     // When enabled, iframe element coordinates will be tracked using the
     // Element::SetTrackedElementSubRect() method.
     {

@@ -2899,6 +2899,41 @@ TEST_F(AIPageContentAgentTest, VisibilityHiddenOnIframe) {
   EXPECT_EQ(root.children_nodes.size(), 0u);
 }
 
+TEST_F(AIPageContentAgentTest,
+       SkipUnclickableFixedOverlaysRespectsFeatureFlag) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body style="margin: 0;">
+          <div id="unclickable"
+               style="position: fixed; inset: 0; pointer-events: none;">
+            Readable text
+          </div>
+          <div id="clickable" style="position: fixed;"></div>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  {
+    ScopedAIPageContentSkipUnclickableFixedOverlaysForTest disable_feature(
+        false);
+    GetAIPageContentWithActionableElements();
+
+    // Preserve the legacy output while the feature is off.
+    EXPECT_TRUE(FindNodeBySelector("#unclickable"));
+  }
+
+  {
+    ScopedAIPageContentSkipUnclickableFixedOverlaysForTest enable_feature(true);
+    GetAIPageContentWithActionableElements();
+
+    // Flatten the pointer-transparent wrapper without dropping its text.
+    ExpectSelectorNotInApcOutput("#unclickable");
+    EXPECT_TRUE(TreeContainsTextSubstring(ContentRootNode(), "Readable text"));
+    EXPECT_TRUE(FindNodeBySelector("#clickable"));
+  }
+}
+
 TEST_F(AIPageContentAgentTest, NoGeometry) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
