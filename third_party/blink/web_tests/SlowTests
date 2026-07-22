@@ -133,7 +133,6 @@ crbug.com/1280736 http/tests/inspector-protocol/network/blocked-setcookie-same-s
 crbug.com/1327867 http/tests/inspector-protocol/network/initiator-minified.js [ Slow ]
 crbug.com/40839871 http/tests/inspector-protocol/network/cookies-protocol-test.js [ Slow ]
 crbug.com/1280882 http/tests/inspector-protocol/network/cors-errors.js [ Slow ]
-crbug.com/1289238 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-navigation-context-downgrade.js [ Slow ]
 crbug.com/1300352 http/tests/inspector-protocol/network/blocked-cookie-not-on-path.js [ Slow ]
 crbug.com/1318449 http/tests/inspector-protocol/window-open-effective-opener.js [ Slow ]
 crbug.com/1412923 [ Win ] http/tests/inspector-protocol/network/load-network-resource-errors.js [ Slow ]
@@ -871,8 +870,6 @@ crbug.com/1298800 http/tests/misc/drag-bookmark.html [ Slow ]
 
 crbug.com/1327869 css3/calc/simple-calcs-prefixed.html [ Slow ]
 
-crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-strict-subresource-context-downgrade.js [ Slow ]
-crbug.com/1228246 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-lax-subresource-context-downgrade.js [ Slow ]
 crbug.com/1228246 http/tests/inspector-protocol/service-worker/network-get-request-body-blob.js [ Slow ]
 crbug.com/1228246 http/tests/inspector-protocol/service-worker/network-extrainfo-subresource.js [ Slow ]
 

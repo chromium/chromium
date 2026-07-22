@@ -3,7 +3,7 @@ Verifies that making cross origin subresource requests from JS which set SameSit
 Javascript initiated subresource blocked set-cookies: [
     [0] : {
         blockedReasons : [
-            [0] : SameSiteLax
+            [0] : SchemefulSameSiteLax
         ]
         cookie : {
             domain : cookie.test

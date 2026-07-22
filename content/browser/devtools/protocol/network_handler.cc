@@ -872,34 +872,19 @@ GetProtocolBlockedSetCookieReason(net::CookieInclusionStatus status) {
   }
   if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                     EXCLUDE_SAMESITE_STRICT)) {
-    if (status.HasSchemefulDowngradeWarning()) {
-      blockedReasons->push_back(
-          Network::SetCookieBlockedReasonEnum::SchemefulSameSiteStrict);
-    } else {
-      blockedReasons->push_back(
-          Network::SetCookieBlockedReasonEnum::SameSiteStrict);
-    }
+    blockedReasons->push_back(
+        Network::SetCookieBlockedReasonEnum::SchemefulSameSiteStrict);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX)) {
-    if (status.HasSchemefulDowngradeWarning()) {
-      blockedReasons->push_back(
-          Network::SetCookieBlockedReasonEnum::SchemefulSameSiteLax);
-    } else {
-      blockedReasons->push_back(
-          Network::SetCookieBlockedReasonEnum::SameSiteLax);
-    }
+    blockedReasons->push_back(
+        Network::SetCookieBlockedReasonEnum::SchemefulSameSiteLax);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::ExclusionReason::
               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX)) {
-    if (status.HasSchemefulDowngradeWarning()) {
-      blockedReasons->push_back(Network::SetCookieBlockedReasonEnum::
-                                    SchemefulSameSiteUnspecifiedTreatedAsLax);
-    } else {
-      blockedReasons->push_back(
-          Network::SetCookieBlockedReasonEnum::SameSiteUnspecifiedTreatedAsLax);
-    }
+    blockedReasons->push_back(Network::SetCookieBlockedReasonEnum::
+                                  SchemefulSameSiteUnspecifiedTreatedAsLax);
   }
   if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                     EXCLUDE_SAMESITE_NONE_INSECURE)) {
@@ -989,33 +974,19 @@ GetProtocolBlockedCookieReason(net::CookieInclusionStatus status) {
   }
   if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                     EXCLUDE_SAMESITE_STRICT)) {
-    if (status.HasSchemefulDowngradeWarning()) {
-      blockedReasons->push_back(
-          Network::CookieBlockedReasonEnum::SchemefulSameSiteStrict);
-    } else {
-      blockedReasons->push_back(
-          Network::CookieBlockedReasonEnum::SameSiteStrict);
-    }
+    blockedReasons->push_back(
+        Network::CookieBlockedReasonEnum::SchemefulSameSiteStrict);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX)) {
-    if (status.HasSchemefulDowngradeWarning()) {
-      blockedReasons->push_back(
-          Network::CookieBlockedReasonEnum::SchemefulSameSiteLax);
-    } else {
-      blockedReasons->push_back(Network::CookieBlockedReasonEnum::SameSiteLax);
-    }
+    blockedReasons->push_back(
+        Network::CookieBlockedReasonEnum::SchemefulSameSiteLax);
   }
   if (status.HasExclusionReason(
           net::CookieInclusionStatus::ExclusionReason::
               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX)) {
-    if (status.HasSchemefulDowngradeWarning()) {
-      blockedReasons->push_back(Network::CookieBlockedReasonEnum::
-                                    SchemefulSameSiteUnspecifiedTreatedAsLax);
-    } else {
-      blockedReasons->push_back(
-          Network::CookieBlockedReasonEnum::SameSiteUnspecifiedTreatedAsLax);
-    }
+    blockedReasons->push_back(Network::CookieBlockedReasonEnum::
+                                  SchemefulSameSiteUnspecifiedTreatedAsLax);
   }
   if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                     EXCLUDE_SAMESITE_NONE_INSECURE)) {

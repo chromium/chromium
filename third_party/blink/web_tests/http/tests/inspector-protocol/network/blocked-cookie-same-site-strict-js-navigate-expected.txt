@@ -3,7 +3,7 @@ Verifies that JavaScript cross origin navigation requests with SameSite=Strict c
 Javascript initiated navigation blocked cookies:n [
     [0] : {
         blockedReasons : [
-            [0] : SameSiteStrict
+            [0] : SchemefulSameSiteStrict
         ]
         cookie : {
             domain : cookie.test

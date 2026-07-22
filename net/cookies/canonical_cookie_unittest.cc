@@ -2254,115 +2254,6 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameSite) {
            SameSiteCookieContext::ContextType::SAME_SITE_STRICT),
        CookieInclusionStatus(), kLongAge},
   };
-
-  // Test cases that require LEGACY semantics.
-  std::vector<IncludeForRequestURLTestCase> schemeful_disabled_test_cases = {
-      {"LEGACY_Schemeful=1;SameSite=Strict", CookieSameSite::STRICT_MODE,
-       CookieEffectiveSameSite::STRICT_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::SAME_SITE_LAX),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {}, {CookieInclusionStatus::WarningReason::
-                    WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE})},
-      {"LEGACY_Schemeful=2;SameSite=Strict", CookieSameSite::STRICT_MODE,
-       CookieEffectiveSameSite::STRICT_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {}, {CookieInclusionStatus::WarningReason::
-                    WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE})},
-      {"LEGACY_Schemeful=3;SameSite=Strict", CookieSameSite::STRICT_MODE,
-       CookieEffectiveSameSite::STRICT_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::CROSS_SITE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {}, {CookieInclusionStatus::WarningReason::
-                    WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE})},
-      {"LEGACY_Schemeful=4;SameSite=Lax", CookieSameSite::LAX_MODE,
-       CookieEffectiveSameSite::LAX_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {}, {CookieInclusionStatus::WarningReason::
-                    WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE})},
-      {"LEGACY_Schemeful=5;SameSite=Lax", CookieSameSite::LAX_MODE,
-       CookieEffectiveSameSite::LAX_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::CROSS_SITE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {}, {CookieInclusionStatus::WarningReason::
-                    WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE})},
-      {"LEGACY_Schemeful=6;SameSite=Lax", CookieSameSite::LAX_MODE,
-       CookieEffectiveSameSite::LAX_MODE,
-       SameSiteCookieContext(SameSiteCookieContext::ContextType::SAME_SITE_LAX,
-                             SameSiteCookieContext::ContextType::CROSS_SITE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {}, {CookieInclusionStatus::WarningReason::
-                    WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE})},
-  };
-
-  // Test cases that require NONLEGACY or UNKNOWN semantics.
-  std::vector<IncludeForRequestURLTestCase> schemeful_enabled_test_cases = {
-      {"NONLEGACY_Schemeful=1;SameSite=Strict", CookieSameSite::STRICT_MODE,
-       CookieEffectiveSameSite::STRICT_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::SAME_SITE_LAX),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_STRICT},
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE})},
-      {"NONLEGACY_Schemeful=2;SameSite=Strict", CookieSameSite::STRICT_MODE,
-       CookieEffectiveSameSite::STRICT_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_STRICT},
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE})},
-      {"NONLEGACY_Schemeful=3;SameSite=Strict", CookieSameSite::STRICT_MODE,
-       CookieEffectiveSameSite::STRICT_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::CROSS_SITE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_STRICT},
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE})},
-      {"NONLEGACY_Schemeful=4;SameSite=Lax", CookieSameSite::LAX_MODE,
-       CookieEffectiveSameSite::LAX_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::SAME_SITE_LAX_METHOD_UNSAFE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX},
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE})},
-      {"NONLEGACY_Schemeful=5;SameSite=Lax", CookieSameSite::LAX_MODE,
-       CookieEffectiveSameSite::LAX_MODE,
-       SameSiteCookieContext(
-           SameSiteCookieContext::ContextType::SAME_SITE_STRICT,
-           SameSiteCookieContext::ContextType::CROSS_SITE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX},
-           {CookieInclusionStatus::WarningReason::
-                WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE})},
-      {"NONLEGACY_Schemeful=6;SameSite=Lax", CookieSameSite::LAX_MODE,
-       CookieEffectiveSameSite::LAX_MODE,
-       SameSiteCookieContext(SameSiteCookieContext::ContextType::SAME_SITE_LAX,
-                             SameSiteCookieContext::ContextType::CROSS_SITE),
-       CookieInclusionStatus::MakeFromReasonsForTesting(
-           {CookieInclusionStatus::ExclusionReason::EXCLUDE_SAMESITE_LAX},
-           {CookieInclusionStatus::WarningReason::
-                WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE})},
-  };
-
   VerifyIncludeForRequestURLTestCases(CookieAccessSemantics::UNKNOWN,
                                       common_test_cases);
   VerifyIncludeForRequestURLTestCases(CookieAccessSemantics::UNKNOWN,
@@ -2375,13 +2266,6 @@ TEST(CanonicalCookieTest, IncludeForRequestURLSameSite) {
                                       common_test_cases);
   VerifyIncludeForRequestURLTestCases(CookieAccessSemantics::NONLEGACY,
                                       default_lax_test_cases);
-  VerifyIncludeForRequestURLTestCases(CookieAccessSemantics::LEGACY,
-                                      schemeful_disabled_test_cases);
-
-  VerifyIncludeForRequestURLTestCases(CookieAccessSemantics::NONLEGACY,
-                                      schemeful_enabled_test_cases);
-  VerifyIncludeForRequestURLTestCases(CookieAccessSemantics::UNKNOWN,
-                                      schemeful_enabled_test_cases);
 }
 
 // Test that SameSite=None requires Secure.
@@ -5604,9 +5488,7 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
                                false /* delegate_treats_url_as_trustworthy */
                                ),
             kCookieableSchemes),
-        MatchesCookieAccessResult(
-            AllOf(IsInclude(), Not(HasSchemefulDowngradeWarning())), _, _,
-            true));
+        MatchesCookieAccessResult(IsInclude(), _, _, true));
     EXPECT_THAT(
         cookie_same_site_unrestricted->IsSetPermittedInContext(
             url, context_same_site_strict_to_cross,
@@ -5615,9 +5497,7 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
                                false /* delegate_treats_url_as_trustworthy */
                                ),
             kCookieableSchemes),
-        MatchesCookieAccessResult(
-            AllOf(IsInclude(), Not(HasSchemefulDowngradeWarning())), _, _,
-            true));
+        MatchesCookieAccessResult(IsInclude(), _, _, true));
     EXPECT_THAT(
         cookie_same_site_unrestricted->IsSetPermittedInContext(
             url, context_same_site_lax_to_cross,
@@ -5626,9 +5506,7 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
                                false /* delegate_treats_url_as_trustworthy */
                                ),
             kCookieableSchemes),
-        MatchesCookieAccessResult(
-            AllOf(IsInclude(), Not(HasSchemefulDowngradeWarning())), _, _,
-            true));
+        MatchesCookieAccessResult(IsInclude(), _, _, true));
   }
 
   {
@@ -5677,9 +5555,7 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
                                false /* delegate_treats_url_as_trustworthy */
                                ),
             kCookieableSchemes),
-        MatchesCookieAccessResult(
-            AllOf(IsInclude(), Not(HasSchemefulDowngradeWarning())), _, _,
-            true));
+        MatchesCookieAccessResult(IsInclude(), _, _, true));
     EXPECT_THAT(
         cookie_same_site_lax->IsSetPermittedInContext(
             url, context_same_site_strict_to_cross,
@@ -5691,8 +5567,6 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
         MatchesCookieAccessResult(
             AllOf(
                 Not(IsInclude()),
-                HasWarningReason(CookieInclusionStatus::WarningReason::
-                                     WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE),
                 HasExclusionReason(CookieInclusionStatus::ExclusionReason::
                                        EXCLUDE_SAMESITE_LAX)),
             _, _, true));
@@ -5706,8 +5580,6 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
             kCookieableSchemes),
         MatchesCookieAccessResult(
             AllOf(Not(IsInclude()),
-                  HasWarningReason(CookieInclusionStatus::WarningReason::
-                                       WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE),
                   HasExclusionReason(CookieInclusionStatus::ExclusionReason::
                                          EXCLUDE_SAMESITE_LAX)),
             _, _, true));
@@ -5763,9 +5635,7 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
                                false /* delegate_treats_url_as_trustworthy */
                                ),
             kCookieableSchemes),
-        MatchesCookieAccessResult(
-            AllOf(IsInclude(), Not(HasSchemefulDowngradeWarning())), _, _,
-            true));
+        MatchesCookieAccessResult(IsInclude(), _, _, true));
     EXPECT_THAT(
         cookie_same_site_strict->IsSetPermittedInContext(
             url, context_same_site_strict_to_cross,
@@ -5776,9 +5646,6 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
             kCookieableSchemes),
         MatchesCookieAccessResult(
             AllOf(Not(IsInclude()),
-                  HasWarningReason(
-                      CookieInclusionStatus::WarningReason::
-                          WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE),
                   HasExclusionReason(CookieInclusionStatus::ExclusionReason::
                                          EXCLUDE_SAMESITE_STRICT)),
             _, _, true));
@@ -5793,8 +5660,6 @@ TEST(CanonicalCookieTest, IsSetPermittedInContext) {
         MatchesCookieAccessResult(
             AllOf(
                 Not(IsInclude()),
-                HasWarningReason(CookieInclusionStatus::WarningReason::
-                                     WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE),
                 HasExclusionReason(CookieInclusionStatus::ExclusionReason::
                                        EXCLUDE_SAMESITE_STRICT)),
             _, _, true));

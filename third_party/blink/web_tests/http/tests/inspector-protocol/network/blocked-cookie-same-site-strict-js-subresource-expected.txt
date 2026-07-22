@@ -3,7 +3,7 @@ Verifies that making cross origin fetch requests with SameSite=Strict cookies se
 Javascript initiated subresource blocked cookies:} [
     [0] : {
         blockedReasons : [
-            [0] : SameSiteStrict
+            [0] : SchemefulSameSiteStrict
         ]
         cookie : {
             domain : cookie.test

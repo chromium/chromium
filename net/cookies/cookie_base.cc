@@ -23,84 +23,6 @@ namespace net {
 
 namespace {
 
-// Captures Strict -> Lax context downgrade with Strict cookie
-bool IsBreakingStrictToLaxDowngrade(
-    CookieOptions::SameSiteCookieContext::ContextType context,
-    CookieOptions::SameSiteCookieContext::ContextType schemeful_context,
-    CookieEffectiveSameSite effective_same_site,
-    bool is_cookie_being_set) {
-  if (context ==
-          CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_STRICT &&
-      schemeful_context ==
-          CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_LAX &&
-      effective_same_site == CookieEffectiveSameSite::STRICT_MODE) {
-    // This downgrade only applies when a SameSite=Strict cookie is being sent.
-    // A Strict -> Lax downgrade will not affect a Strict cookie which is being
-    // set because it will be set in either context.
-    return !is_cookie_being_set;
-  }
-
-  return false;
-}
-
-// Captures Strict -> Cross-site context downgrade with {Strict, Lax} cookie
-// Captures Strict -> Lax Unsafe context downgrade with {Strict, Lax} cookie.
-// This is treated as a cross-site downgrade due to the Lax Unsafe context
-// behaving like cross-site.
-bool IsBreakingStrictToCrossDowngrade(
-    CookieOptions::SameSiteCookieContext::ContextType context,
-    CookieOptions::SameSiteCookieContext::ContextType schemeful_context,
-    CookieEffectiveSameSite effective_same_site) {
-  bool breaking_schemeful_context =
-      schemeful_context ==
-          CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE ||
-      schemeful_context == CookieOptions::SameSiteCookieContext::ContextType::
-                               SAME_SITE_LAX_METHOD_UNSAFE;
-
-  bool strict_lax_enforcement =
-      effective_same_site == CookieEffectiveSameSite::STRICT_MODE ||
-      effective_same_site == CookieEffectiveSameSite::LAX_MODE ||
-      // Treat LAX_MODE_ALLOW_UNSAFE the same as LAX_MODE for the purposes of
-      // our SameSite enforcement check.
-      effective_same_site == CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE;
-
-  if (context ==
-          CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_STRICT &&
-      breaking_schemeful_context && strict_lax_enforcement) {
-    return true;
-  }
-
-  return false;
-}
-
-// Captures Lax -> Cross context downgrade with {Strict, Lax} cookies.
-// Ignores Lax Unsafe context.
-bool IsBreakingLaxToCrossDowngrade(
-    CookieOptions::SameSiteCookieContext::ContextType context,
-    CookieOptions::SameSiteCookieContext::ContextType schemeful_context,
-    CookieEffectiveSameSite effective_same_site,
-    bool is_cookie_being_set) {
-  bool lax_enforcement =
-      effective_same_site == CookieEffectiveSameSite::LAX_MODE ||
-      // Treat LAX_MODE_ALLOW_UNSAFE the same as LAX_MODE for the purposes of
-      // our SameSite enforcement check.
-      effective_same_site == CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE;
-
-  if (context ==
-          CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_LAX &&
-      schemeful_context ==
-          CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE) {
-    // For SameSite=Strict cookies this downgrade only applies when it is being
-    // set. A Lax -> Cross downgrade will not affect a Strict cookie which is
-    // being sent because it wouldn't be sent in either context.
-    return effective_same_site == CookieEffectiveSameSite::STRICT_MODE
-               ? is_cookie_being_set
-               : lax_enforcement;
-  }
-
-  return false;
-}
-
 void ApplySameSiteCookieWarningToStatus(
     CookieSameSite samesite,
     CookieEffectiveSameSite effective_samesite,
@@ -129,43 +51,6 @@ void ApplySameSiteCookieWarningToStatus(
   if (samesite == CookieSameSite::NO_RESTRICTION && !is_secure) {
     status->AddWarningReason(
         CookieInclusionStatus::WarningReason::WARN_SAMESITE_NONE_INSECURE);
-  }
-
-  // Add a warning if the cookie would be accessible in
-  // |same_site_context|::context but not in
-  // |same_site_context|::schemeful_context.
-  if (IsBreakingStrictToLaxDowngrade(same_site_context.context(),
-                                     same_site_context.schemeful_context(),
-                                     effective_samesite, is_cookie_being_set)) {
-    status->AddWarningReason(CookieInclusionStatus::WarningReason::
-                                 WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE);
-  } else if (IsBreakingStrictToCrossDowngrade(
-                 same_site_context.context(),
-                 same_site_context.schemeful_context(), effective_samesite)) {
-    // Which warning to apply depends on the SameSite value.
-    if (effective_samesite == CookieEffectiveSameSite::STRICT_MODE) {
-      status->AddWarningReason(CookieInclusionStatus::WarningReason::
-                                   WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE);
-    } else {
-      // LAX_MODE or LAX_MODE_ALLOW_UNSAFE.
-      status->AddWarningReason(CookieInclusionStatus::WarningReason::
-                                   WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE);
-    }
-
-  } else if (IsBreakingLaxToCrossDowngrade(
-                 same_site_context.context(),
-                 same_site_context.schemeful_context(), effective_samesite,
-                 is_cookie_being_set)) {
-    // Which warning to apply depends on the SameSite value.
-    if (effective_samesite == CookieEffectiveSameSite::STRICT_MODE) {
-      status->AddWarningReason(CookieInclusionStatus::WarningReason::
-                                   WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE);
-    } else {
-      // LAX_MODE or LAX_MODE_ALLOW_UNSAFE.
-      // This warning applies to both set/send.
-      status->AddWarningReason(CookieInclusionStatus::WarningReason::
-                                   WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE);
-    }
   }
 
   // Apply warning for whether inclusion was changed by considering redirects

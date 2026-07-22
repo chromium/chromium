@@ -47,7 +47,7 @@ Javascript initiated navigation blocked cookies: [
 Javascript initiated subresource blocked cookies: [
     [0] : {
         blockedReasons : [
-            [0] : SameSiteLax
+            [0] : SchemefulSameSiteLax
         ]
         cookie : {
             domain : cookie.test

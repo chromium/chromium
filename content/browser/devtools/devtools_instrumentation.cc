@@ -2160,33 +2160,6 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
                                    WarnSameSiteUnspecifiedLaxAllowUnsafe);
   }
 
-  // There can only be one of the following warnings.
-  if (status.HasWarningReason(net::CookieInclusionStatus::WarningReason::
-                                  WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE)) {
-    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
-                                   WarnSameSiteStrictLaxDowngradeStrict);
-  } else if (status.HasWarningReason(
-                 net::CookieInclusionStatus::WarningReason::
-                     WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE)) {
-    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
-                                   WarnSameSiteStrictCrossDowngradeStrict);
-  } else if (status.HasWarningReason(
-                 net::CookieInclusionStatus::WarningReason::
-                     WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE)) {
-    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
-                                   WarnSameSiteStrictCrossDowngradeLax);
-  } else if (status.HasWarningReason(
-                 net::CookieInclusionStatus::WarningReason::
-                     WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE)) {
-    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
-                                   WarnSameSiteLaxCrossDowngradeStrict);
-  } else if (status.HasWarningReason(
-                 net::CookieInclusionStatus::WarningReason::
-                     WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE)) {
-    warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
-                                   WarnSameSiteLaxCrossDowngradeLax);
-  }
-
   if (status.HasWarningReason(
           net::CookieInclusionStatus::WarningReason::WARN_DOMAIN_NON_ASCII)) {
     warning_reasons->push_back(
