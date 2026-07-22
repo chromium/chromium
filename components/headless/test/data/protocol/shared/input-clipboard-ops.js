@@ -5,11 +5,11 @@
 (async function(testRunner) {
   const html = `<!doctype html>
     <html><body>
-    <input type="text" id="input" value="input_value" autofocus>
+    <input type="text" id="input" value="input_value">
     </body></html>
   `;
 
-  const {page, session, dp} = await testRunner.startHTML(
+  const {session, dp} = await testRunner.startHTML(
       html, `Tests input field clipboard operations.`);
 
   async function logElementValue(id) {
@@ -19,40 +19,41 @@
     testRunner.log(`${id}: ${value}`);
   }
 
-  async function sendKey(text, nativeVirtualKeyCode,
-      modifiers = 0, commands = []) {
+  async function sendKey(
+      text, nativeVirtualKeyCode, modifiers = 0, commands = []) {
     await dp.Input.dispatchKeyEvent({
       type: 'keyDown',
       modifiers: modifiers,
       text: text,
-      nativeVirtualKeyCode: nativeVirtualKeyCode,
-      commands: commands
+      nativeVirtualKeyCode,
+      commands: commands,
     });
 
-    await dp.Input.dispatchKeyEvent({
-      type: 'keyUp',
-      modifiers: modifiers,
-      nativeVirtualKeyCode: nativeVirtualKeyCode
-    });
+    await dp.Input.dispatchKeyEvent(
+        {type: 'keyUp', modifiers: modifiers, nativeVirtualKeyCode});
   }
+
+  await dp.Browser.grantPermissions({permissions: ['clipboardReadWrite']});
 
   const modControl = 2;
   const modCommand = 4;
   const mod = navigator.platform.includes('Mac') ? modCommand : modControl;
 
-  await logElementValue("input");
+  await session.evaluate(() => document.getElementById('input').focus());
+
+  await logElementValue('input');
   await sendKey('a', 65, mod, ['selectAll']);
   await sendKey('c', 67, mod, ['copy']);
 
-  await sendKey('1', 61);
-  await sendKey('2', 62);
-  await sendKey('3', 63);
-  await logElementValue("input");
+  await sendKey('1', 49);
+  await sendKey('2', 50);
+  await sendKey('3', 51);
+  await logElementValue('input');
 
   // Don't send Ctrl+A here because this would cause clipboard copy on
   // systems that support selection clipboard, e.g. Linux.
   await sendKey('v', 86, mod, ['paste']);
-  await logElementValue("input");
+  await logElementValue('input');
 
   testRunner.completeTest();
-})
+});
