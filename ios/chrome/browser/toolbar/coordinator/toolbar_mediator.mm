@@ -187,10 +187,10 @@
       setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)
              animated:animated];
 
-  const GURL visibleURL = webState->GetVisibleURL();
-  [self.consumer setShareEnabled:!visibleURL.is_empty()];
-
   BOOL isNtp = IsVisibleURLNewTabPage(webState);
+  const GURL visibleURL = webState->GetVisibleURL();
+  [self.consumer setShareEnabled:!visibleURL.is_empty() && !isNtp];
+
   BOOL isStartSurface = NO;
   if (isNtp) {
     NewTabPageTabHelper* NTPHelper =
