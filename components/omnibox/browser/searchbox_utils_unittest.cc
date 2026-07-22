@@ -179,4 +179,25 @@ TEST_F(SearchboxUtilsTest, FocusChanged) {
                                       1);
 }
 
+TEST_F(SearchboxUtilsTest, GenerateDotComMatch) {
+  AutocompleteInput original_input(u"example", 7,
+                                   metrics::OmniboxEventProto::NTP,
+                                   client_.GetSchemeClassifier());
+  original_input.set_prevent_inline_autocomplete(true);
+  original_input.set_allow_exact_keyword_match(true);
+
+  AutocompleteInput generated_input;
+  AutocompleteMatch match =
+      GenerateDotComMatch(&client_, &autocomplete_controller_, original_input,
+                          u"example", &generated_input);
+
+  EXPECT_EQ(u"example", generated_input.text());
+  EXPECT_TRUE(generated_input.prevent_inline_autocomplete());
+  EXPECT_TRUE(generated_input.allow_exact_keyword_match());
+
+  EXPECT_EQ(AutocompleteMatchType::URL_WHAT_YOU_TYPED, match.type);
+  EXPECT_TRUE(match.destination_url.is_valid());
+  EXPECT_EQ(GURL("http://www.example.com/"), match.destination_url);
+}
+
 }  // namespace searchbox
