@@ -213,7 +213,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 activity.getWindowAndroid(),
                 tabModelInitializer,
                 cipherFactory,
-                lifecycleDispatcher);
+                lifecycleDispatcher,
+                null);
     }
 
     public CustomTabActivityNavigationController createNavigationController(

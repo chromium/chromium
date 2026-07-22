@@ -164,6 +164,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private CustomTabStatusBarColorProvider mStatusBarColorProvider;
     private CustomTabActivityTabFactory mTabFactory;
     private CustomTabIntentHandler mCustomTabIntentHandler;
+    private @Nullable CustomTabResumeManager mResumeManager;
     private CustomTabNightModeStateController mNightModeStateController;
     private @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     private @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
@@ -613,9 +614,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getLifecycleDispatcher(), mIntentDataProvider, getSavedInstanceState());
 
         // Hidden tabs shouldn't be used in incognito/ephemeral CCT, since they are always
-        // created with regular profile.
+        // created with regular profile. Also restrict usage if restoring a tab state.
+        mResumeManager = maybeCreateResumeManager();
+        boolean shouldRestore = mResumeManager != null && mResumeManager.isTabResumptionRequested();
         HiddenTab hiddenTab =
-                mIntentDataProvider.isOffTheRecord()
+                (mIntentDataProvider.isOffTheRecord() || shouldRestore)
                         ? null
                         : CustomTabActivityTabController.takeHiddenTab(mIntentDataProvider);
 
@@ -721,7 +724,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getWindowAndroid(),
                         this,
                         getCipherFactory(),
-                        getLifecycleDispatcher());
+                        getLifecycleDispatcher(),
+                        mResumeManager);
 
         getCustomTabActivityTabFactory().setActivityType(getActivityType());
         // Finish reparenting as soon as possible as it may be blocking navigation.
@@ -888,6 +892,11 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
 
     @Override
     protected void onDestroyInternal() {
+        if (mResumeManager != null) {
+            mResumeManager.destroy();
+            mResumeManager = null;
+        }
+
         if (mCustomTabSessionHandler != null) {
             mCustomTabSessionHandler.onDestroy();
             mCustomTabSessionHandler = null;
@@ -1795,5 +1804,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
         }
 
         return null;
+    }
+
+    private @Nullable CustomTabResumeManager maybeCreateResumeManager() {
+        if (!ChromeFeatureList.sCctTabResumption.isEnabled()) return null;
+
+        if (!CustomTabResumeManager.shouldCreateTabResumeManager(mIntentDataProvider)) {
+            return null;
+        }
+
+        return new CustomTabResumeManager(mIntentDataProvider, getCipherFactory());
     }
 }

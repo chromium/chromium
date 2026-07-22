@@ -921,6 +921,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
     public static final CachedFlag sCctTabModalDialog = newCachedFlag(CCT_TAB_MODAL_DIALOG, true);
+    public static final CachedFlag sCctTabResumption = newCachedFlag(CCT_TAB_RESUMPTION, false);
     public static final CachedFlag sChromeItemPickerUi =
             newCachedFlag(CHROME_ITEM_PICKER_UI, /* defaultValue= */ true);
     public static final CachedFlag sChromeNativeUrlOverriding =
@@ -1342,6 +1343,7 @@ public abstract class ChromeFeatureList {
                     sCctResetTimeoutAllowed,
                     sCctResizableForThirdParties,
                     sCctTabModalDialog,
+                    sCctTabResumption,
                     sChromeItemPickerUi,
                     sChromeNativeUrlOverriding,
                     sClampAutomotiveScaling,

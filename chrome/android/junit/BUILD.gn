@@ -728,6 +728,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/customtabs/CustomTabNavigationEventObserverUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabNightModeStateControllerTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabObserverUnitTest.java",
+      "src/org/chromium/chrome/browser/customtabs/CustomTabResumeManagerUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabStatusBarColorProviderTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionUnitTest.java",
       "src/org/chromium/chrome/browser/customtabs/CustomTabsFilterTouchUnitTest.java",
@@ -772,6 +773,7 @@ if (is_android) {
     deps = [
       ":chrome_junit_tests_helper",
       "//chrome/android:chrome_java",
+      "//chrome/browser/tabpersistence:java",
       "//chrome/browser/ui/android/toolbar:adaptive_features_java",
       "//chrome/browser/ui/android/toolbar:optional_button_java",
     ]
