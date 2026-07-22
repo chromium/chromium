@@ -797,12 +797,6 @@
 // Returns the GREYMatcher for the button to open the overflow menu.
 + (id<GREYMatcher>)tabGridOverflowMenuButton;
 
-// Returns a matcher for the legacy edit button.
-+ (id<GREYMatcher>)tabGridEditButton;
-
-// Returns a matcher for the legacy edit menu button to close all tabs.
-+ (id<GREYMatcher>)tabGridEditMenuCloseAllButton;
-
 // Returns a matcher for the overflow menu button to close all tabs.
 + (id<GREYMatcher>)tabGridOverflowMenuCloseAllButton;
 

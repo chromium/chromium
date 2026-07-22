@@ -39,7 +39,6 @@ NSString* const kInactiveTabGridIdentifier = @"kInactiveTabGridIdentifier";
 NSString* const kInactiveTabGridCloseAllButtonIdentifier =
     @"kInactiveTabGridCloseAllButtonIdentifier";
 
-NSString* const kTabGridEditButtonIdentifier = @"kTabGridEditButtonIdentifier";
 NSString* const kTabGridEditCloseTabsButtonIdentifier =
     @"kTabGridEditCloseTabsButtonIdentifier";
 NSString* const kTabGridEditSelectAllButtonIdentifier =

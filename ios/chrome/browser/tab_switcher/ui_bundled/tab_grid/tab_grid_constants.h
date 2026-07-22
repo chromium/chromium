@@ -33,7 +33,6 @@ extern NSString* const kIncognitoTabGridIdentifier;
 extern NSString* const kInactiveTabGridIdentifier;
 extern NSString* const kInactiveTabGridCloseAllButtonIdentifier;
 
-extern NSString* const kTabGridEditButtonIdentifier;
 extern NSString* const kTabGridEditCloseTabsButtonIdentifier;
 extern NSString* const kTabGridEditSelectAllButtonIdentifier;
 extern NSString* const kTabGridEditAddToButtonIdentifier;

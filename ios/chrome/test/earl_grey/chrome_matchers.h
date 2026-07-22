@@ -829,12 +829,6 @@ id<GREYMatcher> SettingsActionButton();
 // Returns a matcher for the tab grid overflow menu button.
 id<GREYMatcher> TabGridOverflowMenuButton();
 
-// Returns a matcher for the legacy edit button.
-id<GREYMatcher> TabGridEditButton();
-
-// Returns a matcher for the legacy edit menu button to close all tabs.
-id<GREYMatcher> TabGridEditMenuCloseAllButton();
-
 // Returns a matcher for the overflow menu button to close all tabs.
 id<GREYMatcher> TabGridOverflowMenuCloseAllButton();
 
