@@ -7438,11 +7438,6 @@
     "expiry_milestone": 300
   },
   {
-    "name": "omnibox-drs-prototype",
-    "owners": ["stkhapugin@chromium.org", "christianxu@chromium.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "omnibox-dynamic-ai-mode-button",
     "owners": [ "caitc@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 160

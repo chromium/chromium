@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_coordinator.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/omnibox/ui/omnibox_drs_view_controller.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
@@ -132,9 +131,6 @@ inline LayoutStateToolbarPassKey PassKey() {
 @property(nonatomic, strong) OmniboxFocusOrchestrator* orchestrator;
 /// Whether the omnibox is currently focused.
 @property(nonatomic, assign) BOOL locationBarFocused;
-/// Dynamic response system view controller is an omnibox presenter. Only
-/// defined  when kOmniboxDRSPrototype is set.
-@property(nonatomic, strong) OmniboxDRSViewController* drsViewController;
 
 @end
 
@@ -217,13 +213,6 @@ inline LayoutStateToolbarPassKey PassKey() {
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self
                      forProtocol:@protocol(GuidedTourCommands)];
-  }
-
-  if (base::FeatureList::IsEnabled(kOmniboxDRSPrototype)) {
-    self.drsViewController = [[OmniboxDRSViewController alloc] init];
-    self.drsViewController.proxiedPresenterDelegate =
-        self.popupPresenterDelegate;
-    self.popupPresenterDelegate = self.drsViewController;
   }
 
   self.legacyToolbarMediator = [[LegacyToolbarMediator alloc]
@@ -518,21 +507,11 @@ inline LayoutStateToolbarPassKey PassKey() {
       (_steadyStateOmniboxPosition == ToolbarType::kPrimary);
 
   BOOL toolbarExpanded = focused && !CanShowTabStrip(self.traitEnvironment);
-  if (base::FeatureList::IsEnabled(kOmniboxDRSPrototype) && focused) {
-    [self.baseViewController presentViewController:self.drsViewController
-                                          animated:YES
-                                        completion:nil];
-
-    return;
-
-  } else {
-    [self.orchestrator
-        transitionToStateOmniboxFocused:focused
-                        toolbarExpanded:toolbarExpanded
-                                trigger:[self omniboxFocusTrigger]
-                               animated:animateTransition
-                             completion:completion];
-  }
+  [self.orchestrator transitionToStateOmniboxFocused:focused
+                                     toolbarExpanded:toolbarExpanded
+                                             trigger:[self omniboxFocusTrigger]
+                                            animated:animateTransition
+                                          completion:completion];
 
   [self.primaryToolbarCoordinator.viewController setLocationBarFocused:focused];
   [self.secondaryToolbarCoordinator.viewController

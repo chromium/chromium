@@ -54,8 +54,6 @@ source_set("omnibox_internal") {
     "omnibox_consumer.h",
     "omnibox_container_view.h",
     "omnibox_container_view.mm",
-    "omnibox_drs_view_controller.h",
-    "omnibox_drs_view_controller.mm",
     "omnibox_mutator.h",
     "omnibox_text_field_ios.mm",
     "omnibox_text_field_paste_delegate.h",

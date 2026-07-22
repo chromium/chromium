@@ -96,10 +96,6 @@ BASE_DECLARE_FEATURE(kLensSearchHeadersCheckEnabled);
 // Variations of Composebox.
 extern const char kComposeboxParam[];
 extern const char kComposeboxParamAllOmniboxEntrypoints[];
-
-// Feature for the DRS prototype.
-BASE_DECLARE_FEATURE(kOmniboxDRSPrototype);
-
 // Feature flag to enable UITraitCollection workaround for fixing incorrect
 // trait propagation.
 BASE_DECLARE_FEATURE(kEnableTraitCollectionWorkAround);

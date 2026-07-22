@@ -1462,11 +1462,6 @@ inline constexpr char kOmniboxCrashFixKillSwitchName[] =
 inline constexpr char kOmniboxCrashFixKillSwitchDescription[] =
     "Enables the OmniboxCrashFixKillSwitch feature.";
 
-inline constexpr char kOmniboxDRSPrototypeName[] =
-    "Enable the Omnibox DRS prototype";
-inline constexpr char kOmniboxDRSPrototypeDescription[] =
-    "Enables the omnibox dynamic response system prototype";
-
 inline constexpr char kOmniboxGroupingFrameworkForTypedSuggestionsName[] =
     "Omnibox Grouping Framework for Typed Suggestions";
 inline constexpr char
