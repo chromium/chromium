@@ -150,7 +150,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8Document_HasPrivateToken_Method,
           WebFeature::kV8HTMLVideoElement_RequestVideoFrameCallback_Method,
           WebFeature::kV8HTMLVideoElement_CancelVideoFrameCallback_Method,
-          WebFeature::kSchemefulSameSiteContextDowngrade,
           WebFeature::kIdleDetectionStart,
           WebFeature::kPerformanceObserverEntryTypesAndBuffered,
           WebFeature::kStorageAccessAPI_HasStorageAccess_Method,

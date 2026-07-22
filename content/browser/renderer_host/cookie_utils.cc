@@ -180,37 +180,6 @@ void RecordRedirectContextDowngradeUKM(RenderFrameHost* rfh,
   }
 }
 
-void RecordSchemefulContextDowngradeUKM(
-    RenderFrameHost* rfh,
-    CookieAccessDetails::Type access_type,
-    const net::CookieInclusionStatus& status,
-    const GURL& url) {
-  CHECK(rfh);
-
-  // Our data collection policy disallows collecting UKMs while prerendering.
-  // See //content/browser/preloading/prerender/README.md and ask the team to
-  // explore options to record data for prerendering pages if we need to
-  // support the case.
-  if (rfh->IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering)) {
-    return;
-  }
-
-  ukm::SourceId source_id = rfh->GetPageUkmSourceId();
-
-  auto downgrade_metric =
-      static_cast<int64_t>(status.GetBreakingDowngradeMetricsEnumValue(url));
-  if (access_type == CookieAccessDetails::Type::kRead) {
-    ukm::builders::SchemefulSameSiteContextDowngrade(source_id)
-        .SetRequestPerCookie(downgrade_metric)
-        .Record(ukm::UkmRecorder::Get());
-  } else {
-    CHECK(access_type == CookieAccessDetails::Type::kChange);
-    ukm::builders::SchemefulSameSiteContextDowngrade(source_id)
-        .SetResponsePerCookie(downgrade_metric)
-        .Record(ukm::UkmRecorder::Get());
-  }
-}
-
 bool ShouldReportDevToolsIssueForStatus(
     const net::CookieInclusionStatus& status) {
   return status.ShouldWarn() ||
@@ -313,7 +282,6 @@ void EmitCookieWarningsAndMetrics(
 
   bool samesite_treated_as_lax_cookies = false;
   bool samesite_none_insecure_cookies = false;
-  bool breaking_context_downgrade = false;
   bool lax_allow_unsafe_cookies = false;
 
   bool samesite_cookie_inclusion_changed_by_cross_site_redirect = false;
@@ -421,18 +389,6 @@ void EmitCookieWarningsAndMetrics(
       cookies_exempted_by_top_level_storage_access++;
     }
 
-    breaking_context_downgrade =
-        breaking_context_downgrade ||
-        cookie->access_result.status.HasSchemefulDowngradeWarning();
-
-    if (cookie->access_result.status.HasSchemefulDowngradeWarning()) {
-      // Unlike with UMA, do not record cookies that have no schemeful downgrade
-      // warning.
-      RecordSchemefulContextDowngradeUKM(rfh, cookie_details->type,
-                                         cookie->access_result.status,
-                                         cookie_details->url);
-    }
-
     if (status.HasWarningReason(
             net::CookieInclusionStatus::WarningReason::
                 WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION) &&
@@ -490,11 +446,6 @@ void EmitCookieWarningsAndMetrics(
   if (samesite_none_insecure_cookies) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kCookieInsecureAndSameSiteNone);
-  }
-
-  if (breaking_context_downgrade) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kSchemefulSameSiteContextDowngrade);
   }
 
   if (lax_allow_unsafe_cookies) {

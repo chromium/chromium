@@ -233,34 +233,6 @@ class NET_EXPORT CookieInclusionStatus {
     MAX_WARNING_REASON = WARN_THIRD_PARTY_PHASEOUT
   };
 
-  // These enums encode the context downgrade warnings + the secureness of the
-  // url sending/setting the cookie. They're used for metrics only. The format
-  // is k{context}{schemeful_context}{samesite_value}{securness}.
-  // kNoDowngrade{securness} indicates that a cookie didn't have a breaking
-  // context downgrade and was A) included B) excluded only due to insufficient
-  // same-site context. I.e. the cookie wasn't excluded due to other reasons
-  // such as third-party cookie blocking. Keep this in line with
-  // SameSiteCookieContextBreakingDowngradeWithSecureness in enums.xml.
-  enum class ContextDowngradeMetricValues {
-    kNoDowngradeInsecure = 0,
-    kNoDowngradeSecure = 1,
-
-    kStrictLaxStrictInsecure = 2,
-    kStrictCrossStrictInsecure = 3,
-    kStrictCrossLaxInsecure = 4,
-    kLaxCrossStrictInsecure = 5,
-    kLaxCrossLaxInsecure = 6,
-
-    kStrictLaxStrictSecure = 7,
-    kStrictCrossStrictSecure = 8,
-    kStrictCrossLaxSecure = 9,
-    kLaxCrossStrictSecure = 10,
-    kLaxCrossLaxSecure = 11,
-
-    // Keep last.
-    kMaxValue = kLaxCrossLaxSecure
-  };
-
   // Types of reasons why a cookie should-have-been-blocked by 3pcd got
   // exempted and included.
   enum class ExemptionReason {
@@ -376,9 +348,6 @@ class NET_EXPORT CookieInclusionStatus {
   ExclusionReasonBitset exclusion_reasons() const { return exclusion_reasons_; }
 
   WarningReasonBitset warning_reasons() const { return warning_reasons_; }
-
-  ContextDowngradeMetricValues GetBreakingDowngradeMetricsEnumValue(
-      const GURL& url) const;
 
   // Get exclusion reason(s) and warning in string format.
   std::string GetDebugString() const;

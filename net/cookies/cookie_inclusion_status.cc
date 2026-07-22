@@ -175,44 +175,6 @@ void CookieInclusionStatus::RemoveWarningReason(WarningReason reason) {
   warning_reasons_.Remove(reason);
 }
 
-CookieInclusionStatus::ContextDowngradeMetricValues
-CookieInclusionStatus::GetBreakingDowngradeMetricsEnumValue(
-    const GURL& url) const {
-  bool url_is_secure = url.SchemeIsCryptographic();
-
-  // Start the |reason| as something other than the downgrade warnings.
-  WarningReason reason = WarningReason::MAX_WARNING_REASON;
-
-  // Don't bother checking the return value because the default switch case
-  // will handle if no reason was found.
-  HasSchemefulDowngradeWarning(&reason);
-
-  switch (reason) {
-    case WarningReason::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE:
-      return url_is_secure
-                 ? ContextDowngradeMetricValues::kStrictLaxStrictSecure
-                 : ContextDowngradeMetricValues::kStrictLaxStrictInsecure;
-    case WarningReason::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE:
-      return url_is_secure
-                 ? ContextDowngradeMetricValues::kStrictCrossStrictSecure
-                 : ContextDowngradeMetricValues::kStrictCrossStrictInsecure;
-    case WarningReason::WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE:
-      return url_is_secure
-                 ? ContextDowngradeMetricValues::kStrictCrossLaxSecure
-                 : ContextDowngradeMetricValues::kStrictCrossLaxInsecure;
-    case WarningReason::WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE:
-      return url_is_secure
-                 ? ContextDowngradeMetricValues::kLaxCrossStrictSecure
-                 : ContextDowngradeMetricValues::kLaxCrossStrictInsecure;
-    case WarningReason::WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE:
-      return url_is_secure ? ContextDowngradeMetricValues::kLaxCrossLaxSecure
-                           : ContextDowngradeMetricValues::kLaxCrossLaxInsecure;
-    default:
-      return url_is_secure ? ContextDowngradeMetricValues::kNoDowngradeSecure
-                           : ContextDowngradeMetricValues::kNoDowngradeInsecure;
-  }
-}
-
 std::string CookieInclusionStatus::GetDebugString() const {
   std::string out;
 

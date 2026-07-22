@@ -24848,37 +24848,6 @@ Called by update_net_error_codes.py.-->
       label="Strictly same-site secure site-for-cookies to insecure request"/>
 </enum>
 
-<enum name="SameSiteCookieContextBreakingDowngradeWithSecureness">
-  <summary>
-    Used to track the type of same-site context downgrade as well as the
-    secureness of the origin that caused it.
-
-    &quot;No breaking downgrade&quot; is a catch-all bucket for any cases which
-    don't fit into the other buckets.
-  </summary>
-  <int value="0" label="No breaking downgrade; insecure origin"/>
-  <int value="1" label="No breaking downgrade; secure origin"/>
-  <int value="2"
-      label="Strict to Lax context with Strict cookie; insecure origin."/>
-  <int value="3"
-      label="Strict to Cross context with Strict cookie; insecure origin."/>
-  <int value="4"
-      label="Strict to Cross context with Lax cookie; insecure origin."/>
-  <int value="5"
-      label="Lax to Cross context with Strict cookie; insecure origin."/>
-  <int value="6"
-      label="Lax to Cross context with Lax cookie; insecure origin."/>
-  <int value="7"
-      label="Strict to Lax context with Strict cookie; secure origin."/>
-  <int value="8"
-      label="Strict to Cross context with Strict cookie; secure origin."/>
-  <int value="9"
-      label="Strict to Cross context with Lax cookie; secure origin."/>
-  <int value="10"
-      label="Lax to Cross context with Strict cookie; secure origin."/>
-  <int value="11" label="Lax to Cross context with Lax cookie; secure origin."/>
-</enum>
-
 <enum name="SameSiteCookieValue">
   <summary>
     The possible values of SameSite a cookie's SameSite attribute.

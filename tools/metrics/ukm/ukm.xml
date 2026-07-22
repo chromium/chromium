@@ -21689,32 +21689,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="SchemefulSameSiteContextDowngrade">
-  <owner>bingler@chromium.org</owner>
-  <metric name="RequestPerCookie"
-      enum="SameSiteCookieContextBreakingDowngradeWithSecureness">
-    <summary>
-      An enum which records the type of schemeful same-site downgrade applied to
-      a cookie which is being sent on a request along with the secureness of the
-      origin the cookie is attempting to be sent to. This is recorded once per
-      cookie when the cookie is included in the request or if the cookie
-      excluded due to insufficient same-site context only. Cookies that meet the
-      above conditions but without a downgrade warning are not recorded.
-    </summary>
-  </metric>
-  <metric name="ResponsePerCookie"
-      enum="SameSiteCookieContextBreakingDowngradeWithSecureness">
-    <summary>
-      An enum which records the type of schemeful same-site downgrade applied to
-      a cookie which is being set by a response along with the secureness of the
-      origin that is attempting to set the cookie. This is recorded once per
-      cookie when the cookie is allowed to be set or if the cookie is ignored
-      due to insufficient same-site context only. Cookies that meet the above
-      conditions but without a downgrade warning are not recorded.
-    </summary>
-  </metric>
-</event>
-
 <event name="ScreenBrightness">
   <owner>pdyson@chromium.org</owner>
   <summary>
