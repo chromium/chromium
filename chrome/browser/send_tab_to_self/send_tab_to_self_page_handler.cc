@@ -158,7 +158,7 @@ void SendTabToSelfPageHandler::RequestScrollPositionSelectorAndSendRequest(
     base::Token request_token,
     PendingRequest request) {
   content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
-  if (!main_frame) {
+  if (!main_frame || !main_frame->IsRenderFrameLive()) {
     SendFinalizedRequest(
         std::move(request),
         ScrollPositionGenerationOutcome::kMainFrameUnavailable);
