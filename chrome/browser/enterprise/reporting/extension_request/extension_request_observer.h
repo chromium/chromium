@@ -8,6 +8,7 @@
 #include <array>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_notification.h"
 #include "chrome/browser/extensions/extension_management.h"
 
@@ -44,8 +45,10 @@ class ExtensionRequestObserver
   void ShowNotification(ExtensionRequestNotification::NotifyType type);
   void CloseAllNotifications();
 
+#if !BUILDFLAG(IS_ANDROID)
   void OnNotificationClosed(std::vector<std::string>&& extension_ids,
                             bool by_user);
+#endif
 
   void RemoveExtensionsFromPendingList(
       const std::vector<std::string>& extension_ids);

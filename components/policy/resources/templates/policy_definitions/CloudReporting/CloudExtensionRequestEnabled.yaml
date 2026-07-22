@@ -12,6 +12,8 @@ desc: |-
 
   This policy is only effective when the machine is enrolled with <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN">CloudManagementEnrollmentToken</ph> for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
   This policy is always effective for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+
+  Note: This policy only applies to platforms that support extensions.
 example_value: true
 features:
   cloud_only: true
@@ -19,6 +21,7 @@ features:
   per_profile: true
 future_on:
 - fuchsia
+- android
 items:
 - caption: Create and upload extension install requests to the Admin console
   value: true

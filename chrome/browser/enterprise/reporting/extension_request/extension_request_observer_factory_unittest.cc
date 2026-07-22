@@ -132,7 +132,7 @@ TEST_F(ExtensionRequestObserverFactoryTest,
   EXPECT_FALSE(factory_.GetObserverByProfileForTesting(guest_profile));
   EXPECT_EQ(0, factory_.GetNumberOfObserversForTesting());
 
-#if !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   TestingProfile* system_profile = profile_manager()->CreateSystemProfile();
   EXPECT_FALSE(factory_.GetObserverByProfileForTesting(system_profile));
   EXPECT_EQ(0, factory_.GetNumberOfObserversForTesting());

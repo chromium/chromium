@@ -113,11 +113,6 @@ source_set("enterprise") {
     public += [
       "data_protection/data_protection_ui_controller.h",
       "reporting/browser_report_generator_desktop.h",
-      "reporting/extension_request/extension_request_notification.h",
-      "reporting/extension_request/extension_request_observer.h",
-      "reporting/extension_request/extension_request_observer_factory.h",
-      "reporting/extension_request/extension_request_policy_handler.h",
-      "reporting/extension_request/extension_request_report_generator.h",
       "reporting/profile_report_generator_desktop.h",
       "reporting/real_time_report_controller_desktop.h",
       "reporting/real_time_report_generator_desktop.h",
@@ -396,8 +391,18 @@ source_set("enterprise") {
   }
 
   if (enable_extensions_core) {
-    public += [ "reporting/extension_info.h" ]
-    public_deps += [ "//extensions/common" ]
+    public += [
+      "reporting/extension_info.h",
+      "reporting/extension_request/extension_request_notification.h",
+      "reporting/extension_request/extension_request_observer.h",
+      "reporting/extension_request/extension_request_observer_factory.h",
+      "reporting/extension_request/extension_request_policy_handler.h",
+      "reporting/extension_request/extension_request_report_generator.h",
+    ]
+    public_deps += [
+      "//extensions/common",
+      "//ui/message_center/public/cpp",
+    ]
   }
 }
 
@@ -547,11 +552,6 @@ source_set("impl") {
     sources += [
       "data_protection/data_protection_ui_controller.cc",
       "reporting/browser_report_generator_desktop.cc",
-      "reporting/extension_request/extension_request_notification.cc",
-      "reporting/extension_request/extension_request_observer.cc",
-      "reporting/extension_request/extension_request_observer_factory.cc",
-      "reporting/extension_request/extension_request_policy_handler.cc",
-      "reporting/extension_request/extension_request_report_generator.cc",
       "reporting/profile_report_generator_desktop.cc",
       "reporting/real_time_report_controller_desktop.cc",
       "reporting/real_time_report_generator_desktop.cc",
@@ -886,9 +886,17 @@ source_set("impl") {
   }
 
   if (enable_extensions_core) {
-    sources += [ "reporting/extension_info.cc" ]
+    sources += [
+      "reporting/extension_info.cc",
+      "reporting/extension_request/extension_request_notification.cc",
+      "reporting/extension_request/extension_request_observer.cc",
+      "reporting/extension_request/extension_request_observer_factory.cc",
+      "reporting/extension_request/extension_request_policy_handler.cc",
+      "reporting/extension_request/extension_request_report_generator.cc",
+    ]
     deps += [
       "//chrome/browser/extensions",
+      "//components/vector_icons",
       "//extensions/browser",
     ]
   }

@@ -330,6 +330,20 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionBlockedByPermission) {
 }
 
 TEST_F(WebstorePrivateGetExtensionStatusTest,
+       ExtensionBlockedWithRequestEnabled) {
+  SetExtensionSettings(kBlockAllExtensionSettings, profile());
+  profile()->GetTestingPrefService()->SetManagedPref(
+      enterprise_reporting::kCloudExtensionRequestEnabled,
+      std::make_unique<base::Value>(true));
+
+  auto function =
+      base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
+  std::optional<base::Value> response = RunFunctionAndReturnValue(
+      function.get(), GenerateArgs(kExtensionId, kExtensionManifest));
+  VerifyResponse(ExtensionInstallStatus::kCanRequest, *response);
+}
+
+TEST_F(WebstorePrivateGetExtensionStatusTest,
        ExtensionNotBlockedByOptionalPermission) {
   SetExtensionSettings(kBlockedNotificationsPermissionsExtensionSettings,
                        profile());

@@ -18527,7 +18527,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
 
     <!-- Extension request -->
-    <if expr="not is_android">
+    <if expr="not is_android or enable_extensions_core">
       <message name="IDS_ENTERPRISE_EXTENSION_REQUEST_APPROVED_TITLE" desc="The notification title when there are some extension requests approved.">
         {NUM_EXTENSIONS, plural,
           =1 {An extension has been approved}

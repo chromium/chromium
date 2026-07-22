@@ -146,5 +146,11 @@
         }
       }
     ]
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "reason_for_missing_test": "Policy is currently only functional on Desktop Android (enable_extensions_core)."
   }
 ]

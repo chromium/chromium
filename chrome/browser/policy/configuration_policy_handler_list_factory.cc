@@ -162,7 +162,6 @@
 #include "chrome/browser/download/default_download_dir_policy_handler.h"
 #include "chrome/browser/download/download_auto_open_policy_handler.h"
 #include "chrome/browser/download/download_dir_policy_handler.h"
-#include "chrome/browser/enterprise/reporting/extension_request/extension_request_policy_handler.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/policy/battery_saver_policy_handler.h"
 #include "chrome/browser/policy/developer_tools_availability_list_policy_handler.h"
@@ -178,6 +177,10 @@
 #include "components/search_engines/enterprise/search_aggregator_policy_handler.h"
 #include "components/search_engines/enterprise/site_search_policy_handler.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_policy_handler.h"
+#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
@@ -2813,8 +2816,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<BrowsingDataLifetimePolicyHandler>(
       key::kClearBrowsingDataOnExitList,
       browsing_data::prefs::kClearBrowsingDataOnExitList, chrome_schema));
-  handlers->AddHandler(
-      std::make_unique<enterprise_reporting::ExtensionRequestPolicyHandler>());
   handlers->AddHandler(std::make_unique<CopyPreventionSettingsPolicyHandler>(
       key::kCopyPreventionSettings,
       enterprise::content::kCopyPreventionSettings, chrome_schema));
@@ -3505,6 +3506,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       extensions::pref_names::kExtensionUnpublishedAvailability,
       /*min=*/0, /*max=*/1, /*clamp=*/false));
   handlers->AddHandler(std::make_unique<ExtensionDeveloperModePolicyHandler>());
+  handlers->AddHandler(
+      std::make_unique<enterprise_reporting::ExtensionRequestPolicyHandler>());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(

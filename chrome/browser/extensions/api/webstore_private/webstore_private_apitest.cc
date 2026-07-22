@@ -33,7 +33,14 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#endif
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -1357,5 +1364,66 @@ IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
       prefs->GetInteger(enterprise_promotion::kEnterprisePromotionEligibility));
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+class WebstorePrivatePolicyTest : public ExtensionWebstorePrivateApiTest {
+ public:
+  WebstorePrivatePolicyTest() {
+#if !BUILDFLAG(IS_CHROMEOS)
+    browser_dm_token_storage_.SetClientId("client_id");
+    browser_dm_token_storage_.SetEnrollmentToken("enrollment_token");
+    browser_dm_token_storage_.SetDMToken("dm_token");
+    policy::BrowserDMTokenStorage::SetForTesting(&browser_dm_token_storage_);
+#endif
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ExtensionWebstorePrivateApiTest::SetUpInProcessBrowserTestFixture();
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+ protected:
+#if !BUILDFLAG(IS_CHROMEOS)
+  policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;
+#endif
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebstorePrivatePolicyTest, ExtensionRequestPolicy) {
+  // Block all extensions.
+  policy::PolicyMap policies;
+  base::ListValue blocklist;
+  blocklist.Append("*");
+  policies.Set(policy::key::kExtensionInstallBlocklist,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+               policy::POLICY_SOURCE_CLOUD, base::Value(std::move(blocklist)),
+               nullptr);
+
+  // Enable extension request.
+  policies.Set(policy::key::kCloudExtensionRequestEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+
+  // Enable reporting.
+  policies.Set(policy::key::kCloudReportingEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+               policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+
+  provider_.UpdateChromePolicy(policies);
+
+  // Auto-confirm the request dialog.
+  ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
+
+  // Run the test.
+  ASSERT_TRUE(RunInstallTest("extension_request.html", "extension.crx"));
+
+  // Verify that the request was recorded in prefs.
+  const base::DictValue& pending_requests = profile()->GetPrefs()->GetDict(
+      enterprise_reporting::kCloudExtensionRequestIds);
+  EXPECT_EQ(1u, pending_requests.size());
+  EXPECT_TRUE(pending_requests.contains(kExtensionId));
+}
 
 }  // namespace extensions

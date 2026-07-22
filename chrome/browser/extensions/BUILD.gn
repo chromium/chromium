@@ -2526,6 +2526,7 @@ source_set("browser_tests") {
     "//components/bookmarks/managed",
     "//components/contextual_tasks/public:feature_list",
     "//components/embedder_support",
+    "//components/enterprise:test_support",
     "//components/enterprise/browser/promotion",
     "//components/infobars/content",
     "//components/javascript_dialogs",
