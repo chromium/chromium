@@ -171,41 +171,34 @@ public class AtMemoryBottomSheetViewTest {
     }
 
     @Test
-    public void testNoticeVisibleProperty() {
-        AtMemoryHomeView homeView = mView.getHomeView();
-        View noticeContainer = homeView.findViewById(R.id.notice_container);
-        assertNotNull(noticeContainer);
+    public void testNoticeItemViewBinding() {
+        View noticeView =
+                android.view.LayoutInflater.from(mContext)
+                        .inflate(R.layout.at_memory_bottom_sheet_notice_item, null);
 
+        Runnable okClicked = mock(Runnable.class);
+        Runnable settingsClicked = mock(Runnable.class);
         PropertyModel model =
-                new PropertyModel.Builder(HomeProperties.ALL_KEYS)
-                        .with(HomeProperties.IS_NOTICE_VISIBLE, true)
+                new PropertyModel.Builder(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties.ALL_KEYS)
+                        .with(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties.ON_OK_CLICKED,
+                                okClicked)
+                        .with(
+                                AtMemoryBottomSheetProperties.NoticeItemProperties
+                                        .ON_SETTINGS_CLICKED,
+                                settingsClicked)
                         .build();
+
         PropertyModelChangeProcessor.create(
-                model, homeView, AtMemoryBottomSheetViewBinder::bindAtMemoryHomeView);
+                model,
+                (AtMemoryBottomSheetNoticeView) noticeView,
+                AtMemoryBottomSheetViewBinder::bindNoticeItemView);
 
-        assertEquals(View.VISIBLE, noticeContainer.getVisibility());
-
-        model.set(HomeProperties.IS_NOTICE_VISIBLE, false);
-
-        assertEquals(View.GONE, noticeContainer.getVisibility());
-    }
-
-    @Test
-    public void testNoticeOkClickListenerProperty() {
-        AtMemoryHomeView homeView = mView.getHomeView();
-        View noticeOkButton = homeView.findViewById(R.id.notice_ok_button);
+        View noticeOkButton = noticeView.findViewById(R.id.notice_ok_button);
         assertNotNull(noticeOkButton);
-
-        Runnable clicked = mock(Runnable.class);
-        PropertyModel model =
-                new PropertyModel.Builder(HomeProperties.ALL_KEYS)
-                        .with(HomeProperties.NOTICE_OK_CLICK_LISTENER, clicked)
-                        .build();
-        PropertyModelChangeProcessor.create(
-                model, homeView, AtMemoryBottomSheetViewBinder::bindAtMemoryHomeView);
-
         noticeOkButton.performClick();
-        verify(clicked).run();
+        verify(okClicked).run();
     }
 
     @Test

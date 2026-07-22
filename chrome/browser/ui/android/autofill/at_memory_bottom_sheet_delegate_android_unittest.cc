@@ -74,7 +74,8 @@ TEST_F(AtMemoryBottomSheetDelegateAndroidTest,
   AtMemoryBottomSheetDelegateAndroid delegate(
       &client_, mock_suggestion_delegate_.GetWeakPtr(), suggestions);
 
-  EXPECT_CALL(mock_suggestion_delegate_, RemoveSuggestion(suggestions[1]));
+  EXPECT_CALL(mock_suggestion_delegate_, RemoveSuggestion(suggestions[1]))
+      .WillOnce(testing::Return(true));
   delegate.OnSuggestionDismissed(1);
 }
 

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetNoticeView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notice_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/at_memory_suggestions_bg"
+    android:backgroundTint="@macro/default_card_bg_color"
+    android:padding="16dp"
+    android:gravity="center_vertical">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginEnd="16dp">
+
+        <TextView
+            android:id="@+id/notice_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/at_memory_notice_title"
+            android:textAppearance=
+                "@style/TextAppearance.TextMediumThick.Primary" />
+
+        <org.chromium.ui.widget.TextViewWithClickableSpans
+            android:id="@+id/notice_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance=
+                "@style/TextAppearance.TextSmall.Secondary" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/notice_ok_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="@string/at_memory_notice_ok_button"
+        android:textAppearance=
+            "@style/TextAppearance.TextMediumThick.Accent1"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true" />
+</org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetNoticeView>

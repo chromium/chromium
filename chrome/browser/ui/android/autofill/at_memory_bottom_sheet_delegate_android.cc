@@ -70,8 +70,11 @@ void AtMemoryBottomSheetDelegateAndroid::OnSuggestionDismissed(int position) {
     return;
   }
 
-  if (delegate_) {
-    delegate_->RemoveSuggestion(suggestions_[position]);
+  if (delegate_ && delegate_->RemoveSuggestion(suggestions_[position])) {
+    suggestions_.erase(suggestions_.begin() + position);
+    if (client_) {
+      client_->ShowAtMemoryBottomSheet(suggestions_, delegate_);
+    }
   }
 }
 

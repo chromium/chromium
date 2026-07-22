@@ -89,8 +89,4 @@ public class AtMemoryBottomSheetView implements HomeProperties.SearchDelegate {
         assert false : "Undefined displayedChild: " + displayedChild;
         return ScreenId.HOME_SCREEN;
     }
-
-    public void setNoticeSettingsClickListener(Runnable onClick) {
-        mHomeView.setNoticeSettingsClickListener(onClick);
-    }
 }

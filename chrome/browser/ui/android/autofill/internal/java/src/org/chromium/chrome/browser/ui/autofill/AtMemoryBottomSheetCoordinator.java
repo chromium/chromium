@@ -69,7 +69,7 @@ public class AtMemoryBottomSheetCoordinator {
 
         AtMemoryBottomSheetView view = new AtMemoryBottomSheetView(context);
 
-        mMediator = new AtMemoryBottomSheetMediator(context, profile, delegate, view);
+        mMediator = new AtMemoryBottomSheetMediator(context, delegate, view);
 
         mContent = new AtMemoryBottomSheetContent(view, mBottomSheetController);
 

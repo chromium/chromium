@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
+import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.NoticeItemProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.SuggestionItemProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,15 +59,27 @@ class AtMemoryBottomSheetViewBinder {
                     model.get(HomeProperties.SHOW_SUGGESTIONS_BACKGROUND));
         } else if (propertyKey == HomeProperties.SHEET_ITEMS) {
             view.setUpSheetItems(model.get(HomeProperties.SHEET_ITEMS));
-        } else if (propertyKey == HomeProperties.IS_NOTICE_VISIBLE) {
-            view.setNoticeVisible(model.get(HomeProperties.IS_NOTICE_VISIBLE));
-        } else if (propertyKey == HomeProperties.NOTICE_OK_CLICK_LISTENER) {
-            view.setNoticeOkClickListener(model.get(HomeProperties.NOTICE_OK_CLICK_LISTENER));
-        } else if (propertyKey == HomeProperties.NOTICE_SETTINGS_CLICK_LISTENER) {
-            view.setNoticeSettingsClickListener(
-                    model.get(HomeProperties.NOTICE_SETTINGS_CLICK_LISTENER));
         } else {
             // Unhandled property.
+            assert false : "Unhandled property: " + propertyKey;
+        }
+    }
+
+    /**
+     * Called whenever the notice item property model changes. It updates the given view
+     * accordingly.
+     *
+     * @param model The model containing the notice item properties.
+     * @param view The view to update.
+     * @param propertyKey The property key that changed.
+     */
+    static void bindNoticeItemView(
+            PropertyModel model, AtMemoryBottomSheetNoticeView view, PropertyKey propertyKey) {
+        if (propertyKey == NoticeItemProperties.ON_OK_CLICKED) {
+            view.setOkClickListener(model.get(NoticeItemProperties.ON_OK_CLICKED));
+        } else if (propertyKey == NoticeItemProperties.ON_SETTINGS_CLICKED) {
+            view.setSettingsClickListener(model.get(NoticeItemProperties.ON_SETTINGS_CLICKED));
+        } else {
             assert false : "Unhandled property: " + propertyKey;
         }
     }

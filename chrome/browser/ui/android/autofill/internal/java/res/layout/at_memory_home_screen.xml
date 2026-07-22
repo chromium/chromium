@@ -16,55 +16,7 @@ found in the LICENSE file.
         android:id="@+id/search_query_input_container"
         layout="@layout/at_memory_search_bar" />
 
-    <!-- Notice component -->
-    <LinearLayout
-        android:id="@+id/notice_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/at_memory_suggestions_bg"
-        android:backgroundTint="@macro/default_card_bg_color"
-        android:padding="16dp"
-        android:gravity="center_vertical"
-        android:visibility="gone">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginEnd="16dp">
-
-            <TextView
-                android:id="@+id/notice_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/at_memory_notice_title"
-                android:textAppearance=
-                    "@style/TextAppearance.TextMediumThick.Primary" />
-
-            <org.chromium.ui.widget.TextViewWithClickableSpans
-                android:id="@+id/notice_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAppearance=
-                    "@style/TextAppearance.TextSmall.Secondary" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/notice_ok_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:text="@string/at_memory_notice_ok_button"
-            android:textAppearance=
-                "@style/TextAppearance.TextMediumThick.Accent1"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true" />
-    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
