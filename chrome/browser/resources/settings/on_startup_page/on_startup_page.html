@@ -4,10 +4,10 @@
     <div class="cr-row first">
       <settings-radio-group id="onStartupRadioGroup"
           class="flex"
-          pref="{{prefs.session.restore_on_startup}}"
+          pref-key="session.restore_on_startup"
           group-aria-label="$i18n{onStartup}">
         <controlled-radio-button name="[[getName_(prefValuesEnum_.OPEN_NEW_TAB)]]"
-            pref="[[prefs.session.restore_on_startup]]"
+            pref-key="session.restore_on_startup"
             label="$i18n{onStartupOpenNewTab}"
             no-extension-indicator>
         </controlled-radio-button>
@@ -19,31 +19,31 @@
           </extension-controlled-indicator>
         </template>
         <controlled-radio-button name="[[getName_(prefValuesEnum_.CONTINUE)]]"
-            pref="[[prefs.session.restore_on_startup]]"
+            pref-key="session.restore_on_startup"
             label="$i18n{onStartupContinue}">
         </controlled-radio-button>
         <controlled-radio-button name="[[getName_(prefValuesEnum_.OPEN_SPECIFIC)]]"
-            pref="[[prefs.session.restore_on_startup]]"
+            pref-key="session.restore_on_startup"
             label="$i18n{onStartupOpenSpecific}">
         </controlled-radio-button>
         <controlled-radio-button name="[[getName_(
           prefValuesEnum_.CONTINUE_AND_OPEN_SPECIFIC)]]"
-            pref="[[prefs.session.restore_on_startup]]"
+            pref-key="session.restore_on_startup"
             label="$i18n{onStartupContinueAndOpenSpecific}"
             hidden="[[!showContinueAndOpenSpecific_(
-              prefs.session.restore_on_startup)]]">
+              restoreOnStartupPref_)]]">
         </controlled-radio-button>
       </settings-radio-group>
     </div>
     <template is="dom-if"
-        if="[[showStartupUrls_(prefs.session.restore_on_startup.value)]]">
-      <settings-startup-urls-page prefs="[[prefs]]">
+        if="[[showStartupUrls_(restoreOnStartupPref_.value)]]">
+      <settings-startup-urls-page>
       </settings-startup-urls-page>
     </template>
  <if expr="is_win">
     <template is="dom-if" if="[[isForegroundLaunchFeatureEnabled_]]">
       <settings-toggle-button class="hr" id="foregroundLaunchOnStartup"
-          pref="{{prefs.launch_on_login.foreground.enabled}}"
+          pref-key="launch_on_login.foreground.enabled"
           label="$i18n{onStartupForegroundLaunchOnStartupLabel}"
           sub-label="$i18n{onStartupForegroundLaunchOnStartupSubLabel}">
       </settings-toggle-button>

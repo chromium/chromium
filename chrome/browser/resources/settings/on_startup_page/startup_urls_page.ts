@@ -15,7 +15,9 @@ import '../settings_shared.css.js';
 import './startup_url_dialog.js';
 import './startup_url_entry.js';
 
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -27,8 +29,8 @@ import type {StartupPageInfo, StartupUrlsPageBrowserProxy} from './startup_urls_
 import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
 
-const SettingsStartupUrlsPageElementBase =
-    ScrollableMixin(WebUiListenerMixin(PolymerElement));
+const SettingsStartupUrlsPageElementBase = PrefServiceObserverMixin(
+    ScrollableMixin(WebUiListenerMixin(PolymerElement)));
 
 export class SettingsStartupUrlsPageElement extends
     SettingsStartupUrlsPageElementBase {
@@ -42,7 +44,7 @@ export class SettingsStartupUrlsPageElement extends
 
   static get properties() {
     return {
-      prefs: Object,
+      startupUrlsPref_: Object,
 
       /**
        * Pages to load upon browser startup.
@@ -56,7 +58,8 @@ export class SettingsStartupUrlsPageElement extends
     };
   }
 
-  declare prefs: Object;
+  declare private startupUrlsPref_: chrome.settingsPrivate.PrefObject<string[]>|
+      undefined;
   declare private startupPages_: StartupPageInfo[];
   declare private showStartupUrlDialog_: boolean;
   declare private startupUrlDialogModel_: StartupPageInfo|null;
@@ -77,6 +80,8 @@ export class SettingsStartupUrlsPageElement extends
 
   override connectedCallback() {
     super.connectedCallback();
+
+    this.mirrorPref('session.startup_urls', 'startupUrlsPref_');
 
     this.addWebUiListener(
         'update-startup-pages', (startupPages: StartupPageInfo[]) => {
@@ -125,7 +130,8 @@ export class SettingsStartupUrlsPageElement extends
    * @return Whether "Add new page" and "Use current pages" are allowed.
    */
   private shouldAllowUrlsEdit_(): boolean {
-    return this.get('prefs.session.startup_urls.enforcement') !==
+    assert(this.startupUrlsPref_);
+    return this.startupUrlsPref_.enforcement !==
         chrome.settingsPrivate.Enforcement.ENFORCED;
   }
 }

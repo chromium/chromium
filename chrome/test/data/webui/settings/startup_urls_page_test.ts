@@ -9,10 +9,12 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsStartupUrlDialogElement,SettingsStartupUrlEntryElement, SettingsStartupUrlsPageElement, StartupUrlsPageBrowserProxy} from 'chrome://settings/settings.js';
-import {EDIT_STARTUP_URL_EVENT, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {EDIT_STARTUP_URL_EVENT, PrefsBrowserProxy, PrefService, StartupUrlsPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -202,22 +204,33 @@ suite('StartupUrlDialog', function() {
 suite('StartupUrlsPage', function() {
   let page: SettingsStartupUrlsPageElement;
   let browserProxy: TestStartupUrlsPageBrowserProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
 
-  setup(function() {
+  function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+    return [
+      {
+        key: 'session.startup_urls',
+        type: chrome.settingsPrivate.PrefType.LIST,
+        value: [],
+      },
+    ];
+  }
+
+  setup(async function() {
     browserProxy = new TestStartupUrlsPageBrowserProxy();
     StartupUrlsPageBrowserProxyImpl.setInstance(browserProxy);
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     page = document.createElement('settings-startup-urls-page');
-    page.prefs = {
-      session: {
-        restore_on_startup: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: 5,
-        },
-      },
-    };
     document.body.appendChild(page);
-    flush();
+    await microtasksFinished();
   });
 
   teardown(function() {
@@ -292,22 +305,23 @@ suite('StartupUrlsPage', function() {
         !!page.shadowRoot!.querySelector('settings-startup-url-dialog'));
   });
 
-  test('StartupPages_WhenExtensionControlled', function() {
-    assertFalse(!!page.get('prefs.session.startup_urls.controlledBy'));
+  test('StartupPages_WhenExtensionControlled', async function() {
+    assertFalse(!!prefService.getPref('session.startup_urls').controlledBy);
     assertFalse(
         !!page.shadowRoot!.querySelector('extension-controlled-indicator'));
     assertTrue(!!page.shadowRoot!.querySelector('#addPage'));
     assertTrue(!!page.shadowRoot!.querySelector('#useCurrentPages'));
 
-    page.set('prefs.session.startup_urls', {
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'session.startup_urls',
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       controlledByName: 'Totally Real Extension',
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       extensionId: 'mefmhpjnkplhdhmfmblilkgpkbjebmij',
-      type: chrome.settingsPrivate.PrefType.NUMBER,
-      value: 5,
-    });
-    flush();
+      type: chrome.settingsPrivate.PrefType.LIST,
+      value: [],
+    }]);
+    await microtasksFinished();
 
     assertTrue(
         !!page.shadowRoot!.querySelector('extension-controlled-indicator'));

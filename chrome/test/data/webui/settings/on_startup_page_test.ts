@@ -4,15 +4,18 @@
 
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {NtpExtension, OnStartupBrowserProxy, SettingsOnStartupPageElement} from 'chrome://settings/settings.js';
-import {OnStartupBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {OnStartupBrowserProxyImpl, PrefsBrowserProxy, PrefService, PrefValues} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // <if expr="is_win">
 import {loadTimeData} from 'chrome://settings/settings.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+
 // </if>
+
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -38,48 +41,50 @@ class TestOnStartupBrowserProxy extends TestBrowserProxy implements
   }
 }
 
+function getInitialPrefs(): chrome.settingsPrivate.PrefObject[] {
+  return [
+    // <if expr="is_win">
+    {
+      key: 'launch_on_login.foreground.enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+    // </if>
+    {
+      key: 'session.restore_on_startup',
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: PrefValues.OPEN_NEW_TAB,
+    },
+    {
+      key: 'session.startup_urls',
+      type: chrome.settingsPrivate.PrefType.LIST,
+      value: [],
+    },
+  ];
+}
+
 /** @fileoverview Suite of tests for on_startup_page. */
 suite('OnStartupPage', function() {
-  /**
-   * Radio button enum values for restore on startup.
-   * @enum
-   */
-  const RestoreOnStartupEnum = {
-    CONTINUE: 1,
-    OPEN_NEW_TAB: 5,
-    OPEN_SPECIFIC: 4,
-  };
-
   let testElement: SettingsOnStartupPageElement;
   let onStartupBrowserProxy: TestOnStartupBrowserProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
 
   const ntpExtension = {id: 'id', name: 'name', canBeDisabled: true};
 
+  const prefValuesToTest: PrefValues[] = [
+    PrefValues.CONTINUE,
+    PrefValues.OPEN_NEW_TAB,
+    PrefValues.OPEN_SPECIFIC,
+  ];
+
   async function initPage(): Promise<void> {
-    onStartupBrowserProxy.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    onStartupBrowserProxy.reset();
     testElement = document.createElement('settings-on-startup-page');
-    testElement.prefs = {
-      // <if expr="is_win">
-      launch_on_login: {
-        foreground: {
-          enabled: {
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: false,
-          },
-        },
-      },
-      // </if>
-      session: {
-        restore_on_startup: {
-          type: chrome.settingsPrivate.PrefType.NUMBER,
-          value: RestoreOnStartupEnum.OPEN_NEW_TAB,
-        },
-      },
-    };
     document.body.appendChild(testElement);
     await onStartupBrowserProxy.whenCalled('getNtpExtension');
-    flush();
+    return microtasksFinished();
   }
 
   function getSelectedOptionLabel(): string {
@@ -93,38 +98,38 @@ suite('OnStartupPage', function() {
   }
 
   setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     onStartupBrowserProxy = new TestOnStartupBrowserProxy();
     OnStartupBrowserProxyImpl.setInstance(onStartupBrowserProxy);
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy(getInitialPrefs());
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     // <if expr="is_win">
     loadTimeData.overrideValues({isForegroundLaunchFeatureEnabled: false});
     // </if>
-    await initPage();
+    return initPage();
   });
 
-  teardown(function() {
-    if (testElement) {
-      testElement.remove();
-    }
-  });
-
-  test('open-continue', function() {
-    testElement.set(
-        'prefs.session.restore_on_startup.value',
-        RestoreOnStartupEnum.CONTINUE);
+  test('open-continue', async function() {
+    await prefService.setPrefValue(
+        'session.restore_on_startup', PrefValues.CONTINUE);
     assertEquals('Continue where you left off', getSelectedOptionLabel());
   });
 
-  test('open-ntp', function() {
-    testElement.set(
-        'prefs.session.restore_on_startup.value',
-        RestoreOnStartupEnum.OPEN_NEW_TAB);
+  test('open-ntp', async function() {
+    await prefService.setPrefValue(
+        'session.restore_on_startup', PrefValues.OPEN_NEW_TAB);
     assertEquals('Open the New Tab page', getSelectedOptionLabel());
   });
 
-  test('open-specific', function() {
-    testElement.set(
-        'prefs.session.restore_on_startup.value',
-        RestoreOnStartupEnum.OPEN_SPECIFIC);
+  test('open-specific', async function() {
+    await prefService.setPrefValue(
+        'session.restore_on_startup', PrefValues.OPEN_SPECIFIC);
     assertEquals(
         'Open a specific page or set of pages', getSelectedOptionLabel());
   });
@@ -139,29 +144,27 @@ suite('OnStartupPage', function() {
       async function() {
         onStartupBrowserProxy.setNtpExtension(ntpExtension);
         await onStartupBrowserProxy.whenCalled('getNtpExtension');
-        flush();
         assertTrue(extensionControlledIndicatorExists());
-        Object.values(RestoreOnStartupEnum).forEach(function(option) {
-          testElement.set('prefs.session.restore_on_startup.value', option);
+        for (const option of prefValuesToTest) {
+          await prefService.setPrefValue('session.restore_on_startup', option);
           assertTrue(extensionControlledIndicatorExists());
-        });
+        }
       });
 
   test(
       'extension indicator not shown when no ntp extension enabled',
-      function() {
+      async function() {
         assertFalse(extensionControlledIndicatorExists());
-        Object.values(RestoreOnStartupEnum).forEach(function(option) {
-          testElement.set('prefs.session.restore_on_startup.value', option);
+        for (const option of prefValuesToTest) {
+          await prefService.setPrefValue('session.restore_on_startup', option);
           assertFalse(extensionControlledIndicatorExists());
-        });
+        }
       });
 
   test('ntp extension updated, extension indicator added', async function() {
     assertFalse(extensionControlledIndicatorExists());
     onStartupBrowserProxy.setNtpExtension(ntpExtension);
     await onStartupBrowserProxy.whenCalled('getNtpExtension');
-    flush();
     assertTrue(extensionControlledIndicatorExists());
   });
 
@@ -209,10 +212,10 @@ suite('OnStartupPage', function() {
     const toggleButton = getForegroundLaunchToggle();
     assertTrue(!!toggleButton);
 
-    testElement.set('prefs.launch_on_login.foreground.enabled.value', true);
+    await prefService.setPrefValue('launch_on_login.foreground.enabled', true);
     assertTrue(toggleButton.checked);
 
-    testElement.set('prefs.launch_on_login.foreground.enabled.value', false);
+    await prefService.setPrefValue('launch_on_login.foreground.enabled', false);
     assertFalse(toggleButton.checked);
   });
   // </if>
