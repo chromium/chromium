@@ -99,11 +99,10 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
   }
 
   content::RenderFrameHost* CreateChildRenderFrameHost(
-      content::RenderFrameHost* parent_host,
-      const std::string& frame_name) {
+      content::RenderFrameHost* parent_host) {
     auto* parent_host_tester = content::RenderFrameHostTester::For(parent_host);
     parent_host_tester->InitializeRenderFrameIfNeeded();
-    return parent_host_tester->AppendChild(frame_name);
+    return parent_host_tester->AppendChild("");
   }
 
   // Notifies registry observers that an extension with `extension_id` was
@@ -204,7 +203,7 @@ TEST_F(MimeHandlerStreamManagerTest, AddAndGetStreamInvalidURL) {
 // at once.
 TEST_F(MimeHandlerStreamManagerTest, AddMultipleStreamContainers) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* child_host = CreateChildRenderFrameHost(embedder_host, "child host");
+  auto* child_host = CreateChildRenderFrameHost(embedder_host);
   child_host = NavigateAndCommit(child_host, GURL(kOriginalUrl2));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
@@ -250,17 +249,15 @@ TEST_F(MimeHandlerStreamManagerTest, AddMultipleStreamContainers) {
 // `MimeHandlerStreamManager::IsExtensionHost()` should correctly identify
 // the extension hosts.
 TEST_F(MimeHandlerStreamManagerTest, IsExtensionHost) {
-  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh());
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
 
   // During a load, there's an RFH for the extension frame for the initial
   // about:blank navigation. This RFH will always be replaced by
   // `extension_host`.
-  auto* about_blank_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* other_host = CreateChildRenderFrameHost(embedder_host, "other host");
+  auto* about_blank_host = CreateChildRenderFrameHost(embedder_host);
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
+  auto* other_host = CreateChildRenderFrameHost(embedder_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -298,11 +295,10 @@ TEST_F(MimeHandlerStreamManagerTest, IsExtensionHost) {
 // same-FTN navigation to a different extension -- which `IsExtensionHost()`
 // alone accepts because it keys only on `FrameTreeNodeId` -- is rejected.
 TEST_F(MimeHandlerStreamManagerTest, IsExtensionHostForUrl) {
-  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh());
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
 
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -338,15 +334,13 @@ TEST_F(MimeHandlerStreamManagerTest, IsExtensionHostForUrl) {
 // Only the extension host directly under the embedder is a secure-context
 // root; a same-origin child nested inside it is not.
 TEST_F(MimeHandlerStreamManagerTest, SameOriginChildOfExtensionHostIsNotRoot) {
-  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh());
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
 
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
   // A same-origin child frame nested inside the extension host (grandchild of
   // the embedder), e.g. an about:blank or another same-extension URL frame.
-  auto* same_origin_child =
-      CreateChildRenderFrameHost(extension_host, "same-origin child");
+  auto* same_origin_child = CreateChildRenderFrameHost(extension_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -382,20 +376,17 @@ TEST_F(MimeHandlerStreamManagerTest, SameOriginChildOfExtensionHostIsNotRoot) {
 TEST_F(MimeHandlerStreamManagerTest, IsContentHost) {
   const GURL pdf_url = GURL(kOriginalUrl1);
 
-  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh());
   embedder_host = NavigateAndCommit(embedder_host, pdf_url);
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
 
   // During a load, there's an RFH for the content frame for the initial
   // stream URL navigation. This RFH will always be replaced by
   // `content_host`.
-  auto* stream_url_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
-  auto* content_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* stream_url_host = CreateChildRenderFrameHost(extension_host);
+  auto* content_host = CreateChildRenderFrameHost(extension_host);
   content_host = NavigateAndCommit(content_host, pdf_url);
-  auto* other_host = CreateChildRenderFrameHost(extension_host, "other host");
+  auto* other_host = CreateChildRenderFrameHost(extension_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -434,7 +425,7 @@ TEST_F(MimeHandlerStreamManagerTest, IsContentHost) {
 TEST_F(MimeHandlerStreamManagerTest, DeleteWithMultipleStreamContainers) {
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* child_host = CreateChildRenderFrameHost(embedder_host, "child host");
+  auto* child_host = CreateChildRenderFrameHost(embedder_host);
   child_host = NavigateAndCommit(child_host, GURL(kOriginalUrl2));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
@@ -482,7 +473,7 @@ TEST_F(MimeHandlerStreamManagerTest, DeleteUnclaimedStreamInfo) {
 
 // If the embedder render frame is deleted, the stream should be deleted.
 TEST_F(MimeHandlerStreamManagerTest, RenderFrameDeletedWithClaimedStream) {
-  auto* actual_host = CreateChildRenderFrameHost(main_rfh(), "actual host");
+  auto* actual_host = CreateChildRenderFrameHost(main_rfh());
   actual_host = NavigateAndCommit(actual_host, GURL(kOriginalUrl1));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
@@ -507,7 +498,7 @@ TEST_F(MimeHandlerStreamManagerTest, RenderFrameDeletedWithClaimedStream) {
 }
 
 TEST_F(MimeHandlerStreamManagerTest, RenderFrameDeletedWithUnclaimedStream) {
-  auto* actual_host = CreateChildRenderFrameHost(main_rfh(), "actual host");
+  auto* actual_host = CreateChildRenderFrameHost(main_rfh());
   actual_host = NavigateAndCommit(actual_host, GURL(kOriginalUrl1));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
@@ -537,7 +528,7 @@ TEST_F(MimeHandlerStreamManagerTest, RenderFrameDeletedWithUnclaimedStream) {
 TEST_F(MimeHandlerStreamManagerTest, EmbedderRenderFrameHostChanged) {
   content::RenderFrameHost* old_host =
       NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* new_host = CreateChildRenderFrameHost(old_host, "new host");
+  auto* new_host = CreateChildRenderFrameHost(old_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -565,19 +556,17 @@ TEST_F(MimeHandlerStreamManagerTest, EmbedderRenderFrameHostChanged) {
 // If the extension host changes to a different host, the stream should be
 // deleted.
 TEST_F(MimeHandlerStreamManagerTest, ExtensionRenderFrameHostChanged) {
-  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh());
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
 
   // During a load, there's an RFH for the extension frame for the initial
   // about:blank navigation. This RFH will always be replaced by
-  // `extension_host` and shouldn't trigger stream deletion. Both hosts should
-  // share the same frame name.
-  auto* about_blank_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+  // `extension_host` and shouldn't trigger stream deletion. Both hosts
+  // represent the same frame tree node in real scenarios.
+  auto* about_blank_host = CreateChildRenderFrameHost(embedder_host);
   about_blank_host = NavigateAndCommit(about_blank_host, GURL("about:blank"));
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* new_host = CreateChildRenderFrameHost(embedder_host, "new host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
+  auto* new_host = CreateChildRenderFrameHost(embedder_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -620,20 +609,17 @@ TEST_F(MimeHandlerStreamManagerTest, ExtensionRenderFrameHostChanged) {
 TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
   const GURL pdf_url = GURL(kOriginalUrl1);
 
-  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh());
   embedder_host = NavigateAndCommit(embedder_host, pdf_url);
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
 
   // During a load, there's an RFH for the content frame for the initial
   // stream URL navigation. This RFH will always be replaced by
   // `content_host` and shouldn't trigger stream deletion.
-  auto* stream_url_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
-  auto* content_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* stream_url_host = CreateChildRenderFrameHost(extension_host);
+  auto* content_host = CreateChildRenderFrameHost(extension_host);
   content_host = NavigateAndCommit(content_host, pdf_url);
-  auto* new_host = CreateChildRenderFrameHost(extension_host, "new host");
+  auto* new_host = CreateChildRenderFrameHost(extension_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -676,14 +662,12 @@ TEST_F(MimeHandlerStreamManagerTest,
   const GURL pdf_url(kOriginalUrl1);
   const GURL pdf_url_with_fragment = pdf_url.Resolve("#fragment");
 
-  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh());
   embedder_host = NavigateAndCommit(embedder_host, pdf_url);
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* content_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
+  auto* content_host = CreateChildRenderFrameHost(extension_host);
   content_host = NavigateAndCommit(content_host, pdf_url_with_fragment);
-  auto* new_host = CreateChildRenderFrameHost(extension_host, "new host");
+  auto* new_host = CreateChildRenderFrameHost(extension_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -708,11 +692,9 @@ TEST_F(MimeHandlerStreamManagerTest,
 TEST_F(MimeHandlerStreamManagerTest,
        ContentHostChangedCallsValidateContentFrameHost) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* content_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
-  auto* new_host = CreateChildRenderFrameHost(extension_host, "new host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
+  auto* content_host = CreateChildRenderFrameHost(extension_host);
+  auto* new_host = CreateChildRenderFrameHost(extension_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
@@ -763,10 +745,9 @@ TEST_F(MimeHandlerStreamManagerTest, EmbedderFrameDeleted) {
 
 // If the extension frame is deleted, the stream should be deleted.
 TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameDeleted) {
-  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "actual host");
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh());
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
   content::FrameTreeNodeId frame_tree_node_id =
       extension_host->GetFrameTreeNodeId();
 
@@ -793,13 +774,11 @@ TEST_F(MimeHandlerStreamManagerTest, ExtensionFrameDeleted) {
 
 // If the content frame is deleted, the stream should be deleted.
 TEST_F(MimeHandlerStreamManagerTest, ContentFrameDeleted) {
-  auto* embedder_host = CreateChildRenderFrameHost(main_rfh(), "embedder host");
+  auto* embedder_host = CreateChildRenderFrameHost(main_rfh());
   embedder_host = NavigateAndCommit(embedder_host, GURL(kOriginalUrl1));
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
 
-  auto* content_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* content_host = CreateChildRenderFrameHost(extension_host);
   content::FrameTreeNodeId frame_tree_node_id =
       content_host->GetFrameTreeNodeId();
 
@@ -851,8 +830,7 @@ TEST_F(MimeHandlerStreamManagerTest,
 TEST_F(MimeHandlerStreamManagerTest,
        OnStreamClaimedNotCalledForUnrelatedNavigation) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* unrelated_host =
-      CreateChildRenderFrameHost(embedder_host, "unrelated host");
+  auto* unrelated_host = CreateChildRenderFrameHost(embedder_host);
   unrelated_host = NavigateAndCommit(unrelated_host, GURL("https://unrelated"));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
@@ -927,8 +905,7 @@ TEST_F(MimeHandlerStreamManagerTest, ReadyToCommitNavigationClaimAndReplace) {
 TEST_F(MimeHandlerStreamManagerTest,
        DidFinishNavigationDelegateExtensionFinished) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
@@ -961,10 +938,8 @@ TEST_P(MimeHandlerStreamManagerPostMessageTest,
   const bool should_set_up_post_message = GetParam();
 
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* content_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
+  auto* content_host = CreateChildRenderFrameHost(extension_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   auto delegate = std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>();
@@ -998,8 +973,7 @@ INSTANTIATE_TEST_SUITE_P(ShouldSetUpPostMessage,
 TEST_F(MimeHandlerStreamManagerTest,
        DidFinishNavigationDelegateExtensionFinishedIgnoresNonMatchingUrl) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -1055,7 +1029,7 @@ TEST_F(MimeHandlerStreamManagerTest, PluginCanSave) {
 // an unknown host is a no-op.
 TEST_F(MimeHandlerStreamManagerTest, PluginCanSaveUnknownHost) {
   auto* embedder_host = NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
-  auto* other_host = CreateChildRenderFrameHost(embedder_host, "other host");
+  auto* other_host = CreateChildRenderFrameHost(embedder_host);
   other_host = NavigateAndCommit(other_host, GURL(kOriginalUrl2));
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
@@ -1157,7 +1131,7 @@ TEST_F(MimeHandlerStreamManagerTest,
   // before `NavigateToExtensionUrl()` runs. `DidExtensionStartNavigation()`
   // returns false, so the dispatch must not fire.
   content::RenderFrameHost* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
+      CreateChildRenderFrameHost(embedder_host);
   EXPECT_CALL(*delegate_ptr, OnExtensionFrameReadyToCommit(_, _)).Times(0);
   NiceMock<content::MockNavigationHandle> about_blank_handle;
   about_blank_handle.set_render_frame_host(extension_host);
@@ -1173,7 +1147,7 @@ TEST_F(MimeHandlerStreamManagerTest,
   // A sibling iframe under the same embedder has a different
   // FrameTreeNodeId, so its commit must not dispatch.
   content::RenderFrameHost* sibling_host =
-      CreateChildRenderFrameHost(embedder_host, "sibling host");
+      CreateChildRenderFrameHost(embedder_host);
   EXPECT_CALL(*delegate_ptr, OnExtensionFrameReadyToCommit(_, _)).Times(0);
   NiceMock<content::MockNavigationHandle> sibling_handle;
   sibling_handle.set_render_frame_host(sibling_host);
@@ -1522,9 +1496,9 @@ TEST_F(MimeHandlerStreamManagerTest, UnloadErasesOnlyUnloadedExtensionStream) {
       /*container_number=*/2);
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), stream_container_1->original_url());
-  content::RenderFrameHost* child_host = NavigateAndCommit(
-      CreateChildRenderFrameHost(embedder_host, "child embedder"),
-      stream_container_2->original_url());
+  content::RenderFrameHost* child_host =
+      NavigateAndCommit(CreateChildRenderFrameHost(embedder_host),
+                        stream_container_2->original_url());
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -1553,10 +1527,8 @@ TEST_F(MimeHandlerStreamManagerTest, HostPrivilegeBypassWithPushState) {
 
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), pdf_url);
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* content_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
+  auto* content_host = CreateChildRenderFrameHost(extension_host);
   content_host = NavigateAndCommit(content_host, pdf_url);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
@@ -1597,10 +1569,8 @@ TEST_F(MimeHandlerStreamManagerTest, AllowsFragmentNavigation) {
 
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), pdf_url);
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* content_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
+  auto* content_host = CreateChildRenderFrameHost(extension_host);
   content_host = NavigateAndCommit(content_host, pdf_url);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
@@ -1645,9 +1615,8 @@ TEST_F(MimeHandlerStreamManagerTest,
 
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), pdf_url);
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* new_host = CreateChildRenderFrameHost(embedder_host, "new host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
+  auto* new_host = CreateChildRenderFrameHost(embedder_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
@@ -1681,12 +1650,10 @@ TEST_F(MimeHandlerStreamManagerTest,
 
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), pdf_url);
-  auto* extension_host =
-      CreateChildRenderFrameHost(embedder_host, "extension host");
-  auto* content_host =
-      CreateChildRenderFrameHost(extension_host, "content host");
+  auto* extension_host = CreateChildRenderFrameHost(embedder_host);
+  auto* content_host = CreateChildRenderFrameHost(extension_host);
   content_host = NavigateAndCommit(content_host, pdf_url);
-  auto* new_host = CreateChildRenderFrameHost(extension_host, "new host");
+  auto* new_host = CreateChildRenderFrameHost(extension_host);
 
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   manager->AddStreamContainer(
