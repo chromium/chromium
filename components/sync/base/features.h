@@ -267,6 +267,9 @@ BASE_DECLARE_FEATURE(kSyncUseServerDeterminedDeviceName);
 // before entering transport mode.
 BASE_DECLARE_FEATURE(kSyncCopyPreferencesToTransportModeOnServerForcedDisable);
 
+// Authenticate the Initialization Vector (IV) in Nigori encryption.
+BASE_DECLARE_FEATURE(kSyncNigoriAuthenticateIV);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

@@ -9,8 +9,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/crypto/key_derivation_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +22,14 @@ namespace {
 
 using testing::IsNull;
 using testing::NotNull;
+
+constexpr char kNonAuthenticatedIvNigoriGolden[] =
+    "NNYlnzaaLPXWXyzz8J+u4OKgLiKRBPu2GJdjHWk0m3ADZrJhnmer30"
+    "Zgiy4Ulxlfh6fmS71k8rop+UvSJdL1k/fcNLJ1C6sY5Z86ijyl1Jo=";
+
+constexpr char kAuthenticatedIvNigoriGolden[] =
+    "WaACU5CT+wnttSXFQmXgVjv4W1AqKdYURasywlvTZwv2RYvrOs3nc507"
+    "759fvB1tMi32oOU77PSw1qg3ySF8kdF9VYEknEX+eC8vJni9vaE=";
 
 class FakeTickClock : public base::TickClock {
  public:
@@ -86,21 +96,43 @@ TEST(SyncNigoriTest, EncryptDifferentIv) {
   EXPECT_NE(nigori->Encrypt(plaintext), nigori->Encrypt(plaintext));
 }
 
-TEST(SyncNigoriTest, Decrypt) {
+TEST(SyncNigoriTest, DecryptNonAuthenticatedIvGolden) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
       NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
       "password");
   ASSERT_THAT(nigori, NotNull());
 
-  std::string encrypted =
-      "NNYlnzaaLPXWXyzz8J+u4OKgLiKRBPu2GJdjHWk0m3ADZrJhnmer30"
-      "Zgiy4Ulxlfh6fmS71k8rop+UvSJdL1k/fcNLJ1C6sY5Z86ijyl1Jo=";
+  std::string plaintext;
+  EXPECT_TRUE(nigori->Decrypt(kNonAuthenticatedIvNigoriGolden, &plaintext));
+  EXPECT_EQ("test, test, 1, 2, 3", plaintext);
+}
+
+TEST(SyncNigoriTest, DecryptNonAuthenticatedIvGoldenWithFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSyncNigoriAuthenticateIV);
+
+  std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
+  ASSERT_THAT(nigori, NotNull());
 
   std::string plaintext;
-  EXPECT_TRUE(nigori->Decrypt(encrypted, &plaintext));
+  EXPECT_TRUE(nigori->Decrypt(kNonAuthenticatedIvNigoriGolden, &plaintext));
+  EXPECT_EQ("test, test, 1, 2, 3", plaintext);
+}
 
-  std::string expected("test, test, 1, 2, 3");
-  EXPECT_EQ(expected, plaintext);
+TEST(SyncNigoriTest, DecryptAuthenticatedIvGolden) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSyncNigoriAuthenticateIV);
+
+  std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
+  ASSERT_THAT(nigori, NotNull());
+
+  std::string plaintext;
+  EXPECT_TRUE(nigori->Decrypt(kAuthenticatedIvNigoriGolden, &plaintext));
+  EXPECT_EQ("test, test, 1, 2, 3", plaintext);
 }
 
 TEST(SyncNigoriTest, EncryptDecrypt) {
@@ -131,7 +163,7 @@ TEST(SyncNigoriTest, EncryptDecryptEmptyString) {
   EXPECT_EQ(plaintext, decrypted);
 }
 
-TEST(SyncNigoriTest, CorruptedIv) {
+TEST(SyncNigoriTest, CorruptedIv_FeatureDisabled) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
       NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
       "password");
@@ -148,6 +180,59 @@ TEST(SyncNigoriTest, CorruptedIv) {
   EXPECT_TRUE(nigori->Decrypt(encrypted, &decrypted));
 
   EXPECT_NE(plaintext, decrypted);
+}
+
+TEST(SyncNigoriTest, CorruptedIv_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSyncNigoriAuthenticateIV);
+
+  std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
+      NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+      "password");
+  ASSERT_THAT(nigori, NotNull());
+
+  const std::string plaintext("test");
+
+  std::string encrypted = nigori->Encrypt(plaintext);
+
+  // Corrupt the IV by changing one of its byte.
+  encrypted[0] = (encrypted[0] == 'a' ? 'b' : 'a');
+
+  std::string decrypted;
+  EXPECT_FALSE(nigori->Decrypt(encrypted, &decrypted));
+
+  EXPECT_NE(plaintext, decrypted);
+}
+
+TEST(SyncNigoriTest, DecryptNonAuthenticatedIvEncryptedDataWithFeatureEnabled) {
+  std::string encrypted_legacy;
+  const std::string plaintext("test");
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kSyncNigoriAuthenticateIV);
+
+    std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
+        NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+        "password");
+    ASSERT_THAT(nigori, NotNull());
+
+    encrypted_legacy = nigori->Encrypt(plaintext);
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kSyncNigoriAuthenticateIV);
+
+    std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
+        NigoriPassKey::ForTesting(), KeyDerivationParams::CreateForPbkdf2(),
+        "password");
+    ASSERT_THAT(nigori, NotNull());
+
+    std::string decrypted;
+    EXPECT_TRUE(nigori->Decrypt(encrypted_legacy, &decrypted));
+    EXPECT_EQ(plaintext, decrypted);
+  }
 }
 
 TEST(SyncNigoriTest, CorruptedCiphertext) {

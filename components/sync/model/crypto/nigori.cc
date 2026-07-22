@@ -21,20 +21,24 @@
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/model/crypto/key_derivation_params.h"
 #include "crypto/aes_cbc.h"
+#include "crypto/hash.h"
 #include "crypto/hmac.h"
 #include "crypto/kdf.h"
 #include "crypto/random.h"
 #include "crypto/subtle_passkey.h"
 
-constexpr size_t kHashSize = 32;
-constexpr size_t kDefaultScryptCostParameter = 8192;  // 2^13.
-
 namespace syncer {
 
 namespace {
+
+constexpr size_t kHashSize = 32;
+static_assert(crypto::hash::kSha256Size == kHashSize);
+
+constexpr size_t kDefaultScryptCostParameter = 8192;  // 2^13.
 
 // NigoriStream simplifies the concatenation operation of the Nigori protocol.
 class NigoriStream {
@@ -245,12 +249,17 @@ std::vector<uint8_t> Nigori::EncryptToBytes(
 
   auto ciphertext =
       crypto::aes_cbc::Encrypt(keys_.encryption_key, iv, plaintext);
-  auto mac = crypto::hmac::SignSha256(keys_.mac_key, ciphertext);
 
   std::vector<uint8_t> output;
-  output.reserve(iv.size() + ciphertext.size() + mac.size());
+  output.reserve(iv.size() + ciphertext.size() + kHashSize);
   std::copy(iv.begin(), iv.end(), std::back_inserter(output));
   std::copy(ciphertext.begin(), ciphertext.end(), std::back_inserter(output));
+
+  const std::array<uint8_t, crypto::hash::kSha256Size> mac =
+      base::FeatureList::IsEnabled(syncer::kSyncNigoriAuthenticateIV)
+          ? crypto::hmac::SignSha256(keys_.mac_key, output)
+          : crypto::hmac::SignSha256(keys_.mac_key, ciphertext);
+  static_assert(mac.size() == kHashSize);
   std::copy(mac.begin(), mac.end(), std::back_inserter(output));
   return output;
 }
@@ -283,7 +292,11 @@ std::optional<std::vector<uint8_t>> Nigori::DecryptFromBytes(
       encrypted.subspan(kIvSize, encrypted.size() - (kIvSize + kHashSize));
   const auto mac = encrypted.last<kHashSize>();
 
-  if (!crypto::hmac::VerifySha256(keys_.mac_key, ciphertext, mac)) {
+  // The MAC covers the IV and ciphertext. For data written by clients with the
+  // feature disabled, also accept a MAC over the ciphertext alone.
+  if (!crypto::hmac::VerifySha256(
+          keys_.mac_key, encrypted.first(encrypted.size() - kHashSize), mac) &&
+      !crypto::hmac::VerifySha256(keys_.mac_key, ciphertext, mac)) {
     return std::nullopt;
   }
 
