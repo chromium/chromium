@@ -187,7 +187,8 @@ bool SharedResourceChecker::IsSharedResource(
   // Only allow script, style and dictionary destinations.
   if (request.destination != mojom::RequestDestination::kScript &&
       request.destination != mojom::RequestDestination::kStyle &&
-      request.destination != mojom::RequestDestination::kDictionary) {
+      request.destination !=
+          mojom::RequestDestination::kCompressionDictionary) {
     return false;
   }
 

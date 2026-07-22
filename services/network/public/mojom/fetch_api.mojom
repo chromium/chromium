@@ -67,7 +67,7 @@ enum RequestDestination {
   // https://fedidcg.github.io/FedCM/
   kWebIdentity = 23,
   // Requests for compression dictionary
-  kDictionary = 24,
+  kCompressionDictionary = 24,
   // Requests for speculation rules.
   // https://wicg.github.io/nav-speculation/speculation-rules.html
   kSpeculationRules = 25,

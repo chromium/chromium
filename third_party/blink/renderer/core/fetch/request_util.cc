@@ -71,8 +71,8 @@ network::mojom::RequestDestination V8RequestDestinationToMojom(
       return network::mojom::RequestDestination::kXslt;
     case blink::V8RequestDestination::Enum::kFencedframe:
       return network::mojom::RequestDestination::kFencedframe;
-    case blink::V8RequestDestination::Enum::kDictionary:
-      return network::mojom::RequestDestination::kDictionary;
+    case blink::V8RequestDestination::Enum::kCompressionDictionary:
+      return network::mojom::RequestDestination::kCompressionDictionary;
     case blink::V8RequestDestination::Enum::kSpeculationrules:
       return network::mojom::RequestDestination::kSpeculationRules;
     case blink::V8RequestDestination::Enum::kSharedstorageworklet:

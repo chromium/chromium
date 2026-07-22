@@ -687,7 +687,7 @@ bool WriteToBlinkCondition(
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
               Request::kDictionaryDestination:
             request.destination =
-                network::mojom::RequestDestination::kDictionary;
+                network::mojom::RequestDestination::kCompressionDictionary;
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
               Request::kSpeculationRulesDestination:
@@ -1051,7 +1051,7 @@ void WriteConditionToProtoWithHelper(
               ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
                   Request::kEmailVerificationDestination);
           break;
-        case network::mojom::RequestDestination::kDictionary:
+        case network::mojom::RequestDestination::kCompressionDictionary:
           mutable_request->set_destination(
               ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
                   Request::kDictionaryDestination);

@@ -1154,6 +1154,12 @@
       status: "test",
     },
     {
+      // Compression Dictionary Transport: Use "compression-dictionary" as the
+      // destination string.
+      name: "CDTNewDestination",
+      status: "test",
+    },
+    {
       // Compression Dictionary Transport: Align handling of referrerpolicy
       // attribute and referrer on the spec.
       name: "CDTNewReferrerAndReferrerPolicyHandling",

@@ -458,7 +458,7 @@ std::optional<blink::mojom::ResourceType> GetResourceTypeForPrefetch(
       return blink::mojom::ResourceType::kFontResource;
     case network::mojom::RequestDestination::kAudio:
     case network::mojom::RequestDestination::kAudioWorklet:
-    case network::mojom::RequestDestination::kDictionary:
+    case network::mojom::RequestDestination::kCompressionDictionary:
     case network::mojom::RequestDestination::kDocument:
     case network::mojom::RequestDestination::kEmailVerification:
     case network::mojom::RequestDestination::kEmbed:

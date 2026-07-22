@@ -308,11 +308,12 @@ chromium-metrics-reviews@google.com.
   <variant name="Topics"/>
 </variants>
 
-<!-- LINT.IfChange(BlinkRequestDestination) -->
+<!-- LINT.IfChange(RequestDestination) -->
 
 <variants name="RequestDestination">
   <variant name="audio"/>
   <variant name="audioworklet"/>
+  <variant name="compression-dictionary"/>
   <variant name="document"/>
   <variant name="embed"/>
   <variant name="empty"/>

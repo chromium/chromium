@@ -45,7 +45,7 @@ constexpr char kXslt[] = "xslt";
 constexpr char kFencedframe[] = "fencedframe";
 constexpr char kWebIdentity[] = "webidentity";
 constexpr char kEmailVerification[] = "emailverification";
-constexpr char kDictionary[] = "dictionary";
+constexpr char kCompressionDictionary[] = "compression-dictionary";
 constexpr char kSpeculationRules[] = "speculationrules";
 constexpr char kSharedStorageWorklet[] = "sharedstorageworklet";
 constexpr char kText[] = "text";
@@ -79,7 +79,8 @@ constexpr auto kRequestDestinationToStringMap =
          {network::mojom::RequestDestination::kWebIdentity, kWebIdentity},
          {network::mojom::RequestDestination::kEmailVerification,
           kEmailVerification},
-         {network::mojom::RequestDestination::kDictionary, kDictionary},
+         {network::mojom::RequestDestination::kCompressionDictionary,
+          kCompressionDictionary},
          {network::mojom::RequestDestination::kSpeculationRules,
           kSpeculationRules},
          {network::mojom::RequestDestination::kJson, kJson},
@@ -116,7 +117,8 @@ constexpr auto kRequestDestinationFromStringMap =
          {kWebIdentity, network::mojom::RequestDestination::kWebIdentity},
          {kEmailVerification,
           network::mojom::RequestDestination::kEmailVerification},
-         {kDictionary, network::mojom::RequestDestination::kDictionary},
+         {kCompressionDictionary,
+          network::mojom::RequestDestination::kCompressionDictionary},
          {kSpeculationRules,
           network::mojom::RequestDestination::kSpeculationRules},
          {kJson, network::mojom::RequestDestination::kJson},

@@ -14,8 +14,8 @@ enum RequestDestination {
     // https://wicg.github.io/fenced-frame/#new-request-destination
     "fencedframe",
 
-    // https://github.com/WICG/compression-dictionary-transport
-    "dictionary",
+    // https://github.com/whatwg/html/pull/11620
+    "compression-dictionary",
 
     // https://wicg.github.io/nav-speculation/speculation-rules.html#fetch-destination
     "speculationrules",

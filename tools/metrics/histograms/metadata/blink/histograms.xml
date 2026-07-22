@@ -27,6 +27,7 @@ chromium-metrics-reviews@google.com.
 <variants name="BlinkRequestDestination">
   <variant name="audio"/>
   <variant name="audioworklet"/>
+  <variant name="compression-dictionary"/>
   <variant name="document"/>
   <variant name="embed"/>
   <variant name="empty"/>
@@ -50,7 +51,7 @@ chromium-metrics-reviews@google.com.
   <variant name="xslt"/>
 </variants>
 
-<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:BlinkRequestDestination) -->
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/page/histograms.xml:RequestDestination) -->
 
 <variants name="BlinkUpdateTimeSuffixes">
   <variant name=".AggregatedPreFCP"

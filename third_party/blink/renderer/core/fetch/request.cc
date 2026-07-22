@@ -119,8 +119,8 @@ V8RequestDestination::Enum DestinationToV8Enum(
       return V8RequestDestination::Enum::kXslt;
     case network::mojom::RequestDestination::kFencedframe:
       return V8RequestDestination::Enum::kFencedframe;
-    case network::mojom::RequestDestination::kDictionary:
-      return V8RequestDestination::Enum::kDictionary;
+    case network::mojom::RequestDestination::kCompressionDictionary:
+      return V8RequestDestination::Enum::kCompressionDictionary;
     case network::mojom::RequestDestination::kSpeculationRules:
       return V8RequestDestination::Enum::kSpeculationrules;
     case network::mojom::RequestDestination::kJson:

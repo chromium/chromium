@@ -169,7 +169,7 @@ constexpr mojom::RequestDestination kAllDestinations[] = {
     mojom::RequestDestination::kXslt,
     mojom::RequestDestination::kFencedframe,
     mojom::RequestDestination::kWebIdentity,
-    mojom::RequestDestination::kDictionary,
+    mojom::RequestDestination::kCompressionDictionary,
     mojom::RequestDestination::kSpeculationRules,
     mojom::RequestDestination::kJson,
     mojom::RequestDestination::kSharedStorageWorklet,
@@ -185,7 +185,8 @@ TEST_P(SharedResourceCheckerTest, DestinationIsAllowed) {
     if (enabled() &&
         (request.destination == mojom::RequestDestination::kScript ||
          request.destination == mojom::RequestDestination::kStyle ||
-         request.destination == mojom::RequestDestination::kDictionary)) {
+         request.destination ==
+             mojom::RequestDestination::kCompressionDictionary)) {
       EXPECT_TRUE(shared_resource_checker()->IsSharedResource(request, origin,
                                                               std::nullopt));
     } else {

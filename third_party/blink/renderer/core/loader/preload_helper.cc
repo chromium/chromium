@@ -1062,7 +1062,7 @@ void PreloadHelper::FetchCompressionDictionaryIfNeeded(
     resource_request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
   }
   resource_request.SetRequestDestination(
-      network::mojom::RequestDestination::kDictionary);
+      network::mojom::RequestDestination::kCompressionDictionary);
 
   ResourceLoaderOptions options(
       document.GetExecutionContext()->GetCurrentWorld());

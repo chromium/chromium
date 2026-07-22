@@ -41,7 +41,8 @@ TEST(RequestDestinationTest, ToStringUseTheEmptyString) {
       {mojom::RequestDestination::kXslt, "xslt"},
       {mojom::RequestDestination::kFencedframe, "fencedframe"},
       {mojom::RequestDestination::kWebIdentity, "webidentity"},
-      {mojom::RequestDestination::kDictionary, "dictionary"},
+      {mojom::RequestDestination::kCompressionDictionary,
+       "compression-dictionary"},
       {mojom::RequestDestination::kSpeculationRules, "speculationrules"},
   };
 
@@ -84,7 +85,8 @@ TEST(RequestDestinationTest, ToStringUseFiveCharEmptyString) {
       {mojom::RequestDestination::kXslt, "xslt"},
       {mojom::RequestDestination::kFencedframe, "fencedframe"},
       {mojom::RequestDestination::kWebIdentity, "webidentity"},
-      {mojom::RequestDestination::kDictionary, "dictionary"},
+      {mojom::RequestDestination::kCompressionDictionary,
+       "compression-dictionary"},
       {mojom::RequestDestination::kSpeculationRules, "speculationrules"},
   };
 
@@ -128,7 +130,8 @@ TEST(RequestDestinationTest, FromStringUseTheEmptyString) {
       {"xslt", mojom::RequestDestination::kXslt},
       {"fencedframe", mojom::RequestDestination::kFencedframe},
       {"webidentity", mojom::RequestDestination::kWebIdentity},
-      {"dictionary", mojom::RequestDestination::kDictionary},
+      {"compression-dictionary",
+       mojom::RequestDestination::kCompressionDictionary},
       {"speculationrules", mojom::RequestDestination::kSpeculationRules},
 
       {"unknown", std::nullopt},
@@ -173,7 +176,8 @@ TEST(RequestDestinationTest, FromStringUseFiveCharEmptyString) {
       {"xslt", mojom::RequestDestination::kXslt},
       {"fencedframe", mojom::RequestDestination::kFencedframe},
       {"webidentity", mojom::RequestDestination::kWebIdentity},
-      {"dictionary", mojom::RequestDestination::kDictionary},
+      {"compression-dictionary",
+       mojom::RequestDestination::kCompressionDictionary},
       {"speculationrules", mojom::RequestDestination::kSpeculationRules},
 
       {"unknown", std::nullopt},

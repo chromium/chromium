@@ -51,7 +51,7 @@ url_pattern_index::proto::ElementType ToElementType(
 
     case network::mojom::RequestDestination::kDocument:
     case network::mojom::RequestDestination::kWebIdentity:
-    case network::mojom::RequestDestination::kDictionary:
+    case network::mojom::RequestDestination::kCompressionDictionary:
     case network::mojom::RequestDestination::kReport:
     case network::mojom::RequestDestination::kManifest:
     default:

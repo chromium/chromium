@@ -797,7 +797,7 @@ bool CorsURLLoaderFactory::IsValidRequest(
       // Allowed destinations from unprivileged process:
       case network::mojom::RequestDestination::kAudio:
       case network::mojom::RequestDestination::kAudioWorklet:
-      case network::mojom::RequestDestination::kDictionary:
+      case network::mojom::RequestDestination::kCompressionDictionary:
       case network::mojom::RequestDestination::kDocument:
       case network::mojom::RequestDestination::kEmbed:
       case network::mojom::RequestDestination::kEmpty:
