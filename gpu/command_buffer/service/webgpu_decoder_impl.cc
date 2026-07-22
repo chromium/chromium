@@ -1548,6 +1548,11 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
       // D3DImageBacking. This feature should always be supported when
       // running on the D3D12 backend.
       wgpu::FeatureName::SharedBufferMemoryD3D12Resource,
+
+      // Require platform-specific SharedBufferMemory feature to support
+      // importing transfer buffer into Dawn as shared buffer memory in dawn
+      // wire.
+      wgpu::FeatureName::SharedBufferMemoryFromWindowsHandle,
   };
   for (const wgpu::FeatureName& feature : kOptionalFeatures) {
     if (adapter_obj.HasFeature(feature)) {
