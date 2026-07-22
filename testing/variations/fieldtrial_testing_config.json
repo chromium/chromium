@@ -23333,22 +23333,6 @@
             ]
         }
     ],
-    "SkipMediaCodecReallocation": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SkipMediaCodecReallocation"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkipModerateMemoryPressureLevelMac": [
         {
             "platforms": [

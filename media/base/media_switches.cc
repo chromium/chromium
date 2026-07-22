@@ -1284,7 +1284,7 @@ BASE_FEATURE(kNdkVideoEncodeAcceleratorBitrateLayering,
 
 // Enables skipping MediaCodec reallocation if input buffer requirements
 // are already met.
-BASE_FEATURE(kSkipMediaCodecReallocation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSkipMediaCodecReallocation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
