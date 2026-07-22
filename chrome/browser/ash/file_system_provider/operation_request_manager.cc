@@ -9,7 +9,9 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/web_contents.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/tabs/public/tab_interface.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/constants.h"
 
@@ -76,10 +78,15 @@ bool OperationRequestManager::IsInteractingWithUser() const {
     const BrowserDelegate* const browser =
         BrowserController::GetInstance()->GetDelegate(
             window->GetBrowserWindowInterface());
-    if (!browser)
+    if (!browser || browser->GetType() != ash::BrowserType::kNormal) {
       continue;
-    for (unsigned int i = 0, n = browser->GetWebContentsCount(); i < n; ++i) {
-      const GURL& url = browser->GetWebContentsAt(i)->GetURL();
+    }
+
+    const TabStripModel* const tab_strip =
+        browser->GetBrowser().GetTabStripModel();
+    CHECK(tab_strip);
+    for (tabs::TabInterface* tab : *tab_strip) {
+      const GURL& url = tab->GetURL();
       if (url.SchemeIs(extensions::kExtensionScheme) &&
           url.host() == provider_id_) {
         return true;
