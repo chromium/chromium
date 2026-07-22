@@ -881,4 +881,108 @@ TEST_F(H265DecoderTest, AlphaLayerSpsPpsMidPicture) {
   EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
 }
 
+TEST_F(H265DecoderTest, InvalidCropRectReturnsDecodeError) {
+  H26xAnnexBBitstreamBuilder builder;
+
+  H265SPS sps = {};
+  sps.sps_video_parameter_set_id = 0;
+  sps.sps_max_sub_layers_minus1 = 0;
+  sps.sps_temporal_id_nesting_flag = true;
+  sps.profile_tier_level.general_profile_idc = 1;
+  sps.profile_tier_level.general_level_idc = 120;
+  sps.sps_seq_parameter_set_id = 0;
+  sps.chroma_format_idc = 1;
+  sps.pic_width_in_luma_samples = 320;
+  sps.pic_height_in_luma_samples = 184;
+  sps.conf_win_left_offset = 200;  // Out of bounds window offset
+  sps.conf_win_right_offset = 0;
+  sps.conf_win_top_offset = 0;
+  sps.conf_win_bottom_offset = 0;
+  sps.log2_min_luma_coding_block_size_minus3 = 0;
+  sps.log2_diff_max_min_luma_coding_block_size = 1;
+  sps.log2_min_luma_transform_block_size_minus2 = 0;
+  sps.log2_diff_max_min_luma_transform_block_size = 0;
+  sps.max_transform_hierarchy_depth_inter = 0;
+  sps.max_transform_hierarchy_depth_intra = 0;
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.sps_max_dec_pic_buffering_minus1[0] = 1;
+  sps.sps_max_num_reorder_pics[0] = 0;
+  sps.sps_max_latency_increase_plus1[0] = 0;
+  sps.scaling_list_enabled_flag = false;
+  sps.amp_enabled_flag = false;
+  sps.sample_adaptive_offset_enabled_flag = false;
+  sps.pcm_enabled_flag = false;
+  sps.num_short_term_ref_pic_sets = 0;
+  sps.long_term_ref_pics_present_flag = true;
+  sps.num_long_term_ref_pics_sps = 0;
+  sps.sps_temporal_mvp_enabled_flag = false;
+  sps.strong_intra_smoothing_enabled_flag = false;
+  sps.vui_parameters_present_flag = false;
+  BuildPackedH265SPS(builder, sps);
+
+  H265PPS pps = {};
+  pps.pps_pic_parameter_set_id = 0;
+  pps.pps_seq_parameter_set_id = 0;
+  pps.dependent_slice_segments_enabled_flag = true;
+  pps.output_flag_present_flag = false;
+  pps.num_extra_slice_header_bits = 0;
+  pps.sign_data_hiding_enabled_flag = false;
+  pps.cabac_init_present_flag = false;
+  pps.num_ref_idx_l0_default_active_minus1 = 0;
+  pps.num_ref_idx_l1_default_active_minus1 = 0;
+  pps.init_qp_minus26 = 0;
+  pps.constrained_intra_pred_flag = false;
+  pps.transform_skip_enabled_flag = false;
+  pps.cu_qp_delta_enabled_flag = false;
+  pps.pps_slice_chroma_qp_offsets_present_flag = false;
+  pps.pps_loop_filter_across_slices_enabled_flag = false;
+  pps.deblocking_filter_control_present_flag = false;
+  pps.pps_scaling_list_data_present_flag = false;
+  pps.lists_modification_present_flag = false;
+  pps.log2_parallel_merge_level_minus2 = 0;
+  pps.slice_segment_header_extension_present_flag = false;
+  BuildPackedH265PPS(builder, pps);
+
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);                  // forbidden_zero_bit
+  builder.AppendBits(6, H265NALU::CRA_NUT);  // nal_unit_type
+  builder.AppendBits(6, 0);                  // nuh_layer_id = 0
+  builder.AppendBits(3, 1);                  // nuh_temporal_id_plus1 = 1
+
+  builder.AppendBool(true);   // first_slice_segment_in_pic_flag
+  builder.AppendBool(false);  // no_output_of_prior_pics_flag
+  builder.AppendUE(0);        // slice_pic_parameter_set_id
+  builder.AppendUE(2);        // slice_type = I (2)
+  builder.AppendBits(8, 0);   // slice_pic_order_cnt_lsb
+  builder.AppendBool(false);  // short_term_ref_pic_set_sps_flag
+  builder.AppendUE(0);        // num_negative_pics
+  builder.AppendUE(0);        // num_positive_pics
+
+  builder.AppendUE(32);  // num_long_term_pics = 32
+  for (int i = 0; i < 32; ++i) {
+    builder.AppendBits(8, i);   // poc_lsb_lt
+    builder.AppendBool(false);  // used_by_curr_pic_lt_flag
+    builder.AppendBool(false);  // delta_poc_msb_present_flag
+  }
+
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+
+  EXPECT_CALL(*accelerator_, SetStream(_, _))
+      .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, CreateH265Picture()).WillRepeatedly([]() {
+    return base::MakeRefCounted<H265Picture>();
+  });
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H265Decoder::H265Accelerator::Status::kOk));
+
+  decoder_->SetStream(1, buffer);
+
+  EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
+}
+
 }  // namespace media

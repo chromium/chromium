@@ -42,6 +42,7 @@
 #include "media/gpu/windows/supported_profile_helpers.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_switches.h"
@@ -669,8 +670,13 @@ void D3D11VideoDecoder::DoDecode() {
           accelerated_video_decoder_->GetChromaSampling();
       const auto new_color_space =
           accelerated_video_decoder_->GetVideoColorSpace();
+      const auto new_visible_rect =
+          accelerated_video_decoder_->GetVisibleRect();
+      DCHECK(gfx::Rect(new_coded_size).Contains(new_visible_rect));
+      DCHECK(!new_visible_rect.IsEmpty());
       if (new_profile == config_.profile() &&
           new_coded_size == config_.coded_size() &&
+          new_visible_rect == config_.visible_rect() &&
           new_bit_depth == bit_depth_ && !picture_buffers_.size() &&
           new_chroma_sampling == chroma_sampling_ &&
           new_color_space == color_space_) {
@@ -683,11 +689,13 @@ void D3D11VideoDecoder::DoDecode() {
           << GetProfileName(new_profile) << ", chroma_sampling_format: "
           << VideoChromaSamplingToString(new_chroma_sampling)
           << ", coded_size: " << new_coded_size.ToString()
+          << ", visible_rect: " << new_visible_rect.ToString()
           << ", bit_depth: " << base::strict_cast<int>(new_bit_depth)
           << ", color_space: " << new_color_space.ToString();
       profile_ = new_profile;
       config_.set_profile(profile_);
       config_.set_coded_size(new_coded_size);
+      config_.set_visible_rect(new_visible_rect);
       chroma_sampling_ = new_chroma_sampling;
       color_space_ = new_color_space;
 

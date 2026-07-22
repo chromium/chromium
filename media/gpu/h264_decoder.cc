@@ -1313,7 +1313,13 @@ bool H264Decoder::ProcessPPSAndSPS(int pps_id, bool* need_new_buffers) {
     dpb_.set_max_num_pics(max_dpb_size);
   }
 
-  gfx::Rect new_visible_rect = sps->GetVisibleRect().value_or(gfx::Rect());
+  gfx::Rect new_visible_rect = sps->GetVisibleRect().value_or(gfx::Rect(new_pic_size));
+  if (!gfx::Rect(new_pic_size).Contains(new_visible_rect)) {
+    DVLOG(1) << "Visible rect " << new_visible_rect.ToString()
+             << " exceeds pic size " << new_pic_size.ToString()
+             << ", resetting to pic size";
+    new_visible_rect = gfx::Rect(new_pic_size);
+  }
   if (visible_rect_ != new_visible_rect) {
     DVLOG(2) << "New visible rect: " << new_visible_rect.ToString();
     visible_rect_ = new_visible_rect;

@@ -596,6 +596,10 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
 
   gfx::Size new_pic_size = sps->GetCodedSize();
   gfx::Rect new_visible_rect = sps->GetVisibleRect();
+  // H265Parser::ParseSPS guarantees that the crop window (and VUI display
+  // window) parameters fit within the coded picture size and are non-empty.
+  CHECK(gfx::Rect(new_pic_size).Contains(new_visible_rect));
+  CHECK(!new_visible_rect.IsEmpty());
   if (visible_rect_ != new_visible_rect) {
     DVLOG(2) << "New visible rect: " << new_visible_rect.ToString();
     visible_rect_ = new_visible_rect;
