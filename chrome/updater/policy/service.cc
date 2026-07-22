@@ -324,7 +324,7 @@ PolicyStatus<int> PolicyService::GetMajorVersionRolloutPolicy(
 PolicyStatus<int> PolicyService::GetMinorVersionRolloutPolicy(
     const std::string& app_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return QueryAppPolicy(&PolicyManagerInterface::GetMajorVersionRolloutPolicy,
+  return QueryAppPolicy(&PolicyManagerInterface::GetMinorVersionRolloutPolicy,
                         app_id);
 }
 
