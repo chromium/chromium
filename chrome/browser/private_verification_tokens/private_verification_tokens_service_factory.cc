@@ -5,6 +5,7 @@
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -41,7 +42,9 @@ PrivateVerificationTokensServiceFactory::BuildServiceInstanceForBrowserContext(
   }
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(profile);
-  return PrivateVerificationTokensService::Create(profile->GetPath());
+  return PrivateVerificationTokensService::Create(
+      profile->GetPath(),
+      HostContentSettingsMapFactory::GetForProfile(profile));
 }
 
 bool PrivateVerificationTokensServiceFactory::
@@ -52,7 +55,9 @@ bool PrivateVerificationTokensServiceFactory::
 PrivateVerificationTokensServiceFactory::
     PrivateVerificationTokensServiceFactory()
     : ProfileKeyedServiceFactory("PrivateVerificationTokensServiceFactory",
-                                 CreateProfileSelections()) {}
+                                 CreateProfileSelections()) {
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
+}
 
 PrivateVerificationTokensServiceFactory::
     ~PrivateVerificationTokensServiceFactory() = default;

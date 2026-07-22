@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_store.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -30,13 +31,16 @@ using private_verification_tokens::PrivateVerificationTokensStore;
 
 // static
 std::unique_ptr<PrivateVerificationTokensService>
-PrivateVerificationTokensService::Create(const base::FilePath& data_directory) {
+PrivateVerificationTokensService::Create(
+    const base::FilePath& data_directory,
+    HostContentSettingsMap* host_content_settings_map) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (data_directory.empty()) {
     return nullptr;
   }
-  auto service = base::WrapUnique(new PrivateVerificationTokensService());
+  auto service = base::WrapUnique(
+      new PrivateVerificationTokensService(host_content_settings_map));
   base::FilePath db_path = data_directory.Append(kDatabaseName);
 
   auto store = PrivateVerificationTokensStore::Create(
@@ -52,7 +56,9 @@ PrivateVerificationTokensService::Create(const base::FilePath& data_directory) {
   return service;
 }
 
-PrivateVerificationTokensService::PrivateVerificationTokensService() {
+PrivateVerificationTokensService::PrivateVerificationTokensService(
+    HostContentSettingsMap* host_content_settings_map)
+    : host_content_settings_map_(host_content_settings_map) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -98,6 +104,16 @@ void PrivateVerificationTokensService::BindReceiver(
   receivers_.Add(this, std::move(pending_receiver));
 }
 
+bool PrivateVerificationTokensService::IsAntiAbuseEnabled(
+    const url::Origin& issuer) const {
+  if (!host_content_settings_map_) {
+    return true;
+  }
+  ContentSetting setting = host_content_settings_map_->GetContentSetting(
+      issuer.GetURL(), issuer.GetURL(), ContentSettingsType::ANTI_ABUSE);
+  return setting != CONTENT_SETTING_BLOCK;
+}
+
 void PrivateVerificationTokensService::GetTokens(
     private_verification_tokens::mojom::PrivateVerificationTokensProvider::
         GetTokensCallback callback) {
@@ -119,6 +135,9 @@ void PrivateVerificationTokensService::GetTokens(
       tokens;
   CHECK(store_);
   for (const auto& [issuer, token_with_id] : store_->tokens()) {
+    if (!IsAntiAbuseEnabled(issuer)) {
+      continue;
+    }
     auto mojo_token = private_verification_tokens::mojom::
         PrivateVerificationTokensToken::New();
     mojo_token->issuer = issuer;
@@ -143,6 +162,16 @@ void PrivateVerificationTokensService::StoreTokens(
         base::BindOnce(&PrivateVerificationTokensService::StoreTokens,
                        weak_ptr_factory_.GetWeakPtr(), std::move(tokens),
                        std::move(callback)));
+    return;
+  }
+
+  std::erase_if(
+      tokens,
+      [this](const private_verification_tokens::PrivateVerificationTokensToken&
+                 token) { return !IsAntiAbuseEnabled(token.issuer()); });
+
+  if (tokens.empty()) {
+    std::move(callback).Run();
     return;
   }
 

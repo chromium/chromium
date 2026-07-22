@@ -19,7 +19,9 @@ static_library("private_verification_tokens") {
 
   deps = [
     "//base",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
+    "//components/content_settings/core/browser",
     "//components/keyed_service/core",
     "//components/private_verification_tokens/common:private_verification_tokens_store",
     "//components/private_verification_tokens/mojom",
@@ -35,6 +37,7 @@ source_set("browser_tests") {
   deps = [
     ":private_verification_tokens",
     "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//components/private_verification_tokens/common:private_verification_tokens_database",
     "//components/private_verification_tokens/mojom",

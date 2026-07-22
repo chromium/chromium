@@ -19,12 +19,14 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/private_verification_tokens/private_verification_tokens_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "components/private_verification_tokens/mojom/private_verification_tokens_service.mojom.h"
@@ -165,6 +167,60 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
+                       GetTokens_WhenAntiAbuseSettingBlocked_ReturnsEmpty) {
+  Profile* profile = GetProfile();
+
+  HostContentSettingsMapFactory::GetForProfile(profile)
+      ->SetDefaultContentSetting(ContentSettingsType::ANTI_ABUSE,
+                                 CONTENT_SETTING_BLOCK);
+
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+
+  WaitForInitialization(service);
+
+  base::test::TestFuture<std::vector<
+      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
+      future;
+  service->GetTokens(future.GetCallback());
+
+  auto tokens = future.Take();
+  EXPECT_TRUE(tokens.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateVerificationTokensServiceBrowserTest,
+    GetTokens_WhenAntiAbuseSettingBlockedForOrigin_FiltersOriginTokens) {
+  Profile* profile = GetProfile();
+
+  HostContentSettingsMapFactory::GetForProfile(profile)
+      ->SetContentSettingDefaultScope(
+          GURL("https://a.com"), GURL("https://a.com"),
+          ContentSettingsType::ANTI_ABUSE, CONTENT_SETTING_BLOCK);
+
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+
+  WaitForInitialization(service);
+
+  base::test::TestFuture<std::vector<
+      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
+      future;
+  service->GetTokens(future.GetCallback());
+
+  auto tokens = future.Take();
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  std::vector<private_verification_tokens::PrivateVerificationTokensToken>
+      expected_tokens;
+  expected_tokens.emplace_back(url::Origin::Create(GURL("https://b.org")),
+                               std::vector<uint8_t>{4, 5, 6, 7}, 2, expiration,
+                               1);
+  VerifyTokens(tokens, expected_tokens);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
                        StoreTokens_Success) {
   Profile* profile = GetProfile();
 
@@ -194,6 +250,57 @@ IN_PROC_BROWSER_TEST_F(PrivateVerificationTokensServiceBrowserTest,
   auto tokens = get_future.Take();
   auto expected_tokens = CreateTestTokens();
   expected_tokens.emplace_back(c_origin, std::vector<uint8_t>{10, 11}, 3,
+                               expiration, 1);
+  VerifyTokens(tokens, expected_tokens);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrivateVerificationTokensServiceBrowserTest,
+    StoreTokens_WhenAntiAbuseSettingBlockedForOrigin_FiltersOriginTokens) {
+  Profile* profile = GetProfile();
+
+  const auto c_origin = url::Origin::Create(GURL("https://c.net"));
+  const auto d_origin = url::Origin::Create(GURL("https://d.com"));
+
+  HostContentSettingsMapFactory::GetForProfile(profile)
+      ->SetContentSettingDefaultScope(c_origin.GetURL(), c_origin.GetURL(),
+                                      ContentSettingsType::ANTI_ABUSE,
+                                      CONTENT_SETTING_BLOCK);
+
+  PrivateVerificationTokensService* service =
+      PrivateVerificationTokensServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+
+  WaitForInitialization(service);
+
+  const auto expiration = base::Time::Now() + base::Hours(2);
+  std::vector<private_verification_tokens::PrivateVerificationTokensToken>
+      new_tokens = {
+          private_verification_tokens::PrivateVerificationTokensToken(
+              c_origin, std::vector<uint8_t>{10, 11}, 3, expiration, 1),
+          private_verification_tokens::PrivateVerificationTokensToken(
+              d_origin, std::vector<uint8_t>{12, 13}, 4, expiration, 1),
+      };
+
+  base::test::TestFuture<void> store_future;
+  service->StoreTokens(std::move(new_tokens), store_future.GetCallback());
+  EXPECT_TRUE(store_future.Wait());
+
+  // Reset setting for c.net so GetTokens includes it if present, allowing us to
+  // verify that StoreTokens dropped c.net's token.
+  HostContentSettingsMapFactory::GetForProfile(profile)
+      ->SetContentSettingDefaultScope(c_origin.GetURL(), c_origin.GetURL(),
+                                      ContentSettingsType::ANTI_ABUSE,
+                                      CONTENT_SETTING_ALLOW);
+
+  base::test::TestFuture<std::vector<
+      private_verification_tokens::mojom::PrivateVerificationTokensTokenPtr>>
+      get_future;
+  service->GetTokens(get_future.GetCallback());
+
+  auto tokens = get_future.Take();
+  auto expected_tokens = CreateTestTokens();
+  expected_tokens.emplace_back(d_origin, std::vector<uint8_t>{12, 13}, 4,
                                expiration, 1);
   VerifyTokens(tokens, expected_tokens);
 }
