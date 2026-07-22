@@ -569,8 +569,8 @@ class RightPaneView : public NonAccessibleView {
     }
 
     if (language_menu_view_) {
-      advanced_view_->RemoveChildViewT(language_menu_view_.get());
-      language_menu_view_ = nullptr;
+      advanced_view_->RemoveChildViewT(
+          std::exchange(language_menu_view_, nullptr));
     }
     auto language_menu_view = std::make_unique<PublicAccountMenuView>(
         language_items_, selected_language_index,
@@ -604,8 +604,8 @@ class RightPaneView : public NonAccessibleView {
     }
 
     if (keyboard_menu_view_) {
-      advanced_view_->RemoveChildViewT(keyboard_menu_view_.get());
-      keyboard_menu_view_ = nullptr;
+      advanced_view_->RemoveChildViewT(
+          std::exchange(keyboard_menu_view_, nullptr));
     }
     auto keyboard_menu_view = std::make_unique<PublicAccountMenuView>(
         keyboard_items_, selected_keyboard_index,
@@ -660,10 +660,8 @@ class RightPaneView : public NonAccessibleView {
   raw_ptr<views::View> keyboard_title_ = nullptr;
   raw_ptr<views::StyledLabel> learn_more_label_ = nullptr;
 
-  raw_ptr<PublicAccountMenuView, DanglingUntriaged> language_menu_view_ =
-      nullptr;
-  raw_ptr<PublicAccountMenuView, DanglingUntriaged> keyboard_menu_view_ =
-      nullptr;
+  raw_ptr<PublicAccountMenuView> language_menu_view_ = nullptr;
+  raw_ptr<PublicAccountMenuView> keyboard_menu_view_ = nullptr;
 
   std::string selected_language_item_value_;
   std::string selected_keyboard_item_value_;
