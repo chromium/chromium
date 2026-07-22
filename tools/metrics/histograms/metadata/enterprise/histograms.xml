@@ -3854,6 +3854,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ProvisioningDomain.FetchResult"
+    enum="EnterpriseProvisioningDomainFetchResult" expires_after="2027-07-01">
+  <owner>xzonghan@google.com</owner>
+  <owner>chrome-enterprise-networking-core@google.com</owner>
+  <summary>
+    Recorded when a Provisioning Domain configuration fetch finishes or fails.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ProvisioningDomainClient.FetchResult"
     enum="EnterpriseProvisioningDomainClientFetchResult"
     expires_after="2027-07-01">

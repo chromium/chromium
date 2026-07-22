@@ -3714,7 +3714,19 @@ shown properly on the user-facing crash UI.
   <int value="2" label="HTTP Error"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/enterprise/net/core/provisioning_domain_client.h:ProvisioningDomainClientFetchResultStatus) -->
+<!-- LINT.ThenChange(//components/enterprise/net/core/provisioning_domain_client.h:ProvisioningDomainClientFetchResult) -->
+
+<!-- LINT.IfChange(EnterpriseProvisioningDomainFetchResult) -->
+
+<enum name="EnterpriseProvisioningDomainFetchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Invalid URL"/>
+  <int value="2" label="Token Fetch Error"/>
+  <int value="3" label="HTTP Error"/>
+  <int value="4" label="Parse Error"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/enterprise/net/core/provisioning_domain_fetcher.h:ProvisioningDomainFetchResult) -->
 
 <enum name="ExtensionInProgressRequestState">
   <int value="0" label="In progress"/>

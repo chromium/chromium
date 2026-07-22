@@ -23,6 +23,7 @@ static_library("core") {
       "enterprise_network_auth_service.h",
       "enterprise_proxy_service.h",
       "provisioning_domain_client.h",
+      "provisioning_domain_fetcher.h",
       "types.h",
       "utils.h",
     ]
@@ -30,6 +31,7 @@ static_library("core") {
       "enterprise_network_auth_service.cc",
       "enterprise_proxy_service.cc",
       "provisioning_domain_client.cc",
+      "provisioning_domain_fetcher.cc",
       "types.cc",
       "utils.cc",
     ]
@@ -52,6 +54,7 @@ source_set("unit_tests") {
       "enterprise_network_auth_service_unittest.cc",
       "enterprise_proxy_service_unittest.cc",
       "provisioning_domain_client_unittest.cc",
+      "provisioning_domain_fetcher_unittest.cc",
       "utils_unittest.cc",
     ]
     deps += [
