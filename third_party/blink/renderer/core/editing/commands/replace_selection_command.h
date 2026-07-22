@@ -47,7 +47,7 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
     kSanitizeFragment = 1 << 5
   };
 
-  typedef unsigned CommandOptions;
+  using CommandOptions = unsigned;
 
   ReplaceSelectionCommand(Document&,
                           DocumentFragment*,

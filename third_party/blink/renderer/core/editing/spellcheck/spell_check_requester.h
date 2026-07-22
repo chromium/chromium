@@ -141,7 +141,7 @@ class CORE_EXPORT SpellCheckRequester final
 
   Member<SpellCheckRequest> processing_request_;
 
-  typedef HeapDeque<Member<SpellCheckRequest>> RequestQueue;
+  using RequestQueue = HeapDeque<Member<SpellCheckRequest>>;
   RequestQueue request_queue_;
 };
 

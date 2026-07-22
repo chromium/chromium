@@ -45,7 +45,7 @@ class CORE_EXPORT ApplyStyleCommand final : public CompositeEditCommand {
   enum InlineStyleRemovalMode { kRemoveIfNeeded, kRemoveAlways, kRemoveNone };
   enum AddStyledElement { kAddStyledElement, kDoNotAddStyledElement };
   enum MergeSiblings { kMergeSiblings, kDoNotMergeSiblings };
-  typedef bool (*IsInlineElementToRemoveFunction)(const Element*);
+  using IsInlineElementToRemoveFunction = bool (*)(const Element*);
 
   ApplyStyleCommand(Document&,
                     const EditingStyle*,
@@ -56,10 +56,11 @@ class CORE_EXPORT ApplyStyleCommand final : public CompositeEditCommand {
                     const Position& start,
                     const Position& end);
   ApplyStyleCommand(Element*, bool remove_only);
-  ApplyStyleCommand(Document&,
-                    const EditingStyle*,
-                    bool (*is_inline_element_to_remove)(const Element*),
-                    InputEvent::InputType);
+  ApplyStyleCommand(
+      Document&,
+      const EditingStyle*,
+      IsInlineElementToRemoveFunction is_inline_element_to_remove_function,
+      InputEvent::InputType);
 
   void Trace(Visitor*) const override;
 
