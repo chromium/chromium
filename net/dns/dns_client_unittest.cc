@@ -18,6 +18,7 @@
 #include "net/dns/dns_config_service.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_test_util.h"
+#include "net/dns/dns_transaction.h"
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/doh_provider_entry.h"
@@ -218,9 +219,9 @@ TEST_F(DnsClientTest, CanUseSecureDnsTransactions_ProbeSuccess) {
   EXPECT_TRUE(
       client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
 
-  resolve_context_->RecordServerSuccess(0u /* server_index */,
-                                        true /* is_doh_server */,
-                                        client_->GetCurrentSession());
+  resolve_context_->RecordServerSuccess(
+      0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      client_->GetCurrentSession());
   EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
   EXPECT_FALSE(
       client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
@@ -251,9 +252,9 @@ TEST_F(DnsClientTest, AllAllowed) {
   client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
   resolve_context_->InvalidateCachesAndPerSessionData(
       client_->GetCurrentSession(), false /* network_change */);
-  resolve_context_->RecordServerSuccess(0u /* server_index */,
-                                        true /* is_doh_server */,
-                                        client_->GetCurrentSession());
+  resolve_context_->RecordServerSuccess(
+      0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      client_->GetCurrentSession());
 
   EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
   EXPECT_FALSE(
@@ -761,9 +762,9 @@ TEST_F(DnsClientTest,
       client_->GetCurrentSession(), /*network_change=*/false);
 
   // Make DoH server available.
-  resolve_context_->RecordServerSuccess(/*server_index=*/0u,
-                                        /*is_doh_server=*/true,
-                                        client_->GetCurrentSession());
+  resolve_context_->RecordServerSuccess(
+      /*server_index=*/0u, DnsTransactionFactory::AttemptMode::kHttp,
+      client_->GetCurrentSession());
 
   // If DoH is available, should NOT prefer fallback to insecure DNS.
   EXPECT_FALSE(
@@ -781,9 +782,9 @@ TEST_F(
       client_->GetCurrentSession(), /*network_change=*/false);
 
   // Make DoH server available.
-  resolve_context_->RecordServerSuccess(/*server_index=*/0u,
-                                        /*is_doh_server=*/true,
-                                        client_->GetCurrentSession());
+  resolve_context_->RecordServerSuccess(
+      /*server_index=*/0u, DnsTransactionFactory::AttemptMode::kHttp,
+      client_->GetCurrentSession());
 
   // If `should_perform_doh_fallback_upgrade` is false, it should NOT prefer
   // fallback if DoH is available.
@@ -802,9 +803,9 @@ TEST_F(
       client_->GetCurrentSession(), /*network_change=*/false);
 
   // Make DoH server available.
-  resolve_context_->RecordServerSuccess(/*server_index=*/0u,
-                                        /*is_doh_server=*/true,
-                                        client_->GetCurrentSession());
+  resolve_context_->RecordServerSuccess(
+      /*server_index=*/0u, DnsTransactionFactory::AttemptMode::kHttp,
+      client_->GetCurrentSession());
 
   // In SECURE mode, it should NOT prefer fallback if DoH is available.
   EXPECT_FALSE(

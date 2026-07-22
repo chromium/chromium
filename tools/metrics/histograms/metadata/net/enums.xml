@@ -686,6 +686,7 @@ historical analysis. -->
   <int value="1" label="DnsTCPAttempt due to low UDP entropy"/>
   <int value="2" label="DnsTCPAttempt due to retry due to UDP trucation"/>
   <int value="3" label="DnsHTTPAttempt"/>
+  <int value="4" label="DnsPlatformAttempt"/>
 </enum>
 
 <!-- LINT.IfChange(DnsClientCapability) -->

@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,6 +26,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_handle.h"
@@ -103,13 +105,12 @@ bool IsFdReadable(int fd) {
 DnsPlatformAndroidAttempt::DelegateImpl::DelegateImpl() = default;
 DnsPlatformAndroidAttempt::DelegateImpl::~DelegateImpl() = default;
 
-int DnsPlatformAndroidAttempt::DelegateImpl::Query(
-    net_handle_t network,
-    base::cstring_view hostname,
-    uint16_t dns_query_type) {
+int DnsPlatformAndroidAttempt::DelegateImpl::Query(net_handle_t network,
+                                                   base::cstring_view hostname,
+                                                   uint16_t dns_query_type,
+                                                   uint32_t flags) {
   return android_res_nquery(network, hostname.c_str(), dns_protocol::kClassIN,
-                            dns_query_type,
-                            /*flags=*/0);
+                            dns_query_type, flags);
 }
 
 int DnsPlatformAndroidAttempt::DelegateImpl::Result(
@@ -206,8 +207,12 @@ int DnsPlatformAndroidAttempt::DoLoop(int result) {
 
 int DnsPlatformAndroidAttempt::DoQuery() {
   next_state_ = State::kQueryComplete;
+  uint32_t flags = 0;
+  if (base::FeatureList::IsEnabled(features::kDnsPlatformFailFastAndRetry)) {
+    flags |= ANDROID_RESOLV_NO_RETRY;
+  }
   fd_ = delegate_->Query(MapNetworkHandle(target_network_), hostname_,
-                         dns_query_type_);
+                         dns_query_type_, flags);
   if (fd_ < 0) {
     return MapSystemErrorWithoutPending(-fd_);
   }

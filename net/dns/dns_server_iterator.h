@@ -158,31 +158,29 @@ class NET_EXPORT_PRIVATE ClassicDnsServerIterator : public DnsServerIterator {
 // controlling the underlying DNS server used. For example, this is the case for
 // DnsTransactionFactory::AttemptMode::kPlatform on Android.
 // In this scenario, we want to limit the number of attempts for each query to
-// one: calling GetNextAttemptIndex causes future calls to AttemptAvailable to
-// always return false.
-class NET_EXPORT_PRIVATE OneShotDnsServerIterator : public DnsServerIterator {
+// `max_attempts`: calling GetNextAttemptIndex increments the attempt count,
+// and AttemptAvailable will return false once `max_attempts` is reached.
+class NET_EXPORT_PRIVATE PlatformDnsServerIterator : public DnsServerIterator {
  public:
-  OneShotDnsServerIterator()
-      : DnsServerIterator(/*nameservers_size=*/0,
+  explicit PlatformDnsServerIterator(int max_attempts)
+      : DnsServerIterator(/*nameservers_size=*/1,
                           /*starting_index=*/0,
-                          /*max_times_returned=*/0,
+                          /*max_times_returned=*/max_attempts,
                           /*max_failures=*/0,
                           /*resolve_context=*/nullptr,
                           /*session=*/nullptr) {}
 
-  ~OneShotDnsServerIterator() override = default;
+  ~PlatformDnsServerIterator() override = default;
 
   // Not copy or moveable.
-  OneShotDnsServerIterator(const OneShotDnsServerIterator&) = delete;
-  OneShotDnsServerIterator& operator=(const OneShotDnsServerIterator&) = delete;
-  OneShotDnsServerIterator(OneShotDnsServerIterator&&) = delete;
+  PlatformDnsServerIterator(const PlatformDnsServerIterator&) = delete;
+  PlatformDnsServerIterator& operator=(const PlatformDnsServerIterator&) =
+      delete;
+  PlatformDnsServerIterator(PlatformDnsServerIterator&&) = delete;
 
   // DnsServerIterator methods:
   size_t GetNextAttemptIndex() override;
   bool AttemptAvailable() override;
-
- private:
-  bool attempt_available_ = true;
 };
 
 }  // namespace net

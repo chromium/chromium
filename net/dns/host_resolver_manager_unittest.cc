@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "net/dns/host_resolver_manager_unittest.h"
 
 #include <algorithm>
@@ -63,6 +62,7 @@
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_test_util.h"
+#include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_cache.h"
@@ -5416,8 +5416,9 @@ TEST_F(HostResolverManagerDnsTest,
 
   // Mark DoH server as successful so it is considered available in Automatic
   // mode.
-  resolve_context_->RecordServerSuccess(0, /*is_doh_server=*/true,
-                                        GetDnsClient()->GetCurrentSession());
+  resolve_context_->RecordServerSuccess(
+      0, DnsTransactionFactory::AttemptMode::kHttp,
+      GetDnsClient()->GetCurrentSession());
 
   // Target a specific network.
   handles::NetworkHandle target_network = 12345;
@@ -7056,9 +7057,9 @@ TEST_F(HostResolverManagerDnsTest,
   // Mark a DoH server successful only for |resolve_context2|. Note that this
   // must come after the resolver's configuration is set because this relies on
   // the specific configuration containing a DoH server.
-  resolve_context2.RecordServerSuccess(0u /* server_index */,
-                                       true /* is_doh_server */,
-                                       mock_dns_client_->GetCurrentSession());
+  resolve_context2.RecordServerSuccess(
+      0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      mock_dns_client_->GetCurrentSession());
 
   // No available DoH servers for |resolve_context1|, so expect a non-secure
   // request. Non-secure requests for "secure" will fail with
@@ -9482,7 +9483,8 @@ TEST_F(HostResolverManagerDnsTest,
 
   DnsSession* session_before = mock_dns_client_->GetCurrentSession();
   resolve_context_->RecordServerSuccess(
-      0u /* server_index */, true /* is_doh_server */, session_before);
+      0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      session_before);
   ASSERT_TRUE(resolve_context_->GetDohServerAvailability(0u, session_before));
 
   // Flush data by triggering a DnsConfigOverrides change.
@@ -9497,7 +9499,8 @@ TEST_F(HostResolverManagerDnsTest,
 
   // Confirm new session is in use.
   resolve_context_->RecordServerSuccess(
-      0u /* server_index */, true /* is_doh_server */, session_after);
+      0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      session_after);
   EXPECT_TRUE(resolve_context_->GetDohServerAvailability(0u, session_after));
 }
 
@@ -9632,7 +9635,8 @@ TEST_F(HostResolverManagerDnsTest,
 
   DnsSession* session_before = mock_dns_client_->GetCurrentSession();
   resolve_context_->RecordServerSuccess(
-      0u /* server_index */, true /* is_doh_server */, session_before);
+      0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      session_before);
   ASSERT_TRUE(resolve_context_->GetDohServerAvailability(0u, session_before));
 
   // Flush data by triggering a config change.
@@ -9647,7 +9651,8 @@ TEST_F(HostResolverManagerDnsTest,
 
   // Confirm new session is in use.
   resolve_context_->RecordServerSuccess(
-      0u /* server_index */, true /* is_doh_server */, session_after);
+      0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      session_after);
   EXPECT_TRUE(resolve_context_->GetDohServerAvailability(0u, session_after));
 }
 
@@ -13445,7 +13450,8 @@ TEST_F(HostResolverManagerDnsTest,
   // ResolveContext. MockDnsClient skips most other interaction with
   // ResolveContext.
   mock_dns_client_->SetForceDohServerAvailable(false);
-  context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(0u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               mock_dns_client_->GetCurrentSession());
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair("secure", 80), NetworkAnonymizationKey(),
@@ -13485,7 +13491,8 @@ TEST_F(HostResolverManagerDnsTest,
   // ResolveContext. MockDnsClient skips most other interaction with
   // ResolveContext.
   mock_dns_client_->SetForceDohServerAvailable(false);
-  context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(0u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               mock_dns_client_->GetCurrentSession());
   ResolveHostResponseHelper response(resolver_->CreateRequest(
       HostPortPair("secure", 80), NetworkAnonymizationKey(),

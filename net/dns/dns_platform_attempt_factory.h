@@ -23,7 +23,7 @@ class NET_EXPORT DnsPlatformAttemptFactory {
 
   // Creates a DnsAttempt for DnsTransactionFactory::AttemptMode::kPlatform.
   // - `server_index`, this is unused. Platform attempts are not expected to be
-  //   able to control the DNS server being used, see OneShotDnsServerIterator.
+  //   able to control the DNS server being used, see PlatformDnsServerIterator.
   //   It is currently present only for compatibility with DnsAttempt and
   //   DnsTransaction's retry logic. TODO(crbug.com/493029486): Remove this.
   // - `hostname`, the hostname to resolve.

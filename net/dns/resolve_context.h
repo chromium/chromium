@@ -24,6 +24,7 @@
 #include "net/dns/dns_attempt.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_http_attempt.h"
+#include "net/dns/dns_transaction.h"
 #include "net/dns/public/secure_dns_mode.h"
 
 namespace net {
@@ -123,26 +124,26 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   // Record failure to get a response from the server (e.g. SERVFAIL, connection
   // failures, or that the server failed to respond before the fallback period
-  // elapsed. If |is_doh_server| and the number of failures has surpassed a
-  // threshold, sets the DoH probe state to unavailable. Noop if |session| is
-  // not the current session. Should only be called with with server failure
-  // |rv|s, not e.g. OK, ERR_NAME_NOT_RESOLVED (which at the transaction level
-  // is expected to be nxdomain), or ERR_IO_PENDING.
+  // elapsed. If `attempt_mode == AttemptMode::kHttp` and the number of failures
+  // has surpassed a threshold, sets the DoH probe state to unavailable. Noop if
+  // |session| is not the current session. Should only be called with with
+  // server failure |rv|s, not e.g. OK, ERR_NAME_NOT_RESOLVED (which at the
+  // transaction level is expected to be nxdomain), or ERR_IO_PENDING.
   void RecordServerFailure(size_t server_index,
-                           bool is_doh_server,
+                           DnsTransactionFactory::AttemptMode attempt_mode,
                            int rv,
                            const DnsSession* session);
 
   // Record that server responded successfully. Noop if |session| is not the
   // current session.
   void RecordServerSuccess(size_t server_index,
-                           bool is_doh_server,
+                           DnsTransactionFactory::AttemptMode attempt_mode,
                            const DnsSession* session);
 
   // Record how long it took to receive a response from the server. Noop if
   // |session| is not the current session.
   void RecordRtt(size_t server_index,
-                 bool is_doh_server,
+                 DnsTransactionFactory::AttemptMode attempt_mode,
                  base::TimeDelta rtt,
                  int rv,
                  const DnsSession* session);
@@ -171,8 +172,10 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
                                         const DnsSession* session);
 
   // Return the period the next platform query should run before fallback to
-  // next attempt.
-  base::TimeDelta NextPlatformFallbackPeriod(const DnsSession* session);
+  // next attempt. `attempt` counts from 0 and is used for exponential backoff.
+  base::TimeDelta NextPlatformFallbackPeriod(size_t platform_server_index,
+                                             int attempt,
+                                             const DnsSession* session);
 
   // Return a timeout for an insecure transaction (from DnsTransaction::Start()).
   // Expected that the transaction will skip waiting for this timeout if it is
@@ -231,6 +234,14 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     return doh_autoupgrade_success_metric_timer_.IsRunning();
   }
 
+  int platform_last_failure_count_for_testing() const {
+    return platform_server_stats_.last_failure_count;
+  }
+
+  bool platform_current_connection_success_for_testing() const {
+    return platform_server_stats_.current_connection_success;
+  }
+
   // Network to perform the DNS lookups for. When equal to
   // handles::kInvalidNetworkHandle the decision of which one to target is left
   // to the resolver. Virtual for testing.
@@ -256,6 +267,7 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     explicit ServerStats(std::unique_ptr<base::SampleVector> rtt_histogram);
 
     ServerStats(ServerStats&&);
+    ServerStats& operator=(ServerStats&&);
 
     ~ServerStats();
 
@@ -288,7 +300,8 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   // Returns the ServerStats for the designated server. Returns nullptr if no
   // ServerStats found.
-  ServerStats* GetServerStats(size_t server_index, bool is_doh_server);
+  ServerStats* GetServerStats(size_t server_index,
+                              DnsTransactionFactory::AttemptMode attempt_mode);
 
   // Return the fallback period for the next query.
   base::TimeDelta NextFallbackPeriodHelper(const ServerStats* server_stats,
@@ -300,17 +313,19 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   // Record the time to perform a query.
   void RecordRttForUma(size_t server_index,
-                       bool is_doh_server,
+                       DnsTransactionFactory::AttemptMode attempt_mode,
                        base::TimeDelta rtt,
                        int rv,
                        base::TimeDelta base_fallback_period,
                        const DnsSession* session);
-  std::string GetQueryTypeForUma(size_t server_index,
-                                 bool is_doh_server,
-                                 const DnsSession* session);
-  std::string GetDohProviderIdForUma(size_t server_index,
-                                     bool is_doh_server,
-                                     const DnsSession* session);
+  std::string GetQueryTypeForUma(
+      size_t server_index,
+      DnsTransactionFactory::AttemptMode attempt_mode,
+      const DnsSession* session);
+  std::string GetDohProviderIdForUma(
+      size_t server_index,
+      DnsTransactionFactory::AttemptMode attempt_mode,
+      const DnsSession* session);
 
   void NotifyDohStatusObserversOfSessionChanged();
   void NotifyDohStatusObserversOfUnavailable(bool network_change);
@@ -353,6 +368,8 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   std::vector<ServerStats> classic_server_stats_;
   // Track runtime statistics of each DoH server.
   std::vector<ServerStats> doh_server_stats_;
+  // Track runtime statistics of platform resolver.
+  ServerStats platform_server_stats_;
 
   base::OneShotTimer doh_autoupgrade_success_metric_timer_;
 

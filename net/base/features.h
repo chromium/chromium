@@ -60,6 +60,9 @@ NET_EXPORT extern const base::FeatureParam<double>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kDnsMinTransactionTimeout;
 
+// Enables fail-fast and retry behavior for DNS_PLATFORM queries.
+NET_EXPORT BASE_DECLARE_FEATURE(kDnsPlatformFailFastAndRetry);
+
 // Enables querying HTTPS DNS records that will affect results from HostResolver
 // and may be used to affect connection behavior. Whether or not those results
 // are used (e.g. to connect via ECH) may be controlled by separate features.

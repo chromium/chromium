@@ -16,6 +16,7 @@
 #include <memory>
 #include <ranges>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -35,15 +36,15 @@ namespace net {
 class MockAndroidDnsPlatformAttemptDelegate
     : public DnsPlatformAndroidAttempt::Delegate {
  public:
-  static base::ScopedFD CreateFdWithUnreadData();
-  static base::ScopedFD CreateFdWithNoData();
+  static std::pair<base::ScopedFD, base::ScopedFD> CreateFdWithUnreadData();
+  static std::pair<base::ScopedFD, base::ScopedFD> CreateFdWithNoData();
 
   MockAndroidDnsPlatformAttemptDelegate();
   ~MockAndroidDnsPlatformAttemptDelegate() override;
 
   MOCK_METHOD(int,
               Query,
-              (net_handle_t, base::cstring_view, uint16_t),
+              (net_handle_t, base::cstring_view, uint16_t, uint32_t),
               (override));
 
   MOCK_METHOD(int, Result, (int, int*, base::span<uint8_t>), (override));

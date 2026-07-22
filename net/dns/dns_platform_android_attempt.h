@@ -44,10 +44,12 @@ class NET_EXPORT DnsPlatformAndroidAttempt final
     virtual ~Delegate() = default;
 
     // An abstraction over the `android_res_nquery` DNS resolution API to allow
-    // for mocking in tests.
+    // for mocking in tests. `flags` must be one of
+    // https://developer.android.com/ndk/reference/group/networking#resnsendflags.
     virtual int Query(net_handle_t network,
                       base::cstring_view hostname,
-                      uint16_t dns_query_type) = 0;
+                      uint16_t dns_query_type,
+                      uint32_t flags) = 0;
 
     // An abstraction over the `android_res_nresult` DNS resolution API to
     // allow for mocking in tests.
@@ -65,7 +67,8 @@ class NET_EXPORT DnsPlatformAndroidAttempt final
 
     int Query(net_handle_t network,
               base::cstring_view hostname,
-              uint16_t dns_query_type) __INTRODUCED_IN(29) override;
+              uint16_t dns_query_type,
+              uint32_t flags) __INTRODUCED_IN(29) override;
 
     int Result(int fd, int* rcode, base::span<uint8_t> answer)
         __INTRODUCED_IN(29) override;

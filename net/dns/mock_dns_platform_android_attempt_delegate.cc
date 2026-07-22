@@ -11,20 +11,23 @@ MockAndroidDnsPlatformAttemptDelegate::MockAndroidDnsPlatformAttemptDelegate() =
 MockAndroidDnsPlatformAttemptDelegate::
     ~MockAndroidDnsPlatformAttemptDelegate() = default;
 
-base::ScopedFD MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData() {
+std::pair<base::ScopedFD, base::ScopedFD>
+MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData() {
   int pipefd[2];
   CHECK_EQ(pipe(pipefd), 0);
   base::ScopedFD fd(pipefd[0]);
   base::ScopedFD write_fd(pipefd[1]);
   CHECK_EQ(write(write_fd.get(), "unread data", 11), 11);
-  return fd;
+  return {std::move(fd), std::move(write_fd)};
 }
 
-base::ScopedFD MockAndroidDnsPlatformAttemptDelegate::CreateFdWithNoData() {
+std::pair<base::ScopedFD, base::ScopedFD>
+MockAndroidDnsPlatformAttemptDelegate::CreateFdWithNoData() {
   int pipefd[2];
   CHECK_EQ(pipe(pipefd), 0);
   base::ScopedFD fd(pipefd[0]);
-  return fd;
+  base::ScopedFD write_fd(pipefd[1]);
+  return {std::move(fd), std::move(write_fd)};
 }
 
 }  // namespace net

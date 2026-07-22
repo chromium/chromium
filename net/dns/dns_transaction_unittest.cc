@@ -20,6 +20,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
@@ -739,7 +740,8 @@ class DnsTransactionTestBase : public testing::Test {
       for (size_t server_index = 0;
            server_index < config_.doh_config.servers().size(); ++server_index) {
         resolve_context_->RecordServerSuccess(
-            server_index, true /* is_doh_server */, session_.get());
+            server_index, DnsTransactionFactory::AttemptMode::kHttp,
+            session_.get());
       }
     }
   }
@@ -2164,7 +2166,8 @@ TEST_F(DnsTransactionTest, HttpsNotAvailableThenHttpFallback) {
 
   // Make just server 1 available.
   resolve_context_->RecordServerSuccess(
-      1u /* server_index */, true /* is_doh_server*/, session_.get());
+      1u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      session_.get());
 
   {
     std::unique_ptr<DnsServerIterator> doh_itr =
@@ -2204,7 +2207,8 @@ TEST_F(DnsTransactionTest, HttpsFailureThenNotAvailable_Automatic) {
 
   // Make just server 0 available.
   resolve_context_->RecordServerSuccess(
-      0u /* server_index */, true /* is_doh_server*/, session_.get());
+      0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      session_.get());
 
   {
     std::unique_ptr<DnsServerIterator> doh_itr =
@@ -2251,7 +2255,8 @@ TEST_F(DnsTransactionTest, HttpsFailureThenNotAvailable_Secure) {
 
   // Make just server 0 available.
   resolve_context_->RecordServerSuccess(
-      0u /* server_index */, true /* is_doh_server*/, session_.get());
+      0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+      session_.get());
 
   {
     std::unique_ptr<DnsServerIterator> doh_itr =
@@ -4214,9 +4219,9 @@ TEST_F(DnsTransactionTestWithMockTime, RestartFinishedProbe) {
 
   // Mark server unavailabe and restart runner.
   for (int i = 0; i < ResolveContext::kAutomaticModeFailureLimit; ++i) {
-    resolve_context_->RecordServerFailure(0u /* server_index */,
-                                          true /* is_doh_server */, ERR_FAILED,
-                                          session_.get());
+    resolve_context_->RecordServerFailure(
+        0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+        ERR_FAILED, session_.get());
   }
   ASSERT_FALSE(resolve_context_->GetDohServerAvailability(
       0u /* doh_server_index */, session_.get()));
@@ -4264,9 +4269,9 @@ TEST_F(DnsTransactionTestWithMockTime, FastProbeRestart) {
   // becoming unavailable and might as well replecate real behavior for the
   // test.
   for (int i = 0; i < ResolveContext::kAutomaticModeFailureLimit; ++i) {
-    resolve_context_->RecordServerFailure(0u /* server_index */,
-                                          true /* is_doh_server */, ERR_FAILED,
-                                          session_.get());
+    resolve_context_->RecordServerFailure(
+        0u /* server_index */, DnsTransactionFactory::AttemptMode::kHttp,
+        ERR_FAILED, session_.get());
   }
   ASSERT_FALSE(resolve_context_->GetDohServerAvailability(
       0u /* doh_server_index */, session_.get()));
@@ -4435,12 +4440,12 @@ const std::vector<uint8_t> kNxdomainDnsResponse = {
 
 TEST_F(DnsTransactionTest, PlatformAttemptSuccess) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd =
+    auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
-                      dns_protocol::kTypeA))
+                      dns_protocol::kTypeA, 0))
         .WillOnce(Return(fd.get()));
 
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
@@ -4466,12 +4471,12 @@ TEST_F(DnsTransactionTest, PlatformAttemptSuccess) {
 TEST_F(DnsTransactionTest, PlatformAttemptPropagatesTargetNetwork) {
   if (__builtin_available(android 29, *)) {
     constexpr handles::NetworkHandle kTestNetworkHandle = 123;
-    base::ScopedFD fd =
+    auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(static_cast<net_handle_t>(kTestNetworkHandle),
-                      StrEq("www.google.com"), dns_protocol::kTypeA))
+                      StrEq("www.google.com"), dns_protocol::kTypeA, 0))
         .WillOnce(Return(fd.get()));
 
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
@@ -4499,12 +4504,12 @@ TEST_F(DnsTransactionTest, PlatformAttemptPropagatesTargetNetwork) {
 
 TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptTimeout) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd =
+    auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithNoData();
 
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
-                      dns_protocol::kTypeA))
+                      dns_protocol::kTypeA, 0))
         .WillOnce(Return(fd.get()));
 
     TransactionHelper helper(ERR_DNS_TIMED_OUT);
@@ -4512,10 +4517,12 @@ TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptTimeout) {
         transaction_factory_.get(), "www.google.com", dns_protocol::kTypeA,
         DnsTransactionFactory::AttemptMode::kPlatform, resolve_context_.get());
     EXPECT_FALSE(helper.has_completed());
-    FastForwardBy(
-        resolve_context_->NextPlatformFallbackPeriod(session_.get()));
+    FastForwardBy(resolve_context_->NextPlatformFallbackPeriod(
+        /*server_index=*/0u,
+        /*attempt=*/0, session_.get()));
     helper.RunUntilComplete();
     ASSERT_TRUE(helper.has_completed());
+    EXPECT_EQ(resolve_context_->platform_last_failure_count_for_testing(), 1);
   } else {
     GTEST_SKIP_("Skip test on Android version below 29.");
   }
@@ -4526,11 +4533,11 @@ TEST_F(DnsTransactionTest, PlatformAttemptUsesSuffixSearchList) {
     config_.search.push_back("com");
     config_.ndots = 1;
     ConfigureFactory();
-    base::ScopedFD first_query_fd =
+    auto [first_query_fd, first_query_write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
-    EXPECT_CALL(
-        mock_dns_platform_android_attempt_delegate_,
-        Query(NETWORK_UNSPECIFIED, StrEq("www.google"), dns_protocol::kTypeA))
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Query(NETWORK_UNSPECIFIED, StrEq("www.google"),
+                      dns_protocol::kTypeA, 0))
         .WillOnce(Return(first_query_fd.get()));
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(first_query_fd.get(), _, _))
@@ -4539,11 +4546,11 @@ TEST_F(DnsTransactionTest, PlatformAttemptUsesSuffixSearchList) {
           return kNxdomainDnsResponse.size();
         });
 
-    base::ScopedFD second_query_fd =
+    auto [second_query_fd, second_query_write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
-                      dns_protocol::kTypeA))
+                      dns_protocol::kTypeA, 0))
         .WillOnce(Return(second_query_fd.get()));
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(second_query_fd.get(), _, _))
@@ -4560,6 +4567,144 @@ TEST_F(DnsTransactionTest, PlatformAttemptUsesSuffixSearchList) {
     helper.RunUntilComplete();
     ASSERT_TRUE(helper.has_completed());
     EXPECT_EQ(helper.response()->rcode(), dns_protocol::kRcodeNOERROR);
+  } else {
+    GTEST_SKIP_("Skip test on Android version below 29.");
+  }
+}
+
+TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptRetryAndFallback) {
+  if (__builtin_available(android 29, *)) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kDnsPlatformFailFastAndRetry);
+
+    // Allow 2 attempts.
+    config_.attempts = 2;
+    ConfigureFactory();
+
+    auto [first_query_fd, first_query_write_fd] =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithNoData();
+    auto [second_query_fd, second_query_write_fd] =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
+
+    testing::InSequence s;
+
+    // First attempt: should fail fast internally in Android, but in our mock we
+    // just simulate it timing out (no data).
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
+                      dns_protocol::kTypeA, ANDROID_RESOLV_NO_RETRY))
+        .WillOnce(Return(first_query_fd.get()));
+
+    // Second attempt: should be started after fallback_period.
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
+                      dns_protocol::kTypeA, ANDROID_RESOLV_NO_RETRY))
+        .WillOnce(Return(second_query_fd.get()));
+
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Result(second_query_fd.get(), _, _))
+        .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
+          std::ranges::copy(kSuccessfulDnsResponse, answer.begin());
+          return kSuccessfulDnsResponse.size();
+        });
+
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Close(first_query_fd.get()))
+        .WillOnce([&]() { first_query_fd.reset(); });
+
+    TransactionHelper helper(/*expected_answer_count=*/1);
+    helper.StartTransaction(
+        transaction_factory_.get(), "www.google.com", dns_protocol::kTypeA,
+        DnsTransactionFactory::AttemptMode::kPlatform, resolve_context_.get());
+    EXPECT_FALSE(helper.has_completed());
+
+    // Fast forward by fallback period to trigger retry.
+    base::TimeDelta fallback_period =
+        resolve_context_->NextPlatformFallbackPeriod(/*server_index=*/0u,
+                                                     /*attempt=*/0,
+                                                     session_.get());
+    FastForwardBy(fallback_period);
+
+    // The second attempt should have started and completed.
+    helper.RunUntilComplete();
+    ASSERT_TRUE(helper.has_completed());
+    EXPECT_EQ(helper.response()->rcode(), dns_protocol::kRcodeNOERROR);
+  } else {
+    GTEST_SKIP_("Skip test on Android version below 29.");
+  }
+}
+
+TEST_F(DnsTransactionTestWithMockTime,
+       PlatformAttemptRecordsStatsAndUpdatesTimeout) {
+  if (__builtin_available(android 29, *)) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kDnsPlatformFailFastAndRetry);
+
+    ConfigureFactory();
+
+    base::TimeDelta initial_fallback =
+        resolve_context_->NextPlatformFallbackPeriod(/*server_index=*/0u,
+                                                     /*attempt=*/0,
+                                                     session_.get());
+
+    auto [fd, write_fd] =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithNoData();
+
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
+                      dns_protocol::kTypeA, ANDROID_RESOLV_NO_RETRY))
+        .WillOnce(Return(fd.get()));
+
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Result(fd.get(), _, _))
+        .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
+          std::ranges::copy(kSuccessfulDnsResponse, answer.begin());
+          return kSuccessfulDnsResponse.size();
+        });
+
+    base::HistogramTester histogram_tester;
+
+    TransactionHelper helper(/*expected_answer_count=*/1);
+    helper.StartTransaction(
+        transaction_factory_.get(), "www.google.com", dns_protocol::kTypeA,
+        DnsTransactionFactory::AttemptMode::kPlatform, resolve_context_.get());
+    EXPECT_FALSE(helper.has_completed());
+
+    FastForwardBy(base::Milliseconds(100));
+
+    uint8_t dummy = 0;
+    base::WriteFileDescriptor(write_fd.get(), base::span_from_ref(dummy));
+
+    helper.RunUntilComplete();
+    ASSERT_TRUE(helper.has_completed());
+    EXPECT_EQ(helper.response()->rcode(), dns_protocol::kRcodeNOERROR);
+    EXPECT_EQ(resolve_context_->platform_last_failure_count_for_testing(), 0);
+    EXPECT_TRUE(
+        resolve_context_->platform_current_connection_success_for_testing());
+
+    histogram_tester.ExpectBucketCount("Net.DNS.DnsTransaction.AttemptType",
+                                       4 /* DnsAttemptType::kPlatform */, 1);
+    histogram_tester.ExpectTotalCount(
+        "Net.DNS.DnsTransaction.Insecure.Other.SuccessTime", 1);
+
+    // Record high RTTs to update histogram.
+    for (int i = 0; i < 50; ++i) {
+      resolve_context_->RecordRtt(0u,
+                                  DnsTransactionFactory::AttemptMode::kPlatform,
+                                  base::Minutes(10), OK, session_.get());
+    }
+
+    histogram_tester.ExpectTotalCount(
+        "Net.DNS.DnsTransaction.Insecure.Other.SuccessTime", 51);
+
+    // Verify RecordRtt updated fallback period in resolve_context_.
+    base::TimeDelta updated_fallback =
+        resolve_context_->NextPlatformFallbackPeriod(/*server_index=*/0u,
+                                                     /*attempt=*/0,
+                                                     session_.get());
+    EXPECT_GT(updated_fallback, initial_fallback);
   } else {
     GTEST_SKIP_("Skip test on Android version below 29.");
   }

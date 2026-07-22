@@ -179,11 +179,11 @@ const std::vector<uint8_t> kSuccessfulDnsResponseAaaa = {
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(HostResolverDnsTaskTest, PlatformAttemptSuccessIsParsedCorrectly) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd =
+    auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
-                      dns_protocol::kTypeA))
+                      dns_protocol::kTypeA, 0))
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(fd.get(), _, _))
@@ -236,11 +236,11 @@ TEST_F(HostResolverDnsTaskTest, PlatformAttemptSuccessIsParsedCorrectly) {
 TEST_F(HostResolverDnsTaskTest, PlatformAttemptPropagatesTargetNetwork) {
   if (__builtin_available(android 29, *)) {
     constexpr handles::NetworkHandle kTargetNetwork = 123;
-    base::ScopedFD fd =
+    auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(net_handle_t{kTargetNetwork}, StrEq("www.google.com"),
-                      dns_protocol::kTypeA))
+                      dns_protocol::kTypeA, 0))
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(fd.get(), _, _))
@@ -282,11 +282,11 @@ TEST_F(HostResolverDnsTaskTest, PlatformAttemptPropagatesTargetNetwork) {
 TEST_F(HostResolverDnsTaskTest,
        PlatformAttemptCorrectlyTranslatedDefaultNetworkHandle) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd =
+    auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
-                      dns_protocol::kTypeA))
+                      dns_protocol::kTypeA, 0))
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(fd.get(), _, _))
@@ -328,11 +328,11 @@ TEST_F(HostResolverDnsTaskTest,
 
 TEST_F(HostResolverDnsTaskTest, PlatformAttemptCorruptResponseFailsParsing) {
   if (__builtin_available(android 29, *)) {
-    base::ScopedFD fd =
+    auto [fd, write_fd] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
-                      dns_protocol::kTypeA))
+                      dns_protocol::kTypeA, 0))
         .WillOnce(Return(fd.get()));
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Result(fd.get(), _, _))
@@ -386,18 +386,18 @@ TEST_F(HostResolverDnsTaskTest,
        PlatformAttemptMultipleQueriesResultsAreSorted) {
   if (__builtin_available(android 29, *)) {
     constexpr int64_t kTargetNetwork = 123;
-    base::ScopedFD fd_a =
+    auto [fd_a, write_fd_a] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
-    base::ScopedFD fd_aaaa =
+    auto [fd_aaaa, write_fd_aaaa] =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
 
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(net_handle_t{kTargetNetwork}, StrEq("www.google.com"),
-                      dns_protocol::kTypeA))
+                      dns_protocol::kTypeA, 0))
         .WillOnce(Return(fd_a.get()));
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
                 Query(net_handle_t{kTargetNetwork}, StrEq("www.google.com"),
-                      dns_protocol::kTypeAAAA))
+                      dns_protocol::kTypeAAAA, 0))
         .WillOnce(Return(fd_aaaa.get()));
 
     EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,

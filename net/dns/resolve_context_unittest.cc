@@ -32,6 +32,7 @@
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_server_iterator.h"
 #include "net/dns/dns_session.h"
+#include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_cache.h"
@@ -126,7 +127,8 @@ TEST_F(ResolveContextTest, ReusedSessionPointer) {
                                             false /* network_change */);
 
   // Mark probe success for the "original" (pre-invalidation) session.
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   ASSERT_TRUE(context.GetDohServerAvailability(1u, session.get()));
 
@@ -139,7 +141,8 @@ TEST_F(ResolveContextTest, ReusedSessionPointer) {
   // the "new" session has not yet been marked as "current" through
   // InvalidateCaches().
   EXPECT_FALSE(context.GetDohServerAvailability(1u, session.get()));
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   EXPECT_FALSE(context.GetDohServerAvailability(1u, session.get()));
 }
@@ -183,7 +186,8 @@ TEST_F(ResolveContextTest, DohServerAvailability_RecordedSuccess) {
 
   ASSERT_EQ(context.NumAvailableDohServers(session.get()), 0u);
 
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   EXPECT_EQ(context.NumAvailableDohServers(session.get()), 1u);
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
@@ -214,7 +218,8 @@ TEST_F(ResolveContextTest, DohServerAvailability_NoCurrentSession) {
   auto request_context = CreateTestURLRequestContextBuilder()->Build();
   ResolveContext context(request_context.get(), true /* enable_caching */);
 
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
 
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
@@ -240,7 +245,8 @@ TEST_F(ResolveContextTest, DohServerAvailability_DifferentSession) {
                                             true /* network_change */);
 
   // Use current session to set a probe result.
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session2.get());
 
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
@@ -253,7 +259,8 @@ TEST_F(ResolveContextTest, DohServerAvailability_DifferentSession) {
   // Different session for RecordServerFailure() should have no effect.
   ASSERT_TRUE(context.GetDohServerAvailability(1u, session2.get()));
   for (int i = 0; i < ResolveContext::kAutomaticModeFailureLimit; ++i) {
-    context.RecordServerFailure(1u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(1u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session1.get());
   }
   EXPECT_TRUE(context.GetDohServerAvailability(1u, session2.get()));
@@ -269,7 +276,8 @@ TEST_F(ResolveContextTest, DohServerIndexToUse) {
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 
-  context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(0u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   EXPECT_EQ(context.NumAvailableDohServers(session.get()), 1u);
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
@@ -370,20 +378,23 @@ TEST_F(ResolveContextTest, DohServerAvailabilityNotification) {
 
   // Expect notification on first available DoH server.
   ASSERT_EQ(0u, context.NumAvailableDohServers(session.get()));
-  context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(0u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   ASSERT_EQ(1u, context.NumAvailableDohServers(session.get()));
   base::RunLoop().RunUntilIdle();  // Notifications are async.
   EXPECT_EQ(1, config_observer.dns_changed_calls());
 
   // No notifications as additional servers are available or unavailable.
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   base::RunLoop().RunUntilIdle();  // Notifications are async.
   EXPECT_EQ(1, config_observer.dns_changed_calls());
   for (int i = 0; i < ResolveContext::kAutomaticModeFailureLimit; ++i) {
     ASSERT_EQ(2u, context.NumAvailableDohServers(session.get()));
-    context.RecordServerFailure(0u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(0u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session.get());
     base::RunLoop().RunUntilIdle();  // Notifications are async.
     EXPECT_EQ(1, config_observer.dns_changed_calls());
@@ -396,7 +407,8 @@ TEST_F(ResolveContextTest, DohServerAvailabilityNotification) {
     base::RunLoop().RunUntilIdle();  // Notifications are async.
     EXPECT_EQ(1, config_observer.dns_changed_calls());
 
-    context.RecordServerFailure(1u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(1u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session.get());
   }
   ASSERT_EQ(0u, context.NumAvailableDohServers(session.get()));
@@ -458,7 +470,8 @@ TEST_F(ResolveContextTest, InvalidateCachesAndPerSessionData) {
           HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED),
       anonymization_key, handles::kInvalidNetworkHandle,
       HostResolverSource::DNS, /*secure=*/false);
-  context.RecordServerSuccess(/*server_index=*/0u, /*is_doh_server=*/true,
+  context.RecordServerSuccess(/*server_index=*/0u,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   ASSERT_TRUE(context.host_cache()->Lookup(key, tick_clock.NowTicks()));
   ASSERT_TRUE(context.host_resolver_cache()->Lookup(
@@ -508,7 +521,8 @@ TEST_F(ResolveContextTest, InvalidateCachesAndPerSessionDataSameSession) {
           HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED),
       anonymization_key, handles::kInvalidNetworkHandle,
       HostResolverSource::DNS, /*secure=*/false);
-  context.RecordServerSuccess(/*server_index=*/0u, /*is_doh_server=*/true,
+  context.RecordServerSuccess(/*server_index=*/0u,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   ASSERT_TRUE(context.host_cache()->Lookup(key, tick_clock.NowTicks()));
   ASSERT_TRUE(context.host_resolver_cache()->Lookup(
@@ -546,8 +560,8 @@ TEST_F(ResolveContextTest, Failures_Consecutive) {
     EXPECT_EQ(classic_itr->GetNextAttemptIndex(), 1u);
 
     context.RecordServerFailure(1u /* server_index */,
-                                false /* is_doh_server */, ERR_FAILED,
-                                session.get());
+                                DnsTransactionFactory::AttemptMode::kClassic,
+                                ERR_FAILED, session.get());
   }
 
   {
@@ -561,7 +575,8 @@ TEST_F(ResolveContextTest, Failures_Consecutive) {
   }
 
   // Expect failures to be reset on successful request.
-  context.RecordServerSuccess(1u /* server_index */, false /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kClassic,
                               session.get());
   {
     std::unique_ptr<DnsServerIterator> classic_itr =
@@ -593,8 +608,8 @@ TEST_F(ResolveContextTest, Failures_NonConsecutive) {
     EXPECT_EQ(classic_itr->GetNextAttemptIndex(), 1u);
 
     context.RecordServerFailure(1u /* server_index */,
-                                false /* is_doh_server */, ERR_FAILED,
-                                session.get());
+                                DnsTransactionFactory::AttemptMode::kClassic,
+                                ERR_FAILED, session.get());
   }
 
   {
@@ -607,7 +622,8 @@ TEST_F(ResolveContextTest, Failures_NonConsecutive) {
     EXPECT_EQ(classic_itr->GetNextAttemptIndex(), 1u);
   }
 
-  context.RecordServerSuccess(1u /* server_index */, false /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kClassic,
                               session.get());
   {
     std::unique_ptr<DnsServerIterator> classic_itr =
@@ -620,7 +636,8 @@ TEST_F(ResolveContextTest, Failures_NonConsecutive) {
   }
 
   // Expect server stay preferred through non-consecutive failures.
-  context.RecordServerFailure(1u /* server_index */, false /* is_doh_server */,
+  context.RecordServerFailure(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kClassic,
                               ERR_FAILED, session.get());
   {
     std::unique_ptr<DnsServerIterator> classic_itr =
@@ -648,8 +665,8 @@ TEST_F(ResolveContextTest, Failures_NoSession) {
     EXPECT_FALSE(classic_itr->AttemptAvailable());
 
     context.RecordServerFailure(1u /* server_index */,
-                                false /* is_doh_server */, ERR_FAILED,
-                                session.get());
+                                DnsTransactionFactory::AttemptMode::kClassic,
+                                ERR_FAILED, session.get());
   }
   std::unique_ptr<DnsServerIterator> classic_itr =
       context.GetClassicDnsIterator(session->config(), session.get());
@@ -682,8 +699,8 @@ TEST_F(ResolveContextTest, Failures_DifferentSession) {
     EXPECT_EQ(classic_itr->GetNextAttemptIndex(), 1u);
 
     context.RecordServerFailure(1u /* server_index */,
-                                false /* is_doh_server */, ERR_FAILED,
-                                session1.get());
+                                DnsTransactionFactory::AttemptMode::kClassic,
+                                ERR_FAILED, session1.get());
   }
   std::unique_ptr<DnsServerIterator> classic_itr =
       context.GetClassicDnsIterator(session2->config(), session2.get());
@@ -718,11 +735,11 @@ TEST_F(ResolveContextTest, TwoFailures) {
     EXPECT_EQ(classic_itr->GetNextAttemptIndex(), 2u);
 
     context.RecordServerFailure(0u /* server_index */,
-                                false /* is_doh_server */, ERR_FAILED,
-                                session.get());
+                                DnsTransactionFactory::AttemptMode::kClassic,
+                                ERR_FAILED, session.get());
     context.RecordServerFailure(1u /* server_index */,
-                                false /* is_doh_server */, ERR_FAILED,
-                                session.get());
+                                DnsTransactionFactory::AttemptMode::kClassic,
+                                ERR_FAILED, session.get());
   }
   {
     std::unique_ptr<DnsServerIterator> classic_itr =
@@ -737,9 +754,11 @@ TEST_F(ResolveContextTest, TwoFailures) {
   }
 
   // Expect failures to be reset on successful request.
-  context.RecordServerSuccess(0u /* server_index */, false /* is_doh_server */,
+  context.RecordServerSuccess(0u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kClassic,
                               session.get());
-  context.RecordServerSuccess(1u /* server_index */, false /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kClassic,
                               session.get());
   {
     std::unique_ptr<DnsServerIterator> classic_itr =
@@ -783,7 +802,8 @@ TEST_F(ResolveContextTest, DohFailures_Consecutive) {
   TestDohStatusObserver observer;
   context.RegisterDohStatusObserver(&observer);
 
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
 
   for (size_t i = 0; i < ResolveContext::kAutomaticModeFailureLimit; i++) {
@@ -794,7 +814,8 @@ TEST_F(ResolveContextTest, DohFailures_Consecutive) {
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 1u);
     EXPECT_EQ(1u, context.NumAvailableDohServers(session.get()));
     EXPECT_EQ(0, observer.server_unavailable_notifications());
-    context.RecordServerFailure(1u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(1u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session.get());
   }
   std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
@@ -834,7 +855,8 @@ TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
   TestDohStatusObserver observer;
   context.RegisterDohStatusObserver(&observer);
 
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
 
   for (size_t i = 0; i < ResolveContext::kAutomaticModeFailureLimit - 1; i++) {
@@ -844,7 +866,8 @@ TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
     ASSERT_TRUE(doh_itr->AttemptAvailable());
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 1u);
     EXPECT_EQ(1u, context.NumAvailableDohServers(session.get()));
-    context.RecordServerFailure(1u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(1u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session.get());
   }
   {
@@ -856,7 +879,8 @@ TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
   }
   EXPECT_EQ(1u, context.NumAvailableDohServers(session.get()));
 
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
@@ -869,7 +893,8 @@ TEST_F(ResolveContextTest, DohFailures_NonConsecutive) {
 
   // Expect a single additional failure should not make a DoH server unavailable
   // because the success resets failure tracking.
-  context.RecordServerFailure(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerFailure(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               ERR_FAILED, session.get());
   {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
@@ -912,18 +937,21 @@ TEST_F(ResolveContextTest, DohFailures_SuccessAfterFailures) {
   TestDohStatusObserver observer;
   context.RegisterDohStatusObserver(&observer);
 
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
 
   for (size_t i = 0; i < ResolveContext::kAutomaticModeFailureLimit; i++) {
-    context.RecordServerFailure(1u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(1u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session.get());
   }
   ASSERT_EQ(0u, context.NumAvailableDohServers(session.get()));
   EXPECT_EQ(1, observer.server_unavailable_notifications());
 
   // Expect a single success to make an unavailable DoH server available again.
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
   {
     std::unique_ptr<DnsServerIterator> doh_itr = context.GetDohIterator(
@@ -961,13 +989,15 @@ TEST_F(ResolveContextTest, DohFailures_NoSession) {
       CreateDnsConfig(2 /* num_servers */, 2 /* num_doh_servers */);
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
 
   // No expected change from recording failures.
   for (size_t i = 0; i < ResolveContext::kAutomaticModeFailureLimit; i++) {
     EXPECT_EQ(0u, context.NumAvailableDohServers(session.get()));
-    context.RecordServerFailure(1u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(1u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session.get());
   }
   EXPECT_EQ(0u, context.NumAvailableDohServers(session.get()));
@@ -987,14 +1017,16 @@ TEST_F(ResolveContextTest, DohFailures_DifferentSession) {
   context.InvalidateCachesAndPerSessionData(session2.get(),
                                             true /* network_change */);
 
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session2.get());
   ASSERT_EQ(1u, context.NumAvailableDohServers(session2.get()));
 
   // No change from recording failures to wrong session.
   for (size_t i = 0; i < ResolveContext::kAutomaticModeFailureLimit; i++) {
     EXPECT_EQ(1u, context.NumAvailableDohServers(session2.get()));
-    context.RecordServerFailure(1u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(1u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session1.get());
   }
   EXPECT_EQ(1u, context.NumAvailableDohServers(session2.get()));
@@ -1008,7 +1040,8 @@ TEST_F(ResolveContextTest, DohFailures_NeverSuccessful) {
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             /*network_change=*/false);
 
-  context.RecordServerFailure(/*server_index=*/0u, /*is_doh_server=*/true,
+  context.RecordServerFailure(/*server_index=*/0u,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               ERR_FAILED, session.get());
 
   base::HistogramTester histogram_tester;
@@ -1038,7 +1071,8 @@ TEST_F(ResolveContextTest, DohFailures_NeverSuccessfulKnownProviderConfig) {
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             /*network_change=*/false);
 
-  context.RecordServerFailure(/*server_index=*/0u, /*is_doh_server=*/true,
+  context.RecordServerFailure(/*server_index=*/0u,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               ERR_FAILED, session.get());
 
   base::HistogramTester histogram_tester;
@@ -1067,11 +1101,14 @@ TEST_F(ResolveContextTest, TwoDohFailures) {
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 
-  context.RecordServerSuccess(0u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(0u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
-  context.RecordServerSuccess(1u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(1u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
-  context.RecordServerSuccess(2u /* server_index */, true /* is_doh_server */,
+  context.RecordServerSuccess(2u /* server_index */,
+                              DnsTransactionFactory::AttemptMode::kHttp,
                               session.get());
 
   // Expect server preference to change after |config.attempts| failures.
@@ -1086,9 +1123,11 @@ TEST_F(ResolveContextTest, TwoDohFailures) {
     ASSERT_TRUE(doh_itr->AttemptAvailable());
     EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 2u);
 
-    context.RecordServerFailure(0u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(0u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session.get());
-    context.RecordServerFailure(1u /* server_index */, true /* is_doh_server */,
+    context.RecordServerFailure(1u /* server_index */,
+                                DnsTransactionFactory::AttemptMode::kHttp,
                                 ERR_FAILED, session.get());
   }
 
@@ -1196,9 +1235,11 @@ TEST_F(ResolveContextTest, FallbackPeriod_LongRtt) {
                                             false /* network_change */);
 
   for (int i = 0; i < 50; ++i) {
-    context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
+    context.RecordRtt(0u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kClassic,
                       base::Minutes(10), OK, session.get());
-    context.RecordRtt(1u /* server_index */, true /* is_doh_server */,
+    context.RecordRtt(1u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kHttp,
                       base::Minutes(10), OK, session.get());
   }
 
@@ -1234,9 +1275,11 @@ TEST_F(ResolveContextTest, FallbackPeriod_NoSession) {
   scoped_refptr<DnsSession> session = CreateDnsSession(config);
 
   for (int i = 0; i < 50; ++i) {
-    context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
+    context.RecordRtt(0u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kClassic,
                       base::Minutes(10), OK, session.get());
-    context.RecordRtt(1u /* server_index */, true /* is_doh_server */,
+    context.RecordRtt(1u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kHttp,
                       base::Minutes(10), OK, session.get());
   }
 
@@ -1269,9 +1312,11 @@ TEST_F(ResolveContextTest, FallbackPeriod_DifferentSession) {
 
   // Record RTT's to increase fallback periods for current session.
   for (int i = 0; i < 50; ++i) {
-    context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
+    context.RecordRtt(0u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kClassic,
                       base::Minutes(10), OK, session2.get());
-    context.RecordRtt(1u /* server_index */, true /* is_doh_server */,
+    context.RecordRtt(1u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kHttp,
                       base::Minutes(10), OK, session2.get());
   }
 
@@ -1291,7 +1336,8 @@ TEST_F(ResolveContextTest, FallbackPeriod_DifferentSession) {
   base::TimeDelta fallback_period = context.NextClassicFallbackPeriod(
       0u /* server_index */, 0 /* attempt */, session2.get());
   for (int i = 0; i < 50; ++i) {
-    context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
+    context.RecordRtt(0u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kClassic,
                       base::Milliseconds(1), OK, session1.get());
   }
   EXPECT_EQ(fallback_period,
@@ -1349,7 +1395,8 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_LongRtt) {
 
   // Record long RTTs for only 1 server.
   for (int i = 0; i < 50; ++i) {
-    context.RecordRtt(1u /* server_index */, true /* is_doh_server */,
+    context.RecordRtt(1u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kHttp,
                       base::Minutes(10), OK, session.get());
   }
 
@@ -1361,7 +1408,8 @@ TEST_F(ResolveContextTest, SecureTransactionTimeout_LongRtt) {
 
   // Record long RTTs for remaining server.
   for (int i = 0; i < 50; ++i) {
-    context.RecordRtt(0u /* server_index */, true /* is_doh_server */,
+    context.RecordRtt(0u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kHttp,
                       base::Minutes(10), OK, session.get());
   }
 
@@ -1446,7 +1494,8 @@ TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongRtt) {
 
   // Record long RTTs for only 1 server.
   for (int i = 0; i < 50; ++i) {
-    context.RecordRtt(1u /* server_index */, false /* is_doh_server */,
+    context.RecordRtt(1u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kClassic,
                       base::Minutes(10), OK, session.get());
   }
 
@@ -1457,7 +1506,8 @@ TEST_F(ResolveContextTest, ClassicTransactionTimeout_LongRtt) {
 
   // Record long RTTs for remaining server.
   for (int i = 0; i < 50; ++i) {
-    context.RecordRtt(0u /* server_index */, false /* is_doh_server */,
+    context.RecordRtt(0u /* server_index */,
+                      DnsTransactionFactory::AttemptMode::kClassic,
                       base::Minutes(10), OK, session.get());
   }
 
@@ -1507,9 +1557,11 @@ TEST_F(ResolveContextTest, NegativeRtt) {
   context.InvalidateCachesAndPerSessionData(session.get(),
                                             false /* network_change */);
 
-  context.RecordRtt(0 /* server_index */, false /* is_doh_server */,
+  context.RecordRtt(0 /* server_index */,
+                    DnsTransactionFactory::AttemptMode::kClassic,
                     base::Milliseconds(-1), OK /* rv */, session.get());
-  context.RecordRtt(0 /* server_index */, true /* is_doh_server */,
+  context.RecordRtt(0 /* server_index */,
+                    DnsTransactionFactory::AttemptMode::kHttp,
                     base::Milliseconds(-1), OK /* rv */, session.get());
 }
 
@@ -1664,6 +1716,61 @@ TEST_F(ResolveContextTest, RecordDohSessionStatus) {
       "Net.DNS.DnsTransaction.Other.Http3.Existing."
       "FailureTime",
       base::Milliseconds(50), 1);
+}
+
+TEST_F(ResolveContextTest, PlatformServerStats) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kDnsPlatformFailFastAndRetry);
+
+  ResolveContext context(/*url_request_context=*/nullptr,
+                         /*enable_caching=*/false);
+  DnsConfig config = CreateDnsConfig(/*num_servers=*/1, /*num_doh_servers=*/0);
+  scoped_refptr<DnsSession> session = CreateDnsSession(config);
+  context.InvalidateCachesAndPerSessionData(session.get(),
+                                            /*network_change=*/false);
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(context.platform_last_failure_count_for_testing(), 0);
+  EXPECT_FALSE(context.platform_current_connection_success_for_testing());
+
+  base::TimeDelta initial_fallback = context.NextPlatformFallbackPeriod(
+      /*server_index=*/0u, /*attempt=*/0, session.get());
+  base::TimeDelta initial_timeout =
+      context.PlatformTransactionTimeout(session.get());
+
+  // Record failures and verify failure count increases.
+  context.RecordServerFailure(/*server_index=*/0u,
+                              DnsTransactionFactory::AttemptMode::kPlatform,
+                              ERR_FAILED, session.get());
+  EXPECT_EQ(context.platform_last_failure_count_for_testing(), 1);
+
+  // Record high RTTs to update histogram.
+  for (int i = 0; i < 50; ++i) {
+    context.RecordRtt(/*server_index=*/0u,
+                      DnsTransactionFactory::AttemptMode::kPlatform,
+                      base::Minutes(10), OK, session.get());
+  }
+
+  // Increased fallback period and timeout expected after recording high RTT.
+  base::TimeDelta updated_fallback = context.NextPlatformFallbackPeriod(
+      /*server_index=*/0u, /*attempt=*/0, session.get());
+  base::TimeDelta updated_timeout =
+      context.PlatformTransactionTimeout(session.get());
+
+  EXPECT_GT(updated_fallback, initial_fallback);
+  EXPECT_GT(updated_timeout, initial_timeout);
+
+  // Record success and verify failure count resets to 0 and
+  // current_connection_success becomes true.
+  context.RecordServerSuccess(/*server_index=*/0u,
+                              DnsTransactionFactory::AttemptMode::kPlatform,
+                              session.get());
+  EXPECT_EQ(context.platform_last_failure_count_for_testing(), 0);
+  EXPECT_TRUE(context.platform_current_connection_success_for_testing());
+
+  histogram_tester.ExpectTotalCount(
+      "Net.DNS.DnsTransaction.Insecure.Other.SuccessTime", 50);
 }
 
 }  // namespace

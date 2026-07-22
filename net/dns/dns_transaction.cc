@@ -19,6 +19,7 @@
 #include "base/base64url.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -45,6 +46,7 @@
 #include "net/base/backoff_entry.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/elements_upload_data_stream.h"
+#include "net/base/features.h"
 #include "net/base/idempotency.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
@@ -299,7 +301,8 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
       if (rv != OK) {
         // The DoH probe queries don't go through the standard DnsAttempt path,
         // so the ServerStats have not been updated yet.
-        context_->RecordServerFailure(doh_server_index, /*is_doh_server=*/true,
+        context_->RecordServerFailure(doh_server_index,
+                                      DnsTransactionFactory::AttemptMode::kHttp,
                                       rv, session_.get());
         break;
       }
@@ -322,8 +325,10 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
             if (result->type() == HostResolverInternalResult::Type::kData &&
                 !result->AsData().endpoints().empty()) {
               context_->RecordServerSuccess(
-                  doh_server_index, /*is_doh_server=*/true, session_.get());
-              context_->RecordRtt(doh_server_index, /*is_doh_server=*/true,
+                  doh_server_index, DnsTransactionFactory::AttemptMode::kHttp,
+                  session_.get());
+              context_->RecordRtt(doh_server_index,
+                                  DnsTransactionFactory::AttemptMode::kHttp,
                                   base::TimeTicks::Now() - query_start_time, rv,
                                   session_.get());
               success = true;
@@ -340,7 +345,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
       }
       if (!success) {
         context_->RecordServerFailure(
-            doh_server_index, /*is_doh_server=*/true,
+            doh_server_index, DnsTransactionFactory::AttemptMode::kHttp,
             /*rv=*/ERR_DNS_SECURE_PROBE_RECORD_INVALID, session_.get());
       }
       break;
@@ -488,7 +493,8 @@ class DnsTransactionImpl final : public DnsTransaction {
     kTcpLowEntropy = 1,
     kTcpTruncationRetry = 2,
     kHttp = 3,
-    kMaxValue = kHttp,
+    kPlatform = 4,
+    kMaxValue = kPlatform,
   };
 
   // Prepares |qnames_| according to the DnsConfig.
@@ -831,7 +837,10 @@ class DnsTransactionImpl final : public DnsTransaction {
             session_->config(), session_.get());
         break;
       case DnsTransactionFactory::AttemptMode::kPlatform:
-        dns_server_iterator_ = std::make_unique<OneShotDnsServerIterator>();
+        dns_server_iterator_ = std::make_unique<PlatformDnsServerIterator>(
+            base::FeatureList::IsEnabled(features::kDnsPlatformFailFastAndRetry)
+                ? session_->config().attempts
+                : 1);
         break;
       default:
         NOTREACHED();
@@ -852,11 +861,9 @@ class DnsTransactionImpl final : public DnsTransaction {
     DCHECK_LT(attempt_number, attempts_.size());
     const DnsAttempt* attempt = attempts_[attempt_number].get();
     if (record_rtt && attempt->GetResponse()) {
-      resolve_context_->RecordRtt(
-          attempt->server_index(),
-          attempt_mode_ ==
-              DnsTransactionFactory::AttemptMode::kHttp /* is_doh_server */,
-          base::TimeTicks::Now() - start, rv, session_.get());
+      resolve_context_->RecordRtt(attempt->server_index(), attempt_mode_,
+                                  base::TimeTicks::Now() - start, rv,
+                                  session_.get());
     }
     if (callback_.is_null())
       return;
@@ -889,22 +896,16 @@ class DnsTransactionImpl final : public DnsTransaction {
 
       switch (result.rv) {
         case OK:
-          resolve_context_->RecordServerSuccess(
-              result.attempt->server_index(),
-              attempt_mode_ ==
-                  DnsTransactionFactory::AttemptMode::kHttp /* is_doh_server */,
-              session_.get());
+          resolve_context_->RecordServerSuccess(result.attempt->server_index(),
+                                                attempt_mode_, session_.get());
           net_log_.EndEventWithNetErrorCode(
               NetLogEventType::DNS_TRANSACTION_QUERY, result.rv);
           DCHECK(result.attempt);
           DCHECK(result.attempt->GetResponse());
           return result;
         case ERR_NAME_NOT_RESOLVED:
-          resolve_context_->RecordServerSuccess(
-              result.attempt->server_index(),
-              attempt_mode_ ==
-                  DnsTransactionFactory::AttemptMode::kHttp /* is_doh_server */,
-              session_.get());
+          resolve_context_->RecordServerSuccess(result.attempt->server_index(),
+                                                attempt_mode_, session_.get());
           net_log_.EndEventWithNetErrorCode(
               NetLogEventType::DNS_TRANSACTION_QUERY, result.rv);
           // Try next suffix. Check that qnames_ isn't already empty first,
@@ -925,10 +926,8 @@ class DnsTransactionImpl final : public DnsTransaction {
           if (result.attempt) {
             DCHECK(result.attempt == attempts_.back().get());
             resolve_context_->RecordServerFailure(
-                result.attempt->server_index(),
-                attempt_mode_ ==
-                    DnsTransactionFactory::AttemptMode::kHttp /* is_doh_server */,
-                result.rv, session_.get());
+                result.attempt->server_index(), attempt_mode_, result.rv,
+                session_.get());
           }
           if (MoreAttemptsAllowed()) {
             result = MakeAttempt();
@@ -962,10 +961,8 @@ class DnsTransactionImpl final : public DnsTransaction {
           if (result.attempt == attempts_.back().get()) {
             timer_.Stop();
             resolve_context_->RecordServerFailure(
-                result.attempt->server_index(),
-                attempt_mode_ ==
-                    DnsTransactionFactory::AttemptMode::kHttp /* is_doh_server */,
-                result.rv, session_.get());
+                result.attempt->server_index(), attempt_mode_, result.rv,
+                session_.get());
 
             if (MoreAttemptsAllowed()) {
               result = MakeAttempt();
@@ -1054,24 +1051,28 @@ class DnsTransactionImpl final : public DnsTransaction {
   }
 
   AttemptResult MakePlatformAttempt() {
+    RecordAttemptUma(DnsAttemptType::kPlatform);
     const size_t attempt_number = attempts_.size();
+    const size_t server_index = dns_server_iterator_->GetNextAttemptIndex();
 
-    attempts_.push_back(resolve_context_->url_request_context()
-                            ->dns_platform_attempt_factory()
-                            ->CreateDnsPlatformAttempt(
-                                dns_server_iterator_->GetNextAttemptIndex(),
-                                qnames_.front(), qtype_, target_network_,
-                                net_log_));
+    attempts_.push_back(
+        resolve_context_->url_request_context()
+            ->dns_platform_attempt_factory()
+            ->CreateDnsPlatformAttempt(server_index, qnames_.front(), qtype_,
+                                       target_network_, net_log_));
 
     ++attempts_count_;
 
     DnsAttempt* attempt = attempts_.back().get();
+    const bool record_rtt =
+        base::FeatureList::IsEnabled(features::kDnsPlatformFailFastAndRetry);
     int rv = attempt->Start(base::BindOnce(
         &DnsTransactionImpl::OnAttemptComplete, base::Unretained(this),
-        attempt_number, /*record_rtt=*/false, base::TimeTicks::Now()));
+        attempt_number, record_rtt, base::TimeTicks::Now()));
     if (rv == ERR_IO_PENDING) {
       base::TimeDelta fallback_period =
-          resolve_context_->NextPlatformFallbackPeriod(session_.get());
+          resolve_context_->NextPlatformFallbackPeriod(
+              server_index, attempt_number, session_.get());
       timer_.Start(FROM_HERE, fallback_period, this,
                    &DnsTransactionImpl::OnFallbackPeriodExpired);
     }
