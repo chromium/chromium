@@ -1,6 +1,6 @@
 Testing accessibility in the DOM breakpoints pane.
 Setting DOM breakpoints.
-DOM breakpoints container text content: DOM Breakpointsdiv#rootElementSubtree modifieddiv#hostElementNode removed
+DOM breakpoints container text content: DOM breakpointsdiv#rootElementSubtree modifieddiv#hostElementNode removed
 DOM breakpoints container ARIA descriptions: checked,unchecked
 DOM breakpoints pane text content: div#rootElementSubtree modifieddiv#hostElementNode removed
 DOM breakpoints pane ARIA descriptions: checked,unchecked
