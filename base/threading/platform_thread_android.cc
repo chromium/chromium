@@ -35,7 +35,7 @@ namespace base {
 // Allows fine-grained control of thread priorities on Android.
 // Enable with e.g.
 // --enable-features=AndroidThreadPriority:presentation/-8/default/-1
-BASE_FEATURE(kAndroidThreadPriority, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidThreadPriority, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int,
                    kBackgroundThreadPriority,
                    &kAndroidThreadPriority,
@@ -55,12 +55,12 @@ BASE_FEATURE_PARAM(int,
                    kPresentationThreadPriority,
                    &kAndroidThreadPriority,
                    "presentation",
-                   -4);
+                   -8);
 BASE_FEATURE_PARAM(int,
                    kInteractiveThreadPriority,
                    &kAndroidThreadPriority,
                    "interactive",
-                   -4);
+                   -8);
 BASE_FEATURE_PARAM(bool,
                    kObeySocRestrictions,
                    &kAndroidThreadPriority,
