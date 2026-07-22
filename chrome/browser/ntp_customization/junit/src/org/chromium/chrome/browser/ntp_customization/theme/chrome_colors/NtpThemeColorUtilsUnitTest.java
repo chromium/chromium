@@ -30,9 +30,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
-import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -266,7 +266,7 @@ public class NtpThemeColorUtilsUnitTest {
                         mContext, NtpThemeColorId.NTP_COLORS_BLUE);
         NtpBackgroundDataColor dataColor =
                 new NtpBackgroundDataColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID,
+                        PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         blueInfo);
         int expectedColor =
@@ -285,8 +285,7 @@ public class NtpThemeColorUtilsUnitTest {
                 new NtpThemeColorFromHexInfo(
                         mContext, backgroundColor, NtpThemeColorInfo.COLOR_NOT_SET);
         NtpBackgroundDataCustomizedColor dataCustomizedColor =
-                new NtpBackgroundDataCustomizedColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID, customInfo);
+                new NtpBackgroundDataCustomizedColor(PlatformType.ANDROID, customInfo);
         assertEquals(
                 backgroundColor,
                 NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(

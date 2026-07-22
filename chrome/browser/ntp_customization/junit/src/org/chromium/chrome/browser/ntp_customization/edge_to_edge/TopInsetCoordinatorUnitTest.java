@@ -56,8 +56,8 @@ import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
-import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
@@ -309,7 +309,7 @@ public class TopInsetCoordinatorUnitTest {
     public void testOnBackgroundColorChanged_fromInitialization() {
         NtpBackgroundDataCustomizedColor dataColor =
                 new NtpBackgroundDataCustomizedColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID,
+                        PlatformType.ANDROID,
                         new NtpThemeColorFromHexInfo(
                                 mContext, Color.RED, NtpThemeColorInfo.COLOR_NOT_SET));
 

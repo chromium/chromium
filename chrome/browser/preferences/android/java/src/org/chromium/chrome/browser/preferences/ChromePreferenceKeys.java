@@ -724,8 +724,7 @@ public final class ChromePreferenceKeys {
 
     /**
      * The number at the end should be consistent with {@link
-     * org.chromium.chrome.browser.ntp_customization.theme_sync.data.
-     * NtpBackgroundDataBase.PlatformType}
+     * org.chromium.chrome.browser.ntp_customization.theme_sync.data. PlatformType}
      */
     public static final KeyPrefix NTP_CUSTOMIZATION_SYNC_HISTORY_DATA =
             new KeyPrefix("Chrome.NtpCustomizationSync.HistoryData.*");

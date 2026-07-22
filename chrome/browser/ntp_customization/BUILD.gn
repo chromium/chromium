@@ -48,7 +48,10 @@ android_library("public_java") {
 }
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":cross_device_theme_enums",
+    ":jni_headers",
+  ]
   sources = [
     "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetDelegate.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/BottomSheetListContainerView.java",
@@ -118,6 +121,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewLayout.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/upload_image/UploadImagePreviewLayoutViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme_sync/CrossDeviceThemeTracker.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme_sync/NtpThemeSyncHistoryContainerViewBinder.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme_sync/NtpThemeSyncHistoryCoordinator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme_sync/NtpThemeSyncHistoryProperties.java",
@@ -181,6 +185,7 @@ android_library("java") {
     "//components/page_image_service/mojom:mojo_bindings_java",
     "//components/prefs/android:java",
     "//components/search_engines/android:java",
+    "//components/sync/protocol:protocol_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
     "//third_party/android_deps:material_design_java",
@@ -205,6 +210,14 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpSyncedThemeBridge.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/theme_collections/NtpThemeCollectionBridge.java",
+    "java/src/org/chromium/chrome/browser/ntp_customization/theme_sync/CrossDeviceThemeTracker.java",
+  ]
+}
+
+java_cpp_enum("cross_device_theme_enums") {
+  sources = [
+    "//chrome/browser/sync/cross_device_theme_tracker_android.h",
+    "//components/themes/cross_device/cross_device_theme_tracker.h",
   ]
 }
 

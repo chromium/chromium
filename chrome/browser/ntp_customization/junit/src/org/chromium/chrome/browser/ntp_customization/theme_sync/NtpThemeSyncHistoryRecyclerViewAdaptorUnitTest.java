@@ -41,7 +41,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
-import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase.PlatformType;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -119,7 +119,7 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
         int selectedPosition = 0;
         int bindingAdaptorPosition = 0;
 
-        // Test selected item case, ANDROID_LOCAL (no badge).
+        // Test selected item case, ANDROID (no badge).
         mViewHolder.bindImpl(mData1, mOnClickListener, selectedPosition, bindingAdaptorPosition);
         assertTrue(mViewHolder.itemView.isActivated());
         assertTrue(mViewHolder.itemView.isSelected());
@@ -133,7 +133,7 @@ public class NtpThemeSyncHistoryRecyclerViewAdaptorUnitTest {
         assertFalse(mViewHolder.itemView.isSelected());
         assertEquals(View.VISIBLE, badgeView.getVisibility());
 
-        // Test recycling: bind back to ANDROID_LOCAL and verify badge is hidden.
+        // Test recycling: bind back to ANDROID and verify badge is hidden.
         mViewHolder.bindImpl(mData1, mOnClickListener, selectedPosition, bindingAdaptorPosition);
         assertEquals(View.GONE, badgeView.getVisibility());
     }

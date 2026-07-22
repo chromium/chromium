@@ -39,6 +39,8 @@ using LocalThemeSpecifics = sync_pb::ThemeAndroidSpecifics;
 using LocalThemeSpecifics = sync_pb::ThemeSpecifics;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.chrome.browser.ntp_customization.theme_sync)
 enum class ServiceStatus {
   kInitializing,
   kActive,

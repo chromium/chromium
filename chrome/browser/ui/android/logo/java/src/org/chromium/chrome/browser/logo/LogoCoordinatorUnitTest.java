@@ -49,8 +49,8 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
-import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.PlatformType;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.function.Supplier;
@@ -186,7 +186,7 @@ public class LogoCoordinatorUnitTest {
                 NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
         NtpBackgroundDataColor dataColor =
                 new NtpBackgroundDataColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID,
+                        PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         colorInfo);
         @ColorInt
@@ -226,7 +226,7 @@ public class LogoCoordinatorUnitTest {
         colorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
         dataColor =
                 new NtpBackgroundDataColor(
-                        NtpBackgroundDataBase.PlatformType.ANDROID,
+                        PlatformType.ANDROID,
                         /* isChromeColorDailyRefreshEnabled= */ false,
                         colorInfo);
         backgroundColor =

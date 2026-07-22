@@ -200,6 +200,8 @@ source_set("sync") {
 
   if (is_android) {
     sources += [
+      "cross_device_theme_tracker_android.cc",
+      "cross_device_theme_tracker_android.h",
       "glue/synced_tab_delegate_android.cc",
       "glue/synced_tab_delegate_android.h",
       "glue/synced_window_delegate_android.cc",
@@ -212,9 +214,12 @@ source_set("sync") {
     deps += [
       "//chrome/android:chrome_jni_headers",
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ntp_customization:jni_headers",
       "//chrome/browser/sync/android:jni_headers",
       "//chrome/browser/tab",
       "//chrome/browser/ui/android/tab_model",
+      "//ui/color:color_provider_key",
+      "//ui/color/dynamic_color",
     ]
   } else {
     sources += [
