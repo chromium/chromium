@@ -8,4 +8,6 @@ found in the LICENSE file.
 <resources>
     <dimen name="vertical_hairline_width">1dp</dimen>
     <dimen name="rounded_corner_radius">8dp</dimen>
+    <!-- Should be consistent with toolbar_corner_radius (16dp). -->
+    <dimen name="bottom_left_rounded_corner_radius">16dp</dimen>
 </resources>

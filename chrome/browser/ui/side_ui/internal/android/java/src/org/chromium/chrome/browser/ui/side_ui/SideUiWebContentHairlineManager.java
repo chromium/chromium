@@ -15,6 +15,7 @@ import com.google.errorprone.annotations.DoNotMock;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 
 import java.util.Set;
@@ -51,7 +52,8 @@ import java.util.Set;
         browserControlsStateProvider.addObserver(mWebContentHairlineControlsObserver);
 
         mWebContentHairlineAdjuster =
-                new WebContentHairlineAdjuster(sideUiWebContentHairlineContainer);
+                new WebContentHairlineAdjuster(
+                        sideUiStateProvider, sideUiWebContentHairlineContainer);
         sideUiStateProvider.addObserver(mWebContentHairlineAdjuster);
     }
 
@@ -124,12 +126,15 @@ import java.util.Set;
      */
     private static final class WebContentHairlineAdjuster extends ViewMarginAdjusterForSideUi {
 
+        private final SideUiStateProvider mSideUiStateProvider;
         private final SideUiWebContentHairlineContainer mSideUiWebContentHairlineContainer;
 
         public WebContentHairlineAdjuster(
+                SideUiStateProvider sideUiStateProvider,
                 SideUiWebContentHairlineContainer sideUiWebContentHairlineContainer) {
             super(sideUiWebContentHairlineContainer);
 
+            mSideUiStateProvider = sideUiStateProvider;
             mSideUiWebContentHairlineContainer = sideUiWebContentHairlineContainer;
         }
 
@@ -140,17 +145,25 @@ import java.util.Set;
 
         @Override
         public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-            // TODO(crbug.com/525353575): Investigate if we need to update rounded corner logic for
-            //  different height side containers.
-            // TODO(crbug.com/530332806): Investigate if we need to disable rounded corners for VT.
+            // TODO(crbug.com/525353575): Determine the innermost side UI to figure out which
+            //  corner to show when supporting VT and SP on the same side.
+            boolean isLeftShowing = sideUiSpecs.getWidth(AnchorSide.LEFT) != 0;
+            boolean isVtShowing = mSideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS);
+
             int leftHairlineVisibility =
-                    sideUiSpecs.getWidth(AnchorSide.LEFT) == 0 ? View.INVISIBLE : View.VISIBLE;
+                    (isLeftShowing && !isVtShowing) ? View.VISIBLE : View.INVISIBLE;
             mSideUiWebContentHairlineContainer
                     .getLeftHairline()
                     .setVisibility(leftHairlineVisibility);
             mSideUiWebContentHairlineContainer
-                    .getLeftRoundedCorner()
+                    .getTopLeftRoundedCorner()
                     .setVisibility(leftHairlineVisibility);
+
+            int leftBottomCornerVisibility =
+                    (isLeftShowing && isVtShowing) ? View.VISIBLE : View.INVISIBLE;
+            mSideUiWebContentHairlineContainer
+                    .getBottomLeftRoundedCorner()
+                    .setVisibility(leftBottomCornerVisibility);
 
             int rightHairlineVisibility =
                     sideUiSpecs.getWidth(AnchorSide.RIGHT) == 0 ? View.INVISIBLE : View.VISIBLE;
@@ -158,7 +171,7 @@ import java.util.Set;
                     .getRightHairline()
                     .setVisibility(rightHairlineVisibility);
             mSideUiWebContentHairlineContainer
-                    .getRightRoundedCorner()
+                    .getTopRightRoundedCorner()
                     .setVisibility(rightHairlineVisibility);
 
             super.onSideUiSpecsChanged(sideUiSpecs);

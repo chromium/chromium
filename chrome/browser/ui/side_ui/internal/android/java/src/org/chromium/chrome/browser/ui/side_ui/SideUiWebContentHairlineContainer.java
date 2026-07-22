@@ -38,13 +38,18 @@ import org.chromium.build.annotations.Nullable;
         return findViewById(R.id.right_web_content_hairline);
     }
 
-    /** Returns the left rounded corner ImageView. */
-    /* package */ ImageView getLeftRoundedCorner() {
-        return findViewById(R.id.left_web_content_rounded_corner);
+    /** Returns the top left rounded corner ImageView. */
+    /* package */ ImageView getTopLeftRoundedCorner() {
+        return findViewById(R.id.top_left_web_content_rounded_corner);
     }
 
-    /** Returns the right rounded corner ImageView. */
-    /* package */ ImageView getRightRoundedCorner() {
-        return findViewById(R.id.right_web_content_rounded_corner);
+    /** Returns the bottom left rounded corner ImageView. */
+    /* package */ ImageView getBottomLeftRoundedCorner() {
+        return findViewById(R.id.bottom_left_web_content_rounded_corner);
+    }
+
+    /** Returns the top right rounded corner ImageView. */
+    /* package */ ImageView getTopRightRoundedCorner() {
+        return findViewById(R.id.top_right_web_content_rounded_corner);
     }
 }

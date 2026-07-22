@@ -26,6 +26,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.ui.base.TestActivity;
@@ -42,8 +43,14 @@ public class SideUiWebContentHairlineManagerTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private SideUiStateProvider mSideUiStateProvider;
 
-    private SideUiWebContentHairlineContainer mHairlineContainer;
     private SideUiWebContentHairlineManager mManager;
+
+    private View mTopHairline;
+    private View mLeftHairline;
+    private View mTopLeftRoundedCorner;
+    private View mRightHairline;
+    private View mTopRightRoundedCorner;
+    private View mBottomLeftRoundedCorner;
 
     private MarginLayoutParams mLayoutParams;
 
@@ -53,17 +60,24 @@ public class SideUiWebContentHairlineManagerTest {
 
         mLayoutParams = new MarginLayoutParams(0, 0);
 
-        mHairlineContainer =
+        SideUiWebContentHairlineContainer hairlineContainer =
                 (SideUiWebContentHairlineContainer)
                         LayoutInflater.from(activity)
                                 .inflate(
                                         R.layout.side_ui_web_content_hairline_container,
                                         /* root= */ null);
-        mHairlineContainer.setLayoutParams(mLayoutParams);
+        hairlineContainer.setLayoutParams(mLayoutParams);
+
+        mTopHairline = hairlineContainer.getTopHairline();
+        mLeftHairline = hairlineContainer.getLeftHairline();
+        mTopLeftRoundedCorner = hairlineContainer.getTopLeftRoundedCorner();
+        mRightHairline = hairlineContainer.getRightHairline();
+        mTopRightRoundedCorner = hairlineContainer.getTopRightRoundedCorner();
+        mBottomLeftRoundedCorner = hairlineContainer.getBottomLeftRoundedCorner();
 
         mManager =
                 new SideUiWebContentHairlineManager(
-                        mBrowserControlsStateProvider, mSideUiStateProvider, mHairlineContainer);
+                        mBrowserControlsStateProvider, mSideUiStateProvider, hairlineContainer);
     }
 
     @Test
@@ -87,21 +101,20 @@ public class SideUiWebContentHairlineManagerTest {
                 ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
         verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
         BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
-        View topHairline = mHairlineContainer.getTopHairline();
 
         // 1. Non-zero offset: show top hairline.
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
         observer.onTopControlsHeightChanged(100, 0);
 
         assertEquals("Top margin should be updated.", 100, mLayoutParams.topMargin);
-        assertEquals(View.VISIBLE, topHairline.getVisibility());
+        assertEquals(View.VISIBLE, mTopHairline.getVisibility());
 
         // 2. Zero offset: hide top hairline.
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(0f);
         observer.onTopControlsHeightChanged(0, 0);
 
         assertEquals("Top margin should be updated to 0.", 0, mLayoutParams.topMargin);
-        assertEquals(View.INVISIBLE, topHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopHairline.getVisibility());
     }
 
     @Test
@@ -110,32 +123,29 @@ public class SideUiWebContentHairlineManagerTest {
                 ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
         verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
         BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
-        View topHairline = mHairlineContainer.getTopHairline();
 
         // 1. Non-zero offset: show top hairline.
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(50f);
         observer.onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertEquals("Top margin should be updated.", 50, mLayoutParams.topMargin);
-        assertEquals(View.VISIBLE, topHairline.getVisibility());
+        assertEquals(View.VISIBLE, mTopHairline.getVisibility());
 
         // 2. Zero offset: hide top hairline.
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(0f);
         observer.onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
         assertEquals("Top margin should be updated to 0.", 0, mLayoutParams.topMargin);
-        assertEquals(View.INVISIBLE, topHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopHairline.getVisibility());
     }
 
     @Test
     public void testUpdate() {
-        View topHairline = mHairlineContainer.getTopHairline();
-
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
         mManager.update();
 
         assertEquals("Top margin should be updated.", 100, mLayoutParams.topMargin);
-        assertEquals(View.VISIBLE, topHairline.getVisibility());
+        assertEquals(View.VISIBLE, mTopHairline.getVisibility());
     }
 
     @Test
@@ -144,41 +154,63 @@ public class SideUiWebContentHairlineManagerTest {
                 ArgumentCaptor.forClass(SideUiObserver.class);
         verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
         SideUiObserver observer = observerCaptor.getValue();
-        View leftHairline = mHairlineContainer.getLeftHairline();
-        View rightHairline = mHairlineContainer.getRightHairline();
-        View leftRoundedCorner = mHairlineContainer.getLeftRoundedCorner();
-        View rightRoundedCorner = mHairlineContainer.getRightRoundedCorner();
 
         // 1. Assert initially INVISIBLE.
-        assertEquals(View.INVISIBLE, leftHairline.getVisibility());
-        assertEquals(View.INVISIBLE, leftRoundedCorner.getVisibility());
-        assertEquals(View.INVISIBLE, rightHairline.getVisibility());
-        assertEquals(View.INVISIBLE, rightRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mRightHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopRightRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mBottomLeftRoundedCorner.getVisibility());
 
         // 2. Show left SideUI.
         SideUiSpecs showLeftSpecs =
                 new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
         observer.onSideUiSpecsChanged(showLeftSpecs);
-        assertEquals(View.VISIBLE, leftHairline.getVisibility());
-        assertEquals(View.VISIBLE, leftRoundedCorner.getVisibility());
-        assertEquals(View.INVISIBLE, rightHairline.getVisibility());
-        assertEquals(View.INVISIBLE, rightRoundedCorner.getVisibility());
+        assertEquals(View.VISIBLE, mLeftHairline.getVisibility());
+        assertEquals(View.VISIBLE, mTopLeftRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mRightHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopRightRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mBottomLeftRoundedCorner.getVisibility());
 
         // 3. Hide left SideUI and show right SideUI.
         SideUiSpecs showRightSpecs =
                 new SideUiSpecs(Map.of(AnchorSide.RIGHT, new SideUiSize(50, HeightType.TOOLBAR)));
         observer.onSideUiSpecsChanged(showRightSpecs);
-        assertEquals(View.INVISIBLE, leftHairline.getVisibility());
-        assertEquals(View.INVISIBLE, leftRoundedCorner.getVisibility());
-        assertEquals(View.VISIBLE, rightHairline.getVisibility());
-        assertEquals(View.VISIBLE, rightRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
+        assertEquals(View.VISIBLE, mRightHairline.getVisibility());
+        assertEquals(View.VISIBLE, mTopRightRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mBottomLeftRoundedCorner.getVisibility());
 
         // 4. Hide right SideUI.
         SideUiSpecs hideAllSpecs = new SideUiSpecs(Collections.emptyMap());
         observer.onSideUiSpecsChanged(hideAllSpecs);
-        assertEquals(View.INVISIBLE, leftHairline.getVisibility());
-        assertEquals(View.INVISIBLE, leftRoundedCorner.getVisibility());
-        assertEquals(View.INVISIBLE, rightHairline.getVisibility());
-        assertEquals(View.INVISIBLE, rightRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mRightHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopRightRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mBottomLeftRoundedCorner.getVisibility());
+    }
+
+    @Test
+    public void testHairlineVisibilityForVerticalTabs() {
+        ArgumentCaptor<SideUiObserver> observerCaptor =
+                ArgumentCaptor.forClass(SideUiObserver.class);
+        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
+        SideUiObserver observer = observerCaptor.getValue();
+
+        when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
+        when(mSideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS)).thenReturn(true);
+
+        SideUiSpecs showLeftSpecs =
+                new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
+        observer.onSideUiSpecsChanged(showLeftSpecs);
+
+        assertEquals(View.VISIBLE, mTopHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
+        assertEquals(View.INVISIBLE, mRightHairline.getVisibility());
+        assertEquals(View.INVISIBLE, mTopRightRoundedCorner.getVisibility());
+        assertEquals(View.VISIBLE, mBottomLeftRoundedCorner.getVisibility());
     }
 }
