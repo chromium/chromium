@@ -20,6 +20,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.SiteZoomInfo;
 import org.chromium.content_public.browser.WebContents;
@@ -150,7 +151,13 @@ public class HostZoomMapImpl {
             effectiveSystemFontScale = 1.0f;
         }
 
-        float scaleAdjustment = effectiveSystemFontScale * platformAdjustment;
+        // When the Desktop zoom scaling flag is not enabled, set the effective adjustment to 1.
+        float effectivePlatformAdjustment = platformAdjustment;
+        if (!ContentFeatureList.sAndroidDesktopZoomScaling.isEnabled()) {
+            effectivePlatformAdjustment = 1.0f;
+        }
+
+        float scaleAdjustment = effectiveSystemFontScale * effectivePlatformAdjustment;
 
         // No calculation to do if the |scaleAdjustment| is 1.0 (default).
         if (MathUtils.areFloatsEqual(scaleAdjustment, 1.0f)) {

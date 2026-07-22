@@ -4361,6 +4361,23 @@ const FeatureEntry::FeatureVariation kSafetyFrePromoVariations[] = {
      kSafetyFrePromoPasswordManagerAndHistoryQuickDelete, nullptr},
     {"(Animated illustration)", kSafetyFrePromoAnimatedIllustration, nullptr}};
 
+const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorSmall[] = {
+    {"desktop-zoom-scaling-factor", "109"},
+    {"monitor-zoom-scaling-factor", "120"}};
+const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorMedium[] = {
+    {"desktop-zoom-scaling-factor", "115"},
+    {"monitor-zoom-scaling-factor", "125"}};
+const FeatureEntry::FeatureParam kAndroidDesktopZoomScalingFactorLarge[] = {
+    {"desktop-zoom-scaling-factor", "120"},
+    {"monitor-zoom-scaling-factor", "130"}};
+const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
+    {"with 109 scaling, 120 monitor", kAndroidDesktopZoomScalingFactorSmall,
+     nullptr},
+    {"with 115 scaling, 125 monitor", kAndroidDesktopZoomScalingFactorMedium,
+     nullptr},
+    {"with 120 scaling, 130 monitor", kAndroidDesktopZoomScalingFactorLarge,
+     nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kSmartTabSharingEnabled[] = {
@@ -12335,6 +12352,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(
          network::features::kUseUnexportableKeyServiceInBrowserProcess)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"android-desktop-zoom-scaling",
+     flag_descriptions::kAndroidDesktopZoomScalingName,
+     flag_descriptions::kAndroidDesktopZoomScalingDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kAndroidDesktopZoomScaling,
+                                    kAndroidDesktopZoomScalingVariations,
+                                    "AndroidDesktopZoomScaling")},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

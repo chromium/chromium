@@ -45,9 +45,19 @@ class StandardizedBrowserZoomPolicyBrowserTest
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, we disable the feature that automatically scales web content
+    // because it is not meaningful and would change expected values.
+    feature_list_.InitWithFeatureStates(
+        {{blink::features::kStandardizedBrowserZoom, true},
+         {blink::features::kStandardizedBrowserZoomOptOut, false},
+         { features::kAndroidDesktopZoomScaling,
+           false }});
+#else
     feature_list_.InitWithFeatureStates(
         {{blink::features::kStandardizedBrowserZoom, true},
          {blink::features::kStandardizedBrowserZoomOptOut, false}});
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void SetUpInProcessBrowserTestFixture() override {

@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -30,11 +31,13 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ContentFeatureMapJni;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link PageZoomManager}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 public class PageZoomManagerUnitTest {
     // Error messages
     private static final String CURRENT_ZOOM_FAILURE =

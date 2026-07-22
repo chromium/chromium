@@ -77,9 +77,19 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
   SupervisedUserNavigationObserverAndroidBrowserTest()
       : WithFeatureOverrideAndParamInterface<TestCase>(
             kSupervisedUserUseUrlFilteringService) {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, we disable the feature that automatically scales web content
+    // because it is not meaningful and would change expected values.
+    scoped_feature_list_.InitWithFeatureStates(
+        {{kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs,
+          GetTestCase().merge_device_parental_controls_and_family_link_prefs},
+         { features::kAndroidDesktopZoomScaling,
+           false }});
+#else
     scoped_feature_list_.InitWithFeatureState(
         kSupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs,
         GetTestCase().merge_device_parental_controls_and_family_link_prefs);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   content::WebContents* web_contents() {
@@ -267,10 +277,18 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
 
   void ClickButtonById(std::string_view link_id) {
     content::TestNavigationObserver navigation_observer(web_contents());
-    EXPECT_TRUE(content::ExecJs(
-        web_contents(),
-        content::JsReplace("document.getElementById($1).click();", link_id)));
+    content::SimulateMouseClickOrTapElementWithId(web_contents(), link_id);
     navigation_observer.Wait();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, we disable the feature that automatically scales web content
+    // because it is not meaningful and would change expected values.
+    scoped_feature_list_.InitWithFeatureStates(
+        {{ features::kAndroidDesktopZoomScaling,
+           false }});
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
  private:
