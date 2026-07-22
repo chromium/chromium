@@ -51,25 +51,6 @@
   <message name="IDS_AI_MODE_ENTRYPOINT_LABEL" desc="The label of the omnibox AI mode entrypoint" formatter_data="android_java">
     AI Mode
   </message>
-  <message name="IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes the AI mode keyword." formatter_data="android_java">
-    Ask AI Mode in Google Search
-  </message>
-  <message name="IDS_ACC_AI_MODE_BUTTON_FOCUSED" desc="Announcement when AI Mode button is focused.">
-    AI Mode button, press Enter to ask AI Mode
-  </message>
-  <if expr="use_titlecase">
-    <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON" desc="In Title Case: The text label of the omnibox context menu option to enable showing 'AI Mode'">
-      Always Show AI Mode
-    </message>
-  </if>
-  <if expr="not use_titlecase">
-    <message name="IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON" desc="The text label of the omnibox context menu option to enable showing 'AI Mode'">
-      Always show AI Mode
-    </message>
-  </if>
-  <message name="IDS_ACC_AI_MODE_PLACEHOLDER_TEXT" desc="The text shown and announced, prompting the user to use the AI mode button, conditionally displayed in the Omnibox when it is focused with no input and AI Mode is enabled." formatter_data="android_java">
-    Press tab then enter to ask AI Mode
-  </message>
   <message name="IDS_AI_MODE_ENTRYPOINT_TOOLTIP" desc="Tooltip text shown on hover for the omnibox AI Mode entrypoint.">
     Ask <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph> in <ph name="SEARCH_ENGINE_NAME">$2<ex>Google</ex></ph> Search
   </message>
@@ -86,7 +67,7 @@
       Always show <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>
     </message>
   </if>
-  <message name="IDS_AI_MODE_OMNIBOX_PLACEHOLDER" desc="The text shown and announced, prompting the user to use the omnibox AI mode entrypoint. conditionally displayed in the Omnibox when it is focused with no input and AI Mode is enabled.">
+  <message name="IDS_AI_MODE_OMNIBOX_PLACEHOLDER" desc="The text shown and announced, prompting the user to use the omnibox AI mode entrypoint. conditionally displayed in the Omnibox when it is focused with no input and AI Mode is enabled." formatter_data="android_java">
     Press tab then enter to ask <ph name="AI_ENGINE_NAME">$1<ex>AI Mode</ex></ph>
   </message>
 

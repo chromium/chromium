@@ -22,8 +22,18 @@ struct AiModeButtonConfig;
 }
 
 struct AiModeButtonUiConfig {
+  AiModeButtonUiConfig(SearchEngineType id,
+                       const std::u16string& name,
+                       const std::u16string& dse_name,
+                       std::string_view favicon_url,
+                       std::string_view navigation_url,
+                       std::string_view navigation_url_empty);
+  AiModeButtonUiConfig(const AiModeButtonUiConfig&);
+  AiModeButtonUiConfig(AiModeButtonUiConfig&&);
+  AiModeButtonUiConfig& operator=(const AiModeButtonUiConfig&);
+  AiModeButtonUiConfig& operator=(AiModeButtonUiConfig&&);
+  ~AiModeButtonUiConfig();
   SearchEngineType id;
-  std::u16string_view name;
   std::u16string text;
   std::u16string tooltip;
   std::u16string a11y_label;

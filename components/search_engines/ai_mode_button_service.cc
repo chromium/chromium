@@ -18,6 +18,37 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+AiModeButtonUiConfig::AiModeButtonUiConfig(
+    SearchEngineType id,
+    const std::u16string& name,
+    const std::u16string& dse_name,
+    std::string_view favicon_url,
+    std::string_view navigation_url,
+    std::string_view navigation_url_empty)
+    : id(id),
+      text(name),
+      tooltip(l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_TOOLTIP,
+                                         name,
+                                         dse_name)),
+      a11y_label(
+          l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_ACC_FOCUSED, name)),
+      context_menu_label(
+          l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_CONTEXT_MENU_SHOW,
+                                     name)),
+      placeholder_text(
+          l10n_util::GetStringFUTF16(IDS_AI_MODE_OMNIBOX_PLACEHOLDER, name)),
+      favicon_url(favicon_url),
+      navigation_url(navigation_url),
+      navigation_url_empty(navigation_url_empty) {}
+AiModeButtonUiConfig::AiModeButtonUiConfig(const AiModeButtonUiConfig&) =
+    default;
+AiModeButtonUiConfig::AiModeButtonUiConfig(AiModeButtonUiConfig&&) = default;
+AiModeButtonUiConfig& AiModeButtonUiConfig::operator=(
+    const AiModeButtonUiConfig&) = default;
+AiModeButtonUiConfig& AiModeButtonUiConfig::operator=(AiModeButtonUiConfig&&) =
+    default;
+AiModeButtonUiConfig::~AiModeButtonUiConfig() = default;
+
 AiModeButtonService::AiModeButtonService(
     TemplateURLService* template_url_service)
     : template_url_service_(template_url_service) {
@@ -70,19 +101,10 @@ std::optional<AiModeButtonUiConfig> AiModeButtonService::BuildCurrentUiConfig()
       dse->GetEngineType(template_url_service_->search_terms_data());
 
   if (type == SearchEngineType::SEARCH_ENGINE_GOOGLE) {
-    return {{
-        type,
-        u"",
-        l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL),
-        l10n_util::GetStringUTF16(
-            IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS),
-        l10n_util::GetStringUTF16(IDS_ACC_AI_MODE_BUTTON_FOCUSED),
-        l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON),
-        l10n_util::GetStringUTF16(IDS_ACC_AI_MODE_PLACEHOLDER_TEXT),
-        /*favicon_url=*/"",
-        /*navigation_url=*/"",
-        /*navigation_url_empty=*/"",
-    }};
+    return AiModeButtonUiConfig(
+        type, l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL),
+        dse->short_name(), /*favicon_url=*/"", /*navigation_url=*/"",
+        /*navigation_url_empty=*/"");
   }
 
   const ai_mode_button_config::AiModeButtonConfig* found_config = nullptr;
@@ -103,22 +125,9 @@ std::optional<AiModeButtonUiConfig> AiModeButtonService::BuildCurrentUiConfig()
   }
 
   CHECK(IsValidConfig(*found_config));
-  return {{
-      type,
-      found_config->name,
-      std::u16string(found_config->name),
-      l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_TOOLTIP,
-                                 found_config->name, dse->short_name()),
-      l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_ACC_FOCUSED,
-                                 found_config->name),
-      l10n_util::GetStringFUTF16(IDS_AI_MODE_ENTRYPOINT_CONTEXT_MENU_SHOW,
-                                 found_config->name),
-      l10n_util::GetStringFUTF16(IDS_AI_MODE_OMNIBOX_PLACEHOLDER,
-                                 found_config->name),
-      found_config->favicon_url,
-      found_config->navigation_url,
-      found_config->navigation_url_empty,
-  }};
+  return AiModeButtonUiConfig(
+      type, found_config->name, dse->short_name(), found_config->favicon_url,
+      found_config->navigation_url, found_config->navigation_url_empty);
 }
 
 // static

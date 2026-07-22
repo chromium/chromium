@@ -176,7 +176,10 @@ public class HintTextUpdater implements LocationBarDataProvider.Observer {
         if (useAimActivationOrEmptyHint()) {
             if (triggerOrAlreadyShowingActivationHint()) {
                 mUpdateHintTextCallback.onResult(
-                        mContext.getString(R.string.acc_ai_mode_placeholder_text));
+                        OmniboxResourceProvider.getString(
+                                mContext,
+                                R.string.ai_mode_omnibox_placeholder,
+                                mContext.getString(R.string.ai_mode_entrypoint_label)));
             } else {
                 mUpdateHintTextCallback.onResult("");
             }
