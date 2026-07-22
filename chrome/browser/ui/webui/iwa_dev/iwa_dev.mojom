@@ -35,8 +35,21 @@ interface PageHandler {
   GetInstalledAppsInfo() => (array<IwaDevModeAppInfo> apps);
 };
 
+// Interface for the browser to push events to the WebUI page.
+interface Page {
+  // Notifies the page that an app has been installed.
+  OnAppInstalled(IwaDevModeAppInfo app_info);
+
+  // Notifies the page that an app's manifest has been updated.
+  OnAppUpdated(IwaDevModeAppInfo app_info);
+
+  // Notifies the page that an app has been uninstalled.
+  OnAppUninstalled(string app_id);
+};
+
 // Factory interface to create the handler.
 interface PageHandlerFactory {
   // Creates a PageHandler and binds it to the given receiver.
-  CreatePageHandler(pending_receiver<PageHandler> handler);
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
 };

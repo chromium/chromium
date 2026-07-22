@@ -12,7 +12,9 @@
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev_ui.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -25,12 +27,92 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+constexpr char kAppBaseVersion[] = "1.0.0";
+constexpr char kProxyAppName[] = "Simple Isolated App";
+constexpr char kLocalBundleName[] = "Local Bundle IWA Name";
+constexpr char kManifestAppName[] = "Test App";
+constexpr char kUpdateManifestUrl[] = "https://example.com/update.json";
+
+class MockPage : public iwa_dev::mojom::Page {
+ public:
+  MockPage() = default;
+  ~MockPage() override = default;
+
+  mojo::PendingRemote<iwa_dev::mojom::Page> BindAndGetRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  void OnAppInstalled(iwa_dev::mojom::IwaDevModeAppInfoPtr app_info) override {
+    installed_future_.SetValue(std::move(app_info));
+  }
+
+  void OnAppUpdated(iwa_dev::mojom::IwaDevModeAppInfoPtr app_info) override {
+    updated_future_.SetValue(std::move(app_info));
+  }
+
+  void OnAppUninstalled(const std::string& app_id) override {
+    uninstalled_future_.SetValue(app_id);
+  }
+
+  base::test::TestFuture<iwa_dev::mojom::IwaDevModeAppInfoPtr>&
+  installed_future() {
+    return installed_future_;
+  }
+
+  base::test::TestFuture<iwa_dev::mojom::IwaDevModeAppInfoPtr>&
+  updated_future() {
+    return updated_future_;
+  }
+
+  base::test::TestFuture<std::string>& uninstalled_future() {
+    return uninstalled_future_;
+  }
+
+ private:
+  mojo::Receiver<iwa_dev::mojom::Page> receiver_{this};
+  base::test::TestFuture<iwa_dev::mojom::IwaDevModeAppInfoPtr>
+      installed_future_;
+  base::test::TestFuture<iwa_dev::mojom::IwaDevModeAppInfoPtr> updated_future_;
+  base::test::TestFuture<std::string> uninstalled_future_;
+};
+
+}  // namespace
+
 class IwaDevHandlerBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   IwaDevHandlerBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebAppDevUi);
   }
+
+  void SetUpOnMainThread() override {
+    web_app::IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://iwa-dev")));
+  }
+
+  web_app::IsolatedWebAppUrlInfo InstallProxyApp() {
+    server_ =
+        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+    return InstallDevModeProxyIsolatedWebApp(server_->GetOrigin());
+  }
+
+  web_app::IsolatedWebAppUrlInfo InstallBundleApp() {
+    return InstallBundle(kLocalBundleName, kAppBaseVersion);
+  }
+
+  web_app::IsolatedWebAppUrlInfo InstallUpdateManifestApp() {
+    web_app::IsolatedWebAppUrlInfo app =
+        InstallBundle(kManifestAppName, kAppBaseVersion);
+    SetUpdateInfo(app.app_id(), GURL(kUpdateManifestUrl));
+    return app;
+  }
+
+  net::EmbeddedTestServer* server() const { return server_.get(); }
 
  protected:
   void SetUpdateInfo(const webapps::AppId& app_id,
@@ -49,9 +131,6 @@ class IwaDevHandlerBrowserTest
   IwaDevPageHandler* GetHandler() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL("chrome://iwa-dev")));
-    EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
     IwaDevUI* controller =
         static_cast<IwaDevUI*>(web_contents->GetWebUI()->GetController());
@@ -88,58 +167,128 @@ class IwaDevHandlerBrowserTest
   }
 
  private:
+  std::unique_ptr<net::EmbeddedTestServer> server_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
                        GetInstalledAppsInfo_ProxyApp) {
-  std::unique_ptr<net::EmbeddedTestServer> server =
-      CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-  auto proxy_app = InstallDevModeProxyIsolatedWebApp(server->GetOrigin());
+  auto proxy_app = InstallProxyApp();
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
   const auto& app = apps[0];
 
   EXPECT_EQ(app->app_id, proxy_app.app_id());
-  EXPECT_EQ(app->name, "Simple Isolated App");
-  EXPECT_EQ(app->installed_version, "1.0.0");
+  EXPECT_EQ(app->name, kProxyAppName);
+  EXPECT_EQ(app->installed_version, kAppBaseVersion);
   ASSERT_TRUE(app->source->is_proxy_origin());
-  EXPECT_EQ(app->source->get_proxy_origin(), server->GetOrigin());
+  EXPECT_EQ(app->source->get_proxy_origin(), server()->GetOrigin());
 }
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
                        GetInstalledAppsInfo_LocalBundleApp) {
-  web_app::IsolatedWebAppUrlInfo app =
-      InstallBundle("Local Bundle IWA Name", "1.0.0");
+  web_app::IsolatedWebAppUrlInfo app = InstallBundleApp();
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
   const auto& app_info = apps[0];
 
   EXPECT_EQ(app_info->app_id, app.app_id());
-  EXPECT_EQ(app_info->name, "Local Bundle IWA Name");
-  EXPECT_EQ(app_info->installed_version, "1.0.0");
+  EXPECT_EQ(app_info->name, kLocalBundleName);
+  EXPECT_EQ(app_info->installed_version, kAppBaseVersion);
   ASSERT_TRUE(app_info->source->is_bundle_path());
   ExpectBundleInstalledAtProfileDir(app_info->source->get_bundle_path());
 }
 
 IN_PROC_BROWSER_TEST_F(IwaDevHandlerBrowserTest,
                        GetInstalledAppsInfo_ManifestApp) {
-  web_app::IsolatedWebAppUrlInfo app = InstallBundle("Test App", "2.0.0");
-
-  GURL update_manifest_url("https://example.com/update.json");
-  SetUpdateInfo(app.app_id(), update_manifest_url);
+  web_app::IsolatedWebAppUrlInfo app = InstallUpdateManifestApp();
 
   auto apps = GetInstalledAppsInfo();
   ASSERT_EQ(apps.size(), 1u);
   const auto& app_info = apps[0];
 
   EXPECT_EQ(app_info->app_id, app.app_id());
-  EXPECT_EQ(app_info->name, "Test App");
-  EXPECT_EQ(app_info->installed_version, "2.0.0");
+  EXPECT_EQ(app_info->name, kManifestAppName);
+  EXPECT_EQ(app_info->installed_version, kAppBaseVersion);
   ASSERT_TRUE(app_info->source->is_update_info());
   const auto& update_info = app_info->source->get_update_info();
-  EXPECT_EQ(update_info->update_manifest_url, update_manifest_url);
+  EXPECT_EQ(update_info->update_manifest_url, GURL(kUpdateManifestUrl));
   EXPECT_EQ(update_info->update_channel, "default");
+}
+
+class IwaDevHandlerObserverBrowserTest : public IwaDevHandlerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    IwaDevHandlerBrowserTest::SetUpOnMainThread();
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    handler_ = std::make_unique<IwaDevPageHandler>(
+        web_contents->GetWebUI(), mock_page_.BindAndGetRemote(),
+        remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDownOnMainThread() override {
+    handler_.reset();
+    IwaDevHandlerBrowserTest::TearDownOnMainThread();
+  }
+
+  MockPage& mock_page() { return mock_page_; }
+
+ private:
+  MockPage mock_page_;
+  mojo::Remote<iwa_dev::mojom::PageHandler> remote_;
+  std::unique_ptr<IwaDevPageHandler> handler_;
+};
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerObserverBrowserTest, OnAppInstalled) {
+  web_app::IsolatedWebAppUrlInfo app = InstallBundleApp();
+
+  iwa_dev::mojom::IwaDevModeAppInfoPtr app_info =
+      mock_page().installed_future().Take();
+  EXPECT_EQ(app_info->app_id, app.app_id());
+  EXPECT_EQ(app_info->name, kLocalBundleName);
+  EXPECT_EQ(app_info->installed_version, kAppBaseVersion);
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerObserverBrowserTest, OnAppUninstalled) {
+  web_app::IsolatedWebAppUrlInfo app = InstallBundleApp();
+
+  web_app::test::UninstallWebApp(profile(), app.app_id());
+
+  EXPECT_EQ(mock_page().uninstalled_future().Get(), app.app_id());
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerObserverBrowserTest, OnAppUpdated) {
+  web_app::IsolatedWebAppUrlInfo app = InstallBundleApp();
+
+  provider().install_manager().NotifyWebAppManifestUpdated(app.app_id());
+
+  iwa_dev::mojom::IwaDevModeAppInfoPtr app_info =
+      mock_page().updated_future().Take();
+  EXPECT_EQ(app_info->app_id, app.app_id());
+  EXPECT_EQ(app_info->name, kLocalBundleName);
+  EXPECT_EQ(app_info->installed_version, kAppBaseVersion);
+}
+
+IN_PROC_BROWSER_TEST_F(IwaDevHandlerObserverBrowserTest, IgnoresNormalWebApps) {
+  // Install a normal (non-IWA) web app.
+  webapps::AppId normal_app_id = web_app::test::InstallDummyWebApp(
+      profile(), "Normal Web App", GURL("https://example.com/"));
+
+  mock_page().FlushForTesting();
+
+  // The WebUI should only be notified about Dev Mode IWAs.
+  EXPECT_FALSE(mock_page().installed_future().IsReady());
+
+  provider().install_manager().NotifyWebAppManifestUpdated(normal_app_id);
+  mock_page().FlushForTesting();
+  EXPECT_FALSE(mock_page().updated_future().IsReady());
+
+  provider().install_manager().NotifyWebAppWillBeUninstalled(normal_app_id);
+  mock_page().FlushForTesting();
+  EXPECT_FALSE(mock_page().uninstalled_future().IsReady());
 }

@@ -17,11 +17,16 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/isolated_web_apps/types/iwa_origin.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
@@ -80,11 +85,15 @@ iwa_dev::mojom::IwaDevModeAppInfoPtr MapToMojomIwaDevModeAppInfo(
 
 IwaDevPageHandler::IwaDevPageHandler(
     content::WebUI* web_ui,
+    mojo::PendingRemote<iwa_dev::mojom::Page> page,
     mojo::PendingReceiver<iwa_dev::mojom::PageHandler> receiver)
     : profile_(CHECK_DEREF(Profile::FromWebUI(web_ui))),
       provider_(
           CHECK_DEREF(web_app::WebAppProvider::GetForWebApps(&profile_.get()))),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)),
+      page_(std::move(page)) {
+  install_observation_.Observe(&provider_->install_manager());
+}
 
 IwaDevPageHandler::~IwaDevPageHandler() = default;
 
@@ -98,4 +107,31 @@ void IwaDevPageHandler::GetInstalledAppsInfo(
   }
 
   std::move(callback).Run(std::move(dev_mode_apps));
+}
+
+void IwaDevPageHandler::OnWebAppInstalled(const webapps::AppId& app_id) {
+  if (const web_app::WebApp* app = provider_->registrar_unsafe().GetAppById(
+          app_id, web_app::WebAppFilter::IsDevModeIsolatedApp())) {
+    page_->OnAppInstalled(
+        MapToMojomIwaDevModeAppInfo(profile_->GetPath(), *app));
+  }
+}
+
+void IwaDevPageHandler::OnWebAppManifestUpdated(const webapps::AppId& app_id) {
+  if (const web_app::WebApp* app = provider_->registrar_unsafe().GetAppById(
+          app_id, web_app::WebAppFilter::IsDevModeIsolatedApp())) {
+    page_->OnAppUpdated(MapToMojomIwaDevModeAppInfo(profile_->GetPath(), *app));
+  }
+}
+
+void IwaDevPageHandler::OnWebAppWillBeUninstalled(
+    const webapps::AppId& app_id) {
+  if (provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsDevModeIsolatedApp())) {
+    page_->OnAppUninstalled(app_id);
+  }
+}
+
+void IwaDevPageHandler::OnWebAppInstallManagerDestroyed() {
+  install_observation_.Reset();
 }

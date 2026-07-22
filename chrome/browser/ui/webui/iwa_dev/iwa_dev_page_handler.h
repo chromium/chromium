@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_IWA_DEV_IWA_DEV_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/iwa_dev/iwa_dev.mojom.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,15 +21,18 @@ class WebUI;
 }  // namespace content
 
 namespace web_app {
+class WebAppInstallManager;
 class WebAppProvider;
 }  // namespace web_app
 
 // Handles API requests from chrome://iwa-dev page by implementing
 // iwa_dev::mojom::PageHandler.
-class IwaDevPageHandler : public iwa_dev::mojom::PageHandler {
+class IwaDevPageHandler : public iwa_dev::mojom::PageHandler,
+                          public web_app::WebAppInstallManagerObserver {
  public:
   IwaDevPageHandler(
       content::WebUI* web_ui,
+      mojo::PendingRemote<iwa_dev::mojom::Page> page,
       mojo::PendingReceiver<iwa_dev::mojom::PageHandler> receiver);
 
   IwaDevPageHandler(const IwaDevPageHandler&) = delete;
@@ -38,10 +43,20 @@ class IwaDevPageHandler : public iwa_dev::mojom::PageHandler {
   // iwa_dev::mojom::PageHandler:
   void GetInstalledAppsInfo(GetInstalledAppsInfoCallback callback) override;
 
+  // web_app::WebAppInstallManagerObserver:
+  void OnWebAppInstalled(const webapps::AppId& app_id) override;
+  void OnWebAppManifestUpdated(const webapps::AppId& app_id) override;
+  void OnWebAppWillBeUninstalled(const webapps::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+
  private:
   const raw_ref<Profile> profile_;
   const raw_ref<web_app::WebAppProvider> provider_;
   mojo::Receiver<iwa_dev::mojom::PageHandler> receiver_;
+  mojo::Remote<iwa_dev::mojom::Page> page_;
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_IWA_DEV_IWA_DEV_PAGE_HANDLER_H_

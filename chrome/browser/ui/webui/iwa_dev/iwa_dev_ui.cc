@@ -42,12 +42,13 @@ void IwaDevUI::BindInterface(
 }
 
 void IwaDevUI::CreatePageHandler(
+    mojo::PendingRemote<iwa_dev::mojom::Page> page,
     mojo::PendingReceiver<iwa_dev::mojom::PageHandler> receiver) {
   if (!web_app::IsIwaDevModeEnabled(Profile::FromWebUI(web_ui()))) {
     return;
   }
-  page_handler_ =
-      std::make_unique<IwaDevPageHandler>(web_ui(), std::move(receiver));
+  page_handler_ = std::make_unique<IwaDevPageHandler>(web_ui(), std::move(page),
+                                                      std::move(receiver));
 }
 
 IwaDevPageHandler* IwaDevUI::GetHandlerForTesting() {

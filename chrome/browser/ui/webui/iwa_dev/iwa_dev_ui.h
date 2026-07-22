@@ -46,6 +46,7 @@ class IwaDevUI : public ui::MojoWebUIController,
  private:
   // iwa_dev::mojom::PageHandlerFactory:
   void CreatePageHandler(
+      mojo::PendingRemote<iwa_dev::mojom::Page> page,
       mojo::PendingReceiver<iwa_dev::mojom::PageHandler> receiver) override;
 
   std::unique_ptr<IwaDevPageHandler> page_handler_;

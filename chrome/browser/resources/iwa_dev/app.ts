@@ -39,14 +39,51 @@ export class IwaDevAppElement extends CrLitElement {
   protected accessor installedApps_: IwaDevModeAppInfo[] = [];
   protected accessor hasFetchedApps_: boolean = false;
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
+  private listenerIds_: number[] = [];
 
   override async connectedCallback() {
     super.connectedCallback();
+
+    this.listenerIds_.push(
+        this.browserProxy_.callbackRouter.onAppInstalled.addListener(
+            (appInfo: IwaDevModeAppInfo) => this.onAppInstalled_(appInfo)));
+    this.listenerIds_.push(
+        this.browserProxy_.callbackRouter.onAppUpdated.addListener(
+            (appInfo: IwaDevModeAppInfo) => this.onAppUpdated_(appInfo)));
+    this.listenerIds_.push(
+        this.browserProxy_.callbackRouter.onAppUninstalled.addListener(
+            (appId: string) => this.onAppUninstalled_(appId)));
+
     if (this.devModeEnabled_) {
       const {apps} = await this.browserProxy_.handler.getInstalledAppsInfo();
-      this.installedApps_ = apps;
+      this.installedApps_ = this.sortApps_(apps);
       this.hasFetchedApps_ = true;
     }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(
+        id => this.browserProxy_.callbackRouter.removeListener(id));
+    this.listenerIds_ = [];
+  }
+
+  private sortApps_(apps: IwaDevModeAppInfo[]): IwaDevModeAppInfo[] {
+    return apps.sort((a, b) => a.appId.localeCompare(b.appId));
+  }
+
+  private onAppInstalled_(appInfo: IwaDevModeAppInfo) {
+    this.installedApps_ = this.sortApps_([...this.installedApps_, appInfo]);
+  }
+
+  private onAppUpdated_(appInfo: IwaDevModeAppInfo) {
+    this.installedApps_ = this.installedApps_.map(
+        app => app.appId === appInfo.appId ? appInfo : app);
+  }
+
+  private onAppUninstalled_(appId: string) {
+    this.installedApps_ =
+        this.installedApps_.filter(app => app.appId !== appId);
   }
 }
 
