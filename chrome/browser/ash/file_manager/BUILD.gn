@@ -491,6 +491,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/browser/ui/webui/ash/office_fallback",
     "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:profile_test_support",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",

@@ -8151,8 +8151,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/web_app_link_capturing_test_utils.h",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
       "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
-      "../browser/web_applications/test/profile_test_helper.cc",
-      "../browser/web_applications/test/profile_test_helper.h",
       "../browser/web_applications/test/web_app_icon_test_utils.cc",
       "../browser/web_applications/test/web_app_icon_test_utils.h",
       "base/devtools_agent_coverage_observer.cc",

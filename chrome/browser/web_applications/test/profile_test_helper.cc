@@ -10,9 +10,9 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_switches.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/user_names.h"
+#include "ash/constants/ash_switches.h"          // nogncheck crbug.com/40147906
+#include "components/account_id/account_id.h"     // nogncheck crbug.com/40147906
+#include "components/user_manager/user_names.h"   // nogncheck crbug.com/40147906
 #endif
 
 std::string TestProfileTypeToString(

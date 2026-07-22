@@ -1577,6 +1577,41 @@ source_set("web_app_test") {
   ]
 }
 
+# Separate from :web_applications_test_support because this browser-test
+# helper depends on //chrome/test:test_support, which cannot be a dependency
+# of :web_applications_test_support without forming a cycle.
+if (!is_android) {
+  source_set("profile_test_support") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    public = [ "test/profile_test_helper.h" ]
+
+    sources = [ "test/profile_test_helper.cc" ]
+
+    public_deps = [
+      "//base",
+      "//chrome/test:test_support",
+    ]
+
+    deps = [
+      ":web_applications_test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/common:constants",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//ash/constants",
+        "//components/account_id",
+        "//components/user_manager",
+      ]
+    }
+  }
+}
+
 source_set("app_id_helpers") {
   visibility = [
     ":*",
