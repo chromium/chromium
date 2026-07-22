@@ -12,7 +12,7 @@
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/category_classifier_metadata.pb.h"
@@ -43,10 +43,10 @@ class CategoryClassifierModelProvider
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     if (optimization_target ==
         optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER) {
-      auto model_metadata = optimization_guide::TestModelInfoBuilder()
-                                .SetModelFilePath(model_file_path_)
-                                .SetModelMetadata(model_metadata_)
-                                .Build();
+      optimization_guide::ModelInfo model_metadata = {
+          .model_file_path = model_file_path_,
+          .model_metadata = model_metadata_,
+      };
       observer->OnModelUpdated(optimization_target, model_metadata);
       model_observers_.AddObserver(observer);
     }
@@ -54,10 +54,10 @@ class CategoryClassifierModelProvider
 
   void SetModelMetadata(const optimization_guide::proto::Any& model_metadata) {
     model_metadata_ = model_metadata;
-    auto model_info = optimization_guide::TestModelInfoBuilder()
-                          .SetModelFilePath(model_file_path_)
-                          .SetModelMetadata(model_metadata_)
-                          .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = model_file_path_,
+        .model_metadata = model_metadata_,
+    };
     model_observers_.Notify(
         &optimization_guide::OptimizationTargetModelObserver::OnModelUpdated,
         optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,

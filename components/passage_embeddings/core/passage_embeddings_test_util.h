@@ -11,7 +11,7 @@
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace passage_embeddings {
@@ -19,7 +19,7 @@ namespace passage_embeddings {
 inline constexpr int64_t kEmbeddingsModelVersion = 1l;
 
 // Returns a model info builder preloaded with valid model info.
-optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo();
+optimization_guide::ModelInfo GetValidModelInfo();
 
 ////////////////////////////////////////////////////////////////////////////////
 

@@ -22,8 +22,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -188,9 +189,9 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
-          optimization_guide::TestModelInfoBuilder()
-              .SetModelFilePath(model_file_path())
-              .Build());
+          optimization_guide::ModelInfo{
+              .model_file_path = model_file_path(),
+          });
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -228,9 +229,9 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
-          optimization_guide::TestModelInfoBuilder()
-              .SetModelFilePath(model_file_path())
-              .Build());
+          optimization_guide::ModelInfo{
+              .model_file_path = model_file_path(),
+          });
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -256,12 +257,12 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
-          optimization_guide::TestModelInfoBuilder()
-              .SetModelFilePath(
+          optimization_guide::ModelInfo{
+              .model_file_path =
                   base::FilePath(optimization_guide::StringToFilePath(
                                      optimization_guide::kTestAbsoluteFilePath)
-                                     .value()))
-              .Build());
+                                     .value()),
+          });
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -283,9 +284,9 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
-          optimization_guide::TestModelInfoBuilder()
-              .SetModelFilePath(model_file_path())
-              .Build());
+          optimization_guide::ModelInfo{
+              .model_file_path = model_file_path(),
+          });
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,
@@ -300,9 +301,9 @@ IN_PROC_BROWSER_TEST_F(DependencyParserModelLoaderBrowserTest,
   OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
       ->OverrideTargetModelForTesting(
           optimization_guide::proto::OPTIMIZATION_TARGET_PHRASE_SEGMENTATION,
-          optimization_guide::TestModelInfoBuilder()
-              .SetModelFilePath(model_file_path())
-              .Build());
+          optimization_guide::ModelInfo{
+              .model_file_path = model_file_path(),
+          });
 
   RetryForHistogramUntilCountReached(
       &histogram_tester,

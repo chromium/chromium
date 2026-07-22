@@ -11,7 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/mock_safe_browsing_database_manager.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
@@ -114,11 +114,10 @@ class NotificationContentDetectionServiceTest
             &browser_context_);
 
     base::FilePath model_file_path = GetValidModelFile();
-    optimization_guide::ModelInfo model_info =
-        optimization_guide::TestModelInfoBuilder()
-            .SetVersion(1)
-            .SetModelFilePath(model_file_path)
-            .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = model_file_path,
+        .version = 1,
+    };
     test_notification_content_detection_model->OnModelUpdated(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_NOTIFICATION_CONTENT_DETECTION,

@@ -6,7 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/buildflag.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/bert_model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -51,8 +51,9 @@ class BertModelExecutorTest : public testing::Test {
     model_file_path =
         is_valid ? model_file_path.AppendASCII("bert_page_topics_model.tflite")
                  : model_file_path.AppendASCII("simple_test.tflite");
-    ModelInfo model_info =
-        TestModelInfoBuilder().SetModelFilePath(model_file_path).Build();
+    ModelInfo model_info = {
+        .model_file_path = model_file_path,
+    };
     model_handler_->OnModelUpdated(proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
                                    model_info);
     task_environment_.RunUntilIdle();

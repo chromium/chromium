@@ -99,7 +99,7 @@ class PredictionManager : public PredictionModelDownloadObserver,
       const;
 
   // Override the model file returned to observers for |optimization_target|.
-  // Use |TestModelInfoBuilder| to construct the model files. For
+  // Use ModelInfo aggregate initialization to construct the model files. For
   // testing purposes only.
   void OverrideTargetModelForTesting(
       proto::OptimizationTarget optimization_target,

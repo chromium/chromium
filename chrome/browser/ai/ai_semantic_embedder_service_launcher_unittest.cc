@@ -93,7 +93,7 @@ TEST_F(AISemanticEmbedderServiceLauncherTest,
 
   // Set the model to ready immediately.
   launcher.controller()->MaybeUpdateModelInfo(
-      passage_embeddings::GetBuilderWithValidModelInfo().Build());
+      passage_embeddings::GetValidModelInfo());
   EXPECT_TRUE(launcher.controller()->IsModelAvailable());
 
   // Callback should execute immediately (synchronously).
@@ -122,7 +122,7 @@ TEST_F(AISemanticEmbedderServiceLauncherTest,
 
   // Simulate component updater successfully loading the model.
   launcher.controller()->MaybeUpdateModelInfo(
-      passage_embeddings::GetBuilderWithValidModelInfo().Build());
+      passage_embeddings::GetValidModelInfo());
 
   // Now they should have both executed immediately.
   EXPECT_TRUE(future1.IsReady());

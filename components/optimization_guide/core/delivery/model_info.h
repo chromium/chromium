@@ -18,9 +18,7 @@ namespace optimization_guide {
 
 // Encapsulates information about a prediction model like its file path on disk
 // and other metadata.
-//
-// Note: TestModelInfoBuilder can be used to facilitate creation of ModelInfo
-// for testing.
+
 struct ModelInfo {
   // Creates a ModelInfo from the proto if valid.
   static std::optional<ModelInfo> CreateFromProto(

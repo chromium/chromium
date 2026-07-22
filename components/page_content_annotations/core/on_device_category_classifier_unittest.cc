@@ -12,7 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -146,11 +146,10 @@ TEST_F(OnDeviceCategoryClassifierTest, ExecutesIfVersionsMatch) {
       "optimization_guide.proto.CategoryClassifierMetadata");
   metadata.SerializeToString(any.mutable_value());
 
-  auto model_info =
-      optimization_guide::TestModelInfoBuilder()
-          .SetModelFilePath(base::FilePath(FILE_PATH_LITERAL("model.tflite")))
-          .SetModelMetadata(any)
-          .Build();
+  optimization_guide::ModelInfo model_info = {
+      .model_file_path = base::FilePath(FILE_PATH_LITERAL("model.tflite")),
+      .model_metadata = any,
+  };
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
@@ -194,11 +193,10 @@ TEST_F(OnDeviceCategoryClassifierTest, NoTitleUrlEmbedding) {
       "optimization_guide.proto.CategoryClassifierMetadata");
   metadata.SerializeToString(any.mutable_value());
 
-  auto model_info =
-      optimization_guide::TestModelInfoBuilder()
-          .SetModelFilePath(base::FilePath(FILE_PATH_LITERAL("model.tflite")))
-          .SetModelMetadata(any)
-          .Build();
+  optimization_guide::ModelInfo model_info = {
+      .model_file_path = base::FilePath(FILE_PATH_LITERAL("model.tflite")),
+      .model_metadata = any,
+  };
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
@@ -238,11 +236,10 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfVersionsMismatch) {
       "optimization_guide.proto.CategoryClassifierMetadata");
   metadata.SerializeToString(any.mutable_value());
 
-  auto model_info =
-      optimization_guide::TestModelInfoBuilder()
-          .SetModelFilePath(base::FilePath(FILE_PATH_LITERAL("model.tflite")))
-          .SetModelMetadata(any)
-          .Build();
+  optimization_guide::ModelInfo model_info = {
+      .model_file_path = base::FilePath(FILE_PATH_LITERAL("model.tflite")),
+      .model_metadata = any,
+  };
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,
@@ -267,10 +264,9 @@ TEST_F(OnDeviceCategoryClassifierTest, SkipsIfModelMetadataMissing) {
       /*model_version=*/1, /*output_size=*/768));
 
   // Update model without metadata.
-  auto model_info =
-      optimization_guide::TestModelInfoBuilder()
-          .SetModelFilePath(base::FilePath(FILE_PATH_LITERAL("model.tflite")))
-          .Build();
+  optimization_guide::ModelInfo model_info = {
+      .model_file_path = base::FilePath(FILE_PATH_LITERAL("model.tflite")),
+  };
 
   model_provider_->PushModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_EDU_CLASSIFIER,

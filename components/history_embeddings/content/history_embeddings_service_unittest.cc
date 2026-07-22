@@ -33,7 +33,7 @@
 #include "components/history_embeddings/core/mock_intent_classifier.h"
 #include "components/history_embeddings/core/search_strings_update_listener.h"
 #include "components/history_embeddings/core/vector_database.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -181,12 +181,11 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
 
   void OverrideVisibilityScoresForTesting(
       const base::flat_map<std::string, double>& visibility_scores_for_input) {
-    optimization_guide::ModelInfo model_info =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(
-                base::FilePath(FILE_PATH_LITERAL("visibility_model")))
-            .SetVersion(123)
-            .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path =
+            base::FilePath(FILE_PATH_LITERAL("visibility_model")),
+        .version = 123,
+    };
     page_content_annotator_.UseVisibilityScores(model_info,
                                                 visibility_scores_for_input);
     page_content_annotations_service_->OverridePageContentAnnotatorForTesting(

@@ -16,8 +16,8 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
@@ -211,8 +211,10 @@ TEST_F(OnDeviceModelAdaptationLoaderTest, ProvidesValidAssetWithEmptyHints) {
 
 TEST_F(OnDeviceModelAdaptationLoaderTest, RemovedOnInvalidAsset) {
   loaders_.MaybeRegisterModelDownload(feature(), spec_, true);
-  TestModelInfoBuilder invalid_builder;
-  SendAdaptationModelUpdated(invalid_builder.Build());
+  ModelInfo invalid_model_info = {
+      .model_file_path = base::FilePath::FromUTF8Unsafe(kTestAbsoluteFilePath),
+  };
+  SendAdaptationModelUpdated(invalid_model_info);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability."
       "Test",
@@ -268,10 +270,11 @@ TEST_F(OnDeviceModelAdaptationLoaderTest,
       .config = SimpleTestFeatureConfig(),
       .metadata = MatchingMetadata(spec_),
   }};
-  SendAdaptationModelUpdated(
-      TestModelInfoBuilder(asset.model_info())
-          .RemoveAdditionalFileWithBasename(kOnDeviceModelExecutionConfigFile)
-          .Build());
+  ModelInfo model_info = asset.model_info();
+  std::erase_if(model_info.additional_files, [&](const base::FilePath& path) {
+    return path.BaseName().value() == kOnDeviceModelExecutionConfigFile;
+  });
+  SendAdaptationModelUpdated(model_info);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceAdaptationModelAvailability."
       "Test",

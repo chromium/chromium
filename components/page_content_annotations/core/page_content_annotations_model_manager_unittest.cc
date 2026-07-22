@@ -14,7 +14,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -93,10 +93,9 @@ class PageContentAnnotationsModelManagerTest : public testing::Test {
     // execution: job, queue, background sequences, etc, are working correctly.
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("non_existent_model.tflite");
-    optimization_guide::ModelInfo model_info =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(model_file_path)
-            .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = model_file_path,
+    };
     model_manager()->page_visibility_model_handler_->OnModelUpdated(
         optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
         model_info);

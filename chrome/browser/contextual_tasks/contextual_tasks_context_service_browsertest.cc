@@ -34,7 +34,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/contextual_tasks/public/query_contextualizer.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/proto/tab_relevance_model_metadata.pb.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
@@ -1043,10 +1043,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 
   auto model_executor_task_runner =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
-  auto model_info = optimization_guide::TestModelInfoBuilder()
-                        .SetModelFilePath(model_file_path)
-                        .SetModelMetadata(any_metadata)
-                        .Build();
+  optimization_guide::ModelInfo model_info = {
+      .model_file_path = model_file_path,
+      .model_metadata = any_metadata,
+  };
   UpdateModel(optimization_guide::proto::
                   OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE,
               model_info, model_executor_task_runner);
@@ -1895,10 +1895,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SuccessWithMlModel) {
     ASSERT_TRUE(base::PathExists(model_file_path));
   }
 
-  auto model_info = optimization_guide::TestModelInfoBuilder()
-                        .SetModelFilePath(model_file_path)
-                        .SetModelMetadata(any_metadata)
-                        .Build();
+  optimization_guide::ModelInfo model_info = {
+      .model_file_path = model_file_path,
+      .model_metadata = any_metadata,
+  };
   UpdateModel(optimization_guide::proto::
                   OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE,
               model_info);

@@ -9,7 +9,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
@@ -21,6 +20,12 @@
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 
 namespace optimization_guide {
+
+#if BUILDFLAG(IS_WIN)
+const char kTestAbsoluteFilePath[] = "C:\\absolute\\file\\path";
+#else
+const char kTestAbsoluteFilePath[] = "/absolutefilepath";
+#endif
 
 FakeBaseModelAsset::FakeBaseModelAsset()
     : FakeBaseModelAsset(FakeBaseModelAsset::Content{}) {}
@@ -119,19 +124,21 @@ FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
     *config.add_feature_configs() = content.config;
     CHECK(base::WriteFile(config_path, config.SerializeAsString()));
   }
-  TestModelInfoBuilder builder;
-  builder.SetVersion(version())
-      .SetAdditionalFiles({config_path})
-      .SetModelMetadata(AnyWrapProto(content.metadata));
+  std::vector<base::FilePath> additional_files = {config_path};
   if (content.weight) {
     paths_ = std::make_unique<on_device_model::AdaptationAssetPaths>();
     paths_->weights =
         temp_dir_.GetPath().Append(kOnDeviceModelAdaptationWeightsFile);
     CHECK(base::WriteFile(paths_->weights,
                           base::NumberToString(content.weight.value())));
-    builder.SetAdditionalFiles({config_path, paths_->weights});
+    additional_files.push_back(paths_->weights);
   }
-  model_info_ = builder.Build();
+  model_info_ = {
+      .model_file_path = base::FilePath::FromUTF8Unsafe(kTestAbsoluteFilePath),
+      .additional_files = std::move(additional_files),
+      .version = version(),
+      .model_metadata = AnyWrapProto(content.metadata),
+  };
   metadata_ = std::make_unique<OnDeviceModelAdaptationMetadata>(
       paths_.get(), version(),
       base::MakeRefCounted<OnDeviceModelFeatureAdapter>(
@@ -148,10 +155,10 @@ FakeLanguageModelAsset::FakeLanguageModelAsset() {
   CHECK(temp_dir_.CreateUniqueTempDir());
   auto model_path = this->model_path();
   CHECK(base::WriteFile(model_path, on_device_model::FakeLanguageModel()));
-  model_info_ = TestModelInfoBuilder()
-                    .SetModelFilePath(model_path)
-                    .SetVersion(123)
-                    .Build();
+  model_info_ = {
+      .model_file_path = model_path,
+      .version = 123,
+  };
 }
 FakeLanguageModelAsset::~FakeLanguageModelAsset() = default;
 
@@ -170,11 +177,11 @@ FakeSafetyModelAsset::FakeSafetyModelAsset(
   auto data_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("model.tflite"));
   CHECK(base::WriteFile(data_path, on_device_model::FakeTsData()));
-  model_info_ = TestModelInfoBuilder()
-                    .SetModelFilePath(data_path)
-                    .SetVersion(content.model_info_version)
-                    .SetModelMetadata(AnyWrapProto(content.metadata))
-                    .Build();
+  model_info_ = {
+      .model_file_path = data_path,
+      .version = content.model_info_version,
+      .model_metadata = AnyWrapProto(content.metadata),
+  };
 }
 
 FakeSafetyModelAsset::~FakeSafetyModelAsset() = default;

@@ -9,7 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/autocomplete_scoring_model_executor.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/autocomplete_scoring_model_metadata.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -120,11 +120,11 @@ class AutocompleteScoringModelHandlerTest : public testing::Test {
           "optimization_guide.protos.AutocompleteScoringModelMetadata");
     }
 
-    auto model_metadata = optimization_guide::TestModelInfoBuilder()
-                              .SetModelMetadata(any)
-                              .SetModelFilePath(model_file_path_)
-                              .SetVersion(123)
-                              .Build();
+    optimization_guide::ModelInfo model_metadata = {
+        .model_file_path = model_file_path_,
+        .version = 123,
+        .model_metadata = any,
+    };
     model_handler_->OnModelUpdated(
         optimization_guide::proto::OPTIMIZATION_TARGET_OMNIBOX_URL_SCORING,
         model_metadata);

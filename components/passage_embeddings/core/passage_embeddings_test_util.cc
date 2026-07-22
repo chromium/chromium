@@ -21,7 +21,7 @@ EmbedderMetadata GetValidEmbedderMetadata() {
 
 }  // namespace
 
-optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
+optimization_guide::ModelInfo GetValidModelInfo() {
   // Get file paths to the test model files.
   base::FilePath test_data_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
@@ -40,14 +40,12 @@ optimization_guide::TestModelInfoBuilder GetBuilderWithValidModelInfo() {
   model_metadata.set_input_window_size(kEmbeddingsModelInputWindowSize);
   model_metadata.set_output_size(3ul);
 
-  // Load a model info builder.
-  optimization_guide::TestModelInfoBuilder builder;
-  builder.SetModelFilePath(embeddings_path);
-  builder.SetAdditionalFiles({sp_path});
-  builder.SetVersion(kEmbeddingsModelVersion);
-  builder.SetModelMetadata(optimization_guide::AnyWrapProto(model_metadata));
-
-  return builder;
+  return optimization_guide::ModelInfo{
+      .model_file_path = embeddings_path,
+      .additional_files = {sp_path},
+      .version = kEmbeddingsModelVersion,
+      .model_metadata = optimization_guide::AnyWrapProto(model_metadata),
+  };
 }
 
 ////////////////////////////////////////////////////////////////////////////////

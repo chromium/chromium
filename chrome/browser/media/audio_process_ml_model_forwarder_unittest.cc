@@ -14,8 +14,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/common/pref_names.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_provider_registry.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -75,9 +75,9 @@ class AudioProcessMlModelForwarderTest : public testing::Test {
     auto temp_file = std::make_unique<base::ScopedTempFile>();
     CHECK(temp_file->Create());
     model_files_.push_back(std::move(temp_file));
-    return optimization_guide::TestModelInfoBuilder()
-        .SetModelFilePath(model_files_.back()->path())
-        .Build();
+    return optimization_guide::ModelInfo{
+        .model_file_path = model_files_.back()->path(),
+    };
   }
 
   mojo::Remote<audio::mojom::MlModelManager> CreateNewMlModelManager(

@@ -15,7 +15,6 @@
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -113,9 +112,10 @@ class OptimizationGuideSegmentationModelProviderTest : public testing::Test {
     any->set_type_url(
         "type.googleapis.com/"
         "segmentation_platform.proto.SegmentationModelMetadata");
-    return optimization_guide::TestModelInfoBuilder()
-        .SetModelMetadata(any)
-        .Build();
+    return optimization_guide::ModelInfo{
+        .model_file_path = base::FilePath(FILE_PATH_LITERAL("model.tflite")),
+        .model_metadata = any,
+    };
   }
 
  protected:

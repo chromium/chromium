@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/test_tflite_model_executor.h"
 #include "components/optimization_guide/core/inference/test_tflite_model_handler.h"
@@ -119,10 +119,10 @@ class TFLiteModelExecutorTest : public testing::Test {
       proto::OptimizationTarget optimization_target,
       const std::optional<proto::Any>& model_metadata) {
     DCHECK(model_handler());
-    ModelInfo model_info = TestModelInfoBuilder()
-                               .SetModelFilePath(model_file_path_)
-                               .SetModelMetadata(model_metadata)
-                               .Build();
+    ModelInfo model_info = {
+        .model_file_path = model_file_path_,
+        .model_metadata = model_metadata,
+    };
     model_handler()->OnModelUpdated(optimization_target, model_info);
     RunUntilIdle();
   }

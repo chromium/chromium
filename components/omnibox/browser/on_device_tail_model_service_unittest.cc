@@ -15,7 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/on_device_tail_model_executor.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,13 +64,12 @@ class OnDeviceTailModelServiceTest : public ::testing::Test {
         kProbabilityThreshold);
     metadata.SerializeToString(any_metadata.mutable_value());
 
-    model_info_ =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(test_data_dir.AppendASCII(kTailModelFilename))
-            .SetAdditionalFiles(additional_files)
-            .SetVersion(123)
-            .SetModelMetadata(any_metadata)
-            .Build();
+    model_info_ = optimization_guide::ModelInfo{
+        .model_file_path = test_data_dir.AppendASCII(kTailModelFilename),
+        .additional_files = additional_files,
+        .version = 123,
+        .model_metadata = any_metadata,
+    };
 
     task_environment_.RunUntilIdle();
   }

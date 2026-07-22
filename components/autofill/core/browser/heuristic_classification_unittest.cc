@@ -154,7 +154,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/language_code.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/variations/variations_switches.h"
@@ -575,11 +575,11 @@ void HeuristicClassificationTests::SetUp() {
     optimization_guide::proto::ModelInfo model_metadata;
     ASSERT_TRUE(model_metadata.ParseFromString(proto_content));
 
-    optimization_guide::ModelInfo model_info =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelMetadata(/*any_metadata*/ model_metadata.model_metadata())
-            .SetModelFilePath(model_path.AppendASCII("model.tflite"))
-            .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = model_path.AppendASCII("model.tflite"),
+        .version = 123,
+        .model_metadata = model_metadata.model_metadata(),
+    };
 
     ml_predictions_handler_.OnModelUpdated(
         optimization_guide::proto::

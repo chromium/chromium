@@ -28,7 +28,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -242,7 +241,9 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
   optimization_guide::ModelInfo CreateOptimizationGuideModelInfo(
       std::optional<proto::SegmentationModelMetadata>
           segmentation_model_metadata) {
-    auto model_info_builder = optimization_guide::TestModelInfoBuilder();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = base::FilePath(FILE_PATH_LITERAL("dummy_path")),
+    };
     if (segmentation_model_metadata.has_value()) {
       std::string serialized_metadata;
       segmentation_model_metadata.value().SerializeToString(
@@ -253,9 +254,9 @@ class SegmentationPlatformTest : public PlatformBrowserTest {
       any->set_type_url(
           "type.googleapis.com/"
           "segmentation_platform.proto.SegmentationModelMetadata");
-      model_info_builder.SetModelMetadata(any);
+      model_info.model_metadata = any;
     }
-    return model_info_builder.Build();
+    return model_info;
   }
 
   proto::SegmentationModelMetadata GetSegmentationModelMetadataWithSignals() {

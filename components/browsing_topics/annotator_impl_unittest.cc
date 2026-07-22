@@ -15,8 +15,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -122,11 +122,10 @@ class BrowsingTopicsAnnotatorImplTest : public testing::Test {
             .AppendASCII("data")
             .AppendASCII("browsing_topics")
             .AppendASCII("golden_data_model.tflite");
-    optimization_guide::ModelInfo model_info =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(model_file_path)
-            .SetModelMetadata(model_metadata)
-            .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = model_file_path,
+        .model_metadata = model_metadata,
+    };
     annotator()->OnModelUpdated(
         optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
         model_info);
@@ -539,12 +538,11 @@ class BrowsingTopicsAnnotatorOverrideListTest
             // These tests don't need a valid model to execute as we don't care
             // about the model output or execution.
             .AppendASCII("model_doesnt_exist.tflite");
-    optimization_guide::ModelInfo model_info =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(model_file_path)
-            .SetModelMetadata(any_metadata)
-            .SetAdditionalFiles(additional_files)
-            .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = model_file_path,
+        .additional_files = additional_files,
+        .model_metadata = any_metadata,
+    };
     annotator()->OnModelUpdated(
         optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
         model_info);

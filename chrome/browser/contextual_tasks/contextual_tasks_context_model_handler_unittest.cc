@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_scoring_utils.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/tab_relevance_model_metadata.pb.h"
@@ -41,10 +41,10 @@ class ContextualTasksModelProvider
     if (optimization_target ==
         optimization_guide::proto::
             OPTIMIZATION_TARGET_CONTEXTUAL_TASKS_TAB_RELEVANCE) {
-      auto model_metadata = optimization_guide::TestModelInfoBuilder()
-                                .SetModelFilePath(model_file_path_)
-                                .SetModelMetadata(model_metadata_)
-                                .Build();
+      optimization_guide::ModelInfo model_metadata = {
+          .model_file_path = model_file_path_,
+          .model_metadata = model_metadata_,
+      };
       observer->OnModelUpdated(optimization_target, model_metadata);
       model_observers_.AddObserver(observer);
     }
@@ -54,10 +54,10 @@ class ContextualTasksModelProvider
 
   void SetModelMetadata(const optimization_guide::proto::Any& model_metadata) {
     model_metadata_ = model_metadata;
-    auto model_info = optimization_guide::TestModelInfoBuilder()
-                          .SetModelFilePath(model_file_path_)
-                          .SetModelMetadata(model_metadata_)
-                          .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = model_file_path_,
+        .model_metadata = model_metadata_,
+    };
     model_observers_.Notify(
         &optimization_guide::OptimizationTargetModelObserver::OnModelUpdated,
         optimization_guide::proto::

@@ -21,7 +21,7 @@
 #include "components/omnibox/browser/on_device_model_update_listener.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
@@ -87,13 +87,12 @@ class OnDeviceHeadProviderTest : public testing::Test,
         "type.googleapis.com/com.foo.OnDeviceTailSuggestModelMetadata");
     metadata.SerializeToString(any_metadata.mutable_value());
 
-    optimization_guide::ModelInfo model_info =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(tail_model_path)
-            .SetAdditionalFiles(additional_files)
-            .SetVersion(123)
-            .SetModelMetadata(any_metadata)
-            .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = tail_model_path,
+        .additional_files = additional_files,
+        .version = 123,
+        .model_metadata = any_metadata,
+    };
 
     client_->GetOnDeviceTailModelService()->OnModelUpdated(
         optimization_guide::proto::OptimizationTarget::

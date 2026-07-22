@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/test_model_handler.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -204,11 +204,11 @@ class Aiv4HandlerTestBase : public testing::Test {
           "PermissionsAiv4ModelMetadata");
     }
 
-    auto model_metadata = optimization_guide::TestModelInfoBuilder()
-                              .SetModelMetadata(any)
-                              .SetModelFilePath(model_file_path)
-                              .SetVersion(123)
-                              .Build();
+    optimization_guide::ModelInfo model_metadata = {
+        .model_file_path = model_file_path,
+        .version = 123,
+        .model_metadata = any,
+    };
 
     model_handler()->OnModelUpdated(opt_target, model_metadata);
 

@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/browser/client_side_phishing_model.h"
@@ -65,10 +65,10 @@ class ClientSidePhishingModelObserverTracker
       const std::vector<base::FilePath>& additional_files_path) {
     if (optimization_target ==
         optimization_guide::proto::OPTIMIZATION_TARGET_CLIENT_SIDE_PHISHING) {
-      auto model_metadata = optimization_guide::TestModelInfoBuilder()
-                                .SetModelFilePath(model_file_path)
-                                .SetAdditionalFiles(additional_files_path)
-                                .Build();
+      optimization_guide::ModelInfo model_metadata = {
+          .model_file_path = model_file_path,
+          .additional_files = additional_files_path,
+      };
       model_observer_->OnModelUpdated(optimization_target, model_metadata);
     }
   }

@@ -38,7 +38,7 @@ include_rules = [
   "+components/history_embeddings/core/mock_intent_classifier.h",
   "+components/keyed_service/content/browser_context_dependency_manager.h",
   "+components/keyed_service/core/service_access_type.h",
-  "+components/optimization_guide/core/delivery/test_model_info_builder.h",
+  "+components/optimization_guide/core/delivery/model_info.h",
   "+components/optimization_guide/core/feature_registry/feature_registration.h",
   "+components/optimization_guide/core/model_execution/feature_keys.h",
   "+components/optimization_guide/core/model_execution/model_execution_features.h",

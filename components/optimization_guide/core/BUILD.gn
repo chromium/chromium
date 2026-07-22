@@ -620,8 +620,6 @@ static_library("hints_test_support") {
 static_library("delivery_test_support") {
   testonly = true
   sources = [
-    "delivery/test_model_info_builder.cc",
-    "delivery/test_model_info_builder.h",
     "delivery/test_optimization_guide_model_provider.cc",
     "delivery/test_optimization_guide_model_provider.h",
   ]

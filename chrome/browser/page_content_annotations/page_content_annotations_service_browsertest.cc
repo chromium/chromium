@@ -43,7 +43,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/inference/execution_status.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -361,9 +361,9 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->OverrideTargetModelForTesting(
             optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY,
-            optimization_guide::TestModelInfoBuilder()
-                .SetModelFilePath(model_file_path)
-                .Build());
+            optimization_guide::ModelInfo{
+                .model_file_path = model_file_path,
+            });
 
     optimization_guide::RetryForHistogramUntilCountReached(
         &histogram_tester,
@@ -1328,11 +1328,11 @@ class PageContentAnnotationsServiceOnDeviceCategoryClassifierTest
     OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
         ->OverrideTargetModelForTesting(
             optimization_target,
-            optimization_guide::TestModelInfoBuilder()
-                .SetModelFilePath(test_data_dir.AppendASCII(
+            optimization_guide::ModelInfo{
+                .model_file_path = test_data_dir.AppendASCII(
                     "components/test/data/page_content_annotations/"
-                    "edu_classifier.tflite"))
-                .Build());
+                    "edu_classifier.tflite"),
+            });
   }
 
   void NotifyEmbedderMetadata() {

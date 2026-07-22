@@ -24,7 +24,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
@@ -158,11 +158,11 @@ class FieldClassificationModelHandlerTest : public testing::Test {
   void SimulateRetrieveModelFromServer(
       const std::string file_name,
       FieldClassificationModelHandler& model_handler) {
-    optimization_guide::ModelInfo model_info =
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(test_data_dir_.AppendASCII(file_name))
-            .SetModelMetadata(AnyWrapProto(model_metadata_))
-            .Build();
+    optimization_guide::ModelInfo model_info = {
+        .model_file_path = test_data_dir_.AppendASCII(file_name),
+        .version = 123,
+        .model_metadata = AnyWrapProto(model_metadata_),
+    };
     model_handler.OnModelUpdated(
         optimization_guide::proto::
             OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,

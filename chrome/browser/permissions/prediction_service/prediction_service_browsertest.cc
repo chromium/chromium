@@ -39,8 +39,8 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -745,10 +745,10 @@ IN_PROC_BROWSER_TEST_P(SignatureModelPredictionServiceBrowserTest,
 
   opt_guide()->OverrideTargetModelForTesting(
       kCpssV1OptTargetNotification,
-      optimization_guide::TestModelInfoBuilder()
-          .SetModelFilePath(ModelFilePath(kZeroDotFiveReturnSignatureModel))
-          .SetModelMetadata(any)
-          .Build());
+      optimization_guide::ModelInfo{
+          .model_file_path = ModelFilePath(kZeroDotFiveReturnSignatureModel),
+          .model_metadata = any,
+      });
 
   prediction_model_handler()->WaitForModelLoadForTesting();
 
@@ -851,9 +851,9 @@ class AivXModelPredictionServiceBrowserTest
 
   void PushModelFileToModelExecutor(const base::FilePath& model_file_path) {
     opt_guide()->OverrideTargetModelForTesting(
-        optimization_target(), optimization_guide::TestModelInfoBuilder()
-                                   .SetModelFilePath(model_file_path)
-                                   .Build());
+        optimization_target(), optimization_guide::ModelInfo{
+                                   .model_file_path = model_file_path,
+                               });
     model_handler()->WaitForModelLoadForTesting();
   }
 
@@ -1852,10 +1852,10 @@ class Aiv4ModelMultiplePassagesBrowserTest
 
     opt_guide()->OverrideTargetModelForTesting(
         optimization_target(),
-        optimization_guide::TestModelInfoBuilder()
-            .SetModelFilePath(ModelFilePath(kOneReturnAiv4Model))
-            .SetModelMetadata(any)
-            .Build());
+        optimization_guide::ModelInfo{
+            .model_file_path = ModelFilePath(kOneReturnAiv4Model),
+            .model_metadata = any,
+        });
     model_handler()->WaitForModelLoadForTesting();
   }
 

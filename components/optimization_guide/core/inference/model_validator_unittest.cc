@@ -16,8 +16,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -68,10 +68,11 @@ class ModelValidatorModelObserverTracker
   void NotifyModelFileUpdate(proto::OptimizationTarget optimization_target,
                              const base::FilePath& model_file_path) {
     if (optimization_target == proto::OPTIMIZATION_TARGET_MODEL_VALIDATION) {
-      auto model_metadata =
-          TestModelInfoBuilder().SetModelFilePath(model_file_path).Build();
+      ModelInfo model_info = {
+          .model_file_path = model_file_path,
+      };
       model_validation_observer_->OnModelUpdated(optimization_target,
-                                                 model_metadata);
+                                                 model_info);
     }
   }
 

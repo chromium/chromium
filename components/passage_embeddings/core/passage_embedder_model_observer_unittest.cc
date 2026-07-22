@@ -129,7 +129,7 @@ TEST_F(PassageEmbedderModelObserverTest, ObservesTargetAndNotifiesObserver) {
   EXPECT_TRUE(model_info_received_future_.IsReady());
   EXPECT_FALSE(model_info_received_future_.Take());
 
-  model_provider->SetModelInfo(GetBuilderWithValidModelInfo().Build());
+  model_provider->SetModelInfo(GetValidModelInfo());
   EXPECT_TRUE(model_info_received_future_.IsReady());
   EXPECT_TRUE(model_info_received_future_.Take());
 }

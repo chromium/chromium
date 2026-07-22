@@ -31,8 +31,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
-#include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/client_side_phishing_model_metadata.pb.h"
@@ -85,12 +85,11 @@ class ClientSidePhishingModelObserverTracker
       optimization_guide::proto::ClientSidePhishingModelMetadata
           trigger_model_metadata;
       trigger_model_metadata.set_image_embedding_model_version(1);
-      auto model_metadata =
-          optimization_guide::TestModelInfoBuilder()
-              .SetModelFilePath(model_file_path)
-              .SetAdditionalFiles(additional_files_path)
-              .SetModelMetadata(AnyWrapProto(trigger_model_metadata))
-              .Build();
+      optimization_guide::ModelInfo model_metadata = {
+          .model_file_path = model_file_path,
+          .additional_files = additional_files_path,
+          .model_metadata = AnyWrapProto(trigger_model_metadata),
+      };
       model_observer_->OnModelUpdated(optimization_target, model_metadata);
     } else if (optimization_target ==
                optimization_guide::proto::
@@ -98,12 +97,11 @@ class ClientSidePhishingModelObserverTracker
       optimization_guide::proto::ClientSidePhishingModelMetadata
           image_embedding_model_metadata;
       image_embedding_model_metadata.set_image_embedding_model_version(1);
-      auto model_metadata =
-          optimization_guide::TestModelInfoBuilder()
-              .SetModelFilePath(model_file_path)
-              .SetAdditionalFiles(additional_files_path)
-              .SetModelMetadata(AnyWrapProto(image_embedding_model_metadata))
-              .Build();
+      optimization_guide::ModelInfo model_metadata = {
+          .model_file_path = model_file_path,
+          .additional_files = additional_files_path,
+          .model_metadata = AnyWrapProto(image_embedding_model_metadata),
+      };
       model_observer_->OnModelUpdated(optimization_target, model_metadata);
     }
   }
