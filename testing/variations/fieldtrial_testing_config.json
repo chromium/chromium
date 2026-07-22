@@ -15009,6 +15009,24 @@
             ]
         }
     ],
+    "ImprovedStartupBestEffortDelay": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ImprovedStartupBestEffortDelay"
+                    ]
+                }
+            ]
+        }
+    ],
     "InAppWindowManagerDeprecation": [
         {
             "platforms": [
