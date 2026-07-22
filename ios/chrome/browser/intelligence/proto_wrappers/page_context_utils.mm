@@ -7,8 +7,8 @@
 #import "base/strings/string_util.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
+#import "ios/web/public/content_type_util.h"
 #import "ios/web/public/web_state.h"
-#import "ios/web/util/content_type_util.h"
 #import "url/gurl.h"
 
 bool CanExtractPageContextForWebState(web::WebState* web_state,

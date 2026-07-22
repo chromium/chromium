@@ -73,6 +73,7 @@ source_set("web") {
     "browser_state_utils.mm",
     "browser_url_rewriter_impl.h",
     "browser_url_rewriter_impl.mm",
+    "content_type_util.cc",
     "network_context_owner.cc",
     "web_client.mm",
   ]
@@ -237,6 +238,7 @@ source_set("ios_web_general_unittests") {
 
   sources = [
     "browser_state_unittest.mm",
+    "content_type_util_unittest.cc",
     "history_state_util_unittest.mm",
     "network_context_owner_unittest.cc",
     "test/web_test_unittest.mm",

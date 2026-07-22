@@ -36,7 +36,4 @@ specific_include_rules = {
   "^gemini_browser_agent_unittest\\.mm$" : [
     "+ios/web/find_in_page/find_in_page_java_script_feature.h",
   ],
-  "^gemini_service_impl\\.mm$" : [
-    "+ios/web/util/content_type_util.h",
-  ]
 }

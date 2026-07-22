@@ -28,6 +28,7 @@ source_set("public") {
   sources = [
     "browser_state.h",
     "browser_state_utils.h",
+    "content_type_util.h",
     "web_client.h",
     "web_state.h",
     "web_state_delegate.h",

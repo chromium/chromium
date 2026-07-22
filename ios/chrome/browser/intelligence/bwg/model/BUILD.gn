@@ -249,7 +249,6 @@ source_set("gemini_service") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
-    "//ios/web/util",
   ]
   public_deps = [ "//base" ]
 }

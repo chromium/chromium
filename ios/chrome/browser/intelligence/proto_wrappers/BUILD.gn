@@ -194,7 +194,6 @@ source_set("utils") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/web/public",
-    "//ios/web/util",
     "//url",
   ]
 }

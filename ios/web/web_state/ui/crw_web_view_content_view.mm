@@ -13,8 +13,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/crw_viewport_controller.h"
 #import "ios/web/common/crw_web_view_resizing_type.h"
+#import "ios/web/public/content_type_util.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/util/content_type_util.h"
 
 namespace {
 

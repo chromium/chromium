@@ -25,8 +25,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
+#import "ios/web/public/content_type_util.h"
 #import "ios/web/public/web_state.h"
-#import "ios/web/util/content_type_util.h"
 
 GeminiServiceImpl::GeminiServiceImpl(
     ProfileIOS* profile,
