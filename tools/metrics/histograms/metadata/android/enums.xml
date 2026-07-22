@@ -272,6 +272,16 @@ chromium-metrics-reviews@google.com.
   <int value="393228" label="6.12"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidPdfHyperlinkClickResult) -->
+
+<enum name="AndroidPdfHyperlinkClickResult">
+  <int value="0" label="Success: Load initiated"/>
+  <int value="1" label="Blocked: Invalid scheme"/>
+  <int value="2" label="Ignored: V2 disabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/pdf/java/src/org/chromium/chrome/browser/pdf/PdfUtils.java:PdfHyperlinkClickResult) -->
+
 <enum name="AndroidPdfLoadResult">
   <int value="0" label="Success"/>
   <int value="1" label="Error"/>

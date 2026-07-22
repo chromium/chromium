@@ -5243,6 +5243,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.Hyperlink.ClickResult"
+    enum="AndroidPdfHyperlinkClickResult" expires_after="2027-01-10">
+  <owner>rathomas@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the outcome when a user clicks on an embedded hyperlink in a PDF.
+    Recorded in PdfCoordinator#onLinkClicked.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.IsFrozenWhenDisplayed" enum="Boolean"
     expires_after="2026-11-22">
   <owner>shuyng@google.com</owner>

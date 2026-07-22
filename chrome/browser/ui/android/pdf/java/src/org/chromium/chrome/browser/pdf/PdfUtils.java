@@ -128,6 +128,25 @@ public class PdfUtils {
     }
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfSelectionMenuItem)
 
+    // LINT.IfChange(PdfHyperlinkClickResult)
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED,
+        PdfHyperlinkClickResult.BLOCKED_INVALID_SCHEME,
+        PdfHyperlinkClickResult.IGNORED_V2_DISABLED,
+        PdfHyperlinkClickResult.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PdfHyperlinkClickResult {
+        int SUCCESS_LOAD_INITIATED = 0;
+        int BLOCKED_INVALID_SCHEME = 1;
+        int IGNORED_V2_DISABLED = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidPdfHyperlinkClickResult)
+
     private static final String TAG = "PdfUtils";
     private static final Set<String> TRANSIENT_PDF_SCHEMES =
             Set.of(
@@ -490,6 +509,11 @@ public class PdfUtils {
     public static void recordSelectionMenuItem(@PdfSelectionMenuItem int menuItem) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Pdf.SelectionMenuItem", menuItem, PdfSelectionMenuItem.NUM_ENTRIES);
+    }
+
+    public static void recordHyperlinkClickResult(@PdfHyperlinkClickResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Pdf.Hyperlink.ClickResult", result, PdfHyperlinkClickResult.NUM_ENTRIES);
     }
 
     public static void recordPdfLoadResultDetail(@PdfLoadResult int loadResult) {

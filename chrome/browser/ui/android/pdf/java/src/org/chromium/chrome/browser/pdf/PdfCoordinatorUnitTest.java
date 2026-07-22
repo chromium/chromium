@@ -68,7 +68,9 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.pdf.PdfUtils.PdfHyperlinkClickResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
@@ -243,9 +245,14 @@ public class PdfCoordinatorUnitTest {
         };
 
         for (String raw : blockedUris) {
+            HistogramWatcher histogramExpectation =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            "Android.Pdf.Hyperlink.ClickResult",
+                            PdfHyperlinkClickResult.BLOCKED_INVALID_SCHEME);
             assertFalse(
                     "onLinkClicked should reject " + raw,
                     mPdfCoordinator.onLinkClicked(Uri.parse(raw)));
+            histogramExpectation.assertExpected();
         }
         verify(mNativePageHost, never()).loadUrl(any(LoadUrlParams.class), anyBoolean());
     }
@@ -256,9 +263,31 @@ public class PdfCoordinatorUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         createPdfCoordinator();
 
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.Hyperlink.ClickResult",
+                        PdfHyperlinkClickResult.BLOCKED_INVALID_SCHEME);
         assertFalse(
                 "onLinkClicked should reject schemeless URI.",
                 mPdfCoordinator.onLinkClicked(Uri.parse("//www.example.com/foo")));
+        histogramExpectation.assertExpected();
+        verify(mNativePageHost, never()).loadUrl(any(LoadUrlParams.class), anyBoolean());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testOnLinkClicked_V2Disabled() {
+        when(mProfile.isOffTheRecord()).thenReturn(false);
+        createPdfCoordinator();
+
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.Hyperlink.ClickResult",
+                        PdfHyperlinkClickResult.IGNORED_V2_DISABLED);
+        assertFalse(
+                "onLinkClicked should return false when inline PDF V2 is disabled.",
+                mPdfCoordinator.onLinkClicked(Uri.parse("https://www.example.com/")));
+        histogramExpectation.assertExpected();
         verify(mNativePageHost, never()).loadUrl(any(LoadUrlParams.class), anyBoolean());
     }
 
@@ -278,9 +307,14 @@ public class PdfCoordinatorUnitTest {
         };
 
         for (String raw : allowedUris) {
+            HistogramWatcher histogramExpectation =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            "Android.Pdf.Hyperlink.ClickResult",
+                            PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
             assertTrue(
                     "onLinkClicked should accept " + raw,
                     mPdfCoordinator.onLinkClicked(Uri.parse(raw)));
+            histogramExpectation.assertExpected();
         }
         verify(mNativePageHost, times(allowedUris.length))
                 .loadUrl(any(LoadUrlParams.class), eq(false));
@@ -290,8 +324,13 @@ public class PdfCoordinatorUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(isIncognito);
         createPdfCoordinator();
         Uri linkUri = Uri.parse(LINK_URL);
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.Hyperlink.ClickResult",
+                        PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
         boolean result = mPdfCoordinator.onLinkClicked(linkUri);
         assertTrue("name should verify true", result);
+        histogramExpectation.assertExpected();
         ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mNativePageHost).loadUrl(captor.capture(), eq(isIncognito));
         LoadUrlParams params = captor.getValue();

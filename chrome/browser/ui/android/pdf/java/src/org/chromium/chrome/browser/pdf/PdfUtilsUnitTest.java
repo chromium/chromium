@@ -647,4 +647,15 @@ public class PdfUtilsUnitTest {
         PdfUtils.recordSelectionMenuItem(PdfUtils.PdfSelectionMenuItem.SHARE);
         histogramExpectation.assertExpected();
     }
+
+    @Test
+    public void testRecordHyperlinkClickResult() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.Pdf.Hyperlink.ClickResult",
+                        PdfUtils.PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
+        PdfUtils.recordHyperlinkClickResult(
+                PdfUtils.PdfHyperlinkClickResult.SUCCESS_LOAD_INITIATED);
+        histogramExpectation.assertExpected();
+    }
 }
