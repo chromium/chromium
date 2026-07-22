@@ -58,6 +58,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/resource_attribution/queries.h"
@@ -235,7 +236,11 @@ bool TabAndroid::IsNativePage() const {
 
 bool TabAndroid::IsUserInteractable() const {
   JNIEnv* env = AttachCurrentThread();
-  return Java_TabImpl_isUserInteractable(env, GetJavaObject(env));
+  auto j_obj = GetJavaObject(env);
+  if (!j_obj) {
+    return false;
+  }
+  return Java_TabImpl_isUserInteractable(env, j_obj);
 }
 
 bool TabAndroid::IsOffscreenRendering() const {
@@ -550,8 +555,23 @@ class TabWebContentsDestroyer : public content::WebContentsDelegate {
                                   weak_ptr_factory_.GetWeakPtr()));
   }
 
+  content::JavaScriptDialogManager* GetJavaScriptDialogManager(
+      content::WebContents* source) override {
+    return javascript_dialogs::TabModalDialogManager::FromWebContents(source);
+  }
+
  private:
-  void Destroy() { delete this; }
+  void Destroy() {
+    if (web_contents_) {
+      if (auto* dialog_manager =
+              javascript_dialogs::TabModalDialogManager::FromWebContents(
+                  web_contents_.get())) {
+        dialog_manager->CancelDialogs(web_contents_.get(),
+                                      /*reset_state=*/true);
+      }
+    }
+    delete this;
+  }
 
   std::unique_ptr<content::WebContents> web_contents_;
   base::WeakPtrFactory<TabWebContentsDestroyer> weak_ptr_factory_{this};
@@ -570,11 +590,7 @@ tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
       process && process->FastShutdownIfPossible(1, false);
 
   if (!fast_shutdown_succeeded && enable_graceful_shutdown && web_contents()) {
-    std::unique_ptr<content::WebContents> contents =
-        ReleaseWebContentsInternal(/*keep_session_id=*/true,
-                                   /*clear_delegate=*/true);
-    new TabWebContentsDestroyer(std::move(contents));
-    return tabs::TabDestroyStatus::SLOW_SHUTDOWN;
+    return DestroyWebContentsSlowShutdown();
   }
 
   tab_features_.reset();
@@ -582,6 +598,19 @@ tabs::TabDestroyStatus TabAndroid::DestroyWebContents() {
   synced_tab_delegate_->ResetWebContents();
 
   return tabs::TabDestroyStatus::FAST_SHUTDOWN;
+}
+
+tabs::TabDestroyStatus TabAndroid::DestroyWebContentsSlowShutdownForTesting() {
+  WillRemoveWebContentsFromTab(web_contents(), /*clear_delegate=*/false);
+  return DestroyWebContentsSlowShutdown();
+}
+
+tabs::TabDestroyStatus TabAndroid::DestroyWebContentsSlowShutdown() {
+  std::unique_ptr<content::WebContents> contents =
+      ReleaseWebContentsInternal(/*keep_session_id=*/true,
+                                 /*clear_delegate=*/true);
+  new TabWebContentsDestroyer(std::move(contents));
+  return tabs::TabDestroyStatus::SLOW_SHUTDOWN;
 }
 
 void TabAndroid::ReleaseWebContents() {
