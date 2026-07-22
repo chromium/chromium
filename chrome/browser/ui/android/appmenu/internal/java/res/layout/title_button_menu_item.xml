@@ -17,6 +17,7 @@ found in the LICENSE file.
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              android:descendantFocusability="afterDescendants"
               android:gravity="center_vertical">
     <ViewStub android:id="@+id/menu_item_container_stub"
         android:inflatedId="@+id/menu_item_container"
@@ -55,6 +56,6 @@ found in the LICENSE file.
             android:background="?attr/listChoiceBackgroundIndicator"
             android:scaleType="fitCenter"
             android:paddingHorizontal="?attr/listItemIconPadding"
-            android:layout_marginEnd="4dp" />
+            android:layout_marginEnd="?attr/listItemIconPadding" />
     </FrameLayout>
 </RelativeLayout>

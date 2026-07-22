@@ -625,8 +625,9 @@ class AppMenuHandlerImpl
                     protected ViewGroup postInflationInit(ViewGroup view) {
                         ViewStub stub = view.findViewById(R.id.menu_item_container_stub);
                         stub.setLayoutResource(standardItemResId);
-                        View inflatedView = stub.inflate();
-                        inflatedView.setDuplicateParentStateEnabled(true);
+                        stub.inflate();
+                        // Omit setDuplicateParentStateEnabled(true) to allow independent focus on
+                        // primary container.
                         return view;
                     }
                 },

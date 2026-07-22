@@ -67,7 +67,7 @@ public class AppMenuItemViewBinderRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     private static Activity sActivity;

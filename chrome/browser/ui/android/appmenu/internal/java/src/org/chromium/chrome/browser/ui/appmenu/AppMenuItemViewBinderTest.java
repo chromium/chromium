@@ -640,6 +640,62 @@ public class AppMenuItemViewBinderTest {
     @Test
     @UiThreadTest
     @MediumTest
+    public void testTitleButtonMenuItem_WithClickHandler_FocusableAndClickable()
+            throws TimeoutException {
+        PropertyModel titleModel =
+                createTitleMenuItem(MENU_ID2, TITLE_2, null, MENU_ID3, TITLE_3, false, false);
+        titleModel.set(AppMenuItemProperties.CLICK_HANDLER, mClickHandler);
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view = mModelListAdapter.getView(0, null, parentView);
+        View titleContainer = view.findViewById(R.id.menu_item_container);
+
+        Assert.assertNotNull("Title container should be present", titleContainer);
+        Assert.assertTrue("Title container should be focusable", titleContainer.isFocusable());
+
+        titleContainer.performClick();
+        mClickHandler.onClickCallback.waitForCallback(0);
+        Assert.assertEquals(
+                "Incorrect clicked item id",
+                MENU_ID2,
+                mClickHandler.lastClickedModel.get(AppMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
+    public void testTitleButtonMenuItem_Disabled() {
+        PropertyModel titleModel =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, MENU_ID2)
+                        .with(AppMenuItemProperties.TITLE, TITLE_2)
+                        .with(AppMenuItemProperties.ENABLED, false)
+                        .with(AppMenuItemProperties.CLICK_HANDLER, mClickHandler)
+                        .build();
+        PropertyModel buttonModel =
+                new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
+                        .with(AppMenuItemProperties.MENU_ITEM_ID, MENU_ID3)
+                        .with(AppMenuItemProperties.TITLE, TITLE_3)
+                        .with(AppMenuItemProperties.ENABLED, false)
+                        .build();
+        MVCListAdapter.ModelList subList = new MVCListAdapter.ModelList();
+        subList.add(new MVCListAdapter.ListItem(AppMenuItemType.BUTTON_ROW, buttonModel));
+        titleModel.set(AppMenuItemProperties.ADDITIONAL_ICONS, subList);
+
+        mMenuList.add(new MVCListAdapter.ListItem(AppMenuItemType.TITLE_BUTTON, titleModel));
+
+        ViewGroup parentView = mActivity.findViewById(android.R.id.content);
+        View view = mModelListAdapter.getView(0, null, parentView);
+        View titleContainer = view.findViewById(R.id.menu_item_container);
+
+        Assert.assertNotNull("Title container should be present", titleContainer);
+        Assert.assertFalse("Title container should not be enabled", titleContainer.isEnabled());
+        Assert.assertFalse("Title container should not be focusable", titleContainer.isFocusable());
+    }
+
+    @Test
+    @UiThreadTest
+    @MediumTest
     public void testIconRowViewBinders() {
         Drawable icon =
                 AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
