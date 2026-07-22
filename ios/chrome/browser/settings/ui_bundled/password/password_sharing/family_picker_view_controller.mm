@@ -225,22 +225,21 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
 // Creates accessory view for a cell with selected sharing recipient.
 - (UIImageView*)checkmarkCircleIcon {
   return [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
-                                               kAccessorySymbolSize)];
+      initWithImage:SymbolWithPointSize(SymbolCheckmarkCircleFill,
+                                        kAccessorySymbolSize)];
 }
 
 // Creates accessory view for a cell with unselected sharing recipient.
 - (UIImageView*)circleIcon {
   UIImageView* circleIcon = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kCircleSymbol,
-                                               kAccessorySymbolSize)];
+      initWithImage:SymbolWithPointSize(SymbolCircle, kAccessorySymbolSize)];
   circleIcon.tintColor = [UIColor colorNamed:kGrey300Color];
   return circleIcon;
 }
 
 // Creates accessory view for a cell with ineligible sharing recipient.
 - (UIImage*)infoCircleIcon {
-  return DefaultSymbolWithPointSize(kInfoCircleSymbol, kAccessorySymbolSize);
+  return SymbolWithPointSize(SymbolInfoCircle, kAccessorySymbolSize);
 }
 
 // Displays popup with information about password sharing ineligibility.

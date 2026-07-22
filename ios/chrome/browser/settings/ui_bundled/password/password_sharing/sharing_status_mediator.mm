@@ -111,8 +111,7 @@ const CGFloat kProfileImageSize = 60.0;
         kProfileImageSize);
   }
 
-  return DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol,
-                                            kProfileImageSize);
+  return SymbolTemplateWithPointSize(SymbolPersonCropCircle, kProfileImageSize);
 }
 
 // Creates a multi-avatar image of recipients from their profile images.

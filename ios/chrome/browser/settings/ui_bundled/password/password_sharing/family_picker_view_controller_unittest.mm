@@ -127,7 +127,7 @@ TEST_F(FamilyPickerViewControllerTest, TestFamilyPickerLayout) {
     CheckCellDetailText(
         [NSString stringWithFormat:@"%@%d%@", @"test", i, @"@gmail.com"], 0, i);
     CheckCellAccessoryViewImage(
-        DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, i);
+        SymbolWithPointSize(SymbolCircle, kAccessorySymbolSize), 0, i);
   }
 }
 
@@ -145,8 +145,7 @@ TEST_F(FamilyPickerViewControllerTest, TestAccessoryViewOfIneligibleRecipient) {
   CheckCellText(@"user", 0, 0);
   CheckCellDetailText(@"test@gmail.com", 0, 0);
   CheckCellAccessoryViewButton(
-      DefaultSymbolWithPointSize(kInfoCircleSymbol, kAccessorySymbolSize), 0,
-      0);
+      SymbolWithPointSize(SymbolInfoCircle, kAccessorySymbolSize), 0, 0);
 }
 
 // Tests accessory views on selecting and deselecting eligible password sharing
@@ -162,19 +161,18 @@ TEST_F(FamilyPickerViewControllerTest, TestAccessoryViewOfEligibleRecipient) {
   NSIndexPath* indexPath = [NSIndexPath indexPathForRow:1 inSection:0];
 
   CheckCellAccessoryViewImage(
-      DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 1);
+      SymbolWithPointSize(SymbolCircle, kAccessorySymbolSize), 0, 1);
 
   [tableView selectRowAtIndexPath:indexPath
                          animated:NO
                    scrollPosition:UITableViewScrollPositionNone];
   CheckCellAccessoryViewImage(
-      DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
-                                 kAccessorySymbolSize),
-      0, 1);
+      SymbolWithPointSize(SymbolCheckmarkCircleFill, kAccessorySymbolSize), 0,
+      1);
 
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
   CheckCellAccessoryViewImage(
-      DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 1);
+      SymbolWithPointSize(SymbolCircle, kAccessorySymbolSize), 0, 1);
 }
 
 TEST_F(FamilyPickerViewControllerTest, TestShareButtonEnabledWithSelectedRows) {
@@ -253,14 +251,13 @@ TEST_F(FamilyPickerViewControllerTest,
   [family_controller viewWillAppear:YES];
   [family_controller viewDidAppear:YES];
   CheckCellAccessoryViewImage(
-      DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
-                                 kAccessorySymbolSize),
-      0, 0);
+      SymbolWithPointSize(SymbolCheckmarkCircleFill, kAccessorySymbolSize), 0,
+      0);
 
   // Check that the cell still can be deselected.
   [family_controller.tableView
       deselectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                     animated:NO];
   CheckCellAccessoryViewImage(
-      DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize), 0, 0);
+      SymbolWithPointSize(SymbolCircle, kAccessorySymbolSize), 0, 0);
 }

@@ -81,7 +81,7 @@ void DrawBadgeInBottomRightCorner(CGRect rect, NSInteger count, CGFloat size) {
 UIImage* CreateMultiAvatarImage(NSArray<UIImage*>* images, CGFloat size) {
   NSInteger imagesCount = static_cast<NSInteger>(images.count);
   if (imagesCount == 0) {
-    return DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol, size);
+    return SymbolTemplateWithPointSize(SymbolPersonCropCircle, size);
   }
 
   if (imagesCount == 1) {

@@ -21,8 +21,8 @@
     _userID = base::SysUTF8ToNSString(recipient.user_id);
     _publicKey = recipient.public_key;
     _profileImageURL = base::SysUTF8ToNSString(recipient.profile_image_url);
-    _profileImage = DefaultSymbolTemplateWithPointSize(
-        kPersonCropCircleSymbol, kAccountProfilePhotoDimension);
+    _profileImage = SymbolTemplateWithPointSize(SymbolPersonCropCircle,
+                                                kAccountProfilePhotoDimension);
   }
   return self;
 }

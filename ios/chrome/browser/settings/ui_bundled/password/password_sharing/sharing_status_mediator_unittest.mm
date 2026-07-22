@@ -167,8 +167,8 @@ TEST_F(SharingStatusMediatorTest, NotifiesSignedOutConsumerWithDefaultAvatar) {
           changePasswordURL:std::nullopt];
   mediator.consumer = consumer;
 
-  EXPECT_NSEQ(UIImagePNGRepresentation(DefaultSymbolTemplateWithPointSize(
-                  kPersonCropCircleSymbol, kProfileImageSize)),
+  EXPECT_NSEQ(UIImagePNGRepresentation(SymbolTemplateWithPointSize(
+                  SymbolPersonCropCircle, kProfileImageSize)),
               UIImagePNGRepresentation(consumer.senderImage));
 }
 
@@ -185,8 +185,8 @@ TEST_F(SharingStatusMediatorTest, NotifiesConsumerWithRecipientImage) {
   mediator.consumer = consumer;
 
   EXPECT_NSEQ(UIImagePNGRepresentation(CircularImageFromImage(
-                  DefaultSymbolTemplateWithPointSize(
-                      kPersonCropCircleSymbol, kAccountProfilePhotoDimension),
+                  SymbolTemplateWithPointSize(SymbolPersonCropCircle,
+                                              kAccountProfilePhotoDimension),
                   60.0)),
               UIImagePNGRepresentation(consumer.recipientImage));
 }

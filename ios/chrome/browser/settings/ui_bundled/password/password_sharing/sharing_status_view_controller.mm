@@ -301,8 +301,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 // Helper for creating the lock image view.
 - (UIImageView*)createLockImage {
   UIImageView* lockImage = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(kLockSymbol,
-                                               kLockSymbolPointSize)];
+      initWithImage:SymbolWithPointSize(SymbolLock, kLockSymbolPointSize)];
   lockImage.translatesAutoresizingMaskIntoConstraints = NO;
   lockImage.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   lockImage.hidden = YES;
