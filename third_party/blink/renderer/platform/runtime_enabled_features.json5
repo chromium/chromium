@@ -4074,6 +4074,10 @@
       status: "stable",
     },
     {
+      name: "MaskWaitForAllImages",
+      status: "stable",
+    },
+    {
       // Enables MathMLAnchorElement
       name: "MathMLAnchorElement",
       status: "test",

@@ -464,6 +464,8 @@ bool FillLayer::ImageOccludesNextLayers(const Document& document,
 }
 
 bool FillLayer::AllImagesAreInvalid() const {
+  // A layer only counts as valid if its image is renderable and fully
+  // loaded, so still-loading images are treated as invalid here.
   bool has_any_image = false;
   for (const FillLayer* layer = this; layer; layer = layer->Next()) {
     if (StyleImage* image = layer->GetImage()) {
@@ -474,6 +476,22 @@ bool FillLayer::AllImagesAreInvalid() const {
     }
   }
   return has_any_image;
+}
+
+bool FillLayer::AnyImageIsLoading() const {
+  for (const FillLayer* layer = this; layer; layer = layer->Next()) {
+    StyleImage* image = layer->GetImage();
+    if (!image) {
+      continue;
+    }
+    // Treat any non-terminal image state as still loading. In practice,
+    // fetched images can be not-yet-loaded before IsLoading() flips true.
+    // Errored loads are terminal and thus not considered loading.
+    if (!image->IsLoaded() && !image->ErrorOccurred()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 static inline bool LayerImagesIdentical(const FillLayer& layer1,

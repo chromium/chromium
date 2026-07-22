@@ -241,6 +241,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
  protected:
   void WillBeDestroyed() override;
+  void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
   PhysicalOffset OffsetFromContainerInternal(
       const LayoutObject*,

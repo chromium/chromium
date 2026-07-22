@@ -790,8 +790,11 @@ void LayoutInline::DirtyLinesFromChangedChild(LayoutObject* child) {
   }
 }
 
-void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
+void LayoutInline::ImageChanged(WrappedImagePtr image,
+                                CanDeferInvalidation defer) {
   NOT_DESTROYED();
+  LayoutBoxModelObject::ImageChanged(image, defer);
+
   if (!Parent())
     return;
 

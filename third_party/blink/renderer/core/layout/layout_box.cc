@@ -2095,6 +2095,8 @@ bool LayoutBox::ComputeBackgroundIsKnownToBeObscured() const {
 void LayoutBox::ImageChanged(WrappedImagePtr image,
                              CanDeferInvalidation defer) {
   NOT_DESTROYED();
+  LayoutBoxModelObject::ImageChanged(image, defer);
+
   bool is_box_reflect_image =
       (StyleRef().BoxReflect() && StyleRef().BoxReflect()->Mask().GetImage() &&
        StyleRef().BoxReflect()->Mask().GetImage()->Data() == image);
@@ -2113,19 +2115,6 @@ void LayoutBox::ImageChanged(WrappedImagePtr image,
       is_box_reflect_image) {
     SetShouldDoFullPaintInvalidationWithoutLayoutChange(
         PaintInvalidationReason::kImage);
-  } else {
-    for (const FillLayer* layer = &StyleRef().MaskLayers(); layer;
-         layer = layer->Next()) {
-      if (layer->GetImage() && image == layer->GetImage()->Data()) {
-        SetShouldDoFullPaintInvalidationWithoutLayoutChange(
-            PaintInvalidationReason::kImage);
-        // Since an invalid <mask> reference does not yield a paint property
-        // (see CSSMaskPainter), we need to update paint properties when such a
-        // reference changes.
-        SetNeedsPaintPropertyUpdate();
-        break;
-      }
-    }
   }
 
   if (!BackgroundTransfersToView()) {

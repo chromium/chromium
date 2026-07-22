@@ -1895,6 +1895,93 @@ TEST_P(CompositingSimTest, FastPathOpacityUpdateFromStyle) {
   EXPECT_FALSE(effect_node.effect_changed);
 }
 
+TEST_P(CompositingSimTest,
+       BackdropFilterWithMultipleMaskImagesWaitsForAllLoads) {
+  SimRequest slow_mask_image("https://example.com/slow-mask.svg",
+                             "image/svg+xml");
+
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        body { background: yellow; }
+        #target {
+          width: 100px;
+          height: 100px;
+          backdrop-filter: invert(1);
+          background-color: rgba(255, 255, 255, 0.5);
+          mask-image: linear-gradient(black, black),
+                      url('https://example.com/slow-mask.svg');
+        }
+      </style>
+      <div id='target'></div>
+  )HTML");
+
+  auto* target = GetElementById("target");
+  auto* target_properties =
+      target->GetLayoutObject()->FirstFragment().PaintProperties();
+  ASSERT_TRUE(target_properties);
+  ASSERT_TRUE(target_properties->Effect());
+  EXPECT_NEAR(0.f, target_properties->Effect()->Opacity(), 0.001);
+
+  slow_mask_image.Complete(R"SVG(
+    <svg xmlns='http://www.w3.org/2000/svg' width='4' height='4'>
+      <rect width='4' height='4' fill='white'/>
+    </svg>
+  )SVG");
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhases();
+
+  target_properties =
+      target->GetLayoutObject()->FirstFragment().PaintProperties();
+  ASSERT_TRUE(target_properties);
+  ASSERT_TRUE(target_properties->Effect());
+  EXPECT_NEAR(1.f, target_properties->Effect()->Opacity(), 0.001);
+}
+
+TEST_P(CompositingSimTest,
+       BackdropFilterWithMultipleMaskImagesRendersAfterLoadError) {
+  SimRequestBase::Params error_params;
+  error_params.response_http_status = 404;
+  SimSubresourceRequest failing_mask_image("https://example.com/bad-mask.png",
+                                           "image/png", error_params);
+
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        body { background: yellow; }
+        #target {
+          width: 100px;
+          height: 100px;
+          backdrop-filter: invert(1);
+          background-color: rgba(255, 255, 255, 0.5);
+          mask-image: linear-gradient(black, black),
+                      url('https://example.com/bad-mask.png');
+        }
+      </style>
+      <div id='target'></div>
+  )HTML");
+
+  auto* target = GetElementById("target");
+  auto* target_properties =
+      target->GetLayoutObject()->FirstFragment().PaintProperties();
+  ASSERT_TRUE(target_properties);
+  ASSERT_TRUE(target_properties->Effect());
+  EXPECT_NEAR(0.f, target_properties->Effect()->Opacity(), 0.001);
+
+  // Complete the request with a 404 and no body. The load finishes in the
+  // error state, which is terminal: the element must render again, with the
+  // errored layer treated as transparent black.
+  failing_mask_image.Complete();
+  test::RunPendingTasks();
+  UpdateAllLifecyclePhases();
+
+  target_properties =
+      target->GetLayoutObject()->FirstFragment().PaintProperties();
+  ASSERT_TRUE(target_properties);
+  ASSERT_TRUE(target_properties->Effect());
+  EXPECT_NEAR(1.f, target_properties->Effect()->Opacity(), 0.001);
+}
+
 TEST_P(CompositingSimTest, DirectSVGTransformPropertyUpdate) {
   InitializeWithHTML(R"HTML(
     <!doctype html>

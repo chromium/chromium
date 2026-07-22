@@ -2082,18 +2082,30 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (EffectCanUseCurrentClipAsOutputClip())
         state.output_clip = context_.current.clip;
       state.opacity = style.Opacity();
+      // Wait for all mask-image layers to load before rendering so we don't
+      // reveal partially-masked content while some layers are still loading.
+      // This only hides the element while requests are actually in flight:
+      // a failed load (e.g. server error) is a terminal state, and the
+      // resulting ImageChanged() notification triggers a paint property
+      // update that restores the opacity, with the errored layer treated as
+      // transparent black.
+      if (style.HasMask() &&
+          RuntimeEnabledFeatures::MaskWaitForAllImagesEnabled() &&
+          style.MaskLayers().AnyImageIsLoading()) {
+        state.opacity = 0.f;
+      }
       // If the mask image is not valid, it must be treated as a transparent
       // black image layer. See
       // https://drafts.fxtf.org/css-masking-1/#the-mask-image.
-      // MaskBoundingBox() returns nullopt for all invalid mask image layers.
+      // MaskBoundingBox() may return nullopt for invalid mask image layers.
+      // Note that AllImagesAreInvalid() also treats not-yet-loaded images as
+      // invalid, so this also hides the element while its only mask image is
+      // still loading.
       if (style.HasMask() && !style.BackdropFilter().IsEmpty() &&
           RuntimeEnabledFeatures::
-              HandleInvalidMaskImageWithBackdropFilterEnabled()) {
-        // TODO(crbug.com/473987435): Consider waiting for all mask-image layers
-        // to load before rendering, instead of rendering after the first one.
-        if (style.MaskLayers().AllImagesAreInvalid()) {
-          state.opacity = 0.f;
-        }
+              HandleInvalidMaskImageWithBackdropFilterEnabled() &&
+          style.MaskLayers().AllImagesAreInvalid()) {
+        state.opacity = 0.f;
       }
       if (object_.IsBlendingAllowed()) {
         state.blend_mode = ToSkBlendMode(style.GetBlendMode());

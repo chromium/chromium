@@ -216,6 +216,9 @@ class CORE_EXPORT FillLayer {
   bool ImageOccludesNextLayers(const Document&, const ComputedStyle&) const;
   bool ClipOccludesNextLayers() const;
   bool AllImagesAreInvalid() const;
+  // True if the fill layers contain at least one still-loading image.
+  // Errored loads are terminal and thus not considered loading.
+  bool AnyImageIsLoading() const;
 
   EFillLayerType GetType() const { return static_cast<EFillLayerType>(type_); }
 

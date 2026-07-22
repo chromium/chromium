@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/core/style/fill_layer.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -468,6 +469,23 @@ bool LayoutBoxModelObject::ShouldBeHandledAsInline(
   // anonymous <table> is not created, and the LayoutObject should adjust
   // IsInline flag for inlinifying.
   return style.IsInInlinifyingDisplay() && !IsTablePart();
+}
+
+void LayoutBoxModelObject::ImageChanged(WrappedImagePtr image,
+                                        CanDeferInvalidation) {
+  NOT_DESTROYED();
+  for (const FillLayer* layer = &StyleRef().MaskLayers(); layer;
+       layer = layer->Next()) {
+    if (layer->GetImage() && image == layer->GetImage()->Data()) {
+      // Since an invalid <mask> reference does not yield a paint property
+      // (see CSSMaskPainter), we need to update paint properties when such a
+      // reference changes.
+      SetNeedsPaintPropertyUpdate();
+      SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+          PaintInvalidationReason::kImage);
+      break;
+    }
+  }
 }
 
 void LayoutBoxModelObject::UpdateFromStyle() {
