@@ -82,6 +82,17 @@ public class XrHostActivity extends Activity {
     }
 
     @Override
+    public void onResume() {
+        if (DEBUG_LOGS) Log.i(TAG, "onResume");
+        super.onResume();
+
+        if (!XrSessionCoordinator.hasActiveSession()) {
+            Log.i(TAG, "Finishing XrHostActivity in onResume: no active XR session");
+            finishAndRemoveTask();
+        }
+    }
+
+    @Override
     public void onStop() {
         if (DEBUG_LOGS) Log.i(TAG, "onStop");
         super.onStop();

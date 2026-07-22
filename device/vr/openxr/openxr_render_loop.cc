@@ -968,7 +968,7 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
   // openxr_ and context_provider can be nullptr if we receive
   // OnWebXrTokenSignaled after the session has ended. Ensure we don't crash in
   // that case.
-  if (!openxr_ || !context_provider_) {
+  if (!is_presenting_ || !openxr_ || !context_provider_) {
     return;
   }
 
