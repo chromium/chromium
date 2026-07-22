@@ -25,6 +25,9 @@ PageContextEligibilityHelper::PageContextEligibilityHelper(
   tab_subscriptions_.push_back(tab.RegisterWillDeactivate(
       base::BindRepeating(&PageContextEligibilityHelper::OnTabDeactivated,
                           weak_ptr_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab.RegisterWillDetach(
+      base::BindRepeating(&PageContextEligibilityHelper::OnWillDetach,
+                          weak_ptr_factory_.GetWeakPtr())));
   if (tab.IsActivated()) {
     OnTabActivated(&tab);
   }
@@ -41,16 +44,12 @@ PageContextEligibilityHelper* PageContextEligibilityHelper::From(
   return Get(tab->GetUnownedUserDataHost());
 }
 
-std::optional<bool> PageContextEligibilityHelper::IsPageContextEligible()
-    const {
+optimization_guide::PageContextEligibilityStatus
+PageContextEligibilityHelper::IsPageContextEligible() const {
   if (!observer_) {
-    return std::nullopt;
+    return optimization_guide::PageContextEligibilityStatus::kUnknown;
   }
-  auto status = observer_->IsPageContextEligible();
-  if (status == optimization_guide::PageContextEligibilityStatus::kUnknown) {
-    return std::nullopt;
-  }
-  return status == optimization_guide::PageContextEligibilityStatus::kEligible;
+  return observer_->IsPageContextEligible();
 }
 
 base::CallbackListSubscription
@@ -65,52 +64,62 @@ void PageContextEligibilityHelper::OnDiscardContents(
     content::WebContents* new_contents) {
   tabs::ContentsObservingTabFeature::OnDiscardContents(tab, old_contents,
                                                        new_contents);
+  ResetObserverAndNotifyUnknown();
   if (tab->IsActivated()) {
-    observer_ = optimization_guide::PageContextEligibilityObserver::Create(
-        new_contents, GetAccountEmail(),
-        base::BindRepeating(&PageContextEligibilityHelper::OnEligibilityChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-    std::optional<bool> eligibility;
-    if (observer_) {
-      auto status = observer_->IsPageContextEligible();
-      if (status !=
-          optimization_guide::PageContextEligibilityStatus::kUnknown) {
-        eligibility =
-            (status ==
-             optimization_guide::PageContextEligibilityStatus::kEligible);
-      }
-    }
-    callbacks_.Notify(eligibility);
+    CreateObserver(new_contents);
   }
 }
 
 void PageContextEligibilityHelper::OnTabActivated(tabs::TabInterface* tab) {
-  if (!observer_ && tab->GetContents()) {
-    observer_ = optimization_guide::PageContextEligibilityObserver::Create(
-        tab->GetContents(), GetAccountEmail(),
-        base::BindRepeating(&PageContextEligibilityHelper::OnEligibilityChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-    std::optional<bool> eligibility;
-    if (observer_) {
-      auto status = observer_->IsPageContextEligible();
-      if (status !=
-          optimization_guide::PageContextEligibilityStatus::kUnknown) {
-        eligibility =
-            (status ==
-             optimization_guide::PageContextEligibilityStatus::kEligible);
-      }
-    }
-    callbacks_.Notify(eligibility);
+  if (!observer_) {
+    CreateObserver(tab->GetContents());
+  } else {
+    NotifyEligibilityChanged(IsPageContextEligible());
   }
 }
 
 void PageContextEligibilityHelper::OnTabDeactivated(tabs::TabInterface* tab) {
-  observer_.reset();
-  callbacks_.Notify(std::nullopt);
+  ResetObserverAndNotifyUnknown();
 }
 
-void PageContextEligibilityHelper::OnEligibilityChanged(bool is_eligible) {
-  callbacks_.Notify(is_eligible);
+void PageContextEligibilityHelper::OnWillDetach(
+    tabs::TabInterface* tab,
+    tabs::TabInterface::DetachReason reason) {
+  if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    ResetObserverAndNotifyUnknown();
+  }
+}
+
+void PageContextEligibilityHelper::ResetObserverAndNotifyUnknown() {
+  observer_.reset();
+  NotifyEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus::kUnknown);
+}
+
+void PageContextEligibilityHelper::OnEligibilityChanged(
+    optimization_guide::PageContextEligibilityStatus status) {
+  NotifyEligibilityChanged(status);
+}
+
+void PageContextEligibilityHelper::CreateObserver(
+    content::WebContents* contents) {
+  if (!contents) {
+    return;
+  }
+  observer_ = optimization_guide::PageContextEligibilityObserver::Create(
+      contents, GetAccountEmail(),
+      base::BindRepeating(&PageContextEligibilityHelper::OnEligibilityChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+  NotifyEligibilityChanged(IsPageContextEligible());
+}
+
+void PageContextEligibilityHelper::NotifyEligibilityChanged(
+    optimization_guide::PageContextEligibilityStatus status) {
+  if (last_eligibility_ == status) {
+    return;
+  }
+  last_eligibility_ = status;
+  callbacks_.Notify(status);
 }
 
 std::string PageContextEligibilityHelper::GetAccountEmail() {
