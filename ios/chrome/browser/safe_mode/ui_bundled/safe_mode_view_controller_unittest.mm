@@ -17,7 +17,6 @@
 #import "testing/platform_test.h"
 #import "third_party/crashpad/crashpad/client/crash_report_database.h"
 #import "third_party/crashpad/crashpad/client/crashpad_client.h"
-#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 
