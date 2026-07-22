@@ -2662,6 +2662,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 }
             }
 
+            if (newConfig.fontScale != mConfig.fontScale) {
+                doRecreateActivity();
+                return;
+            }
+
             // Maintain tab state by re-parenting tabs when a Chrome window is moved between
             // displays.
             if (newConfig.touchscreen != mConfig.touchscreen
