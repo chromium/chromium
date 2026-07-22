@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/multistep_filter/core/data_models/suggestion_user_decision.h"
 #include "components/multistep_filter/core/data_models/url_filter_suggestion.h"
+#include "components/multistep_filter/core/logging/multistep_filter_metrics.h"
 #include "components/multistep_filter/core/prefs/retention_state_snapshot.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -41,44 +42,92 @@ class MultistepFilterMetricsTracker {
   // The session is flushed and reset when the suggestion is cleared
   // (e.g., due to a new navigation).
   struct SuggestionUiSession {
-    UrlFilterSuggestion suggestion;
-    bool reopened_cue_shown = false;
-    SuggestionUserDecision user_decision = SuggestionUserDecision::kIgnored;
-    base::TimeTicks suggestion_shown_time;
-    base::TimeTicks suggestion_accepted_time;
-    RetentionStateSnapshot retention_snapshot;
-    bool is_preserved_same_page = false;
     // Time when the navigation finishes that triggered the suggestion (i.e.
     // the navigation preceding the suggestion).
     base::TimeTicks triggering_navigation_finish_time;
     ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
-  };
-
-  // Tracks the lifecycle of a suggestion application.
-  //
-  // A session starts when the user accepts a suggestion, triggering a new
-  // navigation. It tracks the navigation outcome (e.g., if it hit an error
-  // page) and measures the latency between suggestion acceptance and when the
-  // navigation finishes (when the suggestion is applied). This latency is only
-  // recorded if the application is subsequently verified by successful
-  // annotation extraction on the navigated URL.
-  struct SuggestionApplicationSession {
+    // A transient, randomly generated identifier used to correlate the UI
+    // session event (MultistepFilter.UiSession) with the subsequent landing
+    // page application session event (MultistepFilter.ApplicationSession) in
+    // UKM. Regenerated for each suggestion impression.
+    int64_t session_id = 0;
     UrlFilterSuggestion suggestion;
-    bool is_error_page = false;
-    base::TimeTicks suggestion_accepted_time;
+    base::TimeTicks suggestion_shown_time;
+    base::TimeDelta suggestion_shown_age;
     RetentionStateSnapshot retention_snapshot;
+    bool reopened_cue_shown = false;
+    SuggestionUserDecision user_decision = SuggestionUserDecision::kIgnored;
+    base::TimeTicks suggestion_accepted_time;
+    bool is_preserved_same_page = false;
   };
 
-  // Tracks the user's behavior after accepting a suggestion.
+  // Holds metrics metadata about the last accepted suggestion (like session ID
+  // and retention history) that needs to be carried over across the navigation
+  // triggered by the acceptance, until the navigation finishes and the
+  // suggestion is applied.
+  //
+  // Lifecycle:
+  // - Created: In `OnSuggestionUserInteraction` when the user accepts a
+  //   suggestion.
+  // - Reset: In `OnNavigationFinished` when the navigation finishes (either
+  //   consumed to start a `SuggestionApplicationSession`, or discarded
+  //   if the navigation was not filter-initiated).
+  struct PendingSuggestionApplicationMetrics {
+    RetentionStateSnapshot retention_snapshot;
+    int64_t session_id = 0;
+    base::TimeTicks suggestion_accepted_time;
+  };
+
+  // Tracks the lifecycle of a suggestion application and subsequent user
+  // engagement.
   //
   // A session starts when the navigation triggered by accepting a suggestion
-  // finishes (either successfully or with an error). It tracks subsequent
-  // navigations and tab closure to log post-application behavior within a
-  // session window.
-  struct PostSuggestionApplicationSession {
-    // The time when the navigation triggered by the accepted suggestion
-    // finished. This marks the start of the post-application session window.
-    base::TimeTicks post_suggestion_window_start_time;
+  // finishes. It tracks the application outcome (success/failure) and, if
+  // successful, subsequent navigations and tab closure to log post-application
+  // behavior within a session window.
+  struct SuggestionApplicationSession {
+    // The UKM source ID of the navigation that is applying the suggestion (the
+    // landing page).
+    ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+    // A transient, randomly generated identifier used to correlate the UI
+    // session event (MultistepFilter.UiSession) with the subsequent landing
+    // page application session event (MultistepFilter.ApplicationSession) in
+    // UKM. Regenerated for each suggestion impression.
+    int64_t session_id = 0;
+    UrlFilterSuggestion suggestion;
+    RetentionStateSnapshot retention_snapshot;
+    base::TimeTicks suggestion_accepted_time;
+    bool is_error_page = false;
+    base::TimeTicks application_navigation_finish_time;
+    // True if the suggestion was successfully applied and we are now tracking
+    // post-application user engagement.
+    bool is_applied = false;
+    // True if the application outcome has already been logged.
+    bool outcome_logged = false;
+  };
+
+  // Internal trigger representing the reason why a suggestion application
+  // session is being flushed. This is mapped to the final metric values
+  // (which also depend on whether the event occurred within the session
+  // window).
+  enum class SuggestionApplicationSessionFlushTrigger {
+    // The suggestion failed to apply (e.g. extraction failed or error page).
+    kApplicationFailure,
+    // The user engaged with the page, which is implied by clicking on links or
+    // submitting forms (both from the page context). The destination (to the
+    // same domain or to a different domain) is not considered. This is recorded
+    // even if the navigation failed and resulted in an error page.
+    kNavigationFromPageContext,
+    // The tab containing the suggestion page was closed.
+    kTabClosed,
+    // The user navigated by typing in the Omnibox or clicking on a bookmark,
+    // which implies starting from a fresh state rather than continuing the
+    // active session with a suggestion.
+    kNavigationFromBrowserContext,
+    // The user navigated back by pressing the browser's back button.
+    kNavigationBack,
+    // A new suggestion application overrode the active session.
+    kSessionOverride,
   };
 
   MultistepFilterMetricsTracker();
@@ -123,66 +172,49 @@ class MultistepFilterMetricsTracker {
       bool was_applied_successfully);
 
  private:
-  // Internal trigger representing the reason why a post-suggestion application
-  // session is being flushed. This is mapped to the final metric values
-  // (which also depend on whether the event occurred within the session
-  // window).
-  enum class SessionOutcomeTrigger {
-    // The user engaged with the page, which is implied by clicking on links or
-    // submitting forms (both from the page context). The destination (to the
-    // same domain or to a different domain) is not considered. This is recorded
-    // even if the navigation failed and resulted in an error page.
-    kNavigationFromPageContext,
-    // The tab containing the suggestion page was closed.
-    kTabClosed,
-    // The user navigated by typing in the Omnibox or clicking on a bookmark,
-    // which implies starting from a fresh state rather than continuing the
-    // active session with a suggestion.
-    kNavigationFromBrowserContext,
-    // The user navigated back by pressing the browser's back button.
-    kNavigationBack,
-    // A new suggestion application overrode the active session.
-    kSessionOverride,
-  };
-
-  // Internal helper to calculate and flush UMA for pending suggestion UI
+  // Internal helper to calculate and flush metrics for pending suggestion UI
   // sessions.
   void FlushSuggestionUiSession(SuggestionUserDecision final_decision);
 
-  // Internal helper to calculate and flush UMA for pending suggestion
-  // application sessions.
-  void FlushSuggestionApplicationSession(bool was_applied_successfully);
-
-  // Internal helper to flush UMA for the post-suggestion application session
-  // (e.g. on tab close or when a new session starts). Only applicable for
-  // successful suggestion applications. The window duration is controlled by
-  // `kMultistepFilterPostApplicationSessionDuration`.
+  // Internal helper to flush metrics for the suggestion application and
+  // engagement session (e.g. on tab close, new navigation, or extraction
+  // finished).
   //
-  // `event_time` must be the timestamp when the user action was *initiated*
-  // (e.g., `metadata.navigation_start_time` for navigations, or
+  // `event_time` is used for post-application engagement duration calculations.
+  // It must be the timestamp when the user action was *initiated* (e.g.,
+  // `metadata.navigation_start_time` for navigations, or
   // `base::TimeTicks::Now()` for tab close). We pass this explicitly to prevent
   // slow-loading destination pages from inflating the calculated dwell time.
-  void FlushPostSuggestionApplicationSession(SessionOutcomeTrigger trigger,
-                                             base::TimeTicks event_time);
+  void FlushSuggestionApplicationSession(
+      SuggestionApplicationSessionFlushTrigger trigger,
+      base::TimeTicks event_time);
+
+  // Decides whether to flush the active application/engagement session when a
+  // navigation finishes, based on the navigation metadata and session state.
+  void MaybeFlushSessionOnNavigation(const FilterNavigationMetadata& metadata);
 
   // The current navigation session.
   NavigationSession current_navigation_;
   // The current UI session, if any.
   std::optional<SuggestionUiSession> current_ui_session_;
-  // The current suggestion application session, if any.
-  std::optional<SuggestionApplicationSession>
-      current_suggestion_application_session_;
-  // The retention state snapshot of the last accepted suggestion. It is
-  // set when a suggestion is accepted, and cleared when the next navigation
-  // finishes (either consumed by the application session or discarded).
-  std::optional<RetentionStateSnapshot>
-      last_accepted_suggestion_retention_snapshot_;
-  // The current post-suggestion application session, if any. This is only
-  // created for successful suggestion applications to track behavior within a
-  // session window (controlled by
-  // `kMultistepFilterPostApplicationSessionDuration`).
-  std::optional<PostSuggestionApplicationSession>
-      current_post_suggestion_application_session_;
+  // The active suggestion application session, if any.
+  //
+  // This is created in `OnNavigationFinished` when the navigation triggered by
+  // accepting a suggestion finishes. It first tracks the application outcome
+  // (verification) and, if successful, remains active to track subsequent user
+  // engagement (dwell time, further navigations, tab close) within a session
+  // window (controlled by `kMultistepFilterPostApplicationSessionDuration`).
+  std::optional<SuggestionApplicationSession> current_application_session_;
+
+  // Holds metrics metadata (session ID and retention snapshot) of the last
+  // accepted suggestion.
+  //
+  // This is set when the user accepts a suggestion, and carried over the
+  // navigation triggered by that acceptance. It is consumed to initialize the
+  // `current_application_session_` when the navigation finishes, or discarded
+  // if the navigation was aborted or not filter-initiated.
+  std::optional<PendingSuggestionApplicationMetrics>
+      pending_suggestion_application_metrics_;
 };
 
 }  // namespace multistep_filter

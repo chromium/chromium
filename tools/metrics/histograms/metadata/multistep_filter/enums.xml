@@ -13,8 +13,17 @@ found in the LICENSE file.
 <!-- LINT.IfChange(MultistepFilterApplicationOutcome) -->
 
 <enum name="MultistepFilterApplicationOutcome">
-  <int value="0" label="AllFiltersApplied">All filters were applied</int>
-  <int value="1" label="NotAllFiltersApplied">Not all filters were applied</int>
+  <int value="0" label="AllFiltersApplied">
+    All filters were successfully applied and verified.
+  </int>
+  <int value="1" label="NotAllFiltersApplied">
+    Technical failure to apply the filters (e.g. extraction failed or landing
+    page was an error page).
+  </int>
+  <int value="2" label="AbandonedBeforeVerification">
+    The user navigated away, closed the tab, or accepted a new suggestion before
+    the application could be verified.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/multistep_filter/core/logging/multistep_filter_metrics.h:MultistepFilterApplicationOutcome) -->

@@ -363,12 +363,14 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   metadata.applied_suggestion = suggestion;
   base::TimeTicks accepted_time = base::TimeTicks::Now();
   metadata.navigation_start_time = accepted_time;
-  MultistepFilterMetricsTracker tracker;
-  task_environment_.FastForwardBy(base::Milliseconds(2000));
-  metadata.navigation_finish_time = base::TimeTicks::Now();
-  tracker.OnNavigationFinished(metadata);
-  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
-      /*was_applied_successfully=*/true);
+  {
+    MultistepFilterMetricsTracker tracker;
+    task_environment_.FastForwardBy(base::Milliseconds(2000));
+    metadata.navigation_finish_time = base::TimeTicks::Now();
+    tracker.OnNavigationFinished(metadata);
+    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/true);
+  }
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   kMultistepFilterApplicationOutcomeHistogram),
@@ -382,6 +384,32 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   VerifyApplicationOutcomeRetentionHistograms(
       histogram_tester, {kRetentionSliceFirstImpression},
       MultistepFilterApplicationOutcome::kAllFiltersApplied);
+  histogram_tester.ExpectUniqueTimeSample(
+      kMultistepFilterTimeSuggestionAcceptanceToAppliedHistogram,
+      base::Milliseconds(2000), 1);
+}
+
+// Verifies that suggestion application latency is calculated using the precise
+// browser-side acceptance time, even if there is a delay before the landing
+// page navigation starts.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       SuggestionApplicationSuccessUsesPreciseAcceptanceTime) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  MultistepFilterMetricsTracker tracker;
+  TriggerInitialNavigation(tracker);
+  tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+  tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+  task_environment_.FastForwardBy(base::Milliseconds(500));
+  FilterNavigationMetadata metadata;
+  metadata.applied_suggestion = suggestion;
+  metadata.navigation_start_time = base::TimeTicks::Now();
+  task_environment_.FastForwardBy(base::Milliseconds(1500));
+  metadata.navigation_finish_time = base::TimeTicks::Now();
+  tracker.OnNavigationFinished(metadata);
+  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+      /*was_applied_successfully=*/true);
   histogram_tester.ExpectUniqueTimeSample(
       kMultistepFilterTimeSuggestionAcceptanceToAppliedHistogram,
       base::Milliseconds(2000), 1);
@@ -440,6 +468,30 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   }
 }
 
+// Tests that if navigation lands on an error page, the session is flushed
+// immediately as a technical failure (kNotAllFiltersApplied) and no engagement
+// is logged even if the tab is closed.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       ErrorPageNavigationFlushesImmediately) {
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+  base::HistogramTester histogram_tester;
+  {
+    MultistepFilterMetricsTracker tracker;
+    FilterNavigationMetadata metadata = CreateDefaultMetadata();
+    metadata.applied_suggestion = suggestion;
+    metadata.is_error_page_navigation = true;
+    tracker.OnNavigationFinished(metadata);
+
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            kMultistepFilterApplicationOutcomeHistogram),
+        BucketsAre(Bucket(
+            MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+  }
+  histogram_tester.ExpectTotalCount(
+      kMultistepFilterPostSuggestionApplicationUserEngagementHistogram, 0);
+}
+
 // Tests that calling annotation extraction finished without a session records
 // no samples.
 TEST_F(MultistepFilterMetricsTrackerTest,
@@ -476,16 +528,88 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           kMultistepFilterApplicationOutcomeHistogram),
-      BucketsAre(
-          Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+      BucketsAre(Bucket(
+          MultistepFilterApplicationOutcome::kAbandonedBeforeVerification, 1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS"),
-      BucketsAre(
-          Bucket(MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1)));
+      BucketsAre(Bucket(
+          MultistepFilterApplicationOutcome::kAbandonedBeforeVerification, 1)));
   VerifyApplicationOutcomeRetentionHistograms(
       histogram_tester, {kRetentionSliceFirstImpression},
-      MultistepFilterApplicationOutcome::kNotAllFiltersApplied);
+      MultistepFilterApplicationOutcome::kAbandonedBeforeVerification);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterPostSuggestionApplicationUserEngagementHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kEngagedWithFurtherNavigationWithinSessionWindow,
+                        1)));
+}
+
+// Tests that if the tab is closed (tracker destroyed) while we were waiting
+// for extraction of a previously applied suggestion, that application session
+// is flushed as abandoned before verification.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       ApplicationInterruptedByTabCloseRecordsAbandoned) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  {
+    MultistepFilterMetricsTracker tracker;
+    FilterNavigationMetadata landing_metadata = CreateDefaultMetadata();
+    landing_metadata.applied_suggestion = suggestion;
+    tracker.OnNavigationFinished(landing_metadata);
+  }
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterApplicationOutcomeHistogram),
+      BucketsAre(Bucket(
+          MultistepFilterApplicationOutcome::kAbandonedBeforeVerification, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "MultistepFilter.ApplicationOutcome.ByTask.SEARCH_ACCOMMODATIONS"),
+      BucketsAre(Bucket(
+          MultistepFilterApplicationOutcome::kAbandonedBeforeVerification, 1)));
+  VerifyApplicationOutcomeRetentionHistograms(
+      histogram_tester, {kRetentionSliceFirstImpression},
+      MultistepFilterApplicationOutcome::kAbandonedBeforeVerification);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterPostSuggestionApplicationUserEngagementHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedWithinSessionWindowTabClosed,
+                        1)));
+}
+
+// Tests that if a navigation is interrupted by a back navigation before
+// extraction finishes, we log the back navigation engagement even though
+// it wasn't verified.
+TEST_F(MultistepFilterMetricsTrackerTest,
+       ApplicationInterruptedByBackNavigationRecordsEngagement) {
+  base::HistogramTester histogram_tester;
+  UrlFilterSuggestion suggestion = CreateSuggestion("SEARCH_ACCOMMODATIONS");
+
+  MultistepFilterMetricsTracker tracker;
+  FilterNavigationMetadata landing_metadata = CreateDefaultMetadata();
+  landing_metadata.applied_suggestion = suggestion;
+  tracker.OnNavigationFinished(landing_metadata);
+  FilterNavigationMetadata interrupt_metadata = CreateDefaultMetadata();
+  interrupt_metadata.is_back_navigation = true;
+  tracker.OnNavigationFinished(interrupt_metadata);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterApplicationOutcomeHistogram),
+      BucketsAre(Bucket(
+          MultistepFilterApplicationOutcome::kAbandonedBeforeVerification, 1)));
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          kMultistepFilterPostSuggestionApplicationUserEngagementHistogram),
+      BucketsAre(Bucket(MultistepFilterPostSuggestionApplicationUserEngagement::
+                            kAbandonedWithinSessionWindowBackNavigation,
+                        1)));
 }
 
 // Tests that showing a suggestion logs the number of facets shown.
@@ -514,10 +638,12 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   FilterNavigationMetadata metadata = CreateDefaultMetadata();
   metadata.applied_suggestion = suggestion;
 
-  MultistepFilterMetricsTracker tracker;
-  tracker.OnNavigationFinished(metadata);
-  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
-      /*was_applied_successfully=*/true);
+  {
+    MultistepFilterMetricsTracker tracker;
+    tracker.OnNavigationFinished(metadata);
+    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/true);
+  }
 
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterNumberOfFacetsSuccessfullyAppliedHistogram, 2, 1);
@@ -648,13 +774,15 @@ TEST_F(MultistepFilterMetricsTrackerTest,
   // Scenario 1: First Impression.
   {
     base::HistogramTester histogram_tester;
-    MultistepFilterMetricsTracker tracker;
-    TriggerInitialNavigation(tracker);
-    tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
-    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
-    tracker.OnNavigationFinished(landing_metadata);
-    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
-        /*was_applied_successfully=*/true);
+    {
+      MultistepFilterMetricsTracker tracker;
+      TriggerInitialNavigation(tracker);
+      tracker.OnSuggestionShown(suggestion, RetentionStateSnapshot());
+      tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+      tracker.OnNavigationFinished(landing_metadata);
+      tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+          /*was_applied_successfully=*/true);
+    }
 
     VerifyApplicationOutcomeRetentionHistograms(
         histogram_tester, {kRetentionSliceFirstImpression},
@@ -669,13 +797,15 @@ TEST_F(MultistepFilterMetricsTrackerTest,
     snapshot.is_last_suggestion_accepted = true;
 
     base::HistogramTester histogram_tester;
-    MultistepFilterMetricsTracker tracker;
-    TriggerInitialNavigation(tracker);
-    tracker.OnSuggestionShown(suggestion, snapshot);
-    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
-    tracker.OnNavigationFinished(landing_metadata);
-    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
-        /*was_applied_successfully=*/true);
+    {
+      MultistepFilterMetricsTracker tracker;
+      TriggerInitialNavigation(tracker);
+      tracker.OnSuggestionShown(suggestion, snapshot);
+      tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+      tracker.OnNavigationFinished(landing_metadata);
+      tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+          /*was_applied_successfully=*/true);
+    }
 
     VerifyApplicationOutcomeRetentionHistograms(
         histogram_tester,
@@ -714,13 +844,15 @@ TEST_F(MultistepFilterMetricsTrackerTest,
     snapshot.is_last_suggestion_accepted = false;
 
     base::HistogramTester histogram_tester;
-    MultistepFilterMetricsTracker tracker;
-    TriggerInitialNavigation(tracker);
-    tracker.OnSuggestionShown(suggestion, snapshot);
-    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
-    tracker.OnNavigationFinished(landing_metadata);
-    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
-        /*was_applied_successfully=*/true);
+    {
+      MultistepFilterMetricsTracker tracker;
+      TriggerInitialNavigation(tracker);
+      tracker.OnSuggestionShown(suggestion, snapshot);
+      tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+      tracker.OnNavigationFinished(landing_metadata);
+      tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+          /*was_applied_successfully=*/true);
+    }
 
     VerifyApplicationOutcomeRetentionHistograms(
         histogram_tester,
@@ -732,39 +864,30 @@ TEST_F(MultistepFilterMetricsTrackerTest,
 TEST_F(MultistepFilterMetricsTrackerTest,
        ApplicationRetentionSnapshotResetOnInterveningNavigation) {
   base::HistogramTester histogram_tester;
-  MultistepFilterMetricsTracker tracker;
-
   UrlFilterSuggestion suggestion = CreateSuggestion("task_type");
-
-  // 1. Suggestion shown with a non-default snapshot (AcceptedLastTime).
   RetentionStateSnapshot snapshot;
   snapshot.suggestion_impressions = 2;
   snapshot.suggestion_acceptances = 1;
   snapshot.is_last_suggestion_accepted = true;
-  TriggerInitialNavigation(tracker);
-  tracker.OnSuggestionShown(suggestion, snapshot);
 
-  // 2. User accepts the suggestion. This caches the snapshot.
-  tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
+  {
+    MultistepFilterMetricsTracker tracker;
+    TriggerInitialNavigation(tracker);
+    tracker.OnSuggestionShown(suggestion, snapshot);
 
-  // 3. An intervening normal navigation occurs (not applying suggestion).
-  // This must reset the cached snapshot.
-  FilterNavigationMetadata normal_metadata = CreateDefaultMetadata();
-  normal_metadata.url = GURL("https://example.com/normal");
-  tracker.OnNavigationFinished(normal_metadata);
+    tracker.OnSuggestionUserInteraction(SuggestionUserDecision::kAccepted);
 
-  // 4. Later, a suggestion is applied.
-  FilterNavigationMetadata landing_metadata = CreateDefaultMetadata();
-  landing_metadata.url = GURL("https://example.com/landing");
-  landing_metadata.applied_suggestion = suggestion;
-  tracker.OnNavigationFinished(landing_metadata);
+    FilterNavigationMetadata normal_metadata = CreateDefaultMetadata();
+    normal_metadata.url = GURL("https://example.com/normal");
+    tracker.OnNavigationFinished(normal_metadata);
 
-  // 5. Extraction finishes.
-  tracker.OnSuggestionApplicationAnnotationExtractionFinished(
-      /*was_applied_successfully=*/true);
-
-  // 6. Verify that the outcome is logged under 'FirstImpression' (the fallback
-  // default snapshot) and NOT 'AcceptedLastTime'.
+    FilterNavigationMetadata landing_metadata = CreateDefaultMetadata();
+    landing_metadata.url = GURL("https://example.com/landing");
+    landing_metadata.applied_suggestion = suggestion;
+    tracker.OnNavigationFinished(landing_metadata);
+    tracker.OnSuggestionApplicationAnnotationExtractionFinished(
+        /*was_applied_successfully=*/true);
+  }
   VerifyApplicationOutcomeRetentionHistograms(
       histogram_tester, {kRetentionSliceFirstImpression},
       MultistepFilterApplicationOutcome::kAllFiltersApplied);

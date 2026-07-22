@@ -180,24 +180,21 @@ found in the LICENSE file.
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the overall technical filter application outcome after a user
-    accepts a Multistep Filter suggestion. &quot;All filter facets successfully
-    applied&quot; (kAllFiltersApplied) means that after the navigation
-    completed, the landing page's URL was successfully parsed, and the extracted
-    filter attributes exactly matched the suggested filters (same keys and
-    values). &quot;Not successfully applied&quot; (kNotAllFiltersApplied) covers
-    cases where:
+    accepts a Multistep Filter suggestion.
 
-    - The navigation failed (error page) or was to an unsupported scheme.
+    - &quot;All filter facets successfully applied&quot; (AllFiltersApplied)
+    means that after the navigation completed, the landing page's URL was
+    successfully parsed, and the extracted filter attributes exactly matched the
+    suggested filters (same keys and values).
 
-    - The extraction process was interrupted by a new navigation or page reload
-    before it could finish.
+    - &quot;Not successfully applied&quot; (NotAllFiltersApplied) covers cases
+    where we failed to apply the filters (e.g., the extraction failed, or the
+    navigation landed on an error page or unsupported scheme).
 
-    - No filter attributes could be extracted from the landing page.
-
-    - The number of extracted attributes did not match the suggested count.
-
-    - There was a mismatch in the keys or values of the filters (e.g. a
-    different brand or price range was applied than what was suggested).
+    - &quot;Abandoned before verification&quot; (AbandonedBeforeVerification)
+    covers cases where the user navigated away (back, browser navigation, tab
+    closed, or new suggestion accepted) before the extraction process finished
+    verifying the applied filters.
   </summary>
 </histogram>
 
@@ -209,23 +206,21 @@ found in the LICENSE file.
   <summary>
     Records the overall technical filter application outcome after a user
     accepts a Multistep Filter suggestion, sliced by user retention state when:
-    {RetentionSlice}. &quot;All filter facets successfully applied&quot;
-    (kAllFiltersApplied) means that after the navigation completed, the landing
-    page's URL was successfully parsed, and the extracted filter attributes
-    exactly matched the suggested filters (same keys and values). &quot;Not
-    successfully applied&quot; (kNotAllFiltersApplied) covers cases where:
+    {RetentionSlice}.
 
-    - The navigation failed (error page) or was to an unsupported scheme.
+    - &quot;All filter facets successfully applied&quot; (AllFiltersApplied)
+    means that after the navigation completed, the landing page's URL was
+    successfully parsed, and the extracted filter attributes exactly matched the
+    suggested filters (same keys and values).
 
-    - The extraction process was interrupted by a new navigation or page reload
-    before it could finish.
+    - &quot;Not successfully applied&quot; (NotAllFiltersApplied) covers cases
+    where we failed to apply the filters (e.g., the extraction failed, or the
+    navigation landed on an error page or unsupported scheme).
 
-    - No filter attributes could be extracted from the landing page.
-
-    - The number of extracted attributes did not match the suggested count.
-
-    - There was a mismatch in the keys or values of the filters (e.g. a
-    different brand or price range was applied than what was suggested).
+    - &quot;Abandoned before verification&quot; (AbandonedBeforeVerification)
+    covers cases where the user navigated away (back, browser navigation, tab
+    closed, or new suggestion accepted) before the extraction process finished
+    verifying the applied filters.
   </summary>
   <token key="RetentionSlice" variants="MultistepFilterRetentionSlice"/>
 </histogram>
@@ -236,24 +231,21 @@ found in the LICENSE file.
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the overall technical filter application outcome after a user
-    accepts a Multistep Filter suggestion for task type {TaskType}. &quot;All
-    filter facets successfully applied&quot; (kAllFiltersApplied) means that
-    after the navigation completed, the landing page's URL was successfully
-    parsed, and the extracted filter attributes exactly matched the suggested
-    filters (same keys and values). &quot;Not successfully applied&quot;
-    (kNotAllFiltersApplied) covers cases where:
+    accepts a Multistep Filter suggestion for task type {TaskType}.
 
-    - The navigation failed (error page) or was to an unsupported scheme.
+    - &quot;All filter facets successfully applied&quot; (AllFiltersApplied)
+    means that after the navigation completed, the landing page's URL was
+    successfully parsed, and the extracted filter attributes exactly matched the
+    suggested filters (same keys and values).
 
-    - The extraction process was interrupted by a new navigation or page reload
-    before it could finish.
+    - &quot;Not successfully applied&quot; (NotAllFiltersApplied) covers cases
+    where we failed to apply the filters (e.g., the extraction failed, or the
+    navigation landed on an error page or unsupported scheme).
 
-    - No filter attributes could be extracted from the landing page.
-
-    - The number of extracted attributes did not match the suggested count.
-
-    - There was a mismatch in the keys or values of the filters (e.g. a
-    different brand or price range was applied than what was suggested).
+    - &quot;Abandoned before verification&quot; (AbandonedBeforeVerification)
+    covers cases where the user navigated away (back, browser navigation, tab
+    closed, or new suggestion accepted) before the extraction process finished
+    verifying the applied filters.
   </summary>
   <token key="TaskType" variants="MultistepFilterTaskType"/>
 </histogram>
@@ -346,8 +338,14 @@ found in the LICENSE file.
   <owner>chrome-multistep-filter-eng@google.com</owner>
   <summary>
     Records the user's post-acceptance engagement behavior (tab close,
-    navigation via omnibox/bookmark, back navigation, or forward navigation)
-    after a Multistep Filter suggestion is successfully applied.
+    navigation via omnibox/bookmark, back navigation, or forward navigation).
+
+    This is recorded after a Multistep Filter suggestion is accepted, either
+    after it is successfully verified (applied), or when the user abandons the
+    load before verification finishes (e.g., by closing the tab or going back).
+
+    This is NOT recorded for technical application failures (extraction failures
+    or error page navigations).
 
     Categorizes the behavior into:
 

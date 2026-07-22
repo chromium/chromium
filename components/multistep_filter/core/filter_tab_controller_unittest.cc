@@ -284,10 +284,14 @@ class FilterTabControllerTest : public testing::Test {
     }
   }
 
-  void TearDown() override {
+  void DestroyController() {
     mock_generator_ = nullptr;
     mock_extractor_ = nullptr;
     controller_.reset();
+  }
+
+  void TearDown() override {
+    DestroyController();
     mock_delegate_.reset();
     filter_store_ = nullptr;
     mock_annotation_client_ = nullptr;
@@ -673,6 +677,7 @@ TEST_F(FilterTabControllerTest, BackgroundRedirectDoesNotResetLatencyBase) {
 
   ASSERT_FALSE(captured_callbacks.on_suggestion_shown.is_null());
   std::move(captured_callbacks.on_suggestion_shown).Run();
+  DestroyController();
 
   histogram_tester.ExpectUniqueTimeSample(
       kMultistepFilterTimeNavigationToSuggestionShownHistogram,
@@ -1129,9 +1134,7 @@ TEST_F(FilterTabControllerTest,
   std::move(captured_callbacks.on_suggestion_reopened).Run();
 
   // 3. Destroy controller (simulates tab closure).
-  mock_extractor_ = nullptr;
-  mock_generator_ = nullptr;
-  controller_.reset();
+  DestroyController();
 
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterAcceptanceInitialCueHistogram,
@@ -1323,6 +1326,7 @@ TEST_F(FilterTabControllerTest, SuccessfulApplicationLogsSuccess) {
                               base::Time::Now(), {attr});
 
   RunSuggestionApplicationFlow(metadata, annotation);
+  DestroyController();
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   kMultistepFilterApplicationOutcomeHistogram),
@@ -1592,6 +1596,7 @@ TEST_F(FilterTabControllerTest,
                               base::Time::Now(), {attr});
 
   RunSuggestionApplicationFlow(apply_metadata, annotation);
+  DestroyController();
 
   // Verify application outcome histograms:
   EXPECT_THAT(histogram_tester.GetAllSamples(
@@ -1681,10 +1686,10 @@ TEST_F(FilterTabControllerTest, ApplicationInterruptedByNewNavigation) {
   // Trigger interrupt navigation finish.
   controller_->OnNavigationFinished(interrupt_metadata);
 
-  // Verify that the application outcome was logged as failure (interrupted).
+  // Verify that the application outcome was logged as abandoned.
   histogram_tester.ExpectUniqueSample(
       kMultistepFilterApplicationOutcomeHistogram,
-      MultistepFilterApplicationOutcome::kNotAllFiltersApplied, 1);
+      MultistepFilterApplicationOutcome::kAbandonedBeforeVerification, 1);
 }
 
 }  // namespace

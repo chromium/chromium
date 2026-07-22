@@ -17,7 +17,8 @@ namespace multistep_filter {
 enum class MultistepFilterApplicationOutcome {
   kAllFiltersApplied = 0,
   kNotAllFiltersApplied = 1,
-  kMaxValue = kNotAllFiltersApplied,
+  kAbandonedBeforeVerification = 2,
+  kMaxValue = kAbandonedBeforeVerification,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/multistep_filter/enums.xml:MultistepFilterApplicationOutcome)
 
