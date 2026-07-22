@@ -251,6 +251,9 @@ struct ActionResult {
   bool requires_page_stabilization;
 
   // If the code is not kOk, an English language message describing the error.
+  // If the code is kOk, an optional English language message providing details
+  // on the execution. This is only forwarded to the model for operations that
+  // have an extra_information attribute in the result data structure.
   string message;
 
   // If the action is a script tool, provides the result of that execution. This

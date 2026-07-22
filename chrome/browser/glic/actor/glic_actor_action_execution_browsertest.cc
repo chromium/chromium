@@ -44,8 +44,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorActionExecutionFunctionalBrowserTest,
   Actions action = ::actor::MakeNavigate(active_tab()->GetHandle(),
                                          target_url.spec(), task_id);
 
-  EXPECT_THAT(PerformActions(action),
-              ValueIs(HasResultCode(::actor::mojom::ActionResultCode::kOk)));
+  ASSERT_OK_AND_ASSIGN(ActionsResult result, PerformActions(action));
+  EXPECT_THAT(result, HasResultCode(::actor::mojom::ActionResultCode::kOk));
+  // At the moment, no actions in GLIC set a non-empty extra_information value.
+  // Therefore, we just verify that the empty string is set.
+  ASSERT_EQ(result.extra_information_size(), 1);
+  EXPECT_EQ(result.extra_information(0), "");
   EXPECT_EQ(target_url, web_contents()->GetURL());
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
@@ -177,7 +181,10 @@ IN_PROC_BROWSER_TEST_P(GlicActorClickActionExecutionErrorBrowserTest,
       action_factory(active_tab()->GetHandle());
   action.set_task_id(task_id.value());
 
-  EXPECT_THAT(PerformActions(action), ValueIs(HasResultCode(expected_result)));
+  ASSERT_OK_AND_ASSIGN(ActionsResult result, PerformActions(action));
+  EXPECT_THAT(result, HasResultCode(expected_result));
+  // In case of errors, no extra_information is set.
+  EXPECT_EQ(result.extra_information_size(), 0);
 
   StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
   EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get())

@@ -1357,6 +1357,15 @@ void BuildActionsResultWithObservations(
   }
   CopyScriptToolResults(*response, action_results);
 
+  for (const auto& action_result : action_results) {
+    if (IsOk(*action_result.result)) {
+      response->add_extra_information(action_result.result->message);
+    } else {
+      // In case of an error, the message is copied to `error_message` instead.
+      response->add_extra_information(std::string());
+    }
+  }
+
   apc::ActionsResult_LatencyInformation* latency_info =
       response->mutable_latency_information();
   for (size_t i = 0; i < action_results.size(); ++i) {

@@ -44,6 +44,8 @@ bool IsOk(mojom::ActionResultCode code);
 bool RequiresPageStabilization(const mojom::ActionResult& result);
 
 mojom::ActionResultPtr MakeOkResult(bool requires_page_stabilization = true);
+mojom::ActionResultPtr MakeOkResultWithMessage(bool requires_page_stabilization,
+                                               const std::string& message);
 
 // TODO(b/459615712): Rename this to MakeErrorResult to make it clear that this
 // shouldn't be used for successful results as the default page_stabilization

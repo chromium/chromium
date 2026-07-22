@@ -387,6 +387,65 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
   EXPECT_FALSE(actions_result->tabs()[0].has_screenshot());
 }
 
+// Verify that optimization_guide::proto::ActionsResult::extra_information is
+// populated with extra information from the action results.
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       BuildActionsResultWithExtraInformation) {
+  TaskId task_id = actor_keyed_service()->CreateTask(
+      TestTaskSourceInfo(), NoEnterprisePolicyChecker());
+  actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
+
+  std::vector<actor::ActionResultWithLatencyInfo> action_results;
+
+  // Add a successful result with an extra_information message
+  // "Some extra info".
+  auto ok_result = MakeOkResultWithMessage(/*requires_page_stabilization=*/true,
+                                           "Some extra info");
+  action_results.emplace_back(base::TimeTicks::Now(), base::TimeTicks::Now(),
+                              std::move(ok_result));
+
+  // Add a failed result.
+  auto fail_result = mojom::ActionResult::New(
+      mojom::ActionResultCode::kFormFillingDialogError,
+      /*requires_page_stabilization=*/false, "Error message",
+      /*script_tool_response=*/nullptr,
+      /*execution_end_time=*/base::TimeTicks::Now(),
+      mojom::ScreenshotPolicy::kRequested,
+      mojom::PageContentExtractionPolicy::kRequested);
+  action_results.emplace_back(base::TimeTicks::Now(), base::TimeTicks::Now(),
+                              std::move(fail_result));
+
+  TestFuture<base::TimeTicks, std::vector<actor::ActionResultWithLatencyInfo>,
+             actor::TaskId, bool,
+             std::optional<page_content_annotations::ScreenshotOptions::
+                               ScreenshotCollectionOptions>,
+             std::unique_ptr<optimization_guide::proto::ActionsResult>,
+             std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
+      future;
+
+  actor::BuildActionsResultWithObservations(
+      *GetProfile(), base::TimeTicks::Now(), std::move(action_results), *task,
+      /*skip_async_observation_information=*/true, std::nullopt,
+      future.GetCallback());
+
+  const std::unique_ptr<optimization_guide::proto::ActionsResult>&
+      actions_result = future.Get<5>();
+  ASSERT_TRUE(actions_result);
+
+  // We expect 2 entries in extra_information.
+  // The first one should be "Some extra info".
+  // The second one should be empty because it failed.
+  ASSERT_EQ(actions_result->extra_information_size(), 2);
+  EXPECT_EQ(actions_result->extra_information(0), "Some extra info");
+  EXPECT_EQ(actions_result->extra_information(1), "");
+
+  // The error message should be "Error message".
+  EXPECT_EQ(actions_result->error_message(), "Error message");
+  EXPECT_EQ(
+      actions_result->action_result(),
+      static_cast<int32_t>(mojom::ActionResultCode::kFormFillingDialogError));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
                        AddsTabBlockedByCrossProfileCheck) {

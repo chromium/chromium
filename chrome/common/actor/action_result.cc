@@ -43,8 +43,13 @@ bool RequiresPageStabilization(const mojom::ActionResult& result) {
 }
 
 mojom::ActionResultPtr MakeOkResult(bool requires_page_stabilization) {
+  return MakeOkResultWithMessage(requires_page_stabilization, std::string());
+}
+
+mojom::ActionResultPtr MakeOkResultWithMessage(bool requires_page_stabilization,
+                                               const std::string& message) {
   return mojom::ActionResult::New(
-      mojom::ActionResultCode::kOk, requires_page_stabilization, std::string(),
+      mojom::ActionResultCode::kOk, requires_page_stabilization, message,
       /*script_tool_response=*/nullptr,
       /*execution_end_time=*/base::TimeTicks::Now(),
       mojom::ScreenshotPolicy::kRequested,
