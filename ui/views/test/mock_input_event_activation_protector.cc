@@ -6,14 +6,14 @@
 
 #include <utility>
 
-#include "ui/views/input_protection/input_protector_delegate.h"
+#include "ui/views/input_protection/input_protection_policy.h"
 
 namespace views {
 MockInputEventActivationProtector::MockInputEventActivationProtector() =
     default;
 MockInputEventActivationProtector::MockInputEventActivationProtector(
-    std::unique_ptr<InputProtectorDelegate> delegate)
-    : InputEventActivationProtector(std::move(delegate)) {}
+    std::unique_ptr<InputProtectionPolicy> policy)
+    : InputEventActivationProtector(std::move(policy)) {}
 MockInputEventActivationProtector::~MockInputEventActivationProtector() =
     default;
 }  // namespace views

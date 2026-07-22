@@ -18,7 +18,7 @@ class Event;
 
 namespace views {
 
-class InputProtectorDelegate;
+class InputProtectionPolicy;
 class View;
 
 // The goal of this class is to prevent potentially unintentional user
@@ -28,14 +28,14 @@ class VIEWS_EXPORT InputEventActivationProtector
     : WindowsStationarityMonitor::Observer {
  public:
   // Creates a protector with the default timing-based protection policy
-  // (using `DefaultInputProtectorDelegate`).
+  // (using `DefaultInputProtectionPolicy`).
   InputEventActivationProtector();
 
   // Creates a protector with a custom initial protection policy. Use this
   // when you want to replace the default timing checks with your own custom
   // logic.
   explicit InputEventActivationProtector(
-      std::unique_ptr<InputProtectorDelegate> delegate);
+      std::unique_ptr<InputProtectionPolicy> policy);
   ~InputEventActivationProtector() override;
 
   InputEventActivationProtector(const InputEventActivationProtector&) = delete;
@@ -46,26 +46,23 @@ class VIEWS_EXPORT InputEventActivationProtector
   // method must be called when the visibility of the view is changed.
   void VisibilityChanged(bool is_visible);
 
-  // Updates the |view_protected_time_stamp_| if needed. This function will be
-  // called when we want to reset back the input protector to "initial
-  // protected" state, basically under some certain view's proprieties changed
-  // events.
+  // Notifies policies to reset or restart their protection window if needed.
+  // This is called under certain view property changes.
   //
-  // If |force| is true, force to update the |view_protected_time_stamp_| even
-  // earlier (shortly before the owner view is visible). It usually helps us to
-  // prevent unintentional clicks happening when "visibility changes" event
-  // coming later than click event (for example click event -> tab activation ->
+  // If `force` is true, forces policies to start their protection window
+  // immediately (early activation). It is helpful to prevent unintentional
+  // events from happening when, for example, a "visibility changed" event
+  // arrives after a click event (for example click event -> tab activation ->
   // visibility change).
   void MaybeUpdateViewProtectedTimeStamp(bool force = false);
 
-  // Returns true if the event is a mouse, touch, pointer, or key (optionally)
-  // event that took place within the double-click time interval after
-  // `view_protected_time_stamp_`.
+  // Returns true if the event is considered a possibly unintended interaction
+  // (e.g. click-spam or inputs too close to when the view/widget was shown).
   //
-  // If `allow_key_events` is true, "key events" will NOT be considered for
-  // possibly unintended interaction checks.
+  // If `allow_key_events` is true, key events will bypass the timing-based
+  // protections of the default policy.
   //
-  // If `target_view` is provided, delegates can use it to perform security
+  // If `target_view` is provided, policies can use it to perform security
   // checks on the view that is the target for the event.
   virtual bool IsPossiblyUnintendedInteraction(const ui::Event& event,
                                                bool allow_key_events,
@@ -75,10 +72,10 @@ class VIEWS_EXPORT InputEventActivationProtector
     return IsPossiblyUnintendedInteraction(event, allow_key_events, nullptr);
   }
 
-  // Adds a delegate to the list of policies that check for unintended
+  // Adds a policy to the list of policies that check for unintended
   // interactions. To allow the event for the interaction to proceed, all
-  // registered delegates must agree.
-  void AddDelegate(std::unique_ptr<InputProtectorDelegate> delegate);
+  // registered policies must agree.
+  void AddPolicy(std::unique_ptr<InputProtectionPolicy> policy);
 
   // Implements WindowsStationarityMonitor::Observer:
   void OnWindowStationaryStateChanged() override;
@@ -86,29 +83,27 @@ class VIEWS_EXPORT InputEventActivationProtector
   // Resets the state for click tracking.
   void ResetForTesting();
 
-  base::TimeTicks view_protected_time_stamp() const {
-    return view_protected_time_stamp_;
+  // Returns the cooldown interval used to prevent unintended interactions.
+  // This serves as a baseline value so individual policies do not need to
+  // define their own.
+  //
+  // The protection period begins when trigger conditions defined by the
+  // policies are met. These include when the view becomes visible, window
+  // stationarity or activation changes, occlusion by always-on-top windows
+  // occurs, or a click event occurs (to prevent click-spam). During this
+  // period, input events (such as mouse clicks, touches, or gestures) are
+  // blocked, depending on the policy configuration.
+  const base::TimeDelta& cooldown_interval() const {
+    return cooldown_interval_;
   }
 
-  base::TimeTicks last_event_timestamp() const { return last_event_timestamp_; }
-
-  size_t repeated_event_count() const { return repeated_event_count_; }
-
  private:
-  // Timestamp of when the view was initially protected. Used to prevent
-  // unintentional user interaction event immediately from the timestamp.
-  base::TimeTicks view_protected_time_stamp_;
-  // Timestamp of the last event.
-  base::TimeTicks last_event_timestamp_;
-  // Number of repeated UI events with short intervals.
-  size_t repeated_event_count_ = 0;
+  // The duration of the protection period. See `cooldown_interval()` for
+  // details.
+  const base::TimeDelta cooldown_interval_;
 
-  // Updates the internal event tracking state (last event timestamp, repeated
-  // event count) based on the incoming event.
-  void UpdateStateForEvent(const ui::Event& event);
-
-  // Delegates that evaluate if an interaction should be blocked.
-  std::vector<std::unique_ptr<InputProtectorDelegate>> delegates_;
+  // Policies that evaluate if an interaction should be blocked.
+  std::vector<std::unique_ptr<InputProtectionPolicy>> policies_;
 };
 
 }  // namespace views

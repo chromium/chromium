@@ -12,7 +12,7 @@
 
 namespace views {
 
-class InputProtectorDelegate;
+class InputProtectionPolicy;
 class View;
 
 // Mock version of InputEventActivationProtector for injection during tests, to
@@ -21,7 +21,7 @@ class MockInputEventActivationProtector : public InputEventActivationProtector {
  public:
   MockInputEventActivationProtector();
   explicit MockInputEventActivationProtector(
-      std::unique_ptr<InputProtectorDelegate> delegate);
+      std::unique_ptr<InputProtectionPolicy> policy);
   ~MockInputEventActivationProtector() override;
 
   MockInputEventActivationProtector(const MockInputEventActivationProtector&) =

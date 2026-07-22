@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/input_protection/occlusion_aware_input_protection_delegate.h"
+#include "ui/views/input_protection/occlusion_aware_input_protection_policy.h"
 
 #include <memory>
 #include <utility>
@@ -11,7 +11,6 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/input_protection/occluded_widget_input_protector.h"
-#include "ui/views/metrics.h"
 #include "ui/views/test/mock_input_event_activation_protector.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/views_features.h"
@@ -19,9 +18,9 @@
 
 namespace views::test {
 
-class OcclusionAwareInputProtectionDelegateTest : public WidgetTest {
+class OcclusionAwareInputProtectionPolicyTest : public WidgetTest {
  public:
-  OcclusionAwareInputProtectionDelegateTest()
+  OcclusionAwareInputProtectionPolicyTest()
       : WidgetTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitAndEnableFeature(features::kEnableInputProtection);
   }
@@ -58,7 +57,7 @@ class OcclusionAwareInputProtectionDelegateTest : public WidgetTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(OcclusionAwareInputProtectionDelegateTest, CurrentOcclusionBlocks) {
+TEST_F(OcclusionAwareInputProtectionPolicyTest, CurrentOcclusionBlocks) {
   const gfx::Rect kWidgetBounds(100, 100, 200, 200);
 
   // Create AOT widget.
@@ -71,9 +70,8 @@ TEST_F(OcclusionAwareInputProtectionDelegateTest, CurrentOcclusionBlocks) {
   auto protected_widget = CreateWidgetWithZOrder();
   protected_widget->SetBounds(kWidgetBounds);
 
-  // Instantiate the delegate directly.
-  auto delegate = std::make_unique<OcclusionAwareInputProtectionDelegate>(
-      protected_widget.get());
+  // Instantiate the policy directly.
+  auto policy = std::make_unique<OcclusionAwareInputProtectionPolicy>();
 
   // Show the protected widget.
   protected_widget->Show();
@@ -90,11 +88,11 @@ TEST_F(OcclusionAwareInputProtectionDelegateTest, CurrentOcclusionBlocks) {
 
   // Verify that the interaction is blocked because the widget is currently
   // occluded.
-  EXPECT_TRUE(delegate->IsPossiblyUnintendedInteraction(
-      event, protected_widget->GetRootView(), &mock_protector));
+  EXPECT_TRUE(policy->IsPossiblyUnintendedInteraction(
+      event, protected_widget->GetRootView(), mock_protector));
 }
 
-TEST_F(OcclusionAwareInputProtectionDelegateTest, RecentOcclusionBlocks) {
+TEST_F(OcclusionAwareInputProtectionPolicyTest, RecentOcclusionBlocks) {
   const gfx::Rect kWidgetBounds(100, 100, 200, 200);
 
   // Create AOT widget.
@@ -107,9 +105,8 @@ TEST_F(OcclusionAwareInputProtectionDelegateTest, RecentOcclusionBlocks) {
   auto protected_widget = CreateWidgetWithZOrder();
   protected_widget->SetBounds(kWidgetBounds);
 
-  // Instantiate the delegate directly.
-  auto delegate = std::make_unique<OcclusionAwareInputProtectionDelegate>(
-      protected_widget.get());
+  // Instantiate the policy directly.
+  auto policy = std::make_unique<OcclusionAwareInputProtectionPolicy>();
 
   // Show the protected widget.
   protected_widget->Show();
@@ -129,33 +126,31 @@ TEST_F(OcclusionAwareInputProtectionDelegateTest, RecentOcclusionBlocks) {
 
   // Verify that the interaction is blocked because the widget was recently
   // occluded.
-  EXPECT_TRUE(delegate->IsPossiblyUnintendedInteraction(
-      event, protected_widget->GetRootView(), &mock_protector));
+  EXPECT_TRUE(policy->IsPossiblyUnintendedInteraction(
+      event, protected_widget->GetRootView(), mock_protector));
 
   // Fast forward past the reveal cooldown.
-  FastForwardBy(GetDoubleClickInterval() + base::Milliseconds(1));
+  FastForwardBy(mock_protector.cooldown_interval() + base::Milliseconds(1));
 
   ui::MouseEvent event_after =
       CreateMouseEvent(protected_center, protected_widget->GetRootView());
 
   // Verify that the interaction is no longer blocked after the cooldown
   // expires.
-  EXPECT_FALSE(delegate->IsPossiblyUnintendedInteraction(
-      event_after, protected_widget->GetRootView(), &mock_protector));
+  EXPECT_FALSE(policy->IsPossiblyUnintendedInteraction(
+      event_after, protected_widget->GetRootView(), mock_protector));
 }
 
-TEST_F(OcclusionAwareInputProtectionDelegateTest, NullTargetViewCrashes) {
-  auto protected_widget = CreateWidgetWithZOrder();
-  auto delegate = std::make_unique<OcclusionAwareInputProtectionDelegate>(
-      protected_widget.get());
+TEST_F(OcclusionAwareInputProtectionPolicyTest, NullTargetViewCrashes) {
+  auto policy = std::make_unique<OcclusionAwareInputProtectionPolicy>();
 
   ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        ui::EventTimeForNow(), 0, 0);
   MockInputEventActivationProtector mock_protector;
 
-  EXPECT_DEATH_IF_SUPPORTED(delegate->IsPossiblyUnintendedInteraction(
-                                event, nullptr, &mock_protector),
-                            "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      policy->IsPossiblyUnintendedInteraction(event, nullptr, mock_protector),
+      "");
 }
 
 }  // namespace views::test

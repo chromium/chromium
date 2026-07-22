@@ -10,21 +10,21 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
-#include "ui/views/input_protection/input_protector_delegate.h"
+#include "ui/views/input_protection/input_protection_policy.h"
 #include "ui/views/metrics.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace views {
 
-class TestInputProtectorDelegate : public InputProtectorDelegate {
+class TestInputProtectionPolicy : public InputProtectionPolicy {
  public:
-  TestInputProtectorDelegate() = default;
-  ~TestInputProtectorDelegate() override = default;
+  TestInputProtectionPolicy() = default;
+  ~TestInputProtectionPolicy() override = default;
 
   bool IsPossiblyUnintendedInteraction(
       const ui::Event& event,
       const View* target_view,
-      InputEventActivationProtector* protector) override {
+      const InputEventActivationProtector& protector) override {
     last_target_view_ = target_view;
     return is_unintended_interaction_;
   }
@@ -67,43 +67,43 @@ TEST_F(InputEventActivationProtectorTest, DefaultBehaviorBlocksRapidClicks) {
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 
   // Clicks after the protection period should be allowed.
-  task_environment()->FastForwardBy(GetDoubleClickInterval() +
+  task_environment()->FastForwardBy(protector.cooldown_interval() +
                                     base::Milliseconds(1));
   EXPECT_FALSE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 }
 
-TEST_F(InputEventActivationProtectorTest, DelegateIsCalled) {
-  auto delegate = std::make_unique<TestInputProtectorDelegate>();
-  TestInputProtectorDelegate* delegate_ptr = delegate.get();
-  InputEventActivationProtector protector(std::move(delegate));
+TEST_F(InputEventActivationProtectorTest, PolicyIsCalled) {
+  auto policy = std::make_unique<TestInputProtectionPolicy>();
+  TestInputProtectionPolicy* policy_ptr = policy.get();
+  InputEventActivationProtector protector(std::move(policy));
 
   // Simulate the view being shown, which starts the protection period in normal
   // usage.
   protector.VisibilityChanged(true);
 
-  delegate_ptr->set_is_unintended_interaction(false);
+  policy_ptr->set_is_unintended_interaction(false);
   EXPECT_FALSE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 
-  delegate_ptr->set_is_unintended_interaction(true);
+  policy_ptr->set_is_unintended_interaction(true);
   EXPECT_TRUE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 }
 
 TEST_F(InputEventActivationProtectorTest,
-       CustomConstructorReplacesDefaultDelegate) {
-  auto delegate = std::make_unique<TestInputProtectorDelegate>();
-  TestInputProtectorDelegate* delegate_ptr = delegate.get();
-  InputEventActivationProtector protector(std::move(delegate));
+       CustomConstructorReplacesDefaultPolicy) {
+  auto policy = std::make_unique<TestInputProtectionPolicy>();
+  TestInputProtectionPolicy* policy_ptr = policy.get();
+  InputEventActivationProtector protector(std::move(policy));
 
   // Simulate the view being shown.
   protector.VisibilityChanged(true);
 
-  // If the default delegate were active, this click would be blocked
-  // by the show cooldown. Since we set the custom delegate to allow it,
-  // it should succeed, proving the default delegate was replaced.
-  delegate_ptr->set_is_unintended_interaction(false);
+  // If the default policy were active, this click would be blocked by the show
+  // cooldown. Since we set the custom policy to allow it, it should succeed,
+  // proving the default policy was replaced.
+  policy_ptr->set_is_unintended_interaction(false);
   EXPECT_FALSE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 }
@@ -128,7 +128,7 @@ TEST_F(InputEventActivationProtectorTest,
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 
   // Wait for the protection period to expire.
-  task_environment()->FastForwardBy(GetDoubleClickInterval() +
+  task_environment()->FastForwardBy(protector.cooldown_interval() +
                                     base::Milliseconds(1));
   EXPECT_FALSE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
@@ -141,53 +141,53 @@ TEST_F(InputEventActivationProtectorTest,
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 }
 
-TEST_F(InputEventActivationProtectorTest, MultipleDelegates) {
-  auto delegate1 = std::make_unique<TestInputProtectorDelegate>();
-  TestInputProtectorDelegate* delegate1_ptr = delegate1.get();
-  auto delegate2 = std::make_unique<TestInputProtectorDelegate>();
-  TestInputProtectorDelegate* delegate2_ptr = delegate2.get();
+TEST_F(InputEventActivationProtectorTest, MultiplePolicies) {
+  auto policy1 = std::make_unique<TestInputProtectionPolicy>();
+  TestInputProtectionPolicy* policy1_ptr = policy1.get();
+  auto policy2 = std::make_unique<TestInputProtectionPolicy>();
+  TestInputProtectionPolicy* policy2_ptr = policy2.get();
 
-  InputEventActivationProtector protector(std::move(delegate1));
-  protector.AddDelegate(std::move(delegate2));
+  InputEventActivationProtector protector(std::move(policy1));
+  protector.AddPolicy(std::move(policy2));
 
   // Simulate the view being shown.
   protector.VisibilityChanged(true);
 
-  // Verify that the protector allows the interaction, since both delegates
+  // Verify that the protector allows the interaction, since both policies
   // allow it.
-  delegate1_ptr->set_is_unintended_interaction(false);
-  delegate2_ptr->set_is_unintended_interaction(false);
+  policy1_ptr->set_is_unintended_interaction(false);
+  policy2_ptr->set_is_unintended_interaction(false);
   EXPECT_FALSE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 
-  // Verify that the protector blocks the interaction, since the first delegate
+  // Verify that the protector blocks the interaction, since the first policy
   // blocks it.
-  delegate1_ptr->set_is_unintended_interaction(true);
-  delegate2_ptr->set_is_unintended_interaction(false);
+  policy1_ptr->set_is_unintended_interaction(true);
+  policy2_ptr->set_is_unintended_interaction(false);
   EXPECT_TRUE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 
-  // Verify that the protector blocks the interaction, since the second delegate
+  // Verify that the protector blocks the interaction, since the second policy
   // blocks it.
-  delegate1_ptr->set_is_unintended_interaction(false);
-  delegate2_ptr->set_is_unintended_interaction(true);
+  policy1_ptr->set_is_unintended_interaction(false);
+  policy2_ptr->set_is_unintended_interaction(true);
   EXPECT_TRUE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 
-  // Verify that the protector blocks the interaction, since both delegates
+  // Verify that the protector blocks the interaction, since both policies
   // block it.
-  delegate1_ptr->set_is_unintended_interaction(true);
-  delegate2_ptr->set_is_unintended_interaction(true);
+  policy1_ptr->set_is_unintended_interaction(true);
+  policy2_ptr->set_is_unintended_interaction(true);
   EXPECT_TRUE(
       protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false));
 }
 
-TEST_F(InputEventActivationProtectorTest, TargetViewIsForwardedToDelegates) {
+TEST_F(InputEventActivationProtectorTest, TargetViewIsForwardedToPolicies) {
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto delegate = std::make_unique<TestInputProtectorDelegate>();
-  TestInputProtectorDelegate* delegate_ptr = delegate.get();
-  InputEventActivationProtector protector(std::move(delegate));
+  auto policy = std::make_unique<TestInputProtectionPolicy>();
+  TestInputProtectionPolicy* policy_ptr = policy.get();
+  InputEventActivationProtector protector(std::move(policy));
 
   protector.VisibilityChanged(true);
 
@@ -198,8 +198,8 @@ TEST_F(InputEventActivationProtectorTest, TargetViewIsForwardedToDelegates) {
   protector.IsPossiblyUnintendedInteraction(CreateClickEvent(), false,
                                             expected_target_view);
 
-  // Assert that the delegate received the exact same target view pointer.
-  EXPECT_EQ(delegate_ptr->last_target_view(), expected_target_view);
+  // Assert that the policy received the exact same target view pointer.
+  EXPECT_EQ(policy_ptr->last_target_view(), expected_target_view);
 }
 
 }  // namespace views
