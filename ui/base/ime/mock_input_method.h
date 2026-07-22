@@ -21,7 +21,7 @@ class TextInputClient;
 
 // A mock ui::InputMethod implementation for testing. You can get the instance
 // of this class as the global input method with calling
-// SetUpInputMethodFactoryForTesting() which is declared in
+// SetUpInputMethodForTesting() which is declared in
 // ui/base/ime/init/input_method_factory.h
 class COMPONENT_EXPORT(UI_BASE_IME) MockInputMethod : public InputMethod {
  public:

@@ -71,7 +71,7 @@ void SetUpInputMethodForTesting(InputMethod* input_method) {
 ScopedTestInputMethodFactory::ScopedTestInputMethodFactory() {
   CHECK(!g_input_method_set_for_testing)
       << "ScopedTestInputMethodFactory was created after calling "
-         "ui::SetUpInputMethodFactoryForTesting or inside another "
+         "ui::SetUpInputMethodForTesting or inside another "
          "ScopedTestInputMethodFactory lifetime.";
 
   DLOG_IF(WARNING, g_create_input_method_called)
