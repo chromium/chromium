@@ -1191,7 +1191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.NumberOfActiveStudentsWhenSessionEnded"
-    units="students" expires_after="2026-12-16">
+    units="students" expires_after="2027-07-20">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1200,7 +1200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.NumberOfStudentsJoinedViaCodeDuringSession"
-    units="students" expires_after="2026-12-16">
+    units="students" expires_after="2027-07-20">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1209,7 +1209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.OnTask.MaxNumberOfTabsDuringSession" units="tabs"
-    expires_after="2026-12-16">
+    expires_after="2027-07-20">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1219,7 +1219,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.OnTask.NumberOfTabsWhenSessionEnded" units="tabs"
-    expires_after="2026-09-27">
+    expires_after="2027-07-20">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1228,8 +1228,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.OnTask.{State}SessionDurationPercentage"
-    units="% of session" expires_after="2026-12-16">
-  <owner>zhumatthew@google.com</owner>
+    units="% of session" expires_after="2027-07-20">
+  <owner>aprilzhou@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the percentage of the duration the session was in {State}.
@@ -1241,7 +1241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.PollingResult" enum="BocaPollingResult"
-    expires_after="2026-09-27">
+    expires_after="2027-07-20">
   <owner>aprilzhou@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1250,24 +1250,30 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.ScreenShare.PresentStudentScreen.FailureReason"
-    enum="BocaPresentStudentScreenFailureReason" expires_after="2026-04-25">
+    enum="BocaPresentStudentScreenFailureReason" expires_after="2027-04-25">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the reason that attempting to start a screen share presentation of
     type PresentStudentScreen failed. Recorded once per failed screen share
     attempt.
+
+    Warning: this histogram was expired from 2026-04-25 to 2026-07-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.Boca.ScreenShare.{PresentOwnScreenType}.FailureReason"
-    enum="BocaPresentOwnScreenFailureReason" expires_after="2026-04-25">
+    enum="BocaPresentOwnScreenFailureReason" expires_after="2027-04-25">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the reason that attempting to start a screen share presentation of
     type {PresentOwnScreenType} failed. Recorded once per failed screen share
     attempt.
+
+    Warning: this histogram was expired from 2026-04-25 to 2026-07-22; data may
+    be missing.
   </summary>
   <token key="PresentOwnScreenType">
     <variant name="PresentOwnScreenInSession"/>
@@ -1276,12 +1282,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.ScreenShare.{ScreenShareType}.Result"
-    enum="BooleanSuccess" expires_after="2026-04-25">
+    enum="BooleanSuccess" expires_after="2027-04-25">
   <owner>bzielinski@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the result of attempting to start a screen share presentation of
     type {ScreenShareType}. Recorded once per screen share attempt.
+
+    Warning: this histogram was expired from 2026-04-25 to 2026-07-22; data may
+    be missing.
   </summary>
   <token key="ScreenShareType">
     <variant name="PresentOwnScreenInSession"/>
@@ -1291,7 +1300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.Spotlight.{Request}.ErrorCode" enum="ApiErrorCode"
-    expires_after="2026-08-16">
+    expires_after="2027-07-20">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -1327,17 +1336,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Boca.TokenRetrievalIsValidation" enum="Boolean"
-    expires_after="2026-04-28">
-  <owner>zifanzhang@google.com</owner>
+    expires_after="2027-04-28">
+  <owner>aprilzhou@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the number of validation and non-validation token Retrievals.
+
+    Warning: this histogram was expired from 2026-04-28 to 2026-07-22; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.Boca.{Request}.ErrorCode" enum="ApiErrorCode"
-    expires_after="2026-08-16">
-  <owner>zifanzhang@google.com</owner>
+    expires_after="2027-07-20">
+  <owner>aprilzhou@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records HTTP response code of the {Request} request needed to send/receive
