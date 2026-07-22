@@ -213,7 +213,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void SetDelegate(CanvasResourceProviderDelegate* delegate) {
     delegate_ = delegate;
   }
-  bool IsPrinting() const { return delegate_ && delegate_->IsPrinting(); }
 
   viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
   const gfx::ColorSpace& GetColorSpace() const { return color_space_; }

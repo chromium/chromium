@@ -527,7 +527,8 @@ std::optional<cc::PaintRecord> Canvas2DResourceProvider::Flush(
   if (!Recorder().HasReleasableDrawOps()) {
     return std::nullopt;
   }
-  bool want_to_print = IsPrinting() || reason == FlushReason::kPrinting ||
+  bool want_to_print = (delegate_ && delegate_->IsPrinting()) ||
+                       reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;
   bool preserve_recording = want_to_print && clear_frame_;
 

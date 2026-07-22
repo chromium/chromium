@@ -463,8 +463,7 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
 
 void OffscreenCanvasRenderingContext2D::FlushIfRecordingLimitExceeded() {
   if (shared_image_provider_) {
-    if (shared_image_provider_->IsPrinting() &&
-        shared_image_provider_->clear_frame()) {
+    if (Host()->IsPrinting() && shared_image_provider_->clear_frame()) {
       return;
     }
     const MemoryManagedPaintRecorder* recorder = Recorder();
