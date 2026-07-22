@@ -10,6 +10,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,9 +19,9 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/experiences/isolated_web_app/isolated_web_app_api_allowlist.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/webapps/common/web_app_id.h"
@@ -148,8 +149,8 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsAllowlistTest,
       InstallIsolatedWebAppAndReturnUrlInfo(profile());
 
   // Configure the allowlist to allow only the first IWA.
-  auto allowlist_override = SetAllowlistedCrosIwaApiOriginsForTesting(
-      {allowed_url_info.origin().host()});
+  EXPECT_OK(web_app::test::ConfigureSetShapeAllowlist(
+      allowed_url_info.web_bundle_id()));
 
   content::RenderFrameHost* allowed_frame = OpenApp(allowed_url_info.app_id());
   content::RenderFrameHost* non_allowed_frame =
@@ -186,8 +187,8 @@ IN_PROC_BROWSER_TEST_F(BlinkExtensionsAllowlistDisabledTest,
   web_app::IsolatedWebAppUrlInfo url_info =
       InstallIsolatedWebAppAndReturnUrlInfo(profile());
 
-  auto allowlist_override =
-      SetAllowlistedCrosIwaApiOriginsForTesting({url_info.origin().host()});
+  EXPECT_OK(
+      web_app::test::ConfigureSetShapeAllowlist(url_info.web_bundle_id()));
 
   content::RenderFrameHost* frame = OpenApp(url_info.app_id());
 

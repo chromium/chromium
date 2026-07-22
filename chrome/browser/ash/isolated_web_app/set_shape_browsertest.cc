@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,10 +21,11 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/experiences/isolated_web_app/isolated_web_app_api_allowlist.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/webapps/common/web_app_id.h"
@@ -127,16 +129,20 @@ class SetShapeTest : public web_app::IsolatedWebAppBrowserTestHarness {
     SetWindowManagementPermission(profile(), app_url_info_->origin(),
                                   CONTENT_SETTING_ALLOW);
 
-    allowlist_override_ = SetAllowlistedCrosIwaApiOriginsForTesting(
-        {app_url_info_->origin().host()});
+    AllowSetShapeFor(app_url_info_->web_bundle_id());
+  }
+
+  void AllowSetShapeFor(const web_package::SignedWebBundleId& web_bundle_id) {
+    data_provider_->Update([&](auto& update) {
+      update.AddToSpecialPermissions(web_bundle_id, {.allow_set_shape = true});
+    });
   }
 
   std::optional<web_app::IsolatedWebAppUrlInfo> app_url_info_;
 
  private:
-  std::optional<base::AutoReset<std::vector<std::string_view>>>
-      allowlist_override_;
   base::test::ScopedFeatureList feature_list_{blink::features::kUnframedIwa};
+  web_app::FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(SetShapeTest, ValidatesInput) {
@@ -194,8 +200,7 @@ IN_PROC_BROWSER_TEST_F(SetShapeTest, DoesNotWorkOutsideUnframedMode) {
   web_app::IsolatedWebAppUrlInfo url_info =
       InstallStandaloneIsolatedWebAppAndReturnUrlInfo(profile());
 
-  auto override =
-      SetAllowlistedCrosIwaApiOriginsForTesting({url_info.origin().host()});
+  AllowSetShapeFor(url_info.web_bundle_id());
 
   content::RenderFrameHost* frame = OpenApp(url_info.app_id());
 

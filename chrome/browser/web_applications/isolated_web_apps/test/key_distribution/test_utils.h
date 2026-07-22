@@ -142,6 +142,12 @@ InstallIwaKeyDistributionComponent(
     const std::string& web_bundle_id,
     std::optional<base::span<const uint8_t>> expected_key);
 
+// Configures the key distribution component to allow the given IWA to use the
+// setShape API.
+base::expected<void, IwaComponentUpdateError> ConfigureSetShapeAllowlist(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const base::Version& version = base::Version("1.0.0"));
+
 // Synchronously registers the component with the component updater and waits
 // for the component updater to pick up the on-disk data in its folder.
 base::expected<IwaComponentMetadata, IwaComponentUpdateError>

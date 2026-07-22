@@ -278,6 +278,18 @@ InstallIwaKeyDistributionComponent(
   return InstallIwaKeyDistributionComponent(version, key_distribution);
 }
 
+base::expected<void, IwaComponentUpdateError> ConfigureSetShapeAllowlist(
+    const web_package::SignedWebBundleId& web_bundle_id,
+    const base::Version& version) {
+  return KeyDistributionComponentBuilder(version)
+      .AddToSpecialAppPermissions(
+          web_bundle_id,
+          KeyDistributionComponentBuilder::SpecialAppPermissions{
+              .allow_set_shape = true})
+      .Build()
+      .UploadFromComponentFolder();
+}
+
 base::expected<IwaComponentMetadata, IwaComponentUpdateError>
 RegisterIwaKeyDistributionComponentAndWaitForLoad() {
   ComponentUpdateFuture future;
