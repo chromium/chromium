@@ -511,7 +511,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
     return;
   }
 
-  suggestion_trigger_field_id_.clear();
+  sections_.clear();
   std::vector<ActorFormFillingRequest> requests;
   requests.reserve(fill_requests.size());
 
@@ -634,20 +634,22 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       }
 
       requests.emplace_back();
-      requests.back().requested_data = sub_request.requested_data;
-      requests.back().request_origin = origin;
+      ActorFormFillingRequest& request = requests.back();
+      request.requested_data = sub_request.requested_data;
+      request.request_origin = origin;
       // TODO(crbug.com/502158215): Integrate form-splitting with section label.
-      requests.back().section_label = fill_request.section_label;
-      requests.back().suggestions.reserve(
+      request.section_label = fill_request.section_label;
+      request.suggestions.reserve(
           suggestion_data.suggestions_with_fill_data.size());
-      suggestion_trigger_field_id_.emplace_back(
-          suggestion_data.trigger_field_id);
+      sections_.emplace_back(suggestion_data.trigger_field_id,
+                             fill_request.section_label,
+                             fill_request.requested_data);
       for (ActorSuggestionWithFillData& entry :
            suggestion_data.suggestions_with_fill_data) {
         entry.suggestion.id =
             ActorSuggestionId(suggestion_id_generator_.GenerateNextId());
         fill_data_[entry.suggestion.id] = std::move(entry.filling_payload);
-        requests.back().suggestions.emplace_back(std::move(entry.suggestion));
+        request.suggestions.emplace_back(std::move(entry.suggestion));
       }
     }
   }
@@ -710,8 +712,8 @@ void ActorFormFillingServiceImpl::ScrollToForm(AutofillClient& client,
 
   // TODO(crbug.com/448398227): Consider making `form_index` a `size_t`
   // everywhere instead of `int`.
-  if (static_cast<size_t>(form_index) >= suggestion_trigger_field_id_.size() ||
-      !suggestion_trigger_field_id_[form_index]) {
+  if (static_cast<size_t>(form_index) >= sections_.size() ||
+      !sections_[form_index].trigger_field_id) {
     LogManager* const log_manager =
         autofill_manager.client().GetCurrentLogManager();
     LOG_AF(log_manager) << LoggingScope::kAutofillActor
@@ -720,7 +722,7 @@ void ActorFormFillingServiceImpl::ScrollToForm(AutofillClient& client,
     return;
   }
   autofill_manager.driver().ScrollFieldIntoView(
-      suggestion_trigger_field_id_[form_index]);
+      sections_[form_index].trigger_field_id);
 }
 
 void ActorFormFillingServiceImpl::PreviewForm(AutofillClient& client,
