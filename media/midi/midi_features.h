@@ -18,7 +18,7 @@ namespace features {
 MIDI_EXPORT BASE_DECLARE_FEATURE(kMidiManagerWinrt);
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 MIDI_EXPORT BASE_DECLARE_FEATURE(kMidiMacUmp);
 #endif
 
