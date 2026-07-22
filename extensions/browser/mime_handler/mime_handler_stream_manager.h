@@ -43,7 +43,7 @@ namespace mime_handler {
 // MIME handler navigation events in a `content::WebContents`. It handles
 // multiple MIME handler instances in a single `content::WebContents`. It is
 // responsible for:
-// 1. Storing the `extensions::StreamContainer` stream data.
+// 1. Storing the `StreamContainer` stream data.
 // 2. Observing for the MIME handler frames either navigating or closing
 //    (including by crashing). This is necessary to ensure that streams that
 //    aren't claimed are not leaked, by deleting the stream if any of those
@@ -56,9 +56,9 @@ namespace mime_handler {
 //    extension.
 // `MimeHandlerStreamManager` is scoped to the `content::WebContents` it tracks,
 // but it may also delete itself if all streams are no longer used.
-// `extensions::StreamContainer` objects are stored from
-// `PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse()` until
-// the MIME handler is no longer in use.
+// `StreamContainer` objects are stored from
+// `PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse()` until the
+// MIME handler is no longer in use.
 //
 // Use `MimeHandlerStreamManager::Create()` to create an instance.
 // Use `MimeHandlerStreamManager::FromWebContents()` to get an instance.
@@ -126,15 +126,14 @@ class MimeHandlerStreamManager
   // navigating to another handled URL before the original `StreamContainer` is
   // claimed.
   // `delegate` must not be null.
-  void AddStreamContainer(
-      content::FrameTreeNodeId frame_tree_node_id,
-      const std::string& internal_id,
-      std::unique_ptr<extensions::StreamContainer> stream_container,
-      std::unique_ptr<extensions::MimeHandlerStreamDelegate> delegate);
+  void AddStreamContainer(content::FrameTreeNodeId frame_tree_node_id,
+                          const std::string& internal_id,
+                          std::unique_ptr<StreamContainer> stream_container,
+                          std::unique_ptr<MimeHandlerStreamDelegate> delegate);
 
   // Returns a pointer to a stream container that `embedder_host` has claimed or
   // nullptr if `embedder_host` hasn't claimed any stream containers.
-  base::WeakPtr<extensions::StreamContainer> GetStreamContainer(
+  base::WeakPtr<StreamContainer> GetStreamContainer(
       content::RenderFrameHost* embedder_host);
 
   // Returns true if `render_frame_host` is an extension host for a MIME
@@ -390,8 +389,7 @@ class MimeHandlerStreamManager
   // Sets up beforeunload API support for full-page PDF viewers.
   // TODO(crbug.com/40268279): Currently a no-op. Support the beforeunload API.
   void SetUpBeforeUnloadControl(
-      mojo::PendingRemote<extensions::mime_handler::BeforeUnloadControl>
-          before_unload_control_remote);
+      mojo::PendingRemote<BeforeUnloadControl> before_unload_control_remote);
 
   // Stores stream info by embedder host info.
   StreamInfoMap stream_infos_;

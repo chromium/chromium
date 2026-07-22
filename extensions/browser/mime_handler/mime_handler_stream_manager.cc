@@ -74,13 +74,12 @@ content::RenderFrameHost* GetEmbedderHostFromContentNavigation(
   return extension_host->GetParent();
 }
 
-// Gets the `extensions::mojom::MimeHandlerViewContainerManager` from the
-// `container_host`.
-mojo::AssociatedRemote<extensions::mojom::MimeHandlerViewContainerManager>
+// Gets the `mojom::MimeHandlerViewContainerManager` from the `container_host`.
+mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>
 GetMimeHandlerViewContainerManager(content::RenderFrameHost* container_host) {
   CHECK(container_host);
 
-  mojo::AssociatedRemote<extensions::mojom::MimeHandlerViewContainerManager>
+  mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>
       container_manager;
   container_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &container_manager);
@@ -196,8 +195,8 @@ void MimeHandlerStreamManager::SetFactoryForTesting(Factory* factory) {
 void MimeHandlerStreamManager::AddStreamContainer(
     content::FrameTreeNodeId frame_tree_node_id,
     const std::string& internal_id,
-    std::unique_ptr<extensions::StreamContainer> stream_container,
-    std::unique_ptr<extensions::MimeHandlerStreamDelegate> delegate) {
+    std::unique_ptr<StreamContainer> stream_container,
+    std::unique_ptr<MimeHandlerStreamDelegate> delegate) {
   CHECK(stream_container);
   CHECK(delegate);
 
@@ -213,17 +212,16 @@ void MimeHandlerStreamManager::AddStreamContainer(
       internal_id, std::move(stream_container), std::move(delegate));
 }
 
-base::WeakPtr<extensions::StreamContainer>
-MimeHandlerStreamManager::GetStreamContainer(
+base::WeakPtr<StreamContainer> MimeHandlerStreamManager::GetStreamContainer(
     content::RenderFrameHost* embedder_host) {
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
   if (!stream_info) {
     return nullptr;
   }
 
-  // It's possible to have multiple `extensions::StreamContainer`s under the
-  // same frame tree node ID. Verify the original URL in the stream container to
-  // avoid a potential URL spoof.
+  // It's possible to have multiple `StreamContainer`s under the same frame tree
+  // node ID. Verify the original URL in the stream container to avoid a
+  // potential URL spoof.
   if (!embedder_host->GetLastCommittedURL().EqualsIgnoringRef(
           stream_info->stream()->original_url())) {
     return nullptr;
@@ -267,10 +265,9 @@ MimeHandlerStreamManager::GetTopLevelHandlerExtensionId() const {
   if (info->stream()->embedded()) {
     return std::nullopt;
   }
-  // It's possible to have multiple `extensions::StreamContainer`s under the
-  // same frame tree node ID. Verify the original URL in the stream container
-  // to avoid a potential URL spoof -- the same guard `GetStreamContainer()`
-  // applies.
+  // It's possible to have multiple `StreamContainer`s under the same frame tree
+  // node ID. Verify the original URL in the stream container to avoid a
+  // potential URL spoof -- the same guard `GetStreamContainer()` applies.
   if (!main_rfh->GetLastCommittedURL().EqualsIgnoringRef(
           info->stream()->original_url())) {
     return std::nullopt;
@@ -973,8 +970,7 @@ void MimeHandlerStreamManager::SetStreamContentHostFrameTreeNodeId(
 }
 
 void MimeHandlerStreamManager::SetUpBeforeUnloadControl(
-    mojo::PendingRemote<extensions::mime_handler::BeforeUnloadControl>
-        before_unload_control_remote) {
+    mojo::PendingRemote<BeforeUnloadControl> before_unload_control_remote) {
   // TODO(crbug.com/40268279): Currently a no-op. Support the beforeunload API.
 }
 
