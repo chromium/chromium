@@ -3595,6 +3595,53 @@ TEST_F(WindowDeathTest, DeleteWindowInBoundsChange) {
   EXPECT_TRUE(weak_window);
 }
 
+// WindowObserver implementation that deletes the observed window in
+// OnWindowHierarchyChanging().
+class DeleteOnHierarchyChangingObserver : public WindowObserver {
+ public:
+  explicit DeleteOnHierarchyChangingObserver(Window* window) : window_(window) {
+    window_->AddObserver(this);
+  }
+
+  DeleteOnHierarchyChangingObserver(const DeleteOnHierarchyChangingObserver&) =
+      delete;
+  DeleteOnHierarchyChangingObserver& operator=(
+      const DeleteOnHierarchyChangingObserver&) = delete;
+
+  ~DeleteOnHierarchyChangingObserver() override {
+    CHECK(window_);
+    window_->RemoveObserver(this);
+  }
+
+  // WindowObserver:
+  void OnWindowHierarchyChanging(const HierarchyChangeParams& params) override {
+    Window* window = window_;
+    window_ = nullptr;
+    window->RemoveObserver(this);
+    // This will fail with CHECK.
+    delete window;
+  }
+
+ private:
+  raw_ptr<Window> window_;
+};
+
+TEST_F(WindowDeathTest, DeleteReceiverInOnWindowHierarchyChanging) {
+  std::unique_ptr<Window> parent = std::make_unique<Window>(nullptr);
+  parent->Init(ui::LAYER_NOT_DRAWN);
+  std::unique_ptr<Window> child = std::make_unique<Window>(nullptr);
+  child->Init(ui::LAYER_NOT_DRAWN);
+  Window* grandchild = new Window(nullptr);
+  grandchild->Init(ui::LAYER_NOT_DRAWN);
+  child->AddChild(grandchild);
+
+  // |grandchild| is notified as a receiver while recursing down through the
+  // subtree rooted at |child|; deleting it from within the notification must
+  // not be allowed.
+  DeleteOnHierarchyChangingObserver observer(grandchild);
+  EXPECT_DEATH(parent->AddChild(child.get()), "");
+}
+
 // WindowObserver implementation that deletes a window in
 // OnWindowVisibilityChanged().
 class DeleteOnVisibilityChangedObserver : public WindowObserver {

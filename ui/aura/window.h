@@ -127,15 +127,22 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   // A helper class to ensure that the Window is not deleted while it is
   // notifying observers or doing other operations where re-entrant deletion
   // would be problematic. Attempting to delete the Window while a
-  // ScopedDeleteBlocker is active will cause a crash.
+  // ScopedDeleteBlocker is active will cause a crash. This is no-op if
+  // if nullptr is passed.
   class ScopedDeleteBlocker {
    public:
     explicit ScopedDeleteBlocker(aura::Window* window) : window_(window) {
-      window_->delete_block_count_++;
+      if (window_) {
+        window_->delete_block_count_++;
+      }
     }
     ScopedDeleteBlocker(const ScopedDeleteBlocker&) = delete;
     ScopedDeleteBlocker& operator=(const ScopedDeleteBlocker&) = delete;
-    ~ScopedDeleteBlocker() { window_->delete_block_count_--; }
+    ~ScopedDeleteBlocker() {
+      if (window_) {
+        window_->delete_block_count_--;
+      }
+    }
     raw_ptr<aura::Window> window_;
   };
 
