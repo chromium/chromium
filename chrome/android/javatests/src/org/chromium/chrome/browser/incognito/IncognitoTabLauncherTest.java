@@ -18,12 +18,14 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -46,10 +48,16 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link IncognitoTabLauncher}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class IncognitoTabLauncherTest {
     @Rule
     public final FreshCtaTransitTestRule mActivityRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @After
+    public void tearDown() {
+        IncognitoTabLauncher.setComponentEnabled(true);
+    }
 
     @Test
     @Feature("Incognito")
