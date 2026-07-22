@@ -126,8 +126,11 @@ public class VariationsSeedLoader {
     private static long sMaxRequestPeriodMillis;
 
     private static void recordLoadSeedResult(@LoadSeedResult int result) {
+        // Note: The +1 is needed, because C++ UmaHistogramEnumeration() actually does +1 twice:
+        // once in UmaHistogramEnumeration() and once in UmaHistogramExactLinear() and the params
+        // need to match with C++ code.
         RecordHistogram.recordEnumeratedHistogram(
-                SEED_LOAD_RESULT_HISTOGRAM_NAME, result, LoadSeedResult.MAX_VALUE);
+                SEED_LOAD_RESULT_HISTOGRAM_NAME, result, LoadSeedResult.MAX_VALUE + 1);
     }
 
     private static void recordSeedLoadBlockingTime(long timeMs) {
