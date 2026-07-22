@@ -82,7 +82,9 @@ bool IsInfobarTypeSupportedInReaderMode(InfobarType infobarType,
     case InfobarType::kInfobarTypeSaveCvc:
       return IsProactiveSuggestionsFrameworkEnabled();
     case InfobarType::kInfobarTypeAutofillAiSaveEntity:
-      // This infobar does not support badges.
+    case InfobarType::kInfobarTypeFormsAiPrivateInference:
+      // This infobar is not supported in reader mode since forms are not shown
+      // in reader mode, so the user shouldn't be able to submit a form.
       return false;
   }
 }
@@ -501,37 +503,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
   if (!self.active) {
     return NO;
   }
-  if (base::FeatureList::IsEnabled(kAutofillBadgeRemoval)) {
-    // TODO(crbug.com/440366193): Remove this ad hoc logic once we can fully
-    // cleanup the autofill and password badges code once we are done
-    // experimenting.
-    switch (infobarType) {
-      case InfobarType::kInfobarTypePasswordSave:
-      case InfobarType::kInfobarTypePasswordUpdate:
-      case InfobarType::kInfobarTypeSaveCard:
-      case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
-      case InfobarType::kInfobarTypeAutofillAiSaveEntity:
-        // Special case where we dynamically want to exclude the badge for
-        // certain infobars while still keeping a badge type for the infobar
-        // in BadgeTypeForInfobarType(). This ad hoc logic is temporary the
-        // time we sunset these badges.
-        return false;
-      case InfobarType::kInfobarTypeConfirm:
-      case InfobarType::kInfobarTypeTranslate:
-      case InfobarType::kInfobarTypePermissions:
-      case InfobarType::kInfobarTypeTailoredSecurityService:
-      case InfobarType::kInfobarTypeSyncError:
-      case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
-      case InfobarType::kInfobarTypeSignin:
-      case InfobarType::kInfobarTypeCollaborationGroup:
-      case InfobarType::kInfobarTypeCollaborationOutOfDate:
-      case InfobarType::kInfobarTypeSaveCvc:
-      case InfobarType::kInfobarTypeReaderMode:
-        return BadgeTypeForInfobarType(infobarType) != kBadgeTypeNone;
-    }
-  } else {
-    return BadgeTypeForInfobarType(infobarType) != kBadgeTypeNone;
-  }
+  return IsBadgeSupportedForInfobarType(infobarType);
 }
 
 - (void)updateBadgesShownForWebState:(web::WebState*)webState {

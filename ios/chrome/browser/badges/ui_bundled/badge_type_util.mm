@@ -6,7 +6,9 @@
 
 #import <ostream>
 
+#import "base/feature_list.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/badges/model/features.h"
 
 BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
   switch (infobar_type) {
@@ -52,5 +54,39 @@ InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
       return InfobarType::kInfobarTypeReaderMode;
     default:
       NOTREACHED() << "Unsupported badge type.";
+  }
+}
+
+bool IsBadgeSupportedForInfobarType(InfobarType infobar_type) {
+  if (!base::FeatureList::IsEnabled(kAutofillBadgeRemoval)) {
+    return BadgeTypeForInfobarType(infobar_type) != kBadgeTypeNone;
+  }
+  // TODO(crbug.com/440366193): Remove this ad hoc logic once we can fully
+  // cleanup the autofill and password badges code once we are done
+  // experimenting.
+  switch (infobar_type) {
+    case InfobarType::kInfobarTypePasswordSave:
+    case InfobarType::kInfobarTypePasswordUpdate:
+    case InfobarType::kInfobarTypeSaveCard:
+    case InfobarType::kInfobarTypeSaveAutofillAddressProfile:
+    case InfobarType::kInfobarTypeAutofillAiSaveEntity:
+      // Special case where we dynamically want to exclude the badge for
+      // certain infobars while still keeping a badge type for the infobar
+      // in BadgeTypeForInfobarType(). This ad hoc logic is temporary the
+      // time we sunset these badges.
+      return false;
+    case InfobarType::kInfobarTypeConfirm:
+    case InfobarType::kInfobarTypeTranslate:
+    case InfobarType::kInfobarTypePermissions:
+    case InfobarType::kInfobarTypeTailoredSecurityService:
+    case InfobarType::kInfobarTypeSyncError:
+    case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
+    case InfobarType::kInfobarTypeSignin:
+    case InfobarType::kInfobarTypeCollaborationGroup:
+    case InfobarType::kInfobarTypeCollaborationOutOfDate:
+    case InfobarType::kInfobarTypeSaveCvc:
+    case InfobarType::kInfobarTypeReaderMode:
+    case InfobarType::kInfobarTypeFormsAiPrivateInference:
+      return BadgeTypeForInfobarType(infobar_type) != kBadgeTypeNone;
   }
 }
