@@ -252,8 +252,6 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
           [[GeminiStartupState alloc]
               initWithEntryPoint:gemini::EntryPoint::AIHubSignInSheet]
                         baseViewController:_navigationController
-                               accessPoint:signin_metrics::AccessPoint::
-                                               kIosPageActionMenu
                   showSnackbarOnCompletion:YES
                                 completion:^(GeminiEntryFlowResult result) {
                                   [weakSelf handleEntryFlowResult:result];

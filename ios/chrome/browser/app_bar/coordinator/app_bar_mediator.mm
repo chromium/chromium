@@ -596,8 +596,6 @@ inline LayoutStateAssistantPassKey PassKey() {
                 [[GeminiStartupState alloc]
                     initWithEntryPoint:gemini::EntryPoint::AppBar]
                               baseViewController:self.baseViewController
-                                     accessPoint:signin_metrics::AccessPoint::
-                                                     kIosAppBar
                         showSnackbarOnCompletion:YES
                                       completion:^(
                                           GeminiEntryFlowResult result) {

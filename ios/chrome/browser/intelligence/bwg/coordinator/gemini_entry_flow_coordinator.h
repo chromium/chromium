@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_ENTRY_FLOW_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_ENTRY_FLOW_COORDINATOR_H_
 
-#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
@@ -26,8 +25,6 @@
 // - `baseViewController`: The view controller to present UI from.
 // - `browser`: The browser instance.
 // - `startupState`: Entry point and configuration for the Gemini session.
-// - `accessPoint`: The sign-in access point for metrics. Only used if
-//   sign-in is triggered.
 // - `showSnackbarOnCompletion`: Whether to show a snackbar when the flow
 //   completes with an ineligible state.
 // - `completion`: Called with the final result of the flow.
@@ -35,7 +32,6 @@
     initWithBaseViewController:(UIViewController*)baseViewController
                        browser:(Browser*)browser
                   startupState:(GeminiStartupState*)startupState
-                   accessPoint:(signin_metrics::AccessPoint)accessPoint
       showSnackbarOnCompletion:(BOOL)showSnackbarOnCompletion
                     completion:(GeminiEntryFlowCompletion)completion;
 

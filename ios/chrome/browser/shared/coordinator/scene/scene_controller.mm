@@ -2627,8 +2627,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
     [geminiHandler
         startGeminiEntryFlowWithStartupState:startupState
                           baseViewController:self.activeViewController
-                                 accessPoint:signin_metrics::AccessPoint::
-                                                 kDeepLinkDefault
                     showSnackbarOnCompletion:YES
                                   completion:nil];
   } else {
@@ -2663,8 +2661,6 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   [geminiHandler
       startGeminiEntryFlowWithStartupState:startupState
                         baseViewController:self.activeViewController
-                               accessPoint:signin_metrics::AccessPoint::
-                                               kDeepLinkDefault
                   showSnackbarOnCompletion:YES
                                 completion:nil];
 }

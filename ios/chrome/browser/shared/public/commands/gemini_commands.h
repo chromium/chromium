@@ -10,9 +10,6 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
 
-namespace signin_metrics {
-enum class AccessPoint;
-}  // namespace signin_metrics
 
 namespace gemini {
 enum class EntryPoint;
@@ -72,9 +69,6 @@ enum class FloatyUpdateSource;
 // - `startupState`: Entry point and configuration for the Gemini session.
 // - `baseViewController`: The view controller to present sign-in and
 //   account menu from.
-// - `accessPoint`: The sign-in access point used for sign-in metrics
-//   (e.g., signin_metrics::AccessPoint::kIosPageActionMenu). Only used
-//   if the user is signed out and sign-in is triggered.
 // - `showSnackbarOnCompletion`: Whether to show a snackbar when the flow
 //   completes with an ineligible state (e.g., page not eligible, account
 //   restricted).
@@ -83,8 +77,6 @@ enum class FloatyUpdateSource;
 - (void)
     startGeminiEntryFlowWithStartupState:(GeminiStartupState*)startupState
                       baseViewController:(UIViewController*)baseViewController
-                             accessPoint:
-                                 (signin_metrics::AccessPoint)accessPoint
                 showSnackbarOnCompletion:(BOOL)showSnackbar
                               completion:(GeminiEntryFlowCompletion)completion;
 

@@ -2384,8 +2384,6 @@ inline LayoutStateScenePassKey PassKey() {
 - (void)
     startGeminiEntryFlowWithStartupState:(GeminiStartupState*)startupState
                       baseViewController:(UIViewController*)baseViewController
-                             accessPoint:
-                                 (signin_metrics::AccessPoint)accessPoint
                 showSnackbarOnCompletion:(BOOL)showSnackbar
                               completion:(GeminiEntryFlowCompletion)completion {
   if (!IsGeneralizedGeminiEntryFlowEnabled()) {
@@ -2407,7 +2405,6 @@ inline LayoutStateScenePassKey PassKey() {
       initWithBaseViewController:presenter
                          browser:_regularBrowser.get()
                     startupState:startupState
-                     accessPoint:accessPoint
         showSnackbarOnCompletion:showSnackbar
                       completion:^(GeminiEntryFlowResult result) {
                         [weakSelf

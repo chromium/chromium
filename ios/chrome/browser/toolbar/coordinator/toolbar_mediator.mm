@@ -322,8 +322,6 @@
           [[GeminiStartupState alloc]
               initWithEntryPoint:gemini::EntryPoint::Toolbar]
                         baseViewController:self.baseViewController
-                               accessPoint:signin_metrics::AccessPoint::
-                                               kIosGeminiButtonToolbar
                   showSnackbarOnCompletion:YES
                                 completion:nil];
 }

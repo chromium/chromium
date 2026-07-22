@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_entry_flow_coordinator.h"
 
+#import "base/notreached.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -33,13 +35,33 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
   kIneligibilitySnackbarTypePage,
 };
 
+namespace {
+
+// Returns the sign-in access point for a given Gemini entry point.
+signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
+    gemini::EntryPoint entryPoint) {
+  switch (entryPoint) {
+    case gemini::EntryPoint::AppBar:
+      return signin_metrics::AccessPoint::kIosAppBar;
+    case gemini::EntryPoint::Toolbar:
+      return signin_metrics::AccessPoint::kIosGeminiButtonToolbar;
+    case gemini::EntryPoint::AIHubSignInSheet:
+      return signin_metrics::AccessPoint::kIosPageActionMenu;
+    case gemini::EntryPoint::ExternalAppStoreEvent:
+    case gemini::EntryPoint::AppSwitcherAISummarization:
+      return signin_metrics::AccessPoint::kDeepLinkDefault;
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
 @implementation GeminiEntryFlowCoordinator {
   // The sign-in coordinator presented when the user is signed out.
   SigninCoordinator* _signinCoordinator;
   // The startup state for the Gemini session.
   GeminiStartupState* _startupState;
-  // The sign-in access point for metrics.
-  signin_metrics::AccessPoint _accessPoint;
   // Whether to show a snackbar on ineligible completion.
   BOOL _showSnackbarOnCompletion;
   // Called with the final result of the flow.
@@ -55,13 +77,11 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
     initWithBaseViewController:(UIViewController*)baseViewController
                        browser:(Browser*)browser
                   startupState:(GeminiStartupState*)startupState
-                   accessPoint:(signin_metrics::AccessPoint)accessPoint
       showSnackbarOnCompletion:(BOOL)showSnackbarOnCompletion
                     completion:(GeminiEntryFlowCompletion)completion {
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _startupState = startupState;
-    _accessPoint = accessPoint;
     _showSnackbarOnCompletion = showSnackbarOnCompletion;
     _completion = [completion copy];
   }
@@ -127,13 +147,15 @@ typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
 
 // Presents the sign-in sheet.
 - (void)presentSignIn {
+  signin_metrics::AccessPoint accessPoint =
+      AccessPointFromGeminiEntryPoint(_startupState.entryPoint);
   _signinCoordinator = [SigninCoordinator
       signinAndHistorySyncCoordinatorWithBaseViewController:
           self.baseViewController
                                                     browser:self.browser
                                                contextStyle:SigninContextStyle::
                                                                 kDefault
-                                                accessPoint:_accessPoint
+                                                accessPoint:accessPoint
                                                 promoAction:
                                                     signin_metrics::PromoAction::
                                                         PROMO_ACTION_NO_SIGNIN_PROMO

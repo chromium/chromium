@@ -51,6 +51,7 @@ source_set("coordinator") {
     "//base",
     "//components/feature_engagement/public",
     "//components/prefs",
+    "//components/signin/public/base",
     "//components/variations/service",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/assistant/coordinator:commands",

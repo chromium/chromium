@@ -662,8 +662,6 @@ TEST_P(ToolbarMediatorTest, TestAssistantButtonTapped) {
   OCMExpect([mock_gemini_handler
       startGeminiEntryFlowWithStartupState:[OCMArg any]
                         baseViewController:nil
-                               accessPoint:signin_metrics::AccessPoint::
-                                               kIosGeminiButtonToolbar
                   showSnackbarOnCompletion:YES
                                 completion:nil]);
   [mediator_ assistantButtonTapped];

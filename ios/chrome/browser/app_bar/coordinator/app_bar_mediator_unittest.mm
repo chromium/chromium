@@ -853,8 +853,6 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedEligible) {
         return state.entryPoint == gemini::EntryPoint::AppBar;
       }]
                         baseViewController:[OCMArg any]
-                               accessPoint:signin_metrics::AccessPoint::
-                                               kIosAppBar
                   showSnackbarOnCompletion:YES
                                 completion:[OCMArg any]]);
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk
