@@ -753,6 +753,67 @@ TEST_F(SpellCheckProviderTest,
 
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER) && !BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER) && !BUILDFLAG(IS_WIN)
+// Verifies that a word added through the SpellCheckCustomDictionary web API is
+// dropped from results returned via the enhanced spelling service path.
+TEST_F(SpellCheckProviderTest,
+       DocumentCustomDictionaryFiltersSpellingServiceResults) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "SpellCheckCustomDictionaryAPI", true);
+
+  // Push a custom word through the per-frame web API entry point.
+  static_cast<blink::WebTextCheckClient*>(&provider_)
+      ->SpellCheckCustomDictionaryChanged({"Pikachu"}, {});
+
+  FakeTextCheckingResult completion_result;
+  int check_id = provider_.AddCompletionForTest(
+      std::make_unique<FakeTextCheckingCompletion>(&completion_result));
+
+  // Simulate the enhanced spelling service reporting "Pikachu" (offset 7,
+  // length 7 in "i love Pikachu") as a misspelling.
+  std::vector<SpellCheckResult> service_results = {
+      SpellCheckResult(spellcheck::Decoration::SPELLING, /*loc=*/7, /*len=*/7)};
+  provider_.OnRespondSpellingService(check_id, u"i love Pikachu",
+                                     /*success=*/true, service_results);
+
+  // The post-filter dropped "Pikachu", so Blink sees no misspellings.
+  EXPECT_EQ(completion_result.completion_count_, 1u);
+  EXPECT_EQ(completion_result.cancellation_count_, 0u);
+  EXPECT_TRUE(completion_result.results_.empty());
+}
+
+// Companion to the test above: the post-filter must be selective. A word that
+// is NOT in the per-document custom dictionary should still be reported as a
+// misspelling.
+TEST_F(SpellCheckProviderTest,
+       DocumentCustomDictionaryKeepsNonCustomSpellingServiceResults) {
+  blink::WebRuntimeFeatures::EnableFeatureFromString(
+      "SpellCheckCustomDictionaryAPI", true);
+
+  // Only "Pikachu" is in the document custom dictionary.
+  static_cast<blink::WebTextCheckClient*>(&provider_)
+      ->SpellCheckCustomDictionaryChanged({"Pikachu"}, {});
+
+  FakeTextCheckingResult completion_result;
+  int check_id = provider_.AddCompletionForTest(
+      std::make_unique<FakeTextCheckingCompletion>(&completion_result));
+
+  // The enhanced spelling service flags both words.
+  std::vector<SpellCheckResult> service_results = {
+      SpellCheckResult(spellcheck::Decoration::SPELLING, /*loc=*/0, /*len=*/7),
+      SpellCheckResult(spellcheck::Decoration::SPELLING, /*loc=*/8, /*len=*/8)};
+  provider_.OnRespondSpellingService(check_id, u"Pikachu Squirtle",
+                                     /*success=*/true, service_results);
+
+  // "Pikachu" was dropped, but "Squirtle" survives as a misspelling.
+  EXPECT_EQ(completion_result.completion_count_, 1u);
+  EXPECT_EQ(completion_result.cancellation_count_, 0u);
+  ASSERT_EQ(completion_result.results_.size(), 1u);
+  EXPECT_EQ(completion_result.results_[0].location, 8);
+  EXPECT_EQ(completion_result.results_[0].length, 8);
+}
+#endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER) && !BUILDFLAG(IS_WIN)
+
 // Verifies the WordCount histogram is emitted with the count of accepted API
 // additions for the outgoing document when a new document is committed.
 TEST_F(SpellCheckProviderTest, DocumentCustomDictionaryRecordsWordCountUma) {

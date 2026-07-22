@@ -15,8 +15,7 @@ blink_modules_sources("spell_check_custom_dictionary") {
 
 source_set("unit_tests") {
   testonly = true
-  if (!is_mac) {
-    # Mac doesn't use Chrome's spellchecker.
+  if (!is_mac && !is_android) {
     sources = [ "spell_check_custom_dictionary_test.cc" ]
   }
 

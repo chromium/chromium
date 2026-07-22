@@ -443,7 +443,8 @@ void SpellCheckProvider::OnRespondSpellingService(
   std::vector<blink::WebTextCheckingResult> textcheck_results;
   spellcheck_->CreateTextCheckingResults(
       SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, GetSpellCheckHost(),
-      /*line_offset=*/0, line, results, &textcheck_results);
+      /*line_offset=*/0, line, results, &textcheck_results,
+      document_custom_words_.empty() ? nullptr : &document_custom_words_);
   completion->DidFinishCheckingText(textcheck_results);
 
   // Cache the request and the converted results.

@@ -176,6 +176,20 @@ void TestingSpellCheckProvider::OnCallSpellingService(
 void TestingSpellCheckProvider::ResetResult() {
   text_.clear();
 }
+
+int TestingSpellCheckProvider::AddCompletionForTest(
+    std::unique_ptr<FakeTextCheckingCompletion> completion) {
+  return SpellCheckProvider::text_check_completions_.Add(std::move(completion));
+}
+
+void TestingSpellCheckProvider::OnRespondSpellingService(
+    int identifier,
+    const std::u16string& text,
+    bool success,
+    const std::vector<SpellCheckResult>& results) {
+  SpellCheckProvider::OnRespondSpellingService(identifier, text, success,
+                                               results);
+}
 #endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
