@@ -86,7 +86,7 @@ namespace {
 
 // This flag enables the SQLite backing store for in-memory contexts.
 BASE_FEATURE(kIdbSqliteBackingStoreInMemoryContexts,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<SqliteRolloutStage>::Option
     kIdbSqliteOnDiskRolloutStages[] = {
