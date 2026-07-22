@@ -358,7 +358,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1254034280040157728">Kanioni i Madh</translation>
 <translation id="1254593899333212300">Lidhje direkte e internetit</translation>
 <translation id="1254767904958485584">Pamja e ndarë u krijua</translation>
-<translation id="1255095393630332248">Kur ndahen skedat, përmbajtjet e faqeve, mediat dhe URL-të e tyre dërgohen te Google.</translation>
 <translation id="1256143630373008432">Vetëtestimi nuk u krye</translation>
 <translation id="1257336506558170607">Eksporto certifikatën e zgjedhur</translation>
 <translation id="1258491128795710625">Ç'të reja ka</translation>
@@ -725,7 +724,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1561331397460162942">Kjo lejon qasjen te vendndodhja për aplikacionet, uebsajtet me lejen për vendndodhjen, si dhe shërbimet e sistemit</translation>
 <translation id="1562119309884184621">Shtimi i këtij kontakti do ta kujtojë atë herën tjetër që do të ndajë</translation>
 <translation id="1562585387501039294">Organizata jote, <ph name="ACCOUNT_MANAGER" />, kërkon një profil të menaxhuar dhe do të mund të shikojë disa informacione, duke përfshirë</translation>
-<translation id="156345786953026804">Përmbajtjet e faqeve dhe URL-të që Gemini përdor gjatë një detyre do të ndahen me Google.</translation>
 <translation id="1566049601598938765">Uebsajti</translation>
 <translation id="15662109988763471">Printeri i zgjedhur nuk ofrohet ose nuk është instaluar si duhet. Kontrollo printerin ose provo të zgjedhësh një printer tjetër.</translation>
 <translation id="1566329594234563241">Kur është joaktive dhe në prizë</translation>
@@ -1766,7 +1764,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Kjo shtesë mund të mos mbështetet së shpejti}other{Këto shtesa mund të mos mbështeten së shpejti}}</translation>
 <translation id="2378982052244864789">Zgjidh direktorinë e shtesës.</translation>
 <translation id="2379111564446699251">Për të rirenditur butonat në shiritin e veglave, zvarriti ato</translation>
-<translation id="2379184471043414645">Aktivizo kuptimin e medias</translation>
 <translation id="2379281330731083556">Printo me dialogun e sistemit... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Kjo mund të bëjë që rrjeti yt celular të shkëputet për disa minuta</translation>
 <translation id="2381499968174336913">Pamja paraprake e skedës së ndarë</translation>

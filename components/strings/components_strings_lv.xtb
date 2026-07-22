@@ -2247,7 +2247,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4445964943162061557">Šī ir eksperimentāla funkcija, un tā ne vienmēr darbojas pareizi.</translation>
 <translation id="4449116177348980384">Poga “Pārvaldīt vietnes iestatījumus”. Aktivizējiet, lai Chrome iestatījumos pārvaldītu atļaujas un vietnēs glabātos datus.</translation>
 <translation id="4451135742916150903">Var pieprasīt atļauju veidot savienojumu ar HID ierīcēm</translation>
-<translation id="4451684391620232683">Lietotājam rādītais teksts:</translation>
 <translation id="4452328064229197696">Nupat izmantotā parole ir atklāta datu aizsardzības pārkāpuma dēļ. Lai aizsargātu kontus, Google paroļu pārvaldnieks iesaka pārbaudīt saglabātās paroles.</translation>
 <translation id="4454620051637646665">Nerādīt reklāmkarogu</translation>
 <translation id="4456937135469235202">Piedzīvojumu tūrisms</translation>
@@ -2422,7 +2421,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4749924365937394956">Servera autentifikācija</translation>
 <translation id="4750671009706599284">šo tālruni</translation>
 <translation id="4750917950439032686">Jūsu informācija (piemēram, paroles vai kredītkaršu numuri) ir privāta, kad tā tiek nosūtīta uz šo vietni.</translation>
-<translation id="4751249061288707459">Piekrišanas pēdējās atjaunināšanas reize:</translation>
 <translation id="4754461935447132332">Nav atļauts nedrošām vietnēm</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kods nav derīgs</translation>
@@ -3181,7 +3179,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5921952831792678223">Pikapi</translation>
 <translation id="5923492272538889093">Vai vēlaties izmantot ierīces atbloķēšanu, nevis CVC?</translation>
 <translation id="5924510104057992926">Pirms atvēršanas jāveic pārskatīšana</translation>
-<translation id="5924782825030413055">Pēdējā piekrišanas atjauninājuma avots:</translation>
 <translation id="5925040402342933574">Optiskais disks (pusglancēts)</translation>
 <translation id="5925147183566400388">Sertifikācijas prakses paziņojuma URI</translation>
 <translation id="5926982310317673627">Sporta zāles un veselības klubi</translation>
@@ -4305,7 +4302,6 @@ Papildu informācija:
 <translation id="762844065391966283">Pa vienam</translation>
 <translation id="7629058630148860366">Darbavietas adrese</translation>
 <translation id="763042426047865637">Ugunsdzēsības un apsardzes pakalpojumi</translation>
-<translation id="7630470133768862132">Piekrišanas statuss:</translation>
 <translation id="7631072086707140121">Vietrādim URL ir jābūt https.</translation>
 <translation id="7631527008834753063">TV spēļu šovi</translation>
 <translation id="7633909222644580952">Veiktspējas dati un avāriju pārskati</translation>

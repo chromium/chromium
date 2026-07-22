@@ -358,7 +358,6 @@
 <translation id="1254034280040157728">大峽谷</translation>
 <translation id="1254593899333212300">直接連線到互聯網</translation>
 <translation id="1254767904958485584">已建立分割檢視畫面</translation>
-<translation id="1255095393630332248">共用分頁時，系統會將頁面內容、媒體和網址傳送給 Google。</translation>
 <translation id="1256143630373008432">未能通過自我測試</translation>
 <translation id="1257336506558170607">匯出揀咗嘅憑證</translation>
 <translation id="1258491128795710625">新功能</translation>
@@ -699,6 +698,7 @@
 <translation id="1542137295869176367">無法更新您的登入資料</translation>
 <translation id="1543284117603151572">從 EDGE 匯入</translation>
 <translation id="1543538514740974167">輕輕一按，即時到位</translation>
+<translation id="1544026754762189866">你的機構不建議複製此內容</translation>
 <translation id="1544588554445317666">請嘗試使用較短的檔案名稱，或者儲存至其他資料夾</translation>
 <translation id="1545749641540134597">掃描二維條碼</translation>
 <translation id="1545775234664667895">已安裝主題「<ph name="THEME_NAME" />」</translation>
@@ -725,7 +725,6 @@
 <translation id="1561331397460162942">此操作會向應用程式、具有麥克風權限的網站及系統服務授予位置資料存取權</translation>
 <translation id="1562119309884184621">新增此聯絡人後，下次該聯絡人分享檔案時，系統將可辨識該聯絡人</translation>
 <translation id="1562585387501039294">你的機構 <ph name="ACCOUNT_MANAGER" /> 要求使用受管設定檔，並可以查看部分資料，包括</translation>
-<translation id="156345786953026804">Gemini 在處理任務期間所用的頁面內容和網址會與 Google 分享。</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">所選打印機無法使用或尚未正確安裝。請檢查打印機，或嘗試選取其他打印機。</translation>
 <translation id="1566329594234563241">處於閒置狀態並接上電源時</translation>
@@ -1509,6 +1508,7 @@
 <translation id="2166369534954157698">繁體中文字體範例 The quick brown fox jumps over the lazy dog</translation>
 <translation id="2168036794078614559">已傳送報告</translation>
 <translation id="2169062631698640254">繼續登入</translation>
+<translation id="217120844667431680">「AI 模式」助你事半功倍</translation>
 <translation id="2173302385160625112">檢查互聯網連線</translation>
 <translation id="2175384018164129879">管理搜尋引擎和站內搜尋</translation>
 <translation id="2175526076681939329">使用主鍵</translation>
@@ -1776,7 +1776,6 @@
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{系統可能即將停止支援此擴充程式}other{系統可能即將停止支援這些擴充程式}}</translation>
 <translation id="2378982052244864789">選取擴充功能目錄。</translation>
 <translation id="2379111564446699251">拖曳工具列上的按鈕即可重新排列</translation>
-<translation id="2379184471043414645">開啟媒體理解功能</translation>
 <translation id="2379281330731083556">使用系統對話方塊列印…<ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">這可能導致流動網絡中斷連線幾分鐘</translation>
 <translation id="2381499968174336913">共用分頁嘅預覽畫面</translation>
@@ -1824,6 +1823,7 @@
 <translation id="2424424966051154874">{0,plural, =1{訪客}other{訪客 (#)}}</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
 <translation id="2427507373259914951">按一下左鍵</translation>
+<translation id="2428120669821109648">分頁樣式</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 個帳戶，密碼只會儲存喺呢部裝置。了解詳情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 個帳戶，密碼只會儲存喺呢部裝置。了解詳情}}</translation>
 <translation id="2428510569851653187">請說明分頁當機時您正在執行的動作</translation>
 <translation id="2428939361789119025">關閉 Wi-Fi</translation>
@@ -3508,6 +3508,7 @@
 <translation id="3700993174159313525">不允許網站追蹤攝錄機位置</translation>
 <translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">在密碼於資料外洩中被盜用時警告你</translation>
+<translation id="3701778844313851487">前往「擴充程式」</translation>
 <translation id="3703166520839776970">如果此問題持續發生，選取下方的「更多詳情」即可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」取得更多資訊。</translation>
 <translation id="3703699162703116302">已重新整理票證</translation>
 <translation id="370415077757856453">已封鎖 JavaScript</translation>
@@ -4586,6 +4587,7 @@
 <translation id="4523876148417776526">尚未擷取的 XML 網站清單。</translation>
 <translation id="4526051299161934899">已隱藏的已儲存分頁群組</translation>
 <translation id="452750746583162491">查看您已同步的資料</translation>
+<translation id="4528216716764031072">現代 (透明)</translation>
 <translation id="4528494169189661126">翻譯建議</translation>
 <translation id="4529455689802245339">「Chrome 即時字幕」可能無法運作</translation>
 <translation id="4531451811601110068">你可以再試一次或聯絡管理員求助</translation>
@@ -4739,6 +4741,7 @@
 <translation id="4645575059429386691">由您的家長管理</translation>
 <translation id="4645676300727003670">保留(&amp;K)</translation>
 <translation id="4646675363240786305">連接埠</translation>
+<translation id="4646859937978908916">新加入的擴充程式會自動固定。你可以在「擴充程式」頁面變更有關設定。</translation>
 <translation id="4647025838970719122">此設定由你的機構管理</translation>
 <translation id="4647090755847581616">關閉分頁(&amp;C)</translation>
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步，共 <ph name="TOTAL_STEPS" /> 步</translation>
@@ -8306,6 +8309,7 @@
 <translation id="7446716846072322308">此操作會刪除 <ph name="SITE_NAME" /> 所儲存的資料 (共 <ph name="TOTAL_USAGE" />) 及相關網站</translation>
 <translation id="7448430327655618736">自動安裝應用程式</translation>
 <translation id="7448664748118305024">在所有視窗關閉後刪除網站儲存至裝置的資料</translation>
+<translation id="7449806939046594699">你的機構禁止複製此內容</translation>
 <translation id="7450761244949417357">正在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
 <translation id="7450926666485653189">透過私隱伺服器隱藏你的 IP 位址，再傳送經編碼隱匿的部分網址傳送給 Google</translation>
 <translation id="7453008956351770337">選取此打印機，即表示您授權下列擴充程式存取您的打印機：</translation>
@@ -8811,6 +8815,7 @@
 <translation id="7849264908733290972">在新分頁中開啟圖片(&amp;I)</translation>
 <translation id="784934925303690534">時間範圍</translation>
 <translation id="7850320739366109486">請勿騷擾</translation>
+<translation id="7851303446278533774">建立、計劃、總結</translation>
 <translation id="7851716364080026749">永遠封鎖存取相機和麥克風</translation>
 <translation id="78526636422538552">新增更多 Google 帳戶功能已停用</translation>
 <translation id="7853747251428735">更多工具(&amp;L)</translation>

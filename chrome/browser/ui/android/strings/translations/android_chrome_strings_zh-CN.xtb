@@ -147,6 +147,7 @@
 <translation id="1571041387761170095">没有安全系数低或重复使用的密码</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{此设备上有 1 个已泄露的密码}other{此设备上有 # 个已泄露的密码}}</translation>
 <translation id="1594635596540195766">下方列表中有 <ph name="SUGGESTIONS_COUNT" /> 项建议的内容。</translation>
+<translation id="159689249463841786">选择文件夹，当前为“<ph name="FOLDER_NAME" />”</translation>
 <translation id="1598163867407640634">通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />，已固定的标签页，正在录制内容</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />，正在共享内容的标签页</translation>
@@ -277,6 +278,7 @@
 <translation id="2190355936436201913">（空）</translation>
 <translation id="219283042927675668">分组内的标签页</translation>
 <translation id="2194856509914051091">注意事项</translation>
+<translation id="2196695604589508993">打开历史记录</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />，已固定的标签页，正在共享内容</translation>
 <translation id="22091350895006575">添加用户名</translation>
 <translation id="221494669172414749">如果在不设置个人资料锁定的情况下打开 Chrome，您已保存的密码和付款方式将会从这部车载设备中移除。使用个人资料锁定功能可确保此类数据安全。</translation>
@@ -1820,6 +1822,7 @@
 <translation id="8317318757008452355">打开打印网页的选项</translation>
 <translation id="8320212361750431956">近期活动</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">书签和清单</translation>
 <translation id="8342727528718219152">Chrome 会通知您哪些网站可能发送了过多通知</translation>
 <translation id="834313815369870491">一律不翻译网站</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />，已选择的多个固定无痕式标签页之一，正在录制内容</translation>
@@ -2061,6 +2064,7 @@
 <translation id="939598580284253335">输入口令</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />，固定的画中画无痕式标签页</translation>
 <translation id="945522503751344254">发送反馈</translation>
+<translation id="948276827484905248">创建二维码</translation>
 <translation id="95817756606698420">在中国，Chrome 可以使用<ph name="BEGIN_BOLD" />搜狗<ph name="END_BOLD" />作为搜索引擎。如果需要，您可以在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中进行更改。</translation>
 <translation id="961856697154696964">删除浏览数据</translation>
 <translation id="963246339335003378">打开任务管理器</translation>

@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">បានចូលគណនី​ជា <ph name="USER_NAME" />។ <ph name="USER_EMAIL" />។ បើកម៉ឺនុយគណនី។</translation>
 <translation id="1397144142234474689">លាក់​ប្រវត្តិ</translation>
 <translation id="1399268420835656394">ប្រសិនបើ​អ្នក​មិនមែនជា​កុមារទេ អ្នក​ប្រហែលជា​ចង់ពិនិត្យមើល​អាយុ​នៅក្នុង​គណនី Apple នៅលើ​ឧបករណ៍នេះ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">បានបំពេញពីមុន</translation>
 <translation id="1407135791313364759">បើកទាំងអស់</translation>
 <translation id="1408847409015257906">ចុច "ឯកជនភាព និងសុវត្ថិភាព"។</translation>
 <translation id="1411386976162024013">ការស្វែងរកតាមរូបភាពដោយប្រើ Lens</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">គណនី​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់មាតាបិតា​អ្នក។
 <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">បានប្ដូរ</translation>
+<translation id="1481450969185702334">ស្វែងរក និងបំពេញ</translation>
 <translation id="1483493594462132177">ផ្ញើ</translation>
 <translation id="1486096554574027028">ស្វែងរកពាក្យសម្ងាត់</translation>
 <translation id="1486593497476255523">បានបញ្ចប់កិច្ចការក្រុមផ្ទាំង!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">ដើម្បី​ការពារ​ឯកជនភាព​របស់អ្នក Chrome នឹងមិន​បំពេញពាក្យសម្ងាត់​របស់អ្នក​ដោយស្វ័យប្រវត្តិ​នៅក្នុងកន្លែង​បញ្ចូលនេះទេ។</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{គេហទំព័រ 1 (ច្រើនជាងនេះនៅលើឧបករណ៍ដែលបានធ្វើសមកាលកម្ម)}other{គេហទំព័រ # (ច្រើនជាងនេះនៅលើឧបករណ៍ដែលបានធ្វើសមកាលកម្ម)}}</translation>
+<translation id="2865392654629180917">សួរអ្វីក៏បាន ហើយទទួលបានការឆ្លើយតបដែលដំណើរការ​ដោយ AI</translation>
 <translation id="2870560284913253234">គេហទំព័រ</translation>
 <translation id="2876369937070532032">ផ្ញើ​ URL​ របស់​ទំព័រ​មួយចំនួន​ដែលអ្នក​ចូលមើល​ទៅ Google នៅពេលអ្នកជួបហានិភ័យ​ផ្នែកសុវត្ថិភាព</translation>
 <translation id="2883151425485251736">មើល និងកែប្រធានបទ​ដែលអ្នកបានលាក់​ពីគណនីរបស់អ្នក</translation>

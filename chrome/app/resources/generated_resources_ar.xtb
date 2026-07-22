@@ -358,7 +358,6 @@
 <translation id="1254034280040157728">الأخدود العظيم</translation>
 <translation id="1254593899333212300">اتصال مباشر بالإنترنت</translation>
 <translation id="1254767904958485584">تم تقسيم العرض</translation>
-<translation id="1255095393630332248">‏عند مشاركة علامات التبويب، يتم إرسال محتواها والوسائط وعناوين URL الخاصة بها إلى Google.</translation>
 <translation id="1256143630373008432">تعذّر الاختبار الذاتي</translation>
 <translation id="1257336506558170607">تصدير الشهادة التي تم اختيارها</translation>
 <translation id="1258491128795710625">الميزات الجديدة</translation>
@@ -699,6 +698,7 @@
 <translation id="1542137295869176367">تعذّر تعديل بيانات تسجيل الدخول.</translation>
 <translation id="1543284117603151572">‏تم الاستيراد من شبكة Edge</translation>
 <translation id="1543538514740974167">الانتقال إلى هنا بشكل أسرع</translation>
+<translation id="1544026754762189866">تنصح مؤسستك بعدم نسخ هذا المحتوى</translation>
 <translation id="1544588554445317666">جرِّب تسمية الملف باسم أقصر أو حفظه في مجلد آخر.</translation>
 <translation id="1545749641540134597">فحص رمز الاستجابة السريعة</translation>
 <translation id="1545775234664667895">تم تثبيت المظهر "<ph name="THEME_NAME" />".</translation>
@@ -725,7 +725,6 @@
 <translation id="1561331397460162942">يترتب على ذلك منح إذن الوصول إلى الموقع الجغرافي لكلّ من التطبيقات والمواقع الإلكترونية المسموح لها بذلك وخدمات النظام</translation>
 <translation id="1562119309884184621">عند إضافة جهة الاتصال هذه، سيتم تذكُّرها في المرات القادمة عند مشاركة الملفات.</translation>
 <translation id="1562585387501039294">تتطلب المؤسسة (<ph name="ACCOUNT_MANAGER" />) ملفًا شخصيًا مُدارًا وستتمكّن من الاطّلاع على بعض المعلومات، بما في ذلك:</translation>
-<translation id="156345786953026804">‏سيتم مشاركة عناوين URL ومحتوى الصفحات التي يستخدمها Gemini أثناء تنفيذ مَهمّة معيّنة مع Google.</translation>
 <translation id="1566049601598938765">موقع إلكتروني</translation>
 <translation id="15662109988763471">لا تتوفر الطابعة المختارة أو لم يتم تثبيتها بشكلٍ صحيح. يُرجى التحقق من الطابعة أو تجربة اختيار طابعة أخرى.</translation>
 <translation id="1566329594234563241">عندما يكون الجهاز غير نشط وموصولاً بمصدر طاقة</translation>
@@ -1503,6 +1502,7 @@
 <translation id="2166369534954157698">أبجد هوز حطي كلمن سعفص قرشت ثخذ ضظغ</translation>
 <translation id="2168036794078614559">تم إرسال الإبلاغ</translation>
 <translation id="2169062631698640254">تسجيل الدخول على أيّ حال</translation>
+<translation id="217120844667431680">‏إنجاز المزيد من المهام باستخدام "وضع AI"</translation>
 <translation id="2173302385160625112">يُرجى التحقُّق من اتصال الإنترنت.</translation>
 <translation id="2175384018164129879">&amp;إدارة محركات البحث والبحث في المواقع الإلكترونية</translation>
 <translation id="2175526076681939329">استخدام المفاتيح الأساسية</translation>
@@ -1767,7 +1767,6 @@
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{قد لا تتوفّر هذه الإضافة قريبًا}zero{قد لا تتوفّر هذه الإضافات قريبًا}two{قد لا تتوفّر هاتان الإضافتان قريبًا}few{قد لا تتوفّر هذه الإضافات قريبًا}many{قد لا تتوفّر هذه الإضافات قريبًا}other{قد لا تتوفّر هذه الإضافات قريبًا}}</translation>
 <translation id="2378982052244864789">تحديد دليل الإضافة.</translation>
 <translation id="2379111564446699251">يمكنك إعادة ترتيب الأزرار بسحبها من مكان لآخر</translation>
-<translation id="2379184471043414645">تفعيل الإعداد "فهم الوسائط"</translation>
 <translation id="2379281330731083556">الطباعة باستخدام مربع حوار النظام... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">قد يؤدي هذا الإجراء إلى انقطاع الاتصال بشبكة الجوّال لبضع دقائق.</translation>
 <translation id="2381499968174336913">معاينة علامة التبويب التي تمت مشاركتها</translation>
@@ -1815,6 +1814,7 @@
 <translation id="2424424966051154874">{0,plural, =1{نافذة ضيف}zero{نافذة ضيف (#)}two{نافذة ضيف (#)}few{نافذة ضيف (#)}many{نافذة ضيف (#)}other{نافذة ضيف (#)}}</translation>
 <translation id="2426805022920575512">اختيار حساب آخر</translation>
 <translation id="2427507373259914951">النقر بالزر الأيسر</translation>
+<translation id="2428120669821109648">تصميم علامات التبويب</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{‫<ph name="DOMAIN_LINK" /> يتوفّر حساب واحد. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}zero{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حساب. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}two{‫<ph name="DOMAIN_LINK" /> يتوفّر حسابان ({NUM_PASSWORDS}). تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}few{‫<ph name="DOMAIN_LINK" /> تتوفّر {NUM_PASSWORDS} حسابات. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}many{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حسابًا. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}other{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حساب. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}}</translation>
 <translation id="2428510569851653187">وصف ما كنت تفعله عندما تعطّلت علامة التبويب</translation>
 <translation id="2428939361789119025">‏إيقاف شبكة Wi-Fi</translation>
@@ -3501,6 +3501,7 @@
 <translation id="3700993174159313525">عدم السماح للمواقع الإلكترونية بتتبُّع موضع الكاميرا</translation>
 <translation id="3701167022068948696">إصلاح الخطأ الآن</translation>
 <translation id="3701515417135397388">التحذير مما إذا كان قد تم اختراق كلمة مرور ضِمن عملية اختراق بيانات</translation>
+<translation id="3701778844313851487">الانتقال إلى "الإضافات"</translation>
 <translation id="3703166520839776970">في حال استمرار هذه المشكلة، يُرجى اختيار "مزيد من التفاصيل" أدناه للحصول على مزيد من المعلومات من "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />".</translation>
 <translation id="3703699162703116302">تمت تحديث التذكرة.</translation>
 <translation id="370415077757856453">‏تم حظر JavaScript</translation>
@@ -4577,6 +4578,7 @@
 <translation id="4523876148417776526">‏لم يتم استرجاع قوائم المواقع الإلكترونية المُعدَّة بالتنسيق XML بعد.</translation>
 <translation id="4526051299161934899">مجموعات علامات التبويب المحفوظة المخفية</translation>
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
+<translation id="4528216716764031072">حديث (شفاف)</translation>
 <translation id="4528494169189661126">اقتراح الترجمة</translation>
 <translation id="4529455689802245339">‏قد لا تعمل ميزة "النسخ النصي التلقائي" في Chrome</translation>
 <translation id="4531451811601110068">يمكنك إعادة المحاولة أو التواصل مع مشرفك لطلب المساعدة</translation>
@@ -4730,6 +4732,7 @@
 <translation id="4645575059429386691">يديره والداك</translation>
 <translation id="4645676300727003670">&amp;احتفاظ</translation>
 <translation id="4646675363240786305">المنافذ</translation>
+<translation id="4646859937978908916">يتم تلقائيًا تثبيت الإضافات التي تمّت إضافتها حديثًا. يمكنك تغيير هذا الإعداد في صفحة "الإضافات".</translation>
 <translation id="4647025838970719122">تدير المؤسسة هذا الإعداد</translation>
 <translation id="4647090755847581616">إغلاق &amp;علامة التبويب</translation>
 <translation id="4647283074445570750">الخطوة <ph name="CURRENT_STEP" /> من أصل <ph name="TOTAL_STEPS" /></translation>
@@ -8311,6 +8314,7 @@
 <translation id="7446716846072322308">سيؤدي هذا الإجراء إلى حذف <ph name="TOTAL_USAGE" /> من البيانات التي خزّنها الموقع الإلكتروني <ph name="SITE_NAME" />، والمواقع الإلكترونية ذات الصلة</translation>
 <translation id="7448430327655618736">يمكنك تثبيت التطبيقات تلقائيًا.</translation>
 <translation id="7448664748118305024">حذف البيانات التي حفظتها المواقع الإلكترونية على جهازك عند إغلاق جميع النوافذ</translation>
+<translation id="7449806939046594699">حظرت مؤسستك نسخ هذا المحتوى</translation>
 <translation id="7450761244949417357">سيتم الفتح في <ph name="ALTERNATIVE_BROWSER_NAME" /> الآن.</translation>
 <translation id="7450926666485653189">‏يتم إرسال جزء مشفّر من عنوان URL إلى Google من خلال خادم يخفي عنوان IP الخاص بجهازك حفاظًا على الخصوصية.</translation>
 <translation id="7453008956351770337">عند تحديد الطابعة، فإنك تمنح الإضافة التالية الإذن للدخول إلى الطابعة.</translation>
@@ -8818,6 +8822,7 @@
 <translation id="7849264908733290972">فتح ال&amp;صورة في علامة تبويب جديدة</translation>
 <translation id="784934925303690534">النطاق الزمني</translation>
 <translation id="7850320739366109486">عدم الإزعاج</translation>
+<translation id="7851303446278533774">يمكنك إنشاء المحتوى والتخطيط له وتلخيصه</translation>
 <translation id="7851716364080026749">حظر الدخول إلى الكاميرا والميكروفون دومًا</translation>
 <translation id="78526636422538552">‏تم إيقاف إمكانية إضافة المزيد من حسابات Google.</translation>
 <translation id="7853747251428735">المزيد من الأد&amp;وات</translation>

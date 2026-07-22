@@ -142,11 +142,13 @@
 <translation id="1544826120773021464">За да управлявате профила си в Google, докоснете бутона „Управление на профила“</translation>
 <translation id="1549000191223877751">Преместв. в другия прозорец</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
+<translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> за „<ph name="SEARCH_TERMS" />“</translation>
 <translation id="1554532453982918912">Помогнете за подобряването на Chrome за хората, които използват браузъра по същия начин като вас</translation>
 <translation id="1568636008098739136">Слушане на тази страница. За да редактирате този пряк път, докоснете и задръжте.</translation>
 <translation id="1571041387761170095">Няма ненадеждни или повторно използвани пароли</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{На това устройство има 1 компрометирана парола}other{На това устройство има # компрометирани пароли}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> предложени елемента в списъка по-долу.</translation>
+<translation id="159689249463841786">Избиране на папка. Текущата е „<ph name="FOLDER_NAME" />“</translation>
 <translation id="1598163867407640634">Използвайте <ph name="SITE_ETLD_PLUS_ONE" /> за <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" /> – фиксиран раздел, който записва</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" /> – раздел, който споделя</translation>
@@ -277,6 +279,7 @@
 <translation id="2190355936436201913">(празно)</translation>
 <translation id="219283042927675668">Раздели в групата</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
+<translation id="2196695604589508993">Отваряне на историята</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" /> – фиксиран раздел, който споделя</translation>
 <translation id="22091350895006575">Добавяне на потребителското име</translation>
 <translation id="221494669172414749">Когато отворите Chrome без опция за заключване на потребителския профил, запазените ви пароли и начини на плащане ще бъдат премахнати от автомобила. Използването на опция за заключване на потребителския профил защитава тези данни.</translation>
@@ -1822,6 +1825,7 @@
 <translation id="8317318757008452355">Отваряне на опциите за печат</translation>
 <translation id="8320212361750431956">Скорошна активност</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">Отметки и списъци</translation>
 <translation id="8342727528718219152">Chrome ще ви уведомява за сайтовете, които може да изпращат твърде много известия</translation>
 <translation id="834313815369870491">Сайтове, които никога да не се превеждат</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, който записва и е избран заедно с други</translation>
@@ -2063,6 +2067,7 @@
 <translation id="939598580284253335">Въведете пропуск</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" /> – фиксиран раздел „картина в картината“ в режим „инкогнито“</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>
+<translation id="948276827484905248">Създаване на QR код</translation>
 <translation id="95817756606698420">Chrome може да използва <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> за търсене в Китай. Можете да промените това от <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>
 <translation id="963246339335003378">Отваряне на „Диспечер на задачите“</translation>

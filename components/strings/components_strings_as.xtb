@@ -322,6 +322,7 @@
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">চাফাই সেৱা</translation>
 <translation id="1476595624592550506">আপোনাৰ পাছৱর্ড সলনি কৰক</translation>
+<translation id="1481450969185702334">বিচাৰক আৰু পূৰ কৰক</translation>
 <translation id="1482372785911828880">অতিৰিক্ত ক্ষীণ</translation>
 <translation id="1482879811280872320">চাইকেল চলোৱা</translation>
 <translation id="1483493594462132177">পঠিয়াওক</translation>
@@ -1880,6 +1881,7 @@
 <translation id="390391808978419508">খোলাৰ সময় উকলিছে</translation>
 <translation id="3905894480064208252">{0,plural, =1{ফাইল স্থানান্তৰণ কৰাটো অৱৰোধ কৰা হৈছে}one{<ph name="FILE_COUNT" /> টা ফাইল স্থানান্তৰণ কৰাটো অৱৰোধ কৰা হৈছে}other{<ph name="FILE_COUNT" /> টা ফাইল স্থানান্তৰণ কৰাটো অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="3906022360148923497">পৰিশোধৰ সঁজুলিৰ চিহ্ন</translation>
+<translation id="3906234161316839040">অন্য অৰ্ডাৰসমূহ</translation>
 <translation id="3906954721959377182">টেবলেট</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">এম্বেড কৰা সমলৰ বিষয়ে অধিক জানক</translation>
@@ -2245,7 +2247,6 @@
 <translation id="4445964943162061557">এইটো এটা পৰীক্ষামূলক সুবিধা আৰু এইটোৱে সদায়েই শুদ্ধ ফলাফল নিদিয়ে।</translation>
 <translation id="4449116177348980384">ছাইটৰ ছেটিং পৰিচালনা কৰাৰ বুটাম, Chromeৰ ছেটিঙত সমগ্ৰ ছাইটত ষ্ট’ৰ কৰি ৰখা ডেটা আৰু অনুমতি পৰিচালনা কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="4451135742916150903">HID ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
-<translation id="4451684391620232683">ব্যৱহাৰকাৰীৰ বাবে উপস্থাপন কৰা পাঠ:</translation>
 <translation id="4452328064229197696">আপুনি এইমাত্ৰ ব্যৱহাৰ কৰা পাছৱৰ্ডটো এক ডেটা উলংঘনত বিচাৰি পোৱা গৈছিল। আপোনাৰ একাউণ্টসমূহ সুৰক্ষিত কৰিবলৈ Google পাছৱৰ্ড পৰিচালকে আপোনাৰ ছেভ হৈ থকা পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="4454620051637646665">বেনাৰ অগ্ৰাহ্য কৰক</translation>
 <translation id="4456937135469235202">দুঃসাহসিক ভ্ৰমণ</translation>
@@ -2420,7 +2421,6 @@
 <translation id="4749924365937394956">ছাৰ্ভাৰৰ বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ</translation>
 <translation id="4750671009706599284">এই ফ’নটো</translation>
 <translation id="4750917950439032686">আপোনাৰ তথ্য (উদাহৰণ স্বৰুপে পাছৱৰ্ড বা ক্ৰেডিট কাৰ্ডৰ নম্বৰ) এই ছাইটলৈ পঠিওৱাৰ পিছতো ব্যক্তিগত হৈ থাকিব।</translation>
-<translation id="4751249061288707459">অন্তিম বাৰ আপডে’ট কৰা সন্মতি:</translation>
 <translation id="4754461935447132332">অসুৰক্ষিত ছাইটসমূহৰ বাবে অনুমতি নাই</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">ক’ডটো অমান্য</translation>
@@ -2582,6 +2582,7 @@
 <translation id="5001526427543320409">তৃতীয় পক্ষৰ কুকি</translation>
 <translation id="5007344584818503324">শ্বেয়াৰ কৰা টেবৰ গোটৰ কাৰ্যকলাপ</translation>
 <translation id="5007392906805964215">পৰ্যালোচনা কৰক</translation>
+<translation id="5008767248670679254">আপোনাৰ আটাইবোৰ শ্বিপমেণ্ট</translation>
 <translation id="5011561501798487822">চিনাক্ত কৰা ভাষা</translation>
 <translation id="5015510746216210676">মেছিনৰ নাম:</translation>
 <translation id="5016205925109358554">ছেৰিফ</translation>
@@ -3179,7 +3180,6 @@
 <translation id="5921952831792678223">পিকআপ ট্ৰাক</translation>
 <translation id="5923492272538889093">CVCৰ পৰিৱৰ্তে ডিভাইচ আনলক কৰাৰ সুবিধাটো ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="5924510104057992926">খোলাৰ আগতে পৰ্যালোচনাৰ প্ৰয়োজন</translation>
-<translation id="5924782825030413055">অন্তিম বাৰ আপডে’ট কৰা সন্মতিৰ উৎস:</translation>
 <translation id="5925040402342933574">অপ্টিকেল ডিস্ক (ছেমি-গ্লছ)</translation>
 <translation id="5925147183566400388">প্ৰমাণপত্ৰ অনুশীলনৰ উক্তিৰ পইণ্টাৰ</translation>
 <translation id="5926982310317673627">জিম আৰু হেল্থ ক্লাব</translation>
@@ -4120,6 +4120,7 @@
 <translation id="7393161616326137353">দুঃসাহসিক গে’ম</translation>
 <translation id="7393475648162498734">চেকআউটত আপোনাৰ কাৰ্ডসমূহৰ বাবে কোনবোৰ পুৰস্কাৰ আৰু লাভ উপলব্ধ সেয়া দেখুৱাওক</translation>
 <translation id="7393971683644170444">আপোনাৰ কাৰ্ড প্ৰদানকাৰীৰ সৈতে সংযোগ কৰি থকা হৈছে…</translation>
+<translation id="7394497897677511168">অন্য শ্বিপমেণ্টসমূহ</translation>
 <translation id="739728382607845710">পৰিশোধৰ নিয়ন্ত্ৰকৰ চিহ্ন</translation>
 <translation id="7399616692258236448">আপুনি অনুমতি দিয়াসমূহৰ বাদে আন আটাইবোৰ ছাইটৰ বাবে অৱস্থানৰ অনুৰোধসমূহ স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হয়</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4301,7 +4302,6 @@
 <translation id="762844065391966283">এবাৰত এটা</translation>
 <translation id="7629058630148860366">কৰ্মস্থানৰ ঠিকনা</translation>
 <translation id="763042426047865637">অগ্নি নিৰ্বাপন আৰু নিৰাপত্তা সেৱা</translation>
-<translation id="7630470133768862132">সন্মতিৰ স্থিতি:</translation>
 <translation id="7631072086707140121">URLটো httpsৰ হ’বই লাগিব।</translation>
 <translation id="7631527008834753063">টিভি গে’ম শ্ব’</translation>
 <translation id="7633909222644580952">পাৰদৰ্শিতাৰ ডেটা আৰু ক্ৰেশ্ব ৰিপ'ৰ্টসমূহ</translation>
@@ -5010,6 +5010,7 @@
 <translation id="877348612833018844">{0,plural, =1{গোপনীয় ফাইলটো স্থানান্তৰ কৰিবনে?}one{গোপনীয় ফাইলসমূহ স্থানান্তৰ কৰিবনে?}other{গোপনীয় ফাইলসমূহ স্থানান্তৰ কৰিবনে?}}</translation>
 <translation id="8775347646940100151">কাগজ (লেটাৰহে’ড)</translation>
 <translation id="8775863327608679820">সময়ৰ লগে লগে পৰিশোধ কৰাৰ সুবিধা প্ৰদান কৰাৰ বাবে উপলব্ধ এতিয়া ক্ৰয় কৰি পাছত পৰিশোধ কৰক জাৰিকৰ্তা অৰ্ধ উচ্চতাত খোলা হৈছে।</translation>
+<translation id="8776789089819232268">আপোনাৰ আটাইবোৰ অৰ্ডাৰ</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">পৃষ্ঠা অনুবাদ কৰাৰ বুটাম, Google Translateৰ জৰিয়তে এই পৃষ্ঠাখন অনুবাদ কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="8785658048882205566">মটৰ চাইকেল</translation>

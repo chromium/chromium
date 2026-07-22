@@ -358,7 +358,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Direct Internet connection</translation>
 <translation id="1254767904958485584">Split view created</translation>
-<translation id="1255095393630332248">When tabs are shared, their page contents, media and URLs are sent to Google.</translation>
 <translation id="1256143630373008432">Self test failed</translation>
 <translation id="1257336506558170607">Export selected certificate</translation>
 <translation id="1258491128795710625">What’s new</translation>
@@ -699,6 +698,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1542137295869176367">Your sign-in data couldn't be updated</translation>
 <translation id="1543284117603151572">Imported From Edge</translation>
 <translation id="1543538514740974167">Get here quicker</translation>
+<translation id="1544026754762189866">Your organisation advises against copying this content</translation>
 <translation id="1544588554445317666">Try using a shorter file name or saving to a different folder</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
 <translation id="1545775234664667895">Installed theme "<ph name="THEME_NAME" />"</translation>
@@ -725,7 +725,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1561331397460162942">This allows location access for apps, websites with the location permission and system services</translation>
 <translation id="1562119309884184621">Adding this contact will remember the next time that they share</translation>
 <translation id="1562585387501039294">Your organisation, <ph name="ACCOUNT_MANAGER" />, requires a managed profile and will be able to view some information, including</translation>
-<translation id="156345786953026804">The page content and URLs that Gemini uses during a task will be shared with Google.</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">The selected printer is not available or not installed correctly. Check your printer or try selecting another printer.</translation>
 <translation id="1566329594234563241">While inactive and plugged in</translation>
@@ -1510,6 +1509,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2168036794078614559">Report sent</translation>
 <translation id="2169062631698640254">Sign in anyway</translation>
+<translation id="217120844667431680">Do more with AI Mode</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2175384018164129879">&amp;Manage Search Engines and Site Search</translation>
 <translation id="2175526076681939329">Use primary keys</translation>
@@ -1777,7 +1777,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{This extension may soon no longer be supported}other{These extensions may soon no longer be supported}}</translation>
 <translation id="2378982052244864789">Select the extension directory.</translation>
 <translation id="2379111564446699251">To rearrange buttons on the toolbar, drag them</translation>
-<translation id="2379184471043414645">Turn on media understanding</translation>
 <translation id="2379281330731083556">Print using system dialogue... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">This may cause your mobile network to disconnect for a few minutes</translation>
 <translation id="2381499968174336913">Preview of shared tab</translation>
@@ -1825,6 +1824,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2424424966051154874">{0,plural, =1{Guest}other{Guest (#)}}</translation>
 <translation id="2426805022920575512">Choose another account</translation>
 <translation id="2427507373259914951">Left click</translation>
+<translation id="2428120669821109648">Tab styling</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> one account, password saved only to this device. More details}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} accounts, password saved only to this device. More details}}</translation>
 <translation id="2428510569851653187">Describe what you were doing when the tab crashed</translation>
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
@@ -3511,6 +3511,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3700993174159313525">Don't allow sites to track your camera position</translation>
 <translation id="3701167022068948696">Fix now</translation>
 <translation id="3701515417135397388">Warn you if a password was compromised in a data breach</translation>
+<translation id="3701778844313851487">Go to Extensions</translation>
 <translation id="3703166520839776970">If this issue keeps happening, choose 'More details' below to get more information from <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="3703699162703116302">Ticket refreshed</translation>
 <translation id="370415077757856453">JavaScript blocked</translation>
@@ -4589,6 +4590,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4523876148417776526">XML sitelists have not been fetched yet.</translation>
 <translation id="4526051299161934899">Hidden saved tab groups</translation>
 <translation id="452750746583162491">Review your synced data</translation>
+<translation id="4528216716764031072">Modern (transparent)</translation>
 <translation id="4528494169189661126">Translation suggestion</translation>
 <translation id="4529455689802245339">Chrome Live Caption might not work</translation>
 <translation id="4531451811601110068">You can try again or contact your administrator for help</translation>
@@ -4742,6 +4744,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4645676300727003670">&amp;Keep</translation>
 <translation id="4646675363240786305">Ports</translation>
+<translation id="4646859937978908916">Newly added extensions are automatically pinned. Change this on the Extensions page.</translation>
 <translation id="4647025838970719122">This setting is managed by your organisation</translation>
 <translation id="4647090755847581616">&amp;Close Tab</translation>
 <translation id="4647283074445570750">Step <ph name="CURRENT_STEP" /> of <ph name="TOTAL_STEPS" /></translation>
@@ -8315,6 +8318,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7446716846072322308">This will delete <ph name="TOTAL_USAGE" /> of data stored by <ph name="SITE_NAME" /> and related sites</translation>
 <translation id="7448430327655618736">Automatically install apps</translation>
 <translation id="7448664748118305024">Delete data sites that have been saved to your device when you close all windows</translation>
+<translation id="7449806939046594699">Your organisation blocked copying this content</translation>
 <translation id="7450761244949417357">Opening in <ph name="ALTERNATIVE_BROWSER_NAME" /> now</translation>
 <translation id="7450926666485653189">Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address</translation>
 <translation id="7453008956351770337">By selecting this printer, you are giving the following extension the permission to access your printer:</translation>
@@ -8822,6 +8826,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7849264908733290972">Open &amp;Image in New Tab</translation>
 <translation id="784934925303690534">Time range</translation>
 <translation id="7850320739366109486">Do not disturb</translation>
+<translation id="7851303446278533774">Create, plan, summarise</translation>
 <translation id="7851716364080026749">Always block camera and microphone access</translation>
 <translation id="78526636422538552">Addition of more Google accounts is disabled</translation>
 <translation id="7853747251428735">More Too&amp;ls</translation>

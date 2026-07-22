@@ -358,7 +358,6 @@
 <translation id="1254034280040157728">그랜드캐니언</translation>
 <translation id="1254593899333212300">인터넷에 바로 연결</translation>
 <translation id="1254767904958485584">분할 뷰가 생성됨</translation>
-<translation id="1255095393630332248">탭이 공유되면 탭의 페이지 콘텐츠, 미디어, URL이 Google로 전송됩니다.</translation>
 <translation id="1256143630373008432">자동 테스트 실패</translation>
 <translation id="1257336506558170607">선택한 인증서 내보내기</translation>
 <translation id="1258491128795710625">새로운 기능</translation>
@@ -726,7 +725,6 @@
 <translation id="1561331397460162942">이렇게 하면 앱, 위치 정보 액세스 권한이 있는 웹사이트, 시스템 서비스에 대한 위치 액세스가 허용됩니다.</translation>
 <translation id="1562119309884184621">이 연락처를 추가하면 다음번 공유 시 연락처에 내 기기가 표시됩니다.</translation>
 <translation id="1562585387501039294">조직(<ph name="ACCOUNT_MANAGER" />)에서 관리 프로필을 요구하며, 다음과 같은 일부 정보를 볼 수 있습니다</translation>
-<translation id="156345786953026804">Gemini가 작업을 수행하는 동안 사용하는 페이지 콘텐츠와 URL은 Google과 공유됩니다.</translation>
 <translation id="1566049601598938765">웹사이트</translation>
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
 <translation id="1566329594234563241">비활성 상태이며 전원에 연결되어 있는 동안</translation>
@@ -1780,7 +1778,6 @@
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 곧 지원 중단될 수 있습니다}other{이 확장 프로그램은 곧 지원 중단될 수 있습니다}}</translation>
 <translation id="2378982052244864789">확장 프로그램 디렉터리를 선택합니다.</translation>
 <translation id="2379111564446699251">툴바에서 버튼을 다시 정렬하려면 드래그하세요</translation>
-<translation id="2379184471043414645">미디어 이해 사용 설정하기</translation>
 <translation id="2379281330731083556">시스템 대화상자를 사용하여 인쇄... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">이로 인해 모바일 네트워크의 연결이 몇 분간 해제될 수 있습니다.</translation>
 <translation id="2381499968174336913">공유 탭 미리보기</translation>

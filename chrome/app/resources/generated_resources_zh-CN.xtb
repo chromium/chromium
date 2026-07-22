@@ -358,7 +358,6 @@
 <translation id="1254034280040157728">大峡谷</translation>
 <translation id="1254593899333212300">直接连接到互联网</translation>
 <translation id="1254767904958485584">已创建拆分视图</translation>
-<translation id="1255095393630332248">分享标签页时，系统会将标签页的网页内容、媒体和网址发送给 Google。</translation>
 <translation id="1256143630373008432">自测失败</translation>
 <translation id="1257336506558170607">导出所选证书</translation>
 <translation id="1258491128795710625">新变化</translation>
@@ -698,6 +697,7 @@
 <translation id="1542137295869176367">无法更新您的登录数据</translation>
 <translation id="1543284117603151572">从 Edge 导入的书签</translation>
 <translation id="1543538514740974167">更快速地转到此处</translation>
+<translation id="1544026754762189866">您的组织建议不要复制此内容</translation>
 <translation id="1544588554445317666">请尝试使用一个更短的文件名或保存到另一个文件夹中</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
 <translation id="1545775234664667895">已安装主题背景“<ph name="THEME_NAME" />”</translation>
@@ -724,7 +724,6 @@
 <translation id="1561331397460162942">这将允许具有位置信息权限的应用和网站以及系统服务使用位置信息</translation>
 <translation id="1562119309884184621">如果您添加了此联系人，当他/她下次分享内容时，系统会识别出此联系人</translation>
 <translation id="1562585387501039294">您的组织 (<ph name="ACCOUNT_MANAGER" />) 要求使用受管资料，并且能够查看某些信息，包括</translation>
-<translation id="156345786953026804">Gemini 在执行任务期间使用的网页内容和网址会分享给 Google。</translation>
 <translation id="1566049601598938765">网站</translation>
 <translation id="15662109988763471">所选打印机无法使用或未正确安装。请检查打印机，或尝试选择其他打印机。</translation>
 <translation id="1566329594234563241">处于闲置状态且接通电源时</translation>
@@ -1500,6 +1499,7 @@
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
 <translation id="2168036794078614559">举报信息已发送</translation>
 <translation id="2169062631698640254">仍然登录</translation>
+<translation id="217120844667431680">开启 AI 模式，事半功倍</translation>
 <translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2175384018164129879">管理搜索引擎和网站搜索(&amp;M)</translation>
 <translation id="2175526076681939329">使用主键</translation>
@@ -1764,7 +1764,6 @@
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{以下扩展程序可能很快不再受支持}other{以下扩展程序可能很快不再受支持}}</translation>
 <translation id="2378982052244864789">选择扩展程序目录。</translation>
 <translation id="2379111564446699251">拖动工具栏上的按钮可重新排列按钮顺序</translation>
-<translation id="2379184471043414645">开启媒体内容理解功能</translation>
 <translation id="2379281330731083556">使用系统对话框进行打印...<ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">这可能会导致您的移动网络连接断开几分钟</translation>
 <translation id="2381499968174336913">已分享的标签页的预览视图</translation>
@@ -1812,6 +1811,7 @@
 <translation id="2424424966051154874">{0,plural, =1{访客}other{访客 (#)}}</translation>
 <translation id="2426805022920575512">选择其他账号</translation>
 <translation id="2427507373259914951">点击鼠标左键</translation>
+<translation id="2428120669821109648">标签页样式</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 个账号，密码仅保存在此设备上。更多详情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 个账号，密码仅保存在此设备上。更多详情}}</translation>
 <translation id="2428510569851653187">请说明此标签页崩溃时您在做什么</translation>
 <translation id="2428939361789119025">关闭 Wi-Fi</translation>
@@ -3496,6 +3496,7 @@
 <translation id="3700993174159313525">不允许网站跟踪您的摄像头位置</translation>
 <translation id="3701167022068948696">立即修正</translation>
 <translation id="3701515417135397388">发现密码遭遇数据泄露时向您发出警告</translation>
+<translation id="3701778844313851487">前往“扩展程序”</translation>
 <translation id="3703166520839776970">如果此问题仍然存在，请选择下方的“更多详情”以从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处获取更多信息。</translation>
 <translation id="3703699162703116302">已刷新票据</translation>
 <translation id="370415077757856453">已拦截 JavaScript</translation>
@@ -4573,6 +4574,7 @@
 <translation id="4523876148417776526">尚未提取 XML 站点列表。</translation>
 <translation id="4526051299161934899">隐藏的已存标签页分组</translation>
 <translation id="452750746583162491">查看您已同步的数据</translation>
+<translation id="4528216716764031072">现代（透明）</translation>
 <translation id="4528494169189661126">建议翻译</translation>
 <translation id="4529455689802245339">Chrome 实时字幕功能可能无法运行</translation>
 <translation id="4531451811601110068">您可以重试，或者向管理员求助</translation>
@@ -4726,6 +4728,7 @@
 <translation id="4645575059429386691">由您父母管理</translation>
 <translation id="4645676300727003670">保留(&amp;K)</translation>
 <translation id="4646675363240786305">端口</translation>
+<translation id="4646859937978908916">新添加的扩展程序会自动固定。您可以在“扩展程序”页面上更改此设置。</translation>
 <translation id="4647025838970719122">此设置由您的组织管理</translation>
 <translation id="4647090755847581616">关闭标签页(&amp;C)</translation>
 <translation id="4647283074445570750">第 <ph name="CURRENT_STEP" /> 步（共 <ph name="TOTAL_STEPS" /> 步）</translation>
@@ -8294,6 +8297,7 @@
 <translation id="7446716846072322308">此操作会删除由 <ph name="SITE_NAME" /> 和相关网站存储的 <ph name="TOTAL_USAGE" /> 数据</translation>
 <translation id="7448430327655618736">自动安装应用</translation>
 <translation id="7448664748118305024">在关闭所有窗口时删除网站已保存到设备上的数据</translation>
+<translation id="7449806939046594699">您的组织已禁止复制此内容</translation>
 <translation id="7450761244949417357">正在<ph name="ALTERNATIVE_BROWSER_NAME" />中打开</translation>
 <translation id="7450926666485653189">通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google</translation>
 <translation id="7453008956351770337">选择此打印机即表示您允许以下扩展程序访问您的打印机：</translation>
@@ -8801,6 +8805,7 @@
 <translation id="7849264908733290972">在新标签页中打开图片(&amp;I)</translation>
 <translation id="784934925303690534">时间范围</translation>
 <translation id="7850320739366109486">请勿打扰</translation>
+<translation id="7851303446278533774">创建、规划、总结</translation>
 <translation id="7851716364080026749">始终禁止使用摄像头和麦克风</translation>
 <translation id="78526636422538552">禁止添加更多 Google 账号</translation>
 <translation id="7853747251428735">更多工具(&amp;L)</translation>

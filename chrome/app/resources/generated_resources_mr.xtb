@@ -358,7 +358,6 @@
 <translation id="1254034280040157728">ग्रँड कॅनियन</translation>
 <translation id="1254593899333212300">थेट इंटरनेट कनेक्शन</translation>
 <translation id="1254767904958485584">विभाजित दृश्य तयार केले आहे</translation>
-<translation id="1255095393630332248">टॅब शेअर केले जातात, तेव्हा त्यांमधील पेजचा आशय आणि URLs या गोष्टी Google ला पाठवल्या जातात.</translation>
 <translation id="1256143630373008432">स्वयं-चाचणी करता आली नाही</translation>
 <translation id="1257336506558170607">निवडलेले सर्टिफिकेट एक्सपोर्ट करा</translation>
 <translation id="1258491128795710625">नवीन काय आहे</translation>
@@ -501,6 +500,7 @@
 <translation id="1376836354785490390">कमी दर्शवा</translation>
 <translation id="1377438103060664754">तुमचा एखादा पासवर्ड डेटा भंगामध्ये आढळल्यास, Google Password Manager त्याला बदलून क्लिष्ट पासवर्ड ठेवायचा आहे का असे तुम्हाला विचारते</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> हे सेटिंग नियंत्रित करीत आहे</translation>
+<translation id="1378715594598306389">आणखी टॅब पहा</translation>
 <translation id="1380028686461971526">नेटवर्कशी आपोआप कनेक्ट करा</translation>
 <translation id="1381567580865186407">प्रक्रिया करण्यासाठी <ph name="LANGUAGE" /> स्पीच Google ला पाठवली आहे</translation>
 <translation id="1382174183118245544">क्रेडिट कार्ड क्रमांक</translation>
@@ -726,7 +726,6 @@
 <translation id="1561331397460162942">हे स्थानाची परवानगी असलेली ॲप्स, वेबसाइट आणि सिस्टीम सेवा यांसाठी स्थान ॲक्सेसची अनुमती देते</translation>
 <translation id="1562119309884184621">हा संपर्क जोडल्याने पुढील वेळी त्यांनी काही शेअर केल्यास, लक्षात ठेवले जाईल</translation>
 <translation id="1562585387501039294">तुमच्या <ph name="ACCOUNT_MANAGER" /> या संस्थेला व्यवस्थापित प्रोफाइलची आवश्यकता आहे आणि तिला काही माहिती पाहता येईल, ज्यामध्ये पुढील गोष्टींचा समावेश आहे</translation>
-<translation id="156345786953026804">टास्कदरम्यान Gemini वापरत असलेला पेजचा आशय आणि URLs Google सोबत शेअर केल्या जातील.</translation>
 <translation id="1566049601598938765">वेबसाइट</translation>
 <translation id="15662109988763471">निवडलेला प्रिंटर उपलब्ध नाही किंवा योग्यरीत्या इंस्टॉल केलेला नाही. तुमचा प्रिंटर तपासा किंवा दुसरा प्रिंटर निवडून पहा.</translation>
 <translation id="1566329594234563241">इनॅक्टिव्ह आणि प्लग इन केले असताना</translation>
@@ -1779,7 +1778,6 @@
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{या एक्स्टेंशनला आता लवकरच सपोर्ट केला जाणार नाही}other{या एक्स्टेंशनना आता लवकरच सपोर्ट केला जाणार नाही}}</translation>
 <translation id="2378982052244864789">एक्स्टेंशन डिरेक्टरी निवडा.</translation>
 <translation id="2379111564446699251">टूलबारवरील बटणे पुन्हा संगतवार लावण्यासाठी, ती ड्रॅग करा</translation>
-<translation id="2379184471043414645">मीडिया समजून घेणे सुरू करा</translation>
 <translation id="2379281330731083556">सिस्टीम डायलॉग वापरून प्रिंट करा… <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">यामुळे तुमचे मोबाइल नेटवर्क काही मिनिटांसाठी डिस्कनेक्ट होऊ शकते</translation>
 <translation id="2381499968174336913">शेअर केलेल्या टॅबचे पूर्वावलोकन</translation>
@@ -2543,6 +2541,7 @@
 <translation id="2955048943983973430">संबंधित Google सेवा</translation>
 <translation id="2956070239128776395">गटामध्ये विभाग नेस्ट केले: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">हे एक्स्टेंशन वापरण्यासाठी विकसक मोड सुरू करा, ज्याचे Chrome वेब स्टोअर द्वारे पुनरावलोकन केले जाऊ शकत नाही.</translation>
+<translation id="2957987442574819977">Gemini कडून अनपेक्षित परिणाम</translation>
 <translation id="2958721676848865875">पॅक एक्स्टेंशन चेतावणी</translation>
 <translation id="2959127025785722291">काहीतरी चूक झाली. स्कॅनिंग पूर्ण करता आले नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="2959474507964749987">या एन्क्रिप्ट केलेल्या फाइलमध्ये व्हायरस किंवा मालवेअर असू शकते.<ph name="LINE_BREAK" />ती असुरक्षित आहे की नाही हे तपासण्यासाठी, तुम्ही Google सुरक्षित ब्राउझिंग ला फाइल आणि पासवर्ड पाठवू शकता. स्कॅनला काही सेकंद लागू शकतात.<ph name="LINE_BREAK" /> स्कॅन करण्यासाठी, फाइलचा पासवर्ड जोडा.</translation>
@@ -3530,6 +3529,7 @@
 <translation id="3708295717182051206">सबटायटल</translation>
 <translation id="3708684582558000260">बंद केलेल्या साइटना डेटा पाठवण्याची किंवा मिळवण्याची प्रक्रिया पूर्ण करण्याची अनुमती देऊ नका</translation>
 <translation id="3709244229496787112">डाउनलोड पूर्ण होण्यापूर्वी ब्राउझर बंद करण्यात आला.</translation>
+<translation id="3710438437470197252">Google Drive मध्ये आणखी पहा</translation>
 <translation id="3710501561113687889">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे <ph name="FIELDS_STRING" /> या साइटसोबत शेअर करेल.</translation>
 <translation id="3711931198657368127">पेस्ट करा आणि <ph name="URL" /> वर जा</translation>
 <translation id="3711945201266135623">प्रिंट सर्व्हरवरील <ph name="NUM_PRINTERS" /> प्रिंटर आढळले</translation>
@@ -5366,6 +5366,7 @@
 <translation id="5112577000029535889">&amp;विकसक साधने</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{१ फाइल हलवली}other{{NUM_OF_FILES} फाइल हलवल्या}}</translation>
 <translation id="511313294362309725">जलद पेअरिंग सुरू करा</translation>
+<translation id="5113992879909788634">Chrome ऑटोमॅटिक ब्राउझिंगबद्दल अधिक जाणून घ्या</translation>
 <translation id="51143538739122961">तुमची सिक्युरिटी की घाला आणि तिला स्पर्श करा</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">म्हणून ऑडिओ ज&amp;तन करा...</translation>
@@ -7052,6 +7053,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6470823736074966819">सूचना म्यूट करा</translation>
 <translation id="6472893788822429178">होम बटण दर्शवा</translation>
 <translation id="6473315466413288899">पर्याय निवडा</translation>
+<translation id="6474021817475285003">Google Calendar मध्ये आणखी पहा</translation>
 <translation id="6474498546677193336">अनशेअर करता आले नाही कारण अ‍ॅप्लिकेशन हे फोल्डर वापरत आहे. पुढे Linux बंद केल्यावर फोल्डर अनशेअर केले जाईल.</translation>
 <translation id="6474884162850599008">Google ड्राइव्ह खाते डिस्कनेक्ट करा</translation>
 <translation id="6476482583633999078">स्पीचची गती</translation>
@@ -9144,6 +9146,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8082132721957920509">तुमचे कार्ड सेव्ह केले आहे</translation>
 <translation id="8082390128630131497">ADB डिबगिंग बंद केल्यामुळे हे <ph name="DEVICE_TYPE" /> फॅक्टरी सेटिंग्जवर रीसेट होईल. सर्व वापरकर्ता खाती आणि स्थानिक डेटा मिटवला जाईल.</translation>
 <translation id="8084114998886531721">सेव्ह केलेले पासवर्ड</translation>
+<translation id="8084417885464859041">Gemini सुरक्षितपणे वापरा</translation>
 <translation id="8084429490152575036">मोबाइल APN सेटिंग्ज</translation>
 <translation id="8084628902026812045">ही साइट सुरक्षित कनेक्शन वापरत नाही आणि फाइलमध्ये छेडछाड केली गेली असू शकते</translation>
 <translation id="808488435221187916">तुमची माहिती कोणत्याही साइन इन केलेल्या डिव्हाइसवर Google Wallet मध्ये उपलब्ध आहे</translation>
@@ -9738,6 +9741,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8553342806078037065">इतर लोक व्यवस्थापित करा</translation>
 <translation id="8554642222921881444">निवडलेल्या मजकुरावरील फ्लोटिंग मेनू</translation>
 <translation id="8554899698005018844">कोणतीही भाषा नाही</translation>
+<translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - विस्तारित आशय दाखवला आहे</translation>
 <translation id="8555444629041783356">सूर्यास्ताचे ऑटोमॅटिक शेड्यूल</translation>
 <translation id="8557022314818157177">तुमचे फिंगरप्रिंट कॅप्चर होईपर्यंत तुमच्या सिक्युरिटी कीला स्पर्श करत राहा</translation>
 <translation id="8557100046150195444">पुढे सुरू ठेवण्यासाठी टच आयडी</translation>

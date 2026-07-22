@@ -61,6 +61,7 @@
 <translation id="1090629319939036170">Meni VR</translation>
 <translation id="1091463901118115503">Nadaljevanje branja</translation>
 <translation id="1091779689406092804">posnetkov zaslona</translation>
+<translation id="1095093219235104018">Iskanje in izpolnjevanje z Geminijem</translation>
 <translation id="1096545575934602868">V tem polju je lahko največ toliko vnosov: <ph name="MAX_ITEMS_LIMIT" />. Vsi nadaljnji vnosi bodo zavrženi.</translation>
 <translation id="1097803577928227769">Regijski parki in vrtovi</translation>
 <translation id="1099928364755383720">samodejni način slike v sliki</translation>
@@ -366,6 +367,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 
       &lt;p&gt;V razdelku &lt;strong&gt;Splošno&lt;/strong&gt; aplikacije &lt;strong&gt;Nastavitve&lt;/strong&gt; prilagodite datum in uro.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Skrbnik bo znova zagnal napravo ob <ph name="TIME" /> dne <ph name="DATE" /></translation>
+<translation id="1562601408588733317">Upravljanje iskanja in izpolnjevanja podatkov z Geminijem</translation>
 <translation id="1562805467275776390">Avtomobilske dirke</translation>
 <translation id="1563755205047885671">Akcijske in platformske igre</translation>
 <translation id="1564634006476980707">Priporočena shema HTTPS za URL za iskanje: <ph name="SEARCH_URL" /></translation>
@@ -832,6 +834,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2268044343513325586">Izboljšaj iskanje</translation>
 <translation id="2268966938956566076">Naloži čez <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Telefonska številka</translation>
+<translation id="2274179746480077483">Samodejno izpolnjevanje podatkov iz aplikacij, kot sta Gmail in Google Foto. Uporablja tehnologijo osebne inteligence.</translation>
 <translation id="2276057643614339130">Osnova za tiskanje</translation>
 <translation id="2277103315734023688">Išči naprej</translation>
 <translation id="2277753418458118549">Prikaži podrobnosti o povezavi</translation>
@@ -1172,6 +1175,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2784949926578158345">Povezava je bila obnovljena.</translation>
 <translation id="2786008859124691917">Kolesa in oprema</translation>
 <translation id="2792012897584536778">Skrbniki te naprave so nastavili varnostna potrdila, ki jim morda omogočajo ogled vsebine spletnih mest, ki jih obiščete.</translation>
+<translation id="2793425367785017642">Zaradi boljšega razumevanja in izpolnjevanja obrazcev se lahko vsebina in URL-ji strani, ki jih obiščete, obdelujejo v zasebnem prostoru v oblaku.</translation>
 <translation id="2794233252405721443">Spletno mesto blokirano</translation>
 <translation id="2794629552137076216">Glass (Surfaced)</translation>
 <translation id="2799223571221894425">Vnovičen zagon</translation>
@@ -1544,6 +1548,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3391482648489541560">urejanje datotek</translation>
 <translation id="3392028486601120379">Vzorec URL »<ph name="URL_PATTERN" />« ima navedeno pot. Poti niso podprte za ta ključ. Odstranite pot in poskusite znova. Npr. *://example.com/ =&gt; *://example.com«.</translation>
 <translation id="3395827396354264108">Način prevzema</translation>
+<translation id="3397968074427155329">Spremenite velikost okna, če želite nadaljevati klepet</translation>
 <translation id="3399161914051569225">Nosljiva tehnologija</translation>
 <translation id="3399952811970034796">Naslov za dostavo</translation>
 <translation id="3402261774528610252">Povezava, prek katere je bilo naloženo to spletno mesto, uporablja standard TLS 1.0 ali TLS 1.1; ta standarda sta zastarela in bosta v prihodnje onemogočena. Ko bosta onemogočena, bo uporabnikom preprečeno naložiti to spletno mesto. V strežniku omogočite standard TLS 1.2 ali novejšega.</translation>
@@ -2249,7 +2254,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4445964943162061557">To je preizkusna funkcija in se lahko včasih tudi zmoti.</translation>
 <translation id="4449116177348980384">Gumb za upravljanje nastavitev spletnega mesta, aktivirajte, če želite upravljati dovoljenja in podatke, shranjene na spletnih mestih v Chromovih nastavitvah.</translation>
 <translation id="4451135742916150903">Lahko zahteva vzpostavitev povezave z napravami HID.</translation>
-<translation id="4451684391620232683">Besedilo, prikazano uporabniku:</translation>
 <translation id="4452328064229197696">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Zaradi zavarovanja računov Google Upravitelj gesel priporoča, da preverite shranjena gesla.</translation>
 <translation id="4454620051637646665">Opustitev pasice</translation>
 <translation id="4456937135469235202">Pustolovska potovanja</translation>
@@ -2424,7 +2428,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4749924365937394956">Preverjanje pristnosti strežnika</translation>
 <translation id="4750671009706599284">s tem telefonom</translation>
 <translation id="4750917950439032686">Vaši podatki (npr. gesla ali številke kreditnih kartic) so zasebni, kadar so poslani temu spletnemu mestu.</translation>
-<translation id="4751249061288707459">Zadnja sprememba privolitve:</translation>
 <translation id="4754461935447132332">Ni dovoljeno za spletna mesta, ki niso varna</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Koda ni veljavna</translation>
@@ -2631,6 +2634,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5074134429918579056">Dolge in kratke hlače</translation>
 <translation id="5077767274537436092">Uporabite drug ključ za dostop</translation>
 <translation id="5078060223219502807">Geslo, ki ste ga pravkar uporabili, je bilo najdeno v podatkovni kršitvi. Zaradi zavarovanja računov Upravitelj gesel priporoča, da ga spremenite zdaj in nato preverite shranjena gesla.</translation>
+<translation id="5082949343606863311">Sistemski podatki, vključno s polji obrazca in delovanjem funkcij, se analizirajo za izboljšanje prihodnjih predlogov</translation>
 <translation id="5087286274860437796">Potrdilo strežnika trenutno ni veljavno.</translation>
 <translation id="5087580092889165836">Dodaj kartico</translation>
 <translation id="5088142053160410913">Sporočilo operaterju</translation>
@@ -3068,6 +3072,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5728246486828755318">Lahko zahteva uporabo dodatnih funkcij tiskalnika</translation>
 <translation id="5729442113829771034">Izobraževanje v zgodnjem otroštvu</translation>
 <translation id="5730040223043577876">Chrome priporoča, da ponastavite geslo, če ste ga uporabljali na drugih spletnih mestih.</translation>
+<translation id="5731983613206445054">Pomagate izboljšati izboljšano samodejno izpolnjevanje</translation>
 <translation id="5735174108294025227">Preverjeni e-poštni naslovi bodo prikazani tukaj</translation>
 <translation id="573555826359077410">Gumb za ustvarjanje obrazca, aktivirajte, če želite hitro ustvariti nov obrazec v Google Obrazcih</translation>
 <translation id="5738385766833540397">Upravljanje načina prejemanja opozoril o znižanju cen za izdelke, ki jih spremljate.</translation>
@@ -3183,7 +3188,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5921952831792678223">Poltovorna vozila</translation>
 <translation id="5923492272538889093">Želite uporabiti odklepanje naprave namesto kode CVC?</translation>
 <translation id="5924510104057992926">Pred odpiranjem je zahtevan pregled</translation>
-<translation id="5924782825030413055">Vir zadnje spremembe privolitve:</translation>
 <translation id="5925040402342933574">Optical Disc (Semi-Gloss)</translation>
 <translation id="5925147183566400388">Kazalec na izjavo o postopku pridobitve certifikata</translation>
 <translation id="5926982310317673627">Športni centri</translation>
@@ -3897,6 +3901,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7011763495818914549">Osebna izkaznica</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Lahko zahteva zaklepanje in uporabo miške</translation>
+<translation id="7013844825046560088">Chrome beleži, kako uporabljate to funkcijo, na primer vaše zahteve in vaše vedenje, ko sprejmete ali prezrete predloge</translation>
 <translation id="7014042602717177828">Avtoradii</translation>
 <translation id="7014741021609395734">Stopnja povečave</translation>
 <translation id="7016992613359344582">Te bremenitve so lahko enkratne ali ponavljajoče se in morda niso očitne.</translation>
@@ -4307,7 +4312,6 @@ Dodatne podrobnosti:
 <translation id="762844065391966283">Posamezno</translation>
 <translation id="7629058630148860366">Službeni naslov</translation>
 <translation id="763042426047865637">Gasilske in varnostne službe</translation>
-<translation id="7630470133768862132">Stanje privolitve:</translation>
 <translation id="7631072086707140121">URL mora biti https.</translation>
 <translation id="7631527008834753063">Televizijski kvizi</translation>
 <translation id="7633909222644580952">Podatki o delovanju in poročila o zrušitvah</translation>
@@ -4574,6 +4578,7 @@ Dodatne podrobnosti:
 <translation id="803771048473350947">Datoteka</translation>
 <translation id="8038182528865038593">Rdeča 2</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
+<translation id="8042898384266617514">Vaše zahteve, naslovi strani in URL-ji se pošiljajo Googlu in jih morda pregledajo ljudje</translation>
 <translation id="8043255123207491407">Oglejte si določila in pogoje prodajalca</translation>
 <translation id="8044986521421349135">Vaš najnovejši zavihek</translation>
 <translation id="8046360364391076336">Industrijski materiali in oprema</translation>
@@ -5017,6 +5022,7 @@ Dodatne podrobnosti:
 <translation id="8775347646940100151">Paper (Letterhead)</translation>
 <translation id="8775863327608679820">Izdajatelji za »Kupi zdaj, plačaj pozneje«, ki so na voljo za plačilo v določenem časovnem obdobju, odprti pri polovični višini.</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8781233757384402598">Ko pošljete zahtevo za izboljšano samodejno izpolnjevanje, se vaši podatki o uporabi, zahteve in podrobnosti strani delijo z Googlom zaradi izboljšanja samodejnega izpolnjevanja</translation>
 <translation id="8781278378794969337">Gumb za prevajanje strani, aktivirajte, če želite to stran prevesti z Google Prevajalnikom</translation>
 <translation id="8785658048882205566">Motorna kolesa</translation>
 <translation id="8790007591277257123">&amp;Uveljavi izbris</translation>

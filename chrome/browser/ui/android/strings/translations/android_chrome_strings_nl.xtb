@@ -724,6 +724,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4044708993631234325">Blad onderaan</translation>
 <translation id="4045441967987592849">Opnieuw openen</translation>
 <translation id="4049920046559074950">Meer opties voor <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051548576872472315">Hier vind je je recent gesloten tabbladen en vensters</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Openen in incognitovenster}other{Alles (#) openen in incognitovenster}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standaardtabblad met nieuwe activiteit in gedeelde tabbladgroepen}other{<ph name="TABS_COUNT_MANY" /> standaardtabbladen met nieuwe activiteit in gedeelde tabbladgroepen}}</translation>
 <translation id="405365679581583349">Google Play-services updaten</translation>
@@ -1697,6 +1698,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7824665136384946951">Je organisatie heeft Safe Browsing uitgezet</translation>
 <translation id="7825973332242257878">Tabbladgroepen</translation>
 <translation id="7826342993930002256">Jouw Chrome, waar je ook bent</translation>
+<translation id="7845155831233417403">Je kunt maximaal <ph name="MAX_INSTANCE_COUNT" /> vensters hebben. Sluit een venster om door te gaan.</translation>
 <translation id="7846161022626028328">Er is iets fout gegaan. Probeer het opnieuw.</translation>
 <translation id="7846296061357476882">Google-services</translation>
 <translation id="784652447248278262">Huidig venster</translation>

@@ -323,6 +323,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Perkhidmatan Pembersihan</translation>
 <translation id="1476595624592550506">Tukar kata laluan anda</translation>
+<translation id="1481450969185702334">Cari dan isi</translation>
 <translation id="1482372785911828880">Amat halus</translation>
 <translation id="1482879811280872320">Berbasikal</translation>
 <translation id="1483493594462132177">Hantar</translation>
@@ -1889,6 +1890,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="390391808978419508">Pembukaan tamat masa</translation>
 <translation id="3905894480064208252">{0,plural, =1{Fail disekat daripada dipindahkan}other{<ph name="FILE_COUNT" /> fail disekat daripada dipindahkan}}</translation>
 <translation id="3906022360148923497">Ikon instrumen pembayaran</translation>
+<translation id="3906234161316839040">Pesanan lain</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Ketahui lebih lanjut tentang kandungan terbenam</translation>
@@ -2255,7 +2257,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4445964943162061557">Ciri ini merupakan ciri percubaan dan tidak akan sentiasa memberikan hasil yang betul.</translation>
 <translation id="4449116177348980384">Butang urus tetapan laman, aktifkan untuk mengurus kebenaran dan data yang disimpan merentas laman dalam tetapan Chrome</translation>
 <translation id="4451135742916150903">Boleh meminta untuk menyambung kepada peranti HID</translation>
-<translation id="4451684391620232683">Teks yang disajikan kepada pengguna:</translation>
 <translation id="4452328064229197696">Kata laluan yang baru sahaja anda gunakan telah ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, Pengurus Kata Laluan Google mengesyorkan agar anda menyemak kata laluan yang disimpan.</translation>
 <translation id="4454620051637646665">Ketepikan sepanduk</translation>
 <translation id="4456937135469235202">Perjalanan Pengembaraan</translation>
@@ -2430,7 +2431,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4749924365937394956">Pengesahan Pelayan</translation>
 <translation id="4750671009706599284">telefon ini</translation>
 <translation id="4750917950439032686">Maklumat anda (contohnya, kata laluan atau nombor kad kredit) adalah berciri peribadi apabila dihantar ke tapak ini.</translation>
-<translation id="4751249061288707459">Persetujuan terakhir dikemas kini:</translation>
 <translation id="4754461935447132332">Tidak dibenarkan untuk laman yang tidak selamat</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kod tidak sah</translation>
@@ -2592,6 +2592,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5001526427543320409">Kuki pihak ketiga</translation>
 <translation id="5007344584818503324">Aktiviti kumpulan tab dikongsi</translation>
 <translation id="5007392906805964215">Semak</translation>
+<translation id="5008767248670679254">Semua penghantaran anda</translation>
 <translation id="5011561501798487822">Bahasa yang Dikesan</translation>
 <translation id="5015510746216210676">Nama Mesin:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3191,7 +3192,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5921952831792678223">Trak Pikap</translation>
 <translation id="5923492272538889093">Gunakan buka kunci peranti dan bukan CVC?</translation>
 <translation id="5924510104057992926">Semakan diperlukan sebelum membuka</translation>
-<translation id="5924782825030413055">Sumber kemaskinian terakhir persetujuan:</translation>
 <translation id="5925040402342933574">Cakera Optik (Separa Kilat)</translation>
 <translation id="5925147183566400388">Penuding Pernyataan Amalan Pensijilan</translation>
 <translation id="5926982310317673627">Gim &amp; Kelab Kesihatan</translation>
@@ -4135,6 +4135,7 @@ Butiran tambahan:
 <translation id="7393161616326137353">Permainan Kembara</translation>
 <translation id="7393475648162498734">Paparkan ganjaran dan manfaat yang tersedia untuk kad anda semasa semak keluar</translation>
 <translation id="7393971683644170444">Menyambung kepada penyedia kad anda...</translation>
+<translation id="7394497897677511168">Penghantaran lain</translation>
 <translation id="739728382607845710">Ikon pengendali pembayaran</translation>
 <translation id="7399616692258236448">Permintaan lokasi disekat secara automatik untuk semua laman kecuali pada laman yang anda benarkan</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4316,7 +4317,6 @@ Butiran tambahan:
 <translation id="762844065391966283">Satu demi satu</translation>
 <translation id="7629058630148860366">Alamat tempat kerja</translation>
 <translation id="763042426047865637">Perkhidmatan Kebakaran &amp; Keselamatan</translation>
-<translation id="7630470133768862132">Status persetujuan:</translation>
 <translation id="7631072086707140121">URL mestilah dalam format https.</translation>
 <translation id="7631527008834753063">Rancangan Permainan TV</translation>
 <translation id="7633909222644580952">Data prestasi dan laporan ranap sistem</translation>
@@ -5027,6 +5027,7 @@ Butiran tambahan:
 <translation id="877348612833018844">{0,plural, =1{Alihkan fail sulit?}other{Alihkan fail sulit?}}</translation>
 <translation id="8775347646940100151">Kertas (Kepala Surat)</translation>
 <translation id="8775863327608679820">Pengeluar Beli Sekarang, Bayar Kemudian yang tersedia untuk bayaran ansuran dibuka pada separuh ketinggian.</translation>
+<translation id="8776789089819232268">Semua pesanan anda</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781233757384402598">Apabila anda membuat permintaan untuk autolengkap dipertingkatkan, data penggunaan, permintaan dan butiran halaman anda dikongsi dengan Google untuk meningkatkan pengalaman autolengkap</translation>
 <translation id="8781278378794969337">Butang terjemah halaman, aktifkan untuk menterjemah halaman ini dengan Google Translate</translation>

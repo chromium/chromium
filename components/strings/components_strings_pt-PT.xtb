@@ -322,6 +322,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Serviços de limpeza</translation>
 <translation id="1476595624592550506">Altere a palavra-passe</translation>
+<translation id="1481450969185702334">Encontre e preencha</translation>
 <translation id="1482372785911828880">Extra fino</translation>
 <translation id="1482879811280872320">Ciclismo</translation>
 <translation id="1483493594462132177">Enviar</translation>
@@ -1883,6 +1884,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="390391808978419508">A abertura excedeu o tempo limite</translation>
 <translation id="3905894480064208252">{0,plural, =1{A transferência do ficheiro foi bloqueada}other{A transferência de <ph name="FILE_COUNT" /> ficheiros foi bloqueada}}</translation>
 <translation id="3906022360148923497">Ícone do meio de pagamento</translation>
+<translation id="3906234161316839040">Outras encomendas</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Saiba mais sobre conteúdo incorporado</translation>
@@ -2249,7 +2251,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4445964943162061557">Esta é uma funcionalidade experimental e nem sempre está certa.</translation>
 <translation id="4449116177348980384">Botão Gerir definições de sites; ative para gerir autorizações e dados armazenados em sites nas definições do Chrome</translation>
 <translation id="4451135742916150903">Pode solicitar a ligação a dispositivos HID</translation>
-<translation id="4451684391620232683">Texto apresentado ao utilizador:</translation>
 <translation id="4452328064229197696">A palavra-passe que acabou de utilizar foi encontrada numa violação de dados. Para proteger as suas contas, o Gestor de palavras-passe da Google recomenda que verifique as suas palavras-passe guardadas.</translation>
 <translation id="4454620051637646665">Ignorar faixa</translation>
 <translation id="4456937135469235202">Viagens de aventura</translation>
@@ -2424,7 +2425,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4749924365937394956">Autenticação do servidor</translation>
 <translation id="4750671009706599284">este telemóvel</translation>
 <translation id="4750917950439032686">As suas informações (por exemplo, palavras-passe ou números de cartões de crédito) são privadas quando são enviadas para este site.</translation>
-<translation id="4751249061288707459">Última atualização do consentimento:</translation>
 <translation id="4754461935447132332">Não permitida para sites não seguros</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">O código é inválido</translation>
@@ -2454,6 +2454,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4786804728079074733">Voleibol</translation>
 <translation id="4787182171088676626">Envelope (fino)</translation>
 <translation id="4791134497475588553">Apps do Linux instaladas e quando foram utilizadas pela última vez.</translation>
+<translation id="4791602164422809437">Com tecnologia da Inteligência Personalizada com o Gemini. Os URLs e os títulos das páginas são enviados para a Google e podem ser revistos por humanos. <ph name="BEGIN_LINK" />Faça a gestão das definições<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">As informações que está prestes a enviar não são seguras</translation>
 <translation id="4793219378458250238">11 x 12 pol.</translation>
 <translation id="4796594887379589189">ID da conta da tarefa</translation>
@@ -2585,6 +2586,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5001526427543320409">Cookies de terceiros</translation>
 <translation id="5007344584818503324">Atividade de grupos de separadores partilhados</translation>
 <translation id="5007392906805964215">Rever</translation>
+<translation id="5008767248670679254">Todos os seus envios</translation>
 <translation id="5011561501798487822">Idioma detetado</translation>
 <translation id="5015510746216210676">Nome do computador:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3030,6 +3032,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5675809467256309336">Música de dança e eletrónica</translation>
 <translation id="5675959228867414813">Mostrar por data</translation>
 <translation id="567604591393105935">Secção inferior do comércio aberta a meia altura</translation>
+<translation id="5676124785522323481">Gerir Apps Associadas</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Folha</translation>
 <translation id="5679086391497468752">Morada de casa</translation>
@@ -3181,7 +3184,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5921952831792678223">Carrinhas de caixa aberta</translation>
 <translation id="5923492272538889093">Usar o desbloqueio do dispositivo em vez do Código de Segurança/CVC?</translation>
 <translation id="5924510104057992926">É necessária uma revisão antes de abrir</translation>
-<translation id="5924782825030413055">Origem da última atualização do consentimento:</translation>
 <translation id="5925040402342933574">Disco ótico (semibrilho)</translation>
 <translation id="5925147183566400388">Apontador para a declaração de práticas de certificação</translation>
 <translation id="5926982310317673627">Ginásios</translation>
@@ -3391,6 +3393,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6240553182907836376">Atualize o cartão de identificação</translation>
 <translation id="6240601837375010619">Guarde o passaporte</translation>
 <translation id="6240964651812394252">Para usar o Gestor de Palavras-passe da Google com o seu sistema operativo, reinicie o Chrome e permita o acesso ao gestor de palavras-passe do computador. Os separadores reabrem depois de serem reiniciados.</translation>
+<translation id="6244366663267187541">Escolha as apps às quais o Gemini estabelece ligação</translation>
 <translation id="624499991300733384">Serviço do compositor de impressão</translation>
 <translation id="6246316216123107851">Há <ph name="NUM_DAYS" /> dias</translation>
 <translation id="6246382863801034910">Veículo</translation>
@@ -4123,6 +4126,7 @@ Detalhes adicionais:
 <translation id="7393161616326137353">Jogos de aventura</translation>
 <translation id="7393475648162498734">Mostrar que recompensas e vantagens estão disponíveis para os seus cartões no momento do pagamento</translation>
 <translation id="7393971683644170444">A estabelecer ligação ao seu fornecedor do cartão…</translation>
+<translation id="7394497897677511168">Outros envios</translation>
 <translation id="739728382607845710">Ícone do controlador de pagamentos</translation>
 <translation id="7399616692258236448">Os pedidos de localização são bloqueados automaticamente para todos os sites, exceto os que autorizar</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4203,6 +4207,7 @@ Detalhes adicionais:
 <translation id="7489255442002627311">A <ph name="BNPL_ISSUER_NAME" /> vai verificar a sua elegibilidade (este procedimento não tem impacto na sua pontuação de crédito). Se for aprovada, a <ph name="BNPL_ISSUER_NAME" /> vai apresentar-lhe planos de pagamento à sua escolha e concluir a sua compra.</translation>
 <translation id="7489392576326061356">Champôs e amaciadores</translation>
 <translation id="7489919936111034362">O seu armazenamento do Google Drive está cheio</translation>
+<translation id="7490622939531327327">Compreensão de formulários mais inteligente</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Contacte o proprietário do site para corrigir o problema.</translation>
 <translation id="749865518782565832">Canalização</translation>
 <translation id="7499188644237027195">Quando fizer compras no Chrome, veja a carteira eletrónica e o Pix como opções</translation>
@@ -4302,7 +4307,6 @@ Detalhes adicionais:
 <translation id="762844065391966283">Um item de cada vez</translation>
 <translation id="7629058630148860366">Morada do trabalho</translation>
 <translation id="763042426047865637">Serviços de segurança e proteção contra incêndios</translation>
-<translation id="7630470133768862132">Estado do consentimento:</translation>
 <translation id="7631072086707140121">O URL tem de ser HTTPS.</translation>
 <translation id="7631527008834753063">Concursos de televisão</translation>
 <translation id="7633909222644580952">Dados de desempenho e relatórios de falhas</translation>
@@ -5012,6 +5016,7 @@ Detalhes adicionais:
 <translation id="877348612833018844">{0,plural, =1{Mover o ficheiro confidencial?}other{Mover os ficheiros confidenciais?}}</translation>
 <translation id="8775347646940100151">Papel (timbrado)</translation>
 <translation id="8775863327608679820">Emissores do método Comprar agora e pagar depois disponíveis para pagamento em prestações abertos a meia altura.</translation>
+<translation id="8776789089819232268">Todas as suas encomendas</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Botão Traduzir página; ative para traduzir esta página com o Google Tradutor</translation>
 <translation id="8785658048882205566">Motos</translation>
@@ -5193,6 +5198,7 @@ Detalhes adicionais:
 <translation id="9078912659001679888">Liquidificadores e espremedores</translation>
 <translation id="9078964945751709336">São necessárias mais informações</translation>
 <translation id="9080712759204168376">Resumo da encomenda</translation>
+<translation id="908365381820697818">Agora, pode encontrar e preencher informações do Gmail e muito mais</translation>
 <translation id="9084304544887760521">Receba emails em <ph name="EMAIL" /> quando o preço dos artigos que acompanha descer em qualquer site.</translation>
 <translation id="9089260154716455634">Política para fora do horário de funcionamento:</translation>
 <translation id="9090218457905363312">Música reggae e caribenha</translation>

@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. ანგარიშის მენიუს გახსნა.</translation>
 <translation id="1397144142234474689">ისტორიის დამალვა</translation>
 <translation id="1399268420835656394">თუ ბავშვი არ ხართ, შეგიძლიათ შეამოწმოთ ასაკი Apple ანგარიშში ამ მოწყობილობაზე. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">ადრე შევსებული</translation>
 <translation id="1407135791313364759">ყველას გახსნა</translation>
 <translation id="1408847409015257906">შეხებით აირჩიეთ „კონფიდენციალურობა და უსაფრთხოება“.</translation>
 <translation id="1411386976162024013">Lens-ით ვიზუალური ძიება</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">თქვენს ანგარიშს მართავს თქვენი მშობელი.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">შეიცვალა</translation>
+<translation id="1481450969185702334">პოვნა და შევსება</translation>
 <translation id="1483493594462132177">გაგზავნა</translation>
 <translation id="1486096554574027028">პაროლების ძებნა</translation>
 <translation id="1486593497476255523">ჩანართების დაჯგუფება დასრულდა!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">კონფიდენციალურობის დაცვის მიზნით, Chrome არ შეავსებს ავტომატურად თქვენს პაროლს ამ ველში.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 საიტი (და მეტი სინქრონიზებულ მოწყობილობებში)}other{# საიტი (და მეტი სინქრონიზებულ მოწყობილობებში)}}</translation>
+<translation id="2865392654629180917">იკითხეთ ნებისმიერი რამ და მიიღეთ პასუხები AI-ს მხარდაჭერით</translation>
 <translation id="2870560284913253234">საიტი</translation>
 <translation id="2876369937070532032">Google-ს უგზავნის თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ებს, როცა უსაფრთხოება რისკის ქვეშ არის</translation>
 <translation id="2883151425485251736">ნახეთ და დაარედაქტირეთ თემები, რომლებიც დამალეთ თქვენი ანგარიშიდან</translation>

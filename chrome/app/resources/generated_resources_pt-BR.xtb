@@ -358,7 +358,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1254034280040157728">Grand Canyon</translation>
 <translation id="1254593899333212300">Conexão direta à Internet</translation>
 <translation id="1254767904958485584">Visualização dividida criada</translation>
-<translation id="1255095393630332248">Quando as guias são compartilhadas, o conteúdo, os URLs e as mídias das páginas são enviados ao Google.</translation>
 <translation id="1256143630373008432">Falha no Autoteste</translation>
 <translation id="1257336506558170607">Exportar certificado selecionado</translation>
 <translation id="1258491128795710625">O que há de novo</translation>
@@ -726,7 +725,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1561331397460162942">Permite que apps, sites com essa permissão e serviços do sistema acessem a localização</translation>
 <translation id="1562119309884184621">Essa ação fará com que o contato seja lembrado no próximo compartilhamento</translation>
 <translation id="1562585387501039294">Sua organização, <ph name="ACCOUNT_MANAGER" />, exige um perfil gerenciado e poderá ver algumas informações, incluindo</translation>
-<translation id="156345786953026804">O conteúdo da página e os URLs que o Gemini usa durante uma atividade são compartilhados com o Google.</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">A impressora selecionada não está disponível ou não foi instalada corretamente. Verifique a impressora ou selecione outra.</translation>
 <translation id="1566329594234563241">Enquanto o dispositivo estiver inativo e conectado à energia</translation>
@@ -1779,7 +1777,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Esta extensão pode ficar indisponível em breve}one{Esta extensão pode ficar indisponível em breve}other{Estas extensões podem ficar indisponíveis em breve}}</translation>
 <translation id="2378982052244864789">Selecionar o diretório da extensão.</translation>
 <translation id="2379111564446699251">Arraste os botões na barra de ferramentas para reorganizar</translation>
-<translation id="2379184471043414645">Ative a compreensão de mídia</translation>
 <translation id="2379281330731083556">Imprimir utilizando caixa de diálogo de sistema... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Isso pode desconectar a rede móvel por alguns minutos</translation>
 <translation id="2381499968174336913">Prévia da guia compartilhada</translation>
@@ -8039,7 +8036,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7237454422623102448">Configurações do sistema</translation>
 <translation id="7237820815228048635">Para <ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" /></translation>
 <translation id="7239108166256782787"><ph name="DEVICE_NAME" /> cancelou a transferência</translation>
-<translation id="7239401402533584029">Ajuda você a escrever o que quiser na Web de forma mais refinada ou inspirada</translation>
+<translation id="7239401402533584029">Ajuda com inspiração ou estilo para o que você precisa escrever na web</translation>
 <translation id="7240339475467890413">Conectar a um novo ponto de acesso?</translation>
 <translation id="7241763419756062043">Escolha a qualidade da navegação e da pesquisa</translation>
 <translation id="7243092385765551741">Excluir a chave de acesso?</translation>

@@ -12933,6 +12933,13 @@ Lưu ý: Thao tác khởi động lại thiết bị sẽ xoá bộ nhớ đệm
 <translation id="9087652369391570821">Chính sách cấu hình dành cho Trình kết nối OnFileTransfer của Chrome Enterprise</translation>
 <translation id="9088433379343318874">Cho phép nhà cung cấp nội dung của người dùng được giám sát</translation>
 <translation id="9088444059179765143">Định cấu hình phương thức phát hiện múi giờ tự động</translation>
+<translation id="9094681501120769194">Kiểm soát việc trình xem PDF trong <ph name="PRODUCT_NAME" /> có sử dụng iframe ngoài quy trình (OOPIF) hay không. Đây sẽ là cấu trúc trình xem PDF mới trong tương lai, vì cấu trúc này có thiết kế đơn giản hơn và giúp bạn thêm các tính năng mới dễ dàng hơn. Trình xem PDF GuestView hiện có là một cấu trúc lỗi thời, phức tạp và sắp tới sẽ không được dùng nữa.
+
+Khi bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt thì <ph name="PRODUCT_NAME" /> sẽ có thể sử dụng cấu trúc trình xem PDF OOPIF. Sau khi bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt, chế độ mặc định sẽ do <ph name="PRODUCT_NAME" /> quyết định.
+
+Khi bạn đặt chính sách này thành Disabled (Tắt), <ph name="PRODUCT_NAME" /> sẽ hoàn toàn dùng trình xem PDF GuestView hiện có. Thao tác này nhúng một trang web có cây khung riêng vào một trang web khác.
+
+Chính sách này không được dùng trong M152 nữa và sẽ bị loại bỏ trong M155. Trình xem PDF GuestView sẽ bị loại bỏ và cấu trúc trình xem PDF dùng iframe ngoài quy trình (OOPIF) sẽ luôn được sử dụng.</translation>
 <translation id="9095599826504830315">Không cho phép tính năng So sánh các thẻ.</translation>
 <translation id="9096772739225230999">Không báo cáo cấu hình mạng</translation>
 <translation id="9098409326885953506">Phát hiện cửa sổ bị che khuất và tạm ngưng pixel vẽ</translation>

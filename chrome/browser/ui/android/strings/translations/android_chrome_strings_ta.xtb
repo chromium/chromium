@@ -724,6 +724,7 @@
 <translation id="4044708993631234325">அடிப்புறத் தாள்</translation>
 <translation id="4045441967987592849">மீண்டும் திற</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" />க்கான கூடுதல் விருப்பங்கள்</translation>
+<translation id="4051548576872472315">சமீபத்தில் மூடப்பட்ட பக்கங்களையும் சாளரங்களையும் இங்கே பார்க்கலாம்</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{மறைநிலைச் சாளரத்தில் திற}other{அனைத்தையும் (#) மறைநிலைச் சாளரத்தில் திற}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{பகிர்ந்த பக்கக் குழுக்களில் புதிய செயல்பாட்டுடன் உள்ள <ph name="TABS_COUNT_ONE" /> வழக்கமான பக்கம்}other{பகிர்ந்த பக்கக் குழுக்களில் புதிய செயல்பாட்டுடன் உள்ள <ph name="TABS_COUNT_MANY" /> வழக்கமான பக்கங்கள்}}</translation>
 <translation id="405365679581583349">Google Play சேவைகளைப் புதுப்பியுங்கள்</translation>
@@ -1697,6 +1698,7 @@
 <translation id="7824665136384946951">பாதுகாப்பு உலாவல் அமைப்பை உங்கள் நிறுவனம் முடக்கியுள்ளது</translation>
 <translation id="7825973332242257878">பக்கக் குழுக்கள்</translation>
 <translation id="7826342993930002256">எங்கிருந்தும் Chromeமைப் பயன்படுத்துங்கள்</translation>
+<translation id="7845155831233417403">அதிகபட்சம் <ph name="MAX_INSTANCE_COUNT" /> சாளரங்களை மட்டுமே திறந்திருக்கலாம். தொடர ஒரு சாளரத்தை மூடவும்.</translation>
 <translation id="7846161022626028328">பிழை ஏற்பட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="7846296061357476882">Google சேவைகள்</translation>
 <translation id="784652447248278262">தற்போதைய சாளரம்</translation>

@@ -369,7 +369,7 @@
 <translation id="2165110345209765380">Se completó la tarea de la búsqueda con el Modo IA.</translation>
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2180338296831857171">Borrar direcciones</translation>
-<translation id="218350106843433823">Autorrellenar contraseñas y llaves de acceso</translation>
+<translation id="218350106843433823">Autocompletar contraseñas y llaves de acceso</translation>
 <translation id="2184272387334793084">Accede para obtener tus contraseñas y más en todos tus dispositivos</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2188993354115194873">Presiona <ph name="BEGIN_BOLD" />Guardar en Descargas<ph name="END_BOLD" /></translation>
@@ -614,6 +614,7 @@
 <translation id="3037177537145227281">Se está haciendo el seguimiento de precios</translation>
 <translation id="3038136505713492417">Verifica tu identidad para usar tus llaves de acceso en este dispositivo</translation>
 <translation id="3039671569659952257">Borrar carpeta</translation>
+<translation id="3050988301648974170">Abrir Revisión de contraseñas</translation>
 <translation id="3053332585453689122">Envía a la Navegación segura de Google las URLs que visitas y una pequeña muestra del contenido de la página, las descargas, la actividad de las extensiones y la información del sistema para revisar si las URLs son dañinas.</translation>
 <translation id="3055102495753300780">Almacenamiento de información</translation>
 <translation id="3059270601560379555">Nueva búsqueda</translation>
@@ -2427,6 +2428,7 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="9013605037177245304">Activar las notificaciones</translation>
 <translation id="9029650858822697271">Saliste de tu cuenta</translation>
 <translation id="9032405509996909363">Confirmar que quieres borrar los datos de navegación</translation>
+<translation id="9035699147763101514">Con la tecnología de Inteligencia personalizada con Gemini. Administra tus opciones en la configuración.</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>
 <translation id="9042893549633094279">Privacidad y seguridad</translation>
 <translation id="9055291197094969722">Crea grupos de pestañas para organizar las pestañas abiertas y mantener la productividad</translation>
@@ -2438,6 +2440,7 @@ Para continuar desde tu computadora, cambia a <ph name="OTHER_EMAIL" />. Obtendr
 <translation id="9070824521421603770">Saldrás de tu cuenta y se cerrarán las pestañas</translation>
 <translation id="9072837124205571418">Grupos de pestañas de todos los dispositivos</translation>
 <translation id="9081058212938299310">¿Quieres actualizar la contraseña para <ph name="USERNAME" />?</translation>
+<translation id="908365381820697818">Ahora puedes encontrar y completar información de Gmail y mucho más</translation>
 <translation id="9083838294503912307">Para sincronizar diferentes dispositivos y personalizar tu experiencia, activa la sincronización.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Tienes {count} contraseña poco segura que podría poner en riesgo tu seguridad. Cámbiala ahora para mantener tu cuenta segura.}other{Tienes {count} contraseñas poco seguras que podrían poner en riesgo tu seguridad. Cámbialas ahora para mantener tu cuenta segura.}}</translation>
 <translation id="9084369964545892485">Nueva pestaña de incógnito en el grupo</translation>

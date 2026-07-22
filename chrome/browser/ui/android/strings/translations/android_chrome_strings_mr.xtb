@@ -724,6 +724,7 @@
 <translation id="4044708993631234325">तळाशी असलेली शीट</translation>
 <translation id="4045441967987592849">पुन्हा उघडा</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> यासाठी आणखी पर्याय</translation>
+<translation id="4051548576872472315">तुमचे अलीकडे बंद केलेले टॅब आणि विंडो इथे शोधा</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{गुप्त विंडोमध्ये उघडा}other{सर्व (#) गुप्त विंडोमध्ये उघडा}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेला <ph name="TABS_COUNT_ONE" /> साधारण टॅब आहे}other{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेले <ph name="TABS_COUNT_MANY" /> साधारण टॅब आहेत}}</translation>
 <translation id="405365679581583349">Google Play सेवा अपडेट करा</translation>
@@ -1697,6 +1698,7 @@
 <translation id="7824665136384946951">तुमच्या संस्थेने सुरक्षित ब्राउझिंग बंद केले आहे</translation>
 <translation id="7825973332242257878">टॅब गट</translation>
 <translation id="7826342993930002256">तुमचे Chrome, सर्व ठिकाणी</translation>
+<translation id="7845155831233417403">तुमच्याकडे कमाल <ph name="MAX_INSTANCE_COUNT" /> विंडो असू शकतात. पुढे सुरू ठेवण्यासाठी विंडो बंद करा.</translation>
 <translation id="7846161022626028328">एरर आली. पुन्हा प्रयत्न करा.</translation>
 <translation id="7846296061357476882">Google सेवा</translation>
 <translation id="784652447248278262">सद्य विंडो</translation>

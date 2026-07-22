@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. <ph name="USER_EMAIL" />입니다. 계정 메뉴를 엽니다.</translation>
 <translation id="1397144142234474689">방문 기록 숨기기</translation>
 <translation id="1399268420835656394">아동이 아니라면 이 기기의 Apple 계정에 설정된 연령을 확인해 보세요. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">이전에 채워짐</translation>
 <translation id="1407135791313364759">모두 열기</translation>
 <translation id="1408847409015257906">'개인 정보 보호 및 보안'을 탭합니다.</translation>
 <translation id="1411386976162024013">렌즈 시각적 검색</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">부모님이 관리하는 계정입니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">변경됨</translation>
+<translation id="1481450969185702334">찾기 및 채우기</translation>
 <translation id="1483493594462132177">보내기</translation>
 <translation id="1486096554574027028">비밀번호 검색</translation>
 <translation id="1486593497476255523">탭 그룹이 완료되었습니다.</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Chrome에서는 개인 정보 보호를 위해 이 입력란의 비밀번호를 자동 완성하지 않습니다.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{사이트 1개(동기화된 기기에는 그 이상)}other{사이트 #개(동기화된 기기에는 그 이상)}}</translation>
+<translation id="2865392654629180917">무엇이든 물어보고 AI 기반 대답을 받아 보세요.</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2876369937070532032">보안상의 위험이 있을 때 일부 방문 페이지의 URL을 Google로 전송합니다.</translation>
 <translation id="2883151425485251736">계정에서 숨긴 주제 확인 및 수정</translation>

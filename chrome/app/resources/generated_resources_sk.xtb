@@ -358,7 +358,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1254034280040157728">Veľký kaňon</translation>
 <translation id="1254593899333212300">Priame pripojenie k Internetu</translation>
 <translation id="1254767904958485584">Rozdelené zobrazenie bolo vytvorené</translation>
-<translation id="1255095393630332248">Pri zdieľaní kariet sa obsah ich stránok, médiá a webové adresy odosielajú Googlu.</translation>
 <translation id="1256143630373008432">Autonómny test sa nepodaril</translation>
 <translation id="1257336506558170607">Exportovať vybraný certifikát</translation>
 <translation id="1258491128795710625">Novinky</translation>
@@ -725,7 +724,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1561331397460162942">Týmto povolíte prístup k polohe aplikáciám, webom s povoleným prístupom k polohe a systémovým službám</translation>
 <translation id="1562119309884184621">Po pridaní tohto kontaktu si ho systém zapamätá pre ďalšie zdieľanie</translation>
 <translation id="1562585387501039294">Vaša organizácia <ph name="ACCOUNT_MANAGER" /> vyžaduje spravovaný profil a bude si môcť zobraziť určité informácie vrátane týchto:</translation>
-<translation id="156345786953026804">Obsah stránky a webové adresy, ktoré bude Gemini používať počas vykonávania úlohy, sa budú zdieľať s Googlom.</translation>
 <translation id="1566049601598938765">Webové stránky</translation>
 <translation id="15662109988763471">Vybratá tlačiareň nie je k dispozícii alebo nie je správne nainštalovaná. Skontrolujte ju alebo vyberte inú.</translation>
 <translation id="1566329594234563241">Keď je zariadenie neaktívne a pripojené</translation>
@@ -1766,7 +1764,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Toto rozšírenie už čoskoro nemusí byť podporované}few{Tieto rozšírenia už čoskoro nemusia byť podporované}many{These extensions may soon no longer be supported}other{Tieto rozšírenia už čoskoro nemusia byť podporované}}</translation>
 <translation id="2378982052244864789">Vybrať adresár rozšírenia.</translation>
 <translation id="2379111564446699251">Ak chcete zmeniť poradie tlačidiel na paneli s nástrojmi, presuňte ich</translation>
-<translation id="2379184471043414645">Zapnúť porozumenie médiám</translation>
 <translation id="2379281330731083556">Tlačiť pomocou dialógového okna systému... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Môže to spôsobiť odpojenie vašej mobilnej siete na niekoľko minút.</translation>
 <translation id="2381499968174336913">Ukážka zdieľanej karty</translation>

@@ -313,6 +313,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2330186936255788117">Més adreces d'interès</translation>
 <translation id="2332515770639153015">La funció Navegació segura millorada està activada</translation>
 <translation id="233375395665273385">Suprimeix i tanca la sessió</translation>
+<translation id="2334275697832662087">La seguretat de Chrome basada en la IA et protegeix contra les amenaces en línia perquè naveguis amb seguretat</translation>
 <translation id="2341410551640223969">No s'ha pogut instal·lar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Dades totals utilitzades per Chrome, com ara comptes, adreces d'interès i opcions de configuració desades</translation>
 <translation id="2354001756790975382">Altres adreces d'interès</translation>
@@ -724,6 +725,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4044708993631234325">Full inferior</translation>
 <translation id="4045441967987592849">Torna a obrir</translation>
 <translation id="4049920046559074950">Més opcions per a <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051548576872472315">Troba aquí les pestanyes i les finestres que has tancat recentment</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Obre en una finestra d'incògnit}other{Obre-les (#) en una finestra d'incògnit}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya estàndard amb activitat nova en grups de pestanyes compartits}other{<ph name="TABS_COUNT_MANY" /> pestanyes estàndard amb activitat nova en grups de pestanyes compartits}}</translation>
 <translation id="405365679581583349">Actualitza Serveis de Google Play</translation>
@@ -1697,6 +1699,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7824665136384946951">La teva organització ha desactivat Navegació segura</translation>
 <translation id="7825973332242257878">Grups de pestanyes</translation>
 <translation id="7826342993930002256">El teu Chrome, siguis on siguis</translation>
+<translation id="7845155831233417403">Pots tenir fins a <ph name="MAX_INSTANCE_COUNT" /> finestres. Tanca una finestra per continuar.</translation>
 <translation id="7846161022626028328">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="7846296061357476882">Serveis de Google</translation>
 <translation id="784652447248278262">Finestra actual</translation>

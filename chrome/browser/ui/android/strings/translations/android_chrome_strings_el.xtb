@@ -147,6 +147,7 @@
 <translation id="1571041387761170095">Κανένας αδύναμος ή επαναχρησιμοποιημένος κωδικός πρόσβασης</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 παραβιασμένος κωδικός πρόσβασης σε αυτή τη συσκευή}other{# παραβιασμένοι κωδικοί πρόσβασης σε αυτή τη συσκευή}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> προτεινόμενα στοιχεία στην παρακάτω λίστα.</translation>
+<translation id="159689249463841786">Επιλογή φακέλου, προς το παρόν <ph name="FOLDER_NAME" /></translation>
 <translation id="1598163867407640634">Χρησιμοποιήστε το <ph name="SITE_ETLD_PLUS_ONE" /> με το <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα που κάνει εγγραφή</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Καρτέλα που κοινοποιεί περιεχόμενο</translation>
@@ -277,6 +278,7 @@
 <translation id="2190355936436201913">(κενό)</translation>
 <translation id="219283042927675668">Καρτέλες στην ομάδα</translation>
 <translation id="2194856509914051091">Λάβετε υπόψη τα εξής</translation>
+<translation id="2196695604589508993">Άνοιγμα ιστορικού</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα που κοινοποιεί περιεχόμενο</translation>
 <translation id="22091350895006575">Προσθήκη ονόματος χρήστη</translation>
 <translation id="221494669172414749">Εάν ανοίξετε το Chrome χωρίς κλείδωμα προφίλ, θα καταργηθούν οι αποθηκευμένοι κωδικοί πρόσβασης και οι τρόποι πληρωμής από το αυτοκίνητο. Η χρήση ενός κλειδώματος προφίλ διατηρεί αυτά τα δεδομένα ασφαλή.</translation>
@@ -1822,6 +1824,7 @@
 <translation id="8317318757008452355">Άνοιγμα επιλογών για εκτύπωση</translation>
 <translation id="8320212361750431956">Πρόσφατη δραστηριότητα</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">Σελιδοδείκτες και λίστες</translation>
 <translation id="8342727528718219152">Το Chrome θα σας ενημερώνει σχετικά με τους ιστοτόπους που μπορεί να στέλνουν πάρα πολλές ειδοποιήσεις</translation>
 <translation id="834313815369870491">Να μην γίνεται ποτέ μετάφραση ιστοτόπων</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα ανώνυμης περιήγησης από πολλαπλή επιλογή που κάνει εγγραφή</translation>
@@ -2063,6 +2066,7 @@
 <translation id="939598580284253335">Εισαγωγή φράσης πρόσβασης</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα ανώνυμης περιήγησης Picture-in-Picture</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
+<translation id="948276827484905248">Δημιουργία κωδικού QR</translation>
 <translation id="95817756606698420">Το Chrome μπορεί να χρησιμοποιήσει το <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> για την αναζήτηση στην Κίνα. Μπορείτε να αλλάξετε αυτή την επιλογή στις <ph name="BEGIN_LINK" />Ρυθμίσεις<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="963246339335003378">Άνοιγμα Διαχείρισης Εργασιών</translation>

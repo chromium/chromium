@@ -61,6 +61,7 @@
 <translation id="1090629319939036170">VR-menu</translation>
 <translation id="1091463901118115503">Verder lezen</translation>
 <translation id="1091779689406092804">screenshots</translation>
+<translation id="1095093219235104018">Zoeken en invullen met Gemini</translation>
 <translation id="1096545575934602868">Dit veld mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten. Verdere items worden verwijderd.</translation>
 <translation id="1097803577928227769">Natuurparken en tuinen</translation>
 <translation id="1099928364755383720">automatische scherm-in-scherm</translation>
@@ -366,6 +367,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 
           &lt;p&gt;Pas in het gedeelte &lt;strong&gt;Algemeen&lt;/strong&gt; van de app &lt;strong&gt;Instellingen&lt;/strong&gt; de datum en tijd aan.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Je beheerder start je apparaat opnieuw op om <ph name="TIME" /> op <ph name="DATE" /></translation>
+<translation id="1562601408588733317">Beheren hoe je informatie vindt en invult met Gemini</translation>
 <translation id="1562805467275776390">Autoraces</translation>
 <translation id="1563755205047885671">Actie- en platformgames</translation>
 <translation id="1564634006476980707">HTTPS-schema aanbevolen voor zoek-URL: <ph name="SEARCH_URL" /></translation>
@@ -832,6 +834,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2268044343513325586">Verfijnen</translation>
 <translation id="2268966938956566076">Upload over <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Telefoonnummer</translation>
+<translation id="2274179746480077483">Vul informatie automatisch in vanuit apps zoals Gmail en Foto's. Mogelijk gemaakt door Personal Intelligence.</translation>
 <translation id="2276057643614339130">Afdrukbasis</translation>
 <translation id="2277103315734023688">Vooruit zoeken</translation>
 <translation id="2277753418458118549">Verbindingsgegevens bekijken</translation>
@@ -1172,6 +1175,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2784949926578158345">De verbinding is opnieuw ingesteld.</translation>
 <translation id="2786008859124691917">Fietsen en accessoires</translation>
 <translation id="2792012897584536778">De beheerders van dit apparaat hebben beveiligingscertificaten ingesteld waarmee ze de content kunnen bekijken van websites die je bezoekt.</translation>
+<translation id="2793425367785017642">De content en URL's van de pagina's die je bezoekt, kunnen worden verwerkt in een privégedeelte in de cloud om formulieren beter te begrijpen en in te vullen.</translation>
 <translation id="2794233252405721443">Site geblokkeerd</translation>
 <translation id="2794629552137076216">Glas (reliëf)</translation>
 <translation id="2799223571221894425">Opnieuw starten</translation>
@@ -1541,6 +1545,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3391482648489541560">bestanden bewerken</translation>
 <translation id="3392028486601120379">Voor het URL-patroon <ph name="URL_PATTERN" /> is een pad opgegeven. Paden worden niet ondersteund voor deze sleutel. Verwijder het pad en probeer het opnieuw. Bijvoorbeeld: *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Ophaalmethode</translation>
+<translation id="3397968074427155329">Het formaat van het venster aanpassen om verder te chatten</translation>
 <translation id="3399161914051569225">Wearables</translation>
 <translation id="3399952811970034796">Bezorgadres</translation>
 <translation id="3402261774528610252">De verbinding waarmee deze site is geladen, gebruikte TLS 1.0 of TLS 1.1. Deze versies zijn verouderd en worden in de toekomst niet meer gebruikt. Dan kunnen gebruikers deze site niet meer laden. Voor de server moet TLS 1.2 of hoger worden gebruikt.</translation>
@@ -2243,7 +2248,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4445964943162061557">Dit is een experimentele functie die het niet altijd juist heeft.</translation>
 <translation id="4449116177348980384">Knop Site-instellingen beheren. Activeer deze om rechten en opgeslagen gegevens voor sites te beheren in de Chrome-instellingen.</translation>
 <translation id="4451135742916150903">Kan vragen of deze site verbinding mag maken met HID-apparaten</translation>
-<translation id="4451684391620232683">Tekst die de gebruiker te zien krijgt:</translation>
 <translation id="4452328064229197696">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
 <translation id="4454620051637646665">Banner sluiten</translation>
 <translation id="4456937135469235202">Avontuurlijke reizen</translation>
@@ -2418,7 +2422,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4749924365937394956">Serververificatie</translation>
 <translation id="4750671009706599284">deze telefoon</translation>
 <translation id="4750917950439032686">Je gegevens (zoals wachtwoorden of creditcardnummers) zijn privé wanneer ze worden verzonden naar deze site.</translation>
-<translation id="4751249061288707459">Toestemming laatst geüpdatet:</translation>
 <translation id="4754461935447132332">Niet toegestaan voor niet-beveiligde sites</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Code is ongeldig</translation>
@@ -2625,6 +2628,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5074134429918579056">Broeken en shorts</translation>
 <translation id="5077767274537436092">Een andere toegangssleutel gebruiken</translation>
 <translation id="5078060223219502807">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen en je opgeslagen wachtwoorden te checken om je account te beveiligen.</translation>
+<translation id="5082949343606863311">Systeemgegevens, waaronder formuliervelden en functieprestaties, worden geanalyseerd om toekomstige suggesties te verbeteren</translation>
 <translation id="5087286274860437796">Het servercertificaat is momenteel niet geldig.</translation>
 <translation id="5087580092889165836">Kaart toevoegen</translation>
 <translation id="5088142053160410913">Bericht aan bediener</translation>
@@ -3062,6 +3066,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5728246486828755318">Kan vragen om geavanceerde printerfuncties te gebruiken</translation>
 <translation id="5729442113829771034">Peuteronderwijs</translation>
 <translation id="5730040223043577876">Chrome raadt je aan je wachtwoord opnieuw in te stellen als je het voor andere sites hebt hergebruikt.</translation>
+<translation id="5731983613206445054">Je helpt ons verbeterd automatisch invullen te verbeteren</translation>
 <translation id="5735174108294025227">Hier worden geverifieerde e-mailadressen getoond</translation>
 <translation id="573555826359077410">Knop Formulier maken. Activeer deze om snel een nieuw formulier in Google Formulieren te maken.</translation>
 <translation id="5738385766833540397">Beheren hoe je meldingen over prijsdalingen krijgt voor producten die je volgt</translation>
@@ -3177,7 +3182,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5921952831792678223">Pick-ups</translation>
 <translation id="5923492272538889093">Apparaatontgrendeling gebruiken in plaats van CVC?</translation>
 <translation id="5924510104057992926">Check bestanden voordat je ze opent</translation>
-<translation id="5924782825030413055">Bron van laatste update van toestemming:</translation>
 <translation id="5925040402342933574">Optische schijf (zijdeglans)</translation>
 <translation id="5925147183566400388">Pointer naar certificeringspraktijkverklaring</translation>
 <translation id="5926982310317673627">Sportscholen en fitnessclubs</translation>
@@ -3890,6 +3894,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7011763495818914549">Identiteitskaart</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Kan vragen om je muis te vergrendelen en te gebruiken</translation>
+<translation id="7013844825046560088">Chrome registreert hoe je de functie gebruikt, zoals je verzoeken en je gedrag als je suggesties accepteert of negeert</translation>
 <translation id="7014042602717177828">Auto-audio</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
 <translation id="7016992613359344582">Dit kunnen eenmalige of terugkerende kosten zijn die misschien niet duidelijk worden aangegeven.</translation>
@@ -4300,7 +4305,6 @@ Aanvullende informatie:
 <translation id="762844065391966283">Eén tegelijk</translation>
 <translation id="7629058630148860366">Werkadres</translation>
 <translation id="763042426047865637">Brandmelding- en beveiligingsservices</translation>
-<translation id="7630470133768862132">Toestemmingsstatus:</translation>
 <translation id="7631072086707140121">URL moet https zijn.</translation>
 <translation id="7631527008834753063">Tv-gameshows</translation>
 <translation id="7633909222644580952">Prestatiegegevens en crashrapporten</translation>
@@ -4567,6 +4571,7 @@ Aanvullende informatie:
 <translation id="803771048473350947">Archief</translation>
 <translation id="8038182528865038593">Rood 2</translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
+<translation id="8042898384266617514">Je verzoeken, paginatitels en URL's worden naar Google gestuurd en kunnen door mensen worden beoordeeld</translation>
 <translation id="8043255123207491407">Algemene voorwaarden van verkoper bekijken</translation>
 <translation id="8044986521421349135">Je meest recente tabblad</translation>
 <translation id="8046360364391076336">Industriële materialen en apparatuur</translation>
@@ -5010,6 +5015,7 @@ Aanvullende informatie:
 <translation id="8775347646940100151">Papier (briefhoofd)</translation>
 <translation id="8775863327608679820">Uitgevers van Koop nu, betaal later die beschikbaar zijn voor betalen in termijnen, zijn op halve hoogte geopend.</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8781233757384402598">Als je een verzoek indient voor verbeterd automatisch invullen, worden je gebruiksgegevens, verzoeken en paginagegevens gedeeld met Google om de functionaliteit voor automatisch invullen te verbeteren</translation>
 <translation id="8781278378794969337">Knop Pagina vertalen. Activeer deze om deze pagina te vertalen met Google Translate.</translation>
 <translation id="8785658048882205566">Motorfietsen</translation>
 <translation id="8790007591277257123">&amp;Opnieuw verwijderen</translation>

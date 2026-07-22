@@ -147,6 +147,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="1571041387761170095">Walang password na mahina o ginamit ulit</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 nakompromisong password sa device na ito}one{# nakompromisong password sa device na ito}other{# na nakompromisong password sa device na ito}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> (na) iminumungkahing item sa listahan sa ibaba.</translation>
+<translation id="159689249463841786">Pumili ng folder, kasalukuyang <ph name="FOLDER_NAME" /></translation>
 <translation id="1598163867407640634">Gamitin ang <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, Naka-pin at Nagre-record na Tab</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Nagshe-share na Tab</translation>
@@ -277,6 +278,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2190355936436201913">(walang laman)</translation>
 <translation id="219283042927675668">Mga tab sa grupo</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
+<translation id="2196695604589508993">Buksan ang history</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Naka-pin at Nagshe-share na Tab</translation>
 <translation id="22091350895006575">Magdagdag ng username</translation>
 <translation id="221494669172414749">Kapag binuksan ang Chrome nang walang lock ng profile, maaalis ang iyong mga naka-save na password at mga paraan ng pagbabayad sa kotse. Kapag gumamit ng lock ng profile, mananatiling secure ang data na ito.</translation>
@@ -311,6 +313,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2330186936255788117">Higit pang bookmark</translation>
 <translation id="2332515770639153015">Naka-on ang Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="233375395665273385">I-delete at mag-sign out</translation>
+<translation id="2334275697832662087">Nakakatulong ang AI-powered na seguridad ng Chrome na protektahan ka laban sa mga banta online, na nagbibigay sa iyo ng kumpiyansa habang nagba-browse ka</translation>
 <translation id="2341410551640223969">Hindi ma-install ang <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Kabuuang data na ginagamit ng Chrome, kabilang ang mga account, bookmark at naka-save na setting</translation>
 <translation id="2354001756790975382">Iba pang mga bookmark</translation>
@@ -1822,6 +1825,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8317318757008452355">Buksan ang mga opsyon para mag-print</translation>
 <translation id="8320212361750431956">Kamakailang Aktibidad</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">Mga bookmark at listahan</translation>
 <translation id="8342727528718219152">Ipapaalam sa iyo ng Chrome ang tungkol sa mga site na posibleng nagpapadala ng masyadong maraming notification</translation>
 <translation id="834313815369870491">Huwag isalin kailanman ang mga site</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, Naka-multiselect na Naka-pin at Nagre-record na Tab na Incognito</translation>
@@ -2063,6 +2067,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="939598580284253335">Ilagay ang passphrase</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, Naka-pin na Picture-in-Picture na Tab na Incognito</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
+<translation id="948276827484905248">Gumawa ng QR code</translation>
 <translation id="95817756606698420">Maaaring gamitin ng Chrome ang <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para sa paghahanap sa China. Maaari mo itong baguhin sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">I-delete ang browsing data</translation>
 <translation id="963246339335003378">Buksan ang Task Manager</translation>

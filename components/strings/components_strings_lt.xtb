@@ -322,6 +322,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Valymo paslaugų teikėjai</translation>
 <translation id="1476595624592550506">Pakeiskite slaptažodį</translation>
+<translation id="1481450969185702334">Rasti ir užpildyti</translation>
 <translation id="1482372785911828880">Itin plonas</translation>
 <translation id="1482879811280872320">Važiavimas dviračiu</translation>
 <translation id="1483493594462132177">Siųsti</translation>
@@ -1884,6 +1885,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="390391808978419508">Baigėsi atidarymo skirtasis laikas</translation>
 <translation id="3905894480064208252">{0,plural, =1{Failas užblokuotas, kad nebūtų galima perkelti}one{<ph name="FILE_COUNT" /> failas užblokuotas, kad nebūtų galima perkelti}few{<ph name="FILE_COUNT" /> failai užblokuoti, kad nebūtų galima perkelti}many{<ph name="FILE_COUNT" /> failo užblokuota, kad nebūtų galima perkelti}other{<ph name="FILE_COUNT" /> failų užblokuota, kad nebūtų galima perkelti}}</translation>
 <translation id="3906022360148923497">Mokėjimo priemonės piktograma</translation>
+<translation id="3906234161316839040">Kiti užsakymai</translation>
 <translation id="3906954721959377182">Planšetinis kompiuteris</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Sužinokite daugiau apie įterptą turinį</translation>
@@ -2250,7 +2252,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4445964943162061557">Tai eksperimentinė funkcija ir ji ne visada pateikia tinkamus atsakymus.</translation>
 <translation id="4449116177348980384">Mygtukas „Tvarkyti svetainės nustatymus“; suaktyvinkite, jei norite tvarkyti leidimus ir svetainėse saugomus duomenis „Chrome“ nustatymuose</translation>
 <translation id="4451135742916150903">Gali būti prašoma prisijungti prie HID įrenginių</translation>
-<translation id="4451684391620232683">Naudotojui pateiktas tekstas:</translation>
 <translation id="4452328064229197696">Slaptažodis, kurį ką tik naudojote, buvo atskleistas įvykus duomenų saugos pažeidimui. Siekiant užtikrinti paskyrų saugumą, „Google“ slaptažodžių tvarkytuvė rekomenduoja patikrinti išsaugotus slaptažodžius.</translation>
 <translation id="4454620051637646665">Uždaryti reklamjuostę</translation>
 <translation id="4456937135469235202">Nuotykinės kelionės</translation>
@@ -2425,7 +2426,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4749924365937394956">Serverio autentifikavimas</translation>
 <translation id="4750671009706599284">šį telefoną</translation>
 <translation id="4750917950439032686">Į šią svetainę siunčiama informacija (pvz., slaptažodžiai arba kredito kortelių numeriai) yra privati.</translation>
-<translation id="4751249061288707459">Sutikimas paskutinį kartą atnaujintas:</translation>
 <translation id="4754461935447132332">Neleidžiama nesaugiose svetainėse</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Netinkamas kodas</translation>
@@ -2587,6 +2587,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5001526427543320409">Trečiųjų šalių slapukai</translation>
 <translation id="5007344584818503324">Bendrinamų skirtukų grupių veikla</translation>
 <translation id="5007392906805964215">Peržiūrėti</translation>
+<translation id="5008767248670679254">Visos jūsų siuntos</translation>
 <translation id="5011561501798487822">Aptikta kalba</translation>
 <translation id="5015510746216210676">Įrenginio pavadinimas:</translation>
 <translation id="5016205925109358554">Su užraitais</translation>
@@ -3184,7 +3185,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5921952831792678223">Pikapai</translation>
 <translation id="5923492272538889093">Naudoti įrenginio atrakinimo funkciją vietoje kortelės saugos kodo (CVC)?</translation>
 <translation id="5924510104057992926">Prieš atidarant reikia peržiūrėti</translation>
-<translation id="5924782825030413055">Paskutinio sutikimo atnaujinimo šaltinis:</translation>
 <translation id="5925040402342933574">Optinis diskas (pusiau blizgus)</translation>
 <translation id="5925147183566400388">Sertifikavimo veiklos nuostatų nuoroda</translation>
 <translation id="5926982310317673627">Sporto salės ir sveikatingumo klubai</translation>
@@ -4127,6 +4127,7 @@ Papildoma išsami informacija:
 <translation id="7393161616326137353">Nuotykių žaidimai</translation>
 <translation id="7393475648162498734">Atsiskaitant parodyti, kokios premijos ir privilegijos pasiekiamos kortelėms</translation>
 <translation id="7393971683644170444">Prisijungiama prie kortelės išdavėjo sistemos...</translation>
+<translation id="7394497897677511168">Kitos siuntos</translation>
 <translation id="739728382607845710">Mokėjimo doroklės piktograma</translation>
 <translation id="7399616692258236448">Vietovės užklausos automatiškai blokuojamos visose svetainėse, išskyrus svetaines, kuriose leidote tai daryti</translation>
 <translation id="7400418766976504921">URL adresas</translation>
@@ -4308,7 +4309,6 @@ Papildoma išsami informacija:
 <translation id="762844065391966283">Po vieną</translation>
 <translation id="7629058630148860366">Darbo adresas</translation>
 <translation id="763042426047865637">Priešgaisrinės saugos ir saugos paslaugos</translation>
-<translation id="7630470133768862132">Sutikimo būsena:</translation>
 <translation id="7631072086707140121">URL turi būti „https“.</translation>
 <translation id="7631527008834753063">TV žaidimų laidos</translation>
 <translation id="7633909222644580952">Našumo duomenys ir strigčių ataskaitos</translation>
@@ -5018,6 +5018,7 @@ Papildoma išsami informacija:
 <translation id="877348612833018844">{0,plural, =1{Perkelti konfidencialų failą?}one{Perkelti konfidencialius failus?}few{Perkelti konfidencialius failus?}many{Perkelti konfidencialius failus?}other{Perkelti konfidencialius failus?}}</translation>
 <translation id="8775347646940100151">Popierius (blankas)</translation>
 <translation id="8775863327608679820">Paslaugos „Pirkite dabar, mokėkite vėliau“ išdavėjai, leidžiantys mokėti per laiką, atidaryti per pusę ekrano aukščio.</translation>
+<translation id="8776789089819232268">Visi jūsų užsakymai</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Mygtukas „Versti puslapį“; suaktyvinkite, kad galėtumėte išversti šį puslapį naudodami „Google“ vertėją</translation>
 <translation id="8785658048882205566">Motociklai</translation>

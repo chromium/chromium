@@ -322,6 +322,7 @@
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">청소 서비스</translation>
 <translation id="1476595624592550506">비밀번호 변경</translation>
+<translation id="1481450969185702334">찾기 및 채우기</translation>
 <translation id="1482372785911828880">매우 가늘게</translation>
 <translation id="1482879811280872320">사이클</translation>
 <translation id="1483493594462132177">보내기</translation>
@@ -1883,6 +1884,7 @@
 <translation id="390391808978419508">여는 시간 초과</translation>
 <translation id="3905894480064208252">{0,plural, =1{파일 전송 차단됨}other{파일 <ph name="FILE_COUNT" />개 전송 차단됨}}</translation>
 <translation id="3906022360148923497">결제 수단 아이콘</translation>
+<translation id="3906234161316839040">다른 주문</translation>
 <translation id="3906954721959377182">태블릿</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">삽입된 콘텐츠에 대해 자세히 알아보기</translation>
@@ -2249,7 +2251,6 @@
 <translation id="4445964943162061557">실험용 기능이므로 정확하지 않을 수 있습니다.</translation>
 <translation id="4449116177348980384">사이트 설정 관리 버튼, Chrome 설정에서 사이트 전반에 저장된 권한 및 데이터를 관리하려면 활성화하세요.</translation>
 <translation id="4451135742916150903">HID 기기에 연결하도록 요청할 수 있음</translation>
-<translation id="4451684391620232683">사용자에게 표시되는 텍스트:</translation>
 <translation id="4452328064229197696">방금 사용한 비밀번호가 정보 유출로 인해 노출된 것으로 확인됩니다. 계정을 보호하기 위해 Google 비밀번호 관리자에서 저장된 비밀번호를 확인하시기 바랍니다.</translation>
 <translation id="4454620051637646665">배너 닫기</translation>
 <translation id="4456937135469235202">모험 여행</translation>
@@ -2424,7 +2425,6 @@
 <translation id="4749924365937394956">서버 인증</translation>
 <translation id="4750671009706599284">이 휴대전화</translation>
 <translation id="4750917950439032686">비밀번호나 신용카드 번호 등의 정보는 비공개 상태로 이 사이트에 전송됩니다.</translation>
-<translation id="4751249061288707459">동의 최종 업데이트:</translation>
 <translation id="4754461935447132332">안전하지 않은 사이트에서 허용되지 않음</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">코드가 잘못되었습니다.</translation>
@@ -2586,6 +2586,7 @@
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
 <translation id="5007344584818503324">공유 탭 그룹 활동</translation>
 <translation id="5007392906805964215">검토</translation>
+<translation id="5008767248670679254">모든 배송</translation>
 <translation id="5011561501798487822">감지된 언어</translation>
 <translation id="5015510746216210676">컴퓨터 이름:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3183,7 +3184,6 @@
 <translation id="5921952831792678223">픽업 트럭</translation>
 <translation id="5923492272538889093">CVC 대신 기기 잠금 해제를 사용하시겠습니까?</translation>
 <translation id="5924510104057992926">열기 전에 검토 필요</translation>
-<translation id="5924782825030413055">마지막 동의 업데이트 소스:</translation>
 <translation id="5925040402342933574">광디스크(반광택)</translation>
 <translation id="5925147183566400388">인증 업무 준칙 URI</translation>
 <translation id="5926982310317673627">체육관 및 헬스장</translation>
@@ -4126,6 +4126,7 @@
 <translation id="7393161616326137353">어드벤처 게임</translation>
 <translation id="7393475648162498734">결제 과정에서 카드에 적용 가능한 리워드 및 혜택을 표시합니다.</translation>
 <translation id="7393971683644170444">카드 제공업체에 연결 중…</translation>
+<translation id="7394497897677511168">다른 배송</translation>
 <translation id="739728382607845710">결제 핸들러 아이콘</translation>
 <translation id="7399616692258236448">허용한 사이트를 제외한 모든 사이트의 위치 요청이 자동으로 차단됩니다.</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4306,7 +4307,6 @@
 <translation id="762844065391966283">한 번에 하나씩</translation>
 <translation id="7629058630148860366">직장 주소</translation>
 <translation id="763042426047865637">화재 및 보안 서비스</translation>
-<translation id="7630470133768862132">동의 상태:</translation>
 <translation id="7631072086707140121">URL은 https여야 합니다.</translation>
 <translation id="7631527008834753063">TV 게임쇼</translation>
 <translation id="7633909222644580952">성능 데이터 및 비정상 종료 보고서</translation>
@@ -5015,6 +5015,7 @@
 <translation id="877348612833018844">{0,plural, =1{기밀 파일을 이동하시겠습니까?}other{기밀 파일을 이동하시겠습니까?}}</translation>
 <translation id="8775347646940100151">용지(레터헤드)</translation>
 <translation id="8775863327608679820">할부 결제를 지원하는 선구매 후지불 발급기관 목록이 절반 높이로 열렸습니다.</translation>
+<translation id="8776789089819232268">모든 주문</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">페이지 번역 버튼, Google 번역으로 이 페이지를 번역하려면 활성화하세요.</translation>
 <translation id="8785658048882205566">오토바이</translation>

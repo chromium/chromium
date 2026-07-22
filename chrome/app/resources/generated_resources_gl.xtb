@@ -358,7 +358,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1254034280040157728">Gran Canón</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
 <translation id="1254767904958485584">Creouse a vista dividida</translation>
-<translation id="1255095393630332248">Cando se comparten pestanas, envíanse a Google o contido das páxinas, o contido multimedia e os URL.</translation>
 <translation id="1256143630373008432">Produciuse un erro na proba automática</translation>
 <translation id="1257336506558170607">Exportar o certificado seleccionado</translation>
 <translation id="1258491128795710625">Novidades</translation>
@@ -725,7 +724,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1561331397460162942">Desta forma, as aplicacións, os sitios web co permiso correspondente e os servizos do sistema poderán acceder á localización</translation>
 <translation id="1562119309884184621">Se engades este contacto, lembrarase a próxima vez que comparta contido</translation>
 <translation id="1562585387501039294">A túa organización, <ph name="ACCOUNT_MANAGER" />, esixe un perfil xestionado e poderá ver algunha información, por exemplo</translation>
-<translation id="156345786953026804">O contido da páxina e os URL que use Gemini durante unha tarefa compartiranse con Google.</translation>
 <translation id="1566049601598938765">Sitio web</translation>
 <translation id="15662109988763471">A impresora seleccionada non está dispoñible ou non está instalada correctamente. Compróbaa ou selecciona outra.</translation>
 <translation id="1566329594234563241">Cando o dispositivo estea inactivo e conectado</translation>
@@ -1766,7 +1764,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Pode que esta extensión deixe de estar dispoñible dentro de pouco}other{Pode que estas extensións deixen de estar dispoñibles dentro de pouco}}</translation>
 <translation id="2378982052244864789">Selecciona o directorio da extensión.</translation>
 <translation id="2379111564446699251">Para reorganizar os botóns na barra de ferramentas, arrástraos</translation>
-<translation id="2379184471043414645">Activar a comprensión de contido multimedia</translation>
 <translation id="2379281330731083556">Imprimir usando a caixa de diálogo do sistema... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Este proceso pode provocar que a rede de telefonía móbil se desconecte durante uns minutos</translation>
 <translation id="2381499968174336913">Vista previa da pestana compartida</translation>

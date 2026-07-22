@@ -614,6 +614,7 @@
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3038136505713492417">Verify that it's you to use your passkeys on this device</translation>
 <translation id="3039671569659952257">Delete folder</translation>
+<translation id="3050988301648974170">Open Password Checkup</translation>
 <translation id="3053332585453689122">Sends the URLs you visit and a small sample of page content, downloads, extension activity and system information to Google Safe Browsing to check if they're harmful.</translation>
 <translation id="3055102495753300780">Information storage</translation>
 <translation id="3059270601560379555">New search</translation>
@@ -2427,6 +2428,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="9013605037177245304">Turn on notifications</translation>
 <translation id="9029650858822697271">You were signed out</translation>
 <translation id="9032405509996909363">Confirm delete browsing data</translation>
+<translation id="9035699147763101514">Powered by Personal Intelligence with Gemini. Manage your choices in settings.</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9042893549633094279">Privacy and security</translation>
 <translation id="9055291197094969722">Create tab groups to organise your open tabs and stay productive</translation>
@@ -2438,6 +2440,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="9070824521421603770">You'll be signed out and tabs will be closed</translation>
 <translation id="9072837124205571418">Tab groups from all devices</translation>
 <translation id="9081058212938299310">Update password for <ph name="USERNAME" />?</translation>
+<translation id="908365381820697818">Now you can find and fill info from Gmail and more</translation>
 <translation id="9083838294503912307">To sync and personalise across devices, turn on sync.</translation>
 <translation id="9084367296493549256">{count,plural, =1{You have {count} weak password that could put your security at risk. Fix it now to stay safe.}other{You have {count} weak passwords that could put your security at risk. Fix them now to stay safe.}}</translation>
 <translation id="9084369964545892485">New Incognito tab in group</translation>

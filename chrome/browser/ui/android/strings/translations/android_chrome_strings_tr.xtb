@@ -147,6 +147,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1571041387761170095">Zayıf veya yeniden kullanılan şifre yok</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{Bu cihazda güvenliği ihlal edilmiş 1 şifre var}other{Bu cihazda güvenliği ihlal edilmiş # şifre var}}</translation>
 <translation id="1594635596540195766">Önerilen <ph name="SUGGESTIONS_COUNT" /> öğe aşağıdaki listede</translation>
+<translation id="159689249463841786">Şu anda <ph name="FOLDER_NAME" /> olan klasörü seçin</translation>
 <translation id="1598163867407640634"><ph name="SITE_ETLD_PLUS_ONE" /> web sitesini <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ile kullanın</translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, Medya Kaydeden Sabit Sekme</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, Paylaşım Sekmesi</translation>
@@ -277,6 +278,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2190355936436201913">(boş)</translation>
 <translation id="219283042927675668">Gruptaki sekmeler</translation>
 <translation id="2194856509914051091">Dikkate alınması gereken noktalar</translation>
+<translation id="2196695604589508993">Geçmişi aç</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Paylaşım Yapan Sabit Sekme</translation>
 <translation id="22091350895006575">Kullanıcı adı ekle</translation>
 <translation id="221494669172414749">Chrome'u profil kilidi olmadan açarsanız arabadaki kayıtlı şifreleriniz ve ödeme yöntemleriniz kaldırılır. Profil kilidi kullanmanız bu verilerin güvenliğini sağlar.</translation>
@@ -1822,6 +1824,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8317318757008452355">Yazdırma seçeneklerini aç</translation>
 <translation id="8320212361750431956">Son Etkinlik</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">Yer işaretleri ve listeler</translation>
 <translation id="8342727528718219152">Chrome, çok fazla bildirim gönderen siteleri size bildirir</translation>
 <translation id="834313815369870491">Siteleri asla çevirme</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, Medya Kaydeden Birden Çok Seçili Sabit Gizli Sekme</translation>
@@ -2063,6 +2066,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="939598580284253335">Parolayı girin</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, Sabit Pencere İçinde Pencere Gizli Sekmesi</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
+<translation id="948276827484905248">QR kodu oluştur</translation>
 <translation id="95817756606698420">Chrome, Çin'de arama yapmak için <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />'yu kullanabilir. Bu seçimi <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'da değiştirebilirsiniz.</translation>
 <translation id="961856697154696964">Tarama verilerini sil</translation>
 <translation id="963246339335003378">Görev yöneticisini aç</translation>

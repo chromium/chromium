@@ -2247,7 +2247,6 @@
 <translation id="4445964943162061557">這項功能目前處於實驗階段，因此提供的結果不一定符合需求。</translation>
 <translation id="4449116177348980384">「管理網站設定」按鈕，啟動後即可在 Chrome 設定中管理各網站的權限和儲存的資料</translation>
 <translation id="4451135742916150903">可以要求連線至 HID 裝置</translation>
-<translation id="4451684391620232683">向使用者顯示的文字：</translation>
 <translation id="4452328064229197696">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，Google 密碼管理員建議你立即檢查已儲存的密碼。</translation>
 <translation id="4454620051637646665">關閉橫幅</translation>
 <translation id="4456937135469235202">探險旅遊</translation>
@@ -2422,7 +2421,6 @@
 <translation id="4749924365937394956">伺服器驗證</translation>
 <translation id="4750671009706599284">這支手機</translation>
 <translation id="4750917950439032686">你傳送給這個網站的資訊 (例如密碼或信用卡號碼) 不會外洩。</translation>
-<translation id="4751249061288707459">同意聲明上次更新時間：</translation>
 <translation id="4754461935447132332">禁止用於不安全的網站</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">安全碼無效</translation>
@@ -2452,6 +2450,7 @@
 <translation id="4786804728079074733">排球</translation>
 <translation id="4787182171088676626">信封 (高品質)</translation>
 <translation id="4791134497475588553">已安裝的 Linux 應用程式及上次使用時間</translation>
+<translation id="4791602164422809437">採用 Gemini 個人化智慧服務。網頁標題和網址會傳送給 Google，並可能交由人工審查。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="4792686369684665359">你要提交的資訊未受到保護</translation>
 <translation id="4793219378458250238">11 x 12 吋</translation>
 <translation id="4796594887379589189">工作帳戶 ID</translation>
@@ -3028,6 +3027,7 @@
 <translation id="5675809467256309336">舞曲與電子音樂</translation>
 <translation id="5675959228867414813">依日期顯示</translation>
 <translation id="567604591393105935">商務底部功能表已開啟，顯示在畫面下半部</translation>
+<translation id="5676124785522323481">管理連結的應用程式</translation>
 <translation id="5676641328629468296">Google Pay、Pix</translation>
 <translation id="5678007133659493065">箔</translation>
 <translation id="5679086391497468752">住家地址</translation>
@@ -3179,7 +3179,6 @@
 <translation id="5921952831792678223">小貨車</translation>
 <translation id="5923492272538889093">要使用裝置解鎖功能取代信用卡驗證碼嗎？</translation>
 <translation id="5924510104057992926">開啟檔案前請務必確認</translation>
-<translation id="5924782825030413055">同意聲明上次更新來源：</translation>
 <translation id="5925040402342933574">光碟 (半光面)</translation>
 <translation id="5925147183566400388">憑證實務作業基準指標</translation>
 <translation id="5926982310317673627">健身房和健康俱樂部</translation>
@@ -3389,6 +3388,7 @@
 <translation id="6240553182907836376">更新身分證件</translation>
 <translation id="6240601837375010619">儲存護照</translation>
 <translation id="6240964651812394252">如要在作業系統上使用 Google 密碼管理工具，請重新啟動 Chrome，並允許存取電腦的密碼管理工具。分頁會在重新啟動之後再次開啟。</translation>
+<translation id="6244366663267187541">選擇要與 Gemini 連結的應用程式</translation>
 <translation id="624499991300733384">列印合成器服務</translation>
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6246382863801034910">車輛</translation>
@@ -4202,6 +4202,7 @@
 <translation id="7489255442002627311">「<ph name="BNPL_ISSUER_NAME" />」會確認資格，這不會影響你的信用評分。如果核准，「<ph name="BNPL_ISSUER_NAME" />」就會提供付款方案供你選擇，讓你完成購買程序。</translation>
 <translation id="7489392576326061356">洗髮精與潤髮乳</translation>
 <translation id="7489919936111034362">Google 雲端硬碟儲存空間已滿</translation>
+<translation id="7490622939531327327">更聰明的表單辨識功能</translation>
 <translation id="7495528107193238112">這項內容已遭到封鎖，請聯絡網站擁有者以修正問題。</translation>
 <translation id="749865518782565832">水管工程</translation>
 <translation id="7499188644237027195">在 Chrome 中進行購買交易時可選擇「電子錢包」和「Pix」</translation>
@@ -4301,7 +4302,6 @@
 <translation id="762844065391966283">一次一個物件</translation>
 <translation id="7629058630148860366">公司地址</translation>
 <translation id="763042426047865637">消防與保全服務</translation>
-<translation id="7630470133768862132">同意聲明狀態：</translation>
 <translation id="7631072086707140121">網址必須是 https。</translation>
 <translation id="7631527008834753063">電視遊戲節目</translation>
 <translation id="7633909222644580952">效能資料和當機報告</translation>
@@ -5191,6 +5191,7 @@
 <translation id="9078912659001679888">食物調理機和榨汁機</translation>
 <translation id="9078964945751709336">請提供詳細資訊</translation>
 <translation id="9080712759204168376">訂單摘要</translation>
+<translation id="908365381820697818">現在可以在 Gmail 等服務中尋找及填入資訊了</translation>
 <translation id="9084304544887760521">設定了追蹤的商品後，如果有任何網站調降了這些商品的價格，系統將傳送電子郵件到 <ph name="EMAIL" />。</translation>
 <translation id="9089260154716455634">停機時間政策：</translation>
 <translation id="9090218457905363312">雷鬼樂與加勒比海音樂</translation>

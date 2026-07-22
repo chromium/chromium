@@ -147,6 +147,7 @@
 <translation id="1571041387761170095">沒有低強度或重複使用的密碼</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{這部裝置上有 1 組密碼外洩}other{這部裝置上有 # 組密碼外洩}}</translation>
 <translation id="1594635596540195766">下列清單中有 <ph name="SUGGESTIONS_COUNT" /> 個建議項目。</translation>
+<translation id="159689249463841786">選擇資料夾，目前為「<ph name="FOLDER_NAME" />」</translation>
 <translation id="1598163867407640634">透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />，固定的分頁，正在錄製媒體</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />，正在分享內容的分頁</translation>
@@ -277,6 +278,7 @@
 <translation id="2190355936436201913">(空白)</translation>
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">注意事項</translation>
+<translation id="2196695604589508993">開啟歷史記錄</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />，固定的分頁，正在分享內容</translation>
 <translation id="22091350895006575">新增使用者名稱</translation>
 <translation id="221494669172414749">如果不鎖定設定檔就開啟 Chrome，系統將移除車上儲存的密碼和付款方式。請使用設定檔鎖定功能，確保這類資料的安全。</translation>
@@ -1822,6 +1824,7 @@
 <translation id="8317318757008452355">開啟列印選項</translation>
 <translation id="8320212361750431956">近期活動</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">書籤和清單</translation>
 <translation id="8342727528718219152">Chrome 會通知你哪些網站可能傳送太多通知</translation>
 <translation id="834313815369870491">一律不翻譯的網站</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />，多選的固定無痕分頁，正在錄製媒體</translation>
@@ -2063,6 +2066,7 @@
 <translation id="939598580284253335">請輸入通關密語</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />，已固定的子母畫面無痕分頁</translation>
 <translation id="945522503751344254">提供意見</translation>
+<translation id="948276827484905248">建立 QR code</translation>
 <translation id="95817756606698420">Chrome 可以在中國使用 <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> 搜尋。你可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中變更這項設定。</translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>
 <translation id="963246339335003378">開啟工作管理員</translation>

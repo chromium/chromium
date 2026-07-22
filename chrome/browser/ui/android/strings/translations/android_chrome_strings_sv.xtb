@@ -147,6 +147,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1571041387761170095">Inga svaga eller återanvända lösenord</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{1 utsatt lösenord på den här enheten}other{# utsatta lösenord på den här enheten}}</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> föreslagna objekt i listan nedan.</translation>
+<translation id="159689249463841786">Välj mapp, för närvarande <ph name="FOLDER_NAME" /></translation>
 <translation id="1598163867407640634">Använd <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677"><ph name="TAB_TITLE" />, fäst flik som spelas in</translation>
 <translation id="1600756129506222718"><ph name="TAB_TITLE" />, flik som delas</translation>
@@ -277,6 +278,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2190355936436201913">(tom)</translation>
 <translation id="219283042927675668">Flikar i gruppen</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
+<translation id="2196695604589508993">Öppna historiken</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, fäst flik som delas</translation>
 <translation id="22091350895006575">Lägg till användarnamn</translation>
 <translation id="221494669172414749">Om du öppnar Chrome utan ett profillås tas dina sparade lösenord och betalningsmetoder bort från bilen. Denna data skyddas om du använder ett profillås.</translation>
@@ -1823,6 +1825,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8317318757008452355">Öppna alternativ för att skriva ut</translation>
 <translation id="8320212361750431956">Senaste aktiviteter</translation>
 <translation id="832514020744584629"><ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">Bokmärken och listor</translation>
 <translation id="8342727528718219152">Chrome meddelar dig om webbplatser som kanske skickar för många aviseringar</translation>
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8348215005712416247"><ph name="TAB_TITLE" />, fäst inkognitoflik som har valts tillsammans med andra och som spelas in</translation>
@@ -2064,6 +2067,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="939598580284253335">Ange lösenfras</translation>
 <translation id="94161319503679839"><ph name="TAB_TITLE" />, fäst inkognitoflik med bild-i-bild</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
+<translation id="948276827484905248">Skapa QR-kod</translation>
 <translation id="95817756606698420">Chrome kan använda <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> som sökmotor i Kina. Du kan ändra detta i <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Radera webbinformation</translation>
 <translation id="963246339335003378">Öppna Aktivitetshanteraren</translation>

@@ -358,7 +358,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1254034280040157728">Böyük Kanyon</translation>
 <translation id="1254593899333212300">Birbaşa İnternet bağlantısı</translation>
 <translation id="1254767904958485584">Bölünmüş görünüş yaradıldı</translation>
-<translation id="1255095393630332248">Tablar paylaşıldıqda onların səhifə kontenti, media və URL-ləri Google-a göndərilir.</translation>
 <translation id="1256143630373008432">Özünü-yoxlama alınmadı</translation>
 <translation id="1257336506558170607">Seçilmiş sertifikatı eksport edin</translation>
 <translation id="1258491128795710625">Yeniliklər</translation>
@@ -725,7 +724,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1561331397460162942">Bu, tətbiqlərlərə, məkan icazəsi olan veb-saytlara və sistem xidmətlərinə məkana giriş imkanı verir</translation>
 <translation id="1562119309884184621">Bu kontaktı əlavə etdikdə, onun növbəti dəfə paylaşımı yadda saxlanacaq</translation>
 <translation id="1562585387501039294">Təşkilatınız, <ph name="ACCOUNT_MANAGER" />, idarə olunan profil tələb edir və aşağıdakı bəzi məlumatlara baxa biləcək</translation>
-<translation id="156345786953026804">Gemini-ın tapşırıq zamanı istifadə etdiyi səhifə kontenti və URL-lər Google ilə paylaşılacaq.</translation>
 <translation id="1566049601598938765">Veb səhifə</translation>
 <translation id="15662109988763471">Seçilmiş printer əlçatan deyil və ya düzgün quraşdırılmayıb. Printerinizi yoxlayın və ya başqa printer seçin.</translation>
 <translation id="1566329594234563241">Deaktiv və qoşulu olduqda</translation>
@@ -1769,7 +1767,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2378602615417849384">{NUM_EXTENSIONS,plural, =1{Bu artırma tezliklə dəstəklənməyə bilər}other{Bu artırmalar tezliklə dəstəklənməyə bilər}}</translation>
 <translation id="2378982052244864789">Artırma direktivini seçin.</translation>
 <translation id="2379111564446699251">Alətlər panelində düymələri yenidən nizamlamaq üçün onları sürüşdürün</translation>
-<translation id="2379184471043414645">Medianı anlama funksiyasını aktiv edin</translation>
 <translation id="2379281330731083556">İstifadəçi sistemi dialoqu çap edin... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381461748765773292">Mobil şəbəkə bir neçə dəqiqəlik kəsilə bilər</translation>
 <translation id="2381499968174336913">Paylaşılan tabın önizləməsi</translation>
