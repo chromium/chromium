@@ -97,18 +97,17 @@ NSString* const kSendTabToSelfModalMenuButton =
   // Set up the menu button ("...") and close button ("X") in the navigation
   // bar.
   __weak id<SendTabToSelfModalDelegate> weakDelegate = _delegate;
-  UIAction* manageDevicesAction =
-      [UIAction actionWithTitle:l10n_util::GetNSString(
-                                    IDS_IOS_SEND_TAB_TO_SELF_MANAGE_DEVICES)
-                          image:DefaultSymbolWithPointSize(kExternalLinkSymbol,
-                                                           kSymbolSize)
-                     identifier:nil
-                        handler:^(UIAction* action) {
-                          [weakDelegate openManageDevicesTab];
-                        }];
+  UIAction* manageDevicesAction = [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_SEND_TAB_TO_SELF_MANAGE_DEVICES)
+                image:SymbolWithPointSize(SymbolExternalLink, kSymbolSize)
+           identifier:nil
+              handler:^(UIAction* action) {
+                [weakDelegate openManageDevicesTab];
+              }];
   UIMenu* menu = [UIMenu menuWithTitle:@"" children:@[ manageDevicesAction ]];
 
-  UIImage* menuImage = DefaultSymbolWithPointSize(kEllipsisSymbol, kSymbolSize);
+  UIImage* menuImage = SymbolWithPointSize(SymbolEllipsis, kSymbolSize);
   UIBarButtonItem* menuButton = [[UIBarButtonItem alloc] initWithImage:menuImage
                                                                   menu:menu];
   menuButton.accessibilityIdentifier = kSendTabToSelfModalMenuButton;
@@ -118,7 +117,7 @@ NSString* const kSendTabToSelfModalMenuButton =
   // If there are no target devices, there's a big blue "Close" button, so no
   // need for the "x".
   if (!_targetDeviceList.empty()) {
-    UIImage* closeImage = DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolSize);
+    UIImage* closeImage = SymbolWithPointSize(SymbolXMark, kSymbolSize);
     UIBarButtonItem* closeButton =
         [[UIBarButtonItem alloc] initWithImage:closeImage
                                          style:UIBarButtonItemStylePlain
@@ -224,16 +223,16 @@ NSString* const kSendTabToSelfModalMenuButton =
   UIImage* deviceImage;
   switch (device.form_factor) {
     case syncer::DeviceInfo::FormFactor::kDesktop:
-      deviceImage = MakeSymbolMonochrome(
-          DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
+      deviceImage =
+          MakeSymbolMonochrome(SymbolWithPointSize(SymbolLaptop, kSymbolSize));
       break;
     case syncer::DeviceInfo::FormFactor::kPhone:
-      deviceImage = MakeSymbolMonochrome(
-          DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize));
+      deviceImage =
+          MakeSymbolMonochrome(SymbolWithPointSize(SymbolIPhone, kSymbolSize));
       break;
     case syncer::DeviceInfo::FormFactor::kTablet:
-      deviceImage = MakeSymbolMonochrome(
-          DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize));
+      deviceImage =
+          MakeSymbolMonochrome(SymbolWithPointSize(SymbolIPad, kSymbolSize));
       break;
     case syncer::DeviceInfo::FormFactor::kUnknown:
     case syncer::DeviceInfo::FormFactor::kAutomotive:
@@ -242,8 +241,8 @@ NSString* const kSendTabToSelfModalMenuButton =
       // These form factors don't have a dedicated icon (but very likely these
       // devices don't support SendTabToSelf anyway). Fall back to the generic
       // laptop icon.
-      deviceImage = MakeSymbolMonochrome(
-          DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
+      deviceImage =
+          MakeSymbolMonochrome(SymbolWithPointSize(SymbolLaptop, kSymbolSize));
       break;
   }
 

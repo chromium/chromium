@@ -230,20 +230,20 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::SysUTF16ToNSString(iter->GetLastActiveTimeForDisplay());
     switch (iter->form_factor) {
       case syncer::DeviceInfo::FormFactor::kTablet:
-        deviceItem.image = MakeSymbolMonochrome(
-            DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize));
+        deviceItem.image =
+            MakeSymbolMonochrome(SymbolWithPointSize(SymbolIPad, kSymbolSize));
         break;
       case syncer::DeviceInfo::FormFactor::kPhone:
         deviceItem.image = MakeSymbolMonochrome(
-            DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize));
+            SymbolWithPointSize(SymbolIPhone, kSymbolSize));
         break;
       case syncer::DeviceInfo::FormFactor::kDesktop:
         deviceItem.image = MakeSymbolMonochrome(
-            DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
+            SymbolWithPointSize(SymbolLaptop, kSymbolSize));
         break;
       default:
         deviceItem.image = MakeSymbolMonochrome(
-            DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize));
+            SymbolWithPointSize(SymbolLaptop, kSymbolSize));
         break;
     }
 
