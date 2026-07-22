@@ -243,6 +243,16 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
       return nullptr;
   }
 
+  uint32_t render_quantum_size = context.renderQuantumSize();
+  if (render_quantum_size == 0 || buffer_size % render_quantum_size != 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        StrCat({"buffer size (", String::Number(buffer_size),
+                ") must be a multiple of the context render quantum size (",
+                String::Number(render_quantum_size), ")."}));
+    return nullptr;
+  }
+
   ScriptProcessorNode* node = MakeGarbageCollected<ScriptProcessorNode>(
       context, context.sampleRate(), buffer_size, number_of_input_channels,
       number_of_output_channels);
