@@ -97,9 +97,9 @@
 #include "services/network/mock_mojo_dhcp_wpad_url_client.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_WEBSOCKETS)
+#if BUILDFLAG(USE_BLINK)
 #include "services/network/test_mojo_proxy_resolver_factory.h"
-#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+#endif  // BUILDFLAG(USE_BLINK)
 
 namespace network {
 
@@ -2376,7 +2376,7 @@ TEST_F(NetworkServiceNetworkDelegateTest, NetworkAnnotationMonitor) {
   EXPECT_EQ(expected_hash_codes, monitor.reported_hash_codes());
 }
 
-#if BUILDFLAG(ENABLE_WEBSOCKETS)
+#if BUILDFLAG(USE_BLINK)
 // Verify that network requests without a loader are reported to Network
 // Annotation Monitor. This test uses a PAC fetch as an example of such request.
 TEST_F(NetworkServiceNetworkDelegateTest,
@@ -2410,7 +2410,7 @@ TEST_F(NetworkServiceNetworkDelegateTest,
   // Verify PAC fetch annotation was reported.
   monitor.WaitForHashCode();
 }
-#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+#endif  // BUILDFLAG(USE_BLINK)
 
 class NetworkServiceTestWithSystemDnsResolver
     : public NetworkServiceTestWithService {

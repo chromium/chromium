@@ -573,11 +573,6 @@ source_set("tests") {
 
   if (enable_websockets) {
     sources += [
-      "proxy_resolver_factory_mojo_unittest.cc",
-      "proxy_service_mojo_unittest.cc",
-      "test_mojo_proxy_resolver_factory.cc",
-      "test_mojo_proxy_resolver_factory.h",
-      "url_request_context_builder_mojo_unittest.cc",
       "websocket_factory_unittest.cc",
       "websocket_interceptor_unittest.cc",
       "websocket_throttler_unittest.cc",
@@ -670,6 +665,13 @@ source_set("tests") {
   }
 
   if (use_blink) {
+    sources += [
+      "proxy_resolver_factory_mojo_unittest.cc",
+      "proxy_service_mojo_unittest.cc",
+      "test_mojo_proxy_resolver_factory.cc",
+      "test_mojo_proxy_resolver_factory.h",
+      "url_request_context_builder_mojo_unittest.cc",
+    ]
     deps += [
       "//services/proxy_resolver:lib",
       "//third_party/blink/public/common:preloading_headers",
