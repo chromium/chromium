@@ -72,8 +72,10 @@ bool StructTraits<media::mojom::AudioEncoderConfigDataView,
   if (input.bitrate() > 0)
     output->bitrate = base::saturated_cast<int>(input.bitrate());
 
-  if (input.channel_count() > media::limits::kMaxChannels)
+  if (input.channel_count() == 0 ||
+      input.channel_count() > media::limits::kMaxChannels) {
     return false;
+  }
   output->channels = input.channel_count();
 
   media::AudioEncoder::AacOptions aac;
