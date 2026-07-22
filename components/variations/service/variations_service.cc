@@ -1157,27 +1157,8 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
   // will not be empty anymore, and will only apply if the new killswitch
   // specifies the same set of features as the original killswitch.
   if (!controlling_trial_name.empty()) {
-    base::flat_set<std::string> associated_features;
-    // TODO(crbug.com/482450632): Implement this more efficiently by maintaining
-    // a map of trials to associated features.
-    if (controlling_trial_is_runtime_override) {
-      // Hacky DCHECK required to access `runtime_mutable_overrides_` for now...
-      DCHECK_CALLED_ON_VALID_SEQUENCE(feature_list->sequence_checker_);
-      for (const auto& [feature_name, runtime_override_info] :
-           feature_list->runtime_mutable_overrides_) {
-        if (runtime_override_info.field_trial_name == controlling_trial_name) {
-          associated_features.insert(feature_name);
-        }
-      }
-    } else {
-      for (const auto& [feature_name, override_info] :
-           feature_list->overrides_) {
-        if (override_info.field_trial &&
-            override_info.field_trial->trial_name() == controlling_trial_name) {
-          associated_features.insert(feature_name);
-        }
-      }
-    }
+    base::flat_set<std::string> associated_features =
+        feature_list->GetFeaturesAssociatedWithTrial(controlling_trial_info);
 
     if (feature_names != associated_features) {
       return kControllingTrialHasOtherFeatures;

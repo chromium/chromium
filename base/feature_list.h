@@ -315,6 +315,11 @@ class BASE_EXPORT FeatureList {
   ControllingTrialInfo GetControllingTrialInfoByFeatureName(
       std::string_view feature_name) const;
 
+  // Returns the names of all features associated with the field trial described
+  // by `controlling_trial_info`.
+  base::flat_set<std::string> GetFeaturesAssociatedWithTrial(
+      const ControllingTrialInfo& controlling_trial_info) const;
+
   // Adds extra overrides (not associated with a field trial). Should be called
   // before SetInstance().
   // The ordering of calls with respect to InitFromCommandLine(),
@@ -533,11 +538,6 @@ class BASE_EXPORT FeatureList {
 
   // Allow Accessor to access GetOverrideStateByFeatureName().
   friend class Accessor;
-  // Allow VariationsService to access `runtime_mutable_overrides_` and
-  // `overrides_` so that it can find all features associated with a trial.
-  // TODO(crbug.com/482450632): Remove this once we maintain a map of trials to
-  // associated features.
-  friend class variations::VariationsService;
 
   struct OverrideEntry {
     // The overridden enable (on/off) state of the feature.

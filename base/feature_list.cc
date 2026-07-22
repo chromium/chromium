@@ -119,13 +119,11 @@ void AtomicSetFeatureState(std::atomic<FeatureStateCache>& cached_value,
                                                std::memory_order_relaxed));
 }
 
-
 // Returns true if the feature is runtime mutable, i.e. if its enabled/disabled
 // state can be changed after initialization.
 bool FeatureIsRuntimeMutable(FeatureStateCache feature_cached_value) {
   return HasFlags(feature_cached_value, internal::kRuntimeMutabilityMask);
 }
-
 
 // Returns true if the feature was accessed before the FeatureList was
 // initialized.
@@ -385,7 +383,6 @@ bool Feature::IsRuntimeMutable() const {
   return FeatureIsRuntimeMutable(cached_value.load(std::memory_order_relaxed));
 }
 
-
 bool Feature::WasAccessedEarly() const {
   return FeatureWasAccessedEarly(cached_value.load(std::memory_order_relaxed));
 }
@@ -632,6 +629,32 @@ FeatureList::GetControllingTrialInfoByFeatureName(
   }
 
   return ControllingTrialInfo();
+}
+
+base::flat_set<std::string> FeatureList::GetFeaturesAssociatedWithTrial(
+    const ControllingTrialInfo& controlling_trial_info) const {
+  // TODO(crbug.com/482450632): Implement this more efficiently by maintaining
+  // a map of trials to associated features.
+  base::flat_set<std::string> associated_features;
+  if (controlling_trial_info.is_runtime_override) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    for (const auto& [feature_name, runtime_override_info] :
+         runtime_mutable_overrides_) {
+      if (runtime_override_info.field_trial_name ==
+          controlling_trial_info.trial_name) {
+        associated_features.insert(feature_name);
+      }
+    }
+  } else {
+    for (const auto& [feature_name, override_info] : overrides_) {
+      if (override_info.field_trial &&
+          override_info.field_trial->trial_name() ==
+              controlling_trial_info.trial_name) {
+        associated_features.insert(feature_name);
+      }
+    }
+  }
+  return associated_features;
 }
 
 bool FeatureList::IsFeatureOverridden(std::string_view feature_name) const {
