@@ -6,6 +6,7 @@ package org.chromium.content.browser.accessibility;
 
 import android.os.Build;
 import android.os.SystemClock;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -58,7 +59,9 @@ public class FakeAndroidCacheTest {
         AccessibilityNodeInfoCompat testNode =
                 fillEmptyAccessibilityNodeInfoCompat("testNode", String.valueOf(mFirstNodeId));
         mFakeAndroidCache.addNode(mFirstNodeId, testNode);
-        mFakeAndroidCache.clearNode(mFirstNodeId, /* recursive= */ false);
+        // Use TYPE_VIEW_CLICKED event to clear the node non-recursively.
+        mFakeAndroidCache.clearNodeOnEvent(
+                createEvent(AccessibilityEvent.TYPE_VIEW_CLICKED), mFirstNodeId);
 
         // To make sure its not in the cache, we make sure to mark is as stale by updating the
         // expected node to be returned if ever built again.
@@ -142,7 +145,9 @@ public class FakeAndroidCacheTest {
                 fillEmptyAccessibilityNodeInfoCompat("testNode2", String.valueOf(mSecondNodeId));
         mFakeAndroidCache.addNode(mSecondNodeId, testNode2);
 
-        mFakeAndroidCache.clearNode(mFirstNodeId, /* recursive= */ true);
+        // Use TYPE_VIEW_SCROLLED event to clear the node recursively.
+        mFakeAndroidCache.clearNodeOnEvent(
+                createEvent(AccessibilityEvent.TYPE_VIEW_SCROLLED), mFirstNodeId);
 
         // If recreated, it should show up as stale when validating by returning a different node.
         AccessibilityNodeInfoCompat testNodeUpdated2 =
@@ -182,7 +187,9 @@ public class FakeAndroidCacheTest {
                 fillEmptyAccessibilityNodeInfoCompat("testNode3", String.valueOf(mThirdNodeId));
         mFakeAndroidCache.addNode(mThirdNodeId, testNode3);
 
-        mFakeAndroidCache.clearNode(mFirstNodeId, /* recursive= */ false);
+        // Use TYPE_VIEW_CLICKED event to clear the node non-recursively.
+        mFakeAndroidCache.clearNodeOnEvent(
+                createEvent(AccessibilityEvent.TYPE_VIEW_CLICKED), mFirstNodeId);
 
         // Make stale by making the expectation return a different node.
         AccessibilityNodeInfoCompat testNodeUpdated2 =
@@ -229,7 +236,9 @@ public class FakeAndroidCacheTest {
                 fillEmptyAccessibilityNodeInfoCompat("testNode4", String.valueOf(mFourthNodeId));
         mFakeAndroidCache.addNode(mFourthNodeId, testNode4);
 
-        mFakeAndroidCache.clearNode(mSecondNodeId, /* recursive= */ false);
+        // Use TYPE_VIEW_CLICKED event to clear the node non-recursively.
+        mFakeAndroidCache.clearNodeOnEvent(
+                createEvent(AccessibilityEvent.TYPE_VIEW_CLICKED), mSecondNodeId);
 
         var histogramWatcher1 =
                 HistogramWatcher.newBuilder()
@@ -243,7 +252,9 @@ public class FakeAndroidCacheTest {
         histogramWatcher1.assertExpected();
 
         // We then recursive clear node1, and expect for grand children to be cleared too.
-        mFakeAndroidCache.clearNode(mFirstNodeId, /* recursive= */ true);
+        // Use TYPE_VIEW_SCROLLED event to clear the node recursively.
+        mFakeAndroidCache.clearNodeOnEvent(
+                createEvent(AccessibilityEvent.TYPE_VIEW_SCROLLED), mFirstNodeId);
 
         // We make the grand children return a mismatch if recreated when validating since they
         // should have been cleared from the cache.
@@ -283,7 +294,9 @@ public class FakeAndroidCacheTest {
             cacheWithRecorder.addNode(
                     i, fillEmptyAccessibilityNodeInfoCompat("node" + i, String.valueOf(i)));
         }
-        cacheWithRecorder.clearNode(10, /* recursive= */ false); // Cache size becomes 9.
+        // Use TYPE_VIEW_CLICKED event to clear the node non-recursively.
+        cacheWithRecorder.clearNodeOnEvent(
+                createEvent(AccessibilityEvent.TYPE_VIEW_CLICKED), 10); // Cache size becomes 9.
 
         cacheWithRecorder
                 .validateAccessibilityForExperiment(); // Triggers Batch 1 validation (clears
@@ -300,8 +313,10 @@ public class FakeAndroidCacheTest {
         cacheWithRecorder.addNode(11, fillEmptyAccessibilityNodeInfoCompat("node11", "11"));
         cacheWithRecorder.addNode(12, fillEmptyAccessibilityNodeInfoCompat("node12", "12"));
         cacheWithRecorder.addNode(13, fillEmptyAccessibilityNodeInfoCompat("node13", "13"));
-        cacheWithRecorder.clearNode(11, /* recursive= */ false);
-        cacheWithRecorder.clearNode(1, /* recursive= */ false);
+        // Use TYPE_VIEW_CLICKED event to clear the node non-recursively.
+        cacheWithRecorder.clearNodeOnEvent(createEvent(AccessibilityEvent.TYPE_VIEW_CLICKED), 11);
+        // Use TYPE_VIEW_CLICKED event to clear the node non-recursively.
+        cacheWithRecorder.clearNodeOnEvent(createEvent(AccessibilityEvent.TYPE_VIEW_CLICKED), 1);
 
         // 1. Churn Calculation:
         // - Removals count = 2 (node11 and node1 were cleared in this batch).
@@ -369,8 +384,10 @@ public class FakeAndroidCacheTest {
         // Batch 2: First batch with removals (add 2 nodes, clear 2 nodes).
         cacheWithRecorder.addNode(4, fillEmptyAccessibilityNodeInfoCompat("node4", "4"));
         cacheWithRecorder.addNode(5, fillEmptyAccessibilityNodeInfoCompat("node5", "5"));
-        cacheWithRecorder.clearNode(4, /* recursive= */ false);
-        cacheWithRecorder.clearNode(2, /* recursive= */ false);
+        // Use TYPE_VIEW_CLICKED event to clear the node non-recursively.
+        cacheWithRecorder.clearNodeOnEvent(createEvent(AccessibilityEvent.TYPE_VIEW_CLICKED), 4);
+        // Use TYPE_VIEW_CLICKED event to clear the node non-recursively.
+        cacheWithRecorder.clearNodeOnEvent(createEvent(AccessibilityEvent.TYPE_VIEW_CLICKED), 2);
 
         // Verify peakCacheNodesInBatch right before Batch 2 validation is 5 (current nodes 3 +
         // removals
@@ -403,6 +420,10 @@ public class FakeAndroidCacheTest {
         int finalCacheSize = cacheWithRecorder.getPeakCacheNodesInBatchForTesting();
         Assert.assertEquals(
                 "Startup final peakCacheNodesInBatch cache size should be 3", 3, finalCacheSize);
+    }
+
+    private AccessibilityEvent createEvent(int eventType) {
+        return AccessibilityEvent.obtain(eventType);
     }
 
     private AccessibilityNodeInfoCompat fillEmptyAccessibilityNodeInfoCompat(

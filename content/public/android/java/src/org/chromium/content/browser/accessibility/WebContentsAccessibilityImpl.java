@@ -2161,60 +2161,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             return;
         }
 
-        if (mFakeAndroidCache != null) {
-            if (virtualViewId == getCurrentRootIdForExperiment()) {
-                // We clear the whole cache when the event is on the root
-                mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ true);
-            }
-            switch (eventType) {
-                case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
-                    {
-                        mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ false);
-                    }
-                    break;
-
-                case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED:
-                    {
-                        mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ false);
-                    }
-                    break;
-
-                case AccessibilityEvent.TYPE_VIEW_FOCUSED:
-                    {
-                        mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ false);
-                    }
-                    break;
-
-                case AccessibilityEvent.TYPE_VIEW_SELECTED:
-                case AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED:
-                case AccessibilityEvent.TYPE_VIEW_CLICKED:
-                case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
-                    {
-                        mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ false);
-                    }
-                    break;
-
-                case AccessibilityEvent.TYPE_VIEW_SCROLLED:
-                    {
-                        mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ true);
-                    }
-                    break;
-
-                case AccessibilityEvent.TYPE_WINDOWS_CHANGED:
-                    {
-                        mFakeAndroidCache.clearNode(
-                                getCurrentRootIdForExperiment(), /* recursive= */ true);
-                    }
-                    break;
-                case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
-                    {
-                        mFakeAndroidCache.clearNode(
-                                getCurrentRootIdForExperiment(), /* recursive= */ true);
-                    }
-                    break;
-            }
-        }
-
         mHistogramRecorder.incrementEnqueuedEvents();
         mEventDispatcher.enqueueEvent(virtualViewId, eventType, /* setSubtreeChanged= */ false);
     }
@@ -2227,10 +2173,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (virtualViewId == View.NO_ID) {
             mView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
             return;
-        }
-
-        if (mFakeAndroidCache != null) {
-            mFakeAndroidCache.clearNode(virtualViewId, /* recursive= */ setSubtreeChanged);
         }
 
         mHistogramRecorder.incrementEnqueuedEvents();
@@ -2646,6 +2588,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (mTracker != null) mTracker.addEvent(event, subtype, virtualViewId);
             try {
                 mView.getParent().requestSendAccessibilityEvent(mView, event);
+                if (mFakeAndroidCache != null) {
+                    mFakeAndroidCache.clearNodeOnEvent(event, virtualViewId);
+                }
                 mDidSendAnyEvent = true;
             } catch (IllegalStateException ignored) {
                 // During boot-up of some content shell tests, events will erroneously be sent even

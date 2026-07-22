@@ -7,6 +7,7 @@ package org.chromium.content.browser.accessibility;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.SystemClock;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.Nullable;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
@@ -155,12 +156,47 @@ public class FakeAndroidCache {
      * @param virtualViewId The virtual view id of the node.
      * @param recursive Whether to clear all of the node's children.
      */
-    public void clearNode(int virtualViewId, boolean recursive) {
+    private void clearNode(int virtualViewId, boolean recursive) {
         if (recursive) {
             clearNodeTimeStamp(virtualViewId, /* timeStamp= */ SystemClock.elapsedRealtime());
         } else {
             clearNodeTimeStamp(virtualViewId, /* timeStamp= */ null);
         }
+    }
+
+    /**
+     * Clears the fake cache according to the event that is fired. This mimics the logic from the
+     * Android Framework's package android.view.accessibility.AccessibilityCache.java.
+     *
+     * @param event The accessibility event.
+     * @param virtualViewId The virtualViewId of the node associated to the event.
+     */
+    public void clearNodeOnEvent(AccessibilityEvent event, int virtualViewId) {
+        if (virtualViewId == mWebContentsAccessibilityImpl.getCurrentRootIdForExperiment()) {
+            // We clear the whole cache when the event is on the root
+            clearNode(virtualViewId, /* recursive= */ true);
+            return;
+        }
+
+        if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            clear(SystemClock.elapsedRealtime());
+            return;
+        }
+
+        boolean recursive = false;
+        switch (event.getEventType()) {
+            case AccessibilityEvent.TYPE_VIEW_SCROLLED:
+                recursive = true;
+                break;
+            case AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED:
+                recursive =
+                        event.getContentChangeTypes()
+                                == AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE;
+                break;
+            default:
+                break;
+        }
+        clearNode(virtualViewId, recursive);
     }
 
     /**
