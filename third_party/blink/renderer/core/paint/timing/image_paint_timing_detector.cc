@@ -109,17 +109,15 @@ ImagePaintTimingDetector::TakePaintTimingCallback() {
 void ImagePaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const MediaTiming* media_timing) {
-  if (ImageRecord* record = records_manager_.RemoveRecord(
-          MediaRecordId::GenerateHash(&object, media_timing))) {
+  ImageRecord* record = records_manager_.RemoveRecord(
+      MediaRecordId::GenerateHash(&object, media_timing));
+  if (auto* manager = GetLargestContentfulPaintManager()) {
+    // Notify `manager` even if record is null so it can update the largest
+    // ignored image, if needed.
+    //
     // TODO(crbug.com/449779010): When soft navs supports largest pending image,
     // this will need to be updated to notify the relevant soft nav context.
-    if (auto* manager = GetLargestContentfulPaintManager()) {
-      manager->OnPendingImageRemoved(record);
-    }
-  }
-  if (const ImageRecord* record = records_manager_.LargestIgnoredImage();
-      record && record->GetMediaTiming() == media_timing) {
-    records_manager_.TakeLargestIgnoredImage();
+    manager->OnImageRemoved(record, object, media_timing);
   }
 }
 
@@ -277,21 +275,15 @@ bool ImagePaintTimingDetector::RecordImage(
         node, &media_timing, image_border, mapped_visual_rect,
         record_id.GetHash(), effective_visual_size_result);
 
-    if (auto* manager = GetLargestContentfulPaintManager()) {
-      manager->InitializePaintTracking(record);
-    }
-
-    if (ignore_paint_depth) {
-      // Record the largest loaded image that is hidden due to documentElement
-      // being invisible but by no other reason (i.e. IgnoreDepth() needs to be
-      // 1).
-      if (ignore_paint_depth == 1 &&
-          IgnorePaintTimingScope::IsDocumentElementInvisible() &&
-          media_timing.IsSufficientContentLoadedForPaint() &&
-          record->IsNeededForLargestContentfulPaint()) {
-        records_manager_.MaybeUpdateLargestIgnoredImage(record);
+    if (ignore_paint_depth > 0) {
+      if (auto* manager = GetLargestContentfulPaintManager()) {
+        manager->MaybeUpdateLargestIgnoredImage(record);
       }
       return false;
+    }
+
+    if (auto* manager = GetLargestContentfulPaintManager()) {
+      manager->InitializePaintTracking(record);
     }
 
     LocalDOMWindow* window = object.GetDocument().domWindow();
@@ -351,11 +343,12 @@ void ImagePaintTimingDetector::NotifyImageFinished(
 }
 
 void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
-  LargestContentfulPaintManager* manager = GetLargestContentfulPaintManager();
-  if (ImageRecord* record =
-          records_manager_.ReportLargestIgnoredImage(frame_index_, !!manager)) {
-    added_entry_in_latest_frame_ = true;
-    manager->InitializePaintTracking(record);
+  if (auto* manager = GetLargestContentfulPaintManager()) {
+    if (ImageRecord* record = manager->TakeLargestIgnoredImage()) {
+      CHECK(record->HasLoadTime());
+      records_manager_.ReportLargestIgnoredImage(record, frame_index_);
+      added_entry_in_latest_frame_ = true;
+    }
   }
 }
 
@@ -413,36 +406,15 @@ void ImageRecordsManager::OnImageLoaded(MediaRecordIdHash record_id_hash,
   OnImageLoadedInternal(record, current_frame_index);
 }
 
-ImageRecord* ImageRecordsManager::ReportLargestIgnoredImage(
-    uint32_t current_frame_index,
-    bool is_recording_lcp) {
-  if (!largest_ignored_image_) {
-    return nullptr;
-  }
-  ImageRecord* record = TakeLargestIgnoredImage();
-  Node* node = record->GetNode();
-  if (!node || !node->GetLayoutObject() || !record->GetMediaTiming()) {
-    // The image has been removed, so we have no content to report.
-    return nullptr;
-  }
-
+void ImageRecordsManager::ReportLargestIgnoredImage(
+    ImageRecord* record,
+    uint32_t current_frame_index) {
   // Trigger FCP if it's not already set.
   PaintTiming::From(*document_.Get()).MarkFirstImagePaint();
-
-  // Ignore this image altogether if LCP is no longer being recorded.
-  //
-  // TODO(crbug.com/460180365): This is probably imperfect since this prevents
-  // the image from being marked as recorded for soft navs. Changing this,
-  // however, would break test expectations, and it would only affect this image
-  // record, rather than all images painted while document opacity was 0.
-  if (!is_recording_lcp) {
-    return nullptr;
-  }
 
   recorded_images_.insert(record->Hash());
   AddPendingImage(record);
   OnImageLoadedInternal(record, current_frame_index);
-  return record;
 }
 
 void ImageRecordsManager::OnImageLoadedInternal(ImageRecord* record,
@@ -450,13 +422,6 @@ void ImageRecordsManager::OnImageLoadedInternal(ImageRecord* record,
   CHECK(record);
   record->MarkLoaded();
   QueueToMeasurePaintTime(record, current_frame_index);
-}
-
-void ImageRecordsManager::MaybeUpdateLargestIgnoredImage(ImageRecord* record) {
-  if (record->IsEffectiveSizeLargerThan(largest_ignored_image_)) {
-    largest_ignored_image_ = record;
-    largest_ignored_image_->SetLoadTime(base::TimeTicks::Now());
-  }
 }
 
 void ImageRecordsManager::ClearImagesQueuedForPaintTime() {
@@ -467,7 +432,6 @@ void ImageRecordsManager::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(pending_images_);
   visitor->Trace(images_queued_for_paint_time_);
-  visitor->Trace(largest_ignored_image_);
 }
 
 void ImagePaintTimingDetector::Trace(Visitor* visitor) const {

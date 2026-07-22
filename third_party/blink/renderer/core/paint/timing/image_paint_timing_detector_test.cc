@@ -189,9 +189,9 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   }
 
   bool HasLargestIgnoredImage() {
-    return !!GetPaintTimingDetector()
-                 .GetImagePaintTimingDetector()
-                 .records_manager_.LargestIgnoredImage();
+    return PaintTiming::From(GetDocument())
+        .GetLargestContentfulPaintManager()
+        ->HasLargestIgnoredImageForTest();
   }
 
   static constexpr base::TimeDelta kQuantumOfTime = base::Milliseconds(10);
@@ -1285,18 +1285,18 @@ TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTMLWithInput) {
   EXPECT_EQ(largest_contentful_paint_details.image_paint_time, 0u);
 
   PaintTiming& paint_timing = PaintTiming::From(GetDocument());
-  // FCP and first image paint, however, should be marked, because that does not
-  // stop on input.
+  // FCP and first image paint should not be marked, since this feature is tied
+  // to hard LCP.
   //
   // Note: `PaintTiming` doesn't support `MockPaintTimingCallbackManager`, so
   // check the paint time instead of presentation time.
   base::TimeTicks fcp_timestamp =
       paint_timing.FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
-  EXPECT_FALSE(fcp_timestamp.is_null());
+  EXPECT_TRUE(fcp_timestamp.is_null());
 
   base::TimeTicks image_timestamp =
       paint_timing.FirstImagePaintRenderedButNotPresentedAsMonotonicTime();
-  EXPECT_FALSE(image_timestamp.is_null());
+  EXPECT_TRUE(image_timestamp.is_null());
 }
 
 TEST_P(ImagePaintTimingDetectorTest, OpacityZeroHTMLRemoveElement) {

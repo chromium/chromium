@@ -17,6 +17,8 @@ struct DOMPaintTimingInfo;
 class Element;
 class LocalDOMWindow;
 class ImageRecord;
+class LayoutObject;
+class MediaTiming;
 class String;
 class TextRecord;
 
@@ -65,15 +67,57 @@ class CORE_EXPORT LargestContentfulPaintManager
 
   // Called by PaintTiming when an image pending presentation time has been
   // removed. This must not be called after the hard LCP algorithm has stopped.
-  void OnPendingImageRemoved(ImageRecord*);
+  void OnImageRemoved(ImageRecord*, const LayoutObject&, const MediaTiming*);
+
+  // Called when a text or image element is painted while paints are being
+  // ignored.
+  void MaybeUpdateLargestIgnoredText(const LayoutObject&, TextRecord*);
+  void MaybeUpdateLargestIgnoredImage(ImageRecord*);
+
+  // Returns the current largest ignored `TextRecord` if it exists and the
+  // underlying node has not been removed from the DOM, and nullptr otherwise.
+  TextRecord* TakeLargestIgnoredText();
+
+  // Returns the current largest ignored `ImageRecord` if it exists and the
+  // underlying node has not been removed from the DOM, and nullptr otherwise.
+  ImageRecord* TakeLargestIgnoredImage();
 
   LargestContentfulPaintCalculator* LargestContentfulPaintCalculatorForTest() {
     return largest_contentful_paint_calculator_;
   }
 
+  bool HasLargestIgnoredTextForTest() {
+    return !!GetLargestIgnoredTextIfNotRemoved();
+  }
+
+  bool HasLargestIgnoredImageForTest() {
+    return !!GetLargestIgnoredImageIfNotRemoved();
+  }
+
  private:
+  // Returns the current largest ignored text or image if it exists and the
+  // underlying node has not been removed from the DOM, and nullptr otherwise.
+  TextRecord* GetLargestIgnoredTextIfNotRemoved() const;
+  ImageRecord* GetLargestIgnoredImageIfNotRemoved() const;
+
   Member<LocalDOMWindow> window_;
   Member<LargestContentfulPaintCalculator> largest_contentful_paint_calculator_;
+
+  // Text and image paints are ignored when they (or an ancestor) have opacity
+  // 0. This can be a problem later on if the opacity changes to nonzero but
+  // this change is composited. We solve this for the special case of
+  // documentElement by storing a record for the largest ignored text or image
+  // without nested opacity. We consider this an LCP candidate when the
+  // documentElement's opacity changes from zero to nonzero.
+  //
+  // TODO(crbug.com/457794552): This is currently best-effort since only one
+  // record is tracked and removing the corresponding node resets tracking.
+  // Consider improving this by tracking all ignored content or not emitting
+  // anything if the largest content was removed.
+  EphemeronPair<const LayoutObject, TextRecord> largest_ignored_text_{nullptr,
+                                                                      nullptr};
+  Member<ImageRecord> largest_ignored_image_;
+
   bool contains_full_viewport_image_ = false;
 };
 

@@ -70,10 +70,6 @@ class TextPaintTimingDetectorTest : public testing::Test {
         .GetTextPaintTimingDetector();
   }
 
-  LargestTextPaintManager& GetLargestTextPaintManager() {
-    return GetTextPaintTimingDetector().ltp_manager_;
-  }
-
   gfx::Rect GetViewportRect(LocalFrameView& view) {
     ScrollableArea* scrollable_area = view.GetScrollableArea();
     DCHECK(scrollable_area);
@@ -106,7 +102,9 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   bool HasLargestIgnoredText() {
-    return !!GetLargestTextPaintManager().GetLargestIgnoredTextIfNotRemoved();
+    return PaintTiming::From(GetDocument())
+        .GetLargestContentfulPaintManager()
+        ->HasLargestIgnoredTextForTest();
   }
 
   void SimulateInputEvent() {
@@ -897,14 +895,14 @@ TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLWithInput) {
   SimulateRenderingAndPresentationTime();
   EXPECT_FALSE(TextRecordOfLargestTextPaint());
 
-  // FCP, however, should be marked, because that does not stop on input.
+  // FCP should not be marked, since this feature is tied to hard LCP.
   //
   // Note: `PaintTiming` doesn't support `MockPaintTimingCallbackManager`, so
   // check the paint time instead of presentation time.
   base::TimeTicks fcp_timestamp =
       PaintTiming::From(GetDocument())
           .FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
-  EXPECT_FALSE(fcp_timestamp.is_null());
+  EXPECT_TRUE(fcp_timestamp.is_null());
 }
 
 TEST_F(TextPaintTimingDetectorTest, OpacityZeroHTMLRemoveElement) {

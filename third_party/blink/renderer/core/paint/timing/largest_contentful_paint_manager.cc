@@ -9,10 +9,13 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/platform/graphics/paint/ignore_paint_timing_scope.h"
+#include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 
 namespace blink {
 
@@ -76,6 +79,8 @@ void LargestContentfulPaintManager::OnFirstInputOrScroll() {
 void LargestContentfulPaintManager::Trace(Visitor* visitor) const {
   visitor->Trace(largest_contentful_paint_calculator_);
   visitor->Trace(window_);
+  visitor->Trace(largest_ignored_text_);
+  visitor->Trace(largest_ignored_image_);
 }
 
 void LargestContentfulPaintManager::InitializePaintTracking(
@@ -103,10 +108,24 @@ void LargestContentfulPaintManager::InitializePaintTracking(
   }
 }
 
-void LargestContentfulPaintManager::OnPendingImageRemoved(ImageRecord* record) {
+void LargestContentfulPaintManager::OnImageRemoved(ImageRecord* record,
+                                                   const LayoutObject& object,
+                                                   const MediaTiming* timing) {
   CHECK(largest_contentful_paint_calculator_);
-  if (record->IsNeededForLargestContentfulPaint()) {
+  // `record` is non-null if the image was removed while pending. In that case,
+  // notify the lcp calculator so it can clear the largest pending image, if
+  // that was removed.
+  if (record && record->IsNeededForLargestContentfulPaint()) {
     largest_contentful_paint_calculator_->OnPendingImageRemoved(record);
+  }
+  // Also check if the `largest_ignored_image_` was removed. Compare
+  // `LayoutObject`s as well since the `MediaTiming` can be shared. Note that
+  // `LayoutObject` may have been detached, in which case `record` will be null
+  // here.
+  record = GetLargestIgnoredImageIfNotRemoved();
+  if (!record || (record->GetMediaTiming() == timing &&
+                  record->GetNode()->GetLayoutObject() == &object)) {
+    largest_ignored_image_ = nullptr;
   }
 }
 
@@ -121,6 +140,89 @@ void LargestContentfulPaintManager::OnFramePresented(
   }
   largest_contentful_paint_calculator_->OnFramePresented(image_records,
                                                          text_records);
+}
+
+TextRecord* LargestContentfulPaintManager::TakeLargestIgnoredText() {
+  CHECK(largest_contentful_paint_calculator_);
+
+  TextRecord* record = GetLargestIgnoredTextIfNotRemoved();
+  largest_ignored_text_ = {nullptr, nullptr};
+  return record;
+}
+
+ImageRecord* LargestContentfulPaintManager::TakeLargestIgnoredImage() {
+  CHECK(largest_contentful_paint_calculator_);
+
+  ImageRecord* record = GetLargestIgnoredImageIfNotRemoved();
+  if (record) {
+    // Notify the `largest_contentful_paint_calculator_` about the image so it
+    // can update the largest pending image.
+    largest_contentful_paint_calculator_->OnImageFirstPaint(record);
+  }
+  largest_ignored_image_ = nullptr;
+  return record;
+}
+
+TextRecord* LargestContentfulPaintManager::GetLargestIgnoredTextIfNotRemoved()
+    const {
+  TextRecord* record = largest_ignored_text_.value;
+  return record && !record->WasNodeRemoved() ? record : nullptr;
+}
+
+ImageRecord* LargestContentfulPaintManager::GetLargestIgnoredImageIfNotRemoved()
+    const {
+  ImageRecord* record = largest_ignored_image_;
+  return record && !record->WasNodeRemoved() && !!record->GetMediaTiming()
+             ? record
+             : nullptr;
+}
+
+void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredText(
+    const LayoutObject& object,
+    TextRecord* record) {
+  CHECK(largest_contentful_paint_calculator_);
+
+  if (IgnorePaintTimingScope::IgnoreDepth() != 1 ||
+      !IgnorePaintTimingScope::IsDocumentElementInvisible()) {
+    return;
+  }
+
+  InitializePaintTracking(record);
+
+  if (record->IsNeededForLargestContentfulPaint() &&
+      record->IsEffectiveSizeLargerThan(GetLargestIgnoredTextIfNotRemoved())) {
+    largest_ignored_text_.key = &object;
+    largest_ignored_text_.value = record;
+  }
+}
+
+void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredImage(
+    ImageRecord* record) {
+  CHECK(largest_contentful_paint_calculator_);
+
+  if (IgnorePaintTimingScope::IgnoreDepth() != 1 ||
+      !IgnorePaintTimingScope::IsDocumentElementInvisible()) {
+    return;
+  }
+
+  CHECK(record->GetMediaTiming());
+  if (!record->GetMediaTiming()->IsSufficientContentLoadedForPaint()) {
+    return;
+  }
+
+  // Set the load time now since the image is sufficiently loaded, rather
+  // than waiting until the opacity changes.
+  //
+  // TODO(crbug.com/503691215): Can we use the actual image load time here
+  // rather instead? It's not clear why this inconsistency exists.
+  record->SetLoadTime(base::TimeTicks::Now());
+
+  InitializePaintTracking(record);
+
+  if (record->IsNeededForLargestContentfulPaint() &&
+      record->IsEffectiveSizeLargerThan(largest_ignored_image_)) {
+    largest_ignored_image_ = record;
+  }
 }
 
 }  // namespace blink
