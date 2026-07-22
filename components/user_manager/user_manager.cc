@@ -10,7 +10,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
-#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
@@ -59,7 +58,6 @@ void UserManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
   UserDirectoryIntegrityManager::RegisterLocalStatePrefs(registry);
   KnownUser::RegisterPrefs(registry);
-  MultiUserSignInPolicyController::RegisterPrefs(registry);
 }
 
 // static

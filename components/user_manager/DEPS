@@ -20,6 +20,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "multi_user_sign_in_policy_controller\.(cc|h)": [
+    "+components/session_manager/core",
+  ],
   "test_helper.cc": [
     "+chromeos/ash/components/cryptohome/cryptohome_parameters.h",
     "+chromeos/ash/components/dbus/userdataauth/userdataauth_client.h",

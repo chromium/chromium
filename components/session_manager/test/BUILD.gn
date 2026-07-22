@@ -15,6 +15,7 @@ static_library("test_support") {
     "//components/session_manager/core",
     "//components/session_manager/core:test_support",
     "//components/user_manager",
+    "//components/user_manager:multi_user",
     "//components/user_manager:test_support",
   ]
 }

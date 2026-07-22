@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_export.h"

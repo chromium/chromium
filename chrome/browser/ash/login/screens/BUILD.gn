@@ -219,6 +219,7 @@ static_library("screens") {
     "//components/sync/base",
     "//components/sync/service",
     "//components/user_manager",
+    "//components/user_manager:multi_user",
     "//components/web_modal",
     "//google_apis",
     "//mojo/public/cpp/bindings",

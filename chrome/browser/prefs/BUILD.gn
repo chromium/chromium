@@ -340,6 +340,7 @@ source_set("impl") {
       "//chromeos/ui/wm",
       "//components/onc",
       "//components/quirks",
+      "//components/user_manager:multi_user",
     ]
   }
 

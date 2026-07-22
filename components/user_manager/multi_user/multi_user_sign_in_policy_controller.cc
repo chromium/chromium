@@ -8,10 +8,13 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
@@ -35,18 +38,18 @@ void MultiUserSignInPolicyController::RegisterPrefs(
 
 bool MultiUserSignInPolicyController::IsUserAllowedInSession(
     const std::string& user_email) const {
-  const User* primary_user = user_manager_->GetPrimaryUser();
-  std::string primary_user_email;
-  if (primary_user) {
-    primary_user_email = primary_user->GetAccountId().GetUserEmail();
-  }
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
 
   // Always allow if there is no primary user or user being checked is the
   // primary user.
-  if (primary_user_email.empty() || primary_user_email == user_email) {
+  if (!primary_session ||
+      primary_session->account_id().GetUserEmail() == user_email) {
     return true;
   }
 
+  const User* primary_user =
+      user_manager_->FindUser(primary_session->account_id());
   auto primary_user_policy = GetMultiUserSignInPolicy(primary_user);
   if (primary_user_policy == MultiUserSignInPolicy::kNotAllowed) {
     return false;

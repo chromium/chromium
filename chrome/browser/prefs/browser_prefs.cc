@@ -502,6 +502,7 @@
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/onc/onc_pref_names.h"  // nogncheck
 #include "components/quirks/quirks_manager.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy_controller.h"
 #include "components/user_manager/user_manager_impl.h"
 #if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
@@ -1548,6 +1549,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   ash::ManagedCellularPrefHandler::RegisterLocalStatePrefs(registry);
   ash::ChromeSessionManager::RegisterPrefs(registry);
   user_manager::UserManagerImpl::RegisterPrefs(registry);
+  user_manager::MultiUserSignInPolicyController::RegisterPrefs(registry);
   ash::CupsPrintersManager::RegisterLocalStatePrefs(registry);
   ash::bluetooth_config::BluetoothPowerControllerImpl::RegisterLocalStatePrefs(
       registry);
