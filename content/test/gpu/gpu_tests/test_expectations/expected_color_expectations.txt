@@ -131,7 +131,7 @@ crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-nelson ] ExpectedCo
 
 
 # Flakes on Android and Windows DEMUXER_ERROR_COULD_NOT_OPEN
-crbug.com/426594100 [ win ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+crbug.com/426594100 [ arch-x86_64 graphite-enabled nvidia-0x2184 nvidia_lt_32.0.15.8180 release-x64 target-cpu-64 win10 ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 crbug.com/509789253 [ mac intel ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
 
 # Flakily timeout even when marked as slow.
