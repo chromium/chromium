@@ -37,7 +37,7 @@ static const size_t kMaxCustomDictionaryWordBytes = 99;
 // Maximum number of words a single frame's per-document custom dictionary
 // (populated via the SpellCheckCustomDictionary web API) may hold. Adds
 // beyond this limit are silently dropped.
-static const size_t kMaxDocumentCustomDictionaryWords = 5000;
+static const size_t kMaxDocumentCustomDictionaryWords = 20000;
 
 // Maximum number of bytes in a word that can be added to a per-document custom
 // dictionary via the SpellCheckCustomDictionary web API.

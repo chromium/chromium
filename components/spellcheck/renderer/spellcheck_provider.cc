@@ -260,8 +260,9 @@ void SpellCheckProvider::DidCreateNewDocument() {
   // documents that actually used the API, so the per-document cap can be
   // revisited with real-world data.
   if (!document_custom_words_.empty()) {
-    UMA_HISTOGRAM_COUNTS_10000("Spellcheck.DocumentCustomDictionary.WordCount",
-                               static_cast<int>(document_custom_words_.size()));
+    UMA_HISTOGRAM_COUNTS_100000(
+        "Spellcheck.DocumentCustomDictionary.WordCount",
+        static_cast<int>(document_custom_words_.size()));
   }
   document_custom_words_.clear();
   document_custom_dictionary_overflow_warned_ = false;
@@ -559,8 +560,9 @@ void SpellCheckProvider::OnDestruct() {
   // Capture the final word count for documents that used the API but were
   // torn down without a follow-on navigation (e.g., the frame was removed).
   if (!document_custom_words_.empty()) {
-    UMA_HISTOGRAM_COUNTS_10000("Spellcheck.DocumentCustomDictionary.WordCount",
-                               static_cast<int>(document_custom_words_.size()));
+    UMA_HISTOGRAM_COUNTS_100000(
+        "Spellcheck.DocumentCustomDictionary.WordCount",
+        static_cast<int>(document_custom_words_.size()));
   }
   delete this;
 }
