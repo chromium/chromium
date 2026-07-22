@@ -1894,9 +1894,10 @@ TEST_F(AutofillAiSuggestionGeneratorSplitManageSuggestionTest,
 
   EXPECT_THAT(
       CreateAutofillAiFillingSuggestions(field(0)),
-      ElementsAre(EqualsSuggestion(SuggestionType::kFetchingAmbientData),
-                  EqualsSuggestion(SuggestionType::kSeparator),
-                  EqualsSuggestion(SuggestionType::kManageAutofillAi)));
+      ElementsAre(
+          EqualsSuggestion(SuggestionType::kFetchingAmbientData),
+          EqualsSuggestion(SuggestionType::kSeparator),
+          EqualsSuggestion(SuggestionType::kManageAutofillAiIdentityDocs)));
 }
 
 class AutofillAiSuggestionGeneratorPolicyTest

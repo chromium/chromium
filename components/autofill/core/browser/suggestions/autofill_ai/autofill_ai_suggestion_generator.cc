@@ -202,8 +202,7 @@ Suggestion CreateUndoSuggestion() {
 
 std::vector<Suggestion> GetFooterSuggestions(
     const FormFieldData& trigger_field,
-    const DenseSet<AutofillAiUiSection>& ui_sections,
-    bool is_loading_suggestion_shown) {
+    const DenseSet<AutofillAiUiSection>& ui_sections) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(3);
 
@@ -218,26 +217,24 @@ std::vector<Suggestion> GetFooterSuggestions(
           features::kSuggestionManageButtonSplitForEnhancedAutofill) &&
       base::FeatureList::IsEnabled(features::kYourSavedInfoSettingsPage);
 
-  const bool should_use_specific_manage_button = is_split_manage_enabled &&
-                                                 !is_loading_suggestion_shown &&
-                                                 ui_sections.size() == 1;
-
-  if (should_use_specific_manage_button) {
-    switch (*ui_sections.begin()) {
-      case AutofillAiUiSection::kTravel:
-        suggestions.emplace_back(CreateManageTravelSuggestion());
-        return suggestions;
-      case AutofillAiUiSection::kIdentityDocs:
-        suggestions.emplace_back(CreateManageIdentityDocsSuggestion());
-        return suggestions;
-      case AutofillAiUiSection::kShopping:
-        suggestions.emplace_back(CreateManageShoppingSuggestion());
-        return suggestions;
+  if (is_split_manage_enabled) {
+    CHECK(!ui_sections.empty());
+    if (ui_sections.size() == 1) {
+      switch (*ui_sections.begin()) {
+        case AutofillAiUiSection::kTravel:
+          suggestions.emplace_back(CreateManageTravelSuggestion());
+          return suggestions;
+        case AutofillAiUiSection::kIdentityDocs:
+          suggestions.emplace_back(CreateManageIdentityDocsSuggestion());
+          return suggestions;
+        case AutofillAiUiSection::kShopping:
+          suggestions.emplace_back(CreateManageShoppingSuggestion());
+          return suggestions;
+      }
     }
   }
 
   // Graceful fallback for everything else:
-  // - Loading states
   // - Features disabled
   // - ui_sections has multiple items
   // - Unhandled AutofillAiUiSection enums
@@ -760,27 +757,38 @@ std::vector<const EntityInstance*> GetEntitiesForSuggestion(
       app_locale);
 }
 
-// Returns true if the `field` is of an entity type that is currently being
-// prefetched. This is used to decide if pre-fetching suggestion should be
-// shown for a specific field.
-bool IsFetchingFillableEntity(const AutofillField& field,
-                              AutofillClient& client) {
+// Returns the set of entity types that are currently being prefetched for the
+// given `field`. We collect all eligible types rather than returning the first
+// match to ensure the UI footer correctly decides between showing a
+// category-specific manage button (if exactly one section is being loaded) and
+// a generic manage button (if multiple sections are being loaded).
+DenseSet<EntityType> GetEntityTypesBeingFetched(const AutofillField& field,
+                                                AutofillClient& client) {
   AutofillAiPersonalContextAccessManager* access_manager =
       client.GetAutofillAiPersonalContextAccessManager();
   if (!access_manager) {
-    return false;
+    return {};
   }
+  DenseSet<EntityType> types;
   using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
   for (EntityType entity_type : DenseSet<EntityType>::all()) {
     if (field.Type().GetAutofillAiType(entity_type) != UNKNOWN_TYPE) {
       if (access_manager->ServerHasDataAvailable(entity_type) &&
           access_manager->GetPrefetchStatusByEntityType(entity_type) ==
               RequestStatus::kPending) {
-        return true;
+        types.insert(entity_type);
       }
     }
   }
-  return false;
+  return types;
+}
+
+// Returns true if the `field` is of an entity type that is currently being
+// prefetched. This is used to decide if pre-fetching suggestion should be
+// shown for a specific field.
+bool IsFetchingFillableEntity(const AutofillField& field,
+                              AutofillClient& client) {
+  return !GetEntityTypesBeingFetched(field, client).empty();
 }
 
 std::vector<Suggestion> CreateFetchingAmbientSuggestions() {
@@ -1038,8 +1046,10 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
     base::span<const EntityInstance> all_entities,
     const AttributeTypeAssignment& assignment,
     AutofillClient& client) {
-  bool should_show_fetching_suggestions =
-      IsFetchingFillableEntity(trigger_field, client);
+  const DenseSet<EntityType> entity_types_being_fetched =
+      GetEntityTypesBeingFetched(trigger_field, client);
+  const bool should_show_fetching_suggestions =
+      !entity_types_being_fetched.empty();
 
   std::vector<Suggestion> suggestions;
   DenseSet<AutofillAiUiSection> ui_sections;
@@ -1072,13 +1082,12 @@ std::vector<Suggestion> CreateAutofillAiFillingSuggestions(
 
   if (should_show_fetching_suggestions) {
     base::Extend(suggestions, CreateFetchingAmbientSuggestions());
+    for (EntityType entity_type : entity_types_being_fetched) {
+      ui_sections.insert(GetAutofillAiUiSection(entity_type));
+    }
   }
 
-  base::Extend(
-      suggestions,
-      GetFooterSuggestions(
-          trigger_field, ui_sections,
-          /*is_loading_suggestion_shown=*/should_show_fetching_suggestions));
+  base::Extend(suggestions, GetFooterSuggestions(trigger_field, ui_sections));
   return suggestions;
 }
 
