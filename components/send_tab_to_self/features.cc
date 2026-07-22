@@ -38,10 +38,10 @@ BASE_FEATURE(kSendTabToSelfPropagateNavigationHistory,
 
 BASE_FEATURE(kSendTabToSelfAutoOpen, base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSendTabToSelfSupportAutoOpenInTabGrid,
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kSendTabToSelfEnhancedDesktopUI,
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -26,9 +26,8 @@
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
@@ -65,20 +64,24 @@ bool IsTabModelViable(TabModel* tab_model) {
          tab_model->GetTabModelType() == TabModel::TabModelType::kStandard;
 }
 
-// Helper function to find the active standard TabModel's WebContents.
-// If `require_visible` is true, only returns the WebContents if it is visible.
+// Helper function to find the active standard TabModel's WebContents if Chrome
+// is in the foreground (has visible activities).
+// Returns nullptr if Chrome is in the background.
 //
-// Note: `require_visible` is set to false during cold start window creation
-// (`OnTabModelAdded`) or app foreground transitions
-// (`HandleApplicationStateChange`). This is because during these quick
-// lifecycle transitions, the WebContents is active and attached, but the
-// compositor might not have drawn the first frame yet (so `GetVisibility()`
-// still temporarily returns `HIDDEN` or `OCCLUDED`). Requiring visibility in
-// these scenarios would cause auto-opening to fail due to timing races. During
-// real-time push sync delivery (`DisplayNewEntriesOnUIThread`), however,
-// `require_visible` is set to true to ensure entries only auto-open if actively
-// browsing.
+// Note: The WebContents is not required to be visible (e.g. it is allowed to be
+// hidden during cold start or app foreground transitions, or when the tab
+// switcher is open) as long as Chrome is in the foreground, to prevent timing
+// races and support auto-opening in the tab switcher.
 content::WebContents* GetActiveWebContents(bool require_visible) {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfSupportAutoOpenInTabGrid)) {
+    // Only auto-open if Chrome is in the foreground (has visible activities)
+    // to avoid resource waste and ensure the user gets a notification if they
+    // are using another app.
+    if (!base::android::ApplicationStatusListener::HasVisibleActivities()) {
+      return nullptr;
+    }
+  }
+
   // Track candidate WebContents across decreasing priority tiers:
   // Priority 1: Active tab of the active TabModel (returned immediately).
   // Priority 2: Active tab of an inactive TabModel.
@@ -193,30 +196,26 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
   // Called when new entries are received from sync.
   content::WebContents* const target_web_contents =
       base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)
-          ? GetActiveWebContents(/*require_visible=*/true)
+          ? GetActiveWebContents(
+                /*require_visible=*/!base::FeatureList::IsEnabled(
+                    kSendTabToSelfSupportAutoOpenInTabGrid))
           : nullptr;
 
   // If Chrome is already open and active in the foreground, entries are
   // opened directly as new background tabs.
   if (target_web_contents) {
-    std::optional<std::string> device_name;
+    std::vector<const SendTabToSelfEntry*> entries;
+    entries.reserve(guids.size());
     for (const std::string& guid : guids) {
       const SendTabToSelfEntry* entry =
           send_tab_to_self_model_->GetEntryByGUID(guid);
-      if (!entry || entry->IsOpened()) {
-        continue;
+      if (entry && !entry->IsOpened()) {
+        entries.push_back(entry);
       }
-      OpenEntryInBackgroundTab(*entry, *target_web_contents);
-      RecordAutoOpenOutcome(
-          AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
-      // Use the device name of the last entry. There can be multiple devices
-      // sending tabs to the same device but only one of them is displayed in
-      // the message banner.
-      device_name = entry->GetDeviceName();
     }
-    if (device_name.has_value()) {
-      ShowMessageBanner(*device_name, target_web_contents);
-    }
+    OpenEntriesInBackground(
+        entries, *target_web_contents,
+        AutoOpenOutcome::kTabsOpenedImmediatelyInBackground);
   } else {
     // Otherwise, show a standard system notification.
     for (const std::string& guid : guids) {
@@ -322,34 +321,56 @@ void AndroidNotificationHandler::CheckAndOpenPendingEntries() {
     return;
   }
 
-  const std::vector<const SendTabToSelfEntry*> pending_entries =
-      send_tab_to_self_model_->GetUnopenedEntriesTargetedToLocalDevice();
+  OpenEntriesInBackground(
+      send_tab_to_self_model_->GetUnopenedEntriesTargetedToLocalDevice(),
+      *target_web_contents,
+      AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation);
+}
 
-  for (const SendTabToSelfEntry* entry : pending_entries) {
-    OpenEntryInBackgroundTab(*entry, *target_web_contents);
+void AndroidNotificationHandler::OpenEntriesInBackground(
+    base::span<const SendTabToSelfEntry* const> entries,
+    content::WebContents& target_web_contents,
+    AutoOpenOutcome outcome) {
+  TabModel* model =
+      TabModelList::GetTabModelForWebContents(&target_web_contents);
+  int active_index = model ? model->GetActiveIndex() : -1;
+
+  std::string_view last_device_name;
+  int opened_count = 0;
+  for (const SendTabToSelfEntry* entry : entries) {
+    // Calculate tabstrip index adjacent to the active tab, preserving
+    // chronological order when opening multiple tabs sequentially.
+    int tabstrip_index =
+        (active_index != -1) ? (active_index + 1 + opened_count++) : -1;
+    OpenEntryInBackgroundTab(*entry, target_web_contents, tabstrip_index);
+    // Dismiss any system notification associated with this entry.
     HideNotification(entry->GetGUID());
-    RecordAutoOpenOutcome(
-        AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation);
+    RecordAutoOpenOutcome(outcome);
+    last_device_name = entry->GetDeviceName();
   }
 
-  if (!pending_entries.empty()) {
-    ShowMessageBanner(pending_entries.back()->GetDeviceName(),
-                      target_web_contents);
+  // Display an in-app banner for the most recent sender device.
+  if (!last_device_name.empty()) {
+    ShowMessageBanner(last_device_name, &target_web_contents);
   }
 }
 
 void AndroidNotificationHandler::OpenEntryInBackgroundTab(
     const SendTabToSelfEntry& entry,
-    content::WebContents& target_web_contents) {
+    content::WebContents& target_web_contents,
+    int tabstrip_index) {
   auto nav_params = std::make_unique<NavigateParams>(
       Profile::FromBrowserContext(target_web_contents.GetBrowserContext()),
       entry.GetURL(), ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   nav_params->source_contents = &target_web_contents;
   nav_params->disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
   nav_params->window_action = NavigateParams::WindowAction::kNoAction;
+  nav_params->tabstrip_index = tabstrip_index;
   nav_params->internal_scroll_to_text_fragment =
       GetScrollToTextFragmentFromEntry(entry);
 
+  // Keep a raw pointer to the NavigateParams aside since the unique_ptr will
+  // be moved into the Navigate() call.
   NavigateParams* nav_params_ptr = nav_params.get();
   Navigate(nav_params_ptr,
            base::BindOnce(&AndroidNotificationHandler::OnNavigationStarted,

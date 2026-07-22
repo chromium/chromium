@@ -49,6 +49,14 @@ std::unique_ptr<KeyedService> BuildStubSendTabToSelfSyncService(
 
 class AndroidNotificationHandlerBrowserTest : public AndroidBrowserTest {
  protected:
+  void SetUpOnMainThread() override {
+    AndroidBrowserTest::SetUpOnMainThread();
+    // Wait for the default tab to be fully initialized to avoid ANR/crashes
+    // when tests attempt to access GetTab(0) immediately.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return GetTabListInterface()->GetTabCount() >= 1; }));
+  }
+
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     SendTabToSelfSyncServiceFactory::GetInstance()->SetTestingFactory(
@@ -161,6 +169,83 @@ IN_PROC_BROWSER_TEST_F(AndroidNotificationHandlerModelNotReadyBrowserTest,
   // Now make model ready. This should trigger auto-open.
   EntryOpenedWaiter waiter(model());
   model()->SetIsReady(true);
+  waiter.Wait();
+
+  EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
+  EXPECT_EQ(initial_tab_count + 1, GetTabListInterface()->GetTabCount());
+  EXPECT_EQ(GURL(kExampleUrl), GetTabListInterface()
+                                   ->GetTab(initial_tab_count)
+                                   ->GetContents()
+                                   ->GetVisibleURL());
+}
+
+class AndroidNotificationHandlerWithoutTabGridAutoOpenSupportBrowserTest
+    : public AndroidNotificationHandlerBrowserTest {
+ public:
+  AndroidNotificationHandlerWithoutTabGridAutoOpenSupportBrowserTest() {
+    feature_list_.InitWithFeatureState(kSendTabToSelfSupportAutoOpenInTabGrid,
+                                       false);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    AndroidNotificationHandlerWithoutTabGridAutoOpenSupportBrowserTest,
+    NoAutoOpenInTabSwitcher) {
+  // Simulating application already running in foreground
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+
+  // Hide the active tab's web contents to simulate tab switcher open.
+  content::WebContents* active_contents =
+      GetTabListInterface()->GetTab(0)->GetContents();
+  active_contents->WasHidden();
+  ASSERT_EQ(content::Visibility::HIDDEN, active_contents->GetVisibility());
+
+  const int initial_tab_count = GetTabListInterface()->GetTabCount();
+
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
+  const std::string guid = entry->GetGUID();
+
+  // Since it's in background/hidden and flag is disabled, it should NOT
+  // auto-open.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(model()->GetEntryByGUID(guid)->IsOpened());
+  EXPECT_EQ(initial_tab_count, GetTabListInterface()->GetTabCount());
+}
+
+class AndroidNotificationHandlerWithTabGridAutoOpenSupportBrowserTest
+    : public AndroidNotificationHandlerBrowserTest {
+  base::test::ScopedFeatureList feature_list_{
+      kSendTabToSelfSupportAutoOpenInTabGrid};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    AndroidNotificationHandlerWithTabGridAutoOpenSupportBrowserTest,
+    AutoOpenWhenReceivedInForegroundInTabSwitcher) {
+  // Simulating application already running in foreground
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+
+  // Hide the active tab's web contents to simulate tab switcher open.
+  content::WebContents* active_contents =
+      GetTabListInterface()->GetTab(0)->GetContents();
+  active_contents->WasHidden();
+  ASSERT_EQ(content::Visibility::HIDDEN, active_contents->GetVisibility());
+
+  const int initial_tab_count = GetTabListInterface()->GetTabCount();
+  EntryOpenedWaiter waiter(model());
+
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
+  const std::string guid = entry->GetGUID();
+
   waiter.Wait();
 
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());

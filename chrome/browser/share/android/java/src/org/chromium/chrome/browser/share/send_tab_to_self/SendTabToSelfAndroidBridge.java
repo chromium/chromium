@@ -16,10 +16,13 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ObserverList;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -56,6 +59,28 @@ public class SendTabToSelfAndroidBridge {
     public interface CommitConfirmationCallback {
         @CalledByNative
         void onResult(@SendTabToSelfResult int result);
+    }
+
+    /**
+     * Interface to observe when a Send Tab to Self label is attached to a tab. This is useful to
+     * handle the race condition where a tab is auto-opened immediately (e.g. in the tab switcher)
+     * but the STTS metadata label is attached asynchronously via JNI later. Observers (like the tab
+     * switcher labeller) can listen to this to refresh the UI when the label arrives.
+     */
+    public interface LabelObjectObserver {
+        void onLabelAttached(Tab tab);
+    }
+
+    private static final ObserverList<LabelObjectObserver> sLabelObservers = new ObserverList<>();
+
+    public static void addLabelObserver(LabelObjectObserver observer) {
+        ThreadUtils.assertOnUiThread();
+        sLabelObservers.addObserver(observer);
+    }
+
+    public static void removeLabelObserver(LabelObjectObserver observer) {
+        ThreadUtils.assertOnUiThread();
+        sLabelObservers.removeObserver(observer);
     }
 
     /**
@@ -247,6 +272,8 @@ public class SendTabToSelfAndroidBridge {
      */
     @CalledByNative
     public static void attachTabLabel(Tab tab, String guid, String senderDeviceName) {
+        ThreadUtils.assertOnUiThread();
+
         if (tab == null || tab.getUserDataHost() == null || TextUtils.isEmpty(senderDeviceName)) {
             return;
         }
@@ -256,18 +283,30 @@ public class SendTabToSelfAndroidBridge {
                         SendTabToSelfTabCardLabelData.class,
                         new SendTabToSelfTabCardLabelData(
                                 tab, guid, senderDeviceName, System.currentTimeMillis()));
-        // TODO(crbug.com/488072250): Inform SendTabToSelfTabLabeller to update the UI. This
-        // specifically affects the case where the tab switcher is already opened and a tab gets
-        // auto-opened.
+        if (ChromeFeatureList.sSendTabToSelfSupportAutoOpenInTabGrid.isEnabled()) {
+            // Notify observers (e.g., UI components like SendTabToSelfTabLabeller) that the label
+            // has been attached asynchronously so they can update the UI immediately.
+            for (LabelObjectObserver observer : sLabelObservers) {
+                observer.onLabelAttached(tab);
+            }
+        }
     }
 
     @CalledByNative
     public static void showMessageBanner(@Nullable WebContents webContents, String deviceName) {
         // The tab or web page has been closed or destroyed.
-        if (webContents == null) return;
+        if (webContents == null || webContents.isDestroyed()) return;
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         // The tab is detached from the UI or the containing activity is being torn down.
         if (windowAndroid == null) return;
+
+        // Do not show the banner if Chrome is in overview mode (tab switcher).
+        if (windowAndroid.getActivity().get() instanceof ChromeActivity chromeActivity) {
+            if (chromeActivity.isInOverviewMode()) {
+                return;
+            }
+        }
+
         MessageDispatcher messageDispatcher = MessageDispatcherProvider.from(windowAndroid);
         // The activity is being recreated, destroyed, or does not support messaging.
         if (messageDispatcher == null) return;

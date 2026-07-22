@@ -545,6 +545,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &send_tab_to_self::kSendTabToSelfGesture,
     &send_tab_to_self::kSendTabToSelfPostSendToast,
     &send_tab_to_self::kSendTabToSelfPropagateScrollPosition,
+    &send_tab_to_self::kSendTabToSelfSupportAutoOpenInTabGrid,
     &sensitive_content::features::kSensitiveContent,
     &sensitive_content::features::kSensitiveContentWhileSwitchingTabs,
     &site_isolation::features::kSiteIsolationEnableMemoryThresholdAndroid,

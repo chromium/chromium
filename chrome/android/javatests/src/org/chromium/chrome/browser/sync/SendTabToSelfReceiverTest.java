@@ -22,6 +22,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
@@ -29,13 +31,16 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.proto.SendTabToSelfPersistedTabData.SendTabToSelfPersistedTabDataProto;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataStorage;
@@ -110,7 +115,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testSendTabToSelfAutoOpenMultipleTabs() throws Exception {
+    public void testSendTabToSelfAutoOpenMultipleTabs() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         injectSendTabToSelfEntity(
                 "stts_test_guid_1",
@@ -165,7 +170,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testSendTabToSelfMessageBanner_BottomControls() throws Exception {
+    public void testSendTabToSelfMessageBanner_BottomControls() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     BrowserControlsManager browserControlsManager =
@@ -192,7 +197,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testSendTabToSelfMessageBannerClickOpensSingleTab() throws Exception {
+    public void testSendTabToSelfMessageBannerClickOpensSingleTab() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         injectSendTabToSelfEntity(
                 "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
@@ -227,8 +232,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testSendTabToSelfMessageBannerClickOpensNewestTabForMultipleTabs()
-            throws Exception {
+    public void testSendTabToSelfMessageBannerClickOpensNewestTabForMultipleTabs() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         injectSendTabToSelfEntity(
                 "stts_test_guid_1",
@@ -273,7 +277,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testNoSendTabToSelfMessageBannerForExpiredEntry() throws Exception {
+    public void testNoSendTabToSelfMessageBannerForExpiredEntry() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         // Set the shared time to 10 days ago, which is greater than the TTL of the STTS entry.
         long sharedTime = now - TimeUnit.DAYS.toMicros(10);
@@ -327,7 +331,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testSendTabToSelfLabelRemovalOnInteraction() throws Exception {
+    public void testSendTabToSelfLabelRemovalOnInteraction() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         injectSendTabToSelfEntity(
                 "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
@@ -351,7 +355,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testSendTabToSelfTabCardLabelLoadsFromPersistentStorage() throws Exception {
+    public void testSendTabToSelfTabCardLabelLoadsFromPersistentStorage() {
         TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 1, 0);
         Tab tab =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -391,7 +395,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testSendTabToSelfPersistedData() throws Exception {
+    public void testSendTabToSelfPersistedData() {
         long startTime = System.currentTimeMillis();
         long now = getCurrentTimeSinceWindowsEpochMicros();
         String guid = "stts_test_guid";
@@ -429,7 +433,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testSendTabToSelfActivationLoggingAfterRestart() throws Exception {
+    public void testSendTabToSelfActivationLoggingAfterRestart() {
         long startTime = System.currentTimeMillis();
         long now = getCurrentTimeSinceWindowsEpochMicros();
         String guid = "stts_test_guid";
@@ -496,7 +500,7 @@ public class SendTabToSelfReceiverTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testSendTabToSelfClosedWithoutActivationLogging() throws Exception {
+    public void testSendTabToSelfClosedWithoutActivationLogging() {
         long now = getCurrentTimeSinceWindowsEpochMicros();
         String guid = "stts_test_guid";
         String deviceName = "Example Phone";
@@ -534,5 +538,160 @@ public class SendTabToSelfReceiverTest {
 
         // Verify that the histograms were logged.
         watcher.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID)
+    public void testSendTabToSelfReceivedInTabSwitcher_GetsLabelImmediately_NoMessageBanner() {
+        // Enter Tab Switcher.
+        TabUiTestHelper.enterTabSwitcher(mSyncTestRule.getActivity());
+
+        // Inject STTS entity.
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        injectSendTabToSelfEntity(
+                "stts_test_guid_switcher",
+                "https://www.example.com",
+                "Example",
+                "Example Phone",
+                now);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        // Verify that the tab is auto-opened immediately (because Chrome is in foreground, even if
+        // in switcher).
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
+
+        // Verify that the active tab index remains 0 (opened in background).
+        TabModel tabModel = mSyncTestRule.getActivity().getTabModelSelector().getModel(false);
+        Assert.assertEquals(
+                0, ThreadUtils.runOnUiThreadBlocking(() -> tabModel.index()).intValue());
+
+        // Verify that the tab card label is visible immediately.
+        onView(withText("From Example Phone")).check(matches(isDisplayed()));
+
+        // Verify that the message banner is NOT displayed.
+        onView(withId(R.id.message_primary_button)).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID)
+    public void testSendTabToSelfReceivedInTabSwitcher_LabelAttachedSynchronously() {
+        // Enter Tab Switcher.
+        TabUiTestHelper.enterTabSwitcher(mSyncTestRule.getActivity());
+
+        TabModel tabModel = mSyncTestRule.getActivity().getTabModelSelector().getModel(false);
+        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(0));
+
+        // Attach label via JNI bridge on the UI thread and verify instant synchronous
+        // inflation/update before the UI thread looper yields or processes posted tasks.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SendTabToSelfAndroidBridge.attachTabLabel(
+                            tab, "stts_test_guid_sync", "Test Device");
+
+                    androidx.recyclerview.widget.RecyclerView recyclerView =
+                            mSyncTestRule.getActivity().findViewById(R.id.tab_list_recycler_view);
+                    Assert.assertNotNull(recyclerView);
+
+                    android.view.View cardView =
+                            recyclerView.getLayoutManager().findViewByPosition(0);
+                    Assert.assertNotNull(cardView);
+
+                    android.view.View labelView = cardView.findViewById(R.id.tab_card_label);
+                    Assert.assertNotNull(labelView);
+                    Assert.assertEquals(android.view.View.VISIBLE, labelView.getVisibility());
+                });
+
+        // Also verify via Espresso.
+        onView(withText("From Test Device")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID)
+    public void testSendTabToSelfOpenedAdjacentToActiveTab() {
+        // Start with 1 tab.
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 1, 0);
+
+        // Open a second tab. This tab will be at index 1.
+        mSyncTestRule.loadUrlInNewTab("chrome://version/");
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 2, 0);
+
+        TabModel tabModel = mSyncTestRule.getActivity().getTabModelSelector().getModel(false);
+
+        // Set the active tab back to index 0.
+        ThreadUtils.runOnUiThreadBlocking(() -> tabModel.setIndex(0, TabSelectionType.FROM_USER));
+        Assert.assertEquals(
+                0, ThreadUtils.runOnUiThreadBlocking(() -> tabModel.index()).intValue());
+
+        // Inject STTS entity. This should open in background adjacent to the active tab (index 0).
+        // So the new tab should be inserted at index 1.
+        // The old tab at index 1 (chrome://version/) should move to index 2.
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        injectSendTabToSelfEntity(
+                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        // Verify tab count is now 3.
+        TabUiTestHelper.verifyTabModelTabCount(mSyncTestRule.getActivity(), 3, 0);
+
+        // Verify that the active tab is STILL index 0.
+        Assert.assertEquals(
+                0, ThreadUtils.runOnUiThreadBlocking(() -> tabModel.index()).intValue());
+
+        // Verify the tab at index 1 is the newly received tab.
+        Tab tab1 = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(1));
+        Assert.assertEquals(
+                "https://www.example.com/",
+                ThreadUtils.runOnUiThreadBlocking(() -> tab1.getUrl().getSpec()));
+
+        // Verify the tab at index 2 is the previously opened tab (chrome://version/).
+        Tab tab2 = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabAt(2));
+        Assert.assertEquals(
+                "chrome://version/",
+                ThreadUtils.runOnUiThreadBlocking(() -> tab2.getUrl().getSpec()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF_SUPPORT_AUTO_OPEN_IN_TAB_GRID)
+    public void testAutoOpenOnActivationAfterReceivedInBackground() {
+        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+
+        // Start with 1 tab.
+        TabUiTestHelper.verifyTabModelTabCount(activity, 1, 0);
+
+        // Simulate app going to background by mocking Activity state in ApplicationStatus.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STOPPED);
+                });
+
+        // Inject STTS entity. This normally triggers auto-open if in foreground.
+        long now = getCurrentTimeSinceWindowsEpochMicros();
+        injectSendTabToSelfEntity(
+                "stts_test_guid", "https://www.example.com", "Example", "Example Phone", now);
+        SyncTestUtil.triggerSyncAndWaitForCompletion();
+
+        // Verify that the tab is NOT opened (still 1 tab) because app is in background.
+        TabUiTestHelper.verifyTabModelTabCount(activity, 1, 0);
+
+        // Simulate app returning to foreground (activation).
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ApplicationStatus.onStateChangeForTesting(activity, ActivityState.STARTED);
+                    ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
+                });
+
+        // Verify that the tab is now auto-opened (2 tabs) upon activation.
+        TabUiTestHelper.verifyTabModelTabCount(activity, 2, 0);
+
+        // Verify that the message banner is displayed.
+        onView(withId(R.id.message_primary_button)).check(matches(isDisplayed()));
     }
 }

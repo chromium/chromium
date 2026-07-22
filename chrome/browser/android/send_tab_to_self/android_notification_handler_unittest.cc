@@ -526,5 +526,92 @@ TEST_F(AndroidNotificationHandlerTest,
   EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
 }
 
+class AndroidNotificationHandlerWithoutTabGridAutoOpenSupportTest
+    : public AndroidNotificationHandlerTest {
+ public:
+  AndroidNotificationHandlerWithoutTabGridAutoOpenSupportTest() {
+    feature_list_.InitWithFeatureState(kSendTabToSelfSupportAutoOpenInTabGrid,
+                                       false);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class AndroidNotificationHandlerWithTabGridAutoOpenSupportTest
+    : public AndroidNotificationHandlerTest {
+  base::test::ScopedFeatureList feature_list_{
+      kSendTabToSelfSupportAutoOpenInTabGrid};
+};
+
+TEST_F(AndroidNotificationHandlerWithoutTabGridAutoOpenSupportTest,
+       ShouldNotAutoOpenInTabSwitcher) {
+  base::HistogramTester histogram_tester;
+  TabModelList::AddTabModel(tab_model_.get());
+
+  // Hide the active WebContents (simulating tab switcher open).
+  web_contents()->WasHidden();
+  ASSERT_EQ(content::Visibility::HIDDEN, web_contents()->GetVisibility());
+
+  base::RunLoop run_loop;
+  // Should fallback to notification.
+  EXPECT_CALL(*handler(), ShowNotification(Property(&SendTabToSelfEntry::GetURL,
+                                                    Eq(GURL(kExampleUrl)))))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(*handler(), ShowMessageBanner).Times(0);
+
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
+
+  static_cast<ReceivingUiHandler*>(handler())->DisplayNewEntries({entry});
+  run_loop.Run();
+
+  EXPECT_FALSE(model()->GetEntryByGUID(entry->GetGUID())->IsOpened());
+
+  histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.AutoOpenOutcome2",
+                                      AutoOpenOutcome::kUnopenedImmediately, 1);
+
+  TabModelList::RemoveTabModel(tab_model_.get());
+}
+
+TEST_F(AndroidNotificationHandlerWithTabGridAutoOpenSupportTest,
+       ShouldAutoOpenInTabSwitcher) {
+  base::HistogramTester histogram_tester;
+  // Attach the tab model.
+  TabModelList::AddTabModel(tab_model_.get());
+
+  // Hide the active WebContents (simulating tab switcher open).
+  web_contents()->WasHidden();
+  ASSERT_EQ(content::Visibility::HIDDEN, web_contents()->GetVisibility());
+
+  // Ensure application status is foreground.
+  base::android::ApplicationStatusListener::NotifyApplicationStateChange(
+      base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+  base::RunLoop().RunUntilIdle();
+
+  const SendTabToSelfEntry* entry =
+      model()->AddEntryRemotely(GURL(kExampleUrl), "Title", kDeviceId,
+                                PageContext(), NavigationHistory());
+  const std::string guid = entry->GetGUID();
+
+  EntryOpenedWaiter waiter(model());
+
+  EXPECT_CALL(*handler(), ShowNotification).Times(0);
+  EXPECT_CALL(*handler(), ShowMessageBanner(kRemoteDeviceName, web_contents()));
+
+  static_cast<ReceivingUiHandler*>(handler())->DisplayNewEntries({entry});
+
+  waiter.Wait();
+
+  EXPECT_TRUE(model()->GetEntryByGUID(guid)->IsOpened());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      AutoOpenOutcome::kTabsOpenedImmediatelyInBackground, 1);
+
+  TabModelList::RemoveTabModel(tab_model_.get());
+}
+
 }  // namespace
 }  // namespace send_tab_to_self

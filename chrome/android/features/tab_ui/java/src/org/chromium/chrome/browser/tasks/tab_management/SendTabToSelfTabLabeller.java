@@ -10,10 +10,10 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.SendTabToSelfTabCardLabelData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import java.util.Set;
 
 /** Pushes Send Tab To Self label updates to UI for tabs. */
 @NullMarked
-public class SendTabToSelfTabLabeller implements TabModelObserver {
+public class SendTabToSelfTabLabeller implements SendTabToSelfAndroidBridge.LabelObjectObserver {
     private final TabListNotificationHandler mNotificationHandler;
     private final NullableObservableSupplier<TabModel> mTabModelSupplier;
     private final Callback<@Nullable TabModel> mOnTabModelChange = this::onTabModelChange;
@@ -44,19 +44,26 @@ public class SendTabToSelfTabLabeller implements TabModelObserver {
         mNotificationHandler = notificationHandler;
         mTabModelSupplier = tabModelSupplier;
         mTabModelSupplier.addSyncObserverAndCallIfNonNull(mOnTabModelChange);
+        // Observe the bridge for late-attaching labels. This is necessary because if a tab
+        // is auto-opened while the tab switcher is active, the tab card is rendered before
+        // the label is attached via JNI. Observing this allows refreshing the card
+        // once the label is attached.
+        SendTabToSelfAndroidBridge.addLabelObserver(this);
     }
 
-    /** Cleans up observers and unregisters from the active {@link TabModel}. */
+    /** Cleans up observers. */
     public void destroy() {
         mTabModelSupplier.removeObserver(mOnTabModelChange);
-        if (mCurrentTabModel != null) {
-            mCurrentTabModel.removeObserver(this);
-            mCurrentTabModel = null;
-        }
+        SendTabToSelfAndroidBridge.removeLabelObserver(this);
+    }
+
+    @Override
+    public void onLabelAttached(Tab tab) {
+        showAllInternal(Collections.singletonList(tab));
     }
 
     /**
-     * Updates the UI with Send Tab To Self labels for the specified tabs.
+     * Updates the UI with Send Tab To Self labels for the specified tabs. Runs asynchronously.
      *
      * @param tabs The list of tabs to update. If null, updates all tabs in the current {@link
      *     TabModel}.
@@ -107,20 +114,12 @@ public class SendTabToSelfTabLabeller implements TabModelObserver {
     }
 
     /**
-     * Handles changes to the active {@link TabModel} by unregistering from the old model and
-     * registering to the new one.
+     * Handles changes to the active {@link TabModel}.
      *
      * @param newTabModel The newly selected {@link TabModel}.
      */
     private void onTabModelChange(@Nullable TabModel newTabModel) {
-        if (mCurrentTabModel == newTabModel) return;
-        if (mCurrentTabModel != null) {
-            mCurrentTabModel.removeObserver(this);
-        }
         mCurrentTabModel = newTabModel;
-        if (mCurrentTabModel != null) {
-            mCurrentTabModel.addObserver(this);
-        }
     }
 
     /**
