@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 
 #include <ostream>
 
 #include "base/strings/utf_ostream_operators.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
-namespace accessibility_annotator {
+namespace autofill {
 
 EntryMetadata::EntryMetadata(MemoryDataType type,
                              std::u16string type_name,
@@ -100,4 +100,4 @@ std::ostream& operator<<(std::ostream& os, const MemorySearchResult& result) {
   return os;
 }
 
-}  // namespace accessibility_annotator
+}  // namespace autofill

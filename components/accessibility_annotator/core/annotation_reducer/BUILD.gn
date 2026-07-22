@@ -12,8 +12,6 @@ source_set("annotation_reducer") {
     "ingested_content_annotation_utils.cc",
     "ingested_content_annotation_utils.h",
     "memory_data_type.h",
-    "memory_search_result.cc",
-    "memory_search_result.h",
   ]
 
   public_deps = [
@@ -31,10 +29,7 @@ source_set("annotation_reducer") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "ingested_content_annotation_utils_unittest.cc",
-    "memory_search_result_unittest.cc",
-  ]
+  sources = [ "ingested_content_annotation_utils_unittest.cc" ]
 
   deps = [
     ":annotation_reducer",

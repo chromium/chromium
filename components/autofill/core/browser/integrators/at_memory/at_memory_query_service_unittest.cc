@@ -21,10 +21,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/at_memory/autofill_data_provider.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -43,13 +43,7 @@ namespace autofill {
 
 namespace {
 
-using ::accessibility_annotator::EntryMetadata;
 using ::accessibility_annotator::MemoryDataType;
-using ::accessibility_annotator::MemoryEntrySource;
-using ::accessibility_annotator::MemoryEntrySourceType;
-using ::accessibility_annotator::MemorySearchResult;
-using ::accessibility_annotator::MemorySearchResults;
-using ::accessibility_annotator::MemorySearchStatus;
 using ::base::test::ErrorIs;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;

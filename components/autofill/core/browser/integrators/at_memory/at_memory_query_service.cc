@@ -47,13 +47,7 @@ namespace autofill {
 
 namespace {
 
-using ::accessibility_annotator::EntryMetadata;
 using ::accessibility_annotator::MemoryDataType;
-using ::accessibility_annotator::MemoryEntrySource;
-using ::accessibility_annotator::MemoryEntrySourceType;
-using ::accessibility_annotator::MemorySearchResult;
-using ::accessibility_annotator::MemorySearchResults;
-using ::accessibility_annotator::MemorySearchStatus;
 using ::personal_context::proto::AtMemoryQueryResponse;
 
 MemoryDataType ToMemoryDataType(
@@ -1004,7 +998,7 @@ void AtMemoryQueryService::AuthenticateAndFetchPiiEntity(
     const std::u16string& auth_message,
     std::u16string_view masked_value,
     accessibility_annotator::MemoryDataType data_type,
-    base::span<const accessibility_annotator::EntryMetadata> metadata_list,
+    base::span<const EntryMetadata> metadata_list,
     FetchUnmaskedPiiEntitiesCallback callback) {
   if (device_authenticator_) {
     RunCallbackAsync(
@@ -1144,7 +1138,7 @@ void AtMemoryQueryService::OnLocalDataRetrieved(
 void AtMemoryQueryService::OnAuthenticationCompleted(
     std::u16string masked_value,
     accessibility_annotator::MemoryDataType data_type,
-    std::vector<accessibility_annotator::EntryMetadata> metadata_list,
+    std::vector<EntryMetadata> metadata_list,
     FetchUnmaskedPiiEntitiesCallback callback,
     bool auth_succeeded) {
   device_authenticator_.reset();

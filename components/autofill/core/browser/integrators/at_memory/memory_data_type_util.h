@@ -9,7 +9,7 @@
 
 #include "base/containers/span.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 
 namespace autofill {
@@ -26,7 +26,7 @@ bool IsSpiiMemoryDataType(accessibility_annotator::MemoryDataType type);
 personal_context::proto::Entity ToPersonalContextEntity(
     std::u16string_view value,
     accessibility_annotator::MemoryDataType memory_data_type,
-    base::span<const accessibility_annotator::EntryMetadata> metadata_list);
+    base::span<const EntryMetadata> metadata_list);
 
 }  // namespace autofill
 

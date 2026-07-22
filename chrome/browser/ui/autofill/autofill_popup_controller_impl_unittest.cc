@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_popup_controller_autofill_client.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -101,14 +102,13 @@ class AutofillPopupControllerImplTest
   void SimulateAtMemoryQuery(const std::u16string& query,
                              const std::vector<std::u16string>& results) {
     // 1. Prepare the backend mock results.
-    std::vector<accessibility_annotator::MemorySearchResult> entries;
+    std::vector<MemorySearchResult> entries;
     for (const auto& value : results) {
       entries.emplace_back(accessibility_annotator::MemoryDataType::kNameFull,
                            u"Name", value);
     }
-    accessibility_annotator::MemorySearchResults search_results(
-        accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-        std::move(entries));
+    MemorySearchResults search_results(
+        MemorySearchStatus::kFinalResponseSuccess, std::move(entries));
 
     // 2. Setup the backend expectation if the query is non-empty.
     if (!query.empty()) {

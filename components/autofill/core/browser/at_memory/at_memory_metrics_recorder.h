@@ -16,8 +16,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/token.h"
 #include "base/types/optional_ref.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
@@ -25,10 +25,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
-
-namespace accessibility_annotator {
-struct MemorySearchResults;
-}  // namespace accessibility_annotator
 
 namespace optimization_guide {
 class ModelQualityLogEntry;
@@ -94,12 +90,10 @@ class AtMemoryMetricsRecorder {
   void OnQuerySubmitted(std::u16string_view query);
 
   // Records that a response for the pending query was received.
-  void OnQueryResponseReceived(
-      const accessibility_annotator::MemorySearchResults& result);
+  void OnQueryResponseReceived(const MemorySearchResults& result);
 
   // Records that a suggestion was accepted during this session.
-  using MemorySourcesBitmask =
-      std::underlying_type_t<accessibility_annotator::MemoryEntrySourceType>;
+  using MemorySourcesBitmask = std::underlying_type_t<MemoryEntrySourceType>;
   void OnSuggestionAccepted(
       accessibility_annotator::MemoryDataType memory_data_type,
       MemorySourcesBitmask sources_bitmask = 0,

@@ -84,6 +84,7 @@
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/heuristic_source.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
@@ -5409,8 +5410,7 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureContext) {
       AutofillSuggestionTriggerSource::kAtMemory);
 
   // Submit search query. This should invoke Query on mock query service.
-  base::RepeatingCallback<void(accessibility_annotator::MemorySearchResults)>
-      search_callback;
+  base::RepeatingCallback<void(MemorySearchResults)> search_callback;
   EXPECT_CALL(*mock_query_service_ptr,
               Query(std::u16string_view(u"query"), _, _, _))
       .WillOnce(testing::SaveArg<3>(&search_callback));
@@ -5418,12 +5418,11 @@ TEST_F(BrowserAutofillManagerTest, DidShowSuggestions_FormNonSecureContext) {
   ASSERT_FALSE(search_callback.is_null());
 
   // Prepare search results containing a SPII entry.
-  std::vector<accessibility_annotator::MemorySearchResult> entries;
+  std::vector<MemorySearchResult> entries;
   entries.emplace_back(accessibility_annotator::MemoryDataType::kPassportNumber,
                        u"Passport", u"123456789");
-  accessibility_annotator::MemorySearchResults results(
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      std::move(entries));
+  MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
+                              std::move(entries));
 
   // Send search results. Since the context is insecure, the SPII entry must be
   // filtered out, leaving no suggestions.

@@ -23,7 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/at_memory/at_memory_utils.h"
@@ -46,6 +45,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/common/aliases.h"
@@ -65,8 +65,6 @@ namespace autofill {
 namespace {
 
 using ::accessibility_annotator::MemoryDataType;
-using ::accessibility_annotator::MemoryEntrySourceType;
-using ::accessibility_annotator::MemorySearchResult;
 
 std::optional<Suggestion> CreateManageSuggestion(MemoryDataType type) {
   auto create_suggestion = [](SuggestionType suggestion_type, int string_id) {
@@ -426,7 +424,7 @@ Suggestion::Icon GetIcon(const MemorySearchResult& search_result) {
 bool IsMemorySearchResultAutofillSourced(const MemorySearchResult& entry) {
   const bool is_autofill_sourced =
       std::ranges::contains(entry.sources, MemoryEntrySourceType::kAutofill,
-                            &accessibility_annotator::MemoryEntrySource::type);
+                            &MemoryEntrySource::type);
   // Mixing Autofill with other sources is currently not in scope, and this
   // DCHECK acts as a temporary way to catch violations of this assumption.
   DCHECK(!is_autofill_sourced ||
@@ -467,8 +465,7 @@ std::vector<Suggestion> CreateSecondarySuggestions(
     bool is_personal_context_sourced) {
   std::vector<Suggestion> children;
   children.reserve(entry.metadata_list.size());
-  for (const accessibility_annotator::EntryMetadata& metadata :
-       entry.metadata_list) {
+  for (const EntryMetadata& metadata : entry.metadata_list) {
     Suggestion child(MaybeObfuscateValue(metadata.value, metadata.type,
                                          is_personal_context_sourced),
                      SuggestionType::kAtMemorySearchResult);
@@ -535,8 +532,7 @@ Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
   if (!type_name.empty()) {
     label_row.emplace_back(type_name);
   }
-  for (const accessibility_annotator::EntryMetadata& metadata :
-       entry.metadata_list) {
+  for (const EntryMetadata& metadata : entry.metadata_list) {
     // CVCs are always fully obfuscated. They add no value to a label.
     if (metadata.type == MemoryDataType::kCreditCardSecurityCode) {
       continue;
@@ -556,8 +552,7 @@ Suggestion TransformResultIntoSuggestion(const MemorySearchResult& entry) {
       GetPayloadIdentifier(entry.type, entry.identifier);
   at_memory_payload.is_personal_context_sourced = is_personal_context_sourced;
 
-  std::underlying_type_t<accessibility_annotator::MemoryEntrySourceType>
-      sources_bitmask = 0;
+  std::underlying_type_t<MemoryEntrySourceType> sources_bitmask = 0;
   for (const auto& source : entry.sources) {
     sources_bitmask |= std::to_underlying(source.type);
   }
@@ -652,9 +647,9 @@ std::optional<std::u16string> GetAttributeFillValue(
 
 // Extracts `EntryMetadata` items stored in `suggestion.children` to provide
 // contextual metadata when unmasking/fetching sensitive PII data.
-std::vector<accessibility_annotator::EntryMetadata> GetMetadataFromSuggestion(
+std::vector<EntryMetadata> GetMetadataFromSuggestion(
     const Suggestion& suggestion) {
-  std::vector<accessibility_annotator::EntryMetadata> metadata;
+  std::vector<EntryMetadata> metadata;
   for (const Suggestion& child : suggestion.children) {
     const auto* child_payload =
         std::get_if<Suggestion::AtMemoryPayload>(&child.payload);
@@ -1109,9 +1104,8 @@ void AtMemoryManager::ClearSuggestions() {
   SendSuggestions({});
 }
 
-void AtMemoryManager::OnSearchResultsReceived(
-    const std::u16string& query,
-    accessibility_annotator::MemorySearchResults result) {
+void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
+                                              MemorySearchResults result) {
   if (!IsAtMemoryTriggerSource(trigger_source_) || !update_callback_ ||
       !is_searching_) {
     return;
@@ -1127,16 +1121,14 @@ void AtMemoryManager::OnSearchResultsReceived(
       return IsSpiiMemoryDataType(entry.type);
     });
     for (MemorySearchResult& entry : result.entries) {
-      std::erase_if(entry.metadata_list,
-                    [](const accessibility_annotator::EntryMetadata& metadata) {
-                      return IsSpiiMemoryDataType(metadata.type);
-                    });
+      std::erase_if(entry.metadata_list, [](const EntryMetadata& metadata) {
+        return IsSpiiMemoryDataType(metadata.type);
+      });
     }
   }
 
   bool expecting_more_data =
-      result.status ==
-      accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess;
+      result.status == MemorySearchStatus::kPartialResponseSuccess;
   if (!expecting_more_data) {
     CancelPendingQueries();
   }
@@ -1156,23 +1148,23 @@ void AtMemoryManager::OnSearchResultsReceived(
   // suggestion based on the status.
   std::vector<Suggestion> suggestions;
   switch (result.status) {
-    case accessibility_annotator::MemorySearchStatus::kUnsupportedQuery:
+    case MemorySearchStatus::kUnsupportedQuery:
       if (owner_->client().IsGlicEnabled()) {
         suggestions.push_back(CreateUnsupportedQuerySuggestion(query));
       } else {
         suggestions.push_back(CreateNoDataSuggestion());
       }
       break;
-    case accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess:
+    case MemorySearchStatus::kFinalResponseSuccess:
       suggestions.push_back(CreateNoDataSuggestion());
       break;
-    case accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess:
+    case MemorySearchStatus::kPartialResponseSuccess:
       break;
-    case accessibility_annotator::MemorySearchStatus::kNoConnectionFailure:
+    case MemorySearchStatus::kNoConnectionFailure:
       suggestions.push_back(CreateNoConnectionSuggestion(query));
       break;
-    case accessibility_annotator::MemorySearchStatus::kInferenceFailure:
-    case accessibility_annotator::MemorySearchStatus::kInternalFailure:
+    case MemorySearchStatus::kInferenceFailure:
+    case MemorySearchStatus::kInternalFailure:
       suggestions.push_back(CreateGenericErrorSuggestion());
       break;
   }

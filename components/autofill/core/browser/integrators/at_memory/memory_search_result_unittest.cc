@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 
 #include <string>
 #include <vector>
@@ -11,7 +11,9 @@
 #include "base/functional/callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace accessibility_annotator {
+namespace autofill {
+
+using ::accessibility_annotator::MemoryDataType;
 
 TEST(MemorySearchResultTest, ObfuscatesIban) {
   std::u16string raw_iban = u"DE91 1000 0000 0123 4567 89";
@@ -34,4 +36,4 @@ TEST(MemorySearchResultTest, DoesNotObfuscateNonSpiiValue) {
   EXPECT_EQ(result.value, value);
 }
 
-}  // namespace accessibility_annotator
+}  // namespace autofill

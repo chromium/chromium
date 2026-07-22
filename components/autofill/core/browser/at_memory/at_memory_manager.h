@@ -29,12 +29,9 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
-namespace accessibility_annotator {
-struct MemorySearchResults;
-}
-
 namespace autofill {
 
+struct MemorySearchResults;
 class BrowserAutofillManager;
 
 // Manager for the AtMemory feature. It handles queries to the
@@ -123,9 +120,8 @@ class AtMemoryManager {
 
   // Callback handler for the search query. `query` is the original search
   // string. `result` contains the search results.
-  void OnSearchResultsReceived(
-      const std::u16string& query,
-      accessibility_annotator::MemorySearchResults result);
+  void OnSearchResultsReceived(const std::u16string& query,
+                               MemorySearchResults result);
 
   // Creates a suggestion to display when the query is not supported.
   Suggestion CreateUnsupportedQuerySuggestion(const std::u16string& query);

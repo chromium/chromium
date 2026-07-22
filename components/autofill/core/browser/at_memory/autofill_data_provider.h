@@ -11,11 +11,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 
 namespace autofill {
 
@@ -33,20 +33,19 @@ class AutofillDataProvider {
   // Retrieves all data entries for the given entry types.
   virtual void RetrieveAll(
       const std::vector<accessibility_annotator::MemoryDataType>& types,
-      base::OnceCallback<void(
-          std::vector<accessibility_annotator::MemorySearchResult>)> callback);
+      base::OnceCallback<void(std::vector<MemorySearchResult>)> callback);
 
  private:
   // Retrieves all entities for a given Autofill data type.
-  std::vector<accessibility_annotator::MemorySearchResult> GetAutofillData(
+  std::vector<MemorySearchResult> GetAutofillData(
       accessibility_annotator::MemoryDataType memory_data_type,
       AtMemoryDataType autofill_type);
 
   // Fetches IBAN data from `personal_data_manager_`.
-  std::vector<accessibility_annotator::MemorySearchResult> FetchIbanData();
+  std::vector<MemorySearchResult> FetchIbanData();
 
   // Fetches credit card data from `personal_data_manager_`.
-  std::vector<accessibility_annotator::MemorySearchResult> FetchCreditCardData(
+  std::vector<MemorySearchResult> FetchCreditCardData(
       FieldType field_type,
       accessibility_annotator::MemoryDataType memory_data_type);
 

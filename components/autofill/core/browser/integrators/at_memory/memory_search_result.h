@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_SEARCH_RESULT_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_SEARCH_RESULT_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_SEARCH_RESULT_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_SEARCH_RESULT_H_
 
 #include <iosfwd>
 #include <memory>
@@ -15,7 +15,9 @@
 #include "base/functional/callback.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 
-namespace accessibility_annotator {
+namespace autofill {
+
+using ::accessibility_annotator::MemoryDataType;
 
 // Key-value metadata providing additional context for an entry.
 struct EntryMetadata {
@@ -169,6 +171,6 @@ struct MemorySearchResults {
   std::string server_request_id;
 };
 
-}  // namespace accessibility_annotator
+}  // namespace autofill
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_MEMORY_SEARCH_RESULT_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AT_MEMORY_MEMORY_SEARCH_RESULT_H_

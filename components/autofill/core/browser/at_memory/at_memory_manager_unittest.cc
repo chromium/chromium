@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/integrators/at_memory/mock_at_memory_query_service.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
@@ -61,11 +62,6 @@ namespace autofill {
 namespace {
 
 using ::accessibility_annotator::MemoryDataType;
-using ::accessibility_annotator::MemoryEntrySource;
-using ::accessibility_annotator::MemoryEntrySourceType;
-using ::accessibility_annotator::MemorySearchResult;
-using ::accessibility_annotator::MemorySearchResults;
-using ::accessibility_annotator::MemorySearchStatus;
 using ::base::Bucket;
 using ::base::BucketsAre;
 using ::base::test::RunOnceCallback;
@@ -868,8 +864,7 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
       .WillOnce(
           [&](const AutofillClient& client, const std::u16string& auth_message,
               std::u16string_view masked_value, MemoryDataType data_type,
-              base::span<const accessibility_annotator::EntryMetadata>
-                  metadata_list,
+              base::span<const EntryMetadata> metadata_list,
               AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback callback) {
             ASSERT_EQ(metadata_list.size(), 1u);
             EXPECT_EQ(metadata_list[0].type,
@@ -1672,10 +1667,9 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
   entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
                                    u"John Doe");
   std::vector<Suggestion> final_suggestions;
-  MockQueryResultsAndExpectCallback(
-      u"query",
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      {entry}, final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry}, final_suggestions);
   manager().OnSearchSubmitted(u"query");
   ASSERT_EQ(final_suggestions.size(), 1u);
 
@@ -1744,10 +1738,9 @@ TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
                                    u"John Doe");
 
   std::vector<Suggestion> final_suggestions;
-  MockQueryResultsAndExpectCallback(
-      u"query",
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      {entry}, final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry}, final_suggestions);
   manager().OnSearchSubmitted(u"query");
 
   // Verify that the CVC is NOT in the labels, but Name is.
@@ -1784,10 +1777,9 @@ TEST_F(AtMemoryManagerTest,
       u"SFO");
 
   std::vector<Suggestion> final_suggestions;
-  MockQueryResultsAndExpectCallback(
-      u"query",
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      {entry}, final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry}, final_suggestions);
   manager().OnSearchSubmitted(u"query");
 
   ASSERT_EQ(final_suggestions.size(), 1u);
@@ -1823,10 +1815,9 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
   entry.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
                                    u"Passport Number", u"987654321");
   std::vector<Suggestion> final_suggestions;
-  MockQueryResultsAndExpectCallback(
-      u"query",
-      accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
-      {entry}, final_suggestions);
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    {entry}, final_suggestions);
   manager().OnSearchSubmitted(u"query");
   ASSERT_EQ(final_suggestions.size(), 1u);
 
@@ -1874,8 +1865,7 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
       .WillOnce(
           [&](const AutofillClient& client, const std::u16string& auth_message,
               std::u16string_view masked_value, MemoryDataType data_type,
-              base::span<const accessibility_annotator::EntryMetadata>
-                  metadata_list,
+              base::span<const EntryMetadata> metadata_list,
               AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback callback) {
             std::move(callback).Run(u"987654321");
           });

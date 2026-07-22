@@ -14,7 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -80,8 +80,7 @@ class AtMemoryQueryService : public KeyedService {
       std::u16string_view query,
       const GURL& url,
       std::u16string_view title,
-      base::RepeatingCallback<
-          void(accessibility_annotator::MemorySearchResults)> callback);
+      base::RepeatingCallback<void(MemorySearchResults)> callback);
 
   // Authenticates the user and then fetches the unmasked PII entities from the
   // server. Fails if an authentication request is already in progress.
@@ -93,14 +92,13 @@ class AtMemoryQueryService : public KeyedService {
       const std::u16string& auth_message,
       std::u16string_view masked_value,
       accessibility_annotator::MemoryDataType data_type,
-      base::span<const accessibility_annotator::EntryMetadata> metadata_list,
+      base::span<const EntryMetadata> metadata_list,
       FetchUnmaskedPiiEntitiesCallback callback);
 
  private:
   // Called when the PersonalContextService query returns.
   void OnPersonalContextRetrieved(
-      base::RepeatingCallback<
-          void(accessibility_annotator::MemorySearchResults)> callback,
+      base::RepeatingCallback<void(MemorySearchResults)> callback,
       personal_context::FetchContextResult result);
 
   // Called when the local data provider finishes retrieving local memory
@@ -108,12 +106,11 @@ class AtMemoryQueryService : public KeyedService {
   // ranks them with the remote results, deduplicates them, and reports the
   // final results via `callback`.
   void OnLocalDataRetrieved(
-      base::RepeatingCallback<
-          void(accessibility_annotator::MemorySearchResults)> callback,
-      std::vector<accessibility_annotator::MemorySearchResult> remote_results,
+      base::RepeatingCallback<void(MemorySearchResults)> callback,
+      std::vector<MemorySearchResult> remote_results,
       base::flat_set<std::u16string> filter_words,
       std::string server_request_id,
-      std::vector<accessibility_annotator::MemorySearchResult> local_results);
+      std::vector<MemorySearchResult> local_results);
 
   // Called when the authentication is completed.
   // Performs the final PII unmasking request to `PersonalContextService` if
@@ -121,7 +118,7 @@ class AtMemoryQueryService : public KeyedService {
   void OnAuthenticationCompleted(
       std::u16string masked_value,
       accessibility_annotator::MemoryDataType data_type,
-      std::vector<accessibility_annotator::EntryMetadata> metadata_list,
+      std::vector<EntryMetadata> metadata_list,
       FetchUnmaskedPiiEntitiesCallback callback,
       bool auth_succeeded);
 

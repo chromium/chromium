@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/aliases.h"
@@ -25,9 +25,7 @@ namespace autofill {
 namespace {
 
 std::optional<AtMemoryQueryCompletedStatus> GetQueryCompletedStatus(
-    const accessibility_annotator::MemorySearchResults& result) {
-  using accessibility_annotator::MemorySearchStatus;
-
+    const MemorySearchResults& result) {
   switch (result.status) {
     case MemorySearchStatus::kUnsupportedQuery:
       return AtMemoryQueryCompletedStatus::kQueryUnsupported;
@@ -272,7 +270,7 @@ void AtMemoryMetricsRecorder::OnSuggestionAccepted(
 }
 
 void AtMemoryMetricsRecorder::OnQueryResponseReceived(
-    const accessibility_annotator::MemorySearchResults& result) {
+    const MemorySearchResults& result) {
   if (std::optional<AtMemoryQueryCompletedStatus> status =
           GetQueryCompletedStatus(result)) {
     base::UmaHistogramEnumeration("Autofill.AtMemory.QueryCompleted", *status);
@@ -313,9 +311,8 @@ void AtMemoryMetricsRecorder::OnQueryResponseReceived(
   for (const auto& suggestion : result.entries) {
     auto* quality_suggestion = quality->add_suggestions();
     bool has_autofill_source = std::ranges::contains(
-        suggestion.sources,
-        accessibility_annotator::MemoryEntrySourceType::kAutofill,
-        &accessibility_annotator::MemoryEntrySource::type);
+        suggestion.sources, MemoryEntrySourceType::kAutofill,
+        &MemoryEntrySource::type);
     quality_suggestion->set_source(
         has_autofill_source
             ? optimization_guide::proto::AT_MEMORY_SUGGESTION_SOURCE_AUTOFILL
