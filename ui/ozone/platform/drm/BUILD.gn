@@ -166,7 +166,7 @@ source_set("gbm") {
     "//ui/base/ime/ash",
   ]
 
-  if (!use_static_angle) {
+  if (!use_static_angle || is_chromeos) {
     data_deps = [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
