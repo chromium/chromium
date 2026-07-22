@@ -12,7 +12,9 @@
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/url_utils.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/net_errors.h"
 #include "net/url_request/redirect_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -229,6 +231,22 @@ void WorkerScriptLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (resource_request_.url.SchemeIsBlob()) {
+    // Loading a blob URL never produces a redirect.
+    complete_status_ =
+        network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT);
+    CommitCompleted();
+    return;
+  }
+
+  if (!IsSafeRedirectTarget(resource_request_.url, redirect_info.new_url)) {
+    complete_status_ =
+        network::URLLoaderCompletionStatus(net::ERR_UNSAFE_REDIRECT);
+    CommitCompleted();
+    return;
+  }
+
   if (--redirect_limit_ == 0) {
     complete_status_ =
         network::URLLoaderCompletionStatus(net::ERR_TOO_MANY_REDIRECTS);
