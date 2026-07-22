@@ -1066,4 +1066,63 @@ TEST(AttributesConditionTest, FileSizeIsTriggeredWithGeminiInChrome) {
       {.source = {.gemini_in_chrome = true, .content_size = 2000}}));
 }
 
+TEST(AttributesConditionTest, UrlRegexParsing_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kDataControlsUrlRegexAndSizeAttributes);
+
+  AttributesCondition condition(CreateDict(R"({
+    "url_regexprs": ["^https://.*\\.secret\\.com/.*$"]
+  })").GetDict());
+  EXPECT_FALSE(condition.IsValid());
+}
+
+TEST(AttributesConditionTest, UrlRegexParsing_Enabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kDataControlsUrlRegexAndSizeAttributes);
+
+  AttributesCondition condition(CreateDict(R"({
+    "url_regexprs": ["^https://.*\\.secret\\.com/.*$"]
+  })").GetDict());
+  EXPECT_TRUE(condition.IsValid());
+}
+
+TEST(AttributesConditionTest, UrlRegexIsTriggered_SourceAndDestination) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kDataControlsUrlRegexAndSizeAttributes);
+
+  auto source_condition = SourceAttributesCondition::Create(CreateDict(R"({
+    "url_regexprs": ["^https://.*\\.secret\\.com/.*$", "internal\\.google\\.com"]
+  })"));
+  ASSERT_TRUE(source_condition);
+  EXPECT_FALSE(source_condition->IsTriggered({.source = {.url = GURL("https://google.com")}}));
+  EXPECT_TRUE(source_condition->IsTriggered({.source = {.url = GURL("https://foo.secret.com/bar")}}));
+  EXPECT_TRUE(source_condition->IsTriggered({.source = {.url = GURL("https://sub.internal.google.com/doc/123")}}));
+
+  auto destination_condition = DestinationAttributesCondition::Create(CreateDict(R"({
+    "url_regexprs": ["^https://(chatgpt|claude)\\.ai/.*$", "ai\\.external\\.com"]
+  })"));
+  ASSERT_TRUE(destination_condition);
+  EXPECT_FALSE(destination_condition->IsTriggered({.destination = {.url = GURL("https://google.com")}}));
+  EXPECT_TRUE(destination_condition->IsTriggered({.destination = {.url = GURL("https://chatgpt.ai/share")}}));
+  EXPECT_TRUE(destination_condition->IsTriggered({.destination = {.url = GURL("https://ai.external.com/prompt")}}));
+}
+
+TEST(AttributesConditionTest, UrlRegexIsTriggered_PartialMatch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kDataControlsUrlRegexAndSizeAttributes);
+
+  // Unanchored regex patterns should trigger on substrings anywhere in the URL.
+  auto condition = SourceAttributesCondition::Create(CreateDict(R"({
+    "url_regexprs": ["confidential", "corp\\.company\\.com/secret"]
+  })"));
+  ASSERT_TRUE(condition);
+  EXPECT_FALSE(condition->IsTriggered({.source = {.url = GURL("https://company.com/public")}}));
+  EXPECT_TRUE(condition->IsTriggered({.source = {.url = GURL("https://docs.company.com/document/d/confidential_notes")}}));
+  EXPECT_TRUE(condition->IsTriggered({.source = {.url = GURL("https://sub.corp.company.com/secret/123/edit")}}));
+}
+
 }  // namespace data_controls

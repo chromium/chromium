@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_DATA_CONTROLS_CORE_BROWSER_CONDITIONS_ATTRIBUTES_CONDITION_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/values.h"
 #include "components/enterprise/data_controls/core/browser/conditions/condition.h"
@@ -16,6 +17,10 @@
 
 #include "components/enterprise/data_controls/core/browser/component.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+namespace re2 {
+class RE2;
+}  // namespace re2
 
 namespace data_controls {
 
@@ -87,6 +92,7 @@ class AttributesCondition {
   // corresponding attribute was not set in the JSON initializing this
   // `AttributesCondition`, and such attributes are ignored.
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
+  std::vector<std::unique_ptr<re2::RE2>> url_regexprs_;
   std::optional<bool> incognito_;
 
   // This attribute indicates the destination/source condition must/mustn't be

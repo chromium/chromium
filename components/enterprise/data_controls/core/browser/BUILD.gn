@@ -72,6 +72,7 @@ source_set("browser") {
     "//components/prefs",
     "//components/strings",
     "//components/url_matcher",
+    "//third_party/re2",
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_types",
   ]

@@ -866,4 +866,27 @@ TEST(DataControlsRuleTest, SizeConditionRuleMatchingLowerThan) {
       Rule::Level::kNotSet);
 }
 
+TEST(DataControlsRuleTest, UrlRegexMatching) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kDataControlsUrlRegexAndSizeAttributes);
+
+  auto clipboard_rule = MakeRule(R"({
+    "name": "Regex paste rule",
+    "sources": { "url_regexprs": ["^https://.*\\.restricted\\.com/.*$"] },
+    "restrictions": [ { "class": "CLIPBOARD", "level": "BLOCK" } ]
+  })");
+  ASSERT_TRUE(clipboard_rule);
+  EXPECT_EQ(
+      clipboard_rule->GetLevel(
+          Rule::Restriction::kClipboard,
+          {.source = {.url = GURL("https://google.com")}}),
+      Rule::Level::kNotSet);
+  EXPECT_EQ(
+      clipboard_rule->GetLevel(
+          Rule::Restriction::kClipboard,
+          {.source = {.url = GURL("https://foo.restricted.com/data")}}),
+      Rule::Level::kBlock);
+}
+
 }  // namespace data_controls
