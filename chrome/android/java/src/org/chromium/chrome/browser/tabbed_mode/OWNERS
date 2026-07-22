@@ -3,3 +3,5 @@ twellington@chromium.org
 per-file BottomAttachedUiObserver.java=clhager@google.com
 per-file TabbedNavigationBarColorController.java=clhager@google.com
 per-file TabbedAdaptiveToolbarBehavior.java=jinsukkim@chromium.org
+per-file KeyboardFocusRowManager.java=mschillaci@google.com
+per-file KeyboardFocusRowManager.java=jhimawan@google.com
