@@ -5,6 +5,7 @@
 #ifndef ASH_LOGIN_UI_LOGIN_PIN_INPUT_VIEW_H_
 #define ASH_LOGIN_UI_LOGIN_PIN_INPUT_VIEW_H_
 
+#include <memory>
 #include <string_view>
 
 #include "ash/ash_export.h"
@@ -112,8 +113,8 @@ class ASH_EXPORT LoginPinInputView : public views::View,
   // Whether the field is read only.
   bool is_read_only_ = false;
 
-  // The input field owned by this view.
-  raw_ptr<LoginPinInput, DanglingUntriaged> code_input_ = nullptr;
+  // The input field owned by this view in views.
+  raw_ptr<LoginPinInput> code_input_ = nullptr;
 
   // Whether the 'Return' key should trigger an unlock with an empty PIN.
   bool authenticate_with_empty_pin_on_return_key_ = false;
