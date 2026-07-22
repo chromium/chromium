@@ -161,29 +161,29 @@ NSDictionary<NSString*, UIColor*>* StandardColorProvider(
     switch (self.type) {
       case BestFeaturesItemType::kLensSearch:
         return MakeSymbolMulticolor(
-            CustomSymbolWithConfiguration(kCameraLensSymbol, configuration));
+            SymbolWithConfiguration(SymbolCameraLens, configuration));
       case BestFeaturesItemType::kEnhancedSafeBrowsing:
         return SymbolWithPalette(
-            CustomSymbolWithConfiguration(kSafetyCheckSymbol, configuration),
+            SymbolWithConfiguration(SymbolSafetyCheck, configuration),
             @[ [UIColor whiteColor] ]);
       case BestFeaturesItemType::kLockedIncognitoTabs:
       case BestFeaturesItemType::kIncognitoBrowsing:
         return SymbolWithPalette(
-            CustomSymbolWithConfiguration(kIncognitoSymbol, configuration),
+            SymbolWithConfiguration(SymbolIncognito, configuration),
             @[ [UIColor whiteColor] ]);
       case BestFeaturesItemType::kSaveAndAutofillPasswords:
       case BestFeaturesItemType::kAutofillPasswordsInOtherApps:
       case BestFeaturesItemType::kSharePasswordsWithFamily:
-        return MakeSymbolMulticolor(CustomSymbolWithConfiguration(
-            kPasswordManagerSymbol, configuration));
+        return MakeSymbolMulticolor(
+            SymbolWithConfiguration(SymbolPasswordManager, configuration));
       case BestFeaturesItemType::kTabGroups:
         return SymbolWithPalette(
-            DefaultSymbolWithConfiguration(kTabGroupsSymbol, configuration),
+            SymbolWithConfiguration(SymbolTabGroups, configuration),
             @[ [UIColor whiteColor] ]);
       case BestFeaturesItemType::kPriceTrackingAndInsights:
         return SymbolWithPalette(
-            DefaultSymbolWithConfiguration(kChartLineDowntrendXYAxisSymbol,
-                                           configuration),
+            SymbolWithConfiguration(SymbolChartLineDowntrendXYAxis,
+                                    configuration),
             @[ [UIColor whiteColor] ]);
     }
 }

@@ -94,9 +94,9 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
   } else {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     UIImage* logo = MakeSymbolMulticolor(
-        CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kIconSize));
+        SymbolWithPointSize(SymbolMulticolorChromeball, kIconSize));
 #else
-    UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kIconSize);
+    UIImage* logo = SymbolWithPointSize(SymbolChromeProduct, kIconSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     self.image = logo;
     self.imageBackgroundColor = [UIColor colorNamed:kBackgroundColor];
