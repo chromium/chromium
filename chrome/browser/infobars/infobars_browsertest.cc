@@ -79,12 +79,6 @@
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #endif
 
-#if !defined(USE_AURA)
-#include "chrome/browser/translate/chrome_translate_client.h"
-#include "components/translate/core/browser/translate_infobar_delegate.h"
-#include "components/translate/core/browser/translate_manager.h"
-#endif
-
 using extensions::InstallPromptData;
 
 class InfoBarsTest : public InProcessBrowserTest {
@@ -220,7 +214,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
           {"oscryptasync_availability",
            IBD::OSCRYPTASYNC_AVAILABILITY_INFOBAR_DELEGATE},
           {"page_info", IBD::PAGE_INFO_INFOBAR_DELEGATE},
-          {"translate", IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA},
           {"automation", IBD::AUTOMATION_INFOBAR_DELEGATE},
           {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
 
@@ -353,23 +346,6 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       }
       break;
 
-    case IBD::TRANSLATE_INFOBAR_DELEGATE_NON_AURA: {
-#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
-      ADD_FAILURE() << "This infobar is not supported on this toolkit.";
-#else
-      // The translate infobar is only used on Android and iOS, neither of
-      // which currently runs browser_tests. So this is currently dead code.
-      ChromeTranslateClient::CreateForWebContents(GetWebContents());
-      ChromeTranslateClient* translate_client =
-          ChromeTranslateClient::FromWebContents(GetWebContents());
-      translate::TranslateInfoBarDelegate::Create(
-          false, translate_client->GetTranslateManager()->GetWeakPtr(),
-          GetInfoBarManager(), translate::TRANSLATE_STEP_BEFORE_TRANSLATE, "ja",
-          "en", translate::TranslateErrors::NONE, false);
-#endif
-      break;
-    }
-
     case IBD::AUTOMATION_INFOBAR_DELEGATE:
       AutomationInfoBarDelegate::Create();
       break;
@@ -486,12 +462,6 @@ IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_oscryptasync_availability) {
 IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_page_info) {
   ShowAndVerifyUi();
 }
-
-#if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_P(InfoBarUiTest, InvokeUi_translate) {
-  ShowAndVerifyUi();
-}
-#endif
 
 #if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/40261456): This test case has been frequently failing on
