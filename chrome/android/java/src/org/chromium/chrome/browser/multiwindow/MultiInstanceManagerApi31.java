@@ -1280,7 +1280,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public void showInstanceCreationLimitMessage() {
         // TODO(crbug.com/535331238): Move this to MultiWindowUtils.java and merge with the
         //  duplicated toast.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)) {
+        if (MultiWindowUtils.isWindowManagerDeprecated()) {
             Toast.makeText(
                             mActivity,
                             mActivity.getString(

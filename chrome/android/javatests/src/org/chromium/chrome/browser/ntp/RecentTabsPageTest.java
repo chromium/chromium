@@ -583,7 +583,7 @@ public class RecentTabsPageTest {
 
     @Test
     @LargeTest
-    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     @DisableFeatures(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
     public void testRecentlyClosedWindows_reachInstanceLimit_showInstanceCreationLimitMessage()
             throws Exception {

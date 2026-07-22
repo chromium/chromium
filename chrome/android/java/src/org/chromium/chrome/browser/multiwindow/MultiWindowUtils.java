@@ -646,11 +646,16 @@ public class MultiWindowUtils implements ActivityStateListener {
         return count;
     }
 
+    /* package */ static boolean isWindowManagerDeprecated() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)
+                || DeviceInfo.isDesktop();
+    }
+
     /**
      * @return Whether the app menu 'Manage windows' should be shown.
      */
     public static boolean shouldShowManageWindowsMenu() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)) {
+        if (isWindowManagerDeprecated()) {
             return false;
         }
         return getInstanceCount(PersistedInstanceType.ANY) > 1;
@@ -660,7 +665,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return Whether the IPH for Chrome's window manager should be shown.
      */
     public static boolean shouldShowInstanceSwitcherIph() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)) {
+        if (isWindowManagerDeprecated()) {
             return false;
         }
         int instanceCount = getInstanceCount(PersistedInstanceType.ANY);
@@ -674,7 +679,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return Whether the IPH for Recent Tabs should be shown.
      */
     public static boolean shouldShowRecentTabsIph() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_WINDOW_MANAGER_DEPRECATION)) {
+        if (!isWindowManagerDeprecated()) {
             return false;
         }
         int inactiveInstanceCount = getInstanceCount(PersistedInstanceType.INACTIVE);
