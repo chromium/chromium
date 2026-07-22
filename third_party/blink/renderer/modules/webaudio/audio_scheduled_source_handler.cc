@@ -233,6 +233,10 @@ void AudioScheduledSourceHandler::FinishWithoutOnEnded() {
 }
 
 void AudioScheduledSourceHandler::Finish() {
+  if (GetPlaybackState() == FINISHED_STATE) {
+    return;
+  }
+
   FinishWithoutOnEnded();
 
   PostCrossThreadTask(

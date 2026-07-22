@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>AudioBufferSourceNode should fire exactly one 'ended' event</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+const CASES = [
+  {
+    name: "unaligned length (126833 frames), start(t, 0, buffer.duration)",
+    frames: 126833,
+    mode: "full"
+  },
+  {
+    name: "aligned length (126848 = 991x128), start(t, 0, buffer.duration)",
+    frames: 126848,
+    mode: "full"
+  },
+  {
+    name: "unaligned length (126833), start(t, 0, buffer.duration - 0.05)",
+    frames: 126833,
+    mode: "short"
+  },
+  {
+    name: "unaligned length (126833), start(0)",
+    frames: 126833,
+    mode: "onearg"
+  },
+];
+
+for (const c of CASES) {
+  promise_test(async t => {
+    // We use a bit of extra duration for offline context to ensure events
+    // finish.
+    const renderDuration = 4;
+    const ctx = new OfflineAudioContext(1, 48000 * renderDuration, 48000);
+
+    const buf = ctx.createBuffer(1, c.frames, 48000);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+
+    let endedCount = 0;
+    src.onended = () => { endedCount++; };
+
+    if (c.mode === "full") {
+      src.start(0, 0, buf.duration);
+    } else if (c.mode === "short") {
+      src.start(0, 0, buf.duration - 0.05);
+    } else {
+      src.start(0);
+    }
+
+    await ctx.startRendering();
+
+    // Wait for ended events to flush
+    await new Promise(r => t.step_timeout(r, 50));
+
+    assert_equals(endedCount, 1, "ended event should fire exactly once");
+  }, `control test: ${c.name}`);
+}
+</script>
