@@ -926,6 +926,10 @@ inline constexpr char kGeneralizedGeminiEntryFlowDescription[] =
     "Generalizes the Gemini entry flow to handle auth and eligibility outside "
     "of the Page Action Menu.";
 
+inline constexpr char kGlassToolbarName[] = "GlassToolbar";
+inline constexpr char kGlassToolbarDescription[] =
+    "Enables the GlassToolbar feature.";
+
 inline constexpr char kHandleMdmErrorsForDasherAccountsName[] =
     "Mdm error handling for dasher accounts";
 inline constexpr char kHandleMdmErrorsForDasherAccountsDescription[] =

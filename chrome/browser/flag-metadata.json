@@ -5421,6 +5421,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "glass-toolbar",
+    "owners": [ "gambard@chromium.org", "meridian@google.com" ],
+    "expiry_milestone": 157
+  },
+  {
     "name": "glic",
     "owners": [
       "birnie@google.com",
