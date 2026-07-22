@@ -1,0 +1,16 @@
+Name: zeroize
+URL: https://crates.io/crates/zeroize
+Version: 1.8.2
+Revision: c100874101bfd584870de5dde1b13dd92a17bf48
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/zeroize-v1/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Securely clear secrets from memory with a simple trait built on
+stable Rust primitives which guarantee memory is zeroed using an
+operation will not be 'optimized away' by the compiler.
+Uses a portable pure Rust implementation that works everywhere,
+even WASM!
+
