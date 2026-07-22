@@ -96,7 +96,6 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   AvatarToolbarButtonInterface* GetAvatarToolbarButtonInterface() override;
   ToolbarButton* GetBackButton() override;
   ReloadControl* GetReloadButton() override;
-  IntentChipButton* GetIntentChipButton() override;
   ToolbarButton* GetDownloadButton() override;
   WebUIToolbarWebView* GetWebUIToolbarViewForTesting() override;
 

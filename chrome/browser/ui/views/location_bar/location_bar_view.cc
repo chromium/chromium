@@ -60,7 +60,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
-#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
@@ -185,8 +184,6 @@ LocationBarView* GetLocationBarViewForActions(Browser* browser) {
   return browser_view ? browser_view->GetLocationBarView() : nullptr;
 }
 
-// The padding between the intent chip and the other trailing decorations.
-constexpr int kIntentChipIntraItemPadding = 12;
 
 // The padding between the content setting icons and other trailing decorations.
 constexpr int kContentSettingIntraItemPadding = 8;
@@ -439,11 +436,6 @@ void LocationBarView::Init() {
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
       this, profile_, omnibox_controller_.get(), font_list));
 
-  if (browser_ && apps::features::ShouldShowLinkCapturingUX() &&
-      !IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
-    intent_chip_ =
-        AddChildView(std::make_unique<IntentChipButton>(browser_, this));
-  }
 
   SkColor icon_color = color_provider->GetColor(kColorOmniboxResultsIcon);
 
@@ -492,9 +484,6 @@ void LocationBarView::Init() {
 
     if (optimization_guide::features::ShouldEnableOptimizationGuideIconView()) {
       params.types_enabled.push_back(PageActionIconType::kOptimizationGuide);
-    }
-    if (!apps::features::ShouldShowLinkCapturingUX()) {
-      params.types_enabled.push_back(PageActionIconType::kIntentPicker);
     }
     params.types_enabled.push_back(PageActionIconType::kFederation);
   }
@@ -921,11 +910,6 @@ void LocationBarView::Layout(PassKey) {
                             /*edge_padding=*/trailing_decorations_edge_padding);
   }
 
-  if (intent_chip_) {
-    int intra_item_padding = kIntentChipIntraItemPadding;
-    add_trailing_decoration(intent_chip_, intra_item_padding,
-                            /*edge_padding=*/trailing_decorations_edge_padding);
-  }
 
   add_trailing_decoration(clear_all_button_, /*intra_item_padding=*/0,
                           /*edge_padding=*/trailing_decorations_edge_padding);
@@ -1067,9 +1051,6 @@ void LocationBarView::Update(WebContents* contents) {
   location_icon_view_->Update(
       /*suppress_animations=*/contents, GetOmniboxController()->IsPopupOpen());
 
-  if (intent_chip_) {
-    intent_chip_->Update();
-  }
 
   if (contents) {
     omnibox_view_->OnTabChanged(contents);

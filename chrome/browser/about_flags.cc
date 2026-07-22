@@ -1219,7 +1219,6 @@ const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
 const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"bookmark_star", "true"},
     {"file_system_access", "true"},
-    {"intent_picker", "true"},
     {"sharing_hub", "true"},
 };
 const FeatureEntry::FeatureVariation kPageActionsMigrationVariations[] = {

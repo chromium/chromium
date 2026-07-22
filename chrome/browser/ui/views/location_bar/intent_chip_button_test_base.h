@@ -9,7 +9,6 @@
 
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "ui/views/controls/button/button.h"
 
@@ -31,12 +30,8 @@ class IntentChipButtonTestBase {
 
   // Function to generate test names for IntentChipButton tests.
   static std::string GenerateIntentChipTestName(
-      const testing::TestParamInfo<
-          std::tuple<apps::test::LinkCapturingFeatureVersion, bool>>&
+      const testing::TestParamInfo<apps::test::LinkCapturingFeatureVersion>&
           param_info);
-
-  // To check if migration has been enabled for page actions
-  bool IsMigrationEnabled() const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_INTENT_CHIP_BUTTON_TEST_BASE_H_

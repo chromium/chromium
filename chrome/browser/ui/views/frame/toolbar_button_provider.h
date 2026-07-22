@@ -17,7 +17,6 @@ class AvatarToolbarButtonInterface;
 class BrowserWindowInterface;
 class PinnedToolbarActions;
 class ExtensionsContainerViews;
-class IntentChipButton;
 class PageActionIconView;
 class ReloadButton;
 class ReloadControl;
@@ -107,8 +106,6 @@ class ToolbarButtonProvider {
   // `WebUIToolbarWebView` depending on the enabled features.
   virtual ReloadControl* GetReloadButton() = 0;
 
-  // Returns the intent chip button, if present.
-  virtual IntentChipButton* GetIntentChipButton() = 0;
 
   // Returns the download button.
   virtual ToolbarButton* GetDownloadButton() = 0;

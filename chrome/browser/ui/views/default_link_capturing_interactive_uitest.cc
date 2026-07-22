@@ -44,19 +44,9 @@ namespace {
 
 // Helper function to generate test names for IntentChipButton tests.
 std::string GenerateIntentChipTestName(
-    const testing::TestParamInfo<
-        std::tuple<apps::test::LinkCapturingFeatureVersion, bool>>&
+    const testing::TestParamInfo<apps::test::LinkCapturingFeatureVersion>&
         param_info) {
-  std::string test_name;
-  test_name.append(apps::test::ToString(
-      std::get<apps::test::LinkCapturingFeatureVersion>(param_info.param)));
-  test_name.append("_");
-  if (std::get<bool>(param_info.param)) {
-    test_name.append("page_action_on");
-  } else {
-    test_name.append("page_action_off");
-  }
-  return test_name;
+  return apps::test::ToString(param_info.param);
 }
 
 }  // namespace
@@ -71,17 +61,13 @@ std::string GenerateIntentChipTestName(
 class DefaultLinkCapturingInteractiveUiTest
     : public web_app::WebAppNavigationBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<apps::test::LinkCapturingFeatureVersion, bool>> {
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   DefaultLinkCapturingInteractiveUiTest() {
     std::vector<base::test::FeatureRefAndParams> features_to_enable =
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()));
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
 
-    features_to_enable.push_back(
-        {::features::kPageActionsMigration,
-         {{::features::kPageActionsMigrationIntentPicker.name,
-           IsMigrationEnabled() ? "true" : "false"}}});
+    features_to_enable.push_back({::features::kPageActionsMigration, {}});
 
     feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }
@@ -121,7 +107,6 @@ class DefaultLinkCapturingInteractiveUiTest
     return {outer_app_id, inner_app_id};
   }
 
-  bool IsMigrationEnabled() const { return std::get<bool>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -236,8 +221,6 @@ IN_PROC_BROWSER_TEST_P(DefaultLinkCapturingInteractiveUiTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     DefaultLinkCapturingInteractiveUiTest,
-    testing::Combine(
-        testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
-                        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
-        testing::Bool()),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
     GenerateIntentChipTestName);

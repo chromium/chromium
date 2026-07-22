@@ -67,7 +67,6 @@ class Browser;
 class BrowserWindowInterface;
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
-class IntentChipButton;
 class OmniboxController;
 class OmniboxContextMenu;
 enum class OmniboxPart;
@@ -217,8 +216,6 @@ class LocationBarView
   PermissionDashboardView* permission_dashboard_view() {
     return permission_dashboard_view_;
   }
-
-  IntentChipButton* intent_chip() { return intent_chip_; }
 
   // LocationBar:
   void FocusLocation(bool is_user_initiated,
@@ -602,7 +599,6 @@ class LocationBarView
   // Shown if the user has selected a keyword.
   raw_ptr<SelectedKeywordView> selected_keyword_view_ = nullptr;
 
-  raw_ptr<IntentChipButton> intent_chip_ = nullptr;
 
   // The content setting views.
   ContentSettingViews content_setting_views_;

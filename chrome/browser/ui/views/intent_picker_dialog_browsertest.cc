@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
-#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/intent_chip_button_test_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -85,18 +84,14 @@ IN_PROC_BROWSER_TEST_F(IntentPickerDialogTest, MAYBE_InvokeUi_default) {
 class IntentPickerDialogGridViewTest
     : public IntentPickerDialogTest,
       public testing::WithParamInterface<
-          std::tuple<apps::test::LinkCapturingFeatureVersion, bool>>,
+          apps::test::LinkCapturingFeatureVersion>,
       public IntentChipButtonTestBase {
  public:
   IntentPickerDialogGridViewTest() {
     std::vector<base::test::FeatureRefAndParams> features_to_enable =
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            std::get<apps::test::LinkCapturingFeatureVersion>(GetParam()));
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam());
 
-    features_to_enable.push_back(
-        {::features::kPageActionsMigration,
-         {{::features::kPageActionsMigrationIntentPicker.name,
-           IsMigrationEnabled() ? "true" : "false"}}});
+    features_to_enable.push_back({::features::kPageActionsMigration, {}});
 
     feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }
@@ -115,13 +110,7 @@ class IntentPickerDialogGridViewTest
     event_generator.MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
     event_generator.ClickLeftButton();
   }
-  bool IsMigrationEnabled() const { return std::get<bool>(GetParam()); }
-
  private:
-  ui::ElementIdentifier GetHighlightElement() override {
-    return kIntentChipElementId;
-  }
-
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -133,11 +122,9 @@ IN_PROC_BROWSER_TEST_P(IntentPickerDialogGridViewTest, InvokeUi_default) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     IntentPickerDialogGridViewTest,
-    testing::Combine(
-        testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
-                        apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
-        testing::Bool()),
-    [](const testing::TestParamInfo<
-        std::tuple<apps::test::LinkCapturingFeatureVersion, bool>>& info) {
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
+    [](const testing::TestParamInfo<apps::test::LinkCapturingFeatureVersion>&
+           info) {
       return IntentChipButtonTestBase::GenerateIntentChipTestName(info);
     });
