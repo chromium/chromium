@@ -131,6 +131,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         mModel = TabSearchOverlayProperties.createDefaultModel();
         mModel.set(TabSearchOverlayProperties.VISIBLE, false);
         mModel.set(TabSearchOverlayProperties.ON_SCRIM_CLICK, (v) -> hide());
+        mModel.set(TabSearchOverlayProperties.ON_CLOSE_CLICK, (v) -> hide());
 
         mSearchBoxDataProvider = new SearchBoxDataProvider();
         mSearchBoxDataProvider.setPageClassification(PageClassification.ANDROID_HUB_VALUE);
@@ -171,7 +172,6 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
                                         mParentContainer,
                                         false);
         final LinearLayout panelContainer = mPanelContainer;
-        View scrim = panelContainer.findViewById(R.id.tab_search_overlay_scrim);
         View panelView = panelContainer.findViewById(R.id.tab_search_overlay_panel);
         View searchActivityView = panelContainer.findViewById(R.id.search_activity_container);
         mParentContainer.addView(panelContainer);
@@ -249,7 +249,7 @@ public class TabSearchOverlayCoordinator implements BackPressHandler {
         setSearchUiElements();
 
         TabSearchOverlayViewBinder.ViewHolder viewHolder =
-                new TabSearchOverlayViewBinder.ViewHolder(panelContainer, scrim, panelView);
+                new TabSearchOverlayViewBinder.ViewHolder(panelContainer, panelView);
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, viewHolder, TabSearchOverlayViewBinder::bind);

@@ -25,8 +25,25 @@ found in the LICENSE file.
         android:clipToOutline="true"
         android:elevation="8dp"
         android:clickable="true"
-        android:focusable="true"
-        android:paddingTop="48dp">
+        android:focusable="true">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="42dp">
+
+            <ImageButton
+                android:id="@+id/tab_search_close_button"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="end|top"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp"
+                android:src="@drawable/material_ic_close_24dp"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:background="@drawable/tile_view_highlight"
+                android:contentDescription="@string/close" />
+        </FrameLayout>
 
         <include
             android:id="@+id/search_activity_container"

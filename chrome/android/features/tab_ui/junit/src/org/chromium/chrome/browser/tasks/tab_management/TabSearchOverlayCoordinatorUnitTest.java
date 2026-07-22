@@ -185,6 +185,15 @@ public class TabSearchOverlayCoordinatorUnitTest {
     }
 
     @Test
+    public void testClickCloseButton_hidesOverlay() {
+        showOverlay();
+        View closeButton = mPanelContainer.findViewById(R.id.tab_search_close_button);
+        assertNotNull(closeButton);
+        closeButton.performClick();
+        assertOverlayHidden();
+    }
+
+    @Test
     public void testPanelEventsConsumed() {
         showOverlay();
         View panelView = mPanelContainer.findViewById(R.id.tab_search_overlay_panel);

@@ -23,26 +23,31 @@ public class TabSearchOverlayViewBinder {
     /** Helper class that holds references to the underlying Android views. */
     public static class ViewHolder {
         public final View panelContainer;
-        public final View scrim;
         public final View panel;
 
         /**
          * Constructs a new ViewHolder holding the inflated views.
          *
          * @param panelContainer The root container layout for the search overlay.
-         * @param scrim The background scrim view used to dismiss the overlay.
          * @param panel The background overlay panel itself.
          */
-        public ViewHolder(View panelContainer, View scrim, View panel) {
+        public ViewHolder(View panelContainer, View panel) {
             this.panelContainer = panelContainer;
-            this.scrim = scrim;
             this.panel = panel;
         }
     }
 
     /** Binds properties from the PropertyModel to the ViewHolder. */
     public static void bind(PropertyModel model, ViewHolder view, PropertyKey propertyKey) {
-        if (TabSearchOverlayProperties.VISIBLE == propertyKey) {
+        if (TabSearchOverlayProperties.ON_CLOSE_CLICK == propertyKey) {
+            view.panel
+                    .findViewById(R.id.tab_search_close_button)
+                    .setOnClickListener(model.get(TabSearchOverlayProperties.ON_CLOSE_CLICK));
+        } else if (TabSearchOverlayProperties.ON_SCRIM_CLICK == propertyKey) {
+            view.panelContainer
+                    .findViewById(R.id.tab_search_overlay_scrim)
+                    .setOnClickListener(model.get(TabSearchOverlayProperties.ON_SCRIM_CLICK));
+        } else if (TabSearchOverlayProperties.VISIBLE == propertyKey) {
             boolean visible = model.get(TabSearchOverlayProperties.VISIBLE);
             if (visible) {
                 runShowAnimation(view);
@@ -56,8 +61,6 @@ public class TabSearchOverlayViewBinder {
                     view.panelContainer.setVisibility(View.GONE);
                 }
             }
-        } else if (TabSearchOverlayProperties.ON_SCRIM_CLICK == propertyKey) {
-            view.scrim.setOnClickListener(model.get(TabSearchOverlayProperties.ON_SCRIM_CLICK));
         }
     }
 
