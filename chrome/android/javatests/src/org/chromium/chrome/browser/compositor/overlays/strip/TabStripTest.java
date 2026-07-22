@@ -1291,7 +1291,7 @@ public class TabStripTest {
         // Verify that the card view background color is correctly set.
         Assert.assertEquals(
                 "Hover card background color is incorrect.",
-                TabUiThemeProvider.getStripTabHoverCardBackgroundTintList(
+                TabUiThemeProvider.getTabHoverCardBackgroundTintList(
                         hoverCardView.getContext(), false),
                 hoverCardView.getBackgroundTintList());
 
@@ -1375,7 +1375,7 @@ public class TabStripTest {
                         .getTabHoverCardViewForTesting());
         Assert.assertEquals(
                 "Hover card background color is incorrect.",
-                TabUiThemeProvider.getStripTabHoverCardBackgroundTintList(
+                TabUiThemeProvider.getTabHoverCardBackgroundTintList(
                         hoverCardView.getContext(), false),
                 hoverCardView.getBackgroundTintList());
 
@@ -1406,7 +1406,7 @@ public class TabStripTest {
                         .getTabHoverCardViewForTesting());
         Assert.assertEquals(
                 "Hover card background color is incorrect.",
-                TabUiThemeProvider.getStripTabHoverCardBackgroundTintList(
+                TabUiThemeProvider.getTabHoverCardBackgroundTintList(
                         hoverCardView.getContext(), true),
                 hoverCardView.getBackgroundTintList());
     }
