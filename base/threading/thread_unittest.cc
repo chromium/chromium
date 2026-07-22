@@ -150,7 +150,14 @@ TEST_F(ThreadTest, StartWithOptions_StackSize) {
   // Ensure that the thread can work with a small stack and still process a
   // message. On a 32-bit system, a release build should be able to work with
   // 12 KiB.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && \
+    !defined(__OPTIMIZE_SIZE__)
+  // PGO (combined with speed optimization) increases stack overhead due to
+  // aggressive inlining, requiring a larger stack.
+  size_t num_slots = 16 * 1024 / 4;
+#else
   size_t num_slots = 12 * 1024 / 4;
+#endif
   size_t slot_size = sizeof(char*);
   int additional_space = 0;
 #if !defined(NDEBUG)
