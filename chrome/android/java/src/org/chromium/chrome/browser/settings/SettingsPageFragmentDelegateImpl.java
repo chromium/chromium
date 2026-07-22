@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.ComponentCallbacks;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -42,11 +44,14 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.List;
 
 /**
  * Implementation of {@link SettingsPage.FragmentDelegate} that manages {@link SettingsPage}
@@ -79,6 +84,7 @@ public class SettingsPageFragmentDelegateImpl
     private @Nullable MultiColumnTitleUpdater mMultiColumnTitleUpdater;
     private @Nullable SettingsSearchCoordinator mSearchCoordinator;
     private @Nullable ComponentCallbacks mComponentCallbacks;
+    private @Nullable List<SettingsIndexData.Entry> mInitialBreadcrumbPath;
 
     public SettingsPageFragmentDelegateImpl(
             Activity activity,
@@ -208,6 +214,21 @@ public class SettingsPageFragmentDelegateImpl
         assert mActivity instanceof ActivityLifecycleDispatcherProvider;
         ((ActivityLifecycleDispatcherProvider) mActivity).getLifecycleDispatcher().register(this);
 
+        // Compute initial breadcrumb path.
+        Bundle savedInstanceState = getSavedInstanceState();
+        if (savedInstanceState == null) {
+            Intent intent = mActivity.getIntent();
+            mInitialBreadcrumbPath =
+                    SettingsBreadcrumbUtil.getInitialBreadcrumbPath(
+                            /* context= */ mActivity,
+                            assertNonNull(mProfile),
+                            intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
+                            intent.getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS));
+        } else {
+            mInitialBreadcrumbPath =
+                    SettingsBreadcrumbUtil.getInitialBreadcrumbPath(savedInstanceState);
+        }
+
         // During activity recreation savedInstanceState may be non-null but MultiColumnSettings may
         // not be attached yet. Check for the existing of MultiColumnSettings to decide whether to
         // create the title updater and search coordinator now vs. later.
@@ -215,16 +236,11 @@ public class SettingsPageFragmentDelegateImpl
         // initialization behavior.
         MultiColumnSettings multiColumnSettings = getMultiColumnSettings();
         if (multiColumnSettings != null && multiColumnSettings.getView() != null) {
-            Bundle savedInstanceState = getSavedInstanceState();
             createMultiColumnTitleUpdater(
                     multiColumnSettings, multiColumnSettings.requireView(), savedInstanceState);
             createSearchCoordinator(multiColumnSettings, savedInstanceState);
             multiColumnSettings.addObserver(this);
             onHeaderLayoutUpdated();
-
-            // TODO(crbug.com/521895796): Update initial breadcrumb path from savedInstanceState if
-            // we're showing a particular fragment, then save it on onSaveInstanceState(). See
-            // SettingsActivity.
         } else {
             // Otherwise create the title updater and search coordinator when the fragment is
             // created.
@@ -291,7 +307,7 @@ public class SettingsPageFragmentDelegateImpl
         if (mMultiColumnTitleUpdater != null) {
             mMultiColumnTitleUpdater.onSaveInstanceState(outState);
         }
-        // TODO(crbug.com/521895796): Save breadcrumb state here.
+        SettingsBreadcrumbUtil.saveInitialBreadcrumbPath(outState, mInitialBreadcrumbPath);
     }
 
     @Override
@@ -321,7 +337,7 @@ public class SettingsPageFragmentDelegateImpl
                         titleContainer,
                         mToolbar::setTitle,
                         this::onTitleTapped,
-                        SettingsBreadcrumbUtil.getInitialBreadcrumbPath(savedInstanceState));
+                        mInitialBreadcrumbPath);
         multiColumnSettings.addObserver(mMultiColumnTitleUpdater);
     }
 

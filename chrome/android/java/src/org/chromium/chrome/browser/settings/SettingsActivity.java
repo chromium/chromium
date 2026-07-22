@@ -127,6 +127,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     // Key used to store activity start time in the Bundle to have it survive activity re-creation.
     private static final String KEY_START_TIME = "start_time";
 
+    // TODO(crbug.com/521895796): Move constants to a utility file, perhaps SettingsIntentUtil, as
+    // they are used by both settings in an activity and settings in a tab.
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
 
@@ -232,21 +234,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 .setIsTablet(DeviceFormFactor.isNonMultiDisplayContextOnTablet(this));
 
         if (savedInstanceState == null && isMultiColumnSettingEnabled()) {
-            String fragmentName = getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT);
-
-            if (fragmentName != null) {
-                SettingsIndexData indexData =
-                        SettingsSearchCoordinator.ensureIndexBuilt(this, assertNonNull(mProfile));
-
-                List<SettingsIndexData.Entry> path =
-                        indexData.getBreadcrumbEntries(
-                                fragmentName,
-                                getIntent().getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS));
-
-                if (path != null && path.size() > 1) {
-                    mInitialBreadcrumbPath = path;
-                }
-            }
+            mInitialBreadcrumbPath =
+                    SettingsBreadcrumbUtil.getInitialBreadcrumbPath(
+                            /* context= */ this,
+                            assertNonNull(mProfile),
+                            getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT),
+                            getIntent().getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS));
         } else if (savedInstanceState != null) {
             mInitialBreadcrumbPath =
                     SettingsBreadcrumbUtil.getInitialBreadcrumbPath(savedInstanceState);

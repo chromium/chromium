@@ -21,6 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +34,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,6 +61,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.SettingsSearchCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.settings.search.PreferenceParser;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -100,6 +103,7 @@ public class SettingsPageFragmentDelegateImplTest {
     @Before
     public void setUp() {
         when(mActivity.getLifecycleDispatcher()).thenReturn(mLifecycleDispatcher);
+        when(mActivity.getIntent()).thenReturn(new Intent());
 
         SettableMonotonicObservableSupplier<ModalDialogManager> modalDialogSupplier =
                 ObservableSuppliers.createMonotonic();
@@ -157,6 +161,11 @@ public class SettingsPageFragmentDelegateImplTest {
                         mBottomSheetController,
                         mModalDialogManager,
                         TAB_ID);
+    }
+
+    @After
+    public void tearDown() {
+        SettingsIndexData.reset();
     }
 
     /**
@@ -343,6 +352,79 @@ public class SettingsPageFragmentDelegateImplTest {
                 ArgumentCaptor.forClass(MultiColumnTitleUpdater.class);
         verify(mMultiColumnSettings).addObserver(captor.capture());
         assertEquals("key1", captor.getValue().getInitialBreadcrumbPathForTesting().get(0).key);
+    }
+
+    @Test
+    public void testInitSettings_withIntent_passesInitialBreadcrumbPathToTitleUpdater() {
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
+
+        SettingsIndexData indexData = SettingsIndexData.createInstance();
+        indexData.resetNeedsIndexing();
+
+        String mainSettings = "org.chromium.chrome.browser.settings.MainSettings";
+        String child1 = "Child1Fragment";
+        String child2 = "Child2Fragment";
+
+        String id1 = PreferenceParser.createUniqueId(mainSettings, "key1");
+        String id2 = PreferenceParser.createUniqueId(child1, "key2");
+
+        // Set up settings path root -> child1 -> child2.
+        SettingsIndexData.Entry entry1 =
+                new SettingsIndexData.Entry.Builder(id1, "key1", "Title 1", mainSettings)
+                        .setFragment(child1)
+                        .build();
+        SettingsIndexData.Entry entry2 =
+                new SettingsIndexData.Entry.Builder(id2, "key2", "Title 2", child1)
+                        .setFragment(child2)
+                        .build();
+
+        indexData.addEntry(id1, entry1);
+        indexData.addEntry(id2, entry2);
+
+        Intent intent = new Intent();
+        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, child2);
+        when(mActivity.getIntent()).thenReturn(intent);
+        when(mActivity.getSavedInstanceState()).thenReturn(null);
+
+        mDelegate.initSettings(mContainerView);
+        triggerFragmentViewCreated();
+
+        ArgumentCaptor<MultiColumnTitleUpdater> captor =
+                ArgumentCaptor.forClass(MultiColumnTitleUpdater.class);
+        verify(mMultiColumnSettings).addObserver(captor.capture());
+        List<SettingsIndexData.Entry> path = captor.getValue().getInitialBreadcrumbPathForTesting();
+        assertNotNull(path);
+        // The path contains 2 keys because the full settings path is root -> child1 -> child2.
+        assertEquals(2, path.size());
+        assertEquals("key1", path.get(0).key);
+        assertEquals("key2", path.get(1).key);
+    }
+
+    @Test
+    public void testOnSaveInstanceState_savesInitialBreadcrumbPath() {
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG))
+                .thenReturn(mMockSettingsHostFragment);
+
+        Bundle savedState = new Bundle();
+        ArrayList<SettingsIndexData.Entry> entries =
+                new ArrayList<>(
+                        List.of(
+                                new SettingsIndexData.Entry.Builder(
+                                                "uuid1", "key1", "Title 1", "FragmentClass1")
+                                        .build()));
+        savedState.putParcelableArrayList(
+                SettingsBreadcrumbUtil.KEY_INITIAL_BREADCRUMB_PATH, entries);
+        when(mActivity.getSavedInstanceState()).thenReturn(savedState);
+
+        mDelegate.initSettings(mContainerView);
+
+        Bundle outState = new Bundle();
+        mDelegate.onSaveInstanceState(outState);
+        List<SettingsIndexData.Entry> restored =
+                SettingsBreadcrumbUtil.getInitialBreadcrumbPath(outState);
+        assertNotNull(restored);
+        assertEquals("key1", restored.get(0).key);
     }
 
     @Test
