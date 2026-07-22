@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/toolbar/coordinator/main_toolbar_coordinator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/notreached.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
@@ -20,11 +21,10 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/browser/test/fake_browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/test/fake_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -82,7 +82,6 @@
 }
 @end
 
-namespace {}  // namespace
 
 // Unittests related to the MainToolbarCoordinator.
 class MainToolbarCoordinatorTest : public PlatformTest {
@@ -101,126 +100,119 @@ class MainToolbarCoordinatorTest : public PlatformTest {
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     profile_ = std::move(test_profile_builder).Build();
-    scene_state_ = [[SceneState alloc] init];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
     LayoutGuideSceneAgent* layout_guide_scene_agent =
         [[LayoutGuideSceneAgent alloc] init];
     [scene_state_ addAgent:layout_guide_scene_agent];
-    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
-
-    fake_browser_provider_ = [[FakeBrowserProvider alloc] init];
-    fake_browser_provider_.browser = browser_.get();
-    fake_browser_provider_interface_ =
-        [[FakeBrowserProviderInterface alloc] init];
-    fake_browser_provider_interface_.currentBrowserProvider =
-        fake_browser_provider_;
-
-    mock_scene_state_ = OCMPartialMock(scene_state_);
-    OCMStub([mock_scene_state_ browserProviderInterface])
-        .andReturn(fake_browser_provider_interface_);
 
     // Setup all necessary handlers.
+    Browser* browser =
+        scene_state_.browserProviderInterface.currentBrowserProvider.browser;
 
     id mock_find_in_page_handler =
         OCMProtocolMock(@protocol(FindInPageCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_find_in_page_handler
                      forProtocol:@protocol(FindInPageCommands)];
 
     id mock_text_zoom_handler = OCMProtocolMock(@protocol(TextZoomCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_text_zoom_handler
                      forProtocol:@protocol(TextZoomCommands)];
 
     id mock_help_handler = OCMProtocolMock(@protocol(HelpCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_help_handler
                      forProtocol:@protocol(HelpCommands)];
 
     id mock_lens_handler = OCMProtocolMock(@protocol(LensCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_lens_handler
                      forProtocol:@protocol(LensCommands)];
 
     id mock_application_handler = OCMProtocolMock(@protocol(SceneCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_application_handler
                      forProtocol:@protocol(SceneCommands)];
 
     id mock_QR_scanner_handler = OCMProtocolMock(@protocol(QRScannerCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_QR_scanner_handler
                      forProtocol:@protocol(QRScannerCommands)];
 
     id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_settings_handler
                      forProtocol:@protocol(SettingsCommands)];
 
     id mock_quick_delete_handler =
         OCMProtocolMock(@protocol(QuickDeleteCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_quick_delete_handler
                      forProtocol:@protocol(QuickDeleteCommands)];
 
     id mock_page_action_menu_commands =
         OCMProtocolMock(@protocol(PageActionMenuCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_page_action_menu_commands
                      forProtocol:@protocol(PageActionMenuCommands)];
 
     id mock_gemini_commands = OCMProtocolMock(@protocol(GeminiCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_gemini_commands
                      forProtocol:@protocol(GeminiCommands)];
 
     id mock_popup_menu_handler = OCMProtocolMock(@protocol(PopupMenuCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_popup_menu_handler
                      forProtocol:@protocol(PopupMenuCommands)];
 
     id mock_activity_service_handler =
         OCMProtocolMock(@protocol(ActivityServiceCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_activity_service_handler
                      forProtocol:@protocol(ActivityServiceCommands)];
 
     id mock_contextual_sheet_handler =
         OCMProtocolMock(@protocol(ContextualSheetCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_contextual_sheet_handler
                      forProtocol:@protocol(ContextualSheetCommands)];
 
     id mock_contextual_panel_entrypoint_IPH_handler =
         OCMProtocolMock(@protocol(ContextualPanelEntrypointIPHCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_contextual_panel_entrypoint_IPH_handler
                      forProtocol:@protocol(
                                      ContextualPanelEntrypointIPHCommands)];
 
     id mock_browser_coordinator_commands =
         OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_browser_coordinator_commands
                      forProtocol:@protocol(BrowserCoordinatorCommands)];
 
     id mock_fullscreen_commands =
         OCMProtocolMock(@protocol(FullscreenCommands));
-    [browser_->GetCommandDispatcher()
+    [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_fullscreen_commands
                      forProtocol:@protocol(FullscreenCommands)];
 
-    OmniboxFocusBrowserAgent::CreateForBrowser(browser_.get());
-    AutocompleteBrowserAgent::CreateForBrowser(browser_.get());
+    OmniboxFocusBrowserAgent::CreateForBrowser(browser);
+    AutocompleteBrowserAgent::CreateForBrowser(browser);
     // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
     // must be created first. Please maintain this order.
-    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
-    FullscreenController::CreateForBrowser(browser_.get());
-    FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser);
+    FullscreenController::CreateForBrowser(browser);
+    FullscreenBrowserAgent::CreateForBrowser(browser);
   }
 
   ~MainToolbarCoordinatorTest() override {}
 
-  void TearDown() override { [coordinator_ stop]; }
+  void TearDown() override {
+    [coordinator_ stop];
+    [scene_state_ shutdown];
+  }
 
   // Verifies that observing `LayoutState` correctly detects when the omnibox
   // position transitions from top to bottom.
@@ -229,8 +221,7 @@ class MainToolbarCoordinatorTest : public PlatformTest {
     LayoutState* layoutState = scene_state_.layoutState;
     [layoutState addObserver:observer];
 
-    coordinator_ =
-        [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+    coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
     [coordinator_ start];
     UIWindow* window = [[UIWindow alloc]
         initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
@@ -255,16 +246,16 @@ class MainToolbarCoordinatorTest : public PlatformTest {
     [layoutState removeObserver:observer];
   }
 
+  Browser* browser() {
+    return scene_state_.browserProviderInterface.currentBrowserProvider.browser;
+  }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<TestBrowser> browser_;
   MainToolbarCoordinator* coordinator_;
-  SceneState* scene_state_;
+  FakeSceneState* scene_state_;
   base::test::ScopedFeatureList feature_list_;
-  FakeBrowserProvider* fake_browser_provider_;
-  FakeBrowserProviderInterface* fake_browser_provider_interface_;
-  id mock_scene_state_;
 };
 
 // Test that the LayoutState can be observed to tell when the
@@ -296,12 +287,11 @@ TEST_F(MainToolbarCoordinatorTest,
   if (!IsBottomOmniboxAvailable()) {
     return;
   }
-  coordinator_ =
-      [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+  coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
   [coordinator_ start];
 
   // Simulate early startup where currentBrowserProvider.browser is nil.
-  fake_browser_provider_.browser = nullptr;
+  [scene_state_ setCurrentBrowserProvider:nil];
 
   [coordinator_ transitionOmniboxToToolbarType:ToolbarType::kSecondary];
   EXPECT_EQ(scene_state_.layoutState.toolbarPosition, ToolbarPosition::kBottom);
@@ -315,8 +305,7 @@ TEST_F(MainToolbarCoordinatorTest,
   if (!IsBottomOmniboxAvailable()) {
     return;
   }
-  coordinator_ =
-      [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+  coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
   [coordinator_ start];
 
   // Reset toolbarPosition to top before transitioning to an inactive browser.
@@ -325,9 +314,8 @@ TEST_F(MainToolbarCoordinatorTest,
 
   // Simulate an inactive browser where currentBrowserProvider.browser is
   // another browser instance.
-  std::unique_ptr<TestBrowser> other_browser =
-      std::make_unique<TestBrowser>(profile_.get(), scene_state_);
-  fake_browser_provider_.browser = other_browser.get();
+  [scene_state_ setCurrentBrowserProvider:scene_state_.browserProviderInterface
+                                              .incognitoBrowserProvider];
 
   [coordinator_ transitionOmniboxToToolbarType:ToolbarType::kSecondary];
   EXPECT_EQ(scene_state_.layoutState.toolbarPosition, ToolbarPosition::kTop);
@@ -336,8 +324,7 @@ TEST_F(MainToolbarCoordinatorTest,
 // Tests that taking a side swipe snapshot of a toolbar that is not in the
 // view hierarchy does not crash and returns nil.
 TEST_F(MainToolbarCoordinatorTest, SideSwipeSnapshotForToolbarNotInHierarchy) {
-  coordinator_ =
-      [[MainToolbarCoordinator alloc] initWithBrowser:browser_.get()];
+  coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
   [coordinator_ start];
   // Add a dummy WebState to the WebStateList.
   auto test_web_state = std::make_unique<web::FakeWebState>();
@@ -351,7 +338,7 @@ TEST_F(MainToolbarCoordinatorTest, SideSwipeSnapshotForToolbarNotInHierarchy) {
   InfoBarManagerImpl::CreateForWebState(web_state);
   InfobarBadgeTabHelper::CreateForWebState(web_state);
 
-  browser_->GetWebStateList()->InsertWebState(
+  browser()->GetWebStateList()->InsertWebState(
       std::move(test_web_state),
       WebStateList::InsertionParams::AtIndex(0).Activate());
 

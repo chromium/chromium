@@ -39,7 +39,8 @@
 #pragma mark - Properties
 
 - (void)setCurrentBrowserProvider:(StubBrowserProvider*)currentBrowserProvider {
-  CHECK(currentBrowserProvider == _mainBrowserProvider ||
+  CHECK(currentBrowserProvider == nil ||
+        currentBrowserProvider == _mainBrowserProvider ||
         currentBrowserProvider == _incognitoBrowserProvider);
   _currentBrowserProvider = currentBrowserProvider;
 }

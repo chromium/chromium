@@ -82,7 +82,8 @@
 }
 
 - (void)setCurrentBrowserProvider:(id<BrowserProvider>)browserProvider {
-  CHECK(browserProvider == _browserProviderInterface.mainBrowserProvider ||
+  CHECK(browserProvider == nil ||
+        browserProvider == _browserProviderInterface.mainBrowserProvider ||
         browserProvider == _browserProviderInterface.incognitoBrowserProvider);
 
   _browserProviderInterface.currentBrowserProvider =
