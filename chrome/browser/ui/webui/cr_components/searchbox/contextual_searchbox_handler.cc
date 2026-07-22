@@ -1408,14 +1408,10 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
 }
 
 bool ContextualSearchboxHandler::IsContextualSearchTabSharingEligible() const {
-  // The default implementation returns true on non-Android. Inheritors (such as
-  // the side panel composebox) can override this to enforce custom or dynamic
+  // The default implementation returns true. Inheritors (such as the side
+  // panel composebox) can override this to enforce custom or dynamic
   // eligibility.
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
   return true;
-#endif
 }
 
 void ContextualSearchboxHandler::RecordTabAddedMetric(
