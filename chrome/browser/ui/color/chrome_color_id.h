@@ -60,6 +60,16 @@
   E_CPONLY(kColorAvatarFillForContrast) \
   E_CPONLY(kColorAvatarRingGradientStart) \
   E_CPONLY(kColorAvatarRingGradientEnd) \
+  E_CPONLY(kColorAvatarBadgeWaveBase0) \
+  E_CPONLY(kColorAvatarBadgeWaveBase1) \
+  E_CPONLY(kColorAvatarBadgeWaveBase2) \
+  E_CPONLY(kColorAvatarBadgeWaveBase3) \
+  E_CPONLY(kColorAvatarBadgeWaveOverlay0) \
+  E_CPONLY(kColorAvatarBadgeWaveOverlay1) \
+  E_CPONLY(kColorAvatarBadgeWaveOverlay2) \
+  E_CPONLY(kColorAvatarBadgeWaveOverlay3) \
+  E_CPONLY(kColorAvatarBadgeShadow) \
+  E_CPONLY(kColorAvatarBadgeBackground) \
   /* Bookmark Manager page colors. */ \
   E_CPONLY(kColorBookmarkManagerItemBackgroundSelected) \
   E_CPONLY(kColorBookmarkManagerItemOutline) \

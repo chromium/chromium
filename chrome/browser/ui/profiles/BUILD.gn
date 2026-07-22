@@ -10,6 +10,7 @@ source_set("profiles") {
 
   if (!is_android) {
     sources += [
+      "avatar_badge_types.h",
       "profile_colors_util.h",
       "profile_view_utils.h",
     ]
