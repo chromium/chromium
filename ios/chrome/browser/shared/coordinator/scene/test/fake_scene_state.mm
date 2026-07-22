@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -24,8 +25,6 @@
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;
   std::unique_ptr<TestBrowser> _incognito_browser;
-  // Overridden value for the scene session identifier.
-  std::string _sceneSessionID;
   // Used to check that -shutdown is called before -dealloc.
   BOOL _shutdown;
 }
@@ -57,7 +56,9 @@
         initWithBrowser:_browser.get()
         incognitBrowser:_incognito_browser.get()];
 
-    _sceneSessionID = std::move(sceneSessionID);
+    if (!sceneSessionID.empty()) {
+      [self connectWithOptions:{.identifier = std::move(sceneSessionID)}];
+    }
   }
   return self;
 }
@@ -71,10 +72,6 @@
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile {
   return [self initWithProfile:profile sceneSessionID:{} commandDispatcher:nil];
-}
-
-- (std::string_view)sceneSessionID {
-  return _sceneSessionID.empty() ? [super sceneSessionID] : _sceneSessionID;
 }
 
 - (void)dealloc {
