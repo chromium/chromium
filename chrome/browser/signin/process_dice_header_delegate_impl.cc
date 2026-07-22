@@ -44,6 +44,7 @@ struct InterceptionBubbleParams {
       signin_metrics::AccessPoint::kWebSignin;
   bool is_new_account = false;
   bool is_sync_signin_tab = false;
+  signin::Tribool primary_is_connected = signin::Tribool::kUnknown;
 };
 
 // Helper function similar to DiceTabHelper::FromWebContents(), but also handles
@@ -88,7 +89,7 @@ void RetryInterceptionBubble(base::WeakPtr<content::WebContents> web_contents,
   interceptor->MaybeInterceptWebSignin(
       web_contents.get(), bubble_params.account_id,
       signin_metrics::AccessPoint::kWebSignin, bubble_params.is_new_account,
-      /*is_sync_signin=*/false);
+      /*is_sync_signin=*/false, bubble_params.primary_is_connected);
 }
 }  // namespace
 
@@ -298,7 +299,8 @@ void ProcessDiceHeaderDelegateImpl::AttemptChromeSignin(
 
 void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
     CoreAccountId account_id,
-    bool is_new_account) {
+    bool is_new_account,
+    signin::Tribool primary_is_connected) {
   initiator_account_id_ = account_id;
   AttemptChromeSignin(account_id);
 
@@ -308,16 +310,16 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeSuccess(
   // signin and do a simple web signin in the same tab instead.
   auto* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(&profile_.get());
-  interceptor->MaybeInterceptWebSignin(web_contents_.get(), account_id,
-                                       access_point_, is_new_account,
-                                       is_sync_signin_tab_);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents_.get(), account_id, access_point_, is_new_account,
+      is_sync_signin_tab_, primary_is_connected);
   DiceTabHelper* tab_helper =
       GetDiceTabHelperFromWebContents(web_contents_.get());
   if (tab_helper) {
     base::OnceClosure retry_interception_bubble_callback = base::BindOnce(
         &RetryInterceptionBubble, web_contents_->GetWeakPtr(),
         InterceptionBubbleParams{account_id, access_point_, is_new_account,
-                                 is_sync_signin_tab_});
+                                 is_sync_signin_tab_, primary_is_connected});
     tab_helper->OnTokenExchangeSuccess(
         std::move(retry_interception_bubble_callback));
   }

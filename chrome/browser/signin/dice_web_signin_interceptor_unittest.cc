@@ -220,7 +220,8 @@ class DiceWebSigninInterceptorTest : public testing::Test {
     interceptor()->MaybeInterceptWebSignin(
         web_contents(), account_id, signin_metrics::AccessPoint::kWebSignin,
         /*is_new_account=*/true,
-        /*is_sync_signin=*/false);
+        /*is_sync_signin=*/false,
+        /*primary_is_connected=*/signin::Tribool::kUnknown);
   }
 
   // Calls MaybeInterceptWebSignin and verifies the heuristic outcome, the
@@ -238,8 +239,8 @@ class DiceWebSigninInterceptorTest : public testing::Test {
     base::HistogramTester histogram_tester;
     interceptor()->MaybeInterceptWebSignin(
         web_contents(), account_info.account_id,
-        signin_metrics::AccessPoint::kWebSignin, is_new_account,
-        is_sync_signin);
+        signin_metrics::AccessPoint::kWebSignin, is_new_account, is_sync_signin,
+        /*primary_is_connected=*/signin::Tribool::kUnknown);
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                         expected_outcome, 1);
@@ -263,8 +264,8 @@ class DiceWebSigninInterceptorTest : public testing::Test {
     base::HistogramTester histogram_tester;
     interceptor()->MaybeInterceptWebSignin(
         web_contents(), account_info.account_id,
-        signin_metrics::AccessPoint::kWebSignin, is_new_account,
-        is_sync_signin);
+        signin_metrics::AccessPoint::kWebSignin, is_new_account, is_sync_signin,
+        /*primary_is_connected=*/signin::Tribool::kUnknown);
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                         expected_outcome, 1);
@@ -1271,7 +1272,8 @@ TEST_F(DiceWebSigninInterceptorTest, TabClosed) {
   interceptor()->MaybeInterceptWebSignin(
       /*web_contents=*/nullptr, CoreAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
-      /*is_new_account=*/true, /*is_sync_signin=*/false);
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
       SigninInterceptionHeuristicOutcome::kAbortTabClosed, 1);
@@ -2188,7 +2190,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
-      /*is_new_account=*/true, /*is_sync_signin=*/false);
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(
                 /*is_new_account=*/true,
                 /*is_sync_signin=*/false, std::string(account_info.GetEmail()),
@@ -2230,7 +2233,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), account_info.account_id,
       signin_metrics::AccessPoint::kWebSignin,
-      /*is_new_account=*/false, /*is_sync_signin=*/false);
+      /*is_new_account=*/false, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   EXPECT_EQ(
       interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
                                          /*is_sync_signin=*/false,
@@ -2285,7 +2289,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
-      /*is_new_account=*/true, /*is_sync_signin=*/false);
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   EXPECT_EQ(interceptor()->is_interception_in_progress(), true);
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 
@@ -2336,7 +2341,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), account_info.GetAccountId(),
       signin_metrics::AccessPoint::kWebSignin,
-      /*is_new_account=*/true, /*is_sync_signin=*/false);
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(
                 /*is_new_account=*/true,
                 /*is_sync_signin=*/false, std::string(account_info.GetEmail()),
@@ -2363,11 +2369,12 @@ TEST_F(DiceWebSigninInterceptorTest,
   EXPECT_CALL(*mock_delegate(), ShowSigninInterceptionBubble(
                                     web_contents(), testing::_, testing::_))
       .Times(0);
-  interceptor()->MaybeInterceptWebSignin(web_contents(),
-                                         account_info.GetAccountId(),
-                                         signin_metrics::AccessPoint::kSettings,
-                                         /*is_new_account=*/true,
-                                         /*is_sync_signin=*/false);
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kSettings,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   // Delegate was not called yet.
   testing::Mock::VerifyAndClearExpectations(mock_delegate());
 
@@ -2417,7 +2424,8 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterceptionIfPrimaryAccountAlreadySet) {
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), second_account_info.account_id,
       signin_metrics::AccessPoint::kWebSignin,
-      /*is_new_account=*/true, /*is_sync_signin=*/false);
+      /*is_new_account=*/true, /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   EXPECT_EQ(interceptor()->GetHeuristicOutcome(/*is_new_account=*/true,
                                                /*is_sync_signin=*/false,
                                                second_account_info.email),
@@ -2466,7 +2474,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), initiator_info.account_id,
       signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
-      /*is_sync_signin=*/false);
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
 
   ASSERT_TRUE(bubble_callback);
   ASSERT_TRUE(interceptor()->is_interception_in_progress());
@@ -2525,7 +2534,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), initiator_info.account_id,
       signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
-      /*is_sync_signin=*/false);
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
 
   ASSERT_TRUE(bubble_callback);
   ASSERT_TRUE(interceptor()->is_interception_in_progress());
@@ -2594,7 +2604,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), initiator_info.account_id,
       signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
-      /*is_sync_signin=*/false);
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
 
   ASSERT_TRUE(bubble_callback);
   ASSERT_TRUE(interceptor()->is_interception_in_progress());
@@ -2665,7 +2676,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), initiator_alice.account_id,
       signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
-      /*is_sync_signin=*/false);
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
 
   ASSERT_TRUE(alice_bubble_callback);
   ASSERT_TRUE(interceptor()->is_interception_in_progress());
@@ -2690,7 +2702,8 @@ TEST_F(DiceWebSigninInterceptorTest,
   interceptor()->MaybeInterceptWebSignin(
       web_contents(), initiator_bob.account_id,
       signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
-      /*is_sync_signin=*/false);
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
 
   ASSERT_TRUE(bob_bubble_callback);
   ASSERT_TRUE(interceptor()->is_interception_in_progress());

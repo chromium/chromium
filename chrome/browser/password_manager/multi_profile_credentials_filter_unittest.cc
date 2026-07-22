@@ -30,6 +30,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -302,7 +303,8 @@ TEST_F(MultiProfileCredentialsFilterTest, InterceptInProgress) {
       web_contents_.get(), account_info.account_id,
       signin_metrics::AccessPoint::kStartPage,
       /*is_new_account=*/true,
-      /*is_sync_signin=*/false);
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   ASSERT_TRUE(dice_web_signin_interceptor()->is_interception_in_progress());
 
   MultiProfileCredentialsFilter multi_profile_filter(

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/dice_response_handler.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/tribool.h"
 
 namespace content {
 class WebContents;
@@ -78,8 +79,10 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   ~ProcessDiceHeaderDelegateImpl() override;
 
   // ProcessDiceHeaderDelegate:
-  void HandleTokenExchangeSuccess(CoreAccountId account_id,
-                                  bool is_new_account) override;
+  void HandleTokenExchangeSuccess(
+      CoreAccountId account_id,
+      bool is_new_account,
+      signin::Tribool primary_is_connected) override;
   void CompleteChromeSignInAfterGaiaSignin(
       const CoreAccountInfo& account_info) override;
   void HandleTokenExchangeFailure(const std::string& email,

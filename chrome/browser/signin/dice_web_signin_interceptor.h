@@ -25,6 +25,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -109,12 +110,17 @@ class DiceWebSigninInterceptor : public KeyedService,
   // this is not a reauth).
   // `is_sync_signin` is true if the user is signing in with the intent of
   // enabling sync for that account.
+  // `primary_is_connected` is relevant during a multi-account sign-in event.
+  // It indicates whether the account is connected to the primary account
+  // (`kTrue` if connected, `kFalse` if not connected—including when the profile
+  // is not signed in, and `kUnknown` otherwise).
   // Virtual for testing.
   virtual void MaybeInterceptWebSignin(content::WebContents* web_contents,
                                        CoreAccountId account_id,
                                        signin_metrics::AccessPoint access_point,
                                        bool is_new_account,
-                                       bool is_sync_signin);
+                                       bool is_sync_signin,
+                                       signin::Tribool primary_is_connected);
 
   void OnDiceSigninSessionComplete(
       const CoreAccountId& initiator_account_id,
@@ -140,12 +146,17 @@ class DiceWebSigninInterceptor : public KeyedService,
   // happens, the signin interception is highly likely (but not guaranteed).
   // `gaia_id` is optional as some usages may not have the information yet. It
   // is currently only mandatory for the checks of the Chrome Signin bubble.
+  // `primary_is_connected` is relevant during a multi-account sign-in event.
+  // It indicates whether the account is connected to the primary account
+  // (`kTrue` if connected, `kFalse` if not connected—including when the profile
+  // is not signed in, and `kUnknown` otherwise).
   std::optional<SigninInterceptionHeuristicOutcome> GetHeuristicOutcome(
       bool is_new_account,
       bool is_sync_signin,
       const std::string& email,
       const GaiaId& gaia_id = GaiaId(),
-      const ProfileAttributesEntry** entry = nullptr) const;
+      const ProfileAttributesEntry** entry = nullptr,
+      signin::Tribool primary_is_connected = signin::Tribool::kUnknown) const;
 
   // Returns true if the interception is in progress (running the heuristic or
   // showing on screen).
@@ -438,6 +449,10 @@ class DiceWebSigninInterceptor : public KeyedService,
     bool dice_signin_session_complete_ = false;
     bool waiting_for_dice_signin_session_completion_ = false;
     base::OnceClosure deferred_action_callback_;
+    // Stores `primary_is_connected` from the initial token exchange during a
+    // multi-account sign-in so downstream heuristics can evaluate it after
+    // asynchronous fetches complete.
+    signin::Tribool primary_is_connected_ = signin::Tribool::kUnknown;
   };
 
   const raw_ptr<Profile> profile_;

@@ -445,7 +445,8 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     bool is_sync_signin,
     const std::string& email,
     const GaiaId& gaia_id,
-    const ProfileAttributesEntry** entry) const {
+    const ProfileAttributesEntry** entry,
+    signin::Tribool primary_is_connected) const {
   bool signin_interception_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kSigninInterceptionEnabled);
 
@@ -548,7 +549,8 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     CoreAccountId account_id,
     signin_metrics::AccessPoint access_point,
     bool is_new_account,
-    bool is_sync_signin) {
+    bool is_sync_signin,
+    signin::Tribool primary_is_connected) {
   // If the user is in sign in pending state and signs in with a different
   // account, it means that they enter an inconsistent state. Record this event
   // so that we can check afterwards if this state is resolved by accepting the
@@ -612,11 +614,12 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
   const ProfileAttributesEntry* entry = nullptr;
   std::optional<SigninInterceptionHeuristicOutcome> heuristic_outcome =
       GetHeuristicOutcome(is_new_account, is_sync_signin, account_info.email,
-                          account_info.gaia, &entry);
+                          account_info.gaia, &entry, primary_is_connected);
   state_->account_id_ = account_id;
   state_->is_interception_in_progress_ = true;
   state_->new_account_interception_ = is_new_account;
   state_->web_contents_ = web_contents->GetWeakPtr();
+  state_->primary_is_connected_ = primary_is_connected;
 
   if (heuristic_outcome &&
       !SigninInterceptionHeuristicOutcomeIsSuccess(*heuristic_outcome)) {

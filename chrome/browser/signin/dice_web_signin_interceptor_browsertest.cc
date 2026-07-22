@@ -80,6 +80,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -218,10 +219,11 @@ Profile* InterceptAndWaitProfileCreation(content::WebContents* contents,
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(
           Profile::FromBrowserContext(contents->GetBrowserContext()));
-  interceptor->MaybeInterceptWebSignin(contents, account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      contents, account_id, signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   // Simulate the terminal session completion since the browser test bypasses
   // the actual DiceResponseHandler token exchange flow.
   interceptor->OnDiceSigninSessionComplete(account_id, {});
@@ -478,10 +480,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
           WebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   // Add the account to the cookies (simulates the account reconcilor).
@@ -607,10 +611,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorGaiaBrowserTest,
           WebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   // Add the account to the cookies (simulates the account reconcilor).
@@ -656,10 +662,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(
           Profile::FromBrowserContext(contents->GetBrowserContext()));
-  interceptor->MaybeInterceptWebSignin(contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
   // Close the source tab during the profile creation.
   contents->Close();
@@ -730,7 +738,8 @@ class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
         contents, account_info.account_id,
         signin_metrics::AccessPoint::kWebSignin,
         /*is_new_account=*/true,
-        /*is_sync_signin=*/false);
+        /*is_sync_signin=*/false,
+        /*primary_is_connected=*/signin::Tribool::kUnknown);
 
     return interceptor_delegate;
   }
@@ -1380,11 +1389,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,
       WebSigninInterceptor::SigninInterceptionType::kMultiUser);
   source_interceptor_delegate->set_expected_interception_result(
       SigninInterceptionResult::kDismissed);
-  interceptor->MaybeInterceptWebSignin(web_contents,
-                                       secondary_account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/false,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, secondary_account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/false,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
 
   histogram_tester.ExpectBucketCount(
       "Signin.SigninPending.InconsistentStateInvoked", true, 1);
@@ -1415,11 +1425,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorSigninBubbleBrowserTest,
   source_interceptor_delegate->set_expected_interception_result(
       SigninInterceptionResult::kAccepted);
   ProfileWaiter waiter;
-  interceptor->MaybeInterceptWebSignin(web_contents,
-                                       secondary_account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, secondary_account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(secondary_account_info.account_id, {});
 
   // New Profile created from accepting the signin interception.
@@ -1724,10 +1735,12 @@ IN_PROC_BROWSER_TEST_P(
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   if (params.expect_bubble_shown) {
@@ -1791,10 +1804,12 @@ IN_PROC_BROWSER_TEST_P(
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   if (params.expect_bubble_shown) {
@@ -1950,10 +1965,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Start the interception.
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
 
@@ -2023,11 +2040,12 @@ IN_PROC_BROWSER_TEST_F(
       policy::ProfileSeparationPolicies(
           policy::ProfileSeparationSettings::ENFORCED, std::nullopt));
 
-  interceptor->MaybeInterceptWebSignin(web_contents,
-                                       primary_account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/false,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, primary_account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/false,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   ASSERT_EQ(profile_management_disclaimer_service
                 ->GetAccountBeingConsideredForManagementIfAny(),
             primary_account_info.account_id);
@@ -2092,11 +2110,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
       policy::ProfileSeparationPolicies(
           policy::ProfileSeparationSettings::ENFORCED, std::nullopt));
 
-  interceptor->MaybeInterceptWebSignin(web_contents,
-                                       primary_account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/false,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, primary_account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/false,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
 
@@ -2230,10 +2249,12 @@ IN_PROC_BROWSER_TEST_F(
 
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   // Wait for the interception to be complete.
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
@@ -2284,10 +2305,12 @@ IN_PROC_BROWSER_TEST_F(
   // Start the interception.
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
 
@@ -2343,10 +2366,12 @@ IN_PROC_BROWSER_TEST_F(
   // Start the interception.
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop run_loop;
   run_loop.RunUntilIdle();
 
@@ -2480,10 +2505,12 @@ IN_PROC_BROWSER_TEST_F(
   // Start the interception.
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/false,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/false,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
   // Interception bubble was closed.
@@ -2532,10 +2559,12 @@ IN_PROC_BROWSER_TEST_F(
   // Start the interception.
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/false,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/false,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   base::RunLoop().RunUntilIdle();
   // Interception bubble was closed.
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
@@ -2685,10 +2714,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
           WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced);
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(GetProfile());
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   // Add the account to the cookies (simulates the account reconcilor).
@@ -3005,10 +3036,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorLatePolicyCallbackUAFTest,
 
   // This is what ProcessDiceHeaderDelegateImpl calls after the Gaia DICE token
   // exchange completes.
-  interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,
-                                       signin_metrics::AccessPoint::kWebSignin,
-                                       /*is_new_account=*/true,
-                                       /*is_sync_signin=*/false);
+  interceptor->MaybeInterceptWebSignin(
+      web_contents, account_info.account_id,
+      signin_metrics::AccessPoint::kWebSignin,
+      /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
   interceptor->OnDiceSigninSessionComplete(account_info.account_id, {});
 
   // The fetcher was created (its access-token request is pending in the test

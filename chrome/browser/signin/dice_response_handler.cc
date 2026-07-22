@@ -383,7 +383,9 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeSuccess(
       base::StringPrintf("Successful (%s)", account_id.ToString().c_str()));
 
   if (is_initiator) {
-    delegate_->HandleTokenExchangeSuccess(account_id, is_new_account);
+    delegate_->HandleTokenExchangeSuccess(
+        account_id, is_new_account,
+        signin_info_.linked_accounts_metadata().primary_is_connected);
 
     if (fetcher->should_enable_sync()) {
       delegate_->CompleteChromeSignInAfterGaiaSignin(

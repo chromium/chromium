@@ -25,6 +25,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -53,12 +54,18 @@ class ProcessDiceHeaderDelegate {
   // Called when a token was successfully exchanged.
   // Called after the account was seeded in the account tracker service and
   // after the refresh token was fetched and updated in the token service.
-  // |is_new_account| is true if the account was added to Chrome (it is not a
+  // `is_new_account` is true if the account was added to Chrome (it is not a
   // re-auth).
-  virtual void HandleTokenExchangeSuccess(CoreAccountId account_id,
-                                          bool is_new_account) = 0;
+  // `primary_is_connected` is relevant during a multi-account sign-in event.
+  // It indicates whether the account is connected to the primary account
+  // (`kTrue` if connected, `kFalse` if not connected—including when the profile
+  // is not signed in, and `kUnknown` otherwise).
+  virtual void HandleTokenExchangeSuccess(
+      CoreAccountId account_id,
+      bool is_new_account,
+      signin::Tribool primary_is_connected) = 0;
 
-  // Completes the profile sign-in process for the |account_info|.
+  // Completes the profile sign-in process for `account_info`.
   // This is called after the account has been seeded in the account tracker
   // service and the refresh token has been fetched and updated in the token
   // service. It may trigger a history sync enablement flow if configured.
