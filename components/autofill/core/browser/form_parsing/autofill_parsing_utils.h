@@ -85,8 +85,7 @@ enum class RegexFeature : uint8_t {
   kAutofillSupportSplitZipCode = 2,
   kAutofillDisallowMoreHyphenLikeLabels = 3,
   kAutofillFixStateCountryMisclassification = 4,
-  kAutofillFixCivilStateMisclassificationForESPT = 5,
-  kAutofillSupportCombinedZipAndCityFR = 6,
+  kAutofillSupportCombinedZipAndCityFR = 5,
   kMaxValue = kAutofillSupportCombinedZipAndCityFR,
 };
 

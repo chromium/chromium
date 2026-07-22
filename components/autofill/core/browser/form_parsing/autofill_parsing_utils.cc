@@ -27,8 +27,6 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillDisallowMoreHyphenLikeLabels;
     case RegexFeature::kAutofillFixStateCountryMisclassification:
       return &features::kAutofillFixStateCountryMisclassification;
-    case RegexFeature::kAutofillFixCivilStateMisclassificationForESPT:
-      return &features::kAutofillFixCivilStateMisclassificationForESPT;
     case RegexFeature::kAutofillSupportCombinedZipAndCityFR:
       return &features::kAutofillSupportCombinedZipAndCityFR;
   }
