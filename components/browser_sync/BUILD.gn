@@ -39,6 +39,7 @@ static_library("browser_sync") {
     "//components/data_sharing/public:personal_collaboration_data",
     "//components/history/core/browser",
     "//components/history/core/common",
+    "//components/notebooks/public",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",
     "//components/plus_addresses/core/browser/settings",

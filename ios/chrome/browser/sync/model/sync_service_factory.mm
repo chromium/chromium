@@ -154,6 +154,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   builder.SetTemplateURLService(nullptr);
   builder.SetUserEventService(
       IOSUserEventServiceFactory::GetForProfile(profile));
+  builder.SetNotebooksService(nullptr);
 
   syncer::DataTypeController::TypeVector controllers = builder.Build(
       /*disabled_types=*/{}, sync_service, ::GetChannel());

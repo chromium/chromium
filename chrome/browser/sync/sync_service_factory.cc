@@ -26,6 +26,7 @@
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/notebooks/notebooks_service_factory.h"
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/password_receiver_service_factory.h"
 #include "chrome/browser/password_manager/factories/password_sender_service_factory.h"
@@ -290,6 +291,8 @@ syncer::DataTypeController::TypeVector CreateCommonControllers(
       skills::SkillsServiceFactory::GetForProfile(profile)
 #endif  // BUILDFLAG(IS_ANDROID)
   );
+  builder.SetNotebooksService(
+      notebooks::NotebooksServiceFactory::GetForProfile(profile));
 
   return builder.Build(/*disabled_types=*/{}, sync_service,
                        chrome::GetChannel());
@@ -566,6 +569,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
+  DependsOn(notebooks::NotebooksServiceFactory::GetInstance());
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(PasskeyModelFactory::GetInstance());
 #endif  // !BUILDFLAG(IS_ANDROID)

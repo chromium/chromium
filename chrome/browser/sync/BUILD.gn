@@ -108,6 +108,7 @@ source_set("sync") {
     "//chrome/browser/glic",
     "//chrome/browser/history",
     "//chrome/browser/metrics",
+    "//chrome/browser/notebooks",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/signin",

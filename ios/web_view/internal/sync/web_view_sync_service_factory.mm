@@ -114,6 +114,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   controller_builder.SetTabGroupSyncService(nullptr);
   controller_builder.SetTemplateURLService(nullptr);
   controller_builder.SetUserEventService(nullptr);
+  controller_builder.SetNotebooksService(nullptr);
 
   return controller_builder.Build(GetDisabledTypes(prefs), sync_service,
                                   version_info::Channel::STABLE);

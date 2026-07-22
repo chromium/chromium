@@ -66,6 +66,10 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
+namespace notebooks {
+class NotebooksService;
+}  // namespace notebooks
+
 namespace password_manager {
 class PasswordReceiverService;
 class PasswordSenderService;
@@ -183,6 +187,7 @@ class CommonControllerBuilder {
   void SetDataTypeStoreService(
       syncer::DataTypeStoreService* data_type_store_service);
   void SetSkillsService(skills::SkillsService* skills_service);
+  void SetNotebooksService(notebooks::NotebooksService* notebooks_service);
 
 #if !BUILDFLAG(IS_ANDROID)
   void SetPasskeyModel(webauthn::PasskeyModel* passkey_model);
@@ -447,6 +452,7 @@ class CommonControllerBuilder {
       tab_context_sync_service_;
   SafeOptional<raw_ptr<TemplateURLService>> template_url_service_;
   SafeOptional<raw_ptr<skills::SkillsService>> skills_service_;
+  SafeOptional<raw_ptr<notebooks::NotebooksService>> notebooks_service_;
 };
 
 }  // namespace browser_sync

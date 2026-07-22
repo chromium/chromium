@@ -45,6 +45,7 @@
 #include "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
 #include "components/history/core/browser/sync/history_data_type_controller.h"
 #include "components/history/core/browser/sync/history_delete_directives_data_type_controller.h"
+#include "components/notebooks/public/notebooks_service.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_data_type_controller.h"
 #include "components/password_manager/core/browser/sharing/outgoing_password_sharing_invitation_data_type_controller.h"
@@ -316,6 +317,11 @@ void CommonControllerBuilder::SetDataTypeStoreService(
 void CommonControllerBuilder::SetSkillsService(
     skills::SkillsService* skills_service) {
   skills_service_.Set(skills_service);
+}
+
+void CommonControllerBuilder::SetNotebooksService(
+    notebooks::NotebooksService* notebooks_service) {
+  notebooks_service_.Set(notebooks_service);
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1251,23 +1257,20 @@ CommonControllerBuilder::CreateContextualTaskDataTypeController() {
 
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreateNotebookDataTypeController() {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncNotebook)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncNotebook) ||
+      !notebooks_service_.value()) {
     return nullptr;
   }
 
-  // TODO(crbug.com/531804614): In CL #4, register the type, i.e. instantiate
-  // the DataTypeController. There is more than one way to go about it,
-  // but one option is:
-  // - Create a trivial implementation of DataTypeSyncBridge which lives in
-  //   your feature's directory. It should have synchronous access to your
-  //   data model (e.g. DualReadingListModel) and be (indirectly) owned by a
-  //   CoolKeyedService (often the model itself).
-  // - Expose CoolKeyedService::GetControllerDelegate() which calls
-  //   bridge->change_processor()->GetControllerDelegate().
-  // - Inject CoolKeyedService in this class and call GetControllerDelegate()
-  //   on it to create the DataTypeController.
-  // In CLs #5, #6, ..., implement the bridge and keep adding unit tests.
-  return nullptr;
+  syncer::DataTypeControllerDelegate* delegate =
+      notebooks_service_.value()->GetSyncControllerDelegate().get();
+  CHECK(delegate);
+  return std::make_unique<syncer::DataTypeController>(
+      syncer::NOTEBOOK,
+      /*delegate_for_full_sync_mode=*/
+      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate),
+      /*delegate_for_transport_mode=*/
+      std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(delegate));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
