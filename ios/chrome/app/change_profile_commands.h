@@ -36,6 +36,9 @@ enum class ChangeProfileReason {
 // Changes the profile used by the scene identified by `sceneState` and invokes
 // `continuation` when the profile is fully loaded.
 //
+// NOTE: Do not call this method directly to switch profiles. Use
+// AuthenticationFlow APIs instead.
+//
 // The profile named `profileName` must be registered already, but it does not
 // need to be initialized or loaded. This method will take care of initializing
 // it, loading it, and then connecting the scene with the profile.
