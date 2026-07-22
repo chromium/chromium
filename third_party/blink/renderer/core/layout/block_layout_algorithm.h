@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/line_clamp_data.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 
@@ -90,9 +91,8 @@ struct BlockLineClampData {
     return data.lines_until_clamp == 0;
   }
 
-  void UpdateFromStyle(int lines_until_clamp,
-                       LayoutUnit clamp_bfc_offset,
-                       LayoutUnit end_border_padding);
+  void Setup(const BlockNode& node,
+             const BoxFragmentBuilder& container_builder);
 
   // Returns false if we need to relayout with a different clamp BFC offset.
   bool UpdateAfterLayout(const LayoutResult* layout_result,
@@ -222,8 +222,6 @@ class CORE_EXPORT BlockLayoutAlgorithm
     return child.IsReplaced() ? replaced_child_percentage_size_
                               : child_percentage_size_;
   }
-
-  NOINLINE void SetupLineClamp();
 
   BoxStrut CalculateMargins(LayoutInputNode child,
                             bool is_new_fc,
