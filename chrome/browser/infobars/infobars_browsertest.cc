@@ -170,7 +170,7 @@ class InfoBarUiTest : public TestInfoBar {
   InfoBarUiTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
         infobars::kCentralizedInfoBarFramework,
-        {{"Migrated", "collected_cookies,page_info"}});
+        {{"kMigratedCollectedCookies", "true"}, {"kMigratedPageInfo", "true"}});
   }
 
   InfoBarUiTest(const InfoBarUiTest&) = delete;
