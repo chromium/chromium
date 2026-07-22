@@ -146,6 +146,9 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   FRIEND_TEST_ALL_PREFIXES(GetAuthTokenFunctionTest, NoninteractiveShutdown);
 
   class RefreshTokensLoadedWaiter;
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  class AccountsInCookieUpdatedWaiter;
+#endif
   enum class InteractionType { kSignin, kConsent };
 #if BUILDFLAG(IS_CHROMEOS)
   class DeviceOAuth2TokenFetcher;
@@ -155,6 +158,12 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // use the primary account if it exists. Otherwise, interactive sign in flow
   // might be started.
   void GetAuthTokenForAccount(const GaiaId& gaia_id);
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  void OnCookiesUpdatedForRemoteConsent(bool success);
+  bool ShouldDelayRemoteConsent();
+  void StartWaitingForCookies();
+#endif
 
   // signin::IdentityManager::Observer implementation:
   void OnRefreshTokenUpdatedForAccount(
@@ -221,8 +230,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 #if !BUILDFLAG(IS_CHROMEOS)
   virtual void ShowExtensionLoginPrompt();
 #endif
-  virtual void ShowRemoteConsentDialog(
-      const RemoteConsentResolutionData& resolution_data);
+  virtual void ShowRemoteConsentDialog();
 
   std::string GetOAuth2ClientId() const;
 
@@ -264,6 +272,10 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // a permissions prompt will be popped up to the user.
   RemoteConsentResolutionData resolution_data_;
   std::unique_ptr<RefreshTokensLoadedWaiter> refresh_tokens_loaded_waiter_;
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  std::unique_ptr<AccountsInCookieUpdatedWaiter>
+      accounts_in_cookie_updated_waiter_;
+#endif
   std::unique_ptr<GaiaRemoteConsentFlow> gaia_remote_consent_flow_;
   std::string consent_result_;
   // Added for debugging https://crbug.com/40134189.

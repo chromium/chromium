@@ -525,8 +525,7 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
   }
 #endif
 
-  void ShowRemoteConsentDialog(
-      const RemoteConsentResolutionData& resolution_data) override {
+  void ShowRemoteConsentDialog() override {
     scope_ui_shown_ = true;
     if (!scope_ui_async_) {
       CompleteRemoteConsentDialog();

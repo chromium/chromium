@@ -4,17 +4,24 @@
 
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_function.h"
 
+#include <algorithm>
+#include <memory>
 #include <set>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -44,6 +51,7 @@
 #include "extensions/common/api/oauth2.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "extensions/common/utils/extension_utils.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -114,6 +122,20 @@ CoreAccountInfo GetSigninPrimaryAccount(Profile* profile) {
       signin::ConsentLevel::kSignin);
 }
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+bool IsAccountInCookieJar(const signin::AccountsInCookieJarInfo& cookie_info,
+                          const CoreAccountInfo& account_info) {
+  if (!cookie_info.AreAccountsFresh()) {
+    return false;
+  }
+  return std::ranges::any_of(cookie_info.GetValidSignedInAccounts(),
+                             [&account_info](const auto& cookie_account) {
+                               return cookie_account.id ==
+                                      account_info.account_id;
+                             });
+}
+#endif
+
 }  // namespace
 
 class IdentityGetAuthTokenFunction::RefreshTokensLoadedWaiter
@@ -131,6 +153,34 @@ class IdentityGetAuthTokenFunction::RefreshTokensLoadedWaiter
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 };
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+class IdentityGetAuthTokenFunction::AccountsInCookieUpdatedWaiter
+    : public signin::IdentityManager::Observer {
+ public:
+  static constexpr base::TimeDelta kCookieUpdatedWaiterTimeout =
+      base::Seconds(10);
+
+  AccountsInCookieUpdatedWaiter(signin::IdentityManager& identity_manager,
+                                const CoreAccountInfo& account_info,
+                                base::OnceCallback<void(bool)> callback);
+
+  // signin::IdentityManager::Observer:
+  void OnAccountsInCookieUpdated(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const GoogleServiceAuthError& error) override;
+
+ private:
+  void OnTimeout();
+
+  CoreAccountInfo account_info_;
+  base::OnceCallback<void(bool)> callback_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  base::OneShotTimer timer_;
+};
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 
@@ -276,7 +326,6 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   // From here on out, results must be returned asynchronously.
   StartAsyncRun();
 
-  // TODO(crbug.com/40614113): collapse the asynchronicity
   base::OnceCallback next_step =
       base::BindOnce(&IdentityGetAuthTokenFunction::GetAuthTokenForAccount,
                      weak_ptr_factory_.GetWeakPtr(), gaia_id);
@@ -352,6 +401,48 @@ void IdentityGetAuthTokenFunction::GetAuthTokenForAccount(
     StartMintTokenFlow(IdentityMintRequestQueue::MINT_TYPE_NONINTERACTIVE);
   }
 }
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+bool IdentityGetAuthTokenFunction::ShouldDelayRemoteConsent() {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
+      identity_manager->GetAccountsInCookieJar();
+  return !IsAccountInCookieJar(accounts_in_cookie_jar_info,
+                               token_key_.account_info);
+}
+
+void IdentityGetAuthTokenFunction::StartWaitingForCookies() {
+  DCHECK(!accounts_in_cookie_updated_waiter_);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  base::OnceCallback<void(bool)> cookie_callback = base::BindOnce(
+      &IdentityGetAuthTokenFunction::OnCookiesUpdatedForRemoteConsent,
+      weak_ptr_factory_.GetWeakPtr());
+  accounts_in_cookie_updated_waiter_ =
+      std::make_unique<AccountsInCookieUpdatedWaiter>(
+          *identity_manager, token_key_.account_info,
+          std::move(cookie_callback));
+}
+
+void IdentityGetAuthTokenFunction::OnCookiesUpdatedForRemoteConsent(
+    bool success) {
+  accounts_in_cookie_updated_waiter_.reset();
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
+      identity_manager->GetAccountsInCookieJar();
+  if (!success) {
+    CompleteMintTokenFlow();
+    SigninFailed();
+    return;
+  }
+
+  ShowRemoteConsentDialog();
+}
+#endif
 
 void IdentityGetAuthTokenFunction::StartAsyncRun() {
   // Balanced in CompleteAsyncRun
@@ -580,7 +671,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
         break;
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT:
-        ShowRemoteConsentDialog(resolution_data_);
+        ShowRemoteConsentDialog();
         break;
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT_APPROVED:
         consent_result_ = cache_entry.consent_result();
@@ -860,6 +951,9 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
   token_key_account_access_token_fetcher_.reset();
   refresh_tokens_loaded_waiter_.reset();
   scoped_identity_manager_observation_.Reset();
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  accounts_in_cookie_updated_waiter_.reset();
+#endif
   extensions::IdentityAPI::GetFactoryInstance()
       ->Get(GetProfile())
       ->mint_queue()
@@ -931,10 +1025,18 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
 }
 #endif
 
-void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog(
-    const RemoteConsentResolutionData& resolution_data) {
+void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog() {
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  // On Android, Gaia session cookies are reconciled asynchronously after
+  // sign-in. Defer showing the remote consent dialog until cookies are
+  // ready in the cookie jar to prevent loading a blank consent page.
+  if (ShouldDelayRemoteConsent()) {
+    StartWaitingForCookies();
+    return;
+  }
+#endif
   gaia_remote_consent_flow_ = std::make_unique<GaiaRemoteConsentFlow>(
-      this, GetProfile(), token_key_, resolution_data, user_gesture());
+      this, GetProfile(), token_key_, resolution_data_, user_gesture());
   gaia_remote_consent_flow_->Start();
 }
 
@@ -1080,5 +1182,41 @@ void IdentityGetAuthTokenFunction::RefreshTokensLoadedWaiter::
   identity_manager_observation_.Reset();
   std::move(callback_).Run();
 }
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+IdentityGetAuthTokenFunction::AccountsInCookieUpdatedWaiter::
+    AccountsInCookieUpdatedWaiter(signin::IdentityManager& identity_manager,
+                                  const CoreAccountInfo& account_info,
+                                  base::OnceCallback<void(bool)> callback)
+    : account_info_(account_info), callback_(std::move(callback)) {
+  CHECK(callback_);
+
+  identity_manager_observation_.Observe(&identity_manager);
+  // `base::Unretained(this)` is safe because `this` owns
+  // `timer_`.
+  timer_.Start(FROM_HERE, kCookieUpdatedWaiterTimeout,
+               base::BindOnce(&AccountsInCookieUpdatedWaiter::OnTimeout,
+                              base::Unretained(this)));
+}
+
+void IdentityGetAuthTokenFunction::AccountsInCookieUpdatedWaiter::
+    OnAccountsInCookieUpdated(
+        const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+        const GoogleServiceAuthError& error) {
+  if (error.state() != GoogleServiceAuthError::NONE ||
+      !IsAccountInCookieJar(accounts_in_cookie_jar_info, account_info_)) {
+    return;
+  }
+
+  timer_.Stop();
+  identity_manager_observation_.Reset();
+  std::move(callback_).Run(/*success=*/true);
+}
+
+void IdentityGetAuthTokenFunction::AccountsInCookieUpdatedWaiter::OnTimeout() {
+  identity_manager_observation_.Reset();
+  std::move(callback_).Run(/*success=*/false);
+}
+#endif
 
 }  // namespace extensions
