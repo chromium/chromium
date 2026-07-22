@@ -167,48 +167,33 @@ SpdyHeadersToHttpResponseHeadersUsingBuilder(
     //    Set-Cookie: bar\0
     size_t start = 0;
     size_t end = 0;
-    std::optional<std::string_view> location_value;
-    std::optional<std::string_view> content_disposition_value;
     do {
       end = value.find('\0', start);
       std::string_view tval;
       if (end != value.npos) {
         tval = value.substr(start, (end - start));
-
-        // TODO(ricea): Make this comparison case-sensitive when we are no
-        // longer maintaining compatibility with the old version of the
-        // function.
-        if (base::EqualsCaseInsensitiveASCII(name, "location") &&
-            !location_value.has_value()) {
-          location_value = HttpUtil::TrimLWS(tval);
-        } else if (base::EqualsCaseInsensitiveASCII(name,
-                                                    "content-disposition") &&
-                   !content_disposition_value.has_value()) {
-          content_disposition_value = HttpUtil::TrimLWS(tval);
-        }
       } else {
         tval = value.substr(start);
-      }
-      if (location_value.has_value() && start > 0) {
-        DCHECK(base::EqualsCaseInsensitiveASCII(name, "location"));
-        std::string_view trimmed_value = HttpUtil::TrimLWS(tval);
-        if (trimmed_value != location_value.value()) {
-          return base::unexpected(ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION);
-        }
-      } else if (content_disposition_value.has_value() && start > 0) {
-        DCHECK(base::EqualsCaseInsensitiveASCII(name, "content-disposition"));
-        std::string_view trimmed_value = HttpUtil::TrimLWS(tval);
-        if (trimmed_value != content_disposition_value.value()) {
-          return base::unexpected(
-              ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION);
-        }
       }
       builder.AddHeader(name, tval);
       start = end + 1;
     } while (end != value.npos);
   }
 
-  return builder.Build();
+  auto response_headers = builder.Build();
+
+  // When there are multiple location headers the response is a potential
+  // response smuggling attack.
+  if (HttpUtil::HeadersContainMultipleCopiesOfField(*response_headers,
+                                                    "location")) {
+    return base::unexpected(ERR_RESPONSE_HEADERS_MULTIPLE_LOCATION);
+  }
+  if (HttpUtil::HeadersContainMultipleCopiesOfField(*response_headers,
+                                                    "content-disposition")) {
+    return base::unexpected(ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION);
+  }
+
+  return response_headers;
 }
 
 void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,

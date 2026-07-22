@@ -412,6 +412,17 @@ TEST_P(SpdyHeadersToHttpResponseHeadersTest,
   EXPECT_EQ(kRawHeaders, ToSimpleString(output));
 }
 
+TEST_P(SpdyHeadersToHttpResponseHeadersTest,
+       CommaSeparatedContentDispositionRejected) {
+  quiche::HttpHeaderBlock headers;
+  headers[spdy::kHttp2StatusHeader] = "200";
+  headers.AppendValueOrAddHeader("content-disposition",
+                                 "inline, attachment; filename=foo.html");
+  EXPECT_THAT(
+      PerformConversion(headers),
+      base::test::ErrorIs(ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_DISPOSITION));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     SpdyHttpUtils,
     SpdyHeadersToHttpResponseHeadersTest,
