@@ -393,8 +393,10 @@ crbug.com/457930206 [ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/su
 crbug.com/457930206 [ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/subframe-cross-origin-html-images.https.sub.html [ Failure Pass ]
 
 # Mac bot-specific flakiness drawing videos to canvas.
-crbug.com/525288402 [ Mac ] wpt_internal/html/canvas/smpte-st-2094-50/drawImage-from-video.html [ Failure Pass ]
 crbug.com/400841 media/video-canvas-draw.html [ Failure ]
+
+# Tests crashing due to Dawn->Vulkan->Swiftshader limitations. Dawn's R10X6BG10X6Biplanar420Unorm format is not supported.
+crbug.com/395910472 [ Mac ] wpt_internal/html/canvas/smpte-st-2094-50/drawImage-from-video.html [ Crash ]
 
 
 crbug.com/433324167 external/wpt/html/canvas/element/text/2d.text.writingmode.html [ Failure ]
