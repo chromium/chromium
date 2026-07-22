@@ -153,7 +153,7 @@
 <translation id="1508263560970797965">Pokračovať v režime inkognito</translation>
 <translation id="1509486075633541495">Prihláste sa na webe</translation>
 <translation id="1513858653616922153">Odstrániť heslo</translation>
-<translation id="1517166097004694782">Skrytie položky Pokračovať s touto kartou</translation>
+<translation id="1517166097004694782">Skryť možnosť Pokračovať s touto kartou</translation>
 <translation id="1520027731907768768">Dostávajte upozornenia na pokles cien produktov, ktoré sledujete.</translation>
 <translation id="1521366073263497277">Prejdite na mriežku kariet.</translation>
 <translation id="1523567067736644845">Ak si chcete zobraziť heslo, odomknite</translation>
@@ -1222,7 +1222,7 @@
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Zapnúť kameru</translation>
-<translation id="5229315183665181733">Uprav web</translation>
+<translation id="5229315183665181733">Upraviť web</translation>
 <translation id="5233111790346066304">Ukladajte súbory na Disk Google a majte k nim prístup kedykoľvek.</translation>
 <translation id="5233638681132016545">Nová karta</translation>
 <translation id="5234094073825090254">{count,plural, =1{Záložka bola uložená vo vašom účte Google {email}}few{Záložky boli uložené vo vašom účte Google {email}}many{Záložky boli uložené vo vašom účte Google {email}}other{Záložky boli uložené vo vašom účte Google {email}}}</translation>
