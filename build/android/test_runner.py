@@ -82,16 +82,14 @@ def AddTestLauncherOptions(parser):
   Returns:
     The given parser.
   """
-  parser.add_argument('--test-launcher-retry-limit',
-                      '--test_launcher_retry_limit',
-                      '--num_retries',
-                      '--num-retries',
-                      '--isolated-script-test-launcher-retry-limit',
-                      dest='num_retries',
-                      type=int,
-                      default=1,
-                      help='Number of retries for a test before '
-                      'giving up (default: %(default)s).')
+  parser.add_argument(
+      '--test-launcher-retry-limit',
+      '--test_launcher_retry_limit',
+      '--num_retries', '--num-retries',
+      '--isolated-script-test-launcher-retry-limit',
+      dest='num_retries', type=int, default=2,
+      help='Number of retries for a test before '
+           'giving up (default: %(default)s).')
   parser.add_argument(
       '--test-launcher-summary-output',
       '--json-results-file',
