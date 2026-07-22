@@ -26,9 +26,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "module_name": "//chrome/test:interactive_ui_tests",
+        "module_name": "//chrome/test:browser_tests",
         "module_scheme": "gtest",
-        "name": "interactive_ui_tests",
+        "name": "browser_tests",
         "swarming": {
           "dimensions": {
             "cpu": "Apple_(Virtual)",
@@ -36,10 +36,10 @@
             "pool": "chromium.tests.macvm"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 7
+          "shards": 25
         },
-        "test": "interactive_ui_tests",
-        "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
       }
     ]
   }

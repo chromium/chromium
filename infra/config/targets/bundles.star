@@ -5787,12 +5787,12 @@ targets.bundle(
     name = "mac_vm_tests",
     targets = [
         "base_unittests",
-        "interactive_ui_tests",
+        "browser_tests",
     ],
     per_test_modifications = {
-        "interactive_ui_tests": targets.mixin(
+        "browser_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 7,
+                shards = 25,
             ),
         ),
     },
