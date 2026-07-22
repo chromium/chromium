@@ -9,7 +9,6 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -120,7 +119,7 @@ base::TimeDelta GetMinorModeRestrictionsDeadline() {
 #endif
 }
 
-void SetInitializedModalHeight(Browser* browser,
+void SetInitializedModalHeight(BrowserWindowInterface* browser,
                                content::WebUI* web_ui,
                                const base::ListValue& args) {
   if (!browser) {

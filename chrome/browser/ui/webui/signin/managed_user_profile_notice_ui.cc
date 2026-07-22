@@ -27,6 +27,7 @@
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
@@ -381,7 +382,7 @@ ManagedUserProfileNoticeUI::GetScreenTypeFromURLForTesting(const GURL& url) {
 ManagedUserProfileNoticeUI::~ManagedUserProfileNoticeUI() = default;
 
 void ManagedUserProfileNoticeUI::Initialize(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ManagedUserProfileNoticeUI::ScreenType type,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
@@ -568,7 +569,7 @@ void ManagedUserProfileNoticeUI::Initialize(
 }
 
 void ManagedUserProfileNoticeUI::InitializeForDeviceSignalsDisclaimer(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
   base::DictValue update_data =

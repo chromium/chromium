@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -248,7 +249,7 @@ SigninViewControllerDelegateViews::CreateSignoutConfirmationWebView(
 // static
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
-    Browser* browser,
+    BrowserWindowInterface& browser,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
   bool is_oidc_account = create_param->is_oidc_account;
@@ -257,8 +258,9 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
   auto width = kManagedUserNoticeConfirmationDialogWidth;
   auto height = kManagedUserNoticeConfirmationDialogHeight;
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
-      browser, GURL(chrome::kChromeUIManagedUserProfileNoticeUrl), height,
-      width, InitializeSigninWebDialogUI(false));
+      browser.GetBrowserForMigrationOnly(),
+      GURL(chrome::kChromeUIManagedUserProfileNoticeUrl), height, width,
+      InitializeSigninWebDialogUI(false));
 
   ManagedUserProfileNoticeUI* web_dialog_ui =
       web_view->GetWebContents()
@@ -278,7 +280,7 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
   } else if (is_oidc_account) {
     screen_type = ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC;
   }
-  web_dialog_ui->Initialize(browser, screen_type, std::move(create_param));
+  web_dialog_ui->Initialize(&browser, screen_type, std::move(create_param));
 
   return web_view;
 }
@@ -657,7 +659,7 @@ SigninViewControllerDelegate::CreateSignoutConfirmationDelegate(
 // static
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
-    Browser* browser,
+    BrowserWindowInterface& browser,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
         create_param) {
   bool profile_creation_required_by_policy =
@@ -686,7 +688,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
             std::move(callback).Run(signin_choice, std::move(done_callback),
                                     std::move(retry_callback));
           },
-          browser->GetProfile()->GetWeakPtr(),
+          browser.GetProfile()->GetWeakPtr(),
           std::move(std::get<signin::SigninChoiceWithConfirmAndRetryCallback>(
               create_param->process_user_choice_callback)));
     }
@@ -707,7 +709,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
             }
             std::move(callback).Run(signin_choice);
           },
-          browser->GetProfile()->GetWeakPtr(),
+          browser.GetProfile()->GetWeakPtr(),
           std::move(std::get<signin::SigninChoiceCallback>(
               create_param->process_user_choice_callback)));
     }
@@ -732,13 +734,13 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
           features::kManagedProfileRequiredInterstitial) &&
       !is_oidc_enrollment) {
     content::WebContents* active_contents =
-        browser->tab_strip_model()->GetActiveWebContents();
+        browser.GetTabStripModel()->GetActiveWebContents();
     // Reload the active web contents so that the managed profile required
     // interstitial is shown there.
     CHECK(active_contents);
     on_closed_callback = ManagedProfileRequiredNavigationThrottle::
         BlockNavigationUntilEnterpriseActionTaken(
-            browser->GetProfile(), active_contents, dialog_web_contents, email);
+            browser.GetProfile(), active_contents, dialog_web_contents, email);
 
     content::OpenURLParams params(active_contents->GetVisibleURL(),
                                   content::Referrer(),
@@ -753,7 +755,8 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
   }
 
   return new SigninViewControllerDelegateViews(
-      std::move(web_view), browser, ui::mojom::ModalType::kWindow, true, false,
+      std::move(web_view), browser.GetBrowserForMigrationOnly(),
+      ui::mojom::ModalType::kWindow, true, false,
       /*animate_on_resize=*/true, false, std::move(on_closed_callback),
       allow_closing_by_pressing_escape);
 }

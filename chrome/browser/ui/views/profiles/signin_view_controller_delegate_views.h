@@ -24,6 +24,7 @@
 #include "ui/views/window/dialog_delegate.h"
 
 class Browser;
+class BrowserWindowInterface;
 class GURL;
 enum class SyncConfirmationStyle;
 
@@ -89,7 +90,7 @@ class SigninViewControllerDelegateViews
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   static std::unique_ptr<views::WebView>
   CreateManagedUserNoticeConfirmationWebView(
-      Browser* browser,
+      BrowserWindowInterface& browser,
       std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
           create_param);
 #endif

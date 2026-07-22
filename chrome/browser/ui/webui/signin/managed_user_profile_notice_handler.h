@@ -25,7 +25,6 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/core_account_id.h"
 
-class Browser;
 class BrowserWindowInterface;
 class Profile;
 struct AccountInfo;
@@ -52,7 +51,7 @@ class ManagedUserProfileNoticeHandler
     kSignalsDisclaimer = 7,
   };
   ManagedUserProfileNoticeHandler(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ManagedUserProfileNoticeUI::ScreenType type,
       std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
           create_param);
@@ -153,7 +152,7 @@ class ManagedUserProfileNoticeHandler
 
   base::OneShotTimer processing_timer_;
 
-  raw_ptr<Browser> browser_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   base::CallbackListSubscription browser_did_close_subscription_;
   const ManagedUserProfileNoticeUI::ScreenType type_;
   const bool profile_creation_required_by_policy_;

@@ -16,6 +16,7 @@
 #include "components/signin/public/base/signin_buildflags.h"
 
 class Browser;
+class BrowserWindowInterface;
 enum class SyncConfirmationStyle;
 
 namespace content {
@@ -98,7 +99,7 @@ class SigninViewControllerDelegate {
   // displays the managed user notice modal dialog. The returned object
   // should delete itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateManagedUserNoticeDelegate(
-      Browser* browser,
+      BrowserWindowInterface& browser,
       std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
           create_param);
 #endif

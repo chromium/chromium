@@ -24,7 +24,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -93,7 +92,7 @@ std::string GetManagedDeviceTitle() {
 }  // namespace
 
 ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ManagedUserProfileNoticeUI::ScreenType type,
     std::unique_ptr<signin::EnterpriseProfileCreationDialogParams> create_param)
     : browser_(browser),
