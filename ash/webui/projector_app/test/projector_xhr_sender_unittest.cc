@@ -258,6 +258,17 @@ TEST_F(ProjectorXhrSenderTest, UnsupportedUrl) {
                           projector::mojom::XhrResponseCode::kUnsupportedURL);
 }
 
+TEST_F(ProjectorXhrSenderTest, MaliciousUnsupportedUrl) {
+  SendRequestFuture future;
+
+  sender()->Send(
+      GURL("https://www.googleapis.com/drive/v3/files/../../myMaliciousPath"),
+      /*method=*/projector::mojom::RequestType::kGet, /*request_body=*/"",
+      /*use_credentials=*/false, /*use_api_key=*/false, future.GetCallback());
+  VerifySendRequestFuture(future, "",
+                          projector::mojom::XhrResponseCode::kUnsupportedURL);
+}
+
 TEST_F(ProjectorXhrSenderTest, SuccessWithPrimaryEmail) {
   SendRequestFuture future;
 
