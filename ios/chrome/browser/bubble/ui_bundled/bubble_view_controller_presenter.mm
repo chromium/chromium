@@ -102,6 +102,8 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 @synthesize dismissalCallback = _dismissalCallback;
 @synthesize voiceOverAnnouncement = _voiceOverAnnouncement;
 @synthesize dismissalTimerDisabled = _dismissalTimerDisabled;
+@synthesize totalPageControlPages = _totalPageControlPages;
+@synthesize customNextButtonTitle = _customNextButtonTitle;
 
 - (instancetype)initWithText:(NSString*)text
                        title:(NSString*)titleString
@@ -117,6 +119,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
                   alignment:alignment
                  bubbleType:type
             pageControlPage:page
+      totalPageControlPages:BubblePageControlPageFourth
       customNextButtonTitle:nil
           dismissalCallback:dismissalCallback];
 }
@@ -130,8 +133,32 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
        customNextButtonTitle:(NSString*)customNextButtonTitle
            dismissalCallback:
                (CallbackWithIPHDismissalReasonType)dismissalCallback {
+  return [self initWithText:text
+                      title:titleString
+             arrowDirection:arrowDirection
+                  alignment:alignment
+                 bubbleType:type
+            pageControlPage:page
+      totalPageControlPages:BubblePageControlPageFourth
+      customNextButtonTitle:customNextButtonTitle
+          dismissalCallback:dismissalCallback];
+}
+
+- (instancetype)initWithText:(NSString*)text
+                       title:(NSString*)titleString
+              arrowDirection:(BubbleArrowDirection)arrowDirection
+                   alignment:(BubbleAlignment)alignment
+                  bubbleType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
+       totalPageControlPages:(NSInteger)totalPageControlPages
+       customNextButtonTitle:(NSString*)customNextButtonTitle
+           dismissalCallback:
+               (CallbackWithIPHDismissalReasonType)dismissalCallback {
   self = [super init];
   if (self) {
+    BOOL hasCustomPages = totalPageControlPages > 0;
+    _totalPageControlPages =
+        hasCustomPages ? totalPageControlPages : BubblePageControlPageFourth;
     _bubbleViewController =
         [[BubbleViewController alloc] initWithText:text
                                              title:titleString
@@ -139,8 +166,10 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
                                          alignment:alignment
                                     bubbleViewType:type
                                    pageControlPage:page
+                             totalPageControlPages:_totalPageControlPages
                              customNextButtonTitle:customNextButtonTitle
                                           delegate:self];
+    _customNextButtonTitle = [customNextButtonTitle copy];
     _userEngaged = NO;
     _triggerFollowUpAction = NO;
     _ignoreWebContentAreaInteractions = NO;
@@ -154,6 +183,18 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
     // appears on screen.
   }
   return self;
+}
+
+- (void)setTotalPageControlPages:(NSInteger)totalPageControlPages {
+  BOOL hasCustomPages = totalPageControlPages > 0;
+  _totalPageControlPages =
+      hasCustomPages ? totalPageControlPages : BubblePageControlPageFourth;
+  _bubbleViewController.totalPageControlPages = totalPageControlPages;
+}
+
+- (void)setCustomNextButtonTitle:(NSString*)customNextButtonTitle {
+  _customNextButtonTitle = customNextButtonTitle;
+  _bubbleViewController.customNextButtonTitle = customNextButtonTitle;
 }
 
 - (instancetype)initDefaultBubbleWithText:(NSString*)text

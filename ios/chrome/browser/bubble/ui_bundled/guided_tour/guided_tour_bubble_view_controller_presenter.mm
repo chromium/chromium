@@ -59,6 +59,7 @@ BubblePageControlPage BubblePageControlPageForStep(GuidedTourStep step) {
                    alignment:alignment
                   bubbleType:type
              pageControlPage:BubblePageControlPageForStep(step)
+       totalPageControlPages:BubblePageControlPageFourth
        customNextButtonTitle:nil
            dismissalCallback:nil];
   if (self) {

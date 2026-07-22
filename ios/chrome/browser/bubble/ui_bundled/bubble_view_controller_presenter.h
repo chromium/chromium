@@ -73,6 +73,15 @@ using CallbackWithIPHDismissalReasonType =
 // suppressed, ignoring the pan gesture ablation experiment.
 @property(nonatomic, assign) BOOL forceDisablePanGestureRecognizer;
 
+// The total number of pages in the Bubble PageControl.
+// Defaults to 0 (which falls back to 4 for backwards compatibility).
+@property(nonatomic, assign) NSInteger totalPageControlPages;
+
+// Custom title for the next/action button in the bubble.
+// If not set, defaults to "Got it" for the last step and "Next" for preceding
+// steps.
+@property(nonatomic, copy) NSString* customNextButtonTitle;
+
 // Sets the maximum content size category for the bubble view. If set, the
 // bubble view will not scale its text beyond this category.
 @property(nonatomic, copy) UIContentSizeCategory maximumContentSizeCategory;
@@ -99,6 +108,18 @@ using CallbackWithIPHDismissalReasonType =
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
              pageControlPage:(BubblePageControlPage)page
+       customNextButtonTitle:(NSString*)customNextButtonTitle
+           dismissalCallback:
+               (CallbackWithIPHDismissalReasonType)dismissalCallback;
+
+// Extends initializer above with `totalPageControlPages`.
+- (instancetype)initWithText:(NSString*)text
+                       title:(NSString*)titleString
+              arrowDirection:(BubbleArrowDirection)arrowDirection
+                   alignment:(BubbleAlignment)alignment
+                  bubbleType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
+       totalPageControlPages:(NSInteger)totalPageControlPages
        customNextButtonTitle:(NSString*)customNextButtonTitle
            dismissalCallback:
                (CallbackWithIPHDismissalReasonType)dismissalCallback

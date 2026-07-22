@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
 
+#import <algorithm>
 #import <ostream>
 
 #import "base/check.h"
@@ -231,13 +232,20 @@ UILabel* BubbleTitleLabelWithText(NSString* text,
   return label;
 }
 
-UIButton* BubbleNextButton(BubblePageControlPage page, NSString* customTitle) {
+UIButton* BubbleNextButton(BubblePageControlPage page,
+                           NSInteger totalPageControlPages,
+                           NSString* customTitle) {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   button.accessibilityIdentifier = kBubbleViewNextButtonIdentifier;
   NSString* title = customTitle;
   if (!title) {
-    int textID = page == BubblePageControlPageFourth ? IDS_IOS_IPH_BUBBLE_GOT_IT
-                                                     : IDS_IOS_IPH_BUBBLE_NEXT;
+    NSInteger maxPages = BubblePageControlPageFourth;
+    if (totalPageControlPages > 0) {
+      maxPages = std::min(totalPageControlPages, maxPages);
+    }
+    BOOL isLastPage = (page == maxPages);
+    int textID =
+        isLastPage ? IDS_IOS_IPH_BUBBLE_GOT_IT : IDS_IOS_IPH_BUBBLE_NEXT;
     title = l10n_util::GetNSString(textID);
   }
   [button setTitle:title forState:UIControlStateNormal];
@@ -253,7 +261,8 @@ UIButton* BubbleNextButton(BubblePageControlPage page, NSString* customTitle) {
   return button;
 }
 
-UIStackView* PageControl(BubblePageControlPage page) {
+UIStackView* PageControl(BubblePageControlPage page,
+                         NSInteger totalPageControlPages) {
   CHECK(page != BubblePageControlPageNone);
   UIStackView* container = [[UIStackView alloc] init];
   container.axis = UILayoutConstraintAxisHorizontal;
@@ -262,7 +271,11 @@ UIStackView* PageControl(BubblePageControlPage page) {
   container.alignment = UIStackViewAlignmentCenter;
   container.spacing = 8;
   container.accessibilityIdentifier = kBubbleViewPageControlIdentifier;
-  for (NSInteger i = 0; i < (NSInteger)BubblePageControlPageFourth; i++) {
+  NSInteger maxPages = BubblePageControlPageFourth;
+  if (totalPageControlPages > 0) {
+    maxPages = std::min(totalPageControlPages, maxPages);
+  }
+  for (NSInteger i = 0; i < maxPages; i++) {
     UIImageSymbolConfiguration* symbolConfiguration =
         [UIImageSymbolConfiguration
             configurationWithPointSize:kPageControlPageSymbolPointSize];
@@ -314,6 +327,14 @@ UIStackView* PageControl(BubblePageControlPage page) {
 @end
 
 @implementation BubbleView {
+  // Flag indicating if title should be shown.
+  BOOL _showsTitle;
+  // Distance between the arrow's tip and the edge of the bubble.
+  CGFloat _alignmentOffset;
+  // Maximum content size category for the bubble view's text.
+  UIContentSizeCategory _maximumContentSizeCategory;
+  // Total page control pages (defaults to 4).
+  NSInteger _totalPageControlPages;
   // Separator line between text and next button.
   UIView* _separator;
   // Optional Next button displayed on the bubble.
@@ -353,11 +374,41 @@ UIStackView* PageControl(BubblePageControlPage page) {
                textAlignment:(NSTextAlignment)textAlignment
        customNextButtonTitle:(NSString*)customNextButtonTitle
                     delegate:(id<BubbleViewDelegate>)delegate {
+  return [self initWithText:text
+             arrowDirection:direction
+                  alignment:alignment
+           showsCloseButton:shouldShowCloseButton
+                      title:titleString
+            showsNextButton:showsNextButton
+                       page:page
+      totalPageControlPages:BubblePageControlPageFourth
+              textAlignment:textAlignment
+      customNextButtonTitle:customNextButtonTitle
+                   delegate:delegate];
+}
+
+- (instancetype)initWithText:(NSString*)text
+              arrowDirection:(BubbleArrowDirection)direction
+                   alignment:(BubbleAlignment)alignment
+            showsCloseButton:(BOOL)shouldShowCloseButton
+                       title:(NSString*)titleString
+             showsNextButton:(BOOL)showsNextButton
+                        page:(BubblePageControlPage)page
+       totalPageControlPages:(NSInteger)totalPageControlPages
+               textAlignment:(NSTextAlignment)textAlignment
+       customNextButtonTitle:(NSString*)customNextButtonTitle
+                    delegate:(id<BubbleViewDelegate>)delegate {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _direction = direction;
     _alignment = alignment;
     _alignmentOffset = bubble_util::BubbleDefaultAlignmentOffset();
+    NSInteger defaultMaxPages = BubblePageControlPageFourth;
+    BOOL hasCustomPages = totalPageControlPages > 0;
+    _totalPageControlPages =
+        hasCustomPages ? std::min(totalPageControlPages, defaultMaxPages)
+                       : defaultMaxPages;
+
     // Add background view.
     _background = BubbleBackgroundView();
     [self addSubview:_background];
@@ -395,14 +446,15 @@ UIStackView* PageControl(BubblePageControlPage page) {
       _separator.translatesAutoresizingMaskIntoConstraints = NO;
       _separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
       [self addSubview:_separator];
-      _nextButton = BubbleNextButton(page, customNextButtonTitle);
+      _nextButton =
+          BubbleNextButton(page, _totalPageControlPages, customNextButtonTitle);
       [_nextButton addTarget:self
                       action:@selector(nextButtonWasTapped:)
             forControlEvents:UIControlEventTouchUpInside];
       [self addSubview:_nextButton];
 
       if (page > BubblePageControlPageNone) {
-        _stepPageControl = PageControl(page);
+        _stepPageControl = PageControl(page, _totalPageControlPages);
         [_stepPageControl
             setContentHuggingPriority:UILayoutPriorityRequired
                               forAxis:UILayoutConstraintAxisHorizontal];
@@ -449,7 +501,9 @@ UIStackView* PageControl(BubblePageControlPage page) {
                       title:nil
             showsNextButton:NO
                        page:BubblePageControlPageNone
+      totalPageControlPages:BubblePageControlPageFourth
               textAlignment:NSTextAlignmentCenter
+      customNextButtonTitle:nil
                    delegate:nil];
 }
 
