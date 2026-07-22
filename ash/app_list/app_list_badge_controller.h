@@ -69,7 +69,7 @@ class ASH_EXPORT AppListBadgeController
 
   // Observed to update notification badging on app list items. Also used to get
   // initial notification badge information when app list items are added.
-  raw_ptr<apps::AppRegistryCache, DanglingUntriaged> cache_ = nullptr;
+  raw_ptr<apps::AppRegistryCache> cache_ = nullptr;
 
   // Observes user profile prefs for the app list.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
