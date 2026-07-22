@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
@@ -60,6 +61,7 @@ public class MinimizedCustomTabIphControllerUnitTest {
         @Override
         protected void before() throws Throwable {
             MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
+            LibraryLoader.getInstance().resetForTesting();
         }
     }
 
