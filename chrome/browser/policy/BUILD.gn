@@ -1237,6 +1237,7 @@ source_set("impl") {
     "//chrome/browser/ui/toolbar/chrome_labs",
     "//chrome/browser/ui/webui/version",
     "//chrome/browser/webauthn",
+    "//components/autofill/core/browser/at_memory/policy",
     "//components/blocked_content",
     "//components/bookmarks/managed",
     "//components/certificate_transparency",

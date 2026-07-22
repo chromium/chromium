@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_ios && !is_fuchsia) {
+  source_set("policy") {
+    sources = [
+      "find_and_fill_with_gemini_settings_policy_handler.cc",
+      "find_and_fill_with_gemini_settings_policy_handler.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/optimization_guide/core:features",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//components/strings",
+    ]
+
+    public_deps = [ "//components/policy/core/browser" ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources =
+        [ "find_and_fill_with_gemini_settings_policy_handler_unittest.cc" ]
+
+    deps = [
+      ":policy",
+      "//base",
+      "//components/optimization_guide/core:features",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//testing/gtest",
+    ]
+  }
+}

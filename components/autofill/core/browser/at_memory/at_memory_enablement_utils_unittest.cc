@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -88,9 +89,9 @@ class AtMemoryEnablementUtilsTest : public testing::Test {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kAutofillAtMemory, {{"at_memory_eligible_tiers", ""}});
     autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
-        optimization_guide::prefs::kGeminiSettings,
-        std::to_underlying(
-            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+        optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+        std::to_underlying(optimization_guide::model_execution::prefs::
+                               ModelExecutionEnterprisePolicyValue::kAllow));
     // Enable the toggle by default in tests since it represents the default
     // active state.
     autofill_client().GetPrefs()->SetUserPref(
@@ -139,18 +140,19 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_AtMemoryDisabled) {
       AtMemoryAction::kAllowCustomizeAtMemoryShortcut, autofill_client()));
 }
 
-// Tests that `MayPerformAtMemoryAction` returns false when the Gemini settings
-// enterprise policy disables Gemini.
+// Tests that `MayPerformAtMemoryAction` returns false when the
+// FindAndFillWithGemini settings enterprise policy disables
+// FindAndFillWithGemini.
 TEST_F(AtMemoryEnablementUtilsTest,
-       MayPerformAtMemoryAction_GeminiPolicyDisabled) {
+       MayPerformAtMemoryAction_FindAndFillWithGeminiPolicyDisabled) {
   EXPECT_CALL(personal_context_service_, GetEligibilityState)
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
   autofill_client().GetPrefs()->SetInteger(
-      optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(
-          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+      std::to_underlying(optimization_guide::model_execution::prefs::
+                             ModelExecutionEnterprisePolicyValue::kDisable));
 
   EXPECT_FALSE(MayPerformAtMemoryAction(
       AtMemoryAction::kTriggerSearchUI, autofill_client(),
@@ -479,9 +481,9 @@ class AtMemoryEnablementUtilsFeatureCheckedLastTest : public testing::Test {
         personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
         true);
     registry_->RegisterIntegerPref(
-        optimization_guide::prefs::kGeminiSettings,
-        std::to_underlying(
-            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+        optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+        std::to_underlying(optimization_guide::model_execution::prefs::
+                               ModelExecutionEnterprisePolicyValue::kAllow));
     pref_service_ = std::make_unique<TestPrefService>(pref_store_, registry_);
 
     autofill_client_.set_last_committed_primary_main_frame_url(

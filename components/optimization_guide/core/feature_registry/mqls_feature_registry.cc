@@ -30,9 +30,7 @@ MqlsFeatureMetadata::MqlsFeatureMetadata(
   // Please do not add exceptions to this CHECK without first getting approval
   // from Chrome Enterprise.
   if (!enterprise_policy_.has_value()) {
-    // TODO: b/524157152 - Remove this exception for AtMemory once the
-    // enterprise policy is in place.
-    CHECK(name_ == "ActorLogin" || name_ == "AtMemory");
+    CHECK_EQ(name_, "ActorLogin");
   }
 }
 MqlsFeatureMetadata::~MqlsFeatureMetadata() = default;

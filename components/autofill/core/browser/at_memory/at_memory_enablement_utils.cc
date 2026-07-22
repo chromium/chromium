@@ -17,6 +17,7 @@
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -158,18 +159,18 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
     return false;
   }
 
-  // TODO(crbug.com/521270638) Add a check for the AtMemory specific policy on
-  // top of the enterprise policy for Gemini.
-
-  const bool gemini_settings_allowed =
-      pref_service->GetInteger(optimization_guide::prefs::kGeminiSettings) ==
-      std::to_underlying(
-          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled);
-  if (!gemini_settings_allowed) {
-    MaybeOutputReason(debug_message,
-                      "Disallowed by GeminiSettings enterprise policy.");
+  const int policy_value = pref_service->GetInteger(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings);
+  const bool allowed =
+      policy_value !=
+      std::to_underlying(optimization_guide::model_execution::prefs::
+                             ModelExecutionEnterprisePolicyValue::kDisable);
+  if (!allowed) {
+    MaybeOutputReason(
+        debug_message,
+        "Disallowed by FindAndFillWithGeminiSettings enterprise policy.");
   }
-  return gemini_settings_allowed;
+  return allowed;
 }
 
 // Returns true if AtMemory is supported for the user.

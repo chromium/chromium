@@ -1,0 +1,127 @@
+[
+  {
+    "os": [
+      "android",
+      "linux",
+      "mac",
+      "win",
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "autofill.personal_context.find_and_fill_with_gemini_settings",
+      "default_value": 0,
+      "default_for_enterprise_users": 1,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
+  },
+  {
+    "os": [
+      "android",
+      "linux",
+      "mac",
+      "win",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "FindAndFillWithGeminiSettings is forced to disabled (2) when GeminiSettings is set to disabled (1)",
+        "policies": {
+          "GeminiSettings": 1,
+          "FindAndFillWithGeminiSettings": 0
+        },
+        "prefs": {
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "note": "FindAndFillWithGeminiSettings is forced to disabled (2) when GeminiSettings is set to disabled (1), even if allowed without logging (1)",
+        "policies": {
+          "GeminiSettings": 1,
+          "FindAndFillWithGeminiSettings": 1
+        },
+        "prefs": {
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "note": "FindAndFillWithGeminiSettings remains disabled (2) when GeminiSettings is set to disabled (1)",
+        "policies": {
+          "GeminiSettings": 1,
+          "FindAndFillWithGeminiSettings": 2
+        },
+        "prefs": {
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "note": "FindAndFillWithGeminiSettings falls back to disabled (2) when GenAiDefaultSettings is set to disabled (2)",
+        "policies": {
+          "GenAiDefaultSettings": 2
+        },
+        "prefs": {
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "note": "FindAndFillWithGeminiSettings falls back to allowed (0) when GenAiDefaultSettings is set to allowed (0)",
+        "policies": {
+          "GenAiDefaultSettings": 0
+        },
+        "prefs": {
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "When GenAiDefaultSettings is disabled (2), GeminiSettings is disabled (1), so explicit FindAndFillWithGeminiSettings (0) is forced to disabled (2)",
+        "policies": {
+          "GenAiDefaultSettings": 2,
+          "FindAndFillWithGeminiSettings": 0
+        },
+        "prefs": {
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "note": "Explicit FindAndFillWithGeminiSettings (0) takes effect when GeminiSettings is explicitly allowed (0), overriding GenAiDefaultSettings (2)",
+        "policies": {
+          "GenAiDefaultSettings": 2,
+          "GeminiSettings": 0,
+          "FindAndFillWithGeminiSettings": 0
+        },
+        "prefs": {
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "FindAndFillWithGeminiSettings (1) takes effect when GeminiSettings is allowed (0)",
+        "policies": {
+          "GeminiSettings": 0,
+          "FindAndFillWithGeminiSettings": 1
+        },
+        "prefs": {
+          "autofill.personal_context.find_and_fill_with_gemini_settings": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

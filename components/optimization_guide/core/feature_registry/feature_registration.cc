@@ -62,6 +62,9 @@ const char kChromeSuggestionsSettings[] =
     "contextual_cueing.chrome_suggestions_settings";
 
 const char kGeminiSettings[] = "browser.gemini_settings";
+
+const char kFindAndFillWithGeminiSettings[] =
+    "autofill.personal_context.find_and_fill_with_gemini_settings";
 }  // namespace prefs
 
 namespace features {
@@ -310,11 +313,13 @@ void RegisterContextualCueing() {
 void RegisterAtMemory() {
   const char kAtMemoryName[] = "AtMemory";
 
-  // TODO: b/524157152 - Add enterprise policy.
+  EnterprisePolicyPref enterprise_policy =
+      EnterprisePolicyRegistry::GetInstance().Register(
+          prefs::kFindAndFillWithGeminiSettings);
 
   auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
       kAtMemoryName, proto::LogAiDataRequest::FeatureCase::kAtMemory,
-      /*enterprise_policy=*/std::nullopt, &features::kAtMemoryMqlsLogging,
+      enterprise_policy, &features::kAtMemoryMqlsLogging,
       FeedbackUnspecified());
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
 }

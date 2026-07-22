@@ -1472,6 +1472,8 @@ policies:
   1471: UpdateOnZeroWindowEnabled
   1472: BackForwardCacheForWebSocketsAllowed
   1473: GeminiChromeFileUploadSettings
+  1474: FindAndFillWithGeminiSettings
+
 
 atomic_groups:
   1: Homepage
