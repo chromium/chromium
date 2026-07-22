@@ -1015,7 +1015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordFailure" units="count"
-    expires_after="2026-09-01">
+    expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1030,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.FetchPasswordNilArgument"
-    units="count" expires_after="2026-09-01">
+    units="count" expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1056,7 +1056,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.KeychainSavePasswordFailureCount"
-    units="count" expires_after="2026-09-01">
+    units="count" expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1072,7 +1072,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.CredentialExtension.NewCredentialUsername"
     enum="IOSCredentialProviderNewCredentialUsername"
-    expires_after="2026-09-01">
+    expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1107,7 +1107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordCreated"
-    enum="IOSCredentialProviderPasswordCreated" expires_after="2026-09-01">
+    enum="IOSCredentialProviderPasswordCreated" expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1121,7 +1121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
-    expires_after="2026-09-01">
+    expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1149,7 +1149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.QuickPasswordUseCount" units="count"
-    expires_after="2026-09-01">
+    expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1163,7 +1163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SaveCredentialFailureCount"
-    units="count" expires_after="2026-09-01">
+    units="count" expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1180,7 +1180,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="IOS.CredentialExtension.Service.Error.ReplaceCredentialIdentitiesWithIdentities"
     enum="iOSCredentialIdentityStoreErrorForReporting"
-    expires_after="2026-09-01">
+    expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1193,7 +1193,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.StatusDidChangeTo.Startup"
-    enum="Boolean" expires_after="2026-09-01">
+    enum="Boolean" expires_after="2027-03-01">
   <owner>rgod@google.com</owner>
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
