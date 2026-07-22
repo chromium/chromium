@@ -18,7 +18,6 @@
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/test_sea_pen_wallpaper_manager_session_delegate.h"
 #include "ash/wallpaper/wallpaper_constants.h"
-#include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "ash/webui/common/mojom/sea_pen_generated.mojom-shared.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
@@ -35,7 +34,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -45,19 +44,17 @@
 #include "chrome/browser/ash/wallpaper_handlers/mock_google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/settings/device_settings_cache.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/known_user.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -79,8 +76,9 @@ namespace ash::personalization_app {
 
 namespace {
 
-constexpr char kFakeTestEmail[] = "fakeemail@personalization";
-constexpr GaiaId::Literal kTestGaiaId("1234567890");
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("fakeemail@personalization",
+                                            GaiaId::Literal("1234567890"));
 
 // Create fake Jpg image bytes.
 std::string CreateJpgBytes() {
@@ -90,27 +88,6 @@ std::string CreateJpgBytes() {
   std::optional<std::vector<uint8_t>> data =
       gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
   return std::string(base::as_string_view(data.value()));
-}
-
-TestingPrefServiceSimple* RegisterPrefs(TestingPrefServiceSimple* local_state) {
-  ash::device_settings_cache::RegisterPrefs(local_state->registry());
-  user_manager::KnownUser::RegisterPrefs(local_state->registry());
-  ash::WallpaperPrefManager::RegisterLocalStatePrefs(local_state->registry());
-  ProfileAttributesStorage::RegisterPrefs(local_state->registry());
-  return local_state;
-}
-
-void AddAndLoginUser(const AccountId& account_id) {
-  ash::FakeChromeUserManager* user_manager =
-      static_cast<ash::FakeChromeUserManager*>(
-          user_manager::UserManager::Get());
-  user_manager->AddUser(account_id);
-  user_manager->LoginUser(account_id);
-  user_manager->SwitchActiveUser(account_id);
-}
-
-AccountId GetTestAccountId() {
-  return AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
 }
 
 // Create a test 1x1 image with a given |color|.
@@ -195,8 +172,7 @@ class TestWallpaperObserver
 class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
  public:
   PersonalizationAppWallpaperProviderImplTest()
-      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
   PersonalizationAppWallpaperProviderImplTest(
       const PersonalizationAppWallpaperProviderImplTest&) = delete;
@@ -207,6 +183,19 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
+
+    cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
+        ash::DeviceSettingsService::Get(),
+        TestingBrowserProcess::GetGlobal()->local_state());
+
+    user_session_manager_ = std::make_unique<ash::test::TestUserSessionManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
+
+    auto* user = user_session_manager_->AddRegularUser(kTestAccountId);
+    ASSERT_TRUE(user);
+    user_session_manager_->LogIn(kTestAccountId);
+
     sea_pen_wallpaper_manager()->SetSessionDelegateForTesting(
         std::make_unique<TestSeaPenWallpaperManagerSessionDelegate>());
 
@@ -216,16 +205,20 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
-    ASSERT_TRUE(profile_manager_.SetUp());
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_.profile_manager(),
+                                            kTestAccountId);
     profile_ = profile_manager_.CreateTestingProfile(
-        kFakeTestEmail,
+        BrowserContextHelper::GetUserBrowserContextDirName(
+            user->username_hash()),
         {TestingProfile::TestingFactory{
             ash::personalization_app::PersonalizationAppManagerFactory::
                 GetInstance(),
             base::BindRepeating(&MakeMockPersonalizationAppManager)}});
 
-    AddAndLoginUser(GetTestAccountId());
-    test_wallpaper_controller()->SetCurrentUser(GetTestAccountId());
+    user_manager::UserManager::Get()->OnUserProfileCreated(
+        kTestAccountId, profile_->GetPrefs());
+
+    test_wallpaper_controller()->SetCurrentUser(kTestAccountId);
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -238,6 +231,19 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
 
     wallpaper_provider_->BindInterface(
         wallpaper_provider_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    web_ui_.set_web_contents(nullptr);
+    web_contents_.reset();
+    wallpaper_provider_.reset();
+    wallpaper_controller_client_.reset();
+    user_manager::UserManager::Get()->OnUserProfileWillBeDestroyed(
+        kTestAccountId);
+    profile_ = nullptr;
+    profile_manager_.DeleteAllTestingProfiles();
+    user_session_manager_.reset();
+    cros_settings_holder_.reset();
   }
 
   PersonalizationAppWallpaperProviderImpl::ImageInfo GetDefaultImageInfo() {
@@ -316,17 +322,14 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   InProcessDataDecoder in_process_data_decoder_;
-  TestingPrefServiceSimple pref_service_;
   // Required for CrosSettings.
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   // Required for CrosSettings.
   ash::ScopedTestDeviceSettingsService scoped_device_settings_;
-  // Required for |WallpaperControllerClientImpl|.
-  ash::CrosSettingsHolder cros_settings_holder_{
-      ash::DeviceSettingsService::Get(), RegisterPrefs(&pref_service_)};
-  user_manager::ScopedUserManager scoped_user_manager_;
+  std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
+  std::unique_ptr<ash::test::TestUserSessionManager> user_session_manager_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   SeaPenWallpaperManager sea_pen_wallpaper_manager_;
   TestWallpaperController test_wallpaper_controller_;
   // |wallpaper_controller_client_| must be destructed before
@@ -360,7 +363,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
   EXPECT_TRUE(
       test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
           ash::WallpaperInfo(
-              {GetTestAccountId(), "collection_id",
+              {kTestAccountId, "collection_id",
                ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                /*preview_mode=*/false, /*from_user=*/true,
                /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
@@ -406,7 +409,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
   EXPECT_TRUE(
       test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
           ash::WallpaperInfo(
-              {GetTestAccountId(), "collection_id",
+              {kTestAccountId, "collection_id",
                ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                /*preview_mode=*/true, /*from_user=*/true,
                /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
@@ -426,7 +429,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
   AddWallpaperImage(image_info);
 
   test_wallpaper_controller()->SetOnlineWallpaper(
-      {GetTestAccountId(), "collection_id",
+      {kTestAccountId, "collection_id",
        ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
        /*preview_mode=*/false, /*from_user=*/true,
        /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
@@ -492,14 +495,14 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, ValidSeaPenAttribution) {
 
     base::test::TestFuture<bool> save_sea_pen_image_future;
     sea_pen_wallpaper_manager()->SaveSeaPenImage(
-        GetTestAccountId(), {CreateJpgBytes(), 111u}, sea_pen_query_ptr,
+        kTestAccountId, {CreateJpgBytes(), 111u}, sea_pen_query_ptr,
         save_sea_pen_image_future.GetCallback());
     ASSERT_TRUE(save_sea_pen_image_future.Get());
   }
 
   // Set the image as user wallpaper.
   test_wallpaper_controller()->SetSeaPenWallpaper(
-      GetTestAccountId(), 111u, /*preview_mode=*/false, base::DoNothing());
+      kTestAccountId, 111u, /*preview_mode=*/false, base::DoNothing());
 
   SetWallpaperObserver();
   test_wallpaper_observer()->WaitForAttributionChange();
@@ -516,14 +519,14 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, ValidSeaPenAttribution) {
 TEST_F(PersonalizationAppWallpaperProviderImplTest, MissingSeaPenAttribution) {
   // Write a jpg with no metadata.
   const base::FilePath jpg_path = sea_pen_wallpaper_manager_session_delegate()
-                                      ->GetStorageDirectory(GetTestAccountId())
+                                      ->GetStorageDirectory(kTestAccountId)
                                       .Append("111")
                                       .AddExtension(".jpg");
   ASSERT_TRUE(base::CreateDirectory(jpg_path.DirName()));
   ASSERT_TRUE(base::WriteFile(jpg_path, CreateJpgBytes()));
 
   test_wallpaper_controller()->SetSeaPenWallpaper(
-      GetTestAccountId(), 111u, /*preview_mode=*/false, base::DoNothing());
+      kTestAccountId, 111u, /*preview_mode=*/false, base::DoNothing());
 
   SetWallpaperObserver();
   test_wallpaper_observer()->WaitForAttributionChange();
@@ -588,9 +591,9 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, GetWallpaperAsJpegBytes) {
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SetDailyRefreshBanned) {
-  EXPECT_EQ(test_wallpaper_controller()->GetDailyRefreshCollectionId(
-                GetTestAccountId()),
-            "");
+  EXPECT_EQ(
+      test_wallpaper_controller()->GetDailyRefreshCollectionId(kTestAccountId),
+      "");
 
   const std::string collection_id = "collection_id";
   test_wallpaper_controller()->set_can_set_user_wallpaper(false);
@@ -634,7 +637,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
   EXPECT_TRUE(
       test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
           ash::WallpaperInfo(
-              {GetTestAccountId(),
+              {kTestAccountId,
                wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                /*preview_mode=*/false, /*from_user=*/true,
@@ -838,7 +841,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
           ->wallpaper_info()
           .value_or(ash::WallpaperInfo())
           .MatchesSelection(ash::WallpaperInfo(
-              {GetTestAccountId(), photo_id, /*daily_refresh_enabled=*/false,
+              {kTestAccountId, photo_id, /*daily_refresh_enabled=*/false,
                ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                /*preview_mode=*/false, "dedup_key"})));
 }
@@ -894,7 +897,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
        SelectGooglePhotosAlbum) {
   test_wallpaper_controller()->ClearCounts();
   EXPECT_EQ(test_wallpaper_controller()->GetGooglePhotosDailyRefreshAlbumId(
-                GetTestAccountId()),
+                kTestAccountId),
             "");
   const std::string album_id = "OmnisVirLupus";
 
@@ -905,7 +908,7 @@ TEST_F(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
       album_id, success_future.GetCallback());
   EXPECT_TRUE(success_future.Take());
   EXPECT_EQ(test_wallpaper_controller()->GetGooglePhotosDailyRefreshAlbumId(
-                GetTestAccountId()),
+                kTestAccountId),
             album_id);
   EXPECT_EQ(
       test_wallpaper_controller()->get_update_daily_refresh_wallpaper_count(),
