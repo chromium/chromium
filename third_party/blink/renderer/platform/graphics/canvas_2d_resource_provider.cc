@@ -523,13 +523,10 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
 }
 
 std::optional<cc::PaintRecord> Canvas2DResourceProvider::Flush(
-    FlushReason reason) {
+    bool want_to_print) {
   if (!Recorder().HasReleasableDrawOps()) {
     return std::nullopt;
   }
-  bool want_to_print = (delegate_ && delegate_->IsPrinting()) ||
-                       reason == FlushReason::kPrinting ||
-                       reason == FlushReason::kCanvasPushFrameWhilePrinting;
   bool preserve_recording = want_to_print && clear_frame_;
 
   clear_frame_ = false;

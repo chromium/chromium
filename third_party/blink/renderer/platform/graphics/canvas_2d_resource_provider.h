@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
-#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
@@ -233,7 +232,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool IsValid() const;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
-  std::optional<cc::PaintRecord> Flush(FlushReason = FlushReason::kOther);
+  std::optional<cc::PaintRecord> Flush(bool want_to_print = false);
   void ReleaseImageProviderImages();
   const std::optional<cc::PaintRecord>& LastRecording();
   void ClearLastRecording() { last_recording_ = std::nullopt; }

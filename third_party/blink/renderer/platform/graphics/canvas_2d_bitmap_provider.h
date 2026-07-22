@@ -16,7 +16,6 @@
 #include "cc/paint/paint_record.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
-#include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
@@ -82,7 +81,7 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   }
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
-  std::optional<cc::PaintRecord> Flush(FlushReason = FlushReason::kOther);
+  std::optional<cc::PaintRecord> Flush(bool want_to_print = false);
   void ReleaseImageProviderImages();
   const std::optional<cc::PaintRecord>& LastRecording();
   void ClearLastRecording() { last_recording_ = std::nullopt; }

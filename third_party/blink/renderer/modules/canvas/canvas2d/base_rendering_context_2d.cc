@@ -735,13 +735,16 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     Canvas2DBitmapProvider* bitmap_provider,
     FlushReason reason) {
   std::optional<cc::PaintRecord> recording;
+  bool want_to_print = (Host() && Host()->IsPrinting()) ||
+                       reason == FlushReason::kPrinting ||
+                       reason == FlushReason::kCanvasPushFrameWhilePrinting;
   if (shared_image_provider) {
-    recording = shared_image_provider->Flush(reason);
+    recording = shared_image_provider->Flush(want_to_print);
     if (recording) {
       shared_image_provider->ReleaseImageProviderImages();
     }
   } else if (bitmap_provider) {
-    recording = bitmap_provider->Flush(reason);
+    recording = bitmap_provider->Flush(want_to_print);
     if (recording) {
       bitmap_provider->ReleaseImageProviderImages();
     }
