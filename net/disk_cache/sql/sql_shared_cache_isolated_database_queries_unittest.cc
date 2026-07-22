@@ -60,6 +60,8 @@ TEST_F(SqlSharedCacheIsolatedDatabaseQueriesTest, AllQueriesHaveValidPlan) {
            "`--SEARCH resources USING INTEGER PRIMARY KEY (rowid=?)"},
           {SharedCacheIsolatedDatabaseQuery::kReaderSelectResource,
            "`--SEARCH resources USING INDEX index_resources_hash (hash=?)"},
+          {SharedCacheIsolatedDatabaseQuery::kDeleteResourceByRowId,
+           "`--SEARCH resources USING INTEGER PRIMARY KEY (rowid=?)"},
       });
 
   static_assert(kAllQueriesAndPlans.size() + kSchemaAndIndexQueries.size() ==

@@ -554,6 +554,14 @@ BASE_FEATURE_PARAM(int,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheMaxReadBufferTotalSize",
                    32 * 1024 * 1024);
+BASE_FEATURE_PARAM(int,
+                   kSqlDiskCacheMaxSharedCacheCopyEntrySize,
+                   &kDiskCacheBackendExperiment,
+                   1024 * 1024);
+BASE_FEATURE_PARAM(int,
+                   kSqlDiskCacheSharedCacheReadBufferSize,
+                   &kDiskCacheBackendExperiment,
+                   512 * 1024);
 BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheSerialCheckpoint,
                    &kDiskCacheBackendExperiment,

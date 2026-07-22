@@ -5,6 +5,9 @@
 #ifndef NET_DISK_CACHE_SQL_SQL_SHARED_CACHE_H_
 #define NET_DISK_CACHE_SQL_SQL_SHARED_CACHE_H_
 
+#include <atomic>
+
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -79,7 +82,92 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
     return db_task_runner_;
   }
 
+  SqlTrackedSequenceBound<SqlSharedCacheIsolatedDatabase>&
+  isolated_database_for_testing() {
+    return isolated_database_;
+  }
+
+  // Copies multiple shared-cache eligible entries into the shared cache. Must
+  // only be called when `entries` is non-empty, no copy operation is currently
+  // in progress, and `InitIsolatedDatabase` has completed (`shared_cache_db_id`
+  // and `isolated_database_` are set).
+  void CopyEntries(
+      base::queue<SqlPersistentStore::SharedCacheEligibleEntry> entries,
+      scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
+      base::OnceCallback<void(
+          base::queue<SqlPersistentStore::SharedCacheEligibleEntry>)> callback);
+
  private:
+  // Entry Copying Call Flow Overview:
+  //
+  // CopyEntries()
+  //       |
+  //       v          (empty/abort)
+  // CopyNextEntry() --------------> FinishCopy()
+  //  ^    |    ^
+  //  |    |    +------------------------------------------+
+  //  |    |                                               |
+  //  |    v                            (error)            |
+  //  |  OnEntryOpenedForSharedCache() ----------------> OnCopyEntryFailed()
+  //  |    | (body == 0)   | (body > 0)                    ^ ^ ^     ^
+  //  |    |               v                      (error)  | | |     |
+  //  |    |          OnEntryDataReadForInsert() ----------+ | |     |
+  //  |    |               | (OK)                            | |     |
+  //  |    v               v           (error)               | |     |
+  //  |  OnIsolatedDatabaseInserted() -----------------------+ |     |
+  //  |                    | (OK)                              |     |
+  //  |                    v                                   |     |
+  //  |               ReadNextChunk()                          |     |
+  //  |               |(done)  ^    | (has data)               |     |
+  //  |               v        |    v                 (error)  |     |
+  //  +- OnCopyEntryComplete() |   OnEntryDataRead() ----------+     |
+  //                           |    | (OK)                           |
+  //                       (OK)|    v                         (error)|
+  //                           +- OnIsolatedDatabaseWritten() -------+
+  void CopyNextEntry();
+  void OnEntryOpenedForSharedCache(
+      SqlPersistentStore::SharedCacheEligibleEntry entry,
+      base::expected<std::optional<SqlPersistentStore::EntryInfo>,
+                     SqlPersistentStore::Error> result);
+  void OnEntryDataReadForInsert(
+      SqlPersistentStore::SharedCacheEligibleEntry entry,
+      SqlPersistentStore::ResId res_id,
+      scoped_refptr<net::PickledIOBuffer> headers,
+      int64_t body_end,
+      scoped_refptr<net::IOBuffer> buffer,
+      base::expected<SqlPersistentStore::ReadResult, SqlPersistentStore::Error>
+          result);
+  void OnIsolatedDatabaseInserted(
+      CacheEntryKey key,
+      SqlPersistentStore::ResId res_id,
+      int64_t body_end,
+      int64_t offset,
+      base::expected<SqlSharedCacheRowId, SqlSharedCacheIsolatedDatabase::Error>
+          result);
+  void ReadNextChunk(CacheEntryKey key,
+                     SqlPersistentStore::ResId res_id,
+                     int64_t body_end,
+                     int64_t offset,
+                     SqlSharedCacheRowId shared_cache_row_id);
+  void OnEntryDataRead(CacheEntryKey key,
+                       SqlPersistentStore::ResId res_id,
+                       int64_t body_end,
+                       int64_t offset,
+                       SqlSharedCacheRowId shared_cache_row_id,
+                       scoped_refptr<net::IOBuffer> buffer,
+                       base::expected<SqlPersistentStore::ReadResult,
+                                      SqlPersistentStore::Error> result);
+  void OnIsolatedDatabaseWritten(
+      CacheEntryKey key,
+      SqlPersistentStore::ResId res_id,
+      int64_t body_end,
+      int64_t next_offset,
+      SqlSharedCacheRowId shared_cache_row_id,
+      base::expected<void, SqlSharedCacheIsolatedDatabase::Error> result);
+  void OnCopyEntryComplete();
+  void OnCopyEntryFailed();
+  void FinishCopy();
+
   const std::string nik_string_;
   const raw_ref<SqlPersistentStore> store_;
   const base::FilePath directory_;
@@ -92,6 +180,14 @@ class NET_EXPORT_PRIVATE SqlSharedCache {
   std::optional<SqlSharedCacheDbId> shared_cache_db_id_;
 
   SqlTrackedSequenceBound<SqlSharedCacheIsolatedDatabase> isolated_database_;
+
+  base::queue<SqlPersistentStore::SharedCacheEligibleEntry>
+      pending_copy_entries_;
+  scoped_refptr<base::RefCountedData<std::atomic_bool>> copy_abort_flag_;
+  base::OnceCallback<void(
+      base::queue<SqlPersistentStore::SharedCacheEligibleEntry>)>
+      copy_callback_;
+  std::optional<SqlSharedCacheRowId> current_copy_row_id_;
 
   base::WeakPtrFactory<SqlSharedCache> weak_factory_{this};
 };

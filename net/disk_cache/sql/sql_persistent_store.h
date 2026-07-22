@@ -525,7 +525,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // `buf_len` is the size of `buffer`.
   // `body_end` is the logical size of the entry's body.
   // If `sparse_reading` is true, the read will stop at the first gap in the
-  // stored data. If false, gaps will be filled with zeros.
+  // stored data. If false, gaps will be filled with zeros (meaning read_bytes
+  // will equal `buf_len` as long as offset + buf_len <= body_end).
   // `callback` is invoked with the number of bytes read on success, or an error
   // code on failure.
   void ReadEntryData(const CacheEntryKey& key,

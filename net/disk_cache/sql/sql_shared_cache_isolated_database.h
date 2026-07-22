@@ -111,10 +111,25 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
                          int offset,
                          scoped_refptr<net::IOBuffer> buffer);
 
+  // Deletes an entry by its row ID. Used for cleaning up partial entries.
+  void DeleteEntry(SqlSharedCacheRowId shared_cache_row_id);
+
   // Releases `db_assets_`.
   void Cleanup();
 
-  void SetSimulateDbFailureForTesting(bool fail);
+  enum class OperationForTesting {
+    kInit,
+    kInsert,
+    kWriteBody,
+    kRead,
+    kDeleteEntry,
+  };
+
+  using SimFailedCallback =
+      base::RepeatingCallback<bool(OperationForTesting op)>;
+
+  void SetSimulateDbFailureCallbackForTesting(SimFailedCallback callback);
+  bool HasRowForTesting(SqlSharedCacheRowId shared_cache_row_id);
 
  private:
   class DatabaseAssets {
@@ -153,9 +168,11 @@ class NET_EXPORT_PRIVATE SqlSharedCacheIsolatedDatabase {
       bool set_ready,
       bool in_transaction);
 
+  bool ShouldSimulateFailure(OperationForTesting op) const;
+
   std::string nik_string_;
   std::unique_ptr<DatabaseAssets> db_assets_;
-  bool simulate_db_failure_ = false;
+  SimFailedCallback simulate_db_failure_callback_;
 };
 
 }  // namespace disk_cache

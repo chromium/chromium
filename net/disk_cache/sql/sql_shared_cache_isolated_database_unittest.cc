@@ -67,7 +67,10 @@ TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitSuccess) {
 TEST_P(SqlSharedCacheIsolatedDatabaseTest, InitFailureForTesting) {
   SqlSharedCacheDbId db_id(1);
   SqlSharedCacheIsolatedDatabase db("nik", temp_dir_.GetPath(), db_id);
-  db.SetSimulateDbFailureForTesting(true);
+  db.SetSimulateDbFailureCallbackForTesting(base::BindRepeating(
+      [](SqlSharedCacheIsolatedDatabase::OperationForTesting op) {
+        return true;
+      }));
   EXPECT_EQ(db.Init().error(),
             SqlSharedCacheIsolatedDatabase::Error::kFailedForTesting);
 }
