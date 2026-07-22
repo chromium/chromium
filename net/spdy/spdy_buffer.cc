@@ -104,10 +104,16 @@ void SpdyBuffer::ConsumeHelper(size_t consume_size,
   DCHECK_GE(consume_size, 1u);
   DCHECK_LE(consume_size, GetRemainingSize());
   offset_ += consume_size;
-  for (std::vector<ConsumeCallback>::const_iterator it =
-           consume_callbacks_.begin(); it != consume_callbacks_.end(); ++it) {
-    it->Run(consume_size, consume_source);
+  // Copy callbacks before iterating: a consume callback may cause `this` to be
+  // destroyed reentrantly. Iterating a local copy keeps the iterator valid and
+  // keeps each callback's BindState alive (via RepeatingCallback's
+  // scoped_refptr) even after `this` is freed. The callbacks themselves are
+  // WeakPtr-bound and tolerate the receiver being gone.
+  std::vector<ConsumeCallback> callbacks = consume_callbacks_;
+  for (const auto& callback : callbacks) {
+    callback.Run(consume_size, consume_source);
   }
+  // `this` may have been deleted here.
 }
 
 }  // namespace net

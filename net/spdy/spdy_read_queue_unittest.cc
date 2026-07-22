@@ -5,10 +5,12 @@
 #include "net/spdy/spdy_read_queue.h"
 
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -136,6 +138,57 @@ TEST_F(SpdyReadQueueTest, Clear) {
   EXPECT_TRUE(discarded);
   EXPECT_EQ(kData.size(), discarded_bytes);
   EXPECT_TRUE(read_queue.IsEmpty());
+}
+
+// Tests that calling Dequeue() reentrantly from within a consume callback
+// does not cause a use-after-free when the SpdyBuffer is destroyed during
+// the reentrant call.
+namespace {
+
+void ReentrantDequeue(SpdyReadQueue* queue,
+                      bool* fired,
+                      size_t inner_buf_len,
+                      size_t consume_size,
+                      SpdyBuffer::ConsumeSource consume_source) {
+  if (*fired) {
+    return;
+  }
+  *fired = true;
+
+  std::vector<uint8_t> inner_buf(inner_buf_len);
+  queue->Dequeue(inner_buf);
+}
+
+}  // namespace
+
+TEST_F(SpdyReadQueueTest, ReentrantDequeue) {
+  constexpr size_t kPayloadSize = 20;
+  constexpr size_t kUserBufLen = 12;
+
+  std::array<uint8_t, kPayloadSize> payload = {};
+  SpdyReadQueue queue;
+  auto buffer =
+      std::make_unique<SpdyBuffer>(base::span<const uint8_t>(payload));
+
+  bool reentry_fired = false;
+
+  buffer->AddConsumeCallback(base::BindRepeating(&ReentrantDequeue, &queue,
+                                                 &reentry_fired, kUserBufLen));
+  // Add a second callback to ensure that the loop in ConsumeHelper continues
+  // and attempts to access the next callback after the buffer has been deleted.
+  int second_callback_called = 0;
+  buffer->AddConsumeCallback(base::BindRepeating(
+      [](int* counter, size_t, SpdyBuffer::ConsumeSource) { (*counter)++; },
+      &second_callback_called));
+
+  queue.Enqueue(std::move(buffer));
+
+  std::array<uint8_t, kUserBufLen> user_buf;
+  size_t copied = queue.Dequeue(base::span<uint8_t>(user_buf));
+
+  EXPECT_EQ(copied, kUserBufLen);
+  EXPECT_TRUE(reentry_fired);
+  EXPECT_EQ(second_callback_called, 2);
 }
 
 }  // namespace net::test
