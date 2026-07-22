@@ -111,6 +111,10 @@ class LitTemplateFormatterTest(unittest.TestCase):
   def testWithIfExpr(self):
     self._run_test("test_with_if_expr.html.ts", "test_with_if_expr.html.ts")
 
+  def testMultilineAttributeExpression(self):
+    self._run_test("test_multiline_attribute_expression.html.ts",
+                   "test_multiline_attribute_expression.html.ts")
+
   def testDryRunModeFormatted(self):
     filename = "test_basic_expressions.html.ts"
     expected_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",

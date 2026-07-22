@@ -157,9 +157,11 @@ function formatAttributes(
     const currentIndent =
         lines.length === 0 ? elementIndentStr.length : attrIndentStr.length;
     const extraLen = (i === resolvedAttrs.length - 1) ? childLen + 1 : 0;
+    const exceedsLimit = (currentIndent + currentLine.length +
+                          firstLine.length + extraLen) > LINE_LENGTH_LIMIT;
+    const isMultiline = attrLines.length > 1;
 
-    if ((currentIndent + currentLine.length + firstLine.length + extraLen) >
-        LINE_LENGTH_LIMIT) {
+    if (currentLine !== '' && (isMultiline || exceedsLimit)) {
       // The first line of the attribute doesn't fit, so push the current line
       pushCurrentLine();
 
@@ -173,31 +175,27 @@ function formatAttributes(
       }
     } else {
       // The first line of the attribute fits on the current line, so append it
-      currentLine += attrLines[0];
+      currentLine =
+          currentLine === '' ? attrLines[0].trim() : currentLine + attrLines[0];
       if (attrLines.length > 1) {
         // For multi line attributes, commit the current line with the first
         // line of the attribute
         pushCurrentLine();
       }
     }
-    // Push intermediate lines and set the current line to the last line of the
-    // current attribute. Apply relative indentation to intermediate lines of
-    // multiline attributes. Assume lines are indented as desired relative to
-    // the last line.
+    // Push remaining lines of multiline attributes directly and reset current
+    // line to empty so subsequent attributes start on a clean dedicated line.
     if (attrLines.length > 1) {
-      const lastLine = attrLines[attrLines.length - 1];
-      const leadingWhitespace = lastLine.match(/^\s*/)[0].length;
-      for (let j = 1; j < attrLines.length - 1; j++) {
-        const line = attrLines[j];
-        const lineLeading = line.match(/^\s*/)[0].length;
-        const stripAmount = Math.min(leadingWhitespace, lineLeading);
-        const strippedLine = line.substring(stripAmount);
-        lines.push(`${attrIndentStr}${strippedLine}`);
+      for (let j = 1; j < attrLines.length; j++) {
+        lines.push(attrLines[j].trimEnd());
       }
-      currentLine = lastLine.trim();
+      currentLine = '';
     }
   }
-  pushCurrentLine();
+
+  if (currentLine !== '') {
+    pushCurrentLine();
+  }
 
   return lines.join('\n') + '>';
 }

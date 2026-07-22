@@ -4,7 +4,7 @@
 
 import assert from 'node:assert';
 
-import {execAsync, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, PROP_PREFIX} from './html_utils.js';
+import {execAsync, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, PROP_PREFIX, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
 
 const ExpressionType = {
   EXPRESSION: 'expression',
@@ -127,10 +127,28 @@ export async function formatTsExpressions(
     // Remove trailing newline added by clang-format if any
     formattedCode = formattedCode.replace(/\n$/, '');
 
+    let baseIndent =
+        (value.indent || 0) + (value.attrName ? WRAPPED_LINE_INDENT_SIZE : 0);
+    // If the first line exceeds the column limit for an attribute, try again
+    // after putting the expression on a new line after the "${".
+    if (value.attrName && formattedCode.split('\n')[0].length > limit) {
+      baseIndent += WRAPPED_LINE_INDENT_SIZE;
+      const newLimit = 80 - baseIndent + config.columnLimitAdjustment;
+      if (newLimit > limit) {
+        const newStyle = `{BasedOnStyle: Chromium, ColumnLimit: ${newLimit}}`;
+        formattedCode = await execAsync(
+            `python3 "${clangFormatPath}" -assume-filename=f.ts -style="${
+                newStyle}"`,
+            codeToFormat);
+        formattedCode = formattedCode.replace(/\n$/, '');
+      }
+      formattedCode = '\n' + formattedCode;
+    }
+
     // Apply indentation to later lines of multiline expressions.
     if (formattedCode.includes('\n')) {
       const exprLines = formattedCode.split('\n');
-      const indentStr = ' '.repeat(value.indent || 0);
+      const indentStr = ' '.repeat(baseIndent);
       formattedCode = exprLines[0] + '\n' +
           exprLines.slice(1).map(l => `${indentStr}${l}`).join('\n');
     }
