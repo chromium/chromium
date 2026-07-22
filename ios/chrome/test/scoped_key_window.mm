@@ -24,6 +24,7 @@ ScopedKeyWindow::ScopedKeyWindow() {
       [[ChromeOverlayWindow alloc] initWithWindowScene:scene_];
   DCHECK(current_key_window_);
 
+  current_key_window_.rootViewController = [[UIViewController alloc] init];
   [current_key_window_ makeKeyAndVisible];
 }
 
