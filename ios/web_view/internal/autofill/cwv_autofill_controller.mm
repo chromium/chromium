@@ -1085,13 +1085,10 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                                                                webFrame)) {
     autofill::AutofillManager& manager = driver->GetAutofillManager();
     bool observed = _autofillManagerObservations->IsObservingSource(&manager);
-    // TODO(crbug.com/477633290): Cleanup check milestone.
-    // Expect -frameBecameAvailable to be only called once during the frame
-    // lifecyle.
-    CHECK(!observed, base::NotFatalUntil::M147);
-    if (!observed) {
-      _autofillManagerObservations->AddObservation(&manager);
-    }
+    // Expect `frameBecameAvailable` to be only called once during the frame
+    // lifecycle.
+    CHECK(!observed);
+    _autofillManagerObservations->AddObservation(&manager);
   }
 }
 
