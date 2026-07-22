@@ -138,9 +138,9 @@ class PLATFORM_EXPORT MemoryManagedPaintRecorder {
 
   // Points to the current canvas we are recording into, either `main_canvas_`
   // or `side_canvas_`.
-  // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+  // Uses UnprotectedInRelease: Performance reasons (based on analysis of
   // MotionMark).
-  raw_ptr<MemoryManagedPaintCanvas, kUnprotectedInRelease> current_canvas_ =
+  raw_ptr<MemoryManagedPaintCanvas, UnprotectedInRelease> current_canvas_ =
       &main_canvas_;
 };
 

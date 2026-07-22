@@ -160,19 +160,19 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
     }
 
    private:
-    // Uses kUnprotectedInRelease for performance reasons (based on analysis of
+    // Uses UnprotectedInRelease for performance reasons (based on analysis of
     // MotionMark).
-    const raw_ptr<RepresentationClass, kUnprotectedInRelease> representation_ =
+    const raw_ptr<RepresentationClass, UnprotectedInRelease> representation_ =
         nullptr;
   };
 
  private:
-  // Uses kUnprotectedInRelease for performance reasons (based on analysis of
+  // Uses UnprotectedInRelease for performance reasons (based on analysis of
   // MotionMark).
-  const raw_ptr<SharedImageManager, kUnprotectedInRelease> manager_ = nullptr;
-  raw_ptr<SharedImageBacking, DanglingUntriaged | kUnprotectedInRelease>
+  const raw_ptr<SharedImageManager, UnprotectedInRelease> manager_ = nullptr;
+  raw_ptr<SharedImageBacking, DanglingUntriaged | UnprotectedInRelease>
       backing_ = nullptr;
-  const raw_ptr<MemoryTypeTracker, kUnprotectedInRelease> tracker_ = nullptr;
+  const raw_ptr<MemoryTypeTracker, UnprotectedInRelease> tracker_ = nullptr;
   bool has_context_ = true;
   AccessMode access_mode_ = AccessMode::kNone;
 };

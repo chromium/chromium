@@ -381,9 +381,9 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
                          MayAlreadyExist);
 
     scoped_refptr<SequencedTaskRunner> task_runner_;
-    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // Uses UnprotectedInRelease: Performance reasons (based on analysis of
     // speedometer3).
-    raw_ptr<CurrentDefaultHandle, kUnprotectedInRelease> previous_handle_ =
+    raw_ptr<CurrentDefaultHandle, UnprotectedInRelease> previous_handle_ =
         nullptr;
   };
 

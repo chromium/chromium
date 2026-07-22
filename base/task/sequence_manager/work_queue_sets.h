@@ -108,9 +108,9 @@ class BASE_EXPORT WorkQueueSets {
  private:
   struct OldestTaskOrder {
     TaskOrder key;
-    // Uses kUnprotectedInRelease: Performance: visible in sampling profiler
+    // Uses UnprotectedInRelease: Performance: visible in sampling profiler
     // stacks.
-    raw_ptr<WorkQueue, kUnprotectedInRelease> value = nullptr;
+    raw_ptr<WorkQueue, UnprotectedInRelease> value = nullptr;
 
     // Used for a min-heap.
     bool operator>(const OldestTaskOrder& other) const {

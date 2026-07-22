@@ -94,9 +94,9 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache,
    private:
     Value program_blob_;
 
-    // Uses kUnprotectedInRelease for performance
+    // Uses UnprotectedInRelease for performance
     // (motionmark_ramp_composite_ganesh regression).
-    raw_ptr<PassthroughProgramCache, kUnprotectedInRelease> program_cache_;
+    raw_ptr<PassthroughProgramCache, UnprotectedInRelease> program_cache_;
   };
 
   void ClearBackend() override;

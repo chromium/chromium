@@ -33,9 +33,9 @@ class BASE_EXPORT SyncWorkAuthorization {
 
   explicit SyncWorkAuthorization(WorkTracker* state);
 
-  // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+  // Uses UnprotectedInRelease: Performance reasons (based on analysis of
   // speedometer3).
-  raw_ptr<WorkTracker, kUnprotectedInRelease> tracker_ = nullptr;
+  raw_ptr<WorkTracker, UnprotectedInRelease> tracker_ = nullptr;
 };
 
 // Tracks queued and running work to support `RunOrPostTask`.

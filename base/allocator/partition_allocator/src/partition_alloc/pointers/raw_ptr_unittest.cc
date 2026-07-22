@@ -3014,13 +3014,13 @@ static_assert(std::is_same_v<raw_ptr<char, DanglingUntriaged>,
 static_assert(
     std::is_same_v<
         uintptr_t,
-        RawPtrIfPtrT<uintptr_t, AllowPtrArithmetic | kUnprotectedInRelease>>);
+        RawPtrIfPtrT<uintptr_t, AllowPtrArithmetic | UnprotectedInRelease>>);
 static_assert(std::is_same_v<
-              raw_ptr<char, AllowPtrArithmetic | kUnprotectedInRelease>,
-              RawPtrIfPtrT<char*, AllowPtrArithmetic | kUnprotectedInRelease>>);
+              raw_ptr<char, AllowPtrArithmetic | UnprotectedInRelease>,
+              RawPtrIfPtrT<char*, AllowPtrArithmetic | UnprotectedInRelease>>);
 static_assert(
-    std::is_same_v<raw_ptr<char, AllowPtrArithmetic | kUnprotectedInRelease>,
+    std::is_same_v<raw_ptr<char, AllowPtrArithmetic | UnprotectedInRelease>,
                    RawPtrIfPtrT<raw_ptr<char>,
-                                AllowPtrArithmetic | kUnprotectedInRelease>>);
+                                AllowPtrArithmetic | UnprotectedInRelease>>);
 
 }  // namespace base::internal

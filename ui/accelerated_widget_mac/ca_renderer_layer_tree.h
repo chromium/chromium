@@ -170,9 +170,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     CARendererLayerTree* tree() { return parent_layer_->tree_; }
 
     // Parent layer that owns `this`, and child layers that `this` owns.
-    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // Uses UnprotectedInRelease: Performance reasons (based on analysis of
     // MotionMark).
-    const raw_ptr<RootLayer, kUnprotectedInRelease> parent_layer_ = nullptr;
+    const raw_ptr<RootLayer, UnprotectedInRelease> parent_layer_ = nullptr;
     std::list<TransformLayer> transform_layers_;
 
     bool is_clipped_ = false;
@@ -211,9 +211,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     CARendererLayerTree* tree() { return parent_layer_->tree(); }
 
     // Parent layer that owns `this`, and child layers that `this` owns.
-    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // Uses UnprotectedInRelease: Performance reasons (based on analysis of
     // MotionMark).
-    const raw_ptr<ClipAndSortingLayer, kUnprotectedInRelease> parent_layer_ =
+    const raw_ptr<ClipAndSortingLayer, UnprotectedInRelease> parent_layer_ =
         nullptr;
     std::list<ContentLayer> content_layers_;
 
@@ -258,10 +258,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
                                     int& last_old_layer_order);
 
     // Parent layer that owns `this`.
-    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // Uses UnprotectedInRelease: Performance reasons (based on analysis of
     // MotionMark).
-    const raw_ptr<TransformLayer, kUnprotectedInRelease> parent_layer_ =
-        nullptr;
+    const raw_ptr<TransformLayer, UnprotectedInRelease> parent_layer_ = nullptr;
 
     // Ensure that the IOSurface be marked as in-use as soon as it is received.
     // When they are committed to the window server, that will also increment

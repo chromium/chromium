@@ -213,9 +213,9 @@ class SiteEngagementScore {
 
   // The clock used to vend times. Enables time travelling in tests. Owned by
   // the SiteEngagementService.
-  // `clock_` uses kUnprotectedInRelease for performance reasons (based on
+  // `clock_` uses UnprotectedInRelease for performance reasons (based on
   // analysis of sampling profiler data).
-  raw_ptr<base::Clock, kUnprotectedInRelease> clock_;
+  raw_ptr<base::Clock, UnprotectedInRelease> clock_;
 
   // |raw_score_| is the score before any decay is applied.
   double raw_score_;
@@ -240,9 +240,9 @@ class SiteEngagementScore {
   GURL origin_;
 
   // The settings to write this score to when Commit() is called.
-  // `settings_map_` uses kUnprotectedInRelease for performance reasons (based
+  // `settings_map_` uses UnprotectedInRelease for performance reasons (based
   // on analysis of sampling profiler data).
-  raw_ptr<HostContentSettingsMap, kUnprotectedInRelease> settings_map_;
+  raw_ptr<HostContentSettingsMap, UnprotectedInRelease> settings_map_;
 };
 
 }  // namespace site_engagement

@@ -72,7 +72,7 @@ class BASE_EXPORT RawPtrAsanService {
     QuarantineFlag quarantine_flag = QuarantineFlag::NotQuarantined;
     internal::RawPtrAsanThreadId alloc_thread_id;  // who allocated
     internal::RawPtrAsanThreadId free_thread_id;   // who quarantined
-    // # of refs from raw_ptr<T, kUnprotectedInRelease>. These keep the
+    // # of refs from raw_ptr<T, UnprotectedInRelease>. These keep the
     // allocation quarantined so the dangling access can still be detected, but
     // they do NOT count as protection: such a field uses the no-op impl (no
     // protection) in a release build. Kept last so existing aggregate
@@ -108,7 +108,7 @@ class BASE_EXPORT RawPtrAsanService {
     uintptr_t allocation_base = 0;
     size_t allocation_size = 0;
     // True when the raw_ptr<T> that recorded this report is marked
-    // kUnprotectedInRelease, i.e. it is instrumented in this build but would be
+    // UnprotectedInRelease, i.e. it is instrumented in this build but would be
     // unprotected (RawPtrNoOpImpl) in a release build.
     bool unprotected_in_release = false;
   };
@@ -168,7 +168,7 @@ class BASE_EXPORT RawPtrAsanService {
   bool IsQuarantined(uintptr_t address) const;
   bool IsFreed(uintptr_t address) const;
   // True iff `address` is in a currently-tracked allocation that is kept alive
-  // ONLY by raw_ptr<T, kUnprotectedInRelease> references (no protective refs),
+  // ONLY by raw_ptr<T, UnprotectedInRelease> references (no protective refs),
   // i.e. it would be unprotected in a release build.
   bool IsUnprotectedInReleaseOnly(uintptr_t address) const;
   void CheckLogAndAbortOnError();

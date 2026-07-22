@@ -32,22 +32,22 @@ class LazyContextTaskQueue {
   // consumers that add tasks to LazyContextTaskQueue.
   struct ContextInfo {
     const ExtensionId extension_id;
-    // `render_process_host` uses kUnprotectedInRelease for performance reasons
+    // `render_process_host` uses UnprotectedInRelease for performance reasons
     // (based on analysis of sampling profiler data).
-    const raw_ptr<content::RenderProcessHost, kUnprotectedInRelease>
+    const raw_ptr<content::RenderProcessHost, UnprotectedInRelease>
         render_process_host;
     const int64_t service_worker_version_id;
     const int worker_thread_id;
     const GURL url;
-    // `browser_context` uses kUnprotectedInRelease for performance reasons
+    // `browser_context` uses UnprotectedInRelease for performance reasons
     // (based on analysis of sampling profiler data).
-    const raw_ptr<content::BrowserContext, kUnprotectedInRelease>
+    const raw_ptr<content::BrowserContext, UnprotectedInRelease>
         browser_context = nullptr;
     // This data member will have a nullptr value for Service Worker-related
     // tasks.
-    // `web_contents` uses kUnprotectedInRelease for performance reasons (based
+    // `web_contents` uses UnprotectedInRelease for performance reasons (based
     // on analysis of sampling profiler data).
-    const raw_ptr<content::WebContents, kUnprotectedInRelease> web_contents =
+    const raw_ptr<content::WebContents, UnprotectedInRelease> web_contents =
         nullptr;
 
     explicit ContextInfo(ExtensionHost* host);

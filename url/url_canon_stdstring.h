@@ -49,9 +49,9 @@ class COMPONENT_EXPORT(URL) StdStringCanonOutput : public CanonOutput {
   void Resize(size_t sz) override;
 
  protected:
-  // `str_` uses kUnprotectedInRelease for performance reasons (based on
+  // `str_` uses UnprotectedInRelease for performance reasons (based on
   // analysis of sampling profiler data and tab_search:top100:2020).
-  raw_ptr<std::string, kUnprotectedInRelease> str_;
+  raw_ptr<std::string, UnprotectedInRelease> str_;
 };
 
 }  // namespace url

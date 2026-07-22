@@ -135,7 +135,7 @@ enum class RawPtrTraits : unsigned {
   // Forces RawPtrNoOpImpl regardless of the compile-time raw_ptr
   // implementation.
   //
-  // Don't use directly, use kUnprotectedInRelease instead.
+  // Don't use directly, use UnprotectedInRelease instead.
   kNoOpImpl = (1 << 6),
 
   // Marks the pointer as unprotected-in-release: it gets no protection in
@@ -148,7 +148,7 @@ enum class RawPtrTraits : unsigned {
   // is instrumented, so the instrumentation (e.g. BRP-ASan) can tell that the
   // field is *not* protected in a release build and report accordingly.
   //
-  // Don't use directly, use kUnprotectedInRelease instead.
+  // Don't use directly, use UnprotectedInRelease instead.
   kIsUnprotectedInRelease = (1 << 7),
 
   // *** ForTest traits below ***
@@ -1251,6 +1251,10 @@ constexpr inline auto CtnExperimental = base::RawPtrTraits::kMayDangle;
 //   - flag on (debug/dcheck and BRP-ASan): stays instrumented so dangling
 //     pointer detection still covers it, while the instrumentation can tell
 //     that the field is unprotected in a release build.
+constexpr inline auto UnprotectedInRelease =
+    base::RawPtrTraits::kIsUnprotectedInRelease;
+
+// Deprecated: use `UnprotectedInRelease`.
 constexpr inline auto kUnprotectedInRelease =
     base::RawPtrTraits::kIsUnprotectedInRelease;
 

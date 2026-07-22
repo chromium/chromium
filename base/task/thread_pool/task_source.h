@@ -354,9 +354,9 @@ class BASE_EXPORT RegisteredTaskSource {
 #endif  // DCHECK_IS_ON()
 
   scoped_refptr<TaskSource> task_source_;
-  // Uses kUnprotectedInRelease: Performance reasons (visible in sampling
+  // Uses UnprotectedInRelease: Performance reasons (visible in sampling
   // profiler stacks).
-  raw_ptr<TaskTracker, kUnprotectedInRelease> task_tracker_ = nullptr;
+  raw_ptr<TaskTracker, UnprotectedInRelease> task_tracker_ = nullptr;
 };
 
 // A pair of Transaction and RegisteredTaskSource. Useful to carry a

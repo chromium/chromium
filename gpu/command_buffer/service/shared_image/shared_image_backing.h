@@ -433,9 +433,9 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   // A vector of SharedImageRepresentations which hold references to this
   // backing. The first reference is considered the owner, and the vector is
   // ordered by the order in which references were taken.
-  // Uses kUnprotectedInRelease for performance reasons (based on analysis of
+  // Uses UnprotectedInRelease for performance reasons (based on analysis of
   // MotionMark).
-  std::vector<raw_ptr<SharedImageRepresentation, kUnprotectedInRelease>> refs_
+  std::vector<raw_ptr<SharedImageRepresentation, UnprotectedInRelease>> refs_
       GUARDED_BY(lock_);
 };
 

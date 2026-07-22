@@ -36,7 +36,7 @@ const char kAsanBrpNotProtected_DataRace[] =
 const char kAsanBrpUnprotectedInRelease_Quarantine[] =
     ASAN_BRP_UNPROTECTED_IN_RELEASE(
         "only kept quarantined by raw_ptr<T> objects marked "
-        "kUnprotectedInRelease");
+        "UnprotectedInRelease");
 #endif  // PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
 
 struct AsanStruct {
@@ -179,7 +179,7 @@ TEST_F(AsanBackupRefPtrTest, RawPtrQuarantineWorks) {
 }
 
 #if PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
-// A raw_ptr<T, kUnprotectedInRelease> keeps its allocation quarantined (so the
+// A raw_ptr<T, UnprotectedInRelease> keeps its allocation quarantined (so the
 // dangling access is still detected), but the allocation is classified as
 // unprotected-in-release rather than protected: such a field uses the no-op
 // impl (no protection) in a release build.
@@ -187,7 +187,7 @@ TEST_F(AsanBackupRefPtrTest, RawPtrUnprotectedInReleaseQuarantine) {
   RawPtrAsanService& service = RawPtrAsanService::GetInstance();
 
   char* ptr = static_cast<char*>(malloc(1));
-  raw_ptr<char, ::kUnprotectedInRelease> unprotected_ptr(ptr);
+  raw_ptr<char, ::UnprotectedInRelease> unprotected_ptr(ptr);
   free(ptr);
 
   uintptr_t address = reinterpret_cast<uintptr_t>(unprotected_ptr.get());
@@ -211,7 +211,7 @@ TEST_F(AsanBackupRefPtrTest, RawPtrUnprotectedInReleaseMixedIsProtected) {
 
   char* ptr = static_cast<char*>(malloc(1));
   raw_ptr<char> protected_ptr(ptr);
-  raw_ptr<char, ::kUnprotectedInRelease> unprotected_ptr(ptr);
+  raw_ptr<char, ::UnprotectedInRelease> unprotected_ptr(ptr);
   free(ptr);
 
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
@@ -233,7 +233,7 @@ TEST_F(AsanBackupRefPtrTest, RawPtrUnprotectedInReleaseMixedIsProtected) {
 // for an allocation kept quarantined only by unprotected-in-release pointers.
 TEST_F(AsanBackupRefPtrTest, RawPtrUnprotectedInReleaseReportedNotProtected) {
   // Aliased to avoid the template comma being parsed as a macro arg separator.
-  using UnprotectedInReleaseCharPtr = raw_ptr<char, ::kUnprotectedInRelease>;
+  using UnprotectedInReleaseCharPtr = raw_ptr<char, ::UnprotectedInRelease>;
 
   char* ptr = static_cast<char*>(malloc(1));
   UnprotectedInReleaseCharPtr unprotected_ptr(ptr);
@@ -302,10 +302,10 @@ const char kAsanBrpMaybeProtected_ThreadPool[] =
 #if PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
 const char kAsanBrpUnprotectedInRelease_Dereference[] =
     ASAN_BRP_UNPROTECTED_IN_RELEASE(
-        "dereferencing a raw_ptr<T> marked kUnprotectedInRelease");
+        "dereferencing a raw_ptr<T> marked UnprotectedInRelease");
 const char kAsanBrpUnprotectedInRelease_Extraction[] =
     ASAN_BRP_UNPROTECTED_IN_RELEASE(
-        "extracted from a raw_ptr<T> marked kUnprotectedInRelease");
+        "extracted from a raw_ptr<T> marked UnprotectedInRelease");
 #endif  // PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
 
 // Instantiation failure message format is special.
@@ -385,12 +385,12 @@ TEST_F(AsanBackupRefPtrTest, Extraction) {
 }
 
 #if PA_BUILDFLAG(ENABLE_BRP_FOR_UNPROTECTED_IN_RELEASE_RAW_PTR)
-// A `raw_ptr<T, kUnprotectedInRelease>` is instrumented in this build, but it
+// A `raw_ptr<T, UnprotectedInRelease>` is instrumented in this build, but it
 // uses the no-op impl (no protection) in release builds. A dangling access must
 // therefore be reported as unprotected-in-release rather than protected. These
 // tests only apply when such pointers are instrumented in the current build.
 TEST_F(AsanBackupRefPtrTest, UnprotectedInReleaseDereference) {
-  raw_ptr<AsanStruct, ::kUnprotectedInRelease> ptr = new AsanStruct;
+  raw_ptr<AsanStruct, ::UnprotectedInRelease> ptr = new AsanStruct;
 
   ptr->x = 1;  // Shouldn't crash while the allocation is valid.
 
@@ -401,7 +401,7 @@ TEST_F(AsanBackupRefPtrTest, UnprotectedInReleaseDereference) {
 }
 
 TEST_F(AsanBackupRefPtrTest, UnprotectedInReleaseExtraction) {
-  raw_ptr<AsanStruct, ::kUnprotectedInRelease> ptr = new AsanStruct;
+  raw_ptr<AsanStruct, ::UnprotectedInRelease> ptr = new AsanStruct;
 
   AsanStruct* ptr1 = ptr;  // Shouldn't crash.
   ptr1->x = 0;
@@ -422,7 +422,7 @@ TEST_F(AsanBackupRefPtrTest, UnprotectedInReleaseExtraction) {
 // pointer's own extraction carries the unprotected-in-release status, which
 // takes precedence in the report.
 TEST_F(AsanBackupRefPtrTest, BoundUnprotectedInReleaseNotProtected) {
-  raw_ptr<AsanStruct, ::kUnprotectedInRelease> ptr = new AsanStruct;
+  raw_ptr<AsanStruct, ::UnprotectedInRelease> ptr = new AsanStruct;
   auto callback =
       base::BindOnce([](AsanStruct* p) { p->func(); }, base::Unretained(ptr));
   delete ptr.get();

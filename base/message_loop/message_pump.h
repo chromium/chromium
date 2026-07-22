@@ -132,9 +132,9 @@ class BASE_EXPORT MessagePump {
         work_item_depth_ = outer_->RunDepth();
       }
 
-      // `outer_` uses kUnprotectedInRelease for performance reasons (based on
+      // `outer_` uses UnprotectedInRelease for performance reasons (based on
       // analysis of sampling profiler data and tab_search:top100:2020).
-      raw_ptr<Delegate, kUnprotectedInRelease> outer_;
+      raw_ptr<Delegate, UnprotectedInRelease> outer_;
 
       // Records the run level at which this DoWorkItem was created to allow
       // detection of exits of nested loops.

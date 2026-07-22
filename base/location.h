@@ -107,9 +107,9 @@ class BASE_EXPORT Location {
   const char* file_name_ = nullptr;
   int line_number_ = -1;
 
-  // `program_counter_` uses kUnprotectedInRelease for performance reasons
+  // `program_counter_` uses UnprotectedInRelease for performance reasons
   // (based on analysis of sampling profiler data and tab_search:top100:2020).
-  raw_ptr<const void, kUnprotectedInRelease> program_counter_ = nullptr;
+  raw_ptr<const void, UnprotectedInRelease> program_counter_ = nullptr;
 };
 
 BASE_EXPORT const void* GetProgramCounter();

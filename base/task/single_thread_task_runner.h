@@ -128,9 +128,9 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
                              OverrideWithNonNull);
 
     scoped_refptr<SingleThreadTaskRunner> task_runner_;
-    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // Uses UnprotectedInRelease: Performance reasons (based on analysis of
     // speedometer3).
-    raw_ptr<CurrentDefaultHandle, kUnprotectedInRelease> previous_handle_ =
+    raw_ptr<CurrentDefaultHandle, UnprotectedInRelease> previous_handle_ =
         nullptr;
     SequencedTaskRunner::CurrentDefaultHandle sequenced_handle_;
   };

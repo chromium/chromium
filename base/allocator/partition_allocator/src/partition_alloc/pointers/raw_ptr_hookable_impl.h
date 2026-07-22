@@ -21,7 +21,7 @@ namespace base::internal {
 
 struct RawPtrHooks {
   // `unprotected_in_release` is true when the originating raw_ptr<T> is marked
-  // kUnprotectedInRelease, i.e. it is instrumented in this build but would be
+  // UnprotectedInRelease, i.e. it is instrumented in this build but would be
   // unprotected (RawPtrNoOpImpl) in a release build. Hooks use this to report
   // the correct protection status (BRP-ASan V1) and to avoid counting the
   // pointer as a protective reference (BRP-ASan V2).

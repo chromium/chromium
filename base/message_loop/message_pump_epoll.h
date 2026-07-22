@@ -214,9 +214,9 @@ class BASE_EXPORT MessagePumpEpoll : public MessagePump,
   struct RunState {
     explicit RunState(Delegate* delegate) : delegate(delegate) {}
 
-    // Uses kUnprotectedInRelease: Performance reasons (based on analysis of
+    // Uses UnprotectedInRelease: Performance reasons (based on analysis of
     // sampling profiler data and tab_search:top100:2020).
-    const raw_ptr<Delegate, kUnprotectedInRelease> delegate;
+    const raw_ptr<Delegate, UnprotectedInRelease> delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
     bool should_quit = false;

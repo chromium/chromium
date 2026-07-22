@@ -250,9 +250,9 @@ class BASE_EXPORT ThreadGroup {
    protected:
     explicit BaseScopedCommandsExecutor(ThreadGroup* outer);
 
-    // Uses kUnprotectedInRelease: Performance: visible in sampling profiler and
+    // Uses UnprotectedInRelease: Performance: visible in sampling profiler and
     // stack scoped, also a back-pointer to the owning object.
-    raw_ptr<ThreadGroup, kUnprotectedInRelease> outer_ = nullptr;
+    raw_ptr<ThreadGroup, UnprotectedInRelease> outer_ = nullptr;
 
    protected:
     // Performs BaseScopedCommandsExecutor-related tasks, must be called in this

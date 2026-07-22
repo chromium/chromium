@@ -52,9 +52,9 @@ class StdStringCanonOutput : public CanonOutput {
   void Resize(size_t sz) override;
 
  protected:
-  // Uses kUnprotectedInRelease: Performance reasons: based on analysis of
+  // Uses UnprotectedInRelease: Performance reasons: based on analysis of
   // sampling profiler data and tab_search:top100:2020.
-  raw_ptr<std::string, kUnprotectedInRelease> str_;
+  raw_ptr<std::string, UnprotectedInRelease> str_;
 };
 
 }  // namespace redaction_internal

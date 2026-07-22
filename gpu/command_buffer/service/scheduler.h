@@ -277,9 +277,9 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT Scheduler {
     // running. Updated in |SetScheduled| and |UpdateRunningPriority|.
     SchedulingState scheduling_state_ GUARDED_BY(lock());
 
-    // Uses kUnprotectedInRelease for performance reasons: no release-build
+    // Uses UnprotectedInRelease for performance reasons: no release-build
     // overhead. See raw_ptr.h for more info.
-    const raw_ptr<Scheduler, kUnprotectedInRelease> scheduler_ = nullptr;
+    const raw_ptr<Scheduler, UnprotectedInRelease> scheduler_ = nullptr;
     const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
     const SchedulingPriority default_priority_;
