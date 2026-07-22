@@ -189,7 +189,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
         glic::GlicNudgeController::CreateFor(browser_window_interface_.get());
 
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
-        tab_strip_->GetBrowserWindowInterface(), glic_nudge_controller_.get());
+        browser_window_interface_.get());
   }
 
  protected:

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/command_observer.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
@@ -76,6 +77,8 @@ class ToolbarGlicButton;
 class ToolbarGlicActorTaskIcon;
 class GlicButtonInterface;
 class GlicButtonController;
+class GlicActorNudgeController;
+class GlicNudgeController;
 }  // namespace glic
 
 class GlicAndActorButtonsContainer;
@@ -399,7 +402,9 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
   raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
   raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
-  raw_ptr<glic::GlicButtonController> glic_button_controller_ = nullptr;
+  base::WeakPtr<glic::GlicButtonController> glic_button_controller_;
+  base::WeakPtr<glic::GlicActorNudgeController> glic_actor_nudge_controller_;
+  base::WeakPtr<glic::GlicNudgeController> glic_nudge_controller_;
 
   // When locked, the container is unable to change its expanded state.
   // Changes will be staged until after this is unlocked.

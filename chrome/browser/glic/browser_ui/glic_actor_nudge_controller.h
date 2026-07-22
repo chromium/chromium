@@ -23,10 +23,7 @@ class GlicSplitButtonDelegate;
 // controller in order to coordinate nudge behavior between Glic and Glic Actor.
 class GlicActorNudgeController {
  public:
-  explicit GlicActorNudgeController(
-      BrowserWindowInterface* browser,
-      GlicSplitButtonDelegate* horizontal_tabs_delegate,
-      GlicSplitButtonDelegate* vertical_tabs_delegate);
+  explicit GlicActorNudgeController(BrowserWindowInterface* browser);
 
   GlicActorNudgeController(const GlicActorNudgeController&) = delete;
   GlicActorNudgeController& operator=(const GlicActorNudgeController& other) =
@@ -35,6 +32,13 @@ class GlicActorNudgeController {
 
   DECLARE_USER_DATA(GlicActorNudgeController);
   static GlicActorNudgeController* From(BrowserWindowInterface* browser);
+
+  // TODO(crbug.com/511309088): Remove these and have the split button
+  // controller keep the delegates.
+  void SetHorizontalTabsDelegate(GlicSplitButtonDelegate* delegate);
+  void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate);
+
+  base::WeakPtr<GlicActorNudgeController> GetWeakPtr();
 
   // Update the nudge for the given state. Will also conditionally show the
   // bubble on UI update based on `show_bubble`.
@@ -71,8 +75,8 @@ class GlicActorNudgeController {
 
   const raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_;
-  raw_ptr<GlicSplitButtonDelegate> horizontal_tabs_delegate_;
-  raw_ptr<GlicSplitButtonDelegate> vertical_tabs_delegate_;
+  raw_ptr<GlicSplitButtonDelegate> horizontal_tabs_delegate_ = nullptr;
+  raw_ptr<GlicSplitButtonDelegate> vertical_tabs_delegate_ = nullptr;
 
   std::vector<base::CallbackListSubscription>
       actor_nudge_state_change_callback_subscription_;

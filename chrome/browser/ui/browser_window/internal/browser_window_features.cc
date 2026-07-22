@@ -550,9 +550,26 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
     if (glic::GlicEnabling::IsProfileEligible(profile)) {
-      glic_iph_controller_ = std::make_unique<glic::GlicIphController>(
-          browser, *glic::GlicKeyedService::Get(profile));
+      glic::GlicKeyedService* glic_service =
+          glic::GlicKeyedService::Get(profile);
+      glic_iph_controller_ =
+          std::make_unique<glic::GlicIphController>(browser, *glic_service);
       glic_nudge_controller_ = glic::GlicNudgeController::CreateFor(browser);
+      glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
+          profile, *browser, glic_service);
+
+      if (base::FeatureList::IsEnabled(features::kGlicActor) &&
+          base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+          features::kGlicActorUiTaskIcon.Get() && profile->IsRegularProfile()) {
+        // Must be before glic_actor_nudge_controller_.
+        actor_task_list_bubble_controller_ =
+            GetUserDataFactory().CreateInstance<ActorTaskListBubbleController>(
+                *browser, browser);
+        // Includes browser twice to enable injecting for testing.
+        glic_actor_nudge_controller_ =
+            GetUserDataFactory().CreateInstance<glic::GlicActorNudgeController>(
+                *browser, browser);
+      }
     }
 
     initial_web_ui_manager_ = std::make_unique<InitialWebUIManager>(browser);
@@ -931,44 +948,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
                                                                      browser);
     }
 
-    if (browser_view) {
-      // Shared if-gate: members initialized only when the GlicKeyedService is
-      // available (glic_button_controller_, actor_task_list_bubble_controller_,
-      // glic_actor_nudge_controller_).
-      if (glic::GlicKeyedService* glic_service =
-              glic::GlicKeyedService::Get(browser_view->GetProfile())) {
-        auto* tab_strip_container =
-            BrowserElementsViews::From(browser_view->browser())
-                ->GetViewAs<TabStripActionContainer>(
-                    kTabStripActionContainerElementId);
-        auto* toolbar_view =
-            BrowserElementsViews::From(browser_view->browser())
-                ->GetViewAs<ToolbarView>(ToolbarView::kToolbarElementId);
-
-        if (tab_strip_container && toolbar_view) {
-          glic_button_controller_ =
-              std::make_unique<glic::GlicButtonController>(
-                  browser_view->GetProfile(), *browser_, tab_strip_container,
-                  toolbar_view, glic_service);
-        }
-
-        if (base::FeatureList::IsEnabled(features::kGlicActor) &&
-            base::FeatureList::IsEnabled(features::kGlicActorUi) &&
-            features::kGlicActorUiTaskIcon.Get() &&
-            browser_->GetProfile()->IsRegularProfile()) {
-          // Must be before glic_actor_nudge_controller_.
-          actor_task_list_bubble_controller_ =
-              GetUserDataFactory()
-                  .CreateInstance<ActorTaskListBubbleController>(*browser_,
-                                                                 browser_);
-          // Includes browser twice to enable injecting for testing.
-          glic_actor_nudge_controller_ =
-              GetUserDataFactory()
-                  .CreateInstance<glic::GlicActorNudgeController>(
-                      *browser_, browser_, tab_strip_container, toolbar_view);
-        }
-      }
-    }
 
     if (MobilePromoOnDesktopEnabled()) {
       ios_promo_controller_ =
@@ -1109,8 +1088,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   pinned_toolbar_actions_ = nullptr;
   memory_saver_opt_in_iph_controller_.reset();
   ios_promo_controller_.reset();
-  glic_button_controller_.reset();
-  glic_actor_nudge_controller_.reset();
   if (chrome_labs_coordinator_) {
     chrome_labs_coordinator_->TearDown();
   }
@@ -1119,7 +1096,6 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   if (actor_ui_window_controller_) {
     actor_ui_window_controller_->TearDown();
   }
-  actor_task_list_bubble_controller_.reset();
 
   // Owned-by-all members.
   zoom_bubble_coordinator_.reset();
@@ -1184,6 +1160,11 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // Init (reverse).
 
   // TYPE_NORMAL members.
+  glic_actor_nudge_controller_.reset();
+  actor_task_list_bubble_controller_.reset();
+  glic_button_controller_.reset();
+  glic_nudge_controller_.reset();
+  glic_iph_controller_.reset();
   initial_web_ui_manager_.reset();
   ai_overlay_dialog_controller_.reset();
 

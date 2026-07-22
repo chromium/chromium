@@ -30,17 +30,11 @@ GlicButtonController* GlicButtonController::From(
 GlicButtonController::GlicButtonController(
     Profile* profile,
     BrowserWindowInterface& browser,
-    GlicSplitButtonDelegate* tab_strip_delegate,
-    GlicSplitButtonDelegate* toolbar_delegate,
     GlicKeyedService* service)
     : profile_(profile),
       browser_(browser),
-      tab_strip_glic_controller_delegate_(tab_strip_delegate),
-      toolbar_glic_controller_delegate_(toolbar_delegate),
       glic_keyed_service_(service),
       scoped_unowned_user_data_(browser.GetUnownedUserDataHost(), *this) {
-  CHECK(tab_strip_glic_controller_delegate_);
-  CHECK(toolbar_glic_controller_delegate_);
   CHECK(glic_keyed_service_);
 
   // Set initial button state.
@@ -62,6 +56,26 @@ GlicButtonController::GlicButtonController(
 
 GlicButtonController::~GlicButtonController() = default;
 
+void GlicButtonController::SetHorizontalTabsDelegate(
+    GlicSplitButtonDelegate* delegate) {
+  tab_strip_glic_controller_delegate_ = delegate;
+  if (tab_strip_glic_controller_delegate_) {
+    UpdateButton();
+  }
+}
+
+void GlicButtonController::SetVerticalTabsDelegate(
+    GlicSplitButtonDelegate* delegate) {
+  toolbar_glic_controller_delegate_ = delegate;
+  if (toolbar_glic_controller_delegate_) {
+    UpdateButton();
+  }
+}
+
+base::WeakPtr<GlicButtonController> GlicButtonController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void GlicButtonController::UpdateButton() {
   // Attempt to record startup metrics when the button controller is first
   // created, no-op if startup metrics have already been measured.
@@ -76,18 +90,30 @@ void GlicButtonController::UpdateButton() {
       profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
   if (!should_show_button || !is_pinned_to_tabstrip) {
     // If the button shouldn't be shown, just hide it.
-    tab_strip_glic_controller_delegate_->SetGlicShowState(false);
-    toolbar_glic_controller_delegate_->SetGlicShowState(false);
+    if (tab_strip_glic_controller_delegate_) {
+      tab_strip_glic_controller_delegate_->SetGlicShowState(false);
+    }
+    if (toolbar_glic_controller_delegate_) {
+      toolbar_glic_controller_delegate_->SetGlicShowState(false);
+    }
     return;
   }
 
-  tab_strip_glic_controller_delegate_->SetGlicShowState(true);
-  toolbar_glic_controller_delegate_->SetGlicShowState(true);
+  if (tab_strip_glic_controller_delegate_) {
+    tab_strip_glic_controller_delegate_->SetGlicShowState(true);
+  }
+  if (toolbar_glic_controller_delegate_) {
+    toolbar_glic_controller_delegate_->SetGlicShowState(true);
+  }
 
   bool is_glic_panel_open =
       glic_keyed_service_->IsPanelShowingForBrowser(*browser_);
-  tab_strip_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
-  toolbar_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
+  if (tab_strip_glic_controller_delegate_) {
+    tab_strip_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
+  }
+  if (toolbar_glic_controller_delegate_) {
+    toolbar_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
+  }
 }
 
 

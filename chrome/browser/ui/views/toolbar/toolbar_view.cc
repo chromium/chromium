@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
@@ -259,7 +260,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolbarView, kToolbarElementId);
 
 ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
     : AnimationDelegateViews(this),
-      glic_button_controller_(glic::GlicButtonController::From(browser)),
       browser_(browser),
       browser_view_(browser_view),
       app_menu_icon_controller_(browser->GetProfile(), this),
@@ -285,13 +285,6 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
 
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
       std::make_unique<views::MouseWatcherViewHost>(this, gfx::Insets()), this);
-
-
-  // `glic_nudge_controller` will be null if feature is not enabled.
-  if (glic::GlicNudgeController* glic_nudge_controller =
-          glic::GlicNudgeController::From(browser_)) {
-    glic_nudge_controller->SetVerticalTabsDelegate(this);
-  }
 }
 
 ToolbarView::~ToolbarView() {
@@ -305,10 +298,16 @@ ToolbarView::~ToolbarView() {
     chrome::RemoveCommandObserver(browser_, view_and_command.second, this);
   }
 
-  glic::GlicNudgeController* glic_nudge_controller =
-      browser_->browser_window_features()->glic_nudge_controller();
-  if (glic_nudge_controller) {
-    glic_nudge_controller->SetVerticalTabsDelegate(/*delegate=*/nullptr);
+  if (glic_nudge_controller_) {
+    glic_nudge_controller_->SetVerticalTabsDelegate(nullptr);
+  }
+
+  if (glic_button_controller_) {
+    glic_button_controller_->SetVerticalTabsDelegate(nullptr);
+  }
+
+  if (glic_actor_nudge_controller_) {
+    glic_actor_nudge_controller_->SetVerticalTabsDelegate(nullptr);
   }
 }
 
@@ -656,6 +655,20 @@ void ToolbarView::Init() {
     if (button) {
       button->set_tag(GetViewCommandMap().at(button->GetID()));
     }
+  }
+
+  // `glic_nudge_controller_` will be null if feature is not enabled.
+  if (auto* controller = glic::GlicNudgeController::From(browser_)) {
+    glic_nudge_controller_ = controller->GetWeakPtr();
+    glic_nudge_controller_->SetVerticalTabsDelegate(this);
+  }
+  if (auto* controller = glic::GlicButtonController::From(browser_)) {
+    glic_button_controller_ = controller->GetWeakPtr();
+    glic_button_controller_->SetVerticalTabsDelegate(this);
+  }
+  if (auto* controller = glic::GlicActorNudgeController::From(browser_)) {
+    glic_actor_nudge_controller_ = controller->GetWeakPtr();
+    glic_actor_nudge_controller_->SetVerticalTabsDelegate(this);
   }
 
   initialized_ = true;

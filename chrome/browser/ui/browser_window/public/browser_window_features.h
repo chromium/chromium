@@ -596,6 +596,10 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<FindBarOwner> find_bar_owner_;
   std::unique_ptr<BrowserWindowFullscreenController> fullscreen_controller_;
+  std::unique_ptr<ActorTaskListBubbleController>
+      actor_task_list_bubble_controller_;
+  std::unique_ptr<glic::GlicActorNudgeController> glic_actor_nudge_controller_;
+  std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
   std::unique_ptr<glic::GlicNudgeController> glic_nudge_controller_;
   std::unique_ptr<HistoryClustersSidePanelCoordinator>
@@ -681,8 +685,6 @@ class BrowserWindowFeatures {
   std::unique_ptr<ZoomBubbleCoordinator> zoom_bubble_coordinator_;
 
   // Members owned only when a BrowserView is attached.
-  std::unique_ptr<ActorTaskListBubbleController>
-      actor_task_list_bubble_controller_;
   std::unique_ptr<ActorUiWindowController> actor_ui_window_controller_;
   std::unique_ptr<omnibox::AiModePageActionController>
       ai_mode_page_action_controller_;
@@ -699,8 +701,6 @@ class BrowserWindowFeatures {
       extension_side_panel_manager_;
 
   std::unique_ptr<FullscreenControlHost> fullscreen_control_host_;
-  std::unique_ptr<glic::GlicActorNudgeController> glic_actor_nudge_controller_;
-  std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
   std::unique_ptr<MemorySaverOptInIPHController>
       memory_saver_opt_in_iph_controller_;
   std::unique_ptr<new_tab_footer::NewTabFooterController>

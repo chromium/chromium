@@ -32,13 +32,9 @@ using glic::Host;
 DEFINE_USER_DATA(GlicActorNudgeController);
 
 GlicActorNudgeController::GlicActorNudgeController(
-    BrowserWindowInterface* browser,
-    GlicSplitButtonDelegate* horizontal_tabs_delegate,
-    GlicSplitButtonDelegate* vertical_tabs_delegate)
+    BrowserWindowInterface* browser)
     : profile_(browser->GetProfile()),
       browser_(browser),
-      horizontal_tabs_delegate_(horizontal_tabs_delegate),
-      vertical_tabs_delegate_(vertical_tabs_delegate),
       scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     RegisterActorNudgeStateCallback();
@@ -62,6 +58,20 @@ GlicActorNudgeController::~GlicActorNudgeController() = default;
 GlicActorNudgeController* GlicActorNudgeController::From(
     BrowserWindowInterface* browser) {
   return Get(browser->GetUnownedUserDataHost());
+}
+
+void GlicActorNudgeController::SetHorizontalTabsDelegate(
+    GlicSplitButtonDelegate* delegate) {
+  horizontal_tabs_delegate_ = delegate;
+}
+
+void GlicActorNudgeController::SetVerticalTabsDelegate(
+    GlicSplitButtonDelegate* delegate) {
+  vertical_tabs_delegate_ = delegate;
+}
+
+base::WeakPtr<GlicActorNudgeController> GlicActorNudgeController::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void GlicActorNudgeController::OnStateUpdate(

@@ -158,9 +158,11 @@ class GlicButtonControllerTest : public testing::Test {
     histograms_ = std::make_unique<base::HistogramTester>();
 
     glic_button_controller_ = std::make_unique<GlicButtonController>(
-        profile_, *mock_browser_window_interface_,
-        &mock_tab_strip_glic_controller_delegate_,
-        &mock_toolbar_glic_controller_delegate_, mock_glic_service_.get());
+        profile_, *mock_browser_window_interface_, mock_glic_service_.get());
+    glic_button_controller_->SetHorizontalTabsDelegate(
+        &mock_tab_strip_glic_controller_delegate_);
+    glic_button_controller_->SetVerticalTabsDelegate(
+        &mock_toolbar_glic_controller_delegate_);
 
     glic_test_env_.SetupProfile(profile());
 

@@ -222,13 +222,9 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::Show() {
 }
 
 TabStripActionContainer::TabStripActionContainer(
-    BrowserWindowInterface* browser_window_interface,
-    glic::GlicNudgeController* glic_nudge_controller)
+    BrowserWindowInterface* browser_window_interface)
     : AnimationDelegateViews(this),
       locked_expansion_view_(this),
-      glic_nudge_controller_(glic_nudge_controller),
-      glic_button_controller_(
-          glic::GlicButtonController::From(browser_window_interface)),
       browser_window_interface_(browser_window_interface) {
   SetProperty(views::kElementIdentifierKey, kTabStripActionContainerElementId);
 
@@ -236,11 +232,6 @@ TabStripActionContainer::TabStripActionContainer(
       std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view_,
                                                     gfx::Insets()),
       this);
-
-  // `glic_nudge_controller_` will be null if feature is not enabled.
-  if (glic_nudge_controller_) {
-    glic_nudge_controller_->SetHorizontalTabsDelegate(this);
-  }
 
   if (glic::GlicEnabling::IsProfileEligible(
           browser_window_interface_->GetProfile())) {
@@ -284,22 +275,47 @@ TabStripActionContainer::TabStripActionContainer(
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCollapseMargins(false);
+
+  // `glic_nudge_controller` will be null if feature is not enabled.
+  if (auto* glic_nudge_controller =
+          glic::GlicNudgeController::From(browser_window_interface)) {
+    glic_nudge_controller_ = glic_nudge_controller->GetWeakPtr();
+    glic_nudge_controller_->SetHorizontalTabsDelegate(this);
+  }
+  if (auto* controller =
+          glic::GlicButtonController::From(browser_window_interface)) {
+    glic_button_controller_ = controller->GetWeakPtr();
+    glic_button_controller_->SetHorizontalTabsDelegate(this);
+  }
+  if (auto* controller =
+          glic::GlicActorNudgeController::From(browser_window_interface)) {
+    glic_actor_nudge_controller_ = controller->GetWeakPtr();
+    glic_actor_nudge_controller_->SetHorizontalTabsDelegate(this);
+  }
 }
 
 TabStripActionContainer::~TabStripActionContainer() {
   if (scoped_tab_strip_modal_ui_) {
     scoped_tab_strip_modal_ui_.reset();
   }
+
   if (glic_nudge_controller_) {
     glic_nudge_controller_->SetHorizontalTabsDelegate(nullptr);
+  }
+
+  if (glic_button_controller_) {
+    glic_button_controller_->SetHorizontalTabsDelegate(nullptr);
+  }
+
+  if (glic_actor_nudge_controller_) {
+    glic_actor_nudge_controller_->SetHorizontalTabsDelegate(nullptr);
   }
 }
 
 void TabStripActionContainer::AddedToWidget() {
   views::View::AddedToWidget();
-  if (auto* controller =
-          glic::GlicActorNudgeController::From(browser_window_interface_)) {
-    controller->UpdateCurrentActorNudgeState();
+  if (glic_actor_nudge_controller_) {
+    glic_actor_nudge_controller_->UpdateCurrentActorNudgeState();
   }
 }
 
