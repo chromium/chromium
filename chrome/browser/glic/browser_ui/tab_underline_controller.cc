@@ -366,10 +366,7 @@ void TabUnderlineController::RemoveSource(UnderlineSource source) {
 
 void TabUnderlineController::AnimateUnderline() {
   if (!ui_delegate_->IsShowing()) {
-    // There is be a chance that the underline view has already stopped showing.
-    // In that case, gracefully handle the crash case in crbug.com/398319435 by
-    // closing(minimizing) the glic window.
-    glic_service_->instance_coordinator().Close({});
+    return;
   }
 
   ui_delegate_->ResetAnimationCycle();

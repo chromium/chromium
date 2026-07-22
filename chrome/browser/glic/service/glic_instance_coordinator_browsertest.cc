@@ -73,6 +73,7 @@
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #endif
 
 namespace glic {
@@ -2021,5 +2022,46 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorRemoveBlankInstancesTest,
   // Wait for the blank instance to be deleted asynchronously.
   ASSERT_OK(WaitForInstanceDeletion(weak_instance));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       DetachedPanelActivationWithMultipleInstances) {
+  // 1. Open glic detached and activate live mode
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * floaty_instance,
+                       OpenGlicForActiveTabAndDetach());
+  ASSERT_TRUE(floaty_instance->IsDetached());
+  ASSERT_OK(WaitForGlicClient(floaty_instance));
+
+  floaty_instance->OnInteractionModeChange(mojom::WebClientMode::kAudio);
+  floaty_instance->host().SetContextAccessIndicator(true);
+  ASSERT_TRUE(floaty_instance->IsLiveMode());
+
+  views::View* floaty_view =
+      floaty_instance->GetActiveEmbedderGlicViewForTesting();
+  ASSERT_TRUE(floaty_view);
+  views::Widget* floaty_widget = floaty_view->GetWidget();
+  ASSERT_TRUE(floaty_widget);
+
+  // 2. Open glic in side panel in a different tab
+  tabs::TabInterface* tab2 =
+      GetTabListInterface()->OpenTab(GURL("about:blank"), -1);
+  GetTabListInterface()->ActivateTab(tab2->GetHandle());
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * side_panel_instance,
+                       OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(side_panel_instance));
+
+  // 3. Move focus back to the floating instance
+  floaty_widget->Activate();
+  views::test::WaitForWidgetActive(floaty_widget, true);
+
+  // Verify that the floaty widget remains open, visible, and registered in the
+  // coordinator.
+  EXPECT_FALSE(floaty_widget->IsClosed());
+  EXPECT_TRUE(floaty_widget->IsVisible());
+  EXPECT_EQ(coordinator().GetInstanceWithFloaty(), floaty_instance);
+  EXPECT_EQ(coordinator().GetActiveInstance(), floaty_instance);
+}
+#endif
 
 }  // namespace glic
