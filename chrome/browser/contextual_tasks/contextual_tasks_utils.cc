@@ -23,7 +23,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #endif
 #include "chrome/common/webui_url_constants.h"

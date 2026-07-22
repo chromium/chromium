@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 
+#include "components/omnibox/common/omnibox_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -143,7 +144,10 @@ const gfx::VectorIcon& ContextualSearchOpenLensAction::GetVectorIcon() const {
   return omnibox_feature_configs::ContextualSearch::Get()
                  .open_lens_action_ui_tweaks
              ? vector_icons::kGoogleLensLogoIcon
-             : vector_icons::kGoogleLensMonochromeLogoIcon;
+             : (omnibox::kAskGSwapIcon.Get()
+                    ? omnibox::kSearchSparkIcon
+                    : vector_icons::kGoogleLensMonochromeLogoIcon);
+
 #else
   return features::IsRoundedIconsEnabled()
              ? vector_icons::kSearchIcon

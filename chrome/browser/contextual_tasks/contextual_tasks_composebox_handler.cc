@@ -68,7 +68,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "components/omnibox/common/omnibox_features.h"
 #else
 #include "base/android/content_uri_utils.h"
 #endif

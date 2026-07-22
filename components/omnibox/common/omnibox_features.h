@@ -249,6 +249,18 @@ extern const base::FeatureParam<InlineLocationSignalingDisplayOrder>
 extern const base::FeatureParam<InlineLocationSignalingWording>
     kInlineLocationSignalingWording;
 
+// If enabled, the "Ask Google about this page" action will route to cobrowse.
+BASE_DECLARE_FEATURE(kWebUIOmniboxAskGAboutThisPage);
+// Whether to open the next panel with cobrowse.
+extern const base::FeatureParam<bool> kAskGCoBrowse;
+// Whether to open the next panel with cobrowse and visual selection.
+extern const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection;
+// Whether to open the composebox for AskG.
+extern const base::FeatureParam<bool> kAskGComposeBox;
+// Determines how to route the lens chip.
+extern const base::FeatureParam<bool> kAskGLensChipRoute;
+// Whether to swap the icon to spark loupe for the AskG button.
+extern const base::FeatureParam<bool> kAskGSwapIcon;
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

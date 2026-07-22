@@ -96,7 +96,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/lens/lens_media_link_handler.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"  // nogncheck
+#include "components/omnibox/common/omnibox_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 

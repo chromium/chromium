@@ -70,7 +70,6 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxPopupSelectionControl);
 BASE_DECLARE_FEATURE(kOmniboxAnimatedCaret);
 // Enables energy effect in the omnibox.
 BASE_DECLARE_FEATURE(kEnergyEffectInOmnibox);
-BASE_DECLARE_FEATURE(kWebUIOmniboxAskGAboutThisPage);
 BASE_DECLARE_FEATURE(kWebUIOmniboxDynamicAiModeButton);
 // Prevents closing popup while file chooser is open.
 BASE_DECLARE_FEATURE(kOmniboxKeepOpenOnFileSelection);
@@ -117,18 +116,10 @@ extern const base::FeatureParam<bool> kContextButtonShowSuggestionLabel;
 // BrowserView.
 extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupUseBrowserView;
 extern const base::FeatureParam<bool> kWebUIOmniboxFullPopupMultiline;
-// Whether to open the next panel with cobrowse.
-extern const base::FeatureParam<bool> kAskGCoBrowse;
-// Whether to open the next panel with cobrowse and visual selection.
-extern const base::FeatureParam<bool> kAskGCoBrowseWithVisualSelection;
 // Whether to enable dynamic animation for the WebUI Omnibox.
 extern const base::FeatureParam<bool> kWebUIOmniboxDynamicAnimation;
 // Whether to enable dynamic color scheme for the WebUI Omnibox.
 extern const base::FeatureParam<bool> kWebUIOmniboxDynamicColorScheme;
-// Whether to open the composebox for AskG.
-extern const base::FeatureParam<bool> kAskGComposeBox;
-// Determines how to route the lens chip.
-extern const base::FeatureParam<bool> kAskGLensChipRoute;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();

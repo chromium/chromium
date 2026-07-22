@@ -106,11 +106,11 @@
 #endif
 
 #include "components/zoom/zoom_controller.h"  // nogncheck
+#include "components/omnibox/common/omnibox_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"  // nogncheck
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
