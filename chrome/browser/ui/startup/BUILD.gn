@@ -236,6 +236,7 @@ source_set("impl") {
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:chrome_pages",
+      "//chrome/browser/ui:session_crashed_bubble",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/extensions",

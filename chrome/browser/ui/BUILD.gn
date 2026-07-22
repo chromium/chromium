@@ -402,7 +402,6 @@ static_library("ui") {
     "managed_ui.cc",
     "managed_ui.h",
     "screen_capture_notification_ui.h",
-    "session_crashed_bubble.h",
     "status_bubble.h",
     "storage_pressure_bubble.h",
     "tab_dialogs.cc",
@@ -470,6 +469,7 @@ static_library("ui") {
     ":browser_ui_prefs",
     ":incognito_allowed_url",
     ":recently_audible_helper",
+    ":session_crashed_bubble",
     ":simple_message_box_internal",
     ":tab_modal_confirm_dialog_delegate",
     ":ui_features",
@@ -5372,6 +5372,10 @@ source_set("layout_constants") {
   if (is_chromeos) {
     deps += [ "//chromeos/constants" ]
   }
+}
+
+source_set("session_crashed_bubble") {
+  sources = [ "session_crashed_bubble.h" ]
 }
 
 source_set("url_identity") {
