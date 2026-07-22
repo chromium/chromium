@@ -629,6 +629,10 @@ class OmniboxEditModel {
 
   AutocompleteController* autocomplete_controller() const;
 
+  // Populates the SearchboxContextData with the currently active tab context.
+  // Only implemented on desktop.
+  void PopulateActiveTabContext();
+
   // If no query is in progress, starts working on an autocomplete query.
   // Returns true if started; false otherwise.
   bool MaybeStartQueryForPopup();

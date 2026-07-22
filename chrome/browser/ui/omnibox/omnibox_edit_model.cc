@@ -121,13 +121,20 @@
 #include "url/url_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "components/sessions/content/session_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"  // nogncheck
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/tabs/public/tab_interface.h"
+#include "components/sessions/core/session_id.h"
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -783,9 +790,47 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 }
 
 void OmniboxEditModel::OpenComposeboxForAskG() {
-  // TODO (crbug.com/532597302): Potential wiring to get autotab and suggestions
-  // to work.
+  PopulateActiveTabContext();
   controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kAim);
+}
+
+void OmniboxEditModel::PopulateActiveTabContext() {
+#if !BUILDFLAG(IS_ANDROID)
+  // Ensure we are in a Chrome browser window context.
+  auto* client = controller_->client();
+  if (!client->IsChromeOmniboxClient()) {
+    return;
+  }
+
+  Browser* browser = static_cast<ChromeOmniboxClient*>(client)->browser();
+  SearchboxContextData* searchbox_context_data =
+      browser ? browser->GetFeatures().searchbox_context_data() : nullptr;
+  TabStripModel* tab_strip = browser ? browser->tab_strip_model() : nullptr;
+  tabs::TabInterface* tab = tab_strip ? tab_strip->GetActiveTab() : nullptr;
+  content::WebContents* web_contents = tab ? tab->GetContents() : nullptr;
+
+  // Abort if any required component for the active tab context is missing.
+  if (!searchbox_context_data || !tab || !web_contents) {
+    return;
+  }
+
+  // We must use the TabHandle's raw value here, NOT the SessionID.
+  // The WebUI's Mojo interfaces (e.g., TabInfo) represent tab IDs using the
+  // TabHandle values mapped by SessionMappedTabHandleFactory. Passing a
+  // raw SessionID here will cause handle resolution to fail browser-side
+  // when the WebUI requests tab upload.
+  int32_t tab_handle_val = tab->GetHandle().raw_value();
+
+  auto context = std::make_unique<SearchboxContextData::Context>();
+  auto tab_attachment = searchbox::mojom::TabAttachment::New();
+  tab_attachment->tab_id = tab_handle_val;
+  tab_attachment->title = base::UTF16ToUTF8(web_contents->GetTitle());
+  tab_attachment->url = web_contents->GetLastCommittedURL();
+  context->file_infos.push_back(
+      searchbox::mojom::SearchContextAttachment::NewTabAttachment(
+          std::move(tab_attachment)));
+  searchbox_context_data->SetPendingContext(std::move(context));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void OmniboxEditModel::OpenAiMode(AimActivation activation) {

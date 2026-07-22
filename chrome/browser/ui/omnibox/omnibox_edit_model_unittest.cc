@@ -18,6 +18,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -27,7 +29,10 @@
 #include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/test_omnibox_view.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/mock_contextual_search_service.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
@@ -2279,17 +2284,17 @@ TEST_F(OmniboxEditModelTest, NavigateToThirdPartyAiMode) {
 }
 
 class OmniboxEditModelContextualSearchTest
-    : public ChromeRenderViewHostTestHarness {
+    : public BrowserWithTestWindowTest {
  public:
   OmniboxEditModelContextualSearchTest() = default;
   ~OmniboxEditModelContextualSearchTest() override = default;
 
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    BrowserWithTestWindowTest::SetUp();
 
     // Create the ChromeOmniboxClient.
     auto omnibox_client = std::make_unique<ChromeOmniboxClient>(
-        /*location_bar=*/nullptr, /*browser=*/nullptr, profile());
+        /*location_bar=*/nullptr, browser(), profile());
 
     // Create the OmniboxController.
     controller_ =
@@ -2305,7 +2310,7 @@ class OmniboxEditModelContextualSearchTest
   void TearDown() override {
     model_ = nullptr;
     controller_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
+    BrowserWithTestWindowTest::TearDown();
   }
 
   TestOmniboxEditModel* model() { return model_; }
@@ -2377,4 +2382,44 @@ TEST_F(OmniboxEditModelTest, OpenComposeboxForAskG) {
 
   EXPECT_EQ(controller()->popup_state_manager()->popup_state(),
             OmniboxPopupState::kAim);
+}
+
+TEST_F(OmniboxEditModelContextualSearchTest,
+       OpenComposeboxForAskGPopulatesContext) {
+  const GURL expected_url("https://example.com/test-page");
+  AddTab(browser(), expected_url);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  int32_t expected_tab_handle = tab->GetHandle().raw_value();
+  SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents);
+
+  // Trigger the AskG flow.
+  model()->OpenComposeboxForAskG();
+
+  // Verify the popup state is correct.
+  EXPECT_EQ(controller()->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
+
+  // Verify context was populated correctly with TabHandle (not SessionID).
+  SearchboxContextData* context_data =
+      browser()->GetFeatures().searchbox_context_data();
+  ASSERT_TRUE(context_data);
+
+  std::unique_ptr<SearchboxContextData::Context> context =
+      context_data->TakePendingContext();
+  ASSERT_TRUE(context);
+  ASSERT_EQ(context->file_infos.size(), 1u);
+
+  const auto& attachment = context->file_infos[0];
+  ASSERT_TRUE(attachment->is_tab_attachment());
+
+  const auto& tab_attachment = attachment->get_tab_attachment();
+  EXPECT_EQ(tab_attachment->tab_id, expected_tab_handle);
+  EXPECT_NE(tab_attachment->tab_id, session_id.id());
+  EXPECT_EQ(tab_attachment->url, expected_url);
 }
