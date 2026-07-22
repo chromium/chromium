@@ -14,10 +14,16 @@ namespace commerce {
 class ShoppingService;
 }  // namespace commerce
 
+// Returns true if the layout should be wide based on trait collection or view
+// width.
+bool ShouldMagicStackHaveWideLayout(UITraitCollection* traitCollection,
+                                    CGFloat viewWidth);
+
 // Returns the amount that MagicStack modules are narrower than the ScrollView,
 // in order to allow peeking at the sides.
-CGFloat ModuleNarrowerWidthToAllowPeekingForTraitCollection(
-    UITraitCollection* traitCollection);
+CGFloat MagicStackModuleNarrowerWidthToAllowPeeking(
+    UITraitCollection* traitCollection,
+    CGFloat viewWidth);
 
 // True if the price tracking notification card feature is enabled.
 bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,

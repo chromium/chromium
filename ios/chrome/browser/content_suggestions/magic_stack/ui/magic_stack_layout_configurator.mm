@@ -50,8 +50,8 @@
       [NSCollectionLayoutItem itemWithLayoutSize:item_size];
 
   CGSize size = layoutEnvironment.container.contentSize;
-  CGFloat peekingInset = ModuleNarrowerWidthToAllowPeekingForTraitCollection(
-      layoutEnvironment.traitCollection);
+  CGFloat peekingInset = MagicStackModuleNarrowerWidthToAllowPeeking(
+      layoutEnvironment.traitCollection, size.width);
   if ([self.dataSource.snapshot
           numberOfItemsInSection:kMagicStackSectionIdentifier] == 1) {
     peekingInset = 0;

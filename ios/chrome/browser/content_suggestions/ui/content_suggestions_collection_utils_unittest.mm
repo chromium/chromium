@@ -179,7 +179,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhonePortrait) {
 
   // Test.
   EXPECT_EQ(IsAimEnabledInNtp() ? 29 : 22, topMargin);
-  EXPECT_EQ(IsAimEnabledInNtp() ? 452 : 343, resultWidth);
+  EXPECT_EQ(IsAimEnabledInNtp() ? 432 : 343, resultWidth);
 }
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhoneLandscape) {

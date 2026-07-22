@@ -232,7 +232,8 @@ CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection) {
   }
 
   if (IsAimEnabledInNtp() && !IsCompactHeight(trait_collection)) {
-    return std::max(width - kMIASearchFieldMinMargin * 2, kSearchFieldSmallMin);
+    return std::clamp(width - kMIASearchFieldMinMargin * 2,
+                      kSearchFieldSmallMin, kSearchFieldLarge);
   }
 
   // Special case for narrow sizes.

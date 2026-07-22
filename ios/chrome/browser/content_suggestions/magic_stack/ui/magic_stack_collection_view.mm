@@ -359,10 +359,8 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 // Returns YES if the MagicStack should be using a wide layout to accomodate for
 // larger horizontal device space. This is needed in landscape and on iPads.
 - (BOOL)shouldHaveWideLayout {
-  return self.traitCollection.horizontalSizeClass ==
-             UIUserInterfaceSizeClassRegular ||
-         self.traitCollection.verticalSizeClass ==
-             UIUserInterfaceSizeClassCompact;
+  return ShouldMagicStackHaveWideLayout(self.traitCollection,
+                                        self.view.bounds.size.width);
 }
 
 // Cell provider helper.
@@ -428,9 +426,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 // the page after the closest current page.
 - (CGFloat)getNextPageOffsetForOffset:(CGFloat)offset
                              velocity:(CGFloat)velocity {
-  CGFloat moduleWidth =
-      self.view.frame.size.width -
-      ModuleNarrowerWidthToAllowPeekingForTraitCollection(self.traitCollection);
+  CGFloat moduleWidth = self.view.frame.size.width -
+                        MagicStackModuleNarrowerWidthToAllowPeeking(
+                            self.traitCollection, self.view.frame.size.width);
 
   // Find closest page to the current scroll offset.
   CGFloat closestPage = roundf(offset / moduleWidth);
@@ -508,9 +506,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 
 // Scrolls to the given page index, optionally animated.
 - (void)scrollToPage:(NSUInteger)page animated:(BOOL)animated {
-  CGFloat moduleWidth =
-      self.view.frame.size.width -
-      ModuleNarrowerWidthToAllowPeekingForTraitCollection(self.traitCollection);
+  CGFloat moduleWidth = self.view.frame.size.width -
+                        MagicStackModuleNarrowerWidthToAllowPeeking(
+                            self.traitCollection, self.view.frame.size.width);
   CGFloat targetX = page * (moduleWidth + kMagicStackSpacing) -
                     [self peekOffsetForMagicStackPage:page];
   CGFloat maxOffset = MAX(
