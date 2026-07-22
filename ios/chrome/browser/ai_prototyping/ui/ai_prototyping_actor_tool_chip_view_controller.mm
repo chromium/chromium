@@ -19,7 +19,7 @@ const CGFloat kSymbolPointSize = 18.0;
 
 // Data representing an actor tool chip.
 struct ChipData {
-  NSString* symbol_name;
+  Symbol symbol;
   NSString* text;
 };
 
@@ -90,18 +90,17 @@ struct ChipData {
   ]];
 
   const ChipData kChips[] = {
-      {kCursorArrowRaysSymbol, @"Clicking"},
-      {kCursorArrowSymbol, @"Working"},
-      {kKeyboardSymbol, @"Typing"},
-      {kCursorArrowMotionLinesSymbol, @"Scrolling"},
-      {kHourglassSymbol, @"Waiting"},
-      {kKeySymbol, @"Filling password"},
+      {SymbolCursorArrowRays, @"Clicking"},
+      {SymbolCursorArrow, @"Working"},
+      {SymbolKeyboard, @"Typing"},
+      {SymbolCursorArrowMotionLines, @"Scrolling"},
+      {SymbolHourglass, @"Waiting"},
+      {SymbolKey, @"Filling password"},
   };
   for (const ChipData& data : kChips) {
     ActorToolChipView* chip = [[ActorToolChipView alloc]
         initWithText:data.text
-                icon:DefaultSymbolWithPointSize(data.symbol_name,
-                                                kSymbolPointSize)];
+                icon:SymbolWithPointSize(data.symbol, kSymbolPointSize)];
     [stackView addArrangedSubview:chip];
     [_chips addObject:chip];
   }

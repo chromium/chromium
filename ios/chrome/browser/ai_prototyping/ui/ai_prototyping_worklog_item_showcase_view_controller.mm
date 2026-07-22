@@ -30,8 +30,7 @@ ActuationWorklogItemView* CreateWorklogItemView(
   ActuationWorklogItem* item = [[ActuationWorklogItem alloc]
       initWithTitle:config.title
            subtitle:config.subtitle
-               icon:DefaultSymbolWithPointSize(kPersonBadgeKeyFillSymbol,
-                                               kSymbolSize)
+               icon:SymbolWithPointSize(SymbolPersonBadgeKeyFill, kSymbolSize)
               style:config.style
              active:config.active];
   ActuationWorklogItemView* view = [[ActuationWorklogItemView alloc] init];
