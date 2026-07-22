@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/gcm_driver/crypto/rfc8188_util.h"
+#include "components/gcm_driver/crypto/rfc8291_util.h"
 
 #include <optional>
 #include <string>
@@ -22,12 +22,12 @@ namespace gcm {
 namespace {
 
 const char kInputMessage[] =
-    "Hello, this is a test message for RFC 8188 payload encryption!";
+    "Hello, this is a test message for RFC 8291 payload encryption!";
 const char kAuthSecret[] = "1234567890123456";
 
-class Rfc8188UtilTest : public testing::Test {
+class Rfc8291UtilTest : public testing::Test {
  public:
-  Rfc8188UtilTest() {
+  Rfc8291UtilTest() {
     recipient_private_key_ = crypto::keypair::PrivateKey::GenerateEcP256();
     std::vector<uint8_t> temp_recip_pub =
         recipient_private_key_->ToUncompressedX962Point();
@@ -60,12 +60,12 @@ class Rfc8188UtilTest : public testing::Test {
   std::string sender_public_key_;
 };
 
-TEST_F(Rfc8188UtilTest, SuccessRoundTrip) {
+TEST_F(Rfc8291UtilTest, SuccessRoundTrip) {
   std::string message = kInputMessage;
   std::string auth_secret = kAuthSecret;
 
-  base::expected<std::string, Rfc8188EncryptionError> encrypted =
-      EncryptPayloadWithRfc8188(message, recipient_public_key(), auth_secret,
+  base::expected<std::string, Rfc8291EncryptionError> encrypted =
+      EncryptPayloadWithRfc8291(message, recipient_public_key(), auth_secret,
                                 sender_private_key());
 
   ASSERT_TRUE(encrypted.has_value());
@@ -98,12 +98,12 @@ TEST_F(Rfc8188UtilTest, SuccessRoundTrip) {
   EXPECT_EQ(decrypted_plaintext, message);
 }
 
-TEST_F(Rfc8188UtilTest, SuccessRoundTripLargePayload) {
+TEST_F(Rfc8291UtilTest, SuccessRoundTripLargePayload) {
   std::string message(5000, 'a');
   std::string auth_secret = kAuthSecret;
 
-  base::expected<std::string, Rfc8188EncryptionError> encrypted =
-      EncryptPayloadWithRfc8188(message, recipient_public_key(), auth_secret,
+  base::expected<std::string, Rfc8291EncryptionError> encrypted =
+      EncryptPayloadWithRfc8291(message, recipient_public_key(), auth_secret,
                                 sender_private_key());
 
   ASSERT_TRUE(encrypted.has_value());
@@ -139,15 +139,15 @@ TEST_F(Rfc8188UtilTest, SuccessRoundTripLargePayload) {
   EXPECT_EQ(decrypted_plaintext, message);
 }
 
-TEST_F(Rfc8188UtilTest, LargePayloadInvalidOutputLegacyFlagDisabled) {
+TEST_F(Rfc8291UtilTest, LargePayloadInvalidOutputLegacyFlagDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kRfc8188StrictCompliance);
+  scoped_feature_list.InitAndDisableFeature(kRfc8291StrictCompliance);
 
   std::string message(5000, 'a');
   std::string auth_secret = kAuthSecret;
 
-  base::expected<std::string, Rfc8188EncryptionError> encrypted =
-      EncryptPayloadWithRfc8188(message, recipient_public_key(), auth_secret,
+  base::expected<std::string, Rfc8291EncryptionError> encrypted =
+      EncryptPayloadWithRfc8291(message, recipient_public_key(), auth_secret,
                                 sender_private_key());
 
   ASSERT_TRUE(encrypted.has_value());
@@ -162,44 +162,44 @@ TEST_F(Rfc8188UtilTest, LargePayloadInvalidOutputLegacyFlagDisabled) {
   EXPECT_LT(rs, ciphertext.size());
 }
 
-TEST_F(Rfc8188UtilTest, InvalidInputs) {
+TEST_F(Rfc8291UtilTest, InvalidInputs) {
   std::string message = kInputMessage;
   std::string auth_secret = kAuthSecret;
 
   std::string invalid_pub_key(64, '0');
-  base::expected<std::string, Rfc8188EncryptionError> result =
-      EncryptPayloadWithRfc8188(message, invalid_pub_key, auth_secret,
+  base::expected<std::string, Rfc8291EncryptionError> result =
+      EncryptPayloadWithRfc8291(message, invalid_pub_key, auth_secret,
                                 sender_private_key());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), Rfc8188EncryptionError::kEncryptionFailed);
+  EXPECT_EQ(result.error(), Rfc8291EncryptionError::kEncryptionFailed);
 
   std::string invalid_format_pub_key = recipient_public_key();
   invalid_format_pub_key[0] = 0x00;
-  result = EncryptPayloadWithRfc8188(message, invalid_format_pub_key,
+  result = EncryptPayloadWithRfc8291(message, invalid_format_pub_key,
                                      auth_secret, sender_private_key());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), Rfc8188EncryptionError::kEncryptionFailed);
+  EXPECT_EQ(result.error(), Rfc8291EncryptionError::kEncryptionFailed);
 
   std::string invalid_auth_secret = "too_short";
-  result = EncryptPayloadWithRfc8188(message, recipient_public_key(),
+  result = EncryptPayloadWithRfc8291(message, recipient_public_key(),
                                      invalid_auth_secret, sender_private_key());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), Rfc8188EncryptionError::kEncryptionFailed);
+  EXPECT_EQ(result.error(), Rfc8291EncryptionError::kEncryptionFailed);
 }
 
-TEST_F(Rfc8188UtilTest, InvalidInputsLegacyFlagDisabled) {
+TEST_F(Rfc8291UtilTest, InvalidInputsLegacyFlagDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kRfc8188StrictCompliance);
+  scoped_feature_list.InitAndDisableFeature(kRfc8291StrictCompliance);
 
   std::string message = kInputMessage;
   std::string auth_secret = kAuthSecret;
 
   std::string invalid_pub_key(64, '0');
-  base::expected<std::string, Rfc8188EncryptionError> result =
-      EncryptPayloadWithRfc8188(message, invalid_pub_key, auth_secret,
+  base::expected<std::string, Rfc8291EncryptionError> result =
+      EncryptPayloadWithRfc8291(message, invalid_pub_key, auth_secret,
                                 sender_private_key());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), Rfc8188EncryptionError::kKeyDerivationFailed);
+  EXPECT_EQ(result.error(), Rfc8291EncryptionError::kKeyDerivationFailed);
 }
 
 }  // namespace

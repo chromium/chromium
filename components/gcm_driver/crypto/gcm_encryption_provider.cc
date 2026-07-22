@@ -23,7 +23,7 @@
 #include "components/gcm_driver/crypto/message_payload_parser.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/gcm_driver/crypto/proto/gcm_encryption_data.pb.h"
-#include "components/gcm_driver/crypto/rfc8188_util.h"
+#include "components/gcm_driver/crypto/rfc8291_util.h"
 #include "crypto/keypair.h"
 #include "crypto/random.h"
 
@@ -361,14 +361,14 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
     return;
   }
 
-  base::expected<std::string, Rfc8188EncryptionError> encrypted =
-      EncryptPayloadWithRfc8188(message, p256dh, auth_secret, *key);
+  base::expected<std::string, Rfc8291EncryptionError> encrypted =
+      EncryptPayloadWithRfc8291(message, p256dh, auth_secret, *key);
 
   if (!encrypted.has_value()) {
     DLOG(ERROR) << "Unable to encrypt the outgoing GCM message: "
                 << static_cast<int>(encrypted.error());
     GCMEncryptionResult error_result = GCMEncryptionResult::ENCRYPTION_FAILED;
-    if (encrypted.error() == Rfc8188EncryptionError::kKeyDerivationFailed) {
+    if (encrypted.error() == Rfc8291EncryptionError::kKeyDerivationFailed) {
       error_result = GCMEncryptionResult::INVALID_SHARED_SECRET;
     }
     std::move(callback).Run(error_result, std::string());

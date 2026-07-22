@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/gcm_driver/crypto/rfc8188_util.h"
+#include "components/gcm_driver/crypto/rfc8291_util.h"
 
 #include <algorithm>
 
@@ -19,9 +19,9 @@
 
 namespace gcm {
 
-BASE_FEATURE(kRfc8188StrictCompliance, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRfc8291StrictCompliance, base::FEATURE_ENABLED_BY_DEFAULT);
 
-base::expected<std::string, Rfc8188EncryptionError> EncryptPayloadWithRfc8188(
+base::expected<std::string, Rfc8291EncryptionError> EncryptPayloadWithRfc8291(
     std::string_view message,
     std::string_view p256dh,
     std::string_view auth_secret,
@@ -29,14 +29,14 @@ base::expected<std::string, Rfc8188EncryptionError> EncryptPayloadWithRfc8188(
   // Validate recipient public key and auth secret sizes to avoid crashing debug
   // builds. Per SEC 1 (ANSI X9.62), an uncompressed P-256 point is 65 bytes
   // starting with 0x04. Per RFC 8291 Section 3.2, auth secret is 16 bytes.
-  if (base::FeatureList::IsEnabled(kRfc8188StrictCompliance)) {
+  if (base::FeatureList::IsEnabled(kRfc8291StrictCompliance)) {
     if (p256dh.size() != 65 || p256dh[0] != 0x04) {
       DLOG(ERROR) << "Invalid recipient public key. Size: " << p256dh.size();
-      return base::unexpected(Rfc8188EncryptionError::kEncryptionFailed);
+      return base::unexpected(Rfc8291EncryptionError::kEncryptionFailed);
     }
     if (auth_secret.size() != 16) {
       DLOG(ERROR) << "Invalid auth secret size: " << auth_secret.size();
-      return base::unexpected(Rfc8188EncryptionError::kEncryptionFailed);
+      return base::unexpected(Rfc8291EncryptionError::kEncryptionFailed);
     }
   }
 
@@ -48,7 +48,7 @@ base::expected<std::string, Rfc8188EncryptionError> EncryptPayloadWithRfc8188(
   std::string shared_secret;
   if (!ComputeSharedP256Secret(sender_private_key, p256dh, &shared_secret)) {
     DLOG(ERROR) << "Unable to calculate the shared secret.";
-    return base::unexpected(Rfc8188EncryptionError::kKeyDerivationFailed);
+    return base::unexpected(Rfc8291EncryptionError::kKeyDerivationFailed);
   }
 
   size_t record_size = 0;
@@ -63,7 +63,7 @@ base::expected<std::string, Rfc8188EncryptionError> EncryptPayloadWithRfc8188(
                              auth_secret, salt, message, &record_size,
                              &ciphertext)) {
     DLOG(ERROR) << "Encryption failed.";
-    return base::unexpected(Rfc8188EncryptionError::kEncryptionFailed);
+    return base::unexpected(Rfc8291EncryptionError::kEncryptionFailed);
   }
 
   // Construct encryption header.
@@ -71,7 +71,7 @@ base::expected<std::string, Rfc8188EncryptionError> EncryptPayloadWithRfc8188(
   // 16-byte AEAD tag, making it smaller than the actual record size for large
   // payloads. To comply with RFC 8188, rs must be >= the size of the record
   // (including tag).
-  uint32_t rs = base::FeatureList::IsEnabled(kRfc8188StrictCompliance)
+  uint32_t rs = base::FeatureList::IsEnabled(kRfc8291StrictCompliance)
                     ? base::checked_cast<uint32_t>(
                           std::max(record_size, ciphertext.size()))
                     : base::checked_cast<uint32_t>(record_size);

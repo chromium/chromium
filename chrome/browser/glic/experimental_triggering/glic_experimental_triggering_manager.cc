@@ -21,7 +21,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/common/chrome_features.h"
-#include "components/gcm_driver/crypto/rfc8188_util.h"
+#include "components/gcm_driver/crypto/rfc8291_util.h"
 #include "components/tabs/public/tab_interface.h"
 #include "crypto/keypair.h"
 #include "crypto/secure_util.h"
@@ -40,7 +40,7 @@ std::optional<std::vector<uint8_t>> EncryptScreenshotPayloadOnBackgroundThread(
 
   // Encrypts according to RFC 8291 (Web Push Message Encryption), generating
   // an ephemeral ECDH P-256 header combined with RFC 8188 record encryption.
-  auto encrypted_payload = gcm::EncryptPayloadWithRfc8188(
+  auto encrypted_payload = gcm::EncryptPayloadWithRfc8291(
       base::as_string_view(jpeg_data), base::as_string_view(public_key),
       base::as_string_view(auth_secret), temp_key);
 
