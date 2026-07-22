@@ -20,6 +20,7 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
+#include "ui/events/ozone/layout/xkb/xkb_evdev_codes.h"
 
 namespace ui {
 
@@ -1023,6 +1024,84 @@ TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
               layout_engine_->GetDomCodeByKeysym(test_case.keysym, modifiers))
         << "input: " << test_case.keysym << ", " << test_case.modifiers;
   }
+}
+
+TEST(XkbKeyboardLayoutEngineTest, NumpadDecimal) {
+  XkbEvdevCodes evdev_codes;
+  XkbKeyboardLayoutEngine layout_engine(evdev_codes);
+
+  // Set up US keyboard layout.
+  {
+    std::unique_ptr<xkb_context, ui::XkbContextDeleter> xkb_context(
+        xkb_context_new(XKB_CONTEXT_NO_FLAGS));
+    xkb_rule_names names = {
+        .rules = nullptr,
+        .model = "pc101",
+        .layout = "us",
+        .variant = "",
+        .options = "",
+    };
+    std::unique_ptr<xkb_keymap, ui::XkbKeymapDeleter> xkb_keymap(
+        xkb_keymap_new_from_names(xkb_context.get(), &names,
+                                  XKB_KEYMAP_COMPILE_NO_FLAGS));
+    std::unique_ptr<char, base::FreeDeleter> layout(
+        xkb_keymap_get_as_string(xkb_keymap.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
+    layout_engine.SetCurrentLayoutFromBuffer(layout.get(),
+                                             std::strlen(layout.get()));
+  }
+
+  DomKey dom_key;
+  KeyboardCode key_code;
+
+  // With NumLock enabled, NUMPAD_DECIMAL should map to DomKey '.' and
+  // VKEY_DECIMAL.
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::NUMPAD_DECIMAL,
+                                   ui::EF_NUM_LOCK_ON, &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::FromCharacter('.'), dom_key);
+  EXPECT_EQ(ui::VKEY_DECIMAL, key_code);
+
+  // NumLock off tests are skipped on ChromeOS because NumLock is always on.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // With NumLock disabled, NUMPAD_DECIMAL should map to DomKey::DEL and
+  // VKEY_DELETE.
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::NUMPAD_DECIMAL, ui::EF_NONE,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::DEL, dom_key);
+  EXPECT_EQ(ui::VKEY_DELETE, key_code);
+
+  // With NumLock disabled and Shift down, the key should still act as Delete
+  // (to facilitate selecting text with the numpad, for example).
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::NUMPAD_DECIMAL,
+                                   ui::EF_SHIFT_DOWN, &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::DEL, dom_key);
+  EXPECT_EQ(ui::VKEY_DELETE, key_code);
+#endif
+
+  // With NumLock enabled and Shift down, NumLock behavior is inverted (acts as
+  // disabled), which maps to DomKey::DEL and VKEY_DELETE.
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::NUMPAD_DECIMAL,
+                                   ui::EF_SHIFT_DOWN | ui::EF_NUM_LOCK_ON,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::DEL, dom_key);
+  EXPECT_EQ(ui::VKEY_DELETE, key_code);
+
+  // With NumLock enabled and Alt down (e.g. Alt+NumpadDecimal), keysym is still
+  // KP_Decimal, mapping to VKEY_DECIMAL.
+  dom_key = DomKey::NONE;
+  key_code = VKEY_UNKNOWN;
+  EXPECT_TRUE(layout_engine.Lookup(ui::DomCode::NUMPAD_DECIMAL,
+                                   ui::EF_ALT_DOWN | ui::EF_NUM_LOCK_ON,
+                                   &dom_key, &key_code));
+  EXPECT_EQ(ui::DomKey::FromCharacter('.'), dom_key);
+  EXPECT_EQ(ui::VKEY_DECIMAL, key_code);
 }
 
 }  // namespace ui
