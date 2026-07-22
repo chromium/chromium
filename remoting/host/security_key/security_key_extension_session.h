@@ -19,7 +19,6 @@
 
 namespace remoting {
 
-class ClientSessionDetails;
 class SecurityKeyAuthHandler;
 
 namespace protocol {
@@ -40,10 +39,8 @@ class SecurityKeyExtensionSession : public HostExtensionSession {
   ~SecurityKeyExtensionSession() override;
 
   // HostExtensionSession interface.
-  bool OnExtensionMessage(ClientSessionDetails* client_session_details,
-                          protocol::ClientStub* client_stub,
+  bool OnExtensionMessage(protocol::ClientStub* client_stub,
                           const protocol::ExtensionMessage& message) override;
-
 
  private:
   // These methods process specific security key extension message types.

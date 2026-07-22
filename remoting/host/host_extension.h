@@ -10,7 +10,6 @@
 
 namespace remoting {
 
-class ClientSessionDetails;
 class HostExtensionSession;
 
 namespace protocol {
@@ -32,11 +31,9 @@ class HostExtension {
 
   // Creates an extension session, which handles extension messages for a
   // client session.
-  // |client_session_details| provides session details and control methods.
-  // |client_stub| may be used to send messages to the session.
-  // Both interfaces are valid for the lifetime of the |HostExtensionSession|.
+  // `client_stub` may be used to send messages to the session.
+  // The interface is valid for the lifetime of the `HostExtensionSession`.
   virtual std::unique_ptr<HostExtensionSession> CreateExtensionSession(
-      ClientSessionDetails* client_session_details,
       protocol::ClientStub* client_stub) = 0;
 };
 

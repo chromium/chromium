@@ -23,7 +23,6 @@ std::string TestEchoExtension::capability() const {
 }
 
 std::unique_ptr<HostExtensionSession> TestEchoExtension::CreateExtensionSession(
-    ClientSessionDetails* details,
     protocol::ClientStub* client_stub) {
   return std::make_unique<TestEchoExtensionSession>();
 }

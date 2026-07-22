@@ -900,8 +900,7 @@ class ClientSessionSecurityKeyTest : public ClientSessionTest {
   }
 
  protected:
-  std::unique_ptr<SecurityKeyAuthHandler> CreateMockHandler(
-      ClientSessionDetails* client_session_details) {
+  std::unique_ptr<SecurityKeyAuthHandler> CreateMockHandler() {
     auto mock =
         std::make_unique<testing::NiceMock<MockSecurityKeyAuthHandler>>();
     mock_handler_ = mock.get();

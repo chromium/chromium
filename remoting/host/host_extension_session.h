@@ -7,24 +7,21 @@
 
 namespace remoting {
 
-class ClientSessionDetails;
-
 namespace protocol {
 class ExtensionMessage;
 class ClientStub;
 }  // namespace protocol
 
-// Created by an |HostExtension| to store |ClientSession| specific state, and to
+// Created by a `HostExtension` to store `ClientSession` specific state, and to
 // handle extension messages.
 class HostExtensionSession {
  public:
   virtual ~HostExtensionSession() {}
 
-  // Called when the host receives an |ExtensionMessage| for the |ClientSession|
-  // associated with this |HostExtensionSession|.
-  // It returns |true| if the message was handled, and |false| otherwise.
+  // Called when the host receives an `ExtensionMessage` for the `ClientSession`
+  // associated with this `HostExtensionSession`.
+  // It returns `true` if the message was handled, and `false` otherwise.
   virtual bool OnExtensionMessage(
-      ClientSessionDetails* client_session_details,
       protocol::ClientStub* client_stub,
       const protocol::ExtensionMessage& message) = 0;
 };

@@ -14,7 +14,6 @@
 
 namespace remoting {
 
-class ClientSessionDetails;
 class HostExtension;
 class HostExtensionSession;
 
@@ -32,8 +31,7 @@ class HostExtensionSessionManager {
       std::vector<raw_ptr<HostExtension, VectorExperimental>>;
 
   // Creates an extension manager for the specified |extensions|.
-  HostExtensionSessionManager(const HostExtensions& extensions,
-                              ClientSessionDetails* client_session_details);
+  explicit HostExtensionSessionManager(const HostExtensions& extensions);
 
   HostExtensionSessionManager(const HostExtensionSessionManager&) = delete;
   HostExtensionSessionManager& operator=(const HostExtensionSessionManager&) =
@@ -67,9 +65,7 @@ class HostExtensionSessionManager {
       base::flat_map</* capability */ std::string,
                      std::unique_ptr<HostExtensionSession>>;
 
-  // Passed to HostExtensionSessions to allow them to send messages,
-  // disconnect the session, etc.
-  raw_ptr<ClientSessionDetails> client_session_details_;
+  // Passed to HostExtensionSessions to allow them to send messages.
   raw_ptr<protocol::ClientStub> client_stub_;
 
   // The HostExtensions to instantiate for the session, if it reaches the

@@ -15,8 +15,7 @@ class TestEchoExtensionSession : public HostExtensionSession {
   ~TestEchoExtensionSession() override;
 
   // HostExtensionSession interface.
-  bool OnExtensionMessage(ClientSessionDetails* client_session_details,
-                          protocol::ClientStub* client_stub,
+  bool OnExtensionMessage(protocol::ClientStub* client_stub,
                           const protocol::ExtensionMessage& message) override;
 };
 

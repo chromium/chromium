@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/client_session_details.h"
 #include "remoting/host/mojom/remote_security_key.mojom.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 
@@ -42,10 +41,7 @@ constexpr base::TimeDelta kSecurityKeyRequestTimeout = base::Seconds(60);
 
 }  // namespace
 
-SecurityKeyAuthHandlerMojo::SecurityKeyAuthHandlerMojo(
-    ClientSessionDetails* client_session_details)
-    : client_session_details_(client_session_details) {
-  DCHECK(client_session_details_);
+SecurityKeyAuthHandlerMojo::SecurityKeyAuthHandlerMojo() {
   receiver_set_.set_disconnect_handler(
       base::BindRepeating(&SecurityKeyAuthHandlerMojo::OnIpcPeerDisconnected,
                           weak_factory_.GetWeakPtr()));

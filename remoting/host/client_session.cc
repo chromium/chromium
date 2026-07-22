@@ -197,7 +197,7 @@ ClientSession::ClientSession(
   // we have completed the data channel migration.
   if (desktop_environment_options.enable_security_key() &&
       gnubby_policy_enabled) {
-    security_key_auth_handler_ = SecurityKeyAuthHandler::Create(this);
+    security_key_auth_handler_ = SecurityKeyAuthHandler::Create();
     if (security_key_auth_handler_) {
       security_key_extension_ = std::make_unique<SecurityKeyExtension>(
           security_key_auth_handler_->GetWeakPtr());
@@ -207,7 +207,7 @@ ClientSession::ClientSession(
 
   // Create a manager for the configured extensions, if any.
   extension_manager_ =
-      std::make_unique<HostExtensionSessionManager>(all_extensions, this);
+      std::make_unique<HostExtensionSessionManager>(all_extensions);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // LocalMouseInputMonitorWin and LocalPointerInputMonitorChromeos filter out
@@ -1034,11 +1034,6 @@ void ClientSession::OnSessionServicesClientConnected(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   session_services_receivers_.Add(this, std::move(receiver));
-}
-
-ClientSessionControl* ClientSession::session_control() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return this;
 }
 
 void ClientSession::OnCursorVisibilityChanged(bool visible) {

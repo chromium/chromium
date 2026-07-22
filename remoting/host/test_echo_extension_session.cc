@@ -19,7 +19,6 @@ TestEchoExtensionSession::TestEchoExtensionSession() = default;
 TestEchoExtensionSession::~TestEchoExtensionSession() = default;
 
 bool TestEchoExtensionSession::OnExtensionMessage(
-    ClientSessionDetails* client_session_details,
     protocol::ClientStub* client_stub,
     const protocol::ExtensionMessage& message) {
   DCHECK(client_stub);

@@ -6,7 +6,6 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "remoting/host/client_session_details.h"
 #include "remoting/host/fake_host_extension.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/proto/control.pb.h"
@@ -41,14 +40,12 @@ class HostExtensionSessionManagerTest : public testing::Test {
   HostExtensionSessionManager::HostExtensions extensions_;
 
   // Mocks of interfaces provided by ClientSession.
-  MockClientSessionDetails client_session_details_;
   protocol::MockClientStub client_stub_;
 };
 
 // Verifies that messages are handled by the correct extension.
 TEST_F(HostExtensionSessionManagerTest, ExtensionMessages_MessageHandled) {
-  HostExtensionSessionManager extension_manager(extensions_,
-                                                &client_session_details_);
+  HostExtensionSessionManager extension_manager(extensions_);
   extension_manager.OnNegotiatedCapabilities(
       &client_stub_, extension_manager.GetCapabilities());
 
@@ -64,8 +61,7 @@ TEST_F(HostExtensionSessionManagerTest, ExtensionMessages_MessageHandled) {
 // Verifies that extension messages not handled by extensions don't result in a
 // crash.
 TEST_F(HostExtensionSessionManagerTest, ExtensionMessages_MessageNotHandled) {
-  HostExtensionSessionManager extension_manager(extensions_,
-                                                &client_session_details_);
+  HostExtensionSessionManager extension_manager(extensions_);
   extension_manager.OnNegotiatedCapabilities(
       &client_stub_, extension_manager.GetCapabilities());
 
@@ -81,8 +77,7 @@ TEST_F(HostExtensionSessionManagerTest, ExtensionMessages_MessageNotHandled) {
 // Verifies that the correct set of capabilities are reported to the client,
 // based on the registered extensions.
 TEST_F(HostExtensionSessionManagerTest, ExtensionCapabilities_AreReported) {
-  HostExtensionSessionManager extension_manager(extensions_,
-                                                &client_session_details_);
+  HostExtensionSessionManager extension_manager(extensions_);
 
   std::vector<std::string> reported_caps =
       base::SplitString(extension_manager.GetCapabilities(), " ",
@@ -97,8 +92,7 @@ TEST_F(HostExtensionSessionManagerTest, ExtensionCapabilities_AreReported) {
 // Verifies that an extension is not instantiated if the client does not
 // support its required capability, and that it does not receive messages.
 TEST_F(HostExtensionSessionManagerTest, ExtensionCapabilities_AreChecked) {
-  HostExtensionSessionManager extension_manager(extensions_,
-                                                &client_session_details_);
+  HostExtensionSessionManager extension_manager(extensions_);
   extension_manager.OnNegotiatedCapabilities(&client_stub_, "cap1");
 
   protocol::ExtensionMessage message;
@@ -112,8 +106,7 @@ TEST_F(HostExtensionSessionManagerTest, ExtensionCapabilities_AreChecked) {
 
 TEST_F(HostExtensionSessionManagerTest,
        FindExtensionSession_ReturnsSessionIfFound) {
-  HostExtensionSessionManager extension_manager(extensions_,
-                                                &client_session_details_);
+  HostExtensionSessionManager extension_manager(extensions_);
   extension_manager.OnNegotiatedCapabilities(&client_stub_, "cap1");
   EXPECT_EQ(extension_manager.FindExtensionSession("cap1"),
             extension1_.extension_session());
@@ -121,15 +114,13 @@ TEST_F(HostExtensionSessionManagerTest,
 
 TEST_F(HostExtensionSessionManagerTest,
        FindExtensionSession_ReturnsNullptrIfNegotiationHasNotCompleted) {
-  HostExtensionSessionManager extension_manager(extensions_,
-                                                &client_session_details_);
+  HostExtensionSessionManager extension_manager(extensions_);
   EXPECT_EQ(extension_manager.FindExtensionSession("cap1"), nullptr);
 }
 
 TEST_F(HostExtensionSessionManagerTest,
        FindExtensionSession_ReturnsNullptrIfCapabilityIsNotSupported) {
-  HostExtensionSessionManager extension_manager(extensions_,
-                                                &client_session_details_);
+  HostExtensionSessionManager extension_manager(extensions_);
   extension_manager.OnNegotiatedCapabilities(&client_stub_, "cap1");
   EXPECT_EQ(extension_manager.FindExtensionSession("cap2"), nullptr);
 }

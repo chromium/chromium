@@ -10,7 +10,6 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
-#include "remoting/host/client_session_details.h"
 #include "remoting/host/security_key/security_key_auth_handler_mojo.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -44,16 +43,14 @@ void SecurityKeyAuthHandler::SetCreateHandlerCallbackForTesting(
 }
 
 // static
-std::unique_ptr<SecurityKeyAuthHandler> SecurityKeyAuthHandler::Create(
-    ClientSessionDetails* client_session_details) {
+std::unique_ptr<SecurityKeyAuthHandler> SecurityKeyAuthHandler::Create() {
   if (!GetTestingCallback().is_null()) {
-    return GetTestingCallback().Run(client_session_details);
+    return GetTestingCallback().Run();
   }
 
   std::unique_ptr<SecurityKeyAuthHandler> auth_handler;
   if (g_use_mojo_handler) {
-    auth_handler =
-        std::make_unique<SecurityKeyAuthHandlerMojo>(client_session_details);
+    auth_handler = std::make_unique<SecurityKeyAuthHandlerMojo>();
   } else {
 #if BUILDFLAG(IS_POSIX)
     auth_handler = std::make_unique<SecurityKeyAuthHandlerPosix>();

@@ -31,7 +31,6 @@
 #include "remoting/host/audio_injector.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
-#include "remoting/host/client_session_details.h"
 #include "remoting/host/client_session_events.h"
 #include "remoting/host/cursor_visibility_notifier.h"
 #include "remoting/host/desktop_display_info.h"
@@ -89,7 +88,6 @@ class ClientSession : public protocol::HostStub,
                       public protocol::ConnectionToClient::EventHandler,
                       public protocol::Session::EventHandler,
                       public ClientSessionControl,
-                      public ClientSessionDetails,
                       public ClientSessionEvents,
                       public CursorVisibilityNotifier::EventHandler,
                       public AudioInjector::Delegate,
@@ -212,9 +210,6 @@ class ClientSession : public protocol::HostStub,
 
   // protocol::Session::EventHandler interface.
   void OnSessionStateChange(protocol::Session::State state) override;
-
-  // ClientSessionDetails interface.
-  ClientSessionControl* session_control() override;
 
   // CursorVisibilityNotifier::EventHandler interface
   void OnCursorVisibilityChanged(bool visible) override;

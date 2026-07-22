@@ -81,14 +81,10 @@ class SecurityKeyAuthHandlerMojoTest : public testing::Test {
 
   // The object under test.
   std::unique_ptr<SecurityKeyAuthHandler> auth_handler_;
-
- private:
-  testing::NiceMock<MockClientSessionDetails> mock_client_session_details_;
 };
 
 SecurityKeyAuthHandlerMojoTest::SecurityKeyAuthHandlerMojoTest() {
-  auth_handler_ = std::make_unique<SecurityKeyAuthHandlerMojo>(
-      &mock_client_session_details_);
+  auth_handler_ = std::make_unique<SecurityKeyAuthHandlerMojo>();
   auth_handler_->SetSendMessageCallback(request_future_.GetRepeatingCallback(),
                                         this);
 }

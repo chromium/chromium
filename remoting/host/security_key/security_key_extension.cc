@@ -23,7 +23,6 @@ std::string SecurityKeyExtension::capability() const {
 
 std::unique_ptr<HostExtensionSession>
 SecurityKeyExtension::CreateExtensionSession(
-    ClientSessionDetails* details,
     protocol::ClientStub* client_stub) {
   return std::make_unique<SecurityKeyExtensionSession>(auth_handler_,
                                                        client_stub);

@@ -14,8 +14,6 @@
 namespace remoting {
 
 class SecurityKeyAuthHandler;
-
-class ClientSessionDetails;
 class HostExtensionSession;
 
 // SecurityKeyExtension extends HostExtension to enable Security Key support.
@@ -34,7 +32,6 @@ class SecurityKeyExtension : public HostExtension {
   // HostExtension interface.
   std::string capability() const override;
   std::unique_ptr<HostExtensionSession> CreateExtensionSession(
-      ClientSessionDetails* client_session_details,
       protocol::ClientStub* client_stub) override;
 
  private:

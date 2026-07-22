@@ -21,7 +21,6 @@ class TestEchoExtension : public HostExtension {
   // HostExtension interface.
   std::string capability() const override;
   std::unique_ptr<HostExtensionSession> CreateExtensionSession(
-      ClientSessionDetails* client_session_details,
       protocol::ClientStub* client_stub) override;
 };
 

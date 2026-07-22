@@ -6,18 +6,14 @@
 
 #include "base/check.h"
 #include "remoting/base/capabilities.h"
-#include "remoting/host/client_session_details.h"
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_extension_session.h"
 
 namespace remoting {
 
 HostExtensionSessionManager::HostExtensionSessionManager(
-    const HostExtensions& extensions,
-    ClientSessionDetails* client_session_details)
-    : client_session_details_(client_session_details),
-      client_stub_(nullptr),
-      extensions_(extensions) {}
+    const HostExtensions& extensions)
+    : client_stub_(nullptr), extensions_(extensions) {}
 
 HostExtensionSessionManager::~HostExtensionSessionManager() = default;
 
@@ -67,8 +63,7 @@ void HostExtensionSessionManager::OnNegotiatedCapabilities(
     }
 
     std::unique_ptr<HostExtensionSession> extension_session =
-        extension->CreateExtensionSession(client_session_details_,
-                                          client_stub_);
+        extension->CreateExtensionSession(client_stub_);
     DCHECK(extension_session);
 
     extension_sessions_.emplace(extension->capability(),
@@ -79,8 +74,7 @@ void HostExtensionSessionManager::OnNegotiatedCapabilities(
 bool HostExtensionSessionManager::OnExtensionMessage(
     const protocol::ExtensionMessage& message) {
   for (const auto& [capability, session] : extension_sessions_) {
-    if (session->OnExtensionMessage(client_session_details_, client_stub_,
-                                    message)) {
+    if (session->OnExtensionMessage(client_stub_, message)) {
       return true;
     }
   }

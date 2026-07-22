@@ -33,10 +33,6 @@ MockClientSessionControl::MockClientSessionControl() = default;
 
 MockClientSessionControl::~MockClientSessionControl() = default;
 
-MockClientSessionDetails::MockClientSessionDetails() = default;
-
-MockClientSessionDetails::~MockClientSessionDetails() = default;
-
 MockClientSessionEvents::MockClientSessionEvents() = default;
 
 MockClientSessionEvents::~MockClientSessionEvents() = default;

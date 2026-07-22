@@ -22,16 +22,13 @@
 
 namespace remoting {
 
-class ClientSessionDetails;
-
 // Implements the mojom::SecurityKeyForwarder interface and handles incoming SK
 // requests from the IPC client. The caller is responsible for running the IPC
 // server and passing in new connections through BindSecurityKeyForwarder().
 class SecurityKeyAuthHandlerMojo : public SecurityKeyAuthHandler,
                                    public mojom::SecurityKeyForwarder {
  public:
-  explicit SecurityKeyAuthHandlerMojo(
-      ClientSessionDetails* client_session_details);
+  SecurityKeyAuthHandlerMojo();
 
   SecurityKeyAuthHandlerMojo(const SecurityKeyAuthHandlerMojo&) = delete;
   SecurityKeyAuthHandlerMojo& operator=(const SecurityKeyAuthHandlerMojo&) =
@@ -86,9 +83,6 @@ class SecurityKeyAuthHandlerMojo : public SecurityKeyAuthHandler,
 
   // The id of the client that registered the callback.
   RAW_PTR_EXCLUSION const void* active_client_id_ = nullptr;
-
-  // Interface which provides details about the client session.
-  raw_ptr<ClientSessionDetails> client_session_details_ = nullptr;
 
   // Tracks the connection created for each security key forwarding session.
   ActiveConnections active_connections_;

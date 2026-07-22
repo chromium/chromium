@@ -317,7 +317,6 @@ source_set("settings") {
 
 source_set("host_extension") {
   sources = [
-    "client_session_details.h",
     "host_extension.h",
     "host_extension_session.h",
   ]

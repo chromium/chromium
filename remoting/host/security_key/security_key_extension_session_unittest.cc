@@ -24,7 +24,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/socket/unix_domain_client_socket_posix.h"
-#include "remoting/host/client_session_details.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/proto/internal.pb.h"
@@ -160,25 +159,6 @@ void TestClientStub::CheckHostDataMessage(int id, const std::string& data) {
   ASSERT_NE(message_.data().find(data_message), std::string::npos);
 }
 
-class TestClientSessionDetails : public ClientSessionDetails {
- public:
-  TestClientSessionDetails();
-
-  TestClientSessionDetails(const TestClientSessionDetails&) = delete;
-  TestClientSessionDetails& operator=(const TestClientSessionDetails&) = delete;
-
-  ~TestClientSessionDetails() override;
-
-  // ClientSessionDetails interface.
-  ClientSessionControl* session_control() override { return nullptr; }
-
- private:
-};
-
-TestClientSessionDetails::TestClientSessionDetails() = default;
-
-TestClientSessionDetails::~TestClientSessionDetails() = default;
-
 class SecurityKeyExtensionSessionTest : public testing::Test {
  public:
   SecurityKeyExtensionSessionTest();
@@ -204,7 +184,6 @@ class SecurityKeyExtensionSessionTest : public testing::Test {
   std::unique_ptr<MockSecurityKeyAuthHandler> mock_security_key_auth_handler_;
 
   TestClientStub client_stub_;
-  TestClientSessionDetails client_details_;
 
   base::ScopedTempDir temp_dir_;
 };
@@ -253,8 +232,8 @@ void SecurityKeyExtensionSessionTest::CreateSecurityKeyConnection() {
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"control\",\"option\":\"auth-v1\"}");
 
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest,
@@ -272,7 +251,7 @@ TEST_F(SecurityKeyExtensionSessionTest,
   message.set_data("{\"type\":\"control\",\"option\":\"auth-v1\"}");
 
   ASSERT_FALSE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+      &client_stub_, message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest,
@@ -285,22 +264,22 @@ TEST_F(SecurityKeyExtensionSessionTest,
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"control\",\"option\":}");
   // handled should still be true, even if the message payload is invalid.
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 
   // Now try an invalid message type.
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"control\",\"option\":\"auth-v0\"}");
   // handled should still be true, even if the message payload is invalid.
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 
   // Now try a message that is missing the option and auth type.
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"control\"}");
   // handled should still be true, even if the message payload is invalid.
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest,
@@ -320,8 +299,8 @@ TEST_F(SecurityKeyExtensionSessionTest,
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"data\"}");
 
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest,
@@ -344,8 +323,8 @@ TEST_F(SecurityKeyExtensionSessionTest,
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"data\",\"connectionId\":1}");
 
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest, DataMessageProcessing_MissingPayload) {
@@ -366,8 +345,8 @@ TEST_F(SecurityKeyExtensionSessionTest, DataMessageProcessing_MissingPayload) {
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"data\",\"connectionId\":1}");
 
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest, DataMessageProcessing_InvalidPayload) {
@@ -389,8 +368,8 @@ TEST_F(SecurityKeyExtensionSessionTest, DataMessageProcessing_InvalidPayload) {
   message.set_data(
       "{\"type\":\"data\",\"connectionId\":1,\"data\":[\"a\",\"-\",\"z\"]}");
 
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest, DataMessageProcessing_ValidData) {
@@ -413,8 +392,8 @@ TEST_F(SecurityKeyExtensionSessionTest, DataMessageProcessing_ValidData) {
   message.set_data(
       "{\"type\":\"data\",\"connectionId\":1,\"data\":[1,2,3,4,5]}");
 
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest,
@@ -434,8 +413,8 @@ TEST_F(SecurityKeyExtensionSessionTest,
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"error\"}");
 
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest,
@@ -458,8 +437,8 @@ TEST_F(SecurityKeyExtensionSessionTest,
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"error\",\"connectionId\":1}");
 
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest, ErrorMessageProcessing_ValidData) {
@@ -480,8 +459,8 @@ TEST_F(SecurityKeyExtensionSessionTest, ErrorMessageProcessing_ValidData) {
   message.set_type("gnubby-auth");
   message.set_data("{\"type\":\"error\",\"connectionId\":1}");
 
-  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(
-      nullptr, nullptr, message));
+  ASSERT_TRUE(security_key_extension_session_->OnExtensionMessage(&client_stub_,
+                                                                  message));
 }
 
 TEST_F(SecurityKeyExtensionSessionTest, SendMessageToClient_ValidData) {

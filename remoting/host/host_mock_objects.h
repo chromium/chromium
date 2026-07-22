@@ -30,7 +30,6 @@
 #include "remoting/host/chromoting_host_services_provider.h"
 #include "remoting/host/client_session.h"
 #include "remoting/host/client_session_control.h"
-#include "remoting/host/client_session_details.h"
 #include "remoting/host/client_session_events.h"
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_environment.h"
@@ -151,17 +150,7 @@ class MockClientSessionControl : public ClientSessionControl {
               (override));
 };
 
-class MockClientSessionDetails : public ClientSessionDetails {
- public:
-  MockClientSessionDetails();
 
-  MockClientSessionDetails(const MockClientSessionDetails&) = delete;
-  MockClientSessionDetails& operator=(const MockClientSessionDetails&) = delete;
-
-  ~MockClientSessionDetails() override;
-
-  MOCK_METHOD(ClientSessionControl*, session_control, (), (override));
-};
 
 class MockClientSessionEvents : public ClientSessionEvents {
  public:
