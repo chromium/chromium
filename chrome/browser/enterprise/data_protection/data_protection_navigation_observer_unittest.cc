@@ -49,6 +49,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/url_util.h"
 
 namespace enterprise_data_protection {
@@ -267,24 +268,37 @@ class FakeDataProtectionNavigationController
   FakeDataProtectionNavigationController(
       content::WebContents* web_contents,
       safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
+      base::RepeatingCallback<void(const UrlSettings&)> callback)
+      : content::WebContentsObserver(web_contents),
+        lookup_service_(lookup_service),
+        repeating_callback_(std::move(callback)) {}
+
+  FakeDataProtectionNavigationController(
+      content::WebContents* web_contents,
+      safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
       DataProtectionNavigationObserver::Callback callback)
       : content::WebContentsObserver(web_contents),
         lookup_service_(lookup_service),
-        callback_(std::move(callback)) {}
+        once_callback_(std::move(callback)) {}
 
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     // Actual controller only instantiates observer for primary main
     // navigations.
-    if (!navigation_handle->IsInPrimaryMainFrame() ||
-        navigation_handle->IsSameDocument()) {
+    if (!navigation_handle->IsInPrimaryMainFrame()) {
       return;
     }
     EXPECT_EQ(web_contents(), navigation_handle->GetWebContents());
+    DataProtectionNavigationObserver::Callback callback;
+    if (repeating_callback_) {
+      callback = base::BindOnce(repeating_callback_);
+    } else if (once_callback_) {
+      callback = std::move(once_callback_);
+    }
     auto navigation_observer =
         std::make_unique<DataProtectionNavigationObserver>(
             *navigation_handle, lookup_service_, web_contents(), this,
-            std::move(callback_));
+            std::move(callback));
 
     navigation_observers_.emplace(navigation_handle->GetNavigationId(),
                                   std::move(navigation_observer));
@@ -296,7 +310,8 @@ class FakeDataProtectionNavigationController
 
  private:
   raw_ptr<safe_browsing::RealTimeUrlLookupServiceBase> lookup_service_;
-  DataProtectionNavigationObserver::Callback callback_;
+  base::RepeatingCallback<void(const UrlSettings&)> repeating_callback_;
+  DataProtectionNavigationObserver::Callback once_callback_;
   DataProtectionNavigationObserver::NavigationObservers navigation_observers_;
 };
 
@@ -1102,6 +1117,78 @@ TEST_F(SinglePageAppWatermarkTest,
   EXPECT_CALL(observer, DidFinishNavigation);
   simulator->CommitSameDocument();
 }
+
+struct WatermarkChangeParams {
+  std::string source_url;
+  std::optional<std::string> source_watermark;
+  std::string destination_url;
+  std::optional<std::string> destination_watermark;
+} kWatermarkChangeTestCases[]{
+    {
+        .source_url = "https://example.com/watermark",
+        .source_watermark = "custom_message",
+        .destination_url = "https://example.com/watermark#unwatermarked",
+        .destination_watermark = std::nullopt,
+    },
+    {
+        .source_url = "https://example.com/unwatermarked",
+        .source_watermark = std::nullopt,
+        .destination_url = "https://example.com/unwatermarked#watermark",
+        .destination_watermark = "custom_message",
+    }};
+
+class SinglePageAppWatermarkChangeTest
+    : public SinglePageAppWatermarkTest,
+      public testing::WithParamInterface<WatermarkChangeParams> {};
+
+TEST_P(SinglePageAppWatermarkChangeTest,
+       SameDocumentNavigation_WatermarkChanges) {
+  DataProtectionNavigationObserver::SetLookupServiceForTesting(
+      &lookup_service_);
+  lookup_service_.SetWatermarkTextForURL(GURL(GetParam().source_url),
+                                         GetParam().source_watermark);
+  lookup_service_.SetWatermarkTextForURL(GURL(GetParam().destination_url),
+                                         GetParam().destination_watermark);
+
+  SetContents(CreateTestWebContents());
+  base::test::TestFuture<const UrlSettings&> future;
+  FakeDataProtectionNavigationController controller(
+      web_contents(), &lookup_service_, future.GetRepeatingCallback());
+
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
+      GURL(GetParam().source_url), web_contents()->GetPrimaryMainFrame());
+  simulator->Start();
+  simulator->Commit();
+
+  EXPECT_EQ(future.Take().watermark_text.empty(),
+            !GetParam().source_watermark.has_value());
+
+  auto* user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings().watermark_text.empty(),
+            !GetParam().source_watermark.has_value());
+
+  auto same_doc_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL(GetParam().destination_url), main_rfh());
+  same_doc_simulator->CommitSameDocument();
+
+  EXPECT_EQ(future.Take().watermark_text.empty(),
+            !GetParam().destination_watermark.has_value());
+
+  // Verify PageUserData is updated to empty watermark on the same
+  // content::Page.
+  user_data = DataProtectionPageUserData::GetForPage(
+      GetPageFromWebContents(web_contents()));
+  ASSERT_TRUE(user_data);
+  EXPECT_EQ(user_data->settings().watermark_text.empty(),
+            !GetParam().destination_watermark.has_value());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SinglePageAppWatermarkChangeTest,
+                         testing::ValuesIn(kWatermarkChangeTestCases));
 
 class OrderedDataProtectionNavigationObserverTest
     : public DataProtectionNavigationObserverTest,

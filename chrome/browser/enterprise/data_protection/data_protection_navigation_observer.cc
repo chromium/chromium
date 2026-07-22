@@ -468,35 +468,37 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
   // the navigation happens from the bfcache, the page itself is located in
   // the browser's cache, and the lookup service's cache TTL has expired.
   // Will need to see if in practice this is a problem.
-  auto* ud = GetUserData(web_contents());
-  if (ud) {
-    LogVerdictSource(URLVerdictSource::kPageUserData);
-    RunPendingNavigationCallback(web_contents(),
-                                 std::move(pending_navigation_callback_));
-    return;
+  if (is_from_cache_) {
+    auto* ud = GetUserData(web_contents());
+    if (ud) {
+      LogVerdictSource(URLVerdictSource::kPageUserData);
+      RunPendingNavigationCallback(web_contents(),
+                                   std::move(pending_navigation_callback_));
+      return;
+    }
   }
 
   DataProtectionPageUserData::UpdateDataControlsScreenshotState(
       GetPageFromWebContents(navigation_handle->GetWebContents()), identifier_,
       allow_screenshot_);
 
-  if (rt_lookup_response_.get()) {
-    LogVerdictSource(URLVerdictSource::kCachedLookupResult);
-    OnDoLookupComplete(web_contents()->GetWeakPtr(),
-                       std::move(pending_navigation_callback_), identifier_,
-                       std::move(rt_lookup_response_));
-  } else if (ShouldPerformRealTimeUrlCheck(
-                 web_contents()->GetBrowserContext())) {
+  if (is_from_cache_ &&
+      ShouldPerformRealTimeUrlCheck(web_contents()->GetBrowserContext())) {
     LogVerdictSource(URLVerdictSource::kPostNavigationLookup);
     DoLookup(
         lookup_service_, navigation_handle->GetURL(),
         base::BindOnce(&OnDoLookupComplete, web_contents()->GetWeakPtr(),
                        std::move(pending_navigation_callback_), identifier_),
         web_contents());
-  } else if (web_contents()) {
-    RunPendingNavigationCallback(web_contents(),
-                                 std::move(pending_navigation_callback_));
+    return;
   }
+
+  if (rt_lookup_response_.get()) {
+    LogVerdictSource(URLVerdictSource::kCachedLookupResult);
+  }
+  OnDoLookupComplete(web_contents()->GetWeakPtr(),
+                     std::move(pending_navigation_callback_), identifier_,
+                     std::move(rt_lookup_response_));
 
   DCHECK(pending_navigation_callback_.is_null());
 }
