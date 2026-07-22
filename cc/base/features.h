@@ -151,10 +151,6 @@ CC_BASE_EXPORT extern const char kNewContentForCheckerboardedScrollsPerFrame[];
 CC_BASE_EXPORT extern const base::FeatureParam<std::string>
     kNewContentForCheckerboardedScrollsParam;
 
-// When enabled, LCD text is allowed with some filters and backdrop filters.
-// Killswitch M135.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAllowLCDTextWithFilter);
-
 // When enabled, and an image decode is requested by both a tile task and
 // explicitly via img.decode(), it will be decoded only once.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kPreventDuplicateImageDecodes);

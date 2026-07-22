@@ -206,9 +206,6 @@ bool FilterOperations::AllowsLCDText() const {
   if (operations_.empty()) {
     return true;
   }
-  if (!base::FeatureList::IsEnabled(features::kAllowLCDTextWithFilter)) {
-    return false;
-  }
   // Assumes any complex filter can cause color fringing of LCD-text pixels.
   if (operations_.size() > 1) {
     return false;
