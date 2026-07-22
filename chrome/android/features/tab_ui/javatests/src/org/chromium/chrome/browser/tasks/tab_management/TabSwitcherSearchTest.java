@@ -329,7 +329,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288229
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288229
     public void testSearchActivityBackButton() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         mPage.openRegularTabSwitcher().openTabSwitcherSearch().pressBackToRegularTabSwitcher(cta);

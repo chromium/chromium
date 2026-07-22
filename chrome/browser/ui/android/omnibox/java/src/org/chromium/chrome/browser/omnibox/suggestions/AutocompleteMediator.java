@@ -1357,7 +1357,7 @@ class AutocompleteMediator
 
     private void onFuseboxStateChanged(@FuseboxState int fuseboxState) {
         boolean suggestionsSeparated =
-                mEmbedder.isTablet()
+                !mEmbedder.isPhoneStyleWindow()
                         && (fuseboxState == FuseboxState.DISABLED
                                 || getFuseboxLayoutMode() == FuseboxLayoutMode.SUGGESTIONS_POPOVER);
 
@@ -1368,7 +1368,7 @@ class AutocompleteMediator
 
     boolean shouldAnimateFuseboxPopover() {
         return mFuseboxCoordinator.getFuseboxStateSupplier().get() != FuseboxState.DISABLED
-                && mEmbedder.isTablet()
+                && mEmbedder.isWideWindow()
                 && !OmniboxCapabilities.isDesktopPlatform();
     }
 

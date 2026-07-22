@@ -2009,7 +2009,8 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     public void fuseboxStateChanges() {
-        doReturn(true).when(mEmbedder).isTablet();
+        doReturn(true).when(mEmbedder).isWideWindow();
+        doReturn(false).when(mEmbedder).isPhoneStyleWindow();
         mMediator.beginInput(createEmptySession());
         mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -2029,13 +2030,28 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     public void fuseboxStateChanges_phone() {
-        doReturn(false).when(mEmbedder).isTablet();
+        doReturn(false).when(mEmbedder).isWideWindow();
+        doReturn(true).when(mEmbedder).isPhoneStyleWindow();
         mMediator.beginInput(createEmptySession());
         mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(mListModel.get(SuggestionListProperties.ROUND_TOP_CORNERS));
         assertFalse(mListModel.get(SuggestionListProperties.DRAW_OVER_ANCHOR));
+    }
+
+    @Test
+    @SmallTest
+    public void fuseboxStateChanges_phone_popover() {
+        doReturn(false).when(mEmbedder).isWideWindow();
+        doReturn(false).when(mEmbedder).isPhoneStyleWindow();
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mMediator.beginInput(createEmptySession());
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(mListModel.get(SuggestionListProperties.ROUND_TOP_CORNERS));
+        assertTrue(mListModel.get(SuggestionListProperties.DRAW_OVER_ANCHOR));
     }
 
     @Test
@@ -2237,7 +2253,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     public void testExternallyDrivenFadeAnimation() {
-        doReturn(true).when(mEmbedder).isTablet();
+        doReturn(true).when(mEmbedder).isWideWindow();
         var session = createEmptySession();
         mMediator.beginInput(session);
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
@@ -2250,7 +2266,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     public void testUnsyncedAnimation_doesNotShowKeyboardInStandbyNoFocus() {
-        doReturn(false).when(mEmbedder).isTablet();
+        doReturn(false).when(mEmbedder).isWideWindow();
         var session = createSession(AutocompleteRequestType.SEARCH);
         session.getAutocompleteInput()
                 .setAutocompleteState(AutocompleteInput.AutocompleteState.STANDBY_NO_FOCUS);
@@ -2267,7 +2283,7 @@ public class AutocompleteMediatorUnitTest {
     @Test
     @SmallTest
     public void testUnsyncedAnimation_showsKeyboardInEnabledState() {
-        doReturn(false).when(mEmbedder).isTablet();
+        doReturn(false).when(mEmbedder).isWideWindow();
         var session = createSession(AutocompleteRequestType.SEARCH);
         session.getAutocompleteInput()
                 .setAutocompleteState(AutocompleteInput.AutocompleteState.ENABLED);

@@ -103,10 +103,13 @@ class SuggestionListViewBinder
             view.container.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
         } else if (SuggestionListProperties.GESTURE_OBSERVER.equals(propertyKey)) {
             view.dropdown.setGestureObserver(model.get(SuggestionListProperties.GESTURE_OBSERVER));
-        } else if (SuggestionListProperties.IS_LARGE_SCREEN.equals(propertyKey)) {
+        } else if (SuggestionListProperties.IS_LARGE_SCREEN.equals(propertyKey)
+                || SuggestionListProperties.ROUND_TOP_CORNERS.equals(propertyKey)) {
             updateColorScheme(model, view);
-            view.container.setShouldClipToOutline(
-                    model.get(SuggestionListProperties.IS_LARGE_SCREEN));
+            boolean isLargeScreen = model.get(SuggestionListProperties.IS_LARGE_SCREEN);
+            boolean roundTopCorners = model.get(SuggestionListProperties.ROUND_TOP_CORNERS);
+            view.container.setShouldRoundTopCorners(roundTopCorners);
+            view.container.setShouldClipToOutline(isLargeScreen || roundTopCorners);
         } else if (SuggestionListProperties.LIST_IS_FINAL.equals(propertyKey)) {
             if (model.get(SuggestionListProperties.LIST_IS_FINAL)) {
                 view.dropdown.emitWindowContentChangedAnnouncement();
@@ -120,9 +123,6 @@ class SuggestionListViewBinder
                     model.get(SuggestionListProperties.OMNIBOX_SESSION_ACTIVE));
         } else if (SuggestionListProperties.RESET_SELECTION.equals(propertyKey)) {
             view.dropdown.resetSelection();
-        } else if (SuggestionListProperties.ROUND_TOP_CORNERS.equals(propertyKey)) {
-            view.container.setShouldRoundTopCorners(
-                    model.get(SuggestionListProperties.ROUND_TOP_CORNERS));
         } else if (SuggestionListProperties.SUGGESTION_MODELS.equals(propertyKey)) {
             ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
             listItems.addObserver(

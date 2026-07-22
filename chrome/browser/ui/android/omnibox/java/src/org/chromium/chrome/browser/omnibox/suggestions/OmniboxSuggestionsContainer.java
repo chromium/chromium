@@ -63,7 +63,7 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        boolean isTablet = mEmbedder != null && mEmbedder.isTablet();
+        boolean shouldWrapDropdownHeight = mEmbedder != null && !mEmbedder.isPhoneStyleWindow();
 
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Measure");
                 TimingMetric metric = OmniboxMetrics.recordSuggestionListMeasureTime();
@@ -78,9 +78,9 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
             heightMeasureSpec =
                     MeasureSpec.makeMeasureSpec(
                             availableViewportHeight,
-                            isTablet ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
+                            shouldWrapDropdownHeight ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            if (isTablet) {
+            if (shouldWrapDropdownHeight) {
                 setRoundingCorners(mShouldRoundTopCorners, shouldRoundBottomCorners());
             }
         }
