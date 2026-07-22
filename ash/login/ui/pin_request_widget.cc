@@ -30,7 +30,9 @@ base::RepeatingClosure& GetOnShownCallback() {
 }  // namespace
 
 PinRequestWidget::TestApi::TestApi(PinRequestWidget* widget)
-    : pin_request_widget_(widget) {}
+    : pin_request_widget_(widget) {
+  DCHECK(widget);
+}
 
 PinRequestWidget::TestApi::~TestApi() = default;
 
@@ -78,8 +80,7 @@ void PinRequestWidget::ClearInput() {
 
 void PinRequestWidget::Close(bool success) {
   DCHECK_EQ(instance_, this);
-  PinRequestWidget* instance = instance_;
-  instance_ = nullptr;
+  PinRequestWidget* instance = std::exchange(instance_, nullptr);
   std::move(on_pin_request_done_).Run(success);
   widget_->Close();
   delete instance;

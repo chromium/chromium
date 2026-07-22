@@ -932,8 +932,9 @@ void LoginScreenTestApi::CancelPinRequestWidget() {
     FAIL() << "No PIN request widget is shown";
   }
   auto event_generator = MakeAshEventGenerator();
-  PinRequestWidget::TestApi pin_widget_test(PinRequestWidget::Get());
-  PinRequestView::TestApi pin_view_test(pin_widget_test.pin_request_view());
+  auto* pin_request_view =
+      PinRequestWidget::TestApi(PinRequestWidget::Get()).pin_request_view();
+  PinRequestView::TestApi pin_view_test(pin_request_view);
   event_generator->MoveMouseTo(
       pin_view_test.back_button()->GetBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
