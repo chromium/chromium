@@ -40,6 +40,7 @@
 #include "net/disk_cache/sql/sql_persistent_store_backend_shard.h"
 #include "net/disk_cache/sql/sql_read_cache_memory_monitor.h"
 #include "net/disk_cache/sql/sql_shared_cache_manager.h"
+#include "net/http/http_response_info.h"
 
 namespace disk_cache {
 namespace {
@@ -101,6 +102,26 @@ void RecordEvictionHistograms(std::string_view method_name,
 }
 
 }  // namespace
+
+SqlPersistentStore::SharedCacheEligibleEntry::SharedCacheEligibleEntry() =
+    default;
+SqlPersistentStore::SharedCacheEligibleEntry::~SharedCacheEligibleEntry() =
+    default;
+SqlPersistentStore::SharedCacheEligibleEntry::SharedCacheEligibleEntry(
+    SqlPersistentStore::SharedCacheEligibleEntry&&) = default;
+SqlPersistentStore::SharedCacheEligibleEntry&
+SqlPersistentStore::SharedCacheEligibleEntry::operator=(
+    SqlPersistentStore::SharedCacheEligibleEntry&&) = default;
+
+SqlPersistentStore::SharedCacheEligibleEntry::SharedCacheEligibleEntry(
+    CacheEntryKey key,
+    GURL url,
+    std::unique_ptr<net::HttpResponseInfo> response_info,
+    net::NetworkIsolationKey nik)
+    : key(std::move(key)),
+      url(std::move(url)),
+      response_info(std::move(response_info)),
+      nik(std::move(nik)) {}
 
 // static
 std::vector<std::unique_ptr<SqlPersistentStore::BackendShard>>

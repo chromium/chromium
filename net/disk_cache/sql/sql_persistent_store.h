@@ -20,6 +20,7 @@
 #include "base/types/strong_alias.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
@@ -27,6 +28,7 @@
 #include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/sql_backend_aliases.h"
 #include "net/disk_cache/sql/sql_persistent_store_in_memory_index.h"
+#include "url/gurl.h"
 
 // This backend is experimental and only available when the build flag is set.
 static_assert(BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND));
@@ -39,6 +41,7 @@ class SequencedTaskRunner;
 namespace net {
 class GrowableIOBuffer;
 class IOBuffer;
+class HttpResponseInfo;
 }  // namespace net
 
 namespace disk_cache {
@@ -56,6 +59,35 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
  public:
   class BackendShard;
   class Backend;
+
+  // Holds metadata for a cache entry that is eligible to be copied into the
+  // shared cache.
+  struct NET_EXPORT_PRIVATE SharedCacheEligibleEntry {
+    SharedCacheEligibleEntry();
+    ~SharedCacheEligibleEntry();
+    SharedCacheEligibleEntry(const SharedCacheEligibleEntry&) = delete;
+    SharedCacheEligibleEntry& operator=(const SharedCacheEligibleEntry&) =
+        delete;
+    SharedCacheEligibleEntry(SharedCacheEligibleEntry&&);
+    SharedCacheEligibleEntry& operator=(SharedCacheEligibleEntry&&);
+    SharedCacheEligibleEntry(
+        CacheEntryKey key,
+        GURL url,
+        std::unique_ptr<net::HttpResponseInfo> response_info,
+        net::NetworkIsolationKey nik);
+
+    // The key identifying the cache entry.
+    CacheEntryKey key;
+    // The URL of the cache entry.
+    GURL url;
+    // The HTTP response information for the entry. This will be written to
+    // SqlSharedCacheIsolatedDatabase and made directly accessible from the
+    // renderer. Note that some fields are omitted compared to what is stored
+    // in the standard HTTP cache.
+    std::unique_ptr<net::HttpResponseInfo> response_info;
+    // The NetworkIsolationKey associated with the entry.
+    net::NetworkIsolationKey nik;
+  };
 
   // The primary key for resources managed in the SqlPersistentStore's resources
   // table.
