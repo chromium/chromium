@@ -11,6 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -30,6 +31,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.PaddedItemDecorationWithDivider;
@@ -50,7 +52,7 @@ public class SettingsHostFragmentTest {
     /** Subclass SettingsHostFragment to mock initial fragment instantiation. */
     public static class TestSettingsHostFragment extends SettingsHostFragment {
         @Override
-        protected Fragment createInitialFragment() {
+        protected Fragment createInitialFragment(@Nullable Intent intent) {
             return new FirstFakeSettingsFragment();
         }
     }
@@ -133,7 +135,7 @@ public class SettingsHostFragmentTest {
     public void testCreateInitialFragment() {
         SettingsHostFragment fragment = new SettingsHostFragment();
 
-        Fragment initial = fragment.createInitialFragment();
+        Fragment initial = fragment.createInitialFragment(null);
         assertTrue(
                 "Initial fragment should be MultiColumnSettings",
                 initial instanceof MultiColumnSettings);

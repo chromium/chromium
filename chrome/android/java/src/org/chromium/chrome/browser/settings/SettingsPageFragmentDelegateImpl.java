@@ -73,7 +73,6 @@ public class SettingsPageFragmentDelegateImpl
     private final String mFragmentTag;
 
     private @Nullable SettingsHostFragment mSettingsHostFragment;
-    private @Nullable FragmentDependencyProvider mDependencyProvider;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mTitleUpdaterLifecycleCallbacks;
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mSettingsMetricsReporter;
     private @Nullable Toolbar mToolbar;
@@ -122,20 +121,6 @@ public class SettingsPageFragmentDelegateImpl
         OneshotSupplierImpl<BottomSheetController> bottomSheetSupplier =
                 new OneshotSupplierImpl<>();
         bottomSheetSupplier.set(mBottomSheetController);
-
-        mDependencyProvider =
-                new FragmentDependencyProvider(
-                        mActivity,
-                        mProfile,
-                        windowAndroidSupplier,
-                        mActivityResultTracker,
-                        snackbarSupplier,
-                        bottomSheetSupplier,
-                        mModalDialogSupplier,
-                        () -> mSearchCoordinator);
-
-        fragmentManager.registerFragmentLifecycleCallbacks(
-                mDependencyProvider, /* recursive= */ true);
 
         // Update the search coordinator on configuration change.
         mComponentCallbacks =
@@ -208,7 +193,17 @@ public class SettingsPageFragmentDelegateImpl
                     .add(fragmentContainer.getId(), mSettingsHostFragment, mFragmentTag)
                     .commitAllowingStateLoss();
         }
-        mSettingsHostFragment.setDependencyProvider(mDependencyProvider);
+        var dependencyProvider =
+                new FragmentDependencyProvider(
+                        mActivity,
+                        mProfile,
+                        windowAndroidSupplier,
+                        mActivityResultTracker,
+                        snackbarSupplier,
+                        bottomSheetSupplier,
+                        mModalDialogSupplier,
+                        () -> mSearchCoordinator);
+        mSettingsHostFragment.setDependencyProvider(dependencyProvider);
 
         assert mActivity instanceof ActivityLifecycleDispatcherProvider;
         ((ActivityLifecycleDispatcherProvider) mActivity).getLifecycleDispatcher().register(this);
@@ -246,10 +241,6 @@ public class SettingsPageFragmentDelegateImpl
 
         FragmentManager fragmentManager =
                 ((FragmentActivity) mActivity).getSupportFragmentManager();
-        assumeNonNull(mDependencyProvider);
-        fragmentManager.unregisterFragmentLifecycleCallbacks(mDependencyProvider);
-        mDependencyProvider = null;
-        assumeNonNull(mSettingsHostFragment);
 
         if (mTitleUpdaterLifecycleCallbacks != null) {
             fragmentManager.unregisterFragmentLifecycleCallbacks(mTitleUpdaterLifecycleCallbacks);

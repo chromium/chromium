@@ -230,18 +230,20 @@ public class SettingsNavigationImpl implements SettingsNavigation {
             }
             assert activity != null;
             SettingsHostFragment settingsHostFragment = SettingsHostFragment.get(activity);
-            assert settingsHostFragment != null;
-            // A null `fragment` implies the main settings page, so pass null to showFragment().
-            Fragment targetFragment =
-                    fragment != null
-                            ? Fragment.instantiate(context, fragment.getName(), fragmentArgs)
-                            : null;
-            if (settingsHostFragment.showFragment(targetFragment, addToBackStack, tag)) {
-                // TODO(crbug.com/521895796): Once we have a mechanism to open the settings
-                // tab when it is closed, switch to that, and move this "return" outside this block.
-                // Until then we fall back to SettingsActivity, just in case.
-                return;
+            // SettingsHostFragment will be null if settings isn't open.
+            if (settingsHostFragment != null) {
+                // A null `fragment` implies the main settings page, so pass null to
+                // showFragment().
+                Fragment targetFragment =
+                        fragment != null
+                                ? Fragment.instantiate(context, fragment.getName(), fragmentArgs)
+                                : null;
+                if (settingsHostFragment.showFragment(targetFragment, addToBackStack, tag)) {
+                    // The target fragment was shown in an existing settings tab.
+                    return;
+                }
             }
+            // Fall through and use an Intent to open a settings tab.
         }
         Intent intent = createSettingsIntent(context, fragment, fragmentArgs, addToBackStack, tag);
         IntentUtils.safeStartActivity(context, intent);

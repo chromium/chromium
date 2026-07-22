@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -233,7 +234,7 @@ public class SettingsHostFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
 
         if (savedInstanceState == null) {
-            Fragment initialFragment = createInitialFragment();
+            Fragment initialFragment = createInitialFragment(requireActivity().getIntent());
             getChildFragmentManager()
                     .beginTransaction()
                     .add(CONTAINER_ID, initialFragment)
@@ -244,9 +245,16 @@ public class SettingsHostFragment extends Fragment
     /**
      * Creates the initial fragment to be shown in the settings page. Allows overrides for testing
      * to use simpler fragments.
+     *
+     * @param intent The intent to use to create the initial settings detail page. If null, shows
+     *     the default settings page.
      */
-    protected Fragment createInitialFragment() {
-        return new MultiColumnSettings();
+    protected Fragment createInitialFragment(@Nullable Intent intent) {
+        var multiColumnSettings = new MultiColumnSettings();
+        if (intent != null) {
+            multiColumnSettings.setPendingFragmentIntent(intent);
+        }
+        return multiColumnSettings;
     }
 
     @Override
@@ -300,7 +308,6 @@ public class SettingsHostFragment extends Fragment
      * @param fragment The settings fragment to show. If null, the main settings page will show.
      * @param addToBackStack Whether to add the fragment to the back stack.
      * @param tag The tag to use for the fragment.
-     *     <p>TODO(crbug.com/521895796): Provide a mechanism to open settings if it is not open.
      */
     public boolean showFragment(
             @Nullable Fragment fragment, boolean addToBackStack, @Nullable String tag) {
@@ -325,7 +332,7 @@ public class SettingsHostFragment extends Fragment
         }
 
         if (fragment == null) {
-            fragment = createInitialFragment();
+            fragment = createInitialFragment(/* intent= */ null);
         }
 
         var transaction = getChildFragmentManager().beginTransaction();

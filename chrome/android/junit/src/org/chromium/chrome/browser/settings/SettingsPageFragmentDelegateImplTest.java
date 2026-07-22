@@ -181,20 +181,16 @@ public class SettingsPageFragmentDelegateImplTest {
 
         mDelegate.initSettings(mContainerView);
 
-        // Verify FragmentDependencyProvider registration.
+        // Verify FragmentDependencyProvider is not registered on mFragmentManager.
         ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
                 ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
         verify(mFragmentManager, atLeastOnce())
                 .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
-        boolean foundDependencyProvider = false;
         for (FragmentManager.FragmentLifecycleCallbacks callback : callbackCaptor.getAllValues()) {
-            if (callback instanceof FragmentDependencyProvider) {
-                foundDependencyProvider = true;
-            }
+            assertFalse(
+                    "Lifecycle callbacks should not include FragmentDependencyProvider",
+                    callback instanceof FragmentDependencyProvider);
         }
-        assertTrue(
-                "Lifecycle callbacks should include FragmentDependencyProvider",
-                foundDependencyProvider);
 
         // Verify fragment creation and addition.
         verify(mFragmentTransaction)
