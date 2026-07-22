@@ -218,8 +218,7 @@ constexpr CGFloat kCornerRadius = 10;
   UIImageSymbolConfiguration* boldConf = [UIImageSymbolConfiguration
       configurationWithWeight:UIImageSymbolWeightSemibold];
   conf = [conf configurationByApplyingConfiguration:boldConf];
-  UIImage* disclosure =
-      DefaultSymbolWithConfiguration(kChevronForwardSymbol, conf);
+  UIImage* disclosure = SymbolWithConfiguration(SymbolChevronForward, conf);
   UIImageView* disclosureIndicator =
       [[UIImageView alloc] initWithImage:disclosure];
   disclosureIndicator.tintColor = [UIColor colorNamed:kTextTertiaryColor];

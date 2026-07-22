@@ -231,9 +231,9 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
   UIButton* clearButton = [UIButton buttonWithType:UIButtonTypeSystem];
   clearButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [clearButton setImage:DefaultSymbolWithPointSize(kXMarkCircleFillSymbol,
-                                                   kClearButtonSize)
-               forState:UIControlStateNormal];
+  [clearButton
+      setImage:SymbolWithPointSize(SymbolXMarkCircleFill, kClearButtonSize)
+      forState:UIControlStateNormal];
   [clearButton setTintColor:[[UIColor colorNamed:kSolidBlackColor]
                                 colorWithAlphaComponent:kClearButtonAlpha]];
   clearButton.accessibilityLabel =
@@ -535,13 +535,13 @@ const CGFloat kClearButtonWidthAndHeight = 40;
     UIColor* buttonColor = [TabGroupColorPalette commonColor:colorID];
 
     UIImage* normalSymbolImage =
-        DefaultSymbolWithConfiguration(kCircleFillSymbol, configuration);
+        SymbolWithConfiguration(SymbolCircleFill, configuration);
     normalSymbolImage = [normalSymbolImage
         imageWithTintColor:buttonColor
              renderingMode:UIImageRenderingModeAlwaysOriginal];
 
     UIImage* selectedSymbolImage =
-        DefaultSymbolWithConfiguration(kCircleCircleFillSymbol, configuration);
+        SymbolWithConfiguration(SymbolCircleCircleFill, configuration);
     selectedSymbolImage = [selectedSymbolImage
         imageWithTintColor:buttonColor
              renderingMode:UIImageRenderingModeAlwaysOriginal];

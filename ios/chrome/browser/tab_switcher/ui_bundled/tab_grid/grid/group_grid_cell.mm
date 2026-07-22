@@ -441,7 +441,7 @@ const CGFloat kTopBarLargeInset = 20;
   _closeIconView.contentMode = UIViewContentModeCenter;
   _closeIconView.hidden = [self isInSelectionMode];
   _closeIconView.image =
-      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kIconSymbolPointSize);
+      SymbolTemplateWithPointSize(SymbolXMark, kIconSymbolPointSize);
 
   _selectIconView = [[UIImageView alloc] init];
   _selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -528,11 +528,10 @@ const CGFloat kTopBarLargeInset = 20;
 
 - (UIImage*)selectIconImageForCurrentState {
   if (_state == GridCellStateEditingUnselected) {
-    return DefaultSymbolTemplateWithPointSize(kCircleSymbol,
-                                              kIconSymbolPointSize);
+    return SymbolTemplateWithPointSize(SymbolCircle, kIconSymbolPointSize);
   }
-  return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
-                                            kIconSymbolPointSize);
+  return SymbolTemplateWithPointSize(SymbolCheckmarkCircleFill,
+                                     kIconSymbolPointSize);
 }
 
 - (void)configureCloseOrSelectIconConstraints {

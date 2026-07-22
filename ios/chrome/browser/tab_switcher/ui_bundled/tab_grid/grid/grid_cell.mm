@@ -556,7 +556,7 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
   closeIconView.contentMode = UIViewContentModeCenter;
   closeIconView.hidden = self.isInSelectionMode;
   closeIconView.image =
-      DefaultSymbolTemplateWithPointSize(kXMarkSymbol, kIconSymbolPointSize);
+      SymbolTemplateWithPointSize(SymbolXMark, kIconSymbolPointSize);
 
   UIImageView* selectIconView = [[UIImageView alloc] init];
   selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -654,11 +654,10 @@ NSString* GridCellSnapshotAccessibilityIdentifier(NSUInteger index) {
 
 - (UIImage*)selectIconImageForCurrentState {
   if (_state == GridCellStateEditingUnselected) {
-    return DefaultSymbolTemplateWithPointSize(kCircleSymbol,
-                                              kIconSymbolPointSize);
+    return SymbolTemplateWithPointSize(SymbolCircle, kIconSymbolPointSize);
   }
-  return DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol,
-                                            kIconSymbolPointSize);
+  return SymbolTemplateWithPointSize(SymbolCheckmarkCircleFill,
+                                     kIconSymbolPointSize);
 }
 
 - (void)updateTopBarSize {

@@ -222,7 +222,7 @@ const int kMaxNumberOfLogs = 5;
     item.activityMetadata = log.activity_metadata;
 
     UIImage* defaultFavicon = SymbolWithPalette(
-        DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
+        SymbolWithPointSize(SymbolGlobeAmericas, kFaviconSize),
         @[ [UIColor colorNamed:kGrey400Color] ]);
     item.attributes = [FaviconAttributes attributesWithImage:defaultFavicon];
 

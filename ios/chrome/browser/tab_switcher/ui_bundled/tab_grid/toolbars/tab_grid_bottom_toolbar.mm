@@ -414,8 +414,8 @@ CGFloat CompactButtonHorizontalPadding() {
   // Share button.
   _shareButton =
       [self createButtonWithTitle:nil
-                            image:DefaultSymbolWithPointSize(
-                                      kShareSymbol, kSymbolActionPointSize)
+                            image:SymbolWithPointSize(SymbolShare,
+                                                      kSymbolActionPointSize)
                    targetSelector:@selector(shareSelectedTabs:)];
   _shareButton.accessibilityIdentifier = kTabGridEditShareButtonIdentifier;
   [_containerToolbar addSubview:_shareButton];

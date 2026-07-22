@@ -87,7 +87,7 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
       kRecentActivityLogCloseButtonIdentifier;
 
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-      initWithImage:DefaultSymbolWithPointSize(kMenuSymbol, kButtonImageSize)
+      initWithImage:SymbolWithPointSize(SymbolMenu, kButtonImageSize)
                menu:menu];
   self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
       kRecentActivityLogMenuButtonIdentifier;

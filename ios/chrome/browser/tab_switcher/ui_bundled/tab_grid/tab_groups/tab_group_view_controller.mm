@@ -75,7 +75,7 @@ constexpr CGFloat kContainerMultiplier = 0.75;
 constexpr CGFloat kContainerCornerRadius = 24;
 
 // Returns a button to be added to the top toolbar.
-UIButton* TopToolbarButton(NSString* symbol_name,
+UIButton* TopToolbarButton(Symbol symbol,
                            UIAction* action,
                            CGFloat image_size,
                            UIColor* background_color) {
@@ -92,11 +92,11 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
   configuration.baseForegroundColor = UIColor.whiteColor;
   configuration.background = background_configuration;
-  configuration.image = DefaultSymbolWithConfiguration(
-      symbol_name, [UIImageSymbolConfiguration
-                       configurationWithPointSize:image_size
-                                           weight:UIImageSymbolWeightBold
-                                            scale:UIImageSymbolScaleMedium]);
+  configuration.image = SymbolWithConfiguration(
+      symbol, [UIImageSymbolConfiguration
+                  configurationWithPointSize:image_size
+                                      weight:UIImageSymbolWeightBold
+                                       scale:UIImageSymbolScaleMedium]);
   ExtendedTouchTargetButton* button =
       [ExtendedTouchTargetButton buttonWithConfiguration:configuration
                                            primaryAction:action];
@@ -535,7 +535,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
       [_tabGroupColorPalette.commonColor colorWithAlphaComponent:kButtonAlpha];
 
   UIButton* button =
-      TopToolbarButton(kMenuSymbol, nil, kMenuImageSize, backgroundColor);
+      TopToolbarButton(SymbolMenu, nil, kMenuImageSize, backgroundColor);
   button.showsMenuAsPrimaryAction = YES;
   button.menu = [self configuredTabGroupMenu];
   button.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
@@ -583,7 +583,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 
   UIColor* backgroundColor =
       [_tabGroupColorPalette.commonColor colorWithAlphaComponent:kButtonAlpha];
-  _closeButton = TopToolbarButton(kXMarkSymbol, closeAction, kCloseImageSize,
+  _closeButton = TopToolbarButton(SymbolXMark, closeAction, kCloseImageSize,
                                   backgroundColor);
   _closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
   _closeButton.accessibilityIdentifier = kTabGroupCloseButtonIdentifier;

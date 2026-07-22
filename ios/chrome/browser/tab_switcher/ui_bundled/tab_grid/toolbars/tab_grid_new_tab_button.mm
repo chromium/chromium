@@ -95,11 +95,11 @@ UIButtonConfigurationUpdateHandler ConfigurationUpdateHandler() {
       buttonSize = kSmallSize;
     }
 
-    _symbol = CustomSymbolWithPointSize(kPlusCircleFillSymbol, symbolSize);
+    _symbol = SymbolWithPointSize(SymbolPlusCircleFill, symbolSize);
 
     if (@available(iOS 18, *)) {
       self.configuration = [UIButtonConfiguration filledButtonConfiguration];
-      _symbol = DefaultSymbolWithPointSize(kPlusSymbol, symbolSize);
+      _symbol = SymbolWithPointSize(SymbolPlus, symbolSize);
       self.tintColor = UIColor.blackColor;
       if (@available(iOS 26, *)) {
         self.configuration = [UIButtonConfiguration glassButtonConfiguration];

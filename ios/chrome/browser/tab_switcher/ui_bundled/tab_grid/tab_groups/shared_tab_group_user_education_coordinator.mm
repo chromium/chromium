@@ -65,7 +65,7 @@ UIImage* TabGroupImage(UITraitCollection* trait_collection) {
     // Draw the icon.
     [[[UIColor colorNamed:kSolidWhiteColor]
         resolvedColorWithTraitCollection:trait_collection] setFill];
-    UIImage* icon = DefaultSymbolTemplateWithPointSize(kTabGroupsSymbol, 0);
+    UIImage* icon = SymbolTemplateWithPointSize(SymbolTabGroups, 0);
     CGFloat ratio = icon.size.height / icon.size.width;
     CGFloat drawingWidth = kTileSize - 2 * kIconPadding;
     CGFloat drawingHeight = drawingWidth * ratio;

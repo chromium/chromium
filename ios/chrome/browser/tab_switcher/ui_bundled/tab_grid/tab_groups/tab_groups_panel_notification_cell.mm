@@ -106,7 +106,7 @@ const CGFloat kVerticalPadding = 20;
 
 // Returns a configured close button.
 - (UIButton*)createCloseButton {
-  UIImage* buttonImage = DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolSize);
+  UIImage* buttonImage = SymbolWithPointSize(SymbolXMark, kSymbolSize);
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
   [buttonConfiguration setImage:buttonImage];

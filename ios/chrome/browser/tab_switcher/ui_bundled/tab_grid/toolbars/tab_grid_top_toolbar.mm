@@ -480,7 +480,7 @@ CGFloat HorizontalMargin() {
   _doneButton.accessibilityIdentifier = kTabGridDoneButtonIdentifier;
 
   UIImage* overflowMenuImage =
-      DefaultSymbolWithPointSize(kMenuSymbol, kSymbolSearchImagePointSize);
+      SymbolWithPointSize(SymbolMenu, kSymbolSearchImagePointSize);
   _overflowMenuButton = [self createButtonWithImage:overflowMenuImage
                                               title:nil
                                      targetSelector:nil];
@@ -508,7 +508,7 @@ CGFloat HorizontalMargin() {
                                               weight:UIFontWeightSemibold]];
 
   UIImage* searchImage =
-      DefaultSymbolWithPointSize(kSearchSymbol, kSymbolSearchImagePointSize);
+      SymbolWithPointSize(SymbolSearch, kSymbolSearchImagePointSize);
   _searchButton = [self createButtonWithImage:searchImage
                                         title:nil
                                targetSelector:@selector(searchButtonTapped:)];

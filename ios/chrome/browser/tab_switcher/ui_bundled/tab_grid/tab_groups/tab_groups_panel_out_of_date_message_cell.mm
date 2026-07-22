@@ -207,7 +207,7 @@ const CGFloat kUpdateButtonWidthMultiplier = 0.4;
 
 // Returns a configured close button.
 - (UIButton*)createCloseButton {
-  UIImage* buttonImage = DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolSize);
+  UIImage* buttonImage = SymbolWithPointSize(SymbolXMark, kSymbolSize);
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
   [buttonConfiguration setImage:buttonImage];

@@ -1930,17 +1930,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (command.action == @selector(keyCommand_select1)) {
     newTitle = l10n_util::GetNSStringWithFixup(
         IDS_IOS_KEYBOARD_GO_TO_INCOGNITO_TAB_GRID);
-    command.image = CustomSymbolWithConfiguration(kIncognitoSymbol, nil);
+    command.image = SymbolWithConfiguration(SymbolIncognito, nil);
   }
   if (command.action == @selector(keyCommand_select2)) {
     newTitle = l10n_util::GetNSStringWithFixup(
         IDS_IOS_KEYBOARD_GO_TO_REGULAR_TAB_GRID);
-    command.image = DefaultSymbolWithConfiguration(kTabsSymbol, nil);
+    command.image = SymbolWithConfiguration(SymbolTabs, nil);
   }
   if (command.action == @selector(keyCommand_select3)) {
     newTitle =
         l10n_util::GetNSStringWithFixup(IDS_IOS_KEYBOARD_GO_TO_TAB_GROUPS_GRID);
-    command.image = DefaultSymbolWithConfiguration(kTabGroupsSymbol, nil);
+    command.image = SymbolWithConfiguration(SymbolTabGroups, nil);
   }
   // If a new title was determined, set it on the command.
   if (newTitle.length > 0) {

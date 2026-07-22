@@ -116,8 +116,8 @@ constexpr CGFloat kDefaultAvatarAlpha = 0.2;
   [_avatar removeFromSuperview];
   if (!avatar) {
     UIImageView* defaultAvatarImage = [[UIImageView alloc]
-        initWithImage:DefaultSymbolWithPointSize(kPersonFillSymbol,
-                                                 kDefaultAvatarSize)];
+        initWithImage:SymbolWithPointSize(SymbolPersonFill,
+                                          kDefaultAvatarSize)];
     defaultAvatarImage.translatesAutoresizingMaskIntoConstraints = NO;
     defaultAvatarImage.tintColor = [UIColor colorNamed:kSolidWhiteColor];
 
