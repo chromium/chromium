@@ -12,16 +12,22 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/paint/timing/element_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
+#include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -66,9 +72,8 @@ ImageElementTiming& ImageElementTiming::From(LocalDOMWindow& window) {
 ImageElementTiming::ImageElementTiming(LocalDOMWindow& window)
     : window_(&window) {}
 
-void ImageElementTiming::NotifyImageFinished(
-    const LayoutObject& layout_object,
-    const ImageResourceContent* cached_image) {
+void ImageElementTiming::NotifyImageFinished(const LayoutObject& layout_object,
+                                             const MediaTiming* cached_image) {
   if (!NeededForTiming(layout_object)) {
     return;
   }
@@ -98,26 +103,56 @@ base::TimeTicks ImageElementTiming::GetBackgroundImageLoadTime(
   return it->value;
 }
 
-void ImageElementTiming::NotifyImagePainted(
+void ImageElementTiming::NotifyImagePaint(
     const LayoutObject& layout_object,
-    const ImageResourceContent& cached_image,
+    const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
   if (!NeededForTiming(layout_object)) {
     return;
   }
 
-  auto it = images_notified_.find(
-      MediaRecordId::GenerateHash(&layout_object, &cached_image));
-  // It is possible that the pair is not in |images_notified_|. See
-  // https://crbug.com/1027948
-  if (it != images_notified_.end() && !it->value.is_painted_) {
-    it->value.is_painted_ = true;
-    DCHECK(layout_object.GeneratingNode());
-    NotifyImagePaintedInternal(*layout_object.GeneratingNode(), layout_object,
-                               cached_image, current_paint_chunk_properties,
-                               it->value.load_time_, image_border);
+  auto* cached_image = DynamicTo<ImageResourceContent>(media_timing);
+  // TODO(crbug.com/537185406): First video frame is not yet supported for
+  // Element Timing. Fix this once ImageElementTiming is a PaintTiming client.
+  if (!cached_image) {
+    return;
   }
+
+  // Paint Timing notifies us of paints before images are fully loaded. Ignore
+  // those.
+  if (!cached_image->IsLoaded()) {
+    return;
+  }
+
+  Node* node = layout_object.GetNode();
+  bool is_image_or_video_element = IsA<HTMLImageElement>(node) ||
+                                   IsA<HTMLVideoElement>(node) ||
+                                   IsA<SVGImageElement>(node);
+  if (!RuntimeEnabledFeatures::AllImagesPaintedSentToElementTimingEnabled() &&
+      !is_image_or_video_element) {
+    return;
+  }
+
+  auto it = images_notified_.find(
+      MediaRecordId::GenerateHash(&layout_object, cached_image));
+  // It is possible that the pair is not in `images_notified_`, e.g. if
+  // `NotifyImageFinished()` was called before the elementtiming attribute was
+  // added. See also https://crbug.com/1027948.
+  if (it == images_notified_.end() || it->value.is_painted_) {
+    return;
+  }
+
+  if (!is_image_or_video_element) {
+    UseCounter::Count(layout_object.GetDocument(),
+                      WebFeature::kImageElementTimingNotImageOrVideoNode);
+  }
+
+  it->value.is_painted_ = true;
+  DCHECK(layout_object.GeneratingNode());
+  NotifyImagePaintedInternal(*layout_object.GeneratingNode(), layout_object,
+                             *cached_image, current_paint_chunk_properties,
+                             it->value.load_time_, image_border);
 }
 
 void ImageElementTiming::NotifyImagePaintedInternal(
@@ -128,7 +163,8 @@ void ImageElementTiming::NotifyImagePaintedInternal(
     base::TimeTicks load_time,
     const gfx::Rect& image_border) {
   LocalFrame* frame = window_->GetFrame();
-  DCHECK(frame == layout_object.GetDocument().GetFrame());
+  CHECK_EQ(frame, layout_object.GetDocument().GetFrame());
+
   // Background images could cause |node| to not be an element. For example,
   // style applied to body causes this node to be a Document Node. Therefore,
   // bail out if that is the case.
@@ -225,9 +261,7 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
   const LayoutObject* layout_object = node.GetLayoutObject();
-  if (!layout_object) {
-    return;
-  }
+  CHECK(layout_object);
 
   if (!NeededForTiming(*layout_object)) {
     return;
@@ -260,9 +294,9 @@ void ImageElementTiming::NotifyBackgroundImagePainted(
   }
 }
 
-void ImageElementTiming::NotifyImageRemoved(const LayoutObject* layout_object,
+void ImageElementTiming::NotifyImageRemoved(const LayoutObject& layout_object,
                                             const ImageResourceContent* image) {
-  images_notified_.erase(MediaRecordId::GenerateHash(layout_object, image));
+  images_notified_.erase(MediaRecordId::GenerateHash(&layout_object, image));
 }
 
 void ImageElementTiming::EnsureContainerTiming() {

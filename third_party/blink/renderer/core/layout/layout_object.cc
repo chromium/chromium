@@ -134,7 +134,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
@@ -4568,8 +4567,7 @@ void LayoutObject::ImageNotifyFinished(ImageResourceContent* image) {
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->ImageLoaded(this);
 
-  if (LocalDOMWindow* window = GetDocument().domWindow()) {
-    ImageElementTiming::From(*window).NotifyImageFinished(*this, image);
+  if (GetDocument().domWindow()) {
     PaintTimingDetector::From(GetDocument()).NotifyImageFinished(*this, image);
   }
 
@@ -4721,8 +4719,7 @@ Element* LayoutObject::OffsetParent(const Element* base) const {
 
 void LayoutObject::NotifyImageFullyRemoved(ImageResourceContent* image) {
   NOT_DESTROYED();
-  if (LocalDOMWindow* window = GetDocument().domWindow()) {
-    ImageElementTiming::From(*window).NotifyImageRemoved(this, image);
+  if (GetDocument().domWindow()) {
     PaintTimingDetector::From(GetDocument()).NotifyImageRemoved(*this, image);
   }
 }

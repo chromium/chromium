@@ -41,16 +41,17 @@ class CORE_EXPORT ImageElementTiming final
 
   static ImageElementTiming& From(LocalDOMWindow&);
 
-  void NotifyImageFinished(const LayoutObject&, const ImageResourceContent*);
+  void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
 
   void NotifyBackgroundImageFinished(const StyleFetchedImage*);
   base::TimeTicks GetBackgroundImageLoadTime(const StyleImage*);
 
-  // Called when the LayoutObject has been painted. This method might queue a
-  // presentation promise to compute and report paint timestamps.
-  void NotifyImagePainted(
+  // Called when the LayoutObject has been painted. Does nothing if the image is
+  // not fully loaded. This method might queue a presentation promise to compute
+  // and report paint timestamps.
+  void NotifyImagePaint(
       const LayoutObject&,
-      const ImageResourceContent& cached_image,
+      const MediaTiming& cached_image,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border);
 
@@ -60,7 +61,7 @@ class CORE_EXPORT ImageElementTiming final
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       const gfx::Rect& image_border);
 
-  void NotifyImageRemoved(const LayoutObject*,
+  void NotifyImageRemoved(const LayoutObject&,
                           const ImageResourceContent* image);
 
   void Trace(Visitor*) const;
@@ -128,9 +129,9 @@ class CORE_EXPORT ImageElementTiming final
     DISALLOW_NEW();
   };
   // Hashmap of pairs of elements, LayoutObjects (for the elements) and
-  // ImageResourceContent (for the src) which correspond to either images or
-  // background images whose paint has been observed. For background images,
-  // only the |is_painted_| bit is used, as the timestamp needs to be tracked by
+  // MediaTiming (for the src) which correspond to either images or background
+  // images whose paint has been observed. For background images, only the
+  // |is_painted_| bit is used, as the timestamp needs to be tracked by
   // |background_image_timestamps_|.
   HashMap<MediaRecordIdHash, ImageInfo> images_notified_;
 

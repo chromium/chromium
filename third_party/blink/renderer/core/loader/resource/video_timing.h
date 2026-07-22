@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -71,11 +72,18 @@ class VideoTiming final : public GarbageCollected<VideoTiming>,
 
   base::TimeTicks DiscoveryTime() const override { return base::TimeTicks(); }
 
+  bool IsVideo() const override { return true; }
+
  private:
   KURL url_;
   bool is_loaded_ = false;
   base::TimeTicks first_frame_time_;
   size_t content_size_ = 0;
+};
+
+template <>
+struct DowncastTraits<VideoTiming> {
+  static bool AllowFrom(const MediaTiming& timing) { return timing.IsVideo(); }
 };
 
 }  // namespace blink

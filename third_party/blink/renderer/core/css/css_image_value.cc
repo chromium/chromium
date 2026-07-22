@@ -110,10 +110,9 @@ FetchParameters CSSImageValue::PrepareFetch(
   return params;
 }
 
-StyleImage* CSSImageValue::CacheImage(
-    const Document& document,
-    CrossOriginAttributeValue cross_origin,
-    const float override_image_resolution) {
+StyleImage* CSSImageValue::CacheImage(Document& document,
+                                      CrossOriginAttributeValue cross_origin,
+                                      const float override_image_resolution) {
   if (!cached_image_) {
     const CSSUrlData& url_data = UrlData();
     if (url_data.ResolvedUrl().empty()) {

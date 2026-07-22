@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_progress.h"
@@ -25,7 +26,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/rounded_inner_rect_clipper.h"
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
@@ -981,12 +981,6 @@ bool NotifyImageTimingOnWillDrawImage(
       PaintTimingDetector::NotifyBackgroundImagePaint(
           *generating_node, image, style_image, current_paint_chunk_properties,
           enclosing_rect);
-
-  LocalDOMWindow* window = node->GetDocument().domWindow();
-  DCHECK(window);
-  ImageElementTiming::From(*window).NotifyBackgroundImagePainted(
-      *generating_node, style_image, current_paint_chunk_properties,
-      enclosing_rect);
   return image_may_be_lcp_candidate;
 }
 

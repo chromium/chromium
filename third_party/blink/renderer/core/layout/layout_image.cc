@@ -42,7 +42,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -75,14 +75,18 @@ void LayoutImage::WillBeDestroyed() {
 void LayoutImage::InsertedIntoTree() {
   NOT_DESTROYED();
   ImageResourceContent* image_content = image_resource_->CachedImage();
-  LocalDOMWindow* window = GetDocument().domWindow();
 
   // If the image content was ready before attaching to the layout image, and
   // and it did not have a node, it would not be possible to know if the node
   // would be required for timing. Notify at this point now it is attached to
   // its parent.
-  if (!GetNode() && window && image_content && image_content->IsLoaded()) {
-    ImageElementTiming::From(*window).NotifyImageFinished(*this, image_content);
+  //
+  // TODO(crbug.com/535432431): This may no longer be necessary once
+  // ImageElementTiming is a PaintTiming client.
+  if (!GetNode() && GetDocument().domWindow() && image_content &&
+      image_content->IsLoaded()) {
+    PaintTimingDetector::From(GetDocument())
+        .NotifyImageFinished(*this, image_content);
   }
   LayoutReplaced::InsertedIntoTree();
 }

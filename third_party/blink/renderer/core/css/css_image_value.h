@@ -47,7 +47,7 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   FetchParameters PrepareFetch(const Document&,
                                CrossOriginAttributeValue) const;
   StyleImage* CacheImage(
-      const Document&,
+      Document&,
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet,
       const float override_image_resolution = 0.0f);
 

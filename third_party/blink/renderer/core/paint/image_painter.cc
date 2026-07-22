@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
-#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
@@ -24,7 +23,6 @@
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
@@ -269,29 +267,9 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
   // timing data. Do so now in order to mark the resulting PaintImage as
   // an LCP candidate.
   ImageResourceContent* image_content = image_resource.CachedImage();
-  bool is_image_or_video_element =
-      IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node);
-  if (image_content &&
-      (RuntimeEnabledFeatures::AllImagesPaintedSentToElementTimingEnabled() ||
-       is_image_or_video_element) &&
-      image_content->IsLoaded()) {
-    Document& document = layout_image_.GetDocument();
-    LocalDOMWindow* window = document.domWindow();
-    DCHECK(window);
-    if (!is_image_or_video_element) {
-      UseCounter::Count(document,
-                        WebFeature::kImageElementTimingNotImageOrVideoNode);
-    }
-    ImageElementTiming::From(*window).NotifyImagePainted(
-        layout_image_, *image_content,
-        context.GetPaintController().CurrentPaintChunkProperties(),
-        pixel_snapped_dest_rect);
-  }
-
   ImageNodeAnimationInfo image_animation =
       CSSImageAnimations::CreateImageNodeAnimationInfo(
           node, image_content, layout_image_.StyleRef().ImageAnimation());
-
   context.DrawImage(
       *image, decode_mode, image_auto_dark_mode,
       ComputeImagePaintTimingInfo(layout_image_, *image, image_content, context,

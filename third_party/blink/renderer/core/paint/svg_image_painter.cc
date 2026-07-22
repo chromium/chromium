@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
 #include "third_party/blink/renderer/core/paint/svg_model_object_painter.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
@@ -120,15 +119,6 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
         dest_rect, src_rect);
   }
 
-  ImageResourceContent* image_content = image_resource.CachedImage();
-  if (image_content->IsLoaded()) {
-    LocalDOMWindow* window = layout_svg_image_.GetDocument().domWindow();
-    DCHECK(window);
-    ImageElementTiming::From(*window).NotifyImagePainted(
-        layout_svg_image_, *image_content,
-        paint_info.context.GetPaintController().CurrentPaintChunkProperties(),
-        gfx::ToEnclosingRect(dest_rect));
-  }
   PaintTiming& timing = PaintTiming::From(layout_svg_image_.GetDocument());
   timing.MarkFirstContentfulPaint();
 
@@ -143,9 +133,9 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
       src_rect);
   paint_info.context.DrawImage(
       *image, decode_mode, image_auto_dark_mode,
-      ComputeImagePaintTimingInfo(layout_svg_image_, *image, image_content,
-                                  paint_info.context,
-                                  gfx::ToEnclosingRect(dest_rect)),
+      ComputeImagePaintTimingInfo(
+          layout_svg_image_, *image, image_resource.CachedImage(),
+          paint_info.context, gfx::ToEnclosingRect(dest_rect)),
       dest_rect, &src_rect, SkBlendMode::kSrcOver, respect_orientation);
 }
 

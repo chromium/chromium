@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
@@ -180,7 +181,7 @@ PaintTimingDetector& PaintTimingDetector::From(Document& document) {
 
 // static
 bool PaintTimingDetector::NotifyBackgroundImagePaint(
-    const Node& node,
+    Node& node,
     const Image& image,
     const StyleImage& style_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
@@ -190,6 +191,10 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
     return false;
   }
 
+  auto& paint_timing = PaintTiming::From(object->GetDocument());
+  paint_timing.GetImageElementTiming()->NotifyBackgroundImagePainted(
+      node, style_image, current_paint_chunk_properties, image_border);
+
   if (!IsBackgroundImageContentful(*object, image)) {
     return false;
   }
@@ -198,7 +203,7 @@ bool PaintTimingDetector::NotifyBackgroundImagePaint(
   DCHECK(cached_image);
   // TODO(yoav): |image| and |cached_image.GetImage()| are not the same here in
   // the case of SVGs. Figure out why and if we can remove this footgun.
-  return PaintTimingDetector::From(object->GetDocument())
+  return paint_timing.GetPaintTimingDetector()
       .GetImagePaintTimingDetector()
       .RecordImage(*object, image.Size(), *cached_image,
                    current_paint_chunk_properties, &style_image, image_border);
@@ -211,6 +216,10 @@ bool PaintTimingDetector::NotifyImagePaint(
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
+  auto& paint_timing = PaintTiming::From(object.GetDocument());
+  paint_timing.GetImageElementTiming()->NotifyImagePaint(
+      object, media_timing, current_paint_chunk_properties, image_border);
+
   if (IgnorePaintTimingScope::ShouldIgnore()) {
     return false;
   }
@@ -223,7 +232,7 @@ bool PaintTimingDetector::NotifyImagePaint(
     ReportImagePixelInaccuracy(element);
   }
 
-  return PaintTimingDetector::From(object.GetDocument())
+  return paint_timing.GetPaintTimingDetector()
       .GetImagePaintTimingDetector()
       .RecordImage(object, intrinsic_size, media_timing,
                    current_paint_chunk_properties, nullptr, image_border);
@@ -262,15 +271,27 @@ void PaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(
 
 void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
                                               const MediaTiming* media_timing) {
+  paint_timing_->GetImageElementTiming()->NotifyImageFinished(object,
+                                                              media_timing);
   if (IgnorePaintTimingScope::ShouldIgnore()) {
     return;
   }
   image_paint_timing_detector_->NotifyImageFinished(object, media_timing);
 }
 
+void PaintTimingDetector::NotifyBackgroundImageFinished(
+    const StyleFetchedImage* image) {
+  // TODO(crbug.com/535432431): Paint Timing (ImagePaintTimingDetector)
+  // currently gets the background image timestamp information from Element
+  // Timing. This should be inverted.
+  paint_timing_->GetImageElementTiming()->NotifyBackgroundImageFinished(image);
+}
+
 void PaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const ImageResourceContent* cached_image) {
+  paint_timing_->GetImageElementTiming()->NotifyImageRemoved(object,
+                                                             cached_image);
   image_paint_timing_detector_->NotifyImageRemoved(object, cached_image);
 }
 

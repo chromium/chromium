@@ -28,8 +28,8 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
@@ -38,7 +38,7 @@ namespace blink {
 
 StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
                                      const CSSUrlData& url_data,
-                                     const Document& document,
+                                     Document& document,
                                      const KURL& url,
                                      const float override_image_resolution)
     : url_data_(url_data),
@@ -220,8 +220,8 @@ void StyleFetchedImage::ImageNotifyFinished(ImageResourceContent*) {
     image_->RecordDecodedImageType(document_->GetExecutionContext());
   }
 
-  if (LocalDOMWindow* window = document_->domWindow()) {
-    ImageElementTiming::From(*window).NotifyBackgroundImageFinished(this);
+  if (document_->domWindow()) {
+    PaintTimingDetector::From(*document_).NotifyBackgroundImageFinished(this);
   }
 
   // Oilpan: do not prolong the Document's lifetime.

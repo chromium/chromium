@@ -61,6 +61,10 @@ class MediaTiming : public GarbageCollectedMixin {
   virtual base::TimeTicks LoadStart() const = 0;
 
   virtual base::TimeTicks LoadEnd() const = 0;
+
+  virtual bool IsVideo() const { return false; }
+
+  virtual bool IsImage() const { return false; }
 };
 
 }  // namespace blink

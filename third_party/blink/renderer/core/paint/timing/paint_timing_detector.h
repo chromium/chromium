@@ -27,10 +27,12 @@ class ImagePaintTimingDetector;
 class ImageResourceContent;
 class LayoutBoxModelObject;
 class LayoutObject;
+class MediaTiming;
 class Node;
 class PaintTiming;
 class PropertyTreeStateOrAlias;
-class MediaTiming;
+class StyleFetchedImage;
+class StyleImage;
 class TextPaintTimingDetector;
 class StyleImage;
 
@@ -58,7 +60,7 @@ class CORE_EXPORT PaintTimingDetector
   // largest status for certain, because we need to wait for presentation.
   // Hence the "maybe" return value.
   static bool NotifyBackgroundImagePaint(
-      const Node&,
+      Node&,
       const Image&,
       const StyleImage&,
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
@@ -86,6 +88,7 @@ class CORE_EXPORT PaintTimingDetector
   void Trace(Visitor* visitor) const;
 
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
+  void NotifyBackgroundImageFinished(const StyleFetchedImage*);
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);
   void NotifyPaintFinished();
   void NotifyInputEvent(WebInputEvent::Type);

@@ -46,7 +46,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
  public:
   StyleFetchedImage(ImageResourceContent* image,
                     const CSSUrlData& url_data,
-                    const Document& document,
+                    Document& document,
                     const KURL& url,
                     const float override_image_resolution = 0.0f);
   ~StyleFetchedImage() override;
@@ -100,7 +100,7 @@ class CORE_EXPORT StyleFetchedImage final : public StyleImage,
 
   Member<ImageResourceContent> image_;
   Member<const CSSUrlData> url_data_;
-  Member<const Document> document_;
+  Member<Document> document_;
 
   const KURL url_;
 
