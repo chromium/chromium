@@ -593,7 +593,9 @@ Response WebAuthnHandler::SetCredentialProperties(
     const String& authenticator_id,
     const Binary& in_credential_id,
     std::optional<bool> backup_eligibility,
-    std::optional<bool> backup_state) {
+    std::optional<bool> backup_state,
+    std::optional<int> active_cmtg_key_index,
+    std::optional<bool> generate_cmtg_key_on_next_operation) {
   VirtualAuthenticator* authenticator;
   Response response = FindAuthenticator(authenticator_id, &authenticator);
   if (!response.IsSuccess()) {
@@ -612,6 +614,26 @@ Response WebAuthnHandler::SetCredentialProperties(
   }
   if (backup_state.has_value()) {
     authenticator->SetBackupState(credential_id, backup_state.value());
+  }
+  if (authenticator->has_cmtg_key()) {
+    if (active_cmtg_key_index.has_value()) {
+      if (*active_cmtg_key_index < 0 ||
+          static_cast<size_t>(*active_cmtg_key_index) >=
+              registration->second.cmtg_keys.size()) {
+        return Response::InvalidParams(kActiveCmtgKeyIndexOutOfBounds);
+      }
+      CHECK(authenticator->SetSelectedCmtgKeyIndex(credential_id,
+                                                   *active_cmtg_key_index));
+    }
+    if (generate_cmtg_key_on_next_operation.has_value()) {
+      CHECK(authenticator->SetGenerateCmtgKeyOnNextOperation(
+          credential_id, *generate_cmtg_key_on_next_operation));
+    }
+  } else {
+    if (active_cmtg_key_index.has_value() ||
+        generate_cmtg_key_on_next_operation.has_value()) {
+      return Response::InvalidParams(kCmtgNotSupported);
+    }
   }
   return Response::Success();
 }

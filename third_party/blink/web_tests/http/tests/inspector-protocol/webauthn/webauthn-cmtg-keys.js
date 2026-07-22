@@ -12,15 +12,16 @@
 
   // Create an authenticator without CMTG support.
   const noCmtgAuthenticatorId = (await dp.WebAuthn.addVirtualAuthenticator({
-    options: {
-      protocol: "ctap2",
-      transport: "usb",
-      hasResidentKey: true,
-      hasUserVerification: true,
-      isUserVerified: true,
-      hasCmtgKey: false,
-    }
-  })).result.authenticatorId;
+                                  options: {
+                                    protocol: 'ctap2',
+                                    ctap2Version: 'ctap2_1',
+                                    transport: 'usb',
+                                    hasResidentKey: true,
+                                    hasUserVerification: true,
+                                    isUserVerified: true,
+                                    hasCmtgKey: false,
+                                  }
+                                })).result.authenticatorId;
 
   // Register a credential requesting CMTG key.
   testRunner.log("Registering credential with CMTG on an authenticator without support...");
@@ -41,15 +42,16 @@
 
   // Create an authenticator with CMTG support.
   const authenticatorId = (await dp.WebAuthn.addVirtualAuthenticator({
-    options: {
-      protocol: "ctap2",
-      transport: "usb",
-      hasResidentKey: true,
-      hasUserVerification: true,
-      isUserVerified: true,
-      hasCmtgKey: true,
-    }
-  })).result.authenticatorId;
+                            options: {
+                              protocol: 'ctap2',
+                              ctap2Version: 'ctap2_1',
+                              transport: 'usb',
+                              hasResidentKey: true,
+                              hasUserVerification: true,
+                              isUserVerified: true,
+                              hasCmtgKey: true,
+                            }
+                          })).result.authenticatorId;
 
   // Register a credential requesting CMTG key.
   testRunner.log("Registering credential with CMTG on an authenticator with support...");
@@ -81,8 +83,8 @@
   const credentialId = cred.credentialId;
 
   // Get assertion and verify it uses key A and returns a signature.
-  testRunner.log("Getting assertion...");
-  let assertResult = await session.evaluateAsync(`getCredential({
+  testRunner.log('Getting assertion 1...');
+  let assertResult1 = await session.evaluateAsync(`getCredential({
     type: "public-key",
     id: base64ToArrayBuffer("${credentialId}"),
   }, {
@@ -90,9 +92,76 @@
       cmtgKey: true,
     }
   })`);
-  testRunner.log(`Assertion status: ${assertResult.status}`);
-  testRunner.log(`Assertion key matches key A: ${assertResult.cmtgKey?.cmtgKey === keyA}`);
-  testRunner.log(`Assertion signature present: ${assertResult.cmtgKey?.signature ? "yes" : "no"}`);
+  testRunner.log(`Assertion 1 status: ${assertResult1.status}`);
+  testRunner.log(`Assertion 1 key matches key A: ${
+      assertResult1.cmtgKey?.cmtgKey === keyA}`);
+  testRunner.log(`Assertion 1 signature present: ${
+      assertResult1.cmtgKey?.signature ? 'yes' : 'no'}`);
+
+  // Trigger generation of a new key.
+  testRunner.log('Setting generateCmtgKeyOnNextOperation = true...');
+  await dp.WebAuthn.setCredentialProperties({
+    authenticatorId,
+    credentialId,
+    generateCmtgKeyOnNextOperation: true,
+  });
+
+  // Verify state before assertion.
+  credentials =
+      (await dp.WebAuthn.getCredentials({authenticatorId})).result.credentials;
+  testRunner.log(`generateCmtgKeyOnNextOperation before assertion: ${
+      credentials[0].generateCmtgKeyOnNextOperation}`);
+
+  // Get assertion again to trigger generation.
+  testRunner.log('Getting assertion 2...');
+  let assertResult2 = await session.evaluateAsync(`getCredential({
+    type: "public-key",
+    id: base64ToArrayBuffer("${credentialId}"),
+  }, {
+    extensions: {
+      cmtgKey: true,
+    }
+  })`);
+  testRunner.log(`Assertion 2 status: ${assertResult2.status}`);
+  const keyB = assertResult2.cmtgKey?.cmtgKey;
+  testRunner.log(`Assertion 2 key matches key A: ${keyB === keyA}`);
+  testRunner.log(`Assertion 2 key B present: ${keyB ? 'yes' : 'no'}`);
+  testRunner.log(`Assertion 2 signature present: ${
+      assertResult2.cmtgKey?.signature ? 'yes' : 'no'}`);
+
+  // Verify state after assertion (should have 2 keys, active index 1, generate
+  // flag reset).
+  credentials =
+      (await dp.WebAuthn.getCredentials({authenticatorId})).result.credentials;
+  const credAfter = credentials[0];
+  testRunner.log('Verify state after assertion...');
+  testRunner.log(`cmtgKeys count after: ${credAfter.cmtgKeys?.length}`);
+  testRunner.log(`activeCmtgKeyIndex after: ${credAfter.activeCmtgKeyIndex}`);
+  testRunner.log(`generateCmtgKeyOnNextOperation after: ${
+      credAfter.generateCmtgKeyOnNextOperation}`);
+
+  // Select key A (index 0) and verify it is used again.
+  testRunner.log('Setting activeCmtgKeyIndex = 0...');
+  await dp.WebAuthn.setCredentialProperties({
+    authenticatorId,
+    credentialId,
+    activeCmtgKeyIndex: 0,
+  });
+
+  testRunner.log('Getting assertion 3...');
+  let assertResult3 = await session.evaluateAsync(`getCredential({
+    type: "public-key",
+    id: base64ToArrayBuffer("${credentialId}"),
+  }, {
+    extensions: {
+      cmtgKey: true,
+    }
+  })`);
+  testRunner.log(`Assertion 3 status: ${assertResult3.status}`);
+  testRunner.log(`Assertion 3 key matches key A: ${
+      assertResult3.cmtgKey?.cmtgKey === keyA}`);
+  testRunner.log(`Assertion 3 signature present: ${
+      assertResult3.cmtgKey?.signature ? 'yes' : 'no'}`);
 
   // Inject a credential with pre-configured CMTG keys.
   testRunner.log('Injecting credential with CMTG keys...');

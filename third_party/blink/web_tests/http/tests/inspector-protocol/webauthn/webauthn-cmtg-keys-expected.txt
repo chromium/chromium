@@ -12,10 +12,26 @@ Credential has cmtgKeys: true
 cmtgKeys count: 1
 activeCmtgKeyIndex: 0
 generateCmtgKeyOnNextOperation: false
-Getting assertion...
-Assertion status: OK
-Assertion key matches key A: true
-Assertion signature present: yes
+Getting assertion 1...
+Assertion 1 status: OK
+Assertion 1 key matches key A: true
+Assertion 1 signature present: yes
+Setting generateCmtgKeyOnNextOperation = true...
+generateCmtgKeyOnNextOperation before assertion: true
+Getting assertion 2...
+Assertion 2 status: OK
+Assertion 2 key matches key A: false
+Assertion 2 key B present: yes
+Assertion 2 signature present: yes
+Verify state after assertion...
+cmtgKeys count after: 2
+activeCmtgKeyIndex after: 1
+generateCmtgKeyOnNextOperation after: false
+Setting activeCmtgKeyIndex = 0...
+Getting assertion 3...
+Assertion 3 status: OK
+Assertion 3 key matches key A: true
+Assertion 3 signature present: yes
 Injecting credential with CMTG keys...
 Retrieving credentials after injection...
 Injected credential found: true

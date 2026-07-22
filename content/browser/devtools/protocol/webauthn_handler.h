@@ -58,10 +58,13 @@ class WebAuthnHandler : public DevToolsDomainHandler,
                            bool is_user_verified) override;
   Response SetAutomaticPresenceSimulation(const String& authenticator_id,
                                           bool enabled) override;
-  Response SetCredentialProperties(const String& authenticator_id,
-                                   const Binary& credential_id,
-                                   std::optional<bool> backup_eligibility,
-                                   std::optional<bool> backup_state) override;
+  Response SetCredentialProperties(
+      const String& authenticator_id,
+      const Binary& credential_id,
+      std::optional<bool> backup_eligibility,
+      std::optional<bool> backup_state,
+      std::optional<int> active_cmtg_key_index,
+      std::optional<bool> generate_cmtg_key_on_next_operation) override;
 
  private:
   // Finds the authenticator with the given |id|. Returns Response::OK() if

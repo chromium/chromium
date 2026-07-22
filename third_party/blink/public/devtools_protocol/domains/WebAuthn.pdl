@@ -222,6 +222,8 @@ experimental domain WebAuthn
       binary credentialId
       optional boolean backupEligibility
       optional boolean backupState
+      optional integer activeCmtgKeyIndex
+      optional boolean generateCmtgKeyOnNextOperation
 
   # Triggered when a credential is added to an authenticator.
   event credentialAdded
