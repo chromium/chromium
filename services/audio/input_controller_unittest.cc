@@ -7,11 +7,8 @@
 #include <memory>
 #include <string_view>
 #include <utility>
-#include <vector>
 
-#include "base/base_paths.h"
 #include "base/compiler_specific.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -31,10 +28,6 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_processing.h"
 #include "media/base/media_switches.h"
-#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-#include "media/webrtc/voice_isolation/voice_isolation.h"
-#endif
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/audio_processor_handler.h"
 #include "services/audio/loopback_signal_provider.h"
@@ -90,19 +83,19 @@ std::unique_ptr<LoopbackMixin> DoNotCreateLoopbackMixin(
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-
 class FakeMlModelHandle : public media::MlModelHandle {
  public:
   FakeMlModelHandle() {
-    base::FilePath source_root;
-    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
-    source_root = source_root.AppendASCII("media")
-                      .AppendASCII("webrtc")
-                      .AppendASCII("voice_isolation")
-                      .AppendASCII("test_model_1_2_160_2.tflite");
+    // Construct a FlatBuffer holding a valid, empty model.
+    flatbuffers::FlatBufferBuilder buffer_builder(1024);
+    tflite::ModelBuilder model_builder(buffer_builder);
+    tflite::FinishModelBuffer(buffer_builder, model_builder.Finish());
 
-    model_ = tflite::FlatBufferModel::BuildFromFile(
-        source_root.AsUTF8Unsafe().c_str());
+    // Initialize a buffer-backed FlatBufferModel from the FlatBuffer.
+    auto span = buffer_builder.GetBufferSpan();
+    buffer_ = std::vector<uint8_t>(span.begin(), span.end());
+    model_ = tflite::FlatBufferModel::VerifyAndBuildFromBuffer(
+        reinterpret_cast<char*>(buffer_.data()), buffer_.size());
     CHECK(model_);
   }
 
@@ -133,7 +126,6 @@ class FakeMlModelManager : public MlModelManager {
  private:
   bool return_null_model_ = false;
 };
-
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 }  // namespace
 
