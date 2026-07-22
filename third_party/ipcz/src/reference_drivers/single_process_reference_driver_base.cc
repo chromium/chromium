@@ -61,9 +61,11 @@ BadTransportActivityCallback& GetBadTransportActivityCallback() {
   return *callback;
 }
 
-IpczResult IPCZ_API Close(IpczDriverHandle handle,
-                          uint32_t flags,
-                          const void* options) {
+}  // namespace
+
+IpczResult SingleProcessReferenceDriverBase::Close(IpczDriverHandle handle,
+                                                   uint32_t flags,
+                                                   const void* options) const {
   Ref<Object> object = Object::TakeFromHandle(handle);
   if (!object) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
@@ -72,14 +74,15 @@ IpczResult IPCZ_API Close(IpczDriverHandle handle,
   return object->Close();
 }
 
-IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
-                              IpczDriverHandle transport,
-                              uint32_t flags,
-                              const void* options,
-                              volatile void* data,
-                              size_t* num_bytes,
-                              IpczDriverHandle* handles,
-                              size_t* num_handles) {
+IpczResult SingleProcessReferenceDriverBase::Serialize(
+    IpczDriverHandle handle,
+    IpczDriverHandle transport,
+    uint32_t flags,
+    const void* options,
+    volatile void* data,
+    size_t* num_bytes,
+    IpczDriverHandle* handles,
+    size_t* num_handles) const {
   Object* object = Object::FromHandle(handle);
   if (!object) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
@@ -102,24 +105,26 @@ IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API Deserialize(const volatile void* data,
-                                size_t num_bytes,
-                                const IpczDriverHandle* handles,
-                                size_t num_handles,
-                                IpczDriverHandle transport,
-                                uint32_t flags,
-                                const void* options,
-                                IpczDriverHandle* driver_handle) {
+IpczResult SingleProcessReferenceDriverBase::Deserialize(
+    const volatile void* data,
+    size_t num_bytes,
+    const IpczDriverHandle* handles,
+    size_t num_handles,
+    IpczDriverHandle transport,
+    uint32_t flags,
+    const void* options,
+    IpczDriverHandle* driver_handle) const {
   ABSL_ASSERT(num_bytes == 0);
   ABSL_ASSERT(num_handles == 1);
   *driver_handle = handles[0];
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API ReportBadTransportActivity(IpczDriverHandle transport,
-                                               uintptr_t context,
-                                               uint32_t flags,
-                                               const void* options) {
+IpczResult SingleProcessReferenceDriverBase::ReportBadTransportActivity(
+    IpczDriverHandle transport,
+    uintptr_t context,
+    uint32_t flags,
+    const void* options) const {
   auto& callback = GetBadTransportActivityCallback();
   if (callback) {
     callback(transport, context);
@@ -127,10 +132,11 @@ IpczResult IPCZ_API ReportBadTransportActivity(IpczDriverHandle transport,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API AllocateSharedMemory(size_t num_bytes,
-                                         uint32_t flags,
-                                         const void* options,
-                                         IpczDriverHandle* driver_memory) {
+IpczResult SingleProcessReferenceDriverBase::AllocateSharedMemory(
+    size_t num_bytes,
+    uint32_t flags,
+    const void* options,
+    IpczDriverHandle* driver_memory) const {
   if (num_bytes > std::numeric_limits<size_t>::max()) {
     return IPCZ_RESULT_RESOURCE_EXHAUSTED;
   }
@@ -140,10 +146,11 @@ IpczResult IPCZ_API AllocateSharedMemory(size_t num_bytes,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult GetSharedMemoryInfo(IpczDriverHandle driver_memory,
-                               uint32_t flags,
-                               const void* options,
-                               IpczSharedMemoryInfo* info) {
+IpczResult SingleProcessReferenceDriverBase::GetSharedMemoryInfo(
+    IpczDriverHandle driver_memory,
+    uint32_t flags,
+    const void* options,
+    IpczSharedMemoryInfo* info) const {
   Object* object = Object::FromHandle(driver_memory);
   if (!object || object->type() != Object::kMemory || !info ||
       info->size < sizeof(IpczSharedMemoryInfo)) {
@@ -154,20 +161,22 @@ IpczResult GetSharedMemoryInfo(IpczDriverHandle driver_memory,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API DuplicateSharedMemory(IpczDriverHandle driver_memory,
-                                          uint32_t flags,
-                                          const void* options,
-                                          IpczDriverHandle* new_driver_memory) {
+IpczResult SingleProcessReferenceDriverBase::DuplicateSharedMemory(
+    IpczDriverHandle driver_memory,
+    uint32_t flags,
+    const void* options,
+    IpczDriverHandle* new_driver_memory) const {
   Ref<InProcessMemory> memory(InProcessMemory::FromHandle(driver_memory));
   *new_driver_memory = Object::ReleaseAsHandle(std::move(memory));
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API MapSharedMemory(IpczDriverHandle driver_memory,
-                                    uint32_t flags,
-                                    const void* options,
-                                    volatile void** address,
-                                    IpczDriverHandle* driver_mapping) {
+IpczResult SingleProcessReferenceDriverBase::MapSharedMemory(
+    IpczDriverHandle driver_memory,
+    uint32_t flags,
+    const void* options,
+    volatile void** address,
+    IpczDriverHandle* driver_mapping) const {
   Ref<InProcessMemory> memory(InProcessMemory::FromHandle(driver_memory));
   auto mapping = MakeRefCounted<InProcessMapping>(std::move(memory));
   *address = mapping->address();
@@ -175,34 +184,13 @@ IpczResult IPCZ_API MapSharedMemory(IpczDriverHandle driver_memory,
   return IPCZ_RESULT_OK;
 }
 
-IpczResult IPCZ_API GenerateRandomBytes(size_t num_bytes,
-                                        uint32_t flags,
-                                        const void* options,
-                                        void* buffer) {
+IpczResult SingleProcessReferenceDriverBase::GenerateRandomBytes(
+    size_t num_bytes,
+    uint32_t flags,
+    const void* options,
+    void* buffer) const {
   RandomBytes(absl::MakeSpan(static_cast<uint8_t*>(buffer), num_bytes));
   return IPCZ_RESULT_OK;
-}
-
-}  // namespace
-
-const IpczDriver& GetSingleProcessReferenceDriverBase() {
-  static const IpczDriver driver = {
-      sizeof(driver),
-      Close,
-      Serialize,
-      Deserialize,
-      nullptr,
-      nullptr,
-      nullptr,
-      nullptr,
-      ReportBadTransportActivity,
-      AllocateSharedMemory,
-      GetSharedMemoryInfo,
-      DuplicateSharedMemory,
-      MapSharedMemory,
-      GenerateRandomBytes,
-  };
-  return driver;
 }
 
 void SetBadTransportActivityCallback(BadTransportActivityCallback callback) {

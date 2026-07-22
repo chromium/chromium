@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/object.h"
 #include "reference_drivers/single_process_reference_driver_base.h"
@@ -195,114 +196,94 @@ class AsyncTransport : public ObjectImpl<AsyncTransport, Object::kTransport> {
       std::make_unique<absl::Notification>();
 };
 
-IpczResult IPCZ_API CreateTransports(IpczDriverHandle transport0,
-                                     IpczDriverHandle transport1,
-                                     uint32_t,
-                                     const void*,
-                                     IpczDriverHandle* new_transport0,
-                                     IpczDriverHandle* new_transport1) {
-  auto* target0 = AsyncTransport::FromHandle(transport0);
-  auto* target1 = AsyncTransport::FromHandle(transport1);
-  auto [first, second] = AsyncTransport::CreatePair(target0->remote_type(),
-                                                    target1->remote_type());
-  *new_transport0 = Object::ReleaseAsHandle(std::move(first));
-  *new_transport1 = Object::ReleaseAsHandle(std::move(second));
-  return IPCZ_RESULT_OK;
-}
-
-IpczResult IPCZ_API ActivateTransport(IpczDriverHandle transport,
-                                      IpczHandle listener,
-                                      IpczTransportActivityHandler handler,
-                                      uint32_t,
-                                      const void*) {
-  AsyncTransport::FromHandle(transport)->Activate(listener, handler);
-  return IPCZ_RESULT_OK;
-}
-
-IpczResult IPCZ_API DeactivateTransport(IpczDriverHandle transport,
-                                        uint32_t,
-                                        const void*) {
-  AsyncTransport::FromHandle(transport)->Deactivate();
-  return IPCZ_RESULT_OK;
-}
-
-IpczResult IPCZ_API Transmit(IpczDriverHandle transport,
-                             const void* data,
-                             size_t num_bytes,
-                             const IpczDriverHandle* handles,
-                             size_t num_handles,
-                             uint32_t,
-                             const void*) {
-  AsyncTransport::FromHandle(transport)->Transmit(
-      {static_cast<const uint8_t*>(data), num_bytes}, {handles, num_handles});
-  return IPCZ_RESULT_OK;
-}
-
-IpczResult IPCZ_API SerializeWithForcedBrokering(IpczDriverHandle handle,
-                                                 IpczDriverHandle transport,
-                                                 uint32_t flags,
-                                                 const void* options,
-                                                 volatile void* data,
-                                                 size_t* num_bytes,
-                                                 IpczDriverHandle* handles,
-                                                 size_t* num_handles) {
-  auto* target = AsyncTransport::FromHandle(transport);
-  if (!target) {
-    return IPCZ_RESULT_ABORTED;
+// Note that this driver inherits most of its implementation from the baseline
+// single-process driver. Only transport operation is overridden here.
+class AsyncReferenceDriverImpl : public SingleProcessReferenceDriverBase {
+ public:
+  IpczResult CreateTransports(IpczDriverHandle transport0,
+                              IpczDriverHandle transport1,
+                              uint32_t flags,
+                              const void* options,
+                              IpczDriverHandle* new_transport0,
+                              IpczDriverHandle* new_transport1) const override {
+    auto* target0 = AsyncTransport::FromHandle(transport0);
+    auto* target1 = AsyncTransport::FromHandle(transport1);
+    auto [first, second] = AsyncTransport::CreatePair(target0->remote_type(),
+                                                      target1->remote_type());
+    *new_transport0 = Object::ReleaseAsHandle(std::move(first));
+    *new_transport1 = Object::ReleaseAsHandle(std::move(second));
+    return IPCZ_RESULT_OK;
   }
 
-  if (target->local_type() == AsyncTransport::NodeType::kNonBroker &&
-      target->remote_type() == AsyncTransport::NodeType::kNonBroker) {
-    // Force ipcz to relay driver objects through a broker.
-    return IPCZ_RESULT_PERMISSION_DENIED;
+  IpczResult ActivateTransport(IpczDriverHandle transport,
+                               IpczHandle listener,
+                               IpczTransportActivityHandler activity_handler,
+                               uint32_t flags,
+                               const void* options) const override {
+    AsyncTransport::FromHandle(transport)->Activate(listener, activity_handler);
+    return IPCZ_RESULT_OK;
   }
 
-  return GetSingleProcessReferenceDriverBase().Serialize(
-      handle, transport, flags, options, data, num_bytes, handles, num_handles);
-}
+  IpczResult DeactivateTransport(IpczDriverHandle transport,
+                                 uint32_t flags,
+                                 const void* options) const override {
+    AsyncTransport::FromHandle(transport)->Deactivate();
+    return IPCZ_RESULT_OK;
+  }
+
+  IpczResult Transmit(IpczDriverHandle transport,
+                      const void* data,
+                      size_t num_bytes,
+                      const IpczDriverHandle* handles,
+                      size_t num_driver_handles,
+                      uint32_t flags,
+                      const void* options) const override {
+    AsyncTransport::FromHandle(transport)->Transmit(
+        {static_cast<const uint8_t*>(data), num_bytes},
+        {handles, num_driver_handles});
+    return IPCZ_RESULT_OK;
+  }
+};
+
+class AsyncReferenceDriverWithForcedBrokeringImpl
+    : public AsyncReferenceDriverImpl {
+ public:
+  IpczResult Serialize(IpczDriverHandle handle,
+                       IpczDriverHandle transport,
+                       uint32_t flags,
+                       const void* options,
+                       volatile void* data,
+                       size_t* num_bytes,
+                       IpczDriverHandle* handles,
+                       size_t* num_handles) const override {
+    auto* target = AsyncTransport::FromHandle(transport);
+    if (!target) {
+      return IPCZ_RESULT_ABORTED;
+    }
+
+    if (target->local_type() == AsyncTransport::NodeType::kNonBroker &&
+        target->remote_type() == AsyncTransport::NodeType::kNonBroker) {
+      // Force ipcz to relay driver objects through a broker.
+      return IPCZ_RESULT_PERMISSION_DENIED;
+    }
+
+    return SingleProcessReferenceDriverBase::Serialize(handle, transport, flags,
+                                                       options, data, num_bytes,
+                                                       handles, num_handles);
+  }
+};
 
 }  // namespace
 
-// Note that this driver inherits most of its implementation from the baseline
-// single-process driver. Only transport operation is overridden here.
 const IpczDriver& GetAsyncReferenceDriver() {
-  static const IpczDriver driver = {
-      sizeof(driver),
-      GetSingleProcessReferenceDriverBase().Close,
-      GetSingleProcessReferenceDriverBase().Serialize,
-      GetSingleProcessReferenceDriverBase().Deserialize,
-      CreateTransports,
-      ActivateTransport,
-      DeactivateTransport,
-      Transmit,
-      GetSingleProcessReferenceDriverBase().ReportBadTransportActivity,
-      GetSingleProcessReferenceDriverBase().AllocateSharedMemory,
-      GetSingleProcessReferenceDriverBase().GetSharedMemoryInfo,
-      GetSingleProcessReferenceDriverBase().DuplicateSharedMemory,
-      GetSingleProcessReferenceDriverBase().MapSharedMemory,
-      GetSingleProcessReferenceDriverBase().GenerateRandomBytes,
-  };
-  return driver;
+  static const base::NoDestructor<AsyncReferenceDriverImpl> driver;
+  return *driver;
 }
 
 const IpczDriver& GetAsyncReferenceDriverWithForcedBrokering() {
-  static const IpczDriver driver = {
-      sizeof(driver),
-      GetSingleProcessReferenceDriverBase().Close,
-      SerializeWithForcedBrokering,
-      GetSingleProcessReferenceDriverBase().Deserialize,
-      CreateTransports,
-      ActivateTransport,
-      DeactivateTransport,
-      Transmit,
-      GetSingleProcessReferenceDriverBase().ReportBadTransportActivity,
-      GetSingleProcessReferenceDriverBase().AllocateSharedMemory,
-      GetSingleProcessReferenceDriverBase().GetSharedMemoryInfo,
-      GetSingleProcessReferenceDriverBase().DuplicateSharedMemory,
-      GetSingleProcessReferenceDriverBase().MapSharedMemory,
-      GetSingleProcessReferenceDriverBase().GenerateRandomBytes,
-  };
-  return driver;
+  static const base::NoDestructor<AsyncReferenceDriverWithForcedBrokeringImpl>
+      driver;
+  return *driver;
 }
 
 AsyncTransportPair CreateAsyncTransportPair() {

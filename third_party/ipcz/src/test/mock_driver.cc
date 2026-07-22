@@ -4,6 +4,7 @@
 
 #include "test/mock_driver.h"
 
+#include "base/no_destructor.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 
 namespace ipcz::test {
@@ -21,118 +22,123 @@ MockDriver& GetDriver() {
   return *ptr;
 }
 
-IpczResult IPCZ_API Close(IpczDriverHandle handle,
-                          uint32_t flags,
-                          const void* options) {
-  return GetDriver().Close(handle, flags, options);
-}
+class MockDriverImpl : public IpczDriver {
+ public:
+  IpczResult Close(IpczDriverHandle handle,
+                   uint32_t flags,
+                   const void* options) const override {
+    return GetDriver().Close(handle, flags, options);
+  }
 
-IpczResult IPCZ_API Serialize(IpczDriverHandle handle,
-                              IpczDriverHandle transport,
+  IpczResult Serialize(IpczDriverHandle handle,
+                       IpczDriverHandle transport,
+                       uint32_t flags,
+                       const void* options,
+                       volatile void* data,
+                       size_t* num_bytes,
+                       IpczDriverHandle* handles,
+                       size_t* num_handles) const override {
+    return GetDriver().Serialize(handle, transport, flags, options, data,
+                                 num_bytes, handles, num_handles);
+  }
+
+  IpczResult Deserialize(const volatile void* data,
+                         size_t num_bytes,
+                         const IpczDriverHandle* handles,
+                         size_t num_handles,
+                         IpczDriverHandle transport,
+                         uint32_t flags,
+                         const void* options,
+                         IpczDriverHandle* driver_handle) const override {
+    return GetDriver().Deserialize(data, num_bytes, handles, num_handles,
+                                   transport, flags, options, driver_handle);
+  }
+
+  IpczResult CreateTransports(IpczDriverHandle transport0,
+                              IpczDriverHandle transport1,
                               uint32_t flags,
                               const void* options,
-                              volatile void* data,
-                              size_t* num_bytes,
-                              IpczDriverHandle* handles,
-                              size_t* num_handles) {
-  return GetDriver().Serialize(handle, transport, flags, options, data,
-                               num_bytes, handles, num_handles);
-}
+                              IpczDriverHandle* new_transport0,
+                              IpczDriverHandle* new_transport1) const override {
+    return GetDriver().CreateTransports(transport0, transport1, flags, options,
+                                        new_transport0, new_transport1);
+  }
 
-IpczResult IPCZ_API Deserialize(const volatile void* data,
-                                size_t num_bytes,
-                                const IpczDriverHandle* handles,
-                                size_t num_handles,
-                                IpczDriverHandle transport,
-                                uint32_t flags,
-                                const void* options,
-                                IpczDriverHandle* driver_handle) {
-  return GetDriver().Deserialize(data, num_bytes, handles, num_handles,
-                                 transport, flags, options, driver_handle);
-}
-
-IpczResult IPCZ_API CreateTransports(IpczDriverHandle transport0,
-                                     IpczDriverHandle transport1,
-                                     uint32_t flags,
-                                     const void* options,
-                                     IpczDriverHandle* new_transport0,
-                                     IpczDriverHandle* new_transport1) {
-  return GetDriver().CreateTransports(transport0, transport1, flags, options,
-                                      new_transport0, new_transport1);
-}
-
-IpczResult IPCZ_API ActivateTransport(IpczDriverHandle driver_transport,
-                                      IpczHandle transport,
-                                      IpczTransportActivityHandler handler,
-                                      uint32_t flags,
-                                      const void* options) {
-  return GetDriver().ActivateTransport(driver_transport, transport, handler,
-                                       flags, options);
-}
-
-IpczResult IPCZ_API DeactivateTransport(IpczDriverHandle driver_transport,
-                                        uint32_t flags,
-                                        const void* options) {
-  return GetDriver().DeactivateTransport(driver_transport, flags, options);
-}
-
-IpczResult IPCZ_API ReportBadTransportActivity(IpczDriverHandle transport,
-                                               uintptr_t context,
-                                               uint32_t flags,
-                                               const void* options) {
-  return GetDriver().ReportBadTransportActivity(transport, context, flags,
-                                                options);
-}
-
-IpczResult IPCZ_API Transmit(IpczDriverHandle driver_transport,
-                             const void* data,
-                             size_t num_bytes,
-                             const IpczDriverHandle* handles,
-                             size_t num_handles,
-                             uint32_t flags,
-                             const void* options) {
-  return GetDriver().Transmit(driver_transport, data, num_bytes, handles,
-                              num_handles, flags, options);
-}
-
-IpczResult IPCZ_API AllocateSharedMemory(size_t num_bytes,
-                                         uint32_t flags,
-                                         const void* options,
-                                         IpczDriverHandle* driver_memory) {
-  return GetDriver().AllocateSharedMemory(num_bytes, flags, options,
-                                          driver_memory);
-}
-
-IpczResult GetSharedMemoryInfo(IpczDriverHandle driver_memory,
+  IpczResult ActivateTransport(IpczDriverHandle driver_transport,
+                               IpczHandle transport,
+                               IpczTransportActivityHandler handler,
                                uint32_t flags,
-                               const void* options,
-                               IpczSharedMemoryInfo* info) {
-  return GetDriver().GetSharedMemoryInfo(driver_memory, flags, options, info);
-}
+                               const void* options) const override {
+    return GetDriver().ActivateTransport(driver_transport, transport, handler,
+                                         flags, options);
+  }
 
-IpczResult IPCZ_API DuplicateSharedMemory(IpczDriverHandle driver_memory,
-                                          uint32_t flags,
-                                          const void* options,
-                                          IpczDriverHandle* new_driver_memory) {
-  return GetDriver().DuplicateSharedMemory(driver_memory, flags, options,
-                                           new_driver_memory);
-}
+  IpczResult DeactivateTransport(IpczDriverHandle driver_transport,
+                                 uint32_t flags,
+                                 const void* options) const override {
+    return GetDriver().DeactivateTransport(driver_transport, flags, options);
+  }
 
-IpczResult IPCZ_API MapSharedMemory(IpczDriverHandle driver_memory,
-                                    uint32_t flags,
-                                    const void* options,
-                                    volatile void** address,
-                                    IpczDriverHandle* driver_mapping) {
-  return GetDriver().MapSharedMemory(driver_memory, flags, options, address,
-                                     driver_mapping);
-}
-
-IpczResult IPCZ_API GenerateRandomBytes(size_t num_bytes,
+  IpczResult ReportBadTransportActivity(IpczDriverHandle transport,
+                                        uintptr_t context,
                                         uint32_t flags,
-                                        const void* options,
-                                        void* buffer) {
-  return GetDriver().GenerateRandomBytes(num_bytes, flags, options, buffer);
-}
+                                        const void* options) const override {
+    return GetDriver().ReportBadTransportActivity(transport, context, flags,
+                                                  options);
+  }
+
+  IpczResult Transmit(IpczDriverHandle driver_transport,
+                      const void* data,
+                      size_t num_bytes,
+                      const IpczDriverHandle* handles,
+                      size_t num_handles,
+                      uint32_t flags,
+                      const void* options) const override {
+    return GetDriver().Transmit(driver_transport, data, num_bytes, handles,
+                                num_handles, flags, options);
+  }
+
+  IpczResult AllocateSharedMemory(
+      size_t num_bytes,
+      uint32_t flags,
+      const void* options,
+      IpczDriverHandle* driver_memory) const override {
+    return GetDriver().AllocateSharedMemory(num_bytes, flags, options,
+                                            driver_memory);
+  }
+
+  IpczResult GetSharedMemoryInfo(IpczDriverHandle driver_memory,
+                                 uint32_t flags,
+                                 const void* options,
+                                 IpczSharedMemoryInfo* info) const override {
+    return GetDriver().GetSharedMemoryInfo(driver_memory, flags, options, info);
+  }
+
+  IpczResult DuplicateSharedMemory(
+      IpczDriverHandle driver_memory,
+      uint32_t flags,
+      const void* options,
+      IpczDriverHandle* new_driver_memory) const override {
+    return GetDriver().DuplicateSharedMemory(driver_memory, flags, options,
+                                             new_driver_memory);
+  }
+
+  IpczResult MapSharedMemory(IpczDriverHandle driver_memory,
+                             uint32_t flags,
+                             const void* options,
+                             volatile void** address,
+                             IpczDriverHandle* driver_mapping) const override {
+    return GetDriver().MapSharedMemory(driver_memory, flags, options, address,
+                                       driver_mapping);
+  }
+
+  IpczResult GenerateRandomBytes(size_t num_bytes,
+                                 uint32_t flags,
+                                 const void* options,
+                                 void* buffer) const override {
+    return GetDriver().GenerateRandomBytes(num_bytes, flags, options, buffer);
+  }
+};
 
 }  // namespace
 
@@ -149,23 +155,8 @@ MockDriver::~MockDriver() {
 }
 
 const IpczDriver& GetMockDriver() {
-  static const IpczDriver driver = {
-      sizeof(driver),
-      Close,
-      Serialize,
-      Deserialize,
-      CreateTransports,
-      ActivateTransport,
-      DeactivateTransport,
-      Transmit,
-      ReportBadTransportActivity,
-      AllocateSharedMemory,
-      GetSharedMemoryInfo,
-      DuplicateSharedMemory,
-      MapSharedMemory,
-      GenerateRandomBytes,
-  };
-  return driver;
+  static const base::NoDestructor<MockDriverImpl> driver;
+  return *driver;
 }
 
 }  // namespace ipcz::test

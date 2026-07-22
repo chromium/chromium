@@ -37,7 +37,7 @@ class DriverMemoryMapping {
  private:
   void Unmap();
 
-  IpczDriver driver_;
+  const IpczDriver* driver_ = nullptr;
   IpczDriverHandle mapping_ = IPCZ_INVALID_DRIVER_HANDLE;
   void* address_ = nullptr;
   size_t size_ = 0;

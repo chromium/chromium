@@ -12,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "ipcz/ipcz.h"
 #include "reference_drivers/object.h"
 #include "reference_drivers/random.h"
@@ -327,68 +328,57 @@ class InProcessTransport
   std::vector<SavedMessage> saved_messages_ ABSL_GUARDED_BY(mutex_);
 };
 
-IpczResult IPCZ_API CreateTransports(IpczDriverHandle transport0,
-                                     IpczDriverHandle transport1,
-                                     uint32_t flags,
-                                     const void* options,
-                                     IpczDriverHandle* new_transport0,
-                                     IpczDriverHandle* new_transport1) {
-  auto first = MakeRefCounted<InProcessTransport>();
-  auto second = MakeRefCounted<InProcessTransport>();
-  first->SetPeer(second);
-  second->SetPeer(first);
-  *new_transport0 = Object::ReleaseAsHandle(std::move(first));
-  *new_transport1 = Object::ReleaseAsHandle(std::move(second));
-  return IPCZ_RESULT_OK;
-}
+class SyncReferenceDriverImpl : public SingleProcessReferenceDriverBase {
+ public:
+  IpczResult CreateTransports(IpczDriverHandle transport0,
+                              IpczDriverHandle transport1,
+                              uint32_t flags,
+                              const void* options,
+                              IpczDriverHandle* new_transport0,
+                              IpczDriverHandle* new_transport1) const override {
+    auto first = MakeRefCounted<InProcessTransport>();
+    auto second = MakeRefCounted<InProcessTransport>();
+    first->SetPeer(second);
+    second->SetPeer(first);
+    *new_transport0 = Object::ReleaseAsHandle(std::move(first));
+    *new_transport1 = Object::ReleaseAsHandle(std::move(second));
+    return IPCZ_RESULT_OK;
+  }
 
-IpczResult IPCZ_API ActivateTransport(IpczDriverHandle transport,
-                                      IpczHandle listener,
-                                      IpczTransportActivityHandler handler,
-                                      uint32_t flags,
-                                      const void* options) {
-  return InProcessTransport::FromHandle(transport)->Activate(listener, handler);
-}
+  IpczResult ActivateTransport(IpczDriverHandle transport,
+                               IpczHandle listener,
+                               IpczTransportActivityHandler activity_handler,
+                               uint32_t flags,
+                               const void* options) const override {
+    return InProcessTransport::FromHandle(transport)->Activate(
+        listener, activity_handler);
+  }
 
-IpczResult IPCZ_API DeactivateTransport(IpczDriverHandle transport,
-                                        uint32_t flags,
-                                        const void* options) {
-  InProcessTransport::FromHandle(transport)->Deactivate();
-  return IPCZ_RESULT_OK;
-}
+  IpczResult DeactivateTransport(IpczDriverHandle transport,
+                                 uint32_t flags,
+                                 const void* options) const override {
+    InProcessTransport::FromHandle(transport)->Deactivate();
+    return IPCZ_RESULT_OK;
+  }
 
-IpczResult IPCZ_API Transmit(IpczDriverHandle transport,
-                             const void* data,
-                             size_t num_bytes,
-                             const IpczDriverHandle* handles,
-                             size_t num_handles,
-                             uint32_t flags,
-                             const void* options) {
-  return InProcessTransport::FromHandle(transport)->Transmit(
-      absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
-      absl::MakeSpan(handles, num_handles));
-}
+  IpczResult Transmit(IpczDriverHandle transport,
+                      const void* data,
+                      size_t num_bytes,
+                      const IpczDriverHandle* handles,
+                      size_t num_driver_handles,
+                      uint32_t flags,
+                      const void* options) const override {
+    return InProcessTransport::FromHandle(transport)->Transmit(
+        absl::MakeSpan(static_cast<const uint8_t*>(data), num_bytes),
+        absl::MakeSpan(handles, num_driver_handles));
+  }
+};
 
 }  // namespace
 
 const IpczDriver& GetSyncReferenceDriver() {
-  static const IpczDriver driver = {
-      sizeof(driver),
-      GetSingleProcessReferenceDriverBase().Close,
-      GetSingleProcessReferenceDriverBase().Serialize,
-      GetSingleProcessReferenceDriverBase().Deserialize,
-      CreateTransports,
-      ActivateTransport,
-      DeactivateTransport,
-      Transmit,
-      GetSingleProcessReferenceDriverBase().ReportBadTransportActivity,
-      GetSingleProcessReferenceDriverBase().AllocateSharedMemory,
-      GetSingleProcessReferenceDriverBase().GetSharedMemoryInfo,
-      GetSingleProcessReferenceDriverBase().DuplicateSharedMemory,
-      GetSingleProcessReferenceDriverBase().MapSharedMemory,
-      GetSingleProcessReferenceDriverBase().GenerateRandomBytes,
-  };
-  return driver;
+  static const base::NoDestructor<SyncReferenceDriverImpl> driver;
+  return *driver;
 }
 
 }  // namespace ipcz::reference_drivers

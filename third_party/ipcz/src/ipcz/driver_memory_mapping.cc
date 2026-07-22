@@ -14,7 +14,7 @@ DriverMemoryMapping::DriverMemoryMapping(const IpczDriver& driver,
                                          IpczDriverHandle mapping_handle,
                                          void* address,
                                          size_t size)
-    : driver_(driver),
+    : driver_(&driver),
       mapping_(mapping_handle),
       address_(address),
       size_(size) {}
@@ -41,7 +41,7 @@ DriverMemoryMapping::~DriverMemoryMapping() {
 
 void DriverMemoryMapping::Unmap() {
   if (is_valid()) {
-    driver_.Close(mapping_, 0, nullptr);
+    driver_->Close(mapping_, 0, nullptr);
     mapping_ = IPCZ_INVALID_DRIVER_HANDLE;
     address_ = nullptr;
     size_ = 0;

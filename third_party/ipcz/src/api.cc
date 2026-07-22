@@ -37,20 +37,11 @@ IpczResult CreateNode(const IpczDriver* driver,
                       IpczCreateNodeFlags flags,
                       const IpczCreateNodeOptions* options,
                       IpczHandle* node) {
-  if (!node || !driver || driver->size < sizeof(IpczDriver)) {
+  if (!node || !driver) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
   if (options && options->size < sizeof(IpczCreateNodeOptions)) {
-    return IPCZ_RESULT_INVALID_ARGUMENT;
-  }
-
-  if (!driver->Close || !driver->Serialize || !driver->Deserialize ||
-      !driver->CreateTransports || !driver->ActivateTransport ||
-      !driver->DeactivateTransport || !driver->Transmit ||
-      !driver->ReportBadTransportActivity || !driver->AllocateSharedMemory ||
-      !driver->GetSharedMemoryInfo || !driver->DuplicateSharedMemory ||
-      !driver->MapSharedMemory || !driver->GenerateRandomBytes) {
     return IPCZ_RESULT_INVALID_ARGUMENT;
   }
 
