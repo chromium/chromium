@@ -4,10 +4,10 @@
 
 #include "media/formats/webm/tracks_builder.h"
 
-#include <cstring>
-
+#include "base/bit_cast.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "media/formats/webm/webm_constants.h"
 
 namespace media {
@@ -68,87 +68,65 @@ static int StringElementSize(int element_id, const std::string& value) {
         value.length();
 }
 
-static void SerializeInt(uint8_t** buf_ptr,
-                         int* buf_size_ptr,
+static void SerializeInt(base::SpanWriter<uint8_t>& writer,
                          int64_t value,
                          int size) {
-  uint8_t*& buf = *buf_ptr;
-  int& buf_size = *buf_size_ptr;
-
   for (int idx = 1; idx <= size; ++idx) {
-    *UNSAFE_TODO(buf++) = static_cast<uint8_t>(value >> ((size - idx) * 8));
-    --buf_size;
+    CHECK(writer.Write(static_cast<uint8_t>(value >> ((size - idx) * 8))));
   }
 }
 
-static void SerializeDouble(uint8_t** buf_ptr,
-                            int* buf_size_ptr,
-                            double value) {
-  // Use a union to convert |value| to native endian integer bit pattern.
-  union {
-    double src;
-    int64_t dst;
-  } tmp;
-  tmp.src = value;
-
-  // Write the bytes from native endian |tmp.dst| to big-endian form in |buf|.
-  SerializeInt(buf_ptr, buf_size_ptr, tmp.dst, 8);
+static void SerializeDouble(base::SpanWriter<uint8_t>& writer, double value) {
+  // Reinterpret `value`'s bit pattern as an integer, then write those bytes in
+  // big-endian form.
+  SerializeInt(writer, base::bit_cast<int64_t>(value), 8);
 }
 
-static void WriteElementId(uint8_t** buf, int* buf_size, int element_id) {
-  SerializeInt(buf, buf_size, element_id, GetUIntSize(element_id));
+static void WriteElementId(base::SpanWriter<uint8_t>& writer, int element_id) {
+  SerializeInt(writer, element_id, GetUIntSize(element_id));
 }
 
-static void WriteUInt(uint8_t** buf, int* buf_size, uint64_t value) {
+static void WriteUInt(base::SpanWriter<uint8_t>& writer, uint64_t value) {
   const int size = GetUIntMkvSize(value);
   value |= (1ULL << (size * 7));  // Matroska formatting
-  SerializeInt(buf, buf_size, value, size);
+  SerializeInt(writer, value, size);
 }
 
-static void WriteMasterElement(uint8_t** buf,
-                               int* buf_size,
+static void WriteMasterElement(base::SpanWriter<uint8_t>& writer,
                                int element_id,
                                int payload_size) {
-  WriteElementId(buf, buf_size, element_id);
-  WriteUInt(buf, buf_size, payload_size);
+  WriteElementId(writer, element_id);
+  WriteUInt(writer, payload_size);
 }
 
-static void WriteUIntElement(uint8_t** buf,
-                             int* buf_size,
+static void WriteUIntElement(base::SpanWriter<uint8_t>& writer,
                              int element_id,
                              uint64_t value) {
-  WriteElementId(buf, buf_size, element_id);
+  WriteElementId(writer, element_id);
 
   const int size = GetUIntSize(value);
-  WriteUInt(buf, buf_size, size);
+  WriteUInt(writer, size);
 
-  SerializeInt(buf, buf_size, value, size);
+  SerializeInt(writer, value, size);
 }
 
-static void WriteDoubleElement(uint8_t** buf,
-                               int* buf_size,
+static void WriteDoubleElement(base::SpanWriter<uint8_t>& writer,
                                int element_id,
                                double value) {
-  WriteElementId(buf, buf_size, element_id);
-  WriteUInt(buf, buf_size, 8);
-  SerializeDouble(buf, buf_size, value);
+  WriteElementId(writer, element_id);
+  WriteUInt(writer, 8);
+  SerializeDouble(writer, value);
 }
 
-static void WriteStringElement(uint8_t** buf_ptr,
-                               int* buf_size_ptr,
+static void WriteStringElement(base::SpanWriter<uint8_t>& writer,
                                int element_id,
                                const std::string& value) {
-  uint8_t*& buf = *buf_ptr;
-  int& buf_size = *buf_size_ptr;
-
-  WriteElementId(&buf, &buf_size, element_id);
+  WriteElementId(writer, element_id);
 
   const uint64_t size = value.length();
-  WriteUInt(&buf, &buf_size, size);
+  WriteUInt(writer, size);
 
-  UNSAFE_TODO(memcpy(buf, value.data(), size));
-  UNSAFE_TODO(buf += size);
-  buf_size -= size;
+  CHECK(writer.Write(base::as_byte_span(value)));
 }
 
 TracksBuilder::TracksBuilder(bool allow_invalid_values)
@@ -193,12 +171,14 @@ void TracksBuilder::AddTextTrack(int track_num,
 }
 
 std::vector<uint8_t> TracksBuilder::Finish() {
-  // Allocate the storage
+  // Allocate the storage.
   std::vector<uint8_t> buffer;
   buffer.resize(GetTracksSize());
 
-  // Populate the storage with a tracks header
-  WriteTracks(&buffer[0], buffer.size());
+  // Populate the storage with a tracks header.
+  auto writer = base::SpanWriter(base::span(buffer));
+  WriteTracks(writer);
+  CHECK_EQ(writer.remaining(), 0u);
 
   return buffer;
 }
@@ -234,11 +214,11 @@ int TracksBuilder::GetTracksPayloadSize() const {
   return payload_size;
 }
 
-void TracksBuilder::WriteTracks(uint8_t* buf, int buf_size) const {
-  WriteMasterElement(&buf, &buf_size, kWebMIdTracks, GetTracksPayloadSize());
+void TracksBuilder::WriteTracks(base::SpanWriter<uint8_t>& writer) const {
+  WriteMasterElement(writer, kWebMIdTracks, GetTracksPayloadSize());
 
-  for (auto itr = tracks_.begin(); itr != tracks_.end(); ++itr) {
-    itr->Write(&buf, &buf_size);
+  for (const auto& track : tracks_) {
+    track.Write(writer);
   }
 }
 
@@ -353,44 +333,44 @@ int TracksBuilder::Track::GetPayloadSize() const {
   return size;
 }
 
-void TracksBuilder::Track::Write(uint8_t** buf, int* buf_size) const {
-  WriteMasterElement(buf, buf_size, kWebMIdTrackEntry, GetPayloadSize());
+void TracksBuilder::Track::Write(base::SpanWriter<uint8_t>& writer) const {
+  WriteMasterElement(writer, kWebMIdTrackEntry, GetPayloadSize());
 
-  WriteUIntElement(buf, buf_size, kWebMIdTrackNumber, track_num_);
-  WriteUIntElement(buf, buf_size, kWebMIdTrackType, track_type_);
-  WriteUIntElement(buf, buf_size, kWebMIdTrackUID, track_uid_);
+  WriteUIntElement(writer, kWebMIdTrackNumber, track_num_);
+  WriteUIntElement(writer, kWebMIdTrackType, track_type_);
+  WriteUIntElement(writer, kWebMIdTrackUID, track_uid_);
 
   if (default_duration_ >= 0)
-    WriteUIntElement(buf, buf_size, kWebMIdDefaultDuration, default_duration_);
+    WriteUIntElement(writer, kWebMIdDefaultDuration, default_duration_);
 
   if (!codec_id_.empty())
-    WriteStringElement(buf, buf_size, kWebMIdCodecID, codec_id_);
+    WriteStringElement(writer, kWebMIdCodecID, codec_id_);
 
   if (!name_.empty())
-    WriteStringElement(buf, buf_size, kWebMIdName, name_);
+    WriteStringElement(writer, kWebMIdName, name_);
 
   if (!language_.empty())
-    WriteStringElement(buf, buf_size, kWebMIdLanguage, language_);
+    WriteStringElement(writer, kWebMIdLanguage, language_);
 
   if (GetVideoPayloadSize() > 0) {
-    WriteMasterElement(buf, buf_size, kWebMIdVideo, GetVideoPayloadSize());
+    WriteMasterElement(writer, kWebMIdVideo, GetVideoPayloadSize());
 
     if (video_pixel_width_ >= 0)
-      WriteUIntElement(buf, buf_size, kWebMIdPixelWidth, video_pixel_width_);
+      WriteUIntElement(writer, kWebMIdPixelWidth, video_pixel_width_);
 
     if (video_pixel_height_ >= 0)
-      WriteUIntElement(buf, buf_size, kWebMIdPixelHeight, video_pixel_height_);
+      WriteUIntElement(writer, kWebMIdPixelHeight, video_pixel_height_);
   }
 
   if (GetAudioPayloadSize() > 0) {
-    WriteMasterElement(buf, buf_size, kWebMIdAudio, GetAudioPayloadSize());
+    WriteMasterElement(writer, kWebMIdAudio, GetAudioPayloadSize());
 
     if (audio_channels_ >= 0)
-      WriteUIntElement(buf, buf_size, kWebMIdChannels, audio_channels_);
+      WriteUIntElement(writer, kWebMIdChannels, audio_channels_);
 
     if (audio_sampling_frequency_ >= 0) {
-      WriteDoubleElement(buf, buf_size, kWebMIdSamplingFrequency,
-          audio_sampling_frequency_);
+      WriteDoubleElement(writer, kWebMIdSamplingFrequency,
+                         audio_sampling_frequency_);
     }
   }
 }

@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span_writer.h"
+
 namespace media {
 
 class TracksBuilder {
@@ -69,7 +71,7 @@ class TracksBuilder {
                         double audio_sampling_frequency);
   int GetTracksSize() const;
   int GetTracksPayloadSize() const;
-  void WriteTracks(uint8_t* buffer, int buffer_size) const;
+  void WriteTracks(base::SpanWriter<uint8_t>& writer) const;
 
   class Track {
    public:
@@ -88,7 +90,7 @@ class TracksBuilder {
     Track(const Track& other);
 
     int GetSize() const;
-    void Write(uint8_t** buf, int* buf_size) const;
+    void Write(base::SpanWriter<uint8_t>& writer) const;
 
    private:
     int GetPayloadSize() const;
