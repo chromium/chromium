@@ -476,6 +476,7 @@ std::vector<ProcessedStudy> FilterAndValidateStudies(
   DCHECK(client_state.version.IsValid());
 
   std::vector<ProcessedStudy> filtered_studies;
+  filtered_studies.reserve(seed.study_size());
 
   // Don't create two studies with the same name.
   // These `string_view`s contain pointers which point to memory owned by
