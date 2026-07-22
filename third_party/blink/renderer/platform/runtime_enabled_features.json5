@@ -1421,6 +1421,26 @@
       settable_from_internals: true,
     },
     {
+      // Enables Connection-Allowlist embedded enforcement: the
+      // `connectionallowlist` iframe content attribute (and its
+      // `connectionAllowlist` IDL reflection), by which an embedder requires a
+      // Connection-Allowlist of the document it frames. Kept separate from the
+      // `ConnectionAllowlist` feature so this in-development piece can iterate
+      // independently. See
+      // https://github.com/WICG/connection-allowlists/issues/1.
+      //
+      // Has its own `origin_trial_feature_name` so the `connectionAllowlist` IDL
+      // reflection can gate on this feature directly: that makes the Web IDL
+      // bindings generator treat it as context-dependent and emit the
+      // context-aware accessor, so the property is exposed only when embedded
+      // enforcement is actually available -- not merely when the base
+      // `ConnectionAllowlist` origin trial is enabled.
+      name: "ConnectionAllowlistEmbeddedEnforcement",
+      origin_trial_feature_name: "ConnectionAllowlistEmbeddedEnforcement",
+      status: "experimental",
+      depends_on: ["ConnectionAllowlist"],
+    },
+    {
       // Fix for https://crbug.com/40659076. When enabled, queryCommandState for
       // 'subscript' or 'superscript' with a caret selection will consider
       // ancestor <sub> or <sup> elements, matching the behavior for range

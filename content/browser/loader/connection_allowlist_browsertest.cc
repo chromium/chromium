@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/public/cpp/connection_allowlist.h"
+
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -18,11 +21,13 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -3454,6 +3459,134 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, GetConnectionAllowlists) {
                    ->GetPrimaryMainFrame()
                    ->GetConnectionAllowlists()
                    .report_only.has_value());
+}
+
+// Connection-Allowlist embedded enforcement (the `connectionallowlist` iframe
+// attribute). This fixture enables the runtime feature so the renderer delivers
+// the attribute. See https://github.com/WICG/connection-allowlists/issues/1.
+class ConnectionAllowlistEmbeddedEnforcementTest
+    : public ConnectionAllowlistTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ConnectionAllowlistTest::SetUpCommandLine(command_line);
+    // The renderer only delivers the `connectionallowlist` attribute when the
+    // ConnectionAllowlistEmbeddedEnforcement runtime feature is enabled, which
+    // in turn depends on the ConnectionAllowlist feature.
+    command_line->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures,
+        "ConnectionAllowlist,ConnectionAllowlistEmbeddedEnforcement");
+  }
+};
+
+// The renderer parses the `connectionallowlist` attribute into a
+// ConnectionAllowlist and delivers it to the browser's FrameTreeNode, and the
+// `connectionAllowlist` IDL attribute reflects the content attribute.
+// (Enforcement of the delivered value is added in a follow-up CL.)
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       AttributeDeliveredToBrowser) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/child.html",
+                   ResponseEntry("<html><body>child</body></html>", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  constexpr char kAllowlist[] = R"(("https://good.test/" response-origin))";
+
+  TestNavigationObserver observer(shell()->web_contents());
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(), JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.id = 'test_iframe';
+        f.setAttribute('connectionallowlist', $1);
+        f.src = $2;
+        document.body.appendChild(f);
+      )",
+                                                kAllowlist, child_url)));
+  observer.Wait();
+
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+  FrameTreeNode* child =
+      static_cast<RenderFrameHostImpl*>(child_rfh)->frame_tree_node();
+
+  // The browser received the parsed ConnectionAllowlist on the child's
+  // FrameTreeNode. `response-origin` resolution is deferred (the browser
+  // resolves it against the frame's response origin later), so it sets
+  // `match_response_origin` rather than appearing in the allowlist.
+  ASSERT_TRUE(child->connection_allowlist_attribute().has_value());
+  const network::ConnectionAllowlist& parsed =
+      child->connection_allowlist_attribute().value();
+  EXPECT_EQ(parsed.allowlist, std::vector<std::string>({"https://good.test/"}));
+  EXPECT_TRUE(parsed.match_response_origin);
+
+  // The `connectionAllowlist` IDL attribute reflects the content attribute.
+  EXPECT_EQ(
+      kAllowlist,
+      EvalJs(shell()->web_contents(),
+             "document.getElementById('test_iframe').connectionAllowlist"));
+}
+
+// Once a valid `connectionallowlist` value has been delivered to the browser,
+// setting the attribute to an invalid value does not clear the browser's
+// requirement (fail closed): the invalid value is dropped in the renderer
+// without notifying the browser, so the last valid requirement stays in effect.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmbeddedEnforcementTest,
+                       InvalidAttributeKeepsPreviousRequirement) {
+  RegisterResponse("/embedder.html",
+                   ResponseEntry("<html><body></body></html>", {}));
+  RegisterResponse("/child.html",
+                   ResponseEntry("<html><body>child</body></html>", {}));
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  GURL embedder_url =
+      embedded_https_test_server().GetURL("a.test", "/embedder.html");
+  GURL child_url = embedded_https_test_server().GetURL("a.test", "/child.html");
+  EXPECT_TRUE(NavigateToURL(shell(), embedder_url));
+
+  constexpr char kAllowlist[] = R"(("https://good.test/"))";
+
+  TestNavigationObserver observer(shell()->web_contents());
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(), JsReplace(R"(
+        const f = document.createElement('iframe');
+        f.id = 'test_iframe';
+        f.setAttribute('connectionallowlist', $1);
+        f.src = $2;
+        document.body.appendChild(f);
+      )",
+                                                kAllowlist, child_url)));
+  observer.Wait();
+
+  RenderFrameHost* child_rfh =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child_rfh);
+  FrameTreeNode* child =
+      static_cast<RenderFrameHostImpl*>(child_rfh)->frame_tree_node();
+  ASSERT_TRUE(child->connection_allowlist_attribute().has_value());
+  EXPECT_EQ(child->connection_allowlist_attribute().value().allowlist,
+            std::vector<std::string>({"https://good.test/"}));
+
+  // Set the attribute to an invalid (header-injecting) value. The renderer
+  // drops it and does not notify the browser, so the delivered requirement is
+  // unchanged.
+  constexpr char kInvalidAllowlist[] = "(response-origin)\nX-Injected: evil";
+  EXPECT_TRUE(ExecJs(shell()->web_contents(), JsReplace(R"(
+      document.getElementById('test_iframe').setAttribute(
+          'connectionallowlist', $1);
+  )",
+                                                        kInvalidAllowlist)));
+  // Round-trip through the main frame's renderer to flush any would-be IPC.
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "true"));
+
+  ASSERT_TRUE(child->connection_allowlist_attribute().has_value());
+  EXPECT_EQ(child->connection_allowlist_attribute().value().allowlist,
+            std::vector<std::string>({"https://good.test/"}));
 }
 
 }  // namespace content

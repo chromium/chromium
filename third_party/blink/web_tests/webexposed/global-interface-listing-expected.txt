@@ -4514,6 +4514,7 @@ interface HTMLIFrameElement : HTMLElement
     getter allowFullscreen
     getter allowPaymentRequest
     getter browsingTopics
+    getter connectionAllowlist
     getter contentDocument
     getter contentWindow
     getter credentialless
@@ -4544,6 +4545,7 @@ interface HTMLIFrameElement : HTMLElement
     setter allowFullscreen
     setter allowPaymentRequest
     setter browsingTopics
+    setter connectionAllowlist
     setter credentialless
     setter csp
     setter frameBorder

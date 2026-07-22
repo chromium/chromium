@@ -68,6 +68,7 @@
     "command",
     "commandfor",
     "compact",
+    "connectionallowlist",
     "containertiming",
     "containertiming-ignore",
     "content",

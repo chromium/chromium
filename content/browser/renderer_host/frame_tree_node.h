@@ -26,6 +26,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_discard_reason.h"
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
@@ -303,6 +304,13 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // exposed to cross-origin renderers.
   const network::mojom::ContentSecurityPolicy* csp_attribute() const {
     return attributes_->parsed_csp_attribute.get();
+  }
+  // Reflects the iframe's 'connectionallowlist' attribute, parsed (in the
+  // renderer) into a ConnectionAllowlist for Connection-Allowlist embedded
+  // enforcement. Null when the attribute is unset.
+  const std::optional<network::ConnectionAllowlist>&
+  connection_allowlist_attribute() const {
+    return attributes_->required_connection_allowlist;
   }
   // Tracks iframe's 'browsingtopics' attribute, indicating whether the
   // navigation requests on this frame should calculate and send the

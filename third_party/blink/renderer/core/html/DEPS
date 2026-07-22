@@ -20,6 +20,9 @@ specific_include_rules = {
     "html_anchor_element.cc" : [
         "+base/command_line.h"
     ],
+    "html_iframe_element.cc": [
+        "+services/network/public/cpp/connection_allowlist_parser.h",
+    ],
     "html_login_element.cc" : [
         "+services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h",
     ],

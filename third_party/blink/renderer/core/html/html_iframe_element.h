@@ -106,6 +106,10 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
 
   AtomicString name_;
   AtomicString required_csp_;
+  // Raw value of the 'connectionallowlist' attribute (unparsed Connection-
+  // Allowlist structured-header syntax), used for Connection-Allowlist embedded
+  // enforcement. Parsed by the browser process.
+  AtomicString required_connection_allowlist_;
   AtomicString allow_;
   AtomicString required_policy_;  // policy attribute
   AtomicString id_;

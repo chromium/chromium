@@ -13,6 +13,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "services/network/public/mojom/connection_allowlist.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
@@ -234,6 +235,13 @@ const uint16 kMaxTitleChars = 4096; // 4 * 1024;
 struct IframeAttributes {
   // Parsed value of the 'csp' attribute of the iframe.
   network.mojom.ContentSecurityPolicy? parsed_csp_attribute;
+  // Parsed value of the iframe's 'connectionallowlist' attribute, used for
+  // Connection-Allowlist embedded enforcement. Parsed in the renderer. The
+  // `response-origin` token can't be resolved here (the frame hasn't navigated
+  // yet), so it is carried unresolved via `match_response_origin` and resolved
+  // by the browser against the frame's response origin before enforcement.
+  // Null when the attribute is unset.
+  network.mojom.ConnectionAllowlist? required_connection_allowlist;
   // 'credentialless' attribute of the iframe.
   bool credentialless;
   // 'browsingtopics' attribute of the iframe.

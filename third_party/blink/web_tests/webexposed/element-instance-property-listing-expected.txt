@@ -776,6 +776,7 @@ html element iframe
     property allowFullscreen
     property allowPaymentRequest
     property browsingTopics
+    property connectionAllowlist
     property contentDocument
     property contentWindow
     property credentialless
