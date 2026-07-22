@@ -76,8 +76,8 @@
   // TODO(crbug.com/40707167): Create a coordinator to own this view controller.
   // The view controller that blocks all interactions with the scene.
   BlockingOverlayViewController* blockingOverlayViewController =
-
       [[BlockingOverlayViewController alloc] init];
+
   blockingOverlayViewController.blockingSceneCommandHandler =
       HandlerForProtocol(
           self.sceneState.profileState.appState.appCommandDispatcher,
