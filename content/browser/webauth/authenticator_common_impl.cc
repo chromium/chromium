@@ -2174,6 +2174,18 @@ void AuthenticatorCommonImpl::Report(
   req_state_->caller_origin = std::move(caller_origin);
   req_state_->relying_party_id = options->relying_party_id;
 
+  VirtualAuthenticatorManagerImpl* virtual_authenticator_manager =
+      AuthenticatorEnvironment::GetInstance()
+          ->MaybeGetVirtualAuthenticatorManager(
+              static_cast<RenderFrameHostImpl*>(GetRenderFrameHost())
+                  ->frame_tree_node());
+  if (!virtual_authenticator_manager && !disable_tls_check_ &&
+      !GetContentClient()->browser()->IsSecurityLevelAcceptableForWebAuthn(
+          GetRenderFrameHost(), req_state_->caller_origin)) {
+    CompleteReportRequest(blink::mojom::AuthenticatorStatus::CERTIFICATE_ERROR);
+    return;
+  }
+
   bool is_cross_origin_iframe = false;
   blink::mojom::AuthenticatorStatus status =
       security_checker_->ValidateAncestorOrigins(
