@@ -337,6 +337,14 @@ class FastPairGattServiceClientTest : public testing::Test {
  public:
   void SetUp() override { fast_pair_data_encryptor_->public_key(kPublicKey); }
 
+  void TearDown() override {
+    raw_fake_bt_device_ = nullptr;
+    temp_fake_key_based_characteristic_ = nullptr;
+    temp_passkey_based_characteristic_ = nullptr;
+    additional_data_characteristic_ = nullptr;
+    testing::Test::TearDown();
+  }
+
   void SuccessfulGattConnectionSetUp() {
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     unique_fake_bt_device_ = CreateTestBluetoothDevice(
@@ -355,7 +363,6 @@ class FastPairGattServiceClientTest : public testing::Test {
     unique_fake_bt_device_ = CreateTestBluetoothDevice(
         adapter_.get(), ash::quick_pair::kFastPairBluetoothUuid);
     unique_fake_bt_device_->SetError(true);
-    raw_fake_bt_device_ = unique_fake_bt_device_.get();
     adapter_->AddMockDevice(std::move(unique_fake_bt_device_));
     gatt_service_client_ = FastPairGattServiceClientImpl::Factory::Create(
         adapter_->GetDevice(kTestBleDeviceAddress), adapter_.get(),
@@ -518,13 +525,19 @@ class FastPairGattServiceClientTest : public testing::Test {
             CreateTestBluetoothDevice(adapter_.get(), uuid).get(),
             kTestServiceId, uuid,
             /*is_primary=*/true);
+    // Will become dangling due to being owned by gatt_service_, and
+    // gatt_service_ is getting reset at assignment,
+    temp_fake_key_based_characteristic_ = nullptr;
+    temp_passkey_based_characteristic_ = nullptr;
+    additional_data_characteristic_ = nullptr;
     gatt_service_ = std::move(gatt_service);
     ON_CALL(*(gatt_service_.get()), GetDevice)
         .WillByDefault(
             testing::Return(adapter_->GetDevice(kTestBleDeviceAddress)));
     SetGattServiceCharacteristics();
     adapter_->NotifyGattDiscoveryCompleteForService(gatt_service_.get());
-  }
+  }  // Will become dangling due to being owned by gatt_service_, and
+     // gatt_service_ is getting reset at assignment,
 
   bool ServiceIsSet() {
     if (!gatt_service_client_->gatt_service())
@@ -701,16 +714,14 @@ class FastPairGattServiceClientTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
   std::unique_ptr<FastPairGattServiceClient> gatt_service_client_;
-  raw_ptr<FakeBluetoothDevice, DanglingUntriaged> raw_fake_bt_device_;
+  raw_ptr<FakeBluetoothDevice> raw_fake_bt_device_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
 
  private:
   // We need temporary pointers to use for write/ready requests because we
   // move the unique pointers when we notify the session.
-  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged>
-      temp_fake_key_based_characteristic_;
-  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged>
-      temp_passkey_based_characteristic_;
+  raw_ptr<FakeBluetoothGattCharacteristic> temp_fake_key_based_characteristic_;
+  raw_ptr<FakeBluetoothGattCharacteristic> temp_passkey_based_characteristic_;
   std::optional<ash::quick_pair::AccountKeyFailure> account_key_error_ =
       std::nullopt;
   bool passkey_char_error_ = false;
@@ -736,8 +747,7 @@ class FastPairGattServiceClientTest : public testing::Test {
   std::unique_ptr<FakeBluetoothDevice> unique_fake_bt_device_;
   std::unique_ptr<FakeBluetoothGattCharacteristic>
       fake_key_based_characteristic_;
-  raw_ptr<FakeBluetoothGattCharacteristic, DanglingUntriaged>
-      additional_data_characteristic_;
+  raw_ptr<FakeBluetoothGattCharacteristic> additional_data_characteristic_;
   std::unique_ptr<FakeFastPairDataEncryptor> fast_pair_data_encryptor_ =
       std::make_unique<FakeFastPairDataEncryptor>();
   std::unique_ptr<FakeBluetoothGattCharacteristic> fake_passkey_characteristic_;
