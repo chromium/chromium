@@ -7901,11 +7901,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "page-stability-metrics",
-    "owners": [ "kaklilu@chromium.org", "bling-ai-foundations@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "page-tools-feature-unavailability",
     "owners": [ "fbeauchamp@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 160

@@ -448,7 +448,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
     features.push_back(actor::SelectToolJavaScriptFeature::GetInstance());
     features.push_back(actor::TypeToolJavaScriptFeature::GetInstance());
   }
-  if (IsActorEnabled() || IsPageStabilityMetricsEnabled()) {
+  if (IsActorEnabled()) {
     features.push_back(actor::PageStabilityJavaScriptFeature::GetInstance());
   }
 

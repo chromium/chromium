@@ -7,19 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import <optional>
-#import <string>
-
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
-
-namespace web {
-class WebState;
-class ScriptMessage;
-}  // namespace web
 
 namespace actor {
 
@@ -43,11 +35,6 @@ class PageStabilityJavaScriptFeature : public web::JavaScriptFeature {
   // Cancels a previous call to `WaitForStability` in `target_frame`.
   void CancelWaitForStability(web::WebFrame* target_frame);
 
-  // JavaScriptFeature:
-  std::optional<std::string> GetScriptMessageHandlerName() const override;
-  void ScriptMessageReceived(web::WebState* web_state,
-                             const web::ScriptMessage& message) override;
-
  protected:
   PageStabilityJavaScriptFeature();
   ~PageStabilityJavaScriptFeature() override;
@@ -55,8 +42,7 @@ class PageStabilityJavaScriptFeature : public web::JavaScriptFeature {
  private:
   friend class base::NoDestructor<PageStabilityJavaScriptFeature>;
 
-  void OnStabilityResult(base::WeakPtr<web::WebFrame> target_frame,
-                         base::OnceCallback<void(ToolExecutionResult)> callback,
+  void OnStabilityResult(base::OnceCallback<void(ToolExecutionResult)> callback,
                          const base::Value* result,
                          NSError* error);
 };

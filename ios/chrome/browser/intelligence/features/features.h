@@ -251,10 +251,6 @@ double GetGeminiResponseReadyInterval();
 base::TimeDelta GetGeminiSessionValidityDuration();
 extern const char kGeminiSessionValidityDuration[];
 
-// Feature flag for enabling early metrics collection for page stability.
-BASE_DECLARE_FEATURE(kPageStabilityMetrics);
-bool IsPageStabilityMetricsEnabled();
-base::TimeDelta GetPageStabilityIntervalDuration();
 
 // Feature flag for Actor tools.
 BASE_DECLARE_FEATURE(kActorTools);

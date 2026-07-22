@@ -470,7 +470,6 @@ source_set("unit_tests") {
     "history_tool_unittest.mm",
     "navigate_tool_unittest.mm",
     "observation_delay_controller_unittest.mm",
-    "page_stability_java_script_feature_unittest.mm",
     "page_stability_js_unittest.mm",
     "page_stability_monitor_unittest.mm",
     "scroll_to_tool_unittest.mm",

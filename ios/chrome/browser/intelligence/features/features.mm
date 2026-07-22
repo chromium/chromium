@@ -475,22 +475,6 @@ base::TimeDelta GetGeminiSessionValidityDuration() {
       kGeminiSessionValidityDurationDefault));
 }
 
-BASE_FEATURE(kPageStabilityMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The length of time after an interaction we will track mutations before
-// reporting UMA.
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kPageStabilityIntervalDuration,
-                   &kPageStabilityMetrics,
-                   base::Milliseconds(4000));
-
-bool IsPageStabilityMetricsEnabled() {
-  return base::FeatureList::IsEnabled(kPageStabilityMetrics);
-}
-
-base::TimeDelta GetPageStabilityIntervalDuration() {
-  return kPageStabilityIntervalDuration.Get();
-}
 
 BASE_FEATURE(kActorTools, base::FEATURE_DISABLED_BY_DEFAULT);
 
