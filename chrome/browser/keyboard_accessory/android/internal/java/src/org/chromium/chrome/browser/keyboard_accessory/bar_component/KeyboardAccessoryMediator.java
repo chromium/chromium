@@ -26,6 +26,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
@@ -56,6 +57,7 @@ import org.chromium.components.autofill.FillingProduct;
 import org.chromium.components.autofill.FillingProductBridge;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
+import org.chromium.components.autofill.autofill_ai.EntityType;
 import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
@@ -87,6 +89,9 @@ class KeyboardAccessoryMediator
         implements PropertyObservable.PropertyObserver<PropertyKey>,
                 Provider.Observer<Action[]>,
                 KeyboardAccessoryButtonGroupCoordinator.AccessoryTabObserver {
+    private static final String UMA_AUTOFILL_AI_SETTINGS_LINKOUT_DIALOG =
+            "Autofill.Ai.SettingsLinkoutDialog";
+
     private final Context mContext;
     private final PropertyModel mModel;
     private final BarVisibilityDelegate mBarVisibilityDelegate;
@@ -412,7 +417,7 @@ class KeyboardAccessoryMediator
                 (dismissHandler, buttonClickResult, stopShowing) ->
                         handleDialogAction(
                                 delegate,
-                                entityInstance.getEntityType().getTypeName(),
+                                entityInstance.getEntityType(),
                                 dismissHandler,
                                 buttonClickResult,
                                 stopShowing));
@@ -438,15 +443,19 @@ class KeyboardAccessoryMediator
 
     private @DialogDismissType int handleDialogAction(
             AutofillDelegate delegate,
-            @EntityTypeName int entityTypeName,
+            EntityType entityType,
             DismissHandler unusedDismissHandler,
             @ButtonClickResult int buttonClickResult,
             boolean unusedStopShowing) {
-        // TODO: crbug.com/503303085 - Log metrics to asses usage.
-        if (buttonClickResult == ButtonClickResult.POSITIVE) {
+        boolean isPositive = buttonClickResult == ButtonClickResult.POSITIVE;
+        RecordHistogram.recordBooleanHistogram(
+                UMA_AUTOFILL_AI_SETTINGS_LINKOUT_DIALOG + "."
+                        + entityType.getTypeNameAsMetricsString(),
+                isPositive);
+        if (isPositive) {
             // Need to go through C++ because `SettingsNavigationHelper` is in `chrome_java`.
             // Keyboard accessory Java code should not depend on `chrome_java`.
-            delegate.openSettingsForEntityType(entityTypeName);
+            delegate.openSettingsForEntityType(entityType.getTypeName());
         }
         return DialogDismissType.DISMISS_IMMEDIATELY;
     }

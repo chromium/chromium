@@ -2024,6 +2024,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.SettingsLinkoutDialog.{EntityTypeName}"
+    enum="Boolean" expires_after="2026-12-12">
+  <owner>tchudakov@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the user interaction with the settings link-out dialog shown before
+    navigating to settings for {EntityTypeName}. Emitted when the user makes a
+    choice in the dialog: true (positive result) if the user decided to open the
+    settings, or false (negative result) if the user decided to close/cancel the
+    dialog.
+  </summary>
+  <token key="EntityTypeName" variants="Autofill.Ai.EntityType"/>
+</histogram>
+
 <histogram name="Autofill.Ai.StoredEntitiesCount{EntityType}{RecordType}"
     units="units" expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>
