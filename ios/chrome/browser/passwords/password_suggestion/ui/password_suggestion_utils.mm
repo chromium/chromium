@@ -18,10 +18,9 @@ constexpr CGFloat kBackupPasswordSymbolPointSize = 18;
 }  // namespace
 
 UIImage* GetBackupPasswordSuggestionIcon() {
-  UIImage* symbol =
-      SymbolWithPalette(DefaultSymbolWithPointSize(
-                            kHistorySymbol, kBackupPasswordSymbolPointSize),
-                        @[ [UIColor colorNamed:kTextPrimaryColor] ]);
+  UIImage* symbol = SymbolWithPalette(
+      SymbolWithPointSize(SymbolHistory, kBackupPasswordSymbolPointSize),
+      @[ [UIColor colorNamed:kTextPrimaryColor] ]);
   symbol.accessibilityIdentifier =
       kRecoveryPasswordSuggestionIconAccessibilityIdentifier;
   return symbol;
@@ -30,7 +29,7 @@ UIImage* GetBackupPasswordSuggestionIcon() {
 FaviconAttributes* GetDefaultGlobeFaviconAttributes() {
   return [FaviconAttributes
       attributesWithImage:SymbolWithPalette(
-                              DefaultSymbolWithPointSize(kGlobeAmericasSymbol,
-                                                         gfx::kFaviconSize),
+                              SymbolWithPointSize(SymbolGlobeAmericas,
+                                                  gfx::kFaviconSize),
                               @[ [UIColor colorNamed:kTextQuaternaryColor] ])];
 }

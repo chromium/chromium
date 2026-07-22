@@ -49,7 +49,7 @@ constexpr CGFloat customSpacingAfterImage = 1;
     configuration.secondaryActionString =
         l10n_util::GetNSString(IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD);
     configuration.secondaryActionImage =
-        DefaultSymbolWithPointSize(kKeyboardSymbol, kSymbolActionPointSize);
+        SymbolWithPointSize(SymbolKeyboard, kSymbolActionPointSize);
   } else {
     configuration.secondaryActionString = l10n_util::GetNSString(IDS_CANCEL);
   }

@@ -427,7 +427,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
     [weakSelf.handler displayPasswordManager];
   };
   UIImage* keyIcon =
-      CustomSymbolWithPointSize(kPasswordSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolPassword, kSymbolActionPointSize);
   return [UIAction
       actionWithTitle:l10n_util::GetNSString(
                           IDS_IOS_CREDENTIAL_BOTTOM_SHEET_PASSWORD_MANAGER)
@@ -447,7 +447,7 @@ void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
   };
 
   UIImage* infoIcon =
-      DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolInfoCircle, kSymbolActionPointSize);
   return [UIAction
       actionWithTitle:l10n_util::GetNSString(
                           IDS_IOS_CREDENTIAL_BOTTOM_SHEET_SHOW_DETAILS)

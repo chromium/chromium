@@ -114,10 +114,10 @@
 - (UIImage*)iconImage {
   UIImage* image =
 #if BUILDFLAG(IS_IOS_MACCATALYST)
-      CustomSymbolWithPointSize(kPasswordSymbol, kInfobarSymbolPointSize);
+      SymbolWithPointSize(SymbolPassword, kInfobarSymbolPointSize);
 #else
-      MakeSymbolMulticolor(CustomSymbolWithPointSize(kMulticolorPasswordSymbol,
-                                                     kInfobarSymbolPointSize));
+      MakeSymbolMulticolor(SymbolWithPointSize(SymbolMulticolorPassword,
+                                               kInfobarSymbolPointSize));
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
   return image;
 }

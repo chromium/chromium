@@ -94,8 +94,8 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   // Verify that the multi-color infobar icon was set up properly.
-  EXPECT_NSEQ(MakeSymbolMulticolor(CustomSymbolWithPointSize(
-                  kMulticolorPasswordSymbol, kInfobarSymbolPointSize)),
+  EXPECT_NSEQ(MakeSymbolMulticolor(SymbolWithPointSize(
+                  SymbolMulticolorPassword, kInfobarSymbolPointSize)),
               consumer_.iconImage);
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 }
@@ -117,8 +117,8 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   // Verify that the multi-color infobar icon was set up properly.
-  EXPECT_NSEQ(MakeSymbolMulticolor(CustomSymbolWithPointSize(
-                  kMulticolorPasswordSymbol, kInfobarSymbolPointSize)),
+  EXPECT_NSEQ(MakeSymbolMulticolor(SymbolWithPointSize(
+                  SymbolMulticolorPassword, kInfobarSymbolPointSize)),
               consumer_.iconImage);
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 }

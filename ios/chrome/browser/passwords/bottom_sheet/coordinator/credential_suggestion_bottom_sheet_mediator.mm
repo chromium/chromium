@@ -494,8 +494,8 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
                                      self.suggestions.firstObject))
        secondaryActionString:l10n_util::GetNSString(
                                  IDS_IOS_CREDENTIAL_BOTTOM_SHEET_USE_KEYBOARD)
-        secondaryActionImage:DefaultSymbolWithPointSize(
-                                 kKeyboardSymbol, kSymbolActionPointSize)];
+        secondaryActionImage:SymbolWithPointSize(SymbolKeyboard,
+                                                 kSymbolActionPointSize)];
 }
 
 - (void)disconnect {

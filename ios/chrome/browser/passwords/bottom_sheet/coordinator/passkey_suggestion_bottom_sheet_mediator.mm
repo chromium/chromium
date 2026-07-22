@@ -60,9 +60,8 @@
                                  IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)
        secondaryActionString:l10n_util::GetNSString(
                                  IDS_IOS_CREDENTIAL_BOTTOM_SHEET_MORE_PASSKEYS)
-        secondaryActionImage:DefaultSymbolWithPointSize(
-                                 kPersonBadgeKeyFillSymbol,
-                                 kSymbolActionPointSize)];
+        secondaryActionImage:SymbolWithPointSize(SymbolPersonBadgeKeyFill,
+                                                 kSymbolActionPointSize)];
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
