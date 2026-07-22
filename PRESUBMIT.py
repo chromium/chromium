@@ -3210,30 +3210,6 @@ def CheckNoDEPSGIT(input_api, output_api):
     return []
 
 
-def CheckCrosApiNeedBrowserTest(input_api, output_api):
-    """Check new crosapi should add browser test."""
-    has_new_crosapi = False
-    has_browser_test = False
-    for f in input_api.AffectedFiles():
-        path = f.UnixLocalPath()
-        if (path.startswith('chromeos/crosapi/mojom')
-                and _IsMojomFile(input_api, path) and f.Action() == 'A'):
-            has_new_crosapi = True
-        if path.endswith('browsertest.cc') or path.endswith('browser_test.cc'):
-            has_browser_test = True
-    if has_new_crosapi and not has_browser_test:
-        return [
-            output_api.PresubmitPromptWarning(
-                'You are adding a new crosapi, but there is no file ends with '
-                'browsertest.cc file being added or modified. It is important '
-                'to add crosapi browser test coverage to avoid version '
-                ' skew issues.\n'
-                'Check //docs/lacros/test_instructions.md for more information.'
-            )
-        ]
-    return []
-
-
 def _GetMessageForMatchingType(input_api, affected_file, line_number, line,
                                ban_rule):
     """Helper method for checking for banned constructs.

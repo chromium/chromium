@@ -888,7 +888,6 @@
                   'chromeos/ash/services/cros_healthd/|'\
                   'chromeos/ash/components/telemetry_extension/|'\
                   'chromeos/ash/services/cros_healthd/public/mojom/|'\
-                  'chromeos/crosapi/cpp/telemetry/|'\
                   'docs/telemetry_extension/',
     },
     'chromeos_login': {
@@ -1058,10 +1057,6 @@
       'filepath': 'chrome/browser/policy/messaging_layer/'\
                   '|chrome/browser/ash/policy/status_collector/'\
                   '|components/policy/proto/record',
-    },
-    'crosapi': {
-      'filepath': 'chromeos/crosapi/'\
-                  '|chrome/browser/ash/crosapi/',
     },
     'crostini': {
       'filepath': 'cicerone'\
@@ -1410,7 +1405,6 @@
                   'ash/system/progress_indicator|'\
                   'chrome/browser/ui/ash/holding_space|'\
                   'chrome/browser/ui/ash/thumbnail_loader|'\
-                  'chromeos/crosapi/mojom/.*holding_space|'\
                   'tools/metrics/histograms/metadata/holding_space'
     },
     'hsts': {
@@ -1733,7 +1727,6 @@
     'multipaste': {
      'filepath': 'ash/clipboard/|'\
                  'ash/public/cpp/.*clipboard.*|'\
-                 'chrome/browser/ash/crosapi/clipboard_history.*|'\
                  'chrome/browser/ui/ash/clipboard.*|'\
                  'chromeos/ui/clipboard_history/',
     },
@@ -2988,7 +2981,6 @@
     'cros_commercial_enrollment': ['asumaneev+watch@google.com'],
     'cros_commercial_policy': ['enterprise-policy-review@google.com'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
-    'crosapi': ['ffred+watch@chromium.org', 'tluk+watch@chromium.org'],
     'crostini': ['crostini-ui@chromium.org'],
     'cups_printing': ['print-reviews+cups@chromium.org',
                       'cros-printing-reviews@google.com'],

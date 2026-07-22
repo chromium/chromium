@@ -116,16 +116,8 @@ class PreinstalledWebAppUtilsTabletTest
  public:
   PreinstalledWebAppUtilsTabletTest() {
     if (GetParam()) {
-#if BUILDFLAG(IS_CHROMEOS)
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           ash::switches::kEnableTabletFormFactor);
-#else
-      auto init_params = crosapi::mojom::BrowserInitParams::New();
-      init_params->device_properties = crosapi::mojom::DeviceProperties::New();
-      init_params->device_properties->is_tablet_form_factor = true;
-      chromeos::BrowserInitParams::SetInitParamsForTests(
-          std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
   ~PreinstalledWebAppUtilsTabletTest() override = default;
@@ -166,16 +158,8 @@ class PreinstalledWebAppUtilsArcTest
  public:
   PreinstalledWebAppUtilsArcTest() {
     if (GetParam()) {
-#if BUILDFLAG(IS_CHROMEOS)
       base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
           ash::switches::kArcAvailability, "officially-supported");
-#else
-      auto init_params = crosapi::mojom::BrowserInitParams::New();
-      init_params->device_properties = crosapi::mojom::DeviceProperties::New();
-      init_params->device_properties->is_arc_available = true;
-      chromeos::BrowserInitParams::SetInitParamsForTests(
-          std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
   ~PreinstalledWebAppUtilsArcTest() override = default;

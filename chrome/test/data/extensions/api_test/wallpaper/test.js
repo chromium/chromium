@@ -9,11 +9,6 @@ chrome.test.getConfig(function(config) {
   const baseURL = 'http://a.com:' + config.testServer.port +
       '/extensions/api_test/wallpaper/';
 
-  let crosapiUnavailable = false;
-  if (config.customArg && config.customArg === 'crosapi_unavailable') {
-    crosapiUnavailable = true;
-  }
-
   /*
    * Calls chrome.wallpaper.setWallpaper using an arraybuffer.
    * @param {string} filePath An extension relative file path.
@@ -26,12 +21,7 @@ chrome.test.getConfig(function(config) {
     wallpaperRequest.responseType = 'arraybuffer';
 
     let callback;
-    if (crosapiUnavailable) {
-      callback = function() {
-        chrome.test.assertLastError('Unsupported ChromeOS version.');
-        chrome.test.succeed();
-      };
-    } else if (wantThumbnail) {
+    if (wantThumbnail) {
       callback = function(thumbnail) {
         chrome.test.assertNe(undefined, thumbnail);
         const buffer = new Uint8Array(thumbnail);
@@ -69,17 +59,9 @@ chrome.test.getConfig(function(config) {
   const testSetWallpaperFromURL = function(relativeURL) {
     const url = baseURL + relativeURL;
 
-    let callback;
-    if (crosapiUnavailable) {
-      callback = function() {
-        chrome.test.assertLastError('Unsupported ChromeOS version.');
-        chrome.test.succeed();
-      };
-    } else {
-      callback = function() {
-        chrome.test.succeed('setWallpaper replied successfully.');
-      };
-    }
+    const callback = function() {
+      chrome.test.succeed('setWallpaper replied successfully.');
+    };
 
     chrome.wallpaper.setWallpaper(
         {'url': url, 'layout': 'CENTER_CROPPED', 'filename': 'test'}, callback);
@@ -111,11 +93,6 @@ chrome.test.getConfig(function(config) {
           fail(expectedError));
     },
     function newRequestCancelPreviousRequest() {
-      if (crosapiUnavailable) {
-        chrome.test.succeed('skipped.');
-        return;
-      }
-
       // The first request should be canceled. The wallpaper in the first
       // request is chosen from one of the high-resolution built-in wallpapers
       // to make sure the first setWallpaper request hasn't finished yet when

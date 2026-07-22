@@ -19,14 +19,7 @@ AshStructuredMetricsDelegate::AshStructuredMetricsDelegate() = default;
 AshStructuredMetricsDelegate::~AshStructuredMetricsDelegate() = default;
 
 void AshStructuredMetricsDelegate::Initialize() {
-  DCHECK(!is_initialized_);
-
-  // If already initialized, do nothing.
-  if (is_initialized_) {
-    return;
-  }
-
-  // Crosapi may not be initialized, in which case a pipe cannot be setup.
+  CHECK(!is_initialized_);
   key_events_observer_ = std::make_unique<StructuredMetricsKeyEventsObserver>(
       user_manager::UserManager::Get(), ash::SessionTerminationManager::Get(),
       chromeos::PowerManagerClient::Get());

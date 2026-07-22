@@ -88,7 +88,6 @@ chromeos/ash/experiences/arc
 chromeos/ash/experiences/arc/mojom
 chromeos/ash/services/ime/public/cpp/shared_lib/proto
 chromeos/ash/services/ime/public/mojom
-chromeos/crosapi
 chromeos/process_proxy
 chrome/test/base/ash/interactive/bluetooth
 chrome/test/chromedriver

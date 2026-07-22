@@ -170,7 +170,7 @@ void ArcIntentHelperMojoAsh::ConvertTextSelectionAction(
     mojom::TextSelectionActionPtr action,
     base::OnceClosure callback,
     const gfx::ImageSkia& image) {
-  // Convert actions to crosapi::mojom::TextSelectionActionPtr from
+  // Convert actions to TextSelectionAction from
   // arc::mojom::TextSelectionActionPtr and ImageSkia icon.
 
   // Generate app_id by looking up ArcAppListPrefs.

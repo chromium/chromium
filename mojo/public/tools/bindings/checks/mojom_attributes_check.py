@@ -94,12 +94,6 @@ _UNION_FIELD_ATTRIBUTES = _COMMON_FIELD_ATTRIBUTES | {
     'Default',
 }
 
-# TODO(crbug.com/40758130) empty this set and remove the allowlist.
-_STABLE_ONLY_ALLOWLISTED_ENUMS = {
-    'crosapi.mojom.OptionalBool',
-    'crosapi.mojom.TriState',
-}
-
 # TODO(crbug.com/393179188): Remove this allowlist. Do not add new entries here.
 _NATIVE_ALLOWLIST = {
     'chrome.mojom.FaviconUsageDataList',
@@ -201,10 +195,8 @@ class Check(check.Check):
       self._CheckAttributes("enum", _ENUM_ATTRIBUTES, enum.attributes)
       full_name = f"{self.module.mojom_namespace}.{enum.mojom_name}"
       if 'Stable' in enum.attributes and not 'Extensible' in enum.attributes:
-        if full_name not in _STABLE_ONLY_ALLOWLISTED_ENUMS:
-          raise check.CheckException(
-              self.module,
-              f"[Extensible] required on [Stable] enum {full_name}")
+        raise check.CheckException(
+            self.module, f"[Extensible] required on [Stable] enum {full_name}")
       if 'Native' in enum.attributes and full_name not in _NATIVE_ALLOWLIST:
         raise check.CheckException(
             self.module, f"[Native] is not allowed on {full_name}; "

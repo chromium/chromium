@@ -221,7 +221,7 @@ void PlatformSensorProviderChromeOS::RegisterSensorClient() {
 
   if (!chromeos::sensors::BindSensorHalClient(
           sensor_hal_client_.BindNewPipeAndPassRemote())) {
-    LOG(ERROR) << "Failed to bind SensorHalClient via Crosapi";
+    LOG(ERROR) << "Failed to bind SensorHalClient";
     return;
   }
 

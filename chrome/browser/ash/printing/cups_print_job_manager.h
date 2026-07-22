@@ -19,10 +19,6 @@
 
 class Profile;
 
-namespace crosapi {
-class TestControllerAsh;
-}  // namespace crosapi
-
 namespace ash {
 
 class CupsPrintJob;
@@ -98,7 +94,6 @@ class CupsPrintJobManager : public KeyedService {
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
  private:
-  friend class crosapi::TestControllerAsh;
   void RecordJobDuration(base::WeakPtr<CupsPrintJob> job);
 
   base::ObserverList<Observer> observers_;
