@@ -338,6 +338,11 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   // Weak factory for this object that we use for bulking up updates.
   base::WeakPtrFactory<WebRTCInternals> weak_factory_{this};
 
+  // Removes tracked getUserMedia/getDisplayMedia requests whose timestamp is
+  // older than kMaxMediaEntryAge so that long-lived sessions do not accumulate
+  // stale entries.
+  void PruneOldGetUserMediaRequests();
+
   // Helper functions for getUserMedia/getDisplayMedia.
   void OnGetMedia(std::string_view request_type,
                   GlobalRenderFrameHostId frame_id,

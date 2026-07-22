@@ -57,6 +57,10 @@ constexpr char kGetDisplayMedia[] = "getDisplayMedia";
 // of many getUserMedia()/getDisplayMedia() calls. See https://crbug.com/804440.
 const size_t kMaxMediaEntries = 1000;
 
+// getUserMedia()/getDisplayMedia() entries older than this are pruned so that
+// long-lived browser sessions do not accumulate stale requests indefinitely.
+constexpr base::TimeDelta kMaxMediaEntryAge = base::Hours(24);
+
 // Controls the polling interval used to refresh getStats() data for
 // chrome://webrtc-internals. The "interval" param is clamped to [200ms, 60s].
 BASE_FEATURE(kWebRtcInternalsStatsPollingInterval,
@@ -304,6 +308,21 @@ void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
   SendUpdate("add-standard-stats", std::move(dict));
 }
 
+void WebRTCInternals::PruneOldGetUserMediaRequests() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  const double min_timestamp =
+      (base::Time::Now() - kMaxMediaEntryAge).InMillisecondsFSinceUnixEpoch();
+  // Iterating backwards so that .erase() is safe.
+  for (int i = get_user_media_requests_.size() - 1; i >= 0; --i) {
+    std::optional<double> timestamp =
+        get_user_media_requests_[i].GetDict().FindDouble("timestamp");
+    if (timestamp && *timestamp < min_timestamp) {
+      get_user_media_requests_.erase(get_user_media_requests_.begin() + i);
+    }
+  }
+}
+
 void WebRTCInternals::OnGetMedia(std::string_view request_type,
                                  GlobalRenderFrameHostId frame_id,
                                  base::ProcessId pid,
@@ -314,6 +333,7 @@ void WebRTCInternals::OnGetMedia(std::string_view request_type,
                                  const std::string& video_constraints) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  PruneOldGetUserMediaRequests();
   if (get_user_media_requests_.size() >= kMaxMediaEntries) {
     LOG(WARNING) << "Maximum number of tracked getUserMedia/getDisplayMedia "
                     "requests reached in webrtc-internals.";
@@ -359,6 +379,7 @@ void WebRTCInternals::OnGetMediaSuccess(std::string_view request_type,
                                         const std::string& video_track_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  PruneOldGetUserMediaRequests();
   if (get_user_media_requests_.size() >= kMaxMediaEntries) {
     LOG(WARNING) << "Maximum number of tracked getUserMedia/getDisplayMedia "
                     "requests reached in webrtc-internals.";
@@ -397,6 +418,7 @@ void WebRTCInternals::OnGetMediaFailure(std::string_view request_type,
                                         const std::string& error_message) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  PruneOldGetUserMediaRequests();
   if (get_user_media_requests_.size() >= kMaxMediaEntries) {
     LOG(WARNING) << "Maximum number of tracked /getDisplayMedia "
                     "requests reached in webrtc-internals.";
