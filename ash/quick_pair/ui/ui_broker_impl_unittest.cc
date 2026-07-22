@@ -105,9 +105,10 @@ class FakeFastPairPresenterFactory
     return fake_fast_pair_presenter_;
   }
 
+  void Reset() { fake_fast_pair_presenter_ = nullptr; }
+
  protected:
-  raw_ptr<FakeFastPairPresenter, DanglingUntriaged> fake_fast_pair_presenter_ =
-      nullptr;
+  raw_ptr<FakeFastPairPresenter> fake_fast_pair_presenter_ = nullptr;
 };
 
 }  // namespace
@@ -132,6 +133,7 @@ class UIBrokerImplTest : public AshTestBase, public UIBroker::Observer {
   }
 
   void TearDown() override {
+    presenter_factory_->Reset();
     ui_broker_->RemoveObserver(this);
     ui_broker_.reset();
     ClearLogin();
