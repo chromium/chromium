@@ -481,6 +481,9 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
 
   url::Origin worker_origin = url::Origin::Create(host->instance().url());
 
+  ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
+      worker_process_host->GetID().value(), worker_origin);
+
   base::WeakPtr<SharedWorkerHost> weak_host = host->AsWeakPtr();
   // Cloning before std::move() so that the object can be used in two functions.
   auto cloned_outside_fetch_client_settings_object =
