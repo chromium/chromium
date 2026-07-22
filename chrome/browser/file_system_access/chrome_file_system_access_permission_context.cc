@@ -478,11 +478,13 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       // a website can do with access to that directory and its contents.
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".dbus"),
                                 BlockType::kBlockAllChildren),
+      // And block all of ~/.cache, matching the similar restrictions on mac
+      // and windows.
+      BlockPath::CreateRelative(base::DIR_CACHE, BlockType::kBlockAllChildren),
 #endif
 #if BUILDFLAG(IS_ANDROID)
       BlockPath::CreateRelative(base::DIR_ANDROID_APP_DATA,
                                 BlockType::kBlockAllChildren),
-      BlockPath::CreateRelative(base::DIR_CACHE, BlockType::kBlockAllChildren),
 #endif
       // TODO(crbug.com/40095723): Refine this list, for example add
       // XDG_CONFIG_HOME when it is not set ~/.config?
