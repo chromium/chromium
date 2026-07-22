@@ -238,8 +238,6 @@ static_library("test_support") {
     "../browser/signin/identity_test_environment_profile_adaptor.h",
     "../browser/signin/test_signin_client_builder.cc",
     "../browser/signin/test_signin_client_builder.h",
-    "../browser/subresource_filter/subresource_filter_browser_test_harness.cc",
-    "../browser/subresource_filter/subresource_filter_browser_test_harness.h",
     "../test/base/menu_model_test.cc",
     "../test/base/menu_model_test.h",
     "base/chrome_render_view_host_test_harness.cc",

@@ -119,6 +119,47 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  public = [ "subresource_filter_browser_test_harness.h" ]
+
+  sources = [ "subresource_filter_browser_test_harness.cc" ]
+
+  public_deps = [
+    ":subresource_filter",
+    "//base",
+    "//chrome/test:test_support",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/subresource_filter/content/browser",
+    "//components/subresource_filter/content/browser:test_support",
+    "//components/subresource_filter/core/browser:test_support",
+    "//components/subresource_filter/core/common:test_support",
+    "//components/url_pattern_index/proto:url_pattern_index",
+    "//content/test:test_support",
+  ]
+
+  deps = [
+    "//chrome/browser/safe_browsing",
+    "//chrome/common",
+    "//components/blocked_content",
+    "//components/content_settings/browser",
+    "//components/subresource_filter/core/browser",
+    "//components/subresource_filter/core/common",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    public_deps += [ "//chrome/test:test_support_ui_android" ]
+  } else {
+    public_deps += [ "//chrome/test:test_support_ui" ]
+  }
+}
+
 if (!is_android) {
   source_set("browser_tests") {
     testonly = true
@@ -152,6 +193,7 @@ if (!is_android) {
       ":subresource_filter",
       "//base",
       "//chrome/browser/preloading",
+      "//chrome/browser/subresource_filter:test_support",
       "//chrome/browser/ui",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",

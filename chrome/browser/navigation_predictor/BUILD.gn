@@ -83,6 +83,7 @@ if (!is_android) {
     ]
     data = [ "test/preloading_heuristics.tflite" ]
     deps = [
+    "//chrome/browser/subresource_filter:test_support",
       ":impl",
       ":navigation_predictor",
       "//chrome/browser/battery",

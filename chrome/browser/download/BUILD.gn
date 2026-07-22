@@ -561,6 +561,7 @@ if (!is_android) {
     ]
 
     deps = [
+    "//chrome/browser/subresource_filter:test_support",
       ":download",
       ":impl",
       ":test_support",
