@@ -458,6 +458,13 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     return SigninInterceptionHeuristicOutcome::kAbortSyncSignin;
   }
 
+  // When Gaia indicates that the account is already connected to the primary
+  // account, suppress interception immediately so added accounts settle
+  // cleanly into the active profile without user prompting.
+  if (primary_is_connected == signin::Tribool::kTrue) {
+    return SigninInterceptionHeuristicOutcome::kAbortAccountConnected;
+  }
+
   auto enforce_enterprise_separation = EnterpriseSeparationMaybeRequired(
       profile_, identity_manager_, email, is_new_account,
       /*intercepted_profile_separation_policies=*/std::nullopt,

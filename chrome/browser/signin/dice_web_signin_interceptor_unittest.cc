@@ -228,19 +228,64 @@ class DiceWebSigninInterceptorTest : public testing::Test {
   // histograms and whether the interception is in progress.
   // This function only works if the interception decision can be made
   // synchronously (GetHeuristicOutcome() returns a value).
-  void TestSynchronousInterception(
+  void TestSingleAccountSynchronousInterception(
       AccountInfo account_info,
       bool is_new_account,
       bool is_sync_signin,
       SigninInterceptionHeuristicOutcome expected_outcome) {
-    ASSERT_EQ(interceptor()->GetHeuristicOutcome(is_new_account, is_sync_signin,
-                                                 account_info.email),
+    TestSynchronousInterceptionImpl(
+        account_info, is_new_account, is_sync_signin,
+        /*primary_is_connected=*/signin::Tribool::kUnknown, expected_outcome);
+  }
+
+  void TestLinkedAccountsSynchronousInterception(
+      AccountInfo account_info,
+      bool is_new_account,
+      bool is_sync_signin,
+      signin::Tribool primary_is_connected,
+      SigninInterceptionHeuristicOutcome expected_outcome) {
+    TestSynchronousInterceptionImpl(account_info, is_new_account,
+                                    is_sync_signin, primary_is_connected,
+                                    expected_outcome);
+  }
+
+  void TestSingleAccountAsynchronousInterception(
+      AccountInfo account_info,
+      bool is_new_account,
+      bool is_sync_signin,
+      SigninInterceptionHeuristicOutcome expected_outcome) {
+    TestAsynchronousInterceptionImpl(
+        account_info, is_new_account, is_sync_signin,
+        /*primary_is_connected=*/signin::Tribool::kUnknown, expected_outcome);
+  }
+
+  void TestLinkedAccountsAsynchronousInterception(
+      AccountInfo account_info,
+      bool is_new_account,
+      bool is_sync_signin,
+      signin::Tribool primary_is_connected,
+      SigninInterceptionHeuristicOutcome expected_outcome) {
+    TestAsynchronousInterceptionImpl(account_info, is_new_account,
+                                     is_sync_signin, primary_is_connected,
+                                     expected_outcome);
+  }
+
+ private:
+  void TestSynchronousInterceptionImpl(
+      AccountInfo account_info,
+      bool is_new_account,
+      bool is_sync_signin,
+      signin::Tribool primary_is_connected,
+      SigninInterceptionHeuristicOutcome expected_outcome) {
+    ASSERT_EQ(interceptor()->GetHeuristicOutcome(
+                  is_new_account, is_sync_signin, account_info.email,
+                  account_info.gaia, nullptr, primary_is_connected),
               expected_outcome);
     base::HistogramTester histogram_tester;
     interceptor()->MaybeInterceptWebSignin(
         web_contents(), account_info.account_id,
         signin_metrics::AccessPoint::kWebSignin, is_new_account, is_sync_signin,
-        /*primary_is_connected=*/signin::Tribool::kUnknown);
+        primary_is_connected);
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                         expected_outcome, 1);
@@ -249,23 +294,21 @@ class DiceWebSigninInterceptorTest : public testing::Test {
               SigninInterceptionHeuristicOutcomeIsSuccess(expected_outcome));
   }
 
-  // Calls MaybeInterceptWebSignin and verifies the heuristic outcome and the
-  // histograms.
-  // This function only works if the interception decision cannot be made
-  // synchronously (GetHeuristicOutcome() returns no value).
-  void TestAsynchronousInterception(
+  void TestAsynchronousInterceptionImpl(
       AccountInfo account_info,
       bool is_new_account,
       bool is_sync_signin,
+      signin::Tribool primary_is_connected,
       SigninInterceptionHeuristicOutcome expected_outcome) {
-    ASSERT_EQ(interceptor()->GetHeuristicOutcome(is_new_account, is_sync_signin,
-                                                 account_info.email),
+    ASSERT_EQ(interceptor()->GetHeuristicOutcome(
+                  is_new_account, is_sync_signin, account_info.email,
+                  account_info.gaia, nullptr, primary_is_connected),
               std::nullopt);
     base::HistogramTester histogram_tester;
     interceptor()->MaybeInterceptWebSignin(
         web_contents(), account_info.account_id,
         signin_metrics::AccessPoint::kWebSignin, is_new_account, is_sync_signin,
-        /*primary_is_connected=*/signin::Tribool::kUnknown);
+        primary_is_connected);
     testing::Mock::VerifyAndClearExpectations(mock_delegate());
     histogram_tester.ExpectUniqueSample("Signin.Intercept.HeuristicOutcome",
                                         expected_outcome, 1);
@@ -641,7 +684,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestAsynchronousInterception(
+  TestSingleAccountAsynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
 }
@@ -660,7 +703,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(testing::_, testing::_, testing::_))
       .Times(0);
-  TestAsynchronousInterception(
+  TestSingleAccountAsynchronousInterception(
       account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
       signin_interception_enabled_
           ? SigninInterceptionHeuristicOutcome::kAbortAccountNotNew
@@ -681,11 +724,11 @@ TEST_P(
           policy::ProfileSeparationSettings::DISABLED, std::nullopt));
 
   if (signin_interception_enabled_) {
-    TestAsynchronousInterception(
+    TestSingleAccountAsynchronousInterception(
         account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
         SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
   } else {
-    TestAsynchronousInterception(
+    TestSingleAccountAsynchronousInterception(
         account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
         SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
   }
@@ -703,11 +746,11 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
       policy::ProfileSeparationPolicies(""));
 
   if (signin_interception_enabled_) {
-    TestAsynchronousInterception(
+    TestSingleAccountAsynchronousInterception(
         account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
         SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
   } else {
-    TestAsynchronousInterception(
+    TestSingleAccountAsynchronousInterception(
         account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
         SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
   }
@@ -739,7 +782,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
 
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
@@ -763,7 +806,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
@@ -787,7 +830,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestAsynchronousInterception(
+  TestSingleAccountAsynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
@@ -819,7 +862,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
@@ -843,7 +886,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
@@ -873,7 +916,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
@@ -907,10 +950,11 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestSynchronousInterception(account_info, /*is_new_account=*/true,
-                              /*is_sync_signin=*/false,
-                              SigninInterceptionHeuristicOutcome::
-                                  kInterceptEnterpriseForcedProfileSwitch);
+  TestSingleAccountSynchronousInterception(
+      account_info, /*is_new_account=*/true,
+      /*is_sync_signin=*/false,
+      SigninInterceptionHeuristicOutcome::
+          kInterceptEnterpriseForcedProfileSwitch);
 }
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
@@ -940,7 +984,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
@@ -958,7 +1002,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   MakeValidAccountInfo(&primary_account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
 
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       primary_account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
       profile()->GetPrefs()->GetBoolean(prefs::kSigninInterceptionEnabled)
           ? SigninInterceptionHeuristicOutcome::kAbortAccountNotNew
@@ -992,7 +1036,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
@@ -1024,7 +1068,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }
@@ -1048,7 +1092,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   if (!profile()->GetPrefs()->GetBoolean(prefs::kSigninInterceptionEnabled)) {
-    TestSynchronousInterception(
+    TestSingleAccountSynchronousInterception(
         account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
         SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
     return;
@@ -1062,7 +1106,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
-  TestAsynchronousInterception(
+  TestSingleAccountAsynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
 }
@@ -1178,26 +1222,45 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterception) {
           account_info.gaia, ChromeSigninUserChoice::kDoNotSignin);
 
   // Check that Sync signin is not intercepted.
-  TestSynchronousInterception(
-      account_info, /*is_new_account=*/true, /*is_sync_signin=*/true,
-      SigninInterceptionHeuristicOutcome::kAbortSyncSignin);
+  {
+    SCOPED_TRACE("Sync signin is not intercepted");
+    TestSingleAccountSynchronousInterception(
+        account_info, /*is_new_account=*/true, /*is_sync_signin=*/true,
+        SigninInterceptionHeuristicOutcome::kAbortSyncSignin);
+  }
 
   // Check that reauth is not intercepted.
-  TestSynchronousInterception(
-      account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
-      SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
+  {
+    SCOPED_TRACE("Reauth is not intercepted");
+    TestSingleAccountSynchronousInterception(
+        account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
+        SigninInterceptionHeuristicOutcome::kAbortAccountNotNew);
+  }
+
+  // Check that primary_is_connected == kTrue is not intercepted.
+  {
+    SCOPED_TRACE(
+        "Connected account (primary_is_connected == kTrue) is not intercepted");
+    TestLinkedAccountsSynchronousInterception(
+        account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+        /*primary_is_connected=*/signin::Tribool::kTrue,
+        SigninInterceptionHeuristicOutcome::kAbortAccountConnected);
+  }
 
   // Check that interception works otherwise, as a sanity check.
-  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
-      WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-      account_info, AccountInfo());
-  EXPECT_CALL(*mock_delegate(),
-              ShowSigninInterceptionBubble(
-                  web_contents(), MatchBubbleParameters(expected_parameters),
-                  testing::_));
-  TestSynchronousInterception(
-      account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
-      SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
+  {
+    SCOPED_TRACE("Sanity check: normal profile switch interception");
+    WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+        WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+        account_info, AccountInfo());
+    EXPECT_CALL(*mock_delegate(),
+                ShowSigninInterceptionBubble(
+                    web_contents(), MatchBubbleParameters(expected_parameters),
+                    testing::_));
+    TestSingleAccountSynchronousInterception(
+        account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+        SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
+  }
 }
 
 // Checks that the heuristic still works if the account was not added to Chrome
@@ -1520,7 +1583,7 @@ TEST_F(DiceWebSigninInterceptorTest, NoInterceptionWithOneAccount) {
       .SetChromeSigninInterceptionUserChoice(
           account_info.gaia, ChromeSigninUserChoice::kDoNotSignin);
 
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kAbortSingleAccount);
 }
@@ -1554,7 +1617,7 @@ TEST_F(DiceWebSigninInterceptorTest, ProfileCreationDisallowed) {
           other_account_info.gaia, ChromeSigninUserChoice::kDoNotSignin);
 
   // Interception that would offer creating a new profile does not work.
-  TestSynchronousInterception(
+  TestSingleAccountSynchronousInterception(
       other_account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kAbortProfileCreationDisallowed);
 
@@ -2270,7 +2333,7 @@ TEST_F(DiceWebSigninInterceptorTest, EnforceManagedAccountAsPrimaryReauth) {
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
 
-  TestAsynchronousInterception(
+  TestSingleAccountAsynchronousInterception(
       account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced);
 }

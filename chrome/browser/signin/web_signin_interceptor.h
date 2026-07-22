@@ -89,8 +89,10 @@ enum class SigninInterceptionHeuristicOutcome {
   kAbortNotFirstAccountButNoPrimaryAccount = 21,
   // The profile management disclaimer service is already handling an account.
   kAbortDisclaimerServiceInProgress = 22,
+  // Account is already connected to the primary account.
+  kAbortAccountConnected = 23,
 
-  kMaxValue = kAbortDisclaimerServiceInProgress,
+  kMaxValue = kAbortAccountConnected,
 };
 
 // Returns whether the heuristic outcome is a success (the signin should be

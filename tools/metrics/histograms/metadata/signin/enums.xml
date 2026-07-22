@@ -1266,6 +1266,7 @@ chromium-metrics-reviews@google.com.
   <int value="21"
       label="Abort: not the first account but there is no primary account."/>
   <int value="22" label="Abort: management disclaimer service in progress"/>
+  <int value="23" label="Abort: account connected to primary"/>
 </enum>
 
 <enum name="SigninInterceptionDismissReason">
