@@ -734,24 +734,22 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (void)updateErrorSection:(AccountErrorUIInfo*)error {
   CHECK(!_selectedIndexPath);
   NSDiffableDataSourceSnapshot* snapshot = _accountMenuDataSource.snapshot;
-  if (error == nil) {
-    // The error disappeared.
-    CHECK_EQ([snapshot indexOfSectionIdentifier:@(SyncErrorsSectionIdentifier)],
-             0);
+  // Always remove existing error section if present.
+  if ([snapshot indexOfSectionIdentifier:@(SyncErrorsSectionIdentifier)] !=
+      NSNotFound) {
     [snapshot
         deleteSectionsWithIdentifiers:@[ @(SyncErrorsSectionIdentifier) ]];
-  } else {
+  }
+  // Insert updated error section before accounts section if an error is
+  // present.
+  if (error) {
     [self recordAccountMenuUserActionableError:error.errorType];
-    if ([snapshot indexOfSectionIdentifier:@(SyncErrorsSectionIdentifier)] ==
-        NSNotFound) {
-      [snapshot
-          insertSectionsWithIdentifiers:@[ @(SyncErrorsSectionIdentifier) ]
-            beforeSectionWithIdentifier:@(AccountsSectionIdentifier)];
-      [snapshot appendItemsWithIdentifiers:@[
-        @(RowIdentifierErrorExplanation), @(RowIdentifierErrorButton)
-      ]
-                 intoSectionWithIdentifier:@(SyncErrorsSectionIdentifier)];
-    }
+    [snapshot insertSectionsWithIdentifiers:@[ @(SyncErrorsSectionIdentifier) ]
+                beforeSectionWithIdentifier:@(AccountsSectionIdentifier)];
+    [snapshot appendItemsWithIdentifiers:@[
+      @(RowIdentifierErrorExplanation), @(RowIdentifierErrorButton)
+    ]
+               intoSectionWithIdentifier:@(SyncErrorsSectionIdentifier)];
   }
   [_accountMenuDataSource applySnapshot:snapshot animatingDifferences:YES];
   [self resize];

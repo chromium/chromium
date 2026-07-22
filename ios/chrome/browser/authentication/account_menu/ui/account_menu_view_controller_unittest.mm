@@ -457,3 +457,74 @@ TEST_F(AccountMenuViewControllerTest, TestMissingNames) {
   EXPECT_NSEQ(centralAccountView.title, identity.userEmail);
   EXPECT_NSEQ(centralAccountView.subtitle, nil);
 }
+
+// Tests that calling `-[AccountMenuViewController updateErrorSection:nil]`
+// does not crash when the snapshot has no error section (e.g. when opening
+// the menu without an active sync error).
+TEST_F(AccountMenuViewControllerTest, UpdateErrorSectionWithNilWhenNoError) {
+  EXPECT_EQ(2, TableView().numberOfSections);
+  [view_controller_ updateErrorSection:nil];
+  EXPECT_EQ(2, TableView().numberOfSections);
+}
+
+// Tests adding an error section and then clearing it with
+// `-[AccountMenuViewController updateErrorSection:nil]`.
+TEST_F(AccountMenuViewControllerTest, ClearErrorSection) {
+  AccountErrorUIInfo* errorInfo = [[AccountErrorUIInfo alloc]
+       initWithErrorType:syncer::SyncService::UserActionableError::
+                             kNeedsPassphrase
+      userActionableType:AccountErrorUserActionableType::kEnterPassphrase
+               messageID:IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE
+           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON];
+  data_source_.accountErrorUIInfo = errorInfo;
+  [view_controller_ updateErrorSection:errorInfo];
+  EXPECT_EQ(3, TableView().numberOfSections);
+
+  data_source_.accountErrorUIInfo = nil;
+  [view_controller_ updateErrorSection:nil];
+  EXPECT_EQ(2, TableView().numberOfSections);
+}
+
+// Tests updating the error section from one error type to another, ensuring
+// the message and button label update properly.
+TEST_F(AccountMenuViewControllerTest, TransitionBetweenErrorTypes) {
+  AccountErrorUIInfo* errorInfo1 = [[AccountErrorUIInfo alloc]
+       initWithErrorType:syncer::SyncService::UserActionableError::
+                             kNeedsPassphrase
+      userActionableType:AccountErrorUserActionableType::kEnterPassphrase
+               messageID:IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE
+           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON];
+  data_source_.accountErrorUIInfo = errorInfo1;
+  [view_controller_ updateErrorSection:errorInfo1];
+  EXPECT_EQ(3, TableView().numberOfSections);
+
+  NSIndexPath* path_for_error_message = [NSIndexPath indexPathForRow:0
+                                                           inSection:0];
+  NSIndexPath* path_for_error_button = [NSIndexPath indexPathForRow:1
+                                                          inSection:0];
+  ExpectSubtitleAtPath(
+      l10n_util::GetNSString(
+          IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE),
+      path_for_error_message);
+  ExpectTextAtPath(l10n_util::GetNSString(
+                       IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON),
+                   path_for_error_button);
+
+  AccountErrorUIInfo* errorInfo2 = [[AccountErrorUIInfo alloc]
+       initWithErrorType:syncer::SyncService::UserActionableError::
+                             kSignInNeedsUpdate
+      userActionableType:AccountErrorUserActionableType::
+                             kReauthToResolveSigninError
+               messageID:IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_MESSAGE
+           buttonLabelID:IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON];
+  data_source_.accountErrorUIInfo = errorInfo2;
+  [view_controller_ updateErrorSection:errorInfo2];
+  EXPECT_EQ(3, TableView().numberOfSections);
+
+  ExpectSubtitleAtPath(l10n_util::GetNSString(
+                           IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_MESSAGE),
+                       path_for_error_message);
+  ExpectTextAtPath(
+      l10n_util::GetNSString(IDS_IOS_ACCOUNT_TABLE_ERROR_VERIFY_ITS_YOU_BUTTON),
+      path_for_error_button);
+}
