@@ -26,14 +26,6 @@ enum CanvasPixelFormat {
     "float16",
 };
 
-enum CanvasToneMappingMode {
-    "standard", // default
-    "extended",
-};
-
-dictionary CanvasToneMapping {
-    CanvasToneMappingMode mode = "standard";
-};
 
 enum CanvasPowerPreference {
     "default",

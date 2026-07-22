@@ -2,12 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+enum CanvasToneMappingMode {
+    "standard", // default
+    "extended",
+};
+
+dictionary CanvasToneMapping {
+    CanvasToneMappingMode mode = "standard";
+};
+
+// CanvasHighDynamicRangeMode is from a prototype that will be deleted.
 enum CanvasHighDynamicRangeMode {
     "default",
     "extended",
 };
 
-// SMPTE ST 2086 color volume metadata.
+// CanvasSmpteSt2086Metadata is from a prototype that will be deleted.
 dictionary CanvasSmpteSt2086Metadata {
   required float redPrimaryX;
   required float redPrimaryY;
@@ -21,6 +31,7 @@ dictionary CanvasSmpteSt2086Metadata {
   required float maximumLuminance;
 };
 
+// CanvasHighDynamicRangeOptions is from a prototype that will be deleted.
 dictionary CanvasHighDynamicRangeOptions {
   CanvasHighDynamicRangeMode mode = "default";
   DOMString? agtm;
