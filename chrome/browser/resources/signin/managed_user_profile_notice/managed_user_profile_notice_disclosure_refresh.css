@@ -11,7 +11,7 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  color: var(--cr-primary-text-color);
+  color: var(--color-sys-on-surface);
   --cr-secondary-text-color: var(--google-grey-700);
   --disclaimer-cards-gap: 24px;
   --disclaimer-card-width: 300px;
@@ -150,7 +150,7 @@ main {
 }
 
 .disclaimer h2 {
-  color: var(--cr-primary-text-color);
+  color: var(--color-sys-on-surface);
   font-size: 16px;
   font-weight: 500;
   text-align: center;
