@@ -590,12 +590,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
     }
     _locationBarKeyboardCenterXConstraint.active = YES;
   } else {
-    if (!_topPosition) {
-      _locationBarTopConstraint.active = YES;
-      _locationBarBottomPaddingConstraint.active = NO;
-    } else {
+    if (_topPosition) {
       _locationBarTopConstraint.active = NO;
       _locationBarBottomPaddingConstraint.active = YES;
+    } else {
+      _locationBarTopConstraint.active = YES;
+      _locationBarBottomPaddingConstraint.active = NO;
     }
     [self.toolbarHeightDelegate secondaryToolbarRemovedFromKeyboard];
 
@@ -703,12 +703,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
   _locationBarBackground.alpha = progress;
 
-  if (!_topPosition) {
-    _locationBarTopConstraint.constant =
-        [self locationBarTopPaddingForFullscreenProgress:progress];
-  } else {
+  if (_topPosition) {
     _locationBarBottomPaddingConstraint.constant =
         -[self locationBarBottomPaddingForFullscreenProgress:progress];
+  } else {
+    _locationBarTopConstraint.constant =
+        [self locationBarTopPaddingForFullscreenProgress:progress];
   }
 
   _bannerPromoBackgroundHeightConstraint.constant =
@@ -821,12 +821,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 - (void)showBannerPromoAnimationBlock {
   _bannerPromoBackgroundHeightConstraint.constant =
       [self bannerPromoBackgroundHeightForFullscreenProgress:1];
-  if (!_topPosition) {
-    _locationBarTopConstraint.constant =
-        [self locationBarTopPaddingForFullscreenProgress:_fullscreenProgress];
-  } else {
+  if (_topPosition) {
     _locationBarBottomPaddingConstraint.constant = -[self
         locationBarBottomPaddingForFullscreenProgress:_fullscreenProgress];
+  } else {
+    _locationBarTopConstraint.constant =
+        [self locationBarTopPaddingForFullscreenProgress:_fullscreenProgress];
   }
   [self.toolbarHeightDelegate toolbarsHeightChanged];
   [self.view.superview layoutIfNeeded];
@@ -849,12 +849,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 
   _bannerPromoVisible = NO;
 
-  if (!_topPosition) {
-    _locationBarTopConstraint.constant =
-        [self locationBarTopPaddingForFullscreenProgress:_fullscreenProgress];
-  } else {
+  if (_topPosition) {
     _locationBarBottomPaddingConstraint.constant = -[self
         locationBarBottomPaddingForFullscreenProgress:_fullscreenProgress];
+  } else {
+    _locationBarTopConstraint.constant =
+        [self locationBarTopPaddingForFullscreenProgress:_fullscreenProgress];
   }
 
   [self.toolbarHeightDelegate toolbarsHeightChanged];
@@ -1330,12 +1330,12 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
       constraintEqualToAnchor:self.view.topAnchor
                      constant:kToolbarPadding];
 
-  if (!_topPosition) {
-    _locationBarTopConstraint.active = YES;
-    _locationBarBottomPaddingConstraint.active = NO;
-  } else {
+  if (_topPosition) {
     _locationBarTopConstraint.active = NO;
     _locationBarBottomPaddingConstraint.active = YES;
+  } else {
+    _locationBarTopConstraint.active = YES;
+    _locationBarBottomPaddingConstraint.active = NO;
   }
 
   [NSLayoutConstraint activateConstraints:@[
