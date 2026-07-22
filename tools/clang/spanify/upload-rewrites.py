@@ -399,10 +399,10 @@ def append_row(branch, gerrit_url, compile_result, plus_delta, minus_delta,
         ])
 
 
-def upload_to_gerrit(submodule, branch, bug_number, compile_result, plus_delta,
-                     minus_delta, total_delta, num_files, first_file,
-                     compilation_errors, llm_output, fixed_text, patch):
+def upload_to_gerrit(submodule, branch, bug_number, first_file, fixed_text,
+                     patch):
     """Uploads the branch to Gerrit with the specified bug number."""
+    gerrit_url = ""
     # Use the current patch file name as original patch info
     original_patch = f"Original patch: {patch}"
 
@@ -460,9 +460,6 @@ def upload_to_gerrit(submodule, branch, bug_number, compile_result, plus_delta,
                 cl_number = os.path.basename(gerrit_url)
                 print(f"Gerrit CL URL: {gerrit_url}")
                 print(f"Gerrit CL Number: {cl_number}")
-                append_row(branch, gerrit_url, compile_result, plus_delta,
-                           minus_delta, total_delta, num_files,
-                           compilation_errors, llm_output)
             else:
                 print("WARNING: Could not parse Gerrit URL " +
                       "from upload output.")
@@ -488,6 +485,18 @@ def upload_to_gerrit(submodule, branch, bug_number, compile_result, plus_delta,
     finally:
         if os.path.exists(f_msg_path):
             os.remove(f_msg_path)
+
+    return gerrit_url
+
+
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    if v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    raise argparse.ArgumentTypeError("Boolean value expected.")
 
 
 def get_arguments():
@@ -543,6 +552,13 @@ def get_arguments():
         type=str,
         default="gemini-3-flash-preview",
         help="Model to use for jetski-cli (default: gemini-3-flash-preview)")
+    parser.add_argument(
+        "--upload",
+        "-u",
+        type=str2bool,
+        default=True,
+        help="upload each patch to gerrit after aplying jetski (default: true)"
+    )
     return parser.parse_args()
 
 
@@ -554,6 +570,7 @@ def main():
     start_branch = args.start_branch
     platform = args.platform
     model = args.model
+    upload_arg = args.upload
 
     target = get_target(project)
 
@@ -644,10 +661,13 @@ Then refined with jetski-cli and at last manually refined"""
             sh(f"git checkout {sub_main}", cwd=submodule)
             continue
 
-        upload_to_gerrit(submodule, branch, bug_number, compile_result,
-                         plus_delta, minus_delta, total_delta, num_files,
-                         compilation_errors, llm_output, first_file,
-                         fixed_text, patch)
+        gerrit_url = ""
+        if upload_arg:
+            gerrit_url = upload_to_gerrit(submodule, branch, bug_number,
+                                          first_file, fixed_text, patch)
+
+        append_row(branch, gerrit_url, compile_result, plus_delta, minus_delta,
+                   total_delta, num_files, compilation_errors, llm_output)
 
         cleanup_prompt_files()
 
