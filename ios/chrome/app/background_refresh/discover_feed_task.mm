@@ -45,10 +45,6 @@ enum class DiscoverFeedBackgroundRefreshOutcome {
 
 #pragma mark - AppRefreshProviderTask
 
-- (void)execute {
-  NOTREACHED() << "Should use executeWithCompletion: instead.";
-}
-
 - (void)executeWithCompletion:(base::OnceClosure)completion {
   DiscoverFeedService* service = _service.get();
   if (!service) {

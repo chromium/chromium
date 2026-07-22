@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/functional/callback_forward.h"
 #import "base/ios/block_types.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
@@ -15,9 +16,14 @@
 // refresh provider so the task object can have a separate sequence checker.
 @protocol AppRefreshProviderTask <NSObject>
 
+@optional
 // Do the work for the refresh task. This method must block and only return when
 // the task is completed.
 - (void)execute;
+
+// Do the work for the refresh task asynchronously, invoking `completion` on the
+// same sequence when finished.
+- (void)executeWithCompletion:(base::OnceClosure)completion;
 
 @end
 
@@ -58,6 +64,10 @@
 // `-handleRefreshWithCompletion:` is not called, and the `lastRun` value is
 // not updated.
 - (void)cancelRefresh;
+
+// Called on the main thread when the refresh task completes (or is cancelled).
+// Subclasses can override this to perform cleanup.
+- (void)refreshDidComplete;
 
 // Return an object that will actually handle the task. The returned object's
 // `execute` method will be called on `taskRunner`, and the whole implementation

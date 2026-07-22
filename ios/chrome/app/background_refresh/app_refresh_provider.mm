@@ -91,23 +91,43 @@
   _isCancelled = NO;
 
   id<AppRefreshProviderTask> task = [self task];
+  if (!task) {
+    if (completion) {
+      completion();
+    }
+    return;
+  }
 
   // Create a weak pointer to `self` to be used in the reply callback.
   // The reply callback runs on the main thread.
   __weak AppRefreshProvider* weakSelf = self;
 
-  base::OnceClosure taskClosure = base::BindOnce(^{
-    [task execute];
-  });
-
-  base::OnceClosure replyClosure = base::BindOnce(^{
-    if (weakSelf) {
-      [weakSelf refreshTaskFinishedWithCompletion:completion];
-    }
-  });
-
-  self.taskRunner->PostTaskAndReply(FROM_HERE, std::move(taskClosure),
-                                    std::move(replyClosure));
+  if ([task respondsToSelector:@selector(executeWithCompletion:)]) {
+    base::OnceClosure taskCompletionClosure = base::BindOnce(^{
+      web::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(^{
+            [weakSelf refreshTaskFinishedWithCompletion:completion];
+          }));
+    });
+    self.taskRunner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](id<AppRefreshProviderTask> task, base::OnceClosure completion) {
+              [task executeWithCompletion:std::move(completion)];
+            },
+            task, std::move(taskCompletionClosure)));
+  } else {
+    base::OnceClosure taskClosure = base::BindOnce(^{
+      [task execute];
+    });
+    base::OnceClosure replyClosure = base::BindOnce(^{
+      if (weakSelf) {
+        [weakSelf refreshTaskFinishedWithCompletion:completion];
+      }
+    });
+    self.taskRunner->PostTaskAndReply(FROM_HERE, std::move(taskClosure),
+                                      std::move(replyClosure));
+  }
 }
 
 // Cancel the task, so it won't run if it hasn't started.
@@ -126,6 +146,8 @@
 - (void)refreshTaskFinishedWithCompletion:(ProceduralBlock)completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
+  [self refreshDidComplete];
+
   // If cancelled, do nothing.
   if (_isCancelled) {
     return;
@@ -139,7 +161,13 @@
                                   base::Time::Now() - _startTime);
   self.lastRun = base::Time::Now();
 
-  completion();
+  if (completion) {
+    completion();
+  }
+}
+
+- (void)refreshDidComplete {
+  // Default implementation does nothing. Subclasses can override this.
 }
 
 @end

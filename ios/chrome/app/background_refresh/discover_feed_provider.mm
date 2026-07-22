@@ -37,8 +37,6 @@ enum class DiscoverFeedServiceAvailability {
   raw_ptr<DiscoverFeedService> _service;
   __weak DiscoverFeedTask* _runningTask;
   SEQUENCE_CHECKER(_sequenceChecker);
-  base::Time _startTime;
-  BOOL _isCancelled;
 }
 
 - (instancetype)init {
@@ -89,11 +87,25 @@ enum class DiscoverFeedServiceAvailability {
   return interval;
 }
 
-- (void)handleRefreshWithCompletion:(ProceduralBlock)completion {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _startTime = base::Time::Now();
-  _isCancelled = NO;
+- (id<AppRefreshProviderTask>)task {
+  return [self discoverFeedTask];
+}
 
+- (void)cancelRefresh {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [super cancelRefresh];
+  [_runningTask cancel];
+}
+
+- (void)refreshDidComplete {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  _service = nullptr;
+}
+
+#pragma mark - Private
+
+- (DiscoverFeedTask*)discoverFeedTask {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   DiscoverFeedService* service = [self discoverFeedService];
 
   // Log service availability.
@@ -103,70 +115,12 @@ enum class DiscoverFeedServiceAvailability {
   base::UmaHistogramEnumeration(
       "IOS.Discover.BackgroundRefresh.ServiceAvailability", availability);
 
-  DiscoverFeedTask* discoverTask = [self discoverFeedTask];
-  if (!discoverTask) {
-    if (completion) {
-      completion();
-    }
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  base::OnceClosure completionClosure = base::BindOnce(^{
-    web::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(^{
-          [weakSelf refreshFinishedWithCompletion:completion];
-        }));
-  });
-
-  self.taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](DiscoverFeedTask* task, base::OnceClosure cb) {
-                       [task executeWithCompletion:std::move(cb)];
-                     },
-                     discoverTask, std::move(completionClosure)));
-}
-
-- (id<AppRefreshProviderTask>)task {
-  return [self discoverFeedTask];
-}
-
-- (void)cancelRefresh {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _isCancelled = YES;
-  [super cancelRefresh];
-  [_runningTask cancel];
-}
-
-#pragma mark - Private
-
-- (DiscoverFeedTask*)discoverFeedTask {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  CHECK(!_isCancelled);
-  DiscoverFeedService* service = [self discoverFeedService];
   if (!service) {
     return nil;
   }
   DiscoverFeedTask* task = [[DiscoverFeedTask alloc] initWithService:service];
   _runningTask = task;
   return task;
-}
-
-- (void)refreshFinishedWithCompletion:(ProceduralBlock)completion {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _service = nullptr;
-
-  if (_isCancelled) {
-    return;
-  }
-
-  RecordProviderExecutionDuration(self.identifier,
-                                  base::Time::Now() - _startTime);
-  self.lastRun = base::Time::Now();
-
-  if (completion) {
-    completion();
-  }
 }
 
 - (DiscoverFeedService*)discoverFeedService {
