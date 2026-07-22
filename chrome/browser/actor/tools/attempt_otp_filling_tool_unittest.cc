@@ -38,6 +38,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -75,6 +76,7 @@ class MockActorOneTimeTokenFillingService
       void,
       RetrieveOtp,
       (tabs::TabHandle,
+       const url::Origin&,
        const std::vector<autofill::FieldGlobalId>&,
        base::OnceCallback<
            void(base::expected<std::string,
@@ -524,7 +526,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_HappyPath) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<2>("123456"));
+      .WillOnce(RunOnceCallback<3>("123456"));
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(true));
   PageTarget target(gfx::Point(10, 10));
@@ -560,7 +562,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorFilling) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<2>("123456"));
+      .WillOnce(RunOnceCallback<3>("123456"));
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(false));
   PageTarget target(gfx::Point(10, 10));
@@ -585,7 +587,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorRetrievingGmailOtp) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<2>(base::unexpected(
+      .WillOnce(RunOnceCallback<3>(base::unexpected(
           one_time_tokens::OneTimeTokenRetrievalError::kUnknown)));
   PageTarget target(gfx::Point(10, 10));
   AttemptOtpFillingTool tool(TaskId(1), delegate(), mock_tab().GetHandle(),
@@ -734,7 +736,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_InsecureBeforeFilling) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<2>("123456"));
+      .WillOnce(RunOnceCallback<3>("123456"));
   // `TimeOfUseValidation()` is called during setup and invokes
   // `ValidateFormFillingContext()`. `Invoke()` calls it a second time during
   // OTP filling. This test specifically tests the call in `Invoke()`.
@@ -763,7 +765,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_DomNode_HappyPath) {
   EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext())
       .WillOnce(Return(CreateValidLoginContext()));
   EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp)
-      .WillOnce(RunOnceCallback<2>("123456"));
+      .WillOnce(RunOnceCallback<3>("123456"));
   EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
       .WillOnce(RunOnceCallback<3>(true));
   std::string doc_token =

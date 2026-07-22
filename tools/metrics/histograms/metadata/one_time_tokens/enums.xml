@@ -23,7 +23,7 @@ found in the LICENSE file.
   <int value="9" label="Error"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceFillOtpEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceFillOtp) -->
 
 <!-- LINT.IfChange(ActorOneTimeTokenFillingServiceRetrieveOtpEvent) -->
 
@@ -31,14 +31,15 @@ found in the LICENSE file.
   <int value="0" label="Start"/>
   <int value="1" label="NullTab"/>
   <int value="2" label="NoService"/>
-  <int value="3" label="CacheHit"/>
-  <int value="4" label="Success"/>
+  <int value="3" label="SuccessCacheMatchFound"/>
+  <int value="4" label="(Obsolete) Success"/>
   <int value="5" label="Error"/>
   <int value="6" label="MockOtp"/>
-  <int value="7" label="NoCallback"/>
+  <int value="7" label="(Obsolete) NoCallback"/>
+  <int value="8" label="SuccessReceivedMatchFound"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtpEvent) -->
+<!-- LINT.ThenChange(//chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h:ActorOneTimeTokenFillingServiceRetrieveOtp) -->
 
 <!-- LINT.IfChange(ActorOtpRetrieveOtpCallbackSupersededEvent) -->
 

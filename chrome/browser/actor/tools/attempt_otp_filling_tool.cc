@@ -478,7 +478,10 @@ void AttemptOtpFillingTool::OnActorLoginFlowChecked(ToolCallback callback,
   if (is_actor_login || bypass_login_check) {
     // Verified sign-in journey: proceed with silent OTP filling.
     tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
-        GetTargetTab(), trigger_field_ids_,
+        GetTargetTab(),
+        GetOtpFrame(GetTargetTab(), trigger_field_ids_)
+            ->GetLastCommittedOrigin(),
+        trigger_field_ids_,
         base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {

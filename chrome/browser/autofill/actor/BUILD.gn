@@ -15,15 +15,19 @@ static_library("actor") {
 
   deps = [
     "//chrome/browser/actor",
+    "//chrome/browser/affiliations",
     "//chrome/browser/autofill",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/autofill",
     "//chrome/common:chrome_features",
     "//components/actor/core:journal",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/affiliations/core/browser/domain_matching",
     "//components/autofill/content/browser",
     "//components/one_time_tokens/core/browser",
     "//components/security_state/content",
     "//components/tabs:public",
+    "//url",
   ]
 
   public_deps = [
@@ -45,8 +49,11 @@ source_set("unit_tests") {
     ":actor",
     "//base/test:test_support",
     "//chrome/browser/actor",
+    "//chrome/browser/affiliations",
     "//chrome/browser/autofill",
     "//chrome/test:test_support",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/affiliations/core/browser:test_support",
     "//components/autofill/content/browser:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/browser/actor:test_support",

@@ -20,6 +20,10 @@
 #include "components/tabs/public/tab_interface.h"
 #include "url/origin.h"
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace autofill {
 
 // Describes the status of the target form filling context during validation.
@@ -83,6 +87,7 @@ class ActorOneTimeTokenFillingService {
   // string if retrieval fails or no OTP is available.
   virtual void RetrieveOtp(
       tabs::TabHandle tab_handle,
+      const url::Origin& otp_frame_origin,
       const std::vector<FieldGlobalId>& trigger_field_ids,
       base::OnceCallback<
           void(base::expected<std::string,

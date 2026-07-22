@@ -19,14 +19,15 @@ enum class ActorOneTimeTokenFillingServiceRetrieveOtp {
   kStart = 0,
   kNullTab = 1,
   kNoService = 2,
-  kCacheHit = 3,
-  kSuccess = 4,
+  kSuccessCacheMatchFound = 3,
+  // kSuccess = 4,  // Obsolete. Replaced by kSuccessReceivedMatchFound.
   kError = 5,
   kMockOtp = 6,
-  kNoCallback = 7,
-  kMaxValue = kNoCallback
+  // kNoCallback = 7,  // Obsolete.
+  kSuccessReceivedMatchFound = 8,
+  kMaxValue = kSuccessReceivedMatchFound,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceRetrieveOtp)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceRetrieveOtpEvent)
 
 // LINT.IfChange(ActorOneTimeTokenFillingServiceFillOtp)
 
@@ -46,7 +47,7 @@ enum class ActorOneTimeTokenFillingServiceFillOtp {
   kError = 9,
   kMaxValue = kError
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceFillOtp)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/one_time_tokens/enums.xml:ActorOneTimeTokenFillingServiceFillOtpEvent)
 
 // LINT.IfChange(ActorOtpRetrieveOtpCallbackSuperseded)
 
