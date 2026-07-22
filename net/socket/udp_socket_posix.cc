@@ -34,6 +34,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
@@ -41,6 +42,7 @@
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/cronet_buildflags.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_address_util.h"
@@ -54,6 +56,7 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
+#include "net/socket/extra_socket_defines.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_tag.h"
@@ -91,45 +94,6 @@ constexpr size_t kMaxMmsgMessages = 128;
 
 int GetSocketFDHash(int fd) {
   return fd ^ 1595649551;
-}
-
-uint8_t GetTosFromMsghdr(struct msghdr* msg) {
-  if (msg->msg_controllen == 0) {
-    return 0;
-  }
-  for (struct cmsghdr* cmsg = CMSG_FIRSTHDR(msg); cmsg != nullptr;
-       // SAFETY: CMSG_NXTHDR is a system macro that safely iterates over
-       // control messages using the boundaries defined in msghdr.
-       cmsg = UNSAFE_BUFFERS(CMSG_NXTHDR(msg, cmsg))) {
-#if BUILDFLAG(IS_APPLE)
-    constexpr int kTosType = IP_RECVTOS;
-#else
-    constexpr int kTosType = IP_TOS;
-#endif
-    if (cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == kTosType) {
-      uint8_t tos_val = 0;
-      // SAFETY: CMSG_DATA returns a pointer to the control message payload.
-      // For IP_TOS, the kernel writes the payload as a uint8_t (1 byte).
-      auto cmsg_data_as_span = UNSAFE_BUFFERS(base::span(
-          reinterpret_cast<const uint8_t*>(CMSG_DATA(cmsg)), sizeof(uint8_t)));
-      base::byte_span_from_ref(tos_val).copy_from(cmsg_data_as_span);
-      return tos_val;
-    }
-
-    if (cmsg->cmsg_level == IPPROTO_IPV6 && cmsg->cmsg_type == IPV6_TCLASS) {
-      int tclass_val = 0;
-      // SAFETY: CMSG_DATA returns a pointer to the control message payload.
-      // For IPV6_TCLASS, the kernel writes the payload as an 'int' (usually 4
-      // bytes). We must read sizeof(int) bytes to correctly handle big-endian
-      // architectures (where the value would be in the last byte of the int)
-      // and avoid alignment issues.
-      auto cmsg_data_as_span = UNSAFE_BUFFERS(base::span(
-          reinterpret_cast<const uint8_t*>(CMSG_DATA(cmsg)), sizeof(int)));
-      base::byte_span_from_ref(tclass_val).copy_from(cmsg_data_as_span);
-      return static_cast<uint8_t>(tclass_val);
-    }
-  }
-  return 0;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -313,6 +277,56 @@ int UDPSocketPosix::AdoptOpenedSocket(AddressFamily address_family,
   return ConfigureOpenedSocket();
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+namespace {
+
+SetSocketOptionGroResult GetSetSocketOptionGroResult(int setsockopt_rv,
+                                                     int saved_errno) {
+  if (setsockopt_rv == 0) {
+    return SetSocketOptionGroResult::kSuccess;
+  }
+  if (saved_errno == ENOPROTOOPT || saved_errno == EOPNOTSUPP ||
+      saved_errno == ENOPKG) {
+    return SetSocketOptionGroResult::kUnsupportedKernel;
+  }
+  return SetSocketOptionGroResult::kOtherError;
+}
+
+void RecordSetSocketOptionGroResult(SetSocketOptionGroResult option_result) {
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    base::UmaHistogramEnumeration("Net.UDPSocketPosix.SetSocketOptionGroResult",
+                                  option_result);
+  }
+}
+
+void RecordGroPacketsRead(size_t packet_count) {
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    base::UmaHistogramCounts100("Net.UDPSocketPosix.GroPacketsRead",
+                                base::checked_cast<int>(packet_count));
+  }
+}
+
+}  // namespace
+#endif
+
+void UDPSocketPosix::ConfigureGroSocketOption() {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK_NE(socket_, kInvalidSocket);
+  CHECK_EQ(gro_status_, GroStatus::kUnconfigured);
+  int on = 1;
+  int rv = setsockopt(socket_, SOL_UDP, UDP_GRO, &on, sizeof(on));
+  SetSocketOptionGroResult option_result =
+      GetSetSocketOptionGroResult(rv, errno);
+  RecordSetSocketOptionGroResult(option_result);
+  gro_status_ = option_result == SetSocketOptionGroResult::kSuccess
+                    ? GroStatus::kEnabled
+                    : GroStatus::kDisabled;
+#else
+  gro_status_ = GroStatus::kDisabled;
+#endif
+}
+
 int UDPSocketPosix::ConfigureOpenedSocket() {
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS)
   // https://crbug.com/41271555: Guard against a file descriptor being closed
@@ -475,6 +489,10 @@ int UDPSocketPosix::GetLocalAddress(IPEndPoint* address) const {
 int UDPSocketPosix::Read(IOBuffer* buf,
                          int buf_len,
                          CompletionOnceCallback callback) {
+  // It is dangerous to call Read() when GRO is enabled because it can return
+  // multiple packets in a single superpacket and the caller/parser will never
+  // expect that.
+  CHECK(gro_status_ != GroStatus::kEnabled);
   return RecvFrom(buf, buf_len, nullptr, std::move(callback));
 }
 
@@ -502,6 +520,14 @@ base::expected<DatagramsMetadata, Error> UDPSocketPosix::ReadMultiple(
   CHECK_GE(buf_len, maximum_packet_size);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  if (gro_status_ == GroStatus::kUnconfigured) {
+    if (base::FeatureList::IsEnabled(features::kEnableUdpGro)) {
+      ConfigureGroSocketOption();
+    } else {
+      gro_status_ = GroStatus::kDisabled;
+    }
+  }
+
   base::expected<DatagramsMetadata, Error> nread =
       InternalReadMultiple(buffer, buf_len, maximum_packet_size);
   if (nread.has_value() || nread.error() != ERR_IO_PENDING) {
@@ -546,6 +572,10 @@ int UDPSocketPosix::RecvFrom(IOBuffer* buf,
   DCHECK_NE(kInvalidSocket, socket_);
   CHECK(read_callback_.is_null());
   CHECK(read_multiple_callback_.is_null());
+  // It is dangerous to call RecvFrom() when GRO is enabled because it can
+  // return multiple packets in a single superpacket and the caller/parser will
+  // never expect that.
+  CHECK(gro_status_ != GroStatus::kEnabled);
   DCHECK(!recv_from_address_);
   DCHECK(!callback.is_null());  // Synchronous operation not supported
   DCHECK_GT(buf_len, 0);
@@ -1033,19 +1063,83 @@ base::expected<UDPSocketPosix::RecvmsgResult, Error> UDPSocketPosix::DoRecvmsg(
       .msg_controllen = kControlBufferSize,
   };
 
-  res.bytes_read = HANDLE_EINTR(recvmsg(socket_, &msg, 0));
-  if (res.bytes_read < 0) {
+  ssize_t bytes_read = HANDLE_EINTR(recvmsg(socket_, &msg, 0));
+  if (bytes_read < 0) {
     return base::unexpected(static_cast<Error>(MapSystemError(errno)));
   }
+  res.bytes_read = static_cast<size_t>(bytes_read);
 
   res.msg_flags = msg.msg_flags;
   if (populate_remote_address) {
     res.storage.addr_len = msg.msg_namelen;
   }
 
-  res.tos = GetTosFromMsghdr(&msg);
+  FillResultFromMessageHeader(&msg, &res);
 
   return res;
+}
+
+void UDPSocketPosix::FillResultFromMessageHeader(struct msghdr* msg,
+                                                 RecvmsgResult* result) {
+  if (msg->msg_controllen == 0) {
+    return;
+  }
+
+  for (struct cmsghdr* cmsg = CMSG_FIRSTHDR(msg);
+       cmsg != nullptr &&
+       (!result->tos.has_value() ||
+        (gro_status_ == GroStatus::kEnabled && !result->gso_size.has_value()));
+       // SAFETY: CMSG_NXTHDR is a system macro that safely iterates over
+       // control messages using the boundaries defined in msghdr.
+       cmsg = UNSAFE_BUFFERS(CMSG_NXTHDR(msg, cmsg))) {
+#if BUILDFLAG(IS_APPLE)
+    constexpr int kTosType = IP_RECVTOS;
+#else
+    constexpr int kTosType = IP_TOS;
+#endif
+    if (cmsg->cmsg_level == IPPROTO_IP && cmsg->cmsg_type == kTosType &&
+        cmsg->cmsg_len >= CMSG_LEN(sizeof(uint8_t)) &&
+        !result->tos.has_value()) {
+      uint8_t tos_val = 0;
+      // SAFETY: CMSG_DATA returns a pointer to the control message payload.
+      // For IP_TOS, the kernel writes the payload as a uint8_t (1 byte).
+      auto cmsg_data_as_span = UNSAFE_BUFFERS(base::span(
+          reinterpret_cast<const uint8_t*>(CMSG_DATA(cmsg)), sizeof(uint8_t)));
+      base::byte_span_from_ref(tos_val).copy_from(cmsg_data_as_span);
+      result->tos = tos_val;
+    } else if (cmsg->cmsg_level == IPPROTO_IPV6 &&
+               cmsg->cmsg_type == IPV6_TCLASS &&
+               cmsg->cmsg_len >= CMSG_LEN(sizeof(int)) &&
+               !result->tos.has_value()) {
+      int tclass_val = 0;
+      // SAFETY: CMSG_DATA returns a pointer to the control message payload.
+      // For IPV6_TCLASS, the kernel writes the payload as an 'int' (usually 4
+      // bytes). We must read sizeof(int) bytes to correctly handle big-endian
+      // architectures (where the value would be in the last byte of the int)
+      // and avoid alignment issues.
+      auto cmsg_data_as_span = UNSAFE_BUFFERS(base::span(
+          reinterpret_cast<const uint8_t*>(CMSG_DATA(cmsg)), sizeof(int)));
+      base::byte_span_from_ref(tclass_val).copy_from(cmsg_data_as_span);
+      result->tos = static_cast<uint8_t>(tclass_val);
+    }
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+    else if (gro_status_ == GroStatus::kEnabled &&
+             cmsg->cmsg_level == SOL_UDP && cmsg->cmsg_type == UDP_GRO &&
+             cmsg->cmsg_len >= CMSG_LEN(sizeof(int)) &&
+             !result->gso_size.has_value()) {
+      int gso_val = 0;
+      // SAFETY: CMSG_DATA returns a pointer to the control message payload.
+      // For UDP_GRO, the kernel writes the payload as an 'int' (usually 4
+      // bytes). We verified in the condition above that cmsg->cmsg_len >=
+      // CMSG_LEN(sizeof(int)), so reading sizeof(int) bytes is guaranteed to
+      // be in bounds and correctly handles big-endian architectures.
+      auto cmsg_data_as_span = UNSAFE_BUFFERS(base::span(
+          reinterpret_cast<const uint8_t*>(CMSG_DATA(cmsg)), sizeof(int)));
+      base::byte_span_from_ref(gso_val).copy_from(cmsg_data_as_span);
+      result->gso_size = static_cast<size_t>(gso_val);
+    }
+#endif
+  }
 }
 
 base::expected<DatagramsMetadata, Error> UDPSocketPosix::InternalReadMultiple(
@@ -1062,6 +1156,9 @@ base::expected<DatagramsMetadata, Error> UDPSocketPosix::InternalReadMultiple(
     return base::unexpected(ERR_SOCKET_NOT_CONNECTED);
   }
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  if (gro_status_ == GroStatus::kEnabled) {
+    return InternalReadMultipleWithGro(buffer, buf_len, maximum_packet_size);
+  }
   return InternalRecvMmsg(buffer, buf_len / maximum_packet_size,
                           maximum_packet_size);
 #else
@@ -1153,11 +1250,98 @@ base::expected<DatagramsMetadata, Error> UDPSocketPosix::ProcessRecvMmsgResults(
     size_t msg_len = mmsg[i].msg_len;
     uint8_t msg_tos = 0;
     if (msg_len > 0) {
-      msg_tos = GetTosFromMsghdr(&mmsg[i].msg_hdr);
+      RecvmsgResult temp_res;
+      FillResultFromMessageHeader(&mmsg[i].msg_hdr, &temp_res);
+      msg_tos = temp_res.tos.value_or(0);
     }
     datagrams.push_back(DatagramMetadata{
         .offset = i * maximum_packet_size, .length = msg_len, .tos = msg_tos});
   }
+  return datagrams;
+}
+
+base::expected<DatagramsMetadata, Error>
+UDPSocketPosix::InternalReadMultipleWithGro(IOBuffer* buffer,
+                                            size_t buf_len,
+                                            size_t maximum_packet_size) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK_GE(buffer->span().size(), buf_len);
+
+  auto recv_result = DoRecvmsg(buffer, buf_len,
+                               /*populate_remote_address=*/false);
+  if (!recv_result.has_value()) {
+    Error error = recv_result.error();
+    if (error != ERR_IO_PENDING) {
+      LogRead(static_cast<int>(error), nullptr, 0, nullptr);
+    }
+    return base::unexpected(error);
+  }
+
+  const RecvmsgResult& res = recv_result.value();
+  auto result = ProcessGroResult(res, maximum_packet_size);
+  if (!result.has_value()) {
+    LogRead(static_cast<int>(result.error()), nullptr, 0, nullptr);
+    return result;
+  }
+
+  for (const auto& datagram : result.value()) {
+    LogRead(static_cast<int>(datagram.length),
+            reinterpret_cast<const char*>(
+                buffer->span().subspan(datagram.offset).data()),
+            remote_address_.get());
+  }
+
+  return result;
+}
+
+base::expected<DatagramsMetadata, Error> UDPSocketPosix::ProcessGroResult(
+    const RecvmsgResult& res,
+    size_t maximum_packet_size) {
+  DatagramsMetadata datagrams;
+
+  if (res.msg_flags & MSG_TRUNC) {
+    return base::unexpected(ERR_MSG_TOO_BIG);
+  }
+
+  if (res.msg_flags & MSG_CTRUNC) {
+    return base::unexpected(ERR_CONTROL_MSG_TOO_BIG);
+  }
+
+  // Fast-path for empty reads and single un-coalesced datagrams. If no GRO
+  // coalescing occurred, the kernel typically does not attach a UDP_GRO cmsg.
+  // We also check for gso_size == 0 defensively in case the kernel ever
+  // attaches a zero-sized segment control message.
+  if (res.bytes_read == 0 || res.gso_size.value_or(0) == 0) {
+    if (res.bytes_read > maximum_packet_size) {
+      return base::unexpected(ERR_MSG_TOO_BIG);
+    }
+    datagrams.push_back(DatagramMetadata{
+        .offset = 0, .length = res.bytes_read, .tos = res.tos.value_or(0)});
+    RecordGroPacketsRead(1);
+    return datagrams;
+  }
+
+  const size_t gso_size = *res.gso_size;
+  if (gso_size > maximum_packet_size) {
+    return base::unexpected(ERR_MSG_TOO_BIG);
+  }
+
+  size_t remaining = res.bytes_read;
+  size_t offset = 0;
+  while (remaining > 0) {
+    // When UDP GRO is active, the Linux kernel coalesces datagrams with the
+    // same payload length (gso_size) into a single superpacket. However, the
+    // final packet in the coalesced train is allowed to be smaller than
+    // gso_size (e.g., the final segment of a transfer). Therefore, bytes_read
+    // is not guaranteed to be divisible by gso_size, and std::min is required
+    // to handle the smaller final chunk.
+    size_t chunk_len = std::min(remaining, gso_size);
+    datagrams.push_back(DatagramMetadata{
+        .offset = offset, .length = chunk_len, .tos = res.tos.value_or(0)});
+    offset += chunk_len;
+    remaining -= chunk_len;
+  }
+  RecordGroPacketsRead(datagrams.size());
   return datagrams;
 }
 #endif
@@ -1214,11 +1398,11 @@ int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
              !address->FromSockAddr(res.storage.addr(), res.storage.addr_len)) {
     result = ERR_ADDRESS_INVALID;
   } else {
-    result = res.bytes_read;
+    result = static_cast<int>(res.bytes_read);
   }
   last_tos_ = 0;
   if (result >= 0) {
-    last_tos_ = res.tos;
+    last_tos_ = res.tos.value_or(0);
   }
 
   LogRead(result, buf->data(), res.storage.addr_len, res.storage.addr());
