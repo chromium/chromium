@@ -19,6 +19,8 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
+import androidx.core.view.WindowInsetsAnimationCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -29,7 +31,11 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.animation.AnimationHandler;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.util.CommonOnLayoutChangeListeners;
+
+import java.util.List;
 
 /** Helper class for showing placeholders while resizing the Web View in the Tab Bottom Sheet. */
 @NullMarked
@@ -43,6 +49,28 @@ public class WebViewResizingHelper {
     private static final int RESIZING_ANIMATION_DURATION_MS = 150;
 
     private final AnimationHandler mAnimationHandler = new AnimationHandler();
+    private final WindowInsetsAnimationListener mInsetAnimationListener =
+            new WindowInsetsAnimationListener() {
+                @Override
+                public void onPrepare(WindowInsetsAnimationCompat animation) {
+                    mPauseInsetUpdates = true;
+                }
+
+                @Override
+                public void onStart(
+                        WindowInsetsAnimationCompat animation,
+                        WindowInsetsAnimationCompat.BoundsCompat bounds) {}
+
+                @Override
+                public void onProgress(
+                        WindowInsetsCompat insets, List<WindowInsetsAnimationCompat> list) {}
+
+                @Override
+                public void onEnd(WindowInsetsAnimationCompat animation) {
+                    mPauseInsetUpdates = false;
+                    updateBounds();
+                }
+            };
 
     private final Context mContext;
     private final FrameLayout mResizingContainer;
@@ -51,9 +79,11 @@ public class WebViewResizingHelper {
     private @Nullable WebContents mWebContents;
     private final View mExpandedContentGroup;
     private final WindowAndroid mWindowAndroid;
+    private final @Nullable InsetObserver mInsetObserver;
     private final boolean mIsSidePanel;
 
     private boolean mIsViewportSizeFixed;
+    private boolean mPauseInsetUpdates;
 
     /**
      * @param containerView The root view for the co-browse content.
@@ -73,6 +103,8 @@ public class WebViewResizingHelper {
         mContext = containerView.getContext();
         mWindowAndroid = windowAndroid;
         mIsSidePanel = isSidePanel;
+
+        mInsetObserver = windowAndroid.getInsetObserver();
         mExpandedContentGroup = containerView.findViewById(R.id.expanded_content_group);
 
         mResizingContainer = new FrameLayout(mContext);
@@ -94,12 +126,19 @@ public class WebViewResizingHelper {
         ColorDrawable background = new ColorDrawable();
         background.setColor(backgroundColor);
         mResizingPlaceholder.setBackground(background);
+
+        if (mInsetObserver != null) {
+            mInsetObserver.addWindowInsetsAnimationListener(mInsetAnimationListener);
+        }
     }
 
     /** Destroys the helper and releases the WebContents. */
     public void destroy() {
         reset();
         mWebContents = null;
+        if (mInsetObserver != null) {
+            mInsetObserver.removeWindowInsetsAnimationListener(mInsetAnimationListener);
+        }
     }
 
     /** Resets the helper to its initial state without resetting the WebContents. */
@@ -109,6 +148,7 @@ public class WebViewResizingHelper {
         mResizingPlaceholder.setVisibility(View.GONE);
         mThinWebView = null;
         mIsViewportSizeFixed = false;
+        mPauseInsetUpdates = false;
     }
 
     /** Sets the ThinWebView and WebContents which will be resized. */
@@ -238,7 +278,7 @@ public class WebViewResizingHelper {
     }
 
     private void updateBounds() {
-        if (isActivityInactive(mWindowAndroid)) {
+        if (mPauseInsetUpdates || isActivityInactive(mWindowAndroid)) {
             return;
         }
 
@@ -258,8 +298,8 @@ public class WebViewResizingHelper {
             return;
         }
 
-        @Px int resizingContainerWidth = mResizingContainer.getWidth();
-        @Px int resizingContainerHeight = mResizingContainer.getHeight();
+        @Px int resizingContainerWidth = mResizingContainer.getMeasuredWidth();
+        @Px int resizingContainerHeight = mResizingContainer.getMeasuredHeight();
         @Px int webContentsWidth = ViewUtils.dpToPx(mContext, mWebContents.getWidth());
         @Px int webContentsHeight = ViewUtils.dpToPx(mContext, mWebContents.getHeight());
 
