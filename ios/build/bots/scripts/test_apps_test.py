@@ -343,7 +343,8 @@ class EgtestsAppTest(test_runner_test.TestCase):
     expected_cmd = [
         'arch', '-arch', 'arm64', 'xcodebuild', 'test-without-building',
         '-xctestrun', 'xctestrun', '-destination', 'id=UUID',
-        '-resultBundlePath', 'outdir', '-test-iterations', '2'
+        '-resultBundlePath', 'outdir', '-collect-test-diagnostics', 'never',
+        '-test-iterations', '2'
     ]
     self.assertEqual(cmd, expected_cmd)
 

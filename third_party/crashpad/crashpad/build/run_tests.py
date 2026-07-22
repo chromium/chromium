@@ -385,6 +385,8 @@ def _RunOnIOSTarget(binary_dir,
             xctestrun_path,
             '-destination',
             f'platform={xcodebuild_platform},name={xcodebuild_device_name}',
+            '-collect-test-diagnostics',
+            'never',
         ]
         with open(xctestrun_path, 'wb') as fp:
             if is_xcuitest:

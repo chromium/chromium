@@ -356,9 +356,16 @@ class GTestsApp(object):
     if is_running_rosetta():
       cmd.extend(['arch', '-arch', 'arm64'])
     cmd.extend([
-        'xcodebuild', 'test-without-building', '-xctestrun',
-        self.fill_xctest_run(out_dir), '-destination', destination,
-        '-resultBundlePath', out_dir
+        'xcodebuild',
+        'test-without-building',
+        '-xctestrun',
+        self.fill_xctest_run(out_dir),
+        '-destination',
+        destination,
+        '-resultBundlePath',
+        out_dir,
+        '-collect-test-diagnostics',
+        'never',
     ])
     if clones > 1:
       cmd.extend([
