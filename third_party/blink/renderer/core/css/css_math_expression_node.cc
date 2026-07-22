@@ -5579,7 +5579,7 @@ double CSSMathExpressionSiblingFunction::ComputeDouble(
   const Element* element = length_resolver.GetElement();
   if (const TreeScope* value_scope = function_->GetTreeScope()) {
     if (!element->GetTreeScope().IsInclusiveAncestorTreeScopeOf(*value_scope)) {
-      return 0;
+      return 1;
     }
   }
   NthIndexCache* nth_index_cache = element->ownerDocument()->GetNthIndexCache();
