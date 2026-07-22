@@ -124,7 +124,7 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
       profile_, base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabEvent,
                                     weak_ptr_factory_.GetWeakPtr()));
   hotkey_manager_ =
-      std::make_unique<InstanceIndependentHotkeyManager>(this, profile_);
+      std::make_unique<InstanceIndependentHotkeyManager>(this, profile_, enabling);
   onboarding_tracker_ =
       std::make_unique<GlicOnboardingTracker>(profile_, enabling);
   metrics_.StartPeriodicMemoryMetricsRecording();

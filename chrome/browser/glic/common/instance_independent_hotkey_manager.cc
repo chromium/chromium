@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -33,15 +34,47 @@ constexpr LocalHotkeyManager::Command kSupportedCommands[] = {
 
 InstanceIndependentHotkeyManager::InstanceIndependentHotkeyManager(
     GlicInstanceCoordinator* coordinator,
-    Profile* profile)
+    Profile* profile,
+    GlicEnabling* enabling)
     : coordinator_(coordinator), profile_(profile) {
-  hotkey_manager_ = std::make_unique<LocalHotkeyManager>(
-      std::make_unique<ApplicationScopedRegistrationDelegate>(profile), this,
-      kSupportedCommands);
-  hotkey_manager_->InitializeAccelerators();
+  // g_browser_process->local_state() can be null in some test environments.
+  if (PrefService* local_state = g_browser_process->local_state()) {
+    pref_registrar_.Init(local_state);
+    pref_registrar_.Add(
+        prefs::kGlicLauncherEnabled,
+        base::BindRepeating(
+            &InstanceIndependentHotkeyManager::UpdateHotkeyRegistration,
+            base::Unretained(this)));
+  }
+  // `enabling` can be null in some test environments.
+  if (enabling) {
+    consent_subscription_ = enabling->RegisterOnConsentChanged(
+        base::BindRepeating(
+            &InstanceIndependentHotkeyManager::UpdateHotkeyRegistration,
+            base::Unretained(this)));
+    enabled_subscription_ = enabling->RegisterAllowedChanged(
+        base::BindRepeating(
+            &InstanceIndependentHotkeyManager::UpdateHotkeyRegistration,
+            base::Unretained(this)));
+  }
+  UpdateHotkeyRegistration();
 }
 
 InstanceIndependentHotkeyManager::~InstanceIndependentHotkeyManager() = default;
+
+void InstanceIndependentHotkeyManager::UpdateHotkeyRegistration() {
+  if (GlicLauncherConfiguration::IsEnabled() &&
+      GlicEnabling::IsEnabledAndConsentForProfile(profile_)) {
+    if (!hotkey_manager_) {
+      hotkey_manager_ = std::make_unique<LocalHotkeyManager>(
+          std::make_unique<ApplicationScopedRegistrationDelegate>(profile_), this,
+          kSupportedCommands);
+      hotkey_manager_->InitializeAccelerators();
+    }
+  } else {
+    hotkey_manager_.reset();
+  }
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 void InstanceIndependentHotkeyManager::RequestCaptureRegion() {
@@ -95,7 +128,7 @@ bool InstanceIndependentHotkeyManager::AcceleratorPressed(
 }
 
 bool InstanceIndependentHotkeyManager::CanHandleAccelerators() const {
-  return GlicEnabling::IsEnabledAndConsentForProfile(profile_);
+  return hotkey_manager_ && GlicEnabling::IsEnabledAndConsentForProfile(profile_);
 }
 
 }  // namespace glic
