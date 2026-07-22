@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
+#include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/fake_server.h"
@@ -30,6 +31,7 @@ using autofill::test::GetCardLinkedOfferData1;
 using autofill::test::GetCardLinkedOfferData2;
 using offer_helper::CreateDefaultSyncCardLinkedOffer;
 using offer_helper::CreateSyncCardLinkedOffer;
+using offer_helper::SetOfferData;
 using wallet_helper::GetPaymentsDataManager;
 using wallet_helper::GetWalletDataTypeState;
 
@@ -107,7 +109,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, EnabledByDefault) {
 // to mimic sync-paused on Android due to https://crbug.com/40871747.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnSyncPaused) {
-  GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
+  SetOfferData(GetFakeServer(), {CreateDefaultSyncCardLinkedOffer()});
   ASSERT_TRUE(SetupSync());
 
   autofill::PaymentsDataManager* paydm = GetPaymentsDataManager(0);
@@ -140,7 +142,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnSyncPaused) {
 #if !BUILDFLAG(IS_CHROMEOS)
 // Offer data should get cleared from the database when the user signs out.
 IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnSignOut) {
-  GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
+  SetOfferData(GetFakeServer(), {CreateDefaultSyncCardLinkedOffer()});
   ASSERT_TRUE(SetupSync());
   autofill::PaymentsDataManager* paydm = GetPaymentsDataManager(0);
   ASSERT_NE(nullptr, paydm);
@@ -159,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnSignOut) {
 IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
   AutofillOfferData offer1 = GetCardLinkedOfferData1(/*offer_id=*/999);
-  GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer1)});
+  SetOfferData(GetFakeServer(), {CreateSyncCardLinkedOffer(offer1)});
   ASSERT_TRUE(SetupSync());
 
   // Make sure the data is in the DB.
@@ -171,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest,
 
   // Put some completely new data in the sync server.
   AutofillOfferData offer2 = GetCardLinkedOfferData2(/*offer_id=*/888);
-  GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer2)});
+  SetOfferData(GetFakeServer(), {CreateSyncCardLinkedOffer(offer2)});
   PaymentsDataChangedWaiter(paydm).Wait();
 
   // Make sure only the new data is present.
@@ -185,7 +187,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest,
 // set, or (more often) an empty update.
 IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   AutofillOfferData offer1 = GetCardLinkedOfferData1(/*offer_id=*/999);
-  GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer1)});
+  SetOfferData(GetFakeServer(), {CreateSyncCardLinkedOffer(offer1)});
   ASSERT_TRUE(SetupSync());
 
   // Make sure the card is in the DB.
@@ -198,6 +200,14 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
   // Trigger a sync and wait for the new data to arrive.
   sync_pb::DataTypeState state_before =
       GetWalletDataTypeState(syncer::AUTOFILL_WALLET_OFFER, 0, GetStoreType());
+
+  // Inject a tombstone (deleted entity) on the server to advance the server
+  // version for AUTOFILL_WALLET_OFFER. LoopbackServer will return an empty
+  // update (0 entities) but advance the progress marker token version.
+  GetFakeServer()->InjectEntity(
+      syncer::PersistentTombstoneEntity::CreateNewForTest(
+          syncer::AUTOFILL_WALLET_OFFER, "tombstone-id"));
+
   ASSERT_TRUE(TriggerGetUpdatesAndWait());
 
   // Check that the new progress marker is stored for empty updates. This is a
@@ -227,7 +237,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, EmptyUpdatesAreIgnored) {
 IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
   AutofillOfferData offer = GetCardLinkedOfferData1(/*offer_id=*/999);
   offer.SetEligibleInstrumentIdForTesting({111111});
-  GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer)});
+  SetOfferData(GetFakeServer(), {CreateSyncCardLinkedOffer(offer)});
   ASSERT_TRUE(SetupSync());
 
   // Make sure the card is in the DB.
@@ -240,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
 
   // Update the data.
   offer.SetEligibleInstrumentIdForTesting({111111, 222222});
-  GetFakeServer()->SetOfferData({CreateSyncCardLinkedOffer(offer)});
+  SetOfferData(GetFakeServer(), {CreateSyncCardLinkedOffer(offer)});
   PaymentsDataChangedWaiter(paydm).Wait();
 
   // Make sure the data is present on the client.
@@ -255,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ChangedEntityGetsUpdated) {
 // Offer data should get cleared from the database when the Autofill sync type
 // flag is disabled.
 IN_PROC_BROWSER_TEST_P(SingleClientOfferSyncTest, ClearOnDisableWalletSync) {
-  GetFakeServer()->SetOfferData({CreateDefaultSyncCardLinkedOffer()});
+  SetOfferData(GetFakeServer(), {CreateDefaultSyncCardLinkedOffer()});
   ASSERT_TRUE(SetupSync());
 
   PaymentsDataManager* paydm = GetPaymentsDataManager(0);

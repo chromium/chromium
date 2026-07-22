@@ -32,15 +32,6 @@ bool AreProgressMarkersEquivalent(const std::string& serialized1,
   DCHECK(!marker1.has_gc_directive());
   DCHECK(!marker2.has_gc_directive());
 
-  if (syncer::GetDataTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
-          syncer::AUTOFILL_WALLET_DATA ||
-      syncer::GetDataTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
-          syncer::AUTOFILL_WALLET_OFFER ||
-      syncer::GetDataTypeFromSpecificsFieldNumber(marker1.data_type_id()) ==
-          syncer::AUTOFILL_VALUABLE) {
-    return fake_server::AreFullUpdateTypeDataProgressMarkersEquivalent(marker1,
-                                                                       marker2);
-  }
   return marker1.SerializeAsString() == marker2.SerializeAsString();
 }
 

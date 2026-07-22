@@ -619,27 +619,16 @@ bool FullUpdateTypeProgressMarkerChecker::IsExitConditionSatisfied(
   bool success = progress_marker.ParseFromString(marker_it->second);
   DCHECK(success);
 
-  // TODO(crbug.com/393282276): Remove legacy FakeServer progress marker
-  // timestamp parsing once all data types (e.g., AUTOFILL_WALLET_OFFER) are
-  // migrated to LoopbackServer's full update support. For legacy FakeServer
-  // full updates, progress markers contain a space-delimited timestamp.
-  const base::Time actual_timestamp =
-      fake_server::FakeServer::GetProgressMarkerTimestamp(progress_marker);
-  if (actual_timestamp >= min_required_progress_marker_timestamp_) {
-    return true;
-  }
-
-  // For LoopbackServer full updates, tokens are version strings
-  // ("migration_version/entity_version"). If the token string has changed since
-  // this checker was created, a new progress marker has arrived.
+  // If the token string has changed since this checker was created, a new
+  // progress marker has arrived.
   if (initial_token_.has_value() &&
       progress_marker.token() != *initial_token_) {
     return true;
   }
 
-  *os << "Waiting for an updated progress marker timestamp "
-      << min_required_progress_marker_timestamp_ << "; actual "
-      << actual_timestamp;
+  *os << "Waiting for an updated progress marker token (initial: "
+      << initial_token_.value_or("") << ", current: " << progress_marker.token()
+      << ")";
 
   return false;
 }

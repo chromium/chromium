@@ -13,7 +13,16 @@ namespace sync_pb {
 class SyncEntity;
 }  // namespace sync_pb
 
+#include <vector>
+
+namespace fake_server {
+class FakeServer;
+}  // namespace fake_server
+
 namespace offer_helper {
+
+void SetOfferData(fake_server::FakeServer* fake_server,
+                  const std::vector<sync_pb::SyncEntity>& offer_entities);
 
 sync_pb::SyncEntity CreateDefaultSyncCardLinkedOffer();
 

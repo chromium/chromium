@@ -49,16 +49,6 @@ enum SyncEnums_ErrorType : int;
 
 namespace fake_server {
 
-// This function only compares one part of the markers, the time-independent
-// hashes of the data served in the update. Apart from this, the progress
-// markers for fake wallet data also include information about fetch time. This
-// is in-line with the server behavior and -- as it keeps changing -- allows
-// integration tests to wait for a GetUpdates call to finish, even if they don't
-// contain data updates.
-bool AreFullUpdateTypeDataProgressMarkersEquivalent(
-    const sync_pb::DataTypeProgressMarker& marker1,
-    const sync_pb::DataTypeProgressMarker& marker2);
-
 // A fake version of the Sync server used for testing. This class is not thread
 // safe.
 // `switches::kDisableFakeServerFailureOutput` can be passed to the command line
@@ -140,33 +130,6 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // guarantees that the added entity will result in successful server
   // operations.
   void InjectEntity(std::unique_ptr<syncer::LoopbackServerEntity> entity);
-
-  // Sets the Wallet card and address data to be served in following GetUpdates
-  // requests (any further GetUpdates response will be empty, indicating no
-  // change, if the client already has received `wallet_entities`).
-  //
-  // The returned value represents the timestamp of the write, such that any
-  // progress marker greater or equal to this timestamp must have processed the
-  // changes. See GetProgressMarkerTimestamp() below.
-
-  // Sets the Autofill offer data to be served in following GetUpdates
-  // requests (any further GetUpdates response will be empty, indicating no
-  // change, if the client already has received `offer_entities`).
-  //
-  // The returned value represents the timestamp of the write, such that any
-  // progress marker greater or equal to this timestamp must have processed the
-  // changes. See GetProgressMarkerTimestamp() below.
-  // TODO(crbug.com/448316539): Migrate to FullUpdate mode and remove this
-  // method.
-  base::Time SetOfferData(
-      const std::vector<sync_pb::SyncEntity>& offer_entities);
-
-
-  // Allows the caller to know the timestamp corresponding to
-  // `progress_marker` as annotated by the FakeServer during the GetUpdates
-  // request that returned the progress marker.
-  static base::Time GetProgressMarkerTimestamp(
-      const sync_pb::DataTypeProgressMarker& progress_marker);
 
   // Modifies the entity on the server with the given `id`. The entity's
   // EntitySpecifics are replaced with `updated_specifics` and its version is
@@ -401,10 +364,6 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   base::ThreadChecker thread_checker_;
 
   std::unique_ptr<syncer::LoopbackServer> loopback_server_;
-
-  // The LoopbackServer does not know how to handle offer data properly, so
-  // the FakeServer handles those itself.
-  std::vector<sync_pb::SyncEntity> offer_entities_;
 
   // Collaborations the user is a member of, used for all shared types.
   std::set<syncer::CollaborationId> collaborations_;

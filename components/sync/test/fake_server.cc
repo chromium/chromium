@@ -55,6 +55,7 @@ FakeServer::FakeServer(const base::FilePath& loopback_server_dir)
 
   SetUpdateMode(syncer::AUTOFILL_VALUABLE, UpdateMode::kFull);
   SetUpdateMode(syncer::AUTOFILL_WALLET_DATA, UpdateMode::kFull);
+  SetUpdateMode(syncer::AUTOFILL_WALLET_OFFER, UpdateMode::kFull);
 
   LoadFakeStateFromDisk();
 }
@@ -103,32 +104,6 @@ void FakeServer::WriteFakeStateToDisk() const {
 
 namespace {
 
-struct HashAndTime {
-  uint64_t hash;
-  base::Time time;
-};
-
-std::unique_ptr<sync_pb::DataTypeProgressMarker>
-RemoveFullUpdateTypeProgressMarkerIfExists(
-    DataType data_type,
-    sync_pb::ClientToServerMessage* message) {
-  DCHECK(data_type == syncer::AUTOFILL_WALLET_DATA ||
-         data_type == syncer::AUTOFILL_WALLET_OFFER);
-  google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>*
-      progress_markers =
-          message->mutable_get_updates()->mutable_from_progress_marker();
-  for (int index = 0; index < progress_markers->size(); ++index) {
-    if (syncer::GetDataTypeFromSpecificsFieldNumber(
-            progress_markers->Get(index).data_type_id()) == data_type) {
-      auto result = std::make_unique<sync_pb::DataTypeProgressMarker>(
-          progress_markers->Get(index));
-      progress_markers->erase(progress_markers->begin() + index);
-      return result;
-    }
-  }
-  return nullptr;
-}
-
 bool ClearProgressTokenIfExists(DataType data_type,
                                 sync_pb::ClientToServerMessage* message) {
   google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>*
@@ -159,98 +134,6 @@ DataTypeSet ClearProgressTokensForTypes(
   return removed_token_types;
 }
 
-void VerifyNoProgressMarkerExistsInResponseForFullUpdateType(
-    sync_pb::GetUpdatesResponse* gu_response) {
-  for (const sync_pb::DataTypeProgressMarker& marker :
-       gu_response->new_progress_marker()) {
-    DataType type =
-        syncer::GetDataTypeFromSpecificsFieldNumber(marker.data_type_id());
-    // Verified there is no progress marker for the full sync type we cared
-    // about.
-    DCHECK(type != syncer::AUTOFILL_WALLET_OFFER);
-  }
-}
-
-// Returns a hash representing `entities` including each entity's ID and
-// version, in a way that the order of the entities is irrelevant.
-uint64_t ComputeEntitiesHash(const std::vector<sync_pb::SyncEntity>& entities) {
-  // Make sure to pick a token that will be consistent across clients when
-  // receiving the same data. We sum up the hashes which has the nice side
-  // effect of being independent of the order.
-  uint64_t hash = 0;
-  for (const sync_pb::SyncEntity& entity : entities) {
-    hash += base::PersistentHash(entity.id_string());
-    hash += entity.version();
-  }
-  return hash;
-}
-
-// Encodes a hash and timestamp in a string that is meant to be used as progress
-// marker token.
-std::string PackProgressMarkerToken(const HashAndTime& hash_and_time) {
-  return base::NumberToString(hash_and_time.hash) + " " +
-         base::NumberToString(
-             hash_and_time.time.ToDeltaSinceWindowsEpoch().InMicroseconds());
-}
-
-// Reverse for PackProgressMarkerToken.
-HashAndTime UnpackProgressMarkerToken(const std::string& token) {
-  // The hash is stored as a first piece of the string (space delimited), the
-  // second piece is the timestamp.
-  HashAndTime hash_and_time;
-  std::vector<std::string_view> pieces =
-      base::SplitStringPiece(token, base::kWhitespaceASCII,
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  uint64_t micros_since_windows_epoch = 0;
-  if (pieces.size() != 2 ||
-      !base::StringToUint64(pieces[0], &hash_and_time.hash) ||
-      !base::StringToUint64(pieces[1], &micros_since_windows_epoch)) {
-    // The hash defaults to an arbitrary hash which should in practice never
-    // match actual hashes (zero is avoided because it's actually a sum).
-    return {std::numeric_limits<uint64_t>::max(), base::Time()};
-  }
-
-  hash_and_time.time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(micros_since_windows_epoch));
-  return hash_and_time;
-}
-
-void PopulateFullUpdateTypeResults(
-    const std::vector<sync_pb::SyncEntity>& entities,
-    const sync_pb::DataTypeProgressMarker& old_marker,
-    sync_pb::GetUpdatesResponse* gu_response) {
-  sync_pb::DataTypeProgressMarker* new_marker =
-      gu_response->add_new_progress_marker();
-  new_marker->set_data_type_id(old_marker.data_type_id());
-
-  uint64_t hash = ComputeEntitiesHash(entities);
-
-  // We also include information about the fetch time in the token. This is
-  // in-line with the server behavior and -- as it keeps changing -- allows
-  // integration tests to wait for a GetUpdates call to finish, even if they
-  // don't contain data updates.
-  new_marker->set_token(PackProgressMarkerToken({hash, base::Time::Now()}));
-
-  if (!old_marker.has_token() ||
-      !AreFullUpdateTypeDataProgressMarkersEquivalent(old_marker,
-                                                      *new_marker)) {
-    // New data available; include new elements and tell the client to drop all
-    // previous data.
-    int64_t version =
-        (base::Time::Now() - base::Time::UnixEpoch()).InMilliseconds();
-    for (const sync_pb::SyncEntity& entity : entities) {
-      sync_pb::SyncEntity* response_entity = gu_response->add_entries();
-      *response_entity = entity;
-      response_entity->set_version(version);
-    }
-
-    // Set the GC directive to implement non-incremental reads.
-    new_marker->mutable_gc_directive()->set_type(
-        sync_pb::GarbageCollectionDirective::VERSION_WATERMARK);
-    new_marker->mutable_gc_directive()->set_version_watermark(version - 1);
-  }
-}
-
 void AddClearAllGCDirectives(syncer::DataTypeSet data_types,
                              sync_pb::GetUpdatesResponse* gu_response) {
   google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>*
@@ -271,13 +154,6 @@ std::string PrettyPrintValue(base::Value value) {
 }
 
 }  // namespace
-
-bool AreFullUpdateTypeDataProgressMarkersEquivalent(
-    const sync_pb::DataTypeProgressMarker& marker1,
-    const sync_pb::DataTypeProgressMarker& marker2) {
-  return UnpackProgressMarkerToken(marker1.token()).hash ==
-         UnpackProgressMarkerToken(marker2.token()).hash;
-}
 
 void FakeServer::HandleEvent(const sync_pb::EventRequest& request) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -377,9 +253,6 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
   // structured. To not interfere with this, we remove progress markers for
   // full-update types before passing the request to the loopback server.
   sync_pb::ClientToServerMessage message_for_loopback_server = message;
-  std::unique_ptr<sync_pb::DataTypeProgressMarker> offer_marker =
-      RemoveFullUpdateTypeProgressMarkerIfExists(syncer::AUTOFILL_WALLET_OFFER,
-                                                 &message_for_loopback_server);
 
   // If any of the data type progress markers are (simulated to be) too old,
   // drop them from the message to the loopback server, so it'll respond with a
@@ -399,16 +272,6 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
   if (http_status_code == net::HTTP_OK &&
       message.message_contents() ==
           sync_pb::ClientToServerMessage::GET_UPDATES) {
-    // The response from the loopback server should never have an existing
-    // progress marker for full-update types (because FakeServer removes it from
-    // the request).
-    VerifyNoProgressMarkerExistsInResponseForFullUpdateType(
-        response->mutable_get_updates());
-
-    if (offer_marker != nullptr) {
-      PopulateFullUpdateTypeResults(offer_entities_, *offer_marker,
-                                    response->mutable_get_updates());
-    }
 
     if (!send_clear_all_directive_types.empty()) {
       AddClearAllGCDirectives(send_clear_all_directive_types,
@@ -522,9 +385,6 @@ void FakeServer::TriggerKeystoreKeyRotation() {
 
 void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(entity->GetDataType() != syncer::AUTOFILL_WALLET_OFFER)
-      << "Offer data must be injected via SetOfferData().";
-
   const DataType data_type = entity->GetDataType();
 
   OnWillCommit();
@@ -541,39 +401,7 @@ void FakeServer::InjectEntity(std::unique_ptr<LoopbackServerEntity> entity) {
 
 
 
-base::Time FakeServer::SetOfferData(
-    const std::vector<sync_pb::SyncEntity>& offer_entities) {
-  DCHECK(!offer_entities.empty());
-  DataType data_type = GetDataTypeFromSpecifics(offer_entities[0].specifics());
-  CHECK_EQ(data_type, syncer::AUTOFILL_WALLET_OFFER);
 
-  OnWillCommit();
-  offer_entities_ = offer_entities;
-
-  const base::Time now = base::Time::Now();
-  const int64_t version = (now - base::Time::UnixEpoch()).InMilliseconds();
-
-  for (sync_pb::SyncEntity& entity : offer_entities_) {
-    DCHECK(!entity.has_client_tag_hash())
-        << "The sync server doesn not provide a client tag for offer entries.";
-    DCHECK(!entity.id_string().empty()) << "server id required!";
-
-    // The version is overridden during serving of the entities, but is useful
-    // here to influence the entities' hash.
-    entity.set_version(version);
-  }
-
-  OnCommit(/*committed_data_types=*/{syncer::AUTOFILL_WALLET_OFFER});
-
-  return now;
-}
-
-
-// static
-base::Time FakeServer::GetProgressMarkerTimestamp(
-    const sync_pb::DataTypeProgressMarker& progress_marker) {
-  return UnpackProgressMarkerToken(progress_marker.token()).time;
-}
 
 bool FakeServer::ModifyEntitySpecifics(
     const std::string& id,

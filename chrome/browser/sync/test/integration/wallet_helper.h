@@ -176,10 +176,7 @@ class AutofillWalletChecker : public StatusChangeChecker,
   const int profile_b_;
 };
 
-// Checker to block until a new progress marker is received.
-// TODO(crbug.com/393282276): Remove legacy progress marker timestamp parsing
-// once all data types (e.g., AUTOFILL_WALLET_OFFER) are migrated to
-// LoopbackServer's full update support.
+// Checker to block until a new progress marker token is received.
 class FullUpdateTypeProgressMarkerChecker : public StatusChangeChecker,
                                             public syncer::SyncServiceObserver {
  public:
