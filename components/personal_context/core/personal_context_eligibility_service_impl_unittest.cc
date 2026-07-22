@@ -15,6 +15,8 @@
 #include "components/account_settings/account_settings_features.h"
 #include "components/account_settings/mock_account_setting_service.h"
 #include "components/glic/glic_pref_names.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_eligibility_service_impl_test_api.h"
 #include "components/personal_context/core/personal_context_features.h"
@@ -85,6 +87,10 @@ class PersonalContextEligibilityServiceImplTest : public testing::Test {
     pref_service_.registry()->RegisterIntegerPref(
         ::glic::prefs::kGlicCompletedFre,
         std::to_underlying(::glic::prefs::FreStatus::kCompleted));
+    pref_service_.registry()->RegisterIntegerPref(
+        optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+        std::to_underlying(optimization_guide::model_execution::prefs::
+                               ModelExecutionEnterprisePolicyValue::kAllow));
     pref_service_.SetBoolean(
         personal_context::prefs::
             kPersonalContextAmbientAutofillNoticeShouldBeShown,
@@ -421,6 +427,37 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
   pref_service_.SetInteger(
       ::glic::prefs::kGlicCompletedFre,
       std::to_underlying(::glic::prefs::FreStatus::kNotStarted));
+
+  service().RemoveObserver(&observer);
+}
+
+// Tests that `PersonalContextEligibilityService` returns `kDisabledNotEligible`
+// when the `FindAndFillWithGeminiSettings` policy is disabled.
+TEST_F(PersonalContextEligibilityServiceImplTest, EnterprisePolicyDisabled) {
+  pref_service_.SetInteger(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+      std::to_underlying(optimization_guide::model_execution::prefs::
+                             ModelExecutionEnterprisePolicyValue::kDisable));
+
+  EXPECT_EQ(service().GetEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
+}
+
+// Tests that observers are notified when the `FindAndFillWithGeminiSettings`
+// policy changes.
+TEST_F(PersonalContextEligibilityServiceImplTest,
+       NotifiedWhenEnterprisePolicyChanges) {
+  MockPersonalContextEligibilityServiceObserver observer;
+  service().AddObserver(&observer);
+
+  EXPECT_CALL(observer,
+              OnEligibilityStateChanged(
+                  PersonalContextEligibilityState::kDisabledNotEligible));
+
+  pref_service_.SetInteger(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+      std::to_underlying(optimization_guide::model_execution::prefs::
+                             ModelExecutionEnterprisePolicyValue::kDisable));
 
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);

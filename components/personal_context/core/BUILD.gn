@@ -31,6 +31,7 @@ source_set("core") {
     "//components/account_settings",
     "//components/glic:glic_pref_names",
     "//components/keyed_service/core",
+    "//components/optimization_guide/core:features",
     "//components/personal_context/proto:personal_context_proto",
     "//components/prefs",
     "//components/signin/public/identity_manager",

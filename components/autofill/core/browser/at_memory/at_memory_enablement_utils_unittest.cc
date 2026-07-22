@@ -140,29 +140,6 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_AtMemoryDisabled) {
       AtMemoryAction::kAllowCustomizeAtMemoryShortcut, autofill_client()));
 }
 
-// Tests that `MayPerformAtMemoryAction` returns false when the
-// FindAndFillWithGemini settings enterprise policy disables
-// FindAndFillWithGemini.
-TEST_F(AtMemoryEnablementUtilsTest,
-       MayPerformAtMemoryAction_FindAndFillWithGeminiPolicyDisabled) {
-  EXPECT_CALL(personal_context_service_, GetEligibilityState)
-      .WillRepeatedly(
-          Return(personal_context::PersonalContextEligibilityState::kEligible));
-
-  autofill_client().GetPrefs()->SetInteger(
-      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable));
-
-  EXPECT_FALSE(MayPerformAtMemoryAction(
-      AtMemoryAction::kTriggerSearchUI, autofill_client(),
-      autofill_client().GetLastCommittedPrimaryMainFrameURL()));
-  EXPECT_FALSE(MayPerformAtMemoryAction(AtMemoryAction::kShowAtMemoryInSettings,
-                                        autofill_client()));
-  EXPECT_FALSE(MayPerformAtMemoryAction(
-      AtMemoryAction::kAllowCustomizeAtMemoryShortcut, autofill_client()));
-}
-
 // Tests that `MayPerformAtMemoryAction` returns false when
 // `personal_context_service` is null.
 TEST_F(AtMemoryEnablementUtilsTest,
@@ -206,15 +183,16 @@ TEST_F(AtMemoryEnablementUtilsTest, MayPerformAtMemoryAction_NullPrefService) {
       .WillRepeatedly(
           Return(personal_context::PersonalContextEligibilityState::kEligible));
 
+  EXPECT_TRUE(MayPerformAtMemoryAction(
+      AtMemoryAction::kShowAtMemoryInSettings, &personal_context_service_,
+      autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
+      nullptr));
+
   // IsPersonalContextToggleOn returns false if pref_service is null.
   EXPECT_FALSE(MayPerformAtMemoryAction(
       AtMemoryAction::kTriggerSearchUI, &personal_context_service_,
       autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
       nullptr, GURL("https://example.com")));
-  EXPECT_FALSE(MayPerformAtMemoryAction(
-      AtMemoryAction::kShowAtMemoryInSettings, &personal_context_service_,
-      autofill_client().GetSubscriptionEligibilityService(), nullptr, nullptr,
-      nullptr));
   EXPECT_FALSE(MayPerformAtMemoryAction(
       AtMemoryAction::kAllowCustomizeAtMemoryShortcut,
       &personal_context_service_,

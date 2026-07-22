@@ -147,32 +147,6 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
   return true;
 }
 
-// Returns whether enterprise policies allow AtMemory trigger.
-//
-// AtMemory is disabled for the Enterprise accounts and these are blocked in the
-// `PersonalContextService`. Additional checks are performed here to ensure
-// correct behavior for consumer accounts on enterprise devices.
-[[nodiscard]] bool SatisfiesEnterprisePolicies(const PrefService* pref_service,
-                                               std::string* debug_message) {
-  if (!pref_service) {
-    MaybeOutputReason(debug_message, "Prefs are not available.");
-    return false;
-  }
-
-  const int policy_value = pref_service->GetInteger(
-      optimization_guide::prefs::kFindAndFillWithGeminiSettings);
-  const bool allowed =
-      policy_value !=
-      std::to_underlying(optimization_guide::model_execution::prefs::
-                             ModelExecutionEnterprisePolicyValue::kDisable);
-  if (!allowed) {
-    MaybeOutputReason(
-        debug_message,
-        "Disallowed by FindAndFillWithGeminiSettings enterprise policy.");
-  }
-  return allowed;
-}
-
 // Returns true if AtMemory is supported for the user.
 //
 // Checks that AtMemory feature flags are enabled, At-Memory eligibility
@@ -278,10 +252,6 @@ bool MayPerformAtMemoryAction(
   }
   if (!IsAtMemorySupported(personal_context_service,
                            subscription_eligibility_service, debug_message)) {
-    return false;
-  }
-
-  if (!SatisfiesEnterprisePolicies(pref_service, debug_message)) {
     return false;
   }
 
