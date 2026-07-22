@@ -1157,10 +1157,6 @@ class WaylandSession(abc.ABC):
     """Returns the name of the binary to start the Wayland session."""
     pass
 
-  @abc.abstractmethod
-  def get_compositor_service(self):
-    """Returns the systemd service name for the Wayland compositor."""
-    pass
 
   @abc.abstractmethod
   def get_portal_services(self):
@@ -1188,9 +1184,6 @@ class GnomeWaylandSession(WaylandSession):
   def get_session_binary(self):
     return "gnome-session"
 
-  def get_compositor_service(self):
-    return "org.gnome.Shell@wayland"
-
   def get_portal_services(self):
     return ["xdg-desktop-portal-gnome", "xdg-desktop-portal-gtk"]
 
@@ -1210,9 +1203,6 @@ class KdeWaylandSession(WaylandSession):
 
   def get_session_binary(self):
     return "startplasma-wayland"
-
-  def get_compositor_service(self):
-    return "plasma-kwin_wayland.service"
 
   def get_portal_services(self):
     return ["plasma-xdg-desktop-portal-kde"]
@@ -1318,6 +1308,7 @@ class WaylandDesktop(Desktop):
     # "systemctl --user show-environment". That command may shell-escape its
     # output, and there may be issues with embedded newlines or invalid UTF-8
     # encoding.
+    bus = None
     try:
       # A private connection is needed. The systemd user "dbus" service runs
       # on-demand (whenever the dbus socket is accessed) so it may stop and
@@ -1334,6 +1325,9 @@ class WaylandDesktop(Desktop):
       # D-Bus errors should be rare - include exception info for debugging.
       logging.error("Failed to get Wayland socket name", exc_info=True)
       return False
+    finally:
+      if bus is not None:
+        bus.close()
 
     wayland_display_env = "WAYLAND_DISPLAY"
     wayland_env_prefix = wayland_display_env + "="
@@ -1343,34 +1337,33 @@ class WaylandDesktop(Desktop):
         self.child_env[wayland_display_env] = self._wayland_socket
         logging.info("Fetched Wayland socket name: %s" % self._wayland_socket)
         return True
-    logging.error("%s not found in systemd environment" % wayland_display_env)
     return False
 
   def _wait_for_wayland_compositor_running(self):
     """
-    Waits for the wayland service to become active. Returns true if this
-    happens within the allowed timeout, else false.
+    Waits for the Wayland display socket to be exported to systemd and for the
+    Wayland server to respond to connections. Returns true if this happens
+    within the allowed timeout, else false.
     """
+    self._wayland_socket = None
     start_time = time.time()
-    compositor_service = self._wayland_session.get_compositor_service()
     while time.time() - start_time < self.WL_SERVER_CHECK_TIMEOUT_SECONDS:
-      exit_code = subprocess.call(
-        # 'systemctl' is provided by the 'systemd' package. The service is of
-        # type 'notify', which means that it tells systemd when it is ready to
-        # accept Wayland connections.
-        ["systemctl", "--user", "is-active", compositor_service],
-        stdout=subprocess.DEVNULL)
-      if exit_code == 0:
-        logging.info("Wayland compositor (%s) became active in %s seconds: " %
-          (compositor_service, str(time.time() - start_time)))
-        # If the socket-name can't be fetched, treat it as a launch failure
-        # requiring a restart, since it will not be possible for this script,
-        # or a child process, to make a Wayland connection.
-        return self._fetch_wayland_socket_from_systemd()
+      if not self._wayland_socket:
+        if not self._fetch_wayland_socket_from_systemd():
+          time.sleep(self.WL_SERVER_CHECK_DELAY_SECONDS)
+          continue
+
+      if self.check_server_responding():
+        logging.info(
+            "Wayland compositor socket (%s) is active and responding in %s "
+            "seconds", self._wayland_socket,
+            time.time() - start_time)
+        return True
       time.sleep(self.WL_SERVER_CHECK_DELAY_SECONDS)
-    logging.error("Waited for Wayland compositor (%s) to become active, but it "
-                  "didn't happen in %s seconds" %
-                  (compositor_service, self.WL_SERVER_CHECK_TIMEOUT_SECONDS))
+    logging.error(
+        "Waited for Wayland compositor to become active and responding, "
+        "but it didn't happen in %s seconds",
+        self.WL_SERVER_CHECK_TIMEOUT_SECONDS)
     return False
 
   def launch_desktop_session(self):
@@ -1456,18 +1449,18 @@ class WaylandDesktop(Desktop):
         # We don't want to wait forever for a reply so we set a timeout here.
         sock.settimeout(self.WL_SERVER_REPLY_TIMEOUT_SECONDS)
         while num_bytes_received < NUM_BYTES_EXPECTED:
-            data = sock.recv(NUM_BYTES_EXPECTED)
-            if len(data) == 0:  # Expect empty reply if server dies
-               break
-            num_bytes_received += len(data)
-            logging.debug("Wayland server replied with: %s" % data)
+          data = sock.recv(NUM_BYTES_EXPECTED)
+          if len(data) == 0:  # Expect empty reply if server dies
+            break
+          num_bytes_received += len(data)
+          logging.debug("Wayland server replied with: %s" % data)
         if not num_bytes_received:
           # If we don't receive a reply at all then the server is likely not
           # listening on the socket.
           return False
     except socket.error as err:
-        logging.error("Wayland server is not responding: %s" % err)
-        return False
+      logging.info("Wayland server is not responding: %s" % err)
+      return False
     return True
 
 
