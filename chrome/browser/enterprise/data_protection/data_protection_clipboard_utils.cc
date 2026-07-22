@@ -458,16 +458,17 @@ void OnDataControlsPasteWarning(
 
 data_controls::Verdict GetPasteVerdict(
     const content::ClipboardEndpoint& source,
-    const content::ClipboardEndpoint& destination) {
+    const content::ClipboardEndpoint& destination,
+    const ui::ClipboardMetadata& metadata) {
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(destination.browser_context())
-                     ->GetPasteVerdict(source, destination);
+                     ->GetPasteVerdict(source, destination, metadata);
   if (source.browser_context() &&
       source.browser_context() != destination.browser_context()) {
     verdict = data_controls::Verdict::MergePasteVerdicts(
         data_controls::ChromeRulesServiceFactory::GetInstance()
             ->GetForBrowserContext(source.browser_context())
-            ->GetPasteVerdict(source, destination),
+            ->GetPasteVerdict(source, destination, metadata),
         std::move(verdict));
   }
   return verdict;
@@ -481,7 +482,7 @@ void PasteIfAllowedByDataControls(
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
   DCHECK(!SkipDataControlOrContentAnalysisChecks(destination));
 
-  auto verdict = GetPasteVerdict(source, destination);
+  auto verdict = GetPasteVerdict(source, destination, metadata);
   auto* factory = GetDialogFactory();
   switch (verdict.level()) {
     case data_controls::Rule::Level::kBlock:
@@ -837,7 +838,7 @@ bool IsPastePolicyCheckRequired(const content::ClipboardEndpoint& source,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  if (GetPasteVerdict(source, destination).level() !=
+  if (GetPasteVerdict(source, destination, metadata).level() !=
       data_controls::Rule::Level::kNotSet) {
     return true;
   }
@@ -1022,7 +1023,7 @@ bool PrepopulateFindBarTextAllowed(
     return false;
   }
 
-  auto verdict = GetPasteVerdict(source, destination);
+  auto verdict = GetPasteVerdict(source, destination, /*metadata=*/{});
   return verdict.level() != data_controls::Rule::Level::kBlock &&
          verdict.level() != data_controls::Rule::Level::kWarn;
 }
@@ -1139,7 +1140,7 @@ void OnGetSourceClipboardEndpointForFindBar(
     content::ClipboardEndpoint destination,
     base::OnceCallback<void(std::optional<std::u16string>)> callback,
     content::ClipboardEndpoint source) {
-  auto verdict = GetPasteVerdict(source, destination);
+  auto verdict = GetPasteVerdict(source, destination, /*metadata=*/{});
 
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     // On a blocked verdict, the find bar is not allowed to get replaced data
