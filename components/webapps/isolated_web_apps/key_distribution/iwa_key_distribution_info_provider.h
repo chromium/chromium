@@ -14,10 +14,12 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "build/build_config.h"
 #include "base/one_shot_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
@@ -206,6 +208,10 @@ class IwaKeyDistributionInfoProvider : public IwaRuntimeDataProvider {
       on_component_updated_for_testing_;
   bool skip_managed_checks_for_testing_ = false;
 };
+
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kIsolatedWebAppBypassManagedAllowlist);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app
 

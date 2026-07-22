@@ -18,6 +18,7 @@ source_set("key_distribution") {
     "//components/component_updater",
     "//components/crx_file",
     "//components/update_client",
+    "//components/webapps/browser",
     "//services/network/public/cpp",
   ]
 }

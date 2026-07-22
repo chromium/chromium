@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_policy_util.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
@@ -77,6 +78,11 @@ base::expected<void, std::string> IsTrustedForShimlessRma(
 base::expected<void, std::string> IsTrustedForIwaPolicy(
     Profile& profile,
     const web_package::SignedWebBundleId& web_bundle_id) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(kIsolatedWebAppBypassManagedAllowlist)) {
+    return base::ok();
+  }
+#endif
   if (!IwaRuntimeDataProvider::GetInstance().IsManagedInstallPermitted(
           web_bundle_id.id())) {
     return base::unexpected(

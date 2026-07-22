@@ -42,6 +42,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "base/auto_reset.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_manager.h"
@@ -52,6 +55,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
+#include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -1380,5 +1385,73 @@ INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     IwaCacheVersionManagementTest,
     testing::Values(SessionType::kManagedGuestSession, SessionType::kKiosk));
+
+class IwaKioskBypassManagedAllowlistTest : public IwaCacheKioskTest {
+ public:
+  IwaKioskBypassManagedAllowlistTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebAppBundleCache,
+         kIsolatedWebAppBypassManagedAllowlist},
+        /*disabled_features=*/{});
+  }
+
+  void SetUpOnMainThread() override {
+    IwaCacheKioskTest::SetUpOnMainThread();
+    // Empty the allowlist, so the app install is NOT allowed under normal policy.
+    SetIwasAllowlist({});
+    // Unregister the fake provider to fall back to the real production one.
+    resetter_ = IwaRuntimeDataProvider::SetInstanceForTesting(
+        &IwaKeyDistributionInfoProvider::GetInstanceForTesting());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<base::AutoReset<IwaRuntimeDataProvider*>> resetter_;
+};
+
+IN_PROC_BROWSER_TEST_F(IwaKioskBypassManagedAllowlistTest, FlagBypassesAllowlist) {
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  ASSERT_TRUE(WaitKioskLaunched());
+  AssertAppInstalledAtVersion(kWebBundleId1, GetBaseVersion());
+}
+
+class IwaKioskFlagDisabledBypassManagedAllowlistTest : public IwaCacheKioskTest {
+ public:
+  IwaKioskFlagDisabledBypassManagedAllowlistTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kIsolatedWebAppBundleCache},
+        /*disabled_features=*/{kIsolatedWebAppBypassManagedAllowlist});
+  }
+
+  void SetUpOnMainThread() override {
+    IwaCacheKioskTest::SetUpOnMainThread();
+    // Empty the allowlist, so the app install is NOT allowed under normal policy.
+    SetIwasAllowlist({});
+    // Unregister the fake provider to fall back to the real production one.
+    resetter_ = IwaRuntimeDataProvider::SetInstanceForTesting(
+        &IwaKeyDistributionInfoProvider::GetInstanceForTesting());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<base::AutoReset<IwaRuntimeDataProvider*>> resetter_;
+};
+
+IN_PROC_BROWSER_TEST_F(IwaKioskFlagDisabledBypassManagedAllowlistTest, FlagDisabled) {
+  network_state_.SimulateOnline();
+  ASSERT_TRUE(LaunchAppManually(TheKioskApp()));
+
+  // Wait for the kiosk launch failure due to kIsolatedAppNotAllowed.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return ash::KioskAppLaunchError::Get(
+               CHECK_DEREF(g_browser_process->local_state())) ==
+           ash::KioskAppLaunchError::Error::kIsolatedAppNotAllowed;
+  }));
+
+  // Verify that the IWA was NOT installed.
+  EXPECT_EQ(GetIsolatedWebApp(kWebBundleId1), nullptr);
+}
 
 }  // namespace web_app

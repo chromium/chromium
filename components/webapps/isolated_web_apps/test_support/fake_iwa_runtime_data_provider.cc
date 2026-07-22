@@ -8,7 +8,9 @@
 
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
+#include "build/build_config.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace web_app {
@@ -148,12 +150,22 @@ FakeIwaRuntimeDataProvider::GetUserInstallAllowlistData(
 
 bool FakeIwaRuntimeDataProvider::IsManagedInstallPermitted(
     std::string_view web_bundle_id) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(kIsolatedWebAppBypassManagedAllowlist)) {
+    return true;
+  }
+#endif
   return std::ranges::contains(managed_allowlist_, web_bundle_id,
                                &web_package::SignedWebBundleId::id);
 }
 
 bool FakeIwaRuntimeDataProvider::IsManagedUpdatePermitted(
     std::string_view web_bundle_id) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(kIsolatedWebAppBypassManagedAllowlist)) {
+    return true;
+  }
+#endif
   return std::ranges::contains(managed_allowlist_, web_bundle_id,
                                &web_package::SignedWebBundleId::id);
 }

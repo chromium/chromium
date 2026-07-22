@@ -199,6 +199,26 @@ TEST_F(IwaKeyDistributionInfoProviderTest, LoadComponentWithEntitlements) {
           IwaAccessControl::UserInstallAllowlistItemData::DIRECT_SOCKETS,
           IwaAccessControl::UserInstallAllowlistItemData::SMART_CARD));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(IwaKeyDistributionInfoProviderTest, BypassManagedAllowlistWithFlag) {
+  const auto& provider =
+      IwaKeyDistributionInfoProvider::GetInstanceForTesting();
+
+  // App is NOT in the managed allowlist initially.
+  EXPECT_FALSE(provider.IsManagedInstallPermitted(kWebBundleId));
+  EXPECT_FALSE(provider.IsManagedUpdatePermitted(kWebBundleId));
+
+  // Enable the bypass flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kIsolatedWebAppBypassManagedAllowlist);
+
+  // Checks should now return true.
+  EXPECT_TRUE(provider.IsManagedInstallPermitted(kWebBundleId));
+  EXPECT_TRUE(provider.IsManagedUpdatePermitted(kWebBundleId));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 struct DebugInfoTestParam {
