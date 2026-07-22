@@ -125,7 +125,7 @@ source_set("common") {
   configs += [ ":blink_common_implementation" ]
 
   if (is_clang) {
-    cflags = [ "-Wshorten-64-to-32" ]
+    cflags = [ "-Wimplicit-int-conversion" ]
   }
 
   sources = [
