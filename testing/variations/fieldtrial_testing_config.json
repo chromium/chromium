@@ -4949,10 +4949,10 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "kMigratedCollectedCookies": "true",
-                        "kMigratedInstallerDownloader": "true",
-                        "kMigratedPageInfo": "true",
-                        "kMigratedPdf": "true"
+                        "MigratedCollectedCookies": "true",
+                        "MigratedInstallerDownloader": "true",
+                        "MigratedPageInfo": "true",
+                        "MigratedPdf": "true"
                     },
                     "enable_features": [
                         "CentralizedInfoBarFramework"
