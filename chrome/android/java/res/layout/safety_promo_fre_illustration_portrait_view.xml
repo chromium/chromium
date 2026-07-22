@@ -38,7 +38,8 @@ found in the LICENSE file.
           android:layout_height="@dimen/fre_illustration_size"
           android:layout_gravity="center"
           android:layout_marginTop="@dimen/fre_spacing"
-          android:layout_marginBottom="@dimen/fre_logo_bottom_margin"
+          android:layout_marginBottom=
+              "@dimen/fre_illustration_to_content_margin"
           android:scaleType="fitCenter"
           android:adjustViewBounds="true"
           android:src="@drawable/fre_product_logo"
