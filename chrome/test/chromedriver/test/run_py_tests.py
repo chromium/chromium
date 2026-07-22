@@ -5070,7 +5070,7 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
       let done = arguments[0];
       getCredential({
         type: "public-key",
-        id: new TextEncoder().encode("cred-1"),
+        id: new Uint8Array([0xfb, 0xff, 0xff]),
         transports: ["usb"],
       }).then(done);
     """
@@ -5084,7 +5084,8 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
         hasUserVerification = True,
         isUserVerified = True,
     )
-    credentialId = self.URLSafeBase64Encode("cred-1")
+    raw_credential_id = bytes([0xfb, 0xff, 0xff])
+    credentialId = self.URLSafeBase64Encode(raw_credential_id)
 
     # Create a credential with default backup flags.
     self._driver.AddCredential(
