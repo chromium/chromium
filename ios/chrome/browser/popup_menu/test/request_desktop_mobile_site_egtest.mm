@@ -175,6 +175,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleUserAgentRequest(
       performAction:grey_tap()];
 }
 
+// Navigates forward to the next page.
+- (void)goForwardSimulator27 {
+  [ChromeEarlGrey startGoingForward];
+  [ChromeEarlGrey waitForPageToFinishLoadingWithTimeout:base::Seconds(60)];
+}
+
 #pragma mark - Tests
 
 // Tests that requesting desktop site of a page works and the user agent
@@ -295,7 +301,16 @@ std::unique_ptr<net::test_server::HttpResponse> HandleUserAgentRequest(
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // The session is restored, navigate forward and check the mode.
-  [ChromeEarlGrey goForward];
+  // TODO(crbug.com/530841942): On iOS 27 beta 2 and 3 tests failed without
+  // loadURL waits.  Beta 4 seems to fixed most, but kept this one.  This is a
+  // temporary fix until we find a better solution. It's possible this is a
+  // iOS 27 beta bug, or that we need a different wait, but so far this wait is
+  // the best approach we've found.
+  if (@available(iOS 27, *)) {
+    [self goForwardSimulator27];
+  } else {
+    [ChromeEarlGrey goForward];
+  }
   [ChromeEarlGrey waitForWebStateContainingText:kDesktopSiteLabel];
   [ChromeEarlGreyUI openToolsMenu];
   [RequestMobileButton() assertWithMatcher:grey_notNil()];

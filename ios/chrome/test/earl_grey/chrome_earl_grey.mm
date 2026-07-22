@@ -259,6 +259,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [self waitForPageToFinishLoading];
 }
 
+- (void)startGoingForward {
+  [ChromeEarlGreyAppInterface startGoingForward];
+}
+
 - (void)goForward {
   [ChromeEarlGreyAppInterface startGoingForward];
   [self waitForPageToFinishLoading];
