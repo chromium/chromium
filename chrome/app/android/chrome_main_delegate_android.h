@@ -16,8 +16,6 @@
 // Android override of ChromeMainDelegate
 class ChromeMainDelegateAndroid : public ChromeMainDelegate {
  public:
-  static void SecureDataDirectory();  // visible for testing
-
   ChromeMainDelegateAndroid();
 
   ChromeMainDelegateAndroid(const ChromeMainDelegateAndroid&) = delete;

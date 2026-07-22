@@ -9611,9 +9611,6 @@ test("chrome_app_unittests") {
   if (is_linux || is_chromeos || is_win) {
     data_deps = [ "//chrome:packed_resources" ]
   }
-  if (is_android) {
-    sources += [ "../app/android/chrome_main_delegate_android_unittest.cc" ]
-  }
 }
 
 if (!is_android) {

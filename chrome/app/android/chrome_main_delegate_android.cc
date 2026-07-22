@@ -11,12 +11,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 #include "base/android/sys_utils.h"
-#include "base/base_paths_android.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/path_service.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/chrome_startup_flags.h"
@@ -87,23 +83,6 @@ void ChromeMainDelegateAndroid::PreSandboxStartup() {
   }
 }
 
-void ChromeMainDelegateAndroid::SecureDataDirectory() {
-  // By default, Android creates the directory accessible by others.
-  // We'd like to tighten security and make it accessible only by
-  // the browser process.
-  // TODO(crbug.com/41382891): Remove this once minsdk >= 21,
-  // at which point this will be handled by PathUtils.java.
-  base::FilePath data_path;
-  bool ok = base::PathService::Get(base::DIR_ANDROID_APP_DATA, &data_path);
-  if (ok) {
-    ok = base::SetPosixFilePermissions(data_path,
-                                       base::FILE_PERMISSION_USER_MASK);
-  }
-  if (!ok) {
-    LOG(ERROR) << "Failed to set data directory permissions";
-  }
-}
-
 std::variant<int, content::MainFunctionParams>
 ChromeMainDelegateAndroid::RunProcess(
     const std::string& process_type,
@@ -112,8 +91,6 @@ ChromeMainDelegateAndroid::RunProcess(
   // Defer to the default main method outside the browser process.
   if (!process_type.empty())
     return std::move(main_function_params);
-
-  SecureDataDirectory();
 
   // Because the browser process can be started asynchronously as a series of
   // UI thread tasks a second request to start it can come in while the
