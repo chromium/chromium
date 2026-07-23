@@ -16,7 +16,6 @@ struct SharedImageCapabilities {
   bool supports_ycbcr_nv12_sampling;
   bool supports_ycbcr_p010_sampling;
   bool is_r16f_supported;
-  bool disable_r8_shared_images;
   bool disable_webgpu_shared_images;
   bool disable_one_component_textures;
 

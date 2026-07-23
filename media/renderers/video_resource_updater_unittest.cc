@@ -986,24 +986,5 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP010HDR) {
   EXPECT_EQ(0u, GetSharedImageCount());
 }
 
-TEST_F(VideoResourceUpdaterTest, EightBitFrameForcedToF16DoesNotOverread) {
-  gpu::SharedImageCapabilities caps =
-      context_provider_->SharedImageInterface()->GetCapabilities();
-  caps.disable_r8_shared_images = true;
-  caps.is_r16f_supported = true;
-  caps.supports_r16_shared_images = false;
-  context_provider_->SharedImageInterface()->SetCapabilities(caps);
-
-  std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
-  scoped_refptr<VideoFrame> video_frame = CreateTestYUVVideoFrame();
-
-  VideoFrameExternalResource resource =
-      updater->CreateExternalResourceFromVideoFrame(video_frame);
-  if (resource.resource.GetFormat().is_multi_plane()) {
-    EXPECT_NE(viz::SharedImageFormat::ChannelFormat::k16F,
-              resource.resource.GetFormat().channel_format());
-  }
-}
-
 }  // namespace
 }  // namespace media

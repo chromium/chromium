@@ -55,11 +55,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
     return input.is_r16f_supported;
   }
 
-  static bool disable_r8_shared_images(
-      const gpu::SharedImageCapabilities& input) {
-    return input.disable_r8_shared_images;
-  }
-
   static bool disable_webgpu_shared_images(
       const gpu::SharedImageCapabilities& input) {
     return input.disable_webgpu_shared_images;

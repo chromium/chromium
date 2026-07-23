@@ -326,8 +326,6 @@ GLFormatCaps::GLFormatCaps(const gles2::FeatureInfo* feature_info)
       oes_texture_float_available_(feature_info->oes_texture_float_available()),
       ext_texture_rg_(feature_info->feature_flags().ext_texture_rg),
       ext_texture_norm16_(feature_info->feature_flags().ext_texture_norm16),
-      disable_r8_shared_images_(
-          feature_info->workarounds().r8_egl_images_broken),
       enable_texture_half_float_linear_(
           feature_info->feature_flags().enable_texture_half_float_linear),
       is_atleast_gles3_(feature_info->gl_version_info().IsAtLeastGLES(3, 0)) {}
@@ -400,13 +398,11 @@ GLFormatDesc GLFormatCaps::ToGLFormatDescOverrideHalfFloatType(
 
 GLenum GLFormatCaps::GetFallbackFormatIfNotSupported(GLenum gl_format) const {
   // Fallback to GL_ALPHA for unsized RED format.
-  if (gl_format == GL_RED_EXT &&
-      (disable_r8_shared_images_ || !ext_texture_rg_)) {
+  if (gl_format == GL_RED_EXT && !ext_texture_rg_) {
     return GL_ALPHA;
   }
   // Fallback to GL_ALPHA8 for sized R8 format.
-  if (gl_format == GL_R8_EXT &&
-      (disable_r8_shared_images_ || !ext_texture_rg_)) {
+  if (gl_format == GL_R8_EXT && !ext_texture_rg_) {
     return GL_ALPHA8_EXT;
   }
   // No fallback for sized/unsize RG8 format without texture_rg extension.
