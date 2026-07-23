@@ -163,6 +163,13 @@ TODO(http://crbug.com/485940935): Delete this.
             android:layout="@layout/tab_hover_card_holder" />
 
         <ViewStub
+            android:id="@+id/vertical_tab_hover_card_holder_stub"
+            android:layout_width="@dimen/tab_hover_card_width"
+            android:layout_height="wrap_content"
+            android:inflatedId="@+id/vertical_tab_hover_card_holder"
+            android:layout="@layout/tab_hover_card_holder" />
+
+        <ViewStub
             android:id="@+id/side_ui_web_content_hairline_container_stub"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

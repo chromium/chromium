@@ -30,6 +30,7 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ImageButton;
 
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -81,12 +82,14 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
@@ -118,6 +121,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link VerticalTabListCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -157,6 +161,9 @@ public class VerticalTabListCoordinatorUnitTest {
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock private RailCollapseListener mMockRailCollapseListener;
+    @Mock private ViewStub mTabHoverCardViewStub;
+    @Mock private Supplier<TabContentManager> mTabContentManagerSupplier;
+    @Mock private TabHoverCardView mTabHoverCardView;
 
     private Activity mActivity;
     private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
@@ -215,6 +222,15 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     private void createCoordinator() {
+        doAnswer(
+                        invocation -> {
+                            ViewStub.OnInflateListener listener = invocation.getArgument(0);
+                            listener.onInflate(mTabHoverCardViewStub, mTabHoverCardView);
+                            return null;
+                        })
+                .when(mTabHoverCardViewStub)
+                .setOnInflateListener(any());
+
         mCoordinator =
                 new VerticalTabListCoordinator(
                         mActivity,
@@ -228,7 +244,9 @@ public class VerticalTabListCoordinatorUnitTest {
                         mShareDelegateSupplier,
                         mDataSharingTabManager,
                         mIsVerticalTabsActiveSupplier,
-                        /* canActivateTabLayoutToggleMenuSupplier= */ null);
+                        /* canActivateTabLayoutToggleMenuSupplier= */ null,
+                        mTabHoverCardViewStub,
+                        mTabContentManagerSupplier);
     }
 
     private Tab prepareMockTab(int id) {

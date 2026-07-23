@@ -2316,7 +2316,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                     mShareDelegateSupplier,
                                     mDataSharingTabManager,
                                     mIsVerticalTabsActiveSupplier,
-                                    canActivateTabLayoutToggleMenu()),
+                                    canActivateTabLayoutToggleMenu(),
+                                    mActivity.findViewById(
+                                            R.id.vertical_tab_hover_card_holder_stub),
+                                    mTabContentManagerSupplier),
                             mIsVerticalTabsActiveSupplier);
             mSideUiCoordinator.registerSideUiContainer(mVerticalTabsSideUiCoordinator);
         }

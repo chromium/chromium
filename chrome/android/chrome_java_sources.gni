@@ -388,7 +388,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutUtils.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutView.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripStacker.java",
-  "java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripTabHoverCardView.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripTabModelActionListener.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripTabUnderlineManager.java",
   "java/src/org/chromium/chrome/browser/compositor/overlays/strip/TabContextMenuCoordinator.java",

@@ -146,6 +146,7 @@ import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
+import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -207,7 +208,7 @@ public class StripLayoutHelperTest {
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private View mControlContainer;
-    @Mock private StripTabHoverCardView mTabHoverCardView;
+    @Mock private TabHoverCardView mTabHoverCardView;
     @Mock private Profile mProfile;
     @Mock private StripLayoutViewOnClickHandler mClickHandler;
     @Mock private TooltipHandler mTooltipHandler;
@@ -2735,14 +2736,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLastHoveredTab(
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
 
-        verify(mTabHoverCardView, never())
-                .show(
-                        nullable(Tab.class),
-                        anyBoolean(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
+        verify(mTabHoverCardView, never()).show(nullable(Tab.class), anyFloat(), anyFloat());
     }
 
     @Test
@@ -2758,14 +2752,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLastHoveredTab(
                 mStripLayoutHelper.getStripLayoutTabsForTesting()[0]);
 
-        verify(mTabHoverCardView, never())
-                .show(
-                        nullable(Tab.class),
-                        anyBoolean(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
+        verify(mTabHoverCardView, never()).show(nullable(Tab.class), anyFloat(), anyFloat());
     }
 
     @Test
@@ -4327,8 +4314,7 @@ public class StripLayoutHelperTest {
         // Hover on tabs[2], and close it.
         int index = 2;
         mStripLayoutHelper.updateLastHoveredTab(tabs[index]);
-        verify(mTabHoverCardView)
-                .show(any(), anyBoolean(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+        verify(mTabHoverCardView).show(any(), anyFloat(), anyFloat());
 
         // Fake the tab closure.
         closeTabAt(index);
@@ -6165,14 +6151,15 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
         assertEquals(
                 "Last hovered tab is not set.", hoveredTab, mStripLayoutHelper.getLastHoveredTab());
-        verify(mTabHoverCardView)
-                .show(
-                        mModel.getTabAt(1),
+        float[] position1 =
+                StripLayoutUtils.getHoverCardPosition(
+                        mTabHoverCardView,
                         false,
                         hoveredTab.getDrawX(),
                         hoveredTab.getWidth(),
                         STRIP_HEIGHT,
                         0f);
+        verify(mTabHoverCardView).show(mModel.getTabAt(1), position1[0], position1[1]);
         assertEquals(
                 "Tab container opacity is incorrect.",
                 StripLayoutTabDelegate.TAB_OPACITY_VISIBLE,
@@ -6186,8 +6173,7 @@ public class StripLayoutHelperTest {
         initializeTabHoverTest();
         var hoveredTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[3];
         mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
-        verify(mTabHoverCardView, never())
-                .show(any(), anyBoolean(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+        verify(mTabHoverCardView, never()).show(any(), anyFloat(), anyFloat());
     }
 
     @Test
@@ -6209,14 +6195,15 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
         assertEquals(
                 "Last hovered tab is not set.", hoveredTab, mStripLayoutHelper.getLastHoveredTab());
-        verify(mTabHoverCardView)
-                .show(
-                        mModel.getTabAt(1),
+        float[] position2 =
+                StripLayoutUtils.getHoverCardPosition(
+                        mTabHoverCardView,
                         false,
                         hoveredTab.getDrawX(),
                         hoveredTab.getWidth(),
                         STRIP_HEIGHT,
                         PADDING_TOP);
+        verify(mTabHoverCardView).show(mModel.getTabAt(1), position2[0], position2[1]);
         assertEquals(
                 "Tab container opacity is incorrect.",
                 StripLayoutTabDelegate.TAB_OPACITY_VISIBLE,
@@ -6234,8 +6221,7 @@ public class StripLayoutHelperTest {
         when(animator.isRunning()).thenReturn(true);
         mStripLayoutHelper.setRunningAnimatorForTesting(animator);
         mStripLayoutHelper.updateLastHoveredTab(hoveredTab);
-        verify(mTabHoverCardView, never())
-                .show(any(), anyBoolean(), anyFloat(), anyFloat(), anyFloat(), anyFloat());
+        verify(mTabHoverCardView, never()).show(any(), anyFloat(), anyFloat());
     }
 
     @Test
@@ -6263,6 +6249,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 3, 4);
         mStripLayoutHelper.onSizeChanged(
                 STRIP_WIDTH, STRIP_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);
+        when(mTabHoverCardView.getContext()).thenReturn(mContext);
         mStripLayoutHelper.setTabHoverCardView(mTabHoverCardView);
         // For ease of dp/px calculation.
         mContext.getResources().getDisplayMetrics().density = 1f;

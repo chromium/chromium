@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -58,6 +60,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabComponentId;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridViewBinder;
+import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListConfigDelegate;
@@ -132,6 +135,7 @@ public class VerticalTabListCoordinator {
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     private @Nullable RailCollapseListener mRailCollapseListener;
+    private @Nullable TabHoverCardView mTabHoverCardView;
     private boolean mIsActive;
 
     /** Listener for collapse state changes. */
@@ -204,11 +208,32 @@ public class VerticalTabListCoordinator {
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             DataSharingTabManager dataSharingTabManager,
             NonNullObservableSupplier<Boolean> verticalTabsActiveSupplier,
-            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier) {
+            @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
+            @Nullable ViewStub tabHoverCardViewStub,
+            Supplier<TabContentManager> tabContentManagerSupplier) {
         mCanActivateTabLayoutToggleMenuSupplier = canActivateTabLayoutToggleMenuSupplier;
         mVerticalTabsActiveSupplier = verticalTabsActiveSupplier;
+        mTabModelSelector = tabModelSelector;
+        mWindowAndroid = windowAndroid;
+        mMultiInstanceManager = multiInstanceManager;
+        mSnackbarManager = snackbarManager;
+        mShareDelegateSupplier = shareDelegateSupplier;
+        mDataSharingTabManager = dataSharingTabManager;
+
         mRailCollapseStateSupplier = ObservableSuppliers.createNonNull(RailCollapseState.EXPANDED);
         mModelList = new TabListModel();
+
+        if (tabHoverCardViewStub != null) {
+            tabHoverCardViewStub.setOnInflateListener(
+                    (viewStub, view) -> {
+                        mTabHoverCardView = (TabHoverCardView) view;
+                        @SuppressWarnings("NullAway")
+                        Supplier<@Nullable TabContentManager> nullableSupplier =
+                                tabContentManagerSupplier;
+
+                        mTabHoverCardView.initialize(mTabModelSelector, nullableSupplier);
+                    });
+        }
         SimpleRecyclerViewAdapter adapter =
                 new SimpleRecyclerViewAdapter(mModelList) {
                     @Override
@@ -357,13 +382,6 @@ public class VerticalTabListCoordinator {
                 new VerticalTabGroupSpineDecoration(
                         activity, recyclerView::postInvalidate, mModelList, tabModelSelector);
         recyclerView.addItemDecoration(mSpineDecoration);
-
-        mTabModelSelector = tabModelSelector;
-        mWindowAndroid = windowAndroid;
-        mMultiInstanceManager = multiInstanceManager;
-        mSnackbarManager = snackbarManager;
-        mShareDelegateSupplier = shareDelegateSupplier;
-        mDataSharingTabManager = dataSharingTabManager;
 
         TabListConfigDelegate tabListConfigDelegate =
                 new TabListConfigDelegate() {
@@ -600,6 +618,11 @@ public class VerticalTabListCoordinator {
         mVerticalTabsActiveSupplier.removeObserver(mActiveObserver);
         if (mTabSwitcherDragHandler != null) {
             mTabSwitcherDragHandler.destroy();
+        }
+
+        if (mTabHoverCardView != null) {
+            mTabHoverCardView.destroy();
+            mTabHoverCardView = null;
         }
 
         mRailCollapseListener = null;
