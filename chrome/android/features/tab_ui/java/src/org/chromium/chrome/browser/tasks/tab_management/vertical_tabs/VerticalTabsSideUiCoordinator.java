@@ -94,8 +94,13 @@ public class VerticalTabsSideUiCoordinator
 
     public void setVisible(boolean show, boolean suppressAnimations) {
         mManualVisible = show;
-        mIsVerticalTabsActiveSupplier.set(show);
         mSideUiCoordinator.updateUi(new UiUpdateRequest(getSideUiId(), suppressAnimations));
+        // Fallback: If hiding VT when spec diff is empty (no hide animation scheduled),
+        // update active state immediately to avoid dropping the state update.
+        SideUiSpecs currentSpecs = mSideUiCoordinator.getCurrentSideUiSpecs();
+        if (!show && (currentSpecs == null || currentSpecs.getWidth(getAnchorSide()) == 0)) {
+            mIsVerticalTabsActiveSupplier.set(false);
+        }
     }
 
     public void destroy() {

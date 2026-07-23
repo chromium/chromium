@@ -117,6 +117,11 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @SmallTest
     public void testDestroy() {
         mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        mCoordinator.onUiUpdateCompleted(
+                /* oldWidth= */ 0,
+                /* newWidth= */ 100,
+                HeightType.NOT_APPLICABLE,
+                HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
 
         mCoordinator.destroy();
@@ -184,7 +189,12 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
 
+        // When hiding with animation, supplier remains true until onUiUpdateCompleted.
+        SideUiSpecs specs = new SideUiSpecs(100, HeightType.TOOLBAR);
+        when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(specs);
         mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
+        assertTrue(mIsVerticalTabsActiveSupplier.get());
+
         mCoordinator.onUiUpdateCompleted(
                 /* oldWidth= */ 100,
                 /* newWidth= */ 0,
@@ -195,9 +205,32 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
     @Test
     @SmallTest
+    public void testOnUiUpdateCompleted_SideUiAlreadyHiddenFallback() {
+        mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        mCoordinator.onUiUpdateCompleted(
+                /* oldWidth= */ 0,
+                /* newWidth= */ 100,
+                HeightType.NOT_APPLICABLE,
+                HeightType.TOOLBAR);
+        assertTrue(mIsVerticalTabsActiveSupplier.get());
+
+        // When side UI width is already 0, hiding updates supplier immediately as a fallback.
+        SideUiSpecs specs = new SideUiSpecs(0, HeightType.NOT_APPLICABLE);
+        when(mMockSideUiCoordinator.getCurrentSideUiSpecs()).thenReturn(specs);
+        mCoordinator.setVisible(/* show= */ false, /* suppressAnimations= */ false);
+        assertFalse(mIsVerticalTabsActiveSupplier.get());
+    }
+
+    @Test
+    @SmallTest
     public void testActiveSupplierRemainsTrueWhenAutoHidden() {
         // Enable Vertical Tabs.
         mCoordinator.setVisible(/* show= */ true, /* suppressAnimations= */ false);
+        mCoordinator.onUiUpdateCompleted(
+                /* oldWidth= */ 0,
+                /* newWidth= */ 100,
+                HeightType.NOT_APPLICABLE,
+                HeightType.TOOLBAR);
         assertTrue(mIsVerticalTabsActiveSupplier.get());
 
         // Simulate auto-hide during narrow window resize (newWidth = 0).
