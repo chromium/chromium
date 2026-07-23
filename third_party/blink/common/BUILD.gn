@@ -125,7 +125,10 @@ source_set("common") {
   configs += [ ":blink_common_implementation" ]
 
   if (is_clang) {
-    cflags = [ "-Wimplicit-int-conversion" ]
+    cflags = [
+      "-Wimplicit-int-conversion",
+      "-Wtautological-unsigned-zero-compare",
+    ]
   }
 
   sources = [
