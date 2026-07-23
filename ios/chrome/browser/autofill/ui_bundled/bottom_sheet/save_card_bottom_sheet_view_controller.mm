@@ -261,21 +261,21 @@ CGFloat const kChromeLogoHeight = 22;
   //  resolution.
   switch ([self.dataSource logoType]) {
     case kChromeLogo:
-      return MakeSymbolMulticolor(CustomSymbolWithPointSize(
-          kMulticolorChromeballSymbol, kChromeLogoHeight));
+      return MakeSymbolMulticolor(
+          SymbolWithPointSize(SymbolMulticolorChromeball, kChromeLogoHeight));
     case kGoogleWalletLogo: {
-      NSString* symbol = kGoogleWalletSymbol;
+      Symbol symbol = SymbolGoogleWallet;
       CGFloat height = kGoogleWalletLogoHeight;
       if (base::FeatureList::IsEnabled(
               autofill::features::kAutofillEnableGradientGoogleLogos)) {
-        symbol = kGoogleWalletIconV2Symbol;
+        symbol = SymbolGoogleWalletIconV2;
         height = kGoogleWalletLogoV2Height;
       } else if (base::FeatureList::IsEnabled(
                      autofill::features::kAutofillEnableWalletBrandingV2)) {
-        symbol = kGoogleWalletIconSymbol;
+        symbol = SymbolGoogleWalletIcon;
         height = kGoogleWalletLogoV2Height;
       }
-      return MakeSymbolMulticolor(CustomSymbolWithPointSize(symbol, height));
+      return MakeSymbolMulticolor(SymbolWithPointSize(symbol, height));
     }
     case kNoLogo:
     default:
@@ -326,14 +326,13 @@ CGFloat const kChromeLogoHeight = 22;
     ImageContentConfiguration* trailingImageConfiguration =
         [[ImageContentConfiguration alloc] init];
 
-    NSString* symbol =
-        base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableGradientGoogleLogos)
-            ? kGPayPillIconV2Symbol
-            : kGPayPillIconSymbol;
+    Symbol symbol = base::FeatureList::IsEnabled(
+                        autofill::features::kAutofillEnableGradientGoogleLogos)
+                        ? SymbolGPayPillIconV2
+                        : SymbolGPayPillIcon;
 
     trailingImageConfiguration.image = MakeSymbolMulticolor(
-        CustomSymbolWithPointSize(symbol, kGoogleWalletLogoHeight));
+        SymbolWithPointSize(symbol, kGoogleWalletLogoHeight));
 
     configuration.trailingConfiguration = trailingImageConfiguration;
 
