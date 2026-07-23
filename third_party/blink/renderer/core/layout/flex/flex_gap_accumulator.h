@@ -289,13 +289,9 @@ class CORE_EXPORT FlexGapAccumulator {
 
   LayoutUnit content_main_end_;
 
-  // For row flex, maps an absolute flex-line index to its per-fragment relative
-  // line index (assigned in first-visit order), or `kNotFound` if the line has
-  // not been visited yet.
-  Vector<wtf_size_t, 4> fragment_relative_row_line_indices_;
-
-  // The index to assign to the next row-flex line visited in this fragment.
-  wtf_size_t next_fragment_relative_row_line_index_ = 0;
+  // Tracks the index of the first row-flex line processed within the current
+  // fragment.
+  wtf_size_t first_row_flex_line_index_ = kNotFound;
 
   // The current fragment's row gap info, built during placement. Column flex
   // containers store one entry per absolute flex line while row flex

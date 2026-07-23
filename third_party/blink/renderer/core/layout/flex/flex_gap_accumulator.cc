@@ -28,8 +28,7 @@ FlexGapAccumulator::FlexGapAccumulator(
       border_scrollbar_padding_block_start_(
           border_scrollbar_padding_block_start),
       border_scrollbar_padding_inline_start_(
-          border_scrollbar_padding_inline_start),
-      fragment_relative_row_line_indices_(num_lines, kNotFound) {
+          border_scrollbar_padding_inline_start) {
   gap_geometry_->ReserveCrossGaps(num_flex_items);
   if (num_lines > 0) {
     gap_geometry_->ReserveMainGaps(num_lines - 1);
@@ -138,16 +137,10 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
   // fragment-relative slots for row flex.
   wtf_size_t fragment_relative_line_index = global_line_index;
   if (!is_column_) {
-    // TODO(javiercon): Explore removing `fragment_relative_row_line_indices_`
-    // in a follow-up, since row-flex lines are processed contiguously. Assign
-    // this row-flex line its fragment-relative index the first time we visit
-    // it.
-    if (fragment_relative_row_line_indices_[global_line_index] == kNotFound) {
-      fragment_relative_row_line_indices_[global_line_index] =
-          next_fragment_relative_row_line_index_++;
+    if (first_row_flex_line_index_ == kNotFound) {
+      first_row_flex_line_index_ = global_line_index;
     }
-    fragment_relative_line_index =
-        fragment_relative_row_line_indices_[global_line_index];
+    fragment_relative_line_index -= first_row_flex_line_index_;
   }
 
   // In a fragmented column flex we populate the `MainGaps` ahead of time since
