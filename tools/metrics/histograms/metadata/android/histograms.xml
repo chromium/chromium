@@ -6930,6 +6930,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.DurationEnabled" units="ms"
+    expires_after="2027-07-22">
+  <owner>agazal@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <summary>
+    Records the duration (wall-clock time) for which Vertical Tabs remained
+    enabled. Recorded when the user toggles Vertical Tabs off (reverting to
+    Horizontal Tabs).
+  </summary>
+</histogram>
+
 <histogram name="Android.Wallet.BoardingPass.Detected" enum="BooleanDetected"
     expires_after="2024-12-31">
   <owner>hanfeng@google.com</owner>

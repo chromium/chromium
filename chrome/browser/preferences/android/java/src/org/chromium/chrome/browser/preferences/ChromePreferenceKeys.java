@@ -1105,6 +1105,10 @@ public final class ChromePreferenceKeys {
     /** Stores the user preference for displaying vertical tabs. */
     public static final String VERTICAL_TABS_ENABLED = "Chrome.VerticalTabs.Enabled";
 
+    /** Stores the timestamp when vertical tabs were enabled. */
+    public static final String VERTICAL_TABS_ENABLED_TIMESTAMP =
+            "Chrome.VerticalTabs.EnabledTimestamp";
+
     /** Key for deferred recording of list of uninstalled WebAPK packages. */
     public static final String WEBAPK_UNINSTALLED_PACKAGES = "webapk_uninstalled_packages";
 
@@ -1367,6 +1371,7 @@ public final class ChromePreferenceKeys {
                 USB_NOTIFICATION_IDS,
                 USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
                 VERTICAL_TABS_ENABLED,
+                VERTICAL_TABS_ENABLED_TIMESTAMP,
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                 WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES);
     }

@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.base.test.util.Batch;
@@ -37,6 +38,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -80,6 +82,7 @@ import org.chromium.ui.test.util.ViewUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabbedRootUiCoordinatorTest {
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -382,5 +385,57 @@ public class TabbedRootUiCoordinatorTest {
 
         // Verify that the trigger event was notified to the tracker.
         verify(mTracker).notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_GLIC_IPH_TRIGGER);
+    }
+
+    @Test
+    @MediumTest
+    public void testToggleTabStripMetrics() {
+        mPage = mActivityTestRule.startOnBlankPage();
+        mTabbedRootUiCoordinator =
+                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
+
+        // Ensure we start with VT disabled.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeSharedPreferences.getInstance()
+                            .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false);
+                    ChromeSharedPreferences.getInstance()
+                            .removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED_TIMESTAMP);
+                });
+
+        // 1. Toggle ON: HT -> VT.
+        ThreadUtils.runOnUiThreadBlocking(() -> mTabbedRootUiCoordinator.toggleTabStrip());
+
+        // Verify preference is set to true, and timestamp is stored.
+        assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+        long startTime =
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.VERTICAL_TABS_ENABLED_TIMESTAMP, 0);
+        assertTrue(startTime > 0);
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.VerticalTabs.DurationEnabled");
+
+        mFakeTimeTestRule.advanceMillis(5);
+
+        // 2. Toggle OFF: VT -> HT
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabbedRootUiCoordinator.toggleTabStrip();
+                });
+
+        // Verify preference is set to false, and timestamp is cleared.
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.VERTICAL_TABS_ENABLED, false));
+        assertEquals(
+                0,
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.VERTICAL_TABS_ENABLED_TIMESTAMP, 0));
+
+        // Verify histogram was logged.
+        histogramWatcher.assertExpected();
     }
 }
