@@ -85,14 +85,35 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, DISABLED_Composebox) {
   RunTest("contextual_tasks/composebox_test.js", "mocha.run();");
 }
 
-// TODO(crbug.com/537550518): Re-enable the test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Composebox_Files DISABLED_Composebox_Files
-#else
-#define MAYBE_Composebox_Files Composebox_Files
-#endif
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_Composebox_Files) {
-  RunTest("contextual_tasks/composebox_files_test.js", "mocha.run();");
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Files) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxFilesTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Files_ForkTrue) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkFilesTest "
+          "\\\\(useContextualTasksComposeboxFork = true\\\\)')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Files_ForkFalse) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkFilesTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\)')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_AutoTab_ForkTrue) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
+          "\\\\(useContextualTasksComposeboxFork = true\\\\)')");
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
+                       Composebox_AutoTab_ForkFalse) {
+  RunTest("contextual_tasks/composebox_files_test.js",
+          "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
+          "\\\\(useContextualTasksComposeboxFork = false\\\\)')");
 }
 
 // TODO(crbug.com/480689282): Flaky on ChromeOS debug.
