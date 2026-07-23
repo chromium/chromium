@@ -35,6 +35,7 @@ source_set("passwords") {
       "passwords_client_ui_delegate.h",
       "passwords_leak_dialog_delegate.h",
       "passwords_model_delegate.h",
+      "remote_actor_selection_dialog_controller.h",
     ]
     public_deps += [
       "//build:branding_buildflags",
@@ -125,6 +126,7 @@ source_set("impl") {
       "password_generation_popup_view.h",
       "passwords_client_ui_delegate.cc",
       "passwords_model_delegate.cc",
+      "remote_actor_selection_dialog_controller.cc",
     ]
 
     deps += [
@@ -271,6 +273,7 @@ source_set("unit_tests") {
       "password_cross_domain_confirmation_popup_controller_impl_unittest.cc",
       "password_generation_popup_controller_impl_unittest.cc",
       "password_manager_navigation_throttle_unittest.cc",
+      "remote_actor_selection_dialog_controller_unittest.cc",
       "well_known_change_password_navigation_throttle_unittest.cc",
     ]
     deps += [

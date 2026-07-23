@@ -586,3 +586,10 @@ void PasswordCombinedSelectorView::OnWidgetInitialized() {
   // TODO(crbug.com/532482932): Add unbranded header.
 #endif
 }
+
+std::unique_ptr<AccountChooserPrompt> CreatePasswordCombinedSelectorPromptView(
+    PasswordCombinedSelectorController* controller,
+    content::WebContents* web_contents) {
+  return std::make_unique<PasswordCombinedSelectorView>(controller,
+                                                        web_contents);
+}

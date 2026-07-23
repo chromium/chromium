@@ -38,7 +38,6 @@ class PasswordCombinedSelectorController : public PasswordBaseDialogController {
   virtual std::u16string GetOkButtonLabel() const = 0;
 
   virtual const FormsVector& GetLocalForms() const = 0;
-  virtual url::Origin GetOrigin() const = 0;
   virtual void OnChooseCredentials(
       const password_manager::PasswordForm& password_form,
       password_manager::CredentialType credential_type) = 0;

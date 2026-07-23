@@ -19,6 +19,7 @@ class Widget;
 
 class CredentialLeakDialogController;
 class CredentialManagerDialogController;
+class PasswordCombinedSelectorController;
 
 // A platform-independent interface for the account chooser dialog.
 class AccountChooserPrompt {
@@ -78,6 +79,11 @@ class CredentialLeakPrompt {
 // Factory function for AccountChooserPrompt on desktop platforms.
 std::unique_ptr<AccountChooserPrompt> CreateAccountChooserPromptView(
     CredentialManagerDialogController* controller,
+    content::WebContents* web_contents);
+
+// Factory function for PasswordCombinedSelectorView on desktop platforms.
+std::unique_ptr<AccountChooserPrompt> CreatePasswordCombinedSelectorPromptView(
+    PasswordCombinedSelectorController* controller,
     content::WebContents* web_contents);
 
 // Factory function for AutoSigninFirstRunPrompt on desktop platforms.

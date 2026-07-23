@@ -30,7 +30,7 @@ class CredentialManagerDialogController : public PasswordCombinedSelectorControl
   const FormsVector& GetLocalForms() const override = 0;
 
   // Returns the origin of the current site.
-  url::Origin GetOrigin() const override = 0;
+  virtual url::Origin GetOrigin() const = 0;
 
   // Returns a title of the account chooser.
   virtual std::u16string GetAccountChooserTitle() const = 0;
