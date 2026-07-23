@@ -1747,6 +1747,50 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
 }
 
+// Tests that when blocked content becomes visible while the warn dialog for a
+// running screen share is still open, the dialog is dismissed and the share
+// stays paused.
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
+                       ScreenShareWarnDialogDismissedOnBlockedContent) {
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(
+      browser()->GetProfile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  MaybeStartFullScreenShare(web_contents, /*expect_allowed=*/true,
+                            /*expect_warning=*/false);
+
+  EXPECT_CALL(state_change_cb_,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  EXPECT_CALL(state_change_cb_,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(0);
+  EXPECT_CALL(stop_cb_, Run).Times(0);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  ASSERT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kScreenSharePausedNotificationId)
+          .has_value());
+
+  // While the dialog is open, blocked content appears.
+  helper_->ChangeConfidentiality(web_contents, kScreenShareRestricted);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kScreenSharePausedNotificationId)
+          .has_value());
+
+  VerifyHistogramCounts(
+      /*blocked_count=*/1,
+      /*warned_count=*/1,
+      /*total_count=*/3,
+      /*blocked_suffix=*/data_controls::dlp::kScreenShareBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kScreenShareWarnedUMA);
+}
+
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                        ContentsUpdatedOnWebContentsTitleChanged) {
   SetupReporting();

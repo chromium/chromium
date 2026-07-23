@@ -819,12 +819,13 @@ void DlpContentManager::CheckRunningScreenShares() {
         data_controls::dlp::kScreenShareWarnedUMA,
         IsWarn(info.restriction_info));
     if (IsBlocked(info.restriction_info)) {
+      screen_share->MaybeCloseDialogWidget();
       if (screen_share->state() == ScreenShareInfo::State::kRunning) {
         screen_share->Pause();
         data_controls::DlpBooleanHistogram(
             data_controls::dlp::kScreenSharePausedOrResumedUMA, true);
-        screen_share->MaybeUpdateNotifications();
       }
+      screen_share->MaybeUpdateNotifications();
       continue;
     }
 
@@ -917,6 +918,10 @@ void DlpContentManager::OnDlpScreenShareWarnDialogReply(
       ReportWarningProceededEvent(info.restriction_info.url,
                                   DlpRulesManager::Restriction::kScreenShare,
                                   reporting_manager_);
+
+    if (IsBlocked(screen_share->GetLatestRestriction())) {
+      return;
+    }
 
     screen_share->Resume();
     for (const auto& content : info.confidential_contents.GetContents()) {
