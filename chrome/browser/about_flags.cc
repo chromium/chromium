@@ -2802,18 +2802,10 @@ const FeatureEntry::Choice kTabsFromOtherDevicesSidePanelChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {"List View", switches::kEnableFeatures,
      "TabsFromOtherDevicesSidePanel,"
-     "TabsFromOtherDevicesSidePanelExcludeStableChannel,"
      "TabsFromOtherDevicesSidePanelPinnedByDefault"},
-    {"Screenshot View", switches::kEnableFeatures,
-     "TabsFromOtherDevicesSidePanel,"
-     "TabsFromOtherDevicesSidePanelExcludeStableChannel,"
-     "TabsFromOtherDevicesSidePanelPinnedByDefault,"
-     "SyncTabScreenshots"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
      "TabsFromOtherDevicesSidePanel,"
-     "TabsFromOtherDevicesSidePanelExcludeStableChannel,"
-     "TabsFromOtherDevicesSidePanelPinnedByDefault,"
-     "SyncTabScreenshots"},
+     "TabsFromOtherDevicesSidePanelPinnedByDefault"},
 };
 
 // The choices for --enable-experimental-cookie-features. This really should
