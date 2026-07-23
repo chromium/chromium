@@ -6285,6 +6285,7 @@ test("unit_tests") {
       "../browser/android/webapk/webapk_helpers_unittest.cc",
       "../browser/android/webapk/webapk_restore_manager_unittest.cc",
       "../browser/android/webapk/webapk_sync_bridge_unittest.cc",
+      "../browser/android/webapps/twa_launch_queue_delegate_unittest.cc",
       "../browser/media/android/cdm/media_drm_origin_id_manager_unittest.cc",
     ]
 

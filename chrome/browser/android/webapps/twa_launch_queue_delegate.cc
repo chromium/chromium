@@ -4,9 +4,11 @@
 
 #include "chrome/browser/android/webapps/twa_launch_queue_delegate.h"
 
+#include "base/android/content_uri_utils.h"
 #include "base/files/file_path.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/webapps/browser/launch_queue/launch_params.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "url/origin.h"
@@ -46,6 +48,11 @@ bool TwaLaunchQueueDelegate::IsInScope(
 
 content::PathInfo TwaLaunchQueueDelegate::GetPathInfo(
     const base::FilePath& entry_path) const {
+  std::u16string display_name;
+  if (base::MaybeGetFileDisplayName(entry_path, &display_name) &&
+      !display_name.empty()) {
+    return content::PathInfo(entry_path, base::UTF16ToUTF8(display_name));
+  }
   return content::PathInfo(entry_path);
 }
 
