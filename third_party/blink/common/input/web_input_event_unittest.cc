@@ -115,17 +115,23 @@ TEST(WebInputEventTest, WebGestureEventCoalescing) {
                                   WebInputEvent::GetStaticTimeStampForTests());
   coalesced_event.data.scroll_update.delta_x = 1;
   coalesced_event.data.scroll_update.delta_y = 1;
+  coalesced_event.data.scroll_update.delta_x_unconstrained = 2;
+  coalesced_event.data.scroll_update.delta_y_unconstrained = 3;
 
   WebGestureEvent event_to_be_coalesced(
       WebInputEvent::Type::kGestureScrollUpdate, WebInputEvent::kNoModifiers,
       WebInputEvent::GetStaticTimeStampForTests());
   event_to_be_coalesced.data.scroll_update.delta_x = 3;
   event_to_be_coalesced.data.scroll_update.delta_y = 4;
+  event_to_be_coalesced.data.scroll_update.delta_x_unconstrained = 5;
+  event_to_be_coalesced.data.scroll_update.delta_y_unconstrained = 6;
 
   EXPECT_TRUE(coalesced_event.CanCoalesce(event_to_be_coalesced));
   coalesced_event.Coalesce(event_to_be_coalesced);
   EXPECT_EQ(4, coalesced_event.data.scroll_update.delta_x);
   EXPECT_EQ(5, coalesced_event.data.scroll_update.delta_y);
+  EXPECT_EQ(7, coalesced_event.data.scroll_update.delta_x_unconstrained);
+  EXPECT_EQ(9, coalesced_event.data.scroll_update.delta_y_unconstrained);
 }
 
 TEST(WebInputEventTest, GesturePinchUpdateCoalescing) {

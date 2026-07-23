@@ -23,6 +23,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -226,6 +227,85 @@ IN_PROC_BROWSER_TEST_F(SyntheticInputTest, DISABLED_SlowSmoothScrollWheel) {
 
   EXPECT_EQ(scroll_delta, EvalJs(shell()->web_contents(),
                                  "document.scrollingElement.scrollTop"));
+}
+
+class ScrollAxisLockSyntheticInputTest : public SyntheticInputTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SyntheticInputTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "ScrollAxisLock");
+  }
+};
+
+// This test ensures that scroll deltas from coalesced input events are not lost
+// on scroll containers with scroll-axis-lock: none.
+IN_PROC_BROWSER_TEST_F(ScrollAxisLockSyntheticInputTest,
+                       ScrollAxisLockCoalescing) {
+  // Load page with scroll-axis-lock: none.
+  LoadURL(R"HTML(
+    data:text/html;charset=utf-8,
+    <!DOCTYPE html>
+    <meta name='viewport' content='width=device-width'>
+    <style>
+      .scroller {
+        scroll-axis-lock: none;
+        width: 200px;
+        height: 200px;
+        overflow: scroll;
+        border: 1px solid black;
+      }
+      .content {
+        width: 2000px;
+        height: 2000px;
+      }
+    </style>
+    <div class="scroller" id="scroller">
+      <div class="content" id="content"></div>
+    </div>
+    <script>
+      document.title = 'ready';
+    </script>
+  )HTML");
+
+  const int scroll_x = 2;
+  const int scroll_y = 400;
+
+  SyntheticSmoothScrollGestureParams params;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.anchor = gfx::PointF(100, 100);  // inside scroller
+  // Drag UP and LEFT to scroll DOWN and RIGHT.
+  // The gesture is split into a sequence of touchmove events animated over
+  // time, creating the opportunity for coalescing.
+  params.distances.push_back(gfx::Vector2d(-scroll_x, -scroll_y));
+  params.speed_in_pixels_s = 800.f;
+  params.granularity = ui::ScrollGranularity::kScrollByPrecisePixel;
+  // Use kTwoPerVsync to force coalescing of events on the compositor thread.
+  params.input_event_pattern = content::mojom::InputEventPattern::kTwoPerVsync;
+
+  runner_ = std::make_unique<base::RunLoop>();
+
+  auto gesture = std::make_unique<SyntheticSmoothScrollGesture>(params);
+  GetRenderWidgetHost()->QueueSyntheticGesture(
+      std::move(gesture),
+      base::BindOnce(&SyntheticInputTest::OnSyntheticGestureCompleted,
+                     base::Unretained(this)));
+
+  // Run until the gesture completes.
+  runner_->Run();
+  runner_.reset();
+
+  double actual_scroll_left =
+      EvalJs(shell()->web_contents(),
+             "document.getElementById('scroller').scrollLeft")
+          .ExtractDouble();
+  double actual_scroll_top =
+      EvalJs(shell()->web_contents(),
+             "document.getElementById('scroller').scrollTop")
+          .ExtractDouble();
+
+  EXPECT_NEAR(actual_scroll_left, scroll_x, 1);
+  EXPECT_NEAR(actual_scroll_top, scroll_y, 1);
 }
 
 }  // namespace content
