@@ -24,6 +24,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -141,8 +142,7 @@ class BookmarkModelObserverImplTest
       const std::string id = entity->metadata().server_id();
       // Don't simulate change in id for simplicity.
       bookmark_tracker()->UpdateUponCommitResponse(
-          entity, id,
-          /*server_version=*/1,
+          entity, id, /*server_version=*/1,
           /*acked_sequence_number=*/entity->metadata().sequence_number(),
           /*specifics_hash=*/entity->metadata().specifics_hash());
     }
@@ -786,12 +786,12 @@ TEST_P(BookmarkModelObserverImplTest,
 
   // Node should be tracked now.
   ASSERT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 4U);
-  const SyncedBookmarkTrackerEntity* entity =
+  SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(folder_node);
   const std::string id = entity->metadata().server_id();
   ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
 
-  bookmark_tracker()->MarkCommitMayHaveStarted(entity);
+  entity->MarkCommitMayHaveStarted();
 
   // Remove the folder.
   bookmark_model()->Remove(folder_node, FROM_HERE);
@@ -799,10 +799,8 @@ TEST_P(BookmarkModelObserverImplTest,
   // Simulate a commit response for the first commit request (the creation).
   // Don't simulate change in id for simplicity.
   bookmark_tracker()->UpdateUponCommitResponse(
-      entity, id,
-      /*server_version=*/1,
-      /*acked_sequence_number=*/1,
-      /*specifics_hash=*/entity->metadata().specifics_hash());
+      entity, id, /*server_version=*/1, /*acked_sequence_number=*/1,
+      entity->metadata().specifics_hash());
 
   // There should still be one local change (the deletion).
   EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
@@ -812,10 +810,8 @@ TEST_P(BookmarkModelObserverImplTest,
 
   // Commit the deletion.
   bookmark_tracker()->UpdateUponCommitResponse(
-      entity, id,
-      /*server_version=*/2,
-      /*acked_sequence_number=*/2,
-      /*specifics_hash=*/entity->metadata().specifics_hash());
+      entity, id, /*server_version=*/2, /*acked_sequence_number=*/2,
+      entity->metadata().specifics_hash());
   // Entity should have been dropped.
   EXPECT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 3U);
 }
@@ -1007,7 +1003,7 @@ TEST_P(BookmarkModelObserverImplTest, ShouldNotIssueCommitUponFaviconLoad) {
   SimulateCommitResponseForAllLocalChanges();
   ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(), IsEmpty());
 
-  const SyncedBookmarkTrackerEntity* entity =
+  SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(bookmark_node);
   ASSERT_THAT(entity, NotNull());
   ASSERT_TRUE(entity->metadata().has_bookmark_favicon_hash());
@@ -1112,9 +1108,9 @@ TEST_P(BookmarkModelObserverImplTest,
           syncer::UniquePosition::RandomSuffix())
           .ToProto();
 
-  const SyncedBookmarkTrackerEntity* entity = bookmark_tracker()->AddRemote(
+  SyncedBookmarkTrackerEntity* entity = bookmark_tracker()->AddRemote(
       bookmark_node, "id", /*server_version=*/1, base::Time::Now(), specifics);
-  bookmark_tracker()->IncrementSequenceNumber(entity);
+  entity->IncrementSequenceNumber();
 
   // Restore state.
   bookmark_model()->AddObserver(observer());

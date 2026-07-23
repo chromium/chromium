@@ -25,7 +25,7 @@ class BookmarkLocalChangesBuilder {
       delete;
 
   // Builds the commit requests list.
-  syncer::CommitRequestDataList BuildCommitRequests(size_t max_entries) const;
+  syncer::CommitRequestDataList BuildCommitRequests(size_t max_entries);
 
  private:
   const raw_ptr<SyncedBookmarkTracker> bookmark_tracker_;

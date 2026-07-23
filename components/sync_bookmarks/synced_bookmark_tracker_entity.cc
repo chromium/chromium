@@ -9,7 +9,11 @@
 #include "base/check.h"
 #include "base/hash/hash.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/sync/base/deletion_origin.h"
+#include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/unique_position.pb.h"
 
 namespace sync_bookmarks {
 
@@ -74,6 +78,78 @@ size_t SyncedBookmarkTrackerEntity::EstimateMemoryUsage() const {
   size_t memory_usage = metadata_.EstimateMemoryUsage();
   memory_usage += sizeof(bookmark_node_);
   return memory_usage;
+}
+
+void SyncedBookmarkTrackerEntity::RecordAcceptedRemoteUpdate(
+    PassKey,
+    const syncer::UpdateResponseData& update) {
+  CHECK_EQ(metadata_.proto().server_id(), update.entity.id);
+
+  std::optional<sync_pb::UniquePosition> unique_position;
+  if (update.entity.specifics.bookmark().has_unique_position()) {
+    unique_position = update.entity.specifics.bookmark().unique_position();
+  }
+  metadata_.RecordAcceptedRemoteUpdate(
+      update, /*trimmed_specifics=*/sync_pb::EntitySpecifics(),
+      std::move(unique_position));
+
+  if (!update.entity.is_deleted()) {
+    metadata_.mutable_proto()->set_bookmark_favicon_hash(
+        base::PersistentHash(update.entity.specifics.bookmark().favicon()));
+  } else {
+    metadata_.mutable_proto()->clear_bookmark_favicon_hash();
+  }
+}
+
+void SyncedBookmarkTrackerEntity::RecordLocalUpdate(
+    const sync_pb::EntitySpecifics& specifics,
+    base::Time modification_time) {
+  CHECK(!IsDeleted());
+  metadata_.UpdateMetadataForLocalUpdate(specifics, modification_time);
+
+  metadata_.mutable_proto()->set_bookmark_favicon_hash(
+      base::PersistentHash(specifics.bookmark().favicon()));
+
+  if (specifics.bookmark().has_unique_position()) {
+    metadata_.SetUniquePosition(specifics.bookmark().unique_position());
+  } else {
+    metadata_.ClearUniquePosition();
+  }
+}
+
+void SyncedBookmarkTrackerEntity::RecordLocalDeletion(
+    PassKey,
+    const syncer::DeletionOrigin& origin) {
+  metadata_.RecordLocalDeletion(origin);
+  metadata_.mutable_proto()->clear_bookmark_favicon_hash();
+}
+
+void SyncedBookmarkTrackerEntity::RecordCommitResponse(
+    PassKey,
+    const syncer::CommitResponseData& ack) {
+  metadata_.RecordCommitResponse(ack);
+}
+
+void SyncedBookmarkTrackerEntity::IncrementSequenceNumber() {
+  metadata_.IncrementSequenceNumber();
+}
+
+void SyncedBookmarkTrackerEntity::UpdateServerVersion(int64_t server_version) {
+  metadata_.mutable_proto()->set_server_version(server_version);
+}
+
+void SyncedBookmarkTrackerEntity::AckSequenceNumber() {
+  metadata_.mutable_proto()->set_acked_sequence_number(
+      metadata_.proto().sequence_number());
+}
+
+void SyncedBookmarkTrackerEntity::UndeleteTombstoneForBookmarkNode(
+    PassKey,
+    const bookmarks::BookmarkNode* node) {
+  DCHECK(node);
+  DCHECK(IsDeleted());
+  metadata_.mutable_proto()->set_is_deleted(false);
+  bookmark_node_ = node;
 }
 
 }  // namespace sync_bookmarks

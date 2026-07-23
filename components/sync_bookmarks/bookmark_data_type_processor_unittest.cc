@@ -160,6 +160,8 @@ sync_pb::BookmarkMetadata CreateNodeMetadata(
           .value());
   bookmark_metadata.mutable_metadata()->set_creation_time(
       syncer::TimeToProtoTime(base::Time::Now()));
+  bookmark_metadata.mutable_metadata()->set_sequence_number(0);
+  bookmark_metadata.mutable_metadata()->set_acked_sequence_number(0);
   *bookmark_metadata.mutable_metadata()->mutable_unique_position() =
       unique_position.ToProto();
   // Required by SyncedBookmarkTracker during validation of local metadata.

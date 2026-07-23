@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/model/processor_entity_metadata.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -22,15 +23,22 @@ class BookmarkNode;
 
 namespace syncer {
 struct EntityData;
+struct UpdateResponseData;
+struct CommitResponseData;
+class DeletionOrigin;
 }  // namespace syncer
 
 namespace sync_bookmarks {
+
+class SyncedBookmarkTracker;
 
 // This class manages the metadata corresponding to an individual BookmarkNode
 // instance. It is analogous to the more generic syncer::ProcessorEntity, which
 // is not reused for bookmarks for historic reasons.
 class SyncedBookmarkTrackerEntity {
  public:
+  using PassKey = base::PassKey<SyncedBookmarkTracker>;
+
   // |bookmark_node| can be null for tombstones.
   SyncedBookmarkTrackerEntity(const bookmarks::BookmarkNode* bookmark_node,
                               syncer::ProcessorEntityMetadata entity_metadata);
@@ -78,30 +86,50 @@ class SyncedBookmarkTrackerEntity {
     return bookmark_node_;
   }
 
-  // Used in local deletions to mark and entity as a tombstone.
-  void clear_bookmark_node() { bookmark_node_ = nullptr; }
-
-  // Used when replacing a node in order to update its otherwise immutable
-  // UUID.
-  void set_bookmark_node(const bookmarks::BookmarkNode* bookmark_node) {
-    bookmark_node_ = bookmark_node;
-  }
-
   const sync_pb::EntityMetadata& metadata() const { return metadata_.proto(); }
 
-  sync_pb::EntityMetadata* MutableMetadata() {
-    return metadata_.mutable_proto();
-  }
-
   bool commit_may_have_started() const { return commit_may_have_started_; }
-  void set_commit_may_have_started(bool value) {
-    commit_may_have_started_ = value;
-  }
+  void MarkCommitMayHaveStarted() { commit_may_have_started_ = true; }
 
   syncer::ClientTagHash GetClientTagHash() const;
 
+  void RecordLocalUpdate(const sync_pb::EntitySpecifics& specifics,
+                         base::Time modification_time);
+
+  void IncrementSequenceNumber();
+
+  void UpdateServerVersion(int64_t server_version);
+  void AckSequenceNumber();
+
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
+
+  // Semi-private functions exclusively available to SyncedBookmarkTracker:
+  // Used in local deletions to mark an entity as a tombstone.
+  void clear_bookmark_node(PassKey) { bookmark_node_ = nullptr; }
+
+  // Used when replacing a node in order to update its otherwise immutable
+  // UUID.
+  void set_bookmark_node(PassKey,
+                         const bookmarks::BookmarkNode* bookmark_node) {
+    bookmark_node_ = bookmark_node;
+  }
+
+  sync_pb::EntityMetadata* MutableMetadata(PassKey) {
+    return metadata_.mutable_proto();
+  }
+
+  void RecordLocalDeletion(PassKey, const syncer::DeletionOrigin& origin);
+
+  void RecordAcceptedRemoteUpdate(PassKey,
+                                  const syncer::UpdateResponseData& update);
+
+  void RecordCommitResponse(PassKey, const syncer::CommitResponseData& ack);
+
+  // Re-associates a placeholder tombstone with a real bookmark node (e.g. undo
+  // deletion).
+  void UndeleteTombstoneForBookmarkNode(PassKey,
+                                        const bookmarks::BookmarkNode* node);
 
  private:
   // Null for tombstones.
