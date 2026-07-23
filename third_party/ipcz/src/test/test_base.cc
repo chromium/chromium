@@ -37,11 +37,13 @@ void OpenPortalsChecked(const IpczAPI& ipcz,
 
 }  // namespace
 
-TestBase::TestBase() {
-  IpczGetAPI(&ipcz_);
-}
+TestBase::TestBase() = default;
 
 TestBase::~TestBase() = default;
+
+const IpczAPI& TestBase::ipcz() const {
+  return GetIpczAPI();
+}
 
 void TestBase::Close(IpczHandle handle) {
   ASSERT_EQ(IPCZ_RESULT_OK, ipcz().Close(handle, IPCZ_NO_FLAGS, nullptr));

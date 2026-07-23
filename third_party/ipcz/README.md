@@ -122,7 +122,9 @@ This directory in the Chromium tree is the source of truth for ipcz. It is integ
 directly into Mojo Core (`//mojo/core`) and is not intended to be used as a standalone
 or embeddable library outside of Chromium.
 
-Consequently, ipcz is implemented using Chromium's `//base` library.
+Consequently, ipcz is implemented using Chromium's `//base` library and exposes C++
+interfaces (like `IpczAPI` and `IpczDriver` as C++ classes with virtual methods) rather
+than a stable C ABI.
 
 In the past ipcz allowed other applications to link against it as a library with
 stable C interfaces, which was called 'standalone' mode. In order to support

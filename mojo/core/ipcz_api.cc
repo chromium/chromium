@@ -15,13 +15,6 @@ namespace mojo::core {
 
 namespace {
 
-class IpczAPIInitializer {
- public:
-  explicit IpczAPIInitializer(IpczAPI& api) {
-    IpczResult result = IpczGetAPI(&api);
-    CHECK_EQ(result, IPCZ_RESULT_OK);
-  }
-};
 
 IpczHandle g_node = IPCZ_INVALID_HANDLE;
 IpczNodeOptions g_options = {.is_broker = false,
@@ -30,9 +23,7 @@ IpczNodeOptions g_options = {.is_broker = false,
 }  // namespace
 
 const IpczAPI& GetIpczAPI() {
-  static IpczAPI api = {sizeof(api)};
-  static IpczAPIInitializer initializer(api);
-  return api;
+  return ::GetIpczAPI();
 }
 
 IpczHandle GetIpczNode() {

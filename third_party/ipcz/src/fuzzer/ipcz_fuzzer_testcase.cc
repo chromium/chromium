@@ -21,12 +21,7 @@ namespace ipcz::fuzzer {
 namespace {
 
 const IpczAPI& GetIpcz() {
-  static IpczAPI api = [] {
-    IpczAPI ipcz = {sizeof(ipcz)};
-    IpczGetAPI(&ipcz);
-    return ipcz;
-  }();
-  return api;
+  return GetIpczAPI();
 }
 
 class ScopedIpczHandle {

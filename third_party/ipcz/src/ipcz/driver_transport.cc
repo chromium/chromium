@@ -19,14 +19,13 @@ namespace ipcz {
 
 namespace {
 
-IpczResult IPCZ_API
-NotifyTransport(IpczHandle listener,
-                const void* data,
-                size_t num_bytes,
-                const IpczDriverHandle* driver_handles,
-                size_t num_driver_handles,
-                IpczTransportActivityFlags flags,
-                const struct IpczTransportActivityOptions* options) {
+IpczResult NotifyTransport(IpczHandle listener,
+                           const void* data,
+                           size_t num_bytes,
+                           const IpczDriverHandle* driver_handles,
+                           size_t num_driver_handles,
+                           IpczTransportActivityFlags flags,
+                           const struct IpczTransportActivityOptions* options) {
   DriverTransport* t = DriverTransport::FromHandle(listener);
   if (!t) {
     return IPCZ_RESULT_INVALID_ARGUMENT;

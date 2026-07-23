@@ -7,20 +7,6 @@
 
 #include "ipcz/ipcz.h"
 
-#if defined(IPCZ_SHARED_LIBRARY)
-#if defined(WIN32)
-#define IPCZ_EXPORT __declspec(dllexport)
-#else
-#define IPCZ_EXPORT __attribute__((visibility("default")))
-#endif
-#else
-#define IPCZ_EXPORT
-#endif
-
-extern "C" {
-
-IPCZ_EXPORT IpczResult IPCZ_API IpczGetAPI(IpczAPI* api);
-
-}  // namespace "C"
+const IpczAPI& GetIpczAPI();
 
 #endif  // IPCZ_SRC_API_H_

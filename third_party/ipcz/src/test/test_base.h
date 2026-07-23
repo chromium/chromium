@@ -30,7 +30,7 @@ class TestBase {
   TestBase();
   ~TestBase();
 
-  const IpczAPI& ipcz() const { return ipcz_; }
+  const IpczAPI& ipcz() const;
 
   // Some trivial shorthand methods to access the ipcz API more conveniently.
   void Close(IpczHandle handle);
@@ -118,8 +118,6 @@ class TestBase {
 
  private:
   static void HandleEvent(const IpczTrapEvent* event);
-
-  IpczAPI ipcz_ = {.size = sizeof(ipcz_)};
 };
 
 }  // namespace ipcz::test::internal
