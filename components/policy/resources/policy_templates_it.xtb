@@ -3638,7 +3638,7 @@ Questa policy non ha alcun effetto sulle app di Chrome o web che hanno un URL di
 Se la policy viene impostata su true o non viene configurata, le app web verranno avviate anche se il dispositivo è offline.</translation>
 <translation id="3255624750680556186">Se la policy viene impostata su Attivata o se non viene configurata, la funzione Powerwash può essere attivata da un dispositivo.
 
-      Se viene impostata su Disattivata, la funzione non può essere attivata da un dispositivo. Si può verificare un'eccezione per l'attivazione della funzione Powerwash, se la policy <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> viene impostata su un valore che consente l'aggiornamento del firmware TPM, ma tale firmware non è ancora stato aggiornato.</translation>
+      Se viene impostata su Disattivata, la funzione non può essere attivata da un dispositivo. Si può verificare un'eccezione per l'attivazione della funzione Powerwash, se la policy <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> viene impostata su un valore che consente l'aggiornamento del firmware TPM, ma questo firmware non è ancora stato aggiornato.</translation>
 <translation id="3256920103934729145">Impedisci il clickthrough degli utenti su pagine di avviso SSL</translation>
 <translation id="3257786863492892609">Controlla le policy relative alla funzionalità Registra schermo.</translation>
 <translation id="3258380413685430793">Esegui tutti i contenuti di <ph name="FLASH_PLUGIN_NAME" /></translation>
