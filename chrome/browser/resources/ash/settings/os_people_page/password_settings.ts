@@ -46,10 +46,10 @@ export class SettingsPasswordSettingsElement extends PolymerElement {
     };
   }
 
-  authToken: string|null;
-  private hasCryptohomePinV2_: boolean;
-  private hasGaiaPassword_: boolean;
-  private hasLocalPassword_: boolean;
+  declare authToken: string|null;
+  declare private hasCryptohomePinV2_: boolean;
+  declare private hasGaiaPassword_: boolean;
+  declare private hasLocalPassword_: boolean;
 
   override ready(): void {
     super.ready();

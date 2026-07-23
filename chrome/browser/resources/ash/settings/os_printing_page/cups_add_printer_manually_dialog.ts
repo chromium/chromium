@@ -88,12 +88,12 @@ export class AddPrinterManuallyDialogElement extends PolymerElement {
     return ['printerInfoChanged_(newPrinter.*)'];
   }
 
-  newPrinter: CupsPrinterInfo;
+  declare newPrinter: CupsPrinterInfo;
 
-  private addPrinterInProgress_: boolean;
+  declare private addPrinterInProgress_: boolean;
   private browserProxy_: CupsPrintersBrowserProxy;
-  private errorText_: string;
-  private showPrinterQueue_: boolean;
+  declare private errorText_: string;
+  declare private showPrinterQueue_: boolean;
 
   constructor() {
     super();

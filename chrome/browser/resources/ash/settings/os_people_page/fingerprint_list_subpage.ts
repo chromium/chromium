@@ -73,7 +73,7 @@ export class SettingsFingerprintListSubpageElement extends
     };
   }
 
-  authToken: string|undefined;
+  declare authToken: string|undefined;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -81,9 +81,9 @@ export class SettingsFingerprintListSubpageElement extends
     Setting.kRemoveFingerprintV2,
   ]);
 
-  private fingerprints_: string[];
-  private showSetupFingerprintDialog_: boolean;
-  private allowAddAnotherFinger_: boolean;
+  declare private fingerprints_: string[];
+  declare private showSetupFingerprintDialog_: boolean;
+  declare private allowAddAnotherFinger_: boolean;
   private browserProxy_: FingerprintBrowserProxy;
 
   constructor() {

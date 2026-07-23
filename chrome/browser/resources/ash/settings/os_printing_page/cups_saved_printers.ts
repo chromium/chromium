@@ -148,19 +148,19 @@ export class SettingsCupsSavedPrintersElement extends
     ];
   }
 
-  activePrinter: CupsPrinterInfo|null;
-  printersCount: number;
-  searchTerm: string;
+  declare activePrinter: CupsPrinterInfo|null;
+  declare printersCount: number;
+  declare searchTerm: string;
 
-  private activePrinterListEntryIndex_: number;
+  declare private activePrinterListEntryIndex_: number;
   private browserProxy_: CupsPrintersBrowserProxy;
-  private filteredPrinters_: PrinterListEntry[];
-  private hasShowMoreBeenTapped_: boolean;
-  private lastFocused_: Object;
-  private listBlurred_: boolean;
-  private newPrinters_: PrinterListEntry[];
+  declare private filteredPrinters_: PrinterListEntry[];
+  declare private hasShowMoreBeenTapped_: boolean;
+  declare private lastFocused_: Object;
+  declare private listBlurred_: boolean;
+  declare private newPrinters_: PrinterListEntry[];
   private visiblePrinterCounter_: number;
-  private printerStatusReasonCache_: Map<string, PrinterStatusReason>;
+  declare private printerStatusReasonCache_: Map<string, PrinterStatusReason>;
 
   constructor() {
     super();

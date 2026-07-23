@@ -50,9 +50,9 @@ export class AddPrintServerDialogElement extends PolymerElement {
     };
   }
   private browserProxy_: CupsPrintersBrowserProxy;
-  private errorText_: string;
-  private inProgress_: boolean;
-  private printServerAddress_: string;
+  declare private errorText_: string;
+  declare private inProgress_: boolean;
+  declare private printServerAddress_: string;
 
   constructor() {
     super();

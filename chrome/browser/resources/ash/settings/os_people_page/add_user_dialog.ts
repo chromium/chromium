@@ -86,9 +86,9 @@ export class SettingsUsersAddUserDialogElement extends
     };
   }
 
-  private errorCode_: UserAddError;
-  private isEmail_: boolean;
-  private isEmpty_: boolean;
+  declare private errorCode_: UserAddError;
+  declare private isEmail_: boolean;
+  declare private isEmpty_: boolean;
   private usersPrivate_: typeof chrome.usersPrivate;
 
   constructor() {

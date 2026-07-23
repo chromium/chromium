@@ -102,15 +102,15 @@ export class OsSettingsPeoplePageElement extends
     };
   }
 
-  prefs: PrefsState;
-  private accounts_: Account[];
-  private deviceAccount_: Account|null;
+  declare prefs: PrefsState;
+  declare private accounts_: Account[];
+  declare private deviceAccount_: Account|null;
   private graduationMojoProvider_: GraduationHandlerInterface;
   private graduationObserverReceiver_: GraduationObserverReceiver|null;
-  private isAccountManagerEnabled_: boolean;
-  private showGraduationApp_: boolean;
-  private showParentalControls_: boolean;
-  private section_: Section;
+  declare private isAccountManagerEnabled_: boolean;
+  declare private showGraduationApp_: boolean;
+  declare private showParentalControls_: boolean;
+  declare private section_: Section;
 
   constructor() {
     super();

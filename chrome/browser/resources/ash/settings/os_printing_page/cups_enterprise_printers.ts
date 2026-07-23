@@ -123,16 +123,16 @@ export class SettingsCupsEnterprisePrintersElement extends
     ];
   }
 
-  activePrinter: CupsPrinterInfo;
-  printersCount: number;
-  searchTerm: string;
+  declare activePrinter: CupsPrinterInfo;
+  declare printersCount: number;
+  declare searchTerm: string;
 
-  private activePrinterListEntryIndex_: number;
+  declare private activePrinterListEntryIndex_: number;
   private browserProxy_: CupsPrintersBrowserProxy;
-  private filteredPrinters_: PrinterListEntry[];
-  private hasShowMoreBeenTapped_: boolean;
-  private lastFocused_: Object;
-  private listBlurred_: boolean;
+  declare private filteredPrinters_: PrinterListEntry[];
+  declare private hasShowMoreBeenTapped_: boolean;
+  declare private lastFocused_: Object;
+  declare private listBlurred_: boolean;
   private visiblePrinterCounter_: number;
 
   constructor() {

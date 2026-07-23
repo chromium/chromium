@@ -106,16 +106,16 @@ export class SettingsCupsNearbyPrintersElement extends
     return ['onSearchOrPrintersChanged_(nearbyPrinters.*, searchTerm)'];
   }
 
-  activePrinter: CupsPrinterInfo;
-  printersCount: number;
-  searchTerm: string;
-  userPrintersAllowed: boolean;
+  declare activePrinter: CupsPrinterInfo;
+  declare printersCount: number;
+  declare searchTerm: string;
+  declare userPrintersAllowed: boolean;
 
-  private activePrinterListEntryIndex_: number;
-  private filteredPrinters_: PrinterListEntry[];
-  private lastFocused_: Object;
-  private listBlurred_: boolean;
-  private savingPrinter_: boolean;
+  declare private activePrinterListEntryIndex_: number;
+  declare private filteredPrinters_: PrinterListEntry[];
+  declare private lastFocused_: Object;
+  declare private listBlurred_: boolean;
+  declare private savingPrinter_: boolean;
 
   override ready(): void {
     super.ready();

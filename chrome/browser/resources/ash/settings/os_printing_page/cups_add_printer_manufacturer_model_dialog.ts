@@ -99,18 +99,18 @@ export class AddPrinterManufacturerModelDialogElement extends PolymerElement {
     ];
   }
 
-  activePrinter: CupsPrinterInfo;
-  manufacturerList: string[];
-  modelList: string[];
+  declare activePrinter: CupsPrinterInfo;
+  declare manufacturerList: string[];
+  declare modelList: string[];
 
-  private addPrinterInProgress_: boolean;
+  declare private addPrinterInProgress_: boolean;
   private browserProxy_: CupsPrintersBrowserProxy;
-  private errorText_: string;
-  private eulaUrl_: string;
-  private invalidPPD_: boolean;
-  private isManufacturerInvalid_: boolean;
-  private isModelInvalid_: boolean;
-  private newUserPPD_: string;
+  declare private errorText_: string;
+  declare private eulaUrl_: string;
+  declare private invalidPPD_: boolean;
+  declare private isManufacturerInvalid_: boolean;
+  declare private isModelInvalid_: boolean;
+  declare private newUserPPD_: string;
 
   constructor() {
     super();

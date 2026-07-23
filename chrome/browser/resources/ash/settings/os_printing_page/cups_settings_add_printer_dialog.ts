@@ -97,13 +97,13 @@ export class SettingsCupsAddPrinterDialogElement extends PolymerElement {
     };
   }
 
-  newPrinter: CupsPrinterInfo;
+  declare newPrinter: CupsPrinterInfo;
 
-  private currentDialog_: string;
-  private previousDialog_: string;
-  private showAddPrintServerDialog_: boolean;
-  private showManuallyAddDialog_: boolean;
-  private showManufacturerDialog_: boolean;
+  declare private currentDialog_: string;
+  declare private previousDialog_: string;
+  declare private showAddPrintServerDialog_: boolean;
+  declare private showManuallyAddDialog_: boolean;
+  declare private showManufacturerDialog_: boolean;
 
   override ready(): void {
     super.ready();

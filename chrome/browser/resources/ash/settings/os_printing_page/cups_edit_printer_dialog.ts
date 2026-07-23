@@ -184,25 +184,25 @@ export class SettingsCupsEditPrinterDialogElement extends
     ];
   }
 
-  activePrinter: CupsPrinterInfo;
-  manufacturerList: string[];
-  modelList: string[];
+  declare activePrinter: CupsPrinterInfo;
+  declare manufacturerList: string[];
+  declare modelList: string[];
 
-  private arePrinterFieldsInitialized_: boolean;
+  declare private arePrinterFieldsInitialized_: boolean;
   private browserProxy_: CupsPrintersBrowserProxy;
-  private errorText_: string;
-  private eulaUrl_: string;
-  private invalidPPD_: boolean;
-  private isManufacturerInvalid_: boolean;
-  private isModelInvalid_: boolean;
-  private isOnline_: boolean;
-  private needsReconfigured_: boolean;
+  declare private errorText_: string;
+  declare private eulaUrl_: string;
+  declare private invalidPPD_: boolean;
+  declare private isManufacturerInvalid_: boolean;
+  declare private isModelInvalid_: boolean;
+  declare private isOnline_: boolean;
+  declare private needsReconfigured_: boolean;
   private networkConfig_: CrosNetworkConfigInterface;
-  private networkProtocolActive_: boolean;
-  private newUserPPD_: string;
-  private pendingPrinter_: CupsPrinterInfo;
-  private printerInfoChanged_: boolean;
-  private userPPD_: string;
+  declare private networkProtocolActive_: boolean;
+  declare private newUserPPD_: string;
+  declare private pendingPrinter_: CupsPrinterInfo;
+  declare private printerInfoChanged_: boolean;
+  declare private userPPD_: string;
 
   constructor() {
     super();

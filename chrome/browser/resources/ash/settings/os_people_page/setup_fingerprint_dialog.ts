@@ -104,12 +104,12 @@ export class SettingsSetupFingerprintDialogElement extends
     };
   }
 
-  allowAddAnotherFinger: boolean;
-  authToken: string;
+  declare allowAddAnotherFinger: boolean;
+  declare authToken: string;
   private browserProxy_: FingerprintBrowserProxy;
-  private percentComplete_: number;
-  private problemMessage_: string;
-  private step_: FingerprintSetupStep;
+  declare private percentComplete_: number;
+  declare private problemMessage_: string;
+  declare private step_: FingerprintSetupStep;
   private tapSensorMessageTimeoutId_: number;
 
   constructor() {

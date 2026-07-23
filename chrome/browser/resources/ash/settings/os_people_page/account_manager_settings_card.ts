@@ -87,11 +87,11 @@ export class AccountManagerSettingsCardElement extends
     };
   }
 
-  deviceAccount: Account|null;
-  private isChildUser_: boolean;
-  private isDeviceAccountManaged_: boolean;
-  private isSecondaryGoogleAccountSigninAllowed_: boolean;
-  private managedByIcon_: string;
+  declare deviceAccount: Account|null;
+  declare private isChildUser_: boolean;
+  declare private isDeviceAccountManaged_: boolean;
+  declare private isSecondaryGoogleAccountSigninAllowed_: boolean;
+  declare private managedByIcon_: string;
 
   private onManagedIconClick_(): void {
     if (this.isChildUser_) {

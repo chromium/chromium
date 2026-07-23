@@ -48,9 +48,9 @@ export class SettingsSetLocalPasswordDialogElement extends PolymerElement {
     };
   }
 
-  authToken: string|null;
-  private showError_: boolean;
-  private password_: string|null;
+  declare authToken: string|null;
+  declare private showError_: boolean;
+  declare private password_: string|null;
 
   override ready(): void {
     super.ready();

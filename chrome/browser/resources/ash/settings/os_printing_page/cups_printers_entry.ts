@@ -72,12 +72,12 @@ export class SettingsCupsPrintersEntryElement extends
     };
   }
 
-  printerEntry: PrinterListEntry;
-  savingPrinter: boolean;
-  userPrintersAllowed: boolean;
-  printerStatusReasonCache: Map<string, PrinterStatusReason>;
-  numPrinters: number;
-  private hasHighSeverityError_: boolean;
+  declare printerEntry: PrinterListEntry;
+  declare savingPrinter: boolean;
+  declare userPrintersAllowed: boolean;
+  declare printerStatusReasonCache: Map<string, PrinterStatusReason>;
+  declare numPrinters: number;
+  declare private hasHighSeverityError_: boolean;
 
   /**
    * Fires a custom event when the menu button is clicked. Sends the details of

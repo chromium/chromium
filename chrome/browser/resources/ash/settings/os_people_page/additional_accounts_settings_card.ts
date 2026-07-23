@@ -96,7 +96,7 @@ export class AdditionalAccountsSettingsCardElement extends
     };
   }
 
-  accounts: Account[];
+  declare accounts: Account[];
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -104,11 +104,11 @@ export class AdditionalAccountsSettingsCardElement extends
     Setting.kRemoveAccount,
   ]);
 
-  private actionMenuAccount_: Account|null;
+  declare private actionMenuAccount_: Account|null;
   private browserProxy_: AccountManagerBrowserProxy;
-  private isChildUser_: boolean;
-  private isDeviceAccountManaged_: boolean;
-  private isSecondaryGoogleAccountSigninAllowed_: boolean;
+  declare private isChildUser_: boolean;
+  declare private isDeviceAccountManaged_: boolean;
+  declare private isSecondaryGoogleAccountSigninAllowed_: boolean;
 
   constructor() {
     super();

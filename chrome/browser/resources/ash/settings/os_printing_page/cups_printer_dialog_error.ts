@@ -33,7 +33,7 @@ export class PrinterDialogErrorElement extends PolymerElement {
     };
   }
 
-  private errorText: string;
+  declare private errorText: string;
 }
 
 declare global {

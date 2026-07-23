@@ -92,11 +92,11 @@ export class OsSyncControlsSubpageElement extends
     Setting.kSplitSyncOnOff,
   ]);
 
-  override hidden: boolean;
-  private areDataTypeTogglesDisabled_: boolean;
+  declare hidden: boolean;
+  declare private areDataTypeTogglesDisabled_: boolean;
   private supportedSettingsIds: Set<Setting>;
   private browserProxy_: OsSyncBrowserProxy;
-  private osSyncPrefs: OsSyncPrefs|undefined;
+  declare private osSyncPrefs: OsSyncPrefs|undefined;
   private cachedOsSyncPrefs_: Partial<Record<keyof OsSyncPrefs, any>>|null;
 
   constructor() {

@@ -53,7 +53,7 @@ class LocalDataRecoveryDialogElement extends
     };
   }
 
-  authToken: string|undefined;
+  declare authToken: string|undefined;
 
   constructor() {
     super();

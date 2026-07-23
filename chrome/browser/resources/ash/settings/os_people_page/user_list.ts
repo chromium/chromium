@@ -75,8 +75,8 @@ export class SettingsUserListElement extends SettingsUserListElementBase {
     };
   }
 
-  disabled: boolean;
-  private users_: chrome.usersPrivate.User[];
+  declare disabled: boolean;
+  declare private users_: chrome.usersPrivate.User[];
   private usersPrivate_: typeof chrome.usersPrivate;
 
   constructor() {

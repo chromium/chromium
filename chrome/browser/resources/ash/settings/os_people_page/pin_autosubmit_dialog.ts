@@ -105,12 +105,12 @@ class SettingsPinAutosubmitDialogElement extends
     };
   }
 
-  authToken: string|undefined;
-  private error_: string|null;
-  private confirmButtonDisabled_: boolean;
-  private pinValue_: string;
-  private quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
-  private requestInProcess_: boolean;
+  declare authToken: string|undefined;
+  declare private error_: string|null;
+  declare private confirmButtonDisabled_: boolean;
+  declare private pinValue_: string;
+  declare private quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
+  declare private requestInProcess_: boolean;
 
   static get observers() {
     return [
