@@ -4676,6 +4676,61 @@ TEST_F(AXPositionTest, CreatePositionAtLineBoundaryWithTrailingIgnoredContent) {
   EXPECT_EQ(5, line_position->text_offset());
 }
 
+TEST_F(AXPositionTest, CreateLineStartBoundaryStaysOnAnchorForEmptyObjectLeaf) {
+  // A container whose only content is an empty-object leaf: a node with a
+  // single ignored child, such as an icon whose graphic is ignored. Its
+  // accessible text is a single embedded object character. The line-start
+  // boundary at the start of the container must stay on the container, not
+  // descend into the empty-object leaf.
+  // +-root_data
+  //   +-container_data       "[OBJ]"
+  //     +-icon_data          "[OBJ]" (leaf, because its only child is ignored)
+  //       +-graphic_data     IGNORED
+  constexpr AXNodeID kRootId = 1;
+  constexpr AXNodeID kContainerId = 2;
+  constexpr AXNodeID kIconId = 3;
+  constexpr AXNodeID kGraphicId = 4;
+
+  AXNodeData root_data;
+  root_data.id = kRootId;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData container_data;
+  container_data.id = kContainerId;
+  container_data.role = ax::mojom::Role::kGenericContainer;
+  container_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData icon_data;
+  icon_data.id = kIconId;
+  icon_data.role = ax::mojom::Role::kGenericContainer;
+
+  AXNodeData graphic_data;
+  graphic_data.id = kGraphicId;
+  graphic_data.role = ax::mojom::Role::kNone;
+  graphic_data.AddState(ax::mojom::State::kIgnored);
+
+  root_data.child_ids = {container_data.id};
+  container_data.child_ids = {icon_data.id};
+  icon_data.child_ids = {graphic_data.id};
+
+  SetTree(CreateAXTree({root_data, container_data, icon_data, graphic_data}));
+
+  // A backward line-start search from the start of the container, stopping at
+  // its boundary. The result must remain rooted on the container.
+  TestPositionType text_position =
+      CreateTextPosition(container_data, 0 /* text_offset */,
+                         ax::mojom::TextAffinity::kDownstream);
+  ASSERT_NE(nullptr, text_position);
+  TestPositionType line_position = text_position->CreatePositionAtTextBoundary(
+      ax::mojom::TextBoundary::kLineStart, ax::mojom::MoveDirection::kBackward,
+      {AXBoundaryBehavior::kStopAtAnchorBoundary,
+       AXBoundaryDetection::kCheckInitialPosition});
+  ASSERT_NE(nullptr, line_position);
+  ASSERT_FALSE(line_position->IsNullPosition());
+  EXPECT_EQ(container_data.id, line_position->anchor_id());
+}
+
 TEST_F(AXPositionTest, CreatePositionAtInvalidGraphemeBoundary) {
   std::vector<int> text_offsets;
   SetTree(CreateMultilingualDocument(&text_offsets));

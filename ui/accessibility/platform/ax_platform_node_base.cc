@@ -2275,7 +2275,12 @@ int AXPlatformNodeBase::FindTextBoundary(
       position->CreatePositionAtTextBoundary(boundary, direction, options);
   if (boundary_position->IsNullPosition())
     return -1;
-  DCHECK_EQ(boundary_position->GetAnchor(), position->GetAnchor());
+  DCHECK_EQ(boundary_position->GetAnchor(), position->GetAnchor())
+      << "The text boundary search moved to a different object."
+      << "\n  start position:    " << *position
+      << "\n  start anchor:      " << position->GetAnchor()
+      << "\n  boundary position: " << *boundary_position
+      << "\n  boundary anchor:   " << boundary_position->GetAnchor();
   DCHECK_GE(boundary_position->text_offset(), 0);
   return boundary_position->text_offset();
 }

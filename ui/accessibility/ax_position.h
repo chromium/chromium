@@ -3919,16 +3919,33 @@ class AXPosition {
     AXPositionInstance unignored_position = text_position->AsUnignoredPosition(
         AXPositionAdjustmentBehavior::kMoveForward);
 
-    // If there are no unignored positions then `text_position` is anchored in
-    // ignored content at the end of the whole content. For
-    // `kStopAtLastAnchorBoundary`, try to adjust in the opposite direction to
-    // return a position within the whole content just before crossing into the
-    // ignored content. This will be the last unignored anchor boundary.
-    if (unignored_position->IsNullPosition() &&
-        options.boundary_behavior ==
-            AXBoundaryBehavior::kStopAtLastAnchorBoundary) {
-      unignored_position = text_position->AsUnignoredPosition(
-          AXPositionAdjustmentBehavior::kMoveBackward);
+    // AsUnignoredPosition() returns a leaf position (or null), which is not
+    // always what a given boundary behavior needs. Handle each behavior
+    // separately.
+    switch (options.boundary_behavior) {
+      case AXBoundaryBehavior::kCrossBoundary:
+        // Any unignored position is acceptable, including a leaf in another
+        // subtree.
+        break;
+      case AXBoundaryBehavior::kStopAtAnchorBoundary:
+        // The result must stay on this anchor, but normalizing to a leaf can
+        // move it off the anchor it was rooted at above. Un-ignore it in a way
+        // that keeps the anchor instead.
+        unignored_position =
+            text_position->TryAsUnignoredPositionPreservingAnchor(
+                move_direction == ax::mojom::MoveDirection::kBackward
+                    ? AXPositionAdjustmentBehavior::kMoveBackward
+                    : AXPositionAdjustmentBehavior::kMoveForward);
+        break;
+      case AXBoundaryBehavior::kStopAtLastAnchorBoundary:
+        // A null position means `text_position` is anchored in ignored content
+        // at the end of the whole content. Adjust in the opposite direction to
+        // return the last unignored position just before that ignored content.
+        if (unignored_position->IsNullPosition()) {
+          unignored_position = text_position->AsUnignoredPosition(
+              AXPositionAdjustmentBehavior::kMoveBackward);
+        }
+        break;
     }
 
     unignored_position->affinity_ = forward_upstream
