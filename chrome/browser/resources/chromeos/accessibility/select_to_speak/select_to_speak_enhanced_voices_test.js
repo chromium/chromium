@@ -44,9 +44,11 @@ SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
   }
 };
 
+// TODO (crbug.com/535989327): Re-enable this test after migrating to new speech
+// backend.
 AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
-    'EnablesVoicesIfConfirmedInDialog', async function() {
+    'DISABLED_EnablesVoicesIfConfirmedInDialog', async function() {
       this.confirmationDialogResponse_ = true;
 
       const root = await this.runWithLoadedTree('<p>This is some text</p>');
@@ -70,9 +72,11 @@ AX_TEST_F(
       this.triggerReadMouseSelectedText(event, event);
     });
 
+// TODO (crbug.com/535989327): Re-enable this test after migrating to new speech
+// backend.
 AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
-    'DisablesVoicesIfCanceledInDialog', async function() {
+    'DISABLED_DisablesVoicesIfCanceledInDialog', async function() {
       this.confirmationDialogResponse_ = false;
 
       const root = await this.runWithLoadedTree('<p>This is some text</p>');
@@ -96,9 +100,11 @@ AX_TEST_F(
       this.triggerReadMouseSelectedText(event, event);
     });
 
+// TODO (crbug.com/535989327): Re-enable this test after migrating to new speech
+// backend.
 AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
-    'DisablesVoicesIfDisallowedByPolicy', async function() {
+    'DISABLED_DisablesVoicesIfDisallowedByPolicy', async function() {
       this.confirmationDialogResponse_ = true;
 
       const root = await this.runWithLoadedTree('<p>This is some text</p>');
@@ -124,9 +130,11 @@ AX_TEST_F(
       this.triggerReadMouseSelectedText(event, event);
     });
 
+// TODO (crbug.com/535989327): Re-enable this test after migrating to new speech
+// backend.
 AX_TEST_F(
     'SelectToSpeakEnhancedNetworkTtsVoicesTest',
-    'DisablesDialogIfDisallowedByPolicy', async function() {
+    'DISABLED_DisablesDialogIfDisallowedByPolicy', async function() {
       await this.setEnhancedNetworkVoicesPolicy(/* allowed= */ false);
 
       // For some reason after setting enhanced network voices pref

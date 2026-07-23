@@ -1281,7 +1281,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Whether enhanced network TTS voices were enabled when Select-to-Speak was
-    activated.
+    activated. Enhanced network voices were forced off in M152.
   </summary>
 </histogram>
 

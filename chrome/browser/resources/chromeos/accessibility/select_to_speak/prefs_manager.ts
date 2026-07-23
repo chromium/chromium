@@ -527,9 +527,11 @@ export class PrefsManager {
    * @return True if enhanced TTS voices are enabled.
    */
   enhancedNetworkVoicesEnabled(): boolean {
-    return this.enhancedNetworkVoicesAllowed_ ?
-        this.enhancedNetworkVoicesEnabled_ :
-        false;
+    // TODO (crbug.com/535989327): Re-enable after migrating to new speech
+    // backend.
+    // return this.enhancedNetworkVoicesAllowed_ ?
+    //     this.enhancedNetworkVoicesEnabled_ : false;
+    return false;
   }
 
   /**
@@ -538,7 +540,10 @@ export class PrefsManager {
    * @return True if enhanced TTS voices are allowed.
    */
   enhancedNetworkVoicesAllowed(): boolean {
-    return this.enhancedNetworkVoicesAllowed_;
+    // TODO (crbug.com/535989327): Re-enable after migrating to new speech
+    // backend.
+    // return this.enhancedNetworkVoicesAllowed_;
+    return false;
   }
 
   /**
@@ -548,7 +553,10 @@ export class PrefsManager {
    * @returns True if the initial popup dialog has been shown already.
    */
   enhancedVoicesDialogShown(): boolean {
-    return this.enhancedVoicesDialogShown_;
+    // TODO (crbug.com/535989327): Re-enable after migrating to new speech
+    // backend.
+    // return this.enhancedVoicesDialogShown_;
+    return true;
   }
 
   /**

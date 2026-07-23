@@ -922,8 +922,11 @@ IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest, AccessibilityMenuVisibility) {
   EXPECT_FALSE(ShouldShowAccessibilityMenu());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerTest,
-                       EnhancedNetworkVoicesExtensionLoadedWhenNeeded) {
+// TODO (crbug.com/535989327): Re-enable this test after migrating to new speech
+// backend.
+IN_PROC_BROWSER_TEST_F(
+    AccessibilityManagerTest,
+    DISABLED_EnhancedNetworkVoicesExtensionLoadedWhenNeeded) {
   auto* component_loader =
       extensions::ComponentLoader::Get(browser()->GetProfile());
 
