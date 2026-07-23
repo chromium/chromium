@@ -26,53 +26,53 @@ class TestCountryNames : public CountryNames {
 // Test mapping of localized country names to country codes.
 TEST(CountryNamesTest, GetCountryCode_BasicMapping) {
   TestCountryNames en_us_names("en_US");
-  EXPECT_EQ("US", en_us_names.GetCountryCode(u"United States"));
-  EXPECT_EQ("CA", en_us_names.GetCountryCode(u"Canada"));
-  EXPECT_EQ("CZ", en_us_names.GetCountryCode(u"Czech Republic"));
+  EXPECT_EQ(en_us_names.GetCountryCode(u"United States"), "US");
+  EXPECT_EQ(en_us_names.GetCountryCode(u"Canada"), "CA");
+  EXPECT_EQ(en_us_names.GetCountryCode(u"Czech Republic"), "CZ");
 }
 
 TEST(CountryNamesTest, GetCountryCode_CaseInsensitiveMapping) {
-  EXPECT_EQ("US", TestCountryNames("en_US").GetCountryCode(u"united states"));
+  EXPECT_EQ(TestCountryNames("en_US").GetCountryCode(u"united states"), "US");
 }
 
 TEST(CountryNamesTest, GetCountryCode_CodesMapToThemselves) {
   TestCountryNames en_us_names("en_US");
   TestCountryNames fr_ca_names("fr_CA");
-  EXPECT_EQ("US", en_us_names.GetCountryCode(u"US"));
-  EXPECT_EQ("HU", en_us_names.GetCountryCode(u"hu"));
-  EXPECT_EQ("CA", fr_ca_names.GetCountryCode(u"CA"));
-  EXPECT_EQ("MX", fr_ca_names.GetCountryCode(u"mx"));
+  EXPECT_EQ(en_us_names.GetCountryCode(u"US"), "US");
+  EXPECT_EQ(en_us_names.GetCountryCode(u"hu"), "HU");
+  EXPECT_EQ(fr_ca_names.GetCountryCode(u"CA"), "CA");
+  EXPECT_EQ(fr_ca_names.GetCountryCode(u"mx"), "MX");
 }
 
 TEST(CountryNamesTest, GetCountryCode_BasicSynonyms) {
   TestCountryNames en_us_names("en_US");
-  EXPECT_EQ("US", en_us_names.GetCountryCode(u"United States of America"));
-  EXPECT_EQ("US", en_us_names.GetCountryCode(u"USA"));
+  EXPECT_EQ(en_us_names.GetCountryCode(u"United States of America"), "US");
+  EXPECT_EQ(en_us_names.GetCountryCode(u"USA"), "US");
 }
 
 TEST(CountryNamesTest, GetCountryCode_OtherLocales) {
-  EXPECT_EQ("US", TestCountryNames("es").GetCountryCode(u"Estados Unidos"));
-  EXPECT_EQ("IT", TestCountryNames("it").GetCountryCode(u"Italia"));
-  EXPECT_EQ("DE", TestCountryNames("nl").GetCountryCode(u"duitsland"));
+  EXPECT_EQ(TestCountryNames("es").GetCountryCode(u"Estados Unidos"), "US");
+  EXPECT_EQ(TestCountryNames("it").GetCountryCode(u"Italia"), "IT");
+  EXPECT_EQ(TestCountryNames("nl").GetCountryCode(u"duitsland"), "DE");
 }
 
 TEST(CountryNamesTest, GetCountryCode_EnUsFallback) {
   TestCountryNames es_names("es");
-  EXPECT_EQ("US", es_names.GetCountryCode(u"United States"));
-  EXPECT_EQ("US", es_names.GetCountryCode(u"united states"));
-  EXPECT_EQ("US", es_names.GetCountryCode(u"USA"));
+  EXPECT_EQ(es_names.GetCountryCode(u"United States"), "US");
+  EXPECT_EQ(es_names.GetCountryCode(u"united states"), "US");
+  EXPECT_EQ(es_names.GetCountryCode(u"USA"), "US");
 }
 
 TEST(CountryNamesTest, GetCountryCodeForLocalizedCountryName) {
   // Initialize with the default locale.
   TestCountryNames names("en_US");
-  EXPECT_EQ("AM",
-            names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"));
+  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"),
+            "AM");
   // Check that there is no cache by requesting the same result twice.
-  EXPECT_EQ("AM",
-            names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"));
-  EXPECT_EQ("AZ",
-            names.GetCountryCodeForLocalizedCountryName(u"Azerbeidzjan", "nl"));
+  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"),
+            "AM");
+  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Azerbeidzjan", "nl"),
+            "AZ");
 }
 
 TEST(CountryNamesTest, GetCachedCountryCodeForLocalizedCountryName) {
@@ -83,8 +83,8 @@ TEST(CountryNamesTest, GetCachedCountryCodeForLocalizedCountryName) {
   EXPECT_FALSE(names.IsCountryNamesForLocaleCachedForTesting("de"));
 
   // Make a lookup of the entry that should result in a cache write.
-  EXPECT_EQ("AM",
-            names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"));
+  EXPECT_EQ(names.GetCountryCodeForLocalizedCountryName(u"Armenien", "de"),
+            "AM");
 
   // Verify that the entry is cached.
   EXPECT_TRUE(names.IsCountryNamesForLocaleCachedForTesting("de"));
@@ -92,7 +92,7 @@ TEST(CountryNamesTest, GetCachedCountryCodeForLocalizedCountryName) {
 
 TEST(CountryNamesTest, GetCountryCode_EmptyString) {
   TestCountryNames en_us_names("en_US");
-  EXPECT_EQ("", en_us_names.GetCountryCode(u""));
+  EXPECT_EQ(en_us_names.GetCountryCode(u""), "");
 }
 
 // Tests that native names of countries are mapped to their country codes
@@ -101,13 +101,13 @@ TEST(CountryNamesTest, GetCountryCode_EmptyString) {
 TEST(CountryNamesTest, GetCountryCode_NativeNames_Uppercase) {
   TestCountryNames en_us_names("en_US");
   // German, uppercase
-  EXPECT_EQ("DE", en_us_names.GetCountryCode(u"DEUTSCHLAND"));
+  EXPECT_EQ(en_us_names.GetCountryCode(u"DEUTSCHLAND"), "DE");
   // Greek, uppercase
-  EXPECT_EQ("GR", en_us_names.GetCountryCode(u"ΕΛΛΆΔΑ"));
+  EXPECT_EQ(en_us_names.GetCountryCode(u"ΕΛΛΆΔΑ"), "GR");
   // Russian, uppercase
-  EXPECT_EQ("RU", en_us_names.GetCountryCode(u"РОССИЯ"));
+  EXPECT_EQ(en_us_names.GetCountryCode(u"РОССИЯ"), "RU");
   // Japanese, no case, should still work.
-  EXPECT_EQ("JP", en_us_names.GetCountryCode(u"日本"));
+  EXPECT_EQ(en_us_names.GetCountryCode(u"日本"), "JP");
 }
 
 // Tests that country native names are correctly mapped even in lowercase.
@@ -115,13 +115,13 @@ TEST(CountryNamesTest, GetCountryCode_NativeNames_Uppercase) {
 // international uppercasing works as expected.
 TEST(CountryNamesTest, GetCountryCode_NativeNames_Lowercase) {
   TestCountryNames en_us_names("en_US");
-  EXPECT_EQ("DE", en_us_names.GetCountryCode(u"Deutschland"));
-  EXPECT_EQ("ES", en_us_names.GetCountryCode(u"España"));
-  EXPECT_EQ("FR", en_us_names.GetCountryCode(u"France"));
-  EXPECT_EQ("GR", en_us_names.GetCountryCode(u"ελλάδα"));
-  EXPECT_EQ("RU", en_us_names.GetCountryCode(u"россия"));
+  EXPECT_EQ(en_us_names.GetCountryCode(u"Deutschland"), "DE");
+  EXPECT_EQ(en_us_names.GetCountryCode(u"España"), "ES");
+  EXPECT_EQ(en_us_names.GetCountryCode(u"France"), "FR");
+  EXPECT_EQ(en_us_names.GetCountryCode(u"ελλάδα"), "GR");
+  EXPECT_EQ(en_us_names.GetCountryCode(u"россия"), "RU");
   // Japanese, no case, should still work.
-  EXPECT_EQ("JP", en_us_names.GetCountryCode(u"日本"));
+  EXPECT_EQ(en_us_names.GetCountryCode(u"日本"), "JP");
 }
 
 // Test mapping of an empty country name to an country code.
