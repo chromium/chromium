@@ -78,8 +78,11 @@ std::string Format(const std::string& message,
   int32_t interval_ms =
       static_cast<int32_t>((timestamp - start_time).InMilliseconds());
   // Log start time (current time).
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
   const std::string now =
-      base::UnlocalizedTimeFormatWithPattern(base::Time::Now(), "HH:mm:ss.SSS");
+      base::StringPrintf("%02d:%02d:%02d.%03d", exploded.hour, exploded.minute,
+                         exploded.second, exploded.millisecond);
   return base::StringPrintf("[%03d:%03d, %s] %s", interval_ms / 1000,
                             interval_ms % 1000, now.c_str(), message.c_str());
 }
@@ -485,8 +488,11 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
   }
 
   // Log start time (current time).
-  LogToCircularBuffer(base::UnlocalizedTimeFormatWithPattern(
-      base::Time::Now(), "'Start 'y-MM-dd HH:mm:ss"));
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  LogToCircularBuffer(base::StringPrintf(
+      "Start %04d-%02d-%02d %02d:%02d:%02d", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second));
 
   // Write metadata if received before logging started.
   if (meta_data_ && !meta_data_->empty()) {

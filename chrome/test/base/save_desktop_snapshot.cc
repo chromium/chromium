@@ -152,9 +152,13 @@ base::FilePath SaveDesktopSnapshot(const base::FilePath& output_dir) {
   }
 
   // Create the output file.
-  base::FilePath output_path =
-      output_dir.AppendASCII(base::UnlocalizedTimeFormatWithPattern(
-          base::Time::Now(), "'ss_'yyyyMMddHHmmss_SSS'.png'"));
+  base::Time::Exploded exploded;
+  base::Time::Now().LocalExplode(&exploded);
+  std::string filename = base::StringPrintf(
+      "ss_%04d%02d%02d%02d%02d%02d_%03d.png", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute, exploded.second,
+      exploded.millisecond);
+  base::FilePath output_path = output_dir.AppendASCII(filename);
   uint32_t flags = base::File::FLAG_CREATE | base::File::FLAG_WRITE;
 #if BUILDFLAG(IS_WIN)
   flags |=

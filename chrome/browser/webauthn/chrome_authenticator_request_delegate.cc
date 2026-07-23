@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -105,7 +106,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "device/fido/mac/credential_metadata.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/views/widget/widget.h"
 #endif
 
@@ -409,10 +409,12 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
   }
 #if BUILDFLAG(IS_MAC)
   if (authenticator_type == device::AuthenticatorType::kTouchID) {
+    base::Time::Exploded exploded;
+    base::Time::Now().UTCExplode(&exploded);
     profile()->GetPrefs()->SetString(
         kWebAuthnTouchIdLastUsed,
-        base::UnlocalizedTimeFormatWithPattern(base::Time::Now(), "yyyy-MM-dd",
-                                               icu::TimeZone::getGMT()));
+        base::StringPrintf("%04d-%02d-%02d", exploded.year, exploded.month,
+                           exploded.day_of_month));
     webauthn::user_actions::RecordChromeProfileSuccess();
   }
   if (authenticator_type == device::AuthenticatorType::kICloudKeychain) {

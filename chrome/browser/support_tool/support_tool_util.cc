@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/feedback/system_logs/log_sources/chrome_internal_log_source.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/support_tool/signin_data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "build/chromeos_buildflags.h"
@@ -361,9 +361,12 @@ base::FilePath GetFilepathToExport(base::FilePath target_directory,
   if (!case_id.empty()) {
     filename += case_id + "_";
   }
-  return target_directory.AppendASCII(
-      filename + base::UnlocalizedTimeFormatWithPattern(
-                     timestamp, "'UTC'yyyyMMdd_HHmm", icu::TimeZone::getGMT()));
+  base::Time::Exploded exploded;
+  timestamp.UTCExplode(&exploded);
+  std::string timestamp_str = base::StringPrintf(
+      "UTC%04d%02d%02d_%02d%02d", exploded.year, exploded.month,
+      exploded.day_of_month, exploded.hour, exploded.minute);
+  return target_directory.AppendASCII(filename + timestamp_str);
 }
 
 std::string SupportToolErrorsToString(

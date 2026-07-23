@@ -640,9 +640,12 @@ void ChromeInternalLogSource::PopulateOnboardingTime(
       profile->GetPrefs()->GetTime(ash::prefs::kOobeOnboardingTime);
   if (time.is_null())
     return;
+
+  base::Time::Exploded exploded;
+  time.UTCExplode(&exploded);
   response->emplace(kOnboardingTime,
-                    base::UnlocalizedTimeFormatWithPattern(
-                        time, "yyyy-MM-dd", icu::TimeZone::getGMT()));
+                    base::StringPrintf("%04d-%02d-%02d", exploded.year,
+                                       exploded.month, exploded.day_of_month));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

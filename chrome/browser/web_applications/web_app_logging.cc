@@ -22,6 +22,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -112,8 +113,10 @@ void RotateLogFileBlocking(scoped_refptr<FileUtilsWrapper> utils,
     return;
   }
   std::optional<base::FilePath> rotated_filename;
-  std::string date_str =
-      base::UnlocalizedTimeFormatWithPattern(clock->Now(), "y-MM-dd");
+  base::Time::Exploded exploded;
+  clock->Now().LocalExplode(&exploded);
+  std::string date_str = base::StringPrintf(
+      "%04d-%02d-%02d", exploded.year, exploded.month, exploded.day_of_month);
   for (int free_index = -1; free_index < kMaxRotatedLogFileIndex;
        ++free_index) {
     std::string suffix = date_str;

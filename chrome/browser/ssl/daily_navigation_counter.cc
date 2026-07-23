@@ -4,16 +4,17 @@
 
 #include "chrome/browser/ssl/daily_navigation_counter.h"
 
-#include "base/i18n/time_formatting.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
-#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace {
 
 // Returns the given time in yyyy-MM-dd format.
 std::string GetDateString(base::Time now) {
-  return base::UnlocalizedTimeFormatWithPattern(now.UTCMidnight(), "yyyy-MM-dd",
-                                                icu::TimeZone::getGMT());
+  base::Time::Exploded exploded;
+  now.UTCMidnight().UTCExplode(&exploded);
+  return base::StringPrintf("%04d-%02d-%02d", exploded.year, exploded.month,
+                            exploded.day_of_month);
 }
 
 }  // namespace
