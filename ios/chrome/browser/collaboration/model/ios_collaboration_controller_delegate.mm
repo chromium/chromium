@@ -699,7 +699,7 @@ void IOSCollaborationControllerDelegate::FetchPreviewItems(
     ShareKitPreviewItem* preview_item = [[ShareKitPreviewItem alloc] init];
     preview_item.title = base::SysUTF8ToNSString(tabs[i].url.GetHost());
     preview_item.image = SymbolWithPalette(
-        DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
+        SymbolWithPointSize(SymbolGlobeAmericas, kFaviconSize),
         @[ [UIColor colorNamed:kGrey400Color] ]);
     [preview_items addObject:preview_item];
   }

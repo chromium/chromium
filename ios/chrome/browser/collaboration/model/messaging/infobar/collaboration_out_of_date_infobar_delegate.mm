@@ -82,6 +82,6 @@ bool CollaborationOutOfDateInfoBarDelegate::Accept() {
 
 ui::ImageModel CollaborationOutOfDateInfoBarDelegate::GetIcon() const {
   UIImage* symbolImage =
-      DefaultSymbolWithPointSize(kTabGroupsSymbol, kInfobarSymbolPointSize);
+      SymbolWithPointSize(SymbolTabGroups, kInfobarSymbolPointSize);
   return ui::ImageModel::FromImage(gfx::Image(symbolImage));
 }
