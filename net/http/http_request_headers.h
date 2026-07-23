@@ -103,6 +103,7 @@ class NET_EXPORT HttpRequestHeaders {
   static constexpr char kProxyConnection[] = "Proxy-Connection";
   static constexpr char kRange[] = "Range";
   static constexpr char kReferer[] = "Referer";
+  static constexpr char kSecGPC[] = "Sec-GPC";
   static constexpr char kSecPurpose[] = "Sec-Purpose";
   static constexpr char kTransferEncoding[] = "Transfer-Encoding";
   static constexpr char kUpgradeInsecureRequests[] =

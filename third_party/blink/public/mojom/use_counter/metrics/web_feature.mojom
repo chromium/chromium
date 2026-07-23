@@ -5285,6 +5285,8 @@ enum WebFeature {
   kLocalNetworkAccessForWebRTCOptOut = 5968,
   kHTMLCameraElement = 5969,
   kHTMLMicrophoneElement = 5970,
+  kV8WorkerNavigator_GlobalPrivacyControl_AttributeGetter = 5971,
+  kV8Navigator_GlobalPrivacyControl_AttributeGetter = 5972,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

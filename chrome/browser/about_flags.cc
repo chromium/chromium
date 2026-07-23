@@ -12900,6 +12900,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableOmniboxAutofillName,
      flag_descriptions::kAutofillEnableOmniboxAutofillDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOmniboxAutofill)},
+    {"enable-global-privacy-control",
+     flag_descriptions::kGlobalPrivacyControlName,
+     flag_descriptions::kGlobalPrivacyControlDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kGlobalPrivacyControlForce)},
 
 #if BUILDFLAG(IS_ANDROID)
     {"android-bottom-bar", flag_descriptions::kAndroidBottomBarName,

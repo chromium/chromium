@@ -3486,6 +3486,14 @@
       status: "stable",
     },
     {
+      name: "GlobalPrivacyControl",
+      implied_by: ["GlobalPrivacyControlForce"],
+      base_feature: "none",
+    },
+    {
+      name: "GlobalPrivacyControlForce",
+    },
+    {
       name: "GraphemeClusterBoundsCheck",
       status: "stable",
     },

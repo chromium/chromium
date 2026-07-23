@@ -1546,6 +1546,7 @@ test("content_browsertests") {
     "../browser/form_controls_browsertest.cc",
     "../browser/framebusting_browsertest.cc",
     "../browser/generic_sensor/generic_sensor_browsertest.cc",
+    "../browser/global_privacy_control_browsertest.cc",
     "../browser/gpu/gpu_host_impl_persistent_cache_browsertest.cc",
     "../browser/gpu/gpu_ipc_browsertest.cc",
     "../browser/gpu/in_process_gpu_thread_browsertest.cc",

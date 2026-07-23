@@ -17668,6 +17668,7 @@ from previous Chrome versions.
   <int value="1016132283" label="SeparateLocalAndAccountSearchEngines:enabled"/>
   <int value="1017364362" label="VrIconInDaydreamHome:enabled"/>
   <int value="1017523412" label="ExtensionsMenuAccessControl:disabled"/>
+  <int value="1017563501" label="GlobalPrivacyControlForce:enabled"/>
   <int value="1017617938"
       label="AutofillEnableBuyNowPayLaterForKlarna:disabled"/>
   <int value="1018101051" label="TabGroupShortcuts:enabled"/>
@@ -21129,6 +21130,7 @@ from previous Chrome versions.
   <int value="2101124624" label="WebUIDownloadShelf:disabled"/>
   <int value="2101151142" label="disable-direct-write"/>
   <int value="2101244145" label="NtpDoodleMurals:disabled"/>
+  <int value="2102392080" label="GlobalPrivacyControlForce:disabled"/>
   <int value="2102772909"
       label="EnableGenericOidcAuthProfileManagement:disabled"/>
   <int value="2103800063"

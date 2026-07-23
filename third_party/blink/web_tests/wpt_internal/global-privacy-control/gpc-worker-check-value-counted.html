@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>WorkerNavigator.globalPrivacyControl value and UseCounter</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+const kGPCWorkerNavigator =
+    WebFeature.kV8WorkerNavigator_GlobalPrivacyControl_AttributeGetter;
+
+promise_test(async () => {
+  internals.clearUseCounter(document, kGPCWorkerNavigator);
+  assert_false(internals.isUseCounted(document, kGPCWorkerNavigator),
+               'UseCounter should be clear before worker access');
+
+  const worker = new Worker(
+      '/wpt_internal/global-privacy-control/resources/gpc-check-value-counted-worker.js');
+
+  const workerValue = await new Promise((resolve, reject) => {
+    worker.onmessage = (e) => resolve(e.data);
+    worker.onerror = reject;
+    worker.postMessage('check');
+  });
+
+  worker.terminate();
+
+  assert_true(workerValue,
+                'Worker navigator.globalPrivacyControl should return true');
+  assert_true(internals.isUseCounted(document, kGPCWorkerNavigator),
+              'UseCounter should be recorded after worker access');
+}, 'WorkerNavigator.globalPrivacyControl returns true and is counted');
+</script>

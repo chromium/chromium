@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>navigator.globalPrivacyControl value and UseCounter</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+const kGPCNavigator = WebFeature.kV8Navigator_GlobalPrivacyControl_AttributeGetter;
+
+test(() => {
+  internals.clearUseCounter(document, kGPCNavigator);
+  assert_false(internals.isUseCounted(document, kGPCNavigator),
+               'UseCounter should be clear before access');
+
+  assert_true(navigator.globalPrivacyControl,
+                'navigator.globalPrivacyControl should return true');
+
+  assert_true(internals.isUseCounted(document, kGPCNavigator),
+              'UseCounter should be recorded after access');
+}, 'Navigator.globalPrivacyControl returns true and is counted');
+</script>

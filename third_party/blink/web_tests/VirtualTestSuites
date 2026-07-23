@@ -1510,6 +1510,25 @@
     ],
     "expires": "never"
   },
+  {
+    "prefix": "global-privacy-control-force",
+    "owners": [
+      "arichiv@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "wpt_internal/global-privacy-control"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=GlobalPrivacyControlForce"
+    ],
+    "expires": "Nov 7, 2026"
+  },
   "This never expires because it tests a shipping configuration",
   {
     "prefix": "gpu",

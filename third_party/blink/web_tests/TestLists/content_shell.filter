@@ -26,6 +26,7 @@ virtual/indexeddb_leveldb/wpt_internal/*
 virtual/cpu-compositing/wpt_internal/*
 virtual/gpu/wpt_internal/*
 virtual/unbounded-element/wpt_internal/*
+virtual/global-privacy-control-force/wpt_internal/*
 
 # Blocklisted tests fail unexpectedly on headless shell for at least one
 # platform, so continue running them on content shell.

@@ -566,6 +566,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFrequencyCappingForOverlayPopupDetection);
 
+// If enabled, disables subsampling of GlobalPrivacyControl histogram entries.
+// Used in tests that verifies sampling in Renderer thread.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGlobalPrivacyControlAlwaysSample);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGMSCoreEmoji);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(

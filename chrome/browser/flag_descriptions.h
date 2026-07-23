@@ -4096,6 +4096,12 @@ inline constexpr char
         "allowlist, to gate notification content warnings and behavior-based "
         "telemetry.";
 
+inline constexpr char kGlobalPrivacyControlName[] =
+    "Force Global Privacy Control signal";
+inline constexpr char kGlobalPrivacyControlDescription[] =
+    "Enables Global Privacy Control (GPC) signal. Sends Sec-GPC=1 header with "
+    "requests to indicate privacy preferences to websites.";
+
 inline constexpr char kAnnotatedPageContentsForVirtualStructureName[] =
     "Use annotated page contents to populate virtual structure";
 inline constexpr char kAnnotatedPageContentsForVirtualStructureDescription[] =

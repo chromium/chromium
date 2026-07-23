@@ -12,6 +12,10 @@ namespace blink {
 // HTTP header set in requests to indicate they should be marked DoNotTrack.
 BLINK_COMMON_EXPORT extern const char kDoNotTrackHeader[];
 
+// HTTP request header `Sec-GPC`, set to "1" when Global Privacy Control is
+// enabled for the request.
+BLINK_COMMON_EXPORT extern const char kGlobalPrivacyControlHeader[];
+
 // These values indicate the load progress constants shared between both
 // //content and //blink.
 //

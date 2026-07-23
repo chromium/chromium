@@ -886,6 +886,9 @@ BASE_FEATURE(kFrequencyCappingForLargeStickyAdDetection,
 BASE_FEATURE(kFrequencyCappingForOverlayPopupDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlobalPrivacyControlAlwaysSample,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGMSCoreEmoji, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(std::string,

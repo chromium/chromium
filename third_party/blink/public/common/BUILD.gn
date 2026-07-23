@@ -162,6 +162,7 @@ source_set("headers") {
     "frame/user_activation_state.h",
     "frame/user_activation_update_source.h",
     "frame/view_transition_state.h",
+    "global_privacy_control/global_privacy_control_util.h",
     "history/session_history_constants.h",
     "indexeddb/indexed_db_default_mojom_traits.h",
     "indexeddb/indexeddb_key.h",

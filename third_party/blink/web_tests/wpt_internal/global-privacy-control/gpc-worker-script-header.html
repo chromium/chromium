@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Sec-GPC header is present at worker script load</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+const kWorkerScript =
+    '/wpt_internal/global-privacy-control/resources/gpc-worker-script-header.py';
+
+promise_test(async () => {
+  const worker = new Worker(kWorkerScript);
+
+  const scriptLoadHadGpcHeader = await new Promise((resolve, reject) => {
+    worker.onmessage = (e) => resolve(e.data);
+    worker.onerror = reject;
+    worker.postMessage('check');
+  });
+
+  worker.terminate();
+
+  assert_true(scriptLoadHadGpcHeader,
+              'Sec-GPC header should be sent on the dedicated worker script ' +
+              'load request');
+}, 'Dedicated worker script load includes the Sec-GPC header');
+
+promise_test(async () => {
+  const worker = new SharedWorker(kWorkerScript);
+
+  const scriptLoadHadGpcHeader = await new Promise((resolve, reject) => {
+    worker.port.onmessage = (e) => resolve(e.data);
+    worker.onerror = reject;
+    worker.port.postMessage('check');
+  });
+
+  assert_true(scriptLoadHadGpcHeader,
+              'Sec-GPC header should be sent on the shared worker script ' +
+              'load request');
+}, 'Shared worker script load includes the Sec-GPC header');
+</script>

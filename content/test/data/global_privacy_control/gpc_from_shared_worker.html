@@ -1,0 +1,12 @@
+<script>
+  const worker = new SharedWorker('gpc_from_shared_worker.js');
+
+  worker.port.start();
+
+function gpc_from_shared_worker() {
+  return new Promise(resolve => {
+    worker.port.onmessage = e => resolve(e.data);
+    worker.port.postMessage({});
+  });
+}
+</script>

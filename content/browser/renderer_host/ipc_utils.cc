@@ -472,7 +472,8 @@ bool VerifyNavigationHeaders(RenderProcessHost* process,
         header.name() != net::HttpRequestHeaders::kContentType &&
         header.name() != net::HttpRequestHeaders::kUserAgent &&
         header.name() != net::HttpRequestHeaders::kSecPurpose &&
-        header.name() != net::HttpRequestHeaders::kDNT) {
+        header.name() != net::HttpRequestHeaders::kDNT &&
+        header.name() != net::HttpRequestHeaders::kSecGPC) {
       if (base::FeatureList::IsEnabled(
               features::kKillOnInvalidNavigationHeaders)) {
         SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",

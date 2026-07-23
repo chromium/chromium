@@ -343,6 +343,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/gamepad/gamepad_touch.idl",
   "//third_party/blink/renderer/modules/gamepad/navigator_gamepad.idl",
   "//third_party/blink/renderer/modules/gamepad/window_gamepad.idl",
+  "//third_party/blink/renderer/modules/global_privacy_control/navigator_global_privacy_control.idl",
   "//third_party/blink/renderer/modules/handwriting/handwriting_drawing.idl",
   "//third_party/blink/renderer/modules/handwriting/handwriting_drawing_segment.idl",
   "//third_party/blink/renderer/modules/handwriting/handwriting_hints.idl",
