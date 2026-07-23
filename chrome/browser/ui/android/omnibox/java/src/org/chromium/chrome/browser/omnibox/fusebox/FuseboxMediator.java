@@ -29,7 +29,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
-import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.AsyncTask;
@@ -128,7 +127,6 @@ import java.util.function.Supplier;
     private final BackPressManager mBackPressManager;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
-    private final NullableObservableSupplier<GURL> mExactMatchUrlSupplier;
     private final Callback<@Nullable GURL> mOnExactMatchUrlChanged = this::onExactMatchUrlChanged;
     private final SettableNonNullObservableSupplier<Boolean> mActivationChipVisibilitySupplier;
     private final Runnable mOnActivationChipClickedWithQuery;
@@ -177,7 +175,6 @@ import java.util.function.Supplier;
             Supplier<@Nullable View> scrimAnchorViewSupplier,
             BackPressManager backPressManager,
             @Nullable Runnable onFirstPickerInteractionCanceledCallback,
-            NullableObservableSupplier<GURL> exactMatchUrlSupplier,
             SettableNonNullObservableSupplier<Boolean> activationChipVisibilitySupplier,
             Runnable onActivationChipClickedWithQuery,
             Runnable clearUrlBarTextRunnable,
@@ -197,8 +194,6 @@ import java.util.function.Supplier;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
         mBackPressManager = backPressManager;
         mOnFirstPickerInteractionCanceledCallback = onFirstPickerInteractionCanceledCallback;
-        mExactMatchUrlSupplier = exactMatchUrlSupplier;
-        mExactMatchUrlSupplier.addSyncObserver(mOnExactMatchUrlChanged);
         mActivationChipVisibilitySupplier = activationChipVisibilitySupplier;
         mOnActivationChipClickedWithQuery = onActivationChipClickedWithQuery;
         mClearUrlBarTextRunnable = clearUrlBarTextRunnable;
@@ -249,7 +244,6 @@ import java.util.function.Supplier;
     /* package */ void destroy() {
         endInput();
         mBackPressManager.removeHandler(this);
-        mExactMatchUrlSupplier.removeObserver(mOnExactMatchUrlChanged);
     }
 
     public boolean wasActionTaken() {
@@ -409,6 +403,7 @@ import java.util.function.Supplier;
             mInput.getRequestTypeSupplier().removeObserver(mOnAutocompleteRequestTypeChanged);
             mInput.getSiteSearchDataSupplier().removeObserver(mOnSiteSearchDataChanged);
             mInput.getAutocompleteStateSupplier().removeObserver(mOnAutocompleteStateChanged);
+            mInput.getExactMatchUrlSupplier().removeObserver(mOnExactMatchUrlChanged);
         }
         mInput = input;
         if (mInput == null) {
@@ -431,6 +426,7 @@ import java.util.function.Supplier;
                     .addSyncObserverAndCallIfNonNull(mOnSiteSearchDataChanged);
             mInput.getAutocompleteStateSupplier()
                     .addSyncObserverAndCallIfNonNull(mOnAutocompleteStateChanged);
+            mInput.getExactMatchUrlSupplier().addSyncObserver(mOnExactMatchUrlChanged);
         }
     }
 
@@ -1057,7 +1053,7 @@ import java.util.function.Supplier;
                                 == FuseboxLayoutMode.SUGGESTIONS_POPOVER
                         && mInput.getRequestType() == AutocompleteRequestType.SEARCH
                         && mInput.getSiteSearchData() == null
-                        && (mExactMatchUrlSupplier.get() == null);
+                        && (mInput.getExactMatchUrlSupplier().get() == null);
         if (mProfile != null
                 && !UserPrefs.get(mProfile).getBoolean(Pref.SHOW_AI_MODE_OMNIBOX_BUTTON)) {
             showActivationChip = false;

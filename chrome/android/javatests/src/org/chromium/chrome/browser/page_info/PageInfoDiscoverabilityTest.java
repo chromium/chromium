@@ -265,8 +265,7 @@ public class PageInfoDiscoverabilityTest {
                                             FuseboxCoordinator.FuseboxState.DISABLED),
                                     ObservableSuppliers.createNonNull(
                                             FuseboxCoordinator.FuseboxLayoutMode.TOOLBAR),
-                                    CallbackUtils.emptyRunnable(),
-                                    ObservableSuppliers.createNullable());
+                                    CallbackUtils.emptyRunnable());
                     mPermissionStatusHandler = mMediator.getPermissionStatusHandlerForTesting();
                 });
     }

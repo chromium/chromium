@@ -97,7 +97,6 @@ public class StatusMediator
     private final NonNullObservableSupplier<@FuseboxState Integer> mFuseboxStateSupplier;
     private final NonNullObservableSupplier<@FuseboxLayoutMode Integer> mFuseboxLayoutModeSupplier;
     private final OnClickListener mFuseboxOnPlusButtonClicked;
-    private final NullableObservableSupplier<GURL> mExactMatchUrlSupplier;
     private final OmniboxImageSupplier mImageSupplier;
     private @Nullable Runnable mOnStatusViewHiddenForPageInfoRemoval;
     private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
@@ -168,8 +167,7 @@ public class StatusMediator
             PageInfoAction pageInfoAction,
             NonNullObservableSupplier<Integer> fuseboxStateSupplier,
             NonNullObservableSupplier<Integer> fuseboxLayoutModeSupplier,
-            Runnable onPlusButtonClicked,
-            NullableObservableSupplier<GURL> exactMatchUrlSupplier) {
+            Runnable onPlusButtonClicked) {
         mContext = context;
         initBackgroundDrawables(context);
         mModel = model;
@@ -194,8 +192,6 @@ public class StatusMediator
         mFuseboxStateSupplier.addSyncObserver(mOnFuseboxStateChanged);
 
         mImageSupplier = new OmniboxImageSupplier(context);
-        mExactMatchUrlSupplier = exactMatchUrlSupplier;
-        mExactMatchUrlSupplier.addSyncObserver(mOnExactMatchUrlChanged);
 
         mPermissionStatusHandler =
                 new PermissionStatusHandler(
@@ -242,7 +238,12 @@ public class StatusMediator
             mCookieControlsBridge = null;
         }
         mFuseboxStateSupplier.removeObserver(mOnFuseboxStateChanged);
-        mExactMatchUrlSupplier.removeObserver(mOnExactMatchUrlChanged);
+        if (mInputSessionState != null) {
+            mInputSessionState
+                    .getAutocompleteInput()
+                    .getExactMatchUrlSupplier()
+                    .removeObserver(mOnExactMatchUrlChanged);
+        }
         mImageSupplier.destroy();
     }
 
@@ -379,6 +380,10 @@ public class StatusMediator
                     .getAutocompleteInput()
                     .getRequestTypeSupplier()
                     .removeObserver(mOnAutocompleteRequestTypeChanged);
+            mInputSessionState
+                    .getAutocompleteInput()
+                    .getExactMatchUrlSupplier()
+                    .removeObserver(mOnExactMatchUrlChanged);
         }
 
         mInputSessionState = sessionState;
@@ -390,6 +395,10 @@ public class StatusMediator
                     .getAutocompleteInput()
                     .getRequestTypeSupplier()
                     .addSyncObserver(mOnAutocompleteRequestTypeChanged);
+            mInputSessionState
+                    .getAutocompleteInput()
+                    .getExactMatchUrlSupplier()
+                    .addSyncObserver(mOnExactMatchUrlChanged);
         }
     }
 
@@ -1061,7 +1070,9 @@ public class StatusMediator
     }
 
     private boolean isUrlBarTextSearch() {
-        return mExactMatchUrlSupplier.get() == null;
+        return (mInputSessionState == null
+                || mInputSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get()
+                        == null);
     }
 
     private boolean isPageInfoMovedToAppMenu() {

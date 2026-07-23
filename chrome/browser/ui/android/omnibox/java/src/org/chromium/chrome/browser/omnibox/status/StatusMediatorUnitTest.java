@@ -164,6 +164,7 @@ public final class StatusMediatorUnitTest {
         doReturn(false).when(mLocationBarDataProvider).isIncognito();
         doReturn(mNewTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(mAutocompleteInput).when(mFuseboxSessionState).getAutocompleteInput();
+        doReturn(mExactMatchUrlSupplier).when(mAutocompleteInput).getExactMatchUrlSupplier();
         doReturn(mRequestTypeSupplier).when(mAutocompleteInput).getRequestTypeSupplier();
 
         mContext =
@@ -184,8 +185,7 @@ public final class StatusMediatorUnitTest {
                         mPageInfoAction,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
-                        mTogglePopupCallback,
-                        mExactMatchUrlSupplier);
+                        mTogglePopupCallback);
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
 
         StatusIconResource logo = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);

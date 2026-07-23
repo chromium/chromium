@@ -162,7 +162,6 @@ public class FuseboxCoordinatorUnitTest {
                         mSnackbarManager,
                         /* scrimAnchorViewSupplier= */ () -> null,
                         mBackPressManager,
-                        mExactMatchUrlSupplier,
                         /* onActivationChipClickedWithQuery= */ () -> {},
                         /* clearUrlBarTextRunnable= */ () -> {},
                         /* urlBarTextSupplier= */ () -> "");

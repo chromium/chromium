@@ -70,7 +70,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -281,8 +280,6 @@ public class LocationBarMediatorTest {
             ObservableSuppliers.createNonNull(false);
     private final UserDataHost mTabUserDataHost = new UserDataHost();
     private final FuseboxSessionState mSessionState = new FuseboxSessionState();
-    private final SettableNullableObservableSupplier<GURL> mExactMatchUrlSupplier =
-            ObservableSuppliers.createNullable();
     private final SettableNonNullObservableSupplier<Boolean> mScrimVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
     private final OmniboxAnimator mOmniboxAnimator = new OmniboxAnimator(1.0f, 0);
@@ -418,8 +415,7 @@ public class LocationBarMediatorTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        mScrimHandler,
-                        mExactMatchUrlSupplier);
+                        mScrimHandler);
         verify(mFuseboxCoordinator)
                 .setOnInteractionCompletedCallback(mOnInteractionCompletedCallbackCaptor.capture());
         mOnInteractionCompletedCallback = mOnInteractionCompletedCallbackCaptor.getValue();
@@ -489,8 +485,7 @@ public class LocationBarMediatorTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        /* scrimHandler= */ null,
-                        mExactMatchUrlSupplier);
+                        /* scrimHandler= */ null);
         doReturn(mUrlBar).when(mLocationBarTablet).getUrlBar();
         doReturn(mDeleteButton).when(mLocationBarTablet).getDeleteButton();
         doReturn(mActivationChip)
@@ -735,7 +730,7 @@ public class LocationBarMediatorTest {
                 true);
         verify(mPrerenderJni, never())
                 .prerenderMaybe(anyLong(), anyString(), anyString(), anyLong(), any(), any());
-        assertNull(mMediator.getExactMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
 
         doReturn(PreloadPagesState.STANDARD_PRELOADING)
                 .when(mPreloadPagesSettingsJni)
@@ -762,14 +757,14 @@ public class LocationBarMediatorTest {
         mMediator.onSuggestionsChanged(defaultMatch, true);
         verify(mPrerenderJni)
                 .prerenderMaybe(123L, "text", JUnitTestGURLs.RED_1.getSpec(), 456L, mProfile, mTab);
-        assertNotNull(mMediator.getExactMatchUrlSupplier().get());
+        assertNotNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
         verify(mUrlCoordinator)
                 .setAutocompleteText("text", "textWithAutocomplete", "additionalText", null);
 
         var state = mSessionState;
         state.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.onSuggestionsChanged(defaultMatch, true);
-        assertNull(mMediator.getExactMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
     }
 
     @Test
@@ -782,7 +777,7 @@ public class LocationBarMediatorTest {
         doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
 
         mMediator.onSuggestionsChanged(null, false);
-        assertNull(mMediator.getExactMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
         verify(mUrlCoordinator).setAutocompleteText("text", null, null, null);
     }
 
@@ -804,10 +799,10 @@ public class LocationBarMediatorTest {
                         .setUrl(JUnitTestGURLs.RED_1)
                         .build();
         mMediator.onSuggestionsChanged(defaultMatch, true);
-        assertNotNull(mMediator.getExactMatchUrlSupplier().get());
+        assertNotNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
 
         mMediator.suspendInput();
-        assertNull(mMediator.getExactMatchUrlSupplier().get());
+        assertNull(mSessionState.getAutocompleteInput().getExactMatchUrlSupplier().get());
     }
 
     @Test
@@ -1897,8 +1892,7 @@ public class LocationBarMediatorTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        mScrimHandler,
-                        mExactMatchUrlSupplier);
+                        mScrimHandler);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mProfileSupplier.set(mProfile);
