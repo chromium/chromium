@@ -11,7 +11,6 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IconTable} from '/shared/icon_table.js';
 import {PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -20,10 +19,23 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {ContextMenuType} from './browser_proxy.js';
 import {getHtml} from './pinned_toolbar_action.html.js';
+import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import {getCss} from './toolbar_button.css.js';
-import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
+import {getContextMenuPosition, getContextMenuSourceType} from './toolbar_button.js';
 
-const PinnedToolbarActionElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const initialState: PinnedToolbarActionState = {
+  action: PinnedToolbarAction.kUnspecified,
+  highlighted: false,
+  enabled: true,
+  activated: false,
+  tooltip: '',
+  accessibilityText: '',
+  elementId: null,
+  icon: {handleId: 0n},
+};
+
+const PinnedToolbarActionElementBase =
+    ToolbarActionMixin(CrLitElement, initialState);
 
 export interface PinnedToolbarActionElement {
   $: {
@@ -44,93 +56,14 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
     return getHtml.bind(this)();
   }
 
-  static override get properties() {
-    return {
-      ...super.properties,
-      state: {type: Object},
-      trackedHighlighted: {type: Boolean},
-    };
-  }
-
-  accessor state: PinnedToolbarActionState = {
-    action: PinnedToolbarAction.kUnspecified,
-    highlighted: false,
-    enabled: true,
-    activated: false,
-    tooltip: '',
-    accessibilityText: '',
-    elementId: null,
-    icon: {handleId: 0n},
-  };
+  private iconTable_: IconTable = IconTable.getInstance();
 
   private get browserProxy_(): BrowserProxy {
     return BrowserProxyImpl.getInstance();
   }
-  private iconTable_: IconTable = IconTable.getInstance();
-  private registerHelpBubbleController_: AbortController|null = null;
 
-  protected accessor trackedHighlighted: boolean = false;
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this.registerHelpBubbleController_) {
-      this.registerHelpBubbleController_.abort();
-      this.registerHelpBubbleController_ = null;
-    }
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    if (changedProperties.has('state')) {
-      const oldState = changedProperties.get('state');
-      const oldId = oldState?.elementId;
-      const newId = this.state.elementId;
-
-      if (oldId !== newId) {
-        if (this.registerHelpBubbleController_) {
-          this.registerHelpBubbleController_.abort();
-          this.registerHelpBubbleController_ = null;
-        }
-        if (oldId) {
-          this.unregisterHelpBubble(oldId);
-        }
-        if (newId) {
-          this.registerHelpBubble_(newId);
-        }
-      }
-    }
-  }
-
-  private async registerHelpBubble_(newId: string) {
-    this.registerHelpBubbleController_ = new AbortController();
-    const signal = this.registerHelpBubbleController_.signal;
-
-    const animations = this.getAnimations().filter(anim => {
-      const timing = anim.effect?.getTiming();
-      // Ignore infinite animations (e.g. pulsing for IPH).
-      return timing?.iterations !== Infinity && timing?.duration !== Infinity;
-    });
-
-    // Wait for any animations to complete, so button is in final location.
-    if (animations.length > 0) {
-      try {
-        await Promise.all(animations.map(a => a.finished));
-      } catch (e) {
-        // Ignore animation cancellation.
-      }
-    }
-
-    if (!signal.aborted) {
-      this.registerHelpBubble(newId, this, {
-        onHighlightChanged: (highlighted: boolean) => {
-          this.trackedHighlighted = highlighted;
-        },
-        onHelpBubbleShown: () => setHasHelpBubble(this, true),
-        onHelpBubbleHidden: () => setHasHelpBubble(this, false),
-      });
-      this.registerHelpBubbleController_ = null;
-    }
+  override getElementId(state: PinnedToolbarActionState): string|undefined {
+    return state.elementId ?? undefined;
   }
 
   protected getIronIcon_(): string|undefined {
