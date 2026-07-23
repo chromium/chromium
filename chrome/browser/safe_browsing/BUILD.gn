@@ -1100,6 +1100,30 @@ source_set("test_support") {
   }
 }
 
+source_set("test_database_helper") {
+  testonly = true
+
+  sources = [
+    "test_safe_browsing_database_helper.cc",
+    "test_safe_browsing_database_helper.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/safe_browsing/core/browser/db:util",
+  ]
+
+  deps = [
+    ":safe_browsing",
+    ":test_support",
+    "//components/safe_browsing/core/browser/db:sb_database",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//content/test:test_support",
+  ]
+}
+
 if (safe_browsing_mode != 0) {
   # Separate leaf target because this browser-test helper depends on
   # //chrome/test:test_support, which reaches safe_browsing:test_support via
