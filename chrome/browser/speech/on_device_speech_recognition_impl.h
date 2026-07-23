@@ -90,12 +90,13 @@ class OnDeviceSpeechRecognitionImpl
   // Mask on-device speech recognition availability by requiring a call to
   // installOnDevice() for a language before the language is available to the
   // origin.
-  media::mojom::AvailabilityStatus GetMaskedAvailabilityStatus(
+  void GetMaskedAvailabilityStatusAsync(
       std::string_view language,
       media::mojom::SpeechRecognitionQuality quality,
       const std::vector<std::string_view>& accept_languages_list,
       bool has_mic_permission,
-      PrefService* profile_prefs);
+      PrefService* profile_prefs,
+      base::OnceCallback<void(media::mojom::AvailabilityStatus)> callback);
 
   void OnModelClientAvailable(
       base::WeakPtr<optimization_guide::ModelClient> client);

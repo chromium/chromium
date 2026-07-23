@@ -37,6 +37,53 @@ std::optional<optimization_guide::mojom::OnDeviceFeature> PickOnDeviceFeature(
              : optimization_guide::mojom::OnDeviceFeature::
                    kOnDeviceSpeechRecognition;
 }
+
+struct FeatureAndService {
+  optimization_guide::mojom::OnDeviceFeature feature;
+  raw_ptr<OptimizationGuideKeyedService> service = nullptr;
+};
+
+std::optional<FeatureAndService> GetOnDeviceFeatureAndService(
+    content::BrowserContext* context,
+    std::string_view language,
+    media::mojom::SpeechRecognitionQuality quality) {
+  std::optional<optimization_guide::mojom::OnDeviceFeature> feature =
+      PickOnDeviceFeature(quality);
+  if (!feature) {
+    return std::nullopt;
+  }
+
+  OptimizationGuideKeyedService* service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(context));
+  if (!service) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/446260680): Add support for other languages.
+  if (l10n_util::GetLanguage(language) != kEnglishLanguageCode) {
+    return std::nullopt;
+  }
+
+  return FeatureAndService{feature.value(), service};
+}
+
+media::mojom::AvailabilityStatus ModelUnavailableReasonToAvailabilityStatus(
+    optimization_guide::OnDeviceModelEligibilityReason eligibility_reason) {
+  std::optional<optimization_guide::mojom::ModelUnavailableReason>
+      unavailable_reason =
+          optimization_guide::AvailabilityFromEligibilityReason(
+              eligibility_reason);
+  if (!unavailable_reason.has_value()) {
+    return media::mojom::AvailabilityStatus::kAvailable;
+  }
+  if (unavailable_reason ==
+      optimization_guide::mojom::ModelUnavailableReason::kNotSupported) {
+    return media::mojom::AvailabilityStatus::kUnavailable;
+  }
+  return media::mojom::AvailabilityStatus::kDownloadable;
+}
+
 }  // namespace
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -51,41 +98,54 @@ media::mojom::AvailabilityStatus GetOnDeviceSpeechRecognitionAvailabilityStatus(
 #else
   if (quality == media::mojom::SpeechRecognitionQuality::kConversation ||
       quality == media::mojom::SpeechRecognitionQuality::kDictation) {
-    std::optional<optimization_guide::mojom::OnDeviceFeature> feature =
-        PickOnDeviceFeature(quality);
-    if (!feature) {
+    auto feature_and_service =
+        GetOnDeviceFeatureAndService(context, language, quality);
+    if (!feature_and_service) {
       return media::mojom::AvailabilityStatus::kUnavailable;
     }
 
-    OptimizationGuideKeyedService* service =
-        OptimizationGuideKeyedServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(context));
-
-    if (!service) {
-      return media::mojom::AvailabilityStatus::kUnavailable;
-    }
-
-    // TODO(crbug.com/446260680): Add support for other languages.
-    if (l10n_util::GetLanguage(language) != kEnglishLanguageCode) {
-      return media::mojom::AvailabilityStatus::kUnavailable;
-    }
-
-    std::optional<optimization_guide::mojom::ModelUnavailableReason>
-        unavailable_reason =
-            optimization_guide::AvailabilityFromEligibilityReason(
-                service->GetOnDeviceModelEligibility(feature.value()));
-    if (!unavailable_reason.has_value()) {
-      return media::mojom::AvailabilityStatus::kAvailable;
-    } else if (unavailable_reason ==
-               optimization_guide::mojom::ModelUnavailableReason::
-                   kNotSupported) {
-      return media::mojom::AvailabilityStatus::kUnavailable;
-    } else {
-      return media::mojom::AvailabilityStatus::kDownloadable;
-    }
+    return ModelUnavailableReasonToAvailabilityStatus(
+        feature_and_service->service->GetOnDeviceModelEligibility(
+            feature_and_service->feature));
   }
 
   return GetSodaAvailabilityStatus(language);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void GetOnDeviceSpeechRecognitionAvailabilityStatusAsync(
+    content::BrowserContext* context,
+    std::string_view language,
+    media::mojom::SpeechRecognitionQuality quality,
+    base::OnceCallback<void(media::mojom::AvailabilityStatus)> callback) {
+#if BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
+#else
+  if (quality == media::mojom::SpeechRecognitionQuality::kConversation ||
+      quality == media::mojom::SpeechRecognitionQuality::kDictation) {
+    auto feature_and_service =
+        GetOnDeviceFeatureAndService(context, language, quality);
+    if (!feature_and_service) {
+      std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
+      return;
+    }
+
+    feature_and_service->service->GetOnDeviceModelEligibilityAsync(
+        feature_and_service->feature, /*capabilities=*/{},
+        base::BindOnce(
+            [](base::OnceCallback<void(media::mojom::AvailabilityStatus)>
+                   callback,
+               optimization_guide::OnDeviceModelEligibilityReason
+                   eligibility_reason) {
+              std::move(callback).Run(
+                  ModelUnavailableReasonToAvailabilityStatus(
+                      eligibility_reason));
+            },
+            std::move(callback)));
+    return;
+  }
+
+  std::move(callback).Run(GetSodaAvailabilityStatus(language));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

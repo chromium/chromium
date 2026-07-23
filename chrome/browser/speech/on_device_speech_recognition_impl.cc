@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/barrier_callback.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -93,6 +94,36 @@ bool HasMicPermission(content::RenderFrameHost& rfh) {
                  &rfh) == blink::mojom::PermissionStatus::GRANTED;
 }
 
+bool HasMicAndAcceptLanguage(
+    std::string_view language,
+    const std::vector<std::string_view>& accept_languages_list,
+    bool has_mic_permission) {
+  if (!has_mic_permission) {
+    return false;
+  }
+  return std::ranges::any_of(
+      accept_languages_list, [&language](std::string_view accept_lang) {
+        return base::EqualsCaseInsensitiveASCII(accept_lang, language);
+      });
+}
+
+media::mojom::AvailabilityStatus ApplyOriginMasking(
+    media::mojom::AvailabilityStatus availability_status,
+    bool is_language_masked,
+    bool has_mic_and_accept_lang) {
+  if (availability_status == media::mojom::AvailabilityStatus::kAvailable &&
+      is_language_masked) {
+    return media::mojom::AvailabilityStatus::kDownloadable;
+  }
+
+  if (availability_status == media::mojom::AvailabilityStatus::kDownloadable &&
+      has_mic_and_accept_lang) {
+    return media::mojom::AvailabilityStatus::kDownloadableWithoutUserActivation;
+  }
+
+  return availability_status;
+}
+
 }  // namespace
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -145,9 +176,6 @@ void OnDeviceSpeechRecognitionImpl::Available(
     return;
   }
 
-  media::mojom::AvailabilityStatus overall_status =
-      media::mojom::AvailabilityStatus::kAvailable;
-
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
   PrefService* profile_prefs = profile ? profile->GetPrefs() : nullptr;
@@ -157,6 +185,7 @@ void OnDeviceSpeechRecognitionImpl::Available(
 
   bool has_mic_permission = HasMicPermission(render_frame_host());
 
+  std::vector<std::string> valid_language_names;
   for (std::string_view language : languages) {
     std::optional<speech::SodaLanguagePackComponentConfig> language_config =
         speech::GetLanguageComponentConfigMatchingLanguageSubtag(language);
@@ -164,22 +193,39 @@ void OnDeviceSpeechRecognitionImpl::Available(
       std::move(callback).Run(media::mojom::AvailabilityStatus::kUnavailable);
       return;
     }
-
-    // According to the spec, the status returned by this API should be the
-    // minimum status. I.e., the API returns:
-    //   'available' if all languages are available
-    //   'downloading' if all languages are either downloading or available
-    //   'downloadable' if all languages are either available, downloading, or
-    //   downloadable 'unavailable' in if one or more language is unavailable
-    media::mojom::AvailabilityStatus status = GetMaskedAvailabilityStatus(
-        language_config.value().language_name, quality, accept_languages_list,
-        has_mic_permission, profile_prefs);
-    if (GetPriority(status) < GetPriority(overall_status)) {
-      overall_status = status;
-    }
+    valid_language_names.push_back(
+        std::string(language_config.value().language_name));
   }
 
-  std::move(callback).Run(overall_status);
+  // According to the spec, the status returned by this API should be the
+  // minimum status. I.e., the API returns:
+  //   'available' if all languages are available
+  //   'downloading' if all languages are either downloading or available
+  //   'downloadable' if all languages are either available, downloading, or
+  //   downloadable 'unavailable' in if one or more language is unavailable
+  auto barrier_callback =
+      base::BarrierCallback<media::mojom::AvailabilityStatus>(
+          valid_language_names.size(),
+          base::BindOnce(
+              [](AvailableCallback callback,
+                 const std::vector<media::mojom::AvailabilityStatus>&
+                     statuses) {
+                media::mojom::AvailabilityStatus overall_status =
+                    media::mojom::AvailabilityStatus::kAvailable;
+                for (auto status : statuses) {
+                  if (GetPriority(status) < GetPriority(overall_status)) {
+                    overall_status = status;
+                  }
+                }
+                std::move(callback).Run(overall_status);
+              },
+              std::move(callback)));
+
+  for (const std::string& language_name : valid_language_names) {
+    GetMaskedAvailabilityStatusAsync(language_name, quality,
+                                     accept_languages_list, has_mic_permission,
+                                     profile_prefs, barrier_callback);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -449,37 +495,37 @@ void OnDeviceSpeechRecognitionImpl::
           std::move(on_device_languages_downloaded));
 }
 
-media::mojom::AvailabilityStatus
-OnDeviceSpeechRecognitionImpl::GetMaskedAvailabilityStatus(
+void OnDeviceSpeechRecognitionImpl::GetMaskedAvailabilityStatusAsync(
     std::string_view language,
     media::mojom::SpeechRecognitionQuality quality,
     const std::vector<std::string_view>& accept_languages_list,
     bool has_mic_permission,
-    PrefService* profile_prefs) {
-  media::mojom::AvailabilityStatus availability_status =
-      GetOnDeviceSpeechRecognitionAvailabilityStatus(
-          render_frame_host().GetBrowserContext(), language, quality);
-  bool has_mic_and_accept_lang = false;
+    PrefService* profile_prefs,
+    base::OnceCallback<void(media::mojom::AvailabilityStatus)> callback) {
+  bool has_mic_and_accept_lang = HasMicAndAcceptLanguage(
+      language, accept_languages_list, has_mic_permission);
 
-  if (has_mic_permission) {
-    has_mic_and_accept_lang = std::ranges::any_of(
-        accept_languages_list, [&language](std::string_view accept_lang) {
-          return base::EqualsCaseInsensitiveASCII(accept_lang, language);
-        });
-  }
-
-  if (availability_status == media::mojom::AvailabilityStatus::kAvailable &&
-      IsLanguageAvailabilityMaskedForOrigin(language, has_mic_and_accept_lang,
-                                            profile_prefs)) {
-    return media::mojom::AvailabilityStatus::kDownloadable;
-  }
-
-  if (availability_status == media::mojom::AvailabilityStatus::kDownloadable &&
-      has_mic_and_accept_lang) {
-    return media::mojom::AvailabilityStatus::kDownloadableWithoutUserActivation;
-  }
-
-  return availability_status;
+  GetOnDeviceSpeechRecognitionAvailabilityStatusAsync(
+      render_frame_host().GetBrowserContext(), language, quality,
+      base::BindOnce(
+          [](base::WeakPtr<OnDeviceSpeechRecognitionImpl> self,
+             std::string language_str, bool has_mic_and_accept_lang,
+             PrefService* profile_prefs,
+             base::OnceCallback<void(media::mojom::AvailabilityStatus)>
+                 callback,
+             media::mojom::AvailabilityStatus availability_status) {
+            if (!self) {
+              std::move(callback).Run(
+                  media::mojom::AvailabilityStatus::kUnavailable);
+              return;
+            }
+            bool is_masked = self->IsLanguageAvailabilityMaskedForOrigin(
+                language_str, has_mic_and_accept_lang, profile_prefs);
+            std::move(callback).Run(ApplyOriginMasking(
+                availability_status, is_masked, has_mic_and_accept_lang));
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::string(language),
+          has_mic_and_accept_lang, profile_prefs, std::move(callback)));
 }
 
 bool OnDeviceSpeechRecognitionImpl::IsLanguageAvailabilityMaskedForOrigin(
