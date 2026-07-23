@@ -1772,6 +1772,23 @@ WebGLRenderingContextBase::ClearIfComposited(
   if (isContextLost())
     return kSkipped;
 
+  if (!framebuffer_binding_ ||
+      (caller != kClearCallerDrawOrClear &&
+       base::FeatureList::IsEnabled(features::kWebGLDiscardBackBuffer))) {
+    // EnsureBackColorBuffer() must be called before checking
+    // BufferClearNeeded() and returning early below. If the back buffer was
+    // discarded when the page was hidden, it must be recreated even if no
+    // implicit clear is needed (BufferClearNeeded() is false).
+    //
+    // If a custom framebuffer is currently bound for a draw/clear operation,
+    // the back buffer isn't active for drawing, but it is still needed for
+    // copy/read operations (caller != kClearCallerDrawOrClear).
+    //
+    // Note: we don't call MarkContentsChanged(), because it hasn't (there is
+    // no new content to present yet).
+    GetDrawingBuffer()->EnsureBackColorBuffer();
+  }
+
   if (!GetDrawingBuffer()->BufferClearNeeded() ||
       (mask && framebuffer_binding_) ||
       (rasterizer_discard_enabled_ && caller == kClearCallerDrawOrClear))
@@ -1780,21 +1797,6 @@ WebGLRenderingContextBase::ClearIfComposited(
   if (isContextLost()) {
     // Unlikely, but context was lost.
     return kSkipped;
-  }
-
-  if (!framebuffer_binding_ ||
-      (caller != kClearCallerDrawOrClear &&
-       base::FeatureList::IsEnabled(features::kWebGLDiscardBackBuffer))) {
-    // If the back buffer was discarded when the page was hidden, it must be
-    // recreated before we can read or copy from it (which corresponds to
-    // kClearCallerOther). If a custom framebuffer is currently bound, the back
-    // buffer isn't active for drawing, but it is still needed for the
-    // copy/read.
-    //
-    // DrawingBuffer may have discarded the back buffer, and we are about to use
-    // it, recreate it. Note: we don't call MarkContentsChanged(), because it
-    // hasn't (there is no new content to present).
-    GetDrawingBuffer()->EnsureBackColorBuffer();
   }
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);

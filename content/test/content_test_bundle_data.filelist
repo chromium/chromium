@@ -7799,6 +7799,7 @@ data/gpu/webcodecs/tex-image-2d.html
 data/gpu/webcodecs/webcodecs_common.js
 data/gpu/webcodecs/webrtc-peer-connection-worker.js
 data/gpu/webcodecs/webrtc-peer-connection.html
+data/gpu/webgl-background-clear.html
 data/gpu/webgl-domain-blocking-page1.html
 data/gpu/webgl-domain-blocking-page2.html
 data/gpu/webgl-domain-not-blocked.html

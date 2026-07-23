@@ -1,0 +1,56 @@
+<html>
+<head>
+  <script type="text/javascript">
+  var setupFinished = false;
+
+  function onLoad() {
+    var canvas = document.createElement('canvas');
+    canvas.width = 16;
+    canvas.height = 16;
+    document.body.appendChild(canvas);
+
+    var gl = canvas.getContext('webgl', { preserveDrawingBuffer: false });
+    if (!gl) {
+      window.domAutomationController.send("FAILED");
+      return;
+    }
+
+    // 1. Initial draw & clear (contents_changed_ = true)
+    gl.clearColor(1.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // 2. Wait for frame presentation so buffer_clear_needed_ = true and contents_changed_ = false.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // 3. Perform readback. ClearIfComposited clears the buffer and sets buffer_clear_needed_ = false.
+        canvas.toDataURL();
+
+        var resultSent = false;
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'hidden' && !resultSent) {
+            resultSent = true;
+            // 4. Perform gl.clear() in background when buffer_clear_needed_ is false.
+            // EnsureBackColorBuffer() must recreate the discarded back buffer.
+            try {
+              gl.clearColor(0.0, 1.0, 0.0, 1.0);
+              gl.clear(gl.COLOR_BUFFER_BIT);
+              if (gl.getError() === gl.NO_ERROR) {
+                window.domAutomationController.send("SUCCESS");
+              } else {
+                window.domAutomationController.send("FAILED");
+              }
+            } catch (e) {
+              window.domAutomationController.send("FAILED");
+            }
+          }
+        });
+
+        window.setupFinished = true;
+      });
+    });
+  }
+  </script>
+</head>
+<body onload="onLoad()">
+</body>
+</html>

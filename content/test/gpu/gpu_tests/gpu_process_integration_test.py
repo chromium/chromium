@@ -131,6 +131,8 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         ('GpuProcess_vulkan_vma_race', 'gpu/vulkan_vma_race.html'),
         ('GpuProcess_visibility', 'about:blank'),
         ('GpuProcess_webgl_y16_uploads', 'gpu/webgl_y16_uploads.html'),
+        ('GpuProcess_webgl_background_clear',
+         'gpu/webgl-background-clear.html'),
     )
 
     for t in tests:
@@ -823,6 +825,17 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWait(test_path)
     self._VerifyGpuProcessPresent()
+
+  def _GpuProcess_webgl_background_clear(self, test_path: str) -> None:
+    self.RestartBrowserWithArgs([])
+    self._Navigate(test_path)
+    webgl_tab = self.tab
+    if not webgl_tab.browser.supports_tab_control:
+      self.fail('Browser must support tab control')
+    webgl_tab.WaitForJavaScriptCondition('window.setupFinished', timeout=10)
+    blank_tab = self.browser.tabs.New()
+    blank_tab.Activate()
+    self._WaitForTestCompletion(webgl_tab)
 
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
