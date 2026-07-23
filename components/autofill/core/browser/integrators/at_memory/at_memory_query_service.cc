@@ -391,7 +391,8 @@ std::optional<std::u16string_view> GetValueForMemoryDataType(
 // entity by checking if they satisfy "merge constraints" from the entity schema
 // (e.g. if both search results belong to passports with the same passport
 // number). If they do and their `value`s match, we deduplicate them so we
-// don't show the user two identical suggestions.
+// don't show the user two identical suggestions. If they don't, they fall back
+// to the regular deduplication flow.
 //
 // For other Autofill data types (Addresses, CreditCards, Ibans) and unknown
 // types, determining if they come from the same real-world entity is done by
@@ -439,7 +440,6 @@ bool AreResultsDuplicates(const MemorySearchResult& a,
         return true;
       }
     }
-    return false;
   }
 
   auto has_contradicting_metadata = [](const MemorySearchResult& result,

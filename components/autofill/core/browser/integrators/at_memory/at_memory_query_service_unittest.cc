@@ -1019,6 +1019,45 @@ TEST_F(AtMemoryQueryServiceTest,
   EXPECT_EQ(result.entries.size(), 2u);
 }
 
+// Tests that Autofill AI entities are deduplicated via fallback
+// non-contradicting metadata logic when no merge constraints are present or
+// satisfied.
+TEST_F(
+    AtMemoryQueryServiceTest,
+    Query_DeduplicatesResults_MergeConstraintsMissing_FallsBackToMetadataMatching) {
+  MemorySearchResult result1(MemoryDataType::kFlightReservationFlightNumber,
+                             u"Flight Number", u"FL123");
+  result1.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationDepartureDate, u"Departure Date",
+      u"2026-01-01");
+  result1.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationDepartureAirport, u"Departure Airport",
+      u"ABC");
+  result1.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationArrivalAirport, u"Arrival Airport",
+      u"XYZ");
+
+  MemorySearchResult result2(MemoryDataType::kFlightReservationFlightNumber,
+                             u"Flight Number", u"FL123");
+  result2.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationDepartureDate, u"Departure Date",
+      u"2026-01-01");
+  result2.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationDepartureAirport, u"Departure Airport",
+      u"ABC");
+  result2.metadata_list.emplace_back(
+      MemoryDataType::kFlightReservationArrivalAirport, u"Arrival Airport",
+      u"XYZ");
+
+  // Neither result has merge constraint attributes
+  // (`kFlightReservationConfirmationCode` or `kFlightReservationTicketNumber`).
+  // Since primary values and secondary metadata match without contradiction,
+  // fallback logic deduplicates them.
+  const MemorySearchResults& result =
+      RunDeduplicationQueryWithLocalResults({result1, result2});
+  EXPECT_EQ(result.entries.size(), 1u);
+}
+
 // Tests that the query service records the provider result count metric.
 TEST_F(AtMemoryQueryServiceTest, RecordsProviderResultCountMetric) {
   base::HistogramTester histogram_tester;
