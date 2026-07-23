@@ -18,8 +18,20 @@ void RecordUmaAudioCapturePermissionCheckerInteractions(
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+namespace {
+AudioCapturePermissionChecker::Factory* g_factory_for_testing = nullptr;
+}  // namespace
+
+// static
+void AudioCapturePermissionChecker::SetFactoryForTesting(Factory* factory) {
+  g_factory_for_testing = factory;
+}
+
 std::unique_ptr<AudioCapturePermissionChecker>
 AudioCapturePermissionChecker::MaybeCreate(base::RepeatingClosure callback) {
+  if (g_factory_for_testing) {
+    return g_factory_for_testing->Create(callback);
+  }
 #if BUILDFLAG(IS_MAC)
   return AudioCapturePermissionCheckerMac::MaybeCreate(callback);
 #else

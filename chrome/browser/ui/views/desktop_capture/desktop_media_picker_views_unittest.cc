@@ -22,6 +22,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_manager.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_list.h"
+#include "chrome/browser/ui/views/desktop_capture/audio_capture_permission_checker.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_delegated_source_list_view.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_controller.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_list_view.h"
@@ -126,7 +127,9 @@ class FakeAudioCapturePermissionChecker : public AudioCapturePermissionChecker {
 };
 #endif
 
-class DesktopMediaPickerViewsTestBase : public testing::Test {
+class DesktopMediaPickerViewsTestBase
+    : public testing::Test,
+      public AudioCapturePermissionChecker::Factory {
  public:
   explicit DesktopMediaPickerViewsTestBase(
       const std::vector<DesktopMediaList::Type>& source_types)
@@ -134,8 +137,21 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
 
   ~DesktopMediaPickerViewsTestBase() override = default;
 
+  std::unique_ptr<AudioCapturePermissionChecker> Create(
+      base::RepeatingClosure callback) override {
+#if BUILDFLAG(IS_MAC)
+    if (media::IsMacCatapSystemLoopbackCaptureSupported()) {
+      auto fake = std::make_unique<views::FakeAudioCapturePermissionChecker>();
+      last_created_fake_checker_ = fake.get();
+      return fake;
+    }
+#endif
+    return nullptr;
+  }
+
   void SetUp() override {
 #if BUILDFLAG(IS_MAC)
+    AudioCapturePermissionChecker::SetFactoryForTesting(this);
     // These tests create actual child Widgets, which normally have a closure
     // animation on Mac; inhibit it here to avoid the tests flakily hanging.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -152,6 +168,10 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_MAC)
+    AudioCapturePermissionChecker::SetFactoryForTesting(nullptr);
+    last_created_fake_checker_ = nullptr;
+#endif
     if (GetPickerDialogView()) {
       GetPickerDialogView()->GetWidget()->CloseNow();
     }
@@ -218,13 +238,6 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
     widget_destroyed_waiter_ =
         std::make_unique<views::test::WidgetDestroyedWaiter>(
             waiter.WaitIfNeededAndGet());
-#if BUILDFLAG(IS_MAC)
-    if (GetPickerDialogView() &&
-        media::IsMacCatapSystemLoopbackCaptureSupported()) {
-      GetPickerDialogView()->SetAudioCapturePermissionCheckerForTest(
-          std::make_unique<FakeAudioCapturePermissionChecker>());
-    }
-#endif
   }
 
   DesktopMediaPickerDialogView* GetPickerDialogView() const {
@@ -265,6 +278,10 @@ class DesktopMediaPickerViewsTestBase : public testing::Test {
   base::RunLoop run_loop_;
   std::optional<PickedIdOrErrorCode> picker_result_;
   std::unique_ptr<views::test::WidgetDestroyedWaiter> widget_destroyed_waiter_;
+#if BUILDFLAG(IS_MAC)
+  raw_ptr<views::FakeAudioCapturePermissionChecker, DanglingUntriaged>
+      last_created_fake_checker_ = nullptr;
+#endif
 
   base::WeakPtrFactory<DesktopMediaPickerViewsTestBase> weak_factory_{this};
 };
@@ -1898,11 +1915,7 @@ class DesktopMediaPickerAudioPermissionTest
                       "loopback capture is supported.";
     }
 
-    auto fake_audio_permission_checker =
-        std::make_unique<views::FakeAudioCapturePermissionChecker>();
-    fake_audio_permission_checker_ = fake_audio_permission_checker.get();
-    GetPickerDialogView()->SetAudioCapturePermissionCheckerForTest(
-        std::move(fake_audio_permission_checker));
+    fake_audio_permission_checker_ = last_created_fake_checker_;
 
     test_api_.SelectTabForSourceType(DesktopMediaList::Type::kScreen);
 
@@ -1926,7 +1939,7 @@ class DesktopMediaPickerAudioPermissionTest
 
  protected:
   raw_ptr<DesktopMediaPaneView> pane_ = nullptr;
-  raw_ptr<views::FakeAudioCapturePermissionChecker>
+  raw_ptr<views::FakeAudioCapturePermissionChecker, DanglingUntriaged>
       fake_audio_permission_checker_ = nullptr;
 };
 
