@@ -161,7 +161,7 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
 
   LoginDataDispatcher login_data_dispatcher_;
 
-  raw_ptr<LoginScreenClient, DanglingUntriaged> client_ = nullptr;
+  raw_ptr<LoginScreenClient> client_ = nullptr;
 
   AuthenticationStage authentication_stage_ = AuthenticationStage::kIdle;
 
