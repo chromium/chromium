@@ -103,4 +103,27 @@ TEST_F(ContentWebStateTest, SetHasOpener) {
   EXPECT_TRUE(content_web_state()->HasOpener());
 }
 
+// Tests that reload with web::ReloadType::NORMAL is no-op when navigation
+// manager only has the initial NavigationEntry that content::WebContents is
+// created with (i.e. no real navigation has happened yet).
+//
+// Unlike WKBasedNavigationManager used by the existing WebKit-based WebState,
+// content::NavigationController always starts with an initial
+// NavigationEntry, so the last committed item is never null even before any
+// real navigation happens.
+TEST_F(ContentWebStateTest,
+       ReloadWithNormalTypeWithInitialNavigationEntryOnly) {
+  NavigationManager* navigation_manager =
+      content_web_state()->GetNavigationManager();
+  ASSERT_FALSE(navigation_manager->GetPendingItem());
+  ASSERT_TRUE(navigation_manager->GetLastCommittedItem());
+  int initial_item_count = navigation_manager->GetItemCount();
+
+  navigation_manager->Reload(web::ReloadType::NORMAL,
+                             /*check_for_repost=*/false);
+
+  EXPECT_FALSE(navigation_manager->GetPendingItem());
+  EXPECT_EQ(initial_item_count, navigation_manager->GetItemCount());
+}
+
 }  // namespace web
