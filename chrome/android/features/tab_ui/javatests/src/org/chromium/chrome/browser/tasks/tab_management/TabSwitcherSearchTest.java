@@ -57,7 +57,6 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -120,7 +119,6 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     public void testZeroPrefixSuggestions() {
         List<String> urlsToOpen =
                 List.of(
@@ -133,8 +131,6 @@ public class TabSwitcherSearchTest {
 
         // ZPS for open tabs only shows the most recent 4 tabs.
         tabSwitcherSearchStation.findSuggestionsByText(urlsToOpen, URL_PREFIX);
-        // Check the header text.
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Last open tabs");
     }
 
     @Test
@@ -184,7 +180,6 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     // Regression test for the currently selected tab being included/excluded randomly.
     public void testZeroPrefixSuggestions_IgnoresHiddenTabs() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
@@ -200,18 +195,12 @@ public class TabSwitcherSearchTest {
         // ZPS for open tabs only shows the most recent 4 tabs.
         tabSwitcherSearchStation.findSuggestionsByText(urlsToOpen, URL_PREFIX);
 
-        // Check the header text.
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Last open tabs");
-
         RegularTabSwitcherStation tabSwitcher =
                 tabSwitcherSearchStation.pressBackToRegularTabSwitcher(cta);
         tabSwitcherSearchStation = tabSwitcher.openTabSwitcherSearch();
 
         // ZPS for open tabs only shows the most recent 4 tabs.
         tabSwitcherSearchStation.findSuggestionsByText(urlsToOpen, URL_PREFIX);
-
-        // Check the header text.
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Last open tabs");
     }
 
     @Test
@@ -347,23 +336,20 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288229
     public void testTypedSuggestions_OpenSearchSuggestion() {
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 mPage.openRegularTabSwitcher().openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("foobar");
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Search the web");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 1, /* title= */ "foobar", /* text= */ null);
+                        /* index= */ 0, /* title= */ "foobar", /* text= */ null);
         mPage = suggestion.openPage();
         assertFalse(mPage.isIncognito());
     }
 
     @Test
     @MediumTest
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestions_OpenTabGroupSearchSuggestion() {
         String tabGroupTitle = "Test";
@@ -392,10 +378,9 @@ public class TabSwitcherSearchTest {
 
         TabSwitcherSearchStation tabSwitcherSearchStation = tabSwitcher.openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("test");
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 2,
+                        /* index= */ 1,
                         /* title= */ "   Test",
                         /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                                 + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
@@ -412,7 +397,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestions_OpenTabGroupSearchSuggestionByURLMatch() {
         String tabGroupTitle = "Test";
@@ -441,10 +425,9 @@ public class TabSwitcherSearchTest {
 
         TabSwitcherSearchStation tabSwitcherSearchStation = tabSwitcher.openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("navigate");
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 2,
+                        /* index= */ 1,
                         /* title= */ "   Test",
                         /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                                 + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
@@ -461,7 +444,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testTypedSuggestionsFromTabGroupsPane_OpenTabGroupSearchSuggestion() {
         String tabGroupTitle = "Test";
@@ -491,10 +473,9 @@ public class TabSwitcherSearchTest {
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 tabSwitcher.selectTabGroupsPane().openTabGroupsPaneSearch();
         tabSwitcherSearchStation.typeInOmnibox("test");
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 2,
+                        /* index= */ 1,
                         /* title= */ "   Test",
                         /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                                 + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
@@ -511,7 +492,6 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288229
     public void testTypedSuggestions_OpenSearchSuggestion_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
@@ -519,10 +499,9 @@ public class TabSwitcherSearchTest {
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 mPage.openIncognitoTabSwitcher().openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("foobar");
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Search the web");
         SuggestionFacility suggestion =
                 tabSwitcherSearchStation.findSuggestion(
-                        /* index= */ 1, /* title= */ "foobar", /* text= */ null);
+                        /* index= */ 0, /* title= */ "foobar", /* text= */ null);
         mPage = suggestion.openPage();
         assertTrue(mPage.isIncognito());
     }
@@ -530,7 +509,6 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @RequiresRestart("Adding the bookmark affects suggestions in subsequent tests")
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     // TODO(crbug.com/394401323): Add some PT station for searching bookmarks.
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
     public void testBookmarkSuggestions() {
@@ -552,15 +530,13 @@ public class TabSwitcherSearchTest {
                         .openRegularTabSwitcher()
                         .openTabSwitcherSearch();
         tabSwitcherSearchStation.typeInOmnibox("one.html");
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "Bookmarks");
         tabSwitcherSearchStation.findSuggestion(
-                /* index= */ 1, /* title= */ "One", /* text= */ null);
+                /* index= */ 0, /* title= */ "One", /* text= */ null);
     }
 
     @Test
     @MediumTest
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/494245361
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     // TODO(crbug.com/394401463): Add some PT station for searching history.
     public void testHistorySuggestions() throws TimeoutException {
         TabSwitcherSearchStation tabSwitcherSearchStation =
@@ -609,8 +585,7 @@ public class TabSwitcherSearchTest {
         helper.waitForNext();
 
         tabSwitcherSearchStation.typeInOmnibox("One");
-        tabSwitcherSearchStation.findSectionHeaderByIndexAndText(0, "History");
         tabSwitcherSearchStation.findSuggestion(
-                /* index= */ 1, /* title= */ "One", /* text= */ null);
+                /* index= */ 0, /* title= */ "One", /* text= */ null);
     }
 }

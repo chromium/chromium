@@ -26,9 +26,9 @@ import java.lang.annotation.RetentionPolicy;
     OmniboxSuggestionUiType.ENTITY_SUGGESTION,
     OmniboxSuggestionUiType.TAIL_SUGGESTION,
     OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
-    OmniboxSuggestionUiType.HEADER,
+    OmniboxSuggestionUiType.OBSOLETE_HEADER,
     OmniboxSuggestionUiType.TILE_NAVSUGGEST,
-    OmniboxSuggestionUiType.GROUP_SEPARATOR,
+    OmniboxSuggestionUiType.OBSOLETE_GROUP_SEPARATOR,
     OmniboxSuggestionUiType.OBSOLETE_QUERY_TILES,
     OmniboxSuggestionUiType.TAB_GROUP_SUGGESTION,
     OmniboxSuggestionUiType.COUNT
@@ -42,9 +42,9 @@ public @interface OmniboxSuggestionUiType {
     int ENTITY_SUGGESTION = 3;
     int TAIL_SUGGESTION = 4;
     int CLIPBOARD_SUGGESTION = 5;
-    int HEADER = 6;
+    int OBSOLETE_HEADER = 6;
     int TILE_NAVSUGGEST = 7;
-    int GROUP_SEPARATOR = 8;
+    int OBSOLETE_GROUP_SEPARATOR = 8;
     int OBSOLETE_QUERY_TILES = 9;
     int TAB_GROUP_SUGGESTION = 10;
 

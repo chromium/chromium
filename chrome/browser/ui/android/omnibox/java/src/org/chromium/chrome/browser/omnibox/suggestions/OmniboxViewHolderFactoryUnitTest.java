@@ -29,7 +29,10 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxViewHolderFactoryUnitTest {
     public static final Set<Integer> OBSOLETE_UI_TYPES =
-            Set.of(OmniboxSuggestionUiType.OBSOLETE_QUERY_TILES);
+            Set.of(
+                    OmniboxSuggestionUiType.OBSOLETE_QUERY_TILES,
+                    OmniboxSuggestionUiType.OBSOLETE_HEADER,
+                    OmniboxSuggestionUiType.OBSOLETE_GROUP_SEPARATOR);
 
     private FrameLayout mContainer;
     private OmniboxViewHolderFactory mFactory;

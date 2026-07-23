@@ -340,9 +340,6 @@ BASE_FEATURE(kOmniboxMobileParityUpdateV2, ENABLED);
 // If enabled, the X-Geo header will include permission granularity.
 BASE_FEATURE(kOmniboxXGeoPermissionGranularity, ENABLED);
 
-// If enabled, omnibox group separators and headers will use item decorations.
-BASE_FEATURE(kOmniboxItemDecoration, DISABLED);
-
 // When the first suggestion is a url, the favicon is shown in the status view.
 BASE_FEATURE(kExactMatchFavicons, DISABLED);
 
@@ -529,7 +526,6 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kAIMSuppressVerbatimMatch,
       &kResetSuggestionsScroll,
       &kOmniboxListMenuContextMenu,
-      &kOmniboxItemDecoration,
       &kExactMatchFavicons,
       &kStarterPackExpansion,
       &kOmniboxSearchPrefetchOnEnterKeyDown,

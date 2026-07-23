@@ -13009,11 +13009,6 @@ const FeatureEntry kFeatureEntries[] = {
          "GestureUserEducationBackSwipe")},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"omnibox-item-decoration", flag_descriptions::kOmniboxItemDecorationName,
-     flag_descriptions::kOmniboxItemDecorationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxItemDecoration)},
-#endif
     {"import-export-flags", flag_descriptions::kImportExportFlagsName,
      flag_descriptions::kImportExportFlagsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kImportExportFlags)},

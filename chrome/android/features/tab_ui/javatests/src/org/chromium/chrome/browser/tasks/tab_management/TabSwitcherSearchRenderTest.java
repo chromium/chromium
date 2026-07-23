@@ -47,7 +47,6 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.testhtmls.NavigatePageStations;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -230,7 +229,6 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderTypedSuggestions(boolean nightModeEnabled) throws IOException {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
@@ -240,8 +238,7 @@ public class TabSwitcherSearchRenderTest {
                         .openRegularTabSwitcher()
                         .openTabSwitcherSearch();
         searchStation.typeInOmnibox("one.html");
-        searchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
-        searchStation.findSuggestion(/* index= */ 1, /* title= */ "One", /* text= */ null);
+        searchStation.findSuggestion(/* index= */ 0, /* title= */ "One", /* text= */ null);
 
         mRenderTestRule.render(
                 searchStation.getActivity().findViewById(android.R.id.content), "hub_search_typed");
@@ -268,7 +265,6 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderTypedTabGroupSuggestions(boolean nightModeEnabled) throws IOException {
         Tab firstTab = mInitialPage.loadedTabElement.value();
@@ -297,9 +293,8 @@ public class TabSwitcherSearchRenderTest {
 
         TabSwitcherSearchStation searchStation = tabSwitcher.openTabSwitcherSearch();
         searchStation.typeInOmnibox("foo");
-        searchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         searchStation.findSuggestion(
-                /* index= */ 1,
+                /* index= */ 0,
                 /* title= */ "   Foobar",
                 /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                         + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
@@ -312,7 +307,6 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderTypedTabGroupSuggestions_URLMatch(boolean nightModeEnabled)
             throws IOException {
@@ -342,9 +336,8 @@ public class TabSwitcherSearchRenderTest {
 
         TabSwitcherSearchStation searchStation = tabSwitcher.openTabSwitcherSearch();
         searchStation.typeInOmnibox("data");
-        searchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
         searchStation.findSuggestion(
-                /* index= */ 2,
+                /* index= */ 1,
                 /* title= */ "   Test",
                 /* text= */ "127.0.0.1:13245/chrome/test/data/android/navigate/one.html,"
                         + " 127.0.0.1:13245/chrome/test/data/android/navigate/one.html");
@@ -357,7 +350,6 @@ public class TabSwitcherSearchRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderTypedTabGroupSuggestions_ChromePrefixedTabsOmmitted(
             boolean nightModeEnabled) throws IOException {
@@ -377,8 +369,7 @@ public class TabSwitcherSearchRenderTest {
 
         TabSwitcherSearchStation searchStation = tabSwitcher.openTabSwitcherSearch();
         searchStation.typeInOmnibox("test");
-        searchStation.findSectionHeaderByIndexAndText(0, "Tabs and tab groups");
-        searchStation.findSuggestion(/* index= */ 1, /* title= */ "   Test", /* text= */ null);
+        searchStation.findSuggestion(/* index= */ 0, /* title= */ "   Test", /* text= */ null);
 
         mRenderTestRule.render(
                 searchStation.getActivity().findViewById(android.R.id.content),

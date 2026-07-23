@@ -46,7 +46,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
     private @Spy SuggestionProcessor mBasicSuggestionProcessor;
     private @Spy SuggestionProcessor mEditUrlSuggestionProcessor;
-    private @Spy DropdownItemProcessor mHeaderProcessor;
     private @Mock PropertyModel mModel;
     private @Mock ListObserver<Void> mListObserver;
 
@@ -59,7 +58,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
         when(mBasicSuggestionProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.DEFAULT);
         when(mEditUrlSuggestionProcessor.getViewTypeId())
                 .thenReturn(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION);
-        when(mHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
 
         mSuggestionModels = new ModelList();
         mSuggestionModels.addObserver(mListObserver);
@@ -141,13 +139,11 @@ public class DropdownItemViewInfoListManagerUnitTest {
         // 5. AutocompleteMediator receives same suggestions as in (2)
         // 6. user sees suggestions again.
         final List<DropdownItemViewInfo> list1 = new ArrayList<>();
-        list1.add(new DropdownItemViewInfo(mHeaderProcessor, mModel, SECTION_1_NO_HEADER));
         list1.add(new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, SECTION_1_NO_HEADER));
         list1.add(new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, SECTION_1_NO_HEADER));
 
         final List<DropdownItemViewInfo> list2 =
                 Arrays.asList(
-                        new DropdownItemViewInfo(mHeaderProcessor, mModel, SECTION_1_NO_HEADER),
                         new DropdownItemViewInfo(
                                 mBasicSuggestionProcessor, mModel, SECTION_1_NO_HEADER),
                         new DropdownItemViewInfo(
@@ -166,10 +162,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
     public void updateSuggestionsList_uiChangesArePropagatedToSuggestions() {
         List<DropdownItemViewInfo> list =
                 Arrays.asList(
-                        new DropdownItemViewInfo(
-                                mHeaderProcessor,
-                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                SECTION_1_NO_HEADER),
                         new DropdownItemViewInfo(
                                 mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
@@ -202,10 +194,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
         list =
                 Arrays.asList(
                         new DropdownItemViewInfo(
-                                mHeaderProcessor,
-                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                SECTION_2_WITH_HEADER),
-                        new DropdownItemViewInfo(
                                 mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
                                 SECTION_2_WITH_HEADER),
@@ -226,10 +214,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
     public void updateSuggestionsList_roundSidesArePropagatedToSuggestions() {
         List<DropdownItemViewInfo> list =
                 Arrays.asList(
-                        new DropdownItemViewInfo(
-                                mHeaderProcessor,
-                                new PropertyModel(SuggestionCommonProperties.ALL_KEYS),
-                                SECTION_1_NO_HEADER),
                         new DropdownItemViewInfo(
                                 mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS),

@@ -23,7 +23,6 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.DocumentType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionKind;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
@@ -219,39 +218,36 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, textLine1);
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, textLine2);
 
-        if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
-            String header = model.get(SuggestionCommonProperties.HEADER_TITLE);
-            // 1-based index for human-readable announcements.
-            int indexInGroup = model.get(SuggestionCommonProperties.INDEX_IN_GROUP) + 1;
-            int totalInGroup = model.get(SuggestionCommonProperties.TOTAL_IN_GROUP);
+        String header = model.get(SuggestionCommonProperties.HEADER_TITLE);
+        // 1-based index for human-readable announcements.
+        int indexInGroup = model.get(SuggestionCommonProperties.INDEX_IN_GROUP) + 1;
+        int totalInGroup = model.get(SuggestionCommonProperties.TOTAL_IN_GROUP);
 
-            if (totalInGroup > 0) {
-                String announcement;
-                String suggestionKindStr = mContext.getString(getSuggestionKindString(suggestion));
-                if (textLine2 != null && !TextUtils.isEmpty(textLine2.toString())) {
-                    announcement =
-                            mUiContext.resourceProvider.getString(
-                                    R.string
-                                            .acc_omnibox_suggestion_in_group_with_type_and_description,
-                                    textLine1.toString(),
-                                    textLine2.toString(),
-                                    suggestionKindStr,
-                                    String.valueOf(indexInGroup),
-                                    String.valueOf(totalInGroup),
-                                    header != null ? header : "");
+        if (totalInGroup > 0) {
+            String announcement;
+            String suggestionKindStr = mContext.getString(getSuggestionKindString(suggestion));
+            if (textLine2 != null && !TextUtils.isEmpty(textLine2.toString())) {
+                announcement =
+                        mUiContext.resourceProvider.getString(
+                                R.string.acc_omnibox_suggestion_in_group_with_type_and_description,
+                                textLine1.toString(),
+                                textLine2.toString(),
+                                suggestionKindStr,
+                                String.valueOf(indexInGroup),
+                                String.valueOf(totalInGroup),
+                                header != null ? header : "");
 
-                } else {
-                    announcement =
-                            mUiContext.resourceProvider.getString(
-                                    R.string.acc_omnibox_suggestion_in_group_with_type,
-                                    textLine1.toString(),
-                                    suggestionKindStr,
-                                    String.valueOf(indexInGroup),
-                                    String.valueOf(totalInGroup),
-                                    header != null ? header : "");
-                }
-                model.set(SuggestionViewProperties.CONTENT_DESCRIPTION, announcement);
+            } else {
+                announcement =
+                        mUiContext.resourceProvider.getString(
+                                R.string.acc_omnibox_suggestion_in_group_with_type,
+                                textLine1.toString(),
+                                suggestionKindStr,
+                                String.valueOf(indexInGroup),
+                                String.valueOf(totalInGroup),
+                                header != null ? header : "");
             }
+            model.set(SuggestionViewProperties.CONTENT_DESCRIPTION, announcement);
         }
 
         if (!isSearchSuggestion

@@ -69,7 +69,6 @@ public class PreWarmingRecycledViewPoolTest {
     private void ensureNoViewsCreated() {
         assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION));
         assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.TILE_NAVSUGGEST));
-        assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.HEADER));
         assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION));
         assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.DEFAULT));
         assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION));
@@ -82,9 +81,6 @@ public class PreWarmingRecycledViewPoolTest {
         assertEquals(
                 PreWarmingRecycledViewPool.PRE_WARMED_TILE_NAVSUGGEST_VIEW_COUNT,
                 mPool.getRecycledViewCount(OmniboxSuggestionUiType.TILE_NAVSUGGEST));
-        assertEquals(
-                PreWarmingRecycledViewPool.PRE_WARMED_HEADER_VIEW_COUNT,
-                mPool.getRecycledViewCount(OmniboxSuggestionUiType.HEADER));
         assertEquals(
                 PreWarmingRecycledViewPool.PRE_WARMED_CLIPBOARD_SUGGESTION_VIEW_COUNT,
                 mPool.getRecycledViewCount(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION));
@@ -102,7 +98,6 @@ public class PreWarmingRecycledViewPoolTest {
                 Arrays.asList(
                         OmniboxSuggestionUiType.EDIT_URL_SUGGESTION,
                         OmniboxSuggestionUiType.TILE_NAVSUGGEST,
-                        OmniboxSuggestionUiType.HEADER,
                         OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
                         OmniboxSuggestionUiType.DEFAULT,
                         OmniboxSuggestionUiType.ENTITY_SUGGESTION)) {

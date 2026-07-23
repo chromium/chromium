@@ -7511,14 +7511,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "omnibox-item-decoration",
-    "owners": [
-      "charlesyc@google.com",
-      "chrome-mobile-search@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "omnibox-list-menu-context-menu",
     "owners": ["oka@chromium.org", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 160

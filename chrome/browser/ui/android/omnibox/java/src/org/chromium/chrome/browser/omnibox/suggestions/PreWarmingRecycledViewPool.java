@@ -51,7 +51,6 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
 
     @VisibleForTesting static final int PRE_WARMED_EDIT_URL_SUGGESTION_VIEW_COUNT = 1;
     @VisibleForTesting static final int PRE_WARMED_TILE_NAVSUGGEST_VIEW_COUNT = 1;
-    @VisibleForTesting static final int PRE_WARMED_HEADER_VIEW_COUNT = 1;
     @VisibleForTesting static final int PRE_WARMED_CLIPBOARD_SUGGESTION_VIEW_COUNT = 1;
     @VisibleForTesting static final int PRE_WARMED_DEFAULT_VIEW_COUNT = 15;
     @VisibleForTesting static final int PRE_WARMED_ENTITY_SUGGESTION_VIEW_COUNT = 3;
@@ -64,7 +63,6 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
                 new ViewTypeAndCount(
                         OmniboxSuggestionUiType.TILE_NAVSUGGEST,
                         PRE_WARMED_TILE_NAVSUGGEST_VIEW_COUNT),
-                new ViewTypeAndCount(OmniboxSuggestionUiType.HEADER, PRE_WARMED_HEADER_VIEW_COUNT),
                 new ViewTypeAndCount(
                         OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
                         PRE_WARMED_CLIPBOARD_SUGGESTION_VIEW_COUNT),
@@ -106,9 +104,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
 
         setMaxRecycledViews(OmniboxSuggestionUiType.TAIL_SUGGESTION, 15);
         setMaxRecycledViews(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION, 1);
-        setMaxRecycledViews(OmniboxSuggestionUiType.HEADER, 4);
         setMaxRecycledViews(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1);
-        setMaxRecycledViews(OmniboxSuggestionUiType.GROUP_SEPARATOR, 1);
 
         if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
             startCreatingViews();

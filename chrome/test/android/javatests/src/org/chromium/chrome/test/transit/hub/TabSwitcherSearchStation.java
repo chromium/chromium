@@ -42,7 +42,6 @@ import org.chromium.chrome.test.util.OmniboxTestUtils.InputMethodManagerIsActive
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsNotShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.UrlBarHasFocusCondition;
-import org.chromium.components.omnibox.OmniboxFeatures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -126,12 +125,6 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
         noopTo().enterFacilities(allSuggestionFacilities.toArray(new Facility[0]));
     }
 
-    /** Expect a suggestion with the given |index| and |text|. */
-    public SectionHeaderFacility findSectionHeaderByIndexAndText(int index, String text) {
-        SUGGESTIONS_LIST.printFromRoot();
-        return noopTo().enterFacility(new SectionHeaderFacility(index, text));
-    }
-
     /** A suggestion in the search results. */
     public class SuggestionFacility extends Facility<TabSwitcherSearchStation> {
         private final @Nullable String mText;
@@ -207,35 +200,6 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
                     .withEntryPoint()
                     .withExpectedUrlSubstring(mText)
                     .build();
-        }
-    }
-
-    /** A section header in the search results. */
-    public static class SectionHeaderFacility extends Facility<TabSwitcherSearchStation> {
-        public ViewElement<View> headerElement;
-
-        public SectionHeaderFacility(int index, String text) {
-            if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
-                headerElement =
-                        declareView(
-                                viewSpec(
-                                        allOf(
-                                                withId(R.id.search_activity_suggestions_container),
-                                                withEffectiveVisibility(
-                                                        ViewMatchers.Visibility.VISIBLE))));
-            } else {
-                headerElement =
-                        declareView(
-                                viewSpec(
-                                        withText(text),
-                                        withParentIndex(index),
-                                        isDescendantOfA(
-                                                allOf(
-                                                        withId(
-                                                                R.id.search_activity_suggestions_container),
-                                                        withEffectiveVisibility(
-                                                                ViewMatchers.Visibility.VISIBLE)))));
-            }
         }
     }
 }

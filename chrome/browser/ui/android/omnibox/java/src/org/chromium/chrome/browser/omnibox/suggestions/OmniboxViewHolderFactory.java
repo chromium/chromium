@@ -25,9 +25,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewB
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorView;
-import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
-import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderViewBinder;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBinder;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -114,16 +111,6 @@ public class OmniboxViewHolderFactory {
                 parent ->
                         BaseCarouselSuggestionItemViewBuilder.createView(parent, resourceProvider),
                 new BaseCarouselSuggestionViewBinder(resourceProvider));
-
-        registerType(
-                OmniboxSuggestionUiType.HEADER,
-                parent -> new HeaderView(parent.getContext()),
-                HeaderViewBinder::bind);
-
-        registerType(
-                OmniboxSuggestionUiType.GROUP_SEPARATOR,
-                parent -> new GroupSeparatorView(parent.getContext()),
-                (m, v, p) -> {});
     }
 
     private <T extends View> void registerType(

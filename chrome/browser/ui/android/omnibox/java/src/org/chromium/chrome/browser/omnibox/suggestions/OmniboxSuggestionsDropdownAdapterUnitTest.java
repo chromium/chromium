@@ -39,7 +39,10 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 public class OmniboxSuggestionsDropdownAdapterUnitTest {
     public static final Set<Integer> OBSOLETE_UI_TYPES =
-            Set.of(OmniboxSuggestionUiType.OBSOLETE_QUERY_TILES);
+            Set.of(
+                    OmniboxSuggestionUiType.OBSOLETE_QUERY_TILES,
+                    OmniboxSuggestionUiType.OBSOLETE_HEADER,
+                    OmniboxSuggestionUiType.OBSOLETE_GROUP_SEPARATOR);
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     private @Mock DropdownItemProcessor mProcessor;
     private Context mContext;

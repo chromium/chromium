@@ -80,7 +80,6 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
-import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
@@ -145,7 +144,6 @@ public class AutocompleteMediatorUnitTest {
     private @Mock AutocompleteDelegate mAutocompleteDelegate;
     private @Mock UrlBarEditingTextStateProvider mTextStateProvider;
     private @Mock SuggestionProcessor mMockProcessor;
-    private @Mock HeaderProcessor mMockHeaderProcessor;
     private @Mock AutocompleteController mAutocompleteController;
     private @Mock AutocompleteMatch mAutocompleteMatch;
     private @Mock AutocompleteController.Natives mControllerJniMock;
@@ -260,10 +258,6 @@ public class AutocompleteMediatorUnitTest {
         mMediator
                 .getDropdownItemViewInfoListBuilderForTest()
                 .registerSuggestionProcessor(mMockProcessor);
-        mMediator
-                .getDropdownItemViewInfoListBuilderForTest()
-                .setHeaderProcessorForTest(mMockHeaderProcessor);
-
         lenient().doReturn(SUGGESTION_MIN_HEIGHT).when(mMockProcessor).getMinimumViewHeight();
         lenient().doReturn(true).when(mMockProcessor).doesProcessSuggestion(any(), anyInt());
         lenient()
@@ -271,16 +265,6 @@ public class AutocompleteMediatorUnitTest {
                 .when(mMockProcessor)
                 .createModel();
         lenient().doReturn(OmniboxSuggestionUiType.DEFAULT).when(mMockProcessor).getViewTypeId();
-
-        lenient()
-                .doAnswer((invocation) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS))
-                .when(mMockHeaderProcessor)
-                .createModel();
-        lenient().doReturn(HEADER_MIN_HEIGHT).when(mMockHeaderProcessor).getMinimumViewHeight();
-        lenient()
-                .doReturn(OmniboxSuggestionUiType.HEADER)
-                .when(mMockHeaderProcessor)
-                .getViewTypeId();
 
         mSuggestionsList = buildSampleSuggestionsList(10, "Suggestion");
         mAutocompleteResult = spy(AutocompleteResult.fromCache(mSuggestionsList, null));
@@ -425,18 +409,15 @@ public class AutocompleteMediatorUnitTest {
         // state (e.g. cached suggestion images) can be set up.
         mMediator.beginInput(createEmptySession());
         verify(mMockProcessor, atLeastOnce()).onOmniboxSessionStateChange(true);
-        verify(mMockHeaderProcessor, atLeastOnce()).onOmniboxSessionStateChange(true);
 
-        clearInvocations(mMockProcessor, mMockHeaderProcessor);
+        clearInvocations(mMockProcessor);
 
         // endInput must notify processors that the session has ended so per-session
         // state can be released. Regression test: this used to be propagated as `true`,
         // preventing DropdownItemViewInfoListBuilder from clearing its image cache.
         mMediator.endInput();
         verify(mMockProcessor, atLeastOnce()).onOmniboxSessionStateChange(false);
-        verify(mMockHeaderProcessor, atLeastOnce()).onOmniboxSessionStateChange(false);
         verify(mMockProcessor, never()).onOmniboxSessionStateChange(true);
-        verify(mMockHeaderProcessor, never()).onOmniboxSessionStateChange(true);
     }
 
     @Test
@@ -2689,8 +2670,6 @@ public class AutocompleteMediatorUnitTest {
                         mUiOverrides);
         mediator.getDropdownItemViewInfoListBuilderForTest()
                 .registerSuggestionProcessor(mMockProcessor);
-        mediator.getDropdownItemViewInfoListBuilderForTest()
-                .setHeaderProcessorForTest(mMockHeaderProcessor);
 
         var session = createEmptySession();
         mediator.beginInput(session);
