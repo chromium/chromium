@@ -183,7 +183,10 @@ IN_PROC_BROWSER_TEST_F(LocalPasswordSetupScreenTest,
 
   test::OobeJS().ClickOnPath(kNextButton);
 
-  base::RunLoop().RunUntilIdle();
+  test::OobeJS()
+      .CreateAttributePresenceWaiter("invalid", /*presence=*/true,
+                                     kLocalPasswordSetupScreenFirstInput)
+      ->Wait();
 
   RunScreenNotExitedChecks();
 }
