@@ -5,8 +5,10 @@
 #include "chrome/test/chromedriver/prompt_behavior.h"
 
 #include <memory>
+#include <string_view>
 #include <unordered_map>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
@@ -166,6 +168,19 @@ Status PromptBehavior::Create(bool w3c_compliant,
                               const base::DictValue& prompt_behavior_dict,
                               PromptBehavior& result) {
   result = PromptBehavior(w3c_compliant);
+
+  // Every key must be a known dialog type or the "default" entry. Unknown keys
+  // are rejected so that invalid handler configurations are not silently
+  // ignored.
+  static constexpr auto allowed_keys = base::MakeFixedFlatSet<std::string_view>(
+      {"alert", "beforeUnload", "confirm", "default", "prompt"});
+  for (auto it : prompt_behavior_dict) {
+    if (!allowed_keys.contains(it.first)) {
+      return Status(kInvalidArgument,
+                    "Unexpected key " + it.first +
+                        " in capability `unhandledPromptBehavior`");
+    }
+  }
 
   // Maps dialog type name to reference to the corresponding handler.
   std::vector<std::tuple<std::string, PromptHandlerConfiguration&>>

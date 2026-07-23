@@ -174,6 +174,23 @@ TEST(PromptBehaviorTest, EmptyDict) {
       });
 }
 
+TEST(PromptBehaviorTest, DictUnknownKey) {
+  PromptBehavior prompt_behavior;
+  Status status = PromptBehavior::Create(
+      true, base::Value(base::test::ParseJsonDict(R"({"foo": "accept"})")),
+      prompt_behavior);
+  ASSERT_EQ(kInvalidArgument, status.code());
+}
+
+TEST(PromptBehaviorTest, DictMisspelledKey) {
+  PromptBehavior prompt_behavior;
+  Status status = PromptBehavior::Create(
+      true,
+      base::Value(base::test::ParseJsonDict(R"({"beforeunload": "bar"})")),
+      prompt_behavior);
+  ASSERT_EQ(kInvalidArgument, status.code());
+}
+
 class PromptBehaviorCreateDictInvariantTest
     : public testing::TestWithParam<
           std::tuple<std::string, std::string, std::string>> {};
