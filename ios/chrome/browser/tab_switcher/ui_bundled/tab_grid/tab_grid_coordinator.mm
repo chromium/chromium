@@ -556,6 +556,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       // beginning of the animation. See crbug.com/432227955 for more details.
       [weakSelf hideTabGroupsViews];
     }
+
+    // If the Inactive Tabs view is presented when displaying an active tab,
+    // hide it so returning to the tab grid targets the regular grid instead of
+    // the inactive tabs view.
+    [weakSelf.inactiveTabsCoordinator hide];
+
     if (completion) {
       completion();
     }
