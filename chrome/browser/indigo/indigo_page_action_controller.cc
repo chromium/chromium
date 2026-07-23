@@ -435,6 +435,7 @@ void IndigoPageActionController::Reset(ResetType reset_type) {
   DestroyToolbar();
   tracked_bounds_ = std::nullopt;
   delay_agent_invoke_timer_.Stop();
+  delete_photo_in_flight_ = false;
 
   content::WebContents* web_contents = tab().GetContents();
   if (!web_contents) {
@@ -587,12 +588,15 @@ void IndigoPageActionController::OnReplaceOriginalPhoto(
 }
 
 void IndigoPageActionController::OnDeleteOriginalPhoto(IndigoToolbar* toolbar) {
-  if (!indigo_service_) {
+  DeleteOriginalPhoto();
+}
+
+void IndigoPageActionController::DeleteOriginalPhoto() {
+  if (!indigo_service_ || delete_photo_in_flight_) {
     return;
   }
 
-  Reset(ResetType::kResetReplacementsAndContentScript);
-
+  delete_photo_in_flight_ = true;
   indigo_service_->GetApiClient().Delete(
       base::BindOnce(&IndigoPageActionController::OnDeleteOriginalPhotoComplete,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -600,11 +604,21 @@ void IndigoPageActionController::OnDeleteOriginalPhoto(IndigoToolbar* toolbar) {
 
 void IndigoPageActionController::OnDeleteOriginalPhotoComplete(
     base::expected<void, DeleteError> result) {
+  delete_photo_in_flight_ = false;
+  ToastController* toast_controller =
+      ToastController::MaybeGetForTabInterface(&tab());
   if (result.has_value()) {
-    // TODO(b/509508517): Show a toast to inform the user the image
-    // was deleted.
+    Reset(ResetType::kResetReplacementsAndContentScript);
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(
+          ToastParams(ToastId::kIndigoDeleteSuccess));
+    }
   } else {
-    LOG(ERROR) << "Delete original photo failed: " << result.error().message;
+    DVLOG(1) << "Delete original photo failed: " << result.error().message;
+    if (toast_controller) {
+      toast_controller->MaybeShowToast(
+          ToastParams(ToastId::kIndigoDeleteError));
+    }
   }
 }
 

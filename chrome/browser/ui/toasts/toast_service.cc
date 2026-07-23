@@ -614,6 +614,33 @@ void ToastService::RegisterToasts(
                     base::Unretained(browser_window_interface)))
             .AddCloseButton()
             .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kIndigoDeleteError,
+        ToastSpecification::Builder(features::IsRoundedIconsEnabled()
+                                        ? vector_icons::kErrorIcon
+                                        : vector_icons::kErrorOutlineOldIcon,
+                                    IDS_INDIGO_DELETE_ERROR_TOAST_BODY)
+            .AddActionButton(
+                IDS_INDIGO_DELETE_ERROR_TOAST_TRY_AGAIN_BUTTON,
+                base::BindRepeating(
+                    [](BrowserWindowInterface* window) {
+                      if (tabs::TabInterface* tab =
+                              window->GetActiveTabInterface()) {
+                        if (auto* controller =
+                                indigo::IndigoPageActionController::From(tab)) {
+                          controller->DeleteOriginalPhoto();
+                        }
+                      }
+                    },
+                    base::Unretained(browser_window_interface)))
+            .AddCloseButton()
+            .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kIndigoDeleteSuccess,
+        ToastSpecification::Builder(
+            features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
+            IDS_INDIGO_DELETE_SUCCESS_TOAST_BODY)
+            .Build());
   }
 
   toast_registry_->RegisterToast(

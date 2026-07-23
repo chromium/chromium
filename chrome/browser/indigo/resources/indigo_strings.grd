@@ -155,6 +155,17 @@
         Try again
       </message>
 
+      <!-- Delete Uploaded Photo Toasts -->
+      <message name="IDS_INDIGO_DELETE_SUCCESS_TOAST_BODY" desc="Text on a toast notification that is shown when the uploaded photo is successfully deleted." translateable="false">
+        Photo deleted
+      </message>
+      <message name="IDS_INDIGO_DELETE_ERROR_TOAST_BODY" desc="Text on a toast notification that is shown when Indigo fails to delete the uploaded photo." translateable="false">
+        Something went wrong
+      </message>
+      <message name="IDS_INDIGO_DELETE_ERROR_TOAST_TRY_AGAIN_BUTTON" desc="Text for the try again button on the Indigo delete error toast notification." translateable="false">
+        Try again
+      </message>
+
       <!-- Settings -->
       <!-- TODO(b/500383894): Move these to settings_strings.grdp when the feature is public. -->
       <message name="IDS_INDIGO_SETTINGS_LABEL" desc="Label for the Indigo setting." translateable="false">

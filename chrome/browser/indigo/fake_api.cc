@@ -86,10 +86,24 @@ void FakeApi::WaitForDeleteRequest(size_t index) {
   delete_responses_[index]->WaitForRequest();
 }
 
+bool FakeApi::HasReceivedDeleteRequest(size_t index) const {
+  CHECK_LT(index, delete_responses_.size());
+  return delete_responses_[index]->has_received_request();
+}
+
 void FakeApi::SendDeleteSuccessResponse(size_t index) {
   CHECK_LT(index, delete_responses_.size());
   auto& controllable_response = delete_responses_[index];
   controllable_response->Send(net::HTTP_OK, "application/json", "{}");
+  controllable_response->Done();
+}
+
+void FakeApi::SendDeleteErrorResponse(size_t index) {
+  CHECK_LT(index, delete_responses_.size());
+  auto& controllable_response = delete_responses_[index];
+  std::string response_body =
+      R"({"error": {"code": "INTERNAL", "message": "Deletion failed"}})";
+  controllable_response->Send(net::HTTP_OK, "application/json", response_body);
   controllable_response->Done();
 }
 

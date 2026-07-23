@@ -52,8 +52,14 @@ class FakeApi {
   // Waits for a request to arrive at the delete endpoint.
   void WaitForDeleteRequest(size_t index = 0);
 
+  // Returns whether a request has been received at the delete endpoint.
+  bool HasReceivedDeleteRequest(size_t index = 0) const;
+
   // Sends a successful response for delete.
   void SendDeleteSuccessResponse(size_t index = 0);
+
+  // Sends an error response for delete.
+  void SendDeleteErrorResponse(size_t index = 0);
 
   // Checks that the request has a valid product image.
   testing::AssertionResult RequestHasValidProductImage(

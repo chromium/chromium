@@ -111,6 +111,8 @@ chromium-metrics-reviews@google.com.
   <int value="50" label="Glic selection affordance hidden for site"/>
   <int value="51" label="Enterprise copy warning toast"/>
   <int value="52" label="Enterprise copy blocked toast"/>
+  <int value="53" label="Indigo delete uploaded photo error"/>
+  <int value="54" label="Indigo delete uploaded photo success"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

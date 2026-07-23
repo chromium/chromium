@@ -113,6 +113,10 @@ std::string_view GetToastName(ToastId toast_id) {
       return "EnterpriseCopyWarning";
     case ToastId::kEnterpriseCopyBlocked:
       return "EnterpriseCopyBlocked";
+    case ToastId::kIndigoDeleteError:
+      return "IndigoDeleteError";
+    case ToastId::kIndigoDeleteSuccess:
+      return "IndigoDeleteSuccess";
   }
 
   NOTREACHED();
