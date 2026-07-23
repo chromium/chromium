@@ -80,6 +80,7 @@ public interface BottomSheetController {
         StateChangeReason.PROMOTE_TAB,
         StateChangeReason.OMNIBOX_FOCUS,
         StateChangeReason.INTERACTION_COMPLETE,
+        StateChangeReason.CLOSE_BUTTON,
         StateChangeReason.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -94,9 +95,10 @@ public interface BottomSheetController {
         int PROMOTE_TAB = 7;
         int OMNIBOX_FOCUS = 8;
         int INTERACTION_COMPLETE = 9;
+        int CLOSE_BUTTON = 10;
 
         // STOP: Updates here require an update in enums.xml.
-        int MAX_VALUE = INTERACTION_COMPLETE;
+        int MAX_VALUE = CLOSE_BUTTON;
     }
 
     /**
@@ -269,4 +271,10 @@ public interface BottomSheetController {
 
     /** Called when the sheet background color override is changed. */
     void onSheetBackgroundColorOverrideChanged();
+
+    /**
+     * @param content The content prospectively being shown in the bottom sheet.
+     * @return Whether the bottom sheet should use the large form factor UI for the given content.
+     */
+    boolean isLargeFormFactorUiEnabled(BottomSheetContent content);
 }

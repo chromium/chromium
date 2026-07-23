@@ -189,6 +189,9 @@ public class PaymentHandlerCoordinator {
                     assumeNonNull(mPaymentHandlerWebContents);
                     mPaymentHandlerWebContents.destroy();
                 };
+        boolean hasFrameworkCloseButton = bottomSheetController.isLargeFormFactorUiEnabled(view);
+        mToolbarCoordinator.setCloseButtonVisibility(!hasFrameworkCloseButton);
+
         boolean isShowSuccess = bottomSheetController.requestShowContent(view, /* animate= */ true);
         if (!isShowSuccess) return null;
 

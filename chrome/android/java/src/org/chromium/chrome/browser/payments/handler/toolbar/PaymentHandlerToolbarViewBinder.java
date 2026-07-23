@@ -54,6 +54,11 @@ import org.chromium.ui.modelutil.PropertyModel;
                         model.get(PaymentHandlerToolbarProperties.CLOSE_BUTTON_ON_CLICK_CALLBACK)
                                 .run();
                     });
+        } else if (PaymentHandlerToolbarProperties.CLOSE_BUTTON_VISIBILITY == propertyKey) {
+            view.mCloseButton.setVisibility(
+                    model.get(PaymentHandlerToolbarProperties.CLOSE_BUTTON_VISIBILITY)
+                            ? View.VISIBLE
+                            : View.GONE);
         }
     }
 }

@@ -1615,7 +1615,7 @@ class BottomSheet extends FrameLayout
             boolean showCloseButton = content != null && content.hasCustomScrimLifecycle();
             mCloseButton.setVisibility(showCloseButton ? View.VISIBLE : View.GONE);
             mCloseButton.setOnClickListener(
-                    v -> setSheetState(SheetState.HIDDEN, true, StateChangeReason.SWIPE));
+                    v -> setSheetState(SheetState.HIDDEN, true, StateChangeReason.CLOSE_BUTTON));
         }
         updateBackgroundColor();
         updateBackgroundGlow();

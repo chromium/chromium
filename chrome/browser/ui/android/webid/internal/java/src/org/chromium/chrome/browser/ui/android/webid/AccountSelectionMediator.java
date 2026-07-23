@@ -311,6 +311,10 @@ class AccountSelectionMediator {
                                             mHeaderType == HeaderType.SIGN_IN_TO_IDP_STATIC
                                                     ? MismatchDialogResult.TAP_SCRIM
                                                     : null;
+                                } else if (reason
+                                        == BottomSheetController.StateChangeReason.CLOSE_BUTTON) {
+                                    dismissReason = IdentityRequestDialogDismissReason.CLOSE_BUTTON;
+                                    recordCloseSheetMetrics();
                                 }
                                 onDismissed(dismissReason);
                             }
@@ -402,18 +406,14 @@ class AccountSelectionMediator {
             String idpForDisplay,
             @RpContext.EnumType int rpContext,
             Boolean isMultipleIdps) {
-        Runnable closeOnClickRunnable =
-                () -> {
-                    onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
-
-                    RecordHistogram.recordBooleanHistogram(
-                            "Blink.FedCm.CloseVerifySheet.Android",
-                            mHeaderType == HeaderType.VERIFY);
-                    RecordHistogram.recordEnumeratedHistogram(
-                            "Blink.FedCm.ClosedSheetType.Android",
-                            getSheetType(),
-                            SheetType.MAX_VALUE + 1);
-                };
+        Runnable closeOnClickRunnable = null;
+        if (!mBottomSheetController.isLargeFormFactorUiEnabled(mBottomSheetContent)) {
+            closeOnClickRunnable =
+                    () -> {
+                        onDismissed(IdentityRequestDialogDismissReason.CLOSE_BUTTON);
+                        recordCloseSheetMetrics();
+                    };
+        }
 
         return new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                 .with(HeaderProperties.HEADER_ICON, mHeaderIcon)
@@ -1294,6 +1294,13 @@ class AccountSelectionMediator {
 
         // At this point, the account is a non-returning user and RP mode is widget.
         showAccountsInternal(/* newAccounts= */ null);
+    }
+
+    private void recordCloseSheetMetrics() {
+        RecordHistogram.recordBooleanHistogram(
+                "Blink.FedCm.CloseVerifySheet.Android", mHeaderType == HeaderType.VERIFY);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Blink.FedCm.ClosedSheetType.Android", getSheetType(), SheetType.MAX_VALUE + 1);
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {

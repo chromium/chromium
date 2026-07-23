@@ -800,6 +800,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         mBottomSheet.onSheetBackgroundColorOverrideChanged();
     }
 
+    @Override
+    public boolean isLargeFormFactorUiEnabled(BottomSheetContent content) {
+        return isLargeFormFactor() && content != null && content.supportsLargeFormFactor();
+    }
+
     private void onScrimVisibilityChanged(boolean visible) {
         if (mScrimVisible == visible) return;
         mScrimVisible = visible;

@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties.ACCOUNT;
+import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.CLOSE_ON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HEADER_ICON;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IDP_FOR_DISPLAY;
 import static org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.IFRAME_FOR_DISPLAY;
@@ -44,9 +45,12 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
@@ -182,6 +186,38 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mAnaAccount,
                 /* expectClickListener= */ true,
                 /* expectShowIdp= */ false);
+    }
+
+    @Test
+    public void testCloseOnClickRunnableFormFactor() {
+        // By default, the Desktop windowing flag and DeviceInfo.isDesktop are not mocked
+        // to true in this test, so it is treated as a small form factor.
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertNotNull(headerModel.get(CLOSE_ON_CLICK_LISTENER));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.BOTTOM_SHEET_ON_DESKTOP_WINDOWING)
+    public void testCloseOnClickRunnableLargeFormFactor() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mMockBottomSheetController.isLargeFormFactorUiEnabled(any())).thenReturn(true);
+        mMediator.showAccounts(
+                new RelyingPartyData(
+                        mTestEtldPlusOne, /* iframeForDisplay= */ "", /* rpIcon= */ null),
+                Arrays.asList(mAnaAccount),
+                Arrays.asList(mIdpData),
+                /* newAccounts= */ Collections.emptyList());
+
+        PropertyModel headerModel = mModel.get(ItemProperties.HEADER);
+        assertNull(headerModel.get(CLOSE_ON_CLICK_LISTENER));
+        DeviceInfo.setIsDesktopForTesting(false);
     }
 
     /**

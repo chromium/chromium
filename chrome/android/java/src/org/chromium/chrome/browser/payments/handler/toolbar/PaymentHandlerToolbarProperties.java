@@ -40,6 +40,9 @@ import org.chromium.url.GURL;
     /* package */ static final WritableObjectPropertyKey<Runnable> CLOSE_BUTTON_ON_CLICK_CALLBACK =
             new WritableObjectPropertyKey<>();
 
+    /* package */ static final WritableBooleanPropertyKey CLOSE_BUTTON_VISIBILITY =
+            new WritableBooleanPropertyKey();
+
     /* package */ static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 URL,
@@ -49,7 +52,8 @@ import org.chromium.url.GURL;
                 SECURITY_ICON,
                 SECURITY_ICON_CONTENT_DESCRIPTION,
                 SECURITY_ICON_ON_CLICK_CALLBACK,
-                CLOSE_BUTTON_ON_CLICK_CALLBACK
+                CLOSE_BUTTON_ON_CLICK_CALLBACK,
+                CLOSE_BUTTON_VISIBILITY
             };
 
     // Prevent instantiation.
