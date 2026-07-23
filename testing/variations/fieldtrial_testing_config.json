@@ -20426,8 +20426,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_WithDisableOnStartup",
                     "enable_features": [
+                        "PrewarmDisableOnStartup",
                         "PrewarmZeroSuggestTrigger"
                     ]
                 }

@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
@@ -31,6 +32,7 @@
 #include "components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -258,6 +260,17 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
   GURL prewarm_url;
   PrewarmDecision decision = ShouldPrewarm(prewarm_url);
   base::UmaHistogramEnumeration(kHistogramPrerenderPrewarmDecision, decision);
+  if (decision == PrewarmDecision::kDisabledOnStartup) {
+    if (!prewarm_scheduled_after_startup_) {
+      prewarm_scheduled_after_startup_ = true;
+      AfterStartupTaskUtils::PostTask(
+          FROM_HERE, content::GetUIThreadTaskRunner({}),
+          base::BindOnce(base::IgnoreResult(
+                             &PrerenderManager::MaybeStartPrewarmSearchResult),
+                         weak_factory_.GetWeakPtr()));
+    }
+    return false;
+  }
   if (decision != PrewarmDecision::kReady) {
     return false;
   }
@@ -503,6 +516,10 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
   }
   if (!base::FeatureList::IsEnabled(features::kPrewarm)) {
     return PrewarmDecision::kDisabled;
+  }
+  if (base::FeatureList::IsEnabled(features::kPrewarmDisableOnStartup) &&
+      !AfterStartupTaskUtils::IsBrowserStartupComplete()) {
+    return PrewarmDecision::kDisabledOnStartup;
   }
   auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
