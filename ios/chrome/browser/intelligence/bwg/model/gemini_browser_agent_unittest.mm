@@ -22,6 +22,7 @@
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/coordinator/fullscreen_coordinator.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -107,7 +108,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
                    PageContextExtractorJavaScriptFeature::GetInstance()});
     SceneState* scene_state = [[SceneState alloc] init];
     browser_ = std::make_unique<TestBrowser>(profile_, scene_state);
-    FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+    InitFullscreenCoordinatorIfNeeded();
     GeminiBrowserAgent::CreateForBrowser(browser_.get());
     gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
 
@@ -122,28 +123,6 @@ class GeminiBrowserAgentTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_gemini_handler_
                      forProtocol:@protocol(GeminiCommands)];
-
-    // TODO(crbug.com/535867411): Replace legacy FullscreenController in
-    // GeminiBrowserAgentTest.
-    mock_fullscreen_handler_ = OCMProtocolMock(@protocol(FullscreenCommands));
-    OCMStub([mock_fullscreen_handler_ disableFullscreenAnimated:YES])
-        .andDo(^(NSInvocation*) {
-          FullscreenController::FromBrowser(browser_.get())
-              ->IncrementDisabledCounter();
-        });
-    OCMStub([mock_fullscreen_handler_ disableFullscreenAnimated:NO])
-        .andDo(^(NSInvocation*) {
-          FullscreenController::FromBrowser(browser_.get())
-              ->IncrementDisabledCounter();
-        });
-    OCMStub([mock_fullscreen_handler_ reenableFullscreen])
-        .andDo(^(NSInvocation*) {
-          FullscreenController::FromBrowser(browser_.get())
-              ->DecrementDisabledCounter();
-        });
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_fullscreen_handler_
-                     forProtocol:@protocol(FullscreenCommands)];
 
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
@@ -196,6 +175,8 @@ class GeminiBrowserAgentTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [fullscreen_coordinator_ stop];
+    fullscreen_coordinator_ = nil;
     fake_main_frame_ = nullptr;
     web_state_ = nullptr;
     profile_ = nullptr;
@@ -204,7 +185,6 @@ class GeminiBrowserAgentTest : public PlatformTest {
     optimization_guide_service_ = nullptr;
     mock_settings_handler_ = nullptr;
     mock_gemini_handler_ = nullptr;
-    mock_fullscreen_handler_ = nullptr;
     fake_snapshot_delegate_ = nullptr;
     browser_.reset();
     profile_manager_.PrepareForDestruction();
@@ -320,9 +300,35 @@ class GeminiBrowserAgentTest : public PlatformTest {
   raw_ptr<web::FakeWebFrame> fake_main_frame_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
-  id mock_fullscreen_handler_;
   FakeSnapshotGeneratorDelegate* fake_snapshot_delegate_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
+  FullscreenCoordinator* fullscreen_coordinator_;
+
+  // Instantiates FullscreenBrowserAgent and starts FullscreenCoordinator if
+  // FullscreenRefactoring feature is enabled and coordinator is not yet
+  // created.
+  void InitFullscreenCoordinatorIfNeeded() {
+    if (IsFullscreenRefactoringEnabled() && !fullscreen_coordinator_) {
+      FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+      fullscreen_coordinator_ = [[FullscreenCoordinator alloc]
+          initWithBaseViewController:nil
+                             browser:browser_.get()];
+      [fullscreen_coordinator_ start];
+    }
+  }
+
+  // Returns whether fullscreen is enabled using FullscreenBrowserAgent if the
+  // refactoring is enabled, or FullscreenController otherwise.
+  bool IsFullscreenEnabled() {
+    if (IsFullscreenRefactoringEnabled()) {
+      FullscreenBrowserAgent* agent =
+          FullscreenBrowserAgent::FromBrowser(browser_.get());
+      return agent && agent->IsEnabled();
+    }
+    FullscreenController* controller =
+        FullscreenController::FromBrowser(browser_.get());
+    return controller && controller->IsEnabled();
+  }
 };
 
 // A test observer for GeminiBrowserAgent.
@@ -1119,35 +1125,34 @@ TEST_F(GeminiBrowserAgentTest,
   scoped_feature_list.InitWithFeatures(
       {kChromeNextIa, kAppBarHideInFullscreen, kComposeboxIpad}, {});
 
-  FullscreenController* controller =
-      FullscreenController::FromBrowser(browser_.get());
-  ASSERT_NE(controller, nullptr);
-  EXPECT_TRUE(controller->IsEnabled());
+  InitFullscreenCoordinatorIfNeeded();
+
+  EXPECT_TRUE(IsFullscreenEnabled());
 
   InvokeFloaty([[GeminiConfiguration alloc] init]);
-  EXPECT_FALSE(controller->IsEnabled());
+  EXPECT_FALSE(IsFullscreenEnabled());
 
   // Fullscreen should remain disabled even when UI appears or state collapses.
   gemini_browser_agent_->OnGeminiUIDidAppear();
-  EXPECT_FALSE(controller->IsEnabled());
+  EXPECT_FALSE(IsFullscreenEnabled());
 
   gemini_browser_agent_->OnViewStateChanged(
       ios::provider::GeminiViewState::kCollapsed);
-  EXPECT_FALSE(controller->IsEnabled());
+  EXPECT_FALSE(IsFullscreenEnabled());
 
   // Fullscreen should be re-enabled once floaty is dismissed.
   gemini_browser_agent_->DismissFloaty();
-  EXPECT_TRUE(controller->IsEnabled());
+  EXPECT_TRUE(IsFullscreenEnabled());
 
   // Fullscreen should be disabled once the state transitions to expanded again.
   gemini_browser_agent_->OnViewStateChanged(
       ios::provider::GeminiViewState::kExpanded);
-  EXPECT_FALSE(controller->IsEnabled());
+  EXPECT_FALSE(IsFullscreenEnabled());
 
   // Fullscreen should be re-enabled once the state transitions to hidden.
   gemini_browser_agent_->OnViewStateChanged(
       ios::provider::GeminiViewState::kHidden);
-  EXPECT_TRUE(controller->IsEnabled());
+  EXPECT_TRUE(IsFullscreenEnabled());
 }
 
 // Tests that when the floaty is un-minimized (expanded), we check if the
