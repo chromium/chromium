@@ -1823,17 +1823,6 @@ prefs when the profile is loaded.  -->
   <token key="PartitionSuffix" variants="PartitionSuffix"/>
 </histogram>
 
-<histogram name="Signin.Dice.InvalidPrimaryConnectedInUnsignedProfile"
-    enum="Boolean" expires_after="2027-04-01">
-  <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records whether Gaia sends primary_is_connected=true in the linked accounts
-    metadata when the profile has no primary account (unsigned profile). Emitted
-    whenever primary_is_connected=true is processed in a DICE signin response.
-  </summary>
-</histogram>
-
 <histogram name="Signin.DiceAuthorizationCode" enum="BooleanPresent"
     expires_after="never">
 <!-- expires-never: used to monitor OAuth outages in Dice.  -->
