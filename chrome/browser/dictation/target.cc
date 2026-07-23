@@ -44,11 +44,6 @@ void Target::SetComposition(const std::u16string& text, bool is_final) {
     return;
   }
 
-  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
-  if (!rwh) {
-    return;
-  }
-
   if (has_lost_focus_during_composition_) {
     // The associated element lost focus, and whatever text we composed was
     // committed. Don't begin a new composition in this state, and instead only
@@ -71,11 +66,6 @@ void Target::SetComposition(const std::u16string& text, bool is_final) {
 }
 
 void Target::CommitComposition(const std::u16string& text) {
-  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
-  if (!rwh) {
-    return;
-  }
-
   // If we've lost focus, then some of the previously composed text has already
   // been committed. Determine what has already been sent to avoid duplication.
   // TODO(b/529388448): This will be incorrect if the stream rewrites text. We
