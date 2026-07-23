@@ -57,6 +57,7 @@ BASE_DECLARE_FEATURE(kNtpModuleSignInRequirement);
 BASE_DECLARE_FEATURE(kNtpOutlookCalendarModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
 BASE_DECLARE_FEATURE(kNtpScaledActionChips);
+BASE_DECLARE_FEATURE(kNtpScaledActionChipsSmall);
 BASE_DECLARE_FEATURE(kNtpSharepointModule);
 enum class NtpSharepointModuleDataType {
   kTrendingInsights,

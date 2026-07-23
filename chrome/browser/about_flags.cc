@@ -7313,6 +7313,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpScaledActionChipsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpScaledActionChips)},
 
+    {"ntp-scaled-action-chips-small",
+     flag_descriptions::kNtpScaledActionChipsSmallName,
+     flag_descriptions::kNtpScaledActionChipsSmallDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpScaledActionChipsSmall)},
+
     {"ntp-sharepoint-module", flag_descriptions::kNtpSharepointModuleName,
      flag_descriptions::kNtpSharepointModuleDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSharepointModule,

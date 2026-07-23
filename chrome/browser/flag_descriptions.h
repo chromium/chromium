@@ -6849,6 +6849,12 @@ inline constexpr char kNtpScaledActionChipsDescription[] =
     "Enables scaled merchandising action chips (e.g., dynamic tool suggestions "
     "and resource pickers) on the New Tab Page.";
 
+inline constexpr char kNtpScaledActionChipsSmallName[] =
+    "NTP Scaled Action Chips Small";
+inline constexpr char kNtpScaledActionChipsSmallDescription[] =
+    "Enables small scaled merchandising action chips on the New Tab Page. "
+    "Requires #ntp-scaled-action-chips to be enabled too.";
+
 inline constexpr char kNtpSharepointModuleName[] = "NTP Sharepoint Module";
 inline constexpr char kNtpSharepointModuleDescription[] =
     "Shows the Sharepoint module on the New Tab Page.";

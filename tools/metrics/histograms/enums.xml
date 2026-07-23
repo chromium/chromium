@@ -13287,6 +13287,7 @@ from previous Chrome versions.
   <int value="-381181808" label="DragAppsInTabletMode:enabled"/>
   <int value="-380992110"
       label="AutofillEnableSaveCardInfoBarAccountIndicationFooter:enabled"/>
+  <int value="-380783630" label="NtpScaledActionChipsSmall:disabled"/>
   <int value="-379809954"
       label="AutofillDoNotMigrateUnsupportedLocalCards:disabled"/>
   <int value="-379723130" label="FasterSetCookie:enabled"/>
@@ -17532,6 +17533,7 @@ from previous Chrome versions.
   <int value="970901442" label="EnableAndroidGamepadVibration:enabled"/>
   <int value="972228058" label="SyncUSSSessions:disabled"/>
   <int value="973161931" label="EnableIframeForPix:enabled"/>
+  <int value="973427644" label="NtpScaledActionChipsSmall:enabled"/>
   <int value="973601997" label="SafeBrowsingUseLocalBlacklistsV2:disabled"/>
   <int value="974840558" label="TabGroupsFocusing:disabled"/>
   <int value="975104092" label="show-taps"/>
