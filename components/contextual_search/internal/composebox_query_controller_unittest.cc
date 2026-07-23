@@ -3801,6 +3801,29 @@ TEST_F(ComposeboxQueryControllerTest,
             lens::ToolMode::TOOL_MODE_IMAGE_GEN);
 }
 
+TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequestWithExitTool) {
+  controller().InitializeIfNeeded();
+
+  std::unique_ptr<CreateClientToAimRequestInfo> client_to_aim_request_info =
+      std::make_unique<CreateClientToAimRequestInfo>();
+  client_to_aim_request_info->exit_tool_info =
+      CreateClientToAimRequestInfo::ExitToolInfo{
+          .tool_mode = omnibox::ToolMode::TOOL_MODE_CANVAS,
+          .new_tool_mode = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED,
+      };
+
+  lens::ClientToAimMessage client_to_aim_request =
+      controller().CreateClientToAimRequest(
+          std::move(client_to_aim_request_info));
+
+  EXPECT_TRUE(client_to_aim_request.has_exit_tool());
+  EXPECT_FALSE(client_to_aim_request.has_submit_query());
+  EXPECT_EQ(client_to_aim_request.exit_tool().payload().tool_mode(),
+            lens::ToolMode::TOOL_MODE_CANVAS);
+  EXPECT_EQ(client_to_aim_request.exit_tool().payload().new_tool_mode(),
+            lens::ToolMode::TOOL_MODE_UNSPECIFIED);
+}
+
 TEST_F(ComposeboxQueryControllerTest,
        CreateClientToAimRequestWithAdditionalCgiParams) {
   // Act: Start the session.

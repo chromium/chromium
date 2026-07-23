@@ -956,6 +956,15 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
     std::unique_ptr<CreateClientToAimRequestInfo>
         create_client_to_aim_request_info) {
   lens::ClientToAimMessage client_to_aim_message;
+  if (create_client_to_aim_request_info->exit_tool_info.has_value()) {
+    lens::ExitTool* exit_tool = client_to_aim_message.mutable_exit_tool();
+    exit_tool->mutable_payload()->set_tool_mode(static_cast<lens::ToolMode>(
+        create_client_to_aim_request_info->exit_tool_info->tool_mode));
+    exit_tool->mutable_payload()->set_new_tool_mode(static_cast<lens::ToolMode>(
+        create_client_to_aim_request_info->exit_tool_info->new_tool_mode));
+    return client_to_aim_message;
+  }
+
   lens::SubmitQuery* submit_query =
       client_to_aim_message.mutable_submit_query();
   submit_query->mutable_payload()->set_query_text(

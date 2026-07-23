@@ -108,6 +108,21 @@ message InjectedInputUpdate {
   InjectedInputUpdatePayload payload = 1;
 }
 
+// LINT.IfChange(ExitToolPayload)
+// Payload for the ExitTool Event.
+message ExitToolPayload {
+  // The tool to exit.
+  ToolMode tool_mode = 1;
+  // The new tool mode we are switching to.
+  ToolMode new_tool_mode = 2;
+}
+// LINT.ThenChange()
+
+// Message from client to AIM to exit a tool.
+message ExitTool {
+  ExitToolPayload payload = 1;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // AIM -> Client messages
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,6 +142,7 @@ message ClientToAimMessage {
     OpenThreadsView open_threads_view = 3;
     SetCobrowsingDisplayMode set_cobrowsing_display_mode = 4;
     InjectedInputUpdate injected_input_update = 5;
+    ExitTool exit_tool = 6;
   }
 }
 

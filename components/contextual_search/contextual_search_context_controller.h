@@ -190,6 +190,14 @@ class ContextualSearchContextController {
     // List of request IDs of removed contexts to be sent to the server.
     // Populated by ContextualSearchSessionHandle.
     std::vector<lens::LensOverlayRequestId> removed_contexts;
+
+    // Payload info for exiting a tool.
+    struct ExitToolInfo {
+      omnibox::ToolMode tool_mode = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+      omnibox::ToolMode new_tool_mode =
+          omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+    };
+    std::optional<ExitToolInfo> exit_tool_info;
   };
 
   virtual ~ContextualSearchContextController() = default;
