@@ -5579,6 +5579,9 @@ crbug.com/485140575 http/tests/devtools/console/console-linkify-relative-links.j
 crbug.com/485140575 http/tests/devtools/sources/debugger-pause/debugger-eval-while-paused-throws.js [ Failure Pass ]
 crbug.com/485140575 http/tests/devtools/console/console-uncaught-exception-in-eval.js [ Failure Pass ]
 
+# Temporarily disabled to land https://crrev.com/c/8127605
+http/tests/devtools/network/warning-for-long-cookie.js [ Failure ]
+
 # Sheriff 2021-03-08
 crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
 
