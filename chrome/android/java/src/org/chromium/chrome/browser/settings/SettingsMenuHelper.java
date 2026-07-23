@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.appbar.MaterialToolbar;
+
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -151,8 +153,11 @@ public class SettingsMenuHelper {
             Toolbar toolbar, Activity activity, boolean show, boolean isMultiColumn) {
         if (show) {
             if (isMultiColumn) {
-                // Show the Chrome logo.
+                // Show the Chrome logo without tinting.
                 toolbar.setNavigationIcon(R.mipmap.app_icon);
+                if (toolbar instanceof MaterialToolbar materialToolbar) {
+                    materialToolbar.clearNavigationIconTint();
+                }
                 toolbar.setNavigationOnClickListener(null);
                 toolbar.setNavigationContentDescription(activity.getString(R.string.app_name));
             } else {

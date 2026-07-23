@@ -177,6 +177,9 @@ public class MainSettings extends ChromeBaseSettingsFragment
     // Saved state of the ListView to restore the scroll offset.
     private @Nullable Parcelable mSavedListState;
 
+    // Avoids using large numbers of dependencies to simplify testing / mocking.
+    private boolean mSkipUpdatePreferencesForTesting;
+
     public MainSettings() {
         setHasOptionsMenu(true);
     }
@@ -541,6 +544,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updatePreferences() {
+        // Avoids using large numbers of dependencies to simplify testing / mocking.
+        if (mSkipUpdatePreferencesForTesting) {
+            return;
+        }
+
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {
             SettingsPromoCardPreference promoCardPreference =
                     (SettingsPromoCardPreference) addPreferenceIfAbsent(PREF_SETTINGS_PROMO_CARD);
@@ -977,6 +985,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
     @Override
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
+    }
+
+    public void setSkipUpdatePreferencesForTesting(boolean skip) {
+        mSkipUpdatePreferencesForTesting = skip;
     }
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =

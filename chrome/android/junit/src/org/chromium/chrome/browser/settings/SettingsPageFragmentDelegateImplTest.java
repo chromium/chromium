@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,6 +142,18 @@ public class SettingsPageFragmentDelegateImplTest {
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         when(mActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                 .thenReturn(layoutInflater);
+        // Route some methods from the activity to the context.
+        when(mActivity.getSystemService(anyString()))
+                .thenAnswer(
+                        invocation ->
+                                ApplicationProvider.getApplicationContext()
+                                        .getSystemService((String) invocation.getArgument(0)));
+        when(mActivity.getApplicationContext())
+                .thenReturn(ApplicationProvider.getApplicationContext());
+        when(mActivity.getApplicationInfo()).thenReturn(context.getApplicationInfo());
+        when(mActivity.getPackageName()).thenReturn(context.getPackageName());
+        when(mActivity.getClassLoader()).thenReturn(context.getClassLoader());
+        when(mActivity.getMainLooper()).thenReturn(context.getMainLooper());
         when(mActivity.getResources()).thenReturn(context.getResources());
         when(mActivity.getTheme()).thenReturn(context.getTheme());
         when(mActivity.getDrawable(anyInt()))
@@ -219,6 +232,22 @@ public class SettingsPageFragmentDelegateImplTest {
         // not its own.
         assertNull(mInflatedSettingsView.findViewById(R.id.sheet_container));
         assertNull(mInflatedSettingsView.findViewById(R.id.dialog_container));
+    }
+
+    @Test
+    public void testInitSettings_inflatesSettingsViewWithChromiumSettingsTheme() {
+        when(mFragmentManager.findFragmentByTag(EXPECTED_TAG)).thenReturn(null);
+
+        mDelegate.initSettings(mContainerView);
+
+        assertNotNull(mInflatedSettingsView);
+        TypedValue tv = new TypedValue();
+        assertTrue(
+                "Inflated settings view context theme should resolve preferenceTheme attribute",
+                mInflatedSettingsView
+                        .getContext()
+                        .getTheme()
+                        .resolveAttribute(R.attr.preferenceTheme, tv, true));
     }
 
     @Test
