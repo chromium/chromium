@@ -605,8 +605,10 @@ if (is_android) {
 
   android_resources("java_resources") {
     sources = [
+      "android/java/res/color-night/omnibox_popover_suggestion_bg_color.xml",
       "android/java/res/color-night/omnibox_suggestion_dropdown_bg.xml",
       "android/java/res/color-night/search_suggestion_bg_color.xml",
+      "android/java/res/color/omnibox_popover_suggestion_bg_color.xml",
       "android/java/res/color/omnibox_suggestion_dropdown_bg.xml",
       "android/java/res/color/search_suggestion_bg_color.xml",
       "android/java/res/drawable-hdpi/omnibox_https_valid_lock.png",
@@ -967,13 +969,12 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//build:android_buildflags",
-    "//build:branding_buildflags",
     "//build:blink_buildflags",
+    "//build:branding_buildflags",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/content_settings/core/browser",
     "//components/contextual_tasks/public:feature_list",
-    "//components/vector_icons",
     "//components/dom_distiller/core",
     "//components/favicon/core/test:test_support",
     "//components/history/core/test",
@@ -1006,6 +1007,7 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/variations:test_support",
     "//components/variations/net",
+    "//components/vector_icons",
     "//extensions/buildflags",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",

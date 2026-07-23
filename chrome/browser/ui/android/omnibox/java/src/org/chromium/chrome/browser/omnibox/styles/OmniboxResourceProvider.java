@@ -35,6 +35,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -269,6 +270,17 @@ public class OmniboxResourceProvider {
      */
     public @ColorInt int getSuggestionsDropdownBackgroundColor() {
         return getSuggestionsDropdownBackgroundColor(mContext, getBrandedColorScheme());
+    }
+
+    /** Get suggestion background color for the instance context and color scheme. */
+    public @ColorInt int getSuggestionBackgroundColor(
+            @FuseboxLayoutMode int layoutMode, boolean isDropdownContainer) {
+        if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            return getPopoverSuggestionBackgroundColor(mContext, getBrandedColorScheme());
+        }
+        return isDropdownContainer
+                ? getSuggestionsDropdownBackgroundColor(mContext, getBrandedColorScheme())
+                : getStandardSuggestionBackgroundColor(mContext, getBrandedColorScheme());
     }
 
     /**
@@ -947,9 +959,20 @@ public class OmniboxResourceProvider {
     /** Returns the background color for suggestions in the given color scheme and context. */
     public static @ColorInt int getStandardSuggestionBackgroundColor(
             Context context, @BrandedColorScheme int colorScheme) {
-        return colorScheme == BrandedColorScheme.INCOGNITO
+        return convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(colorScheme)
                 ? context.getColor(R.color.search_suggestion_bg_color_incognito)
                 : ContextCompat.getColor(context, R.color.search_suggestion_bg_color);
+    }
+
+    /**
+     * Returns the background color for popover suggestions for the given {@link BrandedColorScheme}
+     * with the given context.
+     */
+    public static @ColorInt int getPopoverSuggestionBackgroundColor(
+            Context context, @BrandedColorScheme int colorScheme) {
+        return convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(colorScheme)
+                ? context.getColor(R.color.gm3_baseline_surface_container_dark)
+                : ContextCompat.getColor(context, R.color.omnibox_popover_suggestion_bg_color);
     }
 
     /** Returns the background hover color for suggestions in a model with the given context. */

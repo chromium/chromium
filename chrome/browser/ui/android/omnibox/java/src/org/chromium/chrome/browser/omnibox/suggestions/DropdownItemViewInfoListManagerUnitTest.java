@@ -27,6 +27,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -187,7 +188,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
         mManager.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO, true);
 
-        mManager.setApplySideSpacing(false);
+        mManager.setFuseboxLayoutMode(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
         verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO, false);
 
         // Finally, set the new list and confirm that the values are still applied.

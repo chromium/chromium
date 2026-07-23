@@ -468,15 +468,20 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
 
         mBrandedColorScheme = brandedColorScheme;
         Context context = getContext();
-        mOuterRect.setColor(
-                mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                        ? OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                                context, mBrandedColorScheme)
-                        : OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                                context, mBrandedColorScheme));
-        mInnerRect.setColor(
-                OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                        context, mBrandedColorScheme));
+        if (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            int popoverColor =
+                    OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
+                            context, mBrandedColorScheme);
+            mOuterRect.setColor(popoverColor);
+            mInnerRect.setColor(popoverColor);
+        } else {
+            mOuterRect.setColor(
+                    OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                            context, mBrandedColorScheme));
+            mInnerRect.setColor(
+                    OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                            context, mBrandedColorScheme));
+        }
 
         GradientDrawable unfocusedRect =
                 (GradientDrawable) mUnfocusedDrawable.findDrawableByLayerId(R.id.unfocused_bg);
@@ -549,9 +554,11 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         // SUGGESTIONS_POPOVER (it depends only on flags set at build time and startup) and thus
         // don't handle that case.
         if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
-            mOuterRect.setColor(
-                    OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                            getContext(), mBrandedColorScheme));
+            int popoverColor =
+                    OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
+                            getContext(), mBrandedColorScheme);
+            mOuterRect.setColor(popoverColor);
+            mInnerRect.setColor(popoverColor);
             mGlifBorderDrawable.setCornerRadius(mOmniboxSuggestionDropdownRoundCornerRadius);
             updateLayoutAndBackground();
         }

@@ -10,6 +10,7 @@ import android.view.View;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.RoundSides;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -30,6 +31,7 @@ class DropdownItemViewInfoListManager {
     private final Callback<@RoundSides Integer> mRoundSidesCallback = this::onRoundSidesChanged;
     private int mLayoutDirection;
     private @BrandedColorScheme int mBrandedColorScheme;
+    private @FuseboxLayoutMode int mFuseboxLayoutMode = FuseboxLayoutMode.TOOLBAR;
     private boolean mApplySideSpacing = true;
     private List<DropdownItemViewInfo> mSourceViewInfoList;
 
@@ -77,11 +79,13 @@ class DropdownItemViewInfoListManager {
         }
     }
 
-    void setApplySideSpacing(boolean applySideSpacing) {
-        if (mApplySideSpacing == applySideSpacing) return;
-        mApplySideSpacing = applySideSpacing;
+    void setFuseboxLayoutMode(@FuseboxLayoutMode int fuseboxLayoutMode) {
+        if (mFuseboxLayoutMode == fuseboxLayoutMode) return;
+        mFuseboxLayoutMode = fuseboxLayoutMode;
+        mApplySideSpacing = fuseboxLayoutMode != FuseboxLayoutMode.SUGGESTIONS_POPOVER;
         for (int i = 0; i < mSourceViewInfoList.size(); i++) {
             PropertyModel model = mSourceViewInfoList.get(i).model;
+            model.set(SuggestionCommonProperties.FUSEBOX_LAYOUT_MODE, fuseboxLayoutMode);
             model.set(SuggestionCommonProperties.APPLY_SIDE_SPACING, mApplySideSpacing);
         }
     }
@@ -114,6 +118,7 @@ class DropdownItemViewInfoListManager {
             model.set(SuggestionCommonProperties.LAYOUT_DIRECTION, mLayoutDirection);
             model.set(SuggestionCommonProperties.APPLY_SIDE_SPACING, mApplySideSpacing);
             model.set(SuggestionCommonProperties.COLOR_SCHEME, mBrandedColorScheme);
+            model.set(SuggestionCommonProperties.FUSEBOX_LAYOUT_MODE, mFuseboxLayoutMode);
             model.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, deviceType);
             model.set(SuggestionCommonProperties.BG_ROUND_SIDES, mRoundSidesSupplier.get());
             suggestionsList.add(item);

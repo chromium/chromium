@@ -247,11 +247,16 @@ public class LocationBarTabletUnitTest {
                 (GradientDrawable)
                         ((LayerDrawable) mLocationBarTablet.getBackground())
                                 .findDrawableByLayerId(R.id.focused_popup_bg);
+        GradientDrawable innerRect =
+                (GradientDrawable)
+                        ((LayerDrawable) mLocationBarTablet.getBackground())
+                                .findDrawableByLayerId(R.id.focused_popup_inner_bg);
         @ColorInt
         int expectedOuterRectColor =
-                OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
                         mActivity, BrandedColorScheme.APP_DEFAULT);
         assertEquals(expectedOuterRectColor, outerRect.getColor().getDefaultColor());
+        assertEquals(expectedOuterRectColor, innerRect.getColor().getDefaultColor());
         assertNull(mLocationBarTablet.getForeground());
 
         doReturn(true).when(mUrlBarCoordinator).hasFocus();

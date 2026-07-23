@@ -534,4 +534,30 @@ public class OmniboxResourceProviderTest {
                 OmniboxResourceProvider.getUrlBarPrimaryTextColor(mContext, expectedScheme),
                 provider2.getUrlBarPrimaryTextColor());
     }
+
+    @Test
+    public void getPopoverSuggestionBackgroundColor_incognito() {
+        final int incognitoColor = mContext.getColor(R.color.gm3_baseline_surface_container_dark);
+        assertEquals(
+                incognitoColor,
+                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
+                        mContext, BrandedColorScheme.INCOGNITO));
+    }
+
+    @Test
+    public void getPopoverSuggestionBackgroundColor_light() {
+        assertEquals(
+                MaterialColors.getColor(mContext, R.attr.colorSurface, TAG),
+                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
+                        mContext, BrandedColorScheme.APP_DEFAULT));
+    }
+
+    @Test
+    @Config(qualifiers = "night")
+    public void getPopoverSuggestionBackgroundColor_dark() {
+        assertEquals(
+                SemanticColorUtils.getColorSurfaceContainer(mContext),
+                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
+                        mContext, BrandedColorScheme.APP_DEFAULT));
+    }
 }

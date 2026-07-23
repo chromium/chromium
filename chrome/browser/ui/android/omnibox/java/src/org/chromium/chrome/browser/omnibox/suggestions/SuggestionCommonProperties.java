@@ -63,6 +63,9 @@ public @interface SuggestionCommonProperties {
     /** Whether dark colors should be applied to text, icons. */
     WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
 
+    /** The fusebox layout mode (TOOLBAR vs SUGGESTIONS_POPOVER). */
+    WritableIntPropertyKey FUSEBOX_LAYOUT_MODE = new WritableIntPropertyKey();
+
     /** The layout direction to be applied to the entire suggestion view. */
     WritableIntPropertyKey LAYOUT_DIRECTION = new WritableIntPropertyKey();
 
@@ -94,6 +97,7 @@ public @interface SuggestionCommonProperties {
             new PropertyKey[] {
                 APPLY_SIDE_SPACING,
                 COLOR_SCHEME,
+                FUSEBOX_LAYOUT_MODE,
                 LAYOUT_DIRECTION,
                 DEVICE_FORM_FACTOR,
                 BG_POSITIONAL_MODE,

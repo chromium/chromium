@@ -32,6 +32,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionListViewBinder.SuggestionListViewHolder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -180,6 +181,23 @@ public class SuggestionListViewBinderUnitTest {
         ColorDrawable background = (ColorDrawable) mContainer.getBackground();
         assertEquals(
                 ContextCompat.getColor(mActivity, R.color.omnibox_suggestion_dropdown_bg),
+                background.getColor());
+    }
+
+    @Test
+    public void suggestionsContainerVisible_popoverLayoutMode() {
+        mListModel.set(
+                SuggestionListProperties.FUSEBOX_LAYOUT_MODE,
+                FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        mListModel.set(SuggestionListProperties.COLOR_SCHEME, BrandedColorScheme.INCOGNITO);
+        mListModel.set(SuggestionListProperties.CONTAINER_ALWAYS_VISIBLE, true);
+
+        assertThat(mContainer.getBackground(), instanceOf(ColorDrawable.class));
+        ColorDrawable background = (ColorDrawable) mContainer.getBackground();
+        assertEquals(
+                OmniboxResourceProvider.getPopoverSuggestionBackgroundColor(
+                        mActivity, BrandedColorScheme.INCOGNITO),
                 background.getColor());
     }
 

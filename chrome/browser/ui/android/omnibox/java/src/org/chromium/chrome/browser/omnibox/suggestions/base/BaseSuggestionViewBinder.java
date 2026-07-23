@@ -289,9 +289,11 @@ public abstract class BaseSuggestionViewBinder<T extends View>
         Drawable background;
 
         if (sFocusableDrawableState == null) {
-            background =
-                    resourceProvider.getStatefulSuggestionBackground(
-                            resourceProvider.getStandardSuggestionBackgroundColor());
+            int suggestionBgColor =
+                    resourceProvider.getSuggestionBackgroundColor(
+                            model.get(SuggestionCommonProperties.FUSEBOX_LAYOUT_MODE),
+                            /* isDropdownContainer= */ false);
+            background = resourceProvider.getStatefulSuggestionBackground(suggestionBgColor);
             sFocusableDrawableState = background.getConstantState();
         } else {
             if (sFocusableDrawableState == metadata.backgroundConstantState) return;

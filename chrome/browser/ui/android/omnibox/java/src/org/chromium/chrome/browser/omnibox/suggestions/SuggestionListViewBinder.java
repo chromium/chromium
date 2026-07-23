@@ -150,10 +150,10 @@ class SuggestionListViewBinder
 
     private void updateColorScheme(PropertyModel model, SuggestionListViewHolder holder) {
         @FuseboxLayoutMode int layoutMode = model.get(SuggestionListProperties.FUSEBOX_LAYOUT_MODE);
-        @ColorInt int backgroundColor = mResourceProvider.getSuggestionsDropdownBackgroundColor();
-        if (layoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
-            backgroundColor = mResourceProvider.getStandardSuggestionBackgroundColor();
-        }
+        @ColorInt
+        int backgroundColor =
+                mResourceProvider.getSuggestionBackgroundColor(
+                        layoutMode, /* isDropdownContainer= */ true);
 
         holder.dropdown.setBackgroundColor(backgroundColor);
 
