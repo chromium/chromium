@@ -1387,6 +1387,79 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieWithMismatchingDomain) {
   ASSERT_TRUE(received_bad_message());
 }
 
+TEST_P(RestrictedCookieManagerTest,
+       SetCanonicalCookieRejectEmptyNameAmbiguous) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      net::features::kCookieParseRejectEmptyNameAmbiguous);
+
+  // Nameless cookie with '=' in value should fail to set.
+  EXPECT_FALSE(sync_service_->SetCanonicalCookie(
+      mojom::RestrictedCanonicalCookieParams::New(
+          "", "=__Host-session=evil", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT,
+          mojom::RestrictedCookiePartition::UNPARTITIONED),
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone));
+
+  // If the feature is disabled, it should succeed.
+  features.Reset();
+  features.InitAndDisableFeature(
+      net::features::kCookieParseRejectEmptyNameAmbiguous);
+
+  EXPECT_TRUE(sync_service_->SetCanonicalCookie(
+      mojom::RestrictedCanonicalCookieParams::New(
+          "", "=__Host-session=evil", "example.com", "/", base::Time(),
+          base::Time(), base::Time(), /*secure=*/true,
+          /*httponly=*/false, net::CookieSameSite::NO_RESTRICTION,
+          net::COOKIE_PRIORITY_DEFAULT,
+          mojom::RestrictedCookiePartition::UNPARTITIONED),
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone));
+}
+
+TEST_P(RestrictedCookieManagerTest,
+       SetCookieFromStringRejectEmptyNameAmbiguous) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      net::features::kCookieParseRejectEmptyNameAmbiguous);
+
+  // Nameless cookie string with '=' in value should fail to set via
+  // SetCookieFromString.
+  backend()->SetCookieFromString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone,
+      /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false, "=foo=bar; Secure; path=/");
+  auto options = mojom::CookieManagerGetOptions::New();
+  options->name = "";
+  options->match_type = mojom::CookieMatchType::EQUALS;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                  net::StorageAccessApiStatus::kNone, std::move(options)),
+              IsEmpty());
+
+  // If the feature is disabled, it should succeed.
+  features.Reset();
+  features.InitAndDisableFeature(
+      net::features::kCookieParseRejectEmptyNameAmbiguous);
+
+  backend()->SetCookieFromString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone,
+      /*is_ad_tagged=*/false,
+      /*apply_devtools_overrides=*/false, "=foo=bar; Secure; path=/");
+  options = mojom::CookieManagerGetOptions::New();
+  options->name = "";
+  options->match_type = mojom::CookieMatchType::EQUALS;
+  EXPECT_THAT(sync_service_->GetAllForUrl(
+                  kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+                  net::StorageAccessApiStatus::kNone, std::move(options)),
+              ElementsAre(net::MatchesCookieNameValue("", "foo=bar")));
+}
+
 TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWrongOrigin) {
   ExpectBadMessage("Incorrect url origin");
   backend()->SetCookieFromString(

@@ -579,6 +579,76 @@ TEST(CanonicalCookieTest, ParseEmptyNameAmbiguousValue) {
   }
 }
 
+TEST(CanonicalCookieTest, CreateSanitizedCookieRejectEmptyNameAmbiguous) {
+  CookieInclusionStatus status;
+  std::unique_ptr<CanonicalCookie> cc;
+  GURL url("https://www.example.com");
+  base::Time now = base::Time::Now();
+
+  constexpr std::string_view kAmbiguousValues[] = {
+      "=__Host-session=evil",
+      "foo=bar",
+      "session=123",
+      "a=",
+  };
+
+  // With the feature explicitly enabled, setting a nameless cookie with an
+  // ambiguous value (contains '=') should fail for CreateSanitizedCookie and
+  // FromStorage.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(
+        features::kCookieParseRejectEmptyNameAmbiguous);
+
+    for (std::string_view ambiguous_value : kAmbiguousValues) {
+      status = CookieInclusionStatus();
+      cc = CanonicalCookie::CreateSanitizedCookie(
+          url, "", ambiguous_value.data(), "", "/", base::Time(), base::Time(),
+          base::Time(), /*secure=*/true, /*http_only=*/false,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          /*partition_key=*/std::nullopt, &status);
+      EXPECT_FALSE(cc);
+      EXPECT_TRUE(
+          status.HasExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                        EXCLUDE_AMBIGUOUS_SERIALIZATION));
+
+      cc = CanonicalCookie::FromStorage(
+          "", ambiguous_value.data(), "example.com", "/", now,
+          now + base::Hours(1), now, now, /*secure=*/true, /*httponly=*/false,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 443,
+          CookieSourceType::kOther, CanonicalCookieFromStorageCallSite::kTests);
+      EXPECT_FALSE(cc);
+    }
+  }
+
+  // Now run both with the feature disabled.
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndDisableFeature(
+        features::kCookieParseRejectEmptyNameAmbiguous);
+
+    for (std::string_view ambiguous_value : kAmbiguousValues) {
+      status = CookieInclusionStatus();
+      cc = CanonicalCookie::CreateSanitizedCookie(
+          url, "", ambiguous_value.data(), "", "/", base::Time(), base::Time(),
+          base::Time(), /*secure=*/true, /*http_only=*/false,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          /*partition_key=*/std::nullopt, &status);
+      EXPECT_TRUE(cc);
+      EXPECT_TRUE(status.IsInclude());
+
+      cc = CanonicalCookie::FromStorage(
+          "", ambiguous_value.data(), "example.com", "/", now,
+          now + base::Hours(1), now, now, /*secure=*/true, /*httponly=*/false,
+          CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT,
+          /*partition_key=*/std::nullopt, CookieSourceScheme::kSecure, 443,
+          CookieSourceType::kOther, CanonicalCookieFromStorageCallSite::kTests);
+      EXPECT_TRUE(cc);
+    }
+  }
+}
+
 // Test that a cookie string with an empty domain attribute generates a
 // canonical host cookie.
 TEST(CanonicalCookieTest, CreateHostCookieFromString) {
@@ -4507,10 +4577,18 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       std::string(), base::Time(), base::Time(), base::Time(), false /*secure*/,
       false /*httponly*/, CookieSameSite::NO_RESTRICTION,
       COOKIE_PRIORITY_DEFAULT, std::nullopt /*partition_key*/, &status);
-  EXPECT_TRUE(cc);
-  std::vector<std::unique_ptr<CanonicalCookie>> cookies;
-  cookies.push_back(std::move(cc));
-  MatchCookieLineToVector("ambiguous=value", cookies);
+  if (base::FeatureList::IsEnabled(
+          features::kCookieParseRejectEmptyNameAmbiguous)) {
+    EXPECT_FALSE(cc);
+    EXPECT_TRUE(
+        status.HasExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                      EXCLUDE_AMBIGUOUS_SERIALIZATION));
+  } else {
+    EXPECT_TRUE(cc);
+    std::vector<std::unique_ptr<CanonicalCookie>> cookies;
+    cookies.push_back(std::move(cc));
+    MatchCookieLineToVector("ambiguous=value", cookies);
+  }
 
   // Check that name can't contain an equal sign ("ambiguous=name=value" should
   // correctly be parsed as name: "ambiguous" and value "name=value", so
@@ -4638,8 +4716,16 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       one_hour_from_now, one_hour_ago, true, false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       std::nullopt /*partition_key*/, &status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+  if (base::FeatureList::IsEnabled(
+          features::kCookieParseRejectEmptyNameAmbiguous)) {
+    EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+        {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+         CookieInclusionStatus::ExclusionReason::
+             EXCLUDE_AMBIGUOUS_SERIALIZATION}));
+  } else {
+    EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+        {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+  }
 
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("https://www.foo.com"), "", "__Host-A", "", "/", two_hours_ago,
@@ -4654,8 +4740,16 @@ TEST(CanonicalCookieTest, CreateSanitizedCookie_Logic) {
       one_hour_from_now, one_hour_ago, true, false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       std::nullopt /*partition_key*/, &status));
-  EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
-      {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+  if (base::FeatureList::IsEnabled(
+          features::kCookieParseRejectEmptyNameAmbiguous)) {
+    EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+        {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX,
+         CookieInclusionStatus::ExclusionReason::
+             EXCLUDE_AMBIGUOUS_SERIALIZATION}));
+  } else {
+    EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
+        {CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX}));
+  }
 
   EXPECT_FALSE(CanonicalCookie::CreateSanitizedCookie(
       GURL("https://www.foo.com"), "", "__Secure-A", "", "/", two_hours_ago,

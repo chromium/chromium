@@ -703,6 +703,14 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
         net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_PREFIX);
   }
 
+  if (name.empty() &&
+      base::FeatureList::IsEnabled(
+          features::kCookieParseRejectEmptyNameAmbiguous) &&
+      value.contains('=')) {
+    status->AddExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                   EXCLUDE_AMBIGUOUS_SERIALIZATION);
+  }
+
   if (!cookie_util::IsCookiePartitionedValid(url, secure, partition_key)) {
     status->AddExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                    EXCLUDE_INVALID_PARTITIONED);
@@ -1076,6 +1084,13 @@ CanonicalCookie::IsCanonicalForFromStorage() const {
     return Fail(CanonicalizationFailure::kEmptyNameWithHiddenPrefix);
   }
 
+  if (Name().empty() &&
+      base::FeatureList::IsEnabled(
+          features::kCookieParseRejectEmptyNameAmbiguous) &&
+      Value().contains('=')) {
+    return Fail(CanonicalizationFailure::kEmptyNameWithAmbiguousValue);
+  }
+
   if (IsPartitioned() && !CookiePartitionKey::HasNonce(PartitionKey()) &&
       !SecureAttribute()) {
     return Fail(CanonicalizationFailure::kPartitionedInsecure);
@@ -1253,6 +1268,9 @@ std::ostream& operator<<(std::ostream& os,
         return "kEmptyNameWithHiddenPrefix";
       case CanonicalCookie::CanonicalizationFailure::kPartitionedInsecure:
         return "kPartitionedInsecure";
+      case CanonicalCookie::CanonicalizationFailure::
+          kEmptyNameWithAmbiguousValue:
+        return "kEmptyNameWithAmbiguousValue";
     }
     NOTREACHED();
   }();

@@ -83,6 +83,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
     kInvalidHostHttpPrefix,
     kEmptyNameWithHiddenPrefix,
     kPartitionedInsecure,
+    kEmptyNameWithAmbiguousValue,
   };
 
   // Carries metadata related to the canonicalization results for a given

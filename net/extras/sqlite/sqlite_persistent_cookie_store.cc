@@ -375,13 +375,25 @@ class SQLitePersistentCookieStore::Backend
   void LoadCookiesForKey(base::optional_ref<const std::string> key,
                          LoadedCallback loaded_callback);
 
+  struct NonCanonicalCookieDeleteInfo {
+    std::string name;
+    std::string host_key;
+    std::string top_frame_site_key;
+    std::string path;
+    int source_scheme;
+    int source_port;
+    bool has_cross_site_ancestor;
+  };
+
   // Steps through all results of |statement|, makes a cookie from each, and
   // adds the cookie to |cookies|. Returns true if everything loaded
   // successfully.
   bool MakeCookiesFromSQLStatement(
       std::vector<std::unique_ptr<CanonicalCookie>>& cookies,
       sql::Statement& statement,
-      absl::flat_hash_set<std::string>& top_frame_site_keys_to_delete);
+      absl::flat_hash_set<std::string>& top_frame_site_keys_to_delete,
+      std::vector<NonCanonicalCookieDeleteInfo>&
+          non_canonical_cookies_to_delete);
 
   // Batch a cookie addition.
   void AddCookie(const CanonicalCookie& cc);
@@ -465,6 +477,9 @@ class SQLitePersistentCookieStore::Backend
 
   void DeleteTopFrameSiteKeys(
       const absl::flat_hash_set<std::string>& top_frame_site_keys);
+
+  void DeleteNonCanonicalCookies(
+      const std::vector<NonCanonicalCookieDeleteInfo>& cookies_to_delete);
 
   // Batch a cookie operation (add or delete)
   void BatchOperation(PendingOperation::OperationType op,
@@ -902,16 +917,19 @@ bool SQLitePersistentCookieStore::Backend::LoadCookiesForDomains(
 
   std::vector<std::unique_ptr<CanonicalCookie>> cookies;
   absl::flat_hash_set<std::string> top_frame_site_keys_to_delete;
+  std::vector<NonCanonicalCookieDeleteInfo> non_canonical_cookies_to_delete;
   auto it = domains.begin();
   bool ok = true;
   for (; it != domains.end() && ok; ++it) {
     smt.BindString(0, *it);
-    ok = MakeCookiesFromSQLStatement(cookies, smt,
-                                     top_frame_site_keys_to_delete);
+    ok =
+        MakeCookiesFromSQLStatement(cookies, smt, top_frame_site_keys_to_delete,
+                                    non_canonical_cookies_to_delete);
     smt.Reset(true);
   }
 
   DeleteTopFrameSiteKeys(std::move(top_frame_site_keys_to_delete));
+  DeleteNonCanonicalCookies(std::move(non_canonical_cookies_to_delete));
 
   if (ok) {
     base::AutoLock locked(lock_);
@@ -955,10 +973,42 @@ void SQLitePersistentCookieStore::Backend::DeleteTopFrameSiteKeys(
   }
 }
 
+void SQLitePersistentCookieStore::Backend::DeleteNonCanonicalCookies(
+    const std::vector<NonCanonicalCookieDeleteInfo>& cookies_to_delete) {
+  if (cookies_to_delete.empty()) {
+    return;
+  }
+
+  sql::Statement delete_statement(db()->GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM cookies WHERE "
+      "name=? AND host_key=? AND top_frame_site_key=? AND path=? AND "
+      "source_scheme=? AND source_port=? AND has_cross_site_ancestor=?"));
+  if (!delete_statement.is_valid()) {
+    return;
+  }
+
+  for (const auto& info : cookies_to_delete) {
+    delete_statement.Reset(true);
+    delete_statement.BindString(0, info.name);
+    delete_statement.BindString(1, info.host_key);
+    delete_statement.BindString(2, info.top_frame_site_key);
+    delete_statement.BindString(3, info.path);
+    delete_statement.BindInt(4, info.source_scheme);
+    delete_statement.BindInt(5, info.source_port);
+    delete_statement.BindBool(6, info.has_cross_site_ancestor);
+    if (!delete_statement.Run()) {
+      RecordCookieLoadProblem(CookieLoadProblem::KRecoveryFailed);
+    }
+  }
+}
+
 bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     std::vector<std::unique_ptr<CanonicalCookie>>& cookies,
     sql::Statement& statement,
-    absl::flat_hash_set<std::string>& top_frame_site_keys_to_delete) {
+    absl::flat_hash_set<std::string>& top_frame_site_keys_to_delete,
+    std::vector<NonCanonicalCookieDeleteInfo>&
+        non_canonical_cookies_to_delete) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   bool ok = true;
   while (statement.Step()) {
@@ -1052,7 +1102,15 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
       cookies.push_back(std::move(cc));
     } else {
       RecordCookieLoadProblem(CookieLoadProblem::kNotCanonical);
-      ok = false;
+      non_canonical_cookies_to_delete.push_back({
+          .name = statement.ColumnString(3),
+          .host_key = domain,
+          .top_frame_site_key = statement.ColumnString(2),
+          .path = statement.ColumnString(5),
+          .source_scheme = statement.ColumnInt(15),
+          .source_port = statement.ColumnInt(16),
+          .has_cross_site_ancestor = statement.ColumnBool(19),
+      });
     }
   }
 

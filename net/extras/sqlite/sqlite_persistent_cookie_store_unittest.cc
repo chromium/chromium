@@ -812,9 +812,8 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
                       {"google.izzle", "A=", "B", "/path"},
                       {"google.izzle", "C ", "D", "/path"},
 
-                      // A canonical cookie for same eTLD+1. This one will get
-                      // dropped out of precaution to avoid confusing the site,
-                      // even though there is nothing wrong with it.
+                      // A canonical cookie for same eTLD+1. This one will be
+                      // preserved while non-canonical cookies are purged.
                       {"sub.google.izzle", "E", "F", "/path"},
 
                       // A canonical cookie for another eTLD+1
@@ -841,19 +840,36 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
   stmt.Clear();
   db.reset();
 
-  // Reopen the store and confirm that the only cookie loaded is the
-  // canonical one on an unrelated domain.
+  // Reopen the store and confirm that valid cookies (including sibling domain
+  // sub.google.izzle) are preserved while only the invalid non-canonical
+  // cookies are purged.
   CanonicalCookieVector cookies = CreateAndLoad(
       /*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
-  ASSERT_EQ(1U, cookies.size());
-  EXPECT_STREQ("chromium.org", cookies[0]->Domain().c_str());
-  EXPECT_STREQ("G", cookies[0]->Name().c_str());
-  EXPECT_STREQ("H", cookies[0]->Value().c_str());
-  EXPECT_STREQ("/dir", cookies[0]->Path().c_str());
-  EXPECT_EQ(last_update, cookies[0]->LastUpdateDate());
+  ASSERT_EQ(2U, cookies.size());
+
+  // Find sub.google.izzle and chromium.org cookies.
+  const CanonicalCookie* sub_cookie = nullptr;
+  const CanonicalCookie* chrom_cookie = nullptr;
+  for (const auto& cookie : cookies) {
+    if (cookie->Domain() == "sub.google.izzle") {
+      sub_cookie = cookie.get();
+    } else if (cookie->Domain() == "chromium.org") {
+      chrom_cookie = cookie.get();
+    }
+  }
+  ASSERT_TRUE(sub_cookie);
+  ASSERT_TRUE(chrom_cookie);
+
+  EXPECT_STREQ("sub.google.izzle", sub_cookie->Domain().c_str());
+  EXPECT_STREQ("E", sub_cookie->Name().c_str());
+  EXPECT_STREQ("F", sub_cookie->Value().c_str());
+
+  EXPECT_STREQ("chromium.org", chrom_cookie->Domain().c_str());
+  EXPECT_STREQ("G", chrom_cookie->Name().c_str());
+  EXPECT_STREQ("H", chrom_cookie->Value().c_str());
   DestroyStore();
 
-  // Make sure that we only have one row left.
+  // Make sure that we only have two rows left in the database.
   db = std::make_unique<sql::Database>(sql::test::kTestTag);
   ASSERT_TRUE(db->Open(store_name));
   sql::Statement verify_stmt(db->GetUniqueStatement("SELECT * FROM COOKIES"));
@@ -861,7 +877,83 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
 
   EXPECT_TRUE(verify_stmt.Step());
   EXPECT_TRUE(verify_stmt.Succeeded());
-  // Confirm only one match.
+  EXPECT_TRUE(verify_stmt.Step());
+  EXPECT_TRUE(verify_stmt.Succeeded());
+  // Confirm only two matches.
+  EXPECT_FALSE(verify_stmt.Step());
+}
+
+TEST_F(SQLitePersistentCookieStoreTest,
+       TestAmbiguousNamelessCookieSingleDeletion) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      net::features::kCookieParseRejectEmptyNameAmbiguous);
+
+  CreateAndLoad(/*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
+  DestroyStore();
+
+  // Insert a valid cookie and a pre-existing ambiguous nameless cookie for
+  // example.com.
+  base::FilePath store_name(temp_dir_.GetPath().Append(kCookieFilename));
+  std::unique_ptr<sql::Database> db(
+      std::make_unique<sql::Database>(sql::test::kTestTag));
+  ASSERT_TRUE(db->Open(store_name));
+  sql::Statement stmt(db->GetUniqueStatement(
+      "INSERT INTO cookies (creation_utc, host_key, top_frame_site_key, name, "
+      "value, encrypted_value, path, expires_utc, is_secure, is_httponly, "
+      "samesite, last_access_utc, has_expires, is_persistent, priority, "
+      "source_scheme, source_port, last_update_utc, source_type, "
+      "has_cross_site_ancestor) "
+      "VALUES (?,?,?,?,?,'',?,0,0,0,0,0,1,1,0,?,?,?,0,0)"));
+  ASSERT_TRUE(stmt.is_valid());
+
+  struct CookieInfo {
+    const char* domain;
+    const char* name;
+    const char* value;
+    const char* path;
+  } cookies_info[] = {
+      {"example.com", "", "=__Host-session=evil", "/"},
+      {"example.com", "sid", "123", "/"},
+  };
+
+  int64_t creation_time = 1;
+  base::Time last_update(base::Time::Now());
+  for (auto& cookie_info : cookies_info) {
+    stmt.Reset(true);
+    stmt.BindInt64(0, creation_time++);
+    stmt.BindString(1, cookie_info.domain);
+    stmt.BindString(2, net::kEmptyCookiePartitionKey);
+    stmt.BindString(3, cookie_info.name);
+    stmt.BindString(4, cookie_info.value);
+    stmt.BindString(5, cookie_info.path);
+    stmt.BindInt(6, static_cast<int>(CookieSourceScheme::kUnset));
+    stmt.BindInt(7, SQLitePersistentCookieStore::kDefaultUnknownPort);
+    stmt.BindTime(8, last_update);
+    ASSERT_TRUE(stmt.Run());
+  }
+  stmt.Clear();
+  db.reset();
+
+  // Load store and verify that only the valid "sid" cookie is returned, while
+  // the ambiguous nameless cookie is discarded without dropping valid sibling
+  // cookies.
+  CanonicalCookieVector cookies = CreateAndLoad(
+      /*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
+  ASSERT_EQ(1U, cookies.size());
+  EXPECT_EQ("sid", cookies[0]->Name());
+  EXPECT_EQ("123", cookies[0]->Value());
+  DestroyStore();
+
+  // Verify only the valid cookie remains in DB.
+  db = std::make_unique<sql::Database>(sql::test::kTestTag);
+  ASSERT_TRUE(db->Open(store_name));
+  sql::Statement verify_stmt(
+      db->GetUniqueStatement("SELECT name, value FROM cookies"));
+  ASSERT_TRUE(verify_stmt.is_valid());
+  EXPECT_TRUE(verify_stmt.Step());
+  EXPECT_EQ("sid", verify_stmt.ColumnString(0));
+  EXPECT_EQ("123", verify_stmt.ColumnString(1));
   EXPECT_FALSE(verify_stmt.Step());
 }
 
