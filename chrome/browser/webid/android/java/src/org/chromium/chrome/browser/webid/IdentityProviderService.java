@@ -8,8 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -27,8 +25,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-
-import java.util.List;
 
 /** This class connects to Android apps through bound services. */
 @JNINamespace("content::webid")
@@ -76,25 +72,15 @@ public class IdentityProviderService extends Handler implements ServiceConnectio
 
         Intent intent = new Intent(FEDCM_BOUND_SERVICE_INTENT_ACTION);
         Context context = ContextUtils.getApplicationContext();
-        PackageManager packageManager = context.getPackageManager();
         ComponentName name = new ComponentName(packageName, serviceName);
         intent.setComponent(name);
-        List<ResolveInfo> services = packageManager.queryIntentServices(intent, 0);
 
-        Log.d(TAG, services.toString());
-
-        if (services.isEmpty()) {
-            IdentityProviderServiceJni.get().onConnected(mNativeIdentityProviderService, false);
-            return;
-        }
-
-        Log.d(TAG, "Binding service");
+        Log.d(TAG, "Binding service: " + packageName + "/" + serviceName);
         boolean binding = context.bindService(intent, this, Context.BIND_AUTO_CREATE);
 
         if (!binding) {
             Log.d(TAG, "Binding failed");
             IdentityProviderServiceJni.get().onConnected(mNativeIdentityProviderService, false);
-            return;
         }
     }
 

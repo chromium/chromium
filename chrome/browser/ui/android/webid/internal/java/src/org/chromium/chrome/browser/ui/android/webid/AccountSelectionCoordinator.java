@@ -22,7 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.browser.customtabs.CustomTabsService;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,8 +34,6 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
-import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
@@ -44,8 +41,8 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerItemDecoration;
+import org.chromium.chrome.browser.webid.DigitalAssetLinksVerifier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
@@ -342,48 +339,18 @@ public class AccountSelectionCoordinator
     }
 
     private void findVerifiedApp(GURL url, Callback<String> callback) {
-        findVerifiedApp(url, getNativeAppPackages(url), 0, callback);
-    }
-
-    private void findVerifiedApp(
-            GURL url, List<String> packages, int index, Callback<String> callback) {
-        if (index >= packages.size()) {
-            callback.onResult(null);
-            return;
-        }
-
-        String packageName = packages.get(index);
-        verifyRelation(
-                url,
-                packageName,
-                CustomTabsService.RELATION_USE_AS_ORIGIN,
-                verified -> {
-                    if (verified) {
-                        callback.onResult(packageName);
+        List<String> packages = getNativeAppPackages(url);
+        Origin origin = Origin.create(url.getSpec());
+        DigitalAssetLinksVerifier.checkPackages(
+                packages,
+                origin,
+                index -> {
+                    if (index != -1) {
+                        callback.onResult(packages.get(index));
                     } else {
-                        findVerifiedApp(url, packages, index + 1, callback);
+                        callback.onResult(null);
                     }
                 });
-    }
-
-    private void verifyRelation(
-            GURL url, String packageName, int relation, Callback<Boolean> callback) {
-        Origin origin = Origin.create(url.getSpec());
-        ChromeOriginVerifier verifier =
-                ChromeOriginVerifierFactory.create(packageName, relation, null);
-
-        verifier.start(
-                new OriginVerificationListener() {
-                    @Override
-                    public void onOriginVerified(
-                            String packageName,
-                            Origin verifiedOrigin,
-                            boolean verified,
-                            Boolean online) {
-                        callback.onResult(verified);
-                    }
-                },
-                origin);
     }
 
     @Override

@@ -27,6 +27,7 @@ android_library("java") {
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/webid:public_java",
     "//chrome/browser/util:java",
+    "//chrome/browser/webid:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",

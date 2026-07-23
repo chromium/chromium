@@ -8,6 +8,7 @@ if (is_android) {
 
   android_library("java") {
     sources = [
+      "android/java/src/org/chromium/chrome/browser/webid/DigitalAssetLinksVerifier.java",
       "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsCreationDelegate.java",
       "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsPresentationDelegate.java",
       "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
@@ -15,15 +16,20 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/webid/IdentityProviderService.java",
       "android/java/src/org/chromium/chrome/browser/webid/LoginStatusService.java",
       "android/java/src/org/chromium/chrome/browser/webid/TestIdP.java",
+      "android/java/src/org/chromium/chrome/browser/webid/VerifiedOriginResolver.java",
     ]
     deps = [
       "$google_play_services_package:google_play_services_identity_credentials_java",
       "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
       "//base:service_loader_java",
+      "//chrome/browser/android/browserservices/verification:java",
+      "//components/content_relationship_verification/android:java",
+      "//components/embedder_support/android:util_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_experimental_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_browser_browser_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_credentials_credentials_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -38,6 +44,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
       "android/java/src/org/chromium/chrome/browser/webid/IdentityProviderService.java",
+      "android/java/src/org/chromium/chrome/browser/webid/VerifiedOriginResolver.java",
     ]
   }
 
@@ -91,7 +98,10 @@ source_set("webid") {
     "identity_provider_permission_request.h",
   ]
   if (is_android) {
-    sources += [ "identity_provider_service.h" ]
+    sources += [
+      "identity_provider_service.h",
+      "verified_origin_resolver.h",
+    ]
   }
   public_deps = [
     "//chrome/browser/profiles:profile",
@@ -124,7 +134,10 @@ source_set("impl") {
     "identity_provider_permission_request.cc",
   ]
   if (is_android) {
-    sources += [ "identity_provider_service.cc" ]
+    sources += [
+      "identity_provider_service.cc",
+      "verified_origin_resolver.cc",
+    ]
   }
   deps = [
     ":webid",
