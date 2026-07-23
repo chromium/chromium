@@ -1465,7 +1465,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (getProfileProviderSupplier().get() == null
                 || !GlicEnabling.isProfileEligible(
                         getProfileProviderSupplier().get().getOriginalProfile())
-                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
+                || DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)) {
             return null;
         }
 
