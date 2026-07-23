@@ -47,7 +47,7 @@
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
-#include "cc/layers/video_layer_impl.h"
+#include "cc/layers/texture_layer_impl.h"
 #include "cc/layers/viewport.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
 #include "cc/metrics/frame_info.h"
@@ -62,7 +62,6 @@
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/fake_recording_source.h"
-#include "cc/test/fake_video_frame_provider.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/mock_latency_info_swap_promise_monitor.h"
@@ -8632,51 +8631,6 @@ class FakeLayerWithQuads : public LayerImpl {
       : LayerImpl(tree_impl, id) {}
 };
 
-TEST_P(LayerTreeHostImplTest, LayersFreeTextures) {
-  scoped_refptr<viz::TestContextProvider> context_provider =
-      viz::TestContextProvider::CreateRaster();
-  gpu::TestSharedImageInterface* sii = context_provider->SharedImageInterface();
-  std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
-      FakeLayerTreeFrameSink::Create3d(context_provider));
-  CreateHostImpl(DefaultSettings(), std::move(layer_tree_frame_sink));
-
-  LayerImpl* root_layer = SetupDefaultRootLayer(gfx::Size(10, 10));
-
-  scoped_refptr<VideoFrame> softwareFrame = media::VideoFrame::CreateColorFrame(
-      gfx::Size(4, 4), 0x80, 0x80, 0x80, base::TimeDelta());
-  FakeVideoFrameProvider provider;
-  provider.set_frame(softwareFrame);
-  auto* video_layer = AddLayer<VideoLayerImpl>(
-      host_impl_->active_tree(), &provider, media::VIDEO_ROTATION_0);
-  video_layer->SetBounds(gfx::Size(10, 10));
-  video_layer->SetDrawsContent(true);
-  CopyProperties(root_layer, video_layer);
-
-  UpdateDrawProperties(host_impl_->active_tree());
-
-  EXPECT_EQ(0u, sii->shared_image_count());
-
-  DrawFrame();
-
-  EXPECT_GT(sii->shared_image_count(), 0u);
-
-  // Kill the layer tree.
-  ClearLayersAndPropertyTrees(host_impl_->active_tree());
-
-  // The FakeLayerTreeFrameSink holds the last frame, which holds the
-  // TransferableResources, which hold the ClientSharedImages. We need to
-  // release them to drop the ref count.
-  auto* fake_sink =
-      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
-  fake_sink->ReturnResourcesHeldByParent();
-  if (fake_sink->last_sent_frame()) {
-    fake_sink->last_sent_frame()->resource_list.clear();
-  }
-
-  // There should be no textures left in use after.
-  EXPECT_EQ(0u, sii->shared_image_count());
-}
-
 TEST_P(LayerTreeHostImplTest, HasTransparentBackground) {
   SetupDefaultRootLayer(gfx::Size(10, 10));
   host_impl_->active_tree()->set_background_color(SkColors::kWhite);
@@ -8882,13 +8836,12 @@ TEST_P(LayerTreeHostImplTest,
                                                    gfx::Size(10, 10));
   root->SetDrawsContent(true);
 
-  // VideoLayerImpl will not be drawn.
-  FakeVideoFrameProvider provider;
-  LayerImpl* video_layer = AddLayer<VideoLayerImpl>(
-      host_impl_->active_tree(), &provider, media::VIDEO_ROTATION_0);
-  video_layer->SetBounds(gfx::Size(10, 10));
-  video_layer->SetDrawsContent(true);
-  CopyProperties(root, video_layer);
+  // TextureLayerImpl will not be drawn.
+  LayerImpl* texture_layer =
+      AddLayer<TextureLayerImpl>(host_impl_->active_tree());
+  texture_layer->SetBounds(gfx::Size(10, 10));
+  texture_layer->SetDrawsContent(true);
+  CopyProperties(root, texture_layer);
   UpdateDrawProperties(host_impl_->active_tree());
 
   host_impl_->OnDraw(external_transform, external_viewport,
