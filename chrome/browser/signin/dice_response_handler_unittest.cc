@@ -2353,4 +2353,53 @@ TEST_F(DiceResponseHandlerTest, InvalidPrimaryConnectedInUnsignedProfile) {
   EXPECT_EQ(
       0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
 }
+
+TEST_F(DiceResponseHandlerTest, SessionCompleteFiredOnCancellation) {
+  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  EXPECT_EQ(
+      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+  EXPECT_FALSE(session_complete_called_);
+
+  // Clear the consumer from signin_client_ to prevent a dangling pointer
+  // warning when the token fetcher is destroyed during cancellation.
+  signin_client_.GetAndClearConsumer();
+
+  // A second concurrent sign-in request for the same account cancels the first
+  // session's fetchers. This must reliably trigger OnDiceSigninSessionComplete
+  // on the first session's delegate.
+  dice_response_handler_->ProcessDiceHeader(
+      MakeDiceParams(DiceAction::SIGNIN),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+  EXPECT_TRUE(session_complete_called_);
+
+  // Clear the new consumer created by the second sign-in request before test
+  // fixture teardown deletes dice_response_handler_.
+  signin_client_.GetAndClearConsumer();
+}
+
+TEST_F(DiceResponseHandlerTest, SessionCompleteFiredOnHandlerDestruction) {
+  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  EXPECT_EQ(
+      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
+  EXPECT_FALSE(session_complete_called_);
+
+  // Clear the consumer from signin_client_ to prevent a dangling pointer
+  // warning when the token fetcher is destroyed during shutdown.
+  signin_client_.GetAndClearConsumer();
+
+  // Destroying the handler (e.g. during profile shutdown or teardown) while
+  // token fetches are still pending must guaranteed fire
+  // OnDiceSigninSessionComplete.
+  dice_response_handler_.reset();
+  EXPECT_TRUE(session_complete_called_);
+}
+
 }  // namespace
