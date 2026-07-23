@@ -179,6 +179,10 @@ class CC_BASE_EXPORT MathUtil {
                                    const gfx::RectF& rect);
   static gfx::Rect ProjectEnclosingClippedRect(const gfx::Transform& transform,
                                                const gfx::Rect& rect);
+  static gfx::Rect ProjectEnclosingClippedRectIgnoringError(
+      const gfx::Transform& transform,
+      const gfx::Rect& rect,
+      float ignore_error);
   static gfx::RectF ProjectClippedRect(const gfx::Transform& transform,
                                        const gfx::RectF& rect);
 
