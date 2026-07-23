@@ -86,9 +86,17 @@ void SetCrashKeyThreadSafe(crash_reporter::CrashKeyString<KeySize>& crash_key,
   crash_key.Set(message);
 }
 
-void SetDawnErrorCrashKey(std::string_view message) {
+void AppendDawnErrorCrashKey(std::string_view message) {
+  static base::NoDestructor<base::Lock> lock;
+  static base::NoDestructor<std::string> error_msg;
   static crash_reporter::CrashKeyString<1024> error_key("dawn-error");
-  SetCrashKeyThreadSafe(error_key, message);
+
+  base::AutoLock auto_lock(*lock.get());
+  if (!error_msg->empty()) {
+    error_msg->append("\n");
+  }
+  error_msg->append(message);
+  error_key.Set(*error_msg);
 }
 
 // Different versions of DumpWithoutCrashing for different reasons.
@@ -123,7 +131,7 @@ NOINLINE NOOPT void DumpWithoutCrashingOnGenericError(
 
 void DumpWithoutCrashingOnError(wgpu::ErrorType error_type,
                                 std::string_view message) {
-  SetDawnErrorCrashKey(message);
+  AppendDawnErrorCrashKey(message);
 #if BUILDFLAG(IS_WIN)
   if (message.find("DXGI_ERROR") != std::string_view::npos) {
     DumpWithoutCrashingOnDXGIError(error_type, message);
@@ -674,7 +682,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
           // errors reported via instance callback is related to Surface
           // creation. In that case, instead of triggering context loss, we
           // should let the call sites handle them gracefully.
-          SetDawnErrorCrashKey(view);
+          AppendDawnErrorCrashKey(view);
           base::debug::DumpWithoutCrashing();
         }
         break;
