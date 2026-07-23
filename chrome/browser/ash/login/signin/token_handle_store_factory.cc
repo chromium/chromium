@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/ash/login/signin/token_handle_store_impl.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/browser_process.h"
@@ -19,6 +18,12 @@
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
+
+namespace {
+
+TokenHandleStoreFactory* g_instance = nullptr;
+
+}  // namespace
 
 TokenHandleStoreFactory::DoesUserHaveGaiaPassword::DoesUserHaveGaiaPassword(
     std::unique_ptr<AuthFactorEditor> factor_editor)
@@ -100,14 +105,20 @@ TokenHandleStoreFactory::DoesUserHaveGaiaPassword::
       weak_factory_.GetWeakPtr());
 }
 
-TokenHandleStoreFactory::TokenHandleStoreFactory() = default;
+TokenHandleStoreFactory::TokenHandleStoreFactory() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
 
-TokenHandleStoreFactory::~TokenHandleStoreFactory() = default;
+TokenHandleStoreFactory::~TokenHandleStoreFactory() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 // static
 TokenHandleStoreFactory* TokenHandleStoreFactory::Get() {
-  static base::NoDestructor<TokenHandleStoreFactory> instance;
-  return instance.get();
+  CHECK(g_instance);
+  return g_instance;
 }
 
 std::unique_ptr<TokenHandleStore>
@@ -133,11 +144,6 @@ TokenHandleStore* TokenHandleStoreFactory::GetTokenHandleStore() {
   }
 
   return token_handle_store_.get();
-}
-
-void TokenHandleStoreFactory::DestroyTokenHandleStore() {
-  token_handle_store_.reset();
-  does_user_have_gaia_password_.reset();
 }
 
 }  // namespace ash

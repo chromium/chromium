@@ -65,6 +65,7 @@ namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
 class ApnMigrator;
 class AudioSurveyHandler;
+class AuthEventsRecorder;
 class BluetoothLogController;
 class BluetoothPrefStateObserver;
 class BrowserControllerImpl;
@@ -73,6 +74,7 @@ class CameraGeneralSurveyHandler;
 class ChromeAuthParts;
 class CrosUsbDetector;
 class DebugdNotificationHandler;
+class DozeModePowerStatusScheduler;
 class EventRewriterDelegateImpl;
 class FastTransitionObserver;
 class FwupdDownloadClientImpl;
@@ -82,12 +84,11 @@ class IdleActionWarningObserver;
 class KioskController;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
-class AuthEventsRecorder;
 class MagicBoostControllerImpl;
+class MisconfiguredUserCleaner;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
-class MisconfiguredUserCleaner;
 class PowerMetricsReporter;
 class RendererFreezer;
 class ReportControllerInitializer;
@@ -97,10 +98,10 @@ class ShutdownPolicyForwarder;
 class SigninProfileHandler;
 class SuspendPerfReporter;
 class SystemTokenCertDBInitializer;
+class TokenHandleStoreFactory;
+class UserLoginPermissionTracker;
 class VideoConferenceAppServiceClient;
 class VideoConferenceAshFeatureClient;
-class DozeModePowerStatusScheduler;
-class UserLoginPermissionTracker;
 
 #if BUILDFLAG(USE_CUPS)
 class LocalPrinter;
@@ -319,6 +320,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<parent_access::ParentAccessService> parent_access_service_;
 
   std::unique_ptr<UserSessionManager> user_session_manager_;
+
+  std::unique_ptr<TokenHandleStoreFactory> token_handle_store_factory_;
 
 #if BUILDFLAG(USE_CUPS)
   std::unique_ptr<ash::LocalPrinter> local_printer_;

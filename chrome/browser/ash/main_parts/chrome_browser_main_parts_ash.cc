@@ -954,6 +954,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   app_service_registry_ = std::make_unique<apps::AppServiceRegistry>();
 
+  token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>();
+
   quick_unlock::PinBackend::Initialize(g_browser_process->local_state());
 
   bluetooth_log_controller_ = std::make_unique<ash::BluetoothLogController>(
@@ -1825,7 +1827,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // TokenHandleStore needs to outlive the Profile, which
   // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().
-  TokenHandleStoreFactory::Get()->DestroyTokenHandleStore();
+  token_handle_store_factory_.reset();
 
   magic_boost_controller_.reset();
 

@@ -89,12 +89,13 @@ class TokenHandleStoreFactoryTest : public testing::Test {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_ = std::make_unique<TestingProfile>();
 
+    token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>();
     token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
   }
 
   void TearDown() override {
     token_handle_store_ = nullptr;
-    TokenHandleStoreFactory::Get()->DestroyTokenHandleStore();
+    token_handle_store_factory_.reset();
     profile_.reset();
     session_manager_.reset();
     fake_user_manager_.Reset();
@@ -110,6 +111,7 @@ class TokenHandleStoreFactoryTest : public testing::Test {
       fake_user_manager_;
   std::unique_ptr<TestingProfile> profile_;
 
+  std::unique_ptr<TokenHandleStoreFactory> token_handle_store_factory_;
   raw_ptr<TokenHandleStore> token_handle_store_ = nullptr;
   network::TestURLLoaderFactory url_loader_factory_;
   raw_ptr<CountingFakeUserDataAuthClient> counting_client_ = nullptr;
