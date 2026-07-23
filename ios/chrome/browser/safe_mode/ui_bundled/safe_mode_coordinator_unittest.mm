@@ -15,10 +15,9 @@
 
 class SafeModeCoordinatorTest : public PlatformTest {
  public:
-  SafeModeCoordinatorTest() : scene_state_([[SceneState alloc] init]) {
-    UIWindow* window = scoped_key_window_.Get();
-    window.rootViewController = [[UIViewController alloc] init];
-    scene_state_.scene = scoped_key_window_.GetScene();
+  SafeModeCoordinatorTest() {
+    scene_state_ = [[SceneState alloc] init];
+    scene_state_.window = scoped_key_window_.Get();
   }
 
  protected:
