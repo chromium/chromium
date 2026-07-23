@@ -3,6 +3,6 @@
 ++++[static] name='before selection' selection_start=0 selection_end=16
 ++[section] selection_start=0 selection_end=24
 ++++[static] name='this text is not ignored' selection_start=0 selection_end=24
-++[section] selection_start=0 selection_end=15
-++++[static] name='after selection' selection_start=0 selection_end=15
+++[section] caret_offset=15 selection_start=0 selection_end=15
+++++[static] name='after selection' caret_offset=15 selection_start=0 selection_end=15
 ++[static] name='Done'

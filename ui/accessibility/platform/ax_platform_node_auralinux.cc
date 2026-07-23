@@ -4666,28 +4666,19 @@ bool AXPlatformNodeAuraLinux::IsNameExposed() {
 }
 
 int AXPlatformNodeAuraLinux::GetCaretOffset() {
-  if (!HasVisibleCaretOrSelection()) {
+  // The caret has an offset in this object if this object contains it. Whether
+  // it is rendered, which is what Caret Browsing changes, is a separate matter.
+  if (!HasSelectionFocusInSubtree()) {
     std::optional<FindInPageResultInfo> result =
         GetSelectionOffsetsFromFindInPage();
     AtkObject* atk_object = GetOrCreateAtkObject();
-    if (!atk_object)
-      return -1;
-    if (result.has_value() && result->node == atk_object)
+    if (atk_object && result.has_value() && result->node == atk_object) {
       return UTF16ToUnicodeOffsetInText(result->end_offset);
+    }
     return -1;
   }
 
-  std::pair<int, int> selection;
-  AXPlatformNodeDelegate* const delegate = GetDelegate();
-  if (delegate->IsWebContent()) {
-    AXSelection unignored_selection = delegate->GetUnignoredSelection();
-    GetSelectionOffsetsFromTree(&unignored_selection, &selection.first,
-                                &selection.second, /*caret_only*/ true);
-  } else {
-    GetSelectionOffsets(&selection.first, &selection.second);
-  }
-
-  return UTF16ToUnicodeOffsetInText(selection.second);
+  return UTF16ToUnicodeOffsetInText(AXPlatformNodeBase::GetCaretOffset());
 }
 
 bool AXPlatformNodeAuraLinux::SetCaretOffset(int offset) {

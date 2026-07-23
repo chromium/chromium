@@ -2,4 +2,4 @@
 ++[static] name='this text is not ignored' selection_start=0 selection_end=24
 ++[section] selection_start=0 selection_end=15
 ++++[static] name='after selection' selection_start=0 selection_end=15
-++[static] name='Done' selection_start=0 selection_end=4
+++[static] name='Done' caret_offset=4 selection_start=0 selection_end=4

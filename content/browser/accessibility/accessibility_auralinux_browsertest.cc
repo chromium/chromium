@@ -1710,6 +1710,47 @@ IN_PROC_BROWSER_TEST_F(
   g_object_unref(child_7);
 }
 
+// A caret in non-editable content is a collapsed selection, which is not
+// rendered unless Caret Browsing is enabled. Its offset must be reported
+// regardless, or an assistive technology cannot find out where it is.
+IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
+                       TestGetCaretOffsetWithoutCaretBrowsing) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html><body>
+      <p>Paragraph one text.</p>
+      <p>Paragraph two text.</p>
+      </body></html>)HTML");
+
+  AtkObject* document = GetRendererAccessible();
+  AtkObject* paragraph_1 = atk_object_ref_accessible_child(document, 0);
+  AtkObject* paragraph_2 = atk_object_ref_accessible_child(document, 1);
+  ASSERT_NE(nullptr, paragraph_1);
+  ASSERT_NE(nullptr, paragraph_2);
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ax::mojom::Event::kDocumentSelectionChanged);
+    ASSERT_TRUE(atk_text_set_caret_offset(ATK_TEXT(paragraph_1), 5));
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+  EXPECT_EQ(5, atk_text_get_caret_offset(ATK_TEXT(paragraph_1)));
+  EXPECT_EQ(-1, atk_text_get_caret_offset(ATK_TEXT(paragraph_2)));
+  EXPECT_EQ(0, atk_text_get_n_selections(ATK_TEXT(paragraph_1)));
+
+  {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ax::mojom::Event::kDocumentSelectionChanged);
+    ASSERT_TRUE(atk_text_set_caret_offset(ATK_TEXT(paragraph_2), 0));
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+  EXPECT_EQ(-1, atk_text_get_caret_offset(ATK_TEXT(paragraph_1)));
+  EXPECT_EQ(0, atk_text_get_caret_offset(ATK_TEXT(paragraph_2)));
+
+  g_object_unref(paragraph_1);
+  g_object_unref(paragraph_2);
+}
+
 class AccessibilityAuraLinuxCaretBrowsingBrowserTest
     : public AccessibilityAuraLinuxBrowserTest {
  public:

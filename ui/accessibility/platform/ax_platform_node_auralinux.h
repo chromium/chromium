@@ -245,7 +245,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   // relationship between a toplevel frame and its embedded document.
   void SetDocumentParent(AtkObject* new_document_parent);
 
-  int GetCaretOffset();
+  int GetCaretOffset() override;
   bool SetCaretOffset(int offset);
   bool SetTextSelectionForAtkText(int start_offset, int end_offset);
   bool HasSelection();

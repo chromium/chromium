@@ -291,6 +291,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // See `AXNode::HasVisibleCaretOrSelection`.
   bool HasVisibleCaretOrSelection() const;
 
+  // See `AXNode::HasSelectionFocusInSubtree`. Unlike
+  // `HasVisibleCaretOrSelection`, these do not care whether the selection is
+  // rendered, only where it is.
+  bool HasSelectionFocusInSubtree();
+  bool HasSelectionFocusInSubtree(const AXSelection* selection);
+
   // See AXPlatformNodeDelegate::IsChildOfLeaf().
   bool IsChildOfLeaf() const;
 
@@ -567,7 +573,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
                                    int* selection_end,
                                    bool caret_only = false);
 
-  int GetCaretOffset();
+  virtual int GetCaretOffset();
 
   // Returns the hyperlink at the given text position, or nullptr if no
   // hyperlink can be found.
