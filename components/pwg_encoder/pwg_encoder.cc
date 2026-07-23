@@ -51,26 +51,19 @@ const int kPwgMaxPackedRows = 256;
 
 const int kPwgMaxPackedPixels = 128;
 
-struct BGRA8 {
-  uint8_t blue;
-  uint8_t green;
-  uint8_t red;
-  uint8_t alpha;
-};
-
-void EncodePixelToRGB(const uint32_t* pixel, std::string* output) {
-  const auto* i = reinterpret_cast<const BGRA8*>(pixel);
-  output->push_back(static_cast<char>(i->red));
-  output->push_back(static_cast<char>(i->green));
-  output->push_back(static_cast<char>(i->blue));
+void EncodePixelToRGB(uint32_t pixel, std::string& output) {
+  auto [b, g, r, a] = base::U32ToNativeEndian(pixel);
+  output.push_back(static_cast<char>(r));
+  output.push_back(static_cast<char>(g));
+  output.push_back(static_cast<char>(b));
 }
 
-void EncodePixelToMonochrome(const uint32_t* pixel, std::string* output) {
-  const auto* i = reinterpret_cast<const BGRA8*>(pixel);
-  output->push_back(static_cast<char>((i->red * kRedCoefficient +
-                                       i->green * kGreenCoefficient +
-                                       i->blue * kBlueCoefficient) /
-                                      kColorCoefficientDenominator));
+void EncodePixelToMonochrome(uint32_t pixel, std::string& output) {
+  auto [b, g, r, a] = base::U32ToNativeEndian(pixel);
+  output.push_back(static_cast<char>((r * kRedCoefficient +    //
+                                      g * kGreenCoefficient +  //
+                                      b * kBlueCoefficient)    //
+                                     / kColorCoefficientDenominator));
 }
 
 std::string EncodePageHeader(const BitmapImage& image,
@@ -119,7 +112,7 @@ template <class RandomAccessIterator>
 void EncodeRow(RandomAccessIterator pos,
                RandomAccessIterator row_end,
                bool monochrome,
-               std::string* output) {
+               std::string& output) {
   // According to PWG-raster, a sequence of N identical pixels (up to 128)
   // can be encoded by a byte N-1, followed by the information on
   // that pixel. Any generic sequence of N pixels (up to 129) can be encoded
@@ -142,11 +135,11 @@ void EncodeRow(RandomAccessIterator pos,
       ++it;
     }
     if (it != pos + 1) {  // More than one pixel
-      output->push_back(static_cast<char>((it - pos) - 1));
+      output.push_back(static_cast<char>((it - pos) - 1));
       if (monochrome) {
-        EncodePixelToMonochrome(&*pos, output);
+        EncodePixelToMonochrome(*pos, output);
       } else {
-        EncodePixelToRGB(&*pos, output);
+        EncodePixelToRGB(*pos, output);
       }
       pos = it;
     } else {
@@ -164,12 +157,12 @@ void EncodeRow(RandomAccessIterator pos,
       if (it != row_end && *it == *(it - 1)) {
         --it;
       }
-      output->push_back(static_cast<char>(1 - (it - pos)));
+      output.push_back(static_cast<char>(1 - (it - pos)));
       while (pos != it) {
         if (monochrome) {
-          EncodePixelToMonochrome(&*pos, output);
+          EncodePixelToMonochrome(*pos, output);
         } else {
-          EncodePixelToRGB(&*pos, output);
+          EncodePixelToRGB(*pos, output);
         }
         ++pos;
       }
@@ -207,10 +200,10 @@ std::string PwgEncoder::EncodePageFromBGRAColorspace(
     // Management of the bytes of the pixel is done by pixel_encoder function
     // on the original array to avoid endian problems.
     if (!pwg_header_info.flipx) {
-      EncodeRow(current_row.begin(), current_row.end(), monochrome, &output);
+      EncodeRow(current_row.begin(), current_row.end(), monochrome, output);
     } else {
       // We reverse the iterators.
-      EncodeRow(current_row.rbegin(), current_row.rend(), monochrome, &output);
+      EncodeRow(current_row.rbegin(), current_row.rend(), monochrome, output);
     }
   }
   return output;
