@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/default_browser_step_eligibility_checker.h"
+#include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_constants.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_eligibility_tracker.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_metrics.h"
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_step_eligibility_checker.h"
@@ -654,6 +655,7 @@ class FeatureShowcaseStepController : public ProfileManagementStepController {
         toggle_ambient_sound_callback_(
             std::move(toggle_ambient_sound_callback)) {
     CHECK(step_completed_callback_);
+
     std::vector<std::unique_ptr<FeatureShowcaseStepEligibilityChecker>>
         checkers;
     // Register checkers in order of priority (highest first).
@@ -668,8 +670,17 @@ class FeatureShowcaseStepController : public ProfileManagementStepController {
         std::make_unique<PasswordManagerFeatureShowcaseEligibilityChecker>());
     checkers.push_back(
         std::make_unique<ThemesAndCustomizationStepEligibilityChecker>());
+
+    base::flat_map<std::string, std::string> conflicting_steps;
+    if (base::FeatureList::IsEnabled(
+            switches::kFirstRunFeatureShowcaseGeminiStep)) {
+      conflicting_steps = {
+          {kFeatureShowcaseGeminiStepIdentifier,
+           kFeatureShowcaseGoogleLensStepIdentifier},
+      };
+    }
     tracker_ = std::make_unique<FeatureShowcaseEligibilityTracker>(
-        std::move(checkers));
+        std::move(checkers), std::move(conflicting_steps));
   }
 
   bool is_eligible() const { return !eligible_steps_.empty(); }

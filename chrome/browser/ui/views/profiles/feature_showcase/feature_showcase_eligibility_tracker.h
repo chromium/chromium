@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -20,9 +21,12 @@ class FeatureShowcaseStepEligibilityChecker;
 // given profile.
 class FeatureShowcaseEligibilityTracker {
  public:
+  // `conflicting_steps` is a map of conflicting steps. If the key step is
+  // eligible, the value step will be excluded from the eligible steps.
   explicit FeatureShowcaseEligibilityTracker(
       std::vector<std::unique_ptr<FeatureShowcaseStepEligibilityChecker>>
-          checkers);
+          checkers,
+      base::flat_map<std::string, std::string> conflicting_steps = {});
   FeatureShowcaseEligibilityTracker(const FeatureShowcaseEligibilityTracker&) =
       delete;
   FeatureShowcaseEligibilityTracker& operator=(
@@ -58,6 +62,7 @@ class FeatureShowcaseEligibilityTracker {
   std::vector<std::optional<bool>> results_;
   size_t completed_checkers_ = 0;
 
+  base::flat_map<std::string, std::string> conflicting_steps_;
   base::OneShotTimer timeout_timer_;
   base::WeakPtrFactory<FeatureShowcaseEligibilityTracker> weak_ptr_factory_{
       this};

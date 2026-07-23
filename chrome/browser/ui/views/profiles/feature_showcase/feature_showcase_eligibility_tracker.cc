@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/feature_showcase/feature_showcase_eligibility_tracker.h"
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -19,8 +20,10 @@ constexpr base::TimeDelta kEvaluationTimeout = base::Seconds(2);
 
 FeatureShowcaseEligibilityTracker::FeatureShowcaseEligibilityTracker(
     std::vector<std::unique_ptr<FeatureShowcaseStepEligibilityChecker>>
-        checkers)
-    : checkers_(std::move(checkers)) {}
+        checkers,
+    base::flat_map<std::string, std::string> conflicting_steps)
+    : checkers_(std::move(checkers)),
+      conflicting_steps_(std::move(conflicting_steps)) {}
 
 FeatureShowcaseEligibilityTracker::~FeatureShowcaseEligibilityTracker() =
     default;
@@ -100,6 +103,17 @@ void FeatureShowcaseEligibilityTracker::FinishEvaluation() {
     if (results_[i].value()) {
       eligible_steps.push_back(checkers_[i]->GetStepIdentifier());
     }
+  }
+
+  std::vector<std::string> steps_to_remove;
+  for (const auto& step : eligible_steps) {
+    auto it = conflicting_steps_.find(step);
+    if (it != conflicting_steps_.end()) {
+      steps_to_remove.push_back(it->second);
+    }
+  }
+  for (const auto& step : steps_to_remove) {
+    std::erase(eligible_steps, step);
   }
 
   if (eligible_steps.size() > kMaxFeatureShowcaseSteps) {
