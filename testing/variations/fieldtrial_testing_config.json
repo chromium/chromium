@@ -27574,6 +27574,24 @@
             ]
         }
     ],
+    "WebViewPurgeMemoryInBackground": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_4m",
+                    "params": {
+                        "purge_delay": "4m"
+                    },
+                    "enable_features": [
+                        "WebViewPurgeMemoryInBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewRecordAppCacheHistograms": [
         {
             "platforms": [
