@@ -1830,7 +1830,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
   ASSERT_EQ(static_cast<size_t>(upload.field_data_size()),
             form.fields().size());
 
-  ASSERT_EQ(1, upload.randomized_form_metadata().button_title().size());
+  ASSERT_EQ(upload.randomized_form_metadata().button_title().size(), 1);
   EXPECT_EQ(
       upload.randomized_form_metadata()
           .button_title()[0]
@@ -1839,8 +1839,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
       options.encoder->EncodeForTesting(form_signature, FieldSignature(),
                                         RandomizedEncoder::kFormButtonTitles,
                                         form.button_titles()[0].first));
-  EXPECT_EQ(ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE,
-            upload.randomized_form_metadata().button_title()[0].type());
+  EXPECT_EQ(upload.randomized_form_metadata().button_title()[0].type(),
+            ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE);
 
   for (int i = 0; i < upload.field_data_size(); ++i) {
     SCOPED_TRACE(testing::Message() << "field with index " << i);
@@ -2391,8 +2391,8 @@ TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
 
   auto [encoded_query, encoded_signatures] =
       EncodeAutofillPageQueryRequest(forms);
-  ASSERT_EQ(1U, encoded_signatures.size());
-  EXPECT_EQ(kExpectedSignature, encoded_signatures.front());
+  ASSERT_EQ(encoded_signatures.size(), 1U);
+  EXPECT_EQ(encoded_signatures.front(), kExpectedSignature);
   EXPECT_THAT(encoded_query, EqualsIgnoringMetadataValues(query));
 }
 
@@ -2516,8 +2516,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   const FormSignature kExpectedSignature(16416961345885087496UL);
   auto [encoded_query, encoded_signatures] =
       EncodeAutofillPageQueryRequest(forms);
-  ASSERT_EQ(1U, encoded_signatures.size());
-  EXPECT_EQ(kExpectedSignature, encoded_signatures.front());
+  ASSERT_EQ(encoded_signatures.size(), 1U);
+  EXPECT_EQ(encoded_signatures.front(), kExpectedSignature);
   EXPECT_THAT(encoded_query, EqualsIgnoringMetadataValues(query));
 }
 
@@ -2565,12 +2565,12 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the type predictions.
-  EXPECT_EQ(UNKNOWN_TYPE, form.field(0)->heuristic_type());
-  EXPECT_EQ(HtmlFieldType::kName, form.field(0)->html_type());
-  EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
-  EXPECT_EQ(UNKNOWN_TYPE, form.field(1)->heuristic_type());
-  EXPECT_EQ(HtmlFieldType::kName, form.field(1)->html_type());
-  EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
+  EXPECT_EQ(form.field(0)->heuristic_type(), UNKNOWN_TYPE);
+  EXPECT_EQ(form.field(0)->html_type(), HtmlFieldType::kName);
+  EXPECT_EQ(form.field(0)->server_type(), NAME_FIRST);
+  EXPECT_EQ(form.field(1)->heuristic_type(), UNKNOWN_TYPE);
+  EXPECT_EQ(form.field(1)->html_type(), HtmlFieldType::kName);
+  EXPECT_EQ(form.field(1)->server_type(), NAME_LAST);
 
   // Validate that the overrides are set correctly.
   EXPECT_TRUE(form.field(0)->server_type_prediction_is_override());
@@ -2623,10 +2623,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate the heuristic and server predictions.
-  EXPECT_EQ(NAME_LAST_FIRST, form.field(1)->heuristic_type());
-  EXPECT_EQ(NAME_LAST_SECOND, form.field(2)->heuristic_type());
-  EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
-  EXPECT_EQ(NAME_LAST, form.field(2)->server_type());
+  EXPECT_EQ(form.field(1)->heuristic_type(), NAME_LAST_FIRST);
+  EXPECT_EQ(form.field(2)->heuristic_type(), NAME_LAST_SECOND);
+  EXPECT_EQ(form.field(1)->server_type(), NAME_LAST);
+  EXPECT_EQ(form.field(2)->server_type(), NAME_LAST);
 
   // Validate that the heuristic prediction wins for the two last name fields.
   EXPECT_THAT(form.field(0)->Type().GetTypes(), ElementsAre(NAME_FIRST));
@@ -2668,10 +2668,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ASSERT_EQ(form.field_count(), 4U);
 
   // Validate the heuristic and server predictions.
-  EXPECT_EQ(ADDRESS_HOME_STREET_NAME, form.field(1)->heuristic_type());
-  EXPECT_EQ(ADDRESS_HOME_HOUSE_NUMBER, form.field(2)->heuristic_type());
-  EXPECT_EQ(ADDRESS_HOME_LINE1, form.field(1)->server_type());
-  EXPECT_EQ(ADDRESS_HOME_LINE2, form.field(2)->server_type());
+  EXPECT_EQ(form.field(1)->heuristic_type(), ADDRESS_HOME_STREET_NAME);
+  EXPECT_EQ(form.field(2)->heuristic_type(), ADDRESS_HOME_HOUSE_NUMBER);
+  EXPECT_EQ(form.field(1)->server_type(), ADDRESS_HOME_LINE1);
+  EXPECT_EQ(form.field(2)->server_type(), ADDRESS_HOME_LINE2);
 
   // Validate that the heuristic prediction wins for the street name and house
   // number.
@@ -2794,21 +2794,21 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
-  EXPECT_EQ(NAME_FIRST, form.field(0)->heuristic_type());
-  EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
-  EXPECT_EQ(HtmlFieldType::kUnspecified, form.field(0)->html_type());
+  EXPECT_EQ(form.field(0)->heuristic_type(), NAME_FIRST);
+  EXPECT_EQ(form.field(0)->server_type(), NAME_FIRST);
+  EXPECT_EQ(form.field(0)->html_type(), HtmlFieldType::kUnspecified);
   EXPECT_THAT(form.field(0)->Type().GetTypes(), ElementsAre(NAME_FIRST));
 
   // Validate field 1.
-  EXPECT_EQ(NAME_LAST, form.field(1)->heuristic_type());
-  EXPECT_EQ(NAME_LAST, form.field(1)->server_type());
-  EXPECT_EQ(HtmlFieldType::kUnspecified, form.field(1)->html_type());
+  EXPECT_EQ(form.field(1)->heuristic_type(), NAME_LAST);
+  EXPECT_EQ(form.field(1)->server_type(), NAME_LAST);
+  EXPECT_EQ(form.field(1)->html_type(), HtmlFieldType::kUnspecified);
   EXPECT_THAT(form.field(1)->Type().GetTypes(), ElementsAre(NAME_LAST));
 
   // Validate field 2. Note: HtmlFieldType::kAddressLevel2 -> City
-  EXPECT_EQ(EMAIL_ADDRESS, form.field(2)->heuristic_type());
-  EXPECT_EQ(ADDRESS_HOME_LINE1, form.field(2)->server_type());
-  EXPECT_EQ(HtmlFieldType::kAddressLevel2, form.field(2)->html_type());
+  EXPECT_EQ(form.field(2)->heuristic_type(), EMAIL_ADDRESS);
+  EXPECT_EQ(form.field(2)->server_type(), ADDRESS_HOME_LINE1);
+  EXPECT_EQ(form.field(2)->html_type(), HtmlFieldType::kAddressLevel2);
   EXPECT_THAT(form.field(2)->Type().GetTypes(), ElementsAre(ADDRESS_HOME_CITY));
 
   // Also check the extreme case of an empty form.
@@ -3366,7 +3366,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   const FieldSignature kFieldSignature =
       CalculateFieldSignatureForField(field1);
-  EXPECT_EQ(kFieldSignature, CalculateFieldSignatureForField(field2));
+  EXPECT_EQ(CalculateFieldSignatureForField(field2), kFieldSignature);
 
   FormData form;
   form.set_fields({field1, field2});
@@ -3426,8 +3426,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   const FieldSignature kFieldSignature =
       CalculateFieldSignatureForField(field1);
-  EXPECT_EQ(kFieldSignature, CalculateFieldSignatureForField(field2));
-  EXPECT_EQ(kFieldSignature, CalculateFieldSignatureForField(field3));
+  EXPECT_EQ(CalculateFieldSignatureForField(field2), kFieldSignature);
+  EXPECT_EQ(CalculateFieldSignatureForField(field3), kFieldSignature);
 
   FormData form;
   form.set_fields({field1, field2, field3});
@@ -3504,9 +3504,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   const FieldSignature kFieldSignature =
       CalculateFieldSignatureForField(field1);
-  EXPECT_EQ(kFieldSignature, CalculateFieldSignatureForField(field2));
-  EXPECT_EQ(kFieldSignature, CalculateFieldSignatureForField(field3));
-  EXPECT_EQ(kFieldSignature, CalculateFieldSignatureForField(field4));
+  EXPECT_EQ(CalculateFieldSignatureForField(field2), kFieldSignature);
+  EXPECT_EQ(CalculateFieldSignatureForField(field3), kFieldSignature);
+  EXPECT_EQ(CalculateFieldSignatureForField(field4), kFieldSignature);
 
   FormData form;
   form.set_fields({field1, field2, field3, field4});
@@ -3758,7 +3758,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   // Verify that the form fields remain intact because we could not parse the
   // server's response because it was badly serialized.
   ASSERT_GE(forms[0]->field_count(), 1U);
-  EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
+  EXPECT_EQ(forms[0]->field(0)->server_type(), NAME_FULL);
 }
 
 // Tests parsing the server response when the payload is not base64 where we
@@ -3796,7 +3796,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_WhenPayloadNotBase64) {
   // Verify that the form fields remain intact because we could not parse the
   // server's response that was badly encoded.
   ASSERT_GE(forms[0]->field_count(), 1U);
-  EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
+  EXPECT_EQ(forms[0]->field(0)->server_type(), NAME_FULL);
 }
 
 // Tests that predictions from small address fields are not removed when
@@ -3905,8 +3905,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
       .OnLoadedServerPredictions(SerializeAndEncode(response),
                                  test::GetEncodedSignatures(forms), {form});
 
-  ASSERT_EQ(1U, forms.size());
-  ASSERT_EQ(4U, forms[0]->field_count());
+  ASSERT_EQ(forms.size(), 1U);
+  ASSERT_EQ(forms[0]->field_count(), 4U);
 
   // Only NAME_LAST should be affected by the flag.
   EXPECT_THAT(forms[0]->field(1)->Type().GetTypes(), ElementsAre(NAME_LAST));
@@ -3949,8 +3949,8 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
       .OnLoadedServerPredictions(SerializeAndEncode(response),
                                  test::GetEncodedSignatures(forms), {form});
 
-  ASSERT_EQ(1U, forms.size());
-  ASSERT_EQ(4U, forms[0]->field_count());
+  ASSERT_EQ(forms.size(), 1U);
+  ASSERT_EQ(forms[0]->field_count(), 4U);
   EXPECT_THAT(forms[0]->field(0)->Type().GetTypes(),
               ElementsAre(CREDIT_CARD_NAME_FULL));
   EXPECT_THAT(forms[0]->field(1)->Type().GetTypes(),
@@ -3997,8 +3997,8 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
       .OnLoadedServerPredictions(SerializeAndEncode(response),
                                  test::GetEncodedSignatures(forms), {form});
 
-  ASSERT_EQ(1U, forms.size());
-  ASSERT_EQ(4U, forms[0]->field_count());
+  ASSERT_EQ(forms.size(), 1U);
+  ASSERT_EQ(forms[0]->field_count(), 4U);
 
   // Regardless of the flag, the fields should not have been overwritten,
   // including the CVC field.
