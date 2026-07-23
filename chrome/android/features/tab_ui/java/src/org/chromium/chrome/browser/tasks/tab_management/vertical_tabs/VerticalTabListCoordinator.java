@@ -846,6 +846,15 @@ public class VerticalTabListCoordinator {
                                     public boolean handleDragStart(float xPx, float yPx) {
                                         itemTouchHelper.onExternalDragStart(
                                                 xPx, yPx, /* hideItemWhileDragging= */ true);
+
+                                        // Since the OS-level drag-and-drop only initiates after the
+                                        // cursor has moved
+                                        // outside the bounds of the RecyclerView, we will never
+                                        // receive an
+                                        // ACTION_DRAG_EXITED event. Therefore, we must explicitly
+                                        // trigger the collapse of
+                                        // the drag gap right away.
+                                        itemTouchHelper.clearExternalDragItemVisibility();
                                         return true;
                                     }
 
@@ -856,7 +865,20 @@ public class VerticalTabListCoordinator {
                                     }
 
                                     @Override
+                                    public boolean handleDragEnter() {
+                                        itemTouchHelper.restoreExternalDragItemVisibility();
+                                        return true;
+                                    }
+
+                                    @Override
+                                    public boolean handleDragExit() {
+                                        itemTouchHelper.clearExternalDragItemVisibility();
+                                        return true;
+                                    }
+
+                                    @Override
                                     public boolean handleExternalDragEnd(float xPx, float yPx) {
+                                        itemTouchHelper.restoreExternalDragItemVisibility();
                                         itemTouchHelper.onExternalDragStop(
                                                 /* recoverItem= */ false);
                                         return true;
@@ -878,6 +900,7 @@ public class VerticalTabListCoordinator {
                     PointF startPoint = new PointF(mLastTouchPoint.x + dX, mLastTouchPoint.y + dY);
                     View gridCardView = buildGridCardDragShadow(activity, model);
 
+                    itemTouchHelper.setExternalDragItem(viewHolder);
                     mTabSwitcherDragHandler.startTabDragAction(
                             viewHolder.itemView, tab, startPoint, gridCardView);
                 });
