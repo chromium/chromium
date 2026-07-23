@@ -89,7 +89,7 @@ constexpr int kMenuItemHorizontalMargin = 6;
 // Timing specifications.
 
 // Radius constants.
-constexpr int kToolbarCornerRadius = 12;
+constexpr int kToolbarCornerRadius = 10;
 constexpr int kExpandButtonHoverRadius = 8;
 constexpr int kCloseButtonHoverRadius = kCloseButtonSize / 2;
 constexpr int kMenuItemHoverCornerRadius = 4;
