@@ -1786,8 +1786,15 @@ void LocalFrameView::SetUseColorAdjustBackground(UseColorAdjustBackground use,
                                         true /* color_adjust */);
   }
 
-  if (auto* layout_view = GetLayoutView())
+  if (auto* layout_view = GetLayoutView()) {
+    // LayoutView::UpdateFromStyle() sets this flag during style recalc.
+    // The color adjustment state can change without a style recalc, so
+    // ensure the flag is set here as well.
+    if (ShouldPaintBaseBackgroundColor()) {
+      layout_view->SetHasBoxDecorationBackground(true);
+    }
     layout_view->SetBackgroundNeedsFullPaintInvalidation();
+  }
 }
 
 bool LocalFrameView::ShouldPaintBaseBackgroundColor() const {
