@@ -1240,6 +1240,13 @@
       invalidate: ["layout"],
     },
     {
+      name: "HasSizeContainmentForViewTransitionScope",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      invalidate: ["layout"],
+    },
+    {
       // https://html.spec.whatwg.org/multipage/interaction.html#inert
       name: "IsHTMLInert",
       inherited: true,

@@ -1400,6 +1400,11 @@ void StyleAdjuster::RunUncacheableStyleAdjustment(
           element.GetDocument().documentElement() == element;
       if (!is_document_element) {
         builder.SetContain(builder.Contain() | kContainsLayout);
+        if (view_transition->NeedsContainmentForDurationOfCapture() &&
+            RuntimeEnabledFeatures::
+                ScopedViewTransitionSizeContainmentEnabled()) {
+          builder.SetHasSizeContainmentForViewTransitionScope(true);
+        }
         builder.SetViewTransitionScope(EViewTransitionScope::kAll);
       }
       builder.SetForcesStackingContext(true);

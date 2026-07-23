@@ -5447,6 +5447,10 @@
       status: "stable",
     },
     {
+      name: "ScopedViewTransitionSizeContainment",
+      status: "stable",
+    },
+    {
       name: "ScoreLineBreakerAbort",
       status: "stable",
     },

@@ -30,12 +30,15 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/resize_observer/resize_observer_utilities.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
@@ -371,6 +374,7 @@ bool ViewTransition::AdvanceTo(State state) {
   DCHECK(CanAdvanceTo(state)) << "Current state " << StateToString(state_)
                               << " new state " << StateToString(state);
 
+  State old_state = state_;
   if (state == State::kCapturing || state_ == State::kCapturing) {
     DCHECK(style_tracker_);
     style_tracker_->InvalidateBackdropFilterCompositingProperties();
@@ -378,6 +382,8 @@ bool ViewTransition::AdvanceTo(State state) {
 
   bool was_initial = state_ == State::kInitial;
   state_ = state;
+
+  SaveRememberedSizeIfNeeded(old_state, state_);
   if (!was_initial && IsTerminalState(state_)) {
     if (auto* originating_element = document_->documentElement()) {
       originating_element->ActiveViewTransitionStateChanged();
@@ -984,6 +990,65 @@ void ViewTransition::OnCaptureCommitted() {
   }
   AdvanceTo(State::kCaptureCommitted);
   ProcessCurrentState();
+}
+
+bool ViewTransition::NeedsContainmentForDurationOfCapture() const {
+  return NeedsContainmentForDurationOfCapture(state_);
+}
+
+bool ViewTransition::NeedsContainmentForDurationOfCapture(State state) const {
+  if (!RuntimeEnabledFeatures::ScopedViewTransitionSizeContainmentEnabled()) {
+    return false;
+  }
+  switch (state) {
+    case State::kCaptureCommitted:
+    case State::kCaptured:
+    case State::kDOMCallbackRunning:
+      return true;
+    default:
+      return false;
+  }
+}
+
+void ViewTransition::SaveRememberedSizeIfNeeded(State old_state,
+                                                State new_state) {
+  if (!RuntimeEnabledFeatures::ScopedViewTransitionSizeContainmentEnabled() ||
+      !scope_ || scope_->IsDocumentElement()) {
+    return;
+  }
+
+  bool old_needs_containment = NeedsContainmentForDurationOfCapture(old_state);
+  bool new_needs_containment = NeedsContainmentForDurationOfCapture(new_state);
+
+  if (old_needs_containment == new_needs_containment) {
+    return;
+  }
+
+  if (!old_needs_containment && new_needs_containment) {
+    if (auto* box = scope_->GetLayoutBox()) {
+      const auto* style = scope_->GetComputedStyle();
+      if (style) {
+        PhysicalRect content_box = box->PhysicalContentBoxRect();
+        LayoutUnit inline_size = AdjustForAbsoluteZoom::AdjustLayoutUnit(
+            style->IsHorizontalWritingMode() ? content_box.Width()
+                                             : content_box.Height(),
+            *style);
+        LayoutUnit block_size = AdjustForAbsoluteZoom::AdjustLayoutUnit(
+            style->IsHorizontalWritingMode() ? content_box.Height()
+                                             : content_box.Width(),
+            *style);
+        scope_->SetLastRememberedInlineSize(inline_size);
+        scope_->SetLastRememberedBlockSize(block_size);
+      }
+    }
+  } else if (old_needs_containment && !new_needs_containment) {
+    scope_->SetLastRememberedInlineSize(std::nullopt);
+    scope_->SetLastRememberedBlockSize(std::nullopt);
+  }
+
+  scope_->SetNeedsStyleRecalc(kLocalStyleChange,
+                              StyleChangeReasonForTracing::Create(
+                                  style_change_reason::kViewTransition));
 }
 
 void ViewTransition::OnCaptureRectsReceived() {

@@ -2468,8 +2468,8 @@ bool Element::ShouldUpdateLastRememberedBlockSize() const {
   }
 
   return style->IsHorizontalWritingMode()
-             ? style->ContainIntrinsicHeight().HasAuto()
-             : style->ContainIntrinsicWidth().HasAuto();
+             ? style->EffectiveContainIntrinsicHeight().HasAuto()
+             : style->EffectiveContainIntrinsicWidth().HasAuto();
 }
 
 bool Element::ShouldUpdateLastRememberedInlineSize() const {
@@ -2479,8 +2479,8 @@ bool Element::ShouldUpdateLastRememberedInlineSize() const {
   }
 
   return style->IsHorizontalWritingMode()
-             ? style->ContainIntrinsicWidth().HasAuto()
-             : style->ContainIntrinsicHeight().HasAuto();
+             ? style->EffectiveContainIntrinsicWidth().HasAuto()
+             : style->EffectiveContainIntrinsicHeight().HasAuto();
 }
 
 void Element::SetLastRememberedInlineSize(std::optional<LayoutUnit> size) {

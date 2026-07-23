@@ -294,6 +294,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
       const ViewTransitionPseudoElementBase& pseudo_element) const;
 
   Element* Scope() const;
+  bool NeedsContainmentForDurationOfCapture() const;
 
   // The start of a VT cancels the previous transition; however, first VT's
   // DOM callback must still run. To avoid capturing its DOM changes are part
@@ -395,6 +396,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   // Advance to the new state. This returns true if the state should be
   // processed immediately.
   bool AdvanceTo(State state);
+  bool NeedsContainmentForDurationOfCapture(State state) const;
+  void SaveRememberedSizeIfNeeded(State old_state, State new_state);
 
   bool CanAdvanceTo(State state) const;
   static bool StateRunsInViewTransitionStepsDuringMainFrame(State state);

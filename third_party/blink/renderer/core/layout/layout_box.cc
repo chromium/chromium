@@ -1192,13 +1192,18 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentInlineSize() const {
   }
 
   const auto& style = StyleRef();
-  const StyleIntrinsicLength& intrinsic_length =
-      style.ContainIntrinsicInlineSize();
+  StyleIntrinsicLength intrinsic_length =
+      style.EffectiveContainIntrinsicInlineSize();
 
   if (intrinsic_length.HasAuto()) {
     const auto* context = GetDisplayLockContext();
-    if (context && context->IsLocked()) {
-      if (const auto* elem = DynamicTo<Element>(GetNode())) {
+    const bool is_locked = context && context->IsLocked();
+    const auto* elem = DynamicTo<Element>(GetNode());
+    const bool is_vt_scope =
+        style.HasSizeContainmentForViewTransitionScope() &&
+        RuntimeEnabledFeatures::ScopedViewTransitionSizeContainmentEnabled();
+    if (is_locked || is_vt_scope) {
+      if (elem) {
         if (const auto inline_size = elem->LastRememberedInlineSize()) {
           // ResizeObserverSize is adjusted to be in CSS space, we need to
           // adjust it back to Layout space by applying the effective zoom.
@@ -1226,17 +1231,22 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentBlockSize() const {
   }
 
   const auto& style = StyleRef();
-  const StyleIntrinsicLength& intrinsic_length =
-      style.ContainIntrinsicBlockSize();
+  StyleIntrinsicLength intrinsic_length =
+      style.EffectiveContainIntrinsicBlockSize();
 
   if (intrinsic_length.HasAuto()) {
     const auto* context = GetDisplayLockContext();
-    if (context && context->IsLocked()) {
-      if (const auto* elem = DynamicTo<Element>(GetNode())) {
-        if (const auto inline_size = elem->LastRememberedBlockSize()) {
+    const bool is_locked = context && context->IsLocked();
+    const auto* elem = DynamicTo<Element>(GetNode());
+    const bool is_vt_scope =
+        style.HasSizeContainmentForViewTransitionScope() &&
+        RuntimeEnabledFeatures::ScopedViewTransitionSizeContainmentEnabled();
+    if (is_locked || is_vt_scope) {
+      if (elem) {
+        if (const auto block_size = elem->LastRememberedBlockSize()) {
           // ResizeObserverSize is adjusted to be in CSS space, we need to
           // adjust it back to Layout space by applying the effective zoom.
-          return LayoutUnit::FromFloatRound(*inline_size *
+          return LayoutUnit::FromFloatRound(*block_size *
                                             style.EffectiveZoom());
         }
       }
