@@ -803,7 +803,7 @@ function isValidCredential(credential: Credential|null): boolean {
 // https://www.w3.org/TR/webauthn-2/#authenticatorattestationresponse
 function createAuthenticatorAttestationResponse(
     attestationObj: ArrayBuffer, authenticatorData: ArrayBuffer,
-    publicKeySpkiDer: ArrayBuffer,
+    publicKeySpkiDer: ArrayBuffer|null,
     clientDataJson: string): AuthenticatorAttestationResponse {
   const response = {
     attestationObject: attestationObj,
@@ -1255,7 +1255,10 @@ function resolveAttestationRequest(
       createAuthenticatorAttestationResponse(
           decodeBase64URLToArrayBuffer(attestationObject64),
           decodeBase64URLToArrayBuffer(authenticatorData64),
-          decodeBase64URLToArrayBuffer(publicKeySpkiDer64), clientDataJson);
+          publicKeySpkiDer64 ?
+              decodeBase64URLToArrayBuffer(publicKeySpkiDer64) :
+              null,
+          clientDataJson);
 
   resolveCredentialPromise(requestId, id64, response, extensions);
 }

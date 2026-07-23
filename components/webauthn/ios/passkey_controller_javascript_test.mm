@@ -212,6 +212,43 @@ NSString* const kCheckUserHandleByteLengthJs =
 NSString* const kGetFirstByteOfUserHandleJs =
     @"new Uint8Array(window.credentialResult.response.userHandle)[0]";
 
+NSString* const kCheckCredentialResultInstanceOfPublicKeyCredentialJs =
+    @"window.credentialResult instanceof PublicKeyCredential";
+
+NSString* const kCheckResponseInstanceOfAuthenticatorAttestationResponseJs =
+    @"window.credentialResult.response instanceof "
+    @"AuthenticatorAttestationResponse";
+
+NSString* const kCheckResponseInstanceOfAuthenticatorAssertionResponseJs =
+    @"window.credentialResult.response instanceof "
+    @"AuthenticatorAssertionResponse";
+
+NSString* const kCheckPublicKeyIsNullJs =
+    @"window.credentialResult.response.getPublicKey() === null";
+
+NSString* const kCheckPublicKeyByteLengthJs =
+    @"window.credentialResult.response.getPublicKey().byteLength";
+
+NSString* const kGetFirstByteOfPublicKeyJs =
+    @"new Uint8Array(window.credentialResult.response.getPublicKey())[0]";
+
+NSString* const kResolveAttestationRequestWithEmptyPublicKeyFormat =
+    @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
+    @"resolveAttestationRequest')('%@', 'AQ', '', '', '', '', {})";
+
+NSString* const kResolveAttestationRequestWithPublicKeyFormat =
+    @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
+    @"resolveAttestationRequest')('%@', 'AQ', '', '', 'AQ==', '', {})";
+
+NSString* const kResolveAttestationRequestFormat =
+    @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
+    @"resolveAttestationRequest')('%@', 'AQ', 'AQ==', 'AQ==', 'AQ==', '{}', "
+    @"{})";
+
+NSString* const kResolveAssertionRequestFormat =
+    @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
+    @"resolveAssertionRequest')('%@', 'AQ', 'AQ==', 'AQ==', 'AQ==', '{}', {})";
+
 NSString* const kCheckResultReceivedJs = @"window.resultReceived";
 NSString* const kGetPromiseResultJs = @"window.promiseResult";
 NSString* const kGetPromiseErrorJs = @"window.promiseError";
@@ -237,26 +274,6 @@ NSString* const kLogCreateRequestEvent = @"logCreateRequest";
 NSString* const kLogGetRequestEvent = @"logGetRequest";
 NSString* const kHandleCreateRequestEvent = @"handleCreateRequest";
 NSString* const kHandleGetRequestEvent = @"handleGetRequest";
-
-NSString* const kCheckCredentialResultInstanceOfPublicKeyCredentialJs =
-    @"window.credentialResult instanceof PublicKeyCredential";
-
-NSString* const kCheckResponseInstanceOfAuthenticatorAttestationResponseJs =
-    @"window.credentialResult.response instanceof "
-    @"AuthenticatorAttestationResponse";
-
-NSString* const kCheckResponseInstanceOfAuthenticatorAssertionResponseJs =
-    @"window.credentialResult.response instanceof "
-    @"AuthenticatorAssertionResponse";
-
-NSString* const kResolveAttestationRequestFormat =
-    @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
-    @"resolveAttestationRequest')('%@', 'AQ', 'AQ==', 'AQ==', 'AQ==', '{}', "
-    @"{})";
-
-NSString* const kResolveAssertionRequestFormat =
-    @"__gCrWeb.getRegisteredApi('passkey').getFunction('"
-    @"resolveAssertionRequest')('%@', 'AQ', 'AQ==', 'AQ==', 'AQ==', '{}', {})";
 
 // Provides responses for initial page and destination URLs.
 std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
@@ -507,7 +524,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
   // Since it is a passthrough request, it finishes immediately (rejects) in the
   // test environment, so it shouldn't trigger reload on back navigation.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-  EXPECT_TRUE(message_handler().lastReceivedMessage == nil);
+  EXPECT_NSEQ(nil, message_handler().lastReceivedMessage);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -562,7 +579,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
   // Since it is a passthrough request, it finishes immediately (rejects) in the
   // test environment, so it shouldn't trigger reload on back navigation.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-  EXPECT_TRUE(message_handler().lastReceivedMessage == nil);
+  EXPECT_NSEQ(nil, message_handler().lastReceivedMessage);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -625,7 +642,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   // Since it finished, it should NOT reload.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-  EXPECT_TRUE(message_handler().lastReceivedMessage == nil);
+  EXPECT_NSEQ(nil, message_handler().lastReceivedMessage);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -661,7 +678,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   // Since it succeeded, it should NOT reload.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-  EXPECT_TRUE(message_handler().lastReceivedMessage == nil);
+  EXPECT_NSEQ(nil, message_handler().lastReceivedMessage);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -694,7 +711,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   // Since it finished (rejected), it should NOT reload.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-  EXPECT_TRUE(message_handler().lastReceivedMessage == nil);
+  EXPECT_NSEQ(nil, message_handler().lastReceivedMessage);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -730,7 +747,7 @@ TEST_F(PasskeyControllerJavaScriptTest,
   // Verify that window.credentialResult.response.userHandle is null.
   id isNull =
       web::test::ExecuteJavaScript(web_view(), kCheckUserHandleIsNullJs);
-  EXPECT_TRUE([isNull boolValue]);
+  EXPECT_NSEQ(@YES, isNull);
 }
 
 TEST_F(
@@ -750,7 +767,7 @@ TEST_F(
   NSString* requestId = body[kRequestIdKey];
   ASSERT_TRUE(requestId != nil);
 
-  // Resolve the request with userHandle64 as "AQ==" (which is base64 of 0x01).
+  // Resolve the request.
   NSString* resolveJs = [NSString
       stringWithFormat:kResolveAssertionRequestWithUserHandleFormat, requestId];
   web::test::ExecuteJavaScriptInWebView(web_view(), resolveJs);
@@ -767,7 +784,7 @@ TEST_F(
   // length 1.
   id isNull =
       web::test::ExecuteJavaScript(web_view(), kCheckUserHandleIsNullJs);
-  EXPECT_FALSE([isNull boolValue]);
+  EXPECT_NSEQ(@NO, isNull);
 
   id byteLength =
       web::test::ExecuteJavaScript(web_view(), kCheckUserHandleByteLengthJs);
@@ -815,11 +832,11 @@ TEST_F(PasskeyControllerJavaScriptTest,
   // Assert that promiseResult is null (and not undefined or error).
   id promiseResult =
       web::test::ExecuteJavaScript(web_view(), kGetPromiseResultJs);
-  EXPECT_TRUE(promiseResult == [NSNull null]);
+  EXPECT_NSEQ([NSNull null], promiseResult);
 
   id promiseError =
       web::test::ExecuteJavaScript(web_view(), kGetPromiseErrorJs);
-  EXPECT_TRUE(promiseError == nil);
+  EXPECT_NSEQ(nil, promiseError);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -860,11 +877,11 @@ TEST_F(PasskeyControllerJavaScriptTest,
   // Assert that promiseResult is null (and not undefined or error).
   id promiseResult =
       web::test::ExecuteJavaScript(web_view(), kGetPromiseResultJs);
-  EXPECT_TRUE(promiseResult == [NSNull null]);
+  EXPECT_NSEQ([NSNull null], promiseResult);
 
   id promiseError =
       web::test::ExecuteJavaScript(web_view(), kGetPromiseErrorJs);
-  EXPECT_TRUE(promiseError == nil);
+  EXPECT_NSEQ(nil, promiseError);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -899,13 +916,13 @@ TEST_F(PasskeyControllerJavaScriptTest,
   // Verify that window.credentialResult is an instance of PublicKeyCredential.
   id isPublicKeyCredential = web::test::ExecuteJavaScript(
       web_view(), kCheckCredentialResultInstanceOfPublicKeyCredentialJs);
-  EXPECT_TRUE([isPublicKeyCredential boolValue]);
+  EXPECT_NSEQ(@YES, isPublicKeyCredential);
 
   // Verify that window.credentialResult.response is an instance of
   // AuthenticatorAttestationResponse.
   id isAttestationResponse = web::test::ExecuteJavaScript(
       web_view(), kCheckResponseInstanceOfAuthenticatorAttestationResponseJs);
-  EXPECT_TRUE([isAttestationResponse boolValue]);
+  EXPECT_NSEQ(@YES, isAttestationResponse);
 }
 
 TEST_F(PasskeyControllerJavaScriptTest,
@@ -940,13 +957,92 @@ TEST_F(PasskeyControllerJavaScriptTest,
   // Verify that window.credentialResult is an instance of PublicKeyCredential.
   id isPublicKeyCredential = web::test::ExecuteJavaScript(
       web_view(), kCheckCredentialResultInstanceOfPublicKeyCredentialJs);
-  EXPECT_TRUE([isPublicKeyCredential boolValue]);
+  EXPECT_NSEQ(@YES, isPublicKeyCredential);
 
   // Verify that window.credentialResult.response is an instance of
   // AuthenticatorAssertionResponse.
   id isAssertionResponse = web::test::ExecuteJavaScript(
       web_view(), kCheckResponseInstanceOfAuthenticatorAssertionResponseJs);
-  EXPECT_TRUE([isAssertionResponse boolValue]);
+  EXPECT_NSEQ(@YES, isAssertionResponse);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsModalCreateWithEmptyPublicKeyReturnsNull) {
+  GURL create_url = server().GetURL(kNavigatorCredentialsCreateWithResultUrl);
+
+  ASSERT_TRUE(LoadUrl(create_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(kHandleCreateRequestEvent, body[kEventKey]);
+
+  NSString* requestId = body[kRequestIdKey];
+  ASSERT_TRUE(requestId != nil);
+
+  // Resolve the request with publicKeySpkiDer64 as empty string "".
+  NSString* resolveJs = [NSString
+      stringWithFormat:kResolveAttestationRequestWithEmptyPublicKeyFormat,
+                       requestId];
+  web::test::ExecuteJavaScriptInWebView(web_view(), resolveJs);
+
+  // Wait until window.credentialResult is set.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        id result = web::test::ExecuteJavaScript(
+            web_view(), kCheckCredentialResultDefinedJs);
+        return [result boolValue];
+      }));
+
+  // Verify that window.credentialResult.response.getPublicKey() is null.
+  id isNull = web::test::ExecuteJavaScript(web_view(), kCheckPublicKeyIsNullJs);
+  EXPECT_NSEQ(@YES, isNull);
+}
+
+TEST_F(PasskeyControllerJavaScriptTest,
+       NavigatorCredentialsModalCreateWithNonEmptyPublicKeyReturnsArrayBuffer) {
+  GURL create_url = server().GetURL(kNavigatorCredentialsCreateWithResultUrl);
+
+  ASSERT_TRUE(LoadUrl(create_url));
+
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        return message_handler().lastReceivedMessage != nil;
+      }));
+  NSDictionary* body = message_handler().lastReceivedMessage.body;
+  EXPECT_NSEQ(kHandleCreateRequestEvent, body[kEventKey]);
+
+  NSString* requestId = body[kRequestIdKey];
+  ASSERT_TRUE(requestId != nil);
+
+  // Resolve the request.
+  NSString* resolveJs =
+      [NSString stringWithFormat:kResolveAttestationRequestWithPublicKeyFormat,
+                                 requestId];
+  web::test::ExecuteJavaScriptInWebView(web_view(), resolveJs);
+
+  // Wait until window.credentialResult is set.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForPageLoadTimeout, ^{
+        id result = web::test::ExecuteJavaScript(
+            web_view(), kCheckCredentialResultDefinedJs);
+        return [result boolValue];
+      }));
+
+  // Verify that window.credentialResult.response.getPublicKey() is not null and
+  // has length 1.
+  id isNull = web::test::ExecuteJavaScript(web_view(), kCheckPublicKeyIsNullJs);
+  EXPECT_NSEQ(@NO, isNull);
+
+  id byteLength =
+      web::test::ExecuteJavaScript(web_view(), kCheckPublicKeyByteLengthJs);
+  EXPECT_NSEQ(@1, byteLength);
+
+  id firstByte =
+      web::test::ExecuteJavaScript(web_view(), kGetFirstByteOfPublicKeyJs);
+  EXPECT_NSEQ(@1, firstByte);
 }
 
 }  // namespace webauthn
