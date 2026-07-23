@@ -808,6 +808,9 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
 
   const base::Version& current_version = version_info::GetVersion();
   if (!current_version.IsValid()) {
+    DVLOG(1) << "VariationsService: SimulateAndApplyRuntimeMutableChanges "
+             << "failed, version is invalid. GetVersionNumber() is: "
+             << version_info::GetVersionNumber();
     return;
   }
 
@@ -820,7 +823,12 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
       seed, *client_state, layers,
       [](const Study& study) { return study.runtime_mutable(); });
 
+  DVLOG(1) << "VariationsService: SimulateAndApplyRuntimeMutableChanges "
+           << "found " << filtered_studies.size() << " mutable studies.";
+
   for (const ProcessedStudy& study : filtered_studies) {
+    DVLOG(1) << "VariationsService: Simulating / applying runtime mutable "
+             << "changes for study: " << study.study()->name();
     // Simulate group assignment for the study, and apply it if necessary.
     scoped_refptr<base::FieldTrial> simulated_trial =
         VariationsSeedProcessor(field_trial_creator_.sticky_activation_manager(
@@ -1071,6 +1079,8 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
   // group was forced by the command line).
   const std::string& group_name =
       simulated_trial->GetGroupNameWithoutActivation();
+  DVLOG(1) << "VariationsService: Simulated " << processed_study.study()->name()
+           << " into group: " << group_name;
   int experiment_index = processed_study.GetExperimentIndexByName(group_name);
   if (experiment_index == -1) {
     return kSimulatedGroupNotFound;
@@ -1246,6 +1256,8 @@ ApplyRuntimeMutableChangesResult VariationsService::ApplyRuntimeMutableChanges(
     return kApplyRuntimeFieldTrialOverrideFailed;
   }
   for (const auto& feature_name : feature_names) {
+    DVLOG(1) << "VariationsService: Applying runtime override to disable "
+             << "feature: " << feature_name;
     bool result = feature_list->UpdateRuntimeMutableFeatureState(
         base::PassKey<VariationsService>(), study.name(), group_name,
         feature_name, base::FeatureList::OVERRIDE_DISABLE_FEATURE);

@@ -266,6 +266,13 @@ class VariationsService
   // Returns true if variations seed fetching is paused.
   bool IsSeedFetchingPaused() const;
 
+  // Wrapper for SimulateAndApplyRuntimeMutableChanges.
+  void SimulateAndApplyUploadedSeed(
+      base::PassKey<metrics::RuntimeMutableFeaturesHandlerBase> pass_key,
+      const VariationsSeed& seed) {
+    SimulateAndApplyRuntimeMutableChanges(seed);
+  }
+
   // Cancels the currently pending fetch request.
   void CancelCurrentRequestForTesting();
 
