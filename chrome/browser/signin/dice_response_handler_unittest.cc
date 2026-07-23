@@ -180,6 +180,7 @@ class DiceResponseHandlerTest : public testing::Test,
   }
 
   ~DiceResponseHandlerTest() override {
+    dice_response_handler_.reset();
     account_reconcilor_->RemoveObserver(this);
     account_reconcilor_->Shutdown();
     about_signin_internals_->Shutdown();
@@ -279,7 +280,6 @@ class DiceResponseHandlerTest : public testing::Test,
   SigninErrorController signin_error_controller_;
   std::unique_ptr<AboutSigninInternals> about_signin_internals_;
   std::unique_ptr<AccountReconcilor> account_reconcilor_;
-  std::unique_ptr<DiceResponseHandler> dice_response_handler_;
   int reconcilor_blocked_count_ = 0;
   int reconcilor_unblocked_count_ = 0;
   CoreAccountId token_exchange_account_id_;
@@ -294,6 +294,7 @@ class DiceResponseHandlerTest : public testing::Test,
   base::HistogramTester histogram_tester_;
   bool session_complete_called_ = false;
   std::vector<CoreAccountId> completed_secondary_accounts_;
+  std::unique_ptr<DiceResponseHandler> dice_response_handler_;
 };
 
 class TestProcessDiceHeaderDelegate : public ProcessDiceHeaderDelegate {
