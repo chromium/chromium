@@ -14,10 +14,10 @@ TEST(BankAccountTest, VerifyAllFields) {
                            u"bank_name", u"account_number_suffix",
                            BankAccount::AccountType::kChecking);
 
-  EXPECT_EQ(100, bank_account.payment_instrument().instrument_id());
-  EXPECT_EQ(u"bank_name", bank_account.bank_name());
-  EXPECT_EQ(u"account_number_suffix", bank_account.account_number_suffix());
-  EXPECT_EQ(u"nickname", bank_account.payment_instrument().nickname());
+  EXPECT_EQ(bank_account.payment_instrument().instrument_id(), 100);
+  EXPECT_EQ(bank_account.bank_name(), u"bank_name");
+  EXPECT_EQ(bank_account.account_number_suffix(), u"account_number_suffix");
+  EXPECT_EQ(bank_account.payment_instrument().nickname(), u"nickname");
   EXPECT_EQ(GURL("http://www.example.com"),
             bank_account.payment_instrument().display_icon_url());
   EXPECT_EQ(BankAccount::AccountType::kChecking, bank_account.account_type());
