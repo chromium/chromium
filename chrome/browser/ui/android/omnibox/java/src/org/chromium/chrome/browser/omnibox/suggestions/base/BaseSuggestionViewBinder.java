@@ -27,6 +27,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
@@ -135,14 +136,14 @@ public abstract class BaseSuggestionViewBinder<T extends View>
                         });
             }
         } else if (BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT == propertyKey) {
-            Runnable listener = model.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
+            Callback<Long> listener = model.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
             if (listener == null) {
                 view.setOnTouchListener(null);
             } else {
                 view.setOnTouchListener(
                         (v, event) -> {
                             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                                listener.run();
+                                listener.onResult(event.getEventTime());
                             }
                             return false;
                         });

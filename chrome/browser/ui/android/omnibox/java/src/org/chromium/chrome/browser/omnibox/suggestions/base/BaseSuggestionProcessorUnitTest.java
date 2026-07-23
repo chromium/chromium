@@ -252,7 +252,7 @@ public class BaseSuggestionProcessorUnitTest {
                 /* hasTabMatch= */ false,
                 TEST_URL);
 
-        Runnable touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
+        var touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
         assertNull(touchDownListener);
     }
 
@@ -265,7 +265,7 @@ public class BaseSuggestionProcessorUnitTest {
                 /* hasTabMatch= */ false,
                 TEST_URL);
 
-        Runnable touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
+        var touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
         assertNotNull(touchDownListener);
 
         var histogramWatcher =
@@ -274,10 +274,11 @@ public class BaseSuggestionProcessorUnitTest {
                                 OmniboxMetrics.HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PROCESS_TIME)
                         .build();
 
-        touchDownListener.run();
+        touchDownListener.onResult(1000L);
 
         histogramWatcher.assertExpected();
-        verify(mSuggestionHost, times(1)).onSuggestionTouchDown(mSuggestion, /* position= */ 0);
+        verify(mSuggestionHost, times(1))
+                .onSuggestionTouchDown(mSuggestion, /* position= */ 0, /* eventTime= */ 1000L);
     }
 
     @Test
@@ -290,7 +291,7 @@ public class BaseSuggestionProcessorUnitTest {
                 /* hasTabMatch= */ false,
                 TEST_URL);
 
-        Runnable touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
+        var touchDownListener = mModel.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
         assertNull(touchDownListener);
     }
 

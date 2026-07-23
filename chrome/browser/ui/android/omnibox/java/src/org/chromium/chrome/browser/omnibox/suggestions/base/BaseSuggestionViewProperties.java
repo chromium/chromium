@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
@@ -125,9 +126,13 @@ public @interface BaseSuggestionViewProperties {
     @VisibleForTesting
     WritableObjectPropertyKey<Runnable> ON_LONG_CLICK = new WritableObjectPropertyKey<>();
 
-    /** Callback invoked when user touches down on the suggestion. */
+    /**
+     * Callback invoked when user touches down on the suggestion. The long callback value is the
+     * system uptime of the touch down event in milliseconds.
+     */
     @VisibleForTesting
-    WritableObjectPropertyKey<Runnable> ON_TOUCH_DOWN_EVENT = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Callback</* uptimeMillis */ Long>> ON_TOUCH_DOWN_EVENT =
+            new WritableObjectPropertyKey<>();
 
     /** {@see BaseSuggestionView#setShowDecorationIcon(boolean} */
     WritableBooleanPropertyKey SHOW_DECORATION = new WritableBooleanPropertyKey();

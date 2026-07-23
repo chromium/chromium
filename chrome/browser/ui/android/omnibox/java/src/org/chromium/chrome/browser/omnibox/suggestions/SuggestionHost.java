@@ -33,8 +33,9 @@ public interface SuggestionHost {
      *
      * @param suggestion Touch-downed Suggestion.
      * @param position The position of the suggestion on the list.
+     * @param eventTime Uptime of the touch down event in milliseconds.
      */
-    void onSuggestionTouchDown(AutocompleteMatch suggestion, int position);
+    void onSuggestionTouchDown(AutocompleteMatch suggestion, int position, long eventTime);
 
     /**
      * Triggered when the user clicks one of the OmniboxActions attached to Suggestion.

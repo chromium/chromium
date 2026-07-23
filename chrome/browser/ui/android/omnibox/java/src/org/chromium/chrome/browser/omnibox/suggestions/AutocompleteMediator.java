@@ -22,6 +22,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -781,15 +782,20 @@ class AutocompleteMediator
      *
      * @param suggestion The AutocompleteMatch which was selected.
      * @param matchIndex Position of the suggestion in the drop down view.
+     * @param eventTime Uptime of the touch down event in milliseconds.
      */
     @Override
-    public void onSuggestionTouchDown(AutocompleteMatch suggestion, int matchIndex) {
+    public void onSuggestionTouchDown(
+            AutocompleteMatch suggestion, int matchIndex, long eventTime) {
         if (!isInInputSession()) return;
         if (mNumTouchDownEventForwardedInOmniboxSession
                 >= OmniboxFeatures.getMaxPrefetchesPerOmniboxSession()) {
             return;
         }
         mNumTouchDownEventForwardedInOmniboxSession++;
+
+        OmniboxMetrics.recordSuggestionTouchDownDelay(
+                new TimeUtils.UptimeMillisTimer(eventTime).getElapsedMillis());
 
         boolean wasPrefetchStarted =
                 mAutocomplete.onSuggestionTouchDown(

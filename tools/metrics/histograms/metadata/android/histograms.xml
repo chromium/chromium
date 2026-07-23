@@ -4751,6 +4751,32 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Android.Omnibox.{AndroidSearchPrefetch}.TouchDownDelay.{AndroidNavigationPrefetchOnly}"
+    units="ms" expires_after="2026-12-31">
+  <owner>thesalsa@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    {AndroidSearchPrefetch}
+
+    Measures the delay from physical touch down to the start of prefetch
+    processing on the Java main thread, i.e. directly before
+    TouchDownProcessTime is recorded. This is used to measure the overhead of
+    Android input event dispatching plus queueing time on the UI thread.
+
+    Emitted once for each touch down event on a search suggestion that is
+    forwarded to the prefetch handler. Not emitted when the omnibox input
+    session has ended or the per-session prefetch limit has been reached (in
+    those cases the event is dropped before this is recorded). Emitted whether
+    or not the forwarded event ultimately starts a prefetch.
+
+    {AndroidNavigationPrefetchOnly}
+  </summary>
+  <token key="AndroidSearchPrefetch" variants="AndroidSearchPrefetch"/>
+  <token key="AndroidNavigationPrefetchOnly"
+      variants="AndroidNavigationPrefetchOnly"/>
+</histogram>
+
+<histogram
     name="Android.Omnibox.{AndroidSearchPrefetch}.TouchDownPrefetchResult.{AndroidNavigationPrefetchOnly}"
     enum="SearchPrefetchTouchDownPrefetchResult" expires_after="2026-11-29">
   <owner>nhiroki@chromium.org</owner>

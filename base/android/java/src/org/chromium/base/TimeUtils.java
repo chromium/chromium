@@ -17,12 +17,25 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class TimeUtils {
     /**
-     * Interval timer using SystemClock.uptimeMillis() (excludes deep sleep).
-     * See: https://developer.android.com/reference/android/os/SystemClock
+     * Interval timer using SystemClock.uptimeMillis() (excludes deep sleep). See:
+     * https://developer.android.com/reference/android/os/SystemClock
      */
     @CheckDiscard("Class should get inlined by R8.")
     public static class UptimeMillisTimer {
-        private final long mStart = uptimeMillis();
+        private final long mStart;
+
+        public UptimeMillisTimer() {
+            this(uptimeMillis());
+        }
+
+        /**
+         * Creates a timer whose start time is supplied by the caller.
+         *
+         * @param startUptimeMillis Start time in the {@link SystemClock#uptimeMillis()} time base.
+         */
+        public UptimeMillisTimer(long startUptimeMillis) {
+            mStart = startUptimeMillis;
+        }
 
         public long getElapsedMillis() {
             return uptimeMillis() - mStart;

@@ -52,6 +52,7 @@ import org.robolectric.shadows.ShadowPausedSystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -1460,6 +1461,28 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void touchDownForPrefetch_TouchDownDelayRecorded() {
+        int delay = 100;
+        long eventTime = TimeUtils.uptimeMillis() - delay;
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics
+                                        .HISTOGRAM_SEARCH_PREFETCH_SUGGESTION_TOUCH_DOWN_DELAY,
+                                delay)
+                        .build();
+
+        mMediator.beginInput(createEmptySession());
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+
+        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /* matchIndex= */ 0, eventTime);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
     public void touchDownForPrefetch_PrefetchHit() {
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -1477,7 +1500,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // Simulate a suggestion being touched down.
-        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /* matchIndex= */ 0);
+        mMediator.onSuggestionTouchDown(
+                mSuggestionsList.get(0), /* matchIndex= */ 0, /* eventTime= */ 0);
 
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController, times(1))
@@ -1513,7 +1537,8 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
 
         // Simulate a suggestion being touched down.
-        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /* matchIndex= */ 0);
+        mMediator.onSuggestionTouchDown(
+                mSuggestionsList.get(0), /* matchIndex= */ 0, /* eventTime= */ 0);
 
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController, times(1))
@@ -1553,7 +1578,8 @@ public class AutocompleteMediatorUnitTest {
                 .thenReturn(false);
 
         // Simulate a suggestion being touched down.
-        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /* matchIndex= */ 0);
+        mMediator.onSuggestionTouchDown(
+                mSuggestionsList.get(0), /* matchIndex= */ 0, /* eventTime= */ 0);
 
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController, times(1))
@@ -1593,7 +1619,7 @@ public class AutocompleteMediatorUnitTest {
         int numTouchDownEvents = OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1;
         assertTrue(numTouchDownEvents < mSuggestionsList.size());
         for (int i = 0; i < numTouchDownEvents; i++) {
-            mMediator.onSuggestionTouchDown(mSuggestionsList.get(i), i);
+            mMediator.onSuggestionTouchDown(mSuggestionsList.get(i), i, /* eventTime= */ 0);
         }
 
         // Ensure that no extra signals are sent to native.
@@ -1608,7 +1634,7 @@ public class AutocompleteMediatorUnitTest {
         // Since the state is reset, new prefetches are allowed.
         // Simulate a new omnibox session start.
         mMediator.beginInput(createEmptySession());
-        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), 0);
+        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), 0, /* eventTime= */ 0);
         verify(
                         mAutocompleteController,
                         times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1))

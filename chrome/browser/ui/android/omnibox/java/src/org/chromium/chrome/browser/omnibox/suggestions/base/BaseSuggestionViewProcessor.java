@@ -224,10 +224,12 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      *
      * @param suggestion Selected suggestion.
      * @param position Position of the suggesiton on the list.
+     * @param eventTime Uptime of the touch down event in milliseconds.
      */
-    protected void onSuggestionTouchDownEvent(AutocompleteMatch suggestion, int position) {
+    protected void onSuggestionTouchDownEvent(
+            AutocompleteMatch suggestion, int position, long eventTime) {
         try (TimingMetric metric = OmniboxMetrics.recordTouchDownProcessTime()) {
-            mSuggestionHost.onSuggestionTouchDown(suggestion, position);
+            mSuggestionHost.onSuggestionTouchDown(suggestion, position, eventTime);
         }
     }
 
@@ -260,7 +262,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                 && suggestion.isSearchSuggestion()) {
             model.set(
                     BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT,
-                    () -> onSuggestionTouchDownEvent(suggestion, position));
+                    (eventTime) -> onSuggestionTouchDownEvent(suggestion, position, eventTime));
         }
 
         // Action chips should not be provided in the hub.
