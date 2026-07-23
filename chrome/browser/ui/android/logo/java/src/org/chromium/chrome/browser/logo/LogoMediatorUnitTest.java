@@ -359,6 +359,13 @@ public class LogoMediatorUnitTest {
         mLogoModel.set(LogoProperties.VISIBILITY, true);
         assertTrue(logoMediator.isDefaultGoogleLogoShown());
 
+        Logo logo = mock(Logo.class);
+        mLogoModel.set(LogoProperties.LOGO, logo);
+        Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
+
+        mLogoModel.set(LogoProperties.LOGO, null);
+        assertTrue(logoMediator.isDefaultGoogleLogoShown());
+
         logoMediator.setShouldShowLogoForTesting(false);
         Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
 
@@ -374,13 +381,24 @@ public class LogoMediatorUnitTest {
     }
 
     @Test
-    public void testUpdateDefaultGoogleLogo() {
+    public void testUpdateDefaultGoogleLogo_NoDoodle() {
         LogoMediator logoMediator = createMediator();
         Drawable drawable = mock(Drawable.class);
         logoMediator.updateDefaultGoogleLogo(drawable);
 
         assertEquals(drawable, logoMediator.getDefaultGoogleLogoDrawable());
         assertTrue(mLogoModel.get(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO));
+    }
+
+    @Test
+    public void testUpdateDefaultGoogleLogo_WithDoodle() {
+        LogoMediator logoMediator = createMediator();
+        Logo logo = mock(Logo.class);
+        mLogoModel.set(LogoProperties.LOGO, logo);
+
+        Drawable drawable = mock(Drawable.class);
+        Assert.assertThrows(
+                AssertionError.class, () -> logoMediator.updateDefaultGoogleLogo(drawable));
     }
 
     @Test

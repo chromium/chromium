@@ -249,7 +249,8 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     boolean isDefaultGoogleLogoShown() {
         return mIsDefaultSearchEngineGoogle
                 && mShouldShowLogo
-                && mLogoModel.get(LogoProperties.VISIBILITY);
+                && mLogoModel.get(LogoProperties.VISIBILITY)
+                && mLogoModel.get(LogoProperties.LOGO) == null;
     }
 
     /**
@@ -373,8 +374,9 @@ public class LogoMediator implements TemplateUrlServiceObserver {
      * @param drawable The updated drawable for default Google logo.
      */
     void updateDefaultGoogleLogo(Drawable drawable) {
-        mDefaultGoogleLogoDrawable = drawable;
+        assert mLogoModel.get(LogoProperties.LOGO) == null;
 
+        mDefaultGoogleLogoDrawable = drawable;
         mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE, mDefaultGoogleLogoDrawable);
         mLogoModel.set(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO, true);
     }
