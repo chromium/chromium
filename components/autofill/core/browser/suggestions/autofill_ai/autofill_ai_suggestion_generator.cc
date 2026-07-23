@@ -952,7 +952,7 @@ std::optional<Suggestion> CreateDomainFallbackSuggestion(
     return std::nullopt;
   }
 
-  std::vector<EntityInstance> fallback_entities;
+  std::vector<const EntityInstance*> fallback_entities;
   for (const EntityInstance& entity : all_entities) {
     if (entity.type() != entity_type || IsAllowedForPageUrl(entity, page_url)) {
       continue;
@@ -978,22 +978,29 @@ std::optional<Suggestion> CreateDomainFallbackSuggestion(
         std::string(client.GetAppLocale()),
         trigger_field_with_type->field->format_string());
     if (!trigger_value.empty()) {
-      fallback_entities.push_back(entity);
+      fallback_entities.push_back(&entity);
     }
   }
+
+  fallback_entities = DedupedEntitiesForSuggestions(
+      OrderedEntitiesForSuggestion(std::move(fallback_entities)), assignment,
+      std::string(client.GetAppLocale()));
 
   if (fallback_entities.empty()) {
     return std::nullopt;
   }
 
   std::vector<Suggestion> children = CreateSuggestionsForEntities(
-      form, trigger_field, fallback_entities, all_entities, assignment, client);
+      form, trigger_field,
+      base::ToVector(fallback_entities,
+                     [](const EntityInstance* entity) { return *entity; }),
+      all_entities, assignment, client);
   if (children.empty()) {
     return std::nullopt;
   }
 
-  for (const EntityInstance& entity : fallback_entities) {
-    ui_sections->insert(GetAutofillAiUiSection(entity.type()));
+  for (const EntityInstance* entity : fallback_entities) {
+    ui_sections->insert(GetAutofillAiUiSection(entity->type()));
   }
 
   return CreateParentFallbackSuggestion(entity_type, has_primary_suggestions,
