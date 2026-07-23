@@ -30,6 +30,10 @@ namespace glic::test {
 // that changes in Chrome aren't breaking Glic (though this relies on manual
 // intervention anytime Glic changes and so is not a replacement for full
 // end-to-end tests).
+// =============================================================================
+// DEPRECATED: Do not use this test fixture for new code.
+// Please use `chrome/browser/glic/test_support/glic_browser_test.h` instead.
+// =============================================================================
 class GlicActorUiTest : public test::InteractiveGlicTest {
  public:
   using InteractiveTestApi::MultiStep;

@@ -86,6 +86,10 @@ enum class TargetWebContents {
 
 std::ostream& operator<<(std::ostream& os, const TargetWebContents& value);
 
+// =============================================================================
+// DEPRECATED: Do not use this test fixture for new code.
+// Please use `chrome/browser/glic/test_support/glic_browser_test.h` instead.
+// =============================================================================
 // Mixin class that adds a mock glic to the current browser.
 // If all you need is the combination of this + interactive browser test, use
 // `InteractiveGlicTest` (defined below) instead.

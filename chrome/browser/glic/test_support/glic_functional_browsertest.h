@@ -24,6 +24,10 @@ MATCHER_P(ErrorHasSubstr, expected_substring, "") {
 base::expected<base::Value, std::string> ToExpected(
     content::EvalJsResult result);
 
+// =============================================================================
+// DEPRECATED: Do not use this test fixture for new code.
+// Please use `chrome/browser/glic/test_support/glic_browser_test.h` instead.
+// =============================================================================
 class GlicFunctionalBrowserTestBase : public InteractiveGlicTest {
  public:
   GlicFunctionalBrowserTestBase();

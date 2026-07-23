@@ -17,6 +17,10 @@
 
 namespace glic {
 
+// =============================================================================
+// DEPRECATED: Do not use this test fixture for new code.
+// Please use `chrome/browser/glic/test_support/glic_browser_test.h` instead.
+// =============================================================================
 // Like InteractiveGlicTest, but expected to be used in a non-interactive
 // browser test. Non-interactive browser tests can be run in parallel, and so
 // are more efficient to run, but can be flaky if tests are sensitive to focus

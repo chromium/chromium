@@ -113,6 +113,10 @@ class WebUIStateListener : public Host::Observer {
   std::deque<mojom::WebUiState> states_;
 };
 
+// =============================================================================
+// DEPRECATED: Do not use this test fixture for new code.
+// Please use `chrome/browser/glic/test_support/glic_browser_test.h` instead.
+// =============================================================================
 template <typename T>
   requires std::is_base_of<
       test::InteractiveGlicTestMixin<InteractiveBrowserTest>,
