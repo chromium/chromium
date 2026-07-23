@@ -430,9 +430,7 @@ UIButton* CreateOverflowMenuButton(NSInteger cell_index) {
       [ManualFillUtil expandedManualFillOverflowMenuID:cell_index];
 
   UIImage* menu_image = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
-                                 kOverflowMenuButtonSize),
-      @[
+      SymbolWithPointSize(SymbolEllipsisCircleFill, kOverflowMenuButtonSize), @[
         [UIColor colorNamed:kBlue600Color], [UIColor tertiarySystemFillColor]
       ]);
   [menu_button setImage:menu_image forState:UIControlStateNormal];

@@ -818,12 +818,11 @@ CGFloat GPayIconTopAnchorOffset() {
   UIImage* icon;
   // `kGooglePaySymbol` only exists in official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  NSString* symbol = base::FeatureList::IsEnabled(
-                         autofill::features::kAutofillEnableGradientGoogleLogos)
-                         ? kGooglePayV2Symbol
-                         : kGooglePaySymbol;
-  icon =
-      MakeSymbolMulticolor(CustomSymbolWithPointSize(symbol, kGPayIconWidth));
+  Symbol symbol = base::FeatureList::IsEnabled(
+                      autofill::features::kAutofillEnableGradientGoogleLogos)
+                      ? SymbolGooglePayV2
+                      : SymbolGooglePay;
+  icon = MakeSymbolMulticolor(SymbolWithPointSize(symbol, kGPayIconWidth));
 #else
   icon = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 #endif

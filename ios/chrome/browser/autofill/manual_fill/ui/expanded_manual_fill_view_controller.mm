@@ -426,11 +426,11 @@ CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
 // Creates and configures the Chrome logo.
 - (UIImageView*)createChromeLogo {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  UIImage* image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
-      kMulticolorChromeballSymbol, GetChromeLogoSize()));
+  UIImage* image = MakeSymbolMulticolor(
+      SymbolWithPointSize(SymbolMulticolorChromeball, GetChromeLogoSize()));
 #else
   UIImage* image =
-      CustomSymbolWithPointSize(kChromeProductSymbol, GetChromeLogoSize());
+      SymbolWithPointSize(SymbolChromeProduct, GetChromeLogoSize());
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImageView* chromeLogo = [[UIImageView alloc] initWithImage:image];
   chromeLogo.translatesAutoresizingMaskIntoConstraints = NO;
@@ -463,8 +463,7 @@ CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
   UIImageSymbolConfiguration* symbolConfiguration =
       GetCloseButtonSymbolConfiguration();
   UIImage* buttonImage = SymbolWithPalette(
-      DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
-                                     symbolConfiguration),
+      SymbolWithConfiguration(SymbolXMarkCircleFill, symbolConfiguration),
       @[ GetCloseButtonForegroundColor(), [UIColor tertiarySystemFillColor] ]);
   _closeButtonTrailingOffset = GetCloseButtonTrailingOffset(buttonImage.size);
   [closeButton setImage:buttonImage forState:UIControlStateNormal];
@@ -492,17 +491,17 @@ CGFloat GetTableViewCellHorizontalInset(UITableView* tableView) {
                            scale:UIImageSymbolScaleMedium];
 
   UIImage* passwordIcon =
-      CustomSymbolWithConfiguration(kPasswordSymbol, symbolConfiguration);
+      SymbolWithConfiguration(SymbolPassword, symbolConfiguration);
   passwordIcon.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_EXPANDED_MANUAL_FILL_PASSWORD_TAB_ACCESSIBILITY_LABEL);
 
   UIImage* cardIcon =
-      DefaultSymbolWithConfiguration(kCreditCardSymbol, symbolConfiguration);
+      SymbolWithConfiguration(SymbolCreditCard, symbolConfiguration);
   cardIcon.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_EXPANDED_MANUAL_FILL_PAYMENT_TAB_ACCESSIBILITY_LABEL);
 
   UIImage* addressIcon =
-      CustomSymbolWithConfiguration(kLocationSymbol, symbolConfiguration);
+      SymbolWithConfiguration(SymbolLocation, symbolConfiguration);
   addressIcon.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_EXPANDED_MANUAL_FILL_ADDRESS_TAB_ACCESSIBILITY_LABEL);
 
