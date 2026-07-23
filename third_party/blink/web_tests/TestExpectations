@@ -2058,6 +2058,10 @@ crbug.com/1024156 external/wpt/css/css-pseudo/active-selection-027.html [ Failur
 
 crbug.com/354751900 external/wpt/css/css-values/viewport-units-scrollbars-auto-vhw-001.html [ Failure ]
 
+# Fails because expected value in some cases is based on randomized values,
+# and failure output will rely on those randomized values.
+crbug.com/537461414 external/wpt/css/css-values/random-item-computed.html [ Failure ]
+
 crbug.com/27659 external/wpt/css/css-ruby/block-ruby-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/empty-ruby-base-container.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/improperly-contained-annotation-001.html [ Failure ]
@@ -2826,7 +2830,6 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/shared-dependency-repeated-import.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/537793901 external/wpt/css/css-values/random-item-computed.html [ Failure ]
 crbug.com/537776442 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-bfc.html [ Failure ]
 crbug.com/536956106 [ Win ] external/wpt/css/css-inline/text-box-trim/text-box-on-non-root-inline-box.html [ Pass Timeout ]
 crbug.com/536956106 external/wpt/css/css-inline/text-box-trim/text-box-trim-end-001.html?class=ideographic [ Failure ]
