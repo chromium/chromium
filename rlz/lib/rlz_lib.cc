@@ -198,6 +198,8 @@ bool GetProductEventsAsCgiHelper(rlz_lib::Product product, char* cgi,
   if (!store->ReadProductEvents(product, &events))
     return false;
 
+  std::ranges::sort(events);
+
   // Append the events to the buffer.
   size_t num_values = 0;
 

@@ -194,7 +194,7 @@ TEST_F(RlzLibTest, RecordProductEvent) {
       rlz_lib::CHROME, rlz_lib::CHROME_OMNIBOX,
       rlz_lib::ENTERPRISE_ENROLLED_FIRST_SEARCH));
   EXPECT_TRUE(rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi_50, 50));
-  EXPECT_STREQ("events=C1X,C1Y,C1Z,C1W", cgi_50);
+  EXPECT_STREQ("events=C1W,C1X,C1Y,C1Z", cgi_50);
 }
 
 TEST_F(RlzLibTest, ClearProductEvent) {
