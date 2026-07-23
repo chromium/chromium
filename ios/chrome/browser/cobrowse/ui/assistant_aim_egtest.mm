@@ -148,6 +148,9 @@ id<GREYMatcher> CloseButton() {
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   config.features_disabled.push_back(kAssistantAimMinimizedState);
   config.features_disabled.push_back(kComposeboxServerSideState);
+  // TODO(crbug.com/536079613): Re-enable kAppBarHideInFullscreen once these
+  // tests are updated to support it.
+  config.features_disabled.push_back(kAppBarHideInFullscreen);
 
   // Enable omnibox debugging flags.
   config.additional_args.push_back("-EnableOmniboxDebugging");

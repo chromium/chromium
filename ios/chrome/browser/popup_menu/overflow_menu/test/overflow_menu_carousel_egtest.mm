@@ -227,6 +227,12 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 }
 
 - (void)testOverflowMenuCustomizationIPH {
+  if ([ChromeEarlGrey isOverflowMenuNTPRefactorEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Customization IPH is disabled on NTP when OverflowMenuNTPRefactor is "
+        @"enabled.");
+  }
+
   AppLaunchConfiguration config;
   config.iph_feature_enabled =
       feature_engagement::kIPHiOSOverflowMenuCustomizationFeature.name;

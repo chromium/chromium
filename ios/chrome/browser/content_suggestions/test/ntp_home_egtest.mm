@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
+#import "ios/chrome/browser/popup_menu/overflow_menu/public/features.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_constants.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -241,6 +242,14 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   // TODO(crbug.com/522830813): Test is failing.
   if ([self isRunningTest:@selector(DISABLED_testMinimumHeight)]) {
     config.features_enabled.push_back(kChromeNextIa);
+  }
+
+  if ([self isRunningTest:@selector(
+                              testToggleModuleVisiblityInCustomizationMenu)] ||
+      [self isRunningTest:@selector(testNavigateInCustomizationMenu)]) {
+    // TODO(crbug.com/537272655): Re-enable once the customization menu
+    // coordinator is fully testable in the minimal UI test environment.
+    config.features_enabled.push_back(kOverflowMenuHomeCustomizationEntrypoint);
   }
 
   return config;

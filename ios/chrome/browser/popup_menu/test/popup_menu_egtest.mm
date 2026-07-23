@@ -314,9 +314,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // Tests that the 2nd step of history on overflow menu IPH is not displayed, if
 // the 1st step IPH is dismissed by the user by tapping outside.
 - (void)testOverflowMenuIPHForHistoryNotShow2ndStep {
-  // Enable the IPH flag to ensure the IPH triggers
-  AppLaunchConfiguration config = [self appConfigurationForHistoryIPH];
-
   // The IPH appears immediately on startup, so don't open a new tab when the
   // app starts up.
   [[self class] testForStartup];
@@ -325,6 +322,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   {
     ScopedSynchronizationDisabler syncDisabler;
 
+    AppLaunchConfiguration config = [self prepareAppForHistoryIPH];
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:config];
 

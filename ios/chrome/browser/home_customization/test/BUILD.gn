@@ -17,6 +17,8 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/home_customization/ui:constants",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/popup_menu/overflow_menu/public:features",
+    "//ios/chrome/browser/popup_menu/public",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",

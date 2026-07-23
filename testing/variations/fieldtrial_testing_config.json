@@ -5061,8 +5061,12 @@
                         "chrome_next_ia_share_icon_visible": "false"
                     },
                     "enable_features": [
+                        "AppBarHideInFullscreen",
+                        "AppBarHideLabels",
                         "ChromeNextIa",
                         "FullscreenRefactoring",
+                        "OverflowMenuHomeCustomizationEntrypoint",
+                        "OverflowMenuNTPRefactor",
                         "UseSceneViewController"
                     ]
                 }
