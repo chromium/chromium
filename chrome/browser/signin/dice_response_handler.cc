@@ -259,29 +259,7 @@ DiceResponseHandler::DiceSigninSession::DiceSigninSession(
   CHECK(delegate_);
 }
 
-DiceResponseHandler::DiceSigninSession::~DiceSigninSession() {
-  NotifySessionComplete();
-}
-
-void DiceResponseHandler::DiceSigninSession::NotifySessionComplete() {
-  if (session_completed_notified_ || !delegate_) {
-    return;
-  }
-  session_completed_notified_ = true;
-
-  std::vector<CoreAccountId> secondary_accounts;
-  const auto* initiator = signin_info_.GetInitiator();
-  if (initiator) {
-    for (const auto& account : signin_info_.accounts()) {
-      if (account.account_info.gaia_id != initiator->account_info.gaia_id) {
-        secondary_accounts.push_back(
-            handler_->identity_manager_->PickAccountIdForAccount(
-                account.account_info.gaia_id, account.account_info.email));
-      }
-    }
-  }
-  delegate_->OnDiceSigninSessionComplete(std::move(secondary_accounts));
-}
+DiceResponseHandler::DiceSigninSession::~DiceSigninSession() = default;
 
 DiceResponseHandler::DiceSigninSession::FetchMode
 DiceResponseHandler::DiceSigninSession::GetFetchMode() const {
@@ -318,7 +296,6 @@ void DiceResponseHandler::DiceSigninSession::StartTokenFetches() {
   }
 
   if (token_fetchers_.empty()) {
-    NotifySessionComplete();
     handler_->DeleteSession(this);
   }
 }
@@ -363,7 +340,16 @@ void DiceResponseHandler::DiceSigninSession::DeleteFetcher(
   CHECK_EQ(delete_count, 1U);
 
   if (token_fetchers_.empty()) {
-    NotifySessionComplete();
+    std::vector<CoreAccountId> secondary_accounts;
+    const auto* initiator = signin_info_.GetInitiator();
+    for (const auto& account : signin_info_.accounts()) {
+      if (account.account_info.gaia_id != initiator->account_info.gaia_id) {
+        secondary_accounts.push_back(
+            handler_->identity_manager_->PickAccountIdForAccount(
+                account.account_info.gaia_id, account.account_info.email));
+      }
+    }
+    delegate_->OnDiceSigninSessionComplete(std::move(secondary_accounts));
     handler_->DeleteSession(this);
   }
 }
@@ -474,7 +460,6 @@ bool DiceResponseHandler::DiceSigninSession::CancelFetchForAccount(
     // concurrent sign-ins are rare enough that cancelling the whole session is
     // preferred over bypassing interception.
     if (token_fetchers_.empty()) {
-      NotifySessionComplete();
       handler_->DeleteSession(this);
     }
     return true;

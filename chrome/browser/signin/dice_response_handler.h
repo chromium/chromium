@@ -251,13 +251,11 @@ class DiceResponseHandler : public KeyedService {
 
     enum class FetchMode { kAll, kInitiatorFirst };
     FetchMode GetFetchMode() const;
-    void NotifySessionComplete();
 
     const raw_ptr<DiceResponseHandler> handler_;
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
     signin::DiceResponseParams::SigninInfo signin_info_;
     std::vector<std::unique_ptr<DiceTokenFetcher>> token_fetchers_;
-    bool session_completed_notified_ = false;
   };
 
   // Deletes the session.

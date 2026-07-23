@@ -1248,7 +1248,7 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
   // Check HandleTokenExchangeSuccess parameters.
   EXPECT_EQ(token_exchange_account_id_, account_id_2);
   EXPECT_TRUE(token_exchange_is_new_account_);
-  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kFalse);
+  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kTrue);
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   // Check that the AccountInfo::is_under_advanced_protection is set.
@@ -1616,7 +1616,7 @@ TEST_F(DiceResponseHandlerTest, MultipleAccounts_NoAuthCode_Mixed) {
 
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id1));
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id2));
-  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kFalse);
+  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kTrue);
 
   // Reconcilor should still be blocked because of Account 2!
   EXPECT_EQ(1, reconcilor_blocked_count_);
@@ -1884,7 +1884,7 @@ TEST_F(DiceResponseHandlerTest,
   // Check HandleTokenExchangeSuccess parameters.
   EXPECT_EQ(token_exchange_account_id_, account_id);
   EXPECT_TRUE(token_exchange_is_new_account_);
-  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kFalse);
+  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kTrue);
   // Check that delegate was not called to enable sync.
   EXPECT_TRUE(complete_profile_signin_account_info_.IsEmpty());
 
@@ -1932,7 +1932,7 @@ TEST_F(DiceResponseHandlerTest,
   // Check HandleTokenExchangeSuccess parameters.
   EXPECT_EQ(token_exchange_account_id_, account_id);
   EXPECT_TRUE(token_exchange_is_new_account_);
-  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kFalse);
+  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kTrue);
   // Check that delegate was called to enable sync.
   EXPECT_EQ(gaia_id, complete_profile_signin_account_info_.gaia);
   EXPECT_EQ(email, complete_profile_signin_account_info_.email);
@@ -2319,54 +2319,6 @@ TEST_F(DiceResponseHandlerTest, InvalidPrimaryConnectedInUnsignedProfile) {
 
   EXPECT_EQ(
       0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
-}
-
-TEST_F(DiceResponseHandlerTest, SessionCompleteFiredOnCancellation) {
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  dice_response_handler_->ProcessDiceHeader(
-      std::move(dice_params),
-      std::make_unique<TestProcessDiceHeaderDelegate>(this));
-
-  EXPECT_EQ(
-      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
-  EXPECT_FALSE(session_complete_called_);
-
-  // Clear the consumer from signin_client_ to prevent a dangling pointer
-  // warning when the token fetcher is destroyed during cancellation.
-  signin_client_.GetAndClearConsumer();
-
-  // A second concurrent sign-in request for the same account cancels the first
-  // session's fetchers. This must reliably trigger OnDiceSigninSessionComplete
-  // on the first session's delegate.
-  dice_response_handler_->ProcessDiceHeader(
-      MakeDiceParams(DiceAction::SIGNIN),
-      std::make_unique<TestProcessDiceHeaderDelegate>(this));
-  EXPECT_TRUE(session_complete_called_);
-
-  // Clear the new consumer created by the second sign-in request before test
-  // fixture teardown deletes dice_response_handler_.
-  signin_client_.GetAndClearConsumer();
-}
-
-TEST_F(DiceResponseHandlerTest, SessionCompleteFiredOnHandlerDestruction) {
-  DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  dice_response_handler_->ProcessDiceHeader(
-      std::move(dice_params),
-      std::make_unique<TestProcessDiceHeaderDelegate>(this));
-
-  EXPECT_EQ(
-      1u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
-  EXPECT_FALSE(session_complete_called_);
-
-  // Clear the consumer from signin_client_ to prevent a dangling pointer
-  // warning when the token fetcher is destroyed during shutdown.
-  signin_client_.GetAndClearConsumer();
-
-  // Destroying the handler (e.g. during profile shutdown or teardown) while
-  // token fetches are still pending must guaranteed fire
-  // OnDiceSigninSessionComplete.
-  dice_response_handler_.reset();
-  EXPECT_TRUE(session_complete_called_);
 }
 
 }  // namespace
