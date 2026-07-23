@@ -78,13 +78,13 @@ export class TextAcceleratorElement extends PolymerElement {
     };
   }
 
-  parts: TextAcceleratorPart[];
-  isOnlyText: boolean;
-  narrow: boolean;
-  displayLockIcon: boolean;
-  highlighted: boolean;
-  action: number;
-  source: AcceleratorSource;
+  declare parts: TextAcceleratorPart[];
+  declare isOnlyText: boolean;
+  declare narrow: boolean;
+  declare displayLockIcon: boolean;
+  declare highlighted: boolean;
+  declare action: number;
+  declare source: AcceleratorSource;
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 

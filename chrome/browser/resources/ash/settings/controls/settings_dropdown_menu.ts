@@ -99,11 +99,11 @@ export class SettingsDropdownMenuElement extends
     ];
   }
 
-  menuOptions: DropdownMenuOptionList;
-  disabled: boolean;
-  dictionaryPrefPath: string|null;
-  notFoundValue: string;
-  label: string;
+  declare menuOptions: DropdownMenuOptionList;
+  declare disabled: boolean;
+  declare dictionaryPrefPath: string|null;
+  declare notFoundValue: string;
+  declare label: string;
 
   override focus(): void {
     this.$.dropdownMenu.focus();

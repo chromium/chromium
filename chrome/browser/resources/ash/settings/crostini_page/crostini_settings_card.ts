@@ -83,10 +83,10 @@ export class CrostiniSettingsCardElement extends
   ]);
 
   private browserProxy_: CrostiniBrowserProxy;
-  private disableCrostiniInstall_: boolean;
-  private isCrostiniAllowed_: boolean;
-  private isCrostiniSupported_: boolean;
-  private readonly showBruschetta_: boolean;
+  declare private disableCrostiniInstall_: boolean;
+  declare private isCrostiniAllowed_: boolean;
+  declare private isCrostiniSupported_: boolean;
+  declare private readonly showBruschetta_: boolean;
 
   constructor() {
     super();

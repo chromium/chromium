@@ -52,8 +52,8 @@ export class ShortcutsPageElement extends PolymerElement implements
     };
   }
 
-  initialData: {category: AcceleratorCategory}|null;
-  subcategories: AcceleratorSubcategory[];
+  declare initialData: {category: AcceleratorCategory}|null;
+  declare subcategories: AcceleratorSubcategory[];
   private scrollTimeout: number = kDefaultScrollTimeout;
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();

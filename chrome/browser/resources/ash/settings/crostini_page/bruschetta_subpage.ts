@@ -59,7 +59,7 @@ export class BruschettaSubpageElement extends BruschettaSubpageElementBase {
   ]);
 
   private browserProxy_: CrostiniBrowserProxy;
-  private showBruschettaMicPermissionDialog_: boolean;
+  declare private showBruschettaMicPermissionDialog_: boolean;
 
   constructor() {
     super();

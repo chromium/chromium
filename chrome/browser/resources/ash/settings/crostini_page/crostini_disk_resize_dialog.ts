@@ -118,14 +118,14 @@ export class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
   }
 
   private browserProxy_: CrostiniBrowserProxy;
-  private minDiskSize_: string;
-  private maxDiskSize_: string;
-  private diskSizeTicks_: SliderTick[];
-  private defaultDiskSizeTick_: number;
-  private maxDiskSizeTick_: number;
-  private isLowSpaceAvailable_: boolean;
-  private displayState_: DisplayState;
-  private resizeState_: ResizeState;
+  declare private minDiskSize_: string;
+  declare private maxDiskSize_: string;
+  declare private diskSizeTicks_: SliderTick[];
+  declare private defaultDiskSizeTick_: number;
+  declare private maxDiskSizeTick_: number;
+  declare private isLowSpaceAvailable_: boolean;
+  declare private displayState_: DisplayState;
+  declare private resizeState_: ResizeState;
 
   constructor() {
     super();

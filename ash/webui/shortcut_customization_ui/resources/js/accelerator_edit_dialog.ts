@@ -111,14 +111,14 @@ export class AcceleratorEditDialogElement extends
     };
   }
 
-  description: string;
-  acceleratorInfos: AcceleratorInfo[];
-  action: number;
-  source: AcceleratorSource;
-  protected isAcceleratorCapturing: boolean;
-  protected shouldHideRestoreButton: boolean;
-  protected observableDefaultAcceleratorsWithConflict: string[];
-  private pendingNewAcceleratorState: number;
+  declare description: string;
+  declare acceleratorInfos: AcceleratorInfo[];
+  declare action: number;
+  declare source: AcceleratorSource;
+  declare protected isAcceleratorCapturing: boolean;
+  declare protected shouldHideRestoreButton: boolean;
+  declare protected observableDefaultAcceleratorsWithConflict: string[];
+  declare private pendingNewAcceleratorState: number;
   private shouldSnapshotConflictDefaults: boolean;
   private defaultAcceleratorsWithConflict: Set<string> = new Set<string>();
   private eventTracker: EventTracker = new EventTracker();

@@ -193,20 +193,20 @@ export class SettingsSliderV2Element extends SettingsSliderV2ElementBase {
     ];
   }
 
-  override ariaDescription: string;
-  override ariaLabel: string;
-  ticks: SliderTick[]|number[];
-  scale: number;
-  min: number;
-  max: number;
-  hideLabel: boolean;
-  minLabel: string;
-  maxLabel: string;
-  hideMarkers: boolean;
-  updateValueInstantly: boolean;
+  declare ariaDescription: string;
+  declare ariaLabel: string;
+  declare ticks: SliderTick[]|number[];
+  declare scale: number;
+  declare min: number;
+  declare max: number;
+  declare hideLabel: boolean;
+  declare minLabel: string;
+  declare maxLabel: string;
+  declare hideMarkers: boolean;
+  declare updateValueInstantly: boolean;
   override validPrefTypes = [chrome.settingsPrivate.PrefType.NUMBER];
-  value: number;
-  private loaded_: boolean;
+  declare value: number;
+  declare private loaded_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

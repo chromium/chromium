@@ -123,15 +123,15 @@ export class ShortcutCustomizationAppElement extends
     };
   }
 
-  protected restoreAllButtonHidden: boolean;
-  protected showRestoreAllDialog: boolean;
-  protected dialogShortcutTitle: string;
-  protected dialogAccelerators: AcceleratorInfo[];
-  protected dialogAction: number;
-  protected dialogSource: AcceleratorSource;
-  protected showEditDialog: boolean;
+  declare protected restoreAllButtonHidden: boolean;
+  declare protected showRestoreAllDialog: boolean;
+  declare protected dialogShortcutTitle: string;
+  declare protected dialogAccelerators: AcceleratorInfo[];
+  declare protected dialogAction: number;
+  declare protected dialogSource: AcceleratorSource;
+  declare protected showEditDialog: boolean;
   protected keyboardSettingsLink: string = keyboardSettingsLink;
-  protected isCustomizationAllowedByPolicy: boolean;
+  declare protected isCustomizationAllowedByPolicy: boolean;
   protected acceleratorUpdateInProgress: boolean = false;
   private shortcutProvider: ShortcutProviderInterface = getShortcutProvider();
   private acceleratorlookupManager: AcceleratorLookupManager =

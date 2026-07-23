@@ -97,11 +97,11 @@ export class VcBackgroundBreadcrumbElement extends
     };
   }
 
-  seaPenTemplateId: string;
-  path: string;
-  private breadcrumbs_: string[];
-  private seaPenTemplates_: SeaPenTemplate[]|null;
-  private selectedBreadcrumb_: HTMLElement;
+  declare seaPenTemplateId: string;
+  declare path: string;
+  declare private breadcrumbs_: string[];
+  declare private seaPenTemplates_: SeaPenTemplate[]|null;
+  declare private selectedBreadcrumb_: HTMLElement;
 
   override ready() {
     super.ready();

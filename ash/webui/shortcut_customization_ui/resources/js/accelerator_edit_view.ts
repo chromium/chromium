@@ -129,16 +129,16 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
     };
   }
 
-  acceleratorInfo: StandardAcceleratorInfo;
-  isEditView: boolean;
-  viewState: number;
-  hasError: boolean;
-  hasWarning: boolean;
-  recordedError: boolean;
-  action: number;
-  source: AcceleratorSource;
+  declare acceleratorInfo: StandardAcceleratorInfo;
+  declare isEditView: boolean;
+  declare viewState: number;
+  declare hasError: boolean;
+  declare hasWarning: boolean;
+  declare recordedError: boolean;
+  declare action: number;
+  declare source: AcceleratorSource;
   restoreDefaultHasError: boolean;
-  protected statusMessage: string;
+  declare protected statusMessage: string;
   protected cancelButtonClicked = false;
   private shortcutProvider: ShortcutProviderInterface;
   private lookupManager: AcceleratorLookupManager;

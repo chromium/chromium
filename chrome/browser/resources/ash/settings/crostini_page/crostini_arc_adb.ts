@@ -99,20 +99,20 @@ export class SettingsCrostiniArcAdbElement extends
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
     Setting.kCrostiniAdbDebugging,
   ]);
 
-  private arcAdbEnabled_: boolean;
-  private arcAdbNeedPowerwash_: boolean;
+  declare private arcAdbEnabled_: boolean;
+  declare private arcAdbNeedPowerwash_: boolean;
   private browserProxy_: CrostiniBrowserProxy;
-  private canChangeAdbSideloading_: boolean;
-  private isEnterpriseManaged_: boolean;
-  private isOwnerProfile_: boolean;
-  private showConfirmationDialog_: boolean;
+  declare private canChangeAdbSideloading_: boolean;
+  declare private isEnterpriseManaged_: boolean;
+  declare private isOwnerProfile_: boolean;
+  declare private showConfirmationDialog_: boolean;
 
   constructor() {
     super();

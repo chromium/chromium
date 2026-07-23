@@ -156,21 +156,21 @@ export class SettingsCrostiniSubpageElement extends
   ]);
 
   private browserProxy_: CrostiniBrowserProxy;
-  private canDiskResize_: boolean;
-  private diskResizeButtonAriaLabel_: string;
-  private diskResizeButtonLabel_: string;
+  declare private canDiskResize_: boolean;
+  declare private diskResizeButtonAriaLabel_: string;
+  declare private diskResizeButtonLabel_: string;
   private diskResizeConfirmationState_: ConfirmationState;
-  private diskSizeLabel_: string;
-  private installerShowing_: boolean;
-  private readonly isArcAdbSideloadingSupported_: boolean;
-  private isAndroidEnabled_: boolean;
+  declare private diskSizeLabel_: string;
+  declare private installerShowing_: boolean;
+  declare private readonly isArcAdbSideloadingSupported_: boolean;
+  declare private isAndroidEnabled_: boolean;
   private isDiskUserChosenSize_: boolean;
-  private showArcAdbSideloading_: boolean;
-  private readonly showCrostiniExportImport_: boolean;
-  private showCrostiniMicPermissionDialog_: boolean;
-  private readonly showCrostiniPortForwarding_: boolean;
-  private showDiskResizeConfirmationDialog_: boolean;
-  private showDiskResizeDialog_: boolean;
+  declare private showArcAdbSideloading_: boolean;
+  declare private readonly showCrostiniExportImport_: boolean;
+  declare private showCrostiniMicPermissionDialog_: boolean;
+  declare private readonly showCrostiniPortForwarding_: boolean;
+  declare private showDiskResizeConfirmationDialog_: boolean;
+  declare private showDiskResizeDialog_: boolean;
 
   constructor() {
     super();

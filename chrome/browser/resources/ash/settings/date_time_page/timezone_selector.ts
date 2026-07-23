@@ -81,9 +81,9 @@ export class TimezoneSelectorElement extends TimezoneSelectorElementBase {
     ];
   }
 
-  activeTimeZoneDisplayName: string;
-  shouldDisableTimeZoneGeoSelector: boolean;
-  private timeZoneList_: DropdownMenuOptionList;
+  declare activeTimeZoneDisplayName: string;
+  declare shouldDisableTimeZoneGeoSelector: boolean;
+  declare private timeZoneList_: DropdownMenuOptionList;
   private getTimeZonesRequestSent_: boolean;
 
   /**

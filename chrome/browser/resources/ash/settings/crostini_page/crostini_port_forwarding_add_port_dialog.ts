@@ -105,15 +105,15 @@ class CrostiniPortForwardingAddPortDialog extends PolymerElement {
     ];
   }
 
-  allContainers: ContainerInfo[];
-  allPorts: CrostiniPortSetting[];
+  declare allContainers: ContainerInfo[];
+  declare allPorts: CrostiniPortSetting[];
   private browserProxy_: CrostiniBrowserProxy;
-  private containerId_: GuestId;
-  private defaultVmName_: string;
-  private inputPortLabel_: string;
-  private inputPortNumber_: number|null;
-  private inputProtocolIndex_: number;
-  private portState_: string;
+  declare private containerId_: GuestId;
+  declare private defaultVmName_: string;
+  declare private inputPortLabel_: string;
+  declare private inputPortNumber_: number|null;
+  declare private inputProtocolIndex_: number;
+  declare private portState_: string;
 
   constructor() {
     super();

@@ -47,9 +47,9 @@ export class VcBackgroundApp extends VcBackgroundAppBase {
       },
     };
   }
-  private path_: string;
-  private query_: string;
-  private queryParams_: SeaPenQueryParams;
+  declare private path_: string;
+  declare private query_: string;
+  declare private queryParams_: SeaPenQueryParams;
 
   private onPathChanged_() {
     if (!isManagedSeaPenEnabled()) {

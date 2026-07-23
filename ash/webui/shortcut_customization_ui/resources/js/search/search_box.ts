@@ -107,17 +107,17 @@ export class SearchBoxElement extends SearchBoxElementBase implements
     };
   }
 
-  hasSearchQuery: boolean;
-  searchResults: MojoSearchResult[];
-  shouldShowDropdown: boolean;
-  private lastFocused: HTMLElement|null;
-  private listBlurred: boolean;
+  declare hasSearchQuery: boolean;
+  declare searchResults: MojoSearchResult[];
+  declare shouldShowDropdown: boolean;
+  declare private lastFocused: HTMLElement|null;
+  declare private listBlurred: boolean;
   private resizeObserver: ResizeObserver;
   private searchInputElement: HTMLInputElement;
-  private searchResultsExist: boolean;
-  private selectedItem: MojoSearchResult;
+  declare private searchResultsExist: boolean;
+  declare private selectedItem: MojoSearchResult;
   private shortcutSearchHandler: ShortcutSearchHandlerInterface;
-  private spinnerActive: boolean;
+  declare private spinnerActive: boolean;
 
   constructor() {
     super();

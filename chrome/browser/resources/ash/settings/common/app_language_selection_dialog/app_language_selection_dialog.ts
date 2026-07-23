@@ -65,14 +65,19 @@ export class AppLanguageSelectionDialogElement extends
     };
   }
 
+  constructor() {
+    super();
+    this.filteredLanguages_ = [];
+  }
+
   // Public API: Bidirectional data flow.
   // prefs is provided by PrefsMixin.
 
   // App must be present when this dialog is shown.
-  app: App;
-  entryPoint: AppLanguageSelectionDialogEntryPoint;
+  declare app: App;
+  declare entryPoint: AppLanguageSelectionDialogEntryPoint;
   private suggestedLanguages_: Locale[] = [];
-  private filteredLanguages_: Locale[] = [];
+  declare private filteredLanguages_: Locale[];
   private selectedLanguage_?: Locale;
   private searchQuery_ = '';
 

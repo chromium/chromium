@@ -45,7 +45,7 @@ class SettingsCrostiniImportConfirmationDialogElement extends PolymerElement {
     };
   }
 
-  importContainerId: GuestId;
+  declare importContainerId: GuestId;
   private browserProxy_: CrostiniBrowserProxy;
 
   constructor() {

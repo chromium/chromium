@@ -34,9 +34,9 @@ export class AppLanguageSelectionItemElement extends PolymerElement {
     };
   }
 
-  index: number;
-  item: Locale;
-  selected: boolean;
+  declare index: number;
+  declare item: Locale;
+  declare selected: boolean;
 
   private getDisplayText_(): string {
     let name = this.item.displayName;

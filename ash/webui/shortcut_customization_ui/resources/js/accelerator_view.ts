@@ -160,26 +160,32 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     };
   }
 
-  acceleratorInfo: StandardAcceleratorInfo;
-  viewState: ViewState;
-  private modifiers: string[];
-  statusMessage: string|TrustedHTML;
-  hasError: boolean;
-  recordedError: boolean;
-  description: string;
-  action: number;
-  source: AcceleratorSource;
-  sourceIsLocked: boolean;
-  showEditIcon: boolean;
+  constructor() {
+    super();
+    this.metaKey = MetaKey.kSearch;
+    this.pendingKeyEvent = null;
+  }
+
+  declare acceleratorInfo: StandardAcceleratorInfo;
+  declare viewState: ViewState;
+  declare private modifiers: string[];
+  declare statusMessage: string|TrustedHTML;
+  declare hasError: boolean;
+  declare recordedError: boolean;
+  declare description: string;
+  declare action: number;
+  declare source: AcceleratorSource;
+  declare sourceIsLocked: boolean;
+  declare showEditIcon: boolean;
   subcategoryIsLocked: boolean;
-  isFirstAccelerator: boolean;
-  isDisabled: boolean;
-  metaKey: MetaKey = MetaKey.kSearch;
-  pendingKeyEvent: KeyEvent|null = null;
+  declare isFirstAccelerator: boolean;
+  declare isDisabled: boolean;
+  declare metaKey: MetaKey;
+  declare pendingKeyEvent: KeyEvent|null;
   shortcutInput: ShortcutInputElement|null;
   defaultAccelerators: Accelerator[];
-  hasFunctionKey: boolean;
-  protected isCapturing: boolean;
+  declare hasFunctionKey: boolean;
+  declare protected isCapturing: boolean;
   protected lastAccelerator: Accelerator;
   protected lastResult: AcceleratorConfigResult;
   protected lastPendingKeyEvent: KeyEvent|null = null;

@@ -88,8 +88,8 @@ export class SettingsDropdownRowElement extends SettingsDropdownRowElementBase {
     };
   }
 
-  options: DropdownOptionList;
-  value?: DropdownOption['value'];
+  declare options: DropdownOptionList;
+  declare value?: DropdownOption['value'];
 
   override focus(): void {
     this.$.dropdown.focus();

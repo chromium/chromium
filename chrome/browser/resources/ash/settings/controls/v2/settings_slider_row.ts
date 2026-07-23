@@ -164,18 +164,18 @@ export class SettingsSliderRowElement extends SettingsSliderRowElementBase {
     };
   }
 
-  override ariaDescription: string;
-  override ariaLabel: string;
-  ticks: SliderTick[]|number[];
-  scale: number;
-  min: number;
-  max: number;
-  hideLabel: boolean;
-  minLabel: string;
-  maxLabel: string;
-  hideMarkers: boolean;
-  updateValueInstantly: boolean;
-  value: number;
+  declare ariaDescription: string;
+  declare ariaLabel: string;
+  declare ticks: SliderTick[]|number[];
+  declare scale: number;
+  declare min: number;
+  declare max: number;
+  declare hideLabel: boolean;
+  declare minLabel: string;
+  declare maxLabel: string;
+  declare hideMarkers: boolean;
+  declare updateValueInstantly: boolean;
+  declare value: number;
 
   override focus(): void {
     this.$.slider.focus();

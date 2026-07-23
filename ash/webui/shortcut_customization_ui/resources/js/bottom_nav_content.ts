@@ -39,8 +39,8 @@ export class ShortcutsBottomNavContentElement extends
     };
   }
 
-  restoreAllButtonHidden: boolean;
-  keyboardSettingsLink: string;
+  declare restoreAllButtonHidden: boolean;
+  declare keyboardSettingsLink: string;
 
   onRestoreAllDefaultClicked(): void {
     this.dispatchEvent(new CustomEvent('restore-all-default', {

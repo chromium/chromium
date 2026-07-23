@@ -121,7 +121,7 @@ export class SettingsCrostiniExportImportElement extends
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -129,16 +129,16 @@ export class SettingsCrostiniExportImportElement extends
     Setting.kRestoreLinuxAppsAndFiles,
   ]);
 
-  private allContainers_: ContainerInfo[];
+  declare private allContainers_: ContainerInfo[];
   private browserProxy_: CrostiniBrowserProxy;
-  private defaultVmName_: string;
-  private enableButtons_: boolean;
-  private exportContainerId_: GuestId;
-  private exportImportInProgress_: boolean;
-  private importContainerId_: GuestId;
-  private installerShowing_: boolean;
-  private showContainerSelect_: boolean;
-  private showImportConfirmationDialog_: boolean;
+  declare private defaultVmName_: string;
+  declare private enableButtons_: boolean;
+  declare private exportContainerId_: GuestId;
+  declare private exportImportInProgress_: boolean;
+  declare private importContainerId_: GuestId;
+  declare private installerShowing_: boolean;
+  declare private showContainerSelect_: boolean;
+  declare private showImportConfirmationDialog_: boolean;
 
   constructor() {
     super();

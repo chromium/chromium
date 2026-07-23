@@ -88,11 +88,11 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
     };
   }
 
-  passwordPromptText: string;
-  quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
-  private inputValue_: string;
-  private passwordInvalid_: boolean;
-  private waitingForPasswordCheck_: boolean;
+  declare passwordPromptText: string;
+  declare quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
+  declare private inputValue_: string;
+  declare private passwordInvalid_: boolean;
+  declare private waitingForPasswordCheck_: boolean;
 
   get passwordInput(): CrInputElement {
     return this.shadowRoot!.querySelector('cr-input')!;

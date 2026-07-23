@@ -68,10 +68,10 @@ export class AcceleratorSubsectionElement extends
     };
   }
 
-  override title: string;
-  category: AcceleratorCategory;
-  subcategory: AcceleratorSubcategory;
-  accelRowDataArray: AcceleratorRowData[];
+  declare title: string;
+  declare category: AcceleratorCategory;
+  declare subcategory: AcceleratorSubcategory;
+  declare accelRowDataArray: AcceleratorRowData[];
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 

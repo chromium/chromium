@@ -46,7 +46,7 @@ class SettingsCrostiniArcAdbConfirmationDialogElement extends PolymerElement {
     };
   }
 
-  action: string;
+  declare action: string;
   private browserProxy_: CrostiniBrowserProxy;
 
   constructor() {

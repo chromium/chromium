@@ -94,18 +94,18 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
     };
   }
 
-  description: string;
-  acceleratorInfos: AcceleratorInfo[];
-  layoutStyle: LayoutStyle;
-  action: number;
-  source: AcceleratorSource;
+  declare description: string;
+  declare acceleratorInfos: AcceleratorInfo[];
+  declare layoutStyle: LayoutStyle;
+  declare action: number;
+  declare source: AcceleratorSource;
   protected subcategoryIsLocked: boolean;
-  protected isLocked: boolean;
+  declare protected isLocked: boolean;
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
   private shortcutInterfaceProvider: ShortcutProviderInterface =
       getShortcutProvider();
-  private isEllipsisActive_: boolean;
+  declare private isEllipsisActive_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

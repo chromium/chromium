@@ -68,12 +68,17 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
     };
   }
 
-  override ariaLabel: string;
-  listLength: number;
-  searchResult: MojoSearchResult;
-  searchQuery: string;
-  selected: boolean;
-  metaKey: MetaKey = MetaKey.kSearch;
+  constructor() {
+    super();
+    this.metaKey = MetaKey.kSearch;
+  }
+
+  declare ariaLabel: string;
+  declare listLength: number;
+  declare searchResult: MojoSearchResult;
+  declare searchQuery: string;
+  declare selected: boolean;
+  declare metaKey: MetaKey;
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 

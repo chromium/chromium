@@ -112,13 +112,13 @@ export class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   }
 
   private activePorts_: CrostiniPortActiveSetting[];
-  private allContainers_: ContainerInfo[];
-  private allPorts_: CrostiniPortSetting[];
-  private activeInterface_: string;
-  private activeIpAddress_: string;
+  declare private allContainers_: ContainerInfo[];
+  declare private allPorts_: CrostiniPortSetting[];
+  declare private activeInterface_: string;
+  declare private activeIpAddress_: string;
   private browserProxy_: CrostiniBrowserProxy;
   private lastMenuOpenedPort_: CrostiniPortActiveSetting|null;
-  private showAddPortDialog_: boolean;
+  declare private showAddPortDialog_: boolean;
 
   constructor() {
     super();

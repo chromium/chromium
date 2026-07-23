@@ -81,7 +81,7 @@ export class DateTimeSettingsCardElement extends
     };
   }
 
-  activeTimeZoneDisplayName: string;
+  declare activeTimeZoneDisplayName: string;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -89,9 +89,9 @@ export class DateTimeSettingsCardElement extends
     Setting.kChangeTimeZone,
   ]);
 
-  private canSetDateTime_: boolean;
-  private shouldShowManagedByParentIcon_: boolean;
-  private timeZoneSettingSublabel_: string;
+  declare private canSetDateTime_: boolean;
+  declare private shouldShowManagedByParentIcon_: boolean;
+  declare private timeZoneSettingSublabel_: string;
 
   /**
    * Returns the browser proxy page handler (to invoke functions).

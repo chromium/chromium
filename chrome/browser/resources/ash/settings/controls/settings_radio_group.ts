@@ -66,11 +66,11 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
     ];
   }
 
-  disabled: boolean;
-  groupAriaLabel: string;
-  noSetPref: boolean;
-  selected: string;
-  selectableElements: string;
+  declare disabled: boolean;
+  declare groupAriaLabel: string;
+  declare noSetPref: boolean;
+  declare selected: string;
+  declare selectableElements: string;
 
   override ready(): void {
     super.ready();
