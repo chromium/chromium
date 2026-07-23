@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
@@ -167,6 +168,7 @@ public class MultiColumnTitleUpdaterTest {
         // Single title should only have 1 child (the DetailedTitle view, no back button).
         assertEquals(1, mContainer.getChildCount());
         assertTrue(mContainer.getChildAt(0) instanceof TextView);
+        assertFalse(mContainer.getChildAt(0).isClickable());
     }
 
     @Test
@@ -193,6 +195,15 @@ public class MultiColumnTitleUpdaterTest {
         // Multiple titles should prepend the back button as child at index 0.
         assertTrue(mContainer.getChildCount() > 1);
         assertTrue(mContainer.getChildAt(0) instanceof ChromeImageButton);
+
+        // Parent title ("Appearance") should be clickable, but active title ("Theme") should not.
+        assertTrue(mContainer.getChildAt(1) instanceof TextView);
+        assertEquals("Appearance", ((TextView) mContainer.getChildAt(1)).getText().toString());
+        assertTrue(mContainer.getChildAt(1).isClickable());
+
+        assertTrue(mContainer.getChildAt(3) instanceof TextView);
+        assertEquals("Theme", ((TextView) mContainer.getChildAt(3)).getText().toString());
+        assertFalse(mContainer.getChildAt(3).isClickable());
 
         ChromeImageButton backButton = (ChromeImageButton) mContainer.getChildAt(0);
         backButton.performClick();

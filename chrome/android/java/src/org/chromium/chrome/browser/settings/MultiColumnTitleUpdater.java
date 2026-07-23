@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TooltipCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -76,6 +77,8 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
             // Use the same TextAppearance with the main settings title.
             setTextAppearance(R.style.TextAppearance_Headline_Primary);
+            ViewCompat.setAccessibilityHeading(this, true);
+            setFocusable(true);
         }
 
         void setSupplier(@Nullable MonotonicObservableSupplier<String> supplier) {
@@ -372,8 +375,10 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             view.setLayoutParams(new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL));
             view.setBreakStrategy(LineBreaker.BREAK_STRATEGY_BALANCED);
 
-            final int finalIndex = i;
-            view.setOnClickListener((View v) -> navigateToTitle(title, finalIndex));
+            if (i < titles.size() - 1) {
+                final int finalIndex = i;
+                view.setOnClickListener((View v) -> navigateToTitle(title, finalIndex));
+            }
             mContainer.addView(view);
         }
 
