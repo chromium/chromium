@@ -905,7 +905,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   private onMediaUnderstandingToggleLearnMoreClick_() {
     // URL for "some websites" link.
     OpenWindowProxyImpl.getInstance().openUrl(
-        'https://support.google.com/gemini/answer/16283624');
+        'https://support.google.com/chrome?p=gic_media_questions');
   }
 
   protected getCookieIcon_(): string {

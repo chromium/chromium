@@ -1221,7 +1221,7 @@ suite('GlicSubpage', function() {
       assertTrue(!!link);
       link.click();
       const url = await openWindowProxy.whenCalled('openUrl');
-      assertEquals('https://support.google.com/gemini/answer/16283624', url);
+      assertEquals('https://support.google.com/chrome?p=gic_media_questions', url);
     });
   });
 
