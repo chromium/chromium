@@ -219,9 +219,8 @@ PrintPreviewDialogController::CreatePrintPreviewDialogDelegateForTesting(
 WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialogForTesting(
     WebContents* initiator) {
   constexpr bool kIsPdf = false;
-  mojom::RequestPrintPreviewParams params;
-  params.is_modifiable = !kIsPdf;
-  return GetOrCreatePreviewDialog(initiator, params, kIsPdf);
+  return GetOrCreatePreviewDialog(initiator, mojom::RequestPrintPreviewParams(),
+                                  kIsPdf);
 }
 
 WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
@@ -315,7 +314,7 @@ void PrintPreviewDialogController::EraseInitiatorInfo(
   web_contents_collection_.StopObserving(it->second.initiator);
   it->second.initiator = nullptr;
   it->second.request_params = {};
-  // Set to true to match the behavior for resetting `request_params`.
+  // Set to true to match the original behavior for resetting `request_params`.
   it->second.is_pdf = true;
   it->second.scoper.reset();
 }

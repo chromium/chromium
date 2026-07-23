@@ -103,9 +103,8 @@ class PrintPreviewDialogController : public WebContentsCollection::Observer {
     CHECK(preview_dialog);
 
     constexpr bool kIsPdf = false;
-    mojom::RequestPrintPreviewParams params;
-    params.is_modifiable = !kIsPdf;
-    InitiatorData data(initiator, params, kIsPdf, /*scoper=*/nullptr);
+    InitiatorData data(initiator, mojom::RequestPrintPreviewParams(), kIsPdf,
+                       /*scoper=*/nullptr);
     preview_dialog_map_.emplace(preview_dialog, std::move(data));
   }
   void DisassociateWebContentsesForTesting(

@@ -862,7 +862,7 @@ void PrintPreviewHandler::SendInitialSettings(
     base::DictValue policies,
     const std::string& default_printer) {
   bool is_pdf;
-  mojom::RequestPrintPreviewParams dummy_params;
+  mojom::RequestPrintPreviewParams default_placeholder_params;
 
   // `request_params` and `maybe_is_pdf` should both be non-null or both be
   // null.
@@ -876,13 +876,12 @@ void PrintPreviewHandler::SendInitialSettings(
     is_pdf = maybe_is_pdf.value();
   } else {
     // This only happens with a direct navigation to chrome://print, which can
-    // happen in some tests. Just use `dummy_params` to set up the test with
-    // some sane values, so it does not crash.
+    // happen in some tests. Just use `default_placeholder_params` to set up the
+    // test with some default values, so it does not crash.
     CHECK(!maybe_is_pdf.has_value());
     constexpr bool kIsPdf = false;
     is_pdf = kIsPdf;
-    dummy_params.is_modifiable = !kIsPdf;
-    request_params = &dummy_params;
+    request_params = &default_placeholder_params;
   }
 
   base::DictValue initial_settings;
