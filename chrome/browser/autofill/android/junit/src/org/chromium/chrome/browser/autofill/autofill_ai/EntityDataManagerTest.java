@@ -297,6 +297,14 @@ public class EntityDataManagerTest {
     }
 
     @Test
+    public void testIsPersonalContextDisabledByEnterprisePolicy() {
+        when(mEntityDataManagerJniMock.isPersonalContextDisabledByEnterprisePolicy(NATIVE_PTR))
+                .thenReturn(true);
+        assertTrue(mEntityDataManager.isPersonalContextDisabledByEnterprisePolicy());
+        verify(mEntityDataManagerJniMock).isPersonalContextDisabledByEnterprisePolicy(NATIVE_PTR);
+    }
+
+    @Test
     public void testSetPersonalContextEnabled() {
         mEntityDataManager.setPersonalContextEnabled(true);
         verify(mEntityDataManagerJniMock).setPersonalContextEnabled(NATIVE_PTR, true);

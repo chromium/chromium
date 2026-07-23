@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextViewBinder;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -143,6 +144,10 @@ class AutofillOptionsViewBinder {
                                         .onResult((boolean) newValue);
                                 return true;
                             });
+            view.getAutofillPersonalContextSwitch()
+                    .setManagedPreferenceDelegate(
+                            AutofillPersonalContextViewBinder.createPersonalContextManagedDelegate(
+                                    view.getProfile()));
         } else if (key == PERSONAL_CONTEXT_VISIBLE) {
             view.getAutofillPersonalContextCategory()
                     .setVisible(model.get(PERSONAL_CONTEXT_VISIBLE));

@@ -166,6 +166,10 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
   // Returns whether the personal context is enabled.
   bool IsPersonalContextEnabled(JNIEnv* env);
 
+  // Returns whether the personal context setting is disabled by enterprise
+  // policy.
+  bool IsPersonalContextDisabledByEnterprisePolicy(JNIEnv* env) const;
+
   // Sets whether the personal context is enabled.
   void SetPersonalContextEnabled(JNIEnv* env, bool enabled);
 

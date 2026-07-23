@@ -69,6 +69,7 @@ public class AutofillPersonalContextTest {
                 fragment -> {
                     mFragment = fragment;
                     mFragment.setCustomTabLauncher(mMockCustomTabLauncher);
+                    mFragment.setProfile(mProfile);
                 });
     }
 
@@ -115,6 +116,22 @@ public class AutofillPersonalContextTest {
                 mActionTester
                         .getActions()
                         .contains(AutofillPersonalContextFragment.ACTION_TOGGLED_ON));
+    }
+
+    @Test
+    @SmallTest
+    public void testPersonalContextSwitchManagedByEnterprisePolicy() {
+        when(mMockEntityDataManagerJni.isPersonalContextEnabled(0L)).thenReturn(false);
+        when(mMockEntityDataManagerJni.isPersonalContextDisabledByEnterprisePolicy(0L))
+                .thenReturn(true);
+
+        AutofillPersonalContextCoordinator.createFor(
+                mFragment, mFragment.requireActivity(), mProfile);
+
+        var switchPref = mFragment.getAutofillPersonalContextSwitch();
+        var delegate = switchPref.getManagedPreferenceDelegate();
+        assertTrue(delegate.isPreferenceControlledByPolicy(switchPref));
+        assertTrue(delegate.isPreferenceClickDisabled(switchPref));
     }
 
     @Test

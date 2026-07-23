@@ -217,7 +217,9 @@ public class EntityDataManager implements Destroyable {
                 .isEligibleToAutofillAiForType(mNativeEntityDataManagerAndroid, entityType);
     }
 
-    /** Returns whether the user might perform `AutofillAiAction::kListEntityInstancesInSettings`. */
+    /**
+     * Returns whether the user might perform `AutofillAiAction::kListEntityInstancesInSettings`.
+     */
     public boolean canListEntityInstancesInSettings() {
         ThreadUtils.assertOnUiThread();
         return EntityDataManagerJni.get()
@@ -280,6 +282,12 @@ public class EntityDataManager implements Destroyable {
         return EntityDataManagerJni.get().isPersonalContextEnabled(mNativeEntityDataManagerAndroid);
     }
 
+    public boolean isPersonalContextDisabledByEnterprisePolicy() {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .isPersonalContextDisabledByEnterprisePolicy(mNativeEntityDataManagerAndroid);
+    }
+
     public void setPersonalContextEnabled(boolean enabled) {
         ThreadUtils.assertOnUiThread();
         EntityDataManagerJni.get()
@@ -327,6 +335,8 @@ public class EntityDataManager implements Destroyable {
         boolean isPersonalContextPreferenceVisible(long nativeEntityDataManagerAndroid);
 
         boolean isPersonalContextEnabled(long nativeEntityDataManagerAndroid);
+
+        boolean isPersonalContextDisabledByEnterprisePolicy(long nativeEntityDataManagerAndroid);
 
         void setPersonalContextEnabled(long nativeEntityDataManagerAndroid, boolean enabled);
 

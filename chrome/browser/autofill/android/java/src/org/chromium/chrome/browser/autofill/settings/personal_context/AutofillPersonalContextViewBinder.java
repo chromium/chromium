@@ -11,13 +11,17 @@ import static org.chromium.chrome.browser.autofill.settings.personal_context.Aut
 import androidx.preference.Preference;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View binder for Autofill Personal Context settings. */
 @NullMarked
-class AutofillPersonalContextViewBinder {
+public class AutofillPersonalContextViewBinder {
     public static void bind(
             PropertyModel model, AutofillPersonalContextFragment view, PropertyKey key) {
         if (key == PERSONAL_CONTEXT_ENABLED) {
@@ -36,6 +40,8 @@ class AutofillPersonalContextViewBinder {
                                     .onResult((boolean) newValue);
                             return true;
                         });
+                switchPref.setManagedPreferenceDelegate(
+                        createPersonalContextManagedDelegate(view.getProfile()));
             }
         } else if (key == ON_MANAGE_CONNECTED_APPS_CLICKED) {
             Preference pref = view.getAutofillPersonalContextManageConnectedApps();
@@ -47,6 +53,17 @@ class AutofillPersonalContextViewBinder {
                         });
             }
         }
+    }
+
+    public static ChromeManagedPreferenceDelegate createPersonalContextManagedDelegate(
+            Profile profile) {
+        return new ChromeManagedPreferenceDelegate(profile) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                EntityDataManager manager = EntityDataManagerFactory.getForProfile(profile);
+                return manager != null && manager.isPersonalContextDisabledByEnterprisePolicy();
+            }
+        };
     }
 
     private AutofillPersonalContextViewBinder() {}

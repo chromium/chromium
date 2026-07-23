@@ -44,6 +44,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -103,12 +105,30 @@ bool EntityDataManagerAndroid::IsPersonalContextPreferenceVisible(JNIEnv* env) {
 }
 
 bool EntityDataManagerAndroid::IsPersonalContextEnabled(JNIEnv* env) {
+  if (IsPersonalContextDisabledByEnterprisePolicy(env)) {
+    return false;
+  }
   return prefs_->GetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus);
 }
 
+bool EntityDataManagerAndroid::IsPersonalContextDisabledByEnterprisePolicy(
+    JNIEnv* env) const {
+  const PrefService::Preference* policy_pref = prefs_->FindPreference(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings);
+  if (!policy_pref) {
+    return false;
+  }
+  return policy_pref->GetValue()->GetInt() ==
+         std::to_underlying(optimization_guide::model_execution::prefs::
+                                ModelExecutionEnterprisePolicyValue::kDisable);
+}
+
 void EntityDataManagerAndroid::SetPersonalContextEnabled(JNIEnv* env,
                                                          bool enabled) {
+  if (IsPersonalContextDisabledByEnterprisePolicy(env)) {
+    return;
+  }
   prefs_->SetBoolean(
       personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
       enabled);
