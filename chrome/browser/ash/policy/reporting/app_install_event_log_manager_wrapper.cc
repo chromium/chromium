@@ -24,9 +24,6 @@
 
 namespace policy {
 
-BASE_FEATURE(kUseEncryptedReportingPipelineToReportArcAppInstallEvents,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 AppInstallEventLogManagerWrapper::~AppInstallEventLogManagerWrapper() = default;
 
 // static
@@ -49,13 +46,7 @@ void AppInstallEventLogManagerWrapper::RegisterProfilePrefs(
 AppInstallEventLogManagerWrapper::AppInstallEventLogManagerWrapper(
     PrefService* local_state,
     Profile* profile)
-    : use_encrypted_reporting_pipeline_(base::FeatureList::IsEnabled(
-          kUseEncryptedReportingPipelineToReportArcAppInstallEvents)),
-      local_state_(CHECK_DEREF(local_state)),
-      profile_(profile) {
-  log_task_runner_ =
-      std::make_unique<ArcAppInstallEventLogManager::LogTaskRunnerWrapper>();
-
+    : local_state_(CHECK_DEREF(local_state)), profile_(profile) {
   session_termination_observation_.Observe(
       ash::SessionTerminationManager::Get());
 
@@ -70,16 +61,7 @@ void AppInstallEventLogManagerWrapper::Init() {
   EvaluatePref();
 }
 
-void AppInstallEventLogManagerWrapper::CreateManager() {
-  log_manager_ = std::make_unique<ArcAppInstallEventLogManager>(
-      &local_state_.get(), log_task_runner_.get(),
-      profile_->GetUserCloudPolicyManagerAsh()->GetAppInstallEventLogUploader(),
-      profile_);
-}
 
-void AppInstallEventLogManagerWrapper::DestroyManager() {
-  log_manager_.reset();
-}
 
 void AppInstallEventLogManagerWrapper::CreateEncryptedReporter() {
   // Log events using the encrypted reporting pipeline.
@@ -100,20 +82,11 @@ void AppInstallEventLogManagerWrapper::DestroyEncryptedReporter() {
 }
 
 void AppInstallEventLogManagerWrapper::InitLogging() {
-  if (use_encrypted_reporting_pipeline_) {
-    CreateEncryptedReporter();
-  } else if (!log_manager_) {
-    // Log events using the cloud policy client.
-    CreateManager();
-  }
+  CreateEncryptedReporter();
 }
 
 void AppInstallEventLogManagerWrapper::DisableLogging() {
-  if (use_encrypted_reporting_pipeline_) {
-    DestroyEncryptedReporter();
-  } else {
-    DestroyManager();
-  }
+  DestroyEncryptedReporter();
 }
 
 void AppInstallEventLogManagerWrapper::EvaluatePref() {
@@ -122,7 +95,7 @@ void AppInstallEventLogManagerWrapper::EvaluatePref() {
     InitLogging();
   } else {
     DisableLogging();
-    ArcAppInstallEventLogManager::Clear(log_task_runner_.get(), profile_);
+    ArcAppInstallEventLogger::Clear(profile_);
   }
 }
 

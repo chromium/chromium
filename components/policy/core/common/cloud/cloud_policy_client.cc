@@ -478,7 +478,6 @@ void CloudPolicyClient::SetupRegistration(
   dm_token_ = dm_token;
   client_id_ = client_id;
   request_jobs_.clear();
-  app_install_report_request_job_ = nullptr;
   extension_install_report_request_job_ = nullptr;
   unique_request_job_.reset();
   last_policy_fetch_responses_.clear();
@@ -1250,31 +1249,6 @@ void CloudPolicyClient::UploadSecurityEventReport(bool include_device_info,
       include_device_info, std::move(callback));
 }
 
-void CloudPolicyClient::UploadAppInstallReport(base::DictValue report,
-                                               ResultCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!is_registered()) {
-    std::move(callback).Run(CloudPolicyClient::Result(NotRegistered()));
-    return;
-  }
-
-  CancelAppInstallReportUpload();
-  app_install_report_request_job_ = CreateNewRealtimeReportingJobDeprecated(
-      std::move(report),
-      service()->configuration()->GetRealtimeReportingServerUrl(),
-      /* include_device_info */ true, std::move(callback));
-  DCHECK(app_install_report_request_job_);
-}
-
-void CloudPolicyClient::CancelAppInstallReportUpload() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (app_install_report_request_job_) {
-    RemoveJob(app_install_report_request_job_);
-    DCHECK_EQ(app_install_report_request_job_, nullptr);
-  }
-}
 
 void CloudPolicyClient::FetchRemoteCommands(
     std::unique_ptr<RemoteCommandJob::UniqueIDType> last_command_id,
@@ -1949,9 +1923,7 @@ void CloudPolicyClient::OnDeviceAttributeUpdated(
 }
 
 void CloudPolicyClient::RemoveJob(const DeviceManagementService::Job* job) {
-  if (app_install_report_request_job_ == job) {
-    app_install_report_request_job_ = nullptr;
-  } else if (extension_install_report_request_job_ == job) {
+  if (extension_install_report_request_job_ == job) {
     extension_install_report_request_job_ = nullptr;
   }
   for (auto it = request_jobs_.begin(); it != request_jobs_.end(); ++it) {

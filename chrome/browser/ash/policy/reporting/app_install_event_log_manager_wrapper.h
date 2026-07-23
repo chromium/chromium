@@ -11,7 +11,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_encrypted_event_reporter.h"
-#include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_logger.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/app_install_events.pb.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
@@ -22,7 +21,6 @@ class PrefService;
 class Profile;
 
 namespace policy {
-BASE_DECLARE_FEATURE(kUseEncryptedReportingPipelineToReportArcAppInstallEvents);
 
 // Observes the pref that indicates whether to log events for app push-installs.
 // When logging is enabled, creates an |AppInstallEventLogManager|. When logging
@@ -64,31 +62,18 @@ class AppInstallEventLogManagerWrapper
   // Destructs all logging-related objects.
   void DisableLogging();
 
-  // Creates the |log_manager_|. Virtual for testing.
-  virtual void CreateManager();
-
-  // Destroys the |log_manager_|. Virtual for testing.
-  virtual void DestroyManager();
-
   // Creates the |encrypted_reporter_|. Virtual for testing.
   virtual void CreateEncryptedReporter();
 
   // Destroys the |encrypted_reporter_|. Virtual for testing.
   virtual void DestroyEncryptedReporter();
 
-  // Provides the task runner used for all I/O on the log file.
-  std::unique_ptr<ArcAppInstallEventLogManager::LogTaskRunnerWrapper>
-      log_task_runner_;
-
  private:
-  // Holds the value of the
-  // `kUseEncryptedReportingPipelineToReportArcAppInstallEvents` feature.
-  const bool use_encrypted_reporting_pipeline_;
-
   // Evaluates the current state of the pref that indicates whether to log
   // events for app push-installs. If logging is enabled, creates the
-  // |log_manager_|. If logging is disabled, destroys the |log_manager_| and
-  // clears all data related to the app-install event log.
+  // |encrypted_reporter_|. If logging is disabled, destroys the
+  // |encrypted_reporter_| and clears all data related to the app-install event
+  // log.
   void EvaluatePref();
 
   // ash::SessionTerminationManager::Observer:
@@ -102,9 +87,6 @@ class AppInstallEventLogManagerWrapper
   base::ScopedObservation<ash::SessionTerminationManager,
                           ash::SessionTerminationManager::Observer>
       session_termination_observation_{this};
-
-  // Handles collection, storage and upload of app push-install event logs.
-  std::unique_ptr<ArcAppInstallEventLogManager> log_manager_;
 
   std::unique_ptr<ArcAppInstallEncryptedEventReporter> encrypted_reporter_;
 

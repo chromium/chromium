@@ -52,7 +52,6 @@ namespace local_user_files {
 class LocalFilesCleanup;
 }
 
-class ArcAppInstallEventLogUploader;
 class BrowserPolicyConnectorAsh;
 class CloudExternalDataManager;
 class DeviceManagementService;
@@ -160,10 +159,6 @@ class UserCloudPolicyManagerAsh
   // Indicates a wildcard login check should be performed once an access token
   // is available.
   void EnableWildcardLoginCheck(const std::string& username);
-
-  // Return the ArcAppInstallEventLogUploader used to send app push-install
-  // event logs to the policy server.
-  ArcAppInstallEventLogUploader* GetAppInstallEventLogUploader();
 
   // ConfigurationPolicyProvider:
   void Shutdown() override;
@@ -277,10 +272,6 @@ class UserCloudPolicyManagerAsh
 
   // Manages external data referenced by policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
-
-  // Helper used to send app push-install event logs to the policy server.
-  std::unique_ptr<ArcAppInstallEventLogUploader>
-      app_install_event_log_uploader_;
 
   // Scheduler used to report usage data to DM server periodically.
   std::unique_ptr<enterprise_reporting::ReportScheduler> report_scheduler_;

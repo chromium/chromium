@@ -32,7 +32,6 @@
 #include "chrome/browser/ash/policy/core/policy_oauth2_token_fetcher.h"
 #include "chrome/browser/ash/policy/login/wildcard_login_checker.h"
 #include "chrome/browser/ash/policy/remote_commands/user_commands_factory_ash.h"
-#include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_cleanup.h"
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
@@ -261,8 +260,6 @@ void UserCloudPolicyManagerAsh::ConnectManagementService(
     observed_cloud_policy_service_.Observe(service());
   }
 
-  app_install_event_log_uploader_ =
-      std::make_unique<ArcAppInstallEventLogUploader>(client(), profile_);
 
   if (IsSkyVaultTTEnabled()) {
     // Local files should be deleted if required by policy.
@@ -337,15 +334,10 @@ void UserCloudPolicyManagerAsh::EnableWildcardLoginCheck(
   wildcard_username_ = username;
 }
 
-ArcAppInstallEventLogUploader*
-UserCloudPolicyManagerAsh::GetAppInstallEventLogUploader() {
-  return app_install_event_log_uploader_.get();
-}
-
 void UserCloudPolicyManagerAsh::Shutdown() {
   observed_profile_.Reset();
   local_files_cleanup_.reset();
-  app_install_event_log_uploader_.reset();
+
   report_scheduler_.reset();
   saas_usage_report_scheduler_.reset();
   observed_cloud_policy_client_.Reset();

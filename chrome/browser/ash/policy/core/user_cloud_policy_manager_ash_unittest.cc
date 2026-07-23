@@ -849,12 +849,6 @@ TEST_F(UserCloudPolicyManagerAshTest, TestLifetimeReportingEphemeralUser) {
             register_request.register_request().lifetime());
 }
 
-TEST_F(UserCloudPolicyManagerAshTest, TestHasAppInstallEventLogUploader) {
-  ASSERT_NO_FATAL_FAILURE(MakeManagerWithEmptyStore(
-      base::TimeDelta(), PolicyEnforcement::kPolicyRequired));
-  EXPECT_TRUE(manager_->GetAppInstallEventLogUploader());
-}
-
 TEST_F(UserCloudPolicyManagerAshTest, TestReportSchedulerCreation) {
   // Open policy and feature flag to enable report scheduler.
   g_browser_process->local_state()->SetBoolean(
