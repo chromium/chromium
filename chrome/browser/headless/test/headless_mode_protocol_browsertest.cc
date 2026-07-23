@@ -225,22 +225,26 @@ class HeadlessModeInputSelectFileDialogTest
   }
 
   void FinishAsyncTest() override {
-    EXPECT_TRUE(select_file_dialog_has_run_);
-
-    HeadlessModeProtocolBrowserTest::FinishAsyncTest();
+    finish_async_test_called_ = true;
+    if (select_file_dialog_has_run_) {
+      HeadlessModeProtocolBrowserTest::FinishAsyncTest();
+    }
   }
 
  private:
   void OnSelectFileDialogCallback(ui::SelectFileDialog::Type type) {
     select_file_dialog_has_run_ = true;
+    if (finish_async_test_called_) {
+      HeadlessModeProtocolBrowserTest::FinishAsyncTest();
+    }
   }
 
   bool select_file_dialog_has_run_ = false;
+  bool finish_async_test_called_ = false;
 };
 
-// TODO(crbug.com/40919351, crbug.com/443993825): flaky on Mac/Linux/Win.
 HEADLESS_MODE_PROTOCOL_TEST_F(HeadlessModeInputSelectFileDialogTest,
-                              DISABLED_InputSelectFileDialog,
+                              InputSelectFileDialog,
                               "input/input-select-file-dialog.js")
 
 class HeadlessModeScreencastTest : public HeadlessModeProtocolBrowserTest {
