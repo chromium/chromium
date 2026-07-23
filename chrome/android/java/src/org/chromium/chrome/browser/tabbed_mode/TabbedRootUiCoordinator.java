@@ -1148,6 +1148,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         ? "GestureNav"
                         : "ThreeButton");
 
+        if (VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
+            boolean enabled = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    "VerticalTabsAndroid", enabled ? "Enabled" : "Disabled");
+        }
+
         CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.asNonNull().get();
         mHistoryNavigationCoordinator =
                 HistoryNavigationCoordinator.create(
@@ -2437,6 +2443,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             }
             ChromeSharedPreferences.getInstance()
                     .removeKey(ChromePreferenceKeys.VERTICAL_TABS_ENABLED_TIMESTAMP);
+        }
+
+        if (VerticalTabUtils.isVerticalTabsEligible(mActivity)) {
+            UmaSessionStats.registerSyntheticFieldTrial(
+                    "VerticalTabsAndroid", shouldShowVerticalTabs ? "Enabled" : "Disabled");
         }
     }
 
