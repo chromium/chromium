@@ -25,7 +25,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom-forward.h"
 
 namespace IPC {
@@ -93,10 +92,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   mojom::RouteProvider* GetRemoteRouteProvider();
   void CreateFrame(mojom::CreateFrameParamsPtr params);
   void CreateView(mojom::CreateViewParamsPtr params);
-  void CreateSharedStorageWorkletService(
-      mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver,
-      blink::mojom::WorkletGlobalScopeCreationParamsPtr
-          global_scope_creation_params);
 
   static void set_agent_scheduling_group_host_factory_for_testing(
       AgentSchedulingGroupHostFactory* asgh_factory);

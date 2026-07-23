@@ -1472,8 +1472,6 @@ mojom("mojom_modules") {
   sources = [
     "buckets/bucket_manager_host.mojom",
     "indexeddb/indexeddb.mojom",
-    "shared_storage/shared_storage.mojom",
-    "shared_storage/shared_storage_worklet_service.mojom",
     "storage_access/storage_access_handle.mojom",
   ]
 

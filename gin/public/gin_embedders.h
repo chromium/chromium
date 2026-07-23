@@ -50,7 +50,6 @@ enum ExternalPointerTypeTag : uint16_t {
   kSetBidBindingsTag,
   kSetPriorityBindingsTag,
   kSetPrioritySignalsOverrideBindingsTag,
-  kSharedStorageBindingsTag,
   kWebIDLCompatTestTag,
   kDeclarativeContentHooksDelegateHandlerCallbackTag,
   kAPIBindingHandlerCallbackTag,

@@ -23,7 +23,6 @@
 #include "ipc/constants.mojom.h"
 #include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom.h"
 
 namespace content {
@@ -296,17 +295,6 @@ void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
   CHECK(process_->IsInitializedAndNotDead(), base::NotFatalUntil::M153);
   CHECK(mojo_remote_.is_bound(), base::NotFatalUntil::M153);
   mojo_remote_.get()->CreateView(std::move(params));
-}
-
-void AgentSchedulingGroupHost::CreateSharedStorageWorkletService(
-    mojo::PendingReceiver<blink::mojom::SharedStorageWorkletService> receiver,
-    blink::mojom::WorkletGlobalScopeCreationParamsPtr
-        global_scope_creation_params) {
-  CHECK_EQ(state_, LifecycleState::kBound, base::NotFatalUntil::M153);
-  CHECK(process_->IsInitializedAndNotDead(), base::NotFatalUntil::M153);
-  CHECK(mojo_remote_.is_bound(), base::NotFatalUntil::M153);
-  mojo_remote_.get()->CreateSharedStorageWorkletService(
-      std::move(receiver), std::move(global_scope_creation_params));
 }
 
 // static

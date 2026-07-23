@@ -9,7 +9,6 @@ import "content/common/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame.mojom";
 import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
-import "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/worker/worklet_global_scope_creation_params.mojom";
 
@@ -69,10 +68,4 @@ interface AgentSchedulingGroup {
 
   // Tells the renderer to create a new RenderFrame.
   CreateFrame(CreateFrameParams params);
-
-  // Tells the renderer process to create a thread that exclusively hosts the
-  // shared storage worklet service.
-  CreateSharedStorageWorkletService(
-      pending_receiver<blink.mojom.SharedStorageWorkletService> receiver,
-      blink.mojom.WorkletGlobalScopeCreationParams global_scope_creation_params);
 };
