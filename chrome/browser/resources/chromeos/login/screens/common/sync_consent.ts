@@ -92,10 +92,10 @@ export class SyncConsentScreen extends SyncConsentScreenElementBase {
     };
   }
 
-  private isMinorMode: boolean;
-  private optInButtonTextKey: string;
-  private consentDescription: string[];
-  private consentConfirmation: string;
+  declare private isMinorMode: boolean;
+  declare private optInButtonTextKey: string;
+  declare private consentDescription: string[];
+  declare private consentConfirmation: string;
 
 
   constructor() {

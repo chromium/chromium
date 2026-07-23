@@ -55,7 +55,7 @@ export class HwDataCollectionScreen extends HwDataCollectionScreenElementBase {
     };
   }
 
-  private dataUsageChecked: boolean;
+  declare private dataUsageChecked: boolean;
 
   override get UI_STEPS() {
     return HwDataCollectionStep;

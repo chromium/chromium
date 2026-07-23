@@ -66,10 +66,10 @@ export class ManagedTermsOfService extends ManagedTermsOfServiceBase {
     };
   }
 
-  private backButtonDisabled: boolean;
-  private retryButtonDisabled: boolean;
-  private acceptButtonDisabled: boolean;
-  private tosManager: string;
+  declare private backButtonDisabled: boolean;
+  declare private retryButtonDisabled: boolean;
+  declare private acceptButtonDisabled: boolean;
+  declare private tosManager: string;
 
   constructor() {
     super();

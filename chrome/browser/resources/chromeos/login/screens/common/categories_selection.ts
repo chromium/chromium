@@ -68,7 +68,7 @@ export class CategoriesScreenElement extends CategoriesScreenElementBase {
     };
   }
 
-  private numberOfSelectedCategories: number;
+  declare private numberOfSelectedCategories: number;
 
   override get UI_STEPS() {
     return CategoriesStep;

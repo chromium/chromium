@@ -90,8 +90,8 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
     };
   }
 
-  private selectedTheme: string;
-  private shouldShowReturn_: boolean;
+  declare private selectedTheme: string;
+  declare private shouldShowReturn_: boolean;
 
   override get UI_STEPS() {
     return ThemeSelectionStep;

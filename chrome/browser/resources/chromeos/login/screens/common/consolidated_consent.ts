@@ -189,21 +189,21 @@ export class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     };
   }
 
-  private isPrivacyHubLocationEnabled: boolean;
-  private isArcEnabled: boolean;
-  private isDemo: boolean;
-  private isChildAccount: boolean;
-  private isTosHidden: boolean;
-  private usageManaged: boolean;
-  private usageOptinHidden: boolean;
-  private usageOptinHiddenLoading: boolean;
-  private backupManaged: boolean;
-  private locationManaged: boolean;
-  private usageChecked: boolean;
-  private backupChecked: boolean;
-  private locationChecked: boolean;
-  private recoveryVisible: boolean;
-  private recoveryChecked: boolean;
+  declare private isPrivacyHubLocationEnabled: boolean;
+  declare private isArcEnabled: boolean;
+  declare private isDemo: boolean;
+  declare private isChildAccount: boolean;
+  declare private isTosHidden: boolean;
+  declare private usageManaged: boolean;
+  declare private usageOptinHidden: boolean;
+  declare private usageOptinHiddenLoading: boolean;
+  declare private backupManaged: boolean;
+  declare private locationManaged: boolean;
+  declare private usageChecked: boolean;
+  declare private backupChecked: boolean;
+  declare private locationChecked: boolean;
+  declare private recoveryVisible: boolean;
+  declare private recoveryChecked: boolean;
 
   private areWebviewsInitialized: boolean;
   private configurationApplied: boolean;

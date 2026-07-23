@@ -102,17 +102,17 @@ export class QuickStartScreen extends QuickStartScreenBase {
     };
   }
 
-  private pin: string;
-  private usePinInsteadOfQrForVerification: boolean;
-  private userEmail: string;
-  private userFullName: string;
-  private userAvatarUrl: string;
-  private canCancelSignin: boolean;
-  private willRequestWiFi: boolean;
-  private qrCodeAvailable: boolean;
-  private isOobeOverlayDebuggerEnabled: boolean;
+  declare private pin: string;
+  declare private usePinInsteadOfQrForVerification: boolean;
+  declare private userEmail: string;
+  declare private userFullName: string;
+  declare private userAvatarUrl: string;
+  declare private canCancelSignin: boolean;
+  declare private willRequestWiFi: boolean;
+  declare private qrCodeAvailable: boolean;
+  declare private isOobeOverlayDebuggerEnabled: boolean;
   private qrCodeCanvas: QrCodeCanvas|null;
-  private didTransferWiFi: boolean;
+  declare private didTransferWiFi: boolean;
 
   constructor() {
     super();

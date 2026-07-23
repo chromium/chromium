@@ -103,10 +103,10 @@ export class MarketingOptIn extends MarketingScreenElementBase {
     };
   }
 
-  private isA11ySettingsButtonVisible: boolean;
-  private marketingOptInVisible: boolean;
-  private hasLegalFooter: boolean;
-  private isCloudGamingDevice: boolean;
+  declare private isA11ySettingsButtonVisible: boolean;
+  declare private marketingOptInVisible: boolean;
+  declare private hasLegalFooter: boolean;
+  declare private isCloudGamingDevice: boolean;
 
   override get UI_STEPS() {
     return MarketingOptInStep;

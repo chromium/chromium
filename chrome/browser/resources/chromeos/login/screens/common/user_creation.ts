@@ -159,14 +159,14 @@ export class UserCreation extends UserCreationScreenElementBase {
     };
   }
 
-  selectedUserType: string;
-  selectedEnrollTriageMethod: string;
-  selectedChildSetupMethod: string;
-  isBackButtonVisible_: boolean;
-  titleKey_: string;
-  subtitleKey_: string;
-  isOobeLoaded_: boolean;
-  private readonly isOobeSoftwareUpdateEnabled_: boolean;
+  declare selectedUserType: string;
+  declare selectedEnrollTriageMethod: string;
+  declare selectedChildSetupMethod: string;
+  declare private isBackButtonVisible_: boolean;
+  declare private titleKey_: string;
+  declare private subtitleKey_: string;
+  declare private isOobeLoaded_: boolean;
+  declare private readonly isOobeSoftwareUpdateEnabled_: boolean;
 
   constructor() {
     super();

@@ -244,22 +244,22 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     };
   }
 
-  private loadingFrameContents: boolean;
-  private isLoadingUiShown: boolean;
-  private navigationEnabled: boolean;
-  private isSaml: boolean;
-  private pinDialogParameters: OobeTypes.SecurityTokenPinDialogParameters|null;
-  private isSamlSsoVisible: boolean;
-  private videoEnabled: boolean;
-  private authDomain: string;
-  private authFlow: number;
-  private navigationButtonsHidden: boolean;
-  private canGaiaGoBack: boolean;
-  private firstSigninStep: boolean;
-  private isShown: boolean;
-  private isDefaultSsoProvider: boolean;
-  private isClosable: boolean;
-  private emailDomain: string;
+  declare private loadingFrameContents: boolean;
+  declare private isLoadingUiShown: boolean;
+  declare private navigationEnabled: boolean;
+  declare private isSaml: boolean;
+  declare private pinDialogParameters: OobeTypes.SecurityTokenPinDialogParameters|null;
+  declare private isSamlSsoVisible: boolean;
+  declare private videoEnabled: boolean;
+  declare private authDomain: string;
+  declare private authFlow: number;
+  declare private navigationButtonsHidden: boolean;
+  declare private canGaiaGoBack: boolean;
+  declare private firstSigninStep: boolean;
+  declare private isShown: boolean;
+  declare private isDefaultSsoProvider: boolean;
+  declare private isClosable: boolean;
+  declare private emailDomain: string;
   private authenticatorParams: null|any;
   private email: string;
   private loadingTimer: number|undefined;

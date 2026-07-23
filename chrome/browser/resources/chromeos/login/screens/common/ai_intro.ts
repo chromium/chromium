@@ -48,7 +48,7 @@ export class AiIntroScreen extends AiIntroScreenElementBase {
     };
   }
 
-  private autoTransition: boolean;
+  declare private autoTransition: boolean;
   private callbackRouter: AiIntroPageCallbackRouter;
   private handler: AiIntroPageHandlerRemote;
 

@@ -82,8 +82,8 @@ export class TouchpadScrollScreen extends TouchpadScrollScreenElementBase {
     };
   }
 
-  private isReverseScrolling: boolean;
-  private shouldShowReturn: boolean;
+  declare private isReverseScrolling: boolean;
+  declare private shouldShowReturn: boolean;
   private resizeobserver: ResizeObserver;
 
   constructor() {

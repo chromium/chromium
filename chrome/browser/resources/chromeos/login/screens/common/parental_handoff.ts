@@ -50,7 +50,7 @@ export class ParentalHandoff extends ParentalHandoffElementBase {
     };
   }
 
-  private username: string;
+  declare private username: string;
 
   constructor() {
     super();

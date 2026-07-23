@@ -83,10 +83,10 @@ class DrivePinningScreen extends DrivePinningScreenElementBase {
     };
   }
 
-  private freeSpace_: string;
-  private requiredSpace_: string;
-  private enableDrivePinning_: boolean;
-  private shouldShowReturn_: boolean;
+  declare private freeSpace_: string;
+  declare private requiredSpace_: string;
+  declare private enableDrivePinning_: boolean;
+  declare private shouldShowReturn_: boolean;
   private callbackRouter: DrivePinningPageCallbackRouter;
   private handler: DrivePinningPageHandlerRemote;
 

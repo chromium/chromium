@@ -65,8 +65,8 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
     };
   }
 
-  email: string;
-  isManualInput: boolean;
+  declare email: string;
+  declare isManualInput: boolean;
 
   constructor() {
     super();

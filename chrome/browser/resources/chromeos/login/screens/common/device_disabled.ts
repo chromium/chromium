@@ -115,14 +115,14 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
     };
   }
 
-  private serial: string;
-  private enrollmentDomain: string;
-  private message: string;
-  private locationTrackingEnabled: boolean;
-  private deviceRestrictionScheduleEnabled: boolean;
-  private deviceName: string;
-  private restrictionScheduleEndDay: string;
-  private restrictionScheduleEndTime: string;
+  declare private serial: string;
+  declare private enrollmentDomain: string;
+  declare private message: string;
+  declare private locationTrackingEnabled: boolean;
+  declare private deviceRestrictionScheduleEnabled: boolean;
+  declare private deviceName: string;
+  declare private restrictionScheduleEndDay: string;
+  declare private restrictionScheduleEndTime: string;
 
   override ready(): void {
     super.ready();

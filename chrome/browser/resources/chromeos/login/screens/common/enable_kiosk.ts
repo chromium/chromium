@@ -52,7 +52,7 @@ export class EnableKiosk extends EnableKioskBase {
     };
   }
 
-  private state_: EnableKioskMode;
+  declare private state_: EnableKioskMode;
 
   constructor() {
     super();

@@ -76,7 +76,7 @@ export class AddChildScreen extends AddChildScreenElementBase {
     };
   }
 
-  private selectedSignInMethod: string;
+  declare private selectedSignInMethod: string;
 
   constructor() {
     super();

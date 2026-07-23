@@ -62,10 +62,10 @@ class AppLaunchSplash extends AppLaunchSplashBase {
     };
   }
 
-  private appName: string;
-  private appUrl: string;
-  private launchText: string;
-  private showThrobber: boolean;
+  declare private appName: string;
+  declare private appUrl: string;
+  declare private launchText: string;
+  declare private showThrobber: boolean;
 
   override get EXTERNAL_API(): string[] {
     return ['setAppData', 'updateMessage', 'hideThrobber'];

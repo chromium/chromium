@@ -86,12 +86,12 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
     };
   }
 
-  private errorSubtitle: string;
-  private errorState: number;
-  private params: SigninFatalErrorScreenData;
-  private keyboardHint: string|undefined;
-  private details: string|undefined;
-  private helpLinkText: string|undefined;
+  declare private errorSubtitle: string;
+  declare private errorState: number;
+  declare private params: SigninFatalErrorScreenData;
+  declare private keyboardHint: string|undefined;
+  declare private details: string|undefined;
+  declare private helpLinkText: string|undefined;
 
   override ready() {
     super.ready();

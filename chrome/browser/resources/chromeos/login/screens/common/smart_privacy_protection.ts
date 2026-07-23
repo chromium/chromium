@@ -63,8 +63,8 @@ export class SmartPrivacyProtectionScreen extends
     };
   }
 
-  private isQuickDimEnabled: boolean;
-  private isMinorMode: boolean;
+  declare private isQuickDimEnabled: boolean;
+  declare private isMinorMode: boolean;
 
   override get EXTERNAL_API(): string[] {
     return ['setIsMinorMode'];

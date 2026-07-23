@@ -63,9 +63,9 @@ export class FamilyLinkNotice extends FamilyLinkScreenElementBase {
     };
   }
 
-  private isNewGaiaAccount_: boolean;
-  private email_: string;
-  private domain_: string;
+  declare private isNewGaiaAccount_: boolean;
+  declare private email_: string;
+  declare private domain_: string;
 
   override get EXTERNAL_API(): string[] {
     return [

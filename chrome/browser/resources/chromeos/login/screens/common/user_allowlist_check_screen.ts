@@ -59,7 +59,7 @@ export class UserAllowlistCheckScreenElement extends
     };
   }
 
-  private allowlistError: string;
+  declare private allowlistError: string;
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override defaultUIStep(): DialogMode {

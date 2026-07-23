@@ -59,7 +59,7 @@ export class PersonalizedRecommedAppsElement extends
     };
   }
 
-  private numberOfSelectedApps: number;
+  declare private numberOfSelectedApps: number;
 
   override get UI_STEPS() {
     return PersonalizedAppsStep;

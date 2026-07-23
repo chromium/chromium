@@ -80,7 +80,7 @@ export class GuestTos extends GuestTosScreenElementBase {
     };
   }
 
-  private usageChecked: boolean;
+  declare private usageChecked: boolean;
   private googleEulaUrl: string;
   private crosEulaUrl: string;
 

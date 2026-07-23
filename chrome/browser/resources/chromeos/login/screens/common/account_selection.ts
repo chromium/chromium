@@ -76,9 +76,9 @@ export class AccountSelection extends AccountSelectionBase {
     };
   }
 
-  private enrollmentEmail: string;
-  private selectedAccountOption: string;
-  private accountSelectionEnum: AccountSelectionOptions;
+  declare private enrollmentEmail: string;
+  declare private selectedAccountOption: string;
+  declare private accountSelectionEnum: AccountSelectionOptions;
 
   override ready(): void {
     super.ready();

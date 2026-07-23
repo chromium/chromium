@@ -51,7 +51,7 @@ export class InstallAttributesErrorMessage extends
     };
   }
 
-  private isRestartRequired: boolean;
+  declare private isRestartRequired: boolean;
 
   constructor() {
     super();

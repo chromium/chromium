@@ -140,13 +140,13 @@ export class MultiDeviceSetupScreen extends MultiDeviceSetupScreenBase {
     };
   }
 
-  private delegate: MultiDeviceSetupDelegate;
-  private forwardButtonTextId: string;
-  private forwardButtonDisabled: boolean;
-  private cancelButtonTextId: string;
-  webviewOverlayHidden: boolean;
-  isWebviewLoading: boolean;
-  private webviewSrc: string;
+  declare private delegate: MultiDeviceSetupDelegate;
+  declare private forwardButtonTextId: string;
+  declare private forwardButtonDisabled: boolean;
+  declare private cancelButtonTextId: string;
+  declare webviewOverlayHidden: boolean;
+  declare isWebviewLoading: boolean;
+  declare private webviewSrc: string;
 
   constructor() {
     super();

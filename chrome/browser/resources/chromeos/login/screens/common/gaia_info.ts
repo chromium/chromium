@@ -71,8 +71,8 @@ export class GaiaInfoScreen extends GaiaInfoScreenElementBase {
     };
   }
 
-  private selectedFlowType: string;
-  private isQuickStartVisible: boolean;
+  declare private selectedFlowType: string;
+  declare private isQuickStartVisible: boolean;
   private callbackRouter: GaiaInfoPageCallbackRouter;
   private handler: GaiaInfoPageHandlerRemote;
 

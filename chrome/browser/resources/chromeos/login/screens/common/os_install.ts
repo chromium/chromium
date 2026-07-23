@@ -63,7 +63,7 @@ export class OsInstall extends OsInstallScreenElementBase {
     };
   }
 
-  private osInstallDialogSuccessSubtitile: string;
+  declare private osInstallDialogSuccessSubtitile: string;
 
   constructor() {
     super();

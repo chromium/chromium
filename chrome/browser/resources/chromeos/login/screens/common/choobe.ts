@@ -63,7 +63,7 @@ class ChoobeScreen extends ChoobeScreenElementBase {
     };
   }
 
-  private numberOfSelectedScreens_: number;
+  declare private numberOfSelectedScreens_: number;
 
   override get UI_STEPS() {
     return ChoobeStep;

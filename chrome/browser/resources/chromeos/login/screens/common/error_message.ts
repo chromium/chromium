@@ -180,14 +180,14 @@ export class ErrorMessageScreen extends ErrorMessageScreenBase {
     };
   }
 
-  private uiState: ErrorScreenUiState;
-  private errorState: ErrorState;
-  private isCloseable: boolean;
-  private enableWifiScans: boolean;
-  private currentNetworkName: string;
-  private guestSessionAllowed: boolean;
-  private offlineLoginAllowed: boolean;
-  private connectingIndicatorShown: boolean;
+  declare private uiState: ErrorScreenUiState;
+  declare private errorState: ErrorState;
+  declare private isCloseable: boolean;
+  declare private enableWifiScans: boolean;
+  declare private currentNetworkName: string;
+  declare private guestSessionAllowed: boolean;
+  declare private offlineLoginAllowed: boolean;
+  declare private connectingIndicatorShown: boolean;
 
   private getDialogTitle(
       locale: string, errorState: ErrorState,

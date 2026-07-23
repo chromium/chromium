@@ -189,19 +189,19 @@ export class OobeReset extends ResetScreenElementBase {
     return ['onScreenStateChanged(uiStep)'];
   }
 
-  private isRollbackAvailable_: boolean;
-  private isRollbackRequested_: boolean;
-  private tpmUpdateAvailable_: boolean;
-  private tpmUpdateChecked_: boolean;
-  private tpmUpdateEditable_: boolean;
-  private tpmUpdateMode_: string;
-  private confirmationDialogTitle_: string;
-  private confirmationDialogText_: string;
-  private powerwashStateSubtitle_: string;
-  private powerwashButtonTextKey_: string;
-  private powerwashButtonDisabled_: boolean;
-  private powerwashMode_: number;
-  private inRevertState_: boolean;
+  declare private isRollbackAvailable_: boolean;
+  declare private isRollbackRequested_: boolean;
+  declare private tpmUpdateAvailable_: boolean;
+  declare private tpmUpdateChecked_: boolean;
+  declare private tpmUpdateEditable_: boolean;
+  declare private tpmUpdateMode_: string;
+  declare private confirmationDialogTitle_: string;
+  declare private confirmationDialogText_: string;
+  declare private powerwashStateSubtitle_: string;
+  declare private powerwashButtonTextKey_: string;
+  declare private powerwashButtonDisabled_: boolean;
+  declare private powerwashMode_: number;
+  declare private inRevertState_: boolean;
 
   constructor() {
     super();

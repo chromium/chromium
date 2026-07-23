@@ -72,7 +72,7 @@ class DisplaySizeScreen extends DisplaySizeScreenElementBase {
     };
   }
 
-  private shouldShowReturn_: boolean;
+  declare private shouldShowReturn_: boolean;
 
   override get UI_STEPS() {
     return DisplaySizeStep;

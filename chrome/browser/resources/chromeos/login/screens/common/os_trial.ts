@@ -62,7 +62,7 @@ export class OsTrial extends OsTrialScreenElementBase {
     };
   }
 
-  private selectedTrialOption: TrialOption;
+  declare private selectedTrialOption: TrialOption;
 
   constructor() {
     super();

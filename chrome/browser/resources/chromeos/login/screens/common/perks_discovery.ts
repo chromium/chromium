@@ -242,11 +242,11 @@ export class PerksDiscoveryElement extends PerksDiscoveryElementBase {
     };
   }
 
-  private perksList: PerkData[];
-  private selectedPerks: Set<string>;
-  private currentPerk: number;
-  private itemIconsRendered: number;
-  private itemIllustrationsRendered: number;
+  declare private perksList: PerkData[];
+  declare private selectedPerks: Set<string>;
+  declare private currentPerk: number;
+  declare private itemIconsRendered: number;
+  declare private itemIllustrationsRendered: number;
 
   override get UI_STEPS() {
     return PerksDiscoveryStep;

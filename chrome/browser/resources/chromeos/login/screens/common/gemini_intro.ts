@@ -51,7 +51,7 @@ export class GeminiIntroScreen extends GeminiIntroScreenElementBase {
     };
   }
 
-  private backButtonVisible: boolean;
+  declare private backButtonVisible: boolean;
   private handler: GeminiIntroPageHandlerRemote;
 
   override ready(): void {

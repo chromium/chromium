@@ -79,8 +79,8 @@ class RecommendAppsElement extends RecommendAppsElementBase {
     };
   }
 
-  appsSelected: number;
-  appList: AppData[];
+  declare appsSelected: number;
+  declare appList: AppData[];
   initialized: boolean;
 
   constructor() {
