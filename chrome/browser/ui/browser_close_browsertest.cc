@@ -119,6 +119,17 @@ class BrowserCloseTest : public InProcessBrowserTest {
     ON_CALL(*mock_service, BlockingShutdownCount())
         .WillByDefault(testing::Return(downloads));
   }
+
+  // Simulates a profile whose DownloadCoreService KeyedService has already
+  // been torn down (e.g. mid OTR-profile shutdown).
+  void MakeDownloadCoreServiceNull(Profile* profile) {
+    DownloadCoreServiceFactory::GetInstance()->SetTestingFactory(
+        profile,
+        base::BindOnce(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return nullptr;
+            }));
+  }
 };
 
 // Last window close (incognito window) will trigger warning.
@@ -316,6 +327,28 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, PluralIncognito) {
             UnloadController::From(incognito_browser)
                 ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(2, num_downloads_blocking);
+}
+
+// Regression test for a null-pointer dereference: if the
+// last-window-for-profile's DownloadCoreService has already been torn down
+// (returns null from the factory) while some other profile still has an
+// in-progress download, OkToCloseWithInProgressDownloads() must not
+// dereference the null service.
+IN_PROC_BROWSER_TEST_F(BrowserCloseTest,
+                       LastIncognitoWithTornDownDownloadCoreService) {
+  // Any concurrent download on another profile makes the global download
+  // count non-zero, which is required to reach the per-profile lookup below.
+  Profile* other_profile = CreateProfile();
+  MockDownloadCount(other_profile, 1);
+
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->GetProfile());
+  MakeDownloadCoreServiceNull(incognito_browser->GetProfile());
+
+  int num_downloads_blocking = 0;
+  EXPECT_EQ(UnloadController::DownloadCloseType::kOk,
+            UnloadController::From(incognito_browser)
+                ->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
+  EXPECT_EQ(num_downloads_blocking, 0);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

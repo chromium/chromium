@@ -837,9 +837,11 @@ UnloadController::OkToCloseWithInProgressDownloads(
   // If there aren't any other windows on our profile, and we're an Incognito
   // or Guest profile, and there are downloads associated with that profile,
   // those downloads would be cancelled by our window (-> profile) close.
+  // The profile's DownloadCoreService may already be torn down (e.g. during
+  // OTR profile shutdown), in which case there's nothing left to block on.
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(browser_->GetProfile());
-  if (last_window_for_profile &&
+  if (last_window_for_profile && download_core_service &&
       (download_core_service->BlockingShutdownCount() > 0) &&
       (browser_->GetProfile()->IsIncognitoProfile() ||
        browser_->GetProfile()->IsGuestSession())) {
