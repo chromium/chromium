@@ -21,6 +21,7 @@
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
 #include "components/personal_context/core/personal_context_eligibility_service.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -49,23 +50,6 @@ class AutofillAiPersonalContextAccessManagerImpl
     : public AutofillAiPersonalContextAccessManager,
       public personal_context::PersonalContextEligibilityService::Observer {
  public:
-
-  // LINT.IfChange(AutofillAiPersonalContextPrefetchTriggerResult)
-  // Represents the outcome when a prefetch trigger is evaluated for a requested
-  // entity type. Logged to UMA.
-  enum class PrefetchTriggerResult {
-    // A new network request to the backend service is initiated (Cache Miss).
-    kInitiated = 0,
-    // The fetch is skipped because the cached data is still fresh.
-    kSkippedFreshCache = 1,
-    // The fetch is skipped because a recent fetch failed and the retry delay
-    // configured in exponential backoff has not yet expired.
-    kSkippedBackoff = 2,
-    // The fetch is skipped because a request for the type is already in-flight.
-    kSkippedInFlight = 3,
-    kMaxValue = kSkippedInFlight,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextPrefetchTriggerResult)
 
   AutofillAiPersonalContextAccessManagerImpl(
       personal_context::PersonalContextService* personal_context_service,
@@ -168,8 +152,8 @@ class AutofillAiPersonalContextAccessManagerImpl
                                  std::vector<EntityType> requested_types,
                                  std::vector<ParsedEntity> parsed_entities);
 
-  // Evaluates the prefetch trigger outcome for a requested entity type.
-  PrefetchTriggerResult DeterminePrefetchTriggerResult(EntityType type) const;
+  PersonalContextPrefetchTriggerResult DeterminePrefetchTriggerResult(
+      EntityType type) const;
 
   // Evaluates whether enough time has elapsed since the last failure to
   // attempt fetching the type again, taking backoff delays into account.

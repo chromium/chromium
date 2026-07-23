@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -83,19 +84,6 @@ bool IsPersonalContextSpiiType(EntityType type) {
          EntityInstance::PersonalContextSpiiType::kSpii;
 }
 
-// Logs the unique prefetch trigger outcomes present in a batch of requested
-// entity types to UMA. Each outcome type is logged at most once per prefetch
-// request.
-void LogPersonalContextPrefetchTriggerResults(
-    const DenseSet<
-        AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult>&
-        unique_trigger_results) {
-  for (AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult
-           trigger_result : unique_trigger_results) {
-    base::UmaHistogramEnumeration(
-        "Autofill.Ai.PersonalContext.Prefetch.TriggerResult", trigger_result);
-  }
-}
 
 }  // namespace
 
@@ -135,12 +123,13 @@ void AutofillAiPersonalContextAccessManagerImpl::PrefetchContext(
   std::vector<EntityType> spii_to_request;
   spii_to_request.reserve(requested_types.size());
 
-  DenseSet<PrefetchTriggerResult> unique_trigger_results;
+  DenseSet<PersonalContextPrefetchTriggerResult> unique_trigger_results;
   for (const EntityType& type : requested_types) {
-    PrefetchTriggerResult trigger_result = DeterminePrefetchTriggerResult(type);
+    PersonalContextPrefetchTriggerResult trigger_result =
+        DeterminePrefetchTriggerResult(type);
     unique_trigger_results.insert(trigger_result);
 
-    if (trigger_result == PrefetchTriggerResult::kInitiated) {
+    if (trigger_result == PersonalContextPrefetchTriggerResult::kInitiated) {
       non_spii_and_presence_to_request.push_back(type);
       SetTypeStatus(type, RequestStatus::kPending);
 
@@ -502,31 +491,31 @@ void AutofillAiPersonalContextAccessManagerImpl::
   }
 }
 
-AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult
+PersonalContextPrefetchTriggerResult
 AutofillAiPersonalContextAccessManagerImpl::DeterminePrefetchTriggerResult(
     EntityType type) const {
   const RequestState* request_state = base::FindOrNull(prefetch_state_, type);
   if (!request_state) {
-    return PrefetchTriggerResult::kInitiated;
+    return PersonalContextPrefetchTriggerResult::kInitiated;
   }
 
   using enum RequestStatus;
   switch (request_state->status) {
     case kPending:
-      return PrefetchTriggerResult::kSkippedInFlight;
+      return PersonalContextPrefetchTriggerResult::kSkippedInFlight;
     case kSuccess:
       if (base::TimeTicks::Now() - request_state->last_update_time >
           features::kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL
               .Get()) {
-        return PrefetchTriggerResult::kInitiated;
+        return PersonalContextPrefetchTriggerResult::kInitiated;
       }
-      return PrefetchTriggerResult::kSkippedFreshCache;
+      return PersonalContextPrefetchTriggerResult::kSkippedFreshCache;
     case kFailure:
       return ShouldRetryAfterFailure(*request_state)
-                 ? PrefetchTriggerResult::kInitiated
-                 : PrefetchTriggerResult::kSkippedBackoff;
+                 ? PersonalContextPrefetchTriggerResult::kInitiated
+                 : PersonalContextPrefetchTriggerResult::kSkippedBackoff;
     case kNotStarted:
-      return PrefetchTriggerResult::kInitiated;
+      return PersonalContextPrefetchTriggerResult::kInitiated;
   }
 }
 

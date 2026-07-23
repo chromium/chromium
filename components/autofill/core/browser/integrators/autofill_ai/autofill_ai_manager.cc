@@ -50,6 +50,7 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager.h"
@@ -211,46 +212,6 @@ void PrefetchAmbientAutofillContext(AutofillClient& client,
   }
 }
 
-// Returns the readiness state of the prefetch cache for `entity_type` when the
-// user first interacts with an Ambient Autofill supported field of that type.
-PersonalContextCacheReadinessOnFirstInteraction GetCacheReadinessState(
-    const AutofillAiPersonalContextAccessManager& access_manager,
-    const EntityDataManager* entity_data_manager,
-    EntityType entity_type) {
-  using RequestStatus = AutofillAiPersonalContextAccessManager::RequestStatus;
-  RequestStatus status =
-      access_manager.GetPrefetchStatusByEntityType(entity_type);
-  switch (status) {
-    case RequestStatus::kNotStarted:
-      // Prefetch was not initiated (ineligible or type unsupported).
-      return PersonalContextCacheReadinessOnFirstInteraction::kNotStarted;
-    case RequestStatus::kPending:
-      // Prefetch request is in-flight when the user interacts.
-      return PersonalContextCacheReadinessOnFirstInteraction::kPendingInFlight;
-    case RequestStatus::kFailure:
-      // Prefetch failed.
-      return PersonalContextCacheReadinessOnFirstInteraction::kFailed;
-    case RequestStatus::kSuccess: {
-      // Prefetch succeeded. We check if the cache contains either sensitive
-      // (SPII) or non-sensitive entity data.
-      const bool has_spii_signal =
-          access_manager.ServerHasDataAvailable(entity_type);
-      const bool has_entity_data =
-          entity_data_manager &&
-          std::ranges::any_of(entity_data_manager->GetEntityInstances(),
-                              [&](const EntityInstance& entity) {
-                                return entity.type() == entity_type;
-                              });
-      return (has_spii_signal || has_entity_data)
-                 ? PersonalContextCacheReadinessOnFirstInteraction::
-                       kResolvedWithData
-                 : PersonalContextCacheReadinessOnFirstInteraction::
-                       kResolvedEmpty;
-    }
-  }
-
-  NOTREACHED();
-}
 
 }  // namespace
 

@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/autofill_ai_personal_context_access_manager_impl_test_api.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
@@ -444,17 +445,13 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   PrefetchContextSync(requested_types, {}, expected_response);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
-      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
-          kInitiated,
-      1);
+      PersonalContextPrefetchTriggerResult::kInitiated, 1);
 
   // Repeat Prefetch (Cache Fresh)
   access_manager().PrefetchContext(requested_types);
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
-      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
-          kSkippedFreshCache,
-      1);
+      PersonalContextPrefetchTriggerResult::kSkippedFreshCache, 1);
 
   // Cache TTL Expired
   FastForwardBy(base::Minutes(31));
@@ -472,9 +469,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   access_manager().PrefetchContext(requested_types);
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
-      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
-          kInitiated,
-      2);
+      PersonalContextPrefetchTriggerResult::kInitiated, 2);
 
   // Skipped in Backoff (After Failure)
   FastForwardBy(base::Minutes(31));
@@ -494,16 +489,12 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   access_manager().PrefetchContext(requested_types);
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
-      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
-          kInitiated,
-      3);
+      PersonalContextPrefetchTriggerResult::kInitiated, 3);
 
   access_manager().PrefetchContext(requested_types);
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
-      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
-          kSkippedBackoff,
-      1);
+      PersonalContextPrefetchTriggerResult::kSkippedBackoff, 1);
 
   // Skipped In-Flight (Request Pending)
   // Fast forward out of backoff first to allow a new request to be initiated.
@@ -519,17 +510,13 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
   access_manager().PrefetchContext(requested_types);
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
-      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
-          kInitiated,
-      4);
+      PersonalContextPrefetchTriggerResult::kInitiated, 4);
 
   // Call again while the previous request is still pending.
   access_manager().PrefetchContext(requested_types);
   histogram_tester.ExpectBucketCount(
       "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
-      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
-          kSkippedInFlight,
-      1);
+      PersonalContextPrefetchTriggerResult::kSkippedInFlight, 1);
 }
 
 // Tests that trigger results are only logged once per call to PrefetchContext,
@@ -550,9 +537,7 @@ TEST_F(AutofillAiPersonalContextAccessManagerImplTest,
                       expected_response, expected_response);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.PersonalContext.Prefetch.TriggerResult",
-      AutofillAiPersonalContextAccessManagerImpl::PrefetchTriggerResult::
-          kInitiated,
-      1);
+      PersonalContextPrefetchTriggerResult::kInitiated, 1);
 }
 
 // Tests that request latency and total prefetch latency for SPII entity types

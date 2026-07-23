@@ -456,6 +456,8 @@ static_library("browser") {
     "integrators/autofill_ai/metrics/autofill_ai_metrics.h",
     "integrators/autofill_ai/metrics/autofill_ai_ukm_logger.cc",
     "integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h",
+    "integrators/autofill_ai/metrics/personal_context_metrics.cc",
+    "integrators/autofill_ai/metrics/personal_context_metrics.h",
     "integrators/compose/autofill_compose_delegate.h",
     "integrators/identity_credential/identity_credential_delegate.h",
     "integrators/one_time_tokens/metrics/otp_form_event_logger.cc",

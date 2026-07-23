@@ -31,19 +31,6 @@ enum class AutofillAiOptInFunnelEvents {
 
 void LogOptInFunnelEvent(AutofillAiOptInFunnelEvents event);
 
-// LINT.IfChange(AutofillAiPersonalContextCacheReadinessOnFirstInteraction)
-enum class PersonalContextCacheReadinessOnFirstInteraction {
-  kResolvedWithData = 0,
-  kResolvedEmpty = 1,
-  kPendingInFlight = 2,
-  kFailed = 3,
-  kNotStarted = 4,
-  kMaxValue = kNotStarted,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPersonalContextCacheReadinessOnFirstInteraction)
-
-void LogPersonalContextCacheReadinessOnFirstInteraction(
-    PersonalContextCacheReadinessOnFirstInteraction readiness);
 
 void LogLocalEntitiesDeduplicationMetrics(
     const base::flat_map<EntityType, size_t>&
