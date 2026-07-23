@@ -245,6 +245,8 @@ class CORE_EXPORT HTMLVideoElement final
 
   void UpdatePictureInPictureAvailability();
 
+  void MaybeEnterImmersivePictureInPicture();
+
   void OnIntersectionChangedForLazyLoad(
       const HeapVector<Member<IntersectionObserverEntry>>& entries);
 
@@ -315,6 +317,8 @@ class CORE_EXPORT HTMLVideoElement final
 
   // True if poster loading was deferred because loading=lazy.
   bool poster_deferred_for_lazy_load_ : 1 = false;
+
+  bool has_received_first_frame_ : 1 = false;
 
   // Used to fulfill blink::Image requests (CreateImage(),
   // GetSourceImageForCanvas(), etc). Created on demand.

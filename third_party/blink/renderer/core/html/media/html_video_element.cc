@@ -744,6 +744,8 @@ bool HTMLVideoElement::HasReadableVideoFrame() const {
 void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
                                     size_t bytes_to_first_frame) {
   DCHECK(GetWebMediaPlayer());
+  has_received_first_frame_ = true;
+
   LayoutObject* layout_object = GetLayoutObject();
   // HasLocalBorderBoxProperties will be false in some cases, specifically
   // picture-in-picture video may return false here.
@@ -766,6 +768,8 @@ void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
       video_timing_ = video_timing;
     }
   }
+
+  MaybeEnterImmersivePictureInPicture();
 }
 
 void HTMLVideoElement::EnterFullscreen() {
@@ -1135,12 +1139,19 @@ void HTMLVideoElement::SetIsEffectivelyFullscreen(
   // If the video becomes effectively fullscreen, enter an immersive
   // Picture-in-Picture session if enabled.
   if (is_effectively_fullscreen_ && !was_effectively_fullscreen) {
-    if (GetDocument().GetSettings() &&
-        GetDocument().GetSettings()->GetImmersiveVideoPlaybackEnabled()) {
-      if (!PictureInPictureController::IsElementInPictureInPicture(this)) {
-        PictureInPictureController::From(GetDocument())
-            .EnterPictureInPictureImmersive(*this);
-      }
+    MaybeEnterImmersivePictureInPicture();
+  }
+}
+
+void HTMLVideoElement::MaybeEnterImmersivePictureInPicture() {
+  if (!is_effectively_fullscreen_ || !has_received_first_frame_) {
+    return;
+  }
+  if (GetDocument().GetSettings() &&
+      GetDocument().GetSettings()->GetImmersiveVideoPlaybackEnabled()) {
+    if (!PictureInPictureController::IsElementInPictureInPicture(this)) {
+      PictureInPictureController::From(GetDocument())
+          .EnterPictureInPictureImmersive(*this);
     }
   }
 }
@@ -1207,6 +1218,7 @@ void HTMLVideoElement::OnWebMediaPlayerCreated() {
 }
 
 void HTMLVideoElement::OnWebMediaPlayerCleared() {
+  has_received_first_frame_ = false;
   if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this))
     vfc_requester->OnWebMediaPlayerCleared();
 

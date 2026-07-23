@@ -11,9 +11,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/html_media_test_helper.h"
 #include "third_party/blink/renderer/core/html/media/media_video_visibility_tracker.h"
@@ -42,6 +44,53 @@ using testing::Return;
 namespace blink {
 
 namespace {
+
+class StubPictureInPictureController : public PictureInPictureController {
+ public:
+  explicit StubPictureInPictureController(Document& document)
+      : PictureInPictureController(document) {}
+
+  void EnterPictureInPicture(
+      HTMLVideoElement*,
+      ScriptPromiseResolver<PictureInPictureWindow>*) override {}
+  void EnterPictureInPictureImmersive(
+      HTMLVideoElement& video_element) override {
+    enter_immersive_called_ = true;
+  }
+  void ExitPictureInPicture(HTMLVideoElement*,
+                            ScriptPromiseResolver<IDLUndefined>*) override {}
+  Status IsElementAllowed(const HTMLVideoElement&,
+                          bool report_failure) const override {
+    return Status::kEnabled;
+  }
+  void OnExitedPictureInPicture(ScriptPromiseResolver<IDLUndefined>*) override {
+  }
+  void OnPictureInPictureStateChange() override {}
+  void OnMediaPositionStateChanged(
+      const media_session::mojom::blink::MediaPositionPtr&) override {}
+  Element* PictureInPictureElement() const override { return nullptr; }
+  Element* PictureInPictureElement(TreeScope&) const override {
+    return nullptr;
+  }
+  bool PictureInPictureEnabled() const override { return true; }
+
+  bool enter_immersive_called() const { return enter_immersive_called_; }
+  void reset_enter_immersive_called() { enter_immersive_called_ = false; }
+
+ protected:
+  bool IsPictureInPictureElement(const Element*) const override {
+    return false;
+  }
+  LocalDOMWindow* GetDocumentPictureInPictureWindow() const override {
+    return nullptr;
+  }
+  LocalDOMWindow* GetDocumentPictureInPictureOwner() const override {
+    return nullptr;
+  }
+
+ private:
+  bool enter_immersive_called_ = false;
+};
 
 class HTMLVideoElementMockMediaPlayer : public EmptyWebMediaPlayer {
  public:
@@ -164,6 +213,8 @@ class HTMLVideoElementTest : public PaintTestConfigurations,
   }
 
   void SetFakeCcLayer(cc::Layer* layer) { video_->SetCcLayer(layer); }
+
+  void ClearMediaPlayer() { video_->OnWebMediaPlayerCleared(); }
 
   HTMLVideoElement* video() { return video_.Get(); }
 
@@ -742,6 +793,47 @@ TEST_P(HTMLVideoElementTest, CanvasSubtreeChangeTriggersEvents) {
   video->remove();
   UpdateAllLifecyclePhasesForTest();
   testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+}
+
+TEST_P(HTMLVideoElementTest,
+       ImmersiveVideoPlaybackRequiresFirstFrameAndFullscreen) {
+  video()->SetSrc(AtomicString("http://example.com/foo.mp4"));
+  test::RunPendingTasks();
+
+  // Enable immersive video playback setting.
+  GetDocument().GetSettings()->SetImmersiveVideoPlaybackEnabled(true);
+
+  // Set up the stub PictureInPictureController.
+  auto* pip_controller =
+      MakeGarbageCollected<StubPictureInPictureController>(GetDocument());
+  Supplement<Document>::ProvideTo(GetDocument(), pip_controller);
+
+  // Scenario 1: Transition to effectively fullscreen while first frame has NOT
+  // arrived.
+  video()->SetIsEffectivelyFullscreen(
+      WebFullscreenVideoStatus::kFullscreenAndPictureInPictureEnabled);
+  EXPECT_FALSE(pip_controller->enter_immersive_called());
+
+  // First frame arrives -> should trigger immersive PiP.
+  video()->OnFirstFrame(base::TimeTicks::Now(), 0);
+  EXPECT_TRUE(pip_controller->enter_immersive_called());
+
+  // Reset the stub.
+  pip_controller->reset_enter_immersive_called();
+
+  // Clearing the player resets first frame received.
+  ClearMediaPlayer();
+
+  // Scenario 2: First frame arrives while NOT effectively fullscreen.
+  video()->SetIsEffectivelyFullscreen(
+      WebFullscreenVideoStatus::kNotEffectivelyFullscreen);
+  video()->OnFirstFrame(base::TimeTicks::Now(), 0);
+  EXPECT_FALSE(pip_controller->enter_immersive_called());
+
+  // Transition to effectively fullscreen -> should trigger immersive PiP.
+  video()->SetIsEffectivelyFullscreen(
+      WebFullscreenVideoStatus::kFullscreenAndPictureInPictureEnabled);
+  EXPECT_TRUE(pip_controller->enter_immersive_called());
 }
 
 }  // namespace blink
