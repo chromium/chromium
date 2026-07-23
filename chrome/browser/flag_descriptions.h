@@ -2968,6 +2968,11 @@ inline constexpr char kInlinePdfV2Description[] =
     "Provides users a seamless, productive, and performant way to view, "
     "navigate, and edit PDF files inline in Clank.";
 
+inline constexpr char kInlinePdfV2IncognitoName[] =
+    "Inline PDF V2 Incognito";
+inline constexpr char kInlinePdfV2IncognitoDescription[] =
+    "Enables inline PDF V2 in Incognito mode.";
+
 inline constexpr char kInlineScriptCacheName[] = "Inline Script Cache";
 inline constexpr char kInlineScriptCacheDescription[] =
     "Enables caching of inline scripts. This flag only works if "

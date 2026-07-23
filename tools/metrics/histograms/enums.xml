@@ -10011,6 +10011,7 @@ from previous Chrome versions.
   <int value="-1425927931" label="LensOverlayImageContextMenuActions:enabled"/>
   <int value="-1425919952" label="EnableLauncherSearchNormalization:enabled"/>
   <int value="-1425697035" label="AppProvisioningStatic:enabled"/>
+  <int value="-1425572100" label="InlinePdfV2Incognito:disabled"/>
   <int value="-1425360465" label="BatterySaverModeAvailable:disabled"/>
   <int value="-1423429743" label="MakeIdentityManagerSourceOfAccounts:enabled"/>
   <int value="-1423348289" label="NupPrinting:disabled"/>
@@ -14207,6 +14208,7 @@ from previous Chrome versions.
   <int value="-90521375" label="PDFTwoUpView:enabled"/>
   <int value="-90410008" label="WebUiNtpAndroidTheming:enabled"/>
   <int value="-90032223" label="BuiltInModuleInfra:disabled"/>
+  <int value="-90018824" label="InlinePdfV2Incognito:enabled"/>
   <int value="-89812525"
       label="AutofillEnableMerchantOptOutClientSideUrlFiltering:enabled"/>
   <int value="-89690053" label="MaterialDesignUserManager:enabled"/>
