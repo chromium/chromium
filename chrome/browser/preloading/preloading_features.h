@@ -26,6 +26,9 @@ BASE_DECLARE_FEATURE_PARAM(int, kMaxBlackoutDurationSeconds);
 BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForBookmarkBar);
 BASE_DECLARE_FEATURE(kPrerender2WarmUpCompositorForNewTabPage);
 
+// Controls whether Omnibox Direct URL Input (DUI) prerendering is enabled.
+BASE_DECLARE_FEATURE(kOmniboxDuiPrerendering);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_PRELOADING_PRELOADING_FEATURES_H_

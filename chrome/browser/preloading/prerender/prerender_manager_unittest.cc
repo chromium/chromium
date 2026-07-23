@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
@@ -227,6 +228,25 @@ TEST_F(PrerenderManagerTest, StartCleanPrerenderDirectUrlInput) {
   content::PrerenderHostId prerender_host_id =
       prerender_helper().GetHostForUrl(prerendering_url);
   EXPECT_TRUE(prerender_host_id);
+}
+
+TEST_F(PrerenderManagerTest, StartPrerenderDirectUrlInputDisabledByFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kOmniboxDuiPrerendering);
+
+  GURL prerendering_url = GetUrl("/foo");
+  auto* preloading_data = content::PreloadingData::GetOrCreateForWebContents(
+      GetActiveWebContents());
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          chrome_preloading_predictor::kOmniboxDirectURLInput,
+          content::PreloadingType::kPrerender,
+          content::PreloadingData::GetSameURLMatcher(prerendering_url),
+          GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  auto handle = prerender_manager()->StartPrerenderDirectUrlInput(
+      prerendering_url, *preloading_attempt);
+  EXPECT_FALSE(handle);
 }
 
 // Test that the PreloadingTriggeringOutcome is set to kFailure when the DUI

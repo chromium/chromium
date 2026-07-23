@@ -53,4 +53,6 @@ BASE_FEATURE(kPrerender2WarmUpCompositorForBookmarkBar,
 BASE_FEATURE(kPrerender2WarmUpCompositorForNewTabPage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOmniboxDuiPrerendering, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features

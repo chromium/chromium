@@ -20,6 +20,7 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
@@ -202,6 +203,12 @@ base::WeakPtr<content::PrerenderHandle>
 PrerenderManager::StartPrerenderDirectUrlInput(
     const GURL& prerendering_url,
     content::PreloadingAttempt& preloading_attempt) {
+  if (!base::FeatureList::IsEnabled(features::kOmniboxDuiPrerendering)) {
+    preloading_attempt.SetEligibility(
+        content::PreloadingEligibility::kPreloadingDisabled);
+    return nullptr;
+  }
+
   if (direct_url_input_prerender_handle_) {
     if (direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
         prerendering_url) {

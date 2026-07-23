@@ -25,6 +25,7 @@
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
@@ -234,7 +235,8 @@ void AutocompleteActionPredictor::StartPrerendering(
 AutocompleteActionPredictor::Action
 AutocompleteActionPredictor::DecideActionByConfidence(double confidence) {
   Action action = ACTION_NONE;
-  if (confidence >= kPrerenderDUIConfidenceCutoff.Get()) {
+  if (base::FeatureList::IsEnabled(features::kOmniboxDuiPrerendering) &&
+      confidence >= kPrerenderDUIConfidenceCutoff.Get()) {
     action = ACTION_PRERENDER;
   } else if (confidence >= kPreconnectConfidenceCutoff.Get()) {
     action = ACTION_PRECONNECT;

@@ -24,6 +24,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
@@ -723,6 +724,27 @@ TEST_P(AutocompleteActionPredictorTest, UpdateDatabaseFromTransitionalMatches) {
   EXPECT_TRUE(it != db_cache()->end());
   ASSERT_EQ(it->second.number_of_hits, 0);
   ASSERT_EQ(it->second.number_of_misses, 1);
+}
+
+TEST_P(AutocompleteActionPredictorTest,
+       DecideActionByConfidenceWithDuiPrerenderingFeatureFlag) {
+  // When enabled (default), confidence above threshold returns
+  // ACTION_PRERENDER.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(features::kOmniboxDuiPrerendering);
+    EXPECT_EQ(AutocompleteActionPredictor::ACTION_PRERENDER,
+              AutocompleteActionPredictor::DecideActionByConfidence(0.8));
+  }
+
+  // When disabled, confidence above threshold does not return ACTION_PRERENDER.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kOmniboxDuiPrerendering);
+    EXPECT_NE(AutocompleteActionPredictor::ACTION_PRERENDER,
+              AutocompleteActionPredictor::DecideActionByConfidence(0.8));
+  }
 }
 
 }  // namespace predictors
