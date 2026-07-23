@@ -73,6 +73,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasskeyDetailsCard) {
   RunTest("password_manager/passkey_details_card_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasswordChangeDetails) {
+  RunTest("password_manager/password_change_details_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerUITest, PasswordDetailsCard) {
   RunTest("password_manager/password_details_card_test.js", "mocha.run()");
 }

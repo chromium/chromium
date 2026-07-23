@@ -34,6 +34,7 @@ export {NotificationCardsProxyImpl} from './notification_cards/notification_card
 export {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
 export type {PasskeysBrowserProxy} from './passkeys_browser_proxy.js';
 // </if>
+export {PasswordChangeDetailsElement} from './password_change_details.js';
 export {PasswordDetailsSectionElement} from './password_details_section.js';
 export {PasswordListItemElement} from './password_list_item.js';
 export {PasswordManagerAppElement} from './password_manager_app.js';
