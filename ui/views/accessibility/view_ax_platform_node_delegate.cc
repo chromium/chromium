@@ -595,6 +595,18 @@ bool ViewAXPlatformNodeDelegate::IsLeaf() const {
   return ViewAccessibility::IsLeaf() || AXPlatformNodeDelegate::IsLeaf();
 }
 
+bool ViewAXPlatformNodeDelegate::IsIgnored() const {
+  if (GetIsIgnored()) {
+    return true;
+  }
+
+  // ViewAXPlatformNodeDelegate::GetChildCount() gives virtual children
+  // precedence over the real ones, hiding them and their subtrees from
+  // platform APIs.
+  const View* parent = view()->parent();
+  return parent && !parent->GetViewAccessibility().virtual_children().empty();
+}
+
 bool ViewAXPlatformNodeDelegate::IsInvisibleOrIgnored() const {
   return GetIsIgnored() || GetData().IsInvisible();
 }

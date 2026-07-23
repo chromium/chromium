@@ -194,6 +194,12 @@ std::optional<size_t> AXPlatformNodeDelegate::GetIndexInParent() const {
   if (!parent)
     return std::nullopt;
 
+  // An ignored node is left out of the children its parent exposes, so it has
+  // no index there.
+  if (IsIgnored()) {
+    return std::nullopt;
+  }
+
   for (size_t i = 0; i < parent->GetChildCount(); i++) {
     AXPlatformNode* child_node =
         AXPlatformNode::FromNativeViewAccessible(parent->ChildAtIndex(i));

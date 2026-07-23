@@ -88,6 +88,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   gfx::NativeViewAccessible GetParent() const override;
   bool IsLeaf() const override;
+  bool IsIgnored() const override;
   bool IsInvisibleOrIgnored() const override;
   bool IsFocused() const override;
   gfx::Rect GetBoundsRect(

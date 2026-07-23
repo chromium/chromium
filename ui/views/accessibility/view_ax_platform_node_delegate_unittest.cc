@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -612,6 +613,61 @@ TEST_F(ViewAXPlatformNodeDelegateTest, LabelIsChildOfButton) {
   EXPECT_EQ(button_->GetNativeViewAccessible(),
             label_accessibility()->GetParent());
   EXPECT_EQ(ax::mojom::Role::kStaticText, label_accessibility()->GetRole());
+}
+
+// An ignored view is left out of its parent's children, but still reports that
+// parent. Asking it for its index in parent therefore searches a list it can
+// never appear in.
+TEST_F(ViewAXPlatformNodeDelegateTest, IgnoredChildIndexInParent) {
+  button_->SetInstallFocusRingOnFocus(false);
+
+  // A focusable button ignores all of its children, and a parent with no
+  // unignored children is a leaf, which is handled separately. So make the
+  // button unfocusable and give the label a sibling.
+  button_->SetFocusBehavior(View::FocusBehavior::NEVER);
+  button_->AddChildView(std::make_unique<Label>());
+  label_->GetViewAccessibility().SetIsIgnored(true);
+
+  ASSERT_EQ(1u, button_accessibility()->GetChildCount());
+  ASSERT_NE(label_->GetNativeViewAccessible(),
+            button_accessibility()->ChildAtIndex(0));
+  ASSERT_EQ(button_->GetNativeViewAccessible(),
+            label_accessibility()->GetParent());
+
+  auto* label_node = static_cast<ui::AXPlatformNodeBase*>(
+      ui::AXPlatformNode::FromNativeViewAccessible(
+          label_->GetNativeViewAccessible()));
+  ASSERT_NE(nullptr, label_node);
+
+  EXPECT_FALSE(label_node->GetIndexInParent().has_value());
+}
+
+// A virtual child hides all of its parent's real children, but those children
+// still report that parent. Asking one of them for its index in parent
+// therefore searches a list it can never appear in.
+TEST_F(ViewAXPlatformNodeDelegateTest, HiddenRealChildIndexInParent) {
+  button_->SetInstallFocusRingOnFocus(false);
+  button_->SetFocusBehavior(View::FocusBehavior::NEVER);
+
+  auto virtual_label = std::make_unique<AXVirtualView>();
+  virtual_label->SetRole(ax::mojom::Role::kStaticText);
+  virtual_label->SetName("Virtual label");
+  button_->GetViewAccessibility().AddVirtualChildView(std::move(virtual_label));
+
+  // The virtual child is now the button's only child, and the real label is
+  // nowhere among them.
+  ASSERT_EQ(1u, button_accessibility()->GetChildCount());
+  ASSERT_NE(label_->GetNativeViewAccessible(),
+            button_accessibility()->ChildAtIndex(0));
+  ASSERT_EQ(button_->GetNativeViewAccessible(),
+            label_accessibility()->GetParent());
+
+  auto* label_node = static_cast<ui::AXPlatformNodeBase*>(
+      ui::AXPlatformNode::FromNativeViewAccessible(
+          label_->GetNativeViewAccessible()));
+  ASSERT_NE(nullptr, label_node);
+
+  EXPECT_FALSE(label_node->GetIndexInParent().has_value());
 }
 
 // Verify Views with invisible ancestors have ax::mojom::State::kInvisible.

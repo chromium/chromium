@@ -299,10 +299,10 @@ std::optional<size_t> AXPlatformNodeBase::GetIndexInParent() {
 
   // Ask the delegate for the index in parent, and return it if it's plausible.
   //
-  // Delegates are allowed to not implement this (ViewsAXPlatformNodeDelegate
-  // returns -1). Also, delegates may not know the correct answer if this
-  // node is the root of a tree that's embedded in another tree, in which
-  // case the delegate should return -1 and we'll compute it.
+  // A delegate returns nothing both when it cannot know the index, which is
+  // the case when this node is the root of a tree embedded in another tree,
+  // and when there is genuinely no index to report. The two are not
+  // distinguishable here, so the search below runs for either.
   auto index = delegate->GetIndexInParent();
   if (index.has_value() && index.value() < child_count)
     return index;
@@ -319,8 +319,11 @@ std::optional<size_t> AXPlatformNodeBase::GetIndexInParent() {
     return std::nullopt;
   }
 
-  DCHECK(false)
-      << "Unable to find the child in the list of its parent's children.";
+  // An ignored node is not among the children its parent exposes.
+  DCHECK(delegate->IsIgnored())
+      << "Unable to find the unignored child in the list of its parent's "
+         "children.\n* Child: "
+      << *this << "\n* Parent's subtree: " << parent->SubtreeToString();
   return std::nullopt;
 }
 
