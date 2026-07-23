@@ -619,6 +619,12 @@ ContextualTasksSidePanelCoordinator::
   if (!web_contents) {
     return nullptr;
   }
+  if (auto* helper =
+          ContextualSearchWebContentsHelper::FromWebContents(web_contents)) {
+    if (helper->session_handle()) {
+      return helper->session_handle();
+    }
+  }
   auto* web_ui_interface = GetWebUiInterface(web_contents);
   return web_ui_interface
              ? web_ui_interface->GetOrCreateContextualSessionHandle()
@@ -936,7 +942,7 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
     GURL url;
     if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
       url = ui_service->GetInitialUrlForTask(task_id).value_or(
-          ui_service->GetDefaultAiPageUrlForTask(task_id));
+          GURL("about:blank"));
     } else {
       url = ui_service->GetContextualTaskUrlForTask(task_id);
     }

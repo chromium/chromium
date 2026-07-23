@@ -251,6 +251,12 @@ bool ShouldReloadZeroState(const GURL& url, ContextualTasksUiService* service) {
 }
 #endif
 
+void LoadUrlInSidePanel(content::WebContents* web_contents, const GURL& url) {
+  web_contents->GetController().LoadURL(url, content::Referrer(),
+                                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                        std::string());
+}
+
 }  // namespace
 
 ContextualTasksUiService::ContextualTasksUiService(
@@ -1191,7 +1197,9 @@ bool ContextualTasksUiService::HandleNavigation(
         initiator_frame_token,
     const blink::mojom::WindowFeatures& window_features) {
   if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksRearchitecture)) {
+          contextual_tasks::kContextualTasksRearchitecture) ||
+      base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksSidePanelRearchitecture)) {
     return false;
   }
   return HandleNavigationImpl(
@@ -2611,7 +2619,19 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   // initial pull request via GetUrlForTask.
   if (helper->task_id().has_value() &&
       IsTaskWaitingForUrl(helper->task_id().value())) {
+    if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+      LoadUrlInSidePanel(panel_contents, url);
+    }
     OnInitialThreadUrlAvailable(helper->task_id().value(), url);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+    if (ShouldReloadZeroState(url, this)) {
+      // TODO(crbug.com/537842795): Understand if this flow is possible in the
+      // rearchitecture and handle accordingly. For now, just load the URL.
+    }
+    LoadUrlInSidePanel(panel_contents, url);
     return;
   }
 
@@ -2635,10 +2655,16 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
       return;
     }
 
-    content::OpenURLParams url_params(
-        url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-        ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
-    web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
+    if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+      panel_contents->GetController().LoadURL(url, content::Referrer(),
+                                              ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                              std::string());
+    } else {
+      content::OpenURLParams url_params(
+          url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+          ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+      web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
+    }
   }
 }
 
