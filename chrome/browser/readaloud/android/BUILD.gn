@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/BoyerMoore.java",
+    "java/src/org/chromium/chrome/browser/readaloud/NativeMetadata.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerSupplier.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIphController.java",
@@ -223,6 +224,7 @@ android_library("test_support_java") {
 robolectric_library("junit") {
   testonly = true
   sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/NativeMetadataUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIphControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayerUnitTest.java",
