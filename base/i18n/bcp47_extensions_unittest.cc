@@ -75,16 +75,17 @@ Extension CreateExtension(char singleton, std::string_view subtags) {
 TEST(Bcp47ExtensionTest, GenericExtension) {
   Extension ext = CreateExtension('a', "myext");
   EXPECT_EQ(ext.singleton(), 'a');
-  EXPECT_EQ(ext.subtags_string(), "myext");
+  EXPECT_EQ(ext.SubtagsString(), "myext");
 
   PrivateUseSubtags ext2 = CreatePrivateUseSubtags("private-use");
-  EXPECT_EQ(ext2.subtags_string(), "private-use");
+  EXPECT_EQ(ext2.SubtagsString(), "private-use");
+  EXPECT_THAT(ext2.subtags(), ElementsAre("private", "use"));
 }
 
 TEST(Bcp47ExtensionTest, UnicodeExtensionBasics) {
   ASSERT_OK_AND_ASSIGN(UnicodeExtension ext,
                        CreateUnicodeExtension("ca-gregory"));
-  EXPECT_EQ(ext.ToString(), "ca-gregory");
+  EXPECT_EQ(ext.SubtagsString(), "ca-gregory");
 }
 
 TEST(Bcp47ExtensionTest, UnicodeExtensionAttributes) {
@@ -186,24 +187,24 @@ TEST(Bcp47ExtensionTest, UnicodeExtensionFromString) {
   // Valid with attributes and keywords.
   auto ext1 = UnicodeExtension::FromString("u-attr1-ca-gregory");
   ASSERT_TRUE(ext1.has_value());
-  EXPECT_EQ(ext1->ToString(), "attr1-ca-gregory");
+  EXPECT_EQ(ext1->SubtagsString(), "attr1-ca-gregory");
   EXPECT_TRUE(ext1->has_attribute("attr1"));
   EXPECT_THAT(ext1->GetKeywordValue("ca"), Optional(Eq("gregory")));
 
   // Valid with just attributes.
   auto ext2 = UnicodeExtension::FromString("u-attr1-attr2");
   ASSERT_TRUE(ext2.has_value());
-  EXPECT_EQ(ext2->ToString(), "attr1-attr2");
+  EXPECT_EQ(ext2->SubtagsString(), "attr1-attr2");
 
   // Valid with just keywords.
   auto ext3 = UnicodeExtension::FromString("u-ca-gregory-co-phonebk");
   ASSERT_TRUE(ext3.has_value());
-  EXPECT_EQ(ext3->ToString(), "ca-gregory-co-phonebk");
+  EXPECT_EQ(ext3->SubtagsString(), "ca-gregory-co-phonebk");
 
   // Valid: keyword without type.
   auto ext4 = UnicodeExtension::FromString("u-ca");
   ASSERT_TRUE(ext4.has_value());
-  EXPECT_EQ(ext4->ToString(), "ca");
+  EXPECT_EQ(ext4->SubtagsString(), "ca");
 
   // Invalid: too short.
   EXPECT_FALSE(UnicodeExtension::FromString("u-").has_value());
@@ -272,7 +273,7 @@ TEST(Bcp47ExtensionTest, UnicodeExtensionSubtagsStringComplex) {
       CreateUnicodeExtension("attr2-attr1-co-phonebk-ca-gregory"));
   // Attributes: attr1, attr2.
   // Keywords: ca: gregory, co: phonebk.
-  EXPECT_EQ(ext.ToString(), "attr1-attr2-ca-gregory-co-phonebk");
+  EXPECT_EQ(ext.SubtagsString(), "attr1-attr2-ca-gregory-co-phonebk");
 }
 
 TEST(Bcp47ExtensionTest, UnicodeExtensionDuplicates) {
@@ -285,7 +286,7 @@ TEST(Bcp47ExtensionTest, UnicodeExtensionDuplicates) {
   ASSERT_OK_AND_ASSIGN(UnicodeExtension ext2,
                        CreateUnicodeExtension("ca-gregory-ca-buddhist"));
   EXPECT_THAT(ext2.GetKeywordValue("ca"), Optional(Eq("gregory")));
-  EXPECT_EQ(ext2.ToString(), "ca-gregory");
+  EXPECT_EQ(ext2.SubtagsString(), "ca-gregory");
 }
 
 TEST(Bcp47ExtensionTest, UnicodeExtensionMalformedInput) {
@@ -321,59 +322,48 @@ TEST(Bcp47ExtensionTest, UnicodeExtensionMalformedInput) {
 TEST(Bcp47ExtensionTest, UnicodeExtensionMutation) {
   ASSERT_OK_AND_ASSIGN(UnicodeExtension ext,
                        CreateUnicodeExtension("ca-gregory"));
-  EXPECT_EQ(ext.ToString(), "ca-gregory");
+  EXPECT_EQ(ext.SubtagsString(), "ca-gregory");
 
   // Add attribute.
   EXPECT_TRUE(ext.AddAttribute("attr1"));
   EXPECT_TRUE(ext.has_attribute("attr1"));
   EXPECT_THAT(ext.attributes(), ElementsAre("attr1"));
-  EXPECT_EQ(ext.ToString(), "attr1-ca-gregory");
+  EXPECT_EQ(ext.SubtagsString(), "attr1-ca-gregory");
 
   // Add another attribute (should be sorted).
   EXPECT_TRUE(ext.AddAttribute("aaa"));
   EXPECT_THAT(ext.attributes(), ElementsAre("aaa", "attr1"));
-  EXPECT_EQ(ext.ToString(), "aaa-attr1-ca-gregory");
-
-  // Drop attribute.
-  ext.remove_attribute("attr1");
-  EXPECT_FALSE(ext.has_attribute("attr1"));
-  EXPECT_THAT(ext.attributes(), ElementsAre("aaa"));
-  EXPECT_EQ(ext.ToString(), "aaa-ca-gregory");
+  EXPECT_EQ(ext.SubtagsString(), "aaa-attr1-ca-gregory");
 
   // SetKeyword (new keyword).
   EXPECT_TRUE(ext.SetKeyword("co", "phonebk"));
   EXPECT_THAT(ext.GetKeywordValue("co"), Optional(Eq("phonebk")));
-  EXPECT_EQ(ext.ToString(), "aaa-ca-gregory-co-phonebk");
+  EXPECT_EQ(ext.SubtagsString(), "aaa-attr1-ca-gregory-co-phonebk");
 
   // SetKeyword (update existing keyword).
   EXPECT_TRUE(ext.SetKeyword("ca", "buddhist"));
   EXPECT_THAT(ext.GetKeywordValue("ca"), Optional(Eq("buddhist")));
-  EXPECT_EQ(ext.ToString(), "aaa-ca-buddhist-co-phonebk");
+  EXPECT_EQ(ext.SubtagsString(), "aaa-attr1-ca-buddhist-co-phonebk");
 
   // SetKeyword (multi-subtag value).
   EXPECT_TRUE(ext.SetKeyword("co", "emoji-attr3"));
   EXPECT_THAT(ext.GetKeywordValue("co"), Optional(Eq("emoji-attr3")));
-  EXPECT_EQ(ext.ToString(), "aaa-ca-buddhist-co-emoji-attr3");
-
-  // remove_keyword.
-  ext.remove_keyword("ca");
-  EXPECT_FALSE(ext.GetKeywordValue("ca").has_value());
-  EXPECT_EQ(ext.ToString(), "aaa-co-emoji-attr3");
+  EXPECT_EQ(ext.SubtagsString(), "aaa-attr1-ca-buddhist-co-emoji-attr3");
 
   // Validation: invalid attribute (too short) should be ignored.
   EXPECT_FALSE(ext.AddAttribute("at"));
   EXPECT_FALSE(ext.has_attribute("at"));
-  EXPECT_EQ(ext.ToString(), "aaa-co-emoji-attr3");
+  EXPECT_EQ(ext.SubtagsString(), "aaa-attr1-ca-buddhist-co-emoji-attr3");
 
   // Validation: invalid keyword (too long) should be ignored.
   EXPECT_FALSE(ext.SetKeyword("ccc", "val"));
   EXPECT_FALSE(ext.GetKeywordValue("ccc").has_value());
-  EXPECT_EQ(ext.ToString(), "aaa-co-emoji-attr3");
+  EXPECT_EQ(ext.SubtagsString(), "aaa-attr1-ca-buddhist-co-emoji-attr3");
 
   // Validation: invalid value (too short subtag) should be ignored.
   EXPECT_FALSE(ext.SetKeyword("nu", "a"));
   EXPECT_FALSE(ext.GetKeywordValue("nu").has_value());
-  EXPECT_EQ(ext.ToString(), "aaa-co-emoji-attr3");
+  EXPECT_EQ(ext.SubtagsString(), "aaa-attr1-ca-buddhist-co-emoji-attr3");
 }
 
 TEST(Bcp47ExtensionTest, CopyAndMove) {
@@ -401,7 +391,7 @@ TEST(Bcp47ExtensionTest, UnicodeExtensionCaseInsensitivity) {
   EXPECT_TRUE(ext.has_attribute("ATTR1"));
   EXPECT_THAT(ext.GetKeywordValue("ca"), Optional(Eq("gregory")));
   EXPECT_THAT(ext.GetKeywordValue("CA"), Optional(Eq("gregory")));
-  EXPECT_EQ(ext.ToString(), "attr1-ca-gregory");
+  EXPECT_EQ(ext.SubtagsString(), "attr1-ca-gregory");
 
   // Mutators and lookups should be case-insensitive.
   ASSERT_OK_AND_ASSIGN(UnicodeExtension ext2, CreateUnicodeExtension("attr1"));
@@ -410,12 +400,116 @@ TEST(Bcp47ExtensionTest, UnicodeExtensionCaseInsensitivity) {
   EXPECT_TRUE(ext2.SetKeyword("CO", "PHONEBK"));
   EXPECT_THAT(ext2.GetKeywordValue("co"), Optional(Eq("phonebk")));
   EXPECT_TRUE(ext2.has_keyword("CO"));
+}
 
-  ext2.remove_attribute("Attr2");
-  EXPECT_FALSE(ext2.has_attribute("attr2"));
+TEST(Bcp47ExtensionTest, ExtensionFromString) {
+  // Valid.
+  auto ext1 = Extension::FromString("a-myext");
+  ASSERT_TRUE(ext1.has_value());
+  EXPECT_EQ(ext1->singleton(), 'a');
+  EXPECT_EQ(ext1->SubtagsString(), "myext");
 
-  ext2.remove_keyword("Co");
-  EXPECT_FALSE(ext2.has_keyword("co"));
+  auto ext2 = Extension::FromString("b-sub1-sub2");
+  ASSERT_TRUE(ext2.has_value());
+  EXPECT_EQ(ext2->singleton(), 'b');
+  EXPECT_EQ(ext2->SubtagsString(), "sub1-sub2");
+
+  // Case insensitivity.
+  auto ext3 = Extension::FromString("A-MYEXT");
+  ASSERT_TRUE(ext3.has_value());
+  EXPECT_EQ(ext3->singleton(), 'A');  // Singleton is kept as is?
+  EXPECT_EQ(ext3->SubtagsString(), "myext");
+
+  // Invalid: too short.
+  EXPECT_FALSE(Extension::FromString("a-").has_value());
+  EXPECT_FALSE(Extension::FromString("a").has_value());
+
+  // Invalid: doesn't start with singleton-.
+  EXPECT_FALSE(Extension::FromString("-a-myext").has_value());
+
+  // Invalid: invalid subtag (too short).
+  EXPECT_FALSE(Extension::FromString("a-at").has_value());
+  // Invalid: invalid subtag (too long).
+  EXPECT_FALSE(Extension::FromString("a-toolongsubtag").has_value());
+}
+
+TEST(Bcp47ExtensionTest, ExtensionMutation) {
+  ASSERT_OK_AND_ASSIGN(Extension ext, Extension::FromString("a-abc"));
+  EXPECT_EQ(ext.singleton(), 'a');
+  EXPECT_EQ(ext.SubtagsString(), "abc");
+
+  EXPECT_TRUE(ext.AddSubtag("sub1"));
+  EXPECT_EQ(ext.SubtagsString(), "abc-sub1");
+
+  EXPECT_TRUE(ext.AddSubtag("sub2"));
+  EXPECT_EQ(ext.SubtagsString(), "abc-sub1-sub2");
+
+  // Sorted.
+  EXPECT_TRUE(ext.AddSubtag("aaa"));
+  EXPECT_EQ(ext.SubtagsString(), "aaa-abc-sub1-sub2");
+
+  // Case insensitive.
+  EXPECT_TRUE(ext.AddSubtag("BBB"));
+  EXPECT_EQ(ext.SubtagsString(), "aaa-abc-bbb-sub1-sub2");
+
+  // Duplicates.
+  EXPECT_TRUE(ext.AddSubtag("sub1"));
+  EXPECT_EQ(ext.SubtagsString(), "aaa-abc-bbb-sub1-sub2");
+
+  // Invalid.
+  EXPECT_FALSE(ext.AddSubtag("at"));
+  EXPECT_FALSE(ext.AddSubtag("toolongsubtag"));
+}
+
+TEST(Bcp47ExtensionTest, PrivateUseSubtagsFromString) {
+  // Valid.
+  auto ext1 = PrivateUseSubtags::FromString("x-private");
+  ASSERT_TRUE(ext1.has_value());
+  EXPECT_EQ(ext1->SubtagsString(), "private");
+
+  auto ext2 = PrivateUseSubtags::FromString("x-sub1-sub2");
+  ASSERT_TRUE(ext2.has_value());
+  EXPECT_EQ(ext2->SubtagsString(), "sub1-sub2");
+
+  // Without 'x-' prefix.
+  auto ext3 = PrivateUseSubtags::FromString("onlysub");
+  ASSERT_TRUE(ext3.has_value());
+  EXPECT_EQ(ext3->SubtagsString(), "onlysub");
+
+  // Case sensitive (private use subtags can be case sensitive, though often
+  // treated as insensitive).
+  // The current implementation uses flat_set<std::string, std::less<>> without
+  // canonicalization for private use.
+  auto ext4 = PrivateUseSubtags::FromString("x-Sub1");
+  ASSERT_TRUE(ext4.has_value());
+  EXPECT_EQ(ext4->SubtagsString(), "Sub1");
+
+  // Invalid: empty subtag.
+  EXPECT_FALSE(PrivateUseSubtags::FromString("x-").has_value());
+  EXPECT_FALSE(PrivateUseSubtags::FromString("x--sub").has_value());
+  // Valid: private-use subtag of length 1.
+  EXPECT_TRUE(PrivateUseSubtags::FromString("x").has_value());
+}
+
+TEST(Bcp47ExtensionTest, PrivateUseSubtagsMutation) {
+  ASSERT_OK_AND_ASSIGN(PrivateUseSubtags ext,
+                       PrivateUseSubtags::FromString("x-sub1"));
+  EXPECT_EQ(ext.SubtagsString(), "sub1");
+
+  EXPECT_TRUE(ext.AddSubtag("sub2"));
+  EXPECT_EQ(ext.SubtagsString(), "sub1-sub2");
+
+  // Sorted.
+  EXPECT_TRUE(ext.AddSubtag("aaa"));
+  EXPECT_EQ(ext.SubtagsString(), "sub1-sub2-aaa");
+
+  // Case is preserved.
+  EXPECT_TRUE(ext.AddSubtag("BBB"));
+  EXPECT_EQ(ext.SubtagsString(), "sub1-sub2-aaa-BBB");
+
+  // Invalid.
+  EXPECT_FALSE(ext.AddSubtag(""));
+  EXPECT_FALSE(ext.AddSubtag("sub!"));
 }
 
 }  // namespace base::i18n

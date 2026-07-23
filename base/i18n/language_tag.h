@@ -140,7 +140,7 @@ class BASE_I18N_EXPORT LanguageTag {
   //   LanguageTagConverter::GetInstance().FromString("en-US-u-ca-gregory");
   //   auto ext = locale->GetExtension(bcp47_extensions::unicode());
   //   if (ext) {
-  //     std::string_view val = ext->subtags_string(); // "ca-gregory"
+  //     std::string_view val = ext->SubtagsString(); // "ca-gregory"
   //   }
   template <typename T>
     requires(bcp47_extensions::ExtensionTrait<T>)

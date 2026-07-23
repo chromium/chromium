@@ -37,7 +37,7 @@ TEST(LanguageTagTest, CompileTimeTags) {
   static_assert(ja_jp.tag_string() == "ja-JP");
 }
 
-TEST(LanguageTagTest, ParseAndToString) {
+TEST(LanguageTagTest, ParseAndSubtagsString) {
   EXPECT_THAT(GetKnownLanguageTag("en-US"), GetKnownLanguageTag("en-US"));
 
   EXPECT_THAT(LanguageTagConverter::GetInstance().FromString("EN-us"),
@@ -289,13 +289,13 @@ TEST(LanguageTagTest, MultipleExtensions) {
                            "en-US-a-foo-u-ca-gregory-x-private"))
   EXPECT_EQ(lc.tag_string(), "en-US-a-foo-u-ca-gregory-x-private");
   EXPECT_THAT(lc.GetExtension(bcp47_extensions::ext<'a'>()),
-              Optional(Property(&Extension::subtags_string, Eq("foo"))));
+              Optional(Property(&Extension::SubtagsString, Eq("foo"))));
   EXPECT_THAT(
       lc.GetExtension(bcp47_extensions::unicode()),
-      Optional(Property(&UnicodeExtension::ToString, Eq("ca-gregory"))));
+      Optional(Property(&UnicodeExtension::SubtagsString, Eq("ca-gregory"))));
   EXPECT_THAT(
       lc.GetExtension(bcp47_extensions::priv()),
-      Optional(Property(&PrivateUseSubtags::subtags_string, Eq("private"))));
+      Optional(Property(&PrivateUseSubtags::SubtagsString, Eq("private"))));
 }
 
 TEST(LanguageTagTest, PrivateUseSubtags) {
@@ -307,7 +307,7 @@ TEST(LanguageTagTest, PrivateUseSubtags) {
     EXPECT_EQ(lc.tag_string(), "und-u-ca-gregory-x-private");
     EXPECT_THAT(
         lc.GetExtension(bcp47_extensions::priv()),
-        Optional(Property(&PrivateUseSubtags::subtags_string, Eq("private"))));
+        Optional(Property(&PrivateUseSubtags::SubtagsString, Eq("private"))));
   }
   {
     // Single-char private use subtags.
@@ -315,9 +315,8 @@ TEST(LanguageTagTest, PrivateUseSubtags) {
         LanguageTag lc,
         LanguageTagConverter::GetInstance().FromString("en-US-x-a"))
     EXPECT_EQ(lc.tag_string(), "en-US-x-a");
-    EXPECT_THAT(
-        lc.GetExtension(bcp47_extensions::priv()),
-        Optional(Property(&PrivateUseSubtags::subtags_string, Eq("a"))));
+    EXPECT_THAT(lc.GetExtension(bcp47_extensions::priv()),
+                Optional(Property(&PrivateUseSubtags::SubtagsString, Eq("a"))));
   }
   {
     // Long private use subtags.
@@ -331,7 +330,7 @@ TEST(LanguageTagTest, PrivateUseSubtags) {
         LanguageTagConverter::GetInstance().FromString("en-US-x-12345678"))
     EXPECT_THAT(
         lc.GetExtension(bcp47_extensions::priv()),
-        Optional(Property(&PrivateUseSubtags::subtags_string, Eq("12345678"))));
+        Optional(Property(&PrivateUseSubtags::SubtagsString, Eq("12345678"))));
   }
 }
 
