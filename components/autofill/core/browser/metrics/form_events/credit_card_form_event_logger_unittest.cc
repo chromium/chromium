@@ -2202,6 +2202,24 @@ TEST_F(CreditCardFormEventLoggerTest, OnOmniboxAutofillChipClicked) {
                                      1);
 }
 
+TEST_F(CreditCardFormEventLoggerTest, OnOmniboxAutofillSuggestionAccepted) {
+  base::HistogramTester histogram_tester;
+
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnOmniboxAutofillSuggestionAccepted();
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnOmniboxAutofillSuggestionAccepted();
+
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kSuggestionAccepted,
+                                     2);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.OmniboxAutofill.Events",
+      OmniboxAutofillEvents::kSuggestionAcceptedOnce, 1);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill::autofill_metrics

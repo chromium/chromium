@@ -680,6 +680,14 @@ void CreditCardFormEventLogger::OnOmniboxAutofillChipClicked() {
   LogOmniboxAutofillEvents(OmniboxAutofillEvents::kChipClicked);
 }
 
+void CreditCardFormEventLogger::OnOmniboxAutofillSuggestionAccepted() {
+  if (!has_logged_omnibox_autofill_suggestion_accepted_) {
+    LogOmniboxAutofillEvents(OmniboxAutofillEvents::kSuggestionAcceptedOnce);
+    has_logged_omnibox_autofill_suggestion_accepted_ = true;
+  }
+  LogOmniboxAutofillEvents(OmniboxAutofillEvents::kSuggestionAccepted);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 std::optional<CreditCard>

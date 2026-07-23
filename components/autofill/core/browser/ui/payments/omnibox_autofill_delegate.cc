@@ -372,9 +372,15 @@ void OmniboxAutofillDelegate::DidSelectSuggestion(
 void OmniboxAutofillDelegate::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionMetadata& metadata) {
-  // TODO(crbug.com/490214497): Implement when payment method suggestion list is
-  // clicked.
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/490213796): Fill the form with the accepted suggestion.
+  // Also, replace `GetAutofillManagerForPrimaryMainFrame` call with WeakPtr to
+  // the autofill manager containing the trigger form and field.
+  auto* manager = static_cast<BrowserAutofillManager*>(
+      client_->GetAutofillManagerForPrimaryMainFrame());
+  if (!manager) {
+    return;
+  }
+  manager->GetCreditCardFormEventLogger().OnOmniboxAutofillSuggestionAccepted();
 }
 
 bool OmniboxAutofillDelegate::RemoveSuggestion(const Suggestion& suggestion) {

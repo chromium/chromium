@@ -989,5 +989,28 @@ TEST_F(OmniboxAutofillDelegateTest, ClearPreviewedForm) {
   delegate->ClearPreviewedForm();
 }
 
+TEST_F(OmniboxAutofillDelegateTest,
+       DidAcceptSuggestion_LogOmniboxAutofillEventMetrics) {
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  Suggestion suggestion(SuggestionType::kCreditCardEntry);
+
+  delegate->DidAcceptSuggestion(suggestion, /*metadata=*/{});
+
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kSuggestionAccepted,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.OmniboxAutofill.Events",
+      OmniboxAutofillEvents::kSuggestionAcceptedOnce, 1);
+}
+
 }  // namespace
 }  // namespace autofill
