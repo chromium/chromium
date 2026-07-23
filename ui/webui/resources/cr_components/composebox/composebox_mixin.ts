@@ -1145,9 +1145,12 @@ export const ComposeboxEmbedderMixin =
           }
           this.handleToolModeUpdate(newToolMode);
         }
-
         handleToolModeUpdate(newTool: ToolMode) {
+          // If it is canvas added/removed, browser process will notify
+          // AIM webpage (client side) so it can respond to these changes.
+          // Server is not notified of these changes; side effects are local.
           this.getSearchboxHandler().setActiveToolMode(newTool);
+
           this.queryAutocomplete(/* clearMatches= */ true);
           this.updateInputPlaceholder();
         }

@@ -1443,6 +1443,19 @@ class ContextualTasksComposeboxHandlerToolModeTest
 IN_PROC_BROWSER_TEST_P(ContextualTasksComposeboxHandlerToolModeTest,
                        SetsToolModeFlags) {
   const auto& param = GetParam();
+  // Setting active tool should send `exit_tool_info` to AIM webpage (on client
+  // side).
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce([&](std::unique_ptr<
+                    contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo> info) {
+        EXPECT_TRUE(info->exit_tool_info.has_value());
+        EXPECT_EQ(info->exit_tool_info->tool_mode,
+                  omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+        EXPECT_EQ(info->exit_tool_info->new_tool_mode, param.tool_mode);
+        return lens::ClientToAimMessage();
+      });
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(1);
 
   handler_->SetActiveToolMode(param.tool_mode);
   handler_->RecordToolSelectionAction(param.tool_mode);
@@ -1454,7 +1467,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksComposeboxHandlerToolModeTest,
         EXPECT_EQ(info->active_tool, param.tool_mode);
         return lens::ClientToAimMessage();
       });
-  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(1);
 
   handler_->CreateAndSendQueryMessage("test query", /*is_voice_search=*/false);
 }
@@ -1467,6 +1480,42 @@ INSTANTIATE_TEST_SUITE_P(
         ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH},
         ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN},
         ToolModeTestParam{omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD}));
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       SetActiveToolMode_SendsExitToolMessage) {
+  // Setting active tool should send `exit_tool_info` to AIM webpage (on client
+  // side).
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce([&](std::unique_ptr<
+                    contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo> info) {
+        EXPECT_TRUE(info->exit_tool_info.has_value());
+        EXPECT_EQ(info->exit_tool_info->tool_mode,
+                  omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+        EXPECT_EQ(info->exit_tool_info->new_tool_mode,
+                  omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+        return lens::ClientToAimMessage();
+      });
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(1);
+
+  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  // Clearing active tool should also send `exit_tool_info`.
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce([&](std::unique_ptr<
+                    contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo> info) {
+        EXPECT_TRUE(info->exit_tool_info.has_value());
+        EXPECT_EQ(info->exit_tool_info->tool_mode,
+                  omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+        EXPECT_EQ(info->exit_tool_info->new_tool_mode,
+                  omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+        return lens::ClientToAimMessage();
+      });
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(1);
+
+  handler_->SetActiveToolMode(omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
+}
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
                        AddTabContext_Delayed) {
