@@ -58,6 +58,7 @@ public class SearchBoxViewBinderUnitTest {
 
     private Context mContext;
     private SearchBoxContainerView mSearchBoxLayout;
+    private View mSearchBoxView;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -70,6 +71,7 @@ public class SearchBoxViewBinderUnitTest {
                 (SearchBoxContainerView)
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.fake_search_box_layout, null);
+        mSearchBoxView = mSearchBoxLayout.mSearchBoxView;
         mPropertyModel = new PropertyModel.Builder(SearchBoxProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(
                 mPropertyModel, mSearchBoxLayout, new SearchBoxViewBinder());
@@ -111,13 +113,13 @@ public class SearchBoxViewBinderUnitTest {
         float expectedElevation =
                 mContext.getResources().getDimension(R.dimen.fake_search_box_elevation);
         mPropertyModel.set(SearchBoxProperties.APPLY_ELEVATION, true);
-        assertEquals(expectedElevation, mSearchBoxLayout.getElevation(), 0.01f);
+        assertEquals(expectedElevation, mSearchBoxView.getElevation(), 0.01f);
     }
 
     @Test
     public void testApplyWhiteBackground() {
         mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, true);
-        Drawable background = mSearchBoxLayout.getBackground();
+        Drawable background = mSearchBoxView.getBackground();
         assertTrue(background instanceof GradientDrawable);
         assertEquals(Color.WHITE, ((GradientDrawable) background).getColor().getDefaultColor());
     }

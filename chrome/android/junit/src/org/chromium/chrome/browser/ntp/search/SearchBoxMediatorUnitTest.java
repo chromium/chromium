@@ -100,6 +100,7 @@ public class SearchBoxMediatorUnitTest {
 
     private Context mContext;
     private SearchBoxContainerView mView;
+    private View mSearchBoxView;
     private PropertyModel mPropertyModel;
     private SearchBoxMediator mMediator;
 
@@ -113,7 +114,7 @@ public class SearchBoxMediatorUnitTest {
                 (SearchBoxContainerView)
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.fake_search_box_layout, null);
-
+        mSearchBoxView = mView.mSearchBoxView;
         mPropertyModel = new PropertyModel.Builder(SearchBoxProperties.ALL_KEYS).build();
         LensController.setInstanceForTesting(mLensController);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
@@ -330,7 +331,7 @@ public class SearchBoxMediatorUnitTest {
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
         assertEquals(colorStateList, mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
-        verifyApplyBackground(mView);
+        verifyApplyBackground(mSearchBoxView);
 
         // Tests the case to remove the white background with shadow.
         resId = R.style.TextAppearance_FakeSearchBoxTextMedium;
@@ -344,7 +345,7 @@ public class SearchBoxMediatorUnitTest {
                 colorStateList,
                 mPropertyModel.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
         assertEquals(colorStateList, mPropertyModel.get(SearchBoxProperties.DSE_ICON_TINT));
-        verifyResetBackground(mView, defaultBackground);
+        verifyResetBackground(mSearchBoxView, defaultBackground);
     }
 
     @Test

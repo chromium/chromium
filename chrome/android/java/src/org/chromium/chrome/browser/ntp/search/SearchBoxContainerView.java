@@ -36,6 +36,7 @@ import org.chromium.ui.widget.ButtonCompat;
 public class SearchBoxContainerView extends LinearLayout {
     TextView mHintTextView;
     ImageView mDseIconView;
+    View mSearchBoxView;
     ImageView mVoiceSearchButton;
     ImageView mLensButton;
     ImageView mPlusButton;
@@ -56,6 +57,7 @@ public class SearchBoxContainerView extends LinearLayout {
 
         mHintTextView = findViewById(R.id.search_box_text);
         mDseIconView = findViewById(R.id.search_box_engine_icon);
+        mSearchBoxView = findViewById(R.id.search_box_shadow_container);
         mVoiceSearchButton = findViewById(R.id.voice_search_button);
         mLensButton = findViewById(R.id.lens_camera_button);
         mPlusButton = findViewById(R.id.search_box_plus_button);
@@ -122,7 +124,7 @@ public class SearchBoxContainerView extends LinearLayout {
      * @param apply Whether to apply a white background color to the fake search box.
      */
     void applyWhiteBackground(boolean apply) {
-        ComposeplateUtils.applyWhiteBackground(getContext(), this, apply);
+        ComposeplateUtils.applyWhiteBackground(getContext(), mSearchBoxView, apply);
     }
 
     /**
@@ -132,12 +134,20 @@ public class SearchBoxContainerView extends LinearLayout {
      */
     void applyElevation(boolean apply) {
         if (!apply) {
-            setElevation(0);
+            mSearchBoxView.setElevation(0);
+            // Reset clipping to default to avoid unexpected behavior.
+            setClipToPadding(true);
+            setClipChildren(true);
             return;
         }
 
         float elevation = getResources().getDimension(R.dimen.fake_search_box_elevation);
-        setElevation(elevation);
+        mSearchBoxView.setElevation(elevation);
+
+        // Disable clipping to allow the shadow to be drawn outside the view bounds. This provides a
+        // solution without adding margins to the top/bottom of the view.
+        setClipToPadding(false);
+        setClipChildren(false);
     }
 
     void setDseIconTint(@Nullable ColorStateList tint) {
