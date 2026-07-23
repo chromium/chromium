@@ -2561,6 +2561,20 @@ crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registere
 
 # Inheritance of zoom on non-inherited properties
 crbug.com/420443621 external/wpt/css/css-viewport/zoom/text-decoration-thickness.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/background-size.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/block-step-size.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/border-image-outset.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/box-shadow-inset-spread.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/filters-blur.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/perspective.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/row-gap.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/tab-size.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/transform-matrix-2d.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/transform-matrix-3d.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/transform-perspective.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/transform-translate.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/translate.html [ Failure ]
+crbug.com/420443621 external/wpt/css/css-viewport/zoom/vertical-align.html [ Failure ]
 
 crbug.com/424798906 external/wpt/pointerevents/pointerevent_element_haspointercapture.html?touch [ Failure ]
 
@@ -2813,20 +2827,6 @@ crbug.com/536952792 external/wpt/html/semantics/scripting-1/the-script-element/m
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/537793901 external/wpt/css/css-values/random-item-computed.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/background-size.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/block-step-size.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/border-image-outset.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/box-shadow-inset-spread.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/filters-blur.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/perspective.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/row-gap.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/tab-size.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/transform-matrix-2d.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/transform-matrix-3d.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/transform-perspective.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/transform-translate.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/translate.html [ Failure ]
-crbug.com/537793901 external/wpt/css/css-viewport/zoom/vertical-align.html [ Failure ]
 crbug.com/537776442 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-bfc.html [ Failure ]
 crbug.com/536956106 [ Win ] external/wpt/css/css-inline/text-box-trim/text-box-on-non-root-inline-box.html [ Pass Timeout ]
 crbug.com/536956106 external/wpt/css/css-inline/text-box-trim/text-box-trim-end-001.html?class=ideographic [ Failure ]
