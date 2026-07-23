@@ -64,6 +64,8 @@ reviewer.
   <int value="17" label="Action token is not available"/>
   <int value="18" label="User logged out"/>
   <int value="19" label="API client not available"/>
+  <int value="20" label="User canceled in GMSCore"/>
+  <int value="21" label="GMSCore flow failed"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:AccountLinkingFlowExitedReason) -->

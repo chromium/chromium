@@ -145,6 +145,10 @@ void FacilitatedPaymentsController::ShowPixAccountLinkingPrompt(
   view_->ShowPixAccountLinkingPrompt(strike_count);
 }
 
+void FacilitatedPaymentsController::ShowPixAccountLinkingSuccessScreen() {
+  view_->ShowPixAccountLinkingSuccessScreen();
+}
+
 void FacilitatedPaymentsController::OnPixAccountLinkingPromptAccepted(
     JNIEnv* env) {
   if (on_pix_account_linking_prompt_accepted_) {

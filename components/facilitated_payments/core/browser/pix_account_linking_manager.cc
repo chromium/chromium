@@ -50,8 +50,40 @@ void PixAccountLinkingManager::DoOnClientTokenReceived(
 
 void PixAccountLinkingManager::DoOnAccountLinkingResult(
     AccountLinkingResult result) {
-  // TODO b/505507305 - Show success or error screen based on `result`.
   DismissPrompt();
+
+  switch (result.error_code) {
+    case AccountLinkingResultCode::kResultOk:
+      if (result.is_successful && result.instrument_id > 0) {
+        LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/true);
+        client()->ShowPixAccountLinkingSuccessScreen();
+      } else {
+        LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
+        LogAccountLinkingFlowExitedReason(
+            kPixFopSuffix, AccountLinkingFlowExitedReason::kGmsCoreFlowFailed);
+        // TODO(crbug.com/532367369): Trigger error notification.
+      }
+      break;
+    case AccountLinkingResultCode::kResultCanceled:
+      LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
+      if (is_prompt_accepted_) {
+        LogAccountLinkingFlowExitedReason(
+            kPixFopSuffix,
+            AccountLinkingFlowExitedReason::kUserCanceledInGmsCore);
+      }
+      break;
+    case AccountLinkingResultCode::kResultError:
+      LogAccountLinkingResult(kPixFopSuffix, /*is_successful=*/false);
+      LogAccountLinkingFlowExitedReason(
+          kPixFopSuffix, AccountLinkingFlowExitedReason::kGmsCoreFlowFailed);
+      // TODO(crbug.com/532367369): Trigger error notification.
+      break;
+    case AccountLinkingResultCode::kCouldNotInvoke:
+      // Default result passed during early exit paths in the base class. The
+      // specific flow exited reason has already been logged by
+      // NativeAccountLinkingHandler.
+      break;
+  }
 }
 
 void PixAccountLinkingManager::MaybeShowPixAccountLinkingPrompt(
@@ -115,6 +147,7 @@ void PixAccountLinkingManager::Reset() {
     client()->DismissPrompt();
   }
   is_prompt_showing_ = false;
+  is_prompt_accepted_ = false;
   pix_payment_page_origin_ = url::Origin();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -178,6 +211,7 @@ void PixAccountLinkingManager::DismissPrompt() {
 }
 
 void PixAccountLinkingManager::DoOnAccepted() {
+  is_prompt_accepted_ = true;
   // Clear strikes when user accepts the prompt.
   if (auto* strike_database = GetOrCreateStrikeDatabase()) {
     strike_database->ClearStrikes();

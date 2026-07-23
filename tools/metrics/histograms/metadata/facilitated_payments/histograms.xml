@@ -892,6 +892,21 @@ reviewer.
 </histogram>
 
 <histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.AccountLinking.Result"
+    enum="BooleanSuccess" expires_after="2027-04-30">
+  <owner>longsheng@google.com</owner>
+  <owner>siashah@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs whether the {FacilitatedPaymentsType} account linking process was
+    successful or not. [Frequency] Logged exactly once per account linking flow.
+    [Trigger] Chrome receives the outcome callback after attempting the account
+    linking flow via GMSCore.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.{Result}.Latency"
     units="ms" expires_after="2027-04-30">
   <owner>siashah@google.com</owner>

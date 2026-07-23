@@ -815,21 +815,86 @@ TEST_F(PixAccountLinkingManagerTest, DoOnClientTokenReceived) {
 }
 
 TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Success) {
+  base::HistogramTester histogram_tester;
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   task_environment_.FastForwardBy(kShowPromptDelay);
 
   EXPECT_CALL(client(), DismissPrompt());
+  EXPECT_CALL(client(), ShowPixAccountLinkingSuccessScreen());
+
   test_api().DoOnAccountLinkingResult(AccountLinkingResult{
-      /*is_successful=*/true, 0, AccountLinkingResultCode::kResultOk});
+      /*is_successful=*/true, 12345L, AccountLinkingResultCode::kResultOk});
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.Result",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest,
+       DoOnAccountLinkingResult_MissingInstrumentId) {
+  base::HistogramTester histogram_tester;
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  task_environment_.FastForwardBy(kShowPromptDelay);
+
+  EXPECT_CALL(client(), DismissPrompt());
+  EXPECT_CALL(client(), ShowPixAccountLinkingSuccessScreen()).Times(0);
+
+  test_api().DoOnAccountLinkingResult(
+      AccountLinkingResult{/*is_successful=*/true, /*instrument_id=*/0,
+                           AccountLinkingResultCode::kResultOk});
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.Result",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/AccountLinkingFlowExitedReason::kGmsCoreFlowFailed,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Canceled) {
+  base::HistogramTester histogram_tester;
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+  task_environment_.FastForwardBy(kShowPromptDelay);
+
+  EXPECT_CALL(client(), DismissPrompt());
+
+  // Simulate user accepting prompt to launch GMSCore.
+  test_api().OnAccepted();
+
+  test_api().DoOnAccountLinkingResult(AccountLinkingResult{
+      /*is_successful=*/false, 0, AccountLinkingResultCode::kResultCanceled});
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.Result",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/AccountLinkingFlowExitedReason::kUserCanceledInGmsCore,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PixAccountLinkingManagerTest, DoOnAccountLinkingResult_Failure) {
+  base::HistogramTester histogram_tester;
   manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
   task_environment_.FastForwardBy(kShowPromptDelay);
 
   EXPECT_CALL(client(), DismissPrompt());
+
   test_api().DoOnAccountLinkingResult(AccountLinkingResult{
-      /*is_successful=*/false, 0, AccountLinkingResultCode::kCouldNotInvoke});
+      /*is_successful=*/false, 0, AccountLinkingResultCode::kResultError});
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.Result",
+      /*sample=*/false,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.AccountLinking.FlowExitedReason",
+      /*sample=*/AccountLinkingFlowExitedReason::kGmsCoreFlowFailed,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace payments::facilitated

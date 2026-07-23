@@ -127,6 +127,17 @@ void FacilitatedPaymentsBottomSheetBridge::ShowPixAccountLinkingPrompt(
       env, GetJavaBridge(), strike_count);
 }
 
+void FacilitatedPaymentsBottomSheetBridge::
+    ShowPixAccountLinkingSuccessScreen() {
+  if (!GetJavaBridge()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_FacilitatedPaymentsPaymentMethodsViewBridge_showPixAccountLinkingSuccessScreen(
+      env, GetJavaBridge());
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 FacilitatedPaymentsBottomSheetBridge::GetJavaBridge() {
   if (!java_bridge_) {

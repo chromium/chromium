@@ -83,6 +83,10 @@ class PixAccountLinkingManager : public NativeAccountLinkingHandler {
   // The origin of the Pix payment page that triggered the account linking flow.
   url::Origin pix_payment_page_origin_;
 
+  // Set to true when the user accepts the prompt to differentiate between
+  // prompt decline and GMSCore flow cancellation.
+  bool is_prompt_accepted_ = false;
+
   // Returns the strike database for Pix account linking, creating it if needed.
   PixAccountLinkingStrikeDatabase* GetOrCreateStrikeDatabase();
 

@@ -616,4 +616,10 @@ void LogAccountLinkingFlowExitedReason(std::string_view fop_suffix,
       reason);
 }
 
+void LogAccountLinkingResult(std::string_view fop_suffix, bool is_successful) {
+  base::UmaHistogramBoolean(base::StrCat({"FacilitatedPayments.", fop_suffix,
+                                          ".AccountLinking.Result"}),
+                            is_successful);
+}
+
 }  // namespace payments::facilitated

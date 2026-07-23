@@ -112,6 +112,7 @@ class ChromeFacilitatedPaymentsClient
       int strike_count,
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined) final;
+  void ShowPixAccountLinkingSuccessScreen() final;
   bool HasScreenlockOrBiometricSetup() final;
 
   // Register any allowlists with the OptimizationGuide framework, so that
