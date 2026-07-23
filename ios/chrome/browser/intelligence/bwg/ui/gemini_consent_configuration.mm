@@ -160,15 +160,15 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
   return attributes;
 }
 
-// Gets the second SF Symbol name based on accounts type and iOS availability.
-+ (NSString*)secondSymbolNameForManaged:(BOOL)isManaged {
+// Gets the second SF Symbol based on accounts type and iOS availability.
++ (Symbol)secondSymbolForManaged:(BOOL)isManaged {
   if (isManaged) {
-    return kBuilding2Symbol;
+    return SymbolBuilding2;
   }
   if (@available(iOS 18, *)) {
-    return kCounterClockWiseSymbol;
+    return SymbolCounterClockWise;
   }
-  return kHistorySymbol;
+  return SymbolHistory;
 }
 
 // Helper to construct body text using embedded link delimiters.
@@ -217,8 +217,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 // Builds the share tab row, with a configurable initial collapsed state based
 // on strict mode.
 + (GeminiConsentRow*)shareTabRowWithStrict:(BOOL)useStrict {
-  UIImage* icon = CustomSymbolWithConfiguration(
-      kPhoneSparkleSymbol, [self defaultSymbolConfiguration]);
+  UIImage* icon = SymbolWithConfiguration(SymbolPhoneSparkle,
+                                          [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       useStrict ? IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE_STRICT
                 : IDS_IOS_GEMINI_CONSENT_SHARE_TAB_TITLE);
@@ -251,8 +251,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the enterprise row for managed accounts.
 + (GeminiConsentRow*)dataGovernanceRowForManaged {
-  UIImage* icon = DefaultSymbolWithConfiguration(
-      kBuilding2Symbol, [self defaultSymbolConfiguration]);
+  UIImage* icon = SymbolWithConfiguration(SymbolBuilding2,
+                                          [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_MANAGED_TITLE);
   NSString* text = l10n_util::GetNSString(
@@ -269,8 +269,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the data governance row for non managed layout.
 + (GeminiConsentRow*)dataGovernanceRowForNormal {
-  UIImage* icon = DefaultSymbolWithConfiguration(
-      [self secondSymbolNameForManaged:NO], [self defaultSymbolConfiguration]);
+  UIImage* icon = SymbolWithConfiguration([self secondSymbolForManaged:NO],
+                                          [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_TITLE);
   NSString* text = l10n_util::GetNSString(
@@ -290,8 +290,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the data governance row for non managed strict layout.
 + (GeminiConsentRow*)dataGovernanceRowForStrict {
-  UIImage* icon = DefaultSymbolWithConfiguration(
-      kHistorySymbol, [self defaultSymbolConfiguration]);
+  UIImage* icon =
+      SymbolWithConfiguration(SymbolHistory, [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       IDS_IOS_GEMINI_CONSENT_DATA_GORVERNANCE_NON_MANAGED_TITLE);
 
@@ -343,8 +343,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 //  Builds the connected services row used for the strict layout.
 + (GeminiConsentRow*)connectedServicesRow {
-  UIImage* icon = DefaultSymbolWithConfiguration(
-      kPuzzlePieceExtensionSymbol, [self defaultSymbolConfiguration]);
+  UIImage* icon = SymbolWithConfiguration(SymbolPuzzlePieceExtension,
+                                          [self defaultSymbolConfiguration]);
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_GEMINI_CONSENT_CONNECTED_SERVICES_TITLE);
   NSString* text =
@@ -363,8 +363,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the first standard FRE consent row.
 + (GeminiConsentRow*)standardFirstRowForManaged:(BOOL)isManaged {
-  UIImage* icon = CustomSymbolWithConfiguration(
-      kPhoneSparkleSymbol, [self defaultSymbolConfiguration]);
+  UIImage* icon = SymbolWithConfiguration(SymbolPhoneSparkle,
+                                          [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE);
   NSString* bodyText = l10n_util::GetNSString(
       isManaged ? IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY
@@ -377,9 +377,9 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the second standard FRE consent row.
 + (GeminiConsentRow*)standardSecondRowForManaged:(BOOL)isManaged {
-  UIImage* icon = DefaultSymbolWithConfiguration(
-      [self secondSymbolNameForManaged:isManaged],
-      [self defaultSymbolConfiguration]);
+  UIImage* icon =
+      SymbolWithConfiguration([self secondSymbolForManaged:isManaged],
+                              [self defaultSymbolConfiguration]);
   NSString* title = l10n_util::GetNSString(
       isManaged ? IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_TITLE
                 : IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_TITLE);
@@ -455,9 +455,9 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
                           weight:UIImageSymbolWeightMedium];
   UIImage* icon;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  icon = CustomSymbolWithConfiguration(kGeminiLiveLogoSymbol, config);
+  icon = SymbolWithConfiguration(SymbolGeminiLiveLogo, config);
 #else
-  icon = DefaultSymbolWithConfiguration(kGeminiNonBrandedLogoSymbol, config);
+  icon = SymbolWithConfiguration(SymbolGeminiNonBrandedLogo, config);
 #endif
 
   NSMutableAttributedString* attributedTitle =
@@ -482,8 +482,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the first live FRE consent row.
 + (GeminiConsentRow*)liveFirstRow {
-  UIImage* icon = DefaultSymbolWithConfiguration(
-      kMicrophoneSymbol, [self defaultSymbolConfiguration]);
+  UIImage* icon = SymbolWithConfiguration(SymbolMicrophone,
+                                          [self defaultSymbolConfiguration]);
   NSString* bodyText =
       l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_CONSENT_FIRST_BOX_BODY);
   NSAttributedString* body =
@@ -494,8 +494,8 @@ NSString* const kWarningShieldSymbol = @"exclamationmark.shield";
 
 // Builds the second live FRE consent row.
 + (GeminiConsentRow*)liveSecondRowForManaged:(BOOL)isManaged {
-  UIImage* icon = DefaultSymbolWithConfiguration(
-      kInfoCircleSymbol, [self defaultSymbolConfiguration]);
+  UIImage* icon = SymbolWithConfiguration(SymbolInfoCircle,
+                                          [self defaultSymbolConfiguration]);
   NSString* text =
       isManaged
           ? l10n_util::GetNSString(

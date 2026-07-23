@@ -181,29 +181,27 @@ const CGFloat kBaselineAdjustment = 10.0;
       configurationWithPointSize:kIconSize
                           weight:UIImageSymbolWeightMedium];
 
-  UIView* askRow =
-      [self createFeatureRowWithIcon:CustomSymbolWithConfiguration(
-                                         kTextSearchSymbol, config)
-                             titleID:IDS_IOS_BWG_PROMO_FIRST_BOX_TITLE
-                              bodyID:IDS_IOS_BWG_PROMO_FIRST_BOX_BODY];
+  UIView* askRow = [self
+      createFeatureRowWithIcon:SymbolWithConfiguration(SymbolTextSearch, config)
+                       titleID:IDS_IOS_BWG_PROMO_FIRST_BOX_TITLE
+                        bodyID:IDS_IOS_BWG_PROMO_FIRST_BOX_BODY];
   [_mainStackView addArrangedSubview:askRow];
   [_mainStackView addArrangedSubview:[self createSeparatorView]];
 
   if ([self.mutator shouldShowImageRemixRow]) {
     UIView* remixRow = [self
-        createFeatureRowWithIcon:DefaultSymbolWithConfiguration(
-                                     kPhotoOnRectangleAngled, config)
+        createFeatureRowWithIcon:SymbolWithConfiguration(
+                                     SymbolPhotoOnRectangleAngled, config)
                          titleID:IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_TITLE
                           bodyID:IDS_IOS_GEMINI_PROMO_REMIX_IMAGE_BOX_BODY];
     [_mainStackView addArrangedSubview:remixRow];
     [_mainStackView addArrangedSubview:[self createSeparatorView]];
   }
 
-  UIView* summarizeRow =
-      [self createFeatureRowWithIcon:DefaultSymbolWithConfiguration(
-                                         kListBulletSymbol, config)
-                             titleID:IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE
-                              bodyID:IDS_IOS_BWG_PROMO_SECOND_BOX_BODY];
+  UIView* summarizeRow = [self
+      createFeatureRowWithIcon:SymbolWithConfiguration(SymbolListBullet, config)
+                       titleID:IDS_IOS_BWG_PROMO_SECOND_BOX_TITLE
+                        bodyID:IDS_IOS_BWG_PROMO_SECOND_BOX_BODY];
   [_mainStackView addArrangedSubview:summarizeRow];
 }
 
@@ -234,8 +232,8 @@ const CGFloat kBaselineAdjustment = 10.0;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   NSString* gradientSubstring =
       l10n_util::GetNSString(IDS_IOS_BWG_PROMO_GRADIENT_TEXT);
-  UIImage* geminiIcon = CustomSymbolWithPointSize(
-      kGeminiFullSymbol, labelFont.pointSize + kGeminiLogoFontScale);
+  UIImage* geminiIcon = SymbolWithPointSize(
+      SymbolGeminiFull, labelFont.pointSize + kGeminiLogoFontScale);
   UIImage* gradientImage = [self createGradientImageFromSymbol:geminiIcon];
 
   NSAttributedString* gradientGeminiString =

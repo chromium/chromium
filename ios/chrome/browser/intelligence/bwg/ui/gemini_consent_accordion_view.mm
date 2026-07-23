@@ -121,9 +121,8 @@ const NSTimeInterval kAnimationDuration = 0.3;
       UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
           configurationWithPointSize:kChevronSize
                               weight:UIImageSymbolWeightMedium];
-      UIImageView* chevronView =
-          [[UIImageView alloc] initWithImage:DefaultSymbolWithConfiguration(
-                                                 kChevronDownSymbol, config)];
+      UIImageView* chevronView = [[UIImageView alloc]
+          initWithImage:SymbolWithConfiguration(SymbolChevronDown, config)];
       chevronView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
       chevronView.contentMode = UIViewContentModeScaleAspectFit;
       chevronView.translatesAutoresizingMaskIntoConstraints = NO;
