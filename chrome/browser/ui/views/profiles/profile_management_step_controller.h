@@ -98,8 +98,15 @@ class ProfileManagementStepController {
   // Method to be called if the user is attempting to reload this step.
   virtual void OnReloadRequested();
 
-  // Method to be called if the user is attempting to navigate back.
-  virtual void OnNavigateBackRequested() = 0;
+  // Method to be called if the user is attempting to navigate back. Subclasses
+  // that support back navigation should override this. The default
+  // implementation crashes via NOTREACHED().
+  virtual void OnNavigateBackRequested();
+
+  // Returns whether navigating back is allowed for this step. Subclasses
+  // should override this if they support back navigation. By default this
+  // returns false.
+  virtual bool CanNavigateBack() const;
 
   // Called when the user requests to toggle the media effects (e.g. audio or
   // animations) for a given step.
@@ -114,6 +121,9 @@ class ProfileManagementStepController {
   // If it returns true, we expect that a `pop_step_callback_` is set (by
   // calling `set_pop_step_callback()`) before we attempt to navigate back.
   virtual bool CanPopStep() const;
+
+  // Helper to check if back navigation can be performed.
+  bool CanNavigateBackInternal(content::WebContents* contents) const;
 
   // Helper to implement back navigations for `OnNavigateBackRequested()`.
   // `contents` is expected to be the `WebContents` in which the current step

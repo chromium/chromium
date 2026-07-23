@@ -58,8 +58,6 @@ class SignInCelebrationStepControllerForTest
             weak_ptr_factory_.GetWeakPtr(), std::move(step_shown_callback)));
   }
 
-  void OnNavigateBackRequested() override { NOTREACHED(); }
-
   void OnCelebrationLoaded(StepSwitchFinishedCallback step_shown_callback) {
     auto* intro_ui = host()
                          ->GetPickerContents()

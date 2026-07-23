@@ -103,6 +103,8 @@ class ProfileManagementFlowController
                         StepSwitchFinishedCallback(),
                     base::OnceClosure pop_step_callback = base::OnceClosure());
 
+  bool CanNavigateBack() const;
+
   void OnNavigateBackRequested();
 
   void OnReloadRequested();

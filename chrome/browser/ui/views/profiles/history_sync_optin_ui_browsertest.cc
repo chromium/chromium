@@ -134,8 +134,6 @@ class HistorySyncOptinStepControllerForTest
             weak_ptr_factory_.GetWeakPtr(), std::move(step_shown_callback)));
   }
 
-  void OnNavigateBackRequested() override { NOTREACHED(); }
-
   void OnHistorySyncOptinLoaded(
       StepSwitchFinishedCallback step_shown_callback) {
     HistorySyncOptinUI* history_sync_optin_ui =

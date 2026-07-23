@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -61,6 +62,10 @@ class ProfilePickerAppStepController : public ProfileManagementStepController {
     host()->ShowScreenInPickerContents(GURL(), std::move(step_shown_success));
   }
 
+  bool CanNavigateBack() const override {
+    return CanNavigateBackInternal(host()->GetPickerContents());
+  }
+
   void OnNavigateBackRequested() override {
     NavigateBackInternal(host()->GetPickerContents());
   }
@@ -113,6 +118,12 @@ class SignInStepController : public ProfileManagementStepController {
     }
   }
 
+  bool CanNavigateBack() const override {
+    return sign_in_provider_
+               ? CanNavigateBackInternal(sign_in_provider_->contents())
+               : false;
+  }
+
   void OnNavigateBackRequested() override {
     if (sign_in_provider_) {
       NavigateBackInternal(sign_in_provider_->contents());
@@ -157,10 +168,6 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
         base::BindOnce(&FinishSamlSignInStepController::OnSignInContentsFreedUp,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(step_shown_callback)));
-  }
-
-  void OnNavigateBackRequested() override {
-    // Not supported here
   }
 
  private:
@@ -228,10 +235,6 @@ class PostSignInStepController : public ProfileManagementStepController {
   }
   void OnHidden() override { signed_in_flow_->Cancel(); }
 
-  void OnNavigateBackRequested() override {
-    // Do nothing, navigating back is not allowed.
-  }
-
  private:
   std::unique_ptr<ProfilePickerPostSignInAdapter> signed_in_flow_;
   base::WeakPtrFactory<PostSignInStepController> weak_ptr_factory_{this};
@@ -255,11 +258,6 @@ class FinishFlowAndRunInBrowserStepController
     CHECK(!step_shown_callback->is_null());
     std::move(step_shown_callback.value()).Run(true);
     std::move(finish_flow_and_run_in_browser_callback_).Run();
-  }
-
-  void OnNavigateBackRequested() override {
-    // Do nothing, navigating back is not allowed.
-    NOTREACHED();
   }
 
  private:
@@ -341,11 +339,6 @@ class SearchEngineChoiceStepController
                        std::move(navigation_finished_closure));
   }
 
-  void OnNavigateBackRequested() override {
-    // Do nothing, navigating back is not allowed.
-    NOTREACHED();
-  }
-
  private:
   void OnLoadFinished() {
     auto* search_engine_choice_ui = web_contents_->GetWebUI()
@@ -408,10 +401,6 @@ class DeviceSignalsDisclaimerStepController
     host()->ShowScreen(web_contents_,
                        GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                        std::move(navigation_finished_closure));
-  }
-
-  void OnNavigateBackRequested() override {
-    // Do nothing, navigating back is not allowed.
   }
 
  private:
@@ -534,6 +523,19 @@ ProfileManagementStepController::~ProfileManagementStepController() = default;
 void ProfileManagementStepController::OnReloadRequested() {}
 
 void ProfileManagementStepController::ToggleMediaEffects(bool active) {}
+
+void ProfileManagementStepController::OnNavigateBackRequested() {
+  NOTREACHED();
+}
+
+bool ProfileManagementStepController::CanNavigateBack() const {
+  return false;
+}
+
+bool ProfileManagementStepController::CanNavigateBackInternal(
+    content::WebContents* contents) const {
+  return (contents && contents->GetController().CanGoBack()) || CanPopStep();
+}
 
 void ProfileManagementStepController::NavigateBackInternal(
     content::WebContents* contents) {

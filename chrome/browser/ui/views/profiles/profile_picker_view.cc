@@ -494,6 +494,10 @@ SkColor ProfilePickerView::GetPreferredBackgroundColor() const {
   return GetColorProvider()->GetColor(kColorToolbar);
 }
 
+bool ProfilePickerView::CanNavigateBack() const {
+  return flow_controller_ && flow_controller_->CanNavigateBack();
+}
+
 bool ProfilePickerView::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
@@ -823,7 +827,9 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
       GetWidget()->Minimize();
       break;
     case IDC_BACK: {
-      flow_controller_->OnNavigateBackRequested();
+      if (CanNavigateBack()) {
+        flow_controller_->OnNavigateBackRequested();
+      }
       break;
     }
     // Always reload bypassing cache.

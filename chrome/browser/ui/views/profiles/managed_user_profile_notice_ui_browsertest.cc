@@ -137,8 +137,6 @@ class ManagedUserProfileNoticeStepControllerForTest
                        std::move(step_shown_callback)));
   }
 
-  void OnNavigateBackRequested() override { NOTREACHED(); }
-
   void OnManagedUserProfileNoticeLoaded(
       StepSwitchFinishedCallback step_shown_callback) {
     ManagedUserProfileNoticeUI* managed_user_notice_ui =

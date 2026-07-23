@@ -749,6 +749,21 @@ class FirstRunInteractiveUiBaseTest
     }
   }
 
+  auto SelectDefaultSearchEngine() {
+    return Steps(
+        // Click on "More" to scroll to the bottom of the search engine list.
+        PressJsButton(kWebContentsId, GetSearchEngineChoiceActionButtonQuery()),
+        // The button should become disabled because we didn't make a choice.
+        WaitForButtonDisabled(kWebContentsId,
+                              GetSearchEngineChoiceActionButtonQuery()),
+        PressJsButton(kWebContentsId,
+                      GetSearchEngineChoiceCrRadioButtonQuery()),
+        WaitForButtonEnabled(kWebContentsId,
+                             GetSearchEngineChoiceActionButtonQuery()),
+        PressJsButton(kWebContentsId,
+                      GetSearchEngineChoiceActionButtonQuery()));
+  }
+
   auto CompleteSearchEngineChoiceStep() {
     return Steps(
         WaitForWebContentsNavigation(
@@ -763,17 +778,7 @@ class FirstRunInteractiveUiBaseTest
                         "SearchEngineChoiceScreenShown"),
                     1);
         }),
-        // Click on "More" to scroll to the bottom of the search engine list.
-        PressJsButton(kWebContentsId, GetSearchEngineChoiceActionButtonQuery()),
-        // The button should become disabled because we didn't make a choice.
-        WaitForButtonDisabled(kWebContentsId,
-                              GetSearchEngineChoiceActionButtonQuery()),
-        PressJsButton(kWebContentsId,
-                      GetSearchEngineChoiceCrRadioButtonQuery()),
-        WaitForButtonEnabled(kWebContentsId,
-                             GetSearchEngineChoiceActionButtonQuery()),
-        PressJsButton(kWebContentsId,
-                      GetSearchEngineChoiceActionButtonQuery()));
+        SelectDefaultSearchEngine());
   }
 
   void ExpectStepHistograms(Step step,
@@ -925,6 +930,109 @@ IN_PROC_BROWSER_TEST_P(FirstRunInteractiveUiTest, ExitAtSignIn) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          FirstRunInteractiveUiTest,
+                         Values(FirstRunVersion::Legacy{},
+                                FirstRunVersion::Refreshed{},
+                                FirstRunVersion::Revamped{}),
+                         [](const TestParamInfo<FirstRunVersion::Value>& info) {
+                           return VersionSuffix(info.param);
+                         });
+
+class FirstRunBackNavigationInteractiveUiTest
+    : public FirstRunInteractiveUiTest {
+ public:
+  FirstRunBackNavigationInteractiveUiTest() {
+    scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
+        SearchEngineChoiceDialogServiceFactory::
+            ScopedChromeBuildOverrideForTesting(
+                /*force_chrome_build=*/true));
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FirstRunInteractiveUiTest::SetUpCommandLine(command_line);
+
+    SetUpCommandLineForChoiceScreen(command_line);
+
+    command_line->AppendSwitch(switches::kForceFreDefaultBrowserStep);
+  }
+
+  void SetUpOnMainThread() override {
+    FirstRunInteractiveUiTest::SetUpOnMainThread();
+
+    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
+        /*dialog_disabled=*/false);
+  }
+
+ private:
+  std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
+};
+
+// TODO(crbug.com/366119368): Re-enable this test
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BackNavigationDisabledOnSteps \
+  DISABLED_BackNavigationDisabledOnSteps
+#else
+#define MAYBE_BackNavigationDisabledOnSteps BackNavigationDisabledOnSteps
+#endif
+IN_PROC_BROWSER_TEST_P(FirstRunBackNavigationInteractiveUiTest,
+                       MAYBE_BackNavigationDisabledOnSteps) {
+  base::test::TestFuture<bool> proceed_future;
+
+  ASSERT_TRUE(IsProfileNameDefault());
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+
+      // Intro step: back navigation should be ignored.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      WaitForWebContentsReady(kWebContentsId, GURL(chrome::kChromeUIIntroURL)),
+      WaitForStateChange(kWebContentsId, IsVisible(GetDontSignInButtonQuery())),
+      EnsurePresent(kWebContentsId, GetDontSignInButtonQuery()),
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+      EnsurePresent(kWebContentsId, GetDontSignInButtonQuery()),
+      PressJsButton(kWebContentsId, GetDontSignInButtonQuery()),
+
+      // Search engine choice step: back navigation should be ignored.
+      WaitForWebContentsNavigation(
+          kWebContentsId, GURL(chrome::kChromeUISearchEngineChoiceURL)),
+      EnsurePresent(kWebContentsId, GetSearchEngineChoiceActionButtonQuery()),
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+      SelectDefaultSearchEngine(),
+
+      // Default Browser step: back navigation should be ignored.
+      If([this]() { return !UseRevampedView(); },
+         Then(Steps(
+             WaitForWebContentsNavigation(
+                 kWebContentsId, GURL(chrome::kChromeUIIntroDefaultBrowserURL)),
+             EnsurePresent(kWebContentsId,
+                           GetConfirmDefaultBrowserButtonQuery()),
+             SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+             EnsurePresent(kWebContentsId,
+                           GetConfirmDefaultBrowserButtonQuery()),
+             PressJsButton(kWebContentsId,
+                           GetConfirmDefaultBrowserButtonQuery())))),
+
+      // Finish or Continue step: back navigation should be ignored.
+      If([this]() { return UseRevampedView(); },
+         Then(Steps(
+             WaitForWebContentsNavigation(kWebContentsId,
+                                          GetFinishOrContinueURL()),
+             EnsurePresent(kWebContentsId,
+                           GetFinishOrContinueStartBrowsingButtonQuery()),
+             SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+             EnsurePresent(kWebContentsId,
+                           GetFinishOrContinueStartBrowsingButtonQuery()),
+             PressJsButton(kWebContentsId,
+                           GetFinishOrContinueStartBrowsingButtonQuery())))));
+
+  WaitForPickerClosed();
+  EXPECT_TRUE(proceed_future.Get());
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         FirstRunBackNavigationInteractiveUiTest,
                          Values(FirstRunVersion::Legacy{},
                                 FirstRunVersion::Refreshed{},
                                 FirstRunVersion::Revamped{}),
@@ -2895,6 +3003,44 @@ IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,
   histogram_tester().ExpectUniqueSample(
       "ProfilePicker.FREFlow.FeatureShowcase.StartBrowsing",
       FeatureShowcaseStep::kDefaultBrowser, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,
+                       BackNavigationDisabledDuringFeatureShowcase) {
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/false),
+
+      WaitForWebContentsNavigation(kWebContentsId, GetFeatureShowcaseUrl()),
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+      // Send back accelerator on Default Browser step; should be ignored.
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseDefaultBrowserSkipButtonQuery()),
+
+      WaitForButtonEnabled(kWebContentsId,
+                           GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      EnsurePresent(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+      // Send back accelerator on Google Lens step; should be ignored.
+      SendAccelerator(kProfilePickerViewId, GetAccelerator(IDC_BACK)),
+      PressJsButton(kWebContentsId,
+                    GetFeatureShowcaseGoogleLensSkipButtonQuery()),
+
+      CompleteFinishOrContinueStep());
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(FirstRunRevampInteractiveUiTest,

@@ -292,6 +292,10 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Manages IPH promos displayed through the Profile Picker.
   std::unique_ptr<ProfilePickerFeaturePromoController> feature_promo_;
 
+  // Returns whether the profile picker can navigate back. This is determined by
+  // the current step controller.
+  bool CanNavigateBack() const;
+
   base::CallbackListSubscription web_contents_attached_subscription_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};

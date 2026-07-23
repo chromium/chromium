@@ -107,6 +107,14 @@ void ProfileManagementFlowController::SwitchToStep(
   }
 }
 
+bool ProfileManagementFlowController::CanNavigateBack() const {
+  auto it = initialized_steps_.find(flow_tracker_.tracked_step());
+  if (it == initialized_steps_.end()) {
+    return false;
+  }
+  return it->second->CanNavigateBack();
+}
+
 void ProfileManagementFlowController::OnNavigateBackRequested() {
   DCHECK(initialized_steps_.contains(flow_tracker_.tracked_step()));
   initialized_steps_.at(flow_tracker_.tracked_step())

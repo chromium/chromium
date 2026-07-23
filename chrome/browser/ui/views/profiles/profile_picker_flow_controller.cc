@@ -301,6 +301,12 @@ class ReauthFlowStepController : public ProfileManagementStepController {
     host()->SetNativeToolbarSigninButtonsVisible(false);
   }
 
+  bool CanNavigateBack() const override {
+    return reauth_provider_
+               ? CanNavigateBackInternal(reauth_provider_->contents())
+               : false;
+  }
+
   void OnNavigateBackRequested() override {
     NavigateBackInternal(reauth_provider_->contents());
   }

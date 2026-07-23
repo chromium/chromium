@@ -199,10 +199,6 @@ class IntroStepController : public ProfileManagementStepController {
     }
   }
 
-  void OnNavigateBackRequested() override {
-    NavigateBackInternal(host()->GetPickerContents());
-  }
-
   void OnHidden() override {
     if (!effects_button_shown_by_default_) {
       host()->SetNativeToolbarEffectsControlButtonVisible(false);
@@ -316,10 +312,6 @@ class DefaultBrowserStepController : public ProfileManagementStepController {
         *profile_,
         base::BindOnce(&DefaultBrowserStepController::OnEligibilityDetermined,
                        weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnNavigateBackRequested() override {
-    // Do nothing, navigating back is not allowed.
   }
 
  private:
@@ -471,11 +463,6 @@ class FinishOrContinueStepController : public ProfileManagementStepController {
     host()->ShowScreenInPickerContents(
         url, base::BindOnce(&FinishOrContinueStepController::OnLoadFinished,
                             weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnNavigateBackRequested() override {
-    // Navigating back is not allowed for the finish or continue step.
-    NOTREACHED();
   }
 
   void OnHidden() override {
@@ -720,11 +707,6 @@ class FeatureShowcaseStepController : public ProfileManagementStepController {
         *profile_,
         base::BindOnce(&FeatureShowcaseStepController::OnEligibilityDetermined,
                        weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnNavigateBackRequested() override {
-    // Navigating back from post-identity steps is usually blocked.
-    NOTREACHED();
   }
 
  private:
