@@ -52,9 +52,6 @@ bool ProcessorEntityTracker::AllStorageKeysPopulated() const {
       return false;
     }
   }
-  if (entities_.size() != storage_key_to_tag_hash_.size()) {
-    return false;
-  }
   return true;
 }
 

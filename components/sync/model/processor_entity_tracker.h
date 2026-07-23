@@ -40,7 +40,7 @@ class ProcessorEntityTracker {
   ~ProcessorEntityTracker();
 
   // Returns true if all processor entities have non-empty storage keys.
-  // This may happen during initial merge and for some data types during any
+  // This may be false during initial merge and for some data types during any
   // remote creation.
   bool AllStorageKeysPopulated() const;
 

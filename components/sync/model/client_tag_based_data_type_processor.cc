@@ -1004,10 +1004,8 @@ void ClientTagBasedDataTypeProcessor::OnUpdateReceived(
 
   CHECK(entity_tracker_);
   // If there were entities with empty storage keys, they should have been
-  // updated by bridge as part of ApplyIncrementalSyncChanges.
-  // TODO(crbug.com/339260002): This check used to trigger sometimes; verify
-  // whether it still does after crrev.com/c/6979865.
-  DUMP_WILL_BE_CHECK(entity_tracker_->AllStorageKeysPopulated());
+  // updated by the bridge as part of ApplyIncrementalSyncChanges.
+  CHECK(entity_tracker_->AllStorageKeysPopulated());
   // There may be new reasons to commit by the time this function is done.
   NudgeForCommitIfNeeded();
 }
