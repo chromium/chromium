@@ -4,9 +4,12 @@
 
 #include "ui/gtk/nav_button_provider_gtk.h"
 
+#include <cmath>
+
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "ui/base/glib/glib_cast.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/gfx/image/image_skia.h"
@@ -224,9 +227,15 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
       return gfx::ImageSkiaRep();
     }
 
+    // GTK only rasterizes assets at integer scales, so at a fractional scale
+    // render the button at the next integer scale up and downscale below
+    // with a high-quality filter.
+    const int pixbuf_scale = std::ceil(scale);
+
     auto button_context = AppendCssNodeToStyleContext(
         CreateWindowControlsContext(frame_type_, maximized_),
         "button.titlebutton");
+    gtk_style_context_set_scale(button_context, pixbuf_scale);
     gtk_style_context_add_class(button_context,
                                 ButtonStyleClassFromButtonType(type_));
     GtkStateFlags button_state = GtkStateFlagsFromButtonState(state_);
@@ -286,26 +295,23 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
                         ".titlebutton { background-size: contain; }");
     }
 
-    // Gtk doesn't support fractional scale factors, but chrome does.
-    // Rendering the button background and border at a fractional
-    // scale factor is easy, since we can adjust the cairo context
-    // transform.  But the icon is loaded from a pixbuf, so we pick
-    // the next-highest integer scale and manually downsize.
-    int pixbuf_scale = scale == static_cast<int>(scale) ? scale : scale + 1;
+    auto image_context = AppendCssNodeToStyleContext(button_context, "image");
+    gtk_style_context_set_scale(image_context, pixbuf_scale);
     NavButtonIcon icon;
     auto icon_size =
-        LoadNavButtonIcon(type_, button_context, pixbuf_scale, &icon);
+        LoadNavButtonIcon(type_, image_context, pixbuf_scale, &icon);
 
     SkBitmap bitmap;
-    bitmap.allocN32Pixels(scale * button_size_.width(),
-                          scale * button_size_.height());
+    bitmap.allocN32Pixels(pixbuf_scale * button_size_.width(),
+                          pixbuf_scale * button_size_.height());
     bitmap.eraseColor(0);
 
     CairoSurface surface(bitmap);
     cairo_t* cr = surface.cairo();
 
+    cairo_surface_set_device_scale(cairo_get_target(cr), pixbuf_scale,
+                                   pixbuf_scale);
     cairo_save(cr);
-    cairo_scale(cr, scale, scale);
     gtk_render_background(button_context, cr, 0, 0, button_size_.width(),
                           button_size_.height());
     gtk_render_frame(button_context, cr, 0, 0, button_size_.width(),
@@ -313,7 +319,6 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
     if (GtkCheckVersion(4)) {
       // In GTK4, themes can style the image child of titlebar buttons rather
       // than the button itself.  Render the image background too.
-      auto image_context = AppendCssNodeToStyleContext(button_context, "image");
       int icon_w = icon_size.width() / pixbuf_scale;
       int icon_h = icon_size.height() / pixbuf_scale;
       auto img_size = GetMinimumWidgetSize(gfx::Size(icon_w, icon_h), nullptr,
@@ -328,13 +333,26 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
     }
     cairo_restore(cr);
     cairo_save(cr);
-    float pixbuf_extra_scale = scale / pixbuf_scale;
-    cairo_scale(cr, pixbuf_extra_scale, pixbuf_extra_scale);
+    // The pixbuf was created at the correct physical resolution,
+    // so prevent it from being scaled up again by the device surface scale.
+    cairo_scale(cr, 1.0 / pixbuf_scale, 1.0 / pixbuf_scale);
     GtkRenderIcon(
         button_context, cr, icon.pixbuf, icon.texture,
         ((pixbuf_scale * button_size_.width() - icon_size.width()) / 2),
         ((pixbuf_scale * button_size_.height() - icon_size.height()) / 2));
     cairo_restore(cr);
+
+    if (scale != pixbuf_scale) {
+      // Downscale to the requested fractional scale.
+      SkBitmap scaled;
+      scaled.allocN32Pixels(std::lround(scale * button_size_.width()),
+                            std::lround(scale * button_size_.height()));
+      scaled.eraseColor(0);
+      cairo_surface_flush(cairo_get_target(cr));
+      bitmap.pixmap().scalePixels(
+          scaled.pixmap(), SkSamplingOptions(SkCubicResampler::Mitchell()));
+      bitmap = scaled;
+    }
 
     return gfx::ImageSkiaRep(bitmap, scale);
   }
