@@ -102,7 +102,8 @@ public class SideUiWebContentHairlineManagerTest {
         verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
         BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
 
-        // 1. Non-zero offset: show top hairline.
+        // 1. Non-zero offset and side UI showing: show top hairline.
+        when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
         observer.onTopControlsHeightChanged(100, 0);
 
@@ -124,7 +125,8 @@ public class SideUiWebContentHairlineManagerTest {
         verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
         BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
 
-        // 1. Non-zero offset: show top hairline.
+        // 1. Non-zero offset and side UI showing: show top hairline.
+        when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(50f);
         observer.onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
 
@@ -141,11 +143,16 @@ public class SideUiWebContentHairlineManagerTest {
 
     @Test
     public void testUpdate() {
+        when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
         mManager.update();
 
         assertEquals("Top margin should be updated.", 100, mLayoutParams.topMargin);
         assertEquals(View.VISIBLE, mTopHairline.getVisibility());
+
+        when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(false);
+        mManager.update();
+        assertEquals(View.INVISIBLE, mTopHairline.getVisibility());
     }
 
     @Test
@@ -206,7 +213,6 @@ public class SideUiWebContentHairlineManagerTest {
                 new SideUiSpecs(Map.of(AnchorSide.LEFT, new SideUiSize(100, HeightType.TOOLBAR)));
         observer.onSideUiSpecsChanged(showLeftSpecs);
 
-        assertEquals(View.VISIBLE, mTopHairline.getVisibility());
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
         assertEquals(View.INVISIBLE, mTopLeftRoundedCorner.getVisibility());
         assertEquals(View.INVISIBLE, mRightHairline.getVisibility());

@@ -48,8 +48,11 @@ import java.util.Set;
 
         mWebContentHairlineControlsObserver =
                 new WebContentHairlineControlsObserver(
-                        browserControlsStateProvider, sideUiWebContentHairlineContainer);
+                        browserControlsStateProvider,
+                        sideUiStateProvider,
+                        sideUiWebContentHairlineContainer);
         browserControlsStateProvider.addObserver(mWebContentHairlineControlsObserver);
+        mWebContentHairlineControlsObserver.updateWebContentHairlineContainer();
 
         mWebContentHairlineAdjuster =
                 new WebContentHairlineAdjuster(
@@ -76,12 +79,15 @@ import java.util.Set;
             implements BrowserControlsStateProvider.Observer {
 
         private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+        private final SideUiStateProvider mSideUiStateProvider;
         private final SideUiWebContentHairlineContainer mSideUiWebContentHairlineContainer;
 
         WebContentHairlineControlsObserver(
                 BrowserControlsStateProvider browserControlsStateProvider,
+                SideUiStateProvider sideUiStateProvider,
                 SideUiWebContentHairlineContainer sideUiWebContentHairlineContainer) {
             mBrowserControlsStateProvider = browserControlsStateProvider;
+            mSideUiStateProvider = sideUiStateProvider;
             mSideUiWebContentHairlineContainer = sideUiWebContentHairlineContainer;
         }
 
@@ -107,7 +113,8 @@ import java.util.Set;
             // Hides the top hairline, if needed.
             int topVisibleContentOffset =
                     (int) mBrowserControlsStateProvider.getTopVisibleContentOffset();
-            boolean hideTopHairline = topVisibleContentOffset == 0;
+            boolean hideTopHairline =
+                    topVisibleContentOffset == 0 || !mSideUiStateProvider.isAnySideUiShowing();
             mSideUiWebContentHairlineContainer
                     .getTopHairline()
                     .setVisibility(hideTopHairline ? View.INVISIBLE : View.VISIBLE);
