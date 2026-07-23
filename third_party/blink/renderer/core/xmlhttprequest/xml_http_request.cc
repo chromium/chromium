@@ -899,9 +899,9 @@ void XMLHttpRequest::send(FormData* body, ExceptionState& exception_state) {
     // TODO (sof): override any author-provided charset= in the
     // content type value to UTF-8 ?
     if (!HasContentTypeRequestHeader()) {
-      AtomicString content_type = AtomicString(StrCat(
-          {"multipart/form-data; boundary=",
-           FetchUtils::NormalizeHeaderValue(http_body->Boundary().data())}));
+      AtomicString content_type = AtomicString(
+          StrCat({"multipart/form-data; boundary=",
+                  FetchUtils::NormalizeHeaderValue(http_body->Boundary())}));
       SetRequestHeaderInternal(http_names::kContentType, content_type);
     }
   }

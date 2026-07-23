@@ -30,6 +30,8 @@
 #include <string_view>
 
 #include "base/rand_util.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
 namespace blink {
@@ -116,9 +118,7 @@ TextEncoding FormDataEncoder::EncodingFromAcceptCharset(
   return fallback_encoding;
 }
 
-Vector<char> FormDataEncoder::GenerateUniqueBoundaryString() {
-  Vector<char> boundary;
-
+String FormDataEncoder::GenerateUniqueBoundaryString() {
   // TODO(rsleevi): crbug.com/575779: Follow the spec or fix the spec.
   // The RFC 2046 spec says the alphanumeric characters plus the
   // following characters are legal for boundaries:  '()+_,-./:=?
@@ -128,7 +128,7 @@ Vector<char> FormDataEncoder::GenerateUniqueBoundaryString() {
   // Note that our algorithm makes it twice as much likely for 'A' or 'B'
   // to appear in the boundary string, because 0x41 and 0x42 are present in
   // the below array twice.
-  static const std::array<char, 64> kAlphaNumericEncodingMap = {
+  static const std::array<uint8_t, 64> kAlphaNumericEncodingMap = {
       0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B,
       0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56,
       0x57, 0x58, 0x59, 0x5A, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67,
@@ -136,23 +136,31 @@ Vector<char> FormDataEncoder::GenerateUniqueBoundaryString() {
       0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x30, 0x31, 0x32,
       0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x41, 0x42};
 
+  constexpr std::string_view kPrefix = "----WebKitFormBoundary";
+  constexpr size_t kRandomSuffixCharacters = 16;
+  constexpr size_t kBufferSize = kPrefix.size() + kRandomSuffixCharacters;
+
+  StringBuffer<LChar> boundary_buffer(static_cast<wtf_size_t>(kBufferSize));
+  auto [prefix, suffix] = boundary_buffer.Span()
+                              .template first<kBufferSize>()
+                              .split_at<kPrefix.size()>();
+
   // Start with an informative prefix.
-  Append(boundary, "----WebKitFormBoundary");
+  prefix.copy_from(base::as_byte_span(kPrefix));
 
   // Append 16 random 7bit ascii AlphaNumeric characters.
-  char random_bytes[16];
-  base::RandBytes(base::as_writable_byte_span(random_bytes));
-  for (char& c : random_bytes)
+  std::array<uint8_t, kRandomSuffixCharacters> random_bytes;
+  base::RandBytes(random_bytes);
+  for (uint8_t& c : random_bytes) {
     c = kAlphaNumericEncodingMap[c & 0x3F];
-  boundary.append_range(random_bytes);
+  }
+  suffix.copy_from(random_bytes);
 
-  boundary.push_back(
-      0);  // Add a 0 at the end so we can use this as a C-style string.
-  return boundary;
+  return String::Adopt(boundary_buffer);
 }
 
 void FormDataEncoder::BeginMultiPartHeader(Vector<char>& buffer,
-                                           const std::string& boundary,
+                                           const String& boundary,
                                            const std::string& name) {
   AddBoundaryToMultiPartHeader(buffer, boundary);
 
@@ -164,10 +172,13 @@ void FormDataEncoder::BeginMultiPartHeader(Vector<char>& buffer,
 }
 
 void FormDataEncoder::AddBoundaryToMultiPartHeader(Vector<char>& buffer,
-                                                   const std::string& boundary,
+                                                   const String& boundary,
                                                    bool is_last_boundary) {
+  // We're expecting the boundary to be ASCII-only.
+  CHECK(boundary.ContainsOnlyAsciiOrEmpty());
+
   Append(buffer, "--");
-  Append(buffer, boundary);
+  Append(buffer, StringUtf8Adaptor(boundary).AsStringView());
 
   if (is_last_boundary)
     Append(buffer, "--");

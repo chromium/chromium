@@ -140,9 +140,7 @@ scoped_refptr<EncodedFormData> ComplexFormData() {
   scoped_refptr<BlobDataHandle> blob_data_handle =
       BlobDataHandle::Create(std::move(blob_data), size);
   data->AppendBlob(blob_data_handle);
-  Vector<char> boundary;
-  boundary.push_back('\0');
-  data->SetBoundary(boundary);
+  data->SetBoundary(g_empty_string);
   return data;
 }
 
@@ -651,9 +649,7 @@ scoped_refptr<BlobDataHandle> CreateBlobHandle(const String& content) {
 
 scoped_refptr<EncodedFormData> CreateDataWithBoundary() {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
-  Vector<char> boundary;
-  boundary.push_back('\0');
-  data->SetBoundary(boundary);
+  data->SetBoundary(g_empty_string);
   return data;
 }
 

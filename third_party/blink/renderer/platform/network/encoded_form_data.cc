@@ -219,9 +219,7 @@ String EncodedFormData::FlattenToString() const {
 }
 
 String EncodedFormData::FormatContentTypeWithBoundary() const {
-  // Here we handle `boundary_` as a C-style string. See
-  // FormDataEncoder::GenerateUniqueBoundaryString.
-  return StrCat({"multipart/form-data; boundary=", boundary_.data()});
+  return StrCat({"multipart/form-data; boundary=", boundary_});
 }
 
 uint64_t EncodedFormData::SizeInBytes() const {

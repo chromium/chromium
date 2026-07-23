@@ -205,10 +205,10 @@ TEST(FormDataTest, FilenameWithLoneSurrogates) {
   // The multipart/form-data format with UTF-8 encoding exposes the lone
   // surrogate as EF BF BD (the Unicode replacement character).
   auto encoded_multipart = fd->EncodeMultiPartFormData();
-  const char* boundary = encoded_multipart->Boundary().data();
+  const String& boundary = encoded_multipart->Boundary();
   FormDataElement fde = encoded_multipart->Elements()[0];
   EXPECT_EQ(String(fde.data_),
-            String(String("--") + boundary +
+            String("--" + boundary +
                    "\r\n"
                    "Content-Disposition: form-data; name=\"test\"; "
                    "filename=\"a\xEF\xBF\xBD"

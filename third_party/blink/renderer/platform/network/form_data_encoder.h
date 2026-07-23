@@ -45,12 +45,12 @@ class PLATFORM_EXPORT FormDataEncoder {
       const TextEncoding& fallback_encoding);
 
   // Helper functions used by HTMLFormElement for multi-part form data
-  static Vector<char> GenerateUniqueBoundaryString();
+  static String GenerateUniqueBoundaryString();
   static void BeginMultiPartHeader(Vector<char>&,
-                                   const std::string& boundary,
+                                   const String& boundary,
                                    const std::string& name);
   static void AddBoundaryToMultiPartHeader(Vector<char>&,
-                                           const std::string& boundary,
+                                           const String& boundary,
                                            bool is_last_boundary = false);
   static void AddFilenameToMultiPartHeader(Vector<char>&,
                                            const TextEncoding&,

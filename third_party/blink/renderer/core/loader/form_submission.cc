@@ -307,7 +307,7 @@ FormSubmission* FormSubmission::Create(HTMLFormElement* form,
 
   if (is_multi_part_form) {
     form_data = dom_form_data->EncodeMultiPartFormData();
-    boundary = form_data->Boundary().data();
+    boundary = form_data->Boundary();
   } else {
     form_data = dom_form_data->EncodeFormData(
         attributes.Method() == kGetMethod

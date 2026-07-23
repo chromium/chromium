@@ -281,10 +281,9 @@ scoped_refptr<EncodedFormData> FormData::EncodeFormData(
 scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
   scoped_refptr<EncodedFormData> form_data = EncodedFormData::Create();
   form_data->SetBoundary(FormDataEncoder::GenerateUniqueBoundaryString());
-  Vector<char> encoded_data;
   for (const auto& entry : Entries()) {
     Vector<char> header;
-    FormDataEncoder::BeginMultiPartHeader(header, form_data->Boundary().data(),
+    FormDataEncoder::BeginMultiPartHeader(header, form_data->Boundary(),
                                           Encode(entry->name()));
 
     // If the current type is blob, then we also need to include the
@@ -344,8 +343,10 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
     }
     form_data->AppendData(base::span_from_cstring("\r\n"));
   }
+
+  Vector<char> encoded_data;
   FormDataEncoder::AddBoundaryToMultiPartHeader(
-      encoded_data, form_data->Boundary().data(), true);
+      encoded_data, form_data->Boundary(), /*is_last_boundary=*/true);
   form_data->AppendData(encoded_data);
   return form_data;
 }

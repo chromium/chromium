@@ -134,7 +134,7 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
       : form_data_(std::move(form_data)) {
     DCHECK_EQ(ConsumerType::kDataAndEncodedFileOrBlob,
               GetConsumerType(form_data_.get()));
-    CHECK(form_data_->Boundary().data());
+    CHECK(form_data_->Boundary());
     if (consumer_for_testing) {
       blob_bytes_consumer_ = consumer_for_testing;
       return;
