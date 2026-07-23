@@ -7,6 +7,7 @@
 #include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
 
 #include "base/apple/call_with_eh_frame.h"
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #import "base/mac/mac_util.h"
@@ -204,15 +205,11 @@ std::string DescriptionForNSEvent(NSEvent* event) {
   // on a notification we set up (vs. NSApplication, say).
   if ([keyPath isEqualToString:@"voiceOverEnabled"] &&
       context == content::BrowserAccessibilityState::GetInstance()) {
-    NSNumber* newValueNumber = [change objectForKey:NSKeyValueChangeNewKey];
+    NSNumber* newValueNumber =
+        base::apple::ObjCCast<NSNumber>(change[NSKeyValueChangeNewKey]);
 
-    // In the if statement below, we check newValueNumber's class before
-    // accessing it to guard against crashes should the return type suddenly
-    // change in the future. We DCHECK here to flag any such change.
-    DCHECK([newValueNumber isKindOfClass:[NSNumber class]]);
-
-    if ([newValueNumber isKindOfClass:[NSNumber class]]) {
-      [self voiceOverStateChanged:[newValueNumber boolValue]];
+    if (newValueNumber) {
+      [self voiceOverStateChanged:newValueNumber.boolValue];
     }
 
     return;

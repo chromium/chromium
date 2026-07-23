@@ -94,14 +94,16 @@ NSMutableArray<NSString*>* PathsFromAppList(NSArray* app_list) {
       return nil;
     }
 
-    NSDictionary* tile_data = app[kDockTileDataKey];
-    if (![tile_data isKindOfClass:[NSDictionary class]]) {
+    NSDictionary* tile_data =
+        base::apple::ObjCCast<NSDictionary>(app[kDockTileDataKey]);
+    if (!tile_data) {
       LOG(ERROR) << "tile_data not NSDictionary";
       return nil;
     }
 
-    NSDictionary* file_data = tile_data[kDockFileDataKey];
-    if (![file_data isKindOfClass:[NSDictionary class]]) {
+    NSDictionary* file_data =
+        base::apple::ObjCCast<NSDictionary>(tile_data[kDockFileDataKey]);
+    if (!file_data) {
       // Some apps (e.g. Dashboard) have no file data, but instead have a
       // special value for the tile-type key. For these, add an empty string to
       // align indexes with the source array.
@@ -173,8 +175,8 @@ NSArray* AppListFromDockPlist(NSDictionary* dock_plist, NSString* list_key) {
   if (!dock_plist) {
     return nil;
   }
-  NSArray* app_list = dock_plist[list_key];
-  if (![app_list isKindOfClass:[NSArray class]]) {
+  NSArray* app_list = base::apple::ObjCCast<NSArray>(dock_plist[list_key]);
+  if (!app_list) {
     LOG(ERROR) << base::SysNSStringToUTF8(list_key) << " is not an NSArray";
     return nil;
   }
