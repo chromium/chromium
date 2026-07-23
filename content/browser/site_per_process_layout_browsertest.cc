@@ -19,6 +19,7 @@
 #include "content/common/input/synthetic_pointer_action.h"
 #include "content/common/input/synthetic_touchscreen_pinch_gesture.h"
 #include "content/public/browser/render_process_host_priority_client.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1420,13 +1421,24 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1u, root->child_count());
 
-  // The document in the iframe is blocked by CSPEE. An error page is loaded, it
-  // stays in the process of the main document.
-  EXPECT_EQ(
-      " Site A\n"
-      "   +--Site A\n"
-      "Where A = http://a.com/",
-      DepictFrameTree(root));
+  // The document in the iframe is blocked by CSPEE. An error page is loaded.
+  // With subframe error page isolation, the error page is isolated into its
+  // own process. Otherwise, it stays in the process of the main document.
+  if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+          /*in_main_frame=*/false)) {
+    EXPECT_EQ(
+        " Site A ------------ proxies for B\n"
+        "   +--Site B ------- proxies for A\n"
+        "Where A = http://a.com/\n"
+        "      B = chrome-error://chromewebdata/",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A\n"
+        "   +--Site A\n"
+        "Where A = http://a.com/",
+        DepictFrameTree(root));
+  }
 
   FrameTreeNode* child = root->child_at(0);
 
