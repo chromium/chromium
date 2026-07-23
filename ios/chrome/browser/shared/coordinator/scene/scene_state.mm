@@ -138,10 +138,6 @@
   return _sceneStateOptions.identifier;
 }
 
-- (void)setScene:(UIWindowScene*)scene {
-  _scene = scene;
-}
-
 - (void)setActivationLevel:(SceneActivationLevel)newLevel {
   if (_activationLevel == newLevel) {
     return;
