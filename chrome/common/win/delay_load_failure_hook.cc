@@ -10,11 +10,9 @@
 #include <algorithm>
 #include <string_view>
 
-#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
-#include "base/debug/alias.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/win/delay_load_failure_support.h"
@@ -27,15 +25,16 @@ namespace {
 FARPROC WINAPI DelayLoadFailureHook(unsigned reason, DelayLoadInfo* dll_info) {
   std::string_view raw_dll_name(dll_info->szDll);
   if (raw_dll_name.size() < MAX_PATH) {
-    // It's not an error if these optional modules fail to be loaded, there are
-    // custom exception handlers in `device/bluetooth/bluetooth_init_win.cc` and
-    // `media/base/win/mf_initializer.cc` that will intercept the exception
-    // triggered by the delay load runtime. Returning 0 will tell the runtime
-    // that this failure hasn't been handled and it'll cause the exception to be
-    // raised.
+    // The following modules are speculatively loaded by their consumers via
+    // base::win::LoadAllImportsForDll, which installs an exception handler to
+    // intercept failures and return an error to the caller. These consumers
+    // gracefully handle such failures, so return 0 to tell the runtime that
+    // this failure hasn't been handled so that the exception is raised.
+    // TODO(crbug.com/536936869): Remove this list.
     static constexpr auto kOptionalModules =
         base::MakeFixedFlatSet<std::string_view>(
-            {"bthprops.cpl", "mf.dll", "mfplat.dll", "mfreadwrite.dll"});
+            {"bthprops.cpl", "mf.dll", "mfplat.dll", "mfreadwrite.dll",
+             "tbs.dll"});
     // Copy and transform the module name into lower case.
     char dll_name_buffer[MAX_PATH];
     base::span<char> dll_name_buffer_span(dll_name_buffer);
