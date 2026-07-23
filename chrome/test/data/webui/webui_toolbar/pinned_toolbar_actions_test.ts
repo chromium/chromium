@@ -72,11 +72,10 @@ suite('PinnedToolbarActions', function() {
     TrackedElementManager.setInstance(mockTrackedElementManager as any);
 
     container = document.createElement('pinned-toolbar-actions');
-    container.style.setProperty('--animations-enabled', '0');
     document.body.appendChild(container);
 
     // Initial state with 3 items and a divider
-    container.state = [
+    container.states = [
       {
         action: 1,  // kNewIncognitoWindow
         highlighted: false,
@@ -138,7 +137,7 @@ suite('PinnedToolbarActions', function() {
 
     // Simulate model update resulting from the move
     // We move Action 1 to index 1 (after Action 2)
-    container.state = [
+    container.states = [
       {
         action: 2,
         highlighted: false,
@@ -228,13 +227,13 @@ suite('PinnedToolbarActions', function() {
     assertTrue(dragEvent.defaultPrevented);
     assertEquals('move', dragEvent.dataTransfer!.dropEffect);
 
-    // Verify that keyedStates_ was updated to show placeholder for Action 1 at
+    // Verify that keyedStates was updated to show placeholder for Action 1 at
     // the hovered position
-    const keyedStates = (container as any).keyedStates_;
+    const keyedStates = container.keyedStates;
     assertEquals(3, keyedStates.length);
-    assertEquals('2', keyedStates[0].key);  // Action 2 is now first
-    assertEquals('1', keyedStates[1].key);  // Action 1 is now second
-    assertTrue(keyedStates[1].dragPlaceholder);
+    assertEquals('2', keyedStates[0]!.key);  // Action 2 is now first
+    assertEquals('1', keyedStates[1]!.key);  // Action 1 is now second
+    assertTrue(!!keyedStates[1]!.dragPlaceholder);
   });
 
   test('Local drag start broadcasts', () => {
@@ -324,10 +323,10 @@ suite('PinnedToolbarActions', function() {
 
     assertTrue(dragEvent.defaultPrevented);
 
-    const keyedStates = (container as any).keyedStates_;
+    const keyedStates = container.keyedStates;
     assertEquals(3, keyedStates.length);
-    assertEquals('1', keyedStates[0].key);
-    assertTrue(keyedStates[0].dragPlaceholder);
+    assertEquals('1', keyedStates[0]!.key);
+    assertTrue(!!keyedStates[0]!.dragPlaceholder);
   });
 
   test(
@@ -347,20 +346,20 @@ suite('PinnedToolbarActions', function() {
         container.dispatchEvent(dragEnterEvent);
 
         // Verify no placeholder is set yet (since we don't know the action ID)
-        let keyedStates = (container as any).keyedStates_;
+        let keyedStates = container.keyedStates;
         assertEquals(3, keyedStates.length);
-        assertTrue(!keyedStates[0].dragPlaceholder);
-        assertTrue(!keyedStates[1].dragPlaceholder);
-        assertTrue(!keyedStates[2].dragPlaceholder);
+        assertTrue(!keyedStates[0]!.dragPlaceholder);
+        assertTrue(!keyedStates[1]!.dragPlaceholder);
+        assertTrue(!keyedStates[2]!.dragPlaceholder);
 
         // 2. Simulate broadcast arriving now
         const helperChannel = new BroadcastChannel('pinned-action-drag');
         helperChannel.postMessage({type: 'drag-start', actionId: 1});
 
         // Verify that the placeholder is now set for Action 1
-        keyedStates = (container as any).keyedStates_;
-        assertEquals('1', keyedStates[0].key);
-        assertTrue(keyedStates[0].dragPlaceholder);
+        keyedStates = container.keyedStates;
+        assertEquals('1', keyedStates[0]!.key);
+        assertTrue(!!keyedStates[0]!.dragPlaceholder);
       });
 
   test('Mousemove during local drag triggers fallback drag-end cleanup', () => {
@@ -376,8 +375,8 @@ suite('PinnedToolbarActions', function() {
     }));
 
     // Verify it is marked as dragging/placeholder locally
-    let keyedStates = (container as any).keyedStates_;
-    assertTrue(keyedStates[0].dragPlaceholder);
+    let keyedStates = container.keyedStates;
+    assertTrue(!!keyedStates[0]!.dragPlaceholder);
     assertEquals(1, (container as any).draggedActionId_);
 
     // Set up broadcast listener to verify it broadcasts drag-end
@@ -392,8 +391,8 @@ suite('PinnedToolbarActions', function() {
 
     // Verify cleanup occurred
     assertEquals(null, (container as any).draggedActionId_);
-    keyedStates = (container as any).keyedStates_;
-    assertTrue(!keyedStates[0].dragPlaceholder);
+    keyedStates = container.keyedStates;
+    assertTrue(!keyedStates[0]!.dragPlaceholder);
 
     // Verify broadcast occurred
     assertEquals('drag-end', receivedMessage?.type);
@@ -433,8 +432,8 @@ suite('PinnedToolbarActions', function() {
     secondAction.dispatchEvent(dragOverEvent);
 
     // Verify reorder happened locally (Action 1 is now second, i.e., index 1)
-    const keyedStates = (container as any).keyedStates_;
-    assertEquals('1', keyedStates[1].key);
+    const keyedStates = container.keyedStates;
+    assertEquals('1', keyedStates[1]!.key);
 
     // 3. Simulate drop on Action 2 (which is now at index 0)
     const dropEvent = new DragEvent('drop', {
@@ -471,10 +470,10 @@ suite('PinnedToolbarActions', function() {
     // Verify layout did NOT revert/flicker back to original C++ order yet
     // (Action 2 remains at index 0, Action 1 at index 1 with placeholder
     // cleared)
-    const postDropKeyedStates = (container as any).keyedStates_;
-    assertEquals('2', postDropKeyedStates[0].key);
-    assertEquals('1', postDropKeyedStates[1].key);
-    assertTrue(!postDropKeyedStates[1].dragPlaceholder);
+    const postDropKeyedStates = container.keyedStates;
+    assertEquals('2', postDropKeyedStates[0]!.key);
+    assertEquals('1', postDropKeyedStates[1]!.key);
+    assertTrue(!postDropKeyedStates[1]!.dragPlaceholder);
   });
 
   test('Drop on container (empty space) commits reordering', () => {
@@ -510,9 +509,9 @@ suite('PinnedToolbarActions', function() {
     secondAction.dispatchEvent(dragOverEvent);
 
     // Verify local reorder happened
-    let keyedStates = (container as any).keyedStates_;
-    assertEquals('2', keyedStates[0].key);
-    assertEquals('1', keyedStates[1].key);
+    let keyedStates = container.keyedStates;
+    assertEquals('2', keyedStates[0]!.key);
+    assertEquals('1', keyedStates[1]!.key);
 
     // 2. Dispatch drop on the container itself (simulating drop on empty
     // space)
@@ -548,10 +547,10 @@ suite('PinnedToolbarActions', function() {
     // Verify layout did NOT revert/flicker back to original C++ order yet
     // (Action 2 remains at index 0, Action 1 at index 1 with placeholder
     // cleared)
-    keyedStates = (container as any).keyedStates_;
-    assertEquals('2', keyedStates[0].key);
-    assertEquals('1', keyedStates[1].key);
-    assertTrue(!keyedStates[1].dragPlaceholder);
+    keyedStates = container.keyedStates;
+    assertEquals('2', keyedStates[0]!.key);
+    assertEquals('1', keyedStates[1]!.key);
+    assertTrue(!keyedStates[1]!.dragPlaceholder);
     assertEquals(0, (container as any).dragEnterCount_);
   });
 
@@ -571,16 +570,16 @@ suite('PinnedToolbarActions', function() {
     container.dispatchEvent(dragEnterEvent);
 
     // Verify Action 1 is placeholder
-    let keyedStates = (container as any).keyedStates_;
-    assertTrue(keyedStates[0].dragPlaceholder);
+    let keyedStates = container.keyedStates;
+    assertTrue(!!keyedStates[0]!.dragPlaceholder);
     assertEquals(1, (container as any).dragEnterCount_);
 
     // 2. Simulate broadcast drag-end (aborted)
     helperChannel.postMessage({type: 'drag-end'});
 
     // Verify placeholder is cleared even though dragEnterCount_ is still 1
-    keyedStates = (container as any).keyedStates_;
-    assertTrue(!keyedStates[0].dragPlaceholder);
+    keyedStates = container.keyedStates;
+    assertTrue(!keyedStates[0]!.dragPlaceholder);
     assertEquals(1, (container as any).dragEnterCount_);  // still inside
   });
 
@@ -625,8 +624,8 @@ suite('PinnedToolbarActions', function() {
         secondAction.dispatchEvent(dragOverEvent);
 
         // Verify local reorder happened (Action 1 is at index 1)
-        let keyedStates = (container as any).keyedStates_;
-        assertEquals('1', keyedStates[1].key);
+        let keyedStates = container.keyedStates;
+        assertEquals('1', keyedStates[1]!.key);
 
         // 3. Simulate drop on Action 2 with mismatched Action ID (999)
         const dropEvent = new DragEvent('drop', {
@@ -659,10 +658,10 @@ suite('PinnedToolbarActions', function() {
         }));
 
         // Verify layout was reverted to original
-        keyedStates = (container as any).keyedStates_;
-        assertEquals('1', keyedStates[0].key);
-        assertEquals('2', keyedStates[1].key);
-        assertTrue(!keyedStates[0].dragPlaceholder);
+        keyedStates = container.keyedStates;
+        assertEquals('1', keyedStates[0]!.key);
+        assertEquals('2', keyedStates[1]!.key);
+        assertTrue(!keyedStates[0]!.dragPlaceholder);
       });
 
   test(
@@ -697,8 +696,8 @@ suite('PinnedToolbarActions', function() {
         firstActionButton.dispatchEvent(dragStartEvent);
 
         // Verify Action 1 is marked as placeholder and dragged ID is set
-        let keyedStates = (container as any).keyedStates_;
-        assertTrue(keyedStates[0].dragPlaceholder);
+        let keyedStates = container.keyedStates;
+        assertTrue(!!keyedStates[0]!.dragPlaceholder);
         assertEquals(1, (container as any).draggedActionId_);
 
         // Verify drag-start was broadcast
@@ -707,18 +706,18 @@ suite('PinnedToolbarActions', function() {
         assertEquals(1, receivedMessages[0].actionId);
 
         // 2. Simulate a backend state update during drag (removing Action 2)
-        container.state = [
-          container.state[0]!,
-          container.state[2]!,
+        container.states = [
+          container.states[0]!,
+          container.states[2]!,
         ];
         await microtasksFinished();
 
         // Verify drag was aborted immediately and layout updated
         assertEquals(null, (container as any).draggedActionId_);
-        keyedStates = (container as any).keyedStates_;
+        keyedStates = container.keyedStates;
         assertEquals(2, keyedStates.length);  // Action 1, Divider
-        assertEquals('1', keyedStates[0].key);
-        assertTrue(!keyedStates[0].dragPlaceholder);
+        assertEquals('1', keyedStates[0]!.key);
+        assertTrue(!keyedStates[0]!.dragPlaceholder);
 
         // Verify abort message was broadcasted
         assertEquals(2, receivedMessages.length);

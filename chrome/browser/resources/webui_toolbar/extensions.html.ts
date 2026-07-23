@@ -10,7 +10,7 @@ export function getHtml(this: ExtensionsElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 ${repeat(
-    this.keyedStates_,
+    this.keyedStates,
     (keyedState) => keyedState.key,
     (keyedState) => html`
       <webui-toolbar-extension
@@ -21,10 +21,10 @@ ${repeat(
       </webui-toolbar-extension>
     `,
 )}
-${this.keyedStates_.length > 0 ? html`
+${this.keyedStates.length > 0 ? html`
   <toolbar-divider
-      class="${this.animateInDivider_() ? 'animate-in' : ''}
-             ${this.allExiting_() ? 'exiting' : ''}">
+      class="${this.animateInDivider() ? 'animate-in' : ''}
+             ${this.allExiting() ? 'exiting' : ''}">
   </toolbar-divider>
 ` : ''}
 <!--_html_template_end_-->`;

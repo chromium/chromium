@@ -48,12 +48,12 @@ ${this.isBackForwardButtonEnabled_ ? html`
   ` : ''}
   ${this.isExtensionsContainerEnabled_ ? html`
     <webui-toolbar-extensions id="extensions"
-        .state="${this.navigationControlsState_.extensionsState}">
+        .states="${this.navigationControlsState_.extensionsState}">
     </webui-toolbar-extensions>
   ` : ''}
   ${this.isPinnedToolbarActionsEnabled_ ? html`
     <pinned-toolbar-actions id="pinnedToolbarActions"
-        .state="${this.navigationControlsState_.pinnedToolbarActionsState}">
+        .states="${this.navigationControlsState_.pinnedToolbarActionsState}">
     </pinned-toolbar-actions>
   ` : ''}
   ${this.isBatterySaverButtonEnabled_ ? html`

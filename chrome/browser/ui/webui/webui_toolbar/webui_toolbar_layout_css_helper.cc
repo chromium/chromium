@@ -202,12 +202,6 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
     css_string.append("--touch-mode: 0;");
   }
 
-  if (gfx::Animation::ShouldRenderRichAnimation()) {
-    css_string.append("--animations-enabled: 1;");
-  } else {
-    css_string.append("--animations-enabled: 0;");
-  }
-
   // Add LayoutConstant values.
   for (int layout_constant_num = 0;
        layout_constant_num <= static_cast<int>(LayoutConstant::kLast);
