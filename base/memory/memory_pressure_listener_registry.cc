@@ -172,12 +172,50 @@ bool MemoryPressureListenerRegistry::AreNotificationsSuppressed() {
 
 // static
 void MemoryPressureListenerRegistry::IncreaseNotificationSuppressionCount() {
-  Get().IncreaseNotificationSuppressionCountImpl();
+  // The registry and its listeners live on the process main thread and are
+  // guarded by `thread_checker_`. In the single-process model (e.g. Android
+  // WebView), the callers of this method (the renderer's MemoryPurgeManager via
+  // MemoryPressureSuppressionToken) run on the in-process renderer thread, not
+  // the process main thread. Marshal the mutation to the main thread so that
+  // all registry state changes happen on its owning thread.
+  auto* main_thread_task_runner =
+      SingleThreadTaskRunner::HasMainThreadDefault()
+          ? SingleThreadTaskRunner::GetMainThreadDefault().get()
+          : nullptr;
+  if (main_thread_task_runner &&
+      !main_thread_task_runner->BelongsToCurrentThread()) {
+    main_thread_task_runner->PostTask(
+        FROM_HERE, BindOnce(&MemoryPressureListenerRegistry::
+                                IncreaseNotificationSuppressionCount));
+    return;
+  }
+  if (auto* registry = MaybeGet()) {
+    registry->IncreaseNotificationSuppressionCountImpl();
+  }
 }
 
 // static
 void MemoryPressureListenerRegistry::DecreaseNotificationSuppressionCount() {
-  Get().DecreaseNotificationSuppressionCountImpl();
+  // See IncreaseNotificationSuppressionCount() above. Lifting suppression can
+  // synchronously call SendMemoryPressureNotification(), which iterates the
+  // listener list and dispatches into browser-thread-owned memory consumers.
+  // Running that off the main thread (as happens in the single-process model)
+  // races with concurrent registration/notification and can dereference a
+  // freed consumer pointer, so marshal to the main thread first.
+  auto* main_thread_task_runner =
+      SingleThreadTaskRunner::HasMainThreadDefault()
+          ? SingleThreadTaskRunner::GetMainThreadDefault().get()
+          : nullptr;
+  if (main_thread_task_runner &&
+      !main_thread_task_runner->BelongsToCurrentThread()) {
+    main_thread_task_runner->PostTask(
+        FROM_HERE, BindOnce(&MemoryPressureListenerRegistry::
+                                DecreaseNotificationSuppressionCount));
+    return;
+  }
+  if (auto* registry = MaybeGet()) {
+    registry->DecreaseNotificationSuppressionCountImpl();
+  }
 }
 
 // static
@@ -237,6 +275,9 @@ void MemoryPressureListenerRegistry::SetMemoryPressureLevel(
 void MemoryPressureListenerRegistry::SendMemoryPressureNotification(
     MemoryPressureLevel memory_pressure_level) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(
+      !SingleThreadTaskRunner::HasMainThreadDefault() ||
+      SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
 
   if (FeatureList::IsEnabled(kSuppressMemoryListeners)) {
     std::string mask = kSuppressMemoryListenersMask.Get();
