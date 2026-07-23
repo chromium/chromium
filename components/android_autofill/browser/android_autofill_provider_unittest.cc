@@ -324,9 +324,8 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillStartsSession) {
 
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   EXPECT_CALL(
       provider_bridge(),
@@ -343,9 +342,8 @@ TEST_F(AndroidAutofillProviderTest, OnFocusChangeInsideCurrentAutofillForm) {
 
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   android_autofill_manager().OnAskForValuesToFillTest(
       form, form.fields().front().global_id());
 
@@ -376,9 +374,8 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillFindsCorrectFieldId) {
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   android_autofill_manager().OnAskForValuesToFillTest(
       form, form.fields()[0].global_id());
@@ -427,9 +424,8 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnOtherForm) {
   FormData form2 = CreateFormDataForFrame(
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true),
       main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form1, form2}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form1, form2}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   MockFunction<void()> check;
   {
@@ -464,9 +460,8 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnChangedForm) {
   form.set_name_attribute(u"old_name");
   FormData form_changed = form;
   form_changed.set_name_attribute(u"changed_name");
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   MockFunction<void()> check;
   {
@@ -486,9 +481,8 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnChangedForm) {
   android_autofill_manager().OnAskForValuesToFillTest(
       form, form.fields()[1].global_id());
   check.Call();
-  android_autofill_manager().OnFormsSeen(
-      {form_changed}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form_changed}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   android_autofill_manager().OnAskForValuesToFillTest(
       form_changed, form_changed.fields()[1].global_id());
   check.Call();
@@ -502,9 +496,8 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnSameForm) {
 
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   MockFunction<void()> check;
   {
@@ -528,9 +521,8 @@ TEST_F(AndroidAutofillProviderTest, OnAskForValuesToFillOnSameForm) {
 TEST_F(AndroidAutofillProviderTest, OnTextFieldValueChanged) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Start Autofill session.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -557,9 +549,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldValueChangedInUnrelatedForm) {
   FormData form2 = CreateFormDataForFrame(
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true),
       main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form1, form2}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form1, form2}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Start the Autofill session.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -578,9 +569,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldValueChangedInUnrelatedForm) {
 TEST_F(AndroidAutofillProviderTest, OnTextFieldDidScroll) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Start the Autofill session.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -601,9 +591,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidScrollInUnrelatedForm) {
   FormData form2 = CreateFormDataForFrame(
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true),
       main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form1, form2}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form1, form2}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Start the Autofill session.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -620,9 +609,8 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidScrollInUnrelatedForm) {
 TEST_F(AndroidAutofillProviderTest, OnFormSubmitted) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Start an Autofill session.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -643,9 +631,8 @@ TEST_F(AndroidAutofillProviderTest,
       features::kAutofillAcceptDomMutationAfterAutofillSubmission};
   FormData form =
       CreateFormDataForFrame(CreateTestPasswordFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Start an Autofill session.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -668,9 +655,8 @@ TEST_F(AndroidAutofillProviderTest,
       features::kAutofillAcceptDomMutationAfterAutofillSubmission};
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Start an Autofill session.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -691,9 +677,8 @@ TEST_F(AndroidAutofillProviderTest,
 TEST_F(AndroidAutofillProviderTest, FormSubmissionHappensDirectly) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Start an Autofill session.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -718,9 +703,8 @@ TEST_F(AndroidAutofillProviderTest,
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
 
   auto has_field_type = [](FieldType field_type) {
@@ -747,9 +731,8 @@ TEST_F(AndroidAutofillProviderTest,
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
   FormData changed_form = form;
   changed_form.set_name_attribute(changed_form.name_attribute() +
@@ -782,9 +765,8 @@ TEST_F(AndroidAutofillProviderTest,
   // The changed form has the same signature as the cached form - therefore it
   // should have the session id of the cached form.
   ASSERT_EQ(CalculateFormSignature(form), CalculateFormSignature(changed_form));
-  android_autofill_manager().OnFormsSeen(
-      {changed_form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({changed_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   android_autofill_manager().OnAskForValuesToFillTest(
       changed_form, changed_form.fields().front().global_id());
 }
@@ -794,9 +776,8 @@ TEST_F(AndroidAutofillProviderTest,
 TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   EXPECT_CALL(
       provider_bridge(),
@@ -818,9 +799,8 @@ TEST_F(AndroidAutofillProviderTest,
 
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Start an Autofill session.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -1096,9 +1076,9 @@ class AndroidAutofillProviderWithCredManMultiFrameTest
     url::Origin bar_origin = url::Origin::Create(GURL("https://bar.com"));
     test_api(sub_frame_webauthn_form_).field(0).set_origin(bar_origin);
     test_api(sub_frame_webauthn_form_).field(1).set_origin(bar_origin);
-    android_autofill_manager().OnFormsSeen(
-        {sub_frame_webauthn_form_},
-        /*removed_forms=*/{}, autofill::AutofillManagerTestApi::pass_key());
+    android_autofill_manager().OnFormsSeen({sub_frame_webauthn_form_},
+                                           /*removed_forms=*/{},
+                                           AutofillManagerTestApi::pass_key());
 
     // Create a mock delegate for the subframe and mock passkeys to be
     // default-available.
@@ -1164,8 +1144,8 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
 TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
        CredManTriggerForUnrelatedFormPreservesSessionOrigin) {
   // 1. Start session on main frame (origin https://foo.com).
-  android_autofill_manager().OnFormsSeen(
-      {test_form()}, {}, autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({test_form()}, {},
+                                         AutofillManagerTestApi::pass_key());
   // Focus main frame field to start session and set origin to foo.com.
   android_autofill_manager().OnAskForValuesToFillTest(
       test_form(), non_webauthn_password_field().global_id());
@@ -1224,8 +1204,8 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
   const FormFieldData& foo_field = multi_frame_form.fields()[0];
   const FormFieldData& bar_field = multi_frame_form.fields()[1];
 
-  android_autofill_manager().OnFormsSeen(
-      {multi_frame_form}, {}, autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({multi_frame_form}, {},
+                                         AutofillManagerTestApi::pass_key());
 
   // 1. Start session on foo_field (origin https://foo.com).
   android_autofill_manager().OnAskForValuesToFillTest(multi_frame_form,
@@ -1262,8 +1242,8 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
        CredManActiveBlocksSpoofedFocusOnFormField) {
   // 1. Start session on main frame (origin https://foo.com) and trigger
   // CredMan.
-  android_autofill_manager().OnFormsSeen(
-      {test_form()}, {}, autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({test_form()}, {},
+                                         AutofillManagerTestApi::pass_key());
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi);
   android_autofill_manager().OnFocusOnFormField(
       test_form(), webauthn_email_field().global_id(),
@@ -1296,8 +1276,8 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
        CredManActiveBlocksSpoofedAskForValuesToFill) {
   // 1. Start session on main frame (origin https://foo.com) and trigger
   // CredMan.
-  android_autofill_manager().OnFormsSeen(
-      {test_form()}, {}, autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({test_form()}, {},
+                                         AutofillManagerTestApi::pass_key());
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi);
   android_autofill_manager().OnFocusOnFormField(
       test_form(), webauthn_email_field().global_id(),
@@ -1328,8 +1308,8 @@ TEST_F(AndroidAutofillProviderWithCredManMultiFrameTest,
 
   // 1. Start session on main frame (origin https://foo.com) and trigger
   // CredMan.
-  android_autofill_manager().OnFormsSeen(
-      {test_form()}, {}, autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({test_form()}, {},
+                                         AutofillManagerTestApi::pass_key());
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi);
   android_autofill_manager().OnFocusOnFormField(
       test_form(), webauthn_email_field().global_id(),
@@ -1421,8 +1401,8 @@ TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
   const FormFieldData& attacker_field = form.fields()[0];
   const FormFieldData& victim_field = form.fields()[1];
 
-  android_autofill_manager().OnFormsSeen(
-      {form}, {}, autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, {},
+                                         AutofillManagerTestApi::pass_key());
 
   // Attacker frame queries autofill.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -1472,8 +1452,8 @@ TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
   const FormFieldData& attacker_field = form.fields()[0];
   const FormFieldData& victim_field = form.fields()[1];
 
-  android_autofill_manager().OnFormsSeen(
-      {form}, {}, autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, {},
+                                         AutofillManagerTestApi::pass_key());
 
   // Victim frame queries and focuses, starting session and triggering CredMan
   // sheet.
@@ -1520,17 +1500,15 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
                    .form_control_type = FormControlType::kInputPassword}}});
 
   EXPECT_CALL(provider_bridge(), SendPrefillRequest).Times(2);
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());
   android_autofill_manager().OnAskForValuesToFillTest(
       form, form.fields().front().global_id());
   Reset(autofill_driver());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       form.global_id());
 }
@@ -1547,9 +1525,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   base::HistogramTester histogram_tester;
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   android_autofill_manager().OnAskForValuesToFillTest(
       form, form.fields().front().global_id());
   histogram_tester.ExpectUniqueSample(
@@ -1569,9 +1546,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
 
   // No prefill request is ever sent.
@@ -1590,9 +1566,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest, SendPrefillRequest) {
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
 
   // Upon receiving server predictions a prefill request should be sent.
@@ -1613,9 +1588,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   base::HistogramTester histogram_tester;
   FormData login_form1 =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {login_form1}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({login_form1}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   EXPECT_CALL(provider_bridge(), StartAutofillSession);
   android_autofill_manager().OnAskForValuesToFillTest(
       login_form1, login_form1.fields().front().global_id());
@@ -1625,9 +1599,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 
   FormData login_form2 =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {login_form2}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({login_form2}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(
       android_autofill_manager().FindCachedFormById(login_form2.global_id()));
 
@@ -1648,17 +1621,15 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest, NoSecondPrefillRequest) {
   base::HistogramTester histogram_tester;
   FormData login_form1 =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {login_form1}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({login_form1}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(
       android_autofill_manager().FindCachedFormById(login_form1.global_id()));
 
   FormData login_form2 =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {login_form2}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({login_form2}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(
       android_autofill_manager().FindCachedFormById(login_form2.global_id()));
   // The helper method should generate different ids every time it is called.
@@ -1693,9 +1664,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   ASSERT_TRUE(android_autofill_manager().FindCachedFormById(form.global_id()));
 
   // Upon receiving server predictions a prefill request should be sent.
@@ -1727,9 +1697,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   base::HistogramTester histogram_tester;
   FormData form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Upon receiving server predictions a prefill request should be sent.
   SessionId cache_session_id = SessionId(0);
@@ -1741,9 +1710,9 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 
   FormData changed_form = form;
   test_api(changed_form).Remove(-1);
-  android_autofill_manager().OnFormsSeen(
-      {changed_form},
-      /*removed_forms=*/{}, autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({changed_form},
+                                         /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   SessionId autofill_session_id = SessionId(0);
   EXPECT_CALL(provider_bridge(),
               StartAutofillSession(EqualsFormData(changed_form),
@@ -1775,9 +1744,9 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
   FormData pi_form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {pw_form, pi_form},
-      /*removed_forms=*/{}, autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({pw_form, pi_form},
+                                         /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
 
   // Upon receiving server predictions a prefill request should be sent.
   SessionId cache_session_id = SessionId(0);
@@ -1838,9 +1807,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
 
   FormData login_form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {login_form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       login_form.global_id());
 
@@ -1868,9 +1836,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   base::HistogramTester histogram_tester;
   FormData login_form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {login_form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       login_form.global_id());
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -1896,9 +1863,8 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   base::HistogramTester histogram_tester;
   FormData login_form =
       CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
-  android_autofill_manager().OnFormsSeen(
-      {login_form}, /*removed_forms=*/{},
-      autofill::AutofillManagerTestApi::pass_key());
+  android_autofill_manager().OnFormsSeen({login_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
   android_autofill_manager().SimulatePropagateAutofillPredictions(
       login_form.global_id());
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -1934,8 +1900,7 @@ class AndroidAutofillProviderTestHidingLogic
         CreateFormDataForFrame(CreateTestPersonalInformationFormData(),
                                LocalFrameToken(rfh->GetFrameToken().value()));
     android_autofill_manager(rfh).OnFormsSeen(
-        {form}, /*removed_forms=*/{},
-        autofill::AutofillManagerTestApi::pass_key());
+        {form}, /*removed_forms=*/{}, AutofillManagerTestApi::pass_key());
     // Start an Autofill session.
     android_autofill_manager(rfh).OnAskForValuesToFillTest(
         form, form.fields()[0].global_id());
