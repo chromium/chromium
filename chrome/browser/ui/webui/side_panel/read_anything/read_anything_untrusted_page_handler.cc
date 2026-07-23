@@ -1704,7 +1704,11 @@ void ReadAnythingUntrustedPageHandler::OnQualityMetricsEvaluated(
   }
 
   const auto& metrics = result.value();
+  LogDistillationQualityMetrics(metrics);
+}
 
+void ReadAnythingUntrustedPageHandler::LogDistillationQualityMetrics(
+    const reading_mode::mojom::DistillationMetricsPtr& metrics) {
   if (tab_ && tab_->GetContents()) {
     ukm::SourceId source_id =
         tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -1720,6 +1724,28 @@ void ReadAnythingUntrustedPageHandler::OnQualityMetricsEvaluated(
             static_cast<int>(metrics->link_density_ratio * 100.0))
         .Record(ukm::UkmRecorder::Get());
   }
+
+  base::UmaHistogramPercentage(
+      "Accessibility.ReadAnything.DistillationQuality.RougeLF1",
+      static_cast<int>(metrics->rouge_l_f1 * 100.0));
+  base::UmaHistogramPercentage(
+      "Accessibility.ReadAnything.DistillationQuality.RougeLPrecision",
+      static_cast<int>(metrics->rouge_l_precision * 100.0));
+  base::UmaHistogramPercentage(
+      "Accessibility.ReadAnything.DistillationQuality.RougeLRecall",
+      static_cast<int>(metrics->rouge_l_recall * 100.0));
+  base::UmaHistogramPercentage(
+      "Accessibility.ReadAnything.DistillationQuality.RougeLF2",
+      static_cast<int>(metrics->rouge_l_f2 * 100.0));
+  base::UmaHistogramPercentage(
+      "Accessibility.ReadAnything.DistillationQuality.StructScore",
+      static_cast<int>(metrics->struct_score * 100.0));
+  base::UmaHistogramPercentage(
+      "Accessibility.ReadAnything.DistillationQuality.FormatScore",
+      static_cast<int>(metrics->format_score * 100.0));
+  base::UmaHistogramPercentage(
+      "Accessibility.ReadAnything.DistillationQuality.LinkDensityRatio",
+      static_cast<int>(metrics->link_density_ratio * 100.0));
 }
 
 void ReadAnythingUntrustedPageHandler::SetLanguageCode(

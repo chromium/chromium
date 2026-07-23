@@ -3011,6 +3011,26 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.DistillationQuality.{Metric}"
+    units="%" expires_after="2027-01-01">
+  <owner>alfredohiguera@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records the {Metric} metric for Reading Mode distillation quality. Recorded
+    as a percentage after multiplying the original 0.0-1.0 value by 100.
+    Recorded after a successful distillation quality evaluation on a page.
+  </summary>
+  <token key="Metric">
+    <variant name="FormatScore" summary="Format Score"/>
+    <variant name="LinkDensityRatio" summary="Link Density Ratio"/>
+    <variant name="RougeLF1" summary="ROUGE-L F1 Score"/>
+    <variant name="RougeLF2" summary="ROUGE-L F2 Score"/>
+    <variant name="RougeLPrecision" summary="ROUGE-L Precision"/>
+    <variant name="RougeLRecall" summary="ROUGE-L Recall"/>
+    <variant name="StructScore" summary="Struct Score"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.DistillationScheme"
     enum="ReadAnythingDistillationScheme" expires_after="2027-01-01">
   <owner>davidsegovia@google.com</owner>

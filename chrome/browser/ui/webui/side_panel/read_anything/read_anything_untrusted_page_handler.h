@@ -353,6 +353,9 @@ class ReadAnythingUntrustedPageHandler :
   // Logs the current visual settings values.
   void LogTextStyle();
 
+  void LogDistillationQualityMetrics(
+      const reading_mode::mojom::DistillationMetricsPtr& metrics);
+
   // Restores settings from preferences.
   void RestoreSettingsFromPrefs();
 
