@@ -33,7 +33,8 @@ class FakeCWS {
   ~FakeCWS();
 
   // Initializes as CWS request handler and overrides app gallery command line
-  // switches.
+  // switches. Must be called before the browser starts so the command line
+  // flags take effect.
   void Init(net::EmbeddedTestServer* embedded_test_server);
 
   // Initializes a handler in `embedded_test_server` for a private store using
