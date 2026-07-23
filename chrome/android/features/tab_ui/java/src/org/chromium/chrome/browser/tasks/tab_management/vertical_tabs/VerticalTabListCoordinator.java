@@ -89,7 +89,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 import org.chromium.ui.widget.RectProvider;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -128,7 +127,7 @@ public class VerticalTabListCoordinator {
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable AppHeaderObserver mAppHeaderObserver;
     private final @Nullable BooleanSupplier mCanActivateTabLayoutToggleMenuSupplier;
-    private final List<TabSwitcherDragHandler> mTabSwitcherDragHandlers = new ArrayList<>();
+    private @Nullable TabSwitcherDragHandler mTabSwitcherDragHandler;
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private @Nullable TabContextMenuCoordinator mTabContextMenuCoordinator;
     private @Nullable TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
@@ -599,10 +598,9 @@ public class VerticalTabListCoordinator {
         mSpineDecoration.destroy();
         mTabModelSelectorTabModelObserver.destroy();
         mVerticalTabsActiveSupplier.removeObserver(mActiveObserver);
-        for (TabSwitcherDragHandler dragHandler : mTabSwitcherDragHandlers) {
-            dragHandler.destroy();
+        if (mTabSwitcherDragHandler != null) {
+            mTabSwitcherDragHandler.destroy();
         }
-        mTabSwitcherDragHandlers.clear();
 
         mRailCollapseListener = null;
     }
@@ -800,7 +798,7 @@ public class VerticalTabListCoordinator {
                 touchHelperCallback.createMouseDragDetector(itemTouchHelper));
 
         TabSwitcherDragHandler dragHandler =
-                createTabSwitcherDragHandler(activity, tabModelSelector);
+                getOrCreateTabSwitcherDragHandler(activity, tabModelSelector);
         recyclerView.setOnDragListener(dragHandler);
 
         touchHelperCallback.setOnDragOutListener(
@@ -845,23 +843,24 @@ public class VerticalTabListCoordinator {
                         touchHelperCallback));
     }
 
-    private TabSwitcherDragHandler createTabSwitcherDragHandler(
+    private TabSwitcherDragHandler getOrCreateTabSwitcherDragHandler(
             Activity activity, TabModelSelector tabModelSelector) {
-        Supplier<@Nullable Activity> activitySupplier = () -> activity;
-        DragAndDropDelegate dragDropDelegate = new DragAndDropDelegateImpl();
-        dragDropDelegate.setDragAndDropBrowserDelegate(
-                new ChromeDragAndDropBrowserDelegate(activitySupplier));
+        if (mTabSwitcherDragHandler == null) {
+            Supplier<@Nullable Activity> activitySupplier = () -> activity;
+            DragAndDropDelegate dragDropDelegate = new DragAndDropDelegateImpl();
+            dragDropDelegate.setDragAndDropBrowserDelegate(
+                    new ChromeDragAndDropBrowserDelegate(activitySupplier));
 
-        TabSwitcherDragHandler dragHandler =
-                new TabSwitcherDragHandler(
-                        activitySupplier,
-                        mMultiInstanceManager,
-                        dragDropDelegate,
-                        // TODO(crbug.com/518307037): Provide back press handler manager?
-                        new TabSwitcherBackPressHandlerManager());
-        dragHandler.setTabModelSelector(tabModelSelector);
-        mTabSwitcherDragHandlers.add(dragHandler);
-        return dragHandler;
+            mTabSwitcherDragHandler =
+                    new TabSwitcherDragHandler(
+                            activitySupplier,
+                            mMultiInstanceManager,
+                            dragDropDelegate,
+                            // TODO(crbug.com/518307037): Provide back press handler manager?
+                            new TabSwitcherBackPressHandlerManager());
+            mTabSwitcherDragHandler.setTabModelSelector(tabModelSelector);
+        }
+        return mTabSwitcherDragHandler;
     }
 
     private TabSwitcherDragHandler.DragHandlerDelegate createDragHandlerDelegate(
