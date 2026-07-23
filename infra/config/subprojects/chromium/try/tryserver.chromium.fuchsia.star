@@ -176,6 +176,7 @@ try_.builder(
             "debug_try_builder",
         ],
     ),
+    free_space = builders.free_space.high,
     contact_team_email = "chrome-fuchsia-engprod@google.com",
     # This is the only bot that builds //chromecast code for Fuchsia on x64
     # so trigger it when changes are made.
