@@ -2023,6 +2023,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "contextual-panel-close-button-on-tablets",
+    "owners": ["clhager@google.com", "skavuluru@google.com", "twellington@chromium.org"],
+    "expiry_milestone": 165
+  },
+  {
     "name": "contextual-search-box-uses-contextual-search-provider",
     "owners": [ "mahmadi@chromium.org", "niharm@chromium.org", "orinj@chromium.org", "chrome-desktop-search@google.com"],
     "expiry_milestone": 150

@@ -4834,6 +4834,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(extensions_features::kWebRequestSecurityInfo)},
 #endif  // ENABLE_EXTENSIONS
 #if BUILDFLAG(IS_ANDROID)
+    {"contextual-panel-close-button-on-tablets",
+     flag_descriptions::kContextualPanelCloseButtonOnTabletsName,
+     flag_descriptions::kContextualPanelCloseButtonOnTabletsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kContextualPanelCloseButtonOnTablets)},
     {"contextual-search-suppress-short-view",
      flag_descriptions::kContextualSearchSuppressShortViewName,
      flag_descriptions::kContextualSearchSuppressShortViewDescription,

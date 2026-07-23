@@ -13443,6 +13443,7 @@ from previous Chrome versions.
   <int value="-335331552" label="TabGroupsForTablets:disabled"/>
   <int value="-334873793" label="MediaSessionNotification:enabled"/>
   <int value="-334654963" label="JupiterScreensaver:enabled"/>
+  <int value="-334487969" label="ContextualPanelCloseButtonOnTablets:enabled"/>
   <int value="-332313804" label="enable-account-preview-data:disabled"/>
   <int value="-332018524" label="ContextualTasksContextLibrary:enabled"/>
   <int value="-332010491" label="RetailCoupons:enabled"/>
@@ -18947,6 +18948,7 @@ from previous Chrome versions.
   <int value="1411679884"
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:enabled"/>
   <int value="1411915938" label="AccessibilitySequentialFocus:disabled"/>
+  <int value="1412620764" label="ContextualPanelCloseButtonOnTablets:disabled"/>
   <int value="1412874669" label="EnableRestrictedWebApis:enabled"/>
   <int value="1412998360"
       label="AutofillSkipAndroidBottomSheetForIban:disabled"/>
