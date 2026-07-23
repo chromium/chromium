@@ -5,9 +5,11 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
+#import "ios/chrome/browser/app_switcher/metrics/app_switcher_metrics.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -313,9 +315,14 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
                         startFetchTime:(base::TimeTicks)startFetchTime {
   _appSwitcherParamsRequestStatus = AppSwitcherParamsRequestStatus::kAvailable;
 
+  BOOL success = !result.error;
+  RecordAppSwitcherFetchOutcome(success);
+  RecordAppSwitcherFetchDuration(base::TimeTicks::Now() - startFetchTime);
+
   if (IsCallerAppAllowListedForAISummarization(_sourceAppID)) {
-    if (!result.error && result.is_ai_summarization) {
+    if (success && result.is_ai_summarization) {
       self.postOpeningAction = START_GEMINI_AI_SUMMARIZATION;
+      RecordAppSwitcherAISummarizationEntrypoint();
     }
   }
 
@@ -393,10 +400,10 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
       block(_applicationMode);
     }
     _pendingBlocks = nil;
+    base::UmaHistogramEnumeration("IOS.AppModeFetching.Outcome", outcome);
+    base::UmaHistogramTimes("IOS.AppModeFetching.Duration",
+                            base::TimeTicks::Now() - startFetchTime);
   }
-  UMA_HISTOGRAM_ENUMERATION("IOS.AppModeFetching.Outcome", outcome);
-  UMA_HISTOGRAM_TIMES("IOS.AppModeFetching.Duration",
-                      base::TimeTicks::Now() - startFetchTime);
 }
 
 @end

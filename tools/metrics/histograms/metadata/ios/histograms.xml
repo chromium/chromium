@@ -379,6 +379,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.AppSwitcher.FetchDuration" units="ms"
+    expires_after="2027-04-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The latency of the App Switcher provider API fetch request, from initiation
+    to callback execution. Recorded when receiving the intent for allowed source
+    apps.
+  </summary>
+</histogram>
+
+<histogram name="IOS.AppSwitcher.FetchOutcome" enum="BooleanSuccess"
+    expires_after="2027-04-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The success or failure outcome of fetching parameters from the App Switcher
+    provider API. Recorded when receiving the intent for allowed source apps.
+    True represents a successful parameters fetch (no error), while False
+    represents a failed or timed out fetch request.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AutoDeletion.ServiceActions"
     enum="AutoDeletionServiceActionsType" expires_after="2026-12-16">
   <owner>danieltwhite@google.com</owner>

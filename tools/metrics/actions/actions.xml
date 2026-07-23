@@ -18817,6 +18817,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.AISummarization.AppSwitcherEntrypoint">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    The user entered the AI Summarization flow via the App Switcher. iOS only.
+  </description>
+</action>
+
 <action name="IOS.AutoDeletion.ActionSheet.AcceptDownloadEnrollment">
   <owner>danieltwhite@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>

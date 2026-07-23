@@ -50,6 +50,7 @@ source_set("app") {
   deps = [
     "//base",
     "//ios/chrome/app/startup:utils",
+    "//ios/chrome/browser/app_switcher/metrics",
     "//ios/chrome/browser/app_switcher/model",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/url:constants",
