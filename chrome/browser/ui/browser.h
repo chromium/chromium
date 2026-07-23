@@ -333,7 +333,6 @@ class Browser : public TabStripModelObserver,
 
   Type type() const { return type_; }
   const std::string& app_name() const { return app_name_; }
-  Profile* profile() const { return profile_; }
   // In production code, each instance of Browser will always instantiate an
   // instance of BrowserView in the constructor. Some tests instantiate a
   // Browser without a BrowserView: this is an anti-pattern and should be
