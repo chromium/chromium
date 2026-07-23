@@ -15,10 +15,12 @@
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
+#include "net/cert/root_store_proto_lite/signer_set.pb.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
+#include "net/test/chrome_root_store_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1483,41 +1485,195 @@ TEST(TrustStoreChromeTestNoFixture, SignerSetUpdates) {
   auto compiled_key_it = kSignerKeys.begin();
   base::span<const uint8_t> compiled_key_bytes = compiled_key_it->second;
 
-  auto* issuer1 = proto.add_issuers();
+  std::vector<uint8_t> expected_base_id1 = {0x01, 0x02, 0x03};
+  auto* issuer1 = AddSignerSetIssuer(proto, expected_base_id1, "op1", 1);
   issuer1->set_friendly_name("compiled_key_issuer_with_bytes");
   issuer1->set_key(base::as_string_view(compiled_key_bytes));
-  issuer1->set_base_id("1.2.3");
 
   // Add an issuer with a new key.
+  std::vector<uint8_t> expected_base_id2 = {0x04, 0x05, 0x06, 0x07};
   std::vector<uint8_t> new_key_bytes = {0x01, 0x02, 0x03, 0x04};
-  auto* issuer2 = proto.add_issuers();
+  auto* issuer2 = AddSignerSetIssuer(proto, expected_base_id2, "op2", 2);
   issuer2->set_friendly_name("new_key_issuer");
   issuer2->set_key(base::as_string_view(new_key_bytes));
-  issuer2->set_base_id("4.5.6.7");
 
   std::optional<ChromeRootStoreSignerSet> parsed_set =
       ChromeRootStoreSignerSet::CreateFromProto(proto);
   ASSERT_TRUE(parsed_set.has_value());
   EXPECT_EQ(parsed_set->version(), "2.0.0");
-  ASSERT_EQ(parsed_set->issuers().size(), 2U);
+  ASSERT_EQ(parsed_set->trusted_issuers().size(), 2U);
 
   // issuer1 should have the compiled key bytes.
-  ASSERT_TRUE(parsed_set->issuers()[0].key);
+  ASSERT_TRUE(parsed_set->trusted_issuers()[0].key);
   EXPECT_EQ(base::ToVector(x509_util::CryptoBufferAsSpan(
-                parsed_set->issuers()[0].key.get())),
+                parsed_set->trusted_issuers()[0].key.get())),
             base::ToVector(compiled_key_bytes));
 
   // issuer2 should have the new key bytes.
-  ASSERT_TRUE(parsed_set->issuers()[1].key);
+  ASSERT_TRUE(parsed_set->trusted_issuers()[1].key);
   EXPECT_EQ(base::ToVector(x509_util::CryptoBufferAsSpan(
-                parsed_set->issuers()[1].key.get())),
+                parsed_set->trusted_issuers()[1].key.get())),
             new_key_bytes);
 
   // Check base_id parsing matches expected relative OID DER.
-  std::vector<uint8_t> expected_base_id1 = {0x01, 0x02, 0x03};
-  std::vector<uint8_t> expected_base_id2 = {0x04, 0x05, 0x06, 0x07};
-  EXPECT_EQ(parsed_set->issuers()[0].base_id, expected_base_id1);
-  EXPECT_EQ(parsed_set->issuers()[1].base_id, expected_base_id2);
+  EXPECT_EQ(parsed_set->trusted_issuers()[0].base_id, expected_base_id1);
+  EXPECT_EQ(parsed_set->trusted_issuers()[1].base_id, expected_base_id2);
+}
+
+// Tests the filtering during SignerSet proto parsing that removes issuers
+// which are untrusted or retired.
+TEST(TrustStoreChromeTestNoFixture, SignerSetCreationIssuerFiltering) {
+  chrome_root_store::SignerSet proto;
+  proto.mutable_timestamp()->set_seconds(123456);
+
+  const std::vector<uint8_t> kIssuerUsable = {0x01};
+  AddSignerSetIssuer(proto, kIssuerUsable, "op", std::nullopt);
+
+  const std::vector<uint8_t> kIssuerNoRealm = {0x02};
+  AddSignerSetIssuer(proto, kIssuerNoRealm, "op", std::nullopt)->clear_realm();
+
+  const std::vector<uint8_t> kIssuerUntrustedRealm = {0x03};
+  AddSignerSetIssuer(proto, kIssuerUntrustedRealm, "op", std::nullopt)
+      ->set_realm(chrome_root_store::REALM_UNTRUSTED_VALIDATION_ONLY);
+
+  const std::vector<uint8_t> kIssuerStateUnset = {0x04};
+  AddSignerSetIssuer(proto, kIssuerStateUnset, "op", std::nullopt)
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_UNSET);
+
+  const std::vector<uint8_t> kIssuerStateCandidate = {0x05};
+  AddSignerSetIssuer(proto, kIssuerStateCandidate, "op", std::nullopt)
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_CANDIDATE);
+
+  const std::vector<uint8_t> kIssuerStateRemoved = {0x06};
+  AddSignerSetIssuer(proto, kIssuerStateRemoved, "op", std::nullopt)
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_REMOVED);
+
+  const std::vector<uint8_t> kIssuerStateQualified = {0x07};
+  AddSignerSetIssuer(proto, kIssuerStateQualified, "op", std::nullopt)
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_QUALIFIED);
+
+  const std::vector<uint8_t> kIssuerStateFrozen = {0x08};
+  AddSignerSetIssuer(proto, kIssuerStateFrozen, "op", std::nullopt)
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_FROZEN);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kVerifyMTCs},
+                                  {features::kTestRootStore});
+    std::optional<ChromeRootStoreSignerSet> parsed_set =
+        ChromeRootStoreSignerSet::CreateFromProto(proto);
+    ASSERT_TRUE(parsed_set.has_value());
+    std::vector<std::vector<uint8_t>> usable_issuer_ids;
+    for (const auto& issuer : parsed_set->trusted_issuers()) {
+      usable_issuer_ids.push_back(issuer.base_id);
+    }
+    EXPECT_THAT(usable_issuer_ids,
+                testing::UnorderedElementsAre(
+                    kIssuerUsable, kIssuerStateQualified, kIssuerStateFrozen));
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kVerifyMTCs, features::kTestRootStore}, {});
+    std::optional<ChromeRootStoreSignerSet> parsed_set =
+        ChromeRootStoreSignerSet::CreateFromProto(proto);
+    ASSERT_TRUE(parsed_set.has_value());
+    std::vector<std::vector<uint8_t>> usable_issuer_ids;
+    for (const auto& issuer : parsed_set->trusted_issuers()) {
+      usable_issuer_ids.push_back(issuer.base_id);
+    }
+    // If the kTestRootStore flag was set, then the usable list should be the
+    // same as before, plus the signers that have a realm of
+    // realm_untrusted_validation_only.
+    EXPECT_THAT(usable_issuer_ids,
+                testing::UnorderedElementsAre(
+                    kIssuerUsable, kIssuerStateQualified, kIssuerStateFrozen,
+                    kIssuerUntrustedRealm));
+  }
+}
+
+// Tests the filtering during SignerSet proto parsing that removes mirrors
+// which are untrusted or retired.
+TEST(TrustStoreChromeTestNoFixture, SignerSetCreationMirrorFiltering) {
+  chrome_root_store::SignerSet proto;
+  proto.mutable_timestamp()->set_seconds(123456);
+
+  const std::vector<uint8_t> kMirrorUsable = {0x01};
+  AddSignerSetMirror(proto, kMirrorUsable, "op");
+
+  const std::vector<uint8_t> kMirrorNoRealm = {0x02};
+  AddSignerSetMirror(proto, kMirrorNoRealm, "op")->clear_realm();
+
+  const std::vector<uint8_t> kMirrorUntrustedRealm = {0x03};
+  AddSignerSetMirror(proto, kMirrorUntrustedRealm, "op")
+      ->set_realm(chrome_root_store::REALM_UNTRUSTED_VALIDATION_ONLY);
+
+  const std::vector<uint8_t> kMirrorStateUnset = {0x04};
+  AddSignerSetMirror(proto, kMirrorStateUnset, "op")
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_UNSET);
+
+  const std::vector<uint8_t> kMirrorStateCandidate = {0x05};
+  AddSignerSetMirror(proto, kMirrorStateCandidate, "op")
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_CANDIDATE);
+
+  const std::vector<uint8_t> kMirrorStateRemoved = {0x06};
+  AddSignerSetMirror(proto, kMirrorStateRemoved, "op")
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_REMOVED);
+
+  const std::vector<uint8_t> kMirrorStateQualified = {0x07};
+  AddSignerSetMirror(proto, kMirrorStateQualified, "op")
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_QUALIFIED);
+
+  const std::vector<uint8_t> kMirrorStateFrozen = {0x08};
+  AddSignerSetMirror(proto, kMirrorStateFrozen, "op")
+      ->mutable_state_history(0)
+      ->set_state(chrome_root_store::STATE_FROZEN);
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({features::kVerifyMTCs},
+                                  {features::kTestRootStore});
+    std::optional<ChromeRootStoreSignerSet> parsed_set =
+        ChromeRootStoreSignerSet::CreateFromProto(proto);
+    ASSERT_TRUE(parsed_set.has_value());
+    std::vector<std::vector<uint8_t>> usable_mirror_ids;
+    for (const auto& mirror : parsed_set->trusted_mirrors()) {
+      usable_mirror_ids.push_back(mirror.base_id);
+    }
+    EXPECT_THAT(usable_mirror_ids,
+                testing::UnorderedElementsAre(
+                    kMirrorUsable, kMirrorStateQualified, kMirrorStateFrozen));
+  }
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {features::kVerifyMTCs, features::kTestRootStore}, {});
+    std::optional<ChromeRootStoreSignerSet> parsed_set =
+        ChromeRootStoreSignerSet::CreateFromProto(proto);
+    ASSERT_TRUE(parsed_set.has_value());
+    std::vector<std::vector<uint8_t>> usable_mirror_ids;
+    for (const auto& mirror : parsed_set->trusted_mirrors()) {
+      usable_mirror_ids.push_back(mirror.base_id);
+    }
+    // If the kTestRootStore flag was set, then the usable list should be the
+    // same as before, plus the signers that have a realm of
+    // realm_untrusted_validation_only.
+    EXPECT_THAT(usable_mirror_ids,
+                testing::UnorderedElementsAre(
+                    kMirrorUsable, kMirrorStateQualified, kMirrorStateFrozen,
+                    kMirrorUntrustedRealm));
+  }
 }
 
 }  // namespace

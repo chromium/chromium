@@ -864,8 +864,30 @@ std::optional<std::vector<uint8_t>> RelativeOidBytesFromText(
       UNSAFE_BUFFERS(base::span(CBB_data(cbb.get()), CBB_len(cbb.get()))));
 }
 
-bool ParseSigner(const chrome_root_store::Signer& signer_proto,
-                 std::vector<Signer>& out_signers) {
+// Returns false if `signer` can never be usable in the current configuration,
+// and thus is safe to drop completely.
+bool IsSignerTrustedAndUsable(const chrome_root_store::Signer& signer) {
+  if (!(signer.realm() == chrome_root_store::REALM_PUBLICLY_TRUSTED ||
+        (signer.realm() == chrome_root_store::REALM_UNTRUSTED_VALIDATION_ONLY &&
+         base::FeatureList::IsEnabled(features::kTestRootStore)))) {
+    return false;
+  }
+  if (signer.state_history().empty()) {
+    return false;
+  }
+  auto latest_state = signer.state_history(0).state();
+  if (latest_state != chrome_root_store::STATE_QUALIFIED &&
+      latest_state != chrome_root_store::STATE_USABLE &&
+      latest_state != chrome_root_store::STATE_FROZEN) {
+    return false;
+  }
+  return true;
+}
+
+// Parses the `signer_proto` into a `Signer` object, and if it is trusted and
+// usable, adds it to `out_signers`. Returns false if parsing failed.
+bool ParseAndFilterSigner(const chrome_root_store::Signer& signer_proto,
+                          std::vector<Signer>& out_signers) {
   Signer signer;
   signer.friendly_name = signer_proto.friendly_name();
 
@@ -876,6 +898,9 @@ bool ParseSigner(const chrome_root_store::Signer& signer_proto,
   }
   signer.base_id = std::move(*oid_bytes);
 
+  if (signer_proto.state_history().empty()) {
+    return false;
+  }
   for (const auto& state : signer_proto.state_history()) {
     if (!state.has_state_start()) {
       return false;
@@ -884,6 +909,9 @@ bool ParseSigner(const chrome_root_store::Signer& signer_proto,
         state.state(), ProtoTimestampToTime(state.state_start()));
   }
 
+  if (signer_proto.operator_history().empty()) {
+    return false;
+  }
   for (const auto& op : signer_proto.operator_history()) {
     if (!op.has_operator_start()) {
       return false;
@@ -949,6 +977,16 @@ bool ParseSigner(const chrome_root_store::Signer& signer_proto,
     }
     // This is safe since this is a key that's compiled in and static.
     signer.key = x509_util::CreateCryptoBufferFromStaticDataUnsafe(it->second);
+  }
+
+  if (!IsSignerTrustedAndUsable(signer_proto)) {
+    // If the signer is not trusted or is retired, don't save it in the output
+    // list. Return true to indicate success since it is not an error for the
+    // list to contain untrusted signers. This is done after all parsing is
+    // done to ensure that any parsing errors still cause the proto parsing to
+    // fail, rather than being ignored if the error was in a signer that is
+    // filtered out.
+    return true;
   }
 
   out_signers.push_back(std::move(signer));
@@ -1087,13 +1125,13 @@ ChromeRootStoreSignerSet::CreateFromProto(
   }
 
   for (const auto& issuer : proto.issuers()) {
-    if (!ParseSigner(issuer, signer_set.issuers_)) {
+    if (!ParseAndFilterSigner(issuer, signer_set.trusted_issuers_)) {
       return std::nullopt;
     }
   }
 
   for (const auto& mirror : proto.mirrors()) {
-    if (!ParseSigner(mirror, signer_set.mirrors_)) {
+    if (!ParseAndFilterSigner(mirror, signer_set.trusted_mirrors_)) {
       return std::nullopt;
     }
   }

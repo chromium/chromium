@@ -187,15 +187,19 @@ class NET_EXPORT ChromeRootStoreSignerSet {
   const base::Time& timestamp() const { return timestamp_; }
   const std::string& version() const { return version_; }
   const std::vector<SignerOperator>& operators() const { return operators_; }
-  const std::vector<Signer>& issuers() const { return issuers_; }
-  const std::vector<Signer>& mirrors() const { return mirrors_; }
+  const std::vector<Signer>& trusted_issuers() const {
+    return trusted_issuers_;
+  }
+  const std::vector<Signer>& trusted_mirrors() const {
+    return trusted_mirrors_;
+  }
 
  private:
   base::Time timestamp_;
   std::string version_;
   std::vector<SignerOperator> operators_;
-  std::vector<Signer> issuers_;
-  std::vector<Signer> mirrors_;
+  std::vector<Signer> trusted_issuers_;
+  std::vector<Signer> trusted_mirrors_;
 };
 
 // ChromeRootStoreData is a container class that stores the Chrome Root Store

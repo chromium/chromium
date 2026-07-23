@@ -2413,6 +2413,10 @@ static_library("test_support") {
   ]
 
   if (chrome_root_store_supported) {
+    sources += [
+      "test/chrome_root_store_test_util.cc",
+      "test/chrome_root_store_test_util.h",
+    ]
     deps += [ "//net/cert:root_store_proto_lite" ]
   }
 
