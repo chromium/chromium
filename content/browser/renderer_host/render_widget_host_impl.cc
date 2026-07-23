@@ -1082,6 +1082,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
 
   if (is_frame_widget) {
     visual_properties.display_mode = delegate_->GetDisplayMode();
+    visual_properties.application_context = delegate_->GetApplicationContext();
   } else {
     visual_properties.display_mode = blink::mojom::DisplayMode::kBrowser;
   }
@@ -3248,6 +3249,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.is_fullscreen_granted ||
          old_visual_properties->display_mode !=
              new_visual_properties.display_mode ||
+         old_visual_properties->application_context !=
+             new_visual_properties.application_context ||
          old_visual_properties->window_show_state !=
              new_visual_properties.window_show_state ||
          old_visual_properties->resizable != new_visual_properties.resizable ||

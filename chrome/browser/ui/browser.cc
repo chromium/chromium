@@ -2000,6 +2000,13 @@ blink::mojom::DisplayMode Browser::GetDisplayMode(
   return blink::mojom::DisplayMode::kBrowser;
 }
 
+blink::mojom::ApplicationContext Browser::GetApplicationContext(
+    const WebContents* /*web_contents*/) {
+  return web_app::AppBrowserController::IsWebApp(this)
+             ? blink::mojom::ApplicationContext::kApplication
+             : blink::mojom::ApplicationContext::kNone;
+}
+
 blink::ProtocolHandlerSecurityLevel Browser::GetProtocolHandlerSecurityLevel(
     content::RenderFrameHost* requesting_frame) {
   content::BrowserContext* context = requesting_frame->GetBrowserContext();

@@ -78,6 +78,11 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::VisualPropertiesDataView,
     return r.display_mode;
   }
 
+  static blink::mojom::ApplicationContext application_context(
+      const blink::VisualProperties& r) {
+    return r.application_context;
+  }
+
   static const ui::mojom::WindowShowState& window_show_state(
       const blink::VisualProperties& r) {
     return r.window_show_state;

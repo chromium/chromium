@@ -1960,6 +1960,7 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   // independently.
   // https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
   SetDisplayMode(visual_properties.display_mode);
+  SetApplicationContext(visual_properties.application_context);
 
   if (ForMainFrame()) {
     SetAutoResizeMode(
@@ -2229,6 +2230,11 @@ cc::EventListenerProperties WebFrameWidgetImpl::EventListenerProperties(
 
 mojom::blink::DisplayMode WebFrameWidgetImpl::DisplayMode() const {
   return display_mode_;
+}
+
+mojom::blink::ApplicationContext WebFrameWidgetImpl::ApplicationContext()
+    const {
+  return application_context_;
 }
 
 ui::mojom::blink::WindowShowState WebFrameWidgetImpl::WindowShowState() const {
@@ -3274,6 +3280,16 @@ void WebFrameWidgetImpl::ApplyViewportChangesForTesting(
 void WebFrameWidgetImpl::SetDisplayMode(mojom::blink::DisplayMode mode) {
   if (mode != display_mode_) {
     display_mode_ = mode;
+    LocalFrame* frame = LocalRootImpl()->GetFrame();
+    frame->MediaQueryAffectingValueChangedForLocalSubtree(
+        MediaValueChange::kOther);
+  }
+}
+
+void WebFrameWidgetImpl::SetApplicationContext(
+    mojom::blink::ApplicationContext application_context) {
+  if (application_context != application_context_) {
+    application_context_ = application_context;
     LocalFrame* frame = LocalRootImpl()->GetFrame();
     frame->MediaQueryAffectingValueChangedForLocalSubtree(
         MediaValueChange::kOther);

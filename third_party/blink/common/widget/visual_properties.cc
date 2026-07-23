@@ -29,6 +29,7 @@ bool VisualProperties::operator==(const VisualProperties& other) const {
          local_surface_id == other.local_surface_id &&
          is_fullscreen_granted == other.is_fullscreen_granted &&
          display_mode == other.display_mode &&
+         application_context == other.application_context &&
          zoom_level == other.zoom_level &&
          css_zoom_factor == other.css_zoom_factor &&
          page_scale_factor == other.page_scale_factor &&

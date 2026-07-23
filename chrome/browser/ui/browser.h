@@ -689,6 +689,8 @@ class Browser : public TabStripModelObserver,
       const content::WebContents* web_contents) const override;
   blink::mojom::DisplayMode GetDisplayMode(
       const content::WebContents* web_contents) override;
+  blink::mojom::ApplicationContext GetApplicationContext(
+      const content::WebContents* web_contents) override;
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
       content::RenderFrameHost* requesting_frame) override;
   void RegisterProtocolHandler(content::RenderFrameHost* requesting_frame,

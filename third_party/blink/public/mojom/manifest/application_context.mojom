@@ -1,0 +1,17 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Identifies how a widget's top-level browsing context is presented to the
+// user. This is surfaced to web content through the enumerated
+// `application-context` CSS media feature, whose keyword values map directly
+// onto this enum.
+enum ApplicationContext {
+  // The context is presented as ordinary browser UI (e.g. a tab).
+  kNone,
+
+  // The context is presented as a standalone web application window.
+  kApplication,
+};

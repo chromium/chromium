@@ -17,6 +17,7 @@
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/manifest/application_context.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
@@ -133,6 +134,10 @@ class PLATFORM_EXPORT FrameWidget {
 
   // Returns the DisplayMode in use for the widget.
   virtual mojom::blink::DisplayMode DisplayMode() const = 0;
+
+  // Returns how the top-level browsing context is presented to the user (a
+  // standalone web application window vs ordinary browser UI).
+  virtual mojom::blink::ApplicationContext ApplicationContext() const = 0;
 
   // Returns the WindowShowState in use for the widget.
   virtual ui::mojom::blink::WindowShowState WindowShowState() const = 0;

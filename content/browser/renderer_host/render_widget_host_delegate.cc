@@ -98,6 +98,11 @@ blink::mojom::DisplayMode RenderWidgetHostDelegate::GetDisplayMode() const {
   return blink::mojom::DisplayMode::kBrowser;
 }
 
+blink::mojom::ApplicationContext
+RenderWidgetHostDelegate::GetApplicationContext() const {
+  return blink::mojom::ApplicationContext::kNone;
+}
+
 ui::mojom::WindowShowState RenderWidgetHostDelegate::GetWindowShowState() {
   return ui::mojom::WindowShowState::kDefault;
 }

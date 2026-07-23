@@ -37,6 +37,7 @@
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom-forward.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
+#include "third_party/blink/public/mojom/manifest/application_context.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom-forward.h"
@@ -559,6 +560,11 @@ class CONTENT_EXPORT WebContentsDelegate {
   // user, or HTML API or from a web manifest setting). See
   // http://w3c.github.io/manifest/#dfn-display-mode
   virtual blink::mojom::DisplayMode GetDisplayMode(
+      const WebContents* web_contents);
+
+  // Reflects the application context in which the document's top-level browsing
+  // context is running.
+  virtual blink::mojom::ApplicationContext GetApplicationContext(
       const WebContents* web_contents);
 
   // Returns the security level to use for Navigator.RegisterProtocolHandler().

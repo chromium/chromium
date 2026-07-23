@@ -222,6 +222,11 @@ blink::mojom::DisplayMode WebContentsDelegate::GetDisplayMode(
   return blink::mojom::DisplayMode::kBrowser;
 }
 
+blink::mojom::ApplicationContext WebContentsDelegate::GetApplicationContext(
+    const WebContents* web_contents) {
+  return blink::mojom::ApplicationContext::kNone;
+}
+
 blink::ProtocolHandlerSecurityLevel
 WebContentsDelegate::GetProtocolHandlerSecurityLevel(RenderFrameHost*) {
   return blink::ProtocolHandlerSecurityLevel::kStrict;
