@@ -10,12 +10,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/personal_context/first_run/personal_context_first_run_client.h"
 #include "components/personal_context/first_run/personal_context_first_run_types.h"
-
-namespace content {
-class WebContents;
-}
 
 namespace personal_context {
 
@@ -24,18 +19,7 @@ namespace personal_context {
 // Clients can observe changes to the enablement state.
 class PersonalContextFirstRunService : public KeyedService {
  public:
-  using FirstRunTriggerCallback =
-      base::OnceCallback<void(FirstRunTriggerResult)>;
-
   ~PersonalContextFirstRunService() override = default;
-
-  // Triggers the first-run experience if the current profile is eligible but
-  // has not completed it yet. The `callback` is invoked with the result of
-  // the first-run trigger attempt (e.g., success, failure, or already
-  // completed).
-  virtual void MaybeTriggerFirstRun(content::WebContents* web_contents,
-                                    FirstRunInvocationSource invocation_source,
-                                    FirstRunTriggerCallback callback) = 0;
 
   // Called when the user has acknowledged the Personal Context notice in
   // Autofill.

@@ -4,20 +4,8 @@
 
 <grit-part>
   <!-- Personal Context First Run Strings. -->
-  <message name="IDS_PERSONAL_CONTEXT_NOTICE_TITLE" desc="" formatter_data="android_java" translateable="false">
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_TITLE" desc="" translateable="false">
     Lorem ipsum dolor sit amet
-  </message>
-  <message name="IDS_PERSONAL_CONTEXT_NOTICE_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
-    Lorem ipsum dolor sit amet.
-  </message>
-  <message name="IDS_PERSONAL_CONTEXT_NOTICE_CARD_1_ANDROID" desc="" formatter_data="android_java" translateable="false">
-    Lorem ipsum dolor sit amet.
-  </message>
-  <message name="IDS_PERSONAL_CONTEXT_NOTICE_CARD_2_ANDROID" desc="" formatter_data="android_java" translateable="false">
-    Lorem ipsum dolor sit amet.
-  </message>
-  <message name="IDS_PERSONAL_CONTEXT_NOTICE_LEARN_MORE_ANDROID" desc="" formatter_data="android_java" translateable="false">
-    Lorem ipsum dolor <ph name="BEGIN_LINK">&lt;link&gt;</ph>sit amet<ph name="END_LINK">&lt;/link&gt;</ph>.
   </message>
   <message name="IDS_PERSONAL_CONTEXT_NOTICE_DESCRIPTION_DESKTOP" desc="" translateable="false">
     Lorem ipsum dolor sit amet.
@@ -31,10 +19,10 @@
   <message name="IDS_PERSONAL_CONTEXT_NOTICE_LEARN_MORE_DESKTOP" desc="" translateable="false">
     Lorem ipsum dolor <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>sit amet<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_PERSONAL_CONTEXT_NOTICE_PRIMARY_BUTTON" desc="" formatter_data="android_java" translateable="false">
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_PRIMARY_BUTTON" desc="" translateable="false">
     Lorem
   </message>
-  <message name="IDS_PERSONAL_CONTEXT_NOTICE_SECONDARY_BUTTON" desc="" formatter_data="android_java" translateable="false">
+  <message name="IDS_PERSONAL_CONTEXT_NOTICE_SECONDARY_BUTTON" desc="" translateable="false">
     Ipsum
   </message>
 

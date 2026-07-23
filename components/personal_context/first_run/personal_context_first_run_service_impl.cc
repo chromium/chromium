@@ -47,12 +47,10 @@ void ResetNoticePrefs(PrefService* pref_service) {
 }  // namespace
 
 PersonalContextFirstRunServiceImpl::PersonalContextFirstRunServiceImpl(
-    std::unique_ptr<PersonalContextFirstRunClient> client,
     PersonalContextEligibilityService* eligibility_service,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager)
-    : client_(std::move(client)),
-      eligibility_service_(eligibility_service),
+    : eligibility_service_(eligibility_service),
       pref_service_(pref_service),
       identity_manager_(identity_manager) {
   if (identity_manager_) {
@@ -73,47 +71,6 @@ void PersonalContextFirstRunServiceImpl::OnPrimaryAccountChanged(
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     ResetNoticePrefs(pref_service_);
   }
-}
-
-void PersonalContextFirstRunServiceImpl::MaybeTriggerFirstRun(
-    content::WebContents* web_contents,
-    FirstRunInvocationSource invocation_source,
-    base::OnceCallback<void(FirstRunTriggerResult)> callback) {
-  if (!eligibility_service_ || !pref_service_) {
-    std::move(callback).Run(FirstRunTriggerResult::kIgnoredNotEligible);
-    return;
-  }
-
-  if (eligibility_service_->GetEligibilityState() !=
-      PersonalContextEligibilityState::kEligible) {
-    // Account not eligible.
-    std::move(callback).Run(FirstRunTriggerResult::kIgnoredNotEligible);
-    return;
-  }
-
-  // TODO(b:529716749): This part has insufficient test coverage. Investigate
-  // in which capacity MaybeTriggerFirstRun() is still needed, and revamp it
-  // and update test coverage accordingly.
-  if (!pref_service_->GetBoolean(
-          prefs::kPersonalContextInAutofillSettingsToggleStatus)) {
-    // Disabled via toggle.
-    std::move(callback).Run(FirstRunTriggerResult::kIgnoredNotEligible);
-    return;
-  }
-
-  if (!pref_service_->GetBoolean(
-          prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown)) {
-    // Notice already shown.
-    std::move(callback).Run(FirstRunTriggerResult::kIgnoredAlreadyEnabled);
-    return;
-  }
-
-  auto wrapped_callback = base::BindOnce(
-      &PersonalContextFirstRunServiceImpl::OnNoticeDialogCompleted,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-
-  client_->ShowNotice(web_contents, invocation_source,
-                      std::move(wrapped_callback));
 }
 
 void PersonalContextFirstRunServiceImpl::
@@ -160,18 +117,6 @@ bool PersonalContextFirstRunServiceImpl::
              prefs::kPersonalContextInAutofillSettingsToggleStatus) &&
          pref_service_->GetBoolean(
              prefs::kPersonalContextAtMemoryNoticeShouldBeShown);
-}
-
-void PersonalContextFirstRunServiceImpl::OnNoticeDialogCompleted(
-    base::OnceCallback<void(FirstRunTriggerResult)> callback,
-    NoticeResult result) {
-  if (result == NoticeResult::kAcknowledged) {
-    if (pref_service_) {
-      pref_service_->SetBoolean(
-          prefs::kPersonalContextAmbientAutofillNoticeShouldBeShown, false);
-    }
-  }
-  std::move(callback).Run(FirstRunTriggerResult::kSuccess);
 }
 
 }  // namespace personal_context

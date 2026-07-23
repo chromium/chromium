@@ -25,16 +25,12 @@ if (is_android) {
 
 source_set("first_run") {
   sources = [
-    "chrome_personal_context_first_run_client.cc",
-    "chrome_personal_context_first_run_client.h",
     "personal_context_first_run_service_factory.cc",
     "personal_context_first_run_service_factory.h",
   ]
 
   if (is_android) {
     sources += [
-      "android/personal_context_first_run_bottom_sheet_bridge.cc",
-      "android/personal_context_first_run_bottom_sheet_bridge.h",
       "android/personal_context_first_run_service_bridge.cc",
     ]
   }
@@ -57,27 +53,6 @@ source_set("first_run") {
       "//chrome/android:jni_headers",
       "//ui/android",
     ]
-  } else {
-    deps += [ "//chrome/browser/ui/views/personal_context" ]
   }
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = []
-
-  if (is_android) {
-    sources +=
-        [ "android/personal_context_first_run_bottom_sheet_bridge_unittest.cc" ]
-  }
-
-  deps = [
-    ":first_run",
-    "//base",
-    "//base/test:test_support",
-    "//components/personal_context/first_run",
-    "//content/test:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-}

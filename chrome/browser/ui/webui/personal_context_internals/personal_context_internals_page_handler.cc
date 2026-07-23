@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/webui/personal_context_internals/personal_context_internals_page_handler.h"
 
-#include "chrome/browser/personal_context/first_run/personal_context_first_run_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/personal_context/first_run/personal_context_first_run_service.h"
 
 PersonalContextInternalsPageHandler::PersonalContextInternalsPageHandler(
     mojo::PendingReceiver<
@@ -20,23 +18,9 @@ PersonalContextInternalsPageHandler::PersonalContextInternalsPageHandler(
 PersonalContextInternalsPageHandler::~PersonalContextInternalsPageHandler() =
     default;
 
+// TODO(crbug.com/529716749): Remove this function when removing the internals
+// page.
 void PersonalContextInternalsPageHandler::TriggerFirstRun(
     TriggerFirstRunCallback callback) {
-  auto* service =
-      PersonalContextFirstRunServiceFactory::GetForProfile(profile_);
-  if (!service) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  service->MaybeTriggerFirstRun(
-      web_contents_,
-      personal_context::FirstRunInvocationSource::kAutoTriggerPromo,
-      base::BindOnce(
-          [](TriggerFirstRunCallback callback,
-             personal_context::FirstRunTriggerResult result) {
-            std::move(callback).Run(
-                result == personal_context::FirstRunTriggerResult::kSuccess);
-          },
-          std::move(callback)));
+  std::move(callback).Run(false);
 }

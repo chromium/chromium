@@ -458,11 +458,6 @@ if (is_android) {
     ]
   }
 
-  robolectric_library(
-      "chrome_junit_tests_org.chromium.chrome.browser.personal_context") {
-    sources = [ "src/org/chromium/chrome/browser/personal_context/first_run/PersonalContextFirstRunBottomSheetUnitTest.java" ]
-    deps = [ ":chrome_junit_tests_helper" ]
-  }
 
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.app") {
     sources = [
