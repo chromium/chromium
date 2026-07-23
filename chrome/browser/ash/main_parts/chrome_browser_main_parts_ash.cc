@@ -954,7 +954,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   app_service_registry_ = std::make_unique<apps::AppServiceRegistry>();
 
-  token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>();
+  token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>(
+      g_browser_process->local_state());
 
   quick_unlock::PinBackend::Initialize(g_browser_process->local_state());
 

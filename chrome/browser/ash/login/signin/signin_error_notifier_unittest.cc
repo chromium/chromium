@@ -22,6 +22,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -56,7 +57,8 @@ class SigninErrorNotifierTest : public BrowserWithTestWindowTest {
     // Required to initialize TokenHandleUtil.
     ash::UserDataAuthClient::InitializeFake();
 
-    token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>();
+    token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
 
     SigninErrorNotifierFactory::GetForProfile(GetProfile());

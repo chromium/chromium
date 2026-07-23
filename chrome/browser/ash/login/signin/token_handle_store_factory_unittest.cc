@@ -89,7 +89,8 @@ class TokenHandleStoreFactoryTest : public testing::Test {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_ = std::make_unique<TestingProfile>();
 
-    token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>();
+    token_handle_store_factory_ = std::make_unique<TokenHandleStoreFactory>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     token_handle_store_ = TokenHandleStoreFactory::Get()->GetTokenHandleStore();
   }
 

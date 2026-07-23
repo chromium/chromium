@@ -10,8 +10,11 @@
 
 #include "ash/public/cpp/token_handle_store.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -24,7 +27,8 @@ namespace ash {
 // TokenHandleStoreImpl.
 class TokenHandleStoreFactory {
  public:
-  TokenHandleStoreFactory();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit TokenHandleStoreFactory(PrefService* local_state);
   ~TokenHandleStoreFactory();
 
   TokenHandleStoreFactory(const TokenHandleStoreFactory&) = delete;
@@ -72,6 +76,7 @@ class TokenHandleStoreFactory {
 
   std::unique_ptr<TokenHandleStore> CreateTokenHandleStoreImpl();
 
+  const raw_ref<PrefService> local_state_;
   std::unique_ptr<DoesUserHaveGaiaPassword> does_user_have_gaia_password_;
   std::unique_ptr<TokenHandleStore> token_handle_store_;
 };
