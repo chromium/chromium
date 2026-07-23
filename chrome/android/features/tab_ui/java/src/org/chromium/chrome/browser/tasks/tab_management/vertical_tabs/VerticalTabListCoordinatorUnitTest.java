@@ -129,7 +129,8 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.DATA_SHARING_JOIN_ONLY,
     ChromeFeatureList.ANDROID_CONTEXT_MENU_NEW_ACTIONS,
     ChromeFeatureList.TASK_MANAGER_CLANK,
-    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
+    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS,
+    ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW
 })
 public class VerticalTabListCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
