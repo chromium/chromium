@@ -232,19 +232,19 @@ int g_lock_depth = 0;
 RlzValueStoreMac* g_store_object = nullptr;
 
 NSURL* CreateRlzDirectory() {
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(
-      NSApplicationSupportDirectory, NSUserDomainMask, /*expandTilde=*/YES);
   NSString* folder = nil;
-  if (paths.count > 0) {
-    folder = ObjCCast<NSString>(paths[0]);
-  }
-  if (!folder) {
-    folder = [@"~/Library/Application Support" stringByStandardizingPath];
-  }
-  folder = [folder stringByAppendingPathComponent:@"Google/RLZ"];
-
   if (g_test_folder) {
-    folder = [g_test_folder stringByAppendingPathComponent:folder];
+    folder = [g_test_folder stringByAppendingPathComponent:@"Google/RLZ"];
+  } else {
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(
+        NSApplicationSupportDirectory, NSUserDomainMask, /*expandTilde=*/YES);
+    if (paths.count > 0) {
+      folder = ObjCCast<NSString>(paths[0]);
+    }
+    if (!folder) {
+      folder = [@"~/Library/Application Support" stringByStandardizingPath];
+    }
+    folder = [folder stringByAppendingPathComponent:@"Google/RLZ"];
   }
 
   [NSFileManager.defaultManager createDirectoryAtPath:folder
