@@ -58,7 +58,7 @@ TEST(IbanTest, ConstructLocalIban) {
 TEST(IbanTest, ConstructServerIban) {
   Iban server_iban(Iban::InstrumentId(1234567));
   EXPECT_EQ(server_iban.record_type(), Iban::RecordType::kServerIban);
-  EXPECT_EQ(1234567, server_iban.instrument_id());
+  EXPECT_EQ(server_iban.instrument_id(), 1234567);
 }
 
 TEST(IbanTest, GetMetadata) {
@@ -81,27 +81,27 @@ TEST(IbanTest, SetNickname) {
 
   // Normal input nickname.
   iban.set_nickname(u"My doctor's IBAN");
-  EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
+  EXPECT_EQ(iban.nickname(), u"My doctor's IBAN");
 
   // Input nickname has leading and trailing whitespaces.
   iban.set_nickname(u"  My doctor's IBAN  ");
-  EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
+  EXPECT_EQ(iban.nickname(), u"My doctor's IBAN");
 
   // Input nickname has newlines.
   iban.set_nickname(u"\r\n My doctor's\nIBAN \r\n");
-  EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
+  EXPECT_EQ(iban.nickname(), u"My doctor's IBAN");
 
   // Input nickname has tabs.
   iban.set_nickname(u" \tMy doctor's\t IBAN\t ");
-  EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
+  EXPECT_EQ(iban.nickname(), u"My doctor's IBAN");
 
   // Input nickname has newlines & whitespaces & tabs.
   iban.set_nickname(u"\n\t My doctor's \tIBAN \n \r\n");
-  EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
+  EXPECT_EQ(iban.nickname(), u"My doctor's IBAN");
 
   // Input nickname has newlines & tabs & multi spaces.
   iban.set_nickname(u"\n\t My doctor's    \tIBAN \n \r\n");
-  EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
+  EXPECT_EQ(iban.nickname(), u"My doctor's IBAN");
 }
 
 // Verify that the value has been capitalized.
@@ -109,19 +109,19 @@ TEST(IbanTest, SetValue_Capitalization) {
   Iban iban;
 
   iban.set_value(u"be71096123456769");
-  EXPECT_EQ(u"BE71096123456769", iban.value());
-  EXPECT_EQ(u"BE", iban.prefix());
-  EXPECT_EQ(u"6769", iban.suffix());
+  EXPECT_EQ(iban.value(), u"BE71096123456769");
+  EXPECT_EQ(iban.prefix(), u"BE");
+  EXPECT_EQ(iban.suffix(), u"6769");
 
   iban.set_value(u"Br1500000000000010932840814P2");
-  EXPECT_EQ(u"BR1500000000000010932840814P2", iban.value());
-  EXPECT_EQ(u"BR", iban.prefix());
-  EXPECT_EQ(u"14P2", iban.suffix());
+  EXPECT_EQ(iban.value(), u"BR1500000000000010932840814P2");
+  EXPECT_EQ(iban.prefix(), u"BR");
+  EXPECT_EQ(iban.suffix(), u"14P2");
 
   iban.set_value(u"fR7630006000011234567890189");
-  EXPECT_EQ(u"FR7630006000011234567890189", iban.value());
-  EXPECT_EQ(u"FR", iban.prefix());
-  EXPECT_EQ(u"0189", iban.suffix());
+  EXPECT_EQ(iban.value(), u"FR7630006000011234567890189");
+  EXPECT_EQ(iban.prefix(), u"FR");
+  EXPECT_EQ(iban.suffix(), u"0189");
 }
 
 // Verify that the prefix and suffix have been capitalized.
@@ -129,13 +129,13 @@ TEST(IbanTest, SetPrefixAndSuffix_Capitalization) {
   Iban iban;
   iban.set_prefix(u"be");
   iban.set_suffix(u"14p2");
-  EXPECT_EQ(u"BE", iban.prefix());
-  EXPECT_EQ(u"14P2", iban.suffix());
+  EXPECT_EQ(iban.prefix(), u"BE");
+  EXPECT_EQ(iban.suffix(), u"14P2");
 
   iban.set_prefix(u"Be");
   iban.set_suffix(u"14p2");
-  EXPECT_EQ(u"BE", iban.prefix());
-  EXPECT_EQ(u"14P2", iban.suffix());
+  EXPECT_EQ(iban.prefix(), u"BE");
+  EXPECT_EQ(iban.suffix(), u"14P2");
 }
 
 TEST(IbanTest, SetValue) {
@@ -143,45 +143,45 @@ TEST(IbanTest, SetValue) {
 
   // Verify middle whitespace was removed.
   iban.set_value(u"DE91 1000 0000 0123 4567 89");
-  EXPECT_EQ(u"DE91100000000123456789", iban.value());
+  EXPECT_EQ(iban.value(), u"DE91100000000123456789");
 
   // Verify middle whitespace was removed.
   iban.set_value(u"DE911000      00000123 4567 89");
-  EXPECT_EQ(u"DE91100000000123456789", iban.value());
+  EXPECT_EQ(iban.value(), u"DE91100000000123456789");
 
   // Verify leading whitespaces were removed.
   iban.set_value(u"  DE91100000000123 4567 89");
-  EXPECT_EQ(u"DE91100000000123456789", iban.value());
+  EXPECT_EQ(iban.value(), u"DE91100000000123456789");
 
   // Verify trailing whitespaces were removed.
   iban.set_value(u"DE91100000000123 4567 89   ");
-  EXPECT_EQ(u"DE91100000000123456789", iban.value());
+  EXPECT_EQ(iban.value(), u"DE91100000000123456789");
 }
 
 TEST(IbanTest, ValuePrefixAndSuffix) {
   Iban iban;
   iban.set_value(u"DE91100000000123456789");
-  EXPECT_EQ(u"DE91100000000123456789", iban.value());
-  EXPECT_EQ(u"DE", iban.prefix());
-  EXPECT_EQ(u"6789", iban.suffix());
+  EXPECT_EQ(iban.value(), u"DE91100000000123456789");
+  EXPECT_EQ(iban.prefix(), u"DE");
+  EXPECT_EQ(iban.suffix(), u"6789");
 
   iban.set_value(u"CH5604835012345678009");
-  EXPECT_EQ(u"CH5604835012345678009", iban.value());
-  EXPECT_EQ(u"CH", iban.prefix());
-  EXPECT_EQ(u"8009", iban.suffix());
+  EXPECT_EQ(iban.value(), u"CH5604835012345678009");
+  EXPECT_EQ(iban.prefix(), u"CH");
+  EXPECT_EQ(iban.suffix(), u"8009");
 }
 
 TEST(IbanTest, InvalidValuePrefixAndSuffix) {
   Iban iban;
   iban.set_value(u"DE1234567");
-  EXPECT_EQ(u"", iban.value());
-  EXPECT_EQ(u"", iban.prefix());
-  EXPECT_EQ(u"", iban.suffix());
+  EXPECT_EQ(iban.value(), u"");
+  EXPECT_EQ(iban.prefix(), u"");
+  EXPECT_EQ(iban.suffix(), u"");
 
   iban.set_value(u"");
-  EXPECT_EQ(u"", iban.value());
-  EXPECT_EQ(u"", iban.prefix());
-  EXPECT_EQ(u"", iban.suffix());
+  EXPECT_EQ(iban.value(), u"");
+  EXPECT_EQ(iban.prefix(), u"");
+  EXPECT_EQ(iban.suffix(), u"");
 }
 
 TEST(IbanTest, SetRawData) {
@@ -189,42 +189,42 @@ TEST(IbanTest, SetRawData) {
 
   // Verify RawInfo can be correctly set and read.
   iban.set_value(u"DE91 1000 0000 0123 4567 89");
-  EXPECT_EQ(u"DE91100000000123456789", iban.value());
+  EXPECT_EQ(iban.value(), u"DE91100000000123456789");
 }
 
 TEST(IbanTest, GetUserFacingValue_LocalIban) {
   // Verify each case of an IBAN ending in 1, 2, 3, and 4 unobfuscated
   // digits.
   Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-  EXPECT_EQ(u"", GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
+  EXPECT_EQ(GetHumanReadableIbanString(iban, /*is_value_masked=*/true), u"");
 
   iban.set_value(u"CH5604835012345678009");
 
-  EXPECT_EQ(u"CH **8009",
-            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
-  EXPECT_EQ(u"CH56 0483 5012 3456 7800 9",
-            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
+  EXPECT_EQ(GetHumanReadableIbanString(iban, /*is_value_masked=*/true),
+            u"CH **8009");
+  EXPECT_EQ(GetHumanReadableIbanString(iban, /*is_value_masked=*/false),
+            u"CH56 0483 5012 3456 7800 9");
 
   iban.set_value(u"DE91100000000123456789");
 
-  EXPECT_EQ(u"DE **6789",
-            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
-  EXPECT_EQ(u"DE91 1000 0000 0123 4567 89",
-            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
+  EXPECT_EQ(GetHumanReadableIbanString(iban, /*is_value_masked=*/true),
+            u"DE **6789");
+  EXPECT_EQ(GetHumanReadableIbanString(iban, /*is_value_masked=*/false),
+            u"DE91 1000 0000 0123 4567 89");
 
   iban.set_value(u"GR9608100010000001234567890");
 
-  EXPECT_EQ(u"GR **7890",
-            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
-  EXPECT_EQ(u"GR96 0810 0010 0000 0123 4567 890",
-            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
+  EXPECT_EQ(GetHumanReadableIbanString(iban, /*is_value_masked=*/true),
+            u"GR **7890");
+  EXPECT_EQ(GetHumanReadableIbanString(iban, /*is_value_masked=*/false),
+            u"GR96 0810 0010 0000 0123 4567 890");
 
   iban.set_value(u"PK70BANK0000123456789000");
 
-  EXPECT_EQ(u"PK **9000",
-            GetHumanReadableIbanString(iban, /*is_value_masked=*/true));
-  EXPECT_EQ(u"PK70 BANK 0000 1234 5678 9000",
-            GetHumanReadableIbanString(iban, /*is_value_masked=*/false));
+  EXPECT_EQ(GetHumanReadableIbanString(iban, /*is_value_masked=*/true),
+            u"PK **9000");
+  EXPECT_EQ(GetHumanReadableIbanString(iban, /*is_value_masked=*/false),
+            u"PK70 BANK 0000 1234 5678 9000");
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_UnmaskNotAllowed) {
@@ -240,32 +240,32 @@ TEST(IbanTest, GetUserFacingValue_ServerIban_RegularPrefixAndSuffix) {
   Iban server_iban(Iban::InstrumentId(1234567));
   // Set the prefix and suffix of the server IBAN.
   SetPrefixAndSuffix(server_iban, u"FR", u"0189");
-  EXPECT_EQ(u"FR **0189",
-            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
+  EXPECT_EQ(GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true),
+            u"FR **0189");
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_EmptyPrefix) {
   // Set up a `server_iban` with empty prefix.
   Iban server_iban(Iban::InstrumentId(1234567));
   SetPrefixAndSuffix(server_iban, u"", u"0189");
-  EXPECT_EQ(u" **0189",
-            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
+  EXPECT_EQ(GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true),
+            u" **0189");
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_EmptySuffix) {
   // Set up a `server_iban` with empty suffix.
   Iban server_iban(Iban::InstrumentId(1234567));
   SetPrefixAndSuffix(server_iban, u"FR", u"");
-  EXPECT_EQ(u"FR **",
-            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
+  EXPECT_EQ(GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true),
+            u"FR **");
 }
 
 TEST(IbanTest, GetUserFacingValue_ServerIban_OtherLengthOfPrefixAndSuffix) {
   // Set the prefix and suffix of the server IBAN with length other than 4.
   Iban server_iban(Iban::InstrumentId(1234567));
   SetPrefixAndSuffix(server_iban, u"FR7", u"10189");
-  EXPECT_EQ(u"FR7 **10189",
-            GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true));
+  EXPECT_EQ(GetHumanReadableIbanString(server_iban, /*is_value_masked=*/true),
+            u"FR7 **10189");
 }
 
 TEST(IbanTest, ValidateIbanValue_ValidateOnLength) {
