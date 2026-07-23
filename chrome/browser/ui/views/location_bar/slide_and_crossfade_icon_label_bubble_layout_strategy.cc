@@ -81,17 +81,16 @@ SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::CalculateProposedLayout
   layout.child_layouts.emplace_back(host->ink_drop_container(), true,
                                     host->GetLocalBounds());
 
-  int label_width = host->label()->GetPreferredSize().width();
+  int preferred_width = GetPreferredWidth();
   int icon_size = host->image_container_view()->GetPreferredSize().width();
   const LayoutDimensions dimensions = GetLayoutDimensions();
-  int preferred_width = dimensions.leading_expanded + icon_size +
-                        dimensions.spacing_expanded + label_width +
-                        dimensions.trailing_expanded;
+  int min_width =
+      dimensions.leading_expanded + icon_size + dimensions.trailing_expanded;
 
   int host_width = preferred_width;
   if (size_bounds.width().is_bounded() &&
-      host_width > size_bounds.width().value()) {
-    host_width = size_bounds.width().value();
+      preferred_width > size_bounds.width().value()) {
+    host_width = std::min(min_width, size_bounds.width().value());
   }
   // Calculate the preferred height by combining the icon container height
   // and the border padding. Bypassing views::View::CalculatePreferredSize here
@@ -106,8 +105,6 @@ SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::CalculateProposedLayout
 
   layout.host_size = gfx::Size(host_width, host_height);
 
-  int min_width = dimensions.leading_expanded + icon_size + dimensions.trailing_expanded;
-
   if (host_width <= min_width) {
     int x = (host_width - icon_size) / 2;
     gfx::Rect leading_icon_bounds(x, (host_height - icon_size) / 2, icon_size,
@@ -115,7 +112,11 @@ SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::CalculateProposedLayout
     layout.child_layouts.emplace_back(
         const_cast<views::View*>(host->image_container_view()), true,
         leading_icon_bounds);
-    layout.child_layouts.emplace_back(host->label(), false, gfx::Rect());
+    layout.child_layouts.emplace_back(
+        host->label(),
+        static_cast<views::LayoutManagerBase*>(host->GetLayoutManager())
+            ->CanBeVisible(host->label()),
+        gfx::Rect());
     layout.child_layouts.emplace_back(trailing_image_view_.get(), false,
                                       gfx::Rect());
     if (host->separator_view()) {
@@ -126,6 +127,7 @@ SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::CalculateProposedLayout
     return layout;
   }
 
+  int label_width = host->label()->GetPreferredSize().width();
   int available_label_width =
       host_width - (dimensions.leading_expanded + icon_size +
                     dimensions.spacing_expanded + dimensions.trailing_expanded);
@@ -133,21 +135,12 @@ SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::CalculateProposedLayout
     label_width = std::max(0, available_label_width);
   }
 
-  // Resolve the current animation progress value (0.0 to 1.0). If there is
-  // not enough horizontal room, we lock the animation progress to 0.0 (collapsed).
-  bool is_constrained = size_bounds.width().is_bounded() &&
-                        size_bounds.width().value() < preferred_width;
-  double value = is_constrained ? 0.0 : host->GetAnimationValue();
-  double t_translation = value;
-
-  // Use a Cubic Bezier curve to map linear time progress to spatial coordinates,
-  // creating a natural ease-out (fast start, slow landing) transition.
-  if (host->IsAnimationShowing()) {
-    t_translation = GetForwardBezier().Solve(value);
-  } else {
-    double b = 1.0 - value;
-    t_translation = 1.0 - GetBackwardBezier().Solve(b);
-  }
+  // Resolve the current animation progress value (0.0 to 1.0).
+  const double animation_value = host->GetAnimationValue();
+  const double t_translation =
+      host->IsAnimationShowing()
+          ? GetForwardBezier().Solve(animation_value)
+          : 1.0 - GetBackwardBezier().Solve(1.0 - animation_value);
 
   // Initial bounds for elements in their collapsed/starting layouts.
   int label_end_x = dimensions.leading_collapsed;
@@ -184,7 +177,7 @@ SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::CalculateProposedLayout
   layout.child_layouts.emplace_back(host->label(), label_width > 0,
                                     label_bounds);
   layout.child_layouts.emplace_back(trailing_image_view_.get(),
-                                    value > 0.0 && label_width > 0,
+                                    animation_value > 0.0 && label_width > 0,
                                     trailing_bounds);
   if (host->separator_view()) {
     layout.child_layouts.emplace_back(
@@ -198,12 +191,7 @@ gfx::Size
 SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::CalculatePreferredSize(
     const views::SizeBounds& available_size,
     const IconLabelBubbleView* host) const {
-  int label_width = host->label()->GetPreferredSize().width();
-  int icon_size = host->image_container_view()->GetPreferredSize().width();
-  const LayoutDimensions dimensions = GetLayoutDimensions();
-  int preferred_width = dimensions.leading_expanded + icon_size +
-                        dimensions.spacing_expanded + label_width +
-                        dimensions.trailing_expanded;
+  int preferred_width = GetPreferredWidth();
 
   int preferred_height =
       host->image_container_view()->GetPreferredSize().height() +
@@ -219,12 +207,8 @@ SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::CalculatePreferredSize(
 void SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::UpdateAnimationProgress(
     IconLabelBubbleView* host,
     double progress) {
-  int label_width = host->label()->GetPreferredSize().width();
+  int preferred_width = GetPreferredWidth();
   int icon_size = host->image_container_view()->GetPreferredSize().width();
-  const LayoutDimensions dimensions = GetLayoutDimensions();
-  int preferred_width = dimensions.leading_expanded + icon_size +
-                        dimensions.spacing_expanded + label_width +
-                        dimensions.trailing_expanded;
 
   bool is_constrained = host->width() > 0 && host->width() < preferred_width;
   double value = is_constrained ? 0.0 : progress;
@@ -374,6 +358,26 @@ void SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::OnAnimationEnded(
   views::InkDrop::Get(host)->GetInkDrop()->SetShowHighlightOnFocus(
       !views::FocusRing::Get(host));
   host->UpdateBackground();
+}
+
+bool SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::ShouldCollapse()
+    const {
+  const IconLabelBubbleView* host_view = host();
+  if (host_view->width() == 0) {
+    return false;
+  }
+
+  return host_view->width() < GetPreferredWidth();
+}
+
+int SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::GetPreferredWidth()
+    const {
+  const IconLabelBubbleView* host_view = host();
+  int label_width = host_view->label()->GetPreferredSize().width();
+  int icon_size = host_view->image_container_view()->GetPreferredSize().width();
+  const LayoutDimensions dimensions = GetLayoutDimensions();
+  return dimensions.leading_expanded + icon_size + dimensions.spacing_expanded +
+         label_width + dimensions.trailing_expanded;
 }
 
 views::ImageView*
