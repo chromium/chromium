@@ -553,6 +553,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.FirstDrawCompletedTime" units="ms"
+    expires_after="2027-01-15">
+  <owner>hanxi@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    Records the time duration from a cold start until the first draw pass of the
+    native Android View hierarchy completes (specifically, the
+    android.R.id.content view). This reflects the time until the native Chrome
+    app shell or placeholder UI is painted to the screen by Android, which
+    occurs well before the web renderer paints the actual page content (which is
+    tracked by metrics like Startup.FirstWebContents.NonEmptyPaint3).
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.GURLEnsureMainDexInitialized" units="ms"
     expires_after="2027-01-10">
   <owner>mthiesse@chromium.org</owner>
