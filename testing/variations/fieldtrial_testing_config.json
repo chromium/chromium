@@ -4235,21 +4235,6 @@
             ]
         }
     ],
-    "BocaGeminiIntegration": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BocaGeminiIntegration"
-                    ]
-                }
-            ]
-        }
-    ],
     "BocaMaterialTypeUiIndicator": [
         {
             "platforms": [
