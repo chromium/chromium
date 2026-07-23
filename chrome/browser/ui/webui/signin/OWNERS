@@ -1,8 +1,5 @@
 file://components/signin/DESKTOP_OWNERS
 
-# For profile picker and first run changes
-dgn@chromium.org
-
 per-file inline_login_handler_impl*=file://chrome/credential_provider/OWNERS
 per-file inline_login_handler.*=file://chrome/credential_provider/OWNERS
 
