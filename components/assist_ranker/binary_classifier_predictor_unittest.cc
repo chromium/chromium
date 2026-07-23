@@ -62,7 +62,6 @@ BinaryClassifierPredictorTest::InitPredictor(
 }
 
 BASE_FEATURE(kTestRankerQuery,
-             "TestRankerQuery",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kTestRankerUrl{

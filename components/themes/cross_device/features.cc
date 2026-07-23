@@ -9,7 +9,6 @@
 namespace themes {
 
 BASE_FEATURE(kCrossDeviceThemeTracker,
-             "CrossDeviceThemeTracker",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace themes

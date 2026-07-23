@@ -109,9 +109,9 @@ Study* CreateStudyWithFlagGroups(int default_group_probability,
   return study;
 }
 
-BASE_FEATURE(kDisabled, "Disabled", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnabled, "Enabled", base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kRepeated, "Repeated", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisabled, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRepeated, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Gets the group name of the study associated with a feature or empty string.
 std::string AssociatedStudyGroup(const base::Feature& feature) {

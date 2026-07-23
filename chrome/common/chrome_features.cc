@@ -1421,7 +1421,6 @@ const base::FeatureParam<std::string> kIndigoComponentAttribute{
 // If enabled, the initial WebUI skips spell check initialization on startup for
 // NTP.
 BASE_FEATURE(kInitialWebUIWithoutSpellCheckForNtp,
-             "InitialWebUIWithoutSpellCheckForNtp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSystemNotifications, base::FEATURE_ENABLED_BY_DEFAULT);

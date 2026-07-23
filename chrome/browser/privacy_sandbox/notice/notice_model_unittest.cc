@@ -40,8 +40,8 @@ using enum privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 using enum privacy_sandbox::NoticeType;
 using enum privacy_sandbox::SurfaceType;
 
-BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTestFeatureB, "TestFeatureB", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureA, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureB, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Test notice & Consent ID, with arbitrary NoticeType and SurfaceType.
 constexpr NoticeId kTestNoticeId = {PrivacySandboxNotice::kThreeAdsApisNotice,

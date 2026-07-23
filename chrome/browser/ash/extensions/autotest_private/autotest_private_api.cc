@@ -266,10 +266,8 @@ using chromeos::PrinterClass;
 
 // Features used for testing `isFeatureEnabled`.
 BASE_FEATURE(kEnabledFeatureForTest,
-             "EnabledFeatureForTest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDisabledFeatureForTest,
-             "DisabledFeatureForTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kCrostiniNotAvailableForCurrentUserError[] =

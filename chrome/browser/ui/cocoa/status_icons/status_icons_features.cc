@@ -7,7 +7,6 @@
 namespace features {
 
 BASE_FEATURE(kHideStatusIconMacInFullscreen,
-             "HideStatusIconMacInFullscreen",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features

@@ -112,7 +112,6 @@ constexpr base::TimeDelta kTemporaryResourceDeletionDelay = base::Seconds(3);
 
 // If enabled, VideoTiming is held as a strong member of HTMLVideoElement.
 BASE_FEATURE(kKeepVideoTimingAlive,
-             "KeepVideoTimingAlive",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // These values are persisted to logs. Entries should not be renumbered and

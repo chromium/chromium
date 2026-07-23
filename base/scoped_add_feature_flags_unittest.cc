@@ -33,12 +33,10 @@ TEST(ScopedAddFeatureFlags, ConflictWithExistingFlags) {
   command_line.AppendSwitchASCII(switches::kDisableFeatures,
                                  "ExistingDisabledFoo,ExistingDisabledBar");
 
-  static BASE_FEATURE(kExistingEnabledFoo, "ExistingEnabledFoo",
-                      FEATURE_DISABLED_BY_DEFAULT);
-  static BASE_FEATURE(kExistingDisabledFoo, "ExistingDisabledFoo",
-                      FEATURE_DISABLED_BY_DEFAULT);
-  static BASE_FEATURE(kEnabledBaz, "EnabledBaz", FEATURE_DISABLED_BY_DEFAULT);
-  static BASE_FEATURE(kDisabledBaz, "DisabledBaz", FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kExistingEnabledFoo, FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kExistingDisabledFoo, FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kEnabledBaz, FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kDisabledBaz, FEATURE_DISABLED_BY_DEFAULT);
   {
     ScopedAddFeatureFlags scoped_add(&command_line);
     scoped_add.EnableIfNotSet(kExistingEnabledFoo);
@@ -67,8 +65,7 @@ TEST(ScopedAddFeatureFlags, FlagWithParameter) {
   CommandLine command_line(CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kEnableFeatures,
                                  "ExistingEnabledFoo");
-  static BASE_FEATURE(kExistingEnabledFoo, "ExistingEnabledFoo",
-                      FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kExistingEnabledFoo, FEATURE_DISABLED_BY_DEFAULT);
   static BASE_FEATURE(kFeatureWithParameter, "FeatureWithParam",
                       FEATURE_DISABLED_BY_DEFAULT);
 

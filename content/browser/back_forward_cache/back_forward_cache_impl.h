@@ -53,18 +53,15 @@ class WebContentsImpl;
 // generating the metrics only for "allowed_websites" param. Mainly, to ensure
 // that metrics from the control and experiment groups are consistent.
 BASE_FEATURE(kRecordBackForwardCacheMetricsWithoutEnabling,
-             "RecordBackForwardCacheMetricsWithoutEnabling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Removes the time limit for cached content. This is used on bots to identify
 // accidentally passing tests.
 BASE_FEATURE(kBackForwardCacheNoTimeEviction,
-             "BackForwardCacheNoTimeEviction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature to allow exposing cross-origin subframes' NotRestoredReasons.
 BASE_FEATURE(kAllowCrossOriginNotRestoredReasons,
-             "AllowCrossOriginNotRestoredReasons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheSize);
@@ -77,14 +74,12 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 // in the cache instead. Only the latest prioritized entry outside the limit
 // will be handled in this way.
 BASE_FEATURE(kBackForwardCachePrioritizedEntry,
-             "BackForwardCachePrioritizedEntry",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the interaction between back/forward cache and
 // unload. When enabled, pages with unload handlers may enter the
 // cache.
 BASE_FEATURE(kBackForwardCacheUnloadAllowed,
-             "BackForwardCacheUnloadAllowed",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

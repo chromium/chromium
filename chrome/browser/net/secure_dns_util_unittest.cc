@@ -42,7 +42,6 @@ TEST(SecureDnsUtil, MakeProbeRunner) {
 }
 
 BASE_FEATURE(kDohProviderFeatureForProvider_Global1,
-             "DohProviderFeatureForProvider_Global1",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const auto kProviderGlobal1 = net::DohProviderEntry::ConstructForTesting(
     "Provider_Global1",
@@ -55,7 +54,6 @@ const auto kProviderGlobal1 = net::DohProviderEntry::ConstructForTesting(
     /*display_globally=*/true,
     /*display_countries=*/{});
 BASE_FEATURE(kDohProviderFeatureForProvider_NoDisplay,
-             "DohProviderFeatureForProvider_NoDisplay",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const auto kProviderNoDisplay = net::DohProviderEntry::ConstructForTesting(
     "Provider_NoDisplay",
@@ -68,7 +66,6 @@ const auto kProviderNoDisplay = net::DohProviderEntry::ConstructForTesting(
     /*display_globally=*/false,
     /* display_countries */ {});
 BASE_FEATURE(kDohProviderFeatureForProvider_EE_FR,
-             "DohProviderFeatureForProvider_EE_FR",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const auto kProviderEeFrDisabled = net::DohProviderEntry::ConstructForTesting(
     "Provider_EE_FR",
@@ -81,7 +78,6 @@ const auto kProviderEeFrDisabled = net::DohProviderEntry::ConstructForTesting(
     /*display_globally=*/false,
     /*display_countries=*/{"EE", "FR"});
 BASE_FEATURE(kDohProviderFeatureForProvider_FR,
-             "DohProviderFeatureForProvider_FR",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const auto kProviderFr = net::DohProviderEntry::ConstructForTesting(
     "provider_FR",
@@ -94,7 +90,6 @@ const auto kProviderFr = net::DohProviderEntry::ConstructForTesting(
     /*display_globally=*/false,
     /*display_countries=*/{"FR"});
 BASE_FEATURE(kDohProviderFeatureForProvider_Global2,
-             "DohProviderFeatureForProvider_Global2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const auto kProviderGlobal2 = net::DohProviderEntry::ConstructForTesting(
     "Provider_Global2",
@@ -107,7 +102,6 @@ const auto kProviderGlobal2 = net::DohProviderEntry::ConstructForTesting(
     /*display_globally=*/true,
     /*display_countries=*/{});
 BASE_FEATURE(kDohProviderFeatureForProvider_Global3,
-             "DohProviderFeatureForProvider_Global3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const auto kProviderGlobal3Disabled =
     net::DohProviderEntry::ConstructForTesting(

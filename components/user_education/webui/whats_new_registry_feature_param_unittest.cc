@@ -28,17 +28,13 @@ using BrowserCommand = browser_command::mojom::Command;
 // Modules
 // Enabled through feature list.
 BASE_FEATURE(kTestModuleEnabled1,
-             "TestModuleEnabled1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTestModuleEnabled2,
-             "TestModuleEnabled2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTestEditionEnabled,
-             "TestEditionEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Enabled by default
 BASE_FEATURE(kTestModuleEnabled3,
-             "TestModuleEnabled3",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

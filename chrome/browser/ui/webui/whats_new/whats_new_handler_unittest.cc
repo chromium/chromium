@@ -34,9 +34,7 @@ using whats_new::WhatsNewRegistry;
 namespace {
 
 // Modules
-BASE_FEATURE(kTestEdition, "TestEdition", base::FEATURE_DISABLED_BY_DEFAULT);
-
-
+BASE_FEATURE(kTestEdition, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 

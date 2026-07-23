@@ -8,7 +8,6 @@ namespace metrics {
 
 // static
 BASE_FEATURE(kRecordLastUnsentLogMetadataMetrics,
-             "RecordLastUnsentLogMetadataMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 UnsentLogStoreMetrics::UnsentLogStoreMetrics() = default;

@@ -181,7 +181,6 @@ CanvasAccessibilityMode GetCanvasAccessibilityMode() {
 }
 
 BASE_FEATURE(kEnableCollectAccessibilityHeuristicInCanvasUkm,
-             "EnableCollectAccessibilityHeuristicInCanvasUkm",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsCollectAccessibilityHeuristicInCanvasUkmEnabled() {

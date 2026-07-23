@@ -12,7 +12,6 @@ namespace user_education {
 
 namespace {
 BASE_FEATURE(kTestIPHFeature,
-             "TestIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 

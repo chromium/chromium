@@ -29,8 +29,8 @@
 //
 // In the .cc file, a corresponding new entry should look like:
 //
-//    BASE_FEATURE(kNewFeature, "NewFeature",
-//    base::FEATURE_DISABLED_BY_DEFAULT); bool IsNewFeatureEnabled() {
+//    BASE_FEATURE(kNewFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+//    bool IsNewFeatureEnabled() {
 //      return base::FeatureList::IsEnabled(::features::kNewFeature);
 //    }
 //

@@ -50,9 +50,9 @@ constexpr char kPrecond2Name[] = "Precond2";
 constexpr char kPrecond3Name[] = "Precond3";
 constexpr char kPrecond4Name[] = "Precond4";
 constexpr base::TimeDelta kDefaultTimeout = base::Seconds(15);
-BASE_FEATURE(kTestFeature1, "TestFeature1", base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kTestFeature2, "TestFeature2", base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kTestFeature3, "TestFeature3", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature1, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature2, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature3, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 

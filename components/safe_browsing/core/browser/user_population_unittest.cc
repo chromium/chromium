@@ -23,7 +23,6 @@ namespace safe_browsing {
 namespace {
 
 BASE_FEATURE(kTestCookieTheftFeature,
-             "TestCookieTheftFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }

@@ -420,7 +420,6 @@ const base::FeatureParam<std::string> kComposeboxDriveConsentEntrypointId{
 // only used for testing purposes since dasher accounts are not allowed to
 // consent via pContext.
 BASE_FEATURE(kForceDriveDisclaimerAccepted,
-             "ForceDriveDisclaimerAccepted",
              DISABLED);
 
 // Whether the composebox should show a verbatim match for context in

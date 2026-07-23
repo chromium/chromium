@@ -18,10 +18,10 @@ namespace {
 using BrowserCommand = browser_command::mojom::Command;
 
 // Modules
-BASE_FEATURE(kTestModule, "TestModule", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestModule, base::FEATURE_DISABLED_BY_DEFAULT);
 
 /// Editions
-BASE_FEATURE(kTestEdition, "TestEdition", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestEdition, base::FEATURE_DISABLED_BY_DEFAULT);
 
 void RegisterWhatsNewModulesForTests(whats_new::WhatsNewRegistry* registry) {
   // Test Module

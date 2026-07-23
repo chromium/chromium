@@ -49,7 +49,6 @@ namespace base {
 // Caveat: Since both we and the kernel need to walk the list of all fds at
 // every call, don't do it when we have too many FDs.
 BASE_FEATURE(kUsePollForMessagePumpEpoll,
-             "UsePollForMessagePumpEpoll",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A MessagePump implementation suitable for I/O message loops on Linux-based

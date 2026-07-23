@@ -1883,7 +1883,6 @@ TEST_F(RenderViewContextMenuPrefsTest,
 }
 
 BASE_FEATURE(kTestUnregisteredFeature,
-             "TestUnregisteredFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 TEST_F(RenderViewContextMenuPrefsTest, GetIsNewFeatureAtValue) {

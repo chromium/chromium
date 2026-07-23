@@ -23,27 +23,21 @@ using BrowserCommand = browser_command::mojom::Command;
 
 // Enabled through feature list.
 BASE_FEATURE(kTestModuleEnabled,
-             "TestModuleEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Enabled through feature list.
 BASE_FEATURE(kTestModule2Enabled,
-             "TestModule2Enabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Enabled through feature list.
 BASE_FEATURE(kTestEditionEnabled,
-             "TestEditionEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Disabled through feature list.
 BASE_FEATURE(kTestModuleDisabled,
-             "TestModuleDisabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Enabled by default.
 BASE_FEATURE(kTestModuleEnabledByDefault,
-             "TestModuleEnabledByDefault",
              base::FEATURE_ENABLED_BY_DEFAULT);
 // Disabled by default.
 BASE_FEATURE(kTestModuleDisabledByDefault,
-             "TestModuleDisabledByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 

@@ -1158,9 +1158,9 @@ TEST_F(FieldTrialListTest, DumpAndFetchFromSharedMemory) {
 constexpr shared_memory::SharedMemorySwitch::DescriptorKey kFDKey = 42;
 #endif
 
-BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTestFeatureB, "TestFeatureB", base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kTestFeatureC, "TestFeatureC", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureA, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureB, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeatureC, base::FEATURE_ENABLED_BY_DEFAULT);
 
 MULTIPROCESS_TEST_MAIN(CreateTrialsInChildProcess) {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)

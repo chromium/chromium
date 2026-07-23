@@ -161,10 +161,9 @@ TEST_F(GoogleGroupsManagerTest, ClearProfilePrefsClearsTargetPref) {
 // Tests that `IsFeatureGroupControlled` checks whether the internal feature
 // parameter that contains the ids in the google_groups filter is non-empty.
 TEST_F(GoogleGroupsManagerTest, IsFeatureGroupControlled) {
-  static BASE_FEATURE(kGroupControlledFeature, "GroupControlledFeature",
+  static BASE_FEATURE(kGroupControlledFeature,
                       base::FEATURE_DISABLED_BY_DEFAULT);
-  static BASE_FEATURE(kOtherFeature, "OtherFeature",
-                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kOtherFeature, base::FEATURE_DISABLED_BY_DEFAULT);
   auto feature_list = std::make_unique<base::FeatureList>();
   GoogleGroupsManager google_groups_updater(target_prefs_, key_, source_prefs_);
 
@@ -183,8 +182,7 @@ TEST_F(GoogleGroupsManagerTest, IsFeatureGroupControlled) {
 // enabled and the source prefs of the `GoogleGroupsManager` contain at
 // least one of the google_groups specified for the feature.
 TEST_F(GoogleGroupsManagerTest, IsFeatureEnabledForProfile) {
-  static BASE_FEATURE(kSampleFeature, "SampleFeature",
-                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kSampleFeature, base::FEATURE_DISABLED_BY_DEFAULT);
   auto feature_list = std::make_unique<base::FeatureList>();
   GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
@@ -210,8 +208,7 @@ TEST_F(GoogleGroupsManagerTest, IsFeatureEnabledForProfile) {
 // parameters of size longer than 1.
 TEST_F(GoogleGroupsManagerTest,
        IsFeatureEnabledForProfileMultipleGroups) {
-  static BASE_FEATURE(kSampleFeature, "SampleFeature",
-                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kSampleFeature, base::FEATURE_DISABLED_BY_DEFAULT);
   auto feature_list = std::make_unique<base::FeatureList>();
   GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);
@@ -236,8 +233,7 @@ TEST_F(GoogleGroupsManagerTest,
 // is disabled.
 TEST_F(GoogleGroupsManagerTest,
        IsFeatureEnabledForProfileForDisabledFeature) {
-  static BASE_FEATURE(kSampleFeature, "SampleFeature",
-                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kSampleFeature, base::FEATURE_DISABLED_BY_DEFAULT);
   auto feature_list = std::make_unique<base::FeatureList>();
   GoogleGroupsManager google_groups_updater(target_prefs_, key_,
                                                    source_prefs_);

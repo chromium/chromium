@@ -111,7 +111,6 @@ BASE_FEATURE(kLateFeature, FEATURE_DISABLED_BY_DEFAULT);
 
 // Features for testing runtime mutable features.
 BASE_RUNTIME_MUTABLE_FEATURE(kRuntimeMutableFeature3Args,
-                             "RuntimeMutableFeature3Args",
                              FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_RUNTIME_MUTABLE_FEATURE(kRuntimeMutableFeature,
@@ -370,7 +369,7 @@ TEST_F(FeatureListTest, InitFromCommandLineWithFeatureParams) {
   // this.
   base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
 
-  static BASE_FEATURE(kFeature, "Feature", FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kFeature, FEATURE_DISABLED_BY_DEFAULT);
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.enable_features);
 

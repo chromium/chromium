@@ -18,8 +18,8 @@ namespace base::test {
 
 namespace {
 
-BASE_FEATURE(kTestFeature1, "TestFeature1", FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTestFeature2, "TestFeature2", FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature1, FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature2, FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,
                    kTestFeatureParam1,

@@ -893,10 +893,8 @@ TEST_F(SimpleFeatureTest, CommandLineSwitch) {
 }
 
 TEST_F(SimpleFeatureTest, FeatureFlags) {
-  static BASE_FEATURE(kStubFeature1, "StubFeature1",
-                      base::FEATURE_ENABLED_BY_DEFAULT);
-  static BASE_FEATURE(kStubFeature2, "StubFeature2",
-                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kStubFeature1, base::FEATURE_ENABLED_BY_DEFAULT);
+  static BASE_FEATURE(kStubFeature2, base::FEATURE_DISABLED_BY_DEFAULT);
   const base::Feature* kOverriddenFeatures[] = {&kStubFeature1, &kStubFeature2};
   auto scoped_feature_override =
       CreateScopedFeatureFlagsOverrideForTesting(kOverriddenFeatures);

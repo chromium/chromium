@@ -53,7 +53,6 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabPageElementId);
 
 BASE_FEATURE(kMenuPromoTestFeature,
-             "MenuPromoTestFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 

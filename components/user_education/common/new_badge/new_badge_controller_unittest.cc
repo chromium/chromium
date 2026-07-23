@@ -25,10 +25,8 @@ namespace user_education {
 namespace {
 
 BASE_FEATURE(kNewBadgeTestFeature,
-             "NewBadgeTestFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kOtherTestFeature,
-             "OtherTestFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Mock for testing `NewBadgeController` without a live `NewBadgePolicy`.

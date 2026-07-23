@@ -17,13 +17,10 @@ namespace feature_engagement {
 namespace {
 
 BASE_FEATURE(kBlockedIphFeaturesTestFeature1,
-             "BlockedIphFeaturesTestFeature1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBlockedIphFeaturesTestFeature2,
-             "BlockedIphFeaturesTestFeature2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kBlockedIphFeaturesTestFeature3,
-             "BlockedIphFeaturesTestFeature3",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 

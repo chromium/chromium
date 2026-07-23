@@ -2159,10 +2159,8 @@ TEST_F(BrowserFeaturePromoControllerRotatingPromoTest,
 namespace {
 
 BASE_FEATURE(kLegalNoticeFeature,
-             "LegalNoticeFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLegalNoticeFeature2,
-             "LegalNoticeFeature2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActionableAlertIPHFeature,
              "kActionableAlertIPHFeature",
@@ -2543,10 +2541,8 @@ TEST_F(BrowserFeaturePromoControllerPriorityTest,
 
 namespace {
 BASE_FEATURE(kKeyedPromoFeature,
-             "KeyedPromoFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kKeyedPromoFeature2,
-             "KeyedPromoFeature2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr char kAppName1[] = "app1";

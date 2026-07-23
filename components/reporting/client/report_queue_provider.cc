@@ -101,7 +101,6 @@ bool ReportQueueProvider::IsEncryptedReportingPipelineEnabled() {
 
 // static
 BASE_FEATURE(kEncryptedReportingPipeline,
-             "EncryptedReportingPipeline",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 ReportQueueProvider::ReportQueueProvider(

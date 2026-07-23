@@ -88,13 +88,10 @@ using user_education::FeaturePromoSpecification;
 
 namespace {
 BASE_FEATURE(kToastTestFeature,
-             "ToastTestFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCustomActionTestFeature,
-             "CustomActionTestFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLegalNoticeTestFeature,
-             "LegalNoticeTestFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCustomUiTestFeature,
              "TEST_CustomUiTestFeature",

@@ -25,7 +25,6 @@ class MqlsFeatureRegistryTest : public testing::Test {
 };
 
 BASE_FEATURE(kLoggingEnabledFeature,
-             "LoggingEnabledFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/442828465): Re-enable this test.

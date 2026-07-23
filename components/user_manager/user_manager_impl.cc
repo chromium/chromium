@@ -121,7 +121,6 @@ const char UserManagerImpl::kDeprecatedArcKioskUsersHistogramName[] =
     "Kiosk.DeprecatedArcKioskUsers";
 // static
 BASE_FEATURE(kRemoveDeprecatedArcKioskUsersOnStartup,
-             "RemoveDeprecatedArcKioskUsersOnStartup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 UserManagerImpl::UserManagerImpl(std::unique_ptr<Delegate> delegate,

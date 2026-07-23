@@ -10,7 +10,6 @@
 namespace features {
 
 BASE_FEATURE(kHandleMemoryPressureInRenderer,
-             "HandleMemoryPressureInRenderer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the use of video codecs that cannot be hardware-accelerated.
@@ -24,22 +23,19 @@ BASE_FEATURE(kEnableSoftwareOnlyVideoCodecs,
 
 // Enables the use of VP9 decoding for Cast Mirroring.
 BASE_FEATURE(kEnableCastMirroringVP9Decoding,
-             "EnableCastMirroringVP9Decoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables keyboard input handling via the fuchsia.ui.input3.Keyboard interface.
 BASE_FEATURE(kKeyboardInput,
-             "KeyboardInput",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables use of virtual keyboards via the
 // fuchsia.input.virtualkeyboard.Controller interface.
 BASE_FEATURE(kVirtualKeyboard,
-             "VirtualKeyboard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables origin trials support.
-BASE_FEATURE(kOriginTrials, "OriginTrials", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOriginTrials, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 

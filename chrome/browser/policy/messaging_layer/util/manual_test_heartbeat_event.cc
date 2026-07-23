@@ -25,7 +25,6 @@ namespace {
 
 // Device heartbeat event.
 BASE_FEATURE(kEncryptedReportingManualTestHeartbeatEvent,
-             "EncryptedReportingManualTestHeartbeatEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
@@ -68,7 +67,6 @@ void ManualTestHeartbeatEvent::StartHeartbeatEvent() const {
 namespace {
 // User heartbeat event.
 BASE_FEATURE(kEncryptedReportingManualTestUserHeartbeatEvent,
-             "EncryptedReportingManualTestUserHeartbeatEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace
 

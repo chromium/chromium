@@ -42,7 +42,6 @@ bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
 
 // static
 BASE_FEATURE(kDemographicMetricsReporting,
-             "DemographicMetricsReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 DemographicMetricsProvider::DemographicMetricsProvider(

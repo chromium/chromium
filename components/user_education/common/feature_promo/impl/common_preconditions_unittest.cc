@@ -30,7 +30,7 @@
 namespace user_education {
 
 namespace {
-BASE_FEATURE(kTestFeature, "TestFeature", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kTestFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 using TestLifecycleData =
     test::ScopedTypedData<std::unique_ptr<FeaturePromoLifecycle>>;
 constexpr ui::ElementContext kTestContext =

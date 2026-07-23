@@ -381,7 +381,6 @@ BASE_FEATURE(kSkiaGraphite,
 // instead. This feature only works if `kLateGraphiteFeatureCheck` is
 // also enabled.
 BASE_FEATURE(kSkiaGraphiteWinIntel,
-             "SkiaGraphiteWinIntel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows CompoundImageBacking to allocate backings during runtime if a
@@ -417,7 +416,6 @@ BASE_FEATURE(kSkiaGraphitePrecompilation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to use PersistentCache for Skia Graphite's pipeline cache.
 BASE_FEATURE(kSkiaGraphiteUsePersistentCache,
-             "SkiaGraphiteUsePersistentCache",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else

@@ -37,10 +37,8 @@ namespace user_education {
 
 namespace {
 BASE_FEATURE(kTestIPHFeature,
-             "TestIPHFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTestIPHFeature2,
-             "TestIPHFeature2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 constexpr char kAppName[] = "App1";
 constexpr char kAppName2[] = "App2";
