@@ -32,7 +32,7 @@ export class EduCoexistenceTemplate extends EduCoexistenceTemplateBase {
     };
   }
 
-  showButtonFooter: boolean;
+  declare showButtonFooter: boolean;
 
   updateButtonFooterVisibility(visible: boolean) {
     this.showButtonFooter = visible;

@@ -49,36 +49,31 @@ class DlpInternalsUi extends PolymerElement {
   }
 
   // Names of the top level page tabs.
-  private tabNames_: string[] = [
-    'Clipboard',
-    'OnScreen',
-    'Files',
-    'Reporting',
-  ];
+  declare private tabNames_: string[];
 
   // Whether the profle is off the record.
-  private isOtr_: boolean = false;
+  declare private isOtr_: boolean;
 
   // Whether DLP rules manager exists.
-  private doRulesManagerExist_: boolean = false;
+  declare private doRulesManagerExist_: boolean;
 
   // Whether the page tabs show be added.
-  private showTabs_: boolean = false;
+  declare private showTabs_: boolean;
 
   // Index of the selected top level page tab.
-  private selectedTabIdx_: number = 0;
+  declare private selectedTabIdx_: number;
 
   // Clipboard source type string.
-  private clipboardSourceType_: string;
+  declare private clipboardSourceType_: string;
 
   // Clipboard source url.
-  private clipboardSourceUrl_: string;
+  declare private clipboardSourceUrl_: string;
 
   // Reporting events array.
-  private reportingEvents_: DlpEvent[] = [];
+  declare private reportingEvents_: DlpEvent[];
 
   // Web Contents Info.
-  private webContentsElements_: WebContentsElement[] = [];
+  declare private webContentsElements_: WebContentsElement[];
 
   // Files Database Entries.
   private filesEntries_: FileDatabaseEntry[] = [];
@@ -91,6 +86,18 @@ class DlpInternalsUi extends PolymerElement {
 
   constructor() {
     super();
+    this.tabNames_ = [
+        'Clipboard',
+        'OnScreen',
+        'Files',
+        'Reporting',
+      ];
+    this.isOtr_ = false;
+    this.doRulesManagerExist_ = false;
+    this.showTabs_ = false;
+    this.selectedTabIdx_ = 0;
+    this.reportingEvents_ = [];
+    this.webContentsElements_ = [];
 
     if (loadTimeData.valueExists('isOtr')) {
       this.isOtr_ = loadTimeData.getBoolean('isOtr');

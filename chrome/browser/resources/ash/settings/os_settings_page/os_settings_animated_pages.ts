@@ -64,7 +64,7 @@ class OsSettingsAnimatedPagesElement extends
     };
   }
 
-  section: Section;
+  declare section: Section;
   private previousRoute_: Route|null;
   private lightDomReady_: boolean = false;
   private queuedRouteChange_: {oldRoute?: Route, newRoute: Route}|null = null;

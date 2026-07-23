@@ -44,8 +44,8 @@ export class EduCoexistenceButton extends EduCoexistenceButtonBase {
     };
   }
 
-  disabled: boolean;
-  private buttonType: ButtonTypes;
+  declare disabled: boolean;
+  declare private buttonType: ButtonTypes;
 
   override ready() {
     super.ready();

@@ -47,7 +47,7 @@ export class MultitaskingSettingsCardElement extends
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([

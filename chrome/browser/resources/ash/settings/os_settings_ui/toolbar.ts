@@ -64,12 +64,12 @@ export class SettingsToolbarElement extends PolymerElement {
     };
   }
 
-  spinnerActive: boolean;
-  showMenu: boolean;
-  showSearch: boolean;
-  narrow: boolean;
-  private isSearchBoxCutoff_: boolean;
-  private showingSearch_: boolean;
+  declare spinnerActive: boolean;
+  declare showMenu: boolean;
+  declare showSearch: boolean;
+  declare narrow: boolean;
+  declare private isSearchBoxCutoff_: boolean;
+  declare private showingSearch_: boolean;
 
   getSearchField(): CrToolbarSearchFieldElement {
     const searchBox =

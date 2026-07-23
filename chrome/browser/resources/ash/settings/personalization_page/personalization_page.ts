@@ -52,7 +52,7 @@ export class SettingsPersonalizationPageElement extends
   }
 
   private personalizationHubBrowserProxy_: PersonalizationHubBrowserProxy;
-  private section_: Section;
+  declare private section_: Section;
 
   constructor() {
     super();

@@ -161,13 +161,13 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     };
   }
 
-  prefs: Object;
-  isNarrow: boolean;
-  private toolbarSpinnerActive_: boolean;
-  private pageAvailability_: OsPageAvailability;
-  private showToolbar_: boolean;
-  private showNavMenu_: boolean;
-  private narrowThreshold_: number;
+  declare prefs: Object;
+  declare isNarrow: boolean;
+  declare private toolbarSpinnerActive_: boolean;
+  declare private pageAvailability_: OsPageAvailability;
+  declare private showToolbar_: boolean;
+  declare private showNavMenu_: boolean;
+  declare private narrowThreshold_: number;
   private activeRoute_: Route|null;
   private scrollEndDebouncer_: Debouncer|null;
   private osSettingsHatsBrowserProxy_: OsSettingsHatsBrowserProxy;

@@ -179,19 +179,19 @@ export class OsSettingsSearchBoxElement extends OsSettingsSearchBoxElementBase
     };
   }
 
-  narrow: boolean;
-  showingSearch: boolean;
-  hasSearchQuery: boolean;
-  spinnerActive: boolean;
-  private selectedItem_: SearchResult;
-  private lastSelectedItem_: SearchResult|null;
-  private searchResults_: SearchResult[];
-  private shouldHideFeedbackButton_: boolean;
-  private shouldShowDropdown_: boolean;
-  private searchResultsExist_: boolean;
-  private lastFocused_: HTMLElement|null;
-  private listBlurred_: boolean;
-  private searchRequestCount_: number;
+  declare narrow: boolean;
+  declare showingSearch: boolean;
+  declare hasSearchQuery: boolean;
+  declare spinnerActive: boolean;
+  declare private selectedItem_: SearchResult;
+  declare private lastSelectedItem_: SearchResult|null;
+  declare private searchResults_: SearchResult[];
+  declare private shouldHideFeedbackButton_: boolean;
+  declare private shouldShowDropdown_: boolean;
+  declare private searchResultsExist_: boolean;
+  declare private lastFocused_: HTMLElement|null;
+  declare private listBlurred_: boolean;
+  declare private searchRequestCount_: number;
 
   private settingsSearchResultObserverReceiver_: SearchResultsObserverReceiver|
       null;

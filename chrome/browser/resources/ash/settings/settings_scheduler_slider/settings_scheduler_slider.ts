@@ -149,14 +149,14 @@ export class SettingsSchedulerSliderElement extends
     ];
   }
 
-  prefStartTime: chrome.settingsPrivate.PrefObject<number>;
-  prefEndTime: chrome.settingsPrivate.PrefObject<number>;
+  declare prefStartTime: chrome.settingsPrivate.PrefObject<number>;
+  declare prefEndTime: chrome.settingsPrivate.PrefObject<number>;
   private dragObject_: HTMLElement|null;
-  private isReady_: boolean;
-  private isRTL_: boolean;
+  declare private isReady_: boolean;
+  declare private isRTL_: boolean;
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
   private _ripple: PaperRippleElement|null;
-  private shouldUse24Hours_: boolean;
+  declare private shouldUse24Hours_: boolean;
   private valueAtDragStart_?: number;
 
   constructor() {

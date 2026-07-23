@@ -66,8 +66,8 @@ export class ParentalControlsSettingsCardElement extends
   ]);
 
   private browserProxy_: ParentalControlsBrowserProxy;
-  private readonly isChild_: boolean;
-  private online_: boolean;
+  declare private readonly isChild_: boolean;
+  declare private online_: boolean;
 
   constructor() {
     super();

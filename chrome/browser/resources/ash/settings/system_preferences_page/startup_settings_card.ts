@@ -60,14 +60,14 @@ export class StartupSettingsCardElement extends StartupSettingsCardElementBase {
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
     Setting.kRestoreAppsAndPages,
   ]);
 
-  private readonly onStartupDropdownOptions_:
+  declare private readonly onStartupDropdownOptions_:
       Array<{value: number, name: string}>;
 
   override currentRouteChanged(newRoute: Route): void {

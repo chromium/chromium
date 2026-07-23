@@ -57,8 +57,8 @@ class BluetoothPairingDialogElement extends PolymerElement {
     };
   }
 
-  private deviceAddress_: string;
-  private shouldOmitLinks_: boolean;
+  declare private deviceAddress_: string;
+  declare private shouldOmitLinks_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

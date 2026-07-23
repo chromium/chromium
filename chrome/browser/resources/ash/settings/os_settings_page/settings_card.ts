@@ -37,7 +37,7 @@ export class SettingsCardElement extends PolymerElement {
     };
   }
 
-  headerText: string;
+  declare headerText: string;
 }
 
 declare global {

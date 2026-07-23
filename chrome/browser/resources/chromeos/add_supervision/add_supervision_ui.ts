@@ -82,7 +82,7 @@ export class AddSupervisionUi extends PolymerElement {
     };
   }
 
-  webviewLoading: boolean;
+  declare webviewLoading: boolean;
   private server: AddSupervisionApiServer|null;
 
   override ready() {

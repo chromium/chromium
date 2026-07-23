@@ -46,7 +46,7 @@ export class StorageAndPowerSettingsCardElement extends
     };
   }
 
-  private shouldShowStorageRow_: boolean;
+  declare private shouldShowStorageRow_: boolean;
 
   constructor() {
     super();
