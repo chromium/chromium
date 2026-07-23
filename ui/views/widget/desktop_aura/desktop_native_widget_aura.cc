@@ -51,6 +51,7 @@
 #include "ui/views/drag_utils.h"
 #include "ui/views/view_constants_aura.h"
 #include "ui/views/views_delegate.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/desktop_aura/desktop_capture_client.h"
 #include "ui/views/widget/desktop_aura/desktop_event_client.h"
 #include "ui/views/widget/desktop_aura/desktop_focus_rules.h"
@@ -59,6 +60,7 @@
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/focus_manager_event_handler.h"
+#include "ui/views/widget/legacy_window_reorderer.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/tooltip_manager_aura.h"
@@ -319,6 +321,7 @@ DesktopNativeWidgetAura::~DesktopNativeWidgetAura() {
     // `native_widget_delegate_`'s root view. Reset them before deleting
     // `native_widget_delegate_` to avoid holding a briefly dangling ptr.
     drop_helper_.reset();
+    legacy_window_reorderer_.reset();
     window_reorderer_.reset();
     owned_native_widget_delegate.reset();
   } else {
@@ -661,8 +664,8 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
           std::unique_ptr<wm::NativeCursorManager>(native_cursor_manager_));
       cursor_manager_->SetDisplay(
           display::Screen::Get()->GetDisplayNearestWindow(host_->window()));
-      if (features::IsSystemCursorSizeSupported() ||
-          features::ShouldUseCursorEventHook()) {
+      if (::features::IsSystemCursorSizeSupported() ||
+          ::features::ShouldUseCursorEventHook()) {
         native_cursor_manager_->InitSystemCursorObservers(cursor_manager_);
       }
     }
@@ -734,8 +737,13 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
 
   OnSizeConstraintsChanged();
 
-  window_reorderer_ = std::make_unique<WindowReorderer>(
-      content_window_, GetWidget()->GetRootView());
+  if (base::FeatureList::IsEnabled(features::kNativeViewHostManagesLayers)) {
+    window_reorderer_ = std::make_unique<WindowReorderer>(
+        content_window_, GetWidget()->GetRootView());
+  } else {
+    legacy_window_reorderer_ = std::make_unique<legacy::WindowReorderer>(
+        content_window_, GetWidget()->GetRootView());
+  }
 }
 
 void DesktopNativeWidgetAura::OnWidgetInitDone() {
@@ -802,7 +810,11 @@ void DesktopNativeWidgetAura::ReorderNativeViews() {
   // scope rather than after each individual change.
   // https://crbug.com/829918
   aura::WindowOcclusionTracker::ScopedPause pause_occlusion;
-  window_reorderer_->ReorderChildWindows();
+  if (legacy_window_reorderer_) {
+    legacy_window_reorderer_->ReorderChildWindows();
+  } else if (window_reorderer_) {
+    window_reorderer_->ReorderChildWindows();
+  }
 }
 
 void DesktopNativeWidgetAura::ViewRemoved(View* view) {

@@ -139,6 +139,10 @@
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
 
+#if defined(USE_AURA)
+#include "ui/views/views_features.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/browser.h"
@@ -2486,6 +2490,36 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_TestDeviceEmulation) {
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestDispatchKeyEventDoesNotCrash) {
   RunTest("testDispatchKeyEventDoesNotCrash", "about:blank");
 }
+
+#if defined(USE_AURA)
+class DevToolsVisibilityTest : public DevToolsTest {
+ public:
+  DevToolsVisibilityTest() {
+    feature_list_.InitAndEnableFeature(
+        views::features::kNativeViewHostManagesLayers);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsVisibilityTest,
+                       TestMainWebContentsVisibilityWithDockedDevTools) {
+  content::WebContents* web_contents = GetInspectedTab();
+  OpenDevToolsWindow("about:blank", true);
+
+  content::WebContents* devtools_contents =
+      DevToolsWindow::GetInTabWebContents(web_contents, nullptr);
+  ASSERT_TRUE(devtools_contents);
+
+  EXPECT_EQ(web_contents->GetVisibility(), content::Visibility::VISIBLE);
+  EXPECT_EQ(devtools_contents->GetVisibility(), content::Visibility::VISIBLE);
+
+  CloseDevToolsWindow();
+
+  EXPECT_EQ(web_contents->GetVisibility(), content::Visibility::VISIBLE);
+}
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 class BrowserAutofillManagerTestDelegateDevtoolsImpl

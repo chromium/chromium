@@ -83,6 +83,9 @@ void NativeViewHostAura::AttachNativeView() {
   original_transform_ = host_->native_view()->transform();
   original_transform_changed_ = false;
   UpdateLayerClip();
+  if (host_->layer_managed_by_views() && host_->GetWidget()) {
+    host_->GetWidget()->ReorderNativeViews();
+  }
 }
 
 void NativeViewHostAura::SetParentAccessible(

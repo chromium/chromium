@@ -863,6 +863,7 @@ component("views") {
       "touchui/touch_selection_controller_impl.h",
       "view_constants_aura.h",
       "widget/focus_manager_event_handler.h",
+      "widget/legacy_window_reorderer.h",
       "widget/native_widget_aura.h",
       "widget/tooltip_manager_aura.h",
       "widget/widget_aura_utils.h",
@@ -895,6 +896,7 @@ component("views") {
       "touchui/touch_selection_controller_impl.cc",
       "view_constants_aura.cc",
       "widget/focus_manager_event_handler.cc",
+      "widget/legacy_window_reorderer.cc",
       "widget/native_widget_aura.cc",
       "widget/tooltip_manager_aura.cc",
       "widget/window_reorderer.cc",
@@ -1579,6 +1581,7 @@ test("views_unittests") {
       "corewm/tooltip_controller_unittest.cc",
       "touchui/touch_selection_controller_impl_unittest.cc",
       "view_unittest_aura.cc",
+      "widget/legacy_window_reorderer_unittest.cc",
       "widget/native_widget_aura_unittest.cc",
       "widget/window_reorderer_unittest.cc",
     ]
@@ -1592,7 +1595,10 @@ test("views_unittests") {
 
     if (is_mac) {
       # views_unittests not yet compiling on Mac. http://crbug.com/378134
-      sources -= [ "widget/window_reorderer_unittest.cc" ]
+      sources -= [
+        "widget/legacy_window_reorderer_unittest.cc",
+        "widget/window_reorderer_unittest.cc",
+      ]
     }
 
     if (is_win) {

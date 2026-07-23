@@ -17,6 +17,8 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -124,26 +126,24 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
  public:
   METADATA_HEADER_BASE(Window);
 
+  using Windows = std::vector<raw_ptr<Window, VectorExperimental>>;
+
   // A helper class to ensure that the Window is not deleted while it is
   // notifying observers or doing other operations where re-entrant deletion
   // would be problematic. Attempting to delete the Window while a
   // ScopedDeleteBlocker is active will cause a crash. This is no-op if
   // if nullptr is passed.
-  class ScopedDeleteBlocker {
+  class AURA_EXPORT ScopedDeleteBlocker {
    public:
-    explicit ScopedDeleteBlocker(aura::Window* window) : window_(window) {
-      if (window_) {
-        window_->delete_block_count_++;
-      }
-    }
+    explicit ScopedDeleteBlocker(Window* window);
+    explicit ScopedDeleteBlocker(const Windows& windows);
     ScopedDeleteBlocker(const ScopedDeleteBlocker&) = delete;
     ScopedDeleteBlocker& operator=(const ScopedDeleteBlocker&) = delete;
-    ~ScopedDeleteBlocker() {
-      if (window_) {
-        window_->delete_block_count_--;
-      }
-    }
-    raw_ptr<aura::Window> window_;
+    ~ScopedDeleteBlocker();
+
+   private:
+    raw_ptr<Window> window_ = nullptr;
+    base::raw_span<const raw_ptr<Window, VectorExperimental>> windows_;
   };
 
   // Initial value of id() for newly created windows.
@@ -182,8 +182,6 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
     // because it has an animated child.
     kMaxValue = HIDDEN,
   };
-
-  using Windows = std::vector<raw_ptr<Window, VectorExperimental>>;
 
   explicit Window(WindowDelegate* delegate,
                   client::WindowType type = client::WINDOW_TYPE_UNKNOWN);

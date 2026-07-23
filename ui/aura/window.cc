@@ -2190,6 +2190,29 @@ void Window::SetVisible(bool visible) {
   // Changed notification is handled in SetVisibleInternal().
 }
 
+Window::ScopedDeleteBlocker::ScopedDeleteBlocker(Window* window)
+    : window_(window) {
+  if (window_) {
+    window_->delete_block_count_++;
+  }
+}
+
+Window::ScopedDeleteBlocker::ScopedDeleteBlocker(const Windows& windows)
+    : windows_(windows) {
+  for (Window* window : windows_) {
+    window->delete_block_count_++;
+  }
+}
+
+Window::ScopedDeleteBlocker::~ScopedDeleteBlocker() {
+  if (window_) {
+    window_->delete_block_count_--;
+  }
+  for (Window* window : windows_) {
+    window->delete_block_count_--;
+  }
+}
+
 BEGIN_METADATA_BASE(Window)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ActualBoundsInRootWindow)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, ActualBoundsInScreen)

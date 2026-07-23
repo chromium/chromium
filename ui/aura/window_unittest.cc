@@ -407,6 +407,43 @@ void OffsetBounds(Window* window, int horizontal, int vertical) {
   window->SetBounds(bounds);
 }
 
+TEST_F(WindowTest, ScopedDeleteBlocker) {
+  std::unique_ptr<Window> w1 = CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 1});
+  std::unique_ptr<Window> w2 = CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 2});
+
+  // Test single window blocker.
+  {
+    Window::ScopedDeleteBlocker blocker(w1.get());
+    EXPECT_DEATH(w1.reset(), "");
+    // w2 is not blocked.
+    w2.reset();
+  }
+  // w1 is allowed to be deleted now.
+  w1.reset();
+
+  // Re-create windows for list blocker test.
+  w1 = CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 1});
+  w2 = CreateTestWindow(
+      {.parent = root_window(), .bounds = {100, 100}, .window_id = 2});
+
+  Window::Windows windows;
+  windows.push_back(w1.get());
+  windows.push_back(w2.get());
+
+  {
+    Window::ScopedDeleteBlocker blocker(windows);
+    EXPECT_DEATH(w1.reset(), "");
+    EXPECT_DEATH(w2.reset(), "");
+  }
+
+  // Deletion is allowed again.
+  w1.reset();
+  w2.reset();
+}
+
 TEST_F(WindowTest, GetChildById) {
   std::unique_ptr<Window> w1 = CreateTestWindow(
       {.parent = root_window(), .bounds = {100, 100}, .window_id = 1});
