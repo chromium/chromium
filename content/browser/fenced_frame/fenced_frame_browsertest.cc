@@ -2149,7 +2149,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameProcessIsolationBrowserTest,
   ASSERT_TRUE(https_server()->Start());
 
   const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
-  const GURL subframe_url = https_server()->GetURL("a.test", "/title2.html");
+  const GURL subframe_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title0.html");
   const GURL fenced_frame_url =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
 
