@@ -26,7 +26,7 @@ permission, geolocation, install, usermedia, camera, microphone {
   vertical-align: middle !important;
  }
 
-permission:granted, camera:granted, microphone:granted {
+permission:granted {
   background-color: white;
 }
 
