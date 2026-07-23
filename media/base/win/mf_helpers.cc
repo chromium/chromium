@@ -51,17 +51,16 @@ void DestroySharedImageResourcesOnGpuThread(
     std::unique_ptr<gpu::VideoImageRepresentation> representation,
     std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
         scoped_read_access,
-    scoped_refptr<gpu::SharedContextState> context_state) {
-  if (context_state && context_state->MakeCurrent(nullptr, /*needs_gl=*/true)) {
-    scoped_read_access.reset();
-    representation.reset();
-  } else {
-    if (representation) {
-      representation->OnContextLost();
-    }
-    scoped_read_access.reset();
-    representation.reset();
+    scoped_refptr<gpu::SharedContextState> context_state,
+    std::unique_ptr<gpu::MemoryTypeTracker> tracker) {
+  const bool context_current =
+      context_state && context_state->MakeCurrent(nullptr, /*needs_gl=*/true);
+  if (representation && !context_current) {
+    representation->OnContextLost();
   }
+  scoped_read_access.reset();
+  representation.reset();
+  tracker.reset();
 }
 
 }  // namespace
@@ -71,11 +70,13 @@ SharedImageReadLock::SharedImageReadLock(
     std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
         scoped_read_access,
     scoped_refptr<VideoFrame> frame,
-    scoped_refptr<gpu::SharedContextState> context_state)
+    scoped_refptr<gpu::SharedContextState> context_state,
+    std::unique_ptr<gpu::MemoryTypeTracker> tracker)
     : representation_(std::move(representation)),
       scoped_read_access_(std::move(scoped_read_access)),
       frame_(std::move(frame)),
       context_state_(std::move(context_state)),
+      tracker_(std::move(tracker)),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 SharedImageReadLock::~SharedImageReadLock() {
@@ -83,7 +84,7 @@ SharedImageReadLock::~SharedImageReadLock() {
       FROM_HERE,
       base::BindOnce(&DestroySharedImageResourcesOnGpuThread,
                      std::move(representation_), std::move(scoped_read_access_),
-                     std::move(context_state_)));
+                     std::move(context_state_), std::move(tracker_)));
 }
 
 using Microsoft::WRL::ComPtr;
@@ -1134,10 +1135,11 @@ void GenerateResourceOnSyncTokenReleased(
   bool use_same_device = (encoder_device.Get() == shared_d3d11_device.Get());
   gpu::SharedImageManager* shared_image_manager =
       command_buffer_helper->GetSharedImageManager();
+  auto tracker = std::make_unique<gpu::MemoryTypeTracker>(
+      base::WrapRefCounted(shared_image_stub->memory_tracker()));
   std::unique_ptr<gpu::VideoImageRepresentation> image_representation =
       shared_image_manager->ProduceVideo(
-          shared_d3d11_device, frame->shared_image()->mailbox(),
-          command_buffer_helper->GetMemoryTypeTracker());
+          shared_d3d11_device, frame->shared_image()->mailbox(), tracker.get());
   RETURN_ON_FAILURE_WITH_CALLBACK(image_representation ? S_OK : E_FAIL,
                                   "Failed to produce video");
 
@@ -1152,7 +1154,7 @@ void GenerateResourceOnSyncTokenReleased(
   ComPtr<SharedImageReadLock> si_lock =
       Microsoft::WRL::Make<SharedImageReadLock>(
           std::move(image_representation), std::move(scoped_read_access), frame,
-          std::move(shared_context_state));
+          std::move(shared_context_state), std::move(tracker));
   if (!si_lock) {
     RETURN_ON_FAILURE_WITH_CALLBACK(E_OUTOFMEMORY,
                                     "Failed to create SharedImageReadLock");

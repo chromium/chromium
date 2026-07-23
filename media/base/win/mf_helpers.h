@@ -33,6 +33,7 @@ struct ID3D11Device;
 class IMFMediaType;
 
 namespace gpu {
+class MemoryTypeTracker;
 class SharedContextState;
 }  // namespace gpu
 
@@ -261,7 +262,8 @@ class MEDIA_EXPORT SharedImageReadLock
       std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
           scoped_read_access,
       scoped_refptr<VideoFrame> frame,
-      scoped_refptr<gpu::SharedContextState> context_state);
+      scoped_refptr<gpu::SharedContextState> context_state,
+      std::unique_ptr<gpu::MemoryTypeTracker> tracker);
 
   gpu::VideoImageRepresentation::ScopedReadAccess* access() const {
     return scoped_read_access_.get();
@@ -275,6 +277,7 @@ class MEDIA_EXPORT SharedImageReadLock
       scoped_read_access_;
   scoped_refptr<VideoFrame> frame_;
   scoped_refptr<gpu::SharedContextState> context_state_;
+  std::unique_ptr<gpu::MemoryTypeTracker> tracker_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
