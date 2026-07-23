@@ -79,11 +79,11 @@ export class ReimagingCalibrationSetupPage extends
     };
   }
 
-  calibrationSetupInstruction: CalibrationSetupInstruction;
+  declare calibrationSetupInstruction: CalibrationSetupInstruction;
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
-  protected imgSrc: string;
-  protected imgAlt: string;
-  protected calibrationInstructionsText: string;
+  declare protected imgSrc: string;
+  declare protected imgAlt: string;
+  declare protected calibrationInstructionsText: string;
 
   static get observers() {
     return ['onStatusChanged(calibrationSetupInstruction)'];

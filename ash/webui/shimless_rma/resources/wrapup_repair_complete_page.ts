@@ -107,12 +107,12 @@ export class WrapupRepairCompletePage extends WrapupRepairCompletePageBase {
     };
   }
 
-  allButtonsDisabled: boolean;
-  batteryTimeoutID: number;
-  batteryTimeoutInMs: number;
-  protected shutdownButtonsDisabled: boolean;
-  protected pluggedIn: boolean;
-  protected selectedFinishRmaOption: string;
+  declare allButtonsDisabled: boolean;
+  declare batteryTimeoutID: number;
+  declare batteryTimeoutInMs: number;
+  declare protected shutdownButtonsDisabled: boolean;
+  declare protected pluggedIn: boolean;
+  declare protected selectedFinishRmaOption: string;
   private shimlessRmaService: ShimlessRmaServiceInterface =
       getShimlessRmaService();
   powerCableStateReceiver: PowerCableStateObserverReceiver;

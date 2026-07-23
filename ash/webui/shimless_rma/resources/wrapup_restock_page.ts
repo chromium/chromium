@@ -44,7 +44,7 @@ export class WrapupRestockPage extends WrapupRestockPageBase {
     };
   }
 
-  allButtonsDisabled: boolean;
+  declare allButtonsDisabled: boolean;
   private shimlessRmaService: ShimlessRmaServiceInterface =
       getShimlessRmaService();
 

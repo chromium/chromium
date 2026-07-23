@@ -48,9 +48,9 @@ export class OnboardingChooseDestinationPageElement extends
     };
   }
 
-  allButtonsDisabled: boolean;
+  declare allButtonsDisabled: boolean;
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
-  protected destinationOwner: string;
+  declare protected destinationOwner: string;
 
   override ready() {
     super.ready();

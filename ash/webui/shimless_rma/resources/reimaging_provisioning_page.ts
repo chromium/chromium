@@ -69,9 +69,9 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
     };
   }
 
-  allButtonsDisabled: boolean;
-  protected status: ProvisioningStatus;
-  protected shouldShowSpinner: boolean;
+  declare allButtonsDisabled: boolean;
+  declare protected status: ProvisioningStatus;
+  declare protected shouldShowSpinner: boolean;
   private shimlessRmaService: ShimlessRmaServiceInterface =
       getShimlessRmaService();
   provisioningObserverReceiver: ProvisioningObserverReceiver =

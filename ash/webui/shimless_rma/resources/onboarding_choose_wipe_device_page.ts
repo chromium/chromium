@@ -62,9 +62,9 @@ export class OnboardingChooseWipeDevicePage extends
     };
   }
 
-  allButtonsDisabled: boolean;
+  declare allButtonsDisabled: boolean;
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
-  protected selectedWipeDeviceOption: string;
+  declare protected selectedWipeDeviceOption: string;
 
   override ready() {
     super.ready();

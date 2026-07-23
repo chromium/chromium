@@ -47,7 +47,7 @@ export class ReimagingCalibrationRunPage extends
   private shimlessRmaService: ShimlessRmaServiceInterface =
       getShimlessRmaService();
   private calibrationObserverReceiver: CalibrationObserverReceiver;
-  protected calibrationComplete: boolean;
+  declare protected calibrationComplete: boolean;
 
   constructor() {
     super();

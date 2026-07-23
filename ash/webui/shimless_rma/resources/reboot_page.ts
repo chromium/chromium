@@ -44,7 +44,7 @@ export class RebootPage extends RebootPageBase {
     };
   }
 
-  errorCode: RmadErrorCode;
+  declare errorCode: RmadErrorCode;
 
   override ready() {
     super.ready();

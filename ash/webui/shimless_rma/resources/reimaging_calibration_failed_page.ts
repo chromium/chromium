@@ -88,10 +88,10 @@ export class ReimagingCalibrationFailedPage extends
     };
   }
 
-  allButtonsDisabled: boolean;
+  declare allButtonsDisabled: boolean;
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
-  private componentCheckboxes: ComponentCheckbox[];
-  private focusedComponentIndex: number;
+  declare private componentCheckboxes: ComponentCheckbox[];
+  declare private focusedComponentIndex: number;
   componentClicked: (event: ClickCalibrationComponentEvent) => void;
   handleKeyDownEvent: (event: KeyboardEvent) => void;
   onExitButtonClick: () => Promise<{stateResult: StateResult}>;

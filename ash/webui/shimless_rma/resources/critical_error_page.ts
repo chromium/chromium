@@ -40,7 +40,7 @@ export class CriticalErrorPage extends CriticalErrorPageBase {
   }
 
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
-  allButtonsDisabled: boolean;
+  declare allButtonsDisabled: boolean;
 
   override ready() {
     super.ready();

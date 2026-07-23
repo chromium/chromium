@@ -66,10 +66,10 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
     };
   }
 
-  allButtonsDisabled: boolean;
+  declare allButtonsDisabled: boolean;
   // Receiver responsible for observing finalization progress and state.
   finalizationObserverReceiver: FinalizationObserverReceiver = new FinalizationObserverReceiver(this);
-  protected finalizationMessage: string;
+  declare protected finalizationMessage: string;
   private shimlessRmaService: ShimlessRmaServiceInterface =
       getShimlessRmaService();
 

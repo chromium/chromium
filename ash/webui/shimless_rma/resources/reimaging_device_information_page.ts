@@ -220,38 +220,38 @@ export class ReimagingDeviceInformationPage extends
     };
   }
 
-  allButtonsDisabled: boolean;
+  declare allButtonsDisabled: boolean;
   private shimlessRmaService: ShimlessRmaServiceInterface =
       getShimlessRmaService();
-  protected isChassisBranded: string;
-  protected hwComplianceVersion: string;
-  protected booleanOrDefaultOptions: boolean|null;
-  protected featureLevel: number;
-  protected originalDramPartNumber: string;
-  protected dramPartNumber: string;
-  protected customLabelIndex: number;
-  protected originalCustomLabelIndex: number;
-  protected originalRegionIndex: number;
-  protected regionIndex: number;
-  protected originalSkuIndex: number;
-  protected skuIndex: number;
-  protected regions: string[];
-  protected skus: bigint[]|string[];
-  protected customLabels: string[];
-  protected disableResetSerialNumber: boolean;
-  protected disableResetRegion: boolean;
-  protected disableResetSku: boolean;
-  protected disableResetCustomLabel: boolean;
-  protected disableResetDramPartNumber: boolean;
-  protected disableModifySerialNumber: boolean;
-  protected disableModifyRegion: boolean;
-  protected disableModifySku: boolean;
-  protected disableModifyCustomLabel: boolean;
-  protected disableModifyDramPartNumber: boolean;
-  protected disableModifyFeatureLevel: boolean;
-  protected serialNumberLabel: string;
-  protected originalSerialNumber: string;
-  protected serialNumber: string;
+  declare protected isChassisBranded: string;
+  declare protected hwComplianceVersion: string;
+  declare protected booleanOrDefaultOptions: boolean|null;
+  declare protected featureLevel: number;
+  declare protected originalDramPartNumber: string;
+  declare protected dramPartNumber: string;
+  declare protected customLabelIndex: number;
+  declare protected originalCustomLabelIndex: number;
+  declare protected originalRegionIndex: number;
+  declare protected regionIndex: number;
+  declare protected originalSkuIndex: number;
+  declare protected skuIndex: number;
+  declare protected regions: string[];
+  declare protected skus: bigint[]|string[];
+  declare protected customLabels: string[];
+  declare protected disableResetSerialNumber: boolean;
+  declare protected disableResetRegion: boolean;
+  declare protected disableResetSku: boolean;
+  declare protected disableResetCustomLabel: boolean;
+  declare protected disableResetDramPartNumber: boolean;
+  declare protected disableModifySerialNumber: boolean;
+  declare protected disableModifyRegion: boolean;
+  declare protected disableModifySku: boolean;
+  declare protected disableModifyCustomLabel: boolean;
+  declare protected disableModifyDramPartNumber: boolean;
+  declare protected disableModifyFeatureLevel: boolean;
+  declare protected serialNumberLabel: string;
+  declare protected originalSerialNumber: string;
+  declare protected serialNumber: string;
 
   override ready() {
     super.ready();

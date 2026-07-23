@@ -86,15 +86,15 @@ export class OnboardingUpdatePageElement extends
     };
   }
 
-  allButtonsDisabled: boolean;
+  declare allButtonsDisabled: boolean;
   shimlessRmaService: ShimlessRmaServiceInterface;
   isCompliant: boolean;
-  protected currentVersionText: string;
-  protected updateVersionButtonLabel: string;
-  protected updateInProgress: boolean;
-  protected verificationFailedMessage: TrustedHTML;
-  protected unqualifiedComponentsText: string;
-  protected osUpdateEncounteredError: boolean;
+  declare protected currentVersionText: string;
+  declare protected updateVersionButtonLabel: string;
+  declare protected updateInProgress: boolean;
+  declare protected verificationFailedMessage: TrustedHTML;
+  declare protected unqualifiedComponentsText: string;
+  declare protected osUpdateEncounteredError: boolean;
   protected currentVersion: string;
   protected osUpdateObserverReceiver: OsUpdateObserverReceiver|null;
   protected hwVerificationObserverReceiver: HardwareVerificationStatusObserverReceiver|null;

@@ -115,18 +115,18 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   }
 
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
-  allButtonsDisabled: boolean;
-  errorCode: RmadErrorCode;
-  protected canvasSize: number;
-  protected rsuChallenge: string;
-  protected rsuHwid: string;
-  protected rsuCode: string;
-  protected rsuCodeExpectedLength: number;
-  protected rsuInstructionsText: TrustedHTML;
-  protected qrCodeUrl: string;
-  protected rsuChallengeLinkText: string;
-  protected rsuCodeValidationRegex: string;
-  protected rsuCodeInvalid: boolean;
+  declare allButtonsDisabled: boolean;
+  declare errorCode: RmadErrorCode;
+  declare protected canvasSize: number;
+  declare protected rsuChallenge: string;
+  declare protected rsuHwid: string;
+  declare protected rsuCode: string;
+  declare protected rsuCodeExpectedLength: number;
+  declare protected rsuInstructionsText: TrustedHTML;
+  declare protected qrCodeUrl: string;
+  declare protected rsuChallengeLinkText: string;
+  declare protected rsuCodeValidationRegex: string;
+  declare protected rsuCodeInvalid: boolean;
 
   override ready() {
     super.ready();

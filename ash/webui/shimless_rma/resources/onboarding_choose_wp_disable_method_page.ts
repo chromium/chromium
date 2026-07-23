@@ -50,8 +50,8 @@ export class OnboardingChooseWpDisableMethodPage extends
   }
 
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
-  allButtonsDisabled: boolean;
-  private hwwpMethod: string;
+  declare allButtonsDisabled: boolean;
+  declare private hwwpMethod: string;
 
   override ready() {
     super.ready();

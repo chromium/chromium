@@ -74,12 +74,12 @@ export class RepairComponentChip extends RepairComponentChipBase {
     };
   }
 
-  disabled: boolean;
-  checked: boolean;
-  componentName: string;
-  componentIdentifier: string;
-  uniqueId: number;
-  isFirstClickableComponent: boolean;
+  declare disabled: boolean;
+  declare checked: boolean;
+  declare componentName: string;
+  declare componentIdentifier: string;
+  declare uniqueId: number;
+  declare isFirstClickableComponent: boolean;
 
   protected onComponentButtonClicked(): void {
     this.checked = !this.checked;

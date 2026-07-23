@@ -69,12 +69,12 @@ export class CalibrationComponentChipElement extends PolymerElement {
     };
   }
 
-  checked: boolean;
-  failed: boolean;
-  componentName: string;
-  disabled: boolean;
-  isFirstClickableComponent: boolean;
-  uniqueId: number;
+  declare checked: boolean;
+  declare failed: boolean;
+  declare componentName: string;
+  declare disabled: boolean;
+  declare isFirstClickableComponent: boolean;
+  declare uniqueId: number;
 
   protected onComponentButtonClicked() {
     this.checked = !this.checked;

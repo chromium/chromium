@@ -47,8 +47,8 @@ export class HardwareErrorPage extends HardwareErrorPageBase {
   }
 
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
-  errorCode: number;
-  allButtonsDisabled: boolean;
+  declare errorCode: number;
+  declare allButtonsDisabled: boolean;
 
   override ready() {
     super.ready();

@@ -43,7 +43,7 @@ export class OnboardingWaitForManualWpDisablePage extends
 
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
   private hardwareWriteProtectionStateObserverReceiver: HardwareWriteProtectionStateObserverReceiver;
-  protected hwwpEnabled: boolean;
+  declare protected hwwpEnabled: boolean;
 
   constructor() {
     super();

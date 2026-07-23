@@ -101,12 +101,12 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
     };
   }
 
-  protected status: UpdateRoFirmwareStatus|null;
-  protected statusString: string;
-  protected shouldShowSpinner: boolean;
-  protected shouldShowWarning: boolean;
-  protected imgSrc: string;
-  protected imgAlt: string;
+  declare protected status: UpdateRoFirmwareStatus|null;
+  declare protected statusString: string;
+  declare protected shouldShowSpinner: boolean;
+  declare protected shouldShowWarning: boolean;
+  declare protected imgSrc: string;
+  declare protected imgAlt: string;
   private shimlessRmaService: ShimlessRmaServiceInterface =
       getShimlessRmaService();
   updateRoFirmwareObserverReceiver: UpdateRoFirmwareObserverReceiver;

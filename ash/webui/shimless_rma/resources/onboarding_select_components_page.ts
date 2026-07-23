@@ -83,11 +83,11 @@ export class OnboardingSelectComponentsPageElement extends
     };
   }
 
-  allButtonsDisabled: boolean;
+  declare allButtonsDisabled: boolean;
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
-  protected componentCheckboxes: ComponentCheckbox[];
-  private reworkFlowLinkText: TrustedHTML;
-  private focusedComponentIndex: number;
+  declare protected componentCheckboxes: ComponentCheckbox[];
+  declare private reworkFlowLinkText: TrustedHTML;
+  declare private focusedComponentIndex: number;
   private onComponentClickedListener: EventListenerOrEventListenerObject|null =
       null;
 

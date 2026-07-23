@@ -133,15 +133,15 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     };
   }
 
-  allButtonsDisabled: boolean;
-  protected networkName: string;
-  protected networkType: string;
-  protected guid: string;
-  protected enableConnect: boolean;
-  protected networkShowConnect: boolean;
-  protected networks: NetworkStateProperties[];
-  protected isOnline: boolean;
-  private error: string;
+  declare allButtonsDisabled: boolean;
+  declare protected networkName: string;
+  declare protected networkType: string;
+  declare protected guid: string;
+  declare protected enableConnect: boolean;
+  declare protected networkShowConnect: boolean;
+  declare protected networks: NetworkStateProperties[];
+  declare protected isOnline: boolean;
+  declare private error: string;
   private shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
   private networkConfig: NetworkConfigServiceInterface = getNetworkConfigService();
 
