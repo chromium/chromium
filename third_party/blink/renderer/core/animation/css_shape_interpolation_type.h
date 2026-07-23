@@ -36,13 +36,11 @@ class CSSShapeInterpolationType : public CSSInterpolationType {
                                              const NonInterpolableValue&,
                                              const CSSToLengthConversionData&);
 
-  static InterpolationValue MaybeConvertCSSValue(const CSSValue& value,
-                                                 const CSSProperty& property,
-                                                 ShapeReferenceBox box);
-  static InterpolationValue MaybeConvertBasicShape(const BasicShape* shape,
+  static InterpolationValue MaybeConvertCSSValue(const BasicShapeCssInfo& info,
+                                                 const CSSProperty& property);
+  static InterpolationValue MaybeConvertBasicShape(const BasicShapeInfo& info,
                                                    const CSSProperty& property,
-                                                   double zoom,
-                                                   ShapeReferenceBox box);
+                                                   double zoom);
   static bool ShapesAreCompatible(const NonInterpolableValue& a,
                                   const NonInterpolableValue& b);
   static InterpolableValue* CreateNeutralValue(

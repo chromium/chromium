@@ -58,12 +58,12 @@ enum PathComponentIndex : unsigned {
 };
 
 InterpolationValue PathInterpolationFunctions::ConvertValue(
-    const StylePath* style_path,
-    CoordinateConversion coordinate_conversion,
-    ShapeReferenceBox box) {
-  if (!style_path)
+    const BasicShapeInfo& info,
+    CoordinateConversion coordinate_conversion) {
+  if (!info.shape) {
     return nullptr;
-
+  }
+  const auto* style_path = To<StylePath>(info.shape);
   SVGPathByteStreamSource path_source(style_path->ByteStream());
   wtf_size_t length = 0;
   PathCoordinates current_coordinates;
@@ -92,8 +92,9 @@ InterpolationValue PathInterpolationFunctions::ConvertValue(
   result->Set(kPathNeutralIndex, MakeGarbageCollected<InterpolableNumber>(0));
 
   return InterpolationValue(
-      result, MakeGarbageCollected<SVGPathNonInterpolableValue>(
-                  std::move(path_seg_types), style_path->GetWindRule(), box));
+      result,
+      MakeGarbageCollected<SVGPathNonInterpolableValue>(
+          std::move(path_seg_types), style_path->GetWindRule(), info.box));
 }
 
 class UnderlyingPathSegTypesChecker final

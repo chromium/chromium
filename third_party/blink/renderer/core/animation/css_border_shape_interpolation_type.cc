@@ -25,31 +25,18 @@ InterpolationValue ConvertBorderShape(const StyleBorderShape* border_shape,
     return ListInterpolationFunctions::CreateEmptyList();
   }
 
-  return ListInterpolationFunctions::CreateList(
-      2, [border_shape, &property, zoom](wtf_size_t index) {
-        const BasicShape& shape = index == 0 ? border_shape->OuterShape()
-                                             : border_shape->InnerShape();
-        GeometryBox box =
-            index == 0 ? border_shape->OuterBox() : border_shape->InnerBox();
-        return shape_interpolation_functions::MaybeConvertBasicShape(
-            &shape, property, zoom, box);
-      });
+  return ListInterpolationFunctions::CreateList(2, [border_shape, &property,
+                                                    zoom](wtf_size_t index) {
+    BasicShapeInfo info = {
+        index == 0 ? &border_shape->OuterShape() : &border_shape->InnerShape(),
+        index == 0 ? border_shape->OuterBox() : border_shape->InnerBox()};
+    return shape_interpolation_functions::MaybeConvertBasicShape(info, property,
+                                                                 zoom);
+  });
 }
 
-struct CSSBorderShapeEntry {
-  STACK_ALLOCATED();
-
- public:
-  CSSBorderShapeEntry() = default;
-  CSSBorderShapeEntry(const CSSValue* shape_value, GeometryBox box)
-      : shape_value(shape_value), box(box) {}
-
-  const CSSValue* shape_value = nullptr;
-  GeometryBox box = GeometryBox::kBorderBox;
-};
-
-template <GeometryBox default_box>
-CSSBorderShapeEntry CreateEntryFromCSSValue(const CSSValue& value) {
+BasicShapeCssInfo CreateEntryFromCSSValue(const CSSValue& value,
+                                          GeometryBox default_box) {
   const CSSValue* shape_value = &value;
   GeometryBox box = default_box;
   if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
@@ -57,7 +44,7 @@ CSSBorderShapeEntry CreateEntryFromCSSValue(const CSSValue& value) {
     const auto& ident = To<CSSIdentifierValue>(pair->Second());
     box = ident.ConvertTo<GeometryBox>();
   }
-  return CSSBorderShapeEntry(shape_value, box);
+  return {shape_value, box};
 }
 
 class BorderShapeUnderlyingCompatibilityChecker
@@ -183,24 +170,22 @@ InterpolationValue CSSBorderShapeInterpolationType::MaybeConvertValue(
     return ListInterpolationFunctions::CreateEmptyList();
   }
 
-  std::array<CSSBorderShapeEntry, 2> entries;
+  std::array<BasicShapeCssInfo, 2> entries;
   if (const auto* list = DynamicTo<CSSValueList>(value)) {
     DCHECK_EQ(list->length(), 2u);
-    auto entry =
-        CreateEntryFromCSSValue<GeometryBox::kBorderBox>(list->First());
-    entries[0] = std::move(entry);
-    entry = CreateEntryFromCSSValue<GeometryBox::kPaddingBox>(list->Last());
-    entries[1] = std::move(entry);
+    entries[0] =
+        CreateEntryFromCSSValue(list->First(), GeometryBox::kBorderBox);
+    entries[1] =
+        CreateEntryFromCSSValue(list->Last(), GeometryBox::kPaddingBox);
   } else {
-    auto entry = CreateEntryFromCSSValue<GeometryBox::kHalfBorderBox>(value);
-    entries[0] = entry;
-    entries[1] = entry;
+    entries[0] = CreateEntryFromCSSValue(value, GeometryBox::kHalfBorderBox);
+    entries[1] = entries[0];
   }
 
   return ListInterpolationFunctions::CreateList(
       entries.size(), [this, &entries](wtf_size_t index) {
         return shape_interpolation_functions::MaybeConvertCSSValue(
-            *entries[index].shape_value, CssProperty(), entries[index].box);
+            entries[index], CssProperty());
       });
 }
 

@@ -114,7 +114,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInitial(
       state.GetDocument().GetStyleResolver().InitialStyle();
   auto info = GetBasicShapeInfo(CssProperty(), initial_style);
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
-      info.shape, CssProperty(), 1, info.box);
+      info, CssProperty(), 1);
 }
 
 InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInherit(
@@ -124,8 +124,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertInherit(
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedShapeChecker>(CssProperty(), info.shape));
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
-      info.shape, CssProperty(), state.ParentStyle()->EffectiveZoom(),
-      info.box);
+      info, CssProperty(), state.ParentStyle()->EffectiveZoom());
 }
 
 InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
@@ -135,7 +134,7 @@ InterpolationValue CSSBasicShapeInterpolationType::MaybeConvertValue(
   BasicShapeCssInfo css_info =
       shape_property_functions::GetCssBasicShape(CssProperty(), value);
   return basic_shape_interpolation_functions::MaybeConvertCSSValue(
-      *css_info.shape, CssProperty(), css_info.box);
+      css_info, CssProperty());
 }
 
 PairwiseInterpolationValue CSSBasicShapeInterpolationType::MaybeMergeSingles(
@@ -154,7 +153,7 @@ CSSBasicShapeInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   auto info = GetBasicShapeInfo(CssProperty(), style);
   return basic_shape_interpolation_functions::MaybeConvertBasicShape(
-      info.shape, CssProperty(), style.EffectiveZoom(), info.box);
+      info, CssProperty(), style.EffectiveZoom());
 }
 
 void CSSBasicShapeInterpolationType::Composite(

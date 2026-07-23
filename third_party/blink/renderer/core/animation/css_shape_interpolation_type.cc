@@ -328,14 +328,13 @@ InterpolationValue ConvertShape(const StyleShape* style_shape,
       non_interpolable);
 }
 
-InterpolationValue ConvertShapeOrPath(const BasicShape* shape,
+InterpolationValue ConvertShapeOrPath(const BasicShapeInfo& info,
                                       const CSSProperty& property,
-                                      float zoom,
-                                      ShapeReferenceBox box) {
-  if (auto* style_shape = DynamicTo<StyleShape>(shape)) {
-    return ConvertShape(style_shape, property, zoom, box);
+                                      float zoom) {
+  if (auto* style_shape = DynamicTo<StyleShape>(info.shape)) {
+    return ConvertShape(style_shape, property, zoom, info.box);
   }
-  return ConvertPath(To<StylePath>(shape), property, box);
+  return ConvertPath(To<StylePath>(info.shape), property, info.box);
 }
 
 class UnderlyingShapeConversionChecker final
@@ -702,8 +701,8 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertInherit(
   }
   conversion_checkers.push_back(MakeGarbageCollected<InheritedShapeChecker>(
       CssProperty(), info.shape, info.box));
-  return ConvertShapeOrPath(info.shape, CssProperty(),
-                            state.ParentStyle()->EffectiveZoom(), info.box);
+  return ConvertShapeOrPath(info, CssProperty(),
+                            state.ParentStyle()->EffectiveZoom());
 }
 
 InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
@@ -712,15 +711,14 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertValue(
     ConversionCheckers&) const {
   BasicShapeCssInfo css_info =
       shape_property_functions::GetCssBasicShape(CssProperty(), value);
-  return MaybeConvertCSSValue(*css_info.shape, CssProperty(), css_info.box);
+  return MaybeConvertCSSValue(css_info, CssProperty());
 }
 
 InterpolationValue
 CSSShapeInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
     const ComputedStyle& style) const {
   auto info = GetShapeOrPath(CssProperty(), style);
-  return ConvertShapeOrPath(info.shape, CssProperty(), style.EffectiveZoom(),
-                            info.box);
+  return ConvertShapeOrPath(info, CssProperty(), style.EffectiveZoom());
 }
 
 PairwiseInterpolationValue CSSShapeInterpolationType::MaybeMergeSingles(
@@ -737,14 +735,13 @@ PairwiseInterpolationValue CSSShapeInterpolationType::MaybeMergeSingles(
 
 // static
 InterpolationValue CSSShapeInterpolationType::MaybeConvertCSSValue(
-    const CSSValue& value,
-    const CSSProperty& property,
-    ShapeReferenceBox box) {
-  if (const auto* path = DynamicTo<cssvalue::CSSPathValue>(value)) {
-    return ConvertPath(path->GetStylePath(), property, box);
+    const BasicShapeCssInfo& info,
+    const CSSProperty& property) {
+  if (const auto* path = DynamicTo<cssvalue::CSSPathValue>(*info.shape)) {
+    return ConvertPath(path->GetStylePath(), property, info.box);
   }
 
-  const auto* shape_value = DynamicTo<cssvalue::CSSShapeValue>(value);
+  const auto* shape_value = DynamicTo<cssvalue::CSSShapeValue>(*info.shape);
   if (!shape_value) {
     return nullptr;
   }
@@ -866,7 +863,8 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertCSSValue(
   }
 
   auto* non_interpolable = MakeGarbageCollected<ShapeNonInterpolableValue>(
-      shape_value->GetWindRule(), std::move(non_interpolable_segments), box);
+      shape_value->GetWindRule(), std::move(non_interpolable_segments),
+      info.box);
   return InterpolationValue(
       MakeGarbageCollected<InterpolableList>(std::move(interpolable_segments)),
       non_interpolable);
@@ -874,11 +872,10 @@ InterpolationValue CSSShapeInterpolationType::MaybeConvertCSSValue(
 
 // static
 InterpolationValue CSSShapeInterpolationType::MaybeConvertBasicShape(
-    const BasicShape* shape,
+    const BasicShapeInfo& info,
     const CSSProperty& property,
-    double zoom,
-    ShapeReferenceBox box) {
-  return ConvertShapeOrPath(shape, property, zoom, box);
+    double zoom) {
+  return ConvertShapeOrPath(info, property, zoom);
 }
 
 // static

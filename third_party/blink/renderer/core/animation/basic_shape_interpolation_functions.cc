@@ -706,54 +706,54 @@ BasicShape* CreateBasicShape(
 }  // namespace
 
 InterpolationValue basic_shape_interpolation_functions::MaybeConvertCSSValue(
-    const CSSValue& value,
-    const CSSProperty& property,
-    ShapeReferenceBox box) {
+    const BasicShapeCssInfo& info,
+    const CSSProperty& property) {
+  const CSSValue& value = *info.shape;
   if (auto* circle_value =
           DynamicTo<cssvalue::CSSBasicShapeCircleValue>(value)) {
-    return circle_functions::ConvertCSSValue(*circle_value, property, box);
+    return circle_functions::ConvertCSSValue(*circle_value, property, info.box);
   }
   if (auto* ellipse_value =
           DynamicTo<cssvalue::CSSBasicShapeEllipseValue>(value)) {
-    return ellipse_functions::ConvertCSSValue(*ellipse_value, property, box);
+    return ellipse_functions::ConvertCSSValue(*ellipse_value, property,
+                                              info.box);
   }
   if (auto* inset_value = DynamicTo<cssvalue::CSSBasicShapeInsetValue>(value)) {
-    return inset_functions::ConvertCSSValue(*inset_value, box);
+    return inset_functions::ConvertCSSValue(*inset_value, info.box);
   }
   if (auto* rect_value = DynamicTo<cssvalue::CSSBasicShapeRectValue>(value)) {
-    return inset_functions::ConvertCSSValueToInset(*rect_value, box);
+    return inset_functions::ConvertCSSValueToInset(*rect_value, info.box);
   }
   if (auto* xywh_value = DynamicTo<cssvalue::CSSBasicShapeXYWHValue>(value)) {
-    return inset_functions::ConvertCSSValueToInset(*xywh_value, box);
+    return inset_functions::ConvertCSSValueToInset(*xywh_value, info.box);
   }
   if (auto* polygon_value =
           DynamicTo<cssvalue::CSSBasicShapePolygonValue>(value)) {
-    return polygon_functions::ConvertCSSValue(*polygon_value, box);
+    return polygon_functions::ConvertCSSValue(*polygon_value, info.box);
   }
   return nullptr;
 }
 
 InterpolationValue basic_shape_interpolation_functions::MaybeConvertBasicShape(
-    const BasicShape* shape,
+    const BasicShapeInfo& info,
     const CSSProperty& property,
-    double zoom,
-    ShapeReferenceBox box) {
-  if (!shape) {
+    double zoom) {
+  if (!info.shape) {
     return nullptr;
   }
-  switch (shape->GetType()) {
+  switch (info.shape->GetType()) {
     case BasicShape::kBasicShapeCircleType:
-      return circle_functions::ConvertBasicShape(To<BasicShapeCircle>(*shape),
-                                                 property, box, zoom);
+      return circle_functions::ConvertBasicShape(
+          To<BasicShapeCircle>(*info.shape), property, info.box, zoom);
     case BasicShape::kBasicShapeEllipseType:
-      return ellipse_functions::ConvertBasicShape(To<BasicShapeEllipse>(*shape),
-                                                  property, box, zoom);
+      return ellipse_functions::ConvertBasicShape(
+          To<BasicShapeEllipse>(*info.shape), property, info.box, zoom);
     case BasicShape::kBasicShapeInsetType:
-      return inset_functions::ConvertBasicShape(To<BasicShapeInset>(*shape),
-                                                property, box, zoom);
+      return inset_functions::ConvertBasicShape(
+          To<BasicShapeInset>(*info.shape), property, info.box, zoom);
     case BasicShape::kBasicShapePolygonType:
-      return polygon_functions::ConvertBasicShape(To<BasicShapePolygon>(*shape),
-                                                  property, box, zoom);
+      return polygon_functions::ConvertBasicShape(
+          To<BasicShapePolygon>(*info.shape), property, info.box, zoom);
     // Handled by PathInterpolationFunction.
     case BasicShape::kStylePathType:
     case BasicShape::kStyleShapeType:

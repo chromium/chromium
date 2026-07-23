@@ -28,9 +28,8 @@ class CORE_EXPORT PathInterpolationFunctions {
                         const InterpolationType*,
                         const InterpolationValue&);
 
-  static InterpolationValue ConvertValue(const StylePath*,
-                                         CoordinateConversion,
-                                         ShapeReferenceBox);
+  static InterpolationValue ConvertValue(const BasicShapeInfo&,
+                                         CoordinateConversion);
 
   static InterpolationValue MaybeConvertNeutral(
       const InterpolationValue& underlying,
