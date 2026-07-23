@@ -22,7 +22,7 @@
 
 // Designated initializer.
 - (instancetype)initWithBrowser:(Browser*)browser
-                incognitBrowser:(Browser*)incognitoBrowser
+               incognitoBrowser:(Browser*)incognitoBrowser
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -13,7 +13,7 @@
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
-                incognitBrowser:(Browser*)incognitoBrowser {
+               incognitoBrowser:(Browser*)incognitoBrowser {
   if ((self = [super init])) {
     _mainBrowserProvider =
         [[StubBrowserProvider alloc] initWithBrowser:browser];

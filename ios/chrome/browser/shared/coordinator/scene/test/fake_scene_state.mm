@@ -51,8 +51,8 @@
     }
 
     _browserProviderInterface = [[StubBrowserProviderInterface alloc]
-        initWithBrowser:_browser.get()
-        incognitBrowser:_incognito_browser.get()];
+         initWithBrowser:_browser.get()
+        incognitoBrowser:_incognito_browser.get()];
 
     if (!sceneSessionID.empty()) {
       [self connectWithOptions:{.identifier = std::move(sceneSessionID)}];
