@@ -1354,6 +1354,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Storage.DeprecatedPrivacySandboxAPIs.DatabaseStillExisted.{Api}"
+    enum="Boolean" expires_after="2027-07-01">
+  <owner>cammie@chromium.org</owner>
+  <owner>leimy@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Whether the database files still exist for {Api} on profile startup, so they
+    are deleted subsequently. if they were no longer present.
+  </summary>
+  <token key="Api">
+    <variant name="AggregationService" summary="Aggregation Service"/>
+    <variant name="BrowsingTopicsSiteData" summary="Browsing Topics Site Data"/>
+    <variant name="Conversions" summary="Conversions"/>
+    <variant name="InterestGroups" summary="Interest Groups"/>
+    <variant name="PrivateAggregation" summary="Private Aggregation"/>
+    <variant name="SharedStorage" summary="Shared Storage"/>
+  </token>
+</histogram>
+
+<histogram
     name="Storage.DomStorage.Compression.PrecompressionValueSize.{CompressionState}"
     units="bytes" expires_after="2027-03-24">
   <owner>fergal@chromium.org</owner>

@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -362,6 +363,34 @@ void DeleteMediaHistoryDatabase(const base::FilePath& profile_path) {
   base::UmaHistogramBoolean("Media.MediaHistory.DatabaseExists",
                             base::PathExists(db_path));
   sql::Database::Delete(db_path);
+}
+
+void DeleteDeprecatedPrivacySandboxDatabases(
+    const base::FilePath& profile_path) {
+  static constexpr struct {
+    base::FilePath::StringViewType db_name;
+    std::string_view histogram_name;
+  } kDatabases[] = {
+      {FILE_PATH_LITERAL("SharedStorage"), "SharedStorage"},
+      {FILE_PATH_LITERAL("Conversions"), "Conversions"},
+      {FILE_PATH_LITERAL("AggregationService"), "AggregationService"},
+      {FILE_PATH_LITERAL("PrivateAggregation"), "PrivateAggregation"},
+      {FILE_PATH_LITERAL("InterestGroups"), "InterestGroups"},
+      {FILE_PATH_LITERAL("BrowsingTopicsSiteData"), "BrowsingTopicsSiteData"},
+  };
+
+  for (const auto& db : kDatabases) {
+    base::FilePath db_path = profile_path.Append(db.db_name);
+    bool exists = base::PathExists(db_path);
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"Storage.DeprecatedPrivacySandboxAPIs.DatabaseStillExisted.",
+             db.histogram_name}),
+        exists);
+    if (exists) {
+      sql::Database::Delete(db_path);
+    }
+  }
 }
 #endif
 
@@ -1573,6 +1602,15 @@ void ChromeBrowserMainParts::PostProfileInit(Profile* profile,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&DeleteMediaHistoryDatabase, profile->GetPath()));
+
+  // Delete the deprecated Privacy Sandbox databases if they still exist.
+  // TODO(crbug.com/462465887): Remove this in August 2028.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&DeleteDeprecatedPrivacySandboxDatabases,
+                     profile->GetPath()));
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
