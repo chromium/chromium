@@ -43,6 +43,9 @@ class UnguessableToken;
 // Whether the collection has at least one image added.
 @property(nonatomic, readonly) BOOL hasImage;
 
+// Whether the collection has at least one file added.
+@property(nonatomic, readonly) BOOL hasFile;
+
 // Whether the collection contains a tab or a file attachment.
 @property(nonatomic, readonly) BOOL hasTabOrFile;
 

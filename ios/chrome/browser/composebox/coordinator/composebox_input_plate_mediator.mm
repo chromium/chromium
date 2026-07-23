@@ -1882,6 +1882,13 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return NO;
   }
 
+  // Cobrowse keeps the input plate expanded when files or images are attached.
+  if (self.isCobrowse) {
+    if (_items.hasFile || _items.hasImage) {
+      return NO;
+    }
+  }
+
   std::set<ComposeboxMode> modesAllowingCompact;
   if (self.isCobrowse) {
     modesAllowingCompact = {ComposeboxMode::kAIM,

@@ -41,6 +41,10 @@
   return self.imagesCount > 0;
 }
 
+- (BOOL)hasFile {
+  return self.filesCount > 0;
+}
+
 - (BOOL)hasTabOrFile {
   return self.tabsCount > 0 || self.filesCount > 0;
 }
