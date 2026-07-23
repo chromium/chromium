@@ -60,7 +60,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   void StepSelection(OmniboxPopupSelection::Direction direction,
                      OmniboxPopupSelection::Step step);
   void OpenCurrentSelection(WindowOpenDisposition disposition);
-  void SetAimButtonVisible(bool visible);
+  void SetAimButtonVisible(bool visible) override;
 
   // SearchboxHandler:
   WindowOpenDisposition ComputeWindowOpenDisposition(
@@ -73,7 +73,6 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
       const AutocompleteMatch& match,
       size_t line,
-      const OmniboxEditModel* edit_model,
       bookmarks::BookmarkModel* bookmark_model,
       const omnibox::GroupConfigMap& suggestion_groups_map,
       const TemplateURLService* turl_service) const override;

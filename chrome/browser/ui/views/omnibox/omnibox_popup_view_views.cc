@@ -874,7 +874,7 @@ std::u16string OmniboxPopupViewViews::UpdateRowView(
     const AutocompleteMatch& match,
     const std::u16string& previous_row_header) {
   std::u16string current_row_header =
-      controller()->edit_model()->GetSuggestionGroupHeaderText(
+      controller()->autocomplete_controller()->GetSuggestionGroupHeaderText(
           match.suggestion_group_id);
   // Show the header if it's distinct from the previous match's header.
   if (!current_row_header.empty() &&

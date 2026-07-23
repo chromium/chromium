@@ -24,9 +24,9 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 class Profile;
-class WebuiOmniboxHandler;
 
 class ComposeboxHandler;
+class ContextualSearchboxHandler;
 class OmniboxPopupAimHandler;
 class OmniboxPopupHandler;
 class OmniboxPopupPresenterBase;
@@ -65,7 +65,9 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   void BindInterface(content::RenderFrameHost* host,
                      mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory>
                          pending_page_handler);
-  WebuiOmniboxHandler* omnibox_handler() { return omnibox_handler_.get(); }
+  ContextualSearchboxHandler* omnibox_handler() {
+    return omnibox_handler_.get();
+  }
 
   // omnibox_popup::mojom::PageHandlerFactory:
   void BindInterface(
@@ -121,7 +123,7 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   // Must outlive `omnibox_handler_` and `composebox_handler_`.
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       shared_session_handle_;
-  std::unique_ptr<WebuiOmniboxHandler> omnibox_handler_;
+  std::unique_ptr<ContextualSearchboxHandler> omnibox_handler_;
 
   std::unique_ptr<OmniboxPopupHandler> popup_handler_;
   mojo::Receiver<omnibox_popup::mojom::PageHandlerFactory>

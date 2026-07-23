@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_full_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
@@ -250,12 +252,25 @@ void OmniboxPopupUI::CreatePageHandler(
 
   MetricsReporterService* metrics_reporter_service =
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
-  omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
-      std::move(pending_page_handler), std::move(page),
-      metrics_reporter_service->metrics_reporter(), omnibox_controller,
-      web_ui(),
-      base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
-                          base::Unretained(this)));
+  if (omnibox::ShouldUseWebUIOmniboxFullHandler()) {
+    ChromeOmniboxClient* client =
+        static_cast<ChromeOmniboxClient*>(omnibox_controller->client());
+    CHECK(client);
+    omnibox_handler_ = std::make_unique<WebuiOmniboxFullHandler>(
+        std::move(pending_page_handler), std::move(page),
+        Profile::FromWebUI(web_ui()), web_ui()->GetWebContents(),
+        std::make_unique<ChromeOmniboxClient>(
+            client->GetLocationBar(), client->browser(), client->profile()),
+        base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
+                            base::Unretained(this)));
+  } else {
+    omnibox_handler_ = std::make_unique<WebuiOmniboxHandler>(
+        std::move(pending_page_handler), std::move(page),
+        metrics_reporter_service->metrics_reporter(), omnibox_controller,
+        web_ui(),
+        base::BindRepeating(&OmniboxPopupUI::GetOrCreateContextualSessionHandle,
+                            base::Unretained(this)));
+  }
 }
 
 void OmniboxPopupUI::BindInterface(

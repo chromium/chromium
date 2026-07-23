@@ -127,6 +127,9 @@ bool IsWebUIOmniboxPopupEnabled();
 // Returns true if `kWebUIOmniboxFullPopup` is enabled.
 bool IsWebUIOmniboxFullPopupEnabled();
 
+// Returns true if the webui omnibox should use the WebuiOmniboxFullHandler
+bool ShouldUseWebUIOmniboxFullHandler();
+
 // Returns true if `kWebUIOmniboxInBrowserView` is enabled.
 bool IsWebUIOmniboxInBrowserViewEnabled();
 

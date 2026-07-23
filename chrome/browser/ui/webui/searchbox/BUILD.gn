@@ -81,6 +81,8 @@ source_set("searchbox") {
     sources += [
       "omnibox_composebox_handler.cc",
       "omnibox_composebox_handler.h",
+      "webui_omnibox_full_handler.cc",
+      "webui_omnibox_full_handler.h",
       "webui_omnibox_handler.cc",
       "webui_omnibox_handler.h",
     ]

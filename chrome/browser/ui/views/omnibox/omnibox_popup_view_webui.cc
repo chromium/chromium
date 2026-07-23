@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/widget/widget.h"
 
@@ -162,7 +163,13 @@ void OmniboxPopupViewWebUI::StepSelection(
       presenter()->GetWebUIContent()->contents_wrapper()->GetWebUIController();
   if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
     handler->SetAimButtonVisible(omnibox_view_->AimButtonVisible());
-    handler->StepSelection(direction, step);
+    if (!omnibox::ShouldUseWebUIOmniboxFullHandler()) {
+      // Full webui omnibox avoids this code path by intentionally excluding
+      // the edit model. Use of downcast here seems better than complicating
+      // base classes with methods only relevant to the classic omnibox.
+      static_cast<WebuiOmniboxHandler*>(handler)->StepSelection(direction,
+                                                                step);
+    }
   }
 }
 
@@ -171,7 +178,13 @@ void OmniboxPopupViewWebUI::OpenCurrentSelection(
   auto* controller =
       presenter()->GetWebUIContent()->contents_wrapper()->GetWebUIController();
   if (auto* handler = controller ? controller->omnibox_handler() : nullptr) {
-    handler->OpenCurrentSelection(disposition);
+    if (!omnibox::ShouldUseWebUIOmniboxFullHandler()) {
+      // Full webui omnibox avoids this code path by intentionally excluding
+      // the edit model. Use of downcast here seems better than complicating
+      // base classes with methods only relevant to the classic omnibox.
+      static_cast<WebuiOmniboxHandler*>(handler)->OpenCurrentSelection(
+          disposition);
+    }
   }
 }
 

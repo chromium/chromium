@@ -245,9 +245,6 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   void SetAutocompleteControllerForTesting(
       std::unique_ptr<AutocompleteController> controller);
 
-  std::u16string GetSuggestionGroupHeaderText(
-      const std::optional<omnibox::GroupId>& suggestion_group_id) const;
-
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   // Tracks the ID of the latest query received from the page and sent to
@@ -297,26 +294,22 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       int32_t query_id,
       const std::u16string& input,
       const AutocompleteResult& result,
-      const OmniboxEditModel* edit_model,
       bookmarks::BookmarkModel* bookmark_model,
       const PrefService* prefs,
       const TemplateURLService* turl_service) const;
   base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
   CreateSuggestionGroupsMap(
       const AutocompleteResult& result,
-      const OmniboxEditModel* edit_model,
       const PrefService* prefs,
       const omnibox::GroupConfigMap& suggestion_groups_map) const;
   std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
       const AutocompleteResult& result,
-      const OmniboxEditModel* edit_model,
       bookmarks::BookmarkModel* bookmark_model,
       const omnibox::GroupConfigMap& suggestion_groups_map,
       const TemplateURLService* turl_service) const;
   virtual std::optional<searchbox::mojom::AutocompleteMatchPtr>
   CreateAutocompleteMatch(const AutocompleteMatch& match,
                           size_t line,
-                          const OmniboxEditModel* edit_model,
                           bookmarks::BookmarkModel* bookmark_model,
                           const omnibox::GroupConfigMap& suggestion_groups_map,
                           const TemplateURLService* turl_service) const;

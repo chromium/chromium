@@ -304,13 +304,11 @@ std::optional<searchbox::mojom::AutocompleteMatchPtr>
 WebuiOmniboxHandler::CreateAutocompleteMatch(
     const AutocompleteMatch& match,
     size_t line,
-    const OmniboxEditModel* edit_model,
     bookmarks::BookmarkModel* bookmark_model,
     const omnibox::GroupConfigMap& suggestion_groups_map,
     const TemplateURLService* turl_service) const {
   auto mojom_match = SearchboxHandler::CreateAutocompleteMatch(
-      match, line, edit_model, bookmark_model, suggestion_groups_map,
-      turl_service);
+      match, line, bookmark_model, suggestion_groups_map, turl_service);
 
   // Override contextual search spark loupe icon for GROUP_CONTEXTUAL_SEARCH.
   // Results on the omnibox webui will use an arrow icon instead.
@@ -322,13 +320,8 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
 
   mojom_match.value()->has_instant_keyword =
       match.HasInstantKeyword(turl_service);
-  const OmniboxEditModel* model_to_use =
-      base::FeatureList::IsEnabled(
-          omnibox::kWebUISearchboxWithoutModelController)
-          ? (controller_ ? controller_->edit_model() : nullptr)
-          : edit_model;
-  if (mojom_match && !match.HasInstantKeyword(turl_service) && model_to_use &&
-      model_to_use->IsPopupControlPresentOnMatch(
+  if (mojom_match && !match.HasInstantKeyword(turl_service) && edit_model() &&
+      edit_model()->IsPopupControlPresentOnMatch(
           OmniboxPopupSelection{line, OmniboxPopupSelection::KEYWORD_MODE})) {
     const auto names = SelectedKeywordView::GetKeywordLabelNames(
         match.associated_keyword, turl_service);

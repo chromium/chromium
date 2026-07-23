@@ -490,16 +490,6 @@ class OmniboxEditModel {
   // API extension, otherwise returns empty image.
   gfx::Image GetMatchIconIfExtension(const AutocompleteMatch& match) const;
 
-  // Gets the suggestion group header text associated with the given suggestion
-  // group ID.
-  // In addition to calling `AutocompleteResult::GetHeaderForSuggestionGroup()`,
-  // this function takes into account certain header visibility criteria (e.g.
-  // experiment flags) to determine the proper header text, which will then be
-  // used by the relevant code to conditionally show suggestion group headers
-  // in the Omnibox/Realbox popup.
-  std::u16string GetSuggestionGroupHeaderText(
-      const std::optional<omnibox::GroupId>& suggestion_group_id) const;
-
   // Called when the user hits escape after arrowing around the popup.  This
   // will reset the popup to the initial state.
   void ResetPopupToInitialState();

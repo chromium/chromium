@@ -1972,11 +1972,6 @@ gfx::Image OmniboxEditModel::GetMatchIconIfExtension(
              : controller_->client()->GetSizedIcon(extension_icon);
 }
 
-std::u16string OmniboxEditModel::GetSuggestionGroupHeaderText(
-    const std::optional<omnibox::GroupId>& suggestion_group_id) const {
-  return autocomplete_controller()->GetSuggestionGroupHeaderText(
-      suggestion_group_id);
-}
 
 void OmniboxEditModel::ResetPopupToInitialState() {
   if (!popup_view_) {
@@ -2168,7 +2163,9 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     // screen reader with the header ("Summary") and then the answer in
     // `description`, and finally the URL details in `contents` (includes date).
     return AutocompleteMatchType::ToAccessibilityLabel(
-        match, GetSuggestionGroupHeaderText(match.suggestion_group_id),
+        match,
+        autocomplete_controller()->GetSuggestionGroupHeaderText(
+            match.suggestion_group_id),
         base::StrCat({
             match.history_embeddings_answer_header_text,
             match.description,
@@ -2273,7 +2270,9 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       return base::StrCat(
           {match_text, u" ",
            AutocompleteMatchType::ToAccessibilityLabel(
-               match, GetSuggestionGroupHeaderText(match.suggestion_group_id),
+               match,
+               autocomplete_controller()->GetSuggestionGroupHeaderText(
+                   match.suggestion_group_id),
                match.iph_link_text, line, 0,
                l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_IPH_LINK_SELECTED),
                label_prefix_length)});
@@ -2294,7 +2293,9 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
 
   // If there's a button focused, we don't want the "n of m" message announced.
   return AutocompleteMatchType::ToAccessibilityLabel(
-      match, GetSuggestionGroupHeaderText(match.suggestion_group_id),
+      match,
+      autocomplete_controller()->GetSuggestionGroupHeaderText(
+          match.suggestion_group_id),
       match_text, line, total_matches, additional_message, label_prefix_length);
 }
 

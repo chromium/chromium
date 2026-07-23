@@ -774,15 +774,13 @@ SearchboxHandler::CreateAutocompleteResult(
     int32_t query_id,
     const std::u16string& input,
     const AutocompleteResult& result,
-    const OmniboxEditModel* edit_model,
     bookmarks::BookmarkModel* bookmark_model,
     const PrefService* prefs,
     const TemplateURLService* turl_service) const {
   return searchbox::mojom::AutocompleteResult::New(
       query_id, result.sequence_id(), input,
-      CreateSuggestionGroupsMap(result, edit_model, prefs,
-                                result.suggestion_groups_map()),
-      CreateAutocompleteMatches(result, edit_model, bookmark_model,
+      CreateSuggestionGroupsMap(result, prefs, result.suggestion_groups_map()),
+      CreateAutocompleteMatches(result, bookmark_model,
                                 result.suggestion_groups_map(), turl_service),
       base::UTF8ToUTF16(result.smart_compose_inline_hint()));
 }
@@ -790,18 +788,12 @@ SearchboxHandler::CreateAutocompleteResult(
 base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
 SearchboxHandler::CreateSuggestionGroupsMap(
     const AutocompleteResult& result,
-    const OmniboxEditModel* edit_model,
     const PrefService* prefs,
     const omnibox::GroupConfigMap& suggestion_groups_map) const {
   base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr> result_map;
   for (const auto& pair : suggestion_groups_map) {
-    std::u16string header;
-    if (base::FeatureList::IsEnabled(
-            omnibox::kWebUISearchboxWithoutModelController)) {
-      header = GetSuggestionGroupHeaderText(pair.first);
-    } else {
-      header = edit_model->GetSuggestionGroupHeaderText(pair.first);
-    }
+    std::u16string header =
+        autocomplete_controller()->GetSuggestionGroupHeaderText(pair.first);
 
     if (!header.empty()) {
       searchbox::mojom::SuggestionGroupPtr suggestion_group =
@@ -822,15 +814,14 @@ SearchboxHandler::CreateSuggestionGroupsMap(
 std::vector<searchbox::mojom::AutocompleteMatchPtr>
 SearchboxHandler::CreateAutocompleteMatches(
     const AutocompleteResult& result,
-    const OmniboxEditModel* edit_model,
     bookmarks::BookmarkModel* bookmark_model,
     const omnibox::GroupConfigMap& suggestion_groups_map,
     const TemplateURLService* turl_service) const {
   std::vector<searchbox::mojom::AutocompleteMatchPtr> matches;
   for (const auto& match : result) {
-    auto mojom_match = CreateAutocompleteMatch(
-        match, matches.size(), edit_model, bookmark_model,
-        suggestion_groups_map, turl_service);
+    auto mojom_match =
+        CreateAutocompleteMatch(match, matches.size(), bookmark_model,
+                                suggestion_groups_map, turl_service);
     if (mojom_match) {
       matches.push_back(std::move(mojom_match.value()));
     }
@@ -842,7 +833,6 @@ std::optional<searchbox::mojom::AutocompleteMatchPtr>
 SearchboxHandler::CreateAutocompleteMatch(
     const AutocompleteMatch& match,
     size_t line,
-    const OmniboxEditModel* edit_model,
     bookmarks::BookmarkModel* bookmark_model,
     const omnibox::GroupConfigMap& suggestion_groups_map,
     const TemplateURLService* turl_service) const {
@@ -979,14 +969,9 @@ SearchboxHandler::CreateAutocompleteMatch(
           base::UTF16ToUTF8(label_strings.accessibility_hint)));
     }
   }
-  std::u16string header_text;
-  if (base::FeatureList::IsEnabled(
-          omnibox::kWebUISearchboxWithoutModelController)) {
-    header_text = GetSuggestionGroupHeaderText(match.suggestion_group_id);
-  } else {
-    header_text =
-        edit_model->GetSuggestionGroupHeaderText(match.suggestion_group_id);
-  }
+  std::u16string header_text =
+      autocomplete_controller()->GetSuggestionGroupHeaderText(
+          match.suggestion_group_id);
   mojom_match->a11y_label = AutocompleteMatchType::ToAccessibilityLabel(
       match, header_text, match.contents, line, 0,
       GetAdditionalA11yMessage(match,
@@ -1555,13 +1540,13 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
           omnibox::kWebUISearchboxWithoutModelController)) {
     page_->AutocompleteResultChanged(CreateAutocompleteResult(
         current_query_id_, autocomplete_controller()->input().text(),
-        autocomplete_controller()->result(), nullptr,
+        autocomplete_controller()->result(),
         BookmarkModelFactory::GetForBrowserContext(profile_),
         profile_->GetPrefs(), client()->GetTemplateURLService()));
   } else {
     page_->AutocompleteResultChanged(CreateAutocompleteResult(
         current_query_id_, autocomplete_controller()->input().text(),
-        autocomplete_controller()->result(), edit_model(),
+        autocomplete_controller()->result(),
         BookmarkModelFactory::GetForBrowserContext(profile_),
         profile_->GetPrefs(),
         omnibox_controller()->client()->GetTemplateURLService()));
@@ -1702,11 +1687,6 @@ void SearchboxHandler::GetPageClassification(
       classification_enum));
 }
 
-std::u16string SearchboxHandler::GetSuggestionGroupHeaderText(
-    const std::optional<omnibox::GroupId>& suggestion_group_id) const {
-  return autocomplete_controller()->GetSuggestionGroupHeaderText(
-      suggestion_group_id);
-}
 
 void SearchboxHandler::OnDefaultSearchExtensionDialogDone(
     OmniboxPopupSelection selection,

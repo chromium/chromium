@@ -798,8 +798,9 @@ void OmniboxResultView::UpdateAccessibleName() {
     } else {
       label = AutocompleteMatchType::ToAccessibilityLabel(
           raw_match,
-          popup_view_->controller()->edit_model()->GetSuggestionGroupHeaderText(
-              raw_match.suggestion_group_id),
+          popup_view_->controller()
+              ->autocomplete_controller()
+              ->GetSuggestionGroupHeaderText(raw_match.suggestion_group_id),
           raw_match.contents);
     }
     GetViewAccessibility().SetName(label);

@@ -126,6 +126,8 @@ class ContextualSearchboxHandler
 
   ~ContextualSearchboxHandler() override;
 
+  virtual void SetAimButtonVisible(bool visible) {}
+
   // searchbox::mojom::PageHandler:
   void NotifySessionStarted() override;
   void NotifySessionAbandoned() override;

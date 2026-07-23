@@ -19,6 +19,7 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -233,6 +234,12 @@ bool IsWebUIOmniboxPopupEnabled() {
 
 bool IsWebUIOmniboxFullPopupEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup);
+}
+
+bool ShouldUseWebUIOmniboxFullHandler() {
+  return IsWebUIOmniboxFullPopupEnabled() &&
+         base::FeatureList::IsEnabled(
+             omnibox::kWebUISearchboxWithoutModelController);
 }
 
 bool IsWebUIOmniboxInBrowserViewEnabled() {

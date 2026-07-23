@@ -949,8 +949,7 @@ TEST_F(WebuiOmniboxHandlerTest,
   bookmark_model->LoadEmptyForTest();
 
   auto mojom_match = handler_->CreateAutocompleteMatch(
-      match, 0, omnibox_controller_->edit_model(), bookmark_model,
-      omnibox::GroupConfigMap(),
+      match, 0, bookmark_model, omnibox::GroupConfigMap(),
       omnibox_controller_->client()->GetTemplateURLService());
 
   ASSERT_TRUE(mojom_match.has_value());
