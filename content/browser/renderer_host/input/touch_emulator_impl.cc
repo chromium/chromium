@@ -132,7 +132,11 @@ void TouchEmulatorImpl::Disable() {
     return;
 
   mode_ = Mode::kEmulatingTouchFromMouse;
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   CancelTouch();
+  if (!weak_this) {
+    return;
+  }
   if (gesture_provider_) {
     gesture_provider_->Shutdown();
     gesture_provider_ = nullptr;
