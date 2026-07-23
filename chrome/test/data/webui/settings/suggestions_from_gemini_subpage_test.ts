@@ -5,7 +5,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {CrShortcutInputElement, SettingsSuggestionsFromGeminiSubpageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -46,6 +46,9 @@ suite('SuggestionsFromGeminiSubpage', function() {
     page.setPrefValue(
         'autofill.at_memory.trigger_info', {is_shortcut: false, trigger: '@@'});
     page.setPrefValue('generated.find_and_fill_with_gemini', true);
+    page.setPrefValue(
+        'autofill.personal_context.find_and_fill_with_gemini_settings',
+        ModelExecutionEnterprisePolicyValue.ALLOW);
 
     document.body.appendChild(page);
     await flushTasks();
@@ -105,12 +108,37 @@ suite('SuggestionsFromGeminiSubpage', function() {
         loadTimeData.getString('suggestionsFromGeminiConsider2'),
         secondColumnBullets[1]!.querySelector(
                                    '.cr-secondary-text')!.textContent.trim());
+
+    const considerNoLoggingEnterprise =
+        subpage.shadowRoot!.querySelector('#considerNoLoggingEnterprise');
+    assertTrue(!!considerNoLoggingEnterprise);
+    assertFalse(isVisible(considerNoLoggingEnterprise));
+  });
+
+  test('ConsiderNoLoggingEnterpriseVisibility', async function() {
+    const subpage = await setupPage();
+    const considerNoLoggingEnterprise =
+        subpage.shadowRoot!.querySelector('#considerNoLoggingEnterprise');
+    assertTrue(!!considerNoLoggingEnterprise);
+
+    // By default (ALLOW = 0), the bullet should be hidden.
+    assertFalse(isVisible(considerNoLoggingEnterprise));
+
+    // When policy is set to ALLOW_WITHOUT_LOGGING = 1, it should become
+    // visible.
+    subpage.setPrefValue(
+        'autofill.personal_context.find_and_fill_with_gemini_settings',
+        ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
+    await flushTasks();
+
+    assertTrue(isVisible(considerNoLoggingEnterprise));
     assertEquals(
-        'cr20:domain', secondColumnBullets[2]!.querySelector('cr-icon')!.icon);
+        'cr20:domain',
+        considerNoLoggingEnterprise.querySelector('cr-icon')!.icon);
     assertEquals(
         loadTimeData.getString('suggestionsFromGeminiConsider3'),
-        secondColumnBullets[2]!.querySelector(
-                                   '.cr-secondary-text')!.textContent.trim());
+        considerNoLoggingEnterprise.querySelector('.cr-secondary-text')!
+            .textContent.trim());
   });
 
   test('QualityLoggingIsHiddenWhenToggleIsOff', async function() {

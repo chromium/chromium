@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -122,6 +123,14 @@ TEST_F(PrefsUtilTest, GlicPrefsAllowlisted) {
   ASSERT_TRUE(pref.has_value());
   EXPECT_EQ(pref->key, glic::prefs::kGlicHotkeyGlobalScopeEnabled);
   EXPECT_EQ(pref->type, api::settings_private::PrefType::kBoolean);
+}
+
+TEST_F(PrefsUtilTest, FindAndFillWithGeminiSettingsReadOnly) {
+  base::Value value;
+  EXPECT_EQ(
+      prefs_util_->SetPref(
+          optimization_guide::prefs::kFindAndFillWithGeminiSettings, &value),
+      settings_private::SetPrefResult::PREF_NOT_MODIFIABLE);
 }
 
 }  // namespace extensions

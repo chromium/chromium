@@ -17,6 +17,7 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
@@ -77,6 +78,12 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
   private showQualityLogging_(toggleOn: boolean, atMemoryEnabled: boolean):
       boolean {
     return toggleOn && atMemoryEnabled;
+  }
+
+  private showConsiderNoLoggingEnterprise_(enterprisePolicyValue: number):
+      boolean {
+    return enterprisePolicyValue ===
+        ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING;
   }
   private onManageConnectedAppsClick_() {
     // TODO(crbug.com/512204278): Add metrics.

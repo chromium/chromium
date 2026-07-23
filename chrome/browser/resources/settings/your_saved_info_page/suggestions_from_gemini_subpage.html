@@ -84,7 +84,8 @@
               $i18n{suggestionsFromGeminiConsider2}
             </div>
           </li>
-          <li>
+          <li id="considerNoLoggingEnterprise"
+              hidden$="[[!showConsiderNoLoggingEnterprise_(prefs.autofill.personal_context.find_and_fill_with_gemini_settings.value)]]">
             <cr-icon icon="cr20:domain" aria-hidden="true"></cr-icon>
             <div class="cr-secondary-text">
               $i18n{suggestionsFromGeminiConsider3}

@@ -158,6 +158,12 @@ bool IsSettingReadOnly(const std::string& pref_name) {
     return true;
   }
 
+  // The pref is only used for deciding when to display a data logging
+  // disclaimer - users cannot change it directly.
+  if (pref_name == optimization_guide::prefs::kFindAndFillWithGeminiSettings) {
+    return true;
+  }
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_CHROMEOS)
   // Changing this pref value is protected by reauthentication.
@@ -253,6 +259,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[autofill::kGeneratedFindAndFillWithGeminiPref] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[optimization_guide::prefs::kFindAndFillWithGeminiSettings] =
+      settings_api::PrefType::kNumber;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
   (*s_allowlist)[payments::kCanMakePaymentEnabled] =
