@@ -53,9 +53,7 @@ class InputOnVizBrowserTest : public RenderWidgetHostViewAndroidBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/535296539): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest,
-                       DISABLED_TransfersStateOnTouchDown) {
+IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest, TransfersStateOnTouchDown) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("input");
   RenderFrameSubmissionObserver render_frame_submission_observer(
@@ -67,6 +65,12 @@ IN_PROC_BROWSER_TEST_F(InputOnVizBrowserTest,
   if (render_frame_submission_observer.render_frame_count() == 0) {
     render_frame_submission_observer.WaitForAnyFrameSubmission();
   }
+
+  // Ensure the EventForwarder Java peer is instantiated. In C++ browser tests,
+  // the EventForwarder Java object is uninitialized unless explicitly
+  // requested, which is required for GetCurrentTouchSequenceOffset JNI calls
+  // during touch transfer.
+  shell()->web_contents()->GetNativeView()->GetEventForwarder();
 
   auto* view = static_cast<RenderWidgetHostViewAndroid*>(
       shell()->web_contents()->GetRenderWidgetHostView());
