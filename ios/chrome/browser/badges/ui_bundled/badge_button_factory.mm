@@ -292,11 +292,10 @@ const CGFloat kInfobarSymbolPointSizeModifier = 4;
 }
 
 - (BadgeButton*)readerModeBadgeButton {
-  BadgeButton* button =
-      [self createButtonForType:kBadgeTypeReaderMode
-                          image:DefaultSymbolTemplateWithPointSize(
-                                    GetReaderModeSymbolName(),
-                                    [self infoBarSymbolPointSize])];
+  BadgeButton* button = [self
+      createButtonForType:kBadgeTypeReaderMode
+                    image:SymbolTemplateWithPointSize(
+                              SymbolReaderMode, [self infoBarSymbolPointSize])];
   button.accessibilityIdentifier =
       kBadgeButtonReaderModeAccessibilityIdentifier;
   button.accessibilityLabel =

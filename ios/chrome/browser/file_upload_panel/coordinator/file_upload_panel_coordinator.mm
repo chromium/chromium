@@ -261,7 +261,7 @@ BOOL IsChooseFromDriveAvailable(Browser* browser,
     __weak __typeof(self) weakSelf = self;
     _filePickerAction = [UIAction
         actionWithTitle:[self filePickerActionLabel]
-                  image:DefaultSymbolWithConfiguration(kFolderSymbol, nil)
+                  image:SymbolWithConfiguration(SymbolFolder, nil)
              identifier:@"chromium.uploadfile.choosefile"
                 handler:^(UIAction* action) {
                   [weakSelf
@@ -344,8 +344,7 @@ BOOL IsChooseFromDriveAvailable(Browser* browser,
     __weak __typeof(self) weakSelf = self;
     _photoPickerAction = [UIAction
         actionWithTitle:[self photoPickerActionLabel]
-                  image:DefaultSymbolWithConfiguration(kPhotoOnRectangleSymbol,
-                                                       nil)
+                  image:SymbolWithConfiguration(SymbolPhotoOnRectangle, nil)
              identifier:@"chromium.uploadfile.choosephoto"
                 handler:^(UIAction* action) {
                   [weakSelf showPickerForContextMenuActionVariant:
@@ -434,7 +433,7 @@ BOOL IsChooseFromDriveAvailable(Browser* browser,
     __weak __typeof(self) weakSelf = self;
     _cameraAction = [UIAction
         actionWithTitle:[self cameraActionLabel]
-                  image:DefaultSymbolWithConfiguration(kSystemCameraSymbol, nil)
+                  image:SymbolWithConfiguration(SymbolSystemCamera, nil)
              identifier:@"chromium.uploadfile.choosecamera"
                 handler:^(UIAction* action) {
                   [weakSelf
@@ -503,8 +502,8 @@ BOOL IsChooseFromDriveAvailable(Browser* browser,
         configurationWithPointSize:font.pointSize
                             weight:UIImageSymbolWeightLight
                              scale:UIImageSymbolScaleMedium];
-    driveSymbol = CustomSymbolWithConfiguration(kGoogleDriveSymbol,
-                                                driveSymbolConfiguration);
+    driveSymbol =
+        SymbolWithConfiguration(SymbolGoogleDrive, driveSymbolConfiguration);
 #endif
     _driveFilePickerAction = [UIAction
         actionWithTitle:[self driveFilePickerActionLabel]

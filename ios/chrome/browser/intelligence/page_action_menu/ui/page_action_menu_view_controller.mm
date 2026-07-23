@@ -337,9 +337,9 @@ const CGFloat kDividerWidth = 1.0;
   buttonContentStack.userInteractionEnabled = NO;
 
   // Add leading icon.
-  UIView* leadingIconContainer = [self
-      createIconWithImage:DefaultSymbolWithPointSize(GetReaderModeSymbolName(),
-                                                     kSmallButtonIconSize)];
+  UIView* leadingIconContainer =
+      [self createIconWithImage:SymbolWithPointSize(SymbolReaderMode,
+                                                    kSmallButtonIconSize)];
   [buttonContentStack addArrangedSubview:leadingIconContainer];
 
   // Add stack with title and subtitle.
@@ -466,8 +466,8 @@ const CGFloat kDividerWidth = 1.0;
 
   if ([self.mutator isReaderModeAvailable] &&
       ![self.mutator isReaderModeActive]) {
-    UIImage* readerModeImage = DefaultSymbolWithPointSize(
-        GetReaderModeSymbolName(), kSmallButtonIconSize);
+    UIImage* readerModeImage =
+        SymbolWithPointSize(SymbolReaderMode, kSmallButtonIconSize);
 
     NSString* readerModeLabelText =
         l10n_util::GetNSString(IDS_IOS_AI_HUB_READER_MODE_LABEL);

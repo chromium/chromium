@@ -521,10 +521,8 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"qrcode.viewfinder", SymbolType::kSystem};
     case SymbolReadLaterAction:
       return {@"text.badge.plus", SymbolType::kSystem};
-    case SymbolReaderModePostIOS18:
+    case SymbolReaderMode:
       return {@"text.page", SymbolType::kSystem};
-    case SymbolReaderModePreIOS18:
-      return {@"doc.plaintext", SymbolType::kSystem};
     case SymbolRectangleGroupBubble:
       return {@"rectangle.3.group.bubble", SymbolType::kSystem};
     case SymbolRefineQuery:

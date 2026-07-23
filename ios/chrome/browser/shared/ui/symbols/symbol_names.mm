@@ -314,8 +314,7 @@ NSString* const kArrowUpTrashSymbol = @"arrow.up.trash";
 NSString* const kRectangleGroupBubble = @"rectangle.3.group.bubble";
 NSString* const kHomeSymbol = @"house";
 NSString* const kWorkSymbol = @"case";
-NSString* const kReaderModeSymbolPreIOS18 = @"doc.plaintext";
-NSString* const kReaderModeSymbolPostIOS18 = @"text.page";
+NSString* const kReaderModeSymbol = @"text.page";
 NSString* const kCircleBadgeFill = @"circlebadge.fill";
 NSString* const kCounterClockWiseSymbol =
     @"clock.arrow.trianglehead.counterclockwise.rotate.90";

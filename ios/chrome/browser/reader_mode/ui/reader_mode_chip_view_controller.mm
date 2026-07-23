@@ -69,8 +69,7 @@ const CGFloat kChipSymbolPointSize = 15;
       configurationWithPointSize:kChipSymbolPointSize
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
-  configuration.image =
-      DefaultSymbolWithConfiguration(GetReaderModeSymbolName(), symbolConfig);
+  configuration.image = SymbolWithConfiguration(SymbolReaderMode, symbolConfig);
 
   UIButton* button =
       [ExtendedTouchTargetButton buttonWithConfiguration:configuration

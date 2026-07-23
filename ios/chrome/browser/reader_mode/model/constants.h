@@ -252,9 +252,6 @@ extern const char kReaderModeAccessPointWithModeHistogram[];
 // interacted with Reading Mode.
 extern const char kReaderModeRecentlyUsedTimestampsPref[];
 
-// Returns the Reader mode symbol name.
-NSString* GetReaderModeSymbolName();
-
 // Reader mode font scale multipliers. Must be sorted.
 // These values should be in the range defined in distilled_page_prefs.cc.
 std::vector<double> ReaderModeFontScaleMultipliers();
