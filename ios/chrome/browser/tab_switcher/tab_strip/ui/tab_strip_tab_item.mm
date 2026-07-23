@@ -19,7 +19,7 @@ const CGFloat kSymbolSize = 14.0;
 #pragma mark - Favicons
 
 - (UIImage*)NTPFavicon {
-  return DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kSymbolSize);
+  return SymbolWithPointSize(SymbolGlobeAmericas, kSymbolSize);
 }
 
 @end

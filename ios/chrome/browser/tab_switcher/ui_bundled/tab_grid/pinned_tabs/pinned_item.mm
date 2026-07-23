@@ -12,8 +12,8 @@
 #pragma mark - Favicons
 
 - (UIImage*)NTPFavicon {
-  return CustomSymbolWithPointSize(kChromeProductSymbol,
-                                   kPinnedCellFaviconSymbolPointSize);
+  return SymbolWithPointSize(SymbolChromeProduct,
+                             kPinnedCellFaviconSymbolPointSize);
 }
 
 @end

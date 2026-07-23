@@ -62,7 +62,7 @@ const CGFloat kSymbolSize = 14.0;
 #pragma mark - Favicons
 
 - (UIImage*)NTPFavicon {
-  return CustomSymbolWithPointSize(kChromeProductSymbol, kSymbolSize);
+  return SymbolWithPointSize(SymbolChromeProduct, kSymbolSize);
 }
 
 #pragma mark - NSObject

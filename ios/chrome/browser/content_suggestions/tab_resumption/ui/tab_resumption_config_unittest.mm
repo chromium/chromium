@@ -38,8 +38,8 @@ TEST_F(TabResumptionConfigTest, ReconfigureItem) {
   config.tabURL = GURL("https://a");
   config.reason = @"You visited this web site 1 hour ago";
   config.syncedTime = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(1));
-  config.faviconImage = DefaultSettingsRootSymbol(@"circle");
-  config.contentImage = DefaultSettingsRootSymbol(@"flame");
+  config.faviconImage = SettingsRootSymbol(SymbolCircle);
+  config.contentImage = SettingsRootSymbol(SymbolDiscover);
   config.commandHandler = command_handler;
   config.URLKey = std::string("url key a");
   config.requestID =
@@ -53,8 +53,8 @@ TEST_F(TabResumptionConfigTest, ReconfigureItem) {
   config2.tabURL = GURL("https://b");
   config2.reason = @"You may also like this web site";
   config2.syncedTime = base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(2));
-  config2.faviconImage = DefaultSettingsRootSymbol(@"link");
-  config2.contentImage = DefaultSettingsRootSymbol(@"trash");
+  config2.faviconImage = SettingsRootSymbol(SymbolLinkAction);
+  config2.contentImage = SettingsRootSymbol(SymbolTrash);
   config2.commandHandler = command_handler;
   config2.URLKey = std::string("url key b");
   config2.requestID =

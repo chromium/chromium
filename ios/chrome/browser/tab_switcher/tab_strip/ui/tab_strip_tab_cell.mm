@@ -940,8 +940,7 @@ constexpr CGFloat kBlueDotInset = 1;
 
 // Returns a new close button.
 - (UIButton*)createCloseButton {
-  UIImage* closeSymbol =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kCloseButtonSize);
+  UIImage* closeSymbol = SymbolWithPointSize(SymbolXMark, kCloseButtonSize);
   ExtendedTouchTargetButton* button = [[ExtendedTouchTargetButton alloc] init];
   button.minimumDiameter = kCloseButtonMinimumTouchTarget;
   button.translatesAutoresizingMaskIntoConstraints = NO;

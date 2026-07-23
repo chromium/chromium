@@ -93,9 +93,9 @@ void TabGroupFaviconsGridConfigurator::ConfigureFaviconsGrid(
   const int saved_tabs_count = saved_tabs.size();
   __weak TabGroupFaviconsGridConfigurationToken* weak_token =
       favicons_grid.configurationToken;
-  UIImage* fallback_image = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
-      @[ [UIColor colorNamed:kGrey400Color] ]);
+  UIImage* fallback_image =
+      SymbolWithPalette(SymbolWithPointSize(SymbolGlobeAmericas, kFaviconSize),
+                        @[ [UIColor colorNamed:kGrey400Color] ]);
 
   // Display up to 4 favicons. If there are more than 4 saved tabs,
   // the last slot will display the total number of saved tabs.
@@ -180,9 +180,9 @@ void TabGroupFaviconsGridConfigurator::FetchFaviconsGrid(
         }
       });
 
-  UIImage* fallback_image = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize),
-      @[ [UIColor colorNamed:kGrey400Color] ]);
+  UIImage* fallback_image =
+      SymbolWithPalette(SymbolWithPointSize(SymbolGlobeAmericas, kFaviconSize),
+                        @[ [UIColor colorNamed:kGrey400Color] ]);
 
   // Update the favicons.
   for (int index = 0; index < end; index++) {

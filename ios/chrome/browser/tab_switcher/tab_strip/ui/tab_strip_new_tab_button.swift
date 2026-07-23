@@ -56,8 +56,8 @@ class TabStripNewTabButton: UIView {
   /// Configures the `UIButton`.
   private func configureButton() {
     let symbolSize = TabStripConstants.NewTabButton.symbolBiggerPointSize
-    let closeSymbol = DefaultSymbolWithPointSize(
-      kPlusSymbol, symbolSize)
+    let closeSymbol = SymbolWithPointSize(
+      Symbol.plus, symbolSize)
 
     var configuration = UIButton.Configuration.borderless()
     configuration.contentInsets = .zero

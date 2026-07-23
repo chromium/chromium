@@ -282,8 +282,8 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
 
 // Adds and configures the `_emptyFacePileLabel`.
 - (void)addShareButtonView {
-  UIImage* shareSymbol = DefaultSymbolWithConfiguration(
-      kPersonFillBadgePlusSymbol,
+  UIImage* shareSymbol = SymbolWithConfiguration(
+      SymbolPersonFillBadgePlus,
       [UIImageSymbolConfiguration
           configurationWithPointSize:kShareSymbolPointSize
                               weight:UIImageSymbolWeightBold
@@ -400,8 +400,8 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
     [containerView addSubview:_nonAvatarContainer];
     AddSameCenterConstraints(_nonAvatarContainer, containerView);
 
-    UIImage* peopleWaitingImage = DefaultSymbolWithPointSize(
-        kPersonClockFillSymbol, _avatarSize * kPersonWaitingProportion);
+    UIImage* peopleWaitingImage = SymbolWithPointSize(
+        SymbolPersonClockFill, _avatarSize * kPersonWaitingProportion);
     _peopleWaitingImageView =
         [[UIImageView alloc] initWithImage:peopleWaitingImage];
     _peopleWaitingImageView.contentMode = UIViewContentModeCenter;
