@@ -1231,6 +1231,75 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
   EXPECT_EQ(updated_card->usage_history().use_count(), initial_use_count + 1);
 }
 
+// Tests that fetching an unmasked IBAN asynchronously returns `IsAsync(true)`,
+// hides suggestions when the fetch completes, fills the field, and records
+// metrics.
+TEST_F(AtMemoryManagerTest, FillIban_Success) {
+  base::HistogramTester histogram_tester;
+  Iban iban = test::GetLocalIban();
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddIbanForTest(std::make_unique<Iban>(iban));
+
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kIban, u"IBAN", u"some text");
+    entry.identifier = iban.guid();
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
+  MockIbanAccessManager* mock_iban_access_manager =
+      autofill_client().GetPaymentsAutofillClient()->GetIbanAccessManager();
+
+  IbanAccessManager::OnIbanFetchedCallback fetch_callback;
+  {
+    InSequence seq;
+    EXPECT_CALL(*mock_iban_access_manager, FetchValue)
+        .WillOnce([&](const Suggestion::Payload& payload,
+                      IbanAccessManager::OnIbanFetchedCallback callback) {
+          fetch_callback = std::move(callback);
+          return IsAsync(true);
+        });
+
+    EXPECT_CALL(autofill_client(),
+                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                std::optional(FillingProduct::kAtMemory)));
+    EXPECT_CALL(
+        autofill_manager(),
+        FillOrPreviewField(mojom::ActionPersistence::kFill,
+                           mojom::FieldActionType::kReplaceAtMemoryTrigger, _,
+                           _, iban.value(), FillingProduct::kAtMemory, _));
+  }
+
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+
+  std::u16string unmasked_iban = iban.value();
+  std::move(fetch_callback).Run(unmasked_iban);
+
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.Latency.FetchPii.Iban",
+                                    1);
+}
+
 // Tests that SPII entries and metadata are filtered out from the search
 // results when the context is insecure.
 TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
