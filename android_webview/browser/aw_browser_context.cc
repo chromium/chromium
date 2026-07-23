@@ -52,6 +52,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -180,12 +181,17 @@ AwBrowserContext::AwBrowserContext(std::string name,
 
   // This should be initialized as soon as possible when creating the profile,
   // in order to load the database from disk.
-  origin_trials_controller_delegate_ =
-      std::make_unique<origin_trials::OriginTrials>(
-          std::make_unique<origin_trials::LevelDbPersistenceProvider>(
-              GetPath(),
-              GetDefaultStoragePartition()->GetProtoDatabaseProvider()),
-          std::make_unique<blink::TrialTokenValidator>());
+  {
+    SCOPED_UMA_HISTOGRAM_TIMER(
+        "Android.WebView.AwBrowserContext.GetDefaultStoragePartition."
+        "Duration");
+    origin_trials_controller_delegate_ =
+        std::make_unique<origin_trials::OriginTrials>(
+            std::make_unique<origin_trials::LevelDbPersistenceProvider>(
+                GetPath(),
+                GetDefaultStoragePartition()->GetProtoDatabaseProvider()),
+            std::make_unique<blink::TrialTokenValidator>());
+  }
 
   content_restriction_manager_client_ =
       std::make_unique<AwContentRestrictionManagerClient>();

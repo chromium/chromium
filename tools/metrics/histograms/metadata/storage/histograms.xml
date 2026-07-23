@@ -1899,6 +1899,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.StoragePartition.InitializeDuration" units="ms"
+    expires_after="2027-07-01">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>src/content/browser/OWNERS</owner>
+  <summary>
+    Records the synchronous duration of StoragePartitionImpl::Initialize() on
+    the UI thread across all //content embedders. Emitted once every time a
+    storage partition is initialized.
+  </summary>
+</histogram>
+
+<histogram name="Storage.StoragePartition.InitializeDuration.{Step}" units="ms"
+    expires_after="2027-07-01">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>src/content/browser/OWNERS</owner>
+  <summary>
+    Records the synchronous duration of {Step} inside
+    StoragePartitionImpl::Initialize() on the UI thread.
+
+    Note: The order and grouping of initialization steps within
+    StoragePartitionImpl::Initialize() are implementation details and are not
+    guaranteed to remain stable across Chromium releases. If new features are
+    added or steps are reordered, data continuity across versions will be
+    broken. Consequently, this metric should only be considered for comparisons
+    within the exact same browser version.
+  </summary>
+  <token key="Step">
+    <variant name="BackgroundTasks"
+        summary="initializing background sync, background fetch, platform
+                 notifications, and devtools contexts"/>
+    <variant name="CodeCacheAndInterestGroup"
+        summary="initializing code cache, attribution manager, and interest
+                 group manager"/>
+    <variant name="DOMStorageAndIndexedDB"
+        summary="initializing DOMStorage, IndexedDB, and CacheStorage
+                 wrappers"/>
+    <variant name="QuotaAndFileSystem"
+        summary="initializing QuotaContext, QuotaManager, and
+                 FileSystemContext"/>
+    <variant name="ServiceWorkerContext"
+        summary="initializing ServiceWorkerContextWrapper, worker services,
+                 and cookie store manager"/>
+  </token>
+</histogram>
+
+<histogram name="Storage.StoragePartitionMap.Get.Duration" units="ms"
+    expires_after="2027-07-01">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>src/content/browser/OWNERS</owner>
+  <summary>
+    Records the synchronous duration of StoragePartitionImplMap::Get() on the UI
+    thread across all //content embedders. Emitted once every time a storage
+    partition is retrieved or created in the map.
+  </summary>
+</histogram>
+
 <histogram name="Storage.StoragePressure.Bubble"
     enum="StoragePressureBubbleUserAction" expires_after="2025-09-01">
   <owner>ayui@chromium.org</owner>

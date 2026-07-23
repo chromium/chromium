@@ -7263,6 +7263,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.AwBrowserContext.GetDefaultStoragePartition.Duration"
+    units="ms" expires_after="2027-07-01">
+  <owner>elabadysayed@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the synchronous duration of GetDefaultStoragePartition() when
+    invoked during AwBrowserContext profile initialization. Emitted when
+    creating origin trials delegate in the profile constructor.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.AwBrowserContext.Instantiations"
     units="profiles" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>

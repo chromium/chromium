@@ -28,6 +28,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
@@ -36,6 +37,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_local_storage_slot.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/optional_util.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -1394,6 +1396,8 @@ void StoragePartitionImpl::Initialize(
          !BrowserThread::IsThreadInitialized(BrowserThread::UI));
   DCHECK(!initialized_);
   initialized_ = true;
+  SCOPED_UMA_HISTOGRAM_TIMER("Storage.StoragePartition.InitializeDuration");
+  base::ElapsedTimer step_timer;
 
   // All of the clients have to be created and registered with the
   // QuotaManager prior to the QuotaManager being used. We do them
@@ -1433,6 +1437,10 @@ void StoragePartitionImpl::Initialize(
   // its construction.
   filesystem_context_ = CreateFileSystemContext(
       browser_context_, partition_path_, is_in_memory(), quota_manager_proxy);
+  base::UmaHistogramTimes(
+      "Storage.StoragePartition.InitializeDuration.QuotaAndFileSystem",
+      step_timer.Elapsed());
+  step_timer = base::ElapsedTimer();
 
   dom_storage_context_ = DOMStorageContextWrapper::Create(
       this, browser_context_->GetSpecialStoragePolicy());
@@ -1465,6 +1473,10 @@ void StoragePartitionImpl::Initialize(
       GetIOThreadTaskRunner({}), path,
       browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy,
       ChromeBlobStorageContext::GetRemoteFor(browser_context_));
+  base::UmaHistogramTimes(
+      "Storage.StoragePartition.InitializeDuration.DOMStorageAndIndexedDB",
+      step_timer.Elapsed());
+  step_timer = base::ElapsedTimer();
 
   service_worker_context_ = new ServiceWorkerContextWrapper(browser_context_);
   service_worker_context_->set_storage_partition(this);
@@ -1540,6 +1552,10 @@ void StoragePartitionImpl::Initialize(
   // Production and browser tests rely on CookieStoreManager's well-defined
   // behavior when restoring the state fails.
   cookie_store_manager_->LoadAllSubscriptions(base::DoNothing());
+  base::UmaHistogramTimes(
+      "Storage.StoragePartition.InitializeDuration.ServiceWorkerContext",
+      step_timer.Elapsed());
+  step_timer = base::ElapsedTimer();
 
   bucket_manager_ = std::make_unique<BucketManager>(this);
 
@@ -1549,6 +1565,10 @@ void StoragePartitionImpl::Initialize(
     browsing_topics_site_data_manager_ =
         std::make_unique<BrowsingTopicsSiteDataManagerImpl>(path);
   }
+  base::UmaHistogramTimes(
+      "Storage.StoragePartition.InitializeDuration.BackgroundTasks",
+      step_timer.Elapsed());
+  step_timer = base::ElapsedTimer();
 
   GeneratedCodeCacheSettings settings =
       GetContentClient()->browser()->GetGeneratedCodeCacheSettings(
@@ -1596,6 +1616,9 @@ void StoragePartitionImpl::Initialize(
         std::make_unique<DeclarativePerformanceObserverStore>(is_in_memory(),
                                                               path);
   }
+  base::UmaHistogramTimes(
+      "Storage.StoragePartition.InitializeDuration.CodeCacheAndInterestGroup",
+      step_timer.Elapsed());
 }
 
 void StoragePartitionImpl::ResetSessionStorageConnections() {
