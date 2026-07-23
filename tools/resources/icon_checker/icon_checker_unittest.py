@@ -31,6 +31,39 @@ class IconCheckerTest(unittest.TestCase):
       results = icon_checker.CheckIcons(input_api, output_api, affected_icons)
       self.assertEqual(len(results), 0)
 
+  def test_CheckIcons_ValidWithPrimarySuffixes(self):
+    input_api = MagicMock()
+    input_api.change.RepositoryRoot.return_value = '/root'
+    input_api.os_path.join = os.path.join
+    output_api = MagicMock()
+
+    # Mock FetchValidIconNames to return a set with 'menu' and 'add_to_drive'
+    with patch('icon_checker.FetchValidIconNames',
+               return_value={'menu', 'add_to_drive'}):
+      affected_icons = [
+          ('components/vector_icons/menu_custom.icon', 'menu_custom', None),
+          ('components/vector_icons/menu_filled.icon', 'menu_filled', None),
+          ('components/vector_icons/menu_flippable.icon', 'menu_flippable',
+           None),
+          ('components/vector_icons/menu_weight500.icon', 'menu_weight500',
+           None),
+          ('chrome/browser/resources/pdf/elements/icons.html', 'menu-custom',
+           10),
+          ('chrome/browser/resources/pdf/elements/icons.html', 'menu-filled',
+           11),
+          ('chrome/browser/resources/pdf/elements/icons.html', 'menu-flippable',
+           12),
+          ('chrome/browser/resources/pdf/elements/icons.html', 'menu-weight100',
+           13),
+          ('components/vector_icons/menu_filled_flippable.icon',
+           'menu_filled_flippable', None),
+          ('components/vector_icons/add_to_drive_custom_weight700.icon',
+           'add_to_drive_custom_weight700', None),
+      ]
+
+      results = icon_checker.CheckIcons(input_api, output_api, affected_icons)
+      self.assertEqual(len(results), 0)
+
   def test_CheckIcons_Invalid(self):
     input_api = MagicMock()
     input_api.change.RepositoryRoot.return_value = '/root'
@@ -40,12 +73,18 @@ class IconCheckerTest(unittest.TestCase):
 
     # Mock FetchValidIconNames
     with patch('icon_checker.FetchValidIconNames', return_value={'menu'}):
-      affected_icons = [('components/vector_icons/invalid.icon', 'invalid',
-                         None)]
+      affected_icons = [
+          ('components/vector_icons/invalid.icon', 'invalid', None),
+          ('components/vector_icons/invalid_custom.icon', 'invalid_custom',
+           None),
+          ('components/vector_icons/custom.icon', 'custom', None),
+      ]
 
       results = icon_checker.CheckIcons(input_api, output_api, affected_icons)
-      self.assertEqual(len(results), 1)
+      self.assertEqual(len(results), 3)
       self.assertIn('Icon "invalid" does not match', results[0])
+      self.assertIn('Icon "invalid_custom" does not match', results[1])
+      self.assertIn('Icon "custom" does not match', results[2])
 
   def test_FetchValidIconNames_Parsing(self):
     mock_data = json.dumps({"icons": ["menu", "chevron_right"]})
