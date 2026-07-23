@@ -63,7 +63,8 @@ LastReplacedClipboardDataObserver::GetInstance() {
 }
 
 void LastReplacedClipboardDataObserver::AddDataToNextSeqno(
-    content::ClipboardPasteData data) {
+    content::ClipboardPasteData data,
+    CopyRestrictionLevel restriction_level) {
   // Bitmap isn't used directly by pasting code, so it must first be converted
   // to PNG before being stored in `GetLastReplacedClipboardData()`.
   if (!data.bitmap.empty()) {
@@ -76,6 +77,13 @@ void LastReplacedClipboardDataObserver::AddDataToNextSeqno(
     ui::ClipboardMonitor::GetInstance()->AddObserver(this);
   }
   pending_seqno_data_.Merge(std::move(data));
+  // Only override the pending restriction level if the new restriction is more
+  // severe than any previously staged restriction for this sequence token
+  // (e.g., kBlocked overrides kKeptInManagedChrome, which overrides
+  // kOngoingScan).
+  if (restriction_level > pending_restriction_level_) {
+    pending_restriction_level_ = restriction_level;
+  }
 }
 
 void LastReplacedClipboardDataObserver::OnClipboardDataChanged() {
@@ -85,11 +93,13 @@ void LastReplacedClipboardDataObserver::OnClipboardDataChanged() {
       // `LastReplacedClipboardData::clipboard_paste_data` is reassigned to
       // clear previous data corresponding to an older seqno.
       .clipboard_paste_data = std::move(pending_seqno_data_),
+      .restriction_level = pending_restriction_level_,
   };
 
   // Explicitly clear `pending_seqno_data_` in case it eventually holds a data
   // member that doesn't clear itself cleanly after moving.
   pending_seqno_data_ = content::ClipboardPasteData();
+  pending_restriction_level_ = CopyRestrictionLevel::kNone;
 
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
 }

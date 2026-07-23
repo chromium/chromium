@@ -1818,7 +1818,8 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest, FindBar_Paste) {
   content::ClipboardPasteData data;
   data.text = u"replaced";
   data_controls::LastReplacedClipboardDataObserver::GetInstance()
-      ->AddDataToNextSeqno(data);
+      ->AddDataToNextSeqno(
+          data, data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
   ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 
   base::test::TestFuture<std::optional<std::u16string>> replace_future2;

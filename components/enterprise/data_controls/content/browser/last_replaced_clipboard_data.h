@@ -11,11 +11,32 @@
 
 namespace data_controls {
 
+// Represents the enforcement state of a clipboard copy operation tracked inside
+// `LastReplacedClipboardData`. When pasting across tab boundaries or evaluating
+// context menus, these values determine whether pasting is allowed, blocked,
+// or restricted to managed browser contexts.
+enum class CopyRestrictionLevel {
+  // Default uninitialized state, or data whose copy was completely
+  // unrestricted.
+  kNone = 0,
+  // Indicates an asynchronous scan is currently in progress; cross-tab pastes
+  // are blocked while the OS clipboard holds a temporary scanning placeholder.
+  kOngoingScan = 1,
+  // Indicates copy is permitted inside managed Chrome contexts, but external OS
+  // apps are blocked.
+  kKeptInManagedChrome = 2,
+  // Indicates the copy was strictly prohibited by policy or scanning
+  // evaluation. All pastes are strictly blocked due to the OS clipboard holding
+  // a warning string.
+  kBlocked = 3,
+};
+
 // Struct that holds information on the last data to have been replaced in the
 // OS clipboard by a Data Controls rule.
 struct LastReplacedClipboardData {
   ui::ClipboardSequenceNumberToken seqno;
   content::ClipboardPasteData clipboard_paste_data;
+  CopyRestrictionLevel restriction_level = CopyRestrictionLevel::kNone;
 
   std::vector<std::u16string> GetAvailableTypes() const;
 };
@@ -35,7 +56,10 @@ class LastReplacedClipboardDataObserver : public ui::ClipboardObserver {
   // times with different data types (text, html, png, etc.) before
   // `OnClipboardDataChanged()` is called, `data` is merged into
   // `pending_seqno_data_` instead of replacing it entirely.
-  void AddDataToNextSeqno(content::ClipboardPasteData data);
+  // `restriction_level` is the policy restriction level that resulted in
+  // `data` being replaced.
+  void AddDataToNextSeqno(content::ClipboardPasteData data,
+                          CopyRestrictionLevel restriction_level);
 
   // ui::ClipboardObserver:
   void OnClipboardDataChanged() override;
@@ -43,6 +67,7 @@ class LastReplacedClipboardDataObserver : public ui::ClipboardObserver {
  private:
   // Data recently copied from Chrome, waiting to be tied to a sequence number.
   content::ClipboardPasteData pending_seqno_data_;
+  CopyRestrictionLevel pending_restriction_level_ = CopyRestrictionLevel::kNone;
 };
 
 }  // namespace data_controls

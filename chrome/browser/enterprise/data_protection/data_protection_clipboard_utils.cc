@@ -587,7 +587,8 @@ void IsCopyToOSClipboardRestricted(
     // clipboard sequence number so that it can be potentially replaced again at
     // paste time.
     data_controls::LastReplacedClipboardDataObserver::GetInstance()
-        ->AddDataToNextSeqno(data);
+        ->AddDataToNextSeqno(
+            data, data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
     std::move(callback).Run(metadata.format_type, data, replacement);
 
     return;
@@ -1099,7 +1100,8 @@ bool ReplaceCopyFromFindBar(std::u16string_view selected_text,
     content::ClipboardPasteData data;
     data.text = selected_text;
     data_controls::LastReplacedClipboardDataObserver::GetInstance()
-        ->AddDataToNextSeqno(data);
+        ->AddDataToNextSeqno(
+            data, data_controls::CopyRestrictionLevel::kKeptInManagedChrome);
   }
   return !replacement->empty();
 }
