@@ -131,6 +131,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "payment_app_loading_view_unittest.cc",
     "payment_request_item_list_unittest.cc",
     "validating_textfield_unittest.cc",
     "view_stack_unittest.cc",

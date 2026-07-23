@@ -608,6 +608,14 @@ void PaymentRequestDialogView::HideProcessingSpinner() {
 
 void PaymentRequestDialogView::HideLoadingView() {
   if (loading_view_overlay_) {
+    loading_view_overlay_->Hide(
+        base::BindOnce(&PaymentRequestDialogView::RemoveLoadingView,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void PaymentRequestDialogView::RemoveLoadingView() {
+  if (loading_view_overlay_) {
     RemoveChildViewT(std::exchange(loading_view_overlay_, nullptr));
     if (observer_for_testing_) {
       observer_for_testing_->OnLoadingViewHidden();

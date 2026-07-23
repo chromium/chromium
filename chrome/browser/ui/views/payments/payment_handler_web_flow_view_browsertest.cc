@@ -322,8 +322,11 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
   ResetEventWaiterForSequence(
       {DialogEvent::PROCESSING_SPINNER_SHOWN,
        DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-       DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::LOADING_VIEW_HIDDEN,
+       DialogEvent::LOADING_VIEW_SHOWN,
        DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       // Note: LOADING_VIEW_HIDDEN comes after PAYMENT_HANDLER_WINDOW_OPENED
+       // because the loading view is hidden asynchronously.
+       DialogEvent::LOADING_VIEW_HIDDEN,
        DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ASSERT_EQ("success",
             content::EvalJs(
@@ -373,8 +376,11 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
   ResetEventWaiterForSequence(
       {DialogEvent::PROCESSING_SPINNER_SHOWN,
        DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-       DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::LOADING_VIEW_HIDDEN,
+       DialogEvent::LOADING_VIEW_SHOWN,
        DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       // Note: LOADING_VIEW_HIDDEN comes after PAYMENT_HANDLER_WINDOW_OPENED
+       // because the loading view is hidden asynchronously.
+       DialogEvent::LOADING_VIEW_HIDDEN,
        DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ASSERT_EQ("success",
             content::EvalJs(GetActiveWebContents(),
@@ -417,9 +423,11 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
   ResetEventWaiterForSequence(
       {DialogEvent::PROCESSING_SPINNER_SHOWN,
        DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-       DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::LOADING_VIEW_HIDDEN,
+       DialogEvent::LOADING_VIEW_SHOWN,
        DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-       DialogEvent::PAYMENT_HANDLER_TITLE_SET,
+       // Note: LOADING_VIEW_HIDDEN comes after PAYMENT_HANDLER_WINDOW_OPENED
+       // because the loading view is hidden asynchronously.
+       DialogEvent::LOADING_VIEW_HIDDEN, DialogEvent::PAYMENT_HANDLER_TITLE_SET,
        DialogEvent::PROCESSING_SPINNER_HIDDEN,
        DialogEvent::ERROR_MESSAGE_SHOWN});
   ASSERT_EQ(
@@ -441,8 +449,11 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewMandatoryUiEnabledTest,
   ResetEventWaiterForSequence(
       {DialogEvent::PROCESSING_SPINNER_SHOWN,
        DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-       DialogEvent::LOADING_VIEW_SHOWN, DialogEvent::LOADING_VIEW_HIDDEN,
+       DialogEvent::LOADING_VIEW_SHOWN,
        DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+       // Note: LOADING_VIEW_HIDDEN comes after PAYMENT_HANDLER_WINDOW_OPENED
+       // because the loading view is hidden asynchronously.
+       DialogEvent::LOADING_VIEW_HIDDEN,
        DialogEvent::PAYMENT_HANDLER_TITLE_SET});
   ASSERT_EQ(
       "success",

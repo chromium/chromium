@@ -218,6 +218,7 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
   void OnDialogOpened();
   void ShowInitialPaymentSheet();
   void SetupSpinnerOverlay();
+  void RemoveLoadingView();
   void OnDialogClosed();
   void ResizeDialogWindow();
   void CheckIfDialogFitsInBrowserWindow();

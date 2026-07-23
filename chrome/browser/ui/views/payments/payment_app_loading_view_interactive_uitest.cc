@@ -10,12 +10,14 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/payments/payment_app_loading_view.h"
+#include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -51,6 +53,16 @@ class PaymentAppLoadingViewInteractiveUiTest : public InteractiveBrowserTest {
           auto loading_view = std::make_unique<PaymentAppLoadingView>(
               &icon_, GURL("https://app.com"), GURL("https://merchant.com"),
               close_callback_.Get());
+          // The loading message label starts hidden and becomes visible only
+          // after delay timer is fired. Since the dialog widget sizes itself to
+          // the view's preferred size during initial creation, it would
+          // initialize to a very small size (only housing the header) if we
+          // didn't specify a larger size. When the label becomes visible
+          // later, the widget window doesn't automatically resize, which would
+          // cause the message to be clipped in the screenshot.
+          loading_view->SetPreferredSize(
+              gfx::Size(kPreferredPaymentHandlerDialogWidth,
+                        kPreferredPaymentHandlerDialogHeight));
           loading_view_ = delegate_->SetContentsView(std::move(loading_view));
 
           tabs::TabInterface* tab_interface =
@@ -84,7 +96,12 @@ class PaymentAppLoadingViewInteractiveUiTest : public InteractiveBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PaymentAppLoadingViewInteractiveUiTest, InvokeUi) {
   RunTestSequence(
-      InvokeUiAndWaitForShow(PaymentAppLoadingView::kTopViewId),
+      InvokeUiAndWaitForShow(PaymentAppLoadingView::kTopViewId), Do([this]() {
+        auto& timer = loading_view_->delay_message_timer_for_testing();
+        if (timer.IsRunning()) {
+          timer.FireNow();
+        }
+      }),
       InAnyContext(
           SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                                   kSuppressedScreenshotError),

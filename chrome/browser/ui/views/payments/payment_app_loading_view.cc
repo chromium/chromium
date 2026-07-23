@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/payments/payment_app_loading_view.h"
 
 #include <memory>
-#include <optional>
 
+#include "base/task/sequenced_task_runner.h"
 #include "components/payments/core/sizes.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -22,6 +22,13 @@
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace {
+
+constexpr base::TimeDelta kLoadingMessageShowDelay = base::Milliseconds(500);
+constexpr base::TimeDelta kMinimumMessageShowDuration = base::Milliseconds(500);
+
+}  // namespace
 
 namespace payments {
 
@@ -85,6 +92,15 @@ PaymentAppLoadingView::PaymentAppLoadingView(
                         /*left=*/dialog_insets.left(),
                         /*bottom=*/0,
                         /*right=*/dialog_insets.right()));
+  // The loading message is hidden by default and only shown after 500ms.
+  loading_message_label_->SetVisible(false);
+  // Safe to use `base::Unretained(this)` because `delay_message_timer_` is
+  // owned by `this` and will be destroyed (canceling any pending callback) if
+  // `this` is destroyed.
+  delay_message_timer_.Start(
+      FROM_HERE, kLoadingMessageShowDelay,
+      base::BindOnce(&PaymentAppLoadingView::ShowLoadingMessage,
+                     base::Unretained(this)));
 }
 
 PaymentAppLoadingView::~PaymentAppLoadingView() = default;
@@ -104,6 +120,40 @@ void PaymentAppLoadingView::OnThemeChanged() {
   // the payment handler.
   SetHeaderColors(header_view_, origin_label_, progress_bar_, close_button_,
                   /*theme_color=*/std::nullopt);
+}
+
+void PaymentAppLoadingView::Hide(base::OnceClosure on_hidden_callback) {
+  // If the message was never shown, cancel the 500ms delay timer and hide.
+  if (!message_shown_time_.has_value()) {
+    delay_message_timer_.Stop();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_hidden_callback));
+    return;
+  }
+
+  // If the message was shown, calculate remaining time to reach 500ms
+  // minimum display duration.
+  base::TimeDelta elapsed = base::TimeTicks::Now() - *message_shown_time_;
+  if (elapsed >= kMinimumMessageShowDuration) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(on_hidden_callback));
+    return;
+  }
+
+  // Safety guard to prevent re-entry of Hide() if hide timer is already
+  // running.
+  if (hide_timer_.IsRunning()) {
+    return;
+  }
+  hide_timer_.Start(FROM_HERE, kMinimumMessageShowDuration - elapsed,
+                    std::move(on_hidden_callback));
+}
+
+void PaymentAppLoadingView::ShowLoadingMessage() {
+  if (loading_message_label_) {
+    loading_message_label_->SetVisible(true);
+    message_shown_time_ = base::TimeTicks::Now();
+  }
 }
 
 BEGIN_METADATA(PaymentAppLoadingView)
