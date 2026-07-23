@@ -17,8 +17,11 @@ import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, SuggestionsFromGeminiAction} from '../metrics_browser_proxy.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './suggestions_from_gemini_subpage.html.js';
@@ -75,6 +78,9 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
   declare private isAtMemoryTriggerCustomizationAllowed_: boolean;
   declare private atMemoryTrigger_: string;
 
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
+
   private showQualityLogging_(toggleOn: boolean, atMemoryEnabled: boolean):
       boolean {
     return toggleOn && atMemoryEnabled;
@@ -86,9 +92,17 @@ export class SettingsSuggestionsFromGeminiSubpageElement extends
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING;
   }
   private onManageConnectedAppsClick_() {
-    // TODO(crbug.com/512204278): Add metrics.
+    this.metricsBrowserProxy_.recordSuggestionsFromGeminiAction(
+        SuggestionsFromGeminiAction.MANAGE_CONNECTED_APPS_CLICK);
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('personalContextConnectedAppsUrl'));
+  }
+
+  private onToggleChange_(e: Event) {
+    const toggle = e.target as SettingsToggleButtonElement;
+    this.metricsBrowserProxy_.recordSuggestionsFromGeminiAction(
+        toggle.checked ? SuggestionsFromGeminiAction.TOGGLE_ON :
+                         SuggestionsFromGeminiAction.TOGGLE_OFF);
   }
 
   private onAtMemoryTriggerSettingUpdated_(event: CustomEvent<string>) {

@@ -5881,6 +5881,27 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(//components/autofill/ios/browser/autofill_util.h:SubmissionBlockedReasonIOS) -->
 
+<!-- LINT.IfChange(SuggestionsFromGeminiAction) -->
+
+<enum name="SuggestionsFromGeminiAction">
+  <int value="0" label="Manage connected apps click"/>
+  <int value="1" label="Toggle on"/>
+  <int value="2" label="Toggle off"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/resources/settings/metrics_browser_proxy.ts:SuggestionsFromGeminiAction) -->
+
+<!-- LINT.IfChange(SuggestionsFromGeminiEntryPoint) -->
+
+<enum name="SuggestionsFromGeminiEntryPoint">
+  <int value="0" label="Your saved info"/>
+  <int value="1" label="Travel"/>
+  <int value="2" label="Shopping"/>
+  <int value="3" label="Identity docs"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/resources/settings/metrics_browser_proxy.ts:SuggestionsFromGeminiEntryPoint) -->
+
 <!-- LINT.IfChange(SuggestionType) -->
 
 <enum name="SuggestionType">

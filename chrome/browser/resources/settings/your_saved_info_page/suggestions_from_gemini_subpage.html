@@ -10,7 +10,8 @@
     <settings-toggle-button id="suggestionsFromGeminiToggle"
         pref="{{prefs.generated.find_and_fill_with_gemini}}"
         label="$i18n{personalContextAutofillSettingsSwitchTitle}"
-        sub-label="$i18n{personalContextAutofillSettingsSwitchSummary}">
+        sub-label="$i18n{personalContextAutofillSettingsSwitchSummary}"
+        on-settings-boolean-control-change="onToggleChange_">
     </settings-toggle-button>
     <cr-link-row id="manageConnectedAppsLinkRow"
         label="$i18n{personalContextAutofillSettingsManageConnectedAppsTitle}"

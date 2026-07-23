@@ -293,7 +293,7 @@ suite('YourSavedInfoPage', function() {
     assertFalse(!!geminiCard);
   });
 
-  test('SuggestionsFromGeminiCardNavigates', function() {
+  test('SuggestionsFromGeminiCardNavigates', async function() {
     const geminiCard = yourSavedInfoPage.shadowRoot!.querySelector<HTMLElement>(
         '#suggestionsFromGeminiCard');
     assertTrue(!!geminiCard);
@@ -319,6 +319,11 @@ suite('YourSavedInfoPage', function() {
     button.click();
     assertEquals(
         '/suggestionsFromGemini', Router.getInstance().currentRoute.path);
+
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        'PersonalContext.Settings.EntryPoint.AutofillAndPasswordsSettings',
+        action);
   });
 });
 

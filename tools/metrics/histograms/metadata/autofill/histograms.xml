@@ -10397,6 +10397,31 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.YourSavedInfoSettingsPage.SuggestionsFromGeminiAction"
+    enum="SuggestionsFromGeminiAction" expires_after="2026-12-21">
+  <owner>hkamila@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records actions performed on the 'Suggestions from Gemini' subpage inside
+    the 'Your saved info' settings page. Emitted on every click on tracked
+    actions such as 'Manage connected apps'. Recorded on Desktop only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Autofill.YourSavedInfoSettingsPage.SuggestionsFromGeminiLinkClick"
+    enum="SuggestionsFromGeminiEntryPoint" expires_after="2026-12-21">
+  <owner>hkamila@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records clicks on the 'Suggestions from Gemini' subpage link row across
+    'Your saved info' and its category settings subpages (Travel, Shopping,
+    Identity docs). Emitted on every click of this row from these entry points.
+    Recorded on Desktop only.
+  </summary>
+</histogram>
+
 <!-- TODO(crbug.com/491115361): Merge this metric with the existing Autofill.AddressesSettingsPage.VisitReferrer -->
 
 <histogram name="Autofill.YourSavedInfoSettingsPage.VisitReferrer"

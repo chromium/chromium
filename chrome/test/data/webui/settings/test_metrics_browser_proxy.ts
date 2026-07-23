@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
+import {SuggestionsFromGeminiAction, SuggestionsFromGeminiEntryPoint, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
 import type {AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageSuggestionsInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -43,6 +43,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordYourSavedInfoCategoryClick',
       'recordYourSavedInfoDataChipClick',
       'recordYourSavedInfoRelatedServiceClick',
+      'recordSuggestionsFromGeminiEntryPointClick',
+      'recordSuggestionsFromGeminiAction',
     ]);
   }
 
@@ -206,6 +208,39 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     if (service !== YourSavedInfoRelatedService.MAX_VALUE) {
       this.recordAction(`Settings.YourSavedInfo.RelatedServiceClick.${
           YourSavedInfoRelatedService[service]}`);
+    }
+  }
+
+  recordSuggestionsFromGeminiEntryPointClick(
+      entryPoint: SuggestionsFromGeminiEntryPoint) {
+    this.methodCalled('recordSuggestionsFromGeminiEntryPointClick', entryPoint);
+    if (entryPoint !== SuggestionsFromGeminiEntryPoint.MAX_VALUE) {
+      const actionMap = {
+        [SuggestionsFromGeminiEntryPoint.YOUR_SAVED_INFO]:
+            'PersonalContext.Settings.EntryPoint.AutofillAndPasswordsSettings',
+        [SuggestionsFromGeminiEntryPoint.TRAVEL]:
+            'PersonalContext.Settings.EntryPoint.TravelSettings',
+        [SuggestionsFromGeminiEntryPoint.SHOPPING]:
+            'PersonalContext.Settings.EntryPoint.ShoppingSettings',
+        [SuggestionsFromGeminiEntryPoint.IDENTITY_DOCS]:
+            'PersonalContext.Settings.EntryPoint.IdentityDocsSettings',
+      };
+      this.recordAction(actionMap[entryPoint]);
+    }
+  }
+
+  recordSuggestionsFromGeminiAction(action: SuggestionsFromGeminiAction) {
+    this.methodCalled('recordSuggestionsFromGeminiAction', action);
+    if (action !== SuggestionsFromGeminiAction.MAX_VALUE) {
+      const actionMap = {
+        [SuggestionsFromGeminiAction.MANAGE_CONNECTED_APPS_CLICK]:
+            'PersonalContext.Settings.ManageConnectedAppsClick',
+        [SuggestionsFromGeminiAction.TOGGLE_ON]:
+            'PersonalContext.Settings.ToggledOn',
+        [SuggestionsFromGeminiAction.TOGGLE_OFF]:
+            'PersonalContext.Settings.ToggledOff',
+      };
+      this.recordAction(actionMap[action]);
     }
   }
 }

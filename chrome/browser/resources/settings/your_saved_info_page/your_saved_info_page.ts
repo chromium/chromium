@@ -37,7 +37,7 @@ import {PaymentsManagerImpl} from '../autofill_page/payments_manager_proxy.js';
 import type {PaymentsManagerProxy} from '../autofill_page/payments_manager_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
-import {MetricsBrowserProxyImpl, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl, SuggestionsFromGeminiEntryPoint, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -584,7 +584,8 @@ export class SettingsYourSavedInfoPageElement extends
   }
 
   private onSuggestionsFromGeminiClick_() {
-    // TODO(crbug.com/512204278): Add metrics.
+    this.metricsBrowserProxy_.recordSuggestionsFromGeminiEntryPointClick(
+        SuggestionsFromGeminiEntryPoint.YOUR_SAVED_INFO);
     Router.getInstance().navigateTo(routes.SUGGESTIONS_FROM_GEMINI);
   }
 
