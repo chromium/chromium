@@ -4358,6 +4358,18 @@
       base_feature: "none",
     },
     {
+      // See crbug.com/521921832
+      // Any potential behavioral changes excepting bugfixes from the V2 implementation (including
+      // changes to when the histogram is reported, like early-outs in Animation::PreCommit) are behind
+      // this flag, for safety and consistent reporting on the V1 enum while it is still supported.
+      name: "NewAnimationCompositingChecking",
+      status: "test"
+    },
+    {
+      // Enhanced reporting to dev-tools of the composited/non-composited state of animations.
+      name: "NewAnimationDispositionReporting"
+    },
+    {
       // https://chromestatus.com/feature/5054329641893888
       // streamHTML, appendHTML, etc.
       name: "NewHTMLSettingMethods",

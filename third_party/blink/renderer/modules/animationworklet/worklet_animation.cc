@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_animationeffect_animationeffectsequence.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_documenttimeline_scrolltimeline.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
@@ -610,12 +611,13 @@ bool WorkletAnimation::CanStartOnCompositor() {
   GetEffect()->Model()->SnapshotAllCompositorKeyframesIfNecessary(
       target, target.ComputedStyleRef(), target.ParentComputedStyle());
 
-  CompositorAnimations::FailureReasons failure_reasons =
-      GetEffect()->CheckCanStartAnimationOnCompositor(
-          nullptr, playback_rate_, StartOnCompositorReason::kGeneric);
+  AnimationCompositingDecisionState decision;
+  GetEffect()->CheckCanStartAnimationOnCompositor(
+      nullptr, decision, playback_rate_, StartOnCompositorReason::kGeneric);
 
-  if (failure_reasons != CompositorAnimations::kNoFailure)
+  if (decision.disposition != CompositorAnimations::kNoFailure) {
     return false;
+  }
 
   // If the scroll source is not composited, fall back to main thread.
   if (timeline_->IsScrollTimeline() &&

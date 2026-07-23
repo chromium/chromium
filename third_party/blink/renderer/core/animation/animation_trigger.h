@@ -40,7 +40,8 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable,
   // animation trigger's point of view. In other words, for reasons not in this
   // whitelist, we should not even bother running the check function.
   static const CompositorAnimations::FailureReasons kRecheckCompositingReasons =
-      CompositorAnimations::kInvalidAnimationOrEffect;
+      CompositorAnimations::kInvalidAnimationOrEffect |
+      CompositorAnimations::kUnchecked;
 
   void addAnimation(Animation* animation,
                     V8AnimationTriggerBehavior activate_behavior,

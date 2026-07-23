@@ -155,7 +155,7 @@ void SetCompositeClipPathStatus(Node* node, CompositedPaintStatus status) {
 
 bool AdjustClipPathStatusForCompositingFailureReasons(
     const LayoutObject& layout_object,
-    const Animation& animation,
+    Animation& animation,
     bool for_painting) {
   CompositorAnimations::FailureReasons failure_reasons =
       animation.CheckCanStartAnimationOnCompositor(

@@ -43,6 +43,8 @@ blink_core_sources("animation") {
     "basic_shape_interpolation_functions.h",
     "color_property_functions.cc",
     "color_property_functions.h",
+    "compositing/specific_compositing_decision.cc",
+    "compositing/specific_compositing_decision.h",
     "compositor_animations.cc",
     "compositor_animations.h",
     "css/compositor_keyframe_color.h",

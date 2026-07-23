@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/dynamic_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -1712,14 +1713,33 @@ void inspector_animation_state_event::Data(perfetto::TracedValue context,
 void inspector_animation_compositor_event::Data(
     perfetto::TracedValue context,
     CompositorAnimations::FailureReasons failure_reasons,
-    const PropertyHandleSet& unsupported_properties_for_tracing) {
+    const CompositingDecisionDetailsMap& specific_reasons) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("compositeFailed", failure_reasons);
-  {
+  if (RuntimeEnabledFeatures::NewAnimationDispositionReportingEnabled()) {
+    auto addnl_reasons = dict.AddArray("additionalReasons");
+    for (const auto& bucket : specific_reasons.Map()) {
+      auto type = addnl_reasons.AppendDictionary();
+      type.Add("type", static_cast<uint32_t>(bucket.key));
+      // TODO(crbug.com/521921832): Implement this when V2 reasons are added.
+      type.Add("associatedReason", 0);
+      auto instances = type.AddArray("instances");
+      for (const SpecificCompositingDecisionDetail& entry : bucket.value) {
+        auto inst = instances.AppendDictionary();
+        if (const auto& prop = entry.property) {
+          inst.Add("property", prop->GetCSSPropertyName().ToAtomicString());
+        }
+      }
+    }
+  } else {
     auto unsupported_properties_array = dict.AddArray("unsupportedProperties");
-    for (const PropertyHandle& p : unsupported_properties_for_tracing) {
-      unsupported_properties_array.Append(
-          p.GetCSSPropertyName().ToAtomicString());
+    const auto it = specific_reasons.Map().find(
+        SpecificCompositingDecision::kUnsupportedPropertyName);
+    if (it != specific_reasons.Map().end()) {
+      for (const SpecificCompositingDecisionDetail& entry : it->value) {
+        unsupported_properties_array.Append(
+            entry.property->GetCSSPropertyName().ToAtomicString());
+      }
     }
   }
 }

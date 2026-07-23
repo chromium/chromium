@@ -460,38 +460,34 @@ void KeyframeEffect::NotifySampledEffectRemovedFromEffectStack() {
 CompositorAnimations::FailureReasons
 KeyframeEffect::CheckCanStartAnimationOnCompositor(
     const PaintArtifactCompositor* paint_artifact_compositor,
+    Animation::CompositingDecisionState& state,
     double animation_playback_rate,
-    StartOnCompositorReason start_reason,
-    PropertyHandleSet* unsupported_properties_for_tracing) const {
-  CompositorAnimations::FailureReasons reasons =
-      CompositorAnimations::kNoFailure;
-
+    StartOnCompositorReason start_reason) {
   // There would be no reason to composite an effect that has no keyframes; it
   // has no visual result.
   if (model_->Properties().empty())
-    reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
+    state.disposition |= CompositorAnimations::kInvalidAnimationOrEffect;
 
   // There would be no reason to composite an effect that has no target; it has
   // no visual result.
   if (!effect_target_) {
-    reasons |= CompositorAnimations::kInvalidAnimationOrEffect;
+    state.disposition |= CompositorAnimations::kInvalidAnimationOrEffect;
   } else if (IsCurrent() ||
              start_reason == StartOnCompositorReason::kAnimationTrigger) {
     if (effect_target_->GetComputedStyle() &&
         effect_target_->GetComputedStyle()->HasOffset())
-      reasons |= CompositorAnimations::kTargetHasCSSOffset;
+      state.disposition |= CompositorAnimations::kTargetHasCSSOffset;
 
     // Do not animate a property on the compositor that is marked important.
     if (AffectsImportantProperty())
-      reasons |= CompositorAnimations::kAffectsImportantProperty;
+      state.disposition |= CompositorAnimations::kAffectsImportantProperty;
 
-    reasons |= CompositorAnimations::CheckCanStartAnimationOnCompositor(
+    CompositorAnimations::CheckCanStartAnimationOnCompositor(
         SpecifiedTiming(), NormalizedTiming(), *effect_target_, GetAnimation(),
-        *Model(), paint_artifact_compositor, animation_playback_rate,
-        unsupported_properties_for_tracing);
+        state, *Model(), paint_artifact_compositor, animation_playback_rate);
   }
 
-  return reasons;
+  return state.disposition;
 }
 
 void KeyframeEffect::StartAnimationOnCompositor(

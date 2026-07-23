@@ -42,6 +42,7 @@
 
 namespace blink {
 
+struct AnimationCompositingDecisionState;
 class Element;
 class ExceptionState;
 class KeyframeEffectModelBase;
@@ -115,9 +116,9 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   CompositorAnimations::FailureReasons CheckCanStartAnimationOnCompositor(
       const PaintArtifactCompositor*,
+      AnimationCompositingDecisionState& state,
       double animation_playback_rate,
-      StartOnCompositorReason start_reason,
-      PropertyHandleSet* unsupported_properties_for_tracing = nullptr) const;
+      StartOnCompositorReason start_reason);
   // Must only be called once.
   void StartAnimationOnCompositor(int group,
                                   std::optional<double> start_time,

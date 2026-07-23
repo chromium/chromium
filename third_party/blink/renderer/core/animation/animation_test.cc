@@ -1430,9 +1430,10 @@ TEST_P(AnimationAnimationTestCompositing,
   Animation* animation_not_composited =
       timeline->Play(keyframe_effect_not_composited);
 
-  SimulateFrame(0);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(animation_composited->CheckCanStartAnimationOnCompositorInternal(),
+  SimulateFrame(0);
+  animation_composited->CheckCanStartAnimationOnCompositorInternal();
+  EXPECT_EQ(animation_composited->GetCompositingDecisionState().disposition,
             CompositorAnimations::kNoFailure);
   const PaintArtifactCompositor* paint_artifact_compositor =
       GetDocument().View()->GetPaintArtifactCompositor();
@@ -1590,6 +1591,8 @@ int GenerateHistogramValue(CompositorAnimations::FailureReason reason) {
 }  // namespace
 
 TEST_P(AnimationAnimationTestCompositing, PreCommitRecordsHistograms) {
+  // TODO(crbug.com/521921832): Add tests for this case when V2 has full impl.
+  ScopedNewAnimationCompositingCheckingForTest new_checks(false);
   const std::string histogram_name =
       "Blink.Animation.CompositedAnimationFailureReason";
 

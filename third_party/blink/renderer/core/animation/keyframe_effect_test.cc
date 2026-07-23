@@ -391,8 +391,9 @@ TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorNoKeyframes) {
   {
     auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
         element, CreateEmptyEffectModel(), timing);
+    AnimationCompositingDecisionState state;
     EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
-                    nullptr, animation_playback_rate,
+                    nullptr, state, animation_playback_rate,
                     StartOnCompositorReason::kGeneric) &
                 CompositorAnimations::kInvalidAnimationOrEffect);
   }
@@ -409,8 +410,9 @@ TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorNoKeyframes) {
 
     auto* keyframe_effect =
         MakeGarbageCollected<KeyframeEffect>(element, effect_model, timing);
+    AnimationCompositingDecisionState state;
     EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
-                    nullptr, animation_playback_rate,
+                    nullptr, state, animation_playback_rate,
                     StartOnCompositorReason::kGeneric) &
                 CompositorAnimations::kInvalidAnimationOrEffect);
   }
@@ -437,10 +439,11 @@ TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorNoTarget) {
 
   auto* keyframe_effect =
       MakeGarbageCollected<KeyframeEffect>(nullptr, effect_model, timing);
-  EXPECT_TRUE(
-      keyframe_effect->CheckCanStartAnimationOnCompositor(
-          nullptr, animation_playback_rate, StartOnCompositorReason::kGeneric) &
-      CompositorAnimations::kInvalidAnimationOrEffect);
+  AnimationCompositingDecisionState state;
+  EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
+                  nullptr, state, animation_playback_rate,
+                  StartOnCompositorReason::kGeneric) &
+              CompositorAnimations::kInvalidAnimationOrEffect);
 }
 
 TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorBadTarget) {
@@ -470,11 +473,12 @@ TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorBadTarget) {
   element->SetInlineStyleProperty(CSSPropertyID::kOffsetPosition, "50px 50px");
   UpdateAllLifecyclePhasesForTest();
 
+  AnimationCompositingDecisionState state;
   ASSERT_TRUE(element->GetComputedStyle()->HasOffset());
-  EXPECT_TRUE(
-      keyframe_effect->CheckCanStartAnimationOnCompositor(
-          nullptr, animation_playback_rate, StartOnCompositorReason::kGeneric) &
-      CompositorAnimations::kTargetHasCSSOffset);
+  EXPECT_TRUE(keyframe_effect->CheckCanStartAnimationOnCompositor(
+                  nullptr, state, animation_playback_rate,
+                  StartOnCompositorReason::kGeneric) &
+              CompositorAnimations::kTargetHasCSSOffset);
 }
 
 TEST_F(KeyframeEffectTest, TranslationTransformsPreserveAxisAlignment) {

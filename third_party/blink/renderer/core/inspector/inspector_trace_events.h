@@ -11,6 +11,7 @@
 #include "base/containers/span_or_size.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
+#include "third_party/blink/renderer/core/animation/compositing/specific_compositing_decision.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
@@ -573,7 +574,7 @@ void Data(perfetto::TracedValue context, const Animation&);
 namespace inspector_animation_compositor_event {
 void Data(perfetto::TracedValue context,
           blink::CompositorAnimations::FailureReasons failure_reasons,
-          const blink::PropertyHandleSet& unsupported_properties_for_tracing);
+          const blink::CompositingDecisionDetailsMap& specific_reasons);
 }
 
 namespace inspector_hit_test_event {
