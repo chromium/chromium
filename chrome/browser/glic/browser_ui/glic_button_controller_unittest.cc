@@ -11,7 +11,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -111,7 +110,6 @@ class MockGlicButtonControllerDelegate : public glic::GlicSplitButtonDelegate {
   void SetGlicPanelIsOpen(bool panel_open) override {
     panel_open_ = panel_open;
   }
-  bool IsGlicAdded() override { return true; }
 
   bool show_state() const { return show_state_; }
   bool panel_open() const { return panel_open_; }
@@ -156,16 +154,14 @@ class GlicButtonControllerTest : public testing::Test {
 
     mock_browser_window_interface_ =
         std::make_unique<MockBrowserWindowInterface>();
-    ON_CALL(*mock_browser_window_interface_, GetProfile())
-        .WillByDefault(testing::Return(profile_));
 
     histograms_ = std::make_unique<base::HistogramTester>();
 
-    glic_split_button_controller_ = std::make_unique<GlicSplitButtonController>(
-        mock_browser_window_interface_.get(), mock_glic_service_.get());
-    glic_split_button_controller_->SetHorizontalTabsDelegate(
+    glic_button_controller_ = std::make_unique<GlicButtonController>(
+        profile_, *mock_browser_window_interface_, mock_glic_service_.get());
+    glic_button_controller_->SetHorizontalTabsDelegate(
         &mock_tab_strip_glic_controller_delegate_);
-    glic_split_button_controller_->SetVerticalTabsDelegate(
+    glic_button_controller_->SetVerticalTabsDelegate(
         &mock_toolbar_glic_controller_delegate_);
 
     glic_test_env_.SetupProfile(profile());
@@ -179,7 +175,7 @@ class GlicButtonControllerTest : public testing::Test {
   }
 
   void TearDown() override {
-    glic_split_button_controller_.reset();
+    glic_button_controller_.reset();
     mock_browser_window_interface_.reset();
 
     mock_glic_service_.reset();
@@ -194,9 +190,7 @@ class GlicButtonControllerTest : public testing::Test {
     scoped_feature_list_.Reset();
   }
 
-  GlicButtonController* controller() {
-    return GlicButtonController::From(browser_window_interface());
-  }
+  GlicButtonController* controller() { return glic_button_controller_.get(); }
 
   MockGlicButtonControllerDelegate* tab_strip_controller_delegate() {
     return &mock_tab_strip_glic_controller_delegate_;
@@ -236,7 +230,7 @@ class GlicButtonControllerTest : public testing::Test {
   std::unique_ptr<base::HistogramTester> histograms_;
   std::unique_ptr<actor::ActorKeyedServiceFake> actor_keyed_service_;
   std::unique_ptr<MockGlicKeyedServiceForButtonController> mock_glic_service_;
-  std::unique_ptr<GlicSplitButtonController> glic_split_button_controller_;
+  std::unique_ptr<GlicButtonController> glic_button_controller_;
   std::unique_ptr<MockBrowserWindowInterface> mock_browser_window_interface_;
 };
 

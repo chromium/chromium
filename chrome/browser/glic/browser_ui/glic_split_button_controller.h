@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -42,9 +41,6 @@ class GlicSplitButtonController {
   void SetVerticalTabsDelegate(GlicSplitButtonDelegate* delegate);
   base::WeakPtr<GlicSplitButtonController> GetWeakPtr();
 
-  GlicSplitButtonDelegate* GetActiveDelegate();
-  void CallOnBoth(base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn);
-
   GlicNudgeController* nudge_controller() {
     return glic_nudge_controller_.get();
   }
@@ -58,10 +54,6 @@ class GlicSplitButtonController {
 #endif
 
  private:
-  const raw_ptr<BrowserWindowInterface> browser_;
-  raw_ptr<GlicSplitButtonDelegate> horizontal_tabs_delegate_ = nullptr;
-  raw_ptr<GlicSplitButtonDelegate> vertical_tabs_delegate_ = nullptr;
-
   std::unique_ptr<GlicNudgeController> glic_nudge_controller_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<GlicButtonController> glic_button_controller_;

@@ -20,7 +20,6 @@ class Profile;
 namespace glic {
 
 class GlicSplitButtonDelegate;
-class GlicSplitButtonController;
 class GlicKeyedService;
 
 // Controller class for the button entry point. Manages visibility, icon
@@ -32,7 +31,6 @@ class GlicButtonController {
   static GlicButtonController* From(BrowserWindowInterface* browser);
   GlicButtonController(Profile* profile,
                        BrowserWindowInterface& browser,
-                       GlicSplitButtonController* split_button_controller,
                        GlicKeyedService* service);
   ~GlicButtonController();
 
@@ -46,15 +44,15 @@ class GlicButtonController {
   mojom::InvocationSource GetInvocationSource(bool is_showing_nudge,
                                               bool is_toolbar) const;
 
-  void UpdateButton();
-
  private:
-  void CallOnBoth(base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn);
+  void UpdateButton();
 
   raw_ptr<Profile> profile_;
   raw_ref<BrowserWindowInterface> browser_;
+  raw_ptr<GlicSplitButtonDelegate> tab_strip_glic_controller_delegate_ =
+      nullptr;
+  raw_ptr<GlicSplitButtonDelegate> toolbar_glic_controller_delegate_ = nullptr;
   raw_ptr<GlicKeyedService> glic_keyed_service_;
-  raw_ptr<GlicSplitButtonController> split_button_controller_;
   PrefChangeRegistrar pref_registrar_;
 
   // Holds subscriptions for callbacks.

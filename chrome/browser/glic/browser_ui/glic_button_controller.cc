@@ -4,8 +4,6 @@
 
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 
-#include "base/functional/bind.h"
-#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -32,14 +30,11 @@ GlicButtonController* GlicButtonController::From(
 GlicButtonController::GlicButtonController(
     Profile* profile,
     BrowserWindowInterface& browser,
-    GlicSplitButtonController* split_button_controller,
     GlicKeyedService* service)
     : profile_(profile),
       browser_(browser),
       glic_keyed_service_(service),
-      split_button_controller_(split_button_controller),
       scoped_unowned_user_data_(browser.GetUnownedUserDataHost(), *this) {
-  CHECK(split_button_controller_);
   CHECK(glic_keyed_service_);
 
   // Set initial button state.
@@ -63,12 +58,18 @@ GlicButtonController::~GlicButtonController() = default;
 
 void GlicButtonController::SetHorizontalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
-  split_button_controller_->SetHorizontalTabsDelegate(delegate);
+  tab_strip_glic_controller_delegate_ = delegate;
+  if (tab_strip_glic_controller_delegate_) {
+    UpdateButton();
+  }
 }
 
 void GlicButtonController::SetVerticalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
-  split_button_controller_->SetVerticalTabsDelegate(delegate);
+  toolbar_glic_controller_delegate_ = delegate;
+  if (toolbar_glic_controller_delegate_) {
+    UpdateButton();
+  }
 }
 
 base::WeakPtr<GlicButtonController> GlicButtonController::GetWeakPtr() {
@@ -89,26 +90,32 @@ void GlicButtonController::UpdateButton() {
       profile_->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip);
   if (!should_show_button || !is_pinned_to_tabstrip) {
     // If the button shouldn't be shown, just hide it.
-    CallOnBoth(base::BindRepeating([](GlicSplitButtonDelegate& delegate) {
-      delegate.SetGlicShowState(false);
-    }));
+    if (tab_strip_glic_controller_delegate_) {
+      tab_strip_glic_controller_delegate_->SetGlicShowState(false);
+    }
+    if (toolbar_glic_controller_delegate_) {
+      toolbar_glic_controller_delegate_->SetGlicShowState(false);
+    }
     return;
   }
 
-  const bool is_glic_panel_open =
+  if (tab_strip_glic_controller_delegate_) {
+    tab_strip_glic_controller_delegate_->SetGlicShowState(true);
+  }
+  if (toolbar_glic_controller_delegate_) {
+    toolbar_glic_controller_delegate_->SetGlicShowState(true);
+  }
+
+  bool is_glic_panel_open =
       glic_keyed_service_->IsPanelShowingForBrowser(*browser_);
-  CallOnBoth(base::BindRepeating(
-      [](bool is_glic_panel_open, GlicSplitButtonDelegate& delegate) {
-        delegate.SetGlicShowState(true);
-        delegate.SetGlicPanelIsOpen(is_glic_panel_open);
-      },
-      is_glic_panel_open));
+  if (tab_strip_glic_controller_delegate_) {
+    tab_strip_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
+  }
+  if (toolbar_glic_controller_delegate_) {
+    toolbar_glic_controller_delegate_->SetGlicPanelIsOpen(is_glic_panel_open);
+  }
 }
 
-void GlicButtonController::CallOnBoth(
-    base::RepeatingCallback<void(GlicSplitButtonDelegate&)> fn) {
-  split_button_controller_->CallOnBoth(fn);
-}
 
 mojom::InvocationSource GlicButtonController::GetInvocationSource(
     bool is_showing_nudge,
