@@ -171,6 +171,7 @@
 #include "net/http/http_status_code.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/redirect_info.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -9285,6 +9286,12 @@ void NavigationRequest::DidCommitNavigation(
     base::UmaHistogramCounts100(
         "Navigation.DuplicateNavigationsIgnoredCountPerNavigation",
         ignored_duplicate_navigation_count_);
+    ukm::builders::Navigation_DuplicateNavigationsIgnored builder(
+        GetNextPageUkmSourceId());
+    builder.SetIgnoredDuplicateNavigationCount(
+        ukm::GetExponentialBucketMinForCounts1000(
+            ignored_duplicate_navigation_count_));
+    builder.Record(ukm::UkmRecorder::Get());
   }
 
   if (!IsSameDocument() && IsInOutermostMainFrame() &&

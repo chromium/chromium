@@ -37,6 +37,7 @@
 #include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace {
@@ -1378,6 +1379,8 @@ IN_PROC_BROWSER_TEST_P(
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
 
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   // 2. Navigate again, also to `url_srp()`.
   base::WeakPtr<content::NavigationHandle> nav_handle_for_url =
       web_contents()->GetController().LoadURL(url_srp(), content::Referrer(),
@@ -1412,6 +1415,13 @@ IN_PROC_BROWSER_TEST_P(
                           GetAbandonReasonAtMilestoneHistogramName(milestone))
                       .empty());
     }
+
+    auto ukm_entries =
+        ukm_recorder.GetEntriesByName("Navigation.DuplicateNavigationsIgnored");
+    EXPECT_EQ(ukm_entries.size(), 1ul);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entries[0], "IgnoredDuplicateNavigationCount",
+        ukm::GetExponentialBucketMinForCounts1000(1));
   } else {
     // Check that the abandonment reason is set correctly.
     EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
@@ -1424,6 +1434,10 @@ IN_PROC_BROWSER_TEST_P(
         GetAbandonReasonAtMilestoneHistogramName(
             NavigationMilestone::kNavigationStart),
         AbandonReason::kNewDuplicateNavigation, 1);
+
+    auto ukm_entries =
+        ukm_recorder.GetEntriesByName("Navigation.DuplicateNavigationsIgnored");
+    EXPECT_EQ(ukm_entries.size(), 0ul);
   }
 }
 
@@ -1444,6 +1458,8 @@ IN_PROC_BROWSER_TEST_P(
                      content::JsReplace("location.href = $1;", url_srp())));
   // Pause the navigation at request start.
   EXPECT_TRUE(nav_manager.WaitForRequestStart());
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // 2. Navigate again, also to `url_srp()`.
   EXPECT_TRUE(ExecJs(web_contents(),
@@ -1477,6 +1493,13 @@ IN_PROC_BROWSER_TEST_P(
                           GetAbandonReasonAtMilestoneHistogramName(milestone))
                       .empty());
     }
+
+    auto ukm_entries =
+        ukm_recorder.GetEntriesByName("Navigation.DuplicateNavigationsIgnored");
+    EXPECT_EQ(ukm_entries.size(), 1ul);
+    ukm_recorder.ExpectEntryMetric(
+        ukm_entries[0], "IgnoredDuplicateNavigationCount",
+        ukm::GetExponentialBucketMinForCounts1000(1));
   } else {
     // Check that the abandonment reason is set correctly.
     EXPECT_THAT(histogram_tester().GetTotalCountsForPrefix(
@@ -1489,6 +1512,10 @@ IN_PROC_BROWSER_TEST_P(
         GetAbandonReasonAtMilestoneHistogramName(
             NavigationMilestone::kNavigationStart),
         AbandonReason::kNewDuplicateNavigation, 1);
+
+    auto ukm_entries =
+        ukm_recorder.GetEntriesByName("Navigation.DuplicateNavigationsIgnored");
+    EXPECT_EQ(ukm_entries.size(), 0ul);
   }
 }
 

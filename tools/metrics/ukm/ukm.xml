@@ -15363,6 +15363,22 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Navigation.DuplicateNavigationsIgnored">
+  <owner>annasato@chromium.org</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Records the number of subsequent duplicate navigation requests that were
+    ignored in favor of an ongoing navigation. This is caused by
+    IgnoreDuplicateNavs.
+  </summary>
+  <metric name="IgnoredDuplicateNavigationCount">
+    <summary>
+      The number of duplicate navigations that were ignored.
+      ukm::GetExponentialBucketMinForCounts1000() is applied.
+    </summary>
+  </metric>
+</event>
+
 <event name="Navigation.FromGoogleSearch.Abandoned">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
