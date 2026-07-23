@@ -50,7 +50,7 @@ id<GREYMatcher> ManagedProfileCreationSubtitleMergeByDefaultMatcher() {
 
 id<GREYMatcher> ManagedProfileCreationSubtitleMatcher() {
   return grey_accessibilityLabel(
-          l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE));
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE));
 }
 
 id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
@@ -201,8 +201,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
-  // TODO(crbug.com/399033938): Find a better way to wait for this.
-  GREYWaitForAppToIdle(@"App failed to idle");
+  [ChromeEarlGrey waitForCurrentProfileName:newProfileName];
 
   // The user should be signed in without having to see the managed profile
   // onboarding a second time.
@@ -300,8 +299,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
-  // TODO(crbug.com/399033938): Find a better way to wait for this.
-  GREYWaitForAppToIdle(@"App failed to idle");
+  [ChromeEarlGrey waitForCurrentProfileName:newProfileName];
 
   // The user should be signed in without having to see the managed profile
   // onboarding a second time.
@@ -467,7 +465,8 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
   WaitForEnterpriseOnboardingScreen();
 
   // Verifies that the subtitle is the right one.
-  [[EarlGrey selectElementWithMatcher:ManagedProfileCreationSubtitleMergeByDefaultMatcher()]
+  [[EarlGrey selectElementWithMatcher:
+                 ManagedProfileCreationSubtitleMergeByDefaultMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open the browsing data management screen.
@@ -664,8 +663,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
-  // TODO(crbug.com/399033938): Find a better way to wait for this.
-  GREYWaitForAppToIdle(@"App failed to idle");
+  [ChromeEarlGrey waitForCurrentProfileName:personalProfileName];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
 
@@ -868,8 +866,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
                      IDS_IOS_REMOVE_ACCOUNT_LABEL)] performAction:grey_tap()];
 
   // Wait for the profile switch to complete.
-  // TODO(crbug.com/399033938): Find a better way to wait for this.
-  GREYWaitForAppToIdle(@"App failed to idle");
+  [ChromeEarlGrey waitForCurrentProfileName:personalProfileName];
 
   // Verify that the profile was actually switched back to personal.
   GREYAssert(

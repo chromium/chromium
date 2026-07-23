@@ -215,6 +215,19 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface personalProfileName];
 }
 
+- (void)waitForCurrentProfileName:(NSString*)profileName {
+  ConditionBlock condition = ^{
+    return [self.currentProfileName isEqualToString:profileName];
+  };
+  bool success = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, condition);
+  NSString* errorString =
+      [NSString stringWithFormat:
+                    @"Timed out waiting for current profile name to become %@",
+                    profileName];
+  EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
+}
+
 #pragma mark - History Utilities (EG2)
 
 - (void)clearBrowsingHistory {
@@ -278,7 +291,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
     [self waitForPageToFinishLoading];
   }
 }
-
 
 - (void)dismissSettings {
   [ChromeEarlGreyAppInterface dismissSettings];
@@ -467,9 +479,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   if (pageLoadError) {
     return pageLoadError;
   }
-    // Loading URL (especially the first time) can trigger alerts.
-    [SystemAlertHandler handleSystemAlertIfVisible];
-    return nil;
+  // Loading URL (especially the first time) can trigger alerts.
+  [SystemAlertHandler handleSystemAlertIfVisible];
+  return nil;
 }
 
 - (void)loadURL:(const GURL&)URL withTimeout:(base::TimeDelta)timeout {
