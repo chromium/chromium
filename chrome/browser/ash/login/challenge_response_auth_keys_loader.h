@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "net/ssl/client_cert_identity.h"
 
 class AccountId;
+class PrefService;
 
 namespace ash {
 
@@ -37,9 +39,11 @@ class ChallengeResponseAuthKeysLoader final : public ProfileObserver {
 
   // Returns whether the given user, whose profile must already exist on the
   // device, supports authentication via the challenge-response protocol.
-  static bool CanAuthenticateUser(const AccountId& account_id);
+  static bool CanAuthenticateUser(PrefService& local_state,
+                                  const AccountId& account_id);
 
-  ChallengeResponseAuthKeysLoader();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit ChallengeResponseAuthKeysLoader(PrefService* local_state);
   ChallengeResponseAuthKeysLoader(const ChallengeResponseAuthKeysLoader&) =
       delete;
   ChallengeResponseAuthKeysLoader& operator=(
@@ -81,6 +85,8 @@ class ChallengeResponseAuthKeysLoader final : public ProfileObserver {
       const std::vector<std::string>& suitable_public_key_spki_items,
       LoadAvailableKeysCallback callback,
       net::ClientCertIdentityList cert_identities);
+
+  const raw_ref<PrefService> local_state_;
 
   base::TimeDelta maximum_extension_load_waiting_time_;
 

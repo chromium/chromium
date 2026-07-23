@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/login/user_adding_screen.h"
@@ -174,7 +175,9 @@ ScreenLocker* ScreenLocker::screen_locker_ = nullptr;  // Only on UI thread
 // ScreenLocker, public:
 
 ScreenLocker::ScreenLocker(const user_manager::UserList& users)
-    : users_(users) {
+    : users_(users),
+      // TODO(crbug.com/404133029): Avoid using g_browser_process.
+      challenge_response_auth_keys_loader_(g_browser_process->local_state()) {
   CHECK(base::CurrentUIThread::IsSet());
   CHECK(!screen_locker_);
   screen_locker_ = this;
@@ -413,7 +416,9 @@ void ScreenLocker::AuthenticateWithChallengeResponse(
     return;
   }
 
-  if (!ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id)) {
+  // TODO(crbug.com/404133029): Avoid using g_browser_process.
+  if (!ChallengeResponseAuthKeysLoader::CanAuthenticateUser(
+          CHECK_DEREF(g_browser_process->local_state()), account_id)) {
     LOG(ERROR)
         << "Challenge-response authentication isn't supported for the user";
     if (auth_status_consumer_) {

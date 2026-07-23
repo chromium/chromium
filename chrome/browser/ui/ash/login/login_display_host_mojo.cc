@@ -207,7 +207,8 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>(
-          browser_policy_connector_ash)) {
+          browser_policy_connector_ash)),
+      challenge_response_auth_keys_loader_(local_state) {
   CHECK(!g_login_display_host_mojo);
   g_login_display_host_mojo = this;
 
@@ -786,7 +787,8 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithEasyUnlock(
 void LoginDisplayHostMojo::HandleAuthenticateUserWithChallengeResponse(
     const AccountId& account_id,
     base::OnceCallback<void(bool)> callback) {
-  if (!ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id)) {
+  if (!ChallengeResponseAuthKeysLoader::CanAuthenticateUser(local_state_.get(),
+                                                            account_id)) {
     LOG(ERROR)
         << "Challenge-response authentication isn't supported for the user";
     std::move(callback).Run(false);

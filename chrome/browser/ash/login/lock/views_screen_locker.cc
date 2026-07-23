@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
@@ -203,8 +204,10 @@ void ViewsScreenLocker::UpdatePinKeyboardState(const AccountId& account_id) {
 
 void ViewsScreenLocker::UpdateChallengeResponseAuthAvailability(
     const AccountId& account_id) {
+  // TODO(crbug.com/404133029): Avoid using g_browser_process.
   const bool enable_challenge_response =
-      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id);
+      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(
+          CHECK_DEREF(g_browser_process->local_state()), account_id);
   LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
       account_id, enable_challenge_response);
 }
