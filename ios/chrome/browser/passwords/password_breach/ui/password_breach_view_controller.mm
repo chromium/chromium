@@ -29,7 +29,7 @@ constexpr CGFloat kHelpSymbolSize = 20;
 
 - (void)viewDidLoad {
   _helpButton = [[UIBarButtonItem alloc]
-      initWithImage:DefaultSymbolWithPointSize(kHelpSymbol, kHelpSymbolSize)
+      initWithImage:SymbolWithPointSize(SymbolHelp, kHelpSymbolSize)
               style:UIBarButtonItemStylePlain
              target:self
              action:@selector(showLearnMore)];
