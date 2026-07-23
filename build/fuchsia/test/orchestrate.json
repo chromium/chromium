@@ -1,6 +1,7 @@
 {
   "emulator": {
-    "ffx_path": "third_party/fuchsia-sdk/sdk/tools/x64/ffx",
-    "local_pb": "third_party/fuchsia-sdk/images/terminal/x64/"
+    "comment": "Relative paths are resolved relative to the build directory (e.g. out/Release) because orchestrate is run with CWD set to the build directory.",
+    "ffx_path": "../../third_party/fuchsia-sdk/sdk/tools/x64/ffx",
+    "local_pb": "../../third_party/fuchsia-sdk/images/terminal/x64/"
   }
 }

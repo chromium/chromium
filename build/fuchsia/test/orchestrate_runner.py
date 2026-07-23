@@ -51,9 +51,12 @@ def run_tests_with_orchestrate(out_dir: str,
         overrides_str, '--'
     ] + target_cmd
 
+    env = os.environ.copy()
+    if logs_dir:
+        env['TEST_UNDECLARED_OUTPUTS_DIR'] = logs_dir
     print(f"Running command: {subprocess.list2cmdline(cmd)}")
     try:
-        proc = subprocess.run(cmd, check=False)
+        proc = subprocess.run(cmd, env=env, cwd=out_dir, check=False)
         return proc.returncode
     except KeyboardInterrupt:
         print("\nExecution interrupted by user.", file=sys.stderr)
