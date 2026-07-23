@@ -11105,6 +11105,25 @@
             ]
         }
     ],
+    "ExtensionsPinnedByDefault": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260716",
+                    "enable_features": [
+                        "ExtensionsPinnedByDefault"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtensionsToolbarAndMenuRedesign": [
         {
             "platforms": [
