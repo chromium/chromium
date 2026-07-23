@@ -1689,7 +1689,7 @@ void WebRequestEventRouter::DispatchEventToListeners(
       // lazy context.
       auto event =
           std::make_unique<Event>(listener->histogram_value, id.sub_event_name,
-                                  std::move(args_filtered));
+                                  std::move(args_filtered), id.browser_context);
       // Add a callback to the event in case we find we cannot dispatch to the
       // extension listener (as can happen if the extension fails to re-register
       // the event listener synchronously). If this happens, we treat the event
@@ -1797,8 +1797,8 @@ int WebRequestEventRouter::DispatchEventToTargets(
       // code, narrowed to this target. For a lazy target this wakes up the lazy
       // context.
       CHECK(!key.extension_id.empty());
-      auto event =
-          std::make_unique<Event>(histogram_value, event_name, std::move(args));
+      auto event = std::make_unique<Event>(
+          histogram_value, event_name, std::move(args), group_browser_context);
       event->restrict_to_dispatch_target =
           Event::DispatchTarget{key.render_process_id, key.worker_thread_id,
                                 key.service_worker_version_id};

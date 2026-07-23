@@ -103,6 +103,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/install_prefs_helper.h"
+#include "extensions/browser/lazy_context_id.h"
 #include "extensions/browser/permissions/active_tab_permission_granter.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/process_manager.h"
@@ -7130,6 +7131,123 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   }
 
   ASSERT_TRUE(skipped_listener.WaitUntilSatisfied());
+}
+
+// Regression test for a bug where lazy webRequest event dispatching failed to
+// specify `restrict_to_browser_context` on the generated Event. Previously,
+// omitting this restriction caused the EventRouter to bypass profile isolation
+// checks and uselessly wake up incognito service workers for split-mode
+// extensions whenever a navigation occurred in a regular window (and vice
+// versa). This test verifies that lazy events are properly scoped to the
+// originating browser context and neither service worker is unnecessarily
+// woken up.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       LazyDispatchDoesNotWakeIncognitoSplitModeWorker) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Ensure an incognito browser exists before loading the extension so that
+  // loading the split-mode extension initializes both contexts.
+  content::WebContents* incognito_contents =
+      PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_contents);
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  ASSERT_TRUE(incognito_profile);
+
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Split Mode WebRequest Test",
+           "version": "0.1",
+           "manifest_version": 3,
+           "incognito": "split",
+           "permissions": ["webRequest"],
+           "host_permissions": ["<all_urls>"],
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(const mode = chrome.extension.inIncognitoContext ? 'incognito'
+                                                          : 'regular';
+         chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               chrome.test.sendMessage('event_' + mode);
+             },
+             {urls: ['<all_urls>'], types: ['main_frame']});
+         chrome.test.sendMessage('started_' + mode);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  const Extension* extension = nullptr;
+  {
+    ExtensionTestMessageListener started_regular("started_regular");
+    ExtensionTestMessageListener started_incognito("started_incognito");
+
+    extension = LoadExtension(
+        test_dir.UnpackedPath(),
+        {.allow_in_incognito = true, .wait_for_registration_stored = true});
+    ASSERT_TRUE(extension);
+
+    // Wait for both regular and incognito service workers to finish starting.
+    EXPECT_TRUE(started_regular.WaitUntilSatisfied());
+    EXPECT_TRUE(started_incognito.WaitUntilSatisfied());
+  }
+
+  // Stop both service workers so the event listener becomes lazy in both
+  // contexts.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(incognito_profile,
+                                                             extension->id());
+  base::RunLoop().RunUntilIdle();
+
+  auto expect_no_running_or_pending_workers =
+      [extension](content::BrowserContext* context) {
+        EXPECT_TRUE(ProcessManager::Get(context)
+                        ->GetServiceWorkersForExtension(extension->id())
+                        .empty());
+        EXPECT_EQ(
+            0u, ServiceWorkerTaskQueue::Get(context)->GetNumPendingTasksForTest(
+                    LazyContextId::ForExtension(context, extension)));
+      };
+
+  // 1) Navigate only in the incognito browser context.
+  {
+    ExtensionTestMessageListener event_incognito("event_incognito");
+
+    ASSERT_TRUE(NavigateToURL(
+        incognito_contents,
+        embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+    // Only the incognito service worker should be woken up and receive the
+    // event; the regular service worker must remain stopped with no pending
+    // tasks or starts.
+    EXPECT_TRUE(event_incognito.WaitUntilSatisfied());
+    expect_no_running_or_pending_workers(profile());
+  }
+
+  // 2) Stop the incognito worker again to test regular navigation isolation.
+  // Note that the regular worker remained stopped from step 1 because our
+  // event dispatching fix correctly avoided waking it up.
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(incognito_profile,
+                                                             extension->id());
+  base::RunLoop().RunUntilIdle();
+
+  // Navigate only in the regular (on-the-record) browser context.
+  {
+    ExtensionTestMessageListener event_regular("event_regular");
+
+    content::WebContents* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(NavigateToURL(
+        web_contents,
+        embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+    // Only the regular service worker should be woken up and receive the event;
+    // the incognito service worker must remain stopped with no pending tasks or
+    // starts.
+    EXPECT_TRUE(event_regular.WaitUntilSatisfied());
+    expect_no_running_or_pending_workers(incognito_profile);
+  }
 }
 
 // Tests a service worker-based extension using webRequest for observational
