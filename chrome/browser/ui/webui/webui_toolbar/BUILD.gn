@@ -70,6 +70,7 @@ source_set("impl") {
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/views/permissions/chip",
     "//chrome/browser/ui/waap",
+    "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/util",

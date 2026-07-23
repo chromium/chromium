@@ -46,6 +46,11 @@ export function getHtml(this: ReadonlyOmniboxElement) {
         this.omniboxViewState.inlineAutocompletion}</span>
   <span id="additionalText">${this.omniboxViewState.additionalText}</span>
 </div>
+
+<div id="dragTemplate" aria-hidden="true">
+  <img id="dragFavicon" src="${this.getDragFaviconUrl_()}" alt="">
+  <span id="dragTitle">${this.getDragTitle_()}</span>
+</div>
 <!--_html_template_end_-->`;
   // clang-format on
 }

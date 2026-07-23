@@ -25,6 +25,7 @@ class MockToolbarUiHandler extends TestBrowserProxy {
     return Promise.resolve({
       adjustedText: text,
       adjustedUrl: null,
+      pageTitle: null,
     });
   }
 }

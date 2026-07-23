@@ -9,6 +9,7 @@ import {type Range as MojomRange} from '//resources/mojo/ui/gfx/range/mojom/rang
 import type {AdjustOmniboxTextForCopyResult} from '/shared/toolbar_ui_api.mojom-webui.js';
 import type {OmniboxTextPortion, OmniboxViewState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {FocusRequestTarget, OmniboxTextColor} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
+import {getFaviconUrl} from 'chrome://resources/js/icon.js';
 
 import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import type {BrowserProxy, FocusRequestHandle} from './browser_proxy.js';
@@ -19,6 +20,7 @@ import {getEventDispositionFlags} from './toolbar_button.js';
 export interface ReadonlyOmniboxElement {
   $: {
     additionalText: HTMLElement,
+    dragTemplate: HTMLElement,
     inlineAutocomplete: HTMLElement,
     textContainer: HTMLElement,
     textContainerWrap: HTMLElement,
@@ -71,6 +73,8 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
       // True if the IME is currently active.
       isComposing: {type: Boolean},
+
+      adjustedCopyResult: {type: Object},
     };
   }
 
@@ -93,6 +97,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       Object.assign(this.browserOmniboxState);
 
   accessor isComposing: boolean = false;
+  accessor adjustedCopyResult: AdjustOmniboxTextForCopyResult|null = null;
 
   private focusRequestHandle_: FocusRequestHandle =
       INVALID_FOCUS_REQUEST_HANDLE;
@@ -118,7 +123,6 @@ export class ReadonlyOmniboxElement extends CrLitElement {
   // immediately before. `null` if there is no focus.
   private lastFocusAcquisition_: number|null = null;
   private isDraggingFromSelf_: boolean = false;
-  private adjustedCopyResult_: AdjustOmniboxTextForCopyResult|null = null;
   private onSelectionChangeBound_ = this.onSelectionChange_.bind(this);
 
   // Bitmap of mouse buttons down. This is using `event.button` as bit position,
@@ -491,6 +495,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     });
 
     this.selectAllOnMouseRelease_ = false;
+    this.updateAdjustedCopyResult_();
   }
 
   private onInputMouseMove_(event: MouseEvent): void {
@@ -675,17 +680,31 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     return this.getSelection();
   }
 
+  protected getDragFaviconUrl_(): string {
+    if (this.adjustedCopyResult?.adjustedUrl) {
+      return getFaviconUrl(this.adjustedCopyResult.adjustedUrl, {
+        size: 16,
+        scaleFactor: `${window.devicePixelRatio}x`,
+      });
+    }
+    return '';
+  }
+
+  protected getDragTitle_(): string {
+    return this.adjustedCopyResult?.pageTitle || '';
+  }
+
   private populateDataTransfer_(dataTransfer: DataTransfer): boolean {
     const input = this.$.textInput;
     const selectionStart = input.selectionStart!;
     const selectionEnd = input.selectionEnd!;
 
-    if (selectionStart !== selectionEnd && this.adjustedCopyResult_) {
-      dataTransfer.setData('text/plain', this.adjustedCopyResult_.adjustedText);
+    if (selectionStart !== selectionEnd && this.adjustedCopyResult) {
+      dataTransfer.setData('text/plain', this.adjustedCopyResult.adjustedText);
 
-      if (this.adjustedCopyResult_.adjustedUrl) {
+      if (this.adjustedCopyResult.adjustedUrl) {
         dataTransfer.setData(
-            'text/uri-list', this.adjustedCopyResult_.adjustedUrl);
+            'text/uri-list', this.adjustedCopyResult.adjustedUrl);
       }
       return true;
     }
@@ -697,6 +716,14 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
     if (e.dataTransfer && this.populateDataTransfer_(e.dataTransfer)) {
       e.dataTransfer.effectAllowed = 'copy';
+
+      if (this.adjustedCopyResult?.adjustedUrl) {
+        const template = this.$.dragTemplate;
+        const xOffset = template.clientWidth / 2;
+        const yOffset = template.clientHeight / 2;
+
+        e.dataTransfer.setDragImage(template, xOffset, yOffset);
+      }
     }
   }
 
@@ -723,7 +750,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.isComposing = false;
   }
 
-  private onSelectionChange_(): void {
+  private updateAdjustedCopyResult_(): void {
     const input = this.$.textInput;
     const start = input.selectionStart!;
     const end = input.selectionEnd!;
@@ -732,14 +759,21 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       this.browserProxy_.toolbarUIHandler
           .adjustOmniboxTextForCopy(selectedText, start)
           .then(response => {
-            this.adjustedCopyResult_ = response || null;
+            this.adjustedCopyResult = response || null;
           })
           .catch(() => {
-            this.adjustedCopyResult_ = null;
+            this.adjustedCopyResult = null;
           });
     } else {
-      this.adjustedCopyResult_ = null;
+      this.adjustedCopyResult = null;
     }
+  }
+
+  private onSelectionChange_(): void {
+    if (this.mouseButtonDown_ !== 0) {
+      return;
+    }
+    this.updateAdjustedCopyResult_();
   }
 
   private onDragEnd_(): void {

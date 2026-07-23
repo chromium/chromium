@@ -149,3 +149,47 @@
   /* Since the <input> is full-width, we want to be on top */
   z-index: 2;
 }
+
+#dragTemplate {
+  align-items: center;
+  color: var(--color-textfield-foreground);
+  display: flex;
+  font-family: var(--drag-template-font-family);
+  font-size: var(--drag-template-font-size);
+  font-weight: var(--drag-template-font-weight);
+  /* Matches native drag image preferred height calculation from
+   * button_drag_utils.cc (button->GetPreferredSize({}): 16px gfx::kFaviconSize
+   * icon + 8px LabelButton padding).
+   */
+  height: 24px;
+  /* Position off-screen so the template is not visible in the transparent
+   * WebUI, while keeping its full layout intact for
+   * dataTransfer.setDragImage().
+   */
+  left: -10000px;
+  max-width: 150px;
+  pointer-events: none;
+  position: absolute;
+  top: -10000px;
+  white-space: nowrap;
+}
+
+#dragFavicon {
+  flex-shrink: 0;
+  /* Standard favicon display size (gfx::kFaviconSize). */
+  height: 16px;
+  margin-inline-end: 12px;
+  width: 16px;
+}
+
+#dragTitle {
+  overflow: hidden;
+  padding-inline: 2px;
+  text-overflow: ellipsis;
+  text-shadow:
+      0 0 1px var(--color-textfield-background),
+      0 0 1px var(--color-textfield-background),
+      0 0 2px var(--color-textfield-background),
+      0 0 2px var(--color-textfield-background);
+  white-space: nowrap;
+}

@@ -743,8 +743,21 @@ WebUIToolbarWebView::AdjustOmniboxTextForCopy(const std::u16string& text,
   result->adjusted_text = text16;
   if (write_url) {
     result->adjusted_url = url;
+
+    std::u16string page_title;
+    if (location_bar) {
+      content::WebContents* web_contents = location_bar->GetWebContents();
+      if (web_contents) {
+        page_title = web_contents->GetTitle();
+      }
+    }
+    if (page_title.empty()) {
+      page_title = base::UTF8ToUTF16(url.spec());
+    }
+    result->page_title = std::move(page_title);
   } else {
     result->adjusted_url = std::nullopt;
+    result->page_title = std::nullopt;
   }
   return result;
 }

@@ -1330,10 +1330,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                   )"),
 
       // Wait for the asynchronous C++ AdjustOmniboxTextForCopy to resolve and
-      // populate adjustedCopyResult_.
+      // populate adjustedCopyResult.
       WaitForJsResultAt(
           WebUIToolbarId(), kOmniboxDeepQuery,
-          "el => el.adjustedCopyResult_?.adjustedText === 'title1'"),
+          "el => el.adjustedCopyResult?.adjustedText === 'title1' && "
+          "el.adjustedCopyResult?.pageTitle === null"),
 
       SetupDragDropClient(),
 
@@ -1359,14 +1360,15 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                        MAYBE_DragUrlFromWebUIOmnibox) {
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
-  const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL initial_url = embedded_test_server()->GetURL("/title2.html");
 
   RunTestSequence(
       WaitForToolbarLoaded(), NavigateWebContents(TabId(), initial_url),
+      WaitForWebContentsReady(TabId(), initial_url),
 
-      // Wait until Mojo has successfully populated 'title1' inside `#textInput`
+      // Wait until Mojo has successfully populated 'title2' inside `#textInput`
       WaitForJsResultAt(WebUIToolbarId(), kTextInputDeepQuery,
-                        "el => el.value.includes('title1')"),
+                        "el => el.value.includes('title2')"),
 
       ExecuteJsAt(WebUIToolbarId(), kTextInputDeepQuery,
                   R"(
@@ -1377,9 +1379,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                   )"),
 
       // Wait for the asynchronous C++ AdjustOmniboxTextForCopy to resolve and
-      // populate adjustedCopyResult_.
-      WaitForJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
-                        "el => el.adjustedCopyResult_ !== null"),
+      // populate adjustedCopyResult.
+      WaitForJsResultAt(
+          WebUIToolbarId(), kOmniboxDeepQuery,
+          "el => el.adjustedCopyResult !== null && "
+          "el.adjustedCopyResult.pageTitle === 'Title Of Awesomeness'"),
+
+      Do(base::BindLambdaForTesting([&]() {
+        EXPECT_EQ(
+            browser()->tab_strip_model()->GetActiveWebContents()->GetTitle(),
+            u"Title Of Awesomeness");
+      })),
 
       SetupDragDropClient(),
 
@@ -1425,9 +1435,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                                      js_to_drag.c_str())),
 
       // Wait for the asynchronous C++ AdjustOmniboxTextForCopy to resolve and
-      // populate adjustedCopyResult_.
+      // populate adjustedCopyResult.
       WaitForJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
-                        "el => el.adjustedCopyResult_ !== null"),
+                        "el => el.adjustedCopyResult !== null"),
 
       SetupDragDropClient(),
 
@@ -1472,9 +1482,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
                   )"),
 
       // Wait for the asynchronous C++ AdjustOmniboxTextForCopy to resolve and
-      // populate adjustedCopyResult_.
+      // populate adjustedCopyResult.
       WaitForJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
-                        "el => el.adjustedCopyResult_ !== null"),
+                        "el => el.adjustedCopyResult !== null && "
+                        "el.adjustedCopyResult.pageTitle !== null"),
 
       SetupDragDropClient(),
 
@@ -1524,7 +1535,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
 
       // Wait for the Mojo IPC to resolve and populate the adjusted copy text.
       WaitForJsResultAt(WebUIToolbarId(), kOmniboxDeepQuery,
-                        "el => el.adjustedCopyResult_ !== null"),
+                        "el => el.adjustedCopyResult !== null"),
 
       SetupDragDropClient(),
 
@@ -1580,7 +1591,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
   RunTestSequence(RunClipboardSetTest(
       kClipboardOp::kCopy, embedded_test_server()->GetURL("/title1.html"),
       "title1", "(el) => { el.focus(); el.value = 'title1'; el.select(); }",
-      "el => el.adjustedCopyResult_?.adjustedText === 'title1'", u"title1"));
+      "el => el.adjustedCopyResult?.adjustedText === 'title1'", u"title1"));
 #endif
 }
 
@@ -1591,7 +1602,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
   RunTestSequence(RunClipboardSetTest(kClipboardOp::kCopy, initial_url,
                                       "title1",
                                       "(el) => { el.focus(); el.select(); }",
-                                      "el => el.adjustedCopyResult_ !== null",
+                                      "el => el.adjustedCopyResult !== null",
                                       base::UTF8ToUTF16(initial_url.spec())));
 #endif
 }
@@ -1602,7 +1613,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
   RunTestSequence(RunClipboardSetTest(kClipboardOp::kCut, initial_url, "title1",
                                       "(el) => { el.focus(); el.select(); }",
-                                      "el => el.adjustedCopyResult_ !== null",
+                                      "el => el.adjustedCopyResult !== null",
                                       base::UTF8ToUTF16(initial_url.spec())),
                   WaitForJsResultAt(WebUIToolbarId(), kTextInputDeepQuery,
                                     "el => el.value === ''"));
@@ -1619,7 +1630,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
       base::StringPrintf(
           "(el) => { el.focus(); el.value = '%s'; el.select(); }",
           js_to_copy.c_str()),
-      "el => el.adjustedCopyResult_ !== null", base::UTF8ToUTF16(js_to_copy)));
+      "el => el.adjustedCopyResult !== null", base::UTF8ToUTF16(js_to_copy)));
 #endif
 }
 
@@ -1630,7 +1641,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
   RunTestSequence(RunClipboardSetTest(kClipboardOp::kCopy,
                                       GURL("chrome://version/"), "version",
                                       "(el) => { el.focus(); el.select(); }",
-                                      "el => el.adjustedCopyResult_ !== null",
+                                      "el => el.adjustedCopyResult !== null",
                                       base::UTF8ToUTF16(chrome_url_to_copy)));
 #endif
 }
@@ -1650,7 +1661,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarViewsLocationBarInteractiveUiTest,
           el.setSelectionRange(0, selectEnd);
         }
       )",
-      "el => el.adjustedCopyResult_ !== null",
+      "el => el.adjustedCopyResult !== null",
       base::UTF8ToUTF16(initial_url.GetWithEmptyPath().spec())));
 #endif
 }

@@ -38,6 +38,7 @@ struct InitialState {
 struct AdjustOmniboxTextForCopyResult {
   mojo_base.mojom.String16 adjusted_text;
   url.mojom.Url? adjusted_url;
+  mojo_base.mojom.String16? page_title;
 };
 
 // ToolbarUIService defines methods to be called from the WebUI to the

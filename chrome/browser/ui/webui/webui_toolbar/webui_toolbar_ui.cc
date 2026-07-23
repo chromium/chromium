@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
+#include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
@@ -42,6 +43,7 @@
 #include "chrome/grit/webui_toolbar_shared_resources_map.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
+#include "components/favicon_base/favicon_url_parser.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/navigation_handle.h"
@@ -140,6 +142,11 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                                       context)
                 : base::RepeatingCallback<ui::ElementContext()>());
   }
+
+  Profile* profile_ptr = Profile::FromWebUI(web_ui);
+  content::URLDataSource::Add(
+      profile_ptr, std::make_unique<FaviconSource>(
+                       profile_ptr, chrome::FaviconUrlFormat::kFavicon2));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebUIToolbarUI)

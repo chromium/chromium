@@ -255,6 +255,9 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
   AddFontVariables("--toolbar-button", CONTEXT_TOOLBAR_BUTTON,
                    views::style::STYLE_PRIMARY, typography_provider,
                    css_string);
+  AddFontVariables("--drag-template", views::style::CONTEXT_BUTTON,
+                   views::style::STYLE_PRIMARY, typography_provider,
+                   css_string);
 
   // Add durations.
   base::StrAppend(&css_string,

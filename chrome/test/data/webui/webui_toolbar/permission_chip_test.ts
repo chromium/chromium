@@ -107,6 +107,7 @@ class TestToolbarUiHandler extends TestBrowserProxy implements
     return Promise.resolve({
       adjustedText: text,
       adjustedUrl: null,
+      pageTitle: null,
     });
   }
 }
