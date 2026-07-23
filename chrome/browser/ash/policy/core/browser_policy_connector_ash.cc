@@ -365,7 +365,7 @@ void BrowserPolicyConnectorAsh::Init(
       url_loader_factory,
       std::make_unique<DeviceIdentityProvider>(
           DeviceOAuth2TokenServiceFactory::Get()),
-      g_browser_process->local_state());
+      local_state);
 }
 
 void BrowserPolicyConnectorAsh::OnBrowserStarted() {
