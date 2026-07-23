@@ -47,6 +47,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
@@ -296,11 +297,14 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
         when(mTargetViewHolder.getBindingAdapterPosition()).thenReturn(1);
 
+        UserActionTester userActionTester = new UserActionTester();
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         List.of(mTab1), mTab2, 0, TabGroupMergeNotificationType.NOTIFY_ALWAYS);
+        assertTrue(userActionTester.getActions().contains("Android.VerticalTabs.TabAddedToGroup"));
+        userActionTester.tearDown();
     }
 
     @Test
@@ -326,11 +330,14 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         when(mViewHolder.getBindingAdapterPosition()).thenReturn(2);
         when(mTargetViewHolder.getBindingAdapterPosition()).thenReturn(1);
 
+        UserActionTester userActionTester = new UserActionTester();
         assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
 
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         List.of(mTab1), mTab2, null, TabGroupMergeNotificationType.NOTIFY_ALWAYS);
+        assertTrue(userActionTester.getActions().contains("Android.VerticalTabs.TabAddedToGroup"));
+        userActionTester.tearDown();
     }
 
     @Test
@@ -403,6 +410,36 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
         // It should move to the index of tab2 (which is 5), NOT the end of the group (which would
         // be 6).
         verify(mTabModel).moveTab(1, 5);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnMove_ChildTabToDifferentGroup_Ungroups() {
+        mPropertyModel.set(TabProperties.TAB_ID, 1);
+        Token groupId1 = new Token(1L, 2L);
+        mPropertyModel.set(TabProperties.TAB_GROUP_ID, groupId1);
+        when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
+
+        mTargetPropertyModel.set(TabProperties.TAB_ID, 2);
+        Token groupId2 = new Token(3L, 4L);
+        mTargetPropertyModel.set(TabProperties.TAB_GROUP_ID, groupId2);
+        when(mTargetViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.TAB);
+
+        doReturn(mTab1).when(mTabModel).getTabById(1);
+        doReturn(mTab1).when(mTabModel).getTabById(1);
+        when(mTab1.getTabGroupId()).thenReturn(groupId1);
+
+        // distance > 0 -> dragging downward.
+        when(mViewHolder.getBindingAdapterPosition()).thenReturn(0);
+        when(mTargetViewHolder.getBindingAdapterPosition()).thenReturn(1);
+
+        UserActionTester userActionTester = new UserActionTester();
+        assertTrue(mCallback.onMove(mRecyclerView, mViewHolder, mTargetViewHolder));
+
+        verify(mTabUngrouper).ungroupTabs(List.of(mTab1), true, false);
+        assertTrue(
+                userActionTester.getActions().contains("Android.VerticalTabs.TabRemovedFromGroup"));
+        userActionTester.tearDown();
     }
 
     @Test
@@ -1138,8 +1175,12 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         // Threshold is top - height/2 = 200 - 50 = 150.
         // y < 150 -> return true.
+        UserActionTester userActionTester = new UserActionTester();
         assertTrue(mCallback.hasDragEscapedBounds(mRecyclerView, mViewHolder, 0, 140, 0, -10));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab1), false, false);
+        assertTrue(
+                userActionTester.getActions().contains("Android.VerticalTabs.TabRemovedFromGroup"));
+        userActionTester.tearDown();
     }
 
     @Test
@@ -1184,8 +1225,12 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
 
         // Threshold is top + height/4 = 200 + 25 = 225.
         // y > 225 -> return true.
+        UserActionTester userActionTester = new UserActionTester();
         assertTrue(mCallback.hasDragEscapedBounds(mRecyclerView, mViewHolder, 0, 230, 0, 10));
         verify(mTabUngrouper).ungroupTabs(List.of(mTab2), true, false);
+        assertTrue(
+                userActionTester.getActions().contains("Android.VerticalTabs.TabRemovedFromGroup"));
+        userActionTester.tearDown();
     }
 
     @Test

@@ -5194,6 +5194,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.VerticalTabs.TabAddedToGroup">
+  <owner>agazal@google.com</owner>
+  <owner>kije@google.com</owner>
+  <description>
+    Recorded when a user drags a tab to merge it into a group in Vertical Tabs.
+  </description>
+</action>
+
+<action name="Android.VerticalTabs.TabRemovedFromGroup">
+  <owner>agazal@google.com</owner>
+  <owner>kije@google.com</owner>
+  <description>
+    Recorded when a user drags a tab out of a group to ungroup it in Vertical
+    Tabs.
+  </description>
+</action>
+
 <action name="Android.VerticalTabs.UndoCloseTab">
   <owner>agazal@google.com</owner>
   <owner>kije@google.com</owner>
