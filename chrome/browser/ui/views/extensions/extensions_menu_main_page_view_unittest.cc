@@ -333,6 +333,9 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
+  EXPECT_EQ(
+      menu_entry->site_permissions_button_for_testing()->GetFocusBehavior(),
+      views::View::FocusBehavior::ALWAYS);
   EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));

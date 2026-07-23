@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/controls/hover_button_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
@@ -58,8 +59,9 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
     // still being tested.
     // TODO(crbug.com/40857680): Remove all these tests once
     // kExtensionsMenuAccessControl is fully enabled.
-    scoped_feature_list_.InitAndDisableFeature(
-        extensions_features::kExtensionsMenuAccessControl);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {extensions_features::kExtensionsMenuAccessControl,
+             features::kExtensionsPinnedByDefault});
   }
 
   static base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>

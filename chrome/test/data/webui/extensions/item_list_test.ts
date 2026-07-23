@@ -298,7 +298,10 @@ suite('ExtensionItemListTest', function() {
   });
 
   test('PinnedToggle_Visibility', async () => {
-    // Hidden by default when enableExtensionsPinnedByDefault is false.
+    // Hidden when enableExtensionsPinnedByDefault is false.
+    loadTimeData.overrideValues({enableExtensionsPinnedByDefault: false});
+    setupElement();
+    await microtasksFinished();
     boundTestVisible('#pinned-toggle-container', false);
 
     // Visible when enableExtensionsPinnedByDefault is true.

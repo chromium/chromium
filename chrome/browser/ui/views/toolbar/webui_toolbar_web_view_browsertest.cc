@@ -2280,7 +2280,7 @@ class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
              features::kWebUIInProcessResourceLoadingV2,
              // Needed for browser_tests_no_field_trial.
              extensions_features::kExtensionsMenuAccessControl},
-            {}) {}
+            {features::kExtensionsPinnedByDefault}) {}
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();

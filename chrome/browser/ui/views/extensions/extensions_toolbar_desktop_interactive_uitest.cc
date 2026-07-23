@@ -109,7 +109,15 @@ class ExtensionsToolbarDesktopUITest : public ExtensionsToolbarUITest {
     kTerminate,
   };
 
-  ExtensionsToolbarDesktopUITest() = default;
+  ExtensionsToolbarDesktopUITest()
+      : ExtensionsToolbarDesktopUITest(std::vector<base::test::FeatureRef>{},
+                                       std::vector<base::test::FeatureRef>{}) {}
+  ExtensionsToolbarDesktopUITest(
+      std::vector<base::test::FeatureRef> enabled_features,
+      std::vector<base::test::FeatureRef> disabled_features) {
+    disabled_features.push_back(features::kExtensionsPinnedByDefault);
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
   ExtensionsToolbarDesktopUITest(const ExtensionsToolbarDesktopUITest&) =
       delete;
   ExtensionsToolbarDesktopUITest& operator=(
@@ -200,6 +208,9 @@ class ExtensionsToolbarDesktopUITest : public ExtensionsToolbarUITest {
     views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarDesktop());
     EXPECT_EQ(expected_visibility, GetExtensionsToolbarDesktop()->IsDrawn());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(devlin): There are probably some tests from
@@ -952,10 +963,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
 class ExtensionsToolbarDesktopFeatureUITest
     : public ExtensionsToolbarDesktopUITest {
  public:
-  ExtensionsToolbarDesktopFeatureUITest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsMenuAccessControl);
-  }
+  ExtensionsToolbarDesktopFeatureUITest()
+      : ExtensionsToolbarDesktopUITest(
+            std::vector<base::test::FeatureRef>{
+                extensions_features::kExtensionsMenuAccessControl},
+            std::vector<base::test::FeatureRef>{}) {}
   ExtensionsToolbarDesktopFeatureUITest(
       const ExtensionsToolbarDesktopFeatureUITest&) = delete;
   const ExtensionsToolbarDesktopFeatureUITest& operator=(
@@ -1012,7 +1024,6 @@ class ExtensionsToolbarDesktopFeatureUITest
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_ =
       nullptr;
@@ -1487,11 +1498,13 @@ class ExtensionsToolbarDesktopFeatureRolloutInteractiveTest
  public:
   ExtensionsToolbarDesktopFeatureRolloutInteractiveTest() {
     if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          extensions_features::kExtensionsMenuAccessControl);
+      feature_list_.InitWithFeatures(
+          {extensions_features::kExtensionsMenuAccessControl},
+          {features::kExtensionsPinnedByDefault});
     } else {
-      feature_list_.InitAndDisableFeature(
-          extensions_features::kExtensionsMenuAccessControl);
+      feature_list_.InitWithFeatures(
+          {}, {extensions_features::kExtensionsMenuAccessControl,
+               features::kExtensionsPinnedByDefault});
     }
   }
   ExtensionsToolbarDesktopFeatureRolloutInteractiveTest(
@@ -1622,8 +1635,9 @@ class ExtensionsToolbarDesktopFeatureInteractiveTest
     : public InteractiveBrowserTest {
  public:
   ExtensionsToolbarDesktopFeatureInteractiveTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionsMenuAccessControl);
+    scoped_feature_list_.InitWithFeatures(
+        {extensions_features::kExtensionsMenuAccessControl},
+        {features::kExtensionsPinnedByDefault});
   }
   ExtensionsToolbarDesktopFeatureInteractiveTest(
       const ExtensionsToolbarDesktopFeatureInteractiveTest&) = delete;

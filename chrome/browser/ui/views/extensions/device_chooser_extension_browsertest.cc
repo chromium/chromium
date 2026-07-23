@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/chooser_bubble_testapi.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
@@ -37,6 +38,11 @@ enum ChooserType {
 class DeviceChooserExtensionBrowserTest
     : public extensions::ExtensionBrowserTest,
       public testing::WithParamInterface<ChooserType> {
+ public:
+  DeviceChooserExtensionBrowserTest() {
+    feature_list_.InitAndDisableFeature(features::kExtensionsPinnedByDefault);
+  }
+
  protected:
   void SetUpOnMainThread() override {
     ExtensionBrowserTest::SetUpOnMainThread();
@@ -134,6 +140,7 @@ class DeviceChooserExtensionBrowserTest
 
  private:
   raw_ptr<const extensions::Extension> extension_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(DeviceChooserExtensionBrowserTest,

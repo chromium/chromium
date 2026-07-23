@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_set.h"
@@ -28,8 +29,14 @@ constexpr char kExtension3Name[] = "bar";
 
 class ToolbarActionsModelBrowserTest : public extensions::ExtensionBrowserTest {
  public:
-  ToolbarActionsModelBrowserTest() = default;
+  ToolbarActionsModelBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kExtensionsPinnedByDefault);
+  }
   ~ToolbarActionsModelBrowserTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();

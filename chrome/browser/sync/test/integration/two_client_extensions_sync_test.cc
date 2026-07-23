@@ -8,6 +8,7 @@
 #include "chrome/browser/sync/test/integration/extensions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
@@ -37,10 +38,13 @@ class TwoClientExtensionsSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientExtensionsSyncTest() : SyncTest(TWO_CLIENT) {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kExtensionsPinnedByDefault};
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~TwoClientExtensionsSyncTest() override = default;
 

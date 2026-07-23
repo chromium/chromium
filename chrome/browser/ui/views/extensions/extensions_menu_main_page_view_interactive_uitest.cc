@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_entry_view.h"
@@ -499,7 +500,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
     scoped_feature_list_.InitWithFeatures(
         {extensions_features::kExtensionsMenuAccessControl,
          metrics::kCriticalUserJourneyService, metrics::kPinExtensionJourney},
-        {});
+        {features::kExtensionsPinnedByDefault});
   }
   ExtensionsMenuMainPageViewInteractiveTest(
       const ExtensionsMenuMainPageViewInteractiveTest&) = delete;

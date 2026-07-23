@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -176,7 +177,10 @@ class PopupHostWatcher : public ExtensionHostRegistry::Observer {
 // window be focused/active).
 class BrowserActionInteractiveTest : public ExtensionApiTest {
  public:
-  BrowserActionInteractiveTest() = default;
+  BrowserActionInteractiveTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kExtensionsPinnedByDefault);
+  }
 
   BrowserActionInteractiveTest(const BrowserActionInteractiveTest&) = delete;
   BrowserActionInteractiveTest& operator=(const BrowserActionInteractiveTest&) =
@@ -292,6 +296,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
  private:
   std::unique_ptr<PopupHostWatcher> host_watcher_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests opening a popup using the chrome.browserAction.openPopup API. This test

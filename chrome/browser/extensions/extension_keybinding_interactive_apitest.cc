@@ -8,8 +8,6 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/common/chrome_features.h"
-#include "content/public/common/content_features.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -17,9 +15,12 @@
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/javascript_test_observer.h"
@@ -206,7 +207,10 @@ const char* GetCommandKeyForActionType(ActionInfo::Type action_type) {
 
 class CommandsApiTest : public ExtensionApiTest {
  public:
-  CommandsApiTest() = default;
+  CommandsApiTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kExtensionsPinnedByDefault);
+  }
   ~CommandsApiTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -271,6 +275,9 @@ class CommandsApiTest : public ExtensionApiTest {
         ExtensionsContainer::From(*GetBrowserWindowInterface())
             ->GetActionForId(action_id));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class IncognitoCommandsApiTest : public CommandsApiTest,

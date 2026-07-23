@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/extensions/extension_settings_test_base.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
@@ -366,6 +368,12 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, UserScripts) {
 // Extension Item List Tests
 
 class CrExtensionsItemListTest : public ExtensionsBrowserTest {
+ public:
+  CrExtensionsItemListTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kExtensionsPinnedByDefault);
+  }
+
  protected:
   void RunTestCase(const std::string& testCase) {
     ExtensionsBrowserTest::RunTest(
@@ -373,6 +381,9 @@ class CrExtensionsItemListTest : public ExtensionsBrowserTest {
         base::StringPrintf("runMochaTest('ExtensionItemListTest', '%s');",
                            testCase.c_str()));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest, Filtering) {

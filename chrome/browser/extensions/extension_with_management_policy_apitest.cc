@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
@@ -16,7 +17,10 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 ExtensionApiTestWithManagementPolicy::ExtensionApiTestWithManagementPolicy(
     ContextType context_type)
-    : extensions::ExtensionApiTest(context_type) {}
+    : extensions::ExtensionApiTest(context_type) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kExtensionsPinnedByDefault);
+}
 ExtensionApiTestWithManagementPolicy::~ExtensionApiTestWithManagementPolicy() =
     default;
 

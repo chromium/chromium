@@ -125,13 +125,19 @@ ToolbarActionsModelTestObserver::~ToolbarActionsModelTestObserver() {
 class ToolbarActionsModelUnitTest
     : public extensions::ExtensionServiceTestWithInstall {
  public:
-  ToolbarActionsModelUnitTest() = default;
+  ToolbarActionsModelUnitTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kExtensionsPinnedByDefault);
+  }
 
   ToolbarActionsModelUnitTest(const ToolbarActionsModelUnitTest&) = delete;
   ToolbarActionsModelUnitTest& operator=(const ToolbarActionsModelUnitTest&) =
       delete;
 
   ~ToolbarActionsModelUnitTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  protected:
   // Initialize the ExtensionService, ToolbarActionsModel, and ExtensionSystem.

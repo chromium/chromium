@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -47,6 +48,7 @@ class ExtensionApiTestWithManagementPolicy
 
  private:
   std::vector<ManagementPolicyRequestLog> request_log_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_WITH_MANAGEMENT_POLICY_APITEST_H_

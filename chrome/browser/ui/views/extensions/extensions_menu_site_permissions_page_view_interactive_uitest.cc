@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
@@ -54,8 +55,9 @@ class ExtensionsMenuSitePermissionsPageViewInteractiveUITest
 
 ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
     ExtensionsMenuSitePermissionsPageViewInteractiveUITest() {
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kExtensionsMenuAccessControl);
+  scoped_feature_list_.InitWithFeatures(
+      {extensions_features::kExtensionsMenuAccessControl},
+      {features::kExtensionsPinnedByDefault});
 }
 
 void ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
