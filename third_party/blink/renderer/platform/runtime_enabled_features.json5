@@ -1144,19 +1144,19 @@
       // Compression Dictionary Transport: Align handling of crossorigin
       // attribute on the spec.
       name: "CDTNewCrossOriginHandling",
-      status: "test",
+      status: "experimental",
     },
     {
       // Compression Dictionary Transport: Use "compression-dictionary" as the
       // destination string.
       name: "CDTNewDestination",
-      status: "test",
+      status: "experimental",
     },
     {
       // Compression Dictionary Transport: Align handling of referrerpolicy
       // attribute and referrer on the spec.
       name: "CDTNewReferrerAndReferrerPolicyHandling",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "CheckableInputTypeLayoutInline",
