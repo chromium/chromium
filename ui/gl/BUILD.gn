@@ -268,7 +268,7 @@ component("gl") {
       "//ui/gfx/linux:gbm_support_x11",
     ]
 
-    if (!use_static_angle) {
+    if (!use_static_angle || is_chromeos) {
       data_deps += [
         "//third_party/angle:libEGL",
         "//third_party/angle:libGLESv2",
