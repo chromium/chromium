@@ -22,6 +22,10 @@ interface PageHandler {
   // Called on handshake timeout or if the iframe posts an error.
   // `error_message` is human-readable and should not be parsed.
   OnConsentKitError(string error_message);
+
+  // Called when the untrusted UI displays the error screen so the host can
+  // resize the widget appropriately.
+  OnShowErrorDialog();
 };
 
 // WebUI-side page interface for the untrusted page.

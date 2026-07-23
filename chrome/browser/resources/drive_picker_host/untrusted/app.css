@@ -33,3 +33,29 @@ iframe {
   width: 100%;
   height: 100%;
 }
+
+#error-screen {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  background-color:
+      var(--color-dialog-background, var(--cr-fallback-color-surface));
+  color: var(--cr-primary-text-color);
+  padding: 24px;
+}
+
+.error-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: auto;
+  text-align: left;
+}
+
+.error-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}

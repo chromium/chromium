@@ -58,6 +58,7 @@ class DrivePickerHostUI
    public:
     virtual ~Delegate() = default;
     virtual void OnTransitionToPicker() = 0;
+    virtual void OnTransitionToError() = 0;
   };
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
@@ -96,6 +97,7 @@ class DrivePickerHostUI
   void OnConsentKitPrivacyFlowResult(
       mojo_base::ProtoWrapper result_wrapper) override;
   void OnConsentKitError(const std::string& error_message) override;
+  void OnShowErrorDialog() override;
   base::WeakPtr<DrivePickerUntrustedHostUI::Delegate> GetWeakPtr() override;
 
  private:

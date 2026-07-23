@@ -24,10 +24,12 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_delegate.h"
 
 DrivePickerHostView::DrivePickerHostView(
     Profile* profile,
@@ -86,6 +88,10 @@ gfx::Size DrivePickerHostView::CalculatePreferredSize(
       drive_picker_host::DrivePickerHostRequest::RequestType::kConsentDialog) {
     // Tight fit for the Google ConsentKit card
     size = gfx::Size(520, 580);
+  } else if (current_ui_type_ == drive_picker_host::DrivePickerHostRequest::
+                                     RequestType::kErrorDialog) {
+    // Small size for the error dialog
+    size = gfx::Size(512, 180);
   } else {
     // Standard size for the Google Drive Picker UI
     size = gfx::Size(830, 600);
@@ -96,6 +102,15 @@ gfx::Size DrivePickerHostView::CalculatePreferredSize(
 void DrivePickerHostView::OnTransitionToPicker() {
   current_ui_type_ =
       drive_picker_host::DrivePickerHostRequest::RequestType::kPickerUi;
+  PreferredSizeChanged();
+  if (GetWidget()) {
+    GetWidget()->CenterWindow(GetPreferredSize());
+  }
+}
+
+void DrivePickerHostView::OnTransitionToError() {
+  current_ui_type_ =
+      drive_picker_host::DrivePickerHostRequest::RequestType::kErrorDialog;
   PreferredSizeChanged();
   if (GetWidget()) {
     GetWidget()->CenterWindow(GetPreferredSize());

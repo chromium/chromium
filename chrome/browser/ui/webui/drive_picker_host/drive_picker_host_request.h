@@ -21,7 +21,7 @@ namespace drive_picker_host {
 //   picker or disclaimer dialog.
 class DrivePickerHostRequest {
  public:
-  enum class RequestType { kConsentDialog, kPickerUi };
+  enum class RequestType { kConsentDialog, kPickerUi, kErrorDialog };
 
   DrivePickerHostRequest(
       RequestType type,

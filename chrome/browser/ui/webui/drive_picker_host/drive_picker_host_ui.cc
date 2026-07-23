@@ -324,6 +324,12 @@ void DrivePickerHostUI::OnConsentKitError(const std::string& error_message) {
   }
 }
 
+void DrivePickerHostUI::OnShowErrorDialog() {
+  if (delegate_) {
+    delegate_->OnTransitionToError();
+  }
+}
+
 void DrivePickerHostUI::HandlePrivacyFlowResult(
     const identity_consent::PrivacyFlowResult& result) {
   VLOG(1)

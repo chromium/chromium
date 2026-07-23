@@ -30,10 +30,12 @@ source_set("untrusted") {
   ]
 
   deps = [
+    "//chrome/app:generated_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/drive_picker_host/untrusted:resources",
     "//chrome/common",
     "//components/omnibox/common",
+    "//components/strings:components_strings",
   ]
 }
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ProtoWrapper} from '//resources/mojo/mojo/public/mojom/base/proto_wrapper.mojom-webui.js';
@@ -19,7 +21,10 @@ const IFRAME_MESSAGE_KEY = 'base64webEncodedIframeMessage';
 const PRIVACY_FLOW_RESULT_KEY = 'base64webEncodedPrivacyFlowResult';
 const HANDSHAKE_TIMEOUT_MS = 5000;
 
-export class DrivePickerHostUntrustedAppElement extends CrLitElement {
+const DrivePickerHostUntrustedAppElementBase = I18nMixinLit(CrLitElement);
+
+export class DrivePickerHostUntrustedAppElement extends
+    DrivePickerHostUntrustedAppElementBase {
   static get is() {
     return 'drive-picker-host-untrusted-app';
   }
@@ -28,16 +33,26 @@ export class DrivePickerHostUntrustedAppElement extends CrLitElement {
     return getCss();
   }
 
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      showErrorScreen_: {type: Boolean},
+    };
+  }
+
   private browserProxy_ = BrowserProxyImpl.getInstance();
   private drivePickerApiProxy_ = DrivePickerApiProxyImpl.getInstance();
   private resultHandler_: DrivePickerResultHandlerRemote|null = null;
   private listenerIds_: number[] = [];
   private handshakeTimeoutId_: number|null = null;
   private port_: MessagePort|null = null;
+  protected accessor showErrorScreen_: boolean = false;
+  private lastConsentKitUrl_: string = '';
 
-  override render() {
-    return getHtml.bind(this)();
-  }
+
 
   override connectedCallback() {
     super.connectedCallback();
@@ -99,6 +114,7 @@ export class DrivePickerHostUntrustedAppElement extends CrLitElement {
   }
 
   private loadConsentKitUrl_(consentKitUrl: string) {
+    this.lastConsentKitUrl_ = consentKitUrl;
     const iframe = document.createElement('iframe');
     iframe.src = consentKitUrl;
     iframe.setAttribute('scrolling', 'no');
@@ -112,9 +128,20 @@ export class DrivePickerHostUntrustedAppElement extends CrLitElement {
     this.handshakeTimeoutId_ = setTimeout(() => {
       console.error(`ConsentKit: Handshake timeout fired after ${
           HANDSHAKE_TIMEOUT_MS}ms`);
-      this.browserProxy_.handler.onConsentKitError('Handshake timeout');
+      this.showErrorScreen_ = true;
+      this.browserProxy_.handler.onShowErrorDialog();
       this.clearHandshakeTimeout_();
     }, HANDSHAKE_TIMEOUT_MS);
+  }
+
+  protected onCancelClick_() {
+    this.showErrorScreen_ = false;
+    this.browserProxy_.handler.onConsentKitError('Handshake timeout');
+  }
+
+  protected onTryAgainClick_() {
+    this.showErrorScreen_ = false;
+    this.loadConsentKitUrl_(this.lastConsentKitUrl_);
   }
 
   private clearHandshakeTimeout_() {

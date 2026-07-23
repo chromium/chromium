@@ -77,6 +77,7 @@ class DrivePickerHostView : public views::View,
 
   // DrivePickerHostUI::Delegate:
   void OnTransitionToPicker() override;
+  void OnTransitionToError() override;
 
   // `content::WebContentsDelegate`:
   content::WebContents* OpenURLFromTab(
