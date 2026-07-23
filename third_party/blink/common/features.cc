@@ -1996,27 +1996,6 @@ const char kPrerender2MemoryAcceptablePercentOfSystemMemoryParamName[] =
 BASE_FEATURE(kPrerender2EarlyDocumentLifecycleUpdate,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Private Aggregation API.
-BASE_FEATURE(kPrivateAggregationApi, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Selectively allows the JavaScript API to be disabled in just one of the
-// contexts. The Protected Audience param's name has not been updated (from
-// "fledge") for consistency across versions
-BASE_FEATURE_PARAM(bool,
-                   kPrivateAggregationApiEnabledInSharedStorage,
-                   &kPrivateAggregationApi,
-                   "enabled_in_shared_storage",
-                   /*default_value=*/true);
-// Selectively allows the debug mode to be disabled while leaving the rest of
-// the API in place. If disabled, any `enableDebugMode()` calls will essentially
-// have no effect.
-BASE_FEATURE_PARAM(bool,
-                   kPrivateAggregationApiDebugModeEnabledAtAll,
-                   &kPrivateAggregationApi,
-                   "debug_mode_enabled_at_all",
-                   /*default_value=*/true);
-
-
 BASE_FEATURE(kProcessHtmlDataImmediately, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(bool,

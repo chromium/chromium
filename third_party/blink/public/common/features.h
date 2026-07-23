@@ -1466,14 +1466,6 @@ BLINK_COMMON_EXPORT extern const char
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPrerender2EarlyDocumentLifecycleUpdate);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrivateAggregationApi);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kPrivateAggregationApiEnabledInSharedStorage);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    bool,
-    kPrivateAggregationApiDebugModeEnabledAtAll);
-
 // If set, HTMLDocumentParser processes data immediately rather than after a
 // delay. This is further controlled by the feature params starting with the
 // same name. Also note that this only applies to uses that are normally

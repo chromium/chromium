@@ -23,10 +23,8 @@ namespace blink {
 class FenceTest : private ScopedFencedFramesForTest, public SimTest {
  public:
   FenceTest() : ScopedFencedFramesForTest(true) {
-    scoped_feature_list_.InitWithFeatures(
-        {{blink::features::kFencedFrames},
-         {blink::features::kPrivateAggregationApi}},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures({{blink::features::kFencedFrames}},
+                                          /*disabled_features=*/{});
   }
 
   base::HistogramTester histogram_tester_;
