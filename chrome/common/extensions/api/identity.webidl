@@ -1,0 +1,238 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary AccountInfo {
+  // A unique identifier for the account. This ID will not change
+  // for the lifetime of the account.
+  required DOMString id;
+};
+
+enum AccountStatus {
+  // Specifies that Sync is enabled for the primary account.
+  "SYNC",
+  // Specifies the existence of a primary account, if any.
+  "ANY"
+};
+
+dictionary ProfileDetails {
+  // A status of the primary account signed into a profile whose
+  // <code>ProfileUserInfo</code> should be returned. Defaults to
+  // <code>SYNC</code> account status.
+  AccountStatus accountStatus;
+};
+
+dictionary ProfileUserInfo {
+  // An email address for the user account signed into the current profile.
+  // Empty if the user is not signed in or the <code>identity.email</code>
+  // manifest permission is not specified.
+  required DOMString email;
+
+  // A unique identifier for the account. This ID will not change for the
+  // lifetime of the account. Empty if the user is not signed in or (in M41+)
+  // the <code>identity.email</code> manifest permission is not specified.
+  required DOMString id;
+};
+
+dictionary TokenDetails {
+  // Fetching a token may require the user to sign-in to Chrome, or approve the
+  // application's requested scopes. If the interactive flag is
+  // <code>true</code>, <code>getAuthToken</code> will prompt the user as
+  // necessary. When the flag is <code>false</code> or omitted,
+  // <code>getAuthToken</code> will return failure any time a prompt would be
+  // required.
+  boolean interactive;
+
+  // The account ID whose token should be returned. If not specified, the
+  // function will use an account from the Chrome profile: the Sync account if
+  // there is one, or otherwise the first Google web account.
+  AccountInfo account;
+
+  // A list of OAuth2 scopes to request.
+  //
+  // When the <code>scopes</code> field is present, it overrides the list of
+  // scopes specified in manifest.json.
+  sequence<DOMString> scopes;
+
+  // The <code>enableGranularPermissions</code> flag allows extensions to opt-in
+  // early to the granular permissions consent screen, in which requested
+  // permissions are granted or denied individually.
+  boolean enableGranularPermissions;
+};
+
+dictionary InvalidTokenDetails {
+  // The specific token that should be removed from the cache.
+  required DOMString token;
+};
+
+dictionary WebAuthFlowDetails {
+  // The URL that initiates the auth flow.
+  required DOMString url;
+
+  // Whether to launch auth flow in interactive mode.
+  //
+  // Since some auth flows may immediately redirect to a result URL,
+  // <code>launchWebAuthFlow</code> hides its web view until the first
+  // navigation either redirects to the final URL, or finishes loading a page
+  // meant to be displayed.
+  //
+  // If the <code>interactive</code> flag is <code>true</code>, the window will
+  // be displayed when a page load completes. If the flag is <code>false</code>
+  // or omitted, <code>launchWebAuthFlow</code> will return with an error if the
+  // initial navigation does not complete the flow.
+  //
+  // For flows that use JavaScript for redirection,
+  // <code>abortOnLoadForNonInteractive</code> can be set to <code>false</code>
+  // in combination with setting <code>timeoutMsForNonInteractive</code> to give
+  // the page a chance to perform any redirects.
+  boolean interactive;
+
+  // Whether to terminate <code>launchWebAuthFlow</code> for non-interactive
+  // requests after the page loads. This parameter does not affect interactive
+  // flows.
+  //
+  // When set to <code>true</code> (default) the flow will terminate immediately
+  // after the page loads. When set to <code>false</code>, the flow will only
+  // terminate after the <code>timeoutMsForNonInteractive</code> passes. This is
+  // useful for identity providers that use JavaScript to perform redirections
+  // after the page loads.
+  boolean abortOnLoadForNonInteractive;
+
+  // The maximum amount of time, in miliseconds, <code>launchWebAuthFlow</code>
+  // is allowed to run in non-interactive mode in total. Only has an effect if
+  // <code>interactive</code> is <code>false</code>.
+  long timeoutMsForNonInteractive;
+};
+
+dictionary GetAuthTokenResult {
+  // The specific token associated with the request.
+  DOMString token;
+
+  // A list of OAuth2 scopes granted to the extension.
+  sequence<DOMString> grantedScopes;
+};
+
+callback OnSignInChangedListener =
+    undefined (AccountInfo account, boolean signedIn);
+
+interface OnSignInChangedEvent : ExtensionEvent {
+  static undefined addListener(OnSignInChangedListener listener);
+  static undefined removeListener(OnSignInChangedListener listener);
+  static boolean hasListener(OnSignInChangedListener listener);
+};
+
+// Use the <code>chrome.identity</code> API to get OAuth2 access tokens.
+interface Identity {
+  // Retrieves a list of AccountInfo objects describing the accounts present on
+  // the profile.
+  //
+  // <code>getAccounts</code> is only supported on dev channel.
+  // |PromiseValue|: accounts
+  static Promise<sequence<AccountInfo>> getAccounts();
+
+  // Gets an OAuth2 access token using the client ID and scopes specified in the
+  // <a href="/docs/apps/app_identity#update_manifest"><code>oauth2</code>
+  // section of manifest.json</a>.
+  //
+  // The Identity API caches access tokens in memory, so it's ok to call
+  // <code>getAuthToken</code> non-interactively any time a token is required.
+  // The token cache automatically handles expiration.
+  //
+  // For a good user experience it is important interactive token requests are
+  // initiated by UI in your app explaining what the authorization is for.
+  // Failing to do this will cause your users to get authorization requests,
+  // or Chrome sign in screens if they are not signed in, with with no
+  // context. In particular, do not use <code>getAuthToken</code>
+  // interactively when your app is first launched.
+  //
+  // Note: When called with a callback, instead of returning an object this
+  // function will return the two properties as separate arguments passed to the
+  // callback.
+  //
+  // |details| : Token options.
+  // |Returns| : Returns a Promise which resolves with an OAuth2 access token as
+  // specified by the manifest, or rejects if there was an error. The
+  // <code>grantedScopes</code> parameter is populated since Chrome 87. When
+  // available, this parameter contains the list of granted scopes
+  // corresponding with the returned token.
+  // |PromiseValue|: result
+  static Promise<GetAuthTokenResult> getAuthToken(
+      optional TokenDetails details);
+
+  // Retrieves email address and obfuscated gaia id of the user signed into a
+  // profile.
+  //
+  // Requires the <code>identity.email</code> manifest permission. Otherwise,
+  // returns an empty result.
+  //
+  // This API is different from identity.getAccounts in two ways. The
+  // information returned is available offline, and it only applies to the
+  // primary account for the profile.
+  //
+  // |details|: Profile options.
+  // |Returns|: Returns a Promise which resolves with the
+  // <code>ProfileUserInfo</code> of the primary Chrome account, or an empty
+  // <code>ProfileUserInfo</code> if the account with given
+  // <code>details</code> doesn't exist.
+  // |PromiseValue|: userInfo
+  static Promise<ProfileUserInfo> getProfileUserInfo(
+      optional ProfileDetails details);
+
+  // Removes an OAuth2 access token from the Identity API's token cache.
+  //
+  // If an access token is discovered to be invalid, it should be passed to
+  // removeCachedAuthToken to remove it from the cache. The app may then
+  // retrieve a fresh token with <code>getAuthToken</code>.
+  //
+  // |details| : Token information.
+  // |Returns| : Returns a Promise which resolves when the token has been
+  // removed from the cache.
+  static Promise<undefined> removeCachedAuthToken(InvalidTokenDetails details);
+
+  // Resets the state of the Identity API:
+  // <ul>
+  //   <li>Removes all OAuth2 access tokens from the token cache</li>
+  //   <li>Removes user's account preferences</li>
+  //   <li>De-authorizes the user from all auth flows</li>
+  // </ul>
+  //
+  // |Returns| : Returns a Promise which resolves when the state has been
+  // cleared.
+  static Promise<undefined> clearAllCachedAuthTokens();
+
+  // Starts an auth flow at the specified URL.
+  //
+  // This method enables auth flows with non-Google identity providers by
+  // launching a web view and navigating it to the first URL in the provider's
+  // auth flow. When the provider redirects to a URL matching the pattern
+  // <code>https://&lt;app-id&gt;.chromiumapp.org/*</code>, the
+  // window will close, and the final redirect URL will be passed to
+  // the <var>callback</var> function.
+  //
+  // For a good user experience it is important interactive auth flows are
+  // initiated by UI in your app explaining what the authorization is for.
+  // Failing to do this will cause your users to get authorization requests
+  // with no context. In particular, do not launch an interactive auth flow
+  // when your app is first launched.
+  //
+  // |details| : WebAuth flow options.
+  // |Returns| : Returns a Promise which resolves with the URL redirected back
+  // to your application.
+  // |PromiseValue|: responseUrl
+  static Promise<DOMString?> launchWebAuthFlow(WebAuthFlowDetails details);
+
+  // Generates a redirect URL to be used in |launchWebAuthFlow|.
+  //
+  // The generated URLs match the pattern
+  // <code>https://&lt;app-id&gt;.chromiumapp.org/*</code>.
+  //
+  // |path| : The path appended to the end of the generated URL.
+  [nocompile] static DOMString getRedirectURL(optional DOMString path);
+
+  // Fired when signin state changes for an account on the user's profile.
+  static attribute OnSignInChangedEvent onSignInChanged;
+};
+
+partial interface Browser {
+  static attribute Identity identity;
+};

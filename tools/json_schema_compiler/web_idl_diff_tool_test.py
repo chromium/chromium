@@ -43,6 +43,7 @@ _CONVERTED_SCHEMAS = [
     ('cross_origin_isolation.idl', 'cross_origin_isolation.webidl'),
     ('enterprise_reporting_private.idl', 'enterprise_reporting_private.webidl'),
     ('file_handlers.idl', 'file_handlers.webidl'),
+    ('identity.idl', 'identity.webidl'),
     ('oauth2.idl', 'oauth2.webidl'),
     ('protocol_handlers.idl', 'protocol_handlers.webidl'),
     ('shared_module.idl', 'shared_module.webidl'),

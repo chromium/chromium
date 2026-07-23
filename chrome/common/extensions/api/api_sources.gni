@@ -27,7 +27,7 @@ schema_sources_ = [
   "gcm.json",
   "glic_private.webidl",
   "history.json",
-  "identity.idl",
+  "identity.webidl",
   "instance_id.json",
   "notifications.idl",
   "omnibox.json",
