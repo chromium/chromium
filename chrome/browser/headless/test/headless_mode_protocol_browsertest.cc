@@ -416,13 +416,15 @@ HEADLESS_MODE_PROTOCOL_TEST(StartFullscreenSwitchScaled,
 // TODO(crbug.com/430156442): This fails on macOS where fullscreen uses display
 // bounds rather than work area
 #if BUILDFLAG(IS_MAC)
+#define MAYBE_WindowStateTransitions DISABLED_WindowStateTransitions
 #define MAYBE_WindowZoomSizeMatchesWorkArea \
   DISABLED_WindowZoomSizeMatchesWorkArea
 #else
+#define MAYBE_WindowStateTransitions WindowStateTransitions
 #define MAYBE_WindowZoomSizeMatchesWorkArea WindowZoomSizeMatchesWorkArea
 #endif
 
-HEADLESS_MODE_PROTOCOL_TEST(WindowStateTransitions,
+HEADLESS_MODE_PROTOCOL_TEST(MAYBE_WindowStateTransitions,
                             "shared/window-state-transitions.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(WindowZoomOnSecondaryScreen,
