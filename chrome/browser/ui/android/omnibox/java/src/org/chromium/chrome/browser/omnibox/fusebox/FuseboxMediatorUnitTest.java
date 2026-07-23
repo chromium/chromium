@@ -1049,6 +1049,20 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void attachmentsVisibility_hiddenWhenInStandby() {
+        addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_TAB);
+        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
+
+        mInput.setAutocompleteState(AutocompleteState.STANDBY);
+        assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
+        assertEquals(FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+
+        mInput.setAutocompleteState(AutocompleteState.ENABLED);
+        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+    }
+
+    @Test
     public void dedicatedButton_clearsAttachmentsAndAbandonsSession() {
         addAttachment("title", "token1", FuseboxAttachmentType.ATTACHMENT_TAB);
         assertEquals(

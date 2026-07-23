@@ -547,6 +547,13 @@ import java.util.function.Supplier;
         mModel.set(FuseboxProperties.FUSEBOX_STATE, targetState);
         mModel.set(FuseboxProperties.PLUS_BUTTON_VISIBLE, targetState == FuseboxState.EXPANDED);
         mModel.set(FuseboxProperties.REQUEST_TYPE_BUTTON_VISIBLE, showRequestTypeButton);
+        updateAttachmentsVisibility();
+    }
+
+    private void updateAttachmentsVisibility() {
+        boolean hasAttachments = mHasAttachmentsSupplier.get();
+        boolean isExpanded = mModel.get(FuseboxProperties.FUSEBOX_STATE) == FuseboxState.EXPANDED;
+        mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, hasAttachments && isExpanded);
     }
 
     private void updatePlusButtonBackgroundStyle() {
@@ -796,9 +803,8 @@ import java.util.function.Supplier;
     private void onAttachmentsChanged() {
         if (!isInInputSession()) return;
         updateFuseboxState();
-        boolean hasAttachments = !mModelList.isEmpty();
-        mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, hasAttachments);
-        mHasAttachmentsSupplier.set(hasAttachments);
+        mHasAttachmentsSupplier.set(!mModelList.isEmpty());
+        updateAttachmentsVisibility();
         if (!OmniboxFeatures.sShowModelPicker.getValue()) {
             updateClientControlledToolButtonList();
             updatePopupButtonEnabledStates();
