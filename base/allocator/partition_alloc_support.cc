@@ -67,6 +67,7 @@
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/pointers/instance_tracer.h"
 #include "partition_alloc/pointers/raw_ptr.h"
+#include "partition_alloc/random.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
@@ -1073,6 +1074,11 @@ void PartitionAllocSupport::ReconfigureAfterZygoteFork(
     called_after_zygote_fork_ = true;
     established_process_type_ = process_type;
   }
+
+  // The generator backing GetRandomPageBase() is seeded once and its state is
+  // inherited across fork(). Reinitialize it so that each child process
+  // derives its own address-space-randomization hints.
+  partition_alloc::internal::ReinitializeRandomGenerator();
 
   if (process_type != switches::kZygoteProcess) {
     ReconfigurePartitionForKnownProcess(process_type);

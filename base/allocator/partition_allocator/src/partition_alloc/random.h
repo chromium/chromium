@@ -19,6 +19,11 @@ namespace internal {
 // entirely user-space function after initialization.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint32_t RandomValue();
 
+// Causes the generator to be reinitialized with a fresh OS-provided seed on
+// its next use. Called after fork() so that child processes do not share the
+// parent's generator state.
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void ReinitializeRandomGenerator();
+
 }  // namespace internal
 
 // Sets the seed for the random number generator to a known value, to cause the

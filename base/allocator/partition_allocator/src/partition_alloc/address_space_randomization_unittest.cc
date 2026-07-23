@@ -92,7 +92,7 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, Range) {
   }
 }
 
-TEST(PartitionAllocAddressSpaceRandomizationTest, Predictable) {
+TEST(PartitionAllocAddressSpaceRandomizationTest, ForkedPredictablility) {
   uintptr_t mask = GetMask();
   if (!mask) {
     return;
@@ -111,6 +111,34 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, Predictable) {
   for (size_t i = 0; i < kSamples; ++i) {
     EXPECT_EQ(GetRandomPageBase(), sequence[i]);
   }
+}
+
+TEST(PartitionAllocAddressSpaceRandomizationTest, Reinitialize) {
+  uintptr_t mask = GetMask();
+  if (!mask) {
+    return;
+  }
+
+  const uint64_t kInitialSeed = 0xfeed5eedULL;
+  SetMmapSeedForTesting(kInitialSeed);
+
+  std::vector<uintptr_t> sequence;
+  for (size_t i = 0; i < kSamples; ++i) {
+    sequence.push_back(GetRandomPageBase());
+  }
+
+  // Put the generator back into the same state and then reinitialize it from
+  // the OS. The resulting sequence must diverge from the known-seed sequence.
+  SetMmapSeedForTesting(kInitialSeed);
+  internal::ReinitializeRandomGenerator();
+
+  bool diverged = false;
+  for (size_t i = 0; i < kSamples; ++i) {
+    if (GetRandomPageBase() != sequence[i]) {
+      diverged = true;
+    }
+  }
+  EXPECT_TRUE(diverged);
 }
 
 // This randomness test is adapted from V8's PRNG tests.
