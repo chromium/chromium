@@ -623,3 +623,12 @@ declare_args() {
 # `base::unchecked` on all those spans (shutting them out entirely).
 use_checked_span = !(is_asan || is_ubsan || is_tsan) && use_partition_alloc &&
                    has_64_bit_pointers
+
+# Enables additional features, e.g. slack space zapping.
+#
+# These features depend on the presence of `InSlotMetadata` (which is
+# primarily gated on build support for BackupRefPtr). Therefore, this
+# build toggle is necessarily defined as a subset of BackupRefPtr build
+# support.
+checked_span_has_metadata_support =
+    use_checked_span && enable_backup_ref_ptr_support && false

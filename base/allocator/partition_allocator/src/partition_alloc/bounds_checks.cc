@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
@@ -24,6 +25,14 @@ namespace partition_alloc {
 
 namespace {
 
+// Build support permitting, `CHECK()`s that the `is_allocated` bit of
+// the `InSlotMetadata` is set.
+enum class SlotLiveness {
+  kCheck,
+  kDontCheck,
+};
+
+template <SlotLiveness check = SlotLiveness::kDontCheck>
 PtrPosWithinAlloc IsPtrWithinSameAlloc(
     uintptr_t orig_address,
     uintptr_t test_address,
@@ -31,7 +40,7 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(
     internal::pool_handle pool,
     internal::ReservationOffsetTableAddressInfo offset_info) {
   const std::ptrdiff_t offset = internal::GetMetadataOffset(pool);
-  const auto [slot_start, _] =
+  const auto [slot_start, slot_size] =
       SlotAddressAndSize::From(orig_address, pool, offset_info, offset);
   // Don't use |orig_address| beyond this point at all. It was needed to
   // pick the right slot, but now we're dealing with very concrete addresses.
@@ -41,6 +50,16 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(
   auto* slot_span =
       internal::SlotSpanMetadata::FromSlotStart(slot_start, offset);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  if constexpr (check == SlotLiveness::kCheck) {
+    if (root->brp_enabled()) [[likely]] {
+      internal::InSlotMetadata* metadata =
+          internal::InSlotMetadataPointer(slot_start.value(), slot_size);
+      metadata->EnsureAlive(slot_start, slot_span);
+    }
+  }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
 
   uintptr_t object_addr = slot_start.value();
   uintptr_t object_end = object_addr + root->GetSlotUsableSize(slot_span);
@@ -95,7 +114,7 @@ bool IsExtentOutOfBounds(const void* ptr,
     return false;
   }
 
-  return IsPtrWithinSameAlloc(
+  return IsPtrWithinSameAlloc<SlotLiveness::kCheck>(
              address,
              internal::base::CheckAdd(address, extent_bytes).ValueOrDie(),
              type_size, pool, offset_info) == PtrPosWithinAlloc::kFarOOB;
