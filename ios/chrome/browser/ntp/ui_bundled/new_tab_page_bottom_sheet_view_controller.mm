@@ -491,6 +491,18 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+       shouldReceiveTouch:(UITouch*)touch {
+  if (gestureRecognizer == _sheetPanGesture) {
+    CGPoint point = [touch locationInView:_magicStackContainerView];
+    if ([_magicStackContainerView pointInside:point withEvent:nil] &&
+        _magicStackContainerView.alpha > 0.0) {
+      return NO;
+    }
+  }
+  return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
     shouldRecognizeSimultaneouslyWithGestureRecognizer:
         (UIGestureRecognizer*)otherGestureRecognizer {
   if (gestureRecognizer == _sheetPanGesture &&
