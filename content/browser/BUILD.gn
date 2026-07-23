@@ -62,13 +62,20 @@ rust_static_library("browser_id_types") {
 
 rust_static_library("child_process_security_policy_impl") {
   # allow_unsafe is needed for FFI that underpins the `cxx` crate. While this
-  # allows allow_unsafe for the entire crate, the Rust file also implements
+  # allows allow_unsafe for the entire crate, the Rust code also implements
   # finer-grained controls that allow unsafe code only for FFI code while
   # disallowing it by default for other code.
   allow_unsafe = true
-  crate_root = "security/cpsp/child_process_security_policy_impl.rs"
-  sources = [ "security/cpsp/child_process_security_policy_impl.rs" ]
-  cxx_bindings = [ "security/cpsp/child_process_security_policy_impl.rs" ]
+  crate_root = "security/cpsp/lib.rs"
+  sources = [
+    "security/cpsp/child_process_security_policy_impl.rs",
+    "security/cpsp/lib.rs",
+    "security/cpsp/process_state.rs",
+  ]
+  cxx_bindings = [
+    "security/cpsp/child_process_security_policy_impl.rs",
+    "security/cpsp/process_state.rs",
+  ]
   visibility = [ ":browser" ]
   configs += [ "//content:content_implementation" ]
   deps = [
