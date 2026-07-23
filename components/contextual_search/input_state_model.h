@@ -93,6 +93,8 @@ class InputStateModel {
   void SetPermanentlyDisabledInputTypes(
       const std::vector<InputType>& input_types);
 
+  // Enables or disables an input type based on parameters.
+  void TogglePermanentlyDisabledInputType(InputType input_type, bool disabled);
 
   // Gets additional query params for the current state.
   std::map<std::string, std::string> GetAdditionalQueryParams();

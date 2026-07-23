@@ -1379,10 +1379,9 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
     input_state_model_->SetPrefService(profile_->GetPrefs());
   }
 
-  if (!IsContextualSearchTabSharingEligible()) {
-    input_state_model_->SetPermanentlyDisabledInputTypes(
-        {omnibox::InputType::INPUT_TYPE_BROWSER_TAB});
-  }
+  input_state_model_->TogglePermanentlyDisabledInputType(
+      omnibox::InputType::INPUT_TYPE_BROWSER_TAB,
+      !IsContextualSearchTabSharingEligible());
 
   input_state_subscription_ = input_state_model_->subscribe(
       base::BindRepeating(&ContextualSearchboxHandler::OnInputStateChanged,

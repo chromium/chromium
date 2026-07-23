@@ -502,6 +502,19 @@ void InputStateModel::SetPermanentlyDisabledInputTypes(
   notifySubscribers();
 }
 
+void InputStateModel::TogglePermanentlyDisabledInputType(InputType input_type,
+                                                         bool disabled) {
+  if (disabled) {
+    if (!std::ranges::contains(permanently_disabled_input_types_, input_type)) {
+      permanently_disabled_input_types_.push_back(input_type);
+    }
+  } else {
+    std::erase(permanently_disabled_input_types_, input_type);
+  }
+  updateDisabledState();
+  notifySubscribers();
+}
+
 void InputStateModel::updateSelectedState(ToolMode tool, ModelMode model) {
   state_.active_model = model;
   state_.image_gen_upload_active = false;
