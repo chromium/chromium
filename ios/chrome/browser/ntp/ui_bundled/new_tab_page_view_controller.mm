@@ -733,7 +733,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 #pragma mark - NewTabPageConsumer
 
 - (void)restoreScrollPosition:(CGFloat)scrollPosition {
-  [self.view layoutIfNeeded];
+  if (self.view.window) {
+    [self.view layoutIfNeeded];
+  }
   if (scrollPosition != -CGFLOAT_MAX) {
     [self setSavedContentOffset:scrollPosition];
   } else {

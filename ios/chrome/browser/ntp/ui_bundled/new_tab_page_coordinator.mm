@@ -1981,7 +1981,11 @@
 // Restores the saved scroll position of the NTP associated with `self.webState`
 // if necessary.
 - (void)restoreNTPScrollPosition {
-  [self.NTPMediator restoreNTPScrollPositionForWebState:self.webState];
+  if ([self isStartSurface]) {
+    [self.NTPMediator.consumer restoreScrollPosition:-CGFLOAT_MAX];
+  } else {
+    [self.NTPMediator restoreNTPScrollPositionForWebState:self.webState];
+  }
 }
 
 // Opens the Home customization menu at a specific `page`.
