@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/auth_factors_policy/local_auth_factors_policy_controller_factory.h"
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/auth_factors_policy/local_auth_factors_policy_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -24,12 +25,13 @@ namespace ash {
 namespace {
 
 // Returns `true` if the given Profile/User is enterprise managed.
-bool IsUserEnterpriseManaged(const user_manager::User& user) {
+bool IsUserEnterpriseManaged(PrefService& local_state,
+                             const user_manager::User& user) {
   if (user.is_managed() == true) {
     return true;
   }
   // Fallback to KnownUser, which is often populated earlier in tests.
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   return known_user.GetIsEnterpriseManaged(user.GetAccountId());
 }
 
@@ -81,14 +83,16 @@ LocalAuthFactorsPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  if (!IsUserEnterpriseManaged(*user)) {
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+
+  if (!IsUserEnterpriseManaged(local_state, *user)) {
     LOG(WARNING) << "User was not managed, not building service instance.";
     return nullptr;
   }
 
   const AccountId& account_id = user->GetAccountId();
   return std::make_unique<LocalAuthFactorsPolicyController>(
-      *g_browser_process->local_state(), profile, account_id);
+      local_state, profile, account_id);
 }
 
 bool LocalAuthFactorsPolicyControllerFactory::
