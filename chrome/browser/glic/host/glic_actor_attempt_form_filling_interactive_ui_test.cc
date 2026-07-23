@@ -14,6 +14,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/glic/actor/glic_actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
@@ -71,85 +72,7 @@ void SetFormFillingAction(
   }
 }
 
-// Internal recursive helper to collect text from a subtree.
-void GetSubtreeText(const optimization_guide::proto::ContentNode& node,
-                    std::string& out) {
-  if (node.content_attributes().has_text_data()) {
-    if (!out.empty() && out.back() != ' ') {
-      out += " ";
-    }
-    out += node.content_attributes().text_data().text_content();
-  }
-  for (const optimization_guide::proto::ContentNode& child :
-       node.children_nodes()) {
-    GetSubtreeText(child, out);
-  }
-}
 
-// Recursively builds a map from label text to the corresponding input's
-// DomNode. We ignore iframes and collect label text from the node's subtree.
-//
-// This function requires label text to be unique within the `node`.
-void FindFormLabelsRecursively(
-    const optimization_guide::proto::ContentNode& node,
-    const std::string& document_identifier,
-    base::flat_map<std::string, DomNode>& label_map) {
-  const optimization_guide::proto::ContentAttributes& attrs =
-      node.content_attributes();
-
-  if (attrs.has_label_for_dom_node_id()) {
-    std::string text;
-    GetSubtreeText(node, text);
-    text = base::TrimWhitespaceASCII(text, base::TRIM_ALL);
-    if (!text.empty()) {
-      CHECK(!label_map.contains(text)) << "Test pages must not repeat labels";
-      label_map[text] = DomNode{.node_id = attrs.label_for_dom_node_id(),
-                                .document_identifier = document_identifier};
-    }
-  }
-
-  // Since no tests use iframes, we ignore iframes which have a different
-  // document identifier.
-  if (attrs.attribute_type() ==
-      optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
-    return;
-  }
-
-  for (const optimization_guide::proto::ContentNode& child :
-       node.children_nodes()) {
-    FindFormLabelsRecursively(child, document_identifier, label_map);
-  }
-}
-
-// Builds a map from label text to the corresponding input's DomNode. This is
-// needed to specify the node easily in tests that use step
-// GetDomNodeForLabel().
-base::flat_map<std::string, DomNode> BuildFormLabelsMap(
-    const optimization_guide::proto::AnnotatedPageContent& apc) {
-  base::flat_map<std::string, DomNode> label_map;
-  CHECK(apc.has_root_node());
-  CHECK(apc.has_main_frame_data());
-  FindFormLabelsRecursively(
-      apc.root_node(),
-      apc.main_frame_data().document_identifier().serialized_token(),
-      label_map);
-  return label_map;
-}
-
-std::string FormLabelsDebugString(
-    const base::flat_map<std::string, DomNode>& map) {
-  return base::StrCat(
-      {"{",
-       base::JoinString(base::ToVector(map,
-                                       [](const auto& entry) {
-                                         return StringPrintf(
-                                             "'%s' -> %d @ %s", entry.first,
-                                             entry.second.node_id,
-                                             entry.second.document_identifier);
-                                       }),
-                        ", "),
-       "}"});
-}
 
 content::EvalJsResult EvalJsAt(content::WebContents* contents,
                                std::string_view query_selector,
@@ -283,7 +206,7 @@ class GlicActorAttemptFormFillingUiTest : public GlicActorUiTest {
   [[nodiscard]] auto GetApcAndFormLabelsMap() {
     return Steps(GetPageContextForActorTab(), Do([this]() {
                    form_labels_map_ =
-                       BuildFormLabelsMap(*annotated_page_content_);
+                       glic::BuildFormLabelsMap(*annotated_page_content_);
                  }));
   }
 
@@ -408,7 +331,7 @@ class GlicActorAttemptFormFillingUiTest : public GlicActorUiTest {
       auto it = form_labels_map_.find(label);
       ASSERT_NE(it, form_labels_map_.end())
           << "Could not find label '" << label << "' in "
-          << FormLabelsDebugString(form_labels_map_);
+          << glic::FormLabelsDebugString(form_labels_map_);
       node_out = it->second;
     });
   }

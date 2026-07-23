@@ -135,6 +135,32 @@ base::expected<Command, std::string> DeserializeCommand(
     }
     return MakeNavigateActionCommand{tab_handle, *url, *task_id};
   }
+  if (*command_field == "make-attempt-otp-filling-action") {
+    ASSIGN_OR_RETURN(tabs::TabHandle tab_handle, ParseOptionalTabId(dict));
+    auto task_id = dict.FindInt("taskId");
+    if (!task_id) {
+      return base::unexpected("Missing taskId");
+    }
+    auto node_id = dict.FindInt("nodeId");
+    if (!node_id) {
+      return base::unexpected("Missing nodeId");
+    }
+    auto* document_identifier = dict.FindString("documentIdentifier");
+    if (!document_identifier) {
+      return base::unexpected("Missing documentIdentifier");
+    }
+    auto for_signin = dict.FindBool("forSignin");
+    if (!for_signin.has_value()) {
+      return base::unexpected("Missing forSignin");
+    }
+    auto otp_type = dict.FindInt("otpType");
+    if (!otp_type) {
+      return base::unexpected("Missing otpType");
+    }
+    return MakeAttemptOtpFillingActionCommand{tab_handle,  *task_id,
+                                              *node_id,    *document_identifier,
+                                              *for_signin, *otp_type};
+  }
   return base::unexpected(base::StrCat({"Unknown command: ", *command_field}));
 }
 

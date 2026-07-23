@@ -1,3 +1,9 @@
 include_rules = [
   "+components/glic",
 ]
+
+specific_include_rules = {
+  'glic_actor_attempt_otp_filling_.*': [
+    "+components/one_time_tokens/core/browser",
+  ],
+}
