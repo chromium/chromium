@@ -38,12 +38,12 @@ LayoutBR::LayoutBR(HTMLBRElement& node) : LayoutText(&node, NewlineString()) {}
 
 LayoutBR::~LayoutBR() = default;
 
-int LayoutBR::CaretMinOffset() const {
+wtf_size_t LayoutBR::CaretMinOffset() const {
   NOT_DESTROYED();
   return 0;
 }
 
-int LayoutBR::CaretMaxOffset() const {
+wtf_size_t LayoutBR::CaretMaxOffset() const {
   NOT_DESTROYED();
   return 1;
 }

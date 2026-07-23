@@ -615,7 +615,7 @@ void EditContext::DeleteCurrentSelection() {
 }
 
 template <typename StateMachine>
-int FindNextBoundaryOffset(const String& str, int current);
+wtf_size_t FindNextBoundaryOffset(const String& str, wtf_size_t current);
 
 void EditContext::EnsureSelectionWithinTextBounds() {
   if (!RuntimeEnabledFeatures::

@@ -800,8 +800,8 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
 }
 
 static void UpdatePositionForTextRemoval(Text* node,
-                                         int offset,
-                                         int count,
+                                         wtf_size_t offset,
+                                         wtf_size_t count,
                                          Position& position) {
   if (!position.IsOffsetInAnchor() || position.ComputeContainerNode() != node)
     return;
@@ -857,7 +857,7 @@ void DeleteSelectionCommand::HandleGeneralDelete(EditingState* editing_state) {
   if (upstream_start_.IsNull())
     return;
 
-  int start_offset = upstream_start_.ComputeEditingOffset();
+  wtf_size_t start_offset = upstream_start_.ComputeEditingOffset();
   Node* start_node = upstream_start_.AnchorNode();
   DCHECK(start_node);
 

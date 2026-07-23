@@ -1754,7 +1754,7 @@ bool ApplyStyleCommand::IsValidCaretPositionInTextNode(
   Node* node = position.ComputeContainerNode();
   if (!position.IsOffsetInAnchor() || !node->IsTextNode())
     return false;
-  int offset_in_text = position.OffsetInContainerNode();
+  wtf_size_t offset_in_text = position.OffsetInContainerNode();
   return offset_in_text > CaretMinOffset(node) &&
          offset_in_text < CaretMaxOffset(node);
 }

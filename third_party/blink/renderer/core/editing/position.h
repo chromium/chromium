@@ -56,18 +56,18 @@ class PositionTemplate {
       const PositionTemplate<Strategy>&,
       const PositionTemplate<Strategy>& b);
   static PositionTemplate<Strategy> EditingPositionOf(const Node* anchor_node,
-                                                      int offset);
+                                                      wtf_size_t offset);
 
   // For creating before/after positions:
   PositionTemplate(const Node* anchor_node, PositionAnchorType);
 
   // For creating offset positions:
-  PositionTemplate(const Node& anchor_node, int offset);
+  PositionTemplate(const Node& anchor_node, wtf_size_t offset);
   // TODO(editing-dev): We should not pass |nullptr| as |anchor_node| for
   // |Position| constructor.
   // TODO(editing-dev): This constructor should eventually go away. See bug
   // http://wkb.ug/63040.
-  PositionTemplate(const Node* anchor_node, int offset);
+  PositionTemplate(const Node* anchor_node, wtf_size_t offset);
 
   PositionTemplate(const PositionTemplate&);
   PositionTemplate& operator=(const PositionTemplate&);
@@ -77,13 +77,13 @@ class PositionTemplate {
   // selection for merging text typing.
   static PositionTemplate<Strategy> CreateWithoutValidation(
       const Node& container,
-      int offset);
+      wtf_size_t offset);
 
   // TODO(editing-dev): Once we get a reason to use out of bound position,
   // we should change caller to use |CreateWithoutValidation()|.
   static PositionTemplate<Strategy> CreateWithoutValidationDeprecated(
       const Node& container,
-      int offset);
+      wtf_size_t offset);
 
   explicit operator bool() const { return IsNotNull(); }
 
@@ -111,7 +111,7 @@ class PositionTemplate {
 
   // O(n) for before/after-anchored positions, O(1) for parent-anchored
   // positions
-  int ComputeOffsetInContainerNode() const;
+  wtf_size_t ComputeOffsetInContainerNode() const;
 
   // Convenience method for DOM positions that also fixes up some positions for
   // editing
@@ -124,7 +124,7 @@ class PositionTemplate {
   PositionTemplate<Strategy> ToOffsetInAnchor() const;
 
   // Inline O(1) access for Positions which callers know to be parent-anchored
-  int OffsetInContainerNode() const {
+  wtf_size_t OffsetInContainerNode() const {
     DCHECK(IsOffsetInAnchor());
     return offset_;
   }
@@ -137,7 +137,7 @@ class PositionTemplate {
   //   - kAfterAnchor     last editing offset in anchor node
   // Editing operations will change in anchor node rather than nodes around
   // anchor node.
-  int ComputeEditingOffset() const;
+  wtf_size_t ComputeEditingOffset() const;
 
   // These are convenience methods which are smart about whether the position is
   // neighbor anchored or parent anchored
@@ -201,7 +201,7 @@ class PositionTemplate {
   static PositionTemplate<Strategy> AfterNode(const Node& anchor_node);
   static PositionTemplate<Strategy> InParentBeforeNode(const Node& anchor_node);
   static PositionTemplate<Strategy> InParentAfterNode(const Node& anchor_node);
-  static int LastOffsetInNode(const Node& anchor_node);
+  static wtf_size_t LastOffsetInNode(const Node& anchor_node);
   static PositionTemplate<Strategy> FirstPositionInNode(
       const Node& anchor_node);
   static PositionTemplate<Strategy> LastPositionInNode(const Node& anchor_node);
@@ -230,7 +230,7 @@ class PositionTemplate {
   // EditingIgnoresContent(anchor_node_) returns true, then other places in
   // editing will treat offset_ == 0 as "before the anchor" and offset_ > 0 as
   // "after the anchor node".  See ParentAnchoredEquivalent for more info.
-  int offset_ = 0;
+  wtf_size_t offset_ = 0;
   PositionAnchorType anchor_type_ = PositionAnchorType::kOffsetInAnchor;
 };
 

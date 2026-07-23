@@ -48,8 +48,8 @@ class LayoutBR : public LayoutText {
     return true;
   }
 
-  int CaretMinOffset() const override;
-  int CaretMaxOffset() const override;
+  wtf_size_t CaretMinOffset() const override;
+  wtf_size_t CaretMaxOffset() const override;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const final;
 

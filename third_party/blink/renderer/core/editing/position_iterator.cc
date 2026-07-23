@@ -43,7 +43,7 @@ bool ShouldTraverseChildren(const Node& node) {
 }
 
 template <typename Strategy>
-int LastOffsetForPositionIterator(const Node* node) {
+wtf_size_t LastOffsetForPositionIterator(const Node* node) {
   return IsUserSelectContain(*node) ? 1 : Strategy::LastOffsetForEditing(node);
 }
 
@@ -57,7 +57,7 @@ ContainerNode* SelectableParentOf(const Node& node) {
 
 }  // namespace
 
-static constexpr int kInvalidOffset = -1;
+static constexpr wtf_size_t kInvalidOffset = -1;
 
 template <typename Strategy>
 SlowPositionIteratorAlgorithm<Strategy>::SlowPositionIteratorAlgorithm(
@@ -266,7 +266,7 @@ void SlowPositionIteratorAlgorithm<Strategy>::Decrement() {
             Strategy::Index(*node_after_position_in_anchor_);
       else
         --offsets_in_anchor_node_[depth_to_anchor_node_];
-      DCHECK_GE(offsets_in_anchor_node_[depth_to_anchor_node_], 0);
+      DCHECK_NE(offsets_in_anchor_node_[depth_to_anchor_node_], kInvalidOffset);
       // Increment depth intializing with last offset.
       ++depth_to_anchor_node_;
       if (depth_to_anchor_node_ >= offsets_in_anchor_node_.size())

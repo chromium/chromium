@@ -157,9 +157,9 @@ EditingStyle* EditingStyleUtilities::CreateStyleAtSelectionStart(
   // <b>hello</b>world should give you font-weight: bold.
   auto* position_node = DynamicTo<Text>(position.ComputeContainerNode());
   if (selection.IsRange() && position_node &&
-      position.ComputeOffsetInContainerNode() ==
-          static_cast<int>(position_node->length()))
+      position.ComputeOffsetInContainerNode() == position_node->length()) {
     position = NextVisuallyDistinctCandidate(position);
+  }
 
   Element* element = AssociatedElementOf(position);
   if (!element)

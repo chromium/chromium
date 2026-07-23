@@ -406,9 +406,7 @@ static Position UpdatePositionAfterAdoptingTextReplacement(
 
   // See:
   // http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html#Level-2-Range-Mutation
-  DCHECK_GE(position.OffsetInContainerNode(), 0);
-  unsigned position_offset =
-      static_cast<unsigned>(position.OffsetInContainerNode());
+  wtf_size_t position_offset = position.OffsetInContainerNode();
   // Replacing text can be viewed as a deletion followed by insertion.
   if (position_offset >= offset && position_offset <= offset + old_length)
     position_offset = offset;
@@ -505,9 +503,7 @@ static Position UpdatePostionAfterAdoptingTextNodeSplit(
     return position;
   // See:
   // http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html#Level-2-Range-Mutation
-  DCHECK_GE(position.OffsetInContainerNode(), 0);
-  unsigned position_offset =
-      static_cast<unsigned>(position.OffsetInContainerNode());
+  wtf_size_t position_offset = position.OffsetInContainerNode();
   unsigned old_length = old_node.length();
   if (position_offset <= old_length)
     return position;

@@ -548,7 +548,7 @@ unsigned TextControlElement::IndexForPosition(HTMLElement* inner_editor,
   for (Node* node = start_node; node;
        node = NodeTraversal::Previous(*node, inner_editor)) {
     if (auto* text_node = DynamicTo<Text>(node)) {
-      int length = text_node->length();
+      wtf_size_t length = text_node->length();
       if (node == passed_position.ComputeContainerNode())
         index += std::min(length, passed_position.OffsetInContainerNode());
       else

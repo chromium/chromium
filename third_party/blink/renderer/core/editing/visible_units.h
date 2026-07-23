@@ -49,8 +49,8 @@ class Node;
 class LocalFrame;
 
 // offset functions on Node
-CORE_EXPORT int CaretMinOffset(const Node*);
-CORE_EXPORT int CaretMaxOffset(const Node*);
+CORE_EXPORT wtf_size_t CaretMinOffset(const Node*);
+CORE_EXPORT wtf_size_t CaretMaxOffset(const Node*);
 
 enum class SnapToClient {
   kOthers,

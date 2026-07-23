@@ -384,13 +384,14 @@ void CompositeEditCommand::InsertNodeAt(Node* insert_child,
   // likewise for replaced elements, brs, etc.
   Position p = editing_position.ParentAnchoredEquivalent();
   Node* ref_child = p.AnchorNode();
-  int offset = p.OffsetInContainerNode();
+  wtf_size_t offset = p.OffsetInContainerNode();
 
   auto* ref_child_text_node = DynamicTo<Text>(ref_child);
   if (CanHaveChildrenForEditing(ref_child)) {
     Node* child = ref_child->firstChild();
-    for (int i = 0; child && i < offset; i++)
+    for (wtf_size_t i = 0; child && i < offset; i++) {
       child = child->nextSibling();
+    }
     if (child)
       InsertNodeBefore(insert_child, child, editing_state);
     else
@@ -2216,7 +2217,7 @@ bool CompositeEditCommand::BreakOutOfEmptyMailBlockquotedParagraph(
     if (editing_state->IsAborted())
       return false;
   } else if (auto* text_node = DynamicTo<Text>(caret_pos.AnchorNode())) {
-    DCHECK_EQ(caret_pos.ComputeOffsetInContainerNode(), 0);
+    DCHECK_EQ(caret_pos.ComputeOffsetInContainerNode(), 0u);
     ContainerNode* parent_node = text_node->parentNode();
     // The preserved newline must be the first thing in the node, since
     // otherwise the previous paragraph would be quoted, and we verified that it

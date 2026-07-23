@@ -70,7 +70,7 @@ const TreeScope* PositionTemplate<Strategy>::CommonAncestorTreeScope(
 template <typename Strategy>
 PositionTemplate<Strategy> PositionTemplate<Strategy>::EditingPositionOf(
     const Node* anchor_node,
-    int offset) {
+    wtf_size_t offset) {
   if (!anchor_node || anchor_node->IsTextNode())
     return PositionTemplate<Strategy>(anchor_node, offset);
 
@@ -85,7 +85,7 @@ PositionTemplate<Strategy> PositionTemplate<Strategy>::EditingPositionOf(
 
   // Note: |offset| can be >= 1, if |anchorNode| have child nodes, e.g.
   // using Node.appendChild() to add a child node TEXTAREA.
-  DCHECK_GE(offset, 1);
+  DCHECK_GE(offset, 1u);
   return PositionTemplate<Strategy>(anchor_node,
                                     PositionAnchorType::kAfterAnchor);
 }
@@ -121,29 +121,25 @@ PositionTemplate<Strategy>::PositionTemplate(const Node* anchor_node,
 // See http://crbug.com/735327
 template <typename Strategy>
 PositionTemplate<Strategy>::PositionTemplate(const Node* anchor_node,
-                                             int offset)
+                                             wtf_size_t offset)
     : anchor_node_(const_cast<Node*>(anchor_node)), offset_(offset) {
 #if DCHECK_IS_ON()
   DCHECK(CanBeAnchorNode<Strategy>(anchor_node_.Get())) << anchor_node_;
   if (!anchor_node_) {
-    DCHECK_EQ(offset, 0);
+    DCHECK_EQ(offset, 0u);
     return;
   }
   if (auto* data = DynamicTo<CharacterData>(anchor_node_.Get())) {
-    DCHECK_GE(offset, 0);
-    DCHECK_LE(static_cast<unsigned>(offset), data->length()) << anchor_node_;
+    DCHECK_LE(offset, data->length()) << anchor_node_;
     return;
   }
-  DCHECK_GE(offset, 0);
-  DCHECK_LE(static_cast<unsigned>(offset),
-            Strategy::CountChildren(*anchor_node))
-      << anchor_node_;
+  DCHECK_LE(offset, Strategy::CountChildren(*anchor_node)) << anchor_node_;
 #endif
 }
 
 template <typename Strategy>
 PositionTemplate<Strategy>::PositionTemplate(const Node& anchor_node,
-                                             int offset)
+                                             wtf_size_t offset)
     : PositionTemplate(&anchor_node, offset) {}
 
 template <typename Strategy>
@@ -160,7 +156,7 @@ PositionTemplate<Strategy>& PositionTemplate<Strategy>::operator=(
 template <typename Strategy>
 PositionTemplate<Strategy> PositionTemplate<Strategy>::CreateWithoutValidation(
     const Node& container,
-    int offset) {
+    wtf_size_t offset) {
   PositionTemplate<Strategy> result(container, 0);
   result.offset_ = offset;
   return result;
@@ -171,7 +167,7 @@ template <typename Strategy>
 PositionTemplate<Strategy>
 PositionTemplate<Strategy>::CreateWithoutValidationDeprecated(
     const Node& container,
-    int offset) {
+    wtf_size_t offset) {
   return CreateWithoutValidation(container, offset);
 }
 
@@ -198,20 +194,20 @@ Node* PositionTemplate<Strategy>::ComputeContainerNode() const {
 }
 
 template <typename Strategy>
-static int MinOffsetForNode(Node* anchor_node, int offset) {
+static wtf_size_t MinOffsetForNode(Node* anchor_node, wtf_size_t offset) {
   if (auto* data = DynamicTo<CharacterData>(anchor_node))
-    return std::min(offset, static_cast<int>(data->length()));
+    return std::min(offset, data->length());
 
-  int new_offset = 0;
+  wtf_size_t new_offset = 0;
   for (Node* node = Strategy::FirstChild(*anchor_node);
        node && new_offset < offset; node = Strategy::NextSibling(*node))
-    new_offset++;
+    ++new_offset;
 
   return new_offset;
 }
 
 template <typename Strategy>
-int PositionTemplate<Strategy>::ComputeOffsetInContainerNode() const {
+wtf_size_t PositionTemplate<Strategy>::ComputeOffsetInContainerNode() const {
   if (!anchor_node_)
     return 0;
 
@@ -269,7 +265,7 @@ PositionTemplate<Strategy> PositionTemplate<Strategy>::ToOffsetInAnchor()
 }
 
 template <typename Strategy>
-int PositionTemplate<Strategy>::ComputeEditingOffset() const {
+wtf_size_t PositionTemplate<Strategy>::ComputeEditingOffset() const {
   if (IsAfterAnchorOrAfterChildren())
     return Strategy::LastOffsetForEditing(anchor_node_.Get());
   return offset_;
@@ -511,11 +507,11 @@ PositionTemplate<Strategy> PositionTemplate<Strategy>::AfterNode(
 
 // static
 template <typename Strategy>
-int PositionTemplate<Strategy>::LastOffsetInNode(const Node& node) {
+wtf_size_t PositionTemplate<Strategy>::LastOffsetInNode(const Node& node) {
   if (auto* data = DynamicTo<CharacterData>(node))
-    return static_cast<int>(data->length());
+    return data->length();
 
-  return static_cast<int>(Strategy::CountChildren(node));
+  return Strategy::CountChildren(node);
 }
 
 // static

@@ -222,13 +222,13 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
   Node* end_container = ephemeral_range.EndPosition().ComputeContainerNode();
   Node* corrected_start =
       ResolvePositionToNode(ephemeral_range.StartPosition());
-  int corrected_start_offset =
+  wtf_size_t corrected_start_offset =
       (corrected_start->isSameNode(start_container))
           ? ephemeral_range.StartPosition().ComputeOffsetInContainerNode()
           : 0;
 
   Node* corrected_end = ResolvePositionToNode(ephemeral_range.EndPosition());
-  int corrected_end_offset =
+  wtf_size_t corrected_end_offset =
       (corrected_end->isSameNode(end_container))
           ? ephemeral_range.EndPosition().ComputeOffsetInContainerNode()
           : 0;
@@ -273,17 +273,18 @@ void TextFragmentSelectorGenerator::AdjustSelection() {
     // search for the word end as it will be the end of the next word, which was
     // not included in the selection.
     if (corrected_end_offset !=
-        FindWordStartBoundary(end_text.Span16(), corrected_end_offset)) {
-      corrected_end_offset =
-          FindWordEndBoundary(end_text.Span16(), corrected_end_offset);
+        static_cast<wtf_size_t>(FindWordStartBoundary(
+            end_text.Span16(), static_cast<int>(corrected_end_offset)))) {
+      corrected_end_offset = FindWordEndBoundary(
+          end_text.Span16(), static_cast<int>(corrected_end_offset));
     }
   }
 
   if (corrected_start != start_container ||
-      static_cast<int>(corrected_start_offset) !=
+      corrected_start_offset !=
           ephemeral_range.StartPosition().ComputeOffsetInContainerNode() ||
       corrected_end != end_container ||
-      static_cast<int>(corrected_end_offset) !=
+      corrected_end_offset !=
           ephemeral_range.EndPosition().ComputeOffsetInContainerNode()) {
     PositionInFlatTree start(corrected_start, corrected_start_offset);
     PositionInFlatTree end(corrected_end, corrected_end_offset);

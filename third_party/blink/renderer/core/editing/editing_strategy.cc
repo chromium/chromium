@@ -36,7 +36,7 @@ EUserSelect UsedValueOfUserSelect(const Node& node) {
 // the last candidate, otherwise return the number of children for container
 // nodes and the length for unrendered text nodes.
 template <typename Traversal>
-int EditingAlgorithm<Traversal>::CaretMaxOffset(const Node& node) {
+wtf_size_t EditingAlgorithm<Traversal>::CaretMaxOffset(const Node& node) {
   // For rendered text nodes, return the last position that a caret could
   // occupy.
   if (auto* text = DynamicTo<Text>(node); text && text->GetLayoutObject()) {
@@ -58,12 +58,12 @@ int EditingAlgorithm<Traversal>::CaretMaxOffset(const Node& node) {
 }
 
 template <typename Traversal>
-int EditingAlgorithm<Traversal>::LastOffsetForEditing(const Node* node) {
+wtf_size_t EditingAlgorithm<Traversal>::LastOffsetForEditing(const Node* node) {
   DCHECK(node);
   if (!node)
     return 0;
   if (auto* character_data = DynamicTo<CharacterData>(node))
-    return static_cast<int>(character_data->length());
+    return character_data->length();
 
   if (Traversal::HasChildren(*node))
     return Traversal::CountChildren(*node);

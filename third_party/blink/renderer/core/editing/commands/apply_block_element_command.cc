@@ -361,7 +361,7 @@ void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
     // If start is in the middle of a text node, split.
     if (!start_style->ShouldCollapseWhiteSpaces() &&
         start.OffsetInContainerNode() > 0) {
-      int start_offset = start.OffsetInContainerNode();
+      wtf_size_t start_offset = start.OffsetInContainerNode();
       auto* start_text = To<Text>(start.ComputeContainerNode());
       SplitTextNode(start_text, start_offset);
       GetDocument().UpdateStyleAndLayoutTree();
@@ -387,7 +387,7 @@ void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
     // Include \n at the end of line if we're at an empty paragraph
     if (end_style->ShouldPreserveBreaks() && start == end &&
         end.OffsetInContainerNode() <
-            static_cast<int>(To<Text>(end.ComputeContainerNode())->length())) {
+            To<Text>(end.ComputeContainerNode())->length()) {
       if (is_end_and_end_of_last_paragraph_on_same_node &&
           end.OffsetInContainerNode() >=
               end_of_last_paragraph.OffsetInContainerNode())
@@ -398,7 +398,7 @@ void ApplyBlockElementCommand::RangeForParagraphSplittingTextNodesIfNeeded(
     if (end_style->UsedUserModify() != EUserModify::kReadOnly &&
         end_style->ShouldPreserveWhiteSpaces() && end.OffsetInContainerNode() &&
         end.OffsetInContainerNode() <
-            static_cast<int>(To<Text>(end.ComputeContainerNode())->length())) {
+            To<Text>(end.ComputeContainerNode())->length()) {
       auto* end_container = To<Text>(end.ComputeContainerNode());
       SplitTextNode(end_container, end.OffsetInContainerNode());
       GetDocument().UpdateStyleAndLayoutTree();
