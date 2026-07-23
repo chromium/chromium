@@ -7,11 +7,13 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -31,6 +33,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -1416,6 +1419,96 @@ TEST_F(HTMLSelectElementTest,
   EXPECT_FALSE(HasDescendantsObserver(*select));
 
   test::RunPendingTasks();
+}
+
+TEST_F(HTMLSelectElementTest, KeyboardRepeatDoesNotTogglePopup) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      .base-select, .base-select::picker(select) {
+        appearance: base-select;
+      }
+    </style>
+    <select id="select">
+      <option>one</option>
+      <option>two</option>
+    </select>
+  )HTML");
+
+  auto* select = To<HTMLSelectElement>(GetElementById("select"));
+  ASSERT_TRUE(select);
+
+  // Test both appearance: auto and appearance: base-select
+  for (bool use_base_select : {false, true}) {
+    if (use_base_select) {
+      select->setAttribute(html_names::kClassAttr, AtomicString("base-select"));
+    } else {
+      select->removeAttribute(html_names::kClassAttr);
+    }
+    select->Focus();
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+    ASSERT_FALSE(select->PopupIsVisible());
+
+    // 1. Send repeat keypress Space. It should NOT open the popup.
+    {
+      WebKeyboardEvent web_event(WebInputEvent::Type::kChar,
+                                 WebInputEvent::kIsAutoRepeat,
+                                 base::TimeTicks());
+      web_event.windows_key_code = VKEY_SPACE;
+      web_event.text[0] = ' ';
+      auto* event = KeyboardEvent::Create(web_event, GetDocument().domWindow());
+      select->DefaultEventHandler(*event);
+      EXPECT_FALSE(select->PopupIsVisible())
+          << "Repeat Space should not open (base-select: " << use_base_select
+          << ")";
+    }
+
+    // 2. Send non-repeat keypress Space. It SHOULD open the popup.
+    {
+      WebKeyboardEvent web_event(WebInputEvent::Type::kChar,
+                                 WebInputEvent::kNoModifiers,
+                                 base::TimeTicks());
+      web_event.windows_key_code = VKEY_SPACE;
+      web_event.text[0] = ' ';
+      auto* event = KeyboardEvent::Create(web_event, GetDocument().domWindow());
+      select->DefaultEventHandler(*event);
+      EXPECT_TRUE(select->PopupIsVisible())
+          << "Non-repeat Space should open (base-select: " << use_base_select
+          << ")";
+    }
+
+    // 3. Send repeat key event while open. It should NOT close the popup.
+    Element* active_element = GetDocument().ActiveElement();
+    ASSERT_TRUE(active_element);
+    {
+      WebKeyboardEvent web_event(WebInputEvent::Type::kRawKeyDown,
+                                 WebInputEvent::kIsAutoRepeat,
+                                 base::TimeTicks());
+      web_event.windows_key_code = VKEY_SPACE;
+      auto* event = KeyboardEvent::Create(web_event, GetDocument().domWindow());
+      active_element->DefaultEventHandler(*event);
+      EXPECT_TRUE(select->PopupIsVisible())
+          << "Repeat keydown Space should not close (base-select: "
+          << use_base_select << ")";
+    }
+    {
+      WebKeyboardEvent web_event(WebInputEvent::Type::kChar,
+                                 WebInputEvent::kIsAutoRepeat,
+                                 base::TimeTicks());
+      web_event.windows_key_code = VKEY_SPACE;
+      web_event.text[0] = ' ';
+      auto* event = KeyboardEvent::Create(web_event, GetDocument().domWindow());
+      active_element->DefaultEventHandler(*event);
+      EXPECT_TRUE(select->PopupIsVisible())
+          << "Repeat keypress Space should not close (base-select: "
+          << use_base_select << ")";
+    }
+
+    // Clean up: hide popup if still open
+    if (select->PopupIsVisible()) {
+      select->HidePopup(SelectPopupHideBehavior::kNormal);
+    }
+  }
 }
 
 }  // namespace blink
