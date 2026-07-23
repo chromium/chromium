@@ -95,7 +95,7 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
     bool has_link = false;
     // A multi-line link created by `StyledLabel` is split into multiple link
     // fragments. We check all `views::Link` child views to ensure the focus
-    // border highlights the entire wrapped link.
+    // border highlights the entire wrapped link and text is not truncated.
     for (views::View* child : view().description_for_testing()->children()) {
       if (views::IsViewClass<views::Link>(child)) {
         has_link = true;
@@ -109,6 +109,10 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
           return testing::AssertionFailure()
                  << "Expected link border focused=" << expected_focused
                  << ", but got " << actual_focused;
+        }
+        if (link->IsDisplayTextTruncated() || link->IsDisplayTextClipped()) {
+          return testing::AssertionFailure()
+                 << "Link display text is unexpectedly truncated or clipped.";
         }
       }
     }

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
+#include "cc/paint/paint_flags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -28,8 +29,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -56,6 +61,42 @@ constexpr int kBorderInsets = 12;
 constexpr int kRowVerticalMargin = 12;
 constexpr int kRowHorizontalMargin = 12;
 constexpr int kMinimumWidth = 320;
+
+// A border for link fragments that renders a 1px solid focus border without
+// adding insets to the view content bounds. Setting non-zero insets on
+// `views::Link` child views of `views::StyledLabel` reduces the content bounds
+// width, causing `views::Label` to elide the link text.
+class LinkFocusBorder : public views::Border {
+ public:
+  explicit LinkFocusBorder(bool is_focused) : is_focused_(is_focused) {
+    SetColor(is_focused ? ui::kColorFocusableBorderFocused
+                        : ui::ColorVariant());
+  }
+
+  LinkFocusBorder(const LinkFocusBorder&) = delete;
+  LinkFocusBorder& operator=(const LinkFocusBorder&) = delete;
+  ~LinkFocusBorder() override = default;
+
+  void Paint(const views::View& view, gfx::Canvas* canvas) override {
+    if (is_focused_) {
+      cc::PaintFlags flags;
+      flags.setStrokeWidth(1.0f);
+      flags.setColor(color().ResolveToSkColor(view.GetColorProvider()));
+      flags.setStyle(cc::PaintFlags::kStroke_Style);
+      flags.setAntiAlias(true);
+
+      gfx::RectF bounds(view.GetLocalBounds());
+      bounds.Inset(0.5f);
+      canvas->DrawRoundRect(bounds, /*radius=*/2.0f, flags);
+    }
+  }
+
+  gfx::Insets GetInsets() const override { return gfx::Insets(); }
+  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
+
+ private:
+  const bool is_focused_;
+};
 
 // TODO(b/524157152): Refactor AutofillPopupController to provide this.
 bool IsLoggingDisabledByPolicy(const AutofillPopupController* controller) {
@@ -276,9 +317,7 @@ void PopupPersonalContextNoticeView::UpdateLinkBorders(bool focused) {
   // focus border styling is applied to or removed from the entire wrapped link.
   for (views::View* child : description_->children()) {
     if (views::IsViewClass<views::Link>(child)) {
-      child->SetBorder(focused ? views::CreateSolidBorder(
-                                     1, ui::kColorFocusableBorderFocused)
-                               : views::CreateEmptyBorder(1));
+      child->SetBorder(std::make_unique<LinkFocusBorder>(focused));
     }
   }
 }
@@ -319,14 +358,16 @@ void PopupPersonalContextNoticeView::Layout(views::View::PassKey pass_key) {
   LayoutSuperclass<PopupInteractiveRowView>(this);
 
   // Because `description_` (a `StyledLabel`) creates its link child lazily
-  // during layout, we must wait until after `LayoutSuperclass` runs to find
-  // the link and set its focus behavior to `NEVER`. This prevents clicking the
-  // link from stealing native focus from the search bar/input field.
+  // during layout, we must wait until after `LayoutSuperclass` runs to
+  // configure the link. This sets its focus behavior to `NEVER` (preventing
+  // clicking the link from stealing native focus from the search bar/input
+  // field) and applies the active focus border styling.
   auto* link = GetSettingsLink();
   if (link) {
     link->SetFocusBehavior(views::View::FocusBehavior::NEVER);
     link->SetFontList(link->font_list().DeriveWithStyle(gfx::Font::UNDERLINE));
   }
+  UpdateLinkBorders(is_link_focused_);
 }
 
 gfx::Size PopupPersonalContextNoticeView::GetMinimumSize() const {
