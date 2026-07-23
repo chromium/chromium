@@ -14,10 +14,9 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
-#include "components/prefs/pref_service.h"
-#include "components/unified_consent/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 
 namespace {
@@ -212,15 +211,10 @@ void AutoPictureInPictureHatsService::MaybeLaunchSurvey(
   product_specific_string_data["Pip window duration"] =
       BucketizeDurationToSeconds(*active_window_context_->window_duration);
 
-  // Record Opener site URL only if UKM is enabled for this profile.
-  const bool is_ukm_enabled = profile_->GetPrefs()->GetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
-  if (is_ukm_enabled) {
-    product_specific_string_data["Opener site URL"] =
-        active_window_context_->origin.spec();
-  } else {
-    product_specific_string_data["Opener site URL"] = "";
-  }
+  product_specific_string_data["Opener site domain"] =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          active_window_context_->origin,
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
 
   if (actual_trigger == kHatsSurveyTriggerAutoPipAllowed) {
     product_specific_string_data["Prompt Result"] =

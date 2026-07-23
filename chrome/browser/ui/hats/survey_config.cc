@@ -552,7 +552,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       data_management_psd_bits_fields);
 
   std::vector<std::string> autopip_string_psd_fields{
-      "AutoPip Reason", "Opener site URL", "Pip window duration"};
+      "AutoPip Reason", "Opener site domain", "Pip window duration"};
   survey_configs.emplace_back(&media::kAutoPictureInPictureSurveys,
                               kHatsSurveyTriggerAutoPipPermissionPromptIgnored,
                               /*presupplied_trigger_id=*/std::nullopt,

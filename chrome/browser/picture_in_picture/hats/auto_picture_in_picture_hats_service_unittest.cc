@@ -302,8 +302,6 @@ TEST_F(AutoPictureInPictureHatsServiceTest, RecordsCorrectPSD) {
       CreateFinchScopedFeatureList("VideoConferencing", "AllowOnce");
 
   GURL test_url("https://example.com/");
-  profile()->GetPrefs()->SetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
 
   service()->AutoPictureInPictureWindowOpened(
       PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing, test_url);
@@ -315,30 +313,10 @@ TEST_F(AutoPictureInPictureHatsServiceTest, RecordsCorrectPSD) {
               LaunchSurveyForWebContents(
                   kHatsSurveyTriggerAutoPipAllowed, web_contents(), _,
                   AllOf(Contains(Pair("AutoPip Reason", "VideoConferencing")),
-                        Contains(Pair("Opener site URL", test_url.spec())),
+                        Contains(Pair("Opener site domain", "example.com")),
                         Contains(Pair("Pip window duration", "8s")),
                         Contains(Pair("Prompt Result", "AllowOnce"))),
                   _, _, _, _));
-
-  service()->MaybeLaunchSurvey(web_contents());
-}
-
-TEST_F(AutoPictureInPictureHatsServiceTest, DoesNotRecordUrlWhenUkmDisabled) {
-  auto feature_list =
-      CreateFinchScopedFeatureList("VideoConferencing", "AllowOnce");
-
-  GURL test_url("https://example.com/");
-  profile()->GetPrefs()->SetBoolean(
-      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
-
-  service()->AutoPictureInPictureWindowOpened(
-      PictureInPictureEventsInfo::AutoPipReason::kVideoConferencing, test_url);
-  service()->SetPromptResult(PromptResult::kAllowOnce);
-  service()->AutoPictureInPictureWindowClosed();
-
-  EXPECT_CALL(*mock_hats_service(),
-              LaunchSurveyForWebContents(
-                  _, _, _, Contains(Pair("Opener site URL", "")), _, _, _, _));
 
   service()->MaybeLaunchSurvey(web_contents());
 }
