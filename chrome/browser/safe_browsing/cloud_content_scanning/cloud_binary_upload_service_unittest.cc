@@ -1252,8 +1252,7 @@ TEST_F(CloudBinaryUploadServiceTest, RequestQueue) {
   // Uploading 2*max requests before any response is received ensures that the
   // queue is populated and processed correctly.
   for (size_t i = 0;
-       i < 2 * enterprise_connectors::CloudBinaryUploadServiceBase::
-                   GetParallelActiveRequestsMax();
+       i < 2 * enterprise_connectors::kDefaultMaxParallelActiveRequests;
        ++i) {
     std::unique_ptr<MockRequest> request = MakeRequest(
         &scanning_result, &scanning_response, /*is_advanced_protection*/ false);
@@ -1399,9 +1398,8 @@ TEST_F(CloudBinaryUploadServiceTest,
 
   // Create enough requests to fill the active queue and spill over into the
   // pending queue
-  size_t num_requests = enterprise_connectors::CloudBinaryUploadServiceBase::
-                            GetParallelActiveRequestsMax() +
-                        5;
+  size_t num_requests =
+      enterprise_connectors::kDefaultMaxParallelActiveRequests + 5;
   scanning_results.resize(
       num_requests, enterprise_connectors::ScanRequestUploadResult::kUnknown);
   scanning_responses.resize(num_requests);

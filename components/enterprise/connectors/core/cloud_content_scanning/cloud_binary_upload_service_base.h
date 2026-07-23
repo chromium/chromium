@@ -54,9 +54,6 @@ class CloudBinaryUploadServiceBase : public BinaryUploadService {
       std::unique_ptr<Delegate> delegate);
   ~CloudBinaryUploadServiceBase() override;
 
-  // The maximum number of uploads that can happen in parallel.
-  static size_t GetParallelActiveRequestsMax();
-
   // Returns the URL that requests are uploaded to. Scans for enterprise go to a
   // different URL than scans for Advanced Protection users and Enhanced
   // Protection users.

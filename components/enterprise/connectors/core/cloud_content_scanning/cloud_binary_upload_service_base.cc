@@ -269,15 +269,6 @@ void CloudBinaryUploadServiceBase::MaybeCancelRequests(
   }
 }
 
-size_t CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax() {
-  size_t experiment_max = kParallelContentAnalysisRequestCountMax.Get();
-  if (experiment_max > 0) {
-    return experiment_max;
-  }
-
-  return kDefaultMaxParallelActiveRequests;
-}
-
 base::WeakPtr<BinaryUploadService> CloudBinaryUploadServiceBase::AsWeakPtr() {
   return weakptr_factory_.GetWeakPtr();
 }
@@ -556,7 +547,7 @@ void CloudBinaryUploadServiceBase::RecordRequestMetrics(
 
 void CloudBinaryUploadServiceBase::PopRequestQueue() {
   AssertCalledOnUIThread();
-  while (active_requests_.size() < GetParallelActiveRequestsMax() &&
+  while (active_requests_.size() < kDefaultMaxParallelActiveRequests &&
          !request_queue_.empty()) {
     auto request = std::move(request_queue_.front());
     request_queue_.pop_front();
@@ -844,7 +835,7 @@ void CloudBinaryUploadServiceBase::QueueForDeepScanning(
         AccessPointFromRequest(request->analysis_connector(),
                                request->reason())};
   }
-  if (active_requests_.size() >= GetParallelActiveRequestsMax()) {
+  if (active_requests_.size() >= kDefaultMaxParallelActiveRequests) {
     request_queue_.push_back(std::move(request));
   } else {
     UploadForDeepScanning(std::move(request));

@@ -33,10 +33,6 @@ BASE_DECLARE_FEATURE_PARAM(size_t, kMaxContentAnalysisFileSizeMB);
 // experiments. See http://crbug.com/444472089.
 inline constexpr int kDefaultMaxParallelActiveRequests = 30;
 
-// Controls enabling and count of concurrent upload limit for content analysis.
-BASE_DECLARE_FEATURE(kEnableNewUploadCountLimit);
-BASE_DECLARE_FEATURE_PARAM(size_t, kParallelContentAnalysisRequestCountMax);
-
 // Controls whether encrypted file upload is enabled.
 BASE_DECLARE_FEATURE(kEnableEncryptedFileUpload);
 

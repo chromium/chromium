@@ -84,21 +84,6 @@ class CloudBinaryUploadServiceBaseTest : public testing::Test {
   }
 };
 
-// Tests that GetParallelActiveRequestsMax returns the correct value based on
-// features and parameters.
-TEST_F(CloudBinaryUploadServiceBaseTest, GetParallelActiveRequestsMax) {
-  // Default value.
-  EXPECT_EQ(CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax(),
-            static_cast<size_t>(kDefaultMaxParallelActiveRequests));
-
-  // Experiment value.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      kEnableNewUploadCountLimit,
-      {{kParallelContentAnalysisRequestCountMax.name, "10"}});
-  EXPECT_EQ(CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax(), 10u);
-}
-
 // Tests that GetUploadUrl returns the correct URL for enterprise and consumer
 // scans.
 TEST_F(CloudBinaryUploadServiceBaseTest, GetUploadUrl) {
@@ -270,34 +255,6 @@ TEST_F(CloudBinaryUploadServiceBaseTest,
                                 ScanRequestUploadResult::kSuccess, 1);
   histograms.ExpectUniqueTimeSample("Enterprise.MultipartRequest.Text.Duration",
                                     base::Seconds(4), 1);
-}
-
-TEST_F(CloudBinaryUploadServiceBaseTest, TestMaxParallelRequestsFlag) {
-  EXPECT_EQ(30UL, CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kEnableNewUploadCountLimit, {{"max_parallel_requests", "0"}});
-    EXPECT_EQ(30UL,
-              CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kEnableNewUploadCountLimit, {{"max_parallel_requests", "twenty"}});
-    EXPECT_EQ(30UL,
-              CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
-  }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        kEnableNewUploadCountLimit, {{"max_parallel_requests", "20"}});
-    EXPECT_EQ(20UL,
-              CloudBinaryUploadServiceBase::GetParallelActiveRequestsMax());
-  }
 }
 
 }  // namespace enterprise_connectors
