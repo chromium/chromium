@@ -471,4 +471,13 @@ TEST_F(AnimationWorkletGlobalScopeTest,
   worklet->WaitForShutdownForTesting();
 }
 
+TEST_F(AnimationWorkletGlobalScopeTest, NextWorkletAnimationId) {
+  AnimationWorklet* worklet =
+      MakeGarbageCollected<AnimationWorklet>(*GetDocument().domWindow());
+  WorkletAnimationId id1 = worklet->NextWorkletAnimationId();
+  WorkletAnimationId id2 = worklet->NextWorkletAnimationId();
+  EXPECT_GT(id1.animation_id, 0);
+  EXPECT_GT(id2.animation_id, id1.animation_id);
+}
+
 }  // namespace blink

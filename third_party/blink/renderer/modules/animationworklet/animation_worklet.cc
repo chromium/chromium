@@ -60,7 +60,9 @@ WorkletGlobalScopeProxy* AnimationWorklet::CreateGlobalScope() {
 WorkletAnimationId AnimationWorklet::NextWorkletAnimationId() {
   // Id starts from 1. This way it safe to use it as key in hashmap with default
   // key traits.
-  return WorkletAnimationId(worklet_id_, ++last_animation_id_);
+  last_animation_id_++;
+  CHECK_GT(last_animation_id_, 0);
+  return WorkletAnimationId(worklet_id_, last_animation_id_);
 }
 
 void AnimationWorklet::Trace(Visitor* visitor) const {
