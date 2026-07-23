@@ -164,19 +164,19 @@ void ReportInstallationStageTimes(
         installation.download_CRX_finish_time.value() -
             installation.download_CRX_started_time.value());
   }
-  if (installation.copying_started_time) {
-    DCHECK(installation.verification_started_time);
-    base::UmaHistogramLongTimes(
-        "Extensions.ForceInstalledTime.VerificationStartTo.CopyingStart",
-        installation.copying_started_time.value() -
-            installation.verification_started_time.value());
-  }
-  if (installation.unpacking_started_time &&
+  if (installation.verification_started_time &&
       installation.copying_started_time) {
     base::UmaHistogramLongTimes(
-        "Extensions.ForceInstalledTime.CopyingStartTo.UnpackingStart",
-        installation.unpacking_started_time.value() -
+        "Extensions.ForceInstalledTime.CopyingStartTo.VerificationStart",
+        installation.verification_started_time.value() -
             installation.copying_started_time.value());
+  }
+  if (installation.unpacking_started_time &&
+      installation.verification_started_time) {
+    base::UmaHistogramLongTimes(
+        "Extensions.ForceInstalledTime.VerificationStartTo.UnpackingStart",
+        installation.unpacking_started_time.value() -
+            installation.verification_started_time.value());
   }
   if (installation.checking_expectations_started_time &&
       installation.unpacking_started_time) {

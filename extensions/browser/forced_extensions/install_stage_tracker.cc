@@ -200,10 +200,10 @@ void InstallStageTracker::ReportCRXInstallationStage(const ExtensionId& id,
   InstallationData& data = installation_data_map_[id];
   data.installation_stage = stage;
   const base::TimeTicks current_time = base::TimeTicks::Now();
-  if (stage == InstallationStage::kVerification) {
-    data.verification_started_time = current_time;
-  } else if (stage == InstallationStage::kCopying) {
+  if (stage == InstallationStage::kCopying) {
     data.copying_started_time = current_time;
+  } else if (stage == InstallationStage::kVerification) {
+    data.verification_started_time = current_time;
   } else if (stage == InstallationStage::kUnpacking) {
     data.unpacking_started_time = current_time;
   } else if (stage == InstallationStage::kCheckingExpectations) {

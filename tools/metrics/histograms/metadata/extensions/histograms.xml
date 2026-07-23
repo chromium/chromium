@@ -2509,6 +2509,10 @@ This is emitted for two scenarios when a worker may be unregistered:
         summary="Time taken to perform the expectations checks to confirm
                  that the extension can be installed."/>
     <variant name=".CopyingStartTo.UnpackingStart"
+        summary="(OBSOLETE: Replaced by VerificationStartTo.UnpackingStart)
+                 Time taken to complete copying of extension archive into the
+                 working directory"/>
+    <variant name=".CopyingStartTo.VerificationStart"
         summary="Time taken to complete copying of extension archive into the
                  working directory"/>
     <variant name=".DownloadingStartTo.ManifestDownloadComplete"
@@ -2522,6 +2526,9 @@ This is emitted for two scenarios when a worker may be unregistered:
         summary="Time taken to complete the unpacking of the extension
                  archive."/>
     <variant name=".VerificationStartTo.CopyingStart"
+        summary="(OBSOLETE: Replaced by CopyingStartTo.VerificationStart)
+                 Time taken to complete signature verification of CRX"/>
+    <variant name=".VerificationStartTo.UnpackingStart"
         summary="Time taken to complete signature verification of CRX"/>
   </token>
 </histogram>

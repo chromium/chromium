@@ -150,10 +150,10 @@ constexpr char kManifestDownloadTimeStats[] =
 constexpr char kCRXDownloadTimeStats[] =
     "Extensions.ForceInstalledTime.ManifestDownloadCompleteTo."
     "CRXDownloadComplete";
-constexpr char kVerificationTimeStats[] =
-    "Extensions.ForceInstalledTime.VerificationStartTo.CopyingStart";
 constexpr char kCopyingTimeStats[] =
-    "Extensions.ForceInstalledTime.CopyingStartTo.UnpackingStart";
+    "Extensions.ForceInstalledTime.CopyingStartTo.VerificationStart";
+constexpr char kVerificationTimeStats[] =
+    "Extensions.ForceInstalledTime.VerificationStartTo.UnpackingStart";
 constexpr char kUnpackingTimeStats[] =
     "Extensions.ForceInstalledTime.UnpackingStartTo.CheckingExpectationsStart";
 constexpr char kCheckingExpectationsTimeStats[] =
@@ -392,12 +392,12 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsReportInstallationStageTimes) {
   ReportDownloadingManifestStage();
   ReportInstallationStarted(std::nullopt);
   install_stage_tracker()->ReportCRXInstallationStage(
-      kExtensionId1, InstallationStage::kVerification);
+      kExtensionId1, InstallationStage::kCopying);
 
   const base::TimeDelta installation_stage_time = base::Milliseconds(200);
   task_environment_.FastForwardBy(installation_stage_time);
   install_stage_tracker()->ReportCRXInstallationStage(
-      kExtensionId1, InstallationStage::kCopying);
+      kExtensionId1, InstallationStage::kVerification);
 
   task_environment_.FastForwardBy(installation_stage_time);
   install_stage_tracker()->ReportCRXInstallationStage(
@@ -422,11 +422,11 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsReportInstallationStageTimes) {
   // ForceInstalledMetrics shuts down timer because all extension are either
   // loaded or failed.
   EXPECT_FALSE(fake_timer_->IsRunning());
-  histogram_tester_.ExpectTotalCount(kVerificationTimeStats, 1);
-  histogram_tester_.ExpectTimeBucketCount(kVerificationTimeStats,
-                                          installation_stage_time, 1);
   histogram_tester_.ExpectTotalCount(kCopyingTimeStats, 1);
   histogram_tester_.ExpectTimeBucketCount(kCopyingTimeStats,
+                                          installation_stage_time, 1);
+  histogram_tester_.ExpectTotalCount(kVerificationTimeStats, 1);
+  histogram_tester_.ExpectTimeBucketCount(kVerificationTimeStats,
                                           installation_stage_time, 1);
   histogram_tester_.ExpectTotalCount(kUnpackingTimeStats, 1);
   histogram_tester_.ExpectTimeBucketCount(kUnpackingTimeStats,

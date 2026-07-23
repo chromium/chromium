@@ -9,10 +9,10 @@ namespace extensions {
 
 // The different stages of the extension installation process.
 enum class InstallationStage {
-  // The validation of signature of the extensions is about to be started.
-  kVerification = 0,
   // Extension archive is about to be copied into the working directory.
-  kCopying = 1,
+  kCopying = 0,
+  // The validation of signature of the extensions is about to be started.
+  kVerification = 1,
   // Extension archive is about to be unpacked.
   kUnpacking = 2,
   // Performing the expectation checks before the installation can be started.

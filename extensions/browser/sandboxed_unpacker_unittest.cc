@@ -34,6 +34,7 @@
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
+#include "extensions/browser/install_stage.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_paths.h"
@@ -118,6 +119,11 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
     should_compute_hashes_ = should_compute_hashes;
   }
 
+  void set_stage_changed_callback(
+      base::RepeatingCallback<void(InstallationStage)> callback) {
+    stage_changed_callback_ = std::move(callback);
+  }
+
   void SetQuitClosure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);
   }
@@ -153,12 +159,19 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
     callback_runner_->PostTask(FROM_HERE, std::move(quit_closure_));
   }
 
+  void OnStageChanged(InstallationStage stage) override {
+    if (stage_changed_callback_) {
+      stage_changed_callback_.Run(stage);
+    }
+  }
+
   scoped_refptr<base::SequencedTaskRunner> callback_runner_;
   std::optional<CrxInstallError> error_;
   base::OnceClosure quit_closure_;
   base::FilePath temp_dir_;
   raw_ptr<bool> deleted_tracker_ = nullptr;
   bool should_compute_hashes_ = false;
+  base::RepeatingCallback<void(InstallationStage)> stage_changed_callback_;
 };
 
 class SandboxedUnpackerTest : public ExtensionsTest {
@@ -220,6 +233,19 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     base::FilePath crx_path = GetCrxFullPath(crx_name);
     extensions::CRXFileInfo crx_info(crx_path, GetTestVerifierFormat());
     crx_info.expected_hash = package_hash;
+
+    base::RunLoop run_loop;
+    client_->SetQuitClosure(run_loop.QuitClosure());
+
+    unpacker_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&SandboxedUnpacker::StartWithCrx,
+                                  sandboxed_unpacker_, crx_info));
+    // Wait for unpack
+    run_loop.Run();
+  }
+
+  void SetupUnpackerWithPath(const base::FilePath& crx_path) {
+    extensions::CRXFileInfo crx_info(crx_path, GetTestVerifierFormat());
 
     base::RunLoop run_loop;
     client_->SetQuitClosure(run_loop.QuitClosure());
@@ -535,6 +561,46 @@ TEST_F(SandboxedUnpackerTest, SkipHashCheck) {
   // Check that there is no error message.
   EXPECT_THAT(GetInstallErrorMessage(), testing::IsEmpty());
   EXPECT_EQ(CrxInstallErrorType::NONE, GetInstallErrorType());
+}
+
+// Signature validation must operate on the same bytes that are unpacked. If
+// the source file changes during installation, the unsigned content must not
+// be installed.
+TEST_F(SandboxedUnpackerTest, SourceCrxReplacedDuringInstall) {
+  // Stage a writable copy of a valid signed CRX as the install source.
+  base::ScopedTempDir source_dir;
+  ASSERT_TRUE(source_dir.CreateUniqueTempDir());
+  base::FilePath source_crx = source_dir.GetPath().AppendASCII("ext.crx");
+  ASSERT_TRUE(base::CopyFile(GetCrxFullPath("no_l10n.crx"), source_crx));
+
+  // Prepare a plain ZIP archive (not a signed CRX) to swap in as the source
+  // file at the point where the source is copied into the working directory.
+  base::FilePath unsigned_zip = source_dir.GetPath().AppendASCII("unsigned");
+  ASSERT_TRUE(zip::Zip(GetCrxFullPath("no_l10n"), unsigned_zip,
+                       /*include_hidden_files=*/true));
+  // OnStageChanged(InstallationStage::kCopying) is invoked in StartWithCrx()
+  // immediately before base::CopyFile() copies the source CRX into Chrome's
+  // temporary working directory. When the callback fires on the kCopying stage,
+  // overwrite source_crx with unsigned_zip so base::CopyFile() copies the
+  // unsigned ZIP into temp_crx_path for signature validation.
+  client_->set_stage_changed_callback(base::BindRepeating(
+      [](const base::FilePath& from, const base::FilePath& to,
+         InstallationStage stage) {
+        if (stage == InstallationStage::kCopying) {
+          EXPECT_TRUE(base::CopyFile(from, to));
+        }
+      },
+      unsigned_zip, source_crx));
+
+  SetupUnpackerWithPath(source_crx);
+
+  // The replacement archive has no valid CRX header, so validation must fail.
+  EXPECT_FALSE(InstallSucceeded());
+  ASSERT_EQ(CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE,
+            GetInstallErrorType());
+  EXPECT_EQ(
+      static_cast<int>(SandboxedUnpackerFailureReason::CRX_HEADER_INVALID),
+      GetInstallErrorDetail());
 }
 
 // The following tests simulate the utility services failling.
