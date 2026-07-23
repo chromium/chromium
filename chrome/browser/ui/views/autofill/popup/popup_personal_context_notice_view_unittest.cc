@@ -11,10 +11,19 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -31,18 +40,26 @@
 #include "ui/views/widget/widget_utils.h"
 
 namespace autofill {
-
 namespace {
+
+using ::testing::Return;
+
 constexpr int kNoticePosition = 0;
 
 class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("testing_profile");
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
     controller_.set_suggestions({SuggestionType::kPersonalContextNotice});
+    ON_CALL(controller_, GetWebContents())
+        .WillByDefault(Return(web_contents_.get()));
   }
 
   void ShowView() {
@@ -62,12 +79,15 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
     view_ = nullptr;
     generator_.reset();
     widget_.reset();
+    web_contents_.reset();
+    profile_ = nullptr;
     ChromeViewsTestBase::TearDown();
   }
 
  protected:
   PopupPersonalContextNoticeView& view() { return *view_; }
   MockAutofillPopupController& controller() { return controller_; }
+  TestingProfile* profile() { return profile_; }
   views::Widget& widget() { return *widget_; }
   ui::test::EventGenerator& generator() { return *generator_; }
 
@@ -99,6 +119,10 @@ class PopupPersonalContextNoticeViewTest : public ChromeViewsTestBase {
   }
 
  private:
+  content::RenderViewHostTestEnabler render_view_host_test_enabler_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   testing::NiceMock<MockAutofillPopupController> controller_;
@@ -144,7 +168,7 @@ TEST_F(PopupPersonalContextNoticeViewTest, InitialStateOnAmbientAutofill) {
 // Tests the initial notice view elements for AtMemory filling source.
 TEST_F(PopupPersonalContextNoticeViewTest, InitialStateAtMemorySource) {
   ON_CALL(controller(), GetMainFillingProduct())
-      .WillByDefault(testing::Return(FillingProduct::kAtMemory));
+      .WillByDefault(Return(FillingProduct::kAtMemory));
 
   ShowView();
 
@@ -181,6 +205,38 @@ TEST_F(PopupPersonalContextNoticeViewTest, InitialStateAtMemorySource) {
   EXPECT_EQ(expected_ok, got_it_button->GetText());
 }
 
+// Tests that when `FindAndFillWithGeminiSettings` policy evaluates to 1
+// (allow with no logging), the PI notice string is used for AtMemory context.
+TEST_F(PopupPersonalContextNoticeViewTest,
+       InitialStateAtMemorySourceWithLoggingDisabledByPolicy) {
+  ON_CALL(controller(), GetMainFillingProduct())
+      .WillByDefault(Return(FillingProduct::kAtMemory));
+
+  profile()->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings,
+      static_cast<int>(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging));
+
+  ShowView();
+
+  std::u16string expected_title = l10n_util::GetStringUTF16(
+      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
+  // When logging is disabled by policy, expect PI notice string instead of
+  // combined MQLS & PI notice string.
+  std::u16string expected_context = l10n_util::GetStringUTF16(
+      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_NO_LOGGING);
+  std::u16string expected_link = l10n_util::GetStringUTF16(
+      IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
+
+  views::StyledLabel* description = view().description_for_testing();
+  ASSERT_NE(description, nullptr);
+  EXPECT_TRUE(description->GetVisible());
+  EXPECT_EQ(
+      base::JoinString({expected_title, expected_context, expected_link}, u" "),
+      description->GetText());
+}
+
 // Tests that clicking on GotIt button triggers the removal of the notice.
 TEST_F(PopupPersonalContextNoticeViewTest,
        GotItButtonTriggersRemoveSuggestion) {
@@ -198,7 +254,7 @@ TEST_F(PopupPersonalContextNoticeViewTest,
       RemoveSuggestion(
           kNoticePosition,
           AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked))
-      .WillOnce(testing::Return(true));
+      .WillOnce(Return(true));
 
   generator().MoveMouseTo(got_it_button->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
@@ -220,10 +276,11 @@ TEST_F(PopupPersonalContextNoticeViewTest, ClickSettingsLink) {
   EXPECT_EQ(settings_link->GetFocusBehavior(),
             views::View::FocusBehavior::NEVER);
 
-  // Since `chrome::ShowSettingsSubPageForProfile` is not mockable, we verify
-  // that `OnSettingsLinkClicked` was triggered by checking the only other thing
-  // in the method - that the controller was queried for its WebContents.
-  EXPECT_CALL(controller(), GetWebContents()).Times(testing::AtLeast(1));
+  // Since `chrome::ShowSettingsSubPageForProfile` is not mockable and crashes
+  // in this unit test environment, we return nullptr for WebContents to cause
+  // `OnSettingsLinkClicked` to return early, while verifying that
+  // `GetWebContents()` was called.
+  EXPECT_CALL(controller(), GetWebContents()).WillOnce(Return(nullptr));
 
   generator().MoveMouseTo(settings_link->GetBoundsInScreen().CenterPoint());
   generator().ClickLeftButton();
@@ -442,10 +499,11 @@ TEST_F(PopupPersonalContextNoticeViewTest, PressReturnOnSettingsLinkFocused) {
   view().SetSelectedCell(PopupInteractiveRowView::CellType::kContent);
   ASSERT_TRUE(view().is_link_focused_for_testing());
 
-  // Since `chrome::ShowSettingsSubPageForProfile` is not mockable, we verify
-  // that `OnSettingsLinkClicked` was triggered by checking the only other thing
-  // in the method - that the controller was queried for its WebContents.
-  EXPECT_CALL(controller(), GetWebContents()).Times(testing::AtLeast(1));
+  // Since `chrome::ShowSettingsSubPageForProfile` is not mockable and crashes
+  // in this unit test environment, we return nullptr for WebContents to cause
+  // `OnSettingsLinkClicked` to return early, while verifying that
+  // `GetWebContents()` was called.
+  EXPECT_CALL(controller(), GetWebContents()).WillOnce(Return(nullptr));
 
   input::NativeWebKeyboardEvent return_event(
       blink::WebInputEvent::Type::kRawKeyDown,
@@ -475,7 +533,7 @@ TEST_F(PopupPersonalContextNoticeViewTest, PressReturnOnGotItButtonFocused) {
       RemoveSuggestion(
           kNoticePosition,
           AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked))
-      .WillOnce(testing::Return(true));
+      .WillOnce(Return(true));
 
   input::NativeWebKeyboardEvent return_event = right_event;
   return_event.windows_key_code = ui::VKEY_RETURN;

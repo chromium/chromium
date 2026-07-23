@@ -19,6 +19,9 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -53,6 +56,24 @@ constexpr int kBorderInsets = 12;
 constexpr int kRowVerticalMargin = 12;
 constexpr int kRowHorizontalMargin = 12;
 constexpr int kMinimumWidth = 320;
+
+// TODO(b/524157152): Refactor AutofillPopupController to provide this.
+bool IsLoggingDisabledByPolicy(const AutofillPopupController* controller) {
+  if (!controller || !controller->GetWebContents()) {
+    return false;
+  }
+  Profile* profile = Profile::FromBrowserContext(
+      controller->GetWebContents()->GetBrowserContext());
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
+  const int policy_value = profile->GetPrefs()->GetInteger(
+      optimization_guide::prefs::kFindAndFillWithGeminiSettings);
+  return policy_value ==
+         std::to_underlying(
+             optimization_guide::model_execution::prefs::
+                 ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+}
 
 }  // namespace
 
@@ -96,7 +117,9 @@ PopupPersonalContextNoticeView::PopupPersonalContextNoticeView(
       title_text = l10n_util::GetStringUTF16(
           IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_TITLE);
       context_text = l10n_util::GetStringUTF16(
-          IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
+          IsLoggingDisabledByPolicy(controller_.get())
+              ? IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT_NO_LOGGING
+              : IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_CONTEXT);
       link_text = l10n_util::GetStringUTF16(
           IDS_AT_MEMORY_POPUP_PERSONAL_CONTEXT_NOTICE_LINK_TEXT);
       button_text = l10n_util::GetStringUTF16(
