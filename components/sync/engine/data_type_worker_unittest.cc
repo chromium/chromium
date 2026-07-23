@@ -310,7 +310,7 @@ class DataTypeWorkerTest : public ::testing::Test {
            cryptographer_.GetDefaultEncryptionKeyName() ==
                GetNthKeyName(encryption_keys_count_));
     encryption_keys_count_++;
-    cryptographer_.ClearDefaultEncryptionKey();
+    cryptographer_.InvalidateDefaultEncryptionKey();
     if (worker()) {
       worker()->OnCryptographerChange();
     }

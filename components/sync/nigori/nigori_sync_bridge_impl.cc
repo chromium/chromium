@@ -701,7 +701,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   // upon SetExplicitPassphraseDecryptionKey() or equivalent depending on the
   // passphrase type.
   state_.pending_keys = specifics.encryption_keybag();
-  state_.cryptographer->ClearDefaultEncryptionKey();
+  state_.cryptographer->InvalidateDefaultEncryptionKey();
 
   if (specifics.has_cross_user_sharing_public_key()) {
     // Remote update wins over local state.

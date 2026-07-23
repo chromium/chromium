@@ -44,7 +44,7 @@ void FakeCryptographer::SelectDefaultEncryptionKey(
   default_key_name_ = key_name;
 }
 
-void FakeCryptographer::ClearDefaultEncryptionKey() {
+void FakeCryptographer::InvalidateDefaultEncryptionKey() {
   default_key_name_.clear();
 }
 

@@ -197,7 +197,9 @@ TEST(CryptographerImplTest, ShouldSerializeToAndFromProto) {
 
   // Restore a new cryptographer from proto.
   std::unique_ptr<CryptographerImpl> restored_cryptographer =
-      CryptographerImpl::FromLocalProto(original_cryptographer->ToLocalProto());
+      CryptographerImpl::FromLocalProto(
+          original_cryptographer->ToLocalProto(),
+          /*default_encryption_key_invalidated=*/false);
   ASSERT_THAT(restored_cryptographer, NotNull());
   EXPECT_TRUE(restored_cryptographer->CanEncrypt());
   EXPECT_TRUE(restored_cryptographer->HasCrossUserSharingKeyPair(0));
@@ -474,7 +476,9 @@ TEST(CryptographerImplTest, ShouldSerializeToLocalProto) {
   EXPECT_TRUE(proto.key_bag().key_size() > 0);
 
   std::unique_ptr<CryptographerImpl> restored =
-      CryptographerImpl::FromLocalProto(proto);
+      CryptographerImpl::FromLocalProto(
+          proto,
+          /*default_encryption_key_invalidated=*/false);
   ASSERT_THAT(restored, NotNull());
   EXPECT_THAT(restored->GetDefaultEncryptionKeyName(), Eq(key_name));
   EXPECT_TRUE(restored->CanEncrypt());
@@ -486,7 +490,9 @@ TEST(CryptographerImplTest, ShouldReturnNullOnInvalidLocalProto) {
   // The key bag is empty, so "non_existent_key" is missing.
 
   std::unique_ptr<CryptographerImpl> restored =
-      CryptographerImpl::FromLocalProto(proto);
+      CryptographerImpl::FromLocalProto(
+          proto,
+          /*default_encryption_key_invalidated=*/false);
   EXPECT_THAT(restored, IsNull());
 }
 
@@ -540,6 +546,80 @@ TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithMultipleKeys) {
 
   EXPECT_THAT(decrypted_keys, UnorderedElementsAre(HasKeyName(key_name1),
                                                    HasKeyName(key_name2)));
+}
+
+TEST(CryptographerImplTest, ShouldDisableAndEnableDefaultKey) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  const std::string key_name = cryptographer->EmplaceKey(
+      "password", KeyDerivationParams::CreateForPbkdf2());
+  cryptographer->SelectDefaultEncryptionKey(key_name);
+
+  ASSERT_TRUE(cryptographer->CanEncrypt());
+  ASSERT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(key_name));
+
+  // Disable default key.
+  cryptographer->InvalidateDefaultEncryptionKey();
+  EXPECT_FALSE(cryptographer->CanEncrypt());
+  EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(""));
+  // Keys should still exist (we can still decrypt).
+  EXPECT_TRUE(cryptographer->HasKey(key_name));
+
+  // Re-enable by selecting it again.
+  cryptographer->SelectDefaultEncryptionKey(key_name);
+  EXPECT_TRUE(cryptographer->CanEncrypt());
+  EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(key_name));
+}
+
+TEST(CryptographerImplTest, ShouldResetInvalidatedStateOnClearAllKeys) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  const std::string key_name = cryptographer->EmplaceKey(
+      "password", KeyDerivationParams::CreateForPbkdf2());
+  cryptographer->SelectDefaultEncryptionKey(key_name);
+
+  ASSERT_TRUE(cryptographer->CanEncrypt());
+
+  // Invalidate it.
+  cryptographer->InvalidateDefaultEncryptionKey();
+  ASSERT_FALSE(cryptographer->CanEncrypt());
+
+  // Clear all keys (reverts to empty, resets invalidation flag to false).
+  cryptographer->ClearAllKeys();
+  ASSERT_FALSE(cryptographer->CanEncrypt());  // Still false because empty.
+
+  // Emplace key again and select it -> should CanEncrypt.
+  const std::string new_key_name = cryptographer->EmplaceKey(
+      "password", KeyDerivationParams::CreateForPbkdf2());
+  cryptographer->SelectDefaultEncryptionKey(new_key_name);
+  EXPECT_TRUE(cryptographer->CanEncrypt());
+  EXPECT_THAT(cryptographer->GetDefaultEncryptionKeyName(), Eq(new_key_name));
+}
+
+TEST(CryptographerImplTest, ShouldRestoreDisabledDefaultKey) {
+  std::unique_ptr<CryptographerImpl> original =
+      CryptographerImpl::CreateEmpty();
+  const std::string key_name =
+      original->EmplaceKey("password", KeyDerivationParams::CreateForPbkdf2());
+  original->SelectDefaultEncryptionKey(key_name);
+
+  // Invalidate it.
+  original->InvalidateDefaultEncryptionKey();
+  ASSERT_FALSE(original->CanEncrypt());
+
+  sync_pb::CryptographerData proto = original->ToLocalProto();
+  // Under option 2, this should STILL have default_key_name set to key_name!
+  EXPECT_THAT(proto.default_key_name(), Eq(key_name));
+
+  // Restore with invalidated default key.
+  std::unique_ptr<CryptographerImpl> restored =
+      CryptographerImpl::FromLocalProto(
+          proto,
+          /*default_encryption_key_invalidated=*/true);
+  ASSERT_THAT(restored, NotNull());
+  EXPECT_FALSE(restored->CanEncrypt());
+  EXPECT_THAT(restored->GetDefaultEncryptionKeyName(), Eq(""));
+  EXPECT_TRUE(restored->HasKey(key_name));
 }
 
 }  // namespace syncer

@@ -40,7 +40,7 @@ class FakeCryptographer : public Cryptographer {
   // `key_name` must have been previously added. Once this is called, `key_name`
   // will be the return value of GetDefaultEncryptionKeyName();
   void SelectDefaultEncryptionKey(const std::string& key_name);
-  void ClearDefaultEncryptionKey();
+  void InvalidateDefaultEncryptionKey();
 
   std::array<uint8_t, 32> GetCrossUserSharingRawPublicKey() const;
 
