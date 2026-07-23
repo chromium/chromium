@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/values.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 
 // Enum represnting how security signals will be included in the current report.
@@ -63,7 +64,8 @@ struct ReportGenerationConfig {
                          ReportType report_type,
                          SecuritySignalsMode security_signals_mode,
                          bool use_cookies,
-                         std::optional<std::string> challenge = std::nullopt);
+                         std::optional<std::string> challenge = std::nullopt,
+                         base::ListValue client_certificates_selectors = {});
   explicit ReportGenerationConfig(ReportTrigger report_trigger);
   ReportGenerationConfig();
   ReportGenerationConfig(const ReportGenerationConfig&);
@@ -78,11 +80,14 @@ struct ReportGenerationConfig {
   // logging and debugging purposes.
   std::string ToString() const;
 
+  void PrintDebugString(std::ostream* os) const;
+
   ReportTrigger report_trigger;
   ReportType report_type;
   SecuritySignalsMode security_signals_mode;
   bool use_cookies;
   std::optional<std::string> challenge;
+  base::ListValue client_certificates_selectors;
 };
 
 }  // namespace enterprise_reporting

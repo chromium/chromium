@@ -275,6 +275,11 @@ std::string GetSecuritySignalsInReport(
                      RepeatedFieldptrToList(
                          profile_signals_report.security_event_providers()));
 
+    signals_dict.Set("certificates_count",
+                     chrome_user_profile_info.certificates_size());
+    signals_dict.Set("certificates_were_truncated",
+                     chrome_user_profile_info.certificates_were_truncated());
+
     if (chrome_profile_report_request.has_attestation_payload()) {
       auto attestation_payload =
           chrome_profile_report_request.attestation_payload();

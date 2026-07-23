@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/certificate_matching/certificate_principal_pattern.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/os_report_generator.h"
@@ -208,6 +209,41 @@ void ChromeProfileRequestGenerator::OnBaseReportsReady(
   signals_request.signal_names.emplace(device_signals::SignalName::kAntiVirus);
   signals_request.signal_names.emplace(device_signals::SignalName::kHotfixes);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (enterprise_signals::features::IsCertificateCollectionEnabled() &&
+      generation_config.challenge.has_value() &&
+      !generation_config.challenge.value().empty()) {
+    signals_request.signal_names.emplace(
+        device_signals::SignalName::kCertificates);
+
+    if (generation_config.client_certificates_selectors.empty()) {
+      device_signals::GetCertificateOptions cert_option;
+      cert_option.challenge = generation_config.challenge.value();
+      signals_request.certificate_signal_parameters.push_back(
+          std::move(cert_option));
+    } else {
+      for (const auto& entry :
+           generation_config.client_certificates_selectors) {
+        const base::DictValue* selector_dict = entry.GetIfDict();
+        if (!selector_dict) {
+          continue;
+        }
+        device_signals::GetCertificateOptions cert_option;
+        cert_option.challenge = generation_config.challenge.value();
+        cert_option.issuer_pattern = certificate_matching::
+            CertificatePrincipalPattern::ParseFromOptionalDict(
+                selector_dict->FindDict("ISSUER"), "CN", "L", "O", "OU");
+        cert_option.subject_pattern = certificate_matching::
+            CertificatePrincipalPattern::ParseFromOptionalDict(
+                selector_dict->FindDict("SUBJECT"), "CN", "L", "O", "OU");
+        signals_request.certificate_signal_parameters.push_back(
+            std::move(cert_option));
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   signals_request.trigger = device_signals::Trigger::kSignalsReport;
 
   signals_aggregator_->GetSignals(
@@ -379,6 +415,26 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
     }
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+  if (response.certificate_signals_response) {
+    const auto& cert_signals = response.certificate_signals_response.value();
+    VLOG_POLICY(1, REPORTING)
+        << "Retrieved " << cert_signals.serialized_caa_responses.size()
+        << " certificate signals (truncated: "
+        << cert_signals.truncated_certificates << ")";
+    profile_report->set_certificates_were_truncated(
+        cert_signals.truncated_certificates);
+    for (const std::string& serialized_cert :
+         cert_signals.serialized_caa_responses) {
+      em::SignedCertificateDetails cert_details;
+      if (cert_details.ParseFromString(serialized_cert)) {
+        *profile_report->add_certificates() = std::move(cert_details);
+      } else {
+        LOG_POLICY(ERROR, REPORTING)
+            << "Failed to parse SignedCertificateDetails";
+      }
+    }
+  }
 
   request->GetChromeProfileReportRequest()
       .set_allocated_browser_device_identifier(device_identifier.release());

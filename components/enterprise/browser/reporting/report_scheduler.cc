@@ -466,9 +466,17 @@ void ReportScheduler::ContinueGenerateAndUploadReport(
   }
 
   ReportType report_type = TriggerToReportType(trigger);
-  active_report_generation_config_ =
-      ReportGenerationConfig(trigger, report_type, signals_mode,
-                             delegate_->UseCookiesInUploads(), challenge);
+  base::ListValue cert_selectors;
+  if (delegate_ && delegate_->GetPrefService()) {
+    const auto* pref = delegate_->GetPrefService()->FindPreference(
+        kSecuritySignalsClientCertificatesSelectors);
+    if (pref) {
+      cert_selectors = pref->GetValue()->GetList().Clone();
+    }
+  }
+  active_report_generation_config_ = ReportGenerationConfig(
+      trigger, report_type, signals_mode, delegate_->UseCookiesInUploads(),
+      challenge, std::move(cert_selectors));
 
   VLOG_POLICY(1, REPORTING)
       << "Starting report generation with the following configuration: "

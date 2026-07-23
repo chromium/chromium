@@ -1449,7 +1449,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   policy_value.Append(std::move(selector));
   profile->GetTestingPrefService()->SetManagedPref(
       kSecuritySignalsClientCertificatesSelectors,
-      base::Value(std::move(policy_value)));
+      base::Value(policy_value.Clone()));
 
   // Expect challenge fetch
   em::GenerateChromeProfileChallengeResponse challenge_response;
@@ -1471,12 +1471,13 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
           ? SecuritySignalsMode::kSignalsAttached
           : SecuritySignalsMode::kSignalsOnly;
 
-  EXPECT_CALL(*uploader_,
-              SetRequestAndUpload(ReportGenerationConfig(
-                                      expected_trigger,
-                                      ReportType::kProfileReport, expected_mode,
-                                      /*use_cookies=*/false, "test_challenge"),
-                                  _, _))
+  EXPECT_CALL(
+      *uploader_,
+      SetRequestAndUpload(
+          ReportGenerationConfig(
+              expected_trigger, ReportType::kProfileReport, expected_mode,
+              /*use_cookies=*/false, "test_challenge", policy_value.Clone()),
+          _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateSchedulerForProfileReporting(profile);
@@ -1551,7 +1552,7 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   policy_value.Append(std::move(selector));
   profile->GetTestingPrefService()->SetManagedPref(
       kSecuritySignalsClientCertificatesSelectors,
-      base::Value(std::move(policy_value)));
+      base::Value(policy_value.Clone()));
 
   // Expect challenge fetch to FAIL
   em::GenerateChromeProfileChallengeResponse challenge_response;
@@ -1571,12 +1572,13 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
           ? SecuritySignalsMode::kSignalsAttached
           : SecuritySignalsMode::kSignalsOnly;
 
-  EXPECT_CALL(*uploader_,
-              SetRequestAndUpload(ReportGenerationConfig(
-                                      expected_trigger,
-                                      ReportType::kProfileReport, expected_mode,
-                                      /*use_cookies=*/false, std::nullopt),
-                                  _, _))
+  EXPECT_CALL(
+      *uploader_,
+      SetRequestAndUpload(
+          ReportGenerationConfig(
+              expected_trigger, ReportType::kProfileReport, expected_mode,
+              /*use_cookies=*/false, std::nullopt, policy_value.Clone()),
+          _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
 
   CreateSchedulerForProfileReporting(profile);
