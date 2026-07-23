@@ -44,21 +44,6 @@ namespace send_tab_to_self {
 
 namespace {
 
-std::optional<std::string> GetScrollToTextFragmentFromEntry(
-    const SendTabToSelfEntry& entry) {
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfPropagateScrollPosition) ||
-      entry.GetPageContext().scroll_position.IsEmpty()) {
-    return std::nullopt;
-  }
-
-  shared_highlighting::TextFragment tf =
-      entry.GetPageContext()
-          .scroll_position.text_fragment.ToSharedHighlightingTextFragment();
-
-  return tf.ToEscapedString(shared_highlighting::TextFragment::
-                                EscapedStringFormat::kWithoutTextDirective);
-}
-
 bool IsTabModelViable(TabModel* tab_model) {
   return !tab_model->IsOffTheRecord() &&
          tab_model->GetTabModelType() == TabModel::TabModelType::kStandard;
@@ -242,7 +227,7 @@ void AndroidNotificationHandler::ShowNotification(
           env);
 
   std::optional<std::string> internal_scroll_to_text_fragment =
-      GetScrollToTextFragmentFromEntry(entry);
+      GetScrollPositionAsTextFragment(&entry);
 
   Java_NotificationManager_showNotification(
       env, ConvertUTF8ToJavaString(env, entry.GetGUID()),
@@ -367,7 +352,7 @@ void AndroidNotificationHandler::OpenEntryInBackgroundTab(
   nav_params->window_action = NavigateParams::WindowAction::kNoAction;
   nav_params->tabstrip_index = tabstrip_index;
   nav_params->internal_scroll_to_text_fragment =
-      GetScrollToTextFragmentFromEntry(entry);
+      GetScrollPositionAsTextFragment(&entry);
 
   // Keep a raw pointer to the NavigateParams aside since the unique_ptr will
   // be moved into the Navigate() call.
@@ -392,6 +377,7 @@ void AndroidNotificationHandler::OnNavigationStarted(
     if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
       FillWebContents(new_contents, url::Origin::Create(url), page_context);
     }
+    RecordHasScrollPositionOnOpened(!page_context.scroll_position.IsEmpty());
 
     // Attach a visual label indicating the sender device name to the newly
     // opened background tab.
