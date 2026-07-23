@@ -2707,6 +2707,11 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
           let parts: CtComposeboxAppParts;
 
           setup(async () => {
+            const voiceSearchClass = window.customElements.get('cr-composebox-voice-search') as any;
+            if (voiceSearchClass) {
+              voiceSearchClass.activeRecognition_ = null;
+              voiceSearchClass.pendingStartInstance_ = null;
+            }
             if (!window.chrome) {
               Object.assign(window, {chrome: {}});
             }
@@ -2820,6 +2825,7 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
             await microtasksFinished();
             await parts.innerComposebox.updateComplete;
             await getAnimatedGlow().updateComplete;
+            await getVoiceSearch().updateComplete;
           }
 
           function fireRecognitionResult(transcripts: string[]) {
@@ -3192,7 +3198,8 @@ function createVoiceResults(transcripts: string[]): SpeechRecognitionEvent {
                 assertEquals(
                     'absolute', window.getComputedStyle(voiceSearch).position);
                 assertEquals(
-                    'absolute', window.getComputedStyle(container).position);
+                    coherenceEnabled ? 'absolute' : 'relative',
+                    window.getComputedStyle(container).position);
 
                 // Waiting (permission prompt open):
                 searchboxCallbackRouterRemote.onPermissionPromptChanged(
