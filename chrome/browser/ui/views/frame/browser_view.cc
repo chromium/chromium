@@ -182,7 +182,6 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views_impl.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_browser_view.h"
@@ -1924,17 +1923,8 @@ bool BrowserView::IsLoadingAnimationRunning() const {
 }
 
 void BrowserView::SetStarredState(bool is_starred) {
-  if (IsPageActionMigrated(PageActionIconType::kBookmarkStar)) {
-    // `BookmarkPageActionController` directly observes for changes.
-    return;
-  }
-
-  PageActionIconView* star_icon =
-      ToolbarButtonProvider::From(browser_)->GetPageActionIconView(
-          PageActionIconType::kBookmarkStar);
-  if (star_icon) {
-    star_icon->SetActive(is_starred);
-  }
+  // TODO(crbug.com/532595263): Remove this method.
+  // `BookmarkPageActionController` directly observes for changes.
 }
 
 void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,

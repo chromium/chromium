@@ -77,12 +77,6 @@
 #endif
 
 namespace {
-void FocusNextView(views::FocusManager* focus_manager) {
-  views::View* const focused_view = focus_manager->GetFocusedView();
-  views::View* const next_view =
-      focus_manager->GetNextFocusableView(focused_view, nullptr, false, false);
-  focus_manager->SetFocusedView(next_view);
-}
 
 class TestLocationBarObserver : public LocationBar::Observer {
  public:
@@ -517,82 +511,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
   EXPECT_FALSE(geolocation_icon.GetVisible());
 }
 
-class LocationBarViewPageActionsMigrationTest
-    : public LocationBarViewBrowserTest {
- public:
-  LocationBarViewPageActionsMigrationTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{::features::kPageActionsMigration,
-          {{::features::kPageActionsMigrationBookmarkStar.name, "false"}}},
-         {lens::features::kLensOverlayOmniboxEntryPoint, {}}},
-        {});
-  }
-  ~LocationBarViewPageActionsMigrationTest() override = default;
 
-  LocationBarViewPageActionsMigrationTest(
-      const LocationBarViewPageActionsMigrationTest&) = delete;
-  LocationBarViewPageActionsMigrationTest& operator=(
-      const LocationBarViewPageActionsMigrationTest&) = delete;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// This test fails on both X11 and Wayland on Linux. The root cause for X11
-// might be different from Wayland (where programmatically changing window
-// activation is not supported).
-// TODO(crbug.com/376285664): Remove this test altogether once the migration
-// is complete.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_LocationBarFocusOrder DISABLED_LocationBarFocusOrder
-#else
-#define MAYBE_LocationBarFocusOrder LocationBarFocusOrder
-#endif
-
-// Tests that shifting focus from the omnibox will focus the migrated page
-// actions first, followed by the legacy page actions.
-IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionsMigrationTest,
-                       MAYBE_LocationBarFocusOrder) {
-#if BUILDFLAG(IS_OZONE)
-  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Wayland doesn't support changing window activation "
-                    "programmatically";
-  }
-#endif
-  actions::ActionItem* const lens_action =
-      actions::ActionManager::Get().FindAction(
-          kActionSidePanelShowLensOverlayResults);
-  ASSERT_NE(lens_action, nullptr);
-  lens_action->SetVisible(true);
-  lens_action->SetEnabled(true);
-  browser()
-      ->GetActiveTabInterface()
-      ->GetTabFeatures()
-      ->page_action_controller()
-      ->Show(kActionSidePanelShowLensOverlayResults);
-
-  views::View* const lens_overlay_page_action_view =
-      GetLocationBarView()->page_action_container()->GetPageActionView(
-          kActionSidePanelShowLensOverlayResults);
-  views::View* const bookmark_page_action_view =
-      GetLocationBarView()->page_action_icon_controller()->GetIconView(
-          PageActionIconType::kBookmarkStar);
-  ASSERT_TRUE(bookmark_page_action_view->GetVisible());
-
-  views::FocusManager* const focus_manager =
-      GetLocationBarView()->GetFocusManager();
-
-  GetLocationBarView()->FocusLocation(/*is_user_initiated=*/true,
-                                      /*clear_focus_if_failed=*/false);
-  OmniboxViewViews* const omnibox = GetLocationBarView()->omnibox_view();
-  ASSERT_EQ(focus_manager->GetFocusedView(), omnibox);
-
-  FocusNextView(focus_manager);
-  EXPECT_EQ(focus_manager->GetFocusedView(), lens_overlay_page_action_view);
-
-  FocusNextView(focus_manager);
-  EXPECT_EQ(focus_manager->GetFocusedView(), bookmark_page_action_view);
-}
 
 class LocationBarViewPageActionHideWhileEditingTests
     : public InProcessBrowserTest {

@@ -1217,7 +1217,6 @@ const FeatureEntry::FeatureVariation kStartupLaunchVariations[] = {
 #endif  // BUILDFLAG(IS_WIN)
 
 const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
-    {"bookmark_star", "true"},
     {"file_system_access", "true"},
     {"sharing_hub", "true"},
 };

@@ -65,7 +65,6 @@
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
-#include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
@@ -455,9 +454,9 @@ void LocationBarView::Init() {
   }
 
   // We don't need to bridge the new page action container with the legacy one
-  // if all page actions (i.e. up to bookmark star) are migrated.
+  // if page actions migration is enabled.
   const bool should_bridge_containers =
-      !IsPageActionMigrated(PageActionIconType::kBookmarkStar);
+      !base::FeatureList::IsEnabled(features::kPageActionsMigration);
   static constexpr int kBetweenIconSpacing = 8;
   const page_actions::PageActionViewParams page_action_params{
       .icon_size =
@@ -488,9 +487,6 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kFederation);
   }
 
-  if (browser_ && !is_popup_mode_) {
-    params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
-  }
 
   params.icon_color = color_provider->GetColor(kColorOmniboxActionIcon);
   params.between_icon_spacing = kBetweenIconSpacing;
@@ -882,11 +878,10 @@ void LocationBarView::Layout(PassKey) {
   // When the AIM page action is shown as the right-most page action in the
   // location bar, it should be positioned flush against the right edge of the
   // location bar.
-  // If all page actions are migrated (i.e. up to bookmark star), then the extra
-  // padding that is usually added to bridge the new and legacy containers can
-  // be discounted.
+  // If page actions migration is enabled, then the extra padding that is
+  // usually added to bridge the new and legacy containers can be discounted.
   const bool all_page_actions_migrated =
-      IsPageActionMigrated(PageActionIconType::kBookmarkStar);
+      base::FeatureList::IsEnabled(features::kPageActionsMigration);
   const int kTrailingEdgePaddingForAim = !all_page_actions_migrated ? -3 : 5;
   const PageActionInfo info = GetPageActionInfo();
   const int kTrailingEdgePaddingForNonAim =

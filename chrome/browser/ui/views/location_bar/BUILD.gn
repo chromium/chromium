@@ -26,7 +26,6 @@ source_set("location_bar") {
       "omnibox_popup_file_selector.h",
       "record_replay_page_action_controller.h",
       "selected_keyword_view.h",
-      "star_view.h",
       "webui_content_setting_image_control.h",
       "webui_location_bar.h",
       "zoom_bubble_coordinator.h",
@@ -91,7 +90,6 @@ source_set("impl") {
       "omnibox_popup_file_selector.cc",
       "record_replay_page_action_controller.cc",
       "selected_keyword_view.cc",
-      "star_view.cc",
       "webui_content_setting_image_control.cc",
       "webui_location_bar.cc",
       "zoom_bubble_coordinator.cc",
@@ -334,7 +332,6 @@ source_set("interactive_ui_tests") {
     "location_icon_view_interactive_uitest.cc",
     "record_replay_page_action_controller_interactive_uitest.cc",
     "selected_keyword_view_interactive_uitest.cc",
-    "star_view_interactive_uitest.cc",
   ]
 
   deps = [

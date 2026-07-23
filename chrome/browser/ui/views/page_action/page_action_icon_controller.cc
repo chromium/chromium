@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/optimization_guide/optimization_guide_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
@@ -84,12 +83,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
       continue;
     }
     switch (type) {
-      case PageActionIconType::kBookmarkStar:
-        add_page_action_icon(type, std::make_unique<StarView>(
-                                       params.command_updater, params.browser,
-                                       params.icon_label_bubble_delegate,
-                                       params.page_action_icon_delegate));
-        break;
       case PageActionIconType::kOptimizationGuide:
         add_page_action_icon(
             type, std::make_unique<OptimizationGuideIconView>(
