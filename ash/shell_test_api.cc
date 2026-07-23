@@ -63,7 +63,7 @@ class WindowAnimationWaiter : public ui::LayerAnimationObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  raw_ptr<ui::LayerAnimator, DanglingUntriaged> animator_;
+  const raw_ptr<ui::LayerAnimator> animator_;
   base::RunLoop run_loop_;
 };
 
