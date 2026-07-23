@@ -34,7 +34,6 @@ body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  justify-content: center;
   overflow-y: auto;
   width: 100%;
 }
@@ -44,6 +43,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  margin-top: auto;
   max-width: 1365px;
   padding-left: 38px;
   padding-right: 38px;
@@ -73,6 +73,7 @@ h1 {
   flex-direction: row;
   gap: 71px;
   justify-content: center;
+  margin-bottom: auto;
   max-width: 1280px;
   padding: 80px;
   width: 100%;
