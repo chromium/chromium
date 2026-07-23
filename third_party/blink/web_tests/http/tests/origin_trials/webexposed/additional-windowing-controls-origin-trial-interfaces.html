@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Additional Windowing Controls API - interfaces exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+'use strict';
+
+// Generate token with the command:
+// generate_token.py http://127.0.0.1:8000 DesktopPWAsAdditionalWindowingControls --expire-timestamp=2000000000
+const token =
+    'A+5ujXfeQGUWRs1LP184raq23xvMeOEvpywPdU2/AjwnEHgQgP4FjO+OJb7yOCyfRpwNuUKQIxa40U5xA0sySwoAAABueyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRGVza3RvcFBXQXNBZGRpdGlvbmFsV2luZG93aW5nQ29udHJvbHMiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=';
+
+function check_query_is_known(query) {
+  return window.matchMedia(`${query}, not all and ${query}`).matches;
+}
+
+const properties_to_test = {
+  'global': ['minimize', 'maximize', 'restore', 'setResizable']
+};
+
+test(t => {
+  OriginTrialsHelper.check_properties_missing_unless_runtime_flag(
+      this, properties_to_test,
+      'desktopPWAsAdditionalWindowingControlsEnabled');
+}, 'Additional Windowing Controls related interfaces in regular document.');
+
+if (!OriginTrialsHelper.is_runtime_flag_enabled(
+        'desktopPWAsAdditionalWindowingControlsEnabled')) {
+  test(t => {
+    assert_false(
+        check_query_is_known('(display-state: normal)'),
+        '(display-state: normal) not should be known');
+    assert_false(
+        check_query_is_known('(resizable: true)'),
+        '(resizable: true) should not be known');
+  }, 'Additional Windowing Controls media queries in regular document.');
+}
+
+OriginTrialsHelper.add_token(token);
+
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this, properties_to_test);
+}, 'Additional Windowing Controls related interfaces in Origin-Trial enabled document.');
+
+test(t => {
+  assert_true(
+      check_query_is_known('(display-state: normal)'),
+      '(display-state: normal) should be known');
+  assert_true(
+      check_query_is_known('(resizable: true)'),
+      '(resizable: true) should be known');
+}, 'Additional Windowing Controls media queries in Origin-Trial enabled document.');
+
+</script>
+
