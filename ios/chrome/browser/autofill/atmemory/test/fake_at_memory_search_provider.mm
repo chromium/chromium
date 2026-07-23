@@ -25,10 +25,7 @@
     AtMemorySearchResultItem* item = [[AtMemorySearchResultItem alloc] init];
     item.fillingText = [NSString stringWithFormat:@"%@", dict[@"fillingText"]];
     item.subtitle = [NSString stringWithFormat:@"%@", dict[@"subtitle"]];
-    item.iconSymbolName =
-        dict[@"iconSymbolName"]
-            ? [NSString stringWithFormat:@"%@", dict[@"iconSymbolName"]]
-            : kTextSparkSymbol;
+    item.iconSymbol = SymbolTextSpark;
     [results addObject:item];
   }
   return results;

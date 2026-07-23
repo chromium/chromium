@@ -192,13 +192,11 @@ constexpr CGFloat kCloseButtonMargin = 16.0;
 
   UIImageSymbolConfiguration* symbolConfiguration =
       autofill::GetCloseButtonSymbolConfiguration();
-  UIImage* buttonImage =
-      SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
-                                                       symbolConfiguration),
-                        @[
-                          autofill::GetCloseButtonForegroundColor(),
-                          [UIColor tertiarySystemFillColor]
-                        ]);
+  UIImage* buttonImage = SymbolWithPalette(
+      SymbolWithConfiguration(SymbolXMarkCircleFill, symbolConfiguration), @[
+        autofill::GetCloseButtonForegroundColor(),
+        [UIColor tertiarySystemFillColor]
+      ]);
   [closeButton setImage:buttonImage forState:UIControlStateNormal];
 
   [closeButton addTarget:self

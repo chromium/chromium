@@ -26,8 +26,8 @@
     UIAction* addressAction =
         [UIAction actionWithTitle:l10n_util::GetNSString(
                                       IDS_IOS_AUTOFILL_ADD_ADDRESS_BUTTON_TEXT)
-                            image:DefaultSymbolWithPointSize(
-                                      kEnvelopeSymbol, kSymbolActionPointSize)
+                            image:SymbolWithPointSize(SymbolEnvelope,
+                                                      kSymbolActionPointSize)
                        identifier:nil
                           handler:^(UIAction* action) {
                             [weakDelegate didSelectAddAutofillProfile];

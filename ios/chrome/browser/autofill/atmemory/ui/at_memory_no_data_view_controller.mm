@@ -69,7 +69,7 @@ enum ItemIdentifier {
                    IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE);
 
                contentConfiguration.leadingConfiguration =
-                   autofill::AtMemoryCellIconConfiguration(kErrorCircleSymbol);
+                   autofill::AtMemoryCellIconConfiguration(SymbolErrorCircle);
 
                cell.contentConfiguration = contentConfiguration;
                return cell;

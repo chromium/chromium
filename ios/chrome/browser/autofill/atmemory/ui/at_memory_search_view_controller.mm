@@ -116,12 +116,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                      activityIndicatorConfiguration;
                } else {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-                 NSString* symbolName = kGeminiBrandedLogoSymbol;
+                 Symbol symbol = SymbolGeminiBrandedLogo;
 #else
-            NSString* symbolName = kGeminiNonBrandedLogoSymbol;
+                 Symbol symbol = SymbolGeminiNonBrandedLogo;
 #endif
                  contentConfiguration.leadingConfiguration =
-                     autofill::AtMemoryCellIconConfiguration(symbolName);
+                     autofill::AtMemoryCellIconConfiguration(symbol);
                }
 
                cell.contentConfiguration = contentConfiguration;

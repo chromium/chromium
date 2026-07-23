@@ -47,22 +47,16 @@ UIColor* GetCloseButtonForegroundColor() {
   return [[UIColor secondaryLabelColor] colorWithAlphaComponent:0.6];
 }
 
-ImageContentConfiguration* AtMemoryCellIconConfiguration(
-    NSString* symbol_name) {
+ImageContentConfiguration* AtMemoryCellIconConfiguration(Symbol symbol) {
   UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
       configurationWithPointSize:kCellIconSize
                           weight:UIImageSymbolWeightMedium
                            scale:UIImageSymbolScaleMedium];
-  UIImage* symbol =
-      [UIImage imageNamed:symbol_name
-                   inBundle:nil
-          withConfiguration:configuration]
-          ? CustomSymbolWithConfiguration(symbol_name, configuration)
-          : DefaultSymbolWithConfiguration(symbol_name, configuration);
+  UIImage* symbol_image = SymbolWithConfiguration(symbol, configuration);
 
   ImageContentConfiguration* symbol_configuration =
       [[ImageContentConfiguration alloc] init];
-  symbol_configuration.image = symbol;
+  symbol_configuration.image = symbol_image;
   symbol_configuration.imageTintColor = [UIColor colorNamed:kTextPrimaryColor];
   return symbol_configuration;
 }

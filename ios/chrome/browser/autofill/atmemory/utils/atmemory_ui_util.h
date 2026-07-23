@@ -9,6 +9,8 @@
 
 @class ImageContentConfiguration;
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 namespace autofill {
 
 // Returns the symbol configuration to use for the close button.
@@ -19,7 +21,7 @@ UIColor* GetCloseButtonForegroundColor();
 
 // Creates and returns an ImageContentConfiguration, following the design system
 // for AtMemory cell icons.
-ImageContentConfiguration* AtMemoryCellIconConfiguration(NSString* symbol_name);
+ImageContentConfiguration* AtMemoryCellIconConfiguration(Symbol symbol);
 
 }  // namespace autofill
 

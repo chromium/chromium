@@ -143,7 +143,7 @@ enum ItemType {
       [[TableViewInfoButtonItem alloc] initWithType:kRecentFillsItemType];
   item.text = searchItem.text;
   item.detailText = searchItem.detailText;
-  item.iconImage = CustomSymbolWithPointSize(kTextSparkSymbol, kSymbolSize);
+  item.iconImage = SymbolWithPointSize(SymbolTextSpark, kSymbolSize);
   item.iconTintColor = [UIColor colorNamed:kTextPrimaryColor];
   item.target = self;
   item.selector = @selector(didTapInfoButton:);

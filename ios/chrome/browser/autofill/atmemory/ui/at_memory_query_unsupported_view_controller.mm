@@ -71,7 +71,7 @@ enum ItemIdentifier {
                    IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_DESCRIPTION);
 
                contentConfiguration.leadingConfiguration =
-                   autofill::AtMemoryCellIconConfiguration(kSparklesSymbol);
+                   autofill::AtMemoryCellIconConfiguration(SymbolSparkles);
 
                cell.contentConfiguration = contentConfiguration;
                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;

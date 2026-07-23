@@ -61,9 +61,9 @@ constexpr NSInteger kTrailingSymbolImagePointSize = 18;
   NSMutableAttributedString* attributedText =
       [[NSMutableAttributedString alloc] initWithString:text];
 
-  UIImage* image = [DefaultSymbolWithPointSize(kErrorCircleFillSymbol,
-                                               kTrailingSymbolImagePointSize)
-      imageWithTintColor:[UIColor colorNamed:kRedColor]];
+  UIImage* image =
+      [SymbolWithPointSize(SymbolErrorCircleFill, kTrailingSymbolImagePointSize)
+          imageWithTintColor:[UIColor colorNamed:kRedColor]];
 
   UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   CGFloat yOffset = (font.capHeight - image.size.height) / 2.0;

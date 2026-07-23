@@ -7,13 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 // Custom item representing a search result item.
 // TODO(crbug.com/532090671): Delete this class once backend APIs are hooked up.
 @interface AtMemorySearchResultItem : NSObject
 
 @property(nonatomic, copy) NSString* fillingText;
 @property(nonatomic, copy) NSString* subtitle;
-@property(nonatomic, copy) NSString* iconSymbolName;
+@property(nonatomic, assign) Symbol iconSymbol;
 
 @end
 
