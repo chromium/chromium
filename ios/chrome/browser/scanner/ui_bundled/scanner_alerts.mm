@@ -53,14 +53,12 @@ UIAlertController* CameraPermissionDeniedDialog(
     scanner::CancelAlertAction cancelBlock) {
   NSURL* settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
 
-  BOOL canGoToSettings =
-      [[UIApplication sharedApplication] canOpenURL:settingsURL];
   // In Assistive Access, it's not possible to go to Settings, but
   // `-[UIApplication canOpenURL:]` still returns YES. Detect Assistive Access
-  // (only available starting in iOS 18), and avoid sending to Settings.
-  if (@available(iOS 18, *)) {
-    canGoToSettings = canGoToSettings && !AXAssistiveAccessEnabled();
-  }
+  // and avoid sending to Settings.
+  BOOL canGoToSettings =
+      [[UIApplication sharedApplication] canOpenURL:settingsURL] &&
+      !AXAssistiveAccessEnabled();
   if (!canGoToSettings) {
     // Display a dialog instructing the user how to change the settings.
     NSString* dialogTitle =
