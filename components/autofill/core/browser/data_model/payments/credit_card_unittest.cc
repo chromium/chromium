@@ -121,18 +121,18 @@ TEST(CreditCardTest, LabelSummary) {
 
   // Case 0: empty credit card.
   CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  EXPECT_EQ(std::u16string(), credit_card0.Label());
+  EXPECT_EQ(credit_card0.Label(), std::u16string());
 
   // Case 00: Empty credit card with empty strings.
   CreditCard credit_card00(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card00, "John Dillinger", "", "", "", "");
-  EXPECT_EQ(std::u16string(u"John Dillinger"), credit_card00.Label());
+  EXPECT_EQ(credit_card00.Label(), std::u16string(u"John Dillinger"));
 
   // Case 1: No credit card number.
   CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2010",
                           "1");
-  EXPECT_EQ(std::u16string(u"John Dillinger"), credit_card1.Label());
+  EXPECT_EQ(credit_card1.Label(), std::u16string(u"John Dillinger"));
 
   // Case 1.1: No credit card number, but has nickname.
   CreditCard credit_card11(base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -145,28 +145,28 @@ TEST(CreditCardTest, LabelSummary) {
   CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "5105 1051 0510 5100", "", "2010", "1");
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+  EXPECT_EQ(credit_card2.Label(),
+            UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100", 4) +
-                        ", John Dillinger"),
-            credit_card2.Label());
+                        ", John Dillinger"));
 
   // Case 3: No year.
   CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card3, "John Dillinger",
                           "5105 1051 0510 5100", "01", "", "1");
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+  EXPECT_EQ(credit_card3.Label(),
+            UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100", 4) +
-                        ", John Dillinger"),
-            credit_card3.Label());
+                        ", John Dillinger"));
 
   // Case 4: Have everything except nickname.
   CreditCard credit_card4(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card4, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
+  EXPECT_EQ(credit_card4.Label(),
+            UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100", 4) +
-                        ", John Dillinger"),
-            credit_card4.Label());
+                        ", John Dillinger"));
 
   // Case 5: Very long credit card
   CreditCard credit_card5(base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -174,10 +174,10 @@ TEST(CreditCardTest, LabelSummary) {
       &credit_card5, "John Dillinger",
       "0123456789 0123456789 0123456789 5105 1051 0510 5100", "01", "2010",
       "1");
-  EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
+  EXPECT_EQ(credit_card5.Label(),
+            UTF8ToUTF16(std::string("Card  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100", 4) +
-                        ", John Dillinger"),
-            credit_card5.Label());
+                        ", John Dillinger"));
 
   // Case 6: Have everything including nickname.
   CreditCard credit_card6(base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -196,53 +196,53 @@ TEST(CreditCardTest, NetworkAndLastFourDigits) {
 
   // Case 0: empty credit card.
   CreditCard credit_card0(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
-            credit_card0.NetworkAndLastFourDigits());
+  EXPECT_EQ(credit_card0.NetworkAndLastFourDigits(),
+            ASCIIToUTF16(std::string("Card")));
 
   // Case 00: Empty credit card with empty strings.
   CreditCard credit_card00(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card00, "John Dillinger", "", "", "", "");
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
-            credit_card00.NetworkAndLastFourDigits());
+  EXPECT_EQ(credit_card00.NetworkAndLastFourDigits(),
+            ASCIIToUTF16(std::string("Card")));
 
   // Case 1: No credit card number.
   CreditCard credit_card1(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card1, "John Dillinger", "", "01", "2010",
                           "1");
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
-            credit_card1.NetworkAndLastFourDigits());
+  EXPECT_EQ(credit_card1.NetworkAndLastFourDigits(),
+            ASCIIToUTF16(std::string("Card")));
 
   // Case 1.1: No credit card number, but has nickname.
   CreditCard credit_card11(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card11, "John Dillinger", "", "01", "2010",
                           "1");
   credit_card11.SetNickname(valid_nickname);
-  EXPECT_EQ(ASCIIToUTF16(std::string("Card")),
-            credit_card11.NetworkAndLastFourDigits());
+  EXPECT_EQ(credit_card11.NetworkAndLastFourDigits(),
+            ASCIIToUTF16(std::string("Card")));
 
   // Case 2: No month.
   CreditCard credit_card2(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card2, "John Dillinger",
                           "5105 1051 0510 5100", "", "2010", "1");
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card2.NetworkAndLastFourDigits());
+  EXPECT_EQ(credit_card2.NetworkAndLastFourDigits(),
+            UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)));
 
   // Case 3: No year.
   CreditCard credit_card3(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card3, "John Dillinger",
                           "5105 1051 0510 5100", "01", "", "1");
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card3.NetworkAndLastFourDigits());
+  EXPECT_EQ(credit_card3.NetworkAndLastFourDigits(),
+            UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)));
 
   // Case 4: Have everything except nickname.
   CreditCard credit_card4(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card4, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card4.NetworkAndLastFourDigits());
+  EXPECT_EQ(credit_card4.NetworkAndLastFourDigits(),
+            UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)));
 
   // Case 5: Very long credit card
   CreditCard credit_card5(base::Uuid::GenerateRandomV4().AsLowercaseString());
@@ -250,18 +250,18 @@ TEST(CreditCardTest, NetworkAndLastFourDigits) {
       &credit_card5, "John Dillinger",
       "0123456789 0123456789 0123456789 5105 1051 0510 5100", "01", "2010",
       "1");
-  EXPECT_EQ(UTF8ToUTF16(std::string("Card  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card5.NetworkAndLastFourDigits());
+  EXPECT_EQ(credit_card5.NetworkAndLastFourDigits(),
+            UTF8ToUTF16(std::string("Card  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)));
 
   // Case 6: Have everything including nickname.
   CreditCard credit_card6(base::Uuid::GenerateRandomV4().AsLowercaseString());
   test::SetCreditCardInfo(&credit_card6, "John Dillinger",
                           "5105 1051 0510 5100", "01", "2010", "1");
   credit_card6.SetNickname(valid_nickname);
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card6.NetworkAndLastFourDigits());
+  EXPECT_EQ(credit_card6.NetworkAndLastFourDigits(),
+            UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)));
 }
 
 TEST(CreditCardTest, NicknameAndLastFourDigitsStrings) {
@@ -294,9 +294,9 @@ TEST(CreditCardTest,
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
   EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card.CardNameAndLastFourDigits());
+  EXPECT_EQ(credit_card.CardNameAndLastFourDigits(),
+            UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)));
 }
 
 // Test that card identifier string falls back to issuer network when nickname
@@ -310,9 +310,9 @@ TEST(
                           "1");
   credit_card.SetNickname(u"Nickname length exceeds 25 characters");
   EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
-  EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
-                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card.CardNameAndLastFourDigits());
+  EXPECT_EQ(credit_card.CardNameAndLastFourDigits(),
+            UTF8ToUTF16(std::string("Mastercard  ") +
+                        test::ObfuscatedCardDigitsAsUTF8("5100", 4)));
 }
 
 // Test that card identifier string falls back to product description when
@@ -468,10 +468,10 @@ TEST(CreditCardTest,
   test::SetCreditCardInfo(&credit_card, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
-  EXPECT_EQ(
-      UTF8ToUTF16(std::string("Mastercard  ") +
-                  test::ObfuscatedCardDigitsAsUTF8("5100", obfuscation_length)),
-      credit_card.CardNameAndLastFourDigits(u"", obfuscation_length));
+  EXPECT_EQ(credit_card.CardNameAndLastFourDigits(u"", obfuscation_length),
+            UTF8ToUTF16(
+                std::string("Mastercard  ") +
+                test::ObfuscatedCardDigitsAsUTF8("5100", obfuscation_length)));
 }
 
 TEST(CreditCardTest, AssignmentOperator) {
@@ -676,7 +676,7 @@ TEST_P(SetExpirationYearFromStringTest, SetExpirationYearFromString) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString());
   card.SetExpirationYearFromString(ASCIIToUTF16(test_case.expiration_year));
 
-  EXPECT_EQ(test_case.expected_year, card.expiration_year())
+  EXPECT_EQ(card.expiration_year(), test_case.expected_year)
       << test_case.expiration_year << " " << test_case.expected_year;
 }
 
@@ -708,8 +708,8 @@ TEST_P(SetExpirationDateFromStringTest, SetExpirationDateFromString) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString());
   card.SetExpirationDateFromString(ASCIIToUTF16(test_case.expiration_date));
 
-  EXPECT_EQ(test_case.expected_month, card.expiration_month());
-  EXPECT_EQ(test_case.expected_year, card.expiration_year());
+  EXPECT_EQ(card.expiration_month(), test_case.expected_month);
+  EXPECT_EQ(card.expiration_year(), test_case.expected_year);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -802,13 +802,13 @@ TEST_P(IsLocalOrServerDuplicateOfTest, IsLocalOrServerDuplicateOf) {
     b.SetNetworkForMaskedCard(test_case.second_card_issuer_network);
   }
 
-  EXPECT_EQ(test_case.is_local_or_server_duplicate,
-            a.IsLocalOrServerDuplicateOf(b))
+  EXPECT_EQ(a.IsLocalOrServerDuplicateOf(b),
+            test_case.is_local_or_server_duplicate)
       << " when comparing cards " << a.Label() << " and " << b.Label();
   // Flipping the checks for the cards to verify the functionality of
   // IsLocalOrServerDuplicateOf.
-  EXPECT_EQ(test_case.is_local_or_server_duplicate,
-            b.IsLocalOrServerDuplicateOf(a))
+  EXPECT_EQ(b.IsLocalOrServerDuplicateOf(a),
+            test_case.is_local_or_server_duplicate)
       << " when comparing cards " << b.Label() << " and " << a.Label();
 }
 
@@ -982,92 +982,92 @@ TEST(CreditCardTest, Compare) {
   CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   // Empty cards are the same.
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   // GUIDs don't count.
   a.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   // Origins don't count.
 
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   // Different types of server cards don't count.
   a.set_record_type(MASKED_SERVER_CARD);
   b.set_record_type(FULL_SERVER_CARD);
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   // Difference in nickname counts.
   a.SetNickname(u"My Visa Card");
   b.SetNickname(u"Grocery Cashback Card");
-  EXPECT_LT(0, a.Compare(b));
+  EXPECT_GT(a.Compare(b), 0);
   // Reset the nickname to empty, empty nickname cards are the same.
   a.SetNickname(u"");
   b.SetNickname(u"");
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   // Local is different from server.
   a.set_record_type(LOCAL_CARD);
   b.set_record_type(FULL_SERVER_CARD);
-  EXPECT_GT(0, a.Compare(b));
+  EXPECT_LT(a.Compare(b), 0);
   a.set_record_type(MASKED_SERVER_CARD);
   b.set_record_type(LOCAL_CARD);
-  EXPECT_LT(0, a.Compare(b));
+  EXPECT_GT(a.Compare(b), 0);
   a.set_record_type(MASKED_SERVER_CARD);
   b.set_record_type(MASKED_SERVER_CARD);
 
   // Card with UNKNOWN_ISSUER is different from GOOGLE issued card.
   a.set_card_issuer(CreditCard::Issuer::kIssuerUnknown);
   b.set_card_issuer(CreditCard::Issuer::kGoogle);
-  EXPECT_GT(0, a.Compare(b));
+  EXPECT_LT(a.Compare(b), 0);
   // Card with UNKNOWN_ISSUER is different from EXTERNAL_ISSUER issued card.
   a.set_card_issuer(CreditCard::Issuer::kIssuerUnknown);
   b.set_card_issuer(CreditCard::Issuer::kExternalIssuer);
-  EXPECT_GT(0, a.Compare(b));
+  EXPECT_LT(a.Compare(b), 0);
   a.set_card_issuer(CreditCard::Issuer::kExternalIssuer);
   b.set_card_issuer(CreditCard::Issuer::kExternalIssuer);
 
   // Cards with benefits from different sources are different.
   a.set_benefit_source("bmo");
   b.set_benefit_source("amex");
-  EXPECT_NE(0, a.Compare(b));
+  EXPECT_NE(a.Compare(b), 0);
   // Two same non-empty benefit source are considered the same.
   a.set_benefit_source("bmo");
   b.set_benefit_source("bmo");
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   // Difference in issuer id.
   a.set_issuer_id("amex");
   b.set_issuer_id("capitalone");
-  EXPECT_NE(0, a.Compare(b));
+  EXPECT_NE(a.Compare(b), 0);
   // Reset the issuer ids to empty, and empty ids are considered the same.
   a.set_issuer_id("");
   b.set_issuer_id("");
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   // Difference in cvc.
   a.set_cvc(u"1234");
   b.set_cvc(u"987");
-  EXPECT_NE(0, a.Compare(b));
+  EXPECT_NE(a.Compare(b), 0);
   // Card with cvc is different from card with empty cvc.
   a.set_cvc(u"1234");
   b.set_cvc(u"");
-  EXPECT_NE(0, a.Compare(b));
+  EXPECT_NE(a.Compare(b), 0);
   // Reset the cvc to empty, and empty cvc are considered the same.
   a.set_cvc(u"");
   b.set_cvc(u"");
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
   // Two same non-empty cvc are considered the same.
   a.set_cvc(u"123");
   b.set_cvc(u"123");
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   // Different values produce non-zero results.
   test::SetCreditCardInfo(&a, "Jimmy", nullptr, nullptr, nullptr, "");
   test::SetCreditCardInfo(&b, "Ringo", nullptr, nullptr, nullptr, "");
-  EXPECT_GT(0, a.Compare(b));
-  EXPECT_LT(0, b.Compare(a));
+  EXPECT_LT(a.Compare(b), 0);
+  EXPECT_GT(b.Compare(a), 0);
 }
 
 TEST(CreditCardTest, CompareCardInfoRetrievalEnrollmentState) {
@@ -1075,7 +1075,7 @@ TEST(CreditCardTest, CompareCardInfoRetrievalEnrollmentState) {
   CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   // Empty cards are the same.
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   // Difference in card_info_retrieval_enrollment_state.
   a.set_card_info_retrieval_enrollment_state(
@@ -1083,26 +1083,26 @@ TEST(CreditCardTest, CompareCardInfoRetrievalEnrollmentState) {
           kRetrievalUnenrolledAndNotEligible);
   b.set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
-  EXPECT_NE(0, a.Compare(b));
+  EXPECT_NE(a.Compare(b), 0);
   // Card with UNSPECIFIED enrollment state is different from ENROLLED state.
   a.set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified);
   b.set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
-  EXPECT_NE(0, a.Compare(b));
+  EXPECT_NE(a.Compare(b), 0);
   // Reset the enrollment state to UNSPECIFIED and UNSPECIFIED states are
   // considered the same.
   a.set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified);
   b.set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified);
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
   // Two same non UNSPECIFIED enrollment states are considered the same.
   a.set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
   b.set_card_info_retrieval_enrollment_state(
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 }
 
 TEST(CreditCardTest, CompareCardCreationSource) {
@@ -1110,56 +1110,56 @@ TEST(CreditCardTest, CompareCardCreationSource) {
   CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   // Empty cards are the same.
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   a.set_card_creation_source(
       CreditCard::CardCreationSource::kCreationSourceChromePayments);
   b.set_card_creation_source(
       CreditCard::CardCreationSource::kCreationSourceNonChromePayments);
-  EXPECT_NE(0, a.Compare(b));
+  EXPECT_NE(a.Compare(b), 0);
 
   a.set_card_creation_source(
       CreditCard::CardCreationSource::kCreationSourceUnspecified);
   b.set_card_creation_source(
       CreditCard::CardCreationSource::kCreationSourceChromePayments);
-  EXPECT_NE(0, a.Compare(b));
+  EXPECT_NE(a.Compare(b), 0);
 
   a.set_card_creation_source(
       CreditCard::CardCreationSource::kCreationSourceUnspecified);
   b.set_card_creation_source(
       CreditCard::CardCreationSource::kCreationSourceUnspecified);
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 
   a.set_card_creation_source(
       CreditCard::CardCreationSource::kCreationSourceChromePayments);
   b.set_card_creation_source(
       CreditCard::CardCreationSource::kCreationSourceChromePayments);
-  EXPECT_EQ(0, a.Compare(b));
+  EXPECT_EQ(a.Compare(b), 0);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceId) {
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardDiners));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DISCOVER,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardDiscover));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_ELO,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardElo));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_JCB,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardJCB));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MASTERCARD,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardMasterCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MIR,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardMir));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_TROY,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardTroy));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardUnionPay));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VERVE,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardVerve));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VISA,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardVisa));
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardDiners),
+            IDR_AUTOFILL_METADATA_CC_DINERS);
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardDiscover),
+            IDR_AUTOFILL_METADATA_CC_DISCOVER);
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardElo),
+            IDR_AUTOFILL_METADATA_CC_ELO);
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardJCB),
+            IDR_AUTOFILL_METADATA_CC_JCB);
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardMasterCard),
+            IDR_AUTOFILL_METADATA_CC_MASTERCARD);
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardMir),
+            IDR_AUTOFILL_METADATA_CC_MIR);
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardTroy),
+            IDR_AUTOFILL_METADATA_CC_TROY);
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardUnionPay),
+            IDR_AUTOFILL_METADATA_CC_UNIONPAY);
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardVerve),
+            IDR_AUTOFILL_METADATA_CC_VERVE);
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardVisa),
+            IDR_AUTOFILL_METADATA_CC_VISA);
 }
 
 // Test we get the correct icon for Amex card type when the new Amex network art
@@ -1170,8 +1170,8 @@ TEST(CreditCardTest, IconResourceId_NewAmexNetworkArtEnabled) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnableNewAmexNetworkArt);
 
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX_NEW,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress),
+            IDR_AUTOFILL_METADATA_CC_AMEX_NEW);
 }
 
 // Test we get the correct icon for Amex card type when the new Amex network art
@@ -1180,29 +1180,29 @@ TEST(CreditCardTest, IconResourceId_NewAmexNetworkArtDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kAutofillEnableNewAmexNetworkArt);
 
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX,
-            CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress));
+  EXPECT_EQ(CreditCard::IconResourceId(Suggestion::Icon::kCardAmericanExpress),
+            IDR_AUTOFILL_METADATA_CC_AMEX);
 }
 
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceIdFromString) {
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DINERS,
-            CreditCard::IconResourceId(kDinersCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_DISCOVER,
-            CreditCard::IconResourceId(kDiscoverCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_ELO, CreditCard::IconResourceId(kEloCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_JCB, CreditCard::IconResourceId(kJCBCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MASTERCARD,
-            CreditCard::IconResourceId(kMasterCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_MIR, CreditCard::IconResourceId(kMirCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_TROY,
-            CreditCard::IconResourceId(kTroyCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_UNIONPAY,
-            CreditCard::IconResourceId(kUnionPay));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VERVE,
-            CreditCard::IconResourceId(kVerveCard));
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_VISA,
-            CreditCard::IconResourceId(kVisaCard));
+  EXPECT_EQ(CreditCard::IconResourceId(kDinersCard),
+            IDR_AUTOFILL_METADATA_CC_DINERS);
+  EXPECT_EQ(CreditCard::IconResourceId(kDiscoverCard),
+            IDR_AUTOFILL_METADATA_CC_DISCOVER);
+  EXPECT_EQ(CreditCard::IconResourceId(kEloCard), IDR_AUTOFILL_METADATA_CC_ELO);
+  EXPECT_EQ(CreditCard::IconResourceId(kJCBCard), IDR_AUTOFILL_METADATA_CC_JCB);
+  EXPECT_EQ(CreditCard::IconResourceId(kMasterCard),
+            IDR_AUTOFILL_METADATA_CC_MASTERCARD);
+  EXPECT_EQ(CreditCard::IconResourceId(kMirCard), IDR_AUTOFILL_METADATA_CC_MIR);
+  EXPECT_EQ(CreditCard::IconResourceId(kTroyCard),
+            IDR_AUTOFILL_METADATA_CC_TROY);
+  EXPECT_EQ(CreditCard::IconResourceId(kUnionPay),
+            IDR_AUTOFILL_METADATA_CC_UNIONPAY);
+  EXPECT_EQ(CreditCard::IconResourceId(kVerveCard),
+            IDR_AUTOFILL_METADATA_CC_VERVE);
+  EXPECT_EQ(CreditCard::IconResourceId(kVisaCard),
+            IDR_AUTOFILL_METADATA_CC_VISA);
 }
 
 // Test we get the correct icon for Amex card type when the new Amex network art
@@ -1214,8 +1214,8 @@ TEST(CreditCardTest, IconResourceIdFromString_NewAmexNetworkArtEnabled) {
   base::test::ScopedFeatureList feature_list(
       features::kAutofillEnableNewAmexNetworkArt);
 
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX_NEW,
-            CreditCard::IconResourceId(kAmericanExpressCard));
+  EXPECT_EQ(CreditCard::IconResourceId(kAmericanExpressCard),
+            IDR_AUTOFILL_METADATA_CC_AMEX_NEW);
 }
 
 // Test we get the correct icon for Amex card type when the new Amex network art
@@ -1224,8 +1224,8 @@ TEST(CreditCardTest, IconResourceIdFromString_NewAmexNetworkArtDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kAutofillEnableNewAmexNetworkArt);
 
-  EXPECT_EQ(IDR_AUTOFILL_METADATA_CC_AMEX,
-            CreditCard::IconResourceId(kAmericanExpressCard));
+  EXPECT_EQ(CreditCard::IconResourceId(kAmericanExpressCard),
+            IDR_AUTOFILL_METADATA_CC_AMEX);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -1247,9 +1247,9 @@ TEST(CreditCardTest, UpdateFromImportedCard_UpdatedWithNameAndExpirationDate) {
   // |a| should be updated with the information from |b|.
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_FALSE(a.is_user_confirmed());
-  EXPECT_EQ(u"J. Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"08", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(kYearInFuture, a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"J. Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"08");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), kYearInFuture);
 }
 
 TEST(CreditCardTest,
@@ -1273,9 +1273,9 @@ TEST(CreditCardTest,
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_FALSE(a.is_user_confirmed());
-  EXPECT_EQ(u"J. Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"J. Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2017");
 }
 
 TEST(CreditCardTest,
@@ -1299,9 +1299,9 @@ TEST(CreditCardTest,
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_FALSE(a.is_user_confirmed());
-  EXPECT_EQ(u"J. Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"J. Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2017");
 }
 
 TEST(CreditCardTest,
@@ -1324,9 +1324,9 @@ TEST(CreditCardTest,
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_FALSE(a.is_user_confirmed());
-  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"08", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(kYearInFuture, a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"08");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), kYearInFuture);
 }
 
 TEST(
@@ -1352,9 +1352,9 @@ TEST(
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_TRUE(a.is_user_confirmed());
-  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2017");
 }
 
 TEST(CreditCardTest,
@@ -1376,9 +1376,9 @@ TEST(CreditCardTest,
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_TRUE(a.is_user_confirmed());
-  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2017");
 }
 
 TEST(CreditCardTest,
@@ -1400,9 +1400,9 @@ TEST(CreditCardTest,
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_TRUE(a.is_user_confirmed());
-  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2017");
 }
 
 TEST(CreditCardTest,
@@ -1428,9 +1428,9 @@ TEST(CreditCardTest,
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_TRUE(a.is_user_confirmed());
-  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2010", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2010");
 }
 
 TEST(CreditCardTest,
@@ -1455,9 +1455,9 @@ TEST(CreditCardTest,
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_TRUE(a.is_user_confirmed());
-  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"08", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(kYearInFuture, a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"08");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), kYearInFuture);
 }
 
 TEST(CreditCardTest,
@@ -1480,9 +1480,9 @@ TEST(CreditCardTest,
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_TRUE(a.is_user_confirmed());
-  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2010", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2010");
 }
 
 TEST(CreditCardTest,
@@ -1506,9 +1506,9 @@ TEST(CreditCardTest,
 
   EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_TRUE(a.is_user_confirmed());
-  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"08", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(kYearInFuture, a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"08");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), kYearInFuture);
 }
 
 TEST(CreditCardTest,
@@ -1533,9 +1533,9 @@ TEST(CreditCardTest,
 
   EXPECT_FALSE(a.UpdateFromImportedCard(b, "en-US"));
   EXPECT_TRUE(a.is_user_confirmed());
-  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
-  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
+  EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2017");
 }
 
 TEST(CreditCardTest, IsValidCardNumberAndExpiryDate) {
@@ -1623,7 +1623,7 @@ TEST(CreditCardTest, SetRawInfoCreditCardNumber) {
 
   test::SetCreditCardInfo(&card, "Bob Dylan", "4321-5432-6543-xxxx", "07",
                           "2013", "1");
-  EXPECT_EQ(u"4321-5432-6543-xxxx", card.GetRawInfo(CREDIT_CARD_NUMBER));
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_NUMBER), u"4321-5432-6543-xxxx");
 }
 
 // Verify that we can handle both numeric and named months.
@@ -1631,29 +1631,29 @@ TEST(CreditCardTest, SetExpirationMonth) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"05");
-  EXPECT_EQ(u"05", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(5, card.expiration_month());
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"05");
+  EXPECT_EQ(card.expiration_month(), 5);
 
   card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"7");
-  EXPECT_EQ(u"07", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(7, card.expiration_month());
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"07");
+  EXPECT_EQ(card.expiration_month(), 7);
 
   // This should fail, and preserve the previous value.
   card.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"January");
-  EXPECT_EQ(u"07", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(7, card.expiration_month());
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"07");
+  EXPECT_EQ(card.expiration_month(), 7);
 
   card.SetInfo(CREDIT_CARD_EXP_MONTH, u"January", "en-US");
-  EXPECT_EQ(u"01", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(1, card.expiration_month());
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"01");
+  EXPECT_EQ(card.expiration_month(), 1);
 
   card.SetInfo(CREDIT_CARD_EXP_MONTH, u"Apr", "en-US");
-  EXPECT_EQ(u"04", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(4, card.expiration_month());
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"04");
+  EXPECT_EQ(card.expiration_month(), 4);
 
   card.SetInfo(CREDIT_CARD_EXP_MONTH, u"FÉVRIER", "fr-FR");
-  EXPECT_EQ(u"02", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
-  EXPECT_EQ(2, card.expiration_month());
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"02");
+  EXPECT_EQ(card.expiration_month(), 2);
 }
 
 // Verify that we set nickname with the processed string. We replace all tabs
@@ -1663,23 +1663,23 @@ TEST(CreditCardTest, SetNickname) {
 
   // Normal input nickname.
   card.SetNickname(u"Grocery card");
-  EXPECT_EQ(u"Grocery card", card.nickname());
+  EXPECT_EQ(card.nickname(), u"Grocery card");
 
   // Input nickname has leading and trailing whitespaces.
   card.SetNickname(u"  Grocery card  ");
-  EXPECT_EQ(u"Grocery card", card.nickname());
+  EXPECT_EQ(card.nickname(), u"Grocery card");
 
   // Input nickname has newlines.
   card.SetNickname(u"\r\n Grocery\ncard \r\n");
-  EXPECT_EQ(u"Grocery card", card.nickname());
+  EXPECT_EQ(card.nickname(), u"Grocery card");
 
   // Input nickname has tabs.
   card.SetNickname(u" \tGrocery\t card\t ");
-  EXPECT_EQ(u"Grocery  card", card.nickname());
+  EXPECT_EQ(card.nickname(), u"Grocery  card");
 
   // Input nickname has newlines & whitespaces & tabs.
   card.SetNickname(u"\n\t Grocery \tcard \n \r\n");
-  EXPECT_EQ(u"Grocery  card", card.nickname());
+  EXPECT_EQ(card.nickname(), u"Grocery  card");
 }
 
 TEST(CreditCardTest, CreditCardType) {
@@ -1687,22 +1687,22 @@ TEST(CreditCardTest, CreditCardType) {
 
   // The card type cannot be set directly.
   card.SetRawInfo(CREDIT_CARD_TYPE, u"Visa");
-  EXPECT_EQ(std::u16string(), card.GetRawInfo(CREDIT_CARD_TYPE));
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_TYPE), std::u16string());
 
   // Setting the number should implicitly set the type.
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"4111 1111 1111 1111");
-  EXPECT_EQ(u"Visa", card.GetRawInfo(CREDIT_CARD_TYPE));
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_TYPE), u"Visa");
 }
 
 // Verify that we preserve exactly what the user typed for CVC.
 TEST(CreditCardTest, CreditCardVerificationCode) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString());
   card.SetRawInfo(CREDIT_CARD_VERIFICATION_CODE, u"999");
-  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE));
-  EXPECT_EQ(u"999", card.cvc());
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_VERIFICATION_CODE), u"999");
+  EXPECT_EQ(card.cvc(), u"999");
   card.SetRawInfo(CREDIT_CARD_STANDALONE_VERIFICATION_CODE, u"999");
-  EXPECT_EQ(u"999", card.GetRawInfo(CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
-  EXPECT_EQ(u"999", card.cvc());
+  EXPECT_EQ(card.GetRawInfo(CREDIT_CARD_STANDALONE_VERIFICATION_CODE), u"999");
+  EXPECT_EQ(card.cvc(), u"999");
 }
 
 // Tests that the card in only deletable if it is expired before the threshold.
@@ -1820,7 +1820,7 @@ TEST_P(CreditCardMatchingTypesTest, Cases) {
   FieldTypeSet matching_types;
   card.GetMatchingTypes(UTF8ToUTF16(test_case.value), test_case.locale,
                         &matching_types);
-  EXPECT_EQ(test_case.expected_matched_types, matching_types);
+  EXPECT_EQ(matching_types, test_case.expected_matched_types);
 }
 
 const CreditCardMatchingTypesCase kCreditCardMatchingTypesTestCases[] = {
@@ -1878,26 +1878,26 @@ INSTANTIATE_TEST_SUITE_P(CreditCardTest,
 
 TEST(CreditCardTest, LastFourDigits) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  ASSERT_EQ(std::u16string(), card.LastFourDigits());
+  ASSERT_EQ(card.LastFourDigits(), std::u16string());
   ASSERT_EQ(CreditCard::GetObfuscatedStringForCardDigits(
                 /*obfuscation_length=*/4, std::u16string()),
             card.ObfuscatedNumberWithVisibleLastFourDigits());
 
   test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
                           "2010", "1");
-  ASSERT_EQ(u"3489", card.LastFourDigits());
+  ASSERT_EQ(card.LastFourDigits(), u"3489");
   ASSERT_EQ(CreditCard::GetObfuscatedStringForCardDigits(
                 /*obfuscation_length=*/4, u"3489"),
             card.ObfuscatedNumberWithVisibleLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"3489");
-  ASSERT_EQ(u"3489", card.LastFourDigits());
+  ASSERT_EQ(card.LastFourDigits(), u"3489");
   ASSERT_EQ(CreditCard::GetObfuscatedStringForCardDigits(
                 /*obfuscation_length=*/4, u"3489"),
             card.ObfuscatedNumberWithVisibleLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"489");
-  ASSERT_EQ(u"489", card.LastFourDigits());
+  ASSERT_EQ(card.LastFourDigits(), u"489");
   ASSERT_EQ(CreditCard::GetObfuscatedStringForCardDigits(
                 /*obfuscation_length=*/4, u"489"),
             card.ObfuscatedNumberWithVisibleLastFourDigits());
@@ -1905,37 +1905,37 @@ TEST(CreditCardTest, LastFourDigits) {
 
 TEST(CreditCardTest, FullDigitsForDisplay) {
   CreditCard card(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  ASSERT_EQ(std::u16string(), card.FullDigitsForDisplay());
+  ASSERT_EQ(card.FullDigitsForDisplay(), std::u16string());
 
   test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
                           "2010", "1");
-  ASSERT_EQ(u"5212 3412 3412 3489", card.FullDigitsForDisplay());
+  ASSERT_EQ(card.FullDigitsForDisplay(), u"5212 3412 3412 3489");
 
   // Unstripped card number.
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"5212-3412-3412-3489");
-  ASSERT_EQ(u"5212 3412 3412 3489", card.FullDigitsForDisplay());
+  ASSERT_EQ(card.FullDigitsForDisplay(), u"5212 3412 3412 3489");
 
   // 15-digit Amex card number adds spacing.
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"378282246310005");
-  ASSERT_EQ(u"3782 822463 10005", card.FullDigitsForDisplay());
+  ASSERT_EQ(card.FullDigitsForDisplay(), u"3782 822463 10005");
 
   // 16-digit card number that begins with Amex digits should have normal
   // spacing.
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"3782822463100052");
-  ASSERT_EQ(u"3782 8224 6310 0052", card.FullDigitsForDisplay());
+  ASSERT_EQ(card.FullDigitsForDisplay(), u"3782 8224 6310 0052");
 
   // 15-digit non-Amex card number stays the same.
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"998282246310005");
-  ASSERT_EQ(u"998282246310005", card.FullDigitsForDisplay());
+  ASSERT_EQ(card.FullDigitsForDisplay(), u"998282246310005");
 
   // 19-digit card number stays the same.
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"4532261615476013542");
-  ASSERT_EQ(u"4532261615476013542", card.FullDigitsForDisplay());
+  ASSERT_EQ(card.FullDigitsForDisplay(), u"4532261615476013542");
 
   // Ideally FullDigitsForDisplay shouldn't be invoked for masked cards.Test
   // here just in case. Masked card stays the same.
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"3489");
-  ASSERT_EQ(u"3489", card.FullDigitsForDisplay());
+  ASSERT_EQ(card.FullDigitsForDisplay(), u"3489");
 }
 
 TEST(CreditCardTest, IsBnplCard) {
@@ -1981,7 +1981,7 @@ TEST_P(ShouldUpdateExpirationTest, ShouldUpdateExpiration) {
   card.SetExpirationYear(year);
   card.set_record_type(test_case.record_type);
 
-  EXPECT_EQ(test_case.should_update_expiration, card.ShouldUpdateExpiration());
+  EXPECT_EQ(card.ShouldUpdateExpiration(), test_case.should_update_expiration);
 }
 
 INSTANTIATE_TEST_SUITE_P(
