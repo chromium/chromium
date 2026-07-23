@@ -1,6 +1,9 @@
 # For the safe archive analyzers and document analyzer
 drubery@chromium.org
 xinghuilu@chromium.org
+yawfrempong@google.com
+
+file://components/safe_browsing/OWNERS
 
 # For files that were obfuscated during download
 per-file obfuscated_archive_analysis_delegate.cc=file://components/enterprise/CEP_OWNERS
