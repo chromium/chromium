@@ -52,12 +52,23 @@ class MultistepFilterMetricsTracker {
     // UKM. Regenerated for each suggestion impression.
     int64_t session_id = 0;
     UrlFilterSuggestion suggestion;
-    base::TimeTicks suggestion_shown_time;
-    base::TimeDelta suggestion_shown_age;
     RetentionStateSnapshot retention_snapshot;
+    base::TimeTicks suggestion_shown_time;
+    // Time delta since the filter_annotation which comprises this suggestion
+    // was extracted to the time when the suggestion was shown to the user.
+    base::TimeDelta extraction_to_suggestion_shown_time_delta;
+    base::TimeDelta navigation_to_suggestion_shown_latency;
+    // True if the suggestion was shown on the same eTLD+1 as the page from
+    // which it was extracted.
+    bool is_same_domain = false;
     bool reopened_cue_shown = false;
     SuggestionUserDecision user_decision = SuggestionUserDecision::kIgnored;
     base::TimeTicks suggestion_accepted_time;
+    base::TimeDelta navigation_to_suggestion_accepted_time_delta;
+    base::TimeDelta suggestion_shown_to_accepted_time_delta;
+    // Time delta since the filter_annotation which comprises this suggestion
+    // was extracted to the time when the suggestion was accepted by the user.
+    base::TimeDelta extraction_to_suggestion_accepted_time_delta;
     bool is_preserved_same_page = false;
   };
 
@@ -99,6 +110,8 @@ class MultistepFilterMetricsTracker {
     base::TimeTicks suggestion_accepted_time;
     bool is_error_page = false;
     base::TimeTicks application_navigation_finish_time;
+    base::TimeDelta suggestion_accepted_to_applied_latency;
+    MultistepFilterApplicationOutcome outcome;
     // True if the suggestion was successfully applied and we are now tracking
     // post-application user engagement.
     bool is_applied = false;
