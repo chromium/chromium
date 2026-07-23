@@ -1,0 +1,13 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("signin") {
+  testonly = true
+  sources = [ "signin_test_ai.mm" ]
+  deps = [
+    "//ios/chrome/browser/providers/intelligence/signin/resources",
+    "//ios/public/provider/chrome/browser/intelligence/signin",
+    "//url",
+  ]
+}

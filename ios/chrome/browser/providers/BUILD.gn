@@ -25,6 +25,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/glow_effect:chromium_glow_effect",
     "//ios/chrome/browser/providers/google_one:chromium_google_one",
     "//ios/chrome/browser/providers/intelligence:chromium_intelligence",
+    "//ios/chrome/browser/providers/intelligence/signin",
     "//ios/chrome/browser/providers/keyboard:chromium_keyboard",
     "//ios/chrome/browser/providers/lens:chromium_lens",
     "//ios/chrome/browser/providers/lottie:chromium_lottie_animation",
