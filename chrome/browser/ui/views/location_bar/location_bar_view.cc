@@ -1233,6 +1233,27 @@ OmniboxPopupFileSelector* LocationBarView::GetOmniboxPopupFileSelector() const {
 OmniboxPopupAimPresenter* LocationBarView::GetOmniboxPopupAimPresenter() const {
   return omnibox_popup_aim_presenter_.get();
 }
+// If omnibox is open, notify Omnibox presenter that a permission prompt is
+// starting right before constructing the prompt view widget. This is the
+// notification point that is before and closest to rendering the view, which
+// ensures the omnibox knows as soon as possible and ignores focus-loss events
+// during the whole time that the embedded permission prompt is showing.
+void LocationBarView::SetPermissionPromptShowing(bool showing) {
+  OmniboxPopupPresenterBase* presenter = nullptr;
+  // Get Omnibox popup presenter for AIM or normal omnibox, depending
+  // on which is showing.
+  if (auto* aim_presenter = GetOmniboxPopupAimPresenter();
+      aim_presenter && aim_presenter->IsShown()) {
+    presenter = aim_presenter;
+  } else if (auto* popup_view = GetOmniboxPopupView();
+             popup_view && popup_view->presenter() &&
+             popup_view->presenter()->IsShown()) {
+    presenter = popup_view->presenter();
+  }
+  if (presenter) {
+    presenter->SetPermissionPromptShowing(showing);
+  }
+}
 
 WebContents* LocationBarView::GetWebContentsForPageActionIconView() {
   return GetWebContents();

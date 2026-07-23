@@ -305,6 +305,9 @@ class LocationBarView
   // |is_hovering| should be true when mouse is in omnibox; false when exited.
   void OnOmniboxHovered(bool is_hovering);
 
+  // LocationBar:
+  void SetPermissionPromptShowing(bool showing) override;
+
   // `browser_` returned here may be nullptr. There are two known cases.
   //
   // 1. simple_web_view_dialog, which is used to show captive portal page on

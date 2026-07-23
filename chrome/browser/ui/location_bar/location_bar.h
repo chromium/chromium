@@ -137,6 +137,10 @@ class LocationBar {
   // Called when the edit should update itself without restoring any tab state.
   virtual void UpdateWithoutTabRestore() = 0;
 
+  // Called to notify the location bar (and its omnibox popup presenter)
+  // whether a permission prompt is currently showing.
+  virtual void SetPermissionPromptShowing(bool showing) {}
+
   CommandUpdater* command_updater() { return command_updater_; }
   const CommandUpdater* command_updater() const { return command_updater_; }
 

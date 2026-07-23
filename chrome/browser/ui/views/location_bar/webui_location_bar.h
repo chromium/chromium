@@ -87,6 +87,7 @@ class WebUILocationBar : public LocationBar,
   bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override;
   ChipController* GetChipController() override;
   content::WebContents* GetWebContents() override;
+  void SetPermissionPromptShowing(bool showing) override;
 
   // LocationBarTesting:
   LocationBarModel* GetLocationBarModel() override;

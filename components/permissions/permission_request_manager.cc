@@ -1223,6 +1223,12 @@ void PermissionRequestManager::ShowPrompt() {
   current_request_already_displayed_ = true;
   current_request_first_display_time_ = base::Time::Now();
 
+  // `NotifyPromptAdded()` MUST run after `RecreateView()` has successfully
+  // created the UI view. Calling it before `RecreateView()` may break the
+  // assumption that `NotifyPromptAdded` is only called when the prompt has
+  // successfully shown itself, AND may break the assumption that by default,
+  // other event listeners do not have to clean up the state in
+  // `NotifyPromptAdded` if failure is reached before the prompt is rendered.
   NotifyPromptAdded();
 
   // If in testing mode, automatically respond to the bubble that was shown.

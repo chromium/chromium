@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
@@ -584,4 +587,166 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupKeepOpenBrowserTest,
                 ->popup_state_manager()
                 ->popup_state(),
             OmniboxPopupState::kNone);
+}
+
+namespace {
+
+class TestPermissionPromptDelegate
+    : public permissions::PermissionPrompt::Delegate {
+ public:
+  explicit TestPermissionPromptDelegate(content::WebContents* web_contents)
+      : web_contents_(web_contents) {
+    request_list_.push_back(
+        std::make_unique<permissions::MockPermissionRequest>(
+            permissions::RequestType::kMicStream,
+            permissions::PermissionRequestGestureType::GESTURE));
+  }
+
+  const std::vector<std::unique_ptr<permissions::PermissionRequest>>& Requests()
+      override {
+    return request_list_;
+  }
+  GURL GetRequestingOrigin() const override {
+    return GURL(permissions::MockPermissionRequest::kDefaultOrigin);
+  }
+  GURL GetEmbeddingOrigin() const override {
+    return GURL(permissions::MockPermissionRequest::kDefaultOrigin);
+  }
+  void Accept(const PromptOptions& prompt_options) override {}
+  void AcceptThisTime(const PromptOptions& prompt_options) override {}
+  void Deny(const PromptOptions& prompt_options) override {}
+  void Dismiss(const PromptOptions& prompt_options) override {}
+  void Ignore(const PromptOptions& prompt_options) override {}
+  void SwitchToLoudPrompt() override {}
+  GeolocationAccuracy GetInitialGeolocationAccuracySelection() const override {
+    return GeolocationAccuracy::kPrecise;
+  }
+  std::optional<permissions::GeolocationPromptType> GetGeolocationPromptType()
+      const override {
+    return std::nullopt;
+  }
+  void FinalizeCurrentRequests() override {}
+  void OpenHelpCenterLink(const ui::Event&) override {}
+  void PreIgnoreQuietPrompt() override {}
+  void SetManageClicked() override {}
+  void SetLearnMoreClicked() override {}
+  void SetHatsShownCallback(base::OnceCallback<void()> callback) override {}
+  std::optional<permissions::PermissionUiSelector::QuietUiReason>
+  ReasonForUsingQuietUi() const override {
+    return std::nullopt;
+  }
+  bool ShouldCurrentRequestUseQuietUI() const override { return false; }
+  void set_should_drop(bool drop) { should_drop_ = drop; }
+  bool ShouldDropCurrentRequestIfCannotShowQuietly() const override {
+    return should_drop_;
+  }
+  bool WasCurrentRequestAlreadyDisplayed() override { return false; }
+  void SetDismissOnTabClose() override {}
+  void SetPromptShown() override {}
+  void SetDecisionTime() override {}
+  bool RecreateView() override { return false; }
+  const permissions::PermissionPrompt* GetCurrentPrompt() const override {
+    return nullptr;
+  }
+  base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
+  content::WebContents* GetAssociatedWebContents() override {
+    return web_contents_;
+  }
+
+ private:
+  bool should_drop_ = false;
+  raw_ptr<content::WebContents> web_contents_;
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> request_list_;
+  base::WeakPtrFactory<TestPermissionPromptDelegate> weak_factory_{this};
+};
+
+}  // namespace
+
+// Verifies that when the Omnibox popup is open, creating a microphone
+// permission prompt via `PermissionPromptFactory` notifies the presenter
+// synchronously and prevents the popup from closing on deactivation.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+                       PermissionPromptCreationPreventsPopupCloseWhenOpen) {
+  ASSERT_TRUE(ShowPopupAndGetWebUIContent());
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  EXPECT_TRUE(presenter->IsShown());
+
+  // Initially, before `PermissionPromptFactory` runs, presenter is NOT locked.
+  // (Verifies `PermissionRequestManager` did NOT set it).
+  EXPECT_FALSE(presenter->IsPermissionPromptPreventingClose());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  TestPermissionPromptDelegate test_delegate(web_contents);
+
+  // Directly call PermissionPromptFactory::CreatePermissionPrompt
+  // synchronously.
+  CreatePermissionPrompt(web_contents, &test_delegate);
+
+  // Presenter MUST be locked synchronously by PermissionPromptFactory!
+  EXPECT_TRUE(presenter->IsPermissionPromptPreventingClose());
+
+  // Deactivating the widget while permission prompt is active should NOT close
+  // the popup.
+  static_cast<views::WidgetObserver*>(presenter)->OnWidgetActivationChanged(
+      nullptr, /*active=*/false);
+  EXPECT_EQ(location_bar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state(),
+            OmniboxPopupState::kAim);
+}
+
+// Verifies that when the Omnibox popup is closed, creating a permission prompt
+// does NOT set permission prompt showing on the presenter.
+IN_PROC_BROWSER_TEST_F(OmniboxAimPopupBrowserTest,
+                       PermissionPromptCreationDoesNotLockPresenterWhenClosed) {
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  EXPECT_FALSE(presenter->IsShown());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  TestPermissionPromptDelegate test_delegate(web_contents);
+
+  // Directly call PermissionPromptFactory::CreatePermissionPrompt synchronously
+  // when closed.
+  CreatePermissionPrompt(web_contents, &test_delegate);
+
+  // When presenter is not shown, PermissionPromptFactory does NOT lock
+  // presenter.
+  EXPECT_FALSE(presenter->IsPermissionPromptPreventingClose());
+}
+
+// Verifies that if prompt creation returns `nullptr`, the presenter flag is
+// reset.
+IN_PROC_BROWSER_TEST_F(
+    OmniboxAimPopupBrowserTest,
+    PermissionPromptCreationResetsLockIfPromptCreationFails) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+
+  ASSERT_TRUE(ShowPopupAndGetWebUIContent());
+  auto* presenter = location_bar()->GetOmniboxPopupAimPresenter();
+  ASSERT_TRUE(presenter);
+  EXPECT_TRUE(presenter->IsShown());
+
+  // Allow prompt to drop if it cannot show quietly.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  TestPermissionPromptDelegate test_delegate(web_contents);
+  test_delegate.set_should_drop(true);
+
+  // Set full screen so prompt will fail to render once. Because the prompt
+  // is allowed to drop, the prompt will not show at all.
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+
+  // Directly call `PermissionPromptFactory::CreatePermissionPrompt`
+  // synchronously.
+  auto prompt = CreatePermissionPrompt(web_contents, &test_delegate);
+  EXPECT_EQ(nullptr, prompt);
+
+  // Presenter MUST NOT be locked if prompt creation returned `nullptr`.
+  EXPECT_FALSE(presenter->IsPermissionPromptPreventingClose());
 }

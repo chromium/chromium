@@ -143,6 +143,15 @@ class OmniboxPopupPresenterBase
   // Outermost view in the hierarchy; used for hit testing.
   views::View* GetOuterView();
 
+  // Sets explicit permission prompt showing state. Called by permission request
+  // observer callbacks, PermissionPromptFactory, and WebUI media request
+  // handlers.
+  void SetPermissionPromptShowing(bool showing);
+
+  // Returns true if a permission prompt is showing or being dismissed,
+  // which should prevent out-of-focus activation events from hiding the popup.
+  bool IsPermissionPromptPreventingClose() const;
+
  protected:
   inline static constexpr std::string_view kWebUIPopupMetricPrefix =
       "Omnibox.Popup.WebUI";
@@ -193,10 +202,6 @@ class OmniboxPopupPresenterBase
 
   OmniboxController* controller() const { return controller_.get(); }
 
-  // Sets explicit permission prompt showing state. Called by permission request
-  // observer callbacks and WebUI media request handlers.
-  void SetPermissionPromptShowing(bool showing);
-
   // permissions::PermissionRequestManager::Observer:
   void OnPromptAdded() override;
   void OnPromptRemoved() override;
@@ -204,10 +209,6 @@ class OmniboxPopupPresenterBase
   void OnPromptCreationFailedHiddenTab() override;
   void OnRequestsFinalized() override;
   void OnPermissionRequestManagerDestructed() override;
-
-  // Returns true if a permission prompt is showing or being dismissed,
-  // which should prevent out-of-focus activation events from hiding the popup.
-  bool IsPermissionPromptPreventingClose() const;
 
   // Called by subclasses when widget activation changes to active = true.
   void OnWidgetActivated();

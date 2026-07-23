@@ -162,15 +162,20 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
 
 void WebUILocationBar::PropagateOmniboxUpdate(
     toolbar_ui_api::mojom::OmniboxViewStatePtr omnibox_state) {
-  toolbar_delegate_->OnOmniboxViewStateChanged(std::move(omnibox_state));
+  // `toolbar_delegate_` is null in some tests.
+  if (toolbar_delegate_) {
+    toolbar_delegate_->OnOmniboxViewStateChanged(std::move(omnibox_state));
+  }
 }
 
 void WebUILocationBar::PropagateFocusRequest(
     toolbar_ui_api::mojom::FocusRequestTarget target) {
   // TODO(crbug.com/503784990): Handle immersive lock; this is tricky since
   // our focus request is async. Compare OmniboxViewViews::SetFocus.
-
-  toolbar_delegate_->OnFocusRequested(target);
+  // `toolbar_delegate_` is null in some tests.
+  if (toolbar_delegate_) {
+    toolbar_delegate_->OnFocusRequested(target);
+  }
 }
 
 std::optional<GURL> WebUILocationBar::ConsumeDroppedUrl(
@@ -399,6 +404,9 @@ void WebUILocationBar::InvalidateLayout() {
 }
 
 gfx::Rect WebUILocationBar::Bounds() const {
+  if (!toolbar_delegate_) {
+    return gfx::Rect();
+  }
   gfx::Rect screen_rect = BoundsInScreen();
   if (!screen_rect.IsEmpty()) {
     return views::View::ConvertRectFromScreen(toolbar_delegate_->GetView(),
@@ -408,6 +416,9 @@ gfx::Rect WebUILocationBar::Bounds() const {
 }
 
 gfx::Rect WebUILocationBar::BoundsInScreen() const {
+  if (!toolbar_delegate_) {
+    return gfx::Rect();
+  }
   ui::TrackedElement* anchor =
       BrowserElements::From(browser_)->GetElement(kLocationBarElementId);
   // Fallback to our parent container's bounds if we haven't gotten ours
@@ -448,6 +459,9 @@ void WebUILocationBar::Update(content::WebContents* contents) {
 }
 
 void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
+  if (!toolbar_delegate_) {
+    return;
+  }
   if (GetLocationBarWidget() && GetLocationBarWidget()->IsClosed()) {
     return;
   }
@@ -765,7 +779,8 @@ WebUILocationBar::GetContentSettingBubbleModelDelegate() {
 }
 
 views::Widget* WebUILocationBar::GetLocationBarWidget() {
-  return toolbar_delegate_->GetView()->GetWidget();
+  return toolbar_delegate_ ? toolbar_delegate_->GetView()->GetWidget()
+                           : nullptr;
 }
 
 OmniboxPopupFileSelector* WebUILocationBar::GetOmniboxPopupFileSelector()
@@ -851,8 +866,28 @@ void WebUILocationBar::OnPopupStateChanged(OmniboxPopupState old_state,
   UpdateWithoutTabRestore();
 }
 
+// If omnibox is open, notify Omnibox presenter that a permission prompt is
+// starting right before constructing the prompt view widget. This is the
+// notification point that is before and closest to when the view is rendered,
+// which ensures the omnibox knows as soon as possible and ignores focus-loss
+// events during the whole time that the embedded permission prompt is showing.
+void WebUILocationBar::SetPermissionPromptShowing(bool showing) {
+  OmniboxPopupPresenterBase* presenter = nullptr;
+  // Get Omnibox popup presenter for AIM or normal omnibox, depending
+  // on which is showing.
+  if (omnibox_popup_aim_presenter_ && omnibox_popup_aim_presenter_->IsShown()) {
+    presenter = omnibox_popup_aim_presenter_.get();
+  } else if (GetOmniboxPopupView() && GetOmniboxPopupView()->presenter() &&
+             GetOmniboxPopupView()->presenter()->IsShown()) {
+    presenter = GetOmniboxPopupView()->presenter();
+  }
+  if (presenter) {
+    presenter->SetPermissionPromptShowing(showing);
+  }
+}
+
 void WebUILocationBar::UpdateLocationBarFlagsState() {
-  if (!omnibox_controller_) {  // null in some tests.
+  if (!toolbar_delegate_ || !omnibox_controller_) {  // null in some tests.
     return;
   }
 
@@ -864,7 +899,7 @@ void WebUILocationBar::UpdateLocationBarFlagsState() {
 }
 
 void WebUILocationBar::UpdateSelectedKeywordState() {
-  if (!omnibox_controller_) {  // null in some tests.
+  if (!toolbar_delegate_ || !omnibox_controller_) {  // null in some tests.
     return;
   }
 

@@ -300,5 +300,30 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   } else if (delegate->ShouldCurrentRequestUseQuietUI()) {
     return CreateQuietPrompt(web_contents, delegate);
   }
-  return CreateNormalPrompt(web_contents, delegate);
+
+  // If omnibox is open and this is a microphone request, notify the
+  // `LocationBar` (and Omnibox presenter) that a permission prompt is starting
+  // right before constructing the prompt view widget. This ensures the omnibox
+  // ignores focus-loss events during the time that the permission prompt is
+  // showing.
+  bool has_mic_request =
+      std::ranges::any_of(delegate->Requests(), [](const auto& request) {
+        return request->request_type() == permissions::RequestType::kMicStream;
+      });
+
+  if (has_mic_request) {
+    if (LocationBar* location_bar = GetLocationBar(web_contents)) {
+      location_bar->SetPermissionPromptShowing(true);
+    }
+  }
+
+  auto prompt = CreateNormalPrompt(web_contents, delegate);
+
+  if (!prompt && has_mic_request) {
+    if (LocationBar* location_bar = GetLocationBar(web_contents)) {
+      location_bar->SetPermissionPromptShowing(false);
+    }
+  }
+
+  return prompt;
 }
