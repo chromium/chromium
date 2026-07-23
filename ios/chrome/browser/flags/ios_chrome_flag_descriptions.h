@@ -1175,6 +1175,11 @@ inline constexpr char kInProductHelpDemoModeDescription[] =
     "an individual promotion causes that promotion but no other promotions to "
     "occur.";
 
+inline constexpr char kIncludeSystemLogInFeedbackName[] =
+    "Include system log in feedback";
+inline constexpr char kIncludeSystemLogInFeedbackDescription[] =
+    "When enabled, system log will be included in user feedback reports.";
+
 inline constexpr char kIndicateIdentityErrorInOverflowMenuName[] =
     "Indicate Identity Error in Overflow Menu";
 inline constexpr char kIndicateIdentityErrorInOverflowMenuDescription[] =
