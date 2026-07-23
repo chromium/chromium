@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/api/metrics_private/chrome_metrics_private_delegate.h"
 #include "chrome/browser/extensions/api/storage/managed_value_store_cache.h"
 #include "chrome/browser/extensions/api/storage/sync_value_store_cache.h"
+#include "chrome/browser/extensions/api/webstore_private/chrome_webstore_private_api_delegate.h"
 #include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -109,7 +110,9 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-ChromeExtensionsAPIClient::ChromeExtensionsAPIClient() = default;
+ChromeExtensionsAPIClient::ChromeExtensionsAPIClient()
+    : webstore_private_api_delegate_(
+          std::make_unique<ChromeWebstorePrivateAPIDelegate>()) {}
 
 ChromeExtensionsAPIClient::~ChromeExtensionsAPIClient() = default;
 
@@ -533,6 +536,11 @@ ChromeExtensionsAPIClient::GetFactoryDependencies() {
 #endif
   dependencies.push_back(supervised_user::SupervisedUserServiceFactory::GetInstance());
   return dependencies;
+}
+
+WebstorePrivateAPIDelegate*
+ChromeExtensionsAPIClient::GetWebstorePrivateAPIDelegate() {
+  return webstore_private_api_delegate_.get();
 }
 
 std::unique_ptr<NativeMessagePortDispatcher>

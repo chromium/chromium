@@ -30,6 +30,7 @@ extensions_api_schema_files_ = [
   "test.json",
   "user_scripts.webidl",
   "web_request.json",
+  "webstore_private.json",
 ]
 
 # Schemas that should be used only to auto-generate the C++ types.

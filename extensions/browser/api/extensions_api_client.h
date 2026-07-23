@@ -72,6 +72,7 @@ class SupervisedUserExtensionsDelegate;
 class UsbDevicePermissionsPrompt;
 class ValueStoreCache;
 class VirtualKeyboardDelegate;
+class WebstorePrivateAPIDelegate;
 struct WebRequestInfo;
 class WebViewGuest;
 class WebViewGuestDelegate;
@@ -253,6 +254,10 @@ class ExtensionsAPIClient {
   // Gets keyed service factories that are used in the other methods on this
   // class.
   virtual std::vector<KeyedServiceBaseFactory*> GetFactoryDependencies();
+
+  // Returns a delegate for the webstore_private API, or nullptr if the API is
+  // not supported.
+  virtual WebstorePrivateAPIDelegate* GetWebstorePrivateAPIDelegate();
 
   virtual std::unique_ptr<NativeMessagePortDispatcher>
   CreateNativeMessagePortDispatcher(

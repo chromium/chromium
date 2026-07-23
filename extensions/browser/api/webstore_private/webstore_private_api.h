@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_
-#define CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_
+#ifndef EXTENSIONS_BROWSER_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_
+#define EXTENSIONS_BROWSER_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_
 
 #include <memory>
 #include <optional>
@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/common/extensions/api/webstore_private.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "extensions/browser/active_install_data.h"
 #include "extensions/browser/api/webstore_private/extension_install_status.h"
@@ -24,10 +23,11 @@
 #include "extensions/browser/webstore_install_result.h"
 #include "extensions/browser/webstore_installer.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/api/webstore_private.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
+#include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -486,4 +486,4 @@ class WebstorePrivateOnEnterprisePromoClickFunction : public ExtensionFunction {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_
+#endif  // EXTENSIONS_BROWSER_API_WEBSTORE_PRIVATE_WEBSTORE_PRIVATE_API_H_

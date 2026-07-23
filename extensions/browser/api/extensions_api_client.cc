@@ -210,4 +210,9 @@ ExtensionsAPIClient::GetFactoryDependencies() {
   return {};
 }
 
+WebstorePrivateAPIDelegate*
+ExtensionsAPIClient::GetWebstorePrivateAPIDelegate() {
+  return nullptr;
+}
+
 }  // namespace extensions

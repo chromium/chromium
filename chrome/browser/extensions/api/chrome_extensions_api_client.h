@@ -128,6 +128,8 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
 
   std::vector<KeyedServiceBaseFactory*> GetFactoryDependencies() override;
 
+  WebstorePrivateAPIDelegate* GetWebstorePrivateAPIDelegate() override;
+
   std::unique_ptr<NativeMessagePortDispatcher>
   CreateNativeMessagePortDispatcher(std::unique_ptr<NativeMessageHost> host,
                                     base::WeakPtr<NativeMessagePort> port,
@@ -137,6 +139,7 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
  private:
   std::unique_ptr<ChromeMetricsPrivateDelegate> metrics_private_delegate_;
   std::unique_ptr<MessagingDelegate> messaging_delegate_;
+  std::unique_ptr<WebstorePrivateAPIDelegate> webstore_private_api_delegate_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Desktop Android does not support these APIs.
