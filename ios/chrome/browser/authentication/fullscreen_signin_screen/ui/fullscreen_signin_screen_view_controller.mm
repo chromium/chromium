@@ -98,7 +98,7 @@ NSString* const kCollaborationSigninHeaderBackground =
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   self.bannerName = kChromeSigninBannerImage;
   self.headerImage = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kHeaderImageSize));
+      SymbolWithPointSize(SymbolMulticolorChromeball, kHeaderImageSize));
 #else
   self.bannerName = kChromiumSigninBannerImage;
 #endif
@@ -171,7 +171,7 @@ NSString* const kCollaborationSigninHeaderBackground =
             ? self.specificContentView.topAnchor
             : self.identityControl.bottomAnchor;
     UIImage* image = SymbolWithPalette(
-        CustomSymbolWithPointSize(kEnterpriseSymbol, kEnterpriseIconPointSize),
+        SymbolWithPointSize(SymbolEnterprise, kEnterpriseIconPointSize),
         @[ [UIColor colorNamed:kStaticGrey600Color] ]);
     UIImageView* enterpriseImageView =
         [[UIImageView alloc] initWithImage:image];

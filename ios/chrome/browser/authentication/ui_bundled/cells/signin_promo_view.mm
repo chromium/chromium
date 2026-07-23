@@ -232,8 +232,7 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
     UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
         configurationWithPointSize:kCloseButtonWidthHeight
                             weight:UIImageSymbolWeightSemibold];
-    UIImage* closeButtonImage =
-        DefaultSymbolWithConfiguration(@"xmark", config);
+    UIImage* closeButtonImage = SymbolWithConfiguration(SymbolXMark, config);
     [_closeButton setImage:closeButtonImage forState:UIControlStateNormal];
     _closeButton.tintColor = [UIColor colorNamed:kTextTertiaryColor];
     _closeButton.hidden = YES;

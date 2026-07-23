@@ -125,7 +125,7 @@ CGFloat constexpr kInnerStackHorizontalSpacing = 16;
                  subtitle:
                      l10n_util::GetNSString(
                          IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_BROWSER_INFORMATION_SUBTITLE)
-                   symbol:kCheckmarkShieldSymbol];
+                   symbol:SymbolCheckmarkShield];
   [stack addArrangedSubview:browserInfo];
 
   UIView* deviceInfo = [self
@@ -135,7 +135,7 @@ CGFloat constexpr kInnerStackHorizontalSpacing = 16;
                  subtitle:
                      l10n_util::GetNSString(
                          IDS_IOS_ENTERPRISE_PROFILE_CREATION_LEARN_MORE_DEVICE_INFORMATION_SUBTITLE)
-                   symbol:kIPhoneSymbol];
+                   symbol:SymbolIPhone];
   [stack addArrangedSubview:deviceInfo];
 
   stack.translatesAutoresizingMaskIntoConstraints = NO;
@@ -146,7 +146,7 @@ CGFloat constexpr kInnerStackHorizontalSpacing = 16;
 // Returns a view with `title`, `subtitle` and `symbol`.
 - (UIView*)createViewWithTitle:(NSString*)title
                       subtitle:(NSString*)subtitle
-                        symbol:(NSString*)symbol {
+                        symbol:(Symbol)symbol {
   UILabel* titleLabel = [self createLabel];
   titleLabel.text = title;
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -166,8 +166,8 @@ CGFloat constexpr kInnerStackHorizontalSpacing = 16;
       configurationWithPointSize:kSymbolImagePointSize
                           weight:UIImageSymbolWeightSemibold
                            scale:UIImageSymbolScaleMedium];
-  UIImage* symbolImage = MakeSymbolMonochrome(
-      DefaultSymbolWithConfiguration(symbol, configuration));
+  UIImage* symbolImage =
+      MakeSymbolMonochrome(SymbolWithConfiguration(symbol, configuration));
   UIImageView* symbolView = [[UIImageView alloc] initWithImage:symbolImage];
   symbolView.tintColor = [UIColor colorNamed:kGrey600Color];
   symbolView.translatesAutoresizingMaskIntoConstraints = NO;

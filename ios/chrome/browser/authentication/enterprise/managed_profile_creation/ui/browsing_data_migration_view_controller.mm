@@ -138,7 +138,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                           weight:UIImageSymbolWeightSemibold
                            scale:UIImageSymbolScaleMedium];
   checkmarkConfig.symbolImage =
-      DefaultSymbolWithConfiguration(kCheckmarkSymbol, symbolConfiguration);
+      SymbolWithConfiguration(SymbolCheckmark, symbolConfiguration);
   checkmarkConfig.symbolTintColor =
       selected ? [UIColor colorNamed:kBlueColor] : [UIColor clearColor];
 

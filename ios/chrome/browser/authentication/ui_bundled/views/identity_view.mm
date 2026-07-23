@@ -151,7 +151,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
     // Enterprise icon
     _managementIconView = [[UIImageView alloc] init];
     _managementIconView.image = SymbolWithPalette(
-        CustomSymbolWithPointSize(kEnterpriseSymbol, kEnterpriseIconPointSize),
+        SymbolWithPointSize(SymbolEnterprise, kEnterpriseIconPointSize),
         @[ [UIColor colorNamed:kStaticGrey600Color] ]);
     _managementIconView.translatesAutoresizingMaskIntoConstraints = NO;
     _managementIconView.clipsToBounds = YES;

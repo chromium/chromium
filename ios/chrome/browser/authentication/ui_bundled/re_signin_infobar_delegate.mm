@@ -99,7 +99,7 @@ std::u16string ReSignInInfoBarDelegate::GetButtonLabel(
 
 ui::ImageModel ReSignInInfoBarDelegate::GetIcon() const {
   return ui::ImageModel::FromImage(gfx::Image(
-      DefaultSymbolWithPointSize(kWarningFillSymbol, kInfobarSymbolPointSize)));
+      SymbolWithPointSize(SymbolWarningFill, kInfobarSymbolPointSize)));
 }
 
 bool ReSignInInfoBarDelegate::Accept() {

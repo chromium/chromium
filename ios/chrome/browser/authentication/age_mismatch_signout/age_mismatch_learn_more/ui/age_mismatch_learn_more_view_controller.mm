@@ -79,7 +79,7 @@
   self.navigationItem.rightBarButtonItem = doneButton;
 
   _backOrCloseButton = [[UIBarButtonItem alloc]
-      initWithImage:DefaultSymbolWithPointSize(kChevronBackwardSymbol, 24)
+      initWithImage:SymbolWithPointSize(SymbolChevronBackward, 24)
               style:UIBarButtonItemStylePlain
              target:self
              action:@selector(goBackOrClose)];

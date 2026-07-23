@@ -67,8 +67,8 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
     case TableViewAccountDetailImage::kError: {
       ImageContentConfiguration* trailingImageConfiguration =
           [[ImageContentConfiguration alloc] init];
-      trailingImageConfiguration.image = DefaultSymbolWithPointSize(
-          kErrorCircleFillSymbol, kErrorIconImageSize);
+      trailingImageConfiguration.image =
+          SymbolWithPointSize(SymbolErrorCircleFill, kErrorIconImageSize);
       trailingImageConfiguration.imageSize =
           CGSizeMake(kTableViewIconImageSize, kTableViewIconImageSize);
       trailingImageConfiguration.imageTintColor =
@@ -79,10 +79,9 @@ constexpr CGFloat kEnterpriseIconPointSize = 20;
     case TableViewAccountDetailImage::kManaged: {
       ImageContentConfiguration* trailingImageConfiguration =
           [[ImageContentConfiguration alloc] init];
-      trailingImageConfiguration.image =
-          SymbolWithPalette(CustomSymbolWithPointSize(kEnterpriseSymbol,
-                                                      kEnterpriseIconPointSize),
-                            @[ [UIColor colorNamed:kStaticGrey600Color] ]);
+      trailingImageConfiguration.image = SymbolWithPalette(
+          SymbolWithPointSize(SymbolEnterprise, kEnterpriseIconPointSize),
+          @[ [UIColor colorNamed:kStaticGrey600Color] ]);
       configuration.trailingConfiguration = trailingImageConfiguration;
       break;
     }
