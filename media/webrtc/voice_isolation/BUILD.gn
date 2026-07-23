@@ -13,6 +13,8 @@ source_set("voice_isolation") {
     "passthrough_voice_isolation.h",
     "stft_voice_isolation.cc",
     "stft_voice_isolation.h",
+    "tflite_voice_isolation.cc",
+    "tflite_voice_isolation.h",
     "voice_isolation.cc",
     "voice_isolation.h",
     "voice_isolation_component.cc",
@@ -21,10 +23,14 @@ source_set("voice_isolation") {
 
   defines = [ "IS_MEDIA_WEBRTC_IMPL" ]
 
-  deps = [ "//third_party/tflite:tflite_public_headers" ]
+  deps = [
+    "//third_party/tflite:buildflags",
+    "//third_party/tflite:tflite_public_headers",
+  ]
 
   public_deps = [
     "//base",
+    "//components/optimization_guide/core/inference:op_resolver",
     "//media",
     "//third_party/pffft",
     "//third_party/tflite",
@@ -39,9 +45,11 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/tflite",
   ]
+  data = [ "test_model_1_2_160_2.tflite" ]
   sources = [
     "passthrough_voice_isolation_unittest.cc",
     "stft_voice_isolation_unittest.cc",
+    "tflite_voice_isolation_unittest.cc",
     "voice_isolation_unittest.cc",
   ]
 }

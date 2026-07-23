@@ -6,9 +6,12 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
+#include "base/base_paths.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -68,17 +71,16 @@ namespace {
 class FakeMlModelHandle : public media::MlModelHandle {
  public:
   FakeMlModelHandle() {
-    // Construct a FlatBuffer holding a valid, empty model.
-    flatbuffers::FlatBufferBuilder buffer_builder(1024);
-    tflite::ModelBuilder model_builder(buffer_builder);
-    tflite::FinishModelBuffer(buffer_builder, model_builder.Finish());
+    base::FilePath source_root;
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
 
-    // Initialize a buffer-backed FlatBufferModel from the FlatBuffer.
-    auto span = buffer_builder.GetBufferSpan();
-    buffer_ = std::vector<uint8_t>(span.begin(), span.end());
-    model_ = tflite::FlatBufferModel::VerifyAndBuildFromBuffer(
-        reinterpret_cast<char*>(buffer_.data()), buffer_.size());
-    CHECK(model_);
+    source_root = source_root.AppendASCII("media")
+                      .AppendASCII("webrtc")
+                      .AppendASCII("voice_isolation")
+                      .AppendASCII("test_model_1_2_160_2.tflite");
+
+    model_ = tflite::FlatBufferModel::BuildFromFile(
+        source_root.AsUTF8Unsafe().c_str());
   }
 
   const tflite::FlatBufferModel& Get() override { return *model_; }
@@ -105,9 +107,6 @@ class MockMlModelManager : public MlModelManager {
 std::unique_ptr<VoiceIsolationHandler> GetVoiceIsolationHandler(
     const media::AudioParameters& output_params,
     VoiceIsolationHandler::DeliverProcessedAudioCallback callback) {
-  std::unique_ptr<media::VoiceIsolation> voice_isolation =
-      media::VoiceIsolation::Create(/*model=*/nullptr, output_params);
-
   MockMlModelManager model_manager;
 
   return VoiceIsolationHandler::MaybeCreate(
