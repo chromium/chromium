@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/accessibility/event_handler_common.h"
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "extensions/browser/api/offscreen/offscreen_document_manager.h"
@@ -22,7 +21,7 @@ extensions::ExtensionHost* GetAccessibilityExtensionHost(
   if (!AccessibilityManager::Get())
     return nullptr;
 
-  content::BrowserContext* context = ProfileManager::GetActiveUserProfile();
+  content::BrowserContext* context = AccessibilityManager::Get()->profile();
   if (!context)
     return nullptr;
 
@@ -44,7 +43,7 @@ extensions::OffscreenDocumentHost* GetAccessibilityOffscreenDocumentHost(
     return nullptr;
   }
 
-  content::BrowserContext* context = ProfileManager::GetActiveUserProfile();
+  content::BrowserContext* context = AccessibilityManager::Get()->profile();
   if (!context) {
     return nullptr;
   }
