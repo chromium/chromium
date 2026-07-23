@@ -79,6 +79,8 @@ public class SearchUiCoordinator {
     public SearchUiCoordinator(Activity activity, LocationBarDataProvider locationBarDataProvider) {
         mActivity = activity;
         mLocationBarDataProvider = locationBarDataProvider;
+        // SearchUiCoordinator contexts (e.g. hub search, tab search, search widgets) are transient
+        // overlays and should always use mobile-style layouts rather than desktop-style popovers.
         mLocationBarUiOverrides.setForcedPhoneStyleOmnibox();
     }
 
