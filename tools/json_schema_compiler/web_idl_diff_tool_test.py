@@ -69,6 +69,7 @@ _CONVERTED_SCHEMAS = [
     ('braille_display_private.idl', 'braille_display_private.webidl'),
     ('content_scripts.idl', 'content_scripts.webidl'),
     ('declarative_net_request.idl', 'declarative_net_request.webidl'),
+    ('image_writer_private.idl', 'image_writer_private.webidl'),
     ('printer_provider.idl', 'printer_provider.webidl'),
     ('printer_provider_internal.idl', 'printer_provider_internal.webidl'),
     ('scripts_internal.idl', 'scripts_internal.webidl'),
