@@ -18,6 +18,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -45,6 +46,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/hit_test.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -1290,6 +1292,46 @@ TEST_F(DragDropControllerTest, SetEnabled) {
   drag_drop_controller_->RemoveObserver(&observer);
 }
 
+TEST_F(DragDropControllerTest, RejectedDuringWindowDrag) {
+  TestObserver observer;
+  drag_drop_controller_->AddObserver(&observer);
+
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate =
+           aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate(),
+       .bounds = {100, 100}}));
+
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
+                                     window.get());
+  generator.PressLeftButton();
+
+  auto* toplevel_window_event_handler =
+      Shell::Get()->toplevel_window_event_handler();
+  ASSERT_TRUE(toplevel_window_event_handler->AttemptToStartDrag(
+      window.get(), gfx::PointF(50, 50), HTCAPTION,
+      ::wm::WINDOW_MOVE_SOURCE_MOUSE, base::DoNothing(),
+      /*update_gesture_target=*/false,
+      /*grab_capture=*/false));
+  ASSERT_TRUE(toplevel_window_event_handler->is_drag_in_progress());
+
+  // A data drag started while a toplevel window drag owns the input stream
+  // must be rejected.
+  DragOperation op = drag_drop_controller_->StartDragAndDrop(
+      CreateDragData(/*with_image=*/false), window->GetRootWindow(),
+      window.get(), gfx::Point(5, 5), ui::DragDropTypes::DRAG_MOVE,
+      ui::mojom::DragEventSource::kMouse);
+  EXPECT_EQ(DragOperation::kNone, op);
+  EXPECT_FALSE(drag_drop_controller_->IsDragDropInProgress());
+  EXPECT_EQ(TestObserver::State::kNotInvoked, observer.state());
+  EXPECT_TRUE(toplevel_window_event_handler->is_drag_in_progress());
+
+  toplevel_window_event_handler->CompleteDragForTesting(
+      ToplevelWindowEventHandler::DragResult::SUCCESS);
+  generator.ReleaseLeftButton();
+
+  drag_drop_controller_->RemoveObserver(&observer);
+}
+
 TEST_F(DragDropControllerTest, EventTarget) {
   std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
       {.delegate =
@@ -1426,8 +1468,9 @@ TEST_F(DragDropControllerTest, ToplevelWindowDragDelegate) {
     TestToplevelWindowDragDelegate delegate;
     drag_drop_controller_->set_toplevel_window_drag_delegate(&delegate);
 
-    // Press and hold left mouse button at (0,0) in the rightmost display.
-    ui::test::EventGenerator generator(window2->GetRootWindow(), {0, 0});
+    // Press and hold the left mouse button in the client area of |window2| in
+    // the rightmost display so that no window move or resize is started.
+    ui::test::EventGenerator generator(window2->GetRootWindow(), {400, 300});
     generator.PressLeftButton();
 
     auto data(std::make_unique<ui::OSExchangeData>());
