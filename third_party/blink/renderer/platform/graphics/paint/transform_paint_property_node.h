@@ -366,7 +366,8 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
   bool RequiresCompositingForStickyPositionOnly() const {
     return DirectCompositingReasons() == CompositingReason::kStickyPosition;
   }
-  bool CanMergeForStickyPosition(const TransformPaintPropertyNode& other) const;
+  cc::StickyPositionConstraint::CanMergeResult CanMergeForStickyPosition(
+      const TransformPaintPropertyNode& other) const;
 
   bool RequiresCompositingForAnchorPosition() const {
     return DirectCompositingReasons() & CompositingReason::kAnchorPosition;

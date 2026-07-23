@@ -122,6 +122,7 @@ void PaintArtifactCompositor::Trace(Visitor* visitor) const {
   visitor->Trace(pending_layers_);
   visitor->Trace(painted_scroll_translations_);
   visitor->Trace(synthesized_clip_cache_);
+  visitor->Trace(range_dependent_scrolls_);
 }
 
 void PaintArtifactCompositor::SetTracksRasterInvalidations(bool should_track) {
@@ -434,6 +435,12 @@ PendingLayer::CompositingType PaintArtifactCompositor::ChunkCompositingType(
     }
   }
   return PendingLayer::kOther;
+}
+
+void PaintArtifactCompositor::AddRangeDependentScroll(
+    const PropertyTreeState& state) {
+  range_dependent_scrolls_.insert(
+      state.Transform().NearestScrollTranslationNode().ScrollNode());
 }
 
 namespace {
@@ -771,12 +778,17 @@ bool PaintArtifactCompositor::Layerizer::DecompositeEffect(
   auto is_composited_scroll = [this](const TransformPaintPropertyNode& t) {
     return compositor_.NeedsCompositedScrolling(t);
   };
-  std::optional<PropertyTreeState> upcast_state = group_state.CanUpcastWith(
-      layer.GetPropertyTreeState(), is_composited_scroll);
-  if (!upcast_state)
+  std::optional<PropertyTreeState::UpcastResult> upcast_result =
+      group_state.CanUpcastWith(layer.GetPropertyTreeState(),
+                                is_composited_scroll);
+  if (!upcast_result) {
     return false;
+  }
 
-  upcast_state->SetEffect(parent_effect);
+  if (upcast_result->scroll_range_dependent) {
+    compositor_.AddRangeDependentScroll(upcast_result->upcasted_state);
+  }
+  upcast_result->upcasted_state.SetEffect(parent_effect);
 
   // An exotic blend mode can be decomposited only if the src (`layer`) and
   // the dest (previous layers in the parent group) will be in the same
@@ -806,13 +818,13 @@ bool PaintArtifactCompositor::Layerizer::DecompositeEffect(
       const auto& previous_sibling = pending_layers_[layer_index - 1];
       if (previous_sibling.DrawsContent() &&
           !previous_sibling.CanMergeWithDecompositedBlendMode(
-              layer, *upcast_state, is_composited_scroll)) {
+              layer, upcast_result->upcasted_state, is_composited_scroll)) {
         return false;
       }
     }
   }
 
-  layer.Upcast(*upcast_state);
+  layer.Upcast(upcast_result->upcasted_state);
   return true;
 }
 
@@ -917,10 +929,15 @@ void PaintArtifactCompositor::Layerizer::LayerizeGroup(
                layer_merge_distance_limit_) {
       --candidate_index;
       PendingLayer& candidate_layer = pending_layers_[candidate_index];
-      if (candidate_layer.Merge(new_layer, compositor_.lcd_text_preference_,
-                                compositor_.device_pixel_ratio_,
-                                is_composited_scroll)) {
+      auto merge_result = candidate_layer.Merge(
+          new_layer, compositor_.lcd_text_preference_,
+          compositor_.device_pixel_ratio_, is_composited_scroll);
+      if (merge_result.merged) {
         pending_layers_.pop_back();
+        if (merge_result.scroll_range_dependent) {
+          compositor_.AddRangeDependentScroll(
+              candidate_layer.GetPropertyTreeState());
+        }
         break;
       }
       if (new_layer.MightOverlap(candidate_layer)) {
@@ -1141,6 +1158,8 @@ void PaintArtifactCompositor::Update(
   OldPendingLayerMatcher old_pending_layer_matcher(std::move(pending_layers_));
   canvas_child_layer_map_.clear();
   CHECK(painted_scroll_translations_.empty());
+  range_dependent_scrolls_.clear();
+  should_always_update_on_scroll_ = false;
 
   // Make compositing decisions, storing the result in |pending_layers_|.
   pending_layers_ = Layerizer(*this, artifact, old_size).Layerize();
@@ -1154,7 +1173,6 @@ void PaintArtifactCompositor::Update(
   UpdateCompositorViewportProperties(viewport_properties, property_tree_manager,
                                      host);
 
-  should_always_update_on_scroll_ = false;
   for (auto& entry : synthesized_clip_cache_)
     entry.in_use = false;
 
@@ -1462,7 +1480,8 @@ bool PaintArtifactCompositor::DirectlyUpdatePageScaleTransform(
 bool PaintArtifactCompositor::DirectlyUpdateScrollingContentsCullRect(
     const ScrollPaintPropertyNode& scroll) {
   CHECK(RuntimeEnabledFeatures::ScrollingContentsCullRectOnScrollNodeEnabled());
-  if (CanDirectlyUpdateProperties()) {
+  if (CanDirectlyUpdateProperties() &&
+      !range_dependent_scrolls_.Contains(&scroll)) {
     PropertyTreeManager::DirectlyUpdateScrollingContentsCullRect(
         *root_layer_->layer_tree_host(), scroll);
     return true;

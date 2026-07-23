@@ -95,14 +95,19 @@ class PLATFORM_EXPORT PendingLayer {
   using IsCompositedScrollFunction =
       PropertyTreeState::IsCompositedScrollFunction;
 
-  // Merges |guest| into |this| if it can, by appending chunks of |guest|
-  // after chunks of |this|, with appropriate space conversion applied to
-  // both layers from their original property tree states to |merged_state|.
-  // Returns whether the merge is successful.
-  bool Merge(const PendingLayer& guest,
-             LCDTextPreference lcd_text_preference,
-             float device_pixel_ratio,
-             IsCompositedScrollFunction);
+  // Merges `guest` into `this` if it can, by appending chunks of `guest`
+  // after chunks of `this`, with appropriate space conversion applied to
+  // both layers from their original property tree states to the merged state.
+  struct MergeResult {
+    // Whether the merge is successful.
+    bool merged = false;
+    // See `PropertyTreeState::UpcastResult::scroll_range_dependent`.
+    bool scroll_range_dependent = false;
+  };
+  MergeResult Merge(const PendingLayer& guest,
+                    LCDTextPreference lcd_text_preference,
+                    float device_pixel_ratio,
+                    IsCompositedScrollFunction);
 
   // Returns true if `guest` that could be upcasted with decomposited blend
   // mode can be merged into `this`.
@@ -201,7 +206,7 @@ class PLATFORM_EXPORT PendingLayer {
  private:
   // Checks basic merge-ability with `guest` and calls
   // PropertyTreeState::CanUpcastWith().
-  std::optional<PropertyTreeState> CanUpcastWith(
+  std::optional<PropertyTreeState::UpcastResult> CanUpcastWith(
       const PendingLayer& guest,
       const PropertyTreeState& guest_state,
       IsCompositedScrollFunction is_comosited_scroll) const;
@@ -215,7 +220,8 @@ class PLATFORM_EXPORT PendingLayer {
                 gfx::RectF& merged_rect_known_to_be_opaque,
                 bool& merged_text_known_to_be_on_opaque_background,
                 wtf_size_t& merged_solid_color_chunk_index,
-                cc::HitTestOpaqueness& merged_hit_test_opaqueness) const;
+                cc::HitTestOpaqueness& merged_hit_test_opaqueness,
+                bool& scroll_range_dependent) const;
 
   gfx::RectF MapRectKnownToBeOpaque(
       const PropertyTreeState& new_state,

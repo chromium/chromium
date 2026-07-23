@@ -246,14 +246,23 @@ class PLATFORM_EXPORT PropertyTreeState
   using PropertyTreeStateBase::PropertyTreeStateBase;
   using PropertyTreeStateBase::operator=;
 
-  // Determines whether drawings based on the 'guest' state can be painted into
-  // a layer with the 'home' state, and if yes, returns the common ancestor
-  // state to which both layer will be upcasted.
+  // Determines whether drawings based on the `guest` state can be painted into
+  // a layer with this state, and if yes, returns a UpcastResult.
   using IsCompositedScrollFunction =
       base::FunctionRef<bool(const TransformPaintPropertyNode&)>;
-  std::optional<PropertyTreeState> CanUpcastWith(
-      const PropertyTreeState& guest,
-      IsCompositedScrollFunction) const;
+  struct UpcastResult;
+  std::optional<UpcastResult> CanUpcastWith(const PropertyTreeState& guest,
+                                            IsCompositedScrollFunction) const;
+};
+
+struct PropertyTreeState::UpcastResult {
+  // The common ancestor state to which both states will be upcasted.
+  PropertyTreeState upcasted_state;
+  // Whether the upcast is valid only if the scroll position of the nearest
+  // containing scroll translation of the upcasted state is within the painted
+  // scroll range (i.e. the scrolling contents cull rect) of the scroll.
+  bool scroll_range_dependent = false;
+  STACK_ALLOCATED();
 };
 
 class PLATFORM_EXPORT TraceablePropertyTreeState

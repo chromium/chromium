@@ -175,23 +175,46 @@ bool TransformPaintPropertyNode::CanMergeForFixedPosition(
          Parent() == other.Parent();
 }
 
-bool TransformPaintPropertyNode::CanMergeForStickyPosition(
+cc::StickyPositionConstraint::CanMergeResult
+TransformPaintPropertyNode::CanMergeForStickyPosition(
     const TransformPaintPropertyNode& other) const {
   if (!RequiresCompositingForStickyPositionOnly() ||
       !other.RequiresCompositingForStickyPositionOnly() ||
       UnaliasedParent()->NearestDirectlyCompositedAncestor() !=
-          other.UnaliasedParent()->NearestDirectlyCompositedAncestor()) {
-    return false;
+          other.UnaliasedParent()->NearestDirectlyCompositedAncestor() ||
+      &NearestScrollTranslationNode() !=
+          &other.NearestScrollTranslationNode()) {
+    return cc::StickyPositionConstraint::CanMergeResult::kCannotMerge;
   }
 
   auto* constraint = GetStickyConstraint();
   auto* other_constraint = other.GetStickyConstraint();
   if (!constraint && !other_constraint) {
-    return true;
+    return cc::StickyPositionConstraint::CanMergeResult::kCanAlwaysMerge;
   }
-  return constraint && other_constraint &&
-         constraint->CanMerge(*other_constraint) ==
-             cc::StickyPositionConstraint::CanMergeResult::kCanAlwaysMerge;
+  if (!constraint || !other_constraint) {
+    return cc::StickyPositionConstraint::CanMergeResult::kCannotMerge;
+  }
+  const auto* scroll_node = NearestScrollTranslationNode().ScrollNode();
+  CHECK(scroll_node);
+  auto scroll_element_id = scroll_node->GetCompositorElementId();
+  std::optional<gfx::RectF> scroll_range_f;
+  auto can_use_scroll_range = [scroll_element_id](CompositorElementId id1,
+                                                  CompositorElementId id2) {
+    return id1 == id2 && (!id1 || id1 == scroll_element_id);
+  };
+  if (can_use_scroll_range(constraint->x_scroll_ancestor_element_id,
+                           other_constraint->x_scroll_ancestor_element_id) &&
+      can_use_scroll_range(constraint->y_scroll_ancestor_element_id,
+                           other_constraint->y_scroll_ancestor_element_id)) {
+    gfx::Rect scroll_range = scroll_node->ScrollingContentsCullRect();
+    scroll_range.Intersect(scroll_node->ContentsRect());
+    scroll_range.Offset(-scroll_node->ContentsRect().OffsetFromOrigin());
+    scroll_range.set_size(scroll_range.size() -
+                          scroll_node->ContainerRect().size());
+    scroll_range_f.emplace(scroll_range);
+  }
+  return constraint->CanMerge(*other_constraint, scroll_range_f);
 }
 
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {

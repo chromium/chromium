@@ -324,6 +324,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   PendingLayer::CompositingType ChunkCompositingType(const PaintArtifact&,
                                                      const PaintChunk&) const;
 
+  void AddRangeDependentScroll(const PropertyTreeState&);
+
   static void UpdateRenderSurfaceForEffects(
       cc::EffectTree&,
       const cc::LayerList&,
@@ -371,6 +373,11 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // scrolling (including raster-inducing and main-thread repainted).
   HeapHashMap<Member<const TransformPaintPropertyNode>, ScrollTranslationInfo>
       painted_scroll_translations_;
+
+  // Scroll nodes whose painted scroll ranges (i.e. scrolling contents cull
+  // rects) the last layerization result depended on. We'll need a full update
+  // if any of these scroll nodes' scrolling contents cull rects change.
+  HeapHashSet<Member<const ScrollPaintPropertyNode>> range_dependent_scrolls_;
 
   friend class PaintArtifactCompositorTest;
 };

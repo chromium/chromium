@@ -4252,7 +4252,7 @@
       status: "stable",
     },
     {
-      // Killswitch M149.
+      // Killswitch M149. Functionality changed in M151.
       name: "MergeStickyLayers",
       status: "stable",
     },
@@ -5493,6 +5493,7 @@
     {
       // Killswitch M151.
       name: "ScrollingContentsCullRectOnScrollNode",
+      implied_by: ["MergeStickyLayers"],
       status: "stable",
     },
     {
