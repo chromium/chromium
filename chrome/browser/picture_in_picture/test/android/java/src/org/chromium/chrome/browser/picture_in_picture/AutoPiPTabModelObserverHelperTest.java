@@ -26,11 +26,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
@@ -49,6 +50,7 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.Collections;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -334,11 +336,34 @@ public class AutoPiPTabModelObserverHelperTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(
-            message = "Background tab reparenting test support not added. See crbug.com/425983853")
-    public void testMoveInactiveObservedTabToNewWindow() {
-        // TODO(crbug.com/421608904): test moving observed tab in the background to another window.
-        // The tab should be activated.
+    public void testMoveInactiveObservedTabToNewWindow() throws TimeoutException {
+        // Multi-instance tab reparenting via MultiInstanceOrchestrator is only supported
+        // on Android S+ (API 31+).
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            return;
+        }
+
+        int callCount = startObservingAndAssertInitialCallback(/* expectedIsActivated= */ true);
+
+        // Open a new tab in the original window so that mInitialTab becomes inactive.
+        CtaPageStation page = mInitialPage.openNewTabFast();
+        mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
+        assertFalse(mOnActivationChangedCallbackHelper.isActivated());
+
+        // Move the inactive observed tab (mInitialTab) to a new window.
+        // Reparenting mInitialTab to a new window makes it active in the new window.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MultiInstanceOrchestratorFactory.getInstance()
+                            .moveTabsToNewWindow(
+                                    mInitialActivity,
+                                    Collections.singletonList(mInitialTab),
+                                    /* finalizeCallback= */ null,
+                                    NewWindowAppSource.UNKNOWN);
+                });
+
+        mOnActivationChangedCallbackHelper.waitForCallback(callCount++);
+        assertTrue(mOnActivationChangedCallbackHelper.isActivated());
     }
 
     /**
