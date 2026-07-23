@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
-import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import type {ComposeboxVoiceSearchElement, VoiceSearchError, VoiceSearchMetricType} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+
+import type {TestComposeboxMixinElement} from './test_composebox_mixin.js';
 
 // TODO(crbug.com/452983498): This is a copy of MockInputState from
 // searchbox_test_utils.ts to decouple composebox test builds from searchbox
@@ -189,11 +190,11 @@ export function createValidInputState(): InputState {
 import type {PageCallbackRouter as SearchboxPageCallbackRouter} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 export type MockComposebox = Omit<
-    ComposeboxElement,
-    'transcript'|'inVoiceSearchMode'|'searchboxCallbackRouter_'>&{
+    TestComposeboxMixinElement,
+    'transcript'|'inVoiceSearchMode'|'searchboxCallbackRouter'>&{
   inVoiceSearchMode: boolean,
   transcript: string,
-  searchboxCallbackRouter_: SearchboxPageCallbackRouter,
+  searchboxCallbackRouter: SearchboxPageCallbackRouter,
 };
 
 // Chose type extension instead of just making separate mock public interface.

@@ -3,10 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://contextual-tasks/strings.m.js';
-import 'chrome://resources/cr_components/composebox/composebox.js';
+import './test_composebox_mixin.js';
 import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 
-import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
@@ -21,6 +20,7 @@ import type {TestMock} from 'chrome://webui-test/test_mock.js';
 import {$$, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {disableTransitionsRecursively, installMock, MockSpeechRecognition, mockSpeechRecognition} from './composebox_test_utils.js';
+import type {TestComposeboxMixinElement} from './test_composebox_mixin.js';
 
 
 function createResults(n: number): SpeechRecognitionEvent {
@@ -40,7 +40,7 @@ function createResults(n: number): SpeechRecognitionEvent {
 }
 
 suite('ComposeboxVoiceSearchFlags', () => {
-  let composeboxElement: ComposeboxElement;
+  let composeboxElement: TestComposeboxMixinElement;
   let handler: TestMock<PageHandlerRemote>;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
   let windowProxy: TestMock<WindowProxy>;
@@ -108,20 +108,20 @@ suite('ComposeboxVoiceSearchFlags', () => {
     if (composeboxElement && composeboxElement.parentNode) {
       composeboxElement.remove();
     }
-    composeboxElement = document.createElement('cr-composebox');
+    composeboxElement = document.createElement('test-composebox-mixin');
     composeboxElement.showVoiceSearch = showVoiceSearch;
     document.body.appendChild(composeboxElement);
     await microtasksFinished();
     disableTransitionsRecursively(composeboxElement);
   }
 
-  function getVoiceSearchButton(composeboxElement: ComposeboxElement):
+  function getVoiceSearchButton(composeboxElement: TestComposeboxMixinElement):
       HTMLElement|null {
     return composeboxElement.shadowRoot.querySelector<HTMLElement>(
         '#voiceSearchButton');
   }
 
-  function getVoiceSearchElement(composeboxElement: ComposeboxElement):
+  function getVoiceSearchElement(composeboxElement: TestComposeboxMixinElement):
       ComposeboxVoiceSearchElement {
     const voiceSearchElement = $$<ComposeboxVoiceSearchElement>(
         composeboxElement, 'cr-composebox-voice-search');
