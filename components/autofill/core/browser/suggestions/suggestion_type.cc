@@ -157,6 +157,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kAutofillAiPrivateInferenceNotice";
     case SuggestionType::kAtMemoryAiDisclosure:
       return "kAtMemoryAiDisclosure";
+    case SuggestionType::kAtMemorySourceAttribution:
+      return "kAtMemorySourceAttribution";
   }
   NOTREACHED();
 }

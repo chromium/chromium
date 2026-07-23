@@ -38,7 +38,7 @@ bool IsAcceptableSuggestionType(SuggestionType id) {
   using enum SuggestionType;
   static constexpr auto kUnacceptableItemIds =
       DenseSet({kSeparator, kInsecureContextPaymentDisabledMessage,
-                kMixedFormMessage, kTitle});
+                kMixedFormMessage, kTitle, kAtMemorySourceAttribution});
   return !kUnacceptableItemIds.contains(id);
 }
 
@@ -53,6 +53,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
     case SuggestionType::kAtMemoryAiDisclosure:
+    case SuggestionType::kAtMemorySourceAttribution:
     case SuggestionType::kAutocompleteAtMemoryButton:
     case SuggestionType::kBnplFootnote:
     case SuggestionType::kFreeformFooter:
