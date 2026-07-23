@@ -1600,7 +1600,7 @@
     Type @@ in any form to find and fill info without switching tabs
   </message>
   <message name="IDS_AT_MEMORY_PROMO_DESCRIPTION" desc="Description of the at-memory promo bubble.">
-    Enhanced autofill can now find and fill info — like flight numbers and appointment times — from apps like Gmail and Photos.
+    Enhanced autofill can now find and fill info — like flight numbers and appointment times — from apps like Gmail and Photos
   </message>
   <message name="IDS_AT_MEMORY_PROMO_LEARN_MORE_BUTTON" desc="Label of the 'Learn more' button in the at-memory promo bubble.">
     Learn more
