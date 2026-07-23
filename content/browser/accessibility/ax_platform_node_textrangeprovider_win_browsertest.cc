@@ -17,6 +17,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/common/shell_switches.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/accessibility/ax_node_position.h"
@@ -87,6 +88,23 @@ namespace content {
         provider->GetText(-1, provider_content.Receive())); \
     EXPECT_STREQ(expected_content, provider_content.Get()); \
   }
+
+static void ExpectSingleIntSafeArray(SAFEARRAY* safe_array, LONG expected) {
+  ASSERT_NE(nullptr, safe_array);
+  ASSERT_EQ(sizeof(LONG), ::SafeArrayGetElemsize(safe_array));
+  ASSERT_EQ(1u, SafeArrayGetDim(safe_array));
+
+  LONG lower_bound;
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayGetLBound(safe_array, 1, &lower_bound));
+  LONG upper_bound;
+  ASSERT_HRESULT_SUCCEEDED(::SafeArrayGetUBound(safe_array, 1, &upper_bound));
+  ASSERT_EQ(lower_bound, upper_bound);
+
+  LONG actual;
+  ASSERT_HRESULT_SUCCEEDED(
+      ::SafeArrayGetElement(safe_array, &lower_bound, &actual));
+  EXPECT_EQ(expected, actual);
+}
 
 #define EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(text_range_provider, endpoint, unit,  \
                                          count, expected_text, expected_count) \
@@ -864,6 +882,149 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_EQ(V_BOOL(value.ptr()), VARIANT_TRUE);
   text_range_provider.Reset();
   value.Reset();
+}
+
+// Fixture that exposes the window.internals test API so a test can inject
+// document markers (e.g. spelling markers) deterministically via
+// internals.setMarker().
+class AXPlatformNodeTextRangeProviderWinBrowserTestWithInternals
+    : public AXPlatformNodeTextRangeProviderWinBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    AXPlatformNodeTextRangeProviderWinBrowserTest::SetUpCommandLine(
+        command_line);
+    command_line->AppendSwitch(switches::kExposeInternalsForTesting);
+  }
+};
+
+// Returns true if `node` or any of its internal (unignored) descendants carries
+// document markers (e.g. spelling markers).
+static bool HasMarkerDescendant(ui::BrowserAccessibility& node) {
+  std::vector<ui::BrowserAccessibility*> stack = {&node};
+  while (!stack.empty()) {
+    ui::BrowserAccessibility* current = stack.back();
+    stack.pop_back();
+    if (current->GetData().HasIntListAttribute(
+            ax::mojom::IntListAttribute::kMarkerTypes)) {
+      return true;
+    }
+    for (size_t i = current->InternalChildCount(); i > 0; --i) {
+      stack.push_back(current->InternalGetChild(i - 1));
+    }
+  }
+  return false;
+}
+
+// A spelling marker inside an atomic text field (e.g. <input>) must be exposed
+// via the UIA AnnotationTypes attribute. The field's marker-bearing static-text
+// descendants are hidden from the platform tree because the field is exposed as
+// a leaf, so the annotation query must walk the internal accessibility tree to
+// find them. Regression test for crbug.com/503691211.
+IN_PROC_BROWSER_TEST_F(
+    AXPlatformNodeTextRangeProviderWinBrowserTestWithInternals,
+    GetAttributeValueSpellingAnnotationInAtomicTextField) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <input type="text" aria-label="input_text" value="pling">
+        </body>
+      </html>
+  )HTML");
+
+  ui::BrowserAccessibility* input_text_node =
+      FindNode(ax::mojom::Role::kTextField, "input_text");
+  ASSERT_NE(nullptr, input_text_node);
+  EXPECT_TRUE(input_text_node->IsLeaf());
+  EXPECT_EQ(0u, input_text_node->PlatformChildCount());
+
+  // Inject a spelling marker covering the whole value ("pling") onto the
+  // input's inner editor text.
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), R"JS(
+      const input = document.querySelector('input');
+      input.focus();
+      const innerEditor = internals.innerEditorElement(input);
+      const text = innerEditor.firstChild;
+      const misspelling = 'pling';
+      const range = document.createRange();
+      range.setStart(text, 0);
+      range.setEnd(text, misspelling.length);
+      internals.setMarker(document, range, 'spelling');
+  )JS"));
+
+  // Wait until the spelling marker has been serialized onto a text descendant
+  // of the field. The marker is added to the internal accessibility tree
+  // regardless of the platform-layer fix under test, so this only synchronizes
+  // the marker's arrival before the UIA query below.
+  while (!HasMarkerDescendant(*input_text_node)) {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents());
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*input_text_node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"pling");
+
+  base::win::ScopedVariant value;
+  EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+      UIA_AnnotationTypesAttributeId, value.Receive()));
+  ASSERT_EQ(value.type(), VT_ARRAY | VT_I4);
+  ExpectSingleIntSafeArray(V_ARRAY(value.ptr()), AnnotationType_SpellingError);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AXPlatformNodeTextRangeProviderWinBrowserTestWithInternals,
+    GetAttributeValueSpellingAnnotationInTextarea) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <textarea id="textarea" aria-label="textarea_text">mikjake</textarea>
+        </body>
+      </html>
+  )HTML");
+
+  ui::BrowserAccessibility* text_area_node =
+      FindNode(ax::mojom::Role::kTextField, "textarea_text");
+  ASSERT_NE(nullptr, text_area_node);
+  EXPECT_TRUE(text_area_node->IsLeaf());
+  EXPECT_EQ(0u, text_area_node->PlatformChildCount());
+
+  ASSERT_TRUE(ExecJs(shell()->web_contents(), R"JS(
+      const textarea = document.getElementById('textarea');
+      textarea.focus();
+      const innerEditor = internals.innerEditorElement(textarea);
+      const text = innerEditor.firstChild;
+      const misspelling = 'mikjake';
+      const start = text.textContent.indexOf(misspelling);
+      const range = document.createRange();
+      range.setStart(text, start);
+      range.setEnd(text, start + misspelling.length);
+      internals.setMarker(document, range, 'spelling');
+  )JS"));
+
+  while (!HasMarkerDescendant(*text_area_node)) {
+    AccessibilityNotificationWaiter waiter(shell()->web_contents());
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  ComPtr<ITextRangeProvider> document_range;
+  GetTextRangeProviderFromTextNode(*text_area_node, &document_range);
+  ASSERT_NE(nullptr, document_range.Get());
+
+  base::win::ScopedBstr misspelling(L"mikjake");
+  ComPtr<ITextRangeProvider> misspelled_range;
+  ASSERT_HRESULT_SUCCEEDED(document_range->FindText(misspelling.Get(), false,
+                                                    false, &misspelled_range));
+  ASSERT_NE(nullptr, misspelled_range.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(misspelled_range, L"mikjake");
+
+  base::win::ScopedVariant value;
+  EXPECT_HRESULT_SUCCEEDED(misspelled_range->GetAttributeValue(
+      UIA_AnnotationTypesAttributeId, value.Receive()));
+  ASSERT_EQ(value.type(), VT_ARRAY | VT_I4);
+  ExpectSingleIntSafeArray(V_ARRAY(value.ptr()), AnnotationType_SpellingError);
 }
 
 // With a non-atomic text field, the read-only attribute should be determined

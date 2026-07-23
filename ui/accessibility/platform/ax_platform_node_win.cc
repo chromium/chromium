@@ -6642,9 +6642,15 @@ AXPlatformNodeWin::GetMarkerTypeFromRange(
     AggregateRangesForMarkerType(this, marker_type, /*offset_ranges_amount=*/0,
                                  &relevant_ranges, highlight_type);
   } else if (IsAtomicTextField()) {
+    // An atomic text field (e.g. <input>, <textarea>) is exposed to the
+    // platform as a leaf, so its marker-bearing static-text descendants are
+    // hidden from the platform tree. Walk the INTERNAL accessibility tree to
+    // reach them; a platform-tree walk would find no children and lose the
+    // markers (crbug.com/503691211).
     int offset_ranges_amount = 0;
-    for (AXPlatformNodeBase* static_text = GetFirstTextOnlyDescendant();
-         static_text; static_text = static_text->GetNextSibling()) {
+    const std::vector<AXPlatformNodeWin*> text_only_descendants =
+        CollectTextOnlyDescendants();
+    for (AXPlatformNodeWin* static_text : text_only_descendants) {
       const int child_offset_ranges_amount = offset_ranges_amount;
       if (start_offset || end_offset) {
         // Break if the current node is after the desired |end_offset|.
@@ -8910,15 +8916,31 @@ AXPlatformNodeWin* AXPlatformNodeWin::GetLowestAccessibleElementForUIA() {
   NOTREACHED();
 }
 
-AXPlatformNodeWin* AXPlatformNodeWin::GetFirstTextOnlyDescendant() {
-  for (auto* child = static_cast<AXPlatformNodeWin*>(GetFirstChild()); child;
-       child = static_cast<AXPlatformNodeWin*>(child->GetNextSibling())) {
-    if (child->IsText())
-      return child;
-    if (AXPlatformNodeWin* descendant = child->GetFirstTextOnlyDescendant())
-      return descendant;
+std::vector<AXPlatformNodeWin*>
+AXPlatformNodeWin::CollectTextOnlyDescendants() {
+  std::vector<AXPlatformNodeWin*> descendants;
+  AXNode* node = GetDelegate()->node();
+  CHECK(node);
+
+  std::vector<AXNode*> stack;
+  for (size_t i = node->GetUnignoredChildCount(); i > 0; --i) {
+    stack.push_back(node->GetUnignoredChildAtIndex(i - 1));
   }
-  return nullptr;
+
+  while (!stack.empty()) {
+    AXNode* child = stack.back();
+    stack.pop_back();
+    auto* child_platform = static_cast<AXPlatformNodeWin*>(
+        GetDelegate()->GetFromNodeID(child->id()));
+    if (child_platform && child_platform->IsText()) {
+      descendants.push_back(child_platform);
+      continue;
+    }
+    for (size_t i = child->GetUnignoredChildCount(); i > 0; --i) {
+      stack.push_back(child->GetUnignoredChildAtIndex(i - 1));
+    }
+  }
+  return descendants;
 }
 
 void AXPlatformNodeWin::OnAriaNotificationIA2Fallback(

@@ -1145,10 +1145,6 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // Returns the first ancestor node that is accessible for UIA.
   AXPlatformNodeWin* GetLowestAccessibleElementForUIA();
 
-  // Returns the first |IsTextOnlyObject| descendant using.
-  // depth-first pre-order traversal.
-  AXPlatformNodeWin* GetFirstTextOnlyDescendant();
-
   void OnAriaNotificationIA2Fallback(
       const std::string& announcement,
       ax::mojom::AriaNotificationPriority priority);
@@ -1516,6 +1512,14 @@ class COMPONENT_EXPORT(AX_PLATFORM)
       int offset_ranges_amount,
       std::vector<std::pair<int, int>>* ranges,
       const std::optional<ax::mojom::HighlightType>& highlight_type);
+
+  // Returns the text-only (`IsText`) descendants of this node in depth-first
+  // pre-order by walking the internal accessibility tree. Traversal stops at
+  // each text-only node (its own text children are not collected). Unlike a
+  // platform-tree walk, this reaches the internal static-text descendants of
+  // an atomic text field (e.g. <input>, <textarea>), which are hidden from the
+  // platform tree because the field is exposed as a leaf.
+  std::vector<AXPlatformNodeWin*> CollectTextOnlyDescendants();
 
   enum class MarkerTypeRangeResult {
     // The MarkerType does not overlap the range.
