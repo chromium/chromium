@@ -652,64 +652,6 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
   EXPECT_EQ(result_sessions[1]->name, "My Device (Canary)");
 }
 
-TEST_F(ForeignSessionHandlerSidePanelTest,
-       GetForeignSessions_ExcludeStableChannel) {
-  base::test::ScopedFeatureList feature_list{
-      features::kTabsFromOtherDevicesSidePanelExcludeStableChannel};
-
-  CreateSidePanelUI();
-
-  syncer::DeviceInfoSyncService* device_info_sync_service =
-      DeviceInfoSyncServiceFactory::GetForProfile(profile());
-  syncer::FakeDeviceInfoTracker* device_info_tracker =
-      static_cast<syncer::FakeDeviceInfoTracker*>(
-          device_info_sync_service->GetDeviceInfoTracker());
-
-  // Create one stable and one canary device.
-  auto device1 =
-      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
-          .WithGuid("tag1")
-          .WithClientName("Stable Device")
-          .WithSyncUserAgent("Mozilla/5.0 channel(stable)")
-          .Build();
-
-  auto device2 =
-      syncer::TestDeviceInfoBuilder(syncer::DeviceInfo::OsType::kAndroid)
-          .WithGuid("tag2")
-          .WithClientName("Canary Device")
-          .WithSyncUserAgent("Mozilla/5.0 channel(canary)")
-          .Build();
-
-  device_info_tracker->Add(std::move(device1));
-  device_info_tracker->Add(std::move(device2));
-
-  // Set up fake sessions.
-  session_sync_service()
-      ->GetOpenTabsUIDelegate()
-      ->AddForeignSession("tag1")
-      ->SetSessionName("Stable Device");
-
-  session_sync_service()
-      ->GetOpenTabsUIDelegate()
-      ->AddForeignSession("tag2", base::Time::Now() - base::Seconds(1))
-      ->SetSessionName("Canary Device");
-
-  base::MockCallback<ForeignSessionHandler::GetForeignSessionsCallback>
-      callback;
-
-  std::vector<history::mojom::ForeignSessionPtr> result_sessions;
-  EXPECT_CALL(callback, Run)
-      .WillOnce([&result_sessions](
-                    std::vector<history::mojom::ForeignSessionPtr> sessions) {
-        result_sessions = std::move(sessions);
-      });
-
-  handler_->GetForeignSessions(callback.Get());
-
-  // Only the canary device should be returned.
-  ASSERT_EQ(result_sessions.size(), 1u);
-  EXPECT_EQ(result_sessions[0]->name, "Canary Device");
-}
 
 }  // namespace
 

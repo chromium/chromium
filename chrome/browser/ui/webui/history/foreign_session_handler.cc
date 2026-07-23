@@ -161,18 +161,6 @@ std::string GetDeviceNameSuffixFromSyncUserAgent(
   return "";
 }
 
-void FilterStableChannelSessions(
-    const syncer::DeviceInfoTracker& device_info_tracker,
-    std::vector<raw_ptr<const sync_sessions::SyncedSession,
-                        VectorExperimental>>& sessions) {
-  std::erase_if(sessions, [&](const sync_sessions::SyncedSession* session) {
-    const syncer::DeviceInfo* device_info =
-        device_info_tracker.GetDeviceInfo(session->GetSessionTag());
-    return device_info && device_info->sync_user_agent().find(
-                              "channel(stable)") != std::string::npos;
-  });
-}
-
 }  // namespace
 
 ForeignSessionHandler::ForeignSessionHandler(
@@ -407,12 +395,6 @@ ForeignSessionHandler::GetForeignSessionsInternal() {
           DeviceInfoSyncServiceFactory::GetForProfile(profile_);
       if (device_info_sync_service) {
         device_info_tracker = device_info_sync_service->GetDeviceInfoTracker();
-      }
-
-      if (base::FeatureList::IsEnabled(
-              features::kTabsFromOtherDevicesSidePanelExcludeStableChannel) &&
-          device_info_tracker) {
-        FilterStableChannelSessions(*device_info_tracker, sessions);
       }
 
       for (const sync_sessions::SyncedSession* session : sessions) {
