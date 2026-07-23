@@ -2,8 +2,8 @@ Name: JSON for Modern C++
 Short Name: nlohmann_json
 URL: https://github.com/nlohmann/json
 Version: 3.12.0
-Revision: 75d9166a68355d2cd5a98bfd1a75a3a3dae8f071
-Date: 2025-12-10
+Revision: 3565f40229515411177c196ec912a06307802ed6
+Date: 2026-07-20
 Update Mechanism: Manual
 License: MIT
 License File: LICENSE
