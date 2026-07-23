@@ -22,7 +22,9 @@ class UserInterfaceStyleRecorderTest : public PlatformTest {
   base::test::ScopedLibcTimezoneOverride libc_timezone_{"UTC"};
 };
 
-TEST_F(UserInterfaceStyleRecorderTest, RecordDarkModeMetrics_MidnightTo6AM) {
+// TODO(crbug.com/538008300): Flaky on iOS.
+TEST_F(UserInterfaceStyleRecorderTest,
+       DISABLED_RecordDarkModeMetrics_MidnightTo6AM) {
   base::HistogramTester tester;
   base::Time::Exploded exploded;
   base::Time::Now().LocalExplode(&exploded);
