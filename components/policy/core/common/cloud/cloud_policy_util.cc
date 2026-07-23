@@ -58,8 +58,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -191,12 +191,15 @@ std::string GetOSUsername() {
 
   return base::WideToUTF8(username);
 #elif BUILDFLAG(IS_CHROMEOS)
-  if (!user_manager::UserManager::IsInitialized())
+  auto* session_manager = session_manager::SessionManager::Get();
+  if (!session_manager) {
     return std::string();
-  auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user)
+  }
+  const auto* primary_session = session_manager->GetPrimarySession();
+  if (!primary_session) {
     return std::string();
-  return user->GetAccountId().GetUserEmail();
+  }
+  return primary_session->account_id().GetUserEmail();
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/40200780): This should be fully implemented when there is
   // support in fuchsia.
