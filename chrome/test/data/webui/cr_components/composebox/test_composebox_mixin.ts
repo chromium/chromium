@@ -7,6 +7,7 @@ import 'chrome://resources/cr_components/composebox/composebox_file_inputs.js';
 import 'chrome://resources/cr_components/composebox/composebox_input.js';
 import 'chrome://resources/cr_components/composebox/composebox_submit.js';
 import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
+import 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import 'chrome://resources/cr_components/composebox/file_carousel.js';
 import 'chrome://resources/cr_components/search/animated_glow.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -29,6 +30,7 @@ export interface TestComposeboxMixinElement {
   $: {
     animatedSearchElement: SearchAnimatedGlowElement,
     composebox: HTMLElement,
+    contextEntrypoint: ContextualEntrypointAndMenuElement,
     input: ComposeboxInputElement,
     inputWrapper: HTMLElement,
     matches: ComposeboxDropdownElement,
@@ -59,7 +61,11 @@ export class TestComposeboxMixinElement extends TestElementBase {
           .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
           .darkThemeColorsEnabled="${false}">
       </search-animated-glow>
-      <div id="composebox" @keydown="${this.onKeydown}">
+      <div id="composebox" @keydown="${this.onKeydown}"
+          @dragenter="${this.dragAndDropHandler.handleDragEnter}"
+          @dragover="${this.dragAndDropHandler.handleDragOver}"
+          @dragleave="${this.dragAndDropHandler.handleDragLeave}"
+          @drop="${this.dragAndDropHandler.handleDrop}">
         <div id="inputWrapper">
           <cr-composebox-input id="input"
               .result="${this.result}"
@@ -99,6 +105,11 @@ export class TestComposeboxMixinElement extends TestElementBase {
                 @delete-file="${this.onDeleteFile}">
             </cr-composebox-file-carousel>
           ` : ''}
+          <cr-composebox-contextual-entrypoint-and-menu
+              id="contextEntrypoint"
+              .inputState="${this.inputState}"
+              @tool-click="${this.onToolClick}">
+          </cr-composebox-contextual-entrypoint-and-menu>
           <cr-composebox-submit
               ?disabled="${!this.canSubmitFilesAndInput}"
               .iconType="${this.submitButtonIconType}"
@@ -164,9 +175,8 @@ export class TestComposeboxMixinElement extends TestElementBase {
     return ComposeboxProxyImpl.getInstance().searchboxHandler;
   }
 
-  override getContextEntrypointElement(): ContextualEntrypointAndMenuElement
-      |null {
-    return null;
+  override getContextEntrypointElement(): ContextualEntrypointAndMenuElement {
+    return this.$.contextEntrypoint;
   }
 }
 
