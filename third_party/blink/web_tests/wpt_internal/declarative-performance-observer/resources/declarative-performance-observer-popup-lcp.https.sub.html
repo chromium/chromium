@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Declarative Performance Observer LCP Popup</title>
+</head>
+<body>
+<img src="/images/blue.png" id="lcp_img" />
+<script>
+window.onload = () => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      location.href = "declarative-performance-observer-popup-mark-navigated.https.sub.html";
+    });
+  });
+};
+</script>
+</body>
+</html>

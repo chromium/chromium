@@ -40,6 +40,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
@@ -772,6 +773,18 @@ void Performance::AddLargestContentfulPaint(LargestContentfulPaint* entry) {
            .find(PerformanceEntry::kLargestContentfulPaint)
            ->value);
   }
+
+  if (RuntimeEnabledFeatures::DeclarativePerformanceObserverEnabled(
+          GetExecutionContext()) &&
+      !is_declarative_performance_observer_disabled_for_document_) {
+    auto lcp_mojom_entry = mojom::blink::DeclarativePerformanceEntry::NewLcp(
+        mojom::blink::DeclarativeLargestContentfulPaint::New(
+            base::Milliseconds(entry->startTime()), entry->size(),
+            base::Milliseconds(entry->renderTime()),
+            base::Milliseconds(entry->loadTime()), entry->id(), entry->url(),
+            entry->element() ? entry->element()->tagName() : String()));
+    BufferPerformanceEntry(std::move(lcp_mojom_entry));
+  }
 }
 
 void Performance::AddInteractionContentfulPaint(
@@ -951,10 +964,10 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
           }
         }
       }
-      auto entry = mojom::blink::DeclarativePerformanceEntry::New();
-      entry->name = mark_name;
-      entry->start_time = base::Milliseconds(performance_mark->startTime());
-      entry->detail = std::move(detail_value);
+      auto entry = mojom::blink::DeclarativePerformanceEntry::NewMark(
+          mojom::blink::DeclarativePerformanceMark::New(
+              mark_name, base::Milliseconds(performance_mark->startTime()),
+              std::move(detail_value)));
       BufferPerformanceEntry(std::move(entry));
     }
 

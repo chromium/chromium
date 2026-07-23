@@ -19,6 +19,7 @@ constexpr char kCaptureEarlyFailures[] = "capture-early-failures";
 constexpr char kEntryTypeNavigation[] = "navigation";
 constexpr char kEntryTypeMark[] = "mark";
 constexpr char kEntryTypeVisibilityState[] = "visibility-state";
+constexpr char kEntryTypeLargestContentfulPaint[] = "largest-contentful-paint";
 
 std::optional<mojom::PerformanceEntryType> ParseEntryType(
     std::string_view type_str) {
@@ -30,6 +31,9 @@ std::optional<mojom::PerformanceEntryType> ParseEntryType(
   }
   if (type_str == kEntryTypeVisibilityState) {
     return mojom::PerformanceEntryType::kVisibilityState;
+  }
+  if (type_str == kEntryTypeLargestContentfulPaint) {
+    return mojom::PerformanceEntryType::kLargestContentfulPaint;
   }
   return std::nullopt;
 }

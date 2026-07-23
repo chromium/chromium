@@ -329,23 +329,53 @@ void DeclarativePerformanceObserver::BindReceiver(
 void DeclarativePerformanceObserver::DidObservePerformanceEntries(
     std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries) {
   for (auto& entry : entries) {
-    if (!enabled_types_.contains(network::mojom::PerformanceEntryType::kMark)) {
-      continue;
-    }
-    if (include_user_timing_ && !include_user_timing_->contains(entry->name)) {
-      continue;
-    }
+    switch (entry->which()) {
+      case blink::mojom::DeclarativePerformanceEntry::Tag::kMark: {
+        auto& mark = *entry->get_mark();
+        if (!enabled_types_.contains(
+                network::mojom::PerformanceEntryType::kMark)) {
+          continue;
+        }
+        if (include_user_timing_ &&
+            !include_user_timing_->contains(mark.name)) {
+          continue;
+        }
 
-    base::DictValue dict;
-    dict.Set("name", entry->name);
-    dict.Set("entryType", "mark");
-    dict.Set("startTime", entry->start_time.InMillisecondsF());
-    dict.Set("duration", 0.0);
+        base::DictValue dict;
+        dict.Set("name", mark.name);
+        dict.Set("entryType", "mark");
+        dict.Set("startTime", mark.start_time.InMillisecondsF());
+        dict.Set("duration", 0.0);
 
-    if (entry->detail.has_value()) {
-      dict.Set("detail", std::move(entry->detail.value()));
+        if (mark.detail.has_value()) {
+          dict.Set("detail", std::move(mark.detail).value());
+        }
+        AddEntryToBuffer(std::move(dict));
+        break;
+      }
+      case blink::mojom::DeclarativePerformanceEntry::Tag::kLcp: {
+        auto& lcp = entry->get_lcp();
+        if (!enabled_types_.contains(network::mojom::PerformanceEntryType::
+                                         kLargestContentfulPaint)) {
+          continue;
+        }
+
+        base::DictValue dict;
+        dict.Set("name", "");
+        dict.Set("entryType", "largest-contentful-paint");
+        dict.Set("startTime", lcp->start_time.InMillisecondsF());
+        dict.Set("duration", 0.0);
+        dict.Set("size", static_cast<double>(lcp->size));
+        dict.Set("renderTime", lcp->render_time.InMillisecondsF());
+        dict.Set("loadTime", lcp->load_time.InMillisecondsF());
+        dict.Set("id", lcp->id.value_or(""));
+        dict.Set("url", lcp->url.value_or(""));
+        dict.Set("element", lcp->element.value_or(""));
+
+        AddEntryToBuffer(std::move(dict));
+        break;
+      }
     }
-    AddEntryToBuffer(std::move(dict));
   }
 }
 

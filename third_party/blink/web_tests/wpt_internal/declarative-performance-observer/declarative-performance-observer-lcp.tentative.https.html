@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Declarative Performance Observer: Largest Contentful Paint</title>
+  <script src='/resources/testharness.js'></script>
+  <script src='/resources/testharnessreport.js'></script>
+  <script src='/reporting/resources/report-helper.js'></script>
+</head>
+<body>
+  <script>
+    const base_url = `${location.protocol}//${location.host}`;
+    const endpoint = `${base_url}/reporting/resources/report.py`;
+    const reportID = crypto.randomUUID();
+    const popupURL = `${base_url}/wpt_internal/declarative-performance-observer/resources/declarative-performance-observer-popup-lcp.https.sub.html?reportID=${reportID}`;
+
+    promise_test(async t => {
+      // Open the popup.
+      const popup = window.open(popupURL);
+      assert_not_equals(popup, null, "Popup should be opened");
+
+      // Wait 3 seconds for LCP paint and navigation to complete.
+      await wait(3000);
+      popup.location.href = "about:blank";
+      await wait(2000);
+
+      // Poll reports from stash.
+      const reports = await pollReports(endpoint, reportID);
+
+      // Verify report exists.
+      assert_equals(reports.length, 1, "Should have exactly one report");
+      const report = reports[0];
+      assert_equals(report.type, "performance-observer");
+
+      const body = report.body;
+      assert_true(body.hasOwnProperty("entries"), "Report body should have entries");
+      const entries = body.entries;
+
+      // Verify we received the largest-contentful-paint entry.
+      const lcpEntry = entries.find(e => e.entryType === "largest-contentful-paint");
+      assert_not_equals(lcpEntry, undefined, "Should have largest-contentful-paint entry");
+      assert_equals(lcpEntry.name, "");
+      assert_equals(lcpEntry.entryType, "largest-contentful-paint");
+      assert_true(lcpEntry.startTime >= 0);
+      assert_equals(lcpEntry.duration, 0);
+
+      // Validate LCP specific properties unpacked directly at top-level.
+      assert_greater_than(lcpEntry.size, 0);
+      assert_true(lcpEntry.url.endsWith("/images/blue.png"));
+      assert_equals(lcpEntry.id, "lcp_img");
+      assert_equals(lcpEntry.element, "IMG");
+      assert_true(lcpEntry.hasOwnProperty("renderTime"));
+      assert_true(lcpEntry.hasOwnProperty("loadTime"));
+      assert_equals(typeof lcpEntry.renderTime, "number");
+      assert_equals(typeof lcpEntry.loadTime, "number");
+
+    }, "Declarative Performance Observer collects and reports largest-contentful-paint entries");
+
+  </script>
+</body>
+</html>

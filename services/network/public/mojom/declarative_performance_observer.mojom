@@ -13,6 +13,8 @@ enum PerformanceEntryType {
   kMark,
   // Maps to "visibility-state" entry type.
   kVisibilityState,
+  // Maps to "largest-contentful-paint" entry type.
+  kLargestContentfulPaint,
 };
 
 // Represents the parsed Performance-Observer HTTP header policy.

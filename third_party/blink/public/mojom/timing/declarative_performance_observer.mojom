@@ -7,15 +7,31 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
-// Represents a simplified version of a PerformanceEntry to be forwarded from
-// the renderer to the browser. We only forward fields necessary for the
-// Declarative Performance Observer to evaluate and report the entry (e.g.
-// filtering by name and including the custom 'detail' payload).
-struct DeclarativePerformanceEntry {
+// Represents a PerformanceMark entry.
+struct DeclarativePerformanceMark {
   string name;
   mojo_base.mojom.TimeDelta start_time;
-  // The custom 'detail' payload, if present.
+  // Developer-supplied arbitrary metadata
   mojo_base.mojom.Value? detail;
+};
+
+// Represents a Largest Contentful Paint (LCP) entry.
+struct DeclarativeLargestContentfulPaint {
+  mojo_base.mojom.TimeDelta start_time;
+  uint64 size;
+  mojo_base.mojom.TimeDelta render_time;
+  mojo_base.mojom.TimeDelta load_time;
+  string? id;
+  string? url;
+  string? element;
+};
+
+// Represents a single performance entry observed in the document.
+// This is a union of all supported strongly-typed performance entry payloads.
+// The active union field indicates the entry type.
+union DeclarativePerformanceEntry {
+  DeclarativePerformanceMark mark;
+  DeclarativeLargestContentfulPaint lcp;
 };
 
 // Implemented by the browser process (`content::DeclarativePerformanceObserver`)

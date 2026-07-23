@@ -472,12 +472,12 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsPerformanceMarks) {
   std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
 
   // 1. Allowed mark with detail
-  auto entry1 = blink::mojom::DeclarativePerformanceEntry::New();
-  entry1->name = "some_mark";
-  entry1->start_time = base::Milliseconds(100);
   base::DictValue detail_dict;
   detail_dict.Set("key", "value");
-  entry1->detail = base::Value(std::move(detail_dict));
+  auto entry1 = blink::mojom::DeclarativePerformanceEntry::NewMark(
+      blink::mojom::DeclarativePerformanceMark::New(
+          "some_mark", base::Milliseconds(100),
+          base::Value(std::move(detail_dict))));
   entries.push_back(std::move(entry1));
 
   observer_remote->DidObservePerformanceEntries(std::move(entries));
@@ -507,6 +507,84 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsPerformanceMarks) {
   ASSERT_TRUE(detail);
   ASSERT_TRUE(detail->is_dict());
   EXPECT_EQ(*(detail->GetDict().FindString("key")), "value");
+}
+
+TEST_F(DeclarativePerformanceObserverTest, RecordsLargestContentfulPaint) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kLargestContentfulPaint);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  CreateObserver(&navigation_handle);
+
+  // Bind Mojo remote
+  mojo::Remote<blink::mojom::DeclarativePerformanceObserverHost>
+      observer_remote;
+  DeclarativePerformanceObserver::Bind(
+      main_rfh(), observer_remote.BindNewPipeAndPassReceiver());
+
+  // Simulate receiving performance entries from renderer
+  // Send first LCP entry
+  {
+    std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+    entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewLcp(
+        blink::mojom::DeclarativeLargestContentfulPaint::New(
+            base::Milliseconds(150), 450, base::Milliseconds(150),
+            base::Milliseconds(120), "hero-img", "https://example.com/hero.png",
+            "IMG")));
+    observer_remote->DidObservePerformanceEntries(std::move(entries));
+    observer_remote.FlushForTesting();
+  }
+
+  // Send second larger LCP entry that replaces the first one
+  {
+    std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
+    entries.push_back(blink::mojom::DeclarativePerformanceEntry::NewLcp(
+        blink::mojom::DeclarativeLargestContentfulPaint::New(
+            base::Milliseconds(300), 900, base::Milliseconds(300),
+            base::Milliseconds(250), "main-hero",
+            "https://example.com/main.png", "DIV")));
+    observer_remote->DidObservePerformanceEntries(std::move(entries));
+    observer_remote.FlushForTesting();
+  }
+
+  // Trigger unload to flush metrics
+  DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report = network_context_.reports()[0];
+  EXPECT_EQ(report.type, "performance-observer");
+  EXPECT_EQ(report.group, kEndpoint);
+  EXPECT_EQ(report.url, kPageURL);
+
+  const base::ListValue* report_entries = report.body.FindList("entries");
+  ASSERT_TRUE(report_entries);
+  ASSERT_EQ(report_entries->size(), 2u);
+
+  const base::DictValue* lcp_entry1 = (*report_entries)[0].GetIfDict();
+  ASSERT_TRUE(lcp_entry1);
+  EXPECT_EQ(*(lcp_entry1->FindString("entryType")), "largest-contentful-paint");
+  EXPECT_EQ(*(lcp_entry1->FindDouble("startTime")), 150.0);
+  EXPECT_EQ(*(lcp_entry1->FindDouble("size")), 450.0);
+  EXPECT_EQ(*(lcp_entry1->FindString("id")), "hero-img");
+
+  const base::DictValue* lcp_entry2 = (*report_entries)[1].GetIfDict();
+  ASSERT_TRUE(lcp_entry2);
+  EXPECT_EQ(*(lcp_entry2->FindString("entryType")), "largest-contentful-paint");
+  EXPECT_EQ(*(lcp_entry2->FindDouble("startTime")), 300.0);
+  EXPECT_EQ(*(lcp_entry2->FindDouble("size")), 900.0);
+  EXPECT_EQ(*(lcp_entry2->FindString("id")), "main-hero");
 }
 
 TEST_F(DeclarativePerformanceObserverTest,
@@ -539,15 +617,15 @@ TEST_F(DeclarativePerformanceObserverTest,
   std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
 
   // 1. Allowed mark
-  auto entry1 = blink::mojom::DeclarativePerformanceEntry::New();
-  entry1->name = "allowed_mark";
-  entry1->start_time = base::Milliseconds(100);
+  auto entry1 = blink::mojom::DeclarativePerformanceEntry::NewMark(
+      blink::mojom::DeclarativePerformanceMark::New(
+          "allowed_mark", base::Milliseconds(100), std::nullopt));
   entries.push_back(std::move(entry1));
 
   // 2. Disallowed mark
-  auto entry2 = blink::mojom::DeclarativePerformanceEntry::New();
-  entry2->name = "disallowed_mark";
-  entry2->start_time = base::Milliseconds(200);
+  auto entry2 = blink::mojom::DeclarativePerformanceEntry::NewMark(
+      blink::mojom::DeclarativePerformanceMark::New(
+          "disallowed_mark", base::Milliseconds(200), std::nullopt));
   entries.push_back(std::move(entry2));
 
   observer_remote->DidObservePerformanceEntries(std::move(entries));
@@ -1131,12 +1209,12 @@ TEST_F(DeclarativePerformanceObserverTest, DocumentBufferLimitEnforced) {
   // 1. Send first entry just under 640KB limit (e.g. 400KB detail string)
   {
     std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
-    auto entry = blink::mojom::DeclarativePerformanceEntry::New();
-    entry->name = "mark_1";
-    entry->start_time = base::Milliseconds(100);
     base::DictValue detail_dict;
     detail_dict.Set("payload", std::string(400 * 1024, 'a'));
-    entry->detail = base::Value(std::move(detail_dict));
+    auto entry = blink::mojom::DeclarativePerformanceEntry::NewMark(
+        blink::mojom::DeclarativePerformanceMark::New(
+            "mark_1", base::Milliseconds(100),
+            base::Value(std::move(detail_dict))));
     entries.push_back(std::move(entry));
 
     observer_remote->DidObservePerformanceEntries(std::move(entries));
@@ -1147,12 +1225,12 @@ TEST_F(DeclarativePerformanceObserverTest, DocumentBufferLimitEnforced) {
   // 640KB
   {
     std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
-    auto entry = blink::mojom::DeclarativePerformanceEntry::New();
-    entry->name = "mark_2";
-    entry->start_time = base::Milliseconds(200);
     base::DictValue detail_dict;
     detail_dict.Set("payload", std::string(300 * 1024, 'b'));
-    entry->detail = base::Value(std::move(detail_dict));
+    auto entry = blink::mojom::DeclarativePerformanceEntry::NewMark(
+        blink::mojom::DeclarativePerformanceMark::New(
+            "mark_2", base::Milliseconds(200),
+            base::Value(std::move(detail_dict))));
     entries.push_back(std::move(entry));
 
     observer_remote->DidObservePerformanceEntries(std::move(entries));
@@ -1223,9 +1301,9 @@ TEST_F(DeclarativePerformanceObserverTest,
   // The first 5 should be buffered successfully, and the 6th should be dropped.
   std::vector<blink::mojom::DeclarativePerformanceEntryPtr> entries;
   for (int i = 0; i < 6; ++i) {
-    auto entry = blink::mojom::DeclarativePerformanceEntry::New();
-    entry->name = "mark_tiny";
-    entry->start_time = base::Milliseconds(i);
+    auto entry = blink::mojom::DeclarativePerformanceEntry::NewMark(
+        blink::mojom::DeclarativePerformanceMark::New(
+            "mark_tiny", base::Milliseconds(i), std::nullopt));
     entries.push_back(std::move(entry));
   }
   observer_remote->DidObservePerformanceEntries(std::move(entries));
