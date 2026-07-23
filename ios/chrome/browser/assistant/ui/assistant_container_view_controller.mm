@@ -265,6 +265,14 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 #pragma mark - Public
 
+- (NSInteger)heightForDetent:(AssistantContainerDetent)detent {
+  auto it = _detentHeights.find(detent);
+  if (it != _detentHeights.end()) {
+    return it->second;
+  }
+  return kInvalidDetentHeight;
+}
+
 - (void)animateToDetent:(AssistantContainerDetent)detentIdentifier
                duration:(NSTimeInterval)duration
                   curve:(UIViewAnimationCurve)curve {
@@ -1250,6 +1258,12 @@ inline LayoutStateAssistantPassKey PassKey() {
         _detentHeights[detent] = self.minimizedDetentHeight;
         break;
     }
+  }
+
+  if ([self.delegate
+          respondsToSelector:@selector(
+                                 assistantContainerDidUpdateDetentHeights:)]) {
+    [self.delegate assistantContainerDidUpdateDetentHeights:self];
   }
 }
 

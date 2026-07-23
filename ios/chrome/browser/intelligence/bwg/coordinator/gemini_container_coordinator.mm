@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_coordinator.h"
 
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
@@ -14,7 +16,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
-@interface GeminiContainerCoordinator () <GeminiContainerViewControllerDelegate>
+@interface GeminiContainerCoordinator () <AssistantContainerDelegate,
+                                          GeminiContainerViewControllerDelegate>
 @end
 
 @implementation GeminiContainerCoordinator {
@@ -65,7 +68,7 @@
   _containerHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                          AssistantContainerCommands);
   [_containerHandler showAssistantContainerWithContent:_viewController
-                                              delegate:nil];
+                                              delegate:self];
 }
 
 - (void)dismissWithCompletion:(void (^)(void))completion {
@@ -78,6 +81,20 @@
   _mediator = nil;
   _viewController = nil;
   _containerHandler = nil;
+}
+
+#pragma mark - AssistantContainerDelegate
+
+- (void)assistantContainerDidUpdateDetentHeights:
+    (AssistantContainerViewController*)container {
+  NSInteger collapsedHeight =
+      [container heightForDetent:AssistantContainerDetent::kMinimized];
+  NSInteger extendedHeight =
+      [container heightForDetent:AssistantContainerDetent::kMedium];
+
+  if (collapsedHeight > 0 && extendedHeight > 0) {
+    ios::provider::UpdateDetentHeights(collapsedHeight, extendedHeight);
+  }
 }
 
 #pragma mark - GeminiContainerViewControllerDelegate

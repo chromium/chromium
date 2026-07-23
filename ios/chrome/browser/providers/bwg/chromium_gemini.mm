@@ -53,6 +53,8 @@ GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context) {
 
 void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity) {}
 
+void UpdateDetentHeights(CGFloat collapsed_height, CGFloat extended_height) {}
+
 void UpdateGeminiViewState(GeminiViewState view_state, bool animated) {}
 
 GeminiViewState GetCurrentGeminiViewState() {

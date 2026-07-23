@@ -35,6 +35,10 @@ enum class AssistantPresentationContext;
 
 #pragma mark - Sizing and Detents
 
+// Called when the container updates its detent heights.
+- (void)assistantContainerDidUpdateDetentHeights:
+    (AssistantContainerViewController*)container;
+
 // Called when the container successfully settles on a new detent.
 - (void)assistantContainer:(AssistantContainerViewController*)container
            didChangeDetent:(AssistantContainerDetent)newDetent;

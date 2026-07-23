@@ -49,6 +49,10 @@ enum class AssistantContainerDetent : NSInteger;
 // instead of moving VoiceOver focus to it.
 @property(nonatomic, assign) BOOL announceArrivalOnly;
 
+// Returns the height of a given detent, or kInvalidDetentHeight if the detent
+// is invalid or height is not yet calculated.
+- (NSInteger)heightForDetent:(AssistantContainerDetent)detent;
+
 // Animates the container to a specific detent.
 // If the detent is not found, acts as a no-op.
 - (void)animateToDetent:(AssistantContainerDetent)detent

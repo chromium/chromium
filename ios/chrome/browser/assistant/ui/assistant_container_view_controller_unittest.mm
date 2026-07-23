@@ -268,6 +268,44 @@ TEST_F(AssistantContainerViewControllerTest, AnimateToDetentValid) {
   EXPECT_OCMOCK_VERIFY(delegate_mock);
 }
 
+// Tests that the delegate is notified of detent height updates on layout and
+// orientation changes.
+TEST_F(AssistantContainerViewControllerTest,
+       NotifiesDelegateOnDetentHeightUpdates) {
+  id delegate_mock = OCMProtocolMock(@protocol(AssistantContainerDelegate));
+  view_controller_.delegate = delegate_mock;
+
+  // Initial layout should notify the delegate.
+  OCMExpect([delegate_mock
+      assistantContainerDidUpdateDetentHeights:view_controller_]);
+  [view_controller_.view setNeedsLayout];
+  [view_controller_.view layoutIfNeeded];
+  EXPECT_OCMOCK_VERIFY(delegate_mock);
+
+  // Orientation / size transition should notify the delegate again.
+  id<UIViewControllerTransitionCoordinator> mock_coordinator =
+      OCMProtocolMock(@protocol(UIViewControllerTransitionCoordinator));
+  OCMStub([mock_coordinator animateAlongsideTransition:[OCMArg any]
+                                            completion:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        void (^completion)(id<UIViewControllerTransitionCoordinatorContext>) =
+            nil;
+        [invocation getArgument:&completion atIndex:3];
+        if (completion) {
+          completion(nil);
+        }
+      });
+
+  OCMExpect([delegate_mock
+      assistantContainerDidUpdateDetentHeights:view_controller_]);
+  [view_controller_ viewWillTransitionToSize:CGSizeMake(580, 320)
+                   withTransitionCoordinator:mock_coordinator];
+  [view_controller_.view setNeedsLayout];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_OCMOCK_VERIFY(delegate_mock);
+}
+
 // Tests that tapping the dimming view when in the large detent dismisses the
 // container back to the minimized detent.
 TEST_F(AssistantContainerViewControllerTest, HandleDimmingViewTap) {
