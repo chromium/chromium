@@ -58,7 +58,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.ViewportRectProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -72,7 +71,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
@@ -166,8 +164,7 @@ public class FuseboxCoordinatorUnitTest {
                         mBackPressManager,
                         /* onActivationChipClickedWithQuery= */ () -> {},
                         /* clearUrlBarTextRunnable= */ () -> {},
-                        /* urlBarTextSupplier= */ () -> "",
-                        /* isForcedPhoneStyleOmnibox= */ false);
+                        /* urlBarTextSupplier= */ () -> "");
     }
 
     private FuseboxSessionState createSession() {
@@ -418,50 +415,5 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.beginInput(createSession());
         assertEquals(
                 FuseboxState.DISABLED, mCoordinator.getFuseboxStateSupplier().get().intValue());
-    }
-
-    @Test
-    public void testGetFuseboxLayoutMode_normalStyleOnPhone() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
-
-        assertEquals(
-                FuseboxLayoutMode.TOOLBAR,
-                mCoordinator.getFuseboxLayoutModeSupplier().get().intValue());
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE)
-    public void testGetFuseboxLayoutMode_normalStyleOnDesktop() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-
-        assertEquals(
-                FuseboxLayoutMode.SUGGESTIONS_POPOVER,
-                mCoordinator.getFuseboxLayoutModeSupplier().get().intValue());
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.ANDROID_DESKTOP_AIM_GATE)
-    public void testGetFuseboxLayoutMode_forcedPhoneStyleOnDesktop() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
-
-        FuseboxCoordinator forcedCoordinator =
-                new FuseboxCoordinator(
-                        mActivityController.get(),
-                        mWindowAndroid,
-                        new ConstraintLayout(mActivityController.get()),
-                        mTabModelSelectorSupplier,
-                        mTemplateUrlServiceSupplier,
-                        mSnackbarManager,
-                        /* scrimAnchorViewSupplier= */ () -> null,
-                        mBackPressManager,
-                        mExactMatchUrlSupplier,
-                        /* onActivationChipClickedWithQuery= */ () -> {},
-                        /* clearUrlBarTextRunnable= */ () -> {},
-                        /* urlBarTextSupplier= */ () -> "",
-                        /* isForcedPhoneStyleOmnibox= */ true);
-
-        assertEquals(
-                FuseboxLayoutMode.TOOLBAR,
-                forcedCoordinator.getFuseboxLayoutModeSupplier().get().intValue());
     }
 }

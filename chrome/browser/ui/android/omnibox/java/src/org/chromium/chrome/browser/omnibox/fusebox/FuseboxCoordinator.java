@@ -139,7 +139,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final Runnable mOnActivationChipClickedWithQuery;
     private final Runnable mClearUrlBarTextCallback;
     private final Supplier<String> mUrlBarTextSupplier;
-    private final boolean mIsForcedPhoneStyleOmnibox;
 
     /**
      * Creates a new instance of {@link FuseboxCoordinator}.
@@ -155,7 +154,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * @param onActivationChipClickedWithQuery Runnable for activation chip when there is a query.
      * @param clearUrlBarTextRunnable Callback to clear the URL bar text.
      * @param urlBarTextSupplier Supplier for the current URL bar text
-     * @param isForcedPhoneStyleOmnibox Whether to force phone-style Omnibox layout.
      */
     public FuseboxCoordinator(
             Context context,
@@ -168,8 +166,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             BackPressManager backPressManager,
             Runnable onActivationChipClickedWithQuery,
             Runnable clearUrlBarTextRunnable,
-            Supplier<String> urlBarTextSupplier,
-            boolean isForcedPhoneStyleOmnibox) {
+            Supplier<String> urlBarTextSupplier) {
         mActivity = assumeNonNull(ContextUtils.activityFromContext(context));
         mWindowAndroid = windowAndroid;
         mParent = parent;
@@ -179,7 +176,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSnackbarManager = snackbarManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
-        mIsForcedPhoneStyleOmnibox = isForcedPhoneStyleOmnibox;
         mFuseboxLayoutModeSupplier.set(getFuseboxLayoutMode());
         mBackPressManager = backPressManager;
         mOnActivationChipClickedWithQuery = onActivationChipClickedWithQuery;
@@ -575,13 +571,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
     }
 
-    /**
-     * Resolves the layout mode for the Fusebox. Forced phone-style Omniboxes (e.g. for hub, tab
-     * search, or the search widget) use the TOOLBAR layout mode to match mobile layouts.
-     */
     private @FuseboxLayoutMode int getFuseboxLayoutMode() {
-        return !mIsForcedPhoneStyleOmnibox
-                        && OmniboxCapabilities.isDesktopPlatform()
+        return OmniboxCapabilities.isDesktopPlatform()
                         && OmniboxFeatures.sAndroidDesktopAimGate.isEnabled()
                 ? FuseboxLayoutMode.SUGGESTIONS_POPOVER
                 : FuseboxLayoutMode.TOOLBAR;
