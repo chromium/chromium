@@ -4,7 +4,6 @@
 
 #include "content/browser/loader/subresource_proxying_url_loader.h"
 
-#include "content/browser/browsing_topics/browsing_topics_url_loader_interceptor.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -23,15 +22,7 @@ SubresourceProxyingURLLoader::SubresourceProxyingURLLoader(
       forwarding_client_(std::move(client)) {
   DCHECK(network_loader_factory);
 
-  CHECK(resource_request_.browsing_topics ||
-        resource_request_.ad_auction_headers);
-
-  if (resource_request_.browsing_topics) {
-    interceptors_.push_back(
-        std::make_unique<BrowsingTopicsURLLoaderInterceptor>(
-            document, resource_request_));
-  }
-
+  CHECK(resource_request_.ad_auction_headers);
 
   // Make a copy of `resource_request`, because we may need to modify the
   // request.

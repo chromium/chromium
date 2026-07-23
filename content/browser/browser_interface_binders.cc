@@ -27,7 +27,6 @@
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
-#include "content/browser/browsing_topics/browsing_topics_document_host.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/content_index/content_index_service_impl.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"
@@ -899,12 +898,6 @@ void PopulateBinderMapWithContext(
         }));
   }
 
-  if (base::FeatureList::IsEnabled(network::features::kBrowsingTopics) &&
-      base::FeatureList::IsEnabled(
-          blink::features::kBrowsingTopicsDocumentAPI)) {
-    map->Add<blink::mojom::BrowsingTopicsDocumentService>(
-        &BrowsingTopicsDocumentHost::CreateMojoService);
-  }
   map->Add<blink::mojom::DeclarativePerformanceObserverHost>(
       base::BindRepeating(&DeclarativePerformanceObserver::Bind));
 #if !BUILDFLAG(IS_ANDROID)

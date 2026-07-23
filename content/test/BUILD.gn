@@ -2592,8 +2592,6 @@ test("content_unittests") {
     "../browser/browsing_instance_id_unittest.cc",
     "../browser/browsing_topics/browsing_topics_site_data_manager_impl_unittest.cc",
     "../browser/browsing_topics/browsing_topics_site_data_storage_unittest.cc",
-    "../browser/browsing_topics/browsing_topics_url_loader_unittest.cc",
-    "../browser/browsing_topics/header_util_unittest.cc",
     "../browser/btm/btm_bounce_detector_unittest.cc",
     "../browser/btm/btm_database_migrator_unittest.cc",
     "../browser/btm/btm_database_unittest.cc",

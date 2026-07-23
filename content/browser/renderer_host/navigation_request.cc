@@ -54,7 +54,6 @@
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
-#include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/connection_allowlist_utils.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer.h"
@@ -879,83 +878,6 @@ void PersistOriginTrialsFromHeaders(
       GetOriginTrialHeaderValues(response->headers.get());
   origin_trials_delegate->PersistTrialsFromTokens(
       origin, partition_origin, tokens, base::Time::Now(), source_id);
-}
-
-struct TopicsHeaderValueResult {
-  bool topics_eligible = false;
-  std::optional<std::string> header_value;
-};
-
-// Returns the topics header for a navigation request. Returns std::nullopt if
-// the request isn't eligible for topics. This should align with the handling in
-// `GetTopicsHeaderValueForSubresourceRequest()`.
-TopicsHeaderValueResult GetTopicsHeaderValueForNavigationRequest(
-    FrameTreeNode* frame_tree_node,
-    const GURL& url) {
-  // Skip if the <iframe> does not have the "browsingtopics" opt-in attribute.
-  if (!frame_tree_node->browsing_topics()) {
-    return TopicsHeaderValueResult{};
-  }
-
-  RenderFrameHostImpl* rfh = frame_tree_node->current_frame_host();
-
-  // Skip top frame navigation.
-  // TODO(crbug.com/40260337): This should be checked at the mojom boundary of
-  // RenderFrameHostImpl::DidChangeIframeAttributes, and should be a CHECK
-  // here.
-  if (rfh->is_main_frame()) {
-    return {};
-  }
-
-  // Skip fenced frames.
-  if (rfh->IsNestedWithinFencedFrame()) {
-    return {};
-  }
-
-  // Skip inactive pages (e.g. prerendered pages).
-  if (!rfh->GetPage().IsPrimary()) {
-    return {};
-  }
-
-  url::Origin origin = url::Origin::Create(url);
-  if (origin.opaque()) {
-    return {};
-  }
-
-  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-    return {};
-  }
-
-  const network::PermissionsPolicy* parent_policy =
-      rfh->GetParent()->GetPermissionsPolicy();
-
-  CHECK(parent_policy);
-
-  if (!parent_policy->IsFeatureEnabledForOrigin(
-          network::mojom::PermissionsPolicyFeature::kBrowsingTopics, origin) ||
-      !parent_policy->IsFeatureEnabledForOrigin(
-          network::mojom::PermissionsPolicyFeature::
-              kBrowsingTopicsBackwardCompatible,
-          origin)) {
-    return {};
-  }
-
-  std::vector<blink::mojom::EpochTopicPtr> topics;
-  bool topics_eligible = GetContentClient()->browser()->HandleTopicsWebApi(
-      origin, rfh->GetMainFrame(),
-      browsing_topics::ApiCallerSource::kIframeAttribute,
-      /*get_topics=*/true,
-      /*observe=*/false, topics);
-
-  int num_versions_in_epochs =
-      topics_eligible
-          ? GetContentClient()->browser()->NumVersionsInTopicsEpochs(
-                rfh->GetMainFrame())
-          : 0;
-
-  return {
-      .topics_eligible = topics_eligible,
-      .header_value = DeriveTopicsHeaderValue(topics, num_versions_in_epochs)};
 }
 
 ukm::SourceId GetPageUkmSourceId(FrameTreeNode* frame_tree_node) {
@@ -2211,18 +2133,6 @@ NavigationRequest::NavigationRequest(
         commit_params_->post_content_type = std::move(content_type).value();
       }
     }
-
-    TopicsHeaderValueResult topics_header_value_result =
-        GetTopicsHeaderValueForNavigationRequest(frame_tree_node,
-                                                 common_params_->url);
-
-    topics_eligible_ = topics_header_value_result.topics_eligible;
-
-    if (topics_header_value_result.header_value) {
-      headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
-                        *topics_header_value_result.header_value);
-    }
-
   }
 
   begin_params_->headers = headers.ToString();
@@ -6377,46 +6287,6 @@ void NavigationRequest::OnRedirectChecksComplete(
     nav_entry->SetRemoveExtraHeadersOnCrossOriginRedirect(false);
   }
 
-  // The topics a request is allowed to see can change within its redirect
-  // chain thus we need to recalculate them. For example, different caller
-  // origins (i.e. navigation URL's origin) may receive different topics, as the
-  // callers can only get the topics about the sites they were on. Besides,
-  // regardless of cross-origin-ness, the timestamp can also affect the
-  // candidate epochs where the topics are derived from, thus resulting in
-  // different topics across redirects.
-  if (topics_eligible_) {
-    topics_eligible_ = false;
-
-    // At this point we may not have a valid `GetRenderFrameHost()` if the
-    // navigation is during a cross-site redirect. Thus, pass in the current/old
-    // RenderFrameHost here. This is fine, because it should still give us the
-    // desired IsPrimary() status and the desired top-level frame that
-    // `HandleTopicsEligibleResponse()` is interested in knowing.
-    HandleTopicsEligibleResponse(
-        commit_params_->redirect_params.back()->response_head->parsed_headers,
-        url::Origin::Create(commit_params_->redirects.back()),
-        *frame_tree_node_->current_frame_host(),
-        browsing_topics::ApiCallerSource::kIframeAttribute);
-  }
-
-  // Removes the topics header. This will effectively be a no-op if the topics
-  // header wasn't sent for the previous request.
-  headers_update_params.removed_headers.push_back(
-      kBrowsingTopicsRequestHeaderKey);
-
-  TopicsHeaderValueResult topics_header_value_result =
-      GetTopicsHeaderValueForNavigationRequest(frame_tree_node_,
-                                               common_params_->url);
-
-  topics_eligible_ = topics_header_value_result.topics_eligible;
-
-  if (topics_header_value_result.header_value) {
-    headers_update_params.modified_headers.SetHeader(
-        kBrowsingTopicsRequestHeaderKey,
-        *topics_header_value_result.header_value);
-  }
-
-
   if (shared_storage_writable_opted_in_) {
     // On a redirect, the PermissionsPolicy may change the status of this
     // request's Shared Storage eligibility, so we need to re-compute it.
@@ -6866,9 +6736,6 @@ void NavigationRequest::CommitErrorPage(
 
   ReuseRequestNavigationClientForCommitIfNeeded();
 
-  topics_eligible_ = false;
-
-
   base::WeakPtr<NavigationRequest> weak_self(weak_factory_.GetWeakPtr());
   ReadyToCommitNavigation(true /* is_error */);
   // The caller above might result in the deletion of `this`. Return immediately
@@ -7045,18 +6912,6 @@ void NavigationRequest::CommitNavigation() {
 
   commit_params_->storage_key = GetRenderFrameHost()->CalculateStorageKey(
       origin_to_commit, base::OptionalToPtr(nonce));
-
-  if (topics_eligible_) {
-    topics_eligible_ = false;
-
-    if (response()) {
-      HandleTopicsEligibleResponse(
-          response_head_->parsed_headers, url::Origin::Create(GetURL()),
-          *GetRenderFrameHost(),
-          browsing_topics::ApiCallerSource::kIframeAttribute);
-    }
-  }
-
 
   RenderFrameHostImpl* old_frame_host =
       frame_tree_node_->render_manager()->current_frame_host();

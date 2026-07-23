@@ -3392,14 +3392,6 @@ class CONTENT_EXPORT NavigationRequest
   // at RenderFrameHostImpl::must_be_replaced().
   bool force_new_compositor_ = false;
 
-  // Whether the ongoing navigation resource request is eligible for topics
-  // calculation. This is set before the initial request and each subsequent
-  // redirect. If `topics_eligible_` is true, the request headers will contain
-  // the "Sec-Browsing-Topics" header, and if the corresponding response headers
-  // contain "Observe-Browsing-Topics: ?1", a topic observation will be stored.
-  bool topics_eligible_ = false;
-
-
   // Whether or not the original request (without considering redirects or
   // permissions policy) opted-in to write to shared storage from response
   // headers. See https://github.com/WICG/shared-storage#from-response-headers
