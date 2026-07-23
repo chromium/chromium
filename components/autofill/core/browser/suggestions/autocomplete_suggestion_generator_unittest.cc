@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,9 +69,8 @@ class AutocompleteSuggestionGeneratorTest : public Test {
   }
   AutocompleteSuggestionGenerator& generator() { return *generator_; }
   void RecreateGenerator() {
-    generator_ = std::make_unique<AutocompleteSuggestionGenerator>(
-        web_data_service_,
-        base::FeatureList::IsEnabled(features::kAutofillAtMemory));
+    generator_ =
+        std::make_unique<AutocompleteSuggestionGenerator>(web_data_service_);
   }
 
  private:
@@ -221,7 +221,8 @@ TEST_F(AutocompleteSuggestionGeneratorTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {features::kShowAutocompleteAtMemoryButton, features::kAutofillAtMemory},
+      {features::kShowAutocompleteAtMemoryButton, features::kAutofillAtMemory,
+       features::debug::kAtMemorySkipEnablementChecks},
       /*disabled_features=*/{});
   RecreateGenerator();
 
@@ -296,7 +297,8 @@ TEST_F(AutocompleteSuggestionGeneratorTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {features::kShowAutocompleteAtMemoryButton, features::kAutofillAtMemory},
+      {features::kShowAutocompleteAtMemoryButton, features::kAutofillAtMemory,
+       features::debug::kAtMemorySkipEnablementChecks},
       /*disabled_features=*/{});
   RecreateGenerator();
 
