@@ -5,8 +5,10 @@
 #include "components/policy/core/common/management/management_service.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -340,6 +342,21 @@ TEST_P(AzureActiveDirectoryManagementServiceTests,
           : ManagementAuthorityTrustworthiness::NONE;
   EXPECT_EQ(service->GetManagementAuthorityTrustworthinessForPolicyLoading(),
             expected_trustworthiness);
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(
+        features::kFilterSensitivePoliciesOnWorkplaceJoinedDevices);
+
+    base::test::TestFuture<ManagementAuthorityTrustworthiness,
+                           ManagementAuthorityTrustworthiness>
+        disabled_future;
+    service->RefreshCache(disabled_future.GetCallback());
+    ASSERT_TRUE(disabled_future.Wait());
+
+    EXPECT_EQ(service->GetManagementAuthorityTrustworthinessForPolicyLoading(),
+              ManagementAuthorityTrustworthiness::FULLY_TRUSTED);
+  }
 }
 #endif
 

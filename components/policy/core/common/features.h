@@ -64,6 +64,14 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kEnableExtensionInstallPolicyFetching);
 // performs platform-specific checks.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kUseManagementServiceForSensitivePolicies);
 
+// When enabled, AzureActiveDirectoryDeviceStatusProvider only returns
+// CLOUD_DOMAIN for device-joined Azure AD accounts. When disabled (kill
+// switch), it falls back to the behavior of AzureActiveDirectoryStatusProvider,
+// returning CLOUD_DOMAIN for all Azure AD joined accounts (including
+// workplace-joined).
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kFilterSensitivePoliciesOnWorkplaceJoinedDevices);
+
 // Modifies behavior of policies utilizing URLBlocklistManager.
 // When enabled, bypasses the wildcard "*" in the blocklist for internal
 // chrome:// URLs such as chrome://ntp, chrome://bookmarks, etc.
