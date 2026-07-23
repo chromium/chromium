@@ -205,9 +205,10 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      *
      * @param suggestion Selected suggestion.
      * @param position Position of the suggestion on the list.
+     * @param modifiers The modifier keys pressed during click/activation (metaState).
      */
-    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position) {
-        mSuggestionHost.onSuggestionClicked(suggestion, position, suggestion.getUrl());
+    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position, int modifiers) {
+        mSuggestionHost.onSuggestionClicked(suggestion, position, suggestion.getUrl(), modifiers);
     }
 
     /**
@@ -240,8 +241,8 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
             PropertyModel model,
             int position) {
         model.set(
-                BaseSuggestionViewProperties.ON_CLICK,
-                () -> onSuggestionClicked(suggestion, position));
+                BaseSuggestionViewProperties.ON_ACTIVATE,
+                (modifiers) -> onSuggestionClicked(suggestion, position, modifiers));
         model.set(
                 BaseSuggestionViewProperties.ON_LONG_CLICK,
                 () -> onSuggestionLongClicked(suggestion));

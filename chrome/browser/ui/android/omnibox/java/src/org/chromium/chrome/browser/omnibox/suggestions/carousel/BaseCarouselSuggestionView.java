@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.suggestions.ActivatableSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController;
 import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
@@ -65,7 +66,12 @@ public class BaseCarouselSuggestionView extends RecyclerView {
             return mSelectionController.selectNextItem();
         } else if (KeyNavigationUtil.isEnter(event)) {
             var tile = mSelectionController.getSelectedView();
-            if (tile != null) return tile.performClick();
+            if (tile != null) {
+                if (tile instanceof ActivatableSuggestionView) {
+                    return ((ActivatableSuggestionView) tile).activate(event.getMetaState());
+                }
+                return tile.performClick();
+            }
         }
         return superOnKeyDown(keyCode, event);
     }

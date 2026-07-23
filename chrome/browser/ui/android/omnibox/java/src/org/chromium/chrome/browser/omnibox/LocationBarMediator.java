@@ -517,7 +517,14 @@ class LocationBarMediator
                     @Override
                     public void handleActivationEvent(KeyEvent event) {
                         if (mAutocompleteCoordinator == null) return;
-                        mAutocompleteCoordinator.loadTypedOmniboxText(event.isAltPressed());
+                        @AutocompleteCoordinator.NavigationTarget
+                        int target = AutocompleteCoordinator.NavigationTarget.CURRENT_TAB;
+                        if (event.isAltPressed()) {
+                            target = AutocompleteCoordinator.NavigationTarget.NEW_TAB;
+                        } else if (event.isShiftPressed()) {
+                            target = AutocompleteCoordinator.NavigationTarget.NEW_WINDOW;
+                        }
+                        mAutocompleteCoordinator.loadTypedOmniboxText(event.getEventTime(), target);
                     }
                 };
 
@@ -2642,6 +2649,11 @@ class LocationBarMediator
         }
 
         if (isActivation) {
+            if (KeyNavigationUtil.isEnter(event)
+                    && mSelectionController.getSelectedView() == mUrlBarSelectableView
+                    && OmniboxFeatures.sOmniboxSearchPrefetchOnEnterKeyDown.isEnabled()) {
+                mAutocompleteCoordinator.prefetchDefaultMatch(event.getEventTime());
+            }
             mSelectionController.getSelectedView().handleActivationEvent(event);
             return true;
         }

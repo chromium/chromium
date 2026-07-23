@@ -140,7 +140,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         v -> {
                             OmniboxMetrics.recordSuggestTileTypeUsed(
                                     tileIndex, match.isSearchSuggestion());
-                            mSuggestionHost.onSuggestionClicked(match, matchIndex, match.getUrl());
+                            mSuggestionHost.onSuggestionClicked(
+                                    match, matchIndex, match.getUrl(), /* modifiers= */ 0);
                         },
                         v -> {
                             mSuggestionHost.confirmDeleteMatch(match, title);

@@ -118,9 +118,9 @@ public @interface BaseSuggestionViewProperties {
     @VisibleForTesting
     WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION = new WritableObjectPropertyKey<>();
 
-    /** Callback invoked when user clicks the suggestion. */
+    /** Callback invoked when user activates the suggestion (click or enter). Passes modifiers. */
     @VisibleForTesting
-    WritableObjectPropertyKey<Runnable> ON_CLICK = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Callback<Integer>> ON_ACTIVATE = new WritableObjectPropertyKey<>();
 
     /** Callback invoked when user long-clicks the suggestion. */
     @VisibleForTesting
@@ -152,7 +152,7 @@ public @interface BaseSuggestionViewProperties {
                 ICON,
                 ACTION_BUTTONS,
                 ON_FOCUS_VIA_SELECTION,
-                ON_CLICK,
+                ON_ACTIVATE,
                 ON_LONG_CLICK,
                 ON_TOUCH_DOWN_EVENT,
                 SHOW_DECORATION,

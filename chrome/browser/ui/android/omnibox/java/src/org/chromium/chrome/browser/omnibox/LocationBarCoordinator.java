@@ -34,6 +34,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -327,7 +328,10 @@ public class LocationBarCoordinator
                                         : null,
                         backPressManager,
                         exactMatchUrlSupplier,
-                        () -> mAutocompleteCoordinator.loadTypedOmniboxText(false),
+                        () ->
+                                mAutocompleteCoordinator.loadTypedOmniboxText(
+                                        TimeUtils.uptimeMillis(),
+                                        AutocompleteCoordinator.NavigationTarget.CURRENT_TAB),
                         () -> setOmniboxEditingText(""),
                         this::getUrlBarTextWithoutAutocomplete);
         NonNullObservableSupplier<Integer> fuseboxStateSupplier =

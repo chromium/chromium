@@ -186,16 +186,16 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position) {
+    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position, int modifiers) {
         if (!suggestion.getUrl().isEmpty()) {
-            super.onSuggestionClicked(suggestion, position);
+            super.onSuggestionClicked(suggestion, position, modifiers);
             return;
         }
 
         // Retrieve suggestion content before propagating the Click event.
         suggestion.updateWithClipboardContent(
                 () -> {
-                    super.onSuggestionClicked(suggestion, position);
+                    super.onSuggestionClicked(suggestion, position, modifiers);
                 });
     }
 

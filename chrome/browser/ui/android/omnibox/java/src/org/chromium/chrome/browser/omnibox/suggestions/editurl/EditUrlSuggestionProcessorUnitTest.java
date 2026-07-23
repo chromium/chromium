@@ -349,8 +349,8 @@ public final class EditUrlSuggestionProcessorUnitTest {
         mProcessor.populateModel(mInput, mMatch, mModel, 0);
 
         var monitor = new UserActionTester();
-        mModel.get(BaseSuggestionViewProperties.ON_CLICK).run();
-        verify(mSuggestionHost).onSuggestionClicked(mMatch, 0, mMatch.getUrl());
+        mModel.get(BaseSuggestionViewProperties.ON_ACTIVATE).onResult(/* result= */ 0);
+        verify(mSuggestionHost).onSuggestionClicked(mMatch, 0, mMatch.getUrl(), /* modifiers= */ 0);
         verifyNoMoreInteractions(mSuggestionHost);
 
         assertEquals(1, monitor.getActionCount("Omnibox.EditUrlSuggestion.Tap"));

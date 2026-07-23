@@ -31,6 +31,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.view.ContextThemeWrapper;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 
@@ -917,7 +918,7 @@ public class AutocompleteMediatorUnitTest {
                         .setStarterPackId(StarterPackId.NONE)
                         .build();
 
-        mMediator.onSuggestionClicked(match, 0, JUnitTestGURLs.BLUE_1);
+        mMediator.onSuggestionClicked(match, 0, JUnitTestGURLs.BLUE_1, /* modifiers= */ 0);
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -1071,7 +1072,7 @@ public class AutocompleteMediatorUnitTest {
                                                 /* presentationMode= */ 1)))
                         .build();
 
-        mMediator.onSuggestionClicked(match, 0, url);
+        mMediator.onSuggestionClicked(match, 0, url, /* modifiers= */ 0);
 
         verify(mOmniboxActionDelegate).switchToTab(eq(123), eq(url));
         verify(mAutocompleteDelegate, never()).loadUrl(any());
@@ -1109,7 +1110,7 @@ public class AutocompleteMediatorUnitTest {
                                                 /* presentationMode= */ 1)))
                         .build();
 
-        mMediator.onSuggestionClicked(match, 0, url);
+        mMediator.onSuggestionClicked(match, 0, url, /* modifiers= */ 0);
 
         verify(mOmniboxActionDelegate).switchToTab(eq(123), eq(url));
         verify(mAutocompleteDelegate, never()).loadUrl(any());
@@ -1121,7 +1122,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(createEmptySession());
         GURL url = JUnitTestGURLs.BLUE_1;
 
-        mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url);
+        mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url, /* modifiers= */ 0);
         // Verify that the URL is not loaded in a new tab.
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
@@ -1139,6 +1140,34 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @SmallTest
+    public void onSuggestionClicked_openInNewTab() {
+        mMediator.beginInput(createEmptySession());
+        GURL url = JUnitTestGURLs.BLUE_1;
+
+        // Alt+Click/Enter -> open in new tab.
+        mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url, KeyEvent.META_ALT_ON);
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
+        assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
+        assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewWindow);
+    }
+
+    @Test
+    @SmallTest
+    public void onSuggestionClicked_openInNewWindow() {
+        mMediator.beginInput(createEmptySession());
+        GURL url = JUnitTestGURLs.BLUE_1;
+
+        // Shift+Click/Enter -> open in new window.
+        mMediator.onSuggestionClicked(mSuggestionsList.get(0), 0, url, KeyEvent.META_SHIFT_ON);
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
+        assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
+        assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().openInNewWindow);
+    }
+
+    @Test
     public void onSuggestionClicked_ClipboardImageSuggestion() {
         mMediator.beginInput(createEmptySession());
         var url = new GURL("http://test");
@@ -1147,7 +1176,7 @@ public class AutocompleteMediatorUnitTest {
                         .build();
 
         // Verify that loadUrlWithPostData is called for the clipboard image suggestion.
-        mMediator.onSuggestionClicked(match, 0, url);
+        mMediator.onSuggestionClicked(match, 0, url, /* modifiers= */ 0);
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
 
@@ -1171,7 +1200,8 @@ public class AutocompleteMediatorUnitTest {
         session.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
         mMediator.beginInput(session);
 
-        mMediator.onSuggestionClicked(match, /* matchIndex= */ 0, JUnitTestGURLs.RED_1);
+        mMediator.onSuggestionClicked(
+                match, /* matchIndex= */ 0, JUnitTestGURLs.RED_1, /* modifiers= */ 0);
 
         verify(mComposeboxQueryControllerBridge).getAimUrl(any(), any());
         verifyNoMoreInteractions(mAutocompleteDelegate);
@@ -1510,7 +1540,10 @@ public class AutocompleteMediatorUnitTest {
         // Simulate a navigation to the suggestion that was prefetched. This causes metrics about
         // prefetch to be recorded.
         mMediator.onSuggestionClicked(
-                mSuggestionsList.get(0), /* matchIndex= */ 0, JUnitTestGURLs.URL_1);
+                mSuggestionsList.get(0),
+                /* matchIndex= */ 0,
+                JUnitTestGURLs.URL_1,
+                /* modifiers= */ 0);
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.endInput();
@@ -1547,7 +1580,10 @@ public class AutocompleteMediatorUnitTest {
         // Simulate a navigation to a suggestion that was not prefetched. This causes metrics about
         // prefetch to be recorded.
         mMediator.onSuggestionClicked(
-                mSuggestionsList.get(1), /* matchIndex= */ 1, JUnitTestGURLs.URL_1);
+                mSuggestionsList.get(1),
+                /* matchIndex= */ 1,
+                JUnitTestGURLs.URL_1,
+                /* modifiers= */ 0);
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.endInput();
@@ -1588,7 +1624,10 @@ public class AutocompleteMediatorUnitTest {
         // Simulate a navigation to the suggestion that was not prefetched. This causes metrics
         // about prefetch to be recorded.
         mMediator.onSuggestionClicked(
-                mSuggestionsList.get(0), /* matchIndex= */ 0, JUnitTestGURLs.URL_1);
+                mSuggestionsList.get(0),
+                /* matchIndex= */ 0,
+                JUnitTestGURLs.URL_1,
+                /* modifiers= */ 0);
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.endInput();
@@ -1862,7 +1901,7 @@ public class AutocompleteMediatorUnitTest {
         for (@OmniboxSuggestionType int type = 0; type < OmniboxSuggestionType.NUM_TYPES; type++) {
             if (type != OmniboxSuggestionType.CLIPBOARD_URL) {
                 var match = AutocompleteMatchBuilder.searchWithType(type).build();
-                mMediator.onSuggestionClicked(match, 0, url);
+                mMediator.onSuggestionClicked(match, 0, url, /* modifiers= */ 0);
                 verify(
                                 mAutocompleteDelegate,
                                 never().description(
@@ -1883,7 +1922,7 @@ public class AutocompleteMediatorUnitTest {
         var match =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.CLIPBOARD_URL)
                         .build();
-        mMediator.onSuggestionClicked(match, 0, url);
+        mMediator.onSuggestionClicked(match, 0, url, /* modifiers= */ 0);
 
         verify(mAutocompleteDelegate).maybeShowDefaultBrowserPromo();
     }
@@ -1898,11 +1937,11 @@ public class AutocompleteMediatorUnitTest {
                         .build();
 
         when(mTextStateProvider.wasLastEditPaste()).thenReturn(false);
-        mMediator.onSuggestionClicked(match, 0, url);
+        mMediator.onSuggestionClicked(match, 0, url, /* modifiers= */ 0);
         verify(mAutocompleteDelegate, never()).maybeShowDefaultBrowserPromo();
 
         when(mTextStateProvider.wasLastEditPaste()).thenReturn(true);
-        mMediator.onSuggestionClicked(match, 0, url);
+        mMediator.onSuggestionClicked(match, 0, url, /* modifiers= */ 0);
         verify(mAutocompleteDelegate).maybeShowDefaultBrowserPromo();
     }
 
@@ -1938,8 +1977,7 @@ public class AutocompleteMediatorUnitTest {
         mSuggestionsList.add(0, defaultMatch);
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
 
-        mMediator.loadTypedOmniboxText(
-                123L, /* openInNewTab= */ false, /* openInNewWindow= */ false);
+        mMediator.loadTypedOmniboxText(123L, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
@@ -1971,7 +2009,7 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.beginInput(session);
         mMediator.loadTypedOmniboxText(
-                TEST_EVENT_TIME, /* openInNewTab= */ false, /* openInNewWindow= */ false);
+                TEST_EVENT_TIME, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, JUnitTestGURLs.BLUE_2.getSpec());
@@ -2014,7 +2052,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onSuggestionsReceived(AutocompleteResult.fromCache(mSuggestionsList, null), true);
 
         mMediator.loadTypedOmniboxText(
-                TEST_EVENT_TIME, /* openInNewTab= */ false, /* openInNewWindow= */ false);
+                TEST_EVENT_TIME, AutocompleteCoordinator.NavigationTarget.CURRENT_TAB);
 
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url2.getSpec());

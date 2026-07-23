@@ -162,9 +162,9 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position) {
+    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position, int modifiers) {
         RecordUserAction.record("Omnibox.EditUrlSuggestion.Tap");
-        super.onSuggestionClicked(suggestion, position);
+        super.onSuggestionClicked(suggestion, position, modifiers);
     }
 
     /** Invoked when user interacts with Share action button. */

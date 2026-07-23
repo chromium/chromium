@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
 
 import androidx.annotation.Px;
@@ -735,9 +736,11 @@ class AutocompleteMediator
      * @param suggestion The AutocompleteMatch which was selected.
      * @param matchIndex Position of the suggestion in the drop down view.
      * @param url The URL associated with the suggestion.
+     * @param modifiers The modifier keys pressed during click/activation (metaState).
      */
     @Override
-    public void onSuggestionClicked(AutocompleteMatch suggestion, int matchIndex, GURL url) {
+    public void onSuggestionClicked(
+            AutocompleteMatch suggestion, int matchIndex, GURL url, int modifiers) {
         if (!isInInputSession()) return;
 
         // Android hub and @tabs starter pack should always switch to tab if one is available.
@@ -768,13 +771,11 @@ class AutocompleteMediator
             return;
         }
 
+        boolean openInNewTab = (modifiers & (KeyEvent.META_ALT_ON | KeyEvent.META_CTRL_ON)) != 0;
+        boolean openInNewWindow = !openInNewTab && (modifiers & KeyEvent.META_SHIFT_ON) != 0;
+
         loadUrlForOmniboxMatch(
-                matchIndex,
-                suggestion,
-                url,
-                mLastActionUpTimestamp,
-                /* openInNewTab= */ false,
-                /* openInNewWindow= */ false);
+                matchIndex, suggestion, url, mLastActionUpTimestamp, openInNewTab, openInNewWindow);
     }
 
     /**
@@ -1390,23 +1391,19 @@ class AutocompleteMediator
     }
 
     /**
-     * Load the url corresponding to the typed omnibox text.
+     * Navigate using the current typed omnibox text.
      *
-     * @param eventTime The timestamp the load was triggered by the user.
-     * @param openInNewTab Whether the URL will be loaded in a new tab. If {@code true}, the URL
-     *     will be loaded in a new tab. If {@code false}, The URL will be loaded in the current tab.
-     * @param openInNewWindow Whether the URL will be loaded in a new window. If {@code true}, the
-     *     URL will be loaded in a new window. If {@code false}, The URL will be loaded in the
-     *     current window.
+     * @param eventTime The timestamp when the navigation was triggered (e.g., uptimeMillis).
+     * @param target The target destination for the navigation (current tab, new tab, new window).
      */
-    void loadTypedOmniboxText(long eventTime, boolean openInNewTab, boolean openInNewWindow) {
+    void loadTypedOmniboxText(
+            long eventTime, @AutocompleteCoordinator.NavigationTarget int target) {
         // TODO(crbug.com/478783240): investigate what flows lead to <enter> key triggering
         // navigation while the Omnibox input session is not active.
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.loadTypedOmniboxText")) {
             if (!isInInputSession()) return;
-            assert !openInNewTab || !openInNewWindow
-                    : "Unable to determine if the URL should be loaded in a new tab in the current"
-                            + " window or in a new window.";
+            boolean openInNewTab = target == AutocompleteCoordinator.NavigationTarget.NEW_TAB;
+            boolean openInNewWindow = target == AutocompleteCoordinator.NavigationTarget.NEW_WINDOW;
 
             final String urlText = mUrlBarEditingTextProvider.getTextWithAutocomplete();
             cancelAutocompleteRequests();
@@ -1467,6 +1464,29 @@ class AutocompleteMediator
             return mAutocomplete != null ? mAutocomplete.classify(urlText) : null;
             // If urlText couldn't be classified, bail.
         }
+    }
+
+    /**
+     * Load the URL for the suggestion at the specified index.
+     *
+     * @param matchIndex Position of the suggestion in the drop down view.
+     * @param eventTime The timestamp when the navigation was triggered.
+     * @param openInNewTab Whether the URL will be loaded in a new tab.
+     * @param openInNewWindow Whether the URL will be loaded in a new window.
+     */
+    /* package */ boolean loadUrlForOmniboxMatch(
+            int matchIndex, long eventTime, boolean openInNewTab, boolean openInNewWindow) {
+        if (!isInInputSession()) return false;
+        AutocompleteMatch suggestion = getSuggestionAt(matchIndex);
+        if (suggestion == null) return false;
+        loadUrlForOmniboxMatch(
+                matchIndex,
+                suggestion,
+                suggestion.getUrl(),
+                eventTime,
+                openInNewTab,
+                openInNewWindow);
+        return true;
     }
 
     /**

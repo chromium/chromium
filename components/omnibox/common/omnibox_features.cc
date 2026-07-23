@@ -291,6 +291,9 @@ BASE_FEATURE(kUrlScoringModel, enable_if(!IS_ANDROID));
 // are enabled.
 BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch, enable_if(IS_ANDROID));
 
+// Enables simultaneous prefetch and navigation on Enter KeyDown in Omnibox.
+BASE_FEATURE(kOmniboxSearchPrefetchOnEnterKeyDown, DISABLED);
+
 // Enables keyword-based site search functionality on Android devices.
 BASE_FEATURE(kOmniboxSiteSearch, DISABLED);
 
@@ -529,6 +532,7 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
       &kOmniboxItemDecoration,
       &kExactMatchFavicons,
       &kStarterPackExpansion,
+      &kOmniboxSearchPrefetchOnEnterKeyDown,
       &kOmniboxAimImageDownscaling};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);

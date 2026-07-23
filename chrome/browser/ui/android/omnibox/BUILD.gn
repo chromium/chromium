@@ -115,6 +115,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxImageSupplier.java",
     "java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxResourceProvider.java",
     "java/src/org/chromium/chrome/browser/omnibox/styles/SuggestionSpannable.java",
+    "java/src/org/chromium/chrome/browser/omnibox/suggestions/ActivatableSuggestionView.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteController.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteCoordinator.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/AutocompleteDelegate.java",

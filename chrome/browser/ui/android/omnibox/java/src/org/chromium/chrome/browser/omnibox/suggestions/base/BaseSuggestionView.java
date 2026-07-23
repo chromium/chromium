@@ -19,9 +19,11 @@ import android.widget.ImageView;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.CheckDiscard;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.suggestions.ActivatableSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.SimpleSelectionController;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.ui.base.KeyNavigationUtil;
@@ -36,7 +38,8 @@ import java.util.List;
  * @param <T> The type of View being wrapped by this container.
  */
 @NullMarked
-public class BaseSuggestionView<T extends View> extends SuggestionLayout {
+public class BaseSuggestionView<T extends View> extends SuggestionLayout
+        implements ActivatableSuggestionView {
     public final ImageView decorationIcon;
     public final T contentView;
     public final ActionChipsView actionChipsView;
@@ -45,12 +48,14 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
     private final SimpleSelectionController mActionButtonsHighlighter;
     private final View.OnTouchListener mActionButtonTouchListener;
     private @Nullable Runnable mOnFocusViaSelectionListener;
+    private @Nullable Callback<Integer> mOnActivateListener;
     // Tracks whether the suggestion view is currently hovered during motion. This value diffs
     // from isHovered(), which stays active if the action button is hovered even when the suggestion
     // view itself is not hovered.
     private boolean mSelfMotionHovered;
     private boolean mAnyActionButtonHovered;
     private boolean mAnyActionButtonPressed;
+    private int mLastTouchMetaState;
 
     /**
      * Constructs a new suggestion view and inflates supplied layout as the contents view.
@@ -236,7 +241,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
                 int selection = assumeNonNull(mActionButtonsHighlighter.getPosition());
                 return mActionButtons.get(selection).performClick();
             }
-            return performClick();
+            return activate(event.getMetaState());
         }
 
         // Allow browsing through right hand side buttons.
@@ -330,6 +335,45 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
      */
     void setOnFocusViaSelectionListener(@Nullable Runnable listener) {
         mOnFocusViaSelectionListener = listener;
+    }
+
+    /**
+     * Specify the listener receiving a call when the user activates this Suggestion.
+     *
+     * @param listener The listener to be notified about activation.
+     */
+    void setOnActivateListener(@Nullable Callback<Integer> listener) {
+        mOnActivateListener = listener;
+    }
+
+    // ClickableViewAccessibility is suppressed because we delegate touch handling to
+    // super.onTouchEvent, which internally calls performClick() to handle clicks and accessibility.
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN
+                || event.getActionMasked() == MotionEvent.ACTION_UP) {
+            mLastTouchMetaState = event.getMetaState();
+        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean performClick() {
+        boolean handled = activate(mLastTouchMetaState);
+        mLastTouchMetaState = 0;
+        return handled || super.performClick();
+    }
+
+    @Override
+    public boolean activate(int modifiers) {
+        if (mOnActivateListener != null) {
+            mOnActivateListener.onResult(modifiers);
+            playSoundEffect(android.view.SoundEffectConstants.CLICK);
+            sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
+            return true;
+        }
+        return false;
     }
 
     /** Set the lead-in spacing for the action chip carousel. */

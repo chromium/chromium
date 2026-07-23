@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
@@ -44,7 +45,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionCont
 public class BaseSuggestionViewUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock View.OnClickListener mOnClickListener;
+    private @Mock Callback<Integer> mOnActivateListener;
     private @Mock View.OnLongClickListener mOnLongClickListener;
 
     private Context mContext;
@@ -58,7 +59,7 @@ public class BaseSuggestionViewUnitTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mInnerView = new View(mContext);
         mView = spy(new BaseSuggestionView<>(mInnerView));
-        mView.setOnClickListener(mOnClickListener);
+        mView.setOnActivateListener(mOnActivateListener);
         mView.setOnLongClickListener(mOnLongClickListener);
     }
 
@@ -74,9 +75,33 @@ public class BaseSuggestionViewUnitTest {
         // This test evaluates that <Enter> key triggers the navigation event until we plumb both
         // keyDown and keyUp events.
         assertTrue(sendKey(KeyEvent.KEYCODE_ENTER));
-        verify(mOnClickListener).onClick(any());
-        verifyNoMoreInteractions(mOnClickListener, mOnLongClickListener);
+        verify(mOnActivateListener).onResult(eq(0));
+        verifyNoMoreInteractions(mOnActivateListener, mOnLongClickListener);
         verify(mView, never()).super_onKeyDown(anyInt(), any());
+    }
+
+    @Test
+    public void onKeyDown_enterKeyWithModifiersActivatesSuggestion() {
+        var event =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_ENTER,
+                        0,
+                        KeyEvent.META_ALT_ON);
+        assertTrue(mView.onKeyDown(KeyEvent.KEYCODE_ENTER, event));
+        verify(mOnActivateListener).onResult(eq(KeyEvent.META_ALT_ON));
+    }
+
+    @Test
+    public void performClick_usesLastTouchModifiers() {
+        MotionEvent downEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0f, 0f, KeyEvent.META_ALT_ON);
+        mView.onTouchEvent(downEvent);
+
+        assertTrue(mView.performClick());
+        verify(mOnActivateListener).onResult(eq(KeyEvent.META_ALT_ON));
     }
 
     @Test
@@ -98,7 +123,7 @@ public class BaseSuggestionViewUnitTest {
     @Test
     public void onKeyDown_unrecognizedKeysPassedToSuper() {
         assertFalse(sendKey(KeyEvent.KEYCODE_A));
-        verifyNoMoreInteractions(mOnClickListener, mOnLongClickListener);
+        verifyNoMoreInteractions(mOnActivateListener, mOnLongClickListener);
         verify(mView).super_onKeyDown(eq(KeyEvent.KEYCODE_A), any());
     }
 

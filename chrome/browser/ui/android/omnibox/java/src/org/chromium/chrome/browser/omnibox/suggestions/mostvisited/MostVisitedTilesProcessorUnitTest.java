@@ -338,15 +338,15 @@ public final class MostVisitedTilesProcessorUnitTest {
         // on the list, rather than placement of the tile.
         tileList.get(1).model.get(TileViewProperties.ON_CLICK).onClick(null);
         ordered.verify(mSuggestionHost, times(1))
-                .onSuggestionClicked(eq(mMatches.get(1)), eq(3), eq(NAV_URL));
+                .onSuggestionClicked(eq(mMatches.get(1)), eq(3), eq(NAV_URL), eq(0));
 
         tileList.get(2).model.get(TileViewProperties.ON_CLICK).onClick(null);
         ordered.verify(mSuggestionHost, times(1))
-                .onSuggestionClicked(eq(mMatches.get(2)), eq(3), eq(NAV_URL_2));
+                .onSuggestionClicked(eq(mMatches.get(2)), eq(3), eq(NAV_URL_2), eq(0));
 
         tileList.get(0).model.get(TileViewProperties.ON_CLICK).onClick(null);
         ordered.verify(mSuggestionHost, times(1))
-                .onSuggestionClicked(eq(mMatches.get(0)), eq(3), eq(SEARCH_URL));
+                .onSuggestionClicked(eq(mMatches.get(0)), eq(3), eq(SEARCH_URL), eq(0));
 
         verifyNoMoreInteractions(mSuggestionHost);
 
@@ -389,15 +389,15 @@ public final class MostVisitedTilesProcessorUnitTest {
         // on the list, rather than placement of the tile.
         tileList.get(1).model.get(TileViewProperties.ON_CLICK).onClick(null);
         ordered.verify(mSuggestionHost, times(1))
-                .onSuggestionClicked(eq(mMatches.get(1)), eq(3), eq(NAV_URL));
+                .onSuggestionClicked(eq(mMatches.get(1)), eq(3), eq(NAV_URL), eq(0));
 
         tileList.get(2).model.get(TileViewProperties.ON_CLICK).onClick(null);
         ordered.verify(mSuggestionHost, times(1))
-                .onSuggestionClicked(eq(mMatches.get(2)), eq(3), eq(NAV_URL_2));
+                .onSuggestionClicked(eq(mMatches.get(2)), eq(3), eq(NAV_URL_2), eq(0));
 
         tileList.get(0).model.get(TileViewProperties.ON_CLICK).onClick(null);
         ordered.verify(mSuggestionHost, times(1))
-                .onSuggestionClicked(eq(mMatches.get(0)), eq(3), eq(SEARCH_URL));
+                .onSuggestionClicked(eq(mMatches.get(0)), eq(3), eq(SEARCH_URL), eq(0));
 
         verifyNoMoreInteractions(mSuggestionHost);
 

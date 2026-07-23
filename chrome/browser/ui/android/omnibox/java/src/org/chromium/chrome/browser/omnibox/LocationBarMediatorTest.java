@@ -163,7 +163,10 @@ import java.util.Map;
 /** Unit tests for LocationBarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {LocationBarMediatorTest.ObjectAnimatorShadow.class})
-@DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+@DisableFeatures({
+    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
+    OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN
+})
 @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public class LocationBarMediatorTest {
 
@@ -510,6 +513,19 @@ public class LocationBarMediatorTest {
         locationBarMediator.getInstallButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
         locationBarMediator.getBookmarkButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
         locationBarMediator.getZoomButtonToolbarWidthConsumer().updateVisibility(buttonWidth);
+    }
+
+    private void setUpMediatorAndCoordinator() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        doReturn(true).when(mAutocompleteCoordinator).hasAutocompleteController();
+        doReturn(null).when(mAutocompleteCoordinator).getSuggestionsContainer();
+    }
+
+    private void setUpEnterKeyEvent(long eventTime) {
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+        doReturn(KeyEvent.KEYCODE_ENTER).when(mKeyEvent).getKeyCode();
+        doReturn(eventTime).when(mKeyEvent).getEventTime();
     }
 
     @Test
@@ -1531,6 +1547,75 @@ public class LocationBarMediatorTest {
     public void testOnKey_unhandled() {
         doReturn(KeyEvent.KEYCODE_BUTTON_14).when(mKeyEvent).getAction();
         assertFalse(mMediator.onKey(mView, KeyEvent.KEYCODE_BACK, mKeyEvent));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN)
+    public void testOnKey_enter_noSuggestionSelected() {
+        setUpMediatorAndCoordinator();
+        setUpEnterKeyEvent(9999L);
+
+        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_ENTER, mKeyEvent));
+
+        // Verify prefetch is triggered.
+        verify(mAutocompleteCoordinator).prefetchDefaultMatch(eq(9999L));
+
+        // Verify navigation is triggered.
+        verify(mAutocompleteCoordinator)
+                .loadTypedOmniboxText(
+                        eq(9999L), eq(AutocompleteCoordinator.NavigationTarget.CURRENT_TAB));
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN)
+    public void testOnKey_enter_noSuggestionSelected_featureDisabled() {
+        setUpMediatorAndCoordinator();
+        setUpEnterKeyEvent(9999L);
+
+        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_ENTER, mKeyEvent));
+
+        // Verify prefetch is NOT triggered.
+        verify(mAutocompleteCoordinator, never()).prefetchDefaultMatch(anyLong());
+
+        // Verify navigation is triggered.
+        verify(mAutocompleteCoordinator)
+                .loadTypedOmniboxText(
+                        eq(9999L), eq(AutocompleteCoordinator.NavigationTarget.CURRENT_TAB));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN)
+    public void testOnKey_enter_deleteButtonSelected() {
+        setUpMediatorAndCoordinator();
+
+        // Make only UrlBar and Delete button visible to simplify selection.
+        doReturn(View.GONE).when(mActivationChip).getVisibility();
+        doReturn(View.GONE).when(mPlusButton).getVisibility();
+        doReturn(View.GONE).when(mMicButton).getVisibility();
+        doReturn(View.GONE).when(mNavigateButton).getVisibility();
+        doReturn(View.VISIBLE).when(mDeleteButton).getVisibility();
+
+        // 1. Send TAB to move selection from UrlBar (index 0) to Delete button (index 1 in visible
+        // views).
+        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+        doReturn(KeyEvent.KEYCODE_TAB).when(mKeyEvent).getKeyCode();
+        doReturn(true).when(mKeyEvent).hasNoModifiers();
+
+        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_TAB, mKeyEvent));
+
+        // 2. Send ENTER KeyDown event to activate the selected Delete button.
+        setUpEnterKeyEvent(0L);
+
+        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_ENTER, mKeyEvent));
+
+        // Verify Delete button activation was triggered (performClick).
+        verify(mDeleteButton).performClick();
+
+        // Verify prefetch was NOT triggered.
+        verify(mAutocompleteCoordinator, never()).prefetchDefaultMatch(anyLong());
+
+        // Verify UrlBar navigation was NOT triggered.
+        verify(mAutocompleteCoordinator, never()).loadTypedOmniboxText(anyLong(), anyInt());
     }
 
     @Test
@@ -3640,14 +3725,26 @@ public class LocationBarMediatorTest {
     public void testHandleKeyNavigationEvent_activate() {
         doReturn(KeyEvent.KEYCODE_ENTER).when(mKeyEvent).getKeyCode();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
+        doReturn(9999L).when(mKeyEvent).getEventTime();
 
         doReturn(View.VISIBLE).when(mUrlBar).getVisibility();
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_ENTER, mKeyEvent));
-        verify(mAutocompleteCoordinator).loadTypedOmniboxText(false);
+        verify(mAutocompleteCoordinator)
+                .loadTypedOmniboxText(
+                        eq(9999L), eq(AutocompleteCoordinator.NavigationTarget.CURRENT_TAB));
 
         doReturn(true).when(mKeyEvent).isAltPressed();
         assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_ENTER, mKeyEvent));
-        verify(mAutocompleteCoordinator).loadTypedOmniboxText(true);
+        verify(mAutocompleteCoordinator)
+                .loadTypedOmniboxText(
+                        eq(9999L), eq(AutocompleteCoordinator.NavigationTarget.NEW_TAB));
+
+        doReturn(false).when(mKeyEvent).isAltPressed();
+        doReturn(true).when(mKeyEvent).isShiftPressed();
+        assertTrue(mMediator.handleKeyNavigationEvent(KeyEvent.KEYCODE_ENTER, mKeyEvent));
+        verify(mAutocompleteCoordinator)
+                .loadTypedOmniboxText(
+                        eq(9999L), eq(AutocompleteCoordinator.NavigationTarget.NEW_WINDOW));
     }
 
     @Test

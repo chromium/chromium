@@ -592,7 +592,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             handleSelectionChange();
             return true;
         } else if (KeyNavigationUtil.isEnter(event)) {
-            if (selectedView != null && !hasAdditionalModifiers) {
+            if (selectedView != null) {
+                if (selectedView instanceof ActivatableSuggestionView) {
+                    return ((ActivatableSuggestionView) selectedView)
+                            .activate(event.getMetaState());
+                }
                 return selectedView.performClick();
             }
         }

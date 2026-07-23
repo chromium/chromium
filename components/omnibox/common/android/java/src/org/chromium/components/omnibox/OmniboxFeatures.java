@@ -88,6 +88,11 @@ public class OmniboxFeatures {
                     OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
                     FeatureState.ENABLED_IN_PROD);
 
+    public static final CachedFlag sOmniboxSearchPrefetchOnEnterKeyDown =
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_SEARCH_PREFETCH_ON_ENTER_KEY_DOWN,
+                    FeatureState.DISABLED);
+
     public static final CachedFlag sUrlBarWithoutLigatures =
             newFlag(OmniboxFeatureList.URL_BAR_WITHOUT_LIGATURES, FeatureState.ENABLED_IN_PROD);
 
