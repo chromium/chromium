@@ -716,6 +716,7 @@ source_set("unit_tests") {
     "//chrome/browser:global_features",
     "//chrome/browser/background/glic",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/sync",
     "//chrome/browser/ui:ui_features",
     "//components/tabs:test_support",
     "//testing/gmock",

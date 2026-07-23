@@ -229,6 +229,7 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 }
 
 void GlicKeyedService::Shutdown() {
+  experimental_triggering_state_subscription_ = {};
   instance_coordinator().Shutdown();
 }
 

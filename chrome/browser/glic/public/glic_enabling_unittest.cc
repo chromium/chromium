@@ -67,6 +67,10 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#else
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/local_device_info_provider_impl.h"
 #endif
 
 using base::test::FeatureRef;
@@ -1268,6 +1272,42 @@ TEST_F(GlicEnablingProfileEligibilityTest,
                        std::make_unique<base::Value>(false));
   EXPECT_FALSE(enabling.IsExperimentalTriggeringUserControlled());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(GlicEnablingProfileEligibilityTest,
+       ExperimentalTriggering_ProfileTeardownNoCrash) {
+  base::test::ScopedFeatureList feature_list(
+      features::kGlicExperimentalTriggering);
+
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  identity_test_env->MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+  SetGlicCapability(profile(), true);
+
+  auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(profile());
+  ASSERT_TRUE(glic_service);
+  glic_service->enabling().SetCompletedFre(prefs::FreStatus::kCompleted);
+  glic_service->enabling().SetUserEnabledActuationOnWeb(true);
+  glic_service->enabling().SetExperimentalTriggeringEnabled(true);
+
+  auto* device_info_sync_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(device_info_sync_service);
+  auto* provider = static_cast<syncer::LocalDeviceInfoProviderImpl*>(
+      device_info_sync_service->GetLocalDeviceInfoProvider());
+  ASSERT_TRUE(provider);
+  provider->Initialize("cache_guid", "client_name", "manufacturer", "model",
+                       "full_hardware_class",
+                       /*android_os_build_fingerprint_prefix=*/std::nullopt,
+                       /*device_info_restored_from_store=*/nullptr);
+
+  // 1. Simulate GlicKeyedService Phase 1 Shutdown.
+  glic_service->Shutdown();
+
+  // 2. Trigger GlicEnabling state change post-shutdown.
+  glic_service->enabling().SetExperimentalTriggeringEnabled(false);
+}
+#endif
 
 TEST_F(GlicEnablingProfileEligibilityTest, ConsentChangedCallback) {
   bool callback_called = false;
