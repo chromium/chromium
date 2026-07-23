@@ -1703,6 +1703,27 @@ public class MultiWindowUtilsUnitTest {
                 MultiWindowUtils.getForegroundWindowActivity(activity0));
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testIsNewStartupWindowPolicyEnabled_Desktop() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        assertTrue(MultiWindowUtils.isNewStartupWindowPolicyEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testIsNewStartupWindowPolicyEnabled_NonDesktop() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ false);
+        assertFalse(MultiWindowUtils.isNewStartupWindowPolicyEnabled());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testIsNewStartupWindowPolicyEnabled_FlagDisabled() {
+        DeviceInfo.setIsDesktopForTesting(/* isDesktop= */ true);
+        assertFalse(MultiWindowUtils.isNewStartupWindowPolicyEnabled());
+    }
+
     private void testRecordTabCountForRelaunchWhenActivityPausedImpl(int windowId) {
         List<TabModel> models = Arrays.asList(mNormalTabModel, mIncognitoTabModel);
         when(mTabModelSelector.getModels()).thenReturn(models);

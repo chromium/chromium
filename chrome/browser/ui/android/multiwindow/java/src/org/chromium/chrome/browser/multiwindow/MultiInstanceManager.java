@@ -125,6 +125,13 @@ public abstract class MultiInstanceManager {
         int INVALID_INSTANCE = 7;
     }
 
+    @IntDef({LastSessionExitType.NORMAL, LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LastSessionExitType {
+        int NORMAL = 0;
+        int LAST_WINDOW_CLOSED_BY_APP = 1;
+    }
+
     /** A class that holds information about an allocated instance ID. */
     public static class AllocatedIdInfo {
         public final int instanceId;

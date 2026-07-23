@@ -1764,6 +1764,10 @@ public class MultiWindowUtils implements ActivityStateListener {
         return results;
     }
 
+    /* package */ static boolean isNewStartupWindowPolicyEnabled() {
+        return ChromeFeatureList.sOnStartupWindowPolicy.isEnabled() && DeviceInfo.isDesktop();
+    }
+
     /* package */ static void setAppTaskIdsForTesting(Set<Integer> appTaskIds) {
         sAppTaskIdsForTesting = appTaskIds;
         ResettersForTesting.register(() -> sAppTaskIdsForTesting = null);

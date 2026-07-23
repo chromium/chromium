@@ -421,6 +421,17 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
         }
     }
 
+    static int readLastSessionExitType() {
+        return sData != null ? sData.getLastSessionExitType() : 0;
+    }
+
+    static void writeLastSessionExitType(int exitType) {
+        if (sData != null) {
+            sData = sData.toBuilder().setLastSessionExitType(exitType).build();
+            saveProto();
+        }
+    }
+
     static List<CrashRecoveryWindowInfo> readCrashRecoveryData() {
         if (sData == null) return Collections.emptyList();
 

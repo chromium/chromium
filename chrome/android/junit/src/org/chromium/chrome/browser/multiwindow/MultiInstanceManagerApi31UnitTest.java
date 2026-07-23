@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.MultiInsta
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.LastSessionExitType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
@@ -474,13 +475,21 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[0]));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
 
-        // Simulate closing a window from Android Recents.
+        // Simulate closing instance 1 from recents (instance 1 now has persisted state).
         removeTaskOnRecentsScreen(mActivityPool[1]);
 
-        // Normally, without ON_STARTUP_WINDOW_POLICY, allocating a new window here would reuse
-        // instance 1 because it has persistent state. With ON_STARTUP_WINDOW_POLICY enabled, it
-        // refrains from reusing instance 1 and allocates a brand-new unused index (2).
+        // Mark last session exit type as LAST_WINDOW_CLOSED_BY_APP.
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(
+                LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP);
+
+        // Allocating a new window should refrain from using instance 1 and allocate brand-new
+        // instance 2.
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+
+        // Check that the flag was reset to NORMAL.
+        assertEquals(
+                LastSessionExitType.NORMAL,
+                ChromeMultiInstancePersistentStore.readLastSessionExitType());
     }
 
     @Test
@@ -502,6 +511,32 @@ public class MultiInstanceManagerApi31UnitTest {
         // With ON_STARTUP_WINDOW_POLICY enabled, but with EXTRA_FROM_RELAUNCH set on the intent,
         // it should bypass the skip check and reuse instance 1.
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void
+            testAllocInstanceId_onStartupWindowPolicy_lastWindowClosedByApp_refrainsFromUsingExistingInstanceState() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        // Allocate instance 0 and 1.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[0]));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+
+        // Simulate closing instance 1 from recents (instance 1 now has persisted state).
+        removeTaskOnRecentsScreen(mActivityPool[1]);
+
+        // Mark last session exit type as LAST_WINDOW_CLOSED_BY_APP.
+        ChromeMultiInstancePersistentStore.writeLastSessionExitType(
+                LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP);
+
+        // Allocating a new window should refrain from using instance 1 and allocate brand-new
+        // instance 2.
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+
+        // Check that the flag was reset to NORMAL.
+        assertEquals(
+                LastSessionExitType.NORMAL,
+                ChromeMultiInstancePersistentStore.readLastSessionExitType());
     }
 
     @Test
@@ -1061,6 +1096,43 @@ public class MultiInstanceManagerApi31UnitTest {
         inOrderVerifier.verify(appTasks.get(1)).finishAndRemoveTask();
         inOrderVerifier.verify(appTasks.get(2)).finishAndRemoveTask();
         inOrderVerifier.verify(mCurrentActivity).finishAndRemoveTask();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testCloseWindows_lastActiveWindowClosed_setsLastSessionExitType() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        // Allocate instance 0.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[0]));
+
+        // Close instance 0 (the only active instance).
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(0), CloseWindowAppSource.NO_TABS_IN_WINDOW);
+
+        assertEquals(
+                LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP,
+                ChromeMultiInstancePersistentStore.readLastSessionExitType());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void
+            testCloseWindows_lastActiveWindowClosed_withInactiveInstancesInList_setsLastSessionExitType() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        // Allocate instance 0 (active) and instance 1.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[0]));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+
+        // Simulate closing instance 1 from recents (instance 1 is now inactive).
+        removeTaskOnRecentsScreen(mActivityPool[1]);
+
+        // Close list containing active instance 0 and inactive instance 1.
+        mMultiInstanceManager.closeWindows(
+                Arrays.asList(0, 1), CloseWindowAppSource.NO_TABS_IN_WINDOW);
+
+        assertEquals(
+                LastSessionExitType.LAST_WINDOW_CLOSED_BY_APP,
+                ChromeMultiInstancePersistentStore.readLastSessionExitType());
     }
 
     @Test

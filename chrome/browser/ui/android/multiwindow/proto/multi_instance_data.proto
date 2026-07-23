@@ -61,6 +61,10 @@ message MultiInstanceData {
 
   // State to track pending crash recovery.
   optional bool is_crash_recovery_pending = 13;
+
+  // The exit type of the last multi-instance session.
+  // Maps to MultiInstanceManager.LastSessionExitType.
+  optional int32 last_session_exit_type = 14;
 }
 
 // Data representing the state of a single Chrome instance.
