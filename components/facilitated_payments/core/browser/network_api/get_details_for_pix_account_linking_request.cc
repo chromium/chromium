@@ -84,11 +84,14 @@ void GetDetailsForPixAccountLinkingRequest::ParseResponse(
   if (response.FindDict("error")) {
     return;
   }
-  if (response.FindDict("pix_account_linking_details")) {
-    is_eligible_for_pix_account_linking_ = true;
-    // TODO(crbug.com/417330610): Parse action_token from
-    // pix_account_linking_details.
-    return;
+  if (const base::DictValue* details_dict =
+          response.FindDict("pix_account_linking_details")) {
+    if (const std::string* action_token_b64 =
+            details_dict->FindString("action_token")) {
+      action_token_ = base::Base64Decode(*action_token_b64)
+                          .value_or(std::vector<uint8_t>{});
+      is_eligible_for_pix_account_linking_ = !action_token_.empty();
+    }
   }
 }
 
@@ -99,8 +102,7 @@ bool GetDetailsForPixAccountLinkingRequest::IsResponseComplete() {
 void GetDetailsForPixAccountLinkingRequest::RespondToDelegate(
     autofill::payments::PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(response_callback_)
-      .Run(result, is_eligible_for_pix_account_linking_,
-           std::vector<uint8_t>{});
+      .Run(result, is_eligible_for_pix_account_linking_, action_token_);
 }
 
 }  // namespace payments::facilitated

@@ -53,7 +53,12 @@ class GetDetailsForPixAccountLinkingRequest
       ParseResponse_Success_AccountLinkingEligibilitySetToTrue);
   FRIEND_TEST_ALL_PREFIXES(
       GetDetailsForPixAccountLinkingRequestTest,
-      ParseResponse_SuccessWithoutPixAccountLinkingDetails_AccountLinkingEligibilitySetToTrue);
+      ParseResponse_SuccessWithoutPixAccountLinkingDetails_AccountLinkingEligibilitySetToFalse);
+  FRIEND_TEST_ALL_PREFIXES(GetDetailsForPixAccountLinkingRequestTest,
+                           ParseResponse_SuccessWithActionToken);
+  FRIEND_TEST_ALL_PREFIXES(
+      GetDetailsForPixAccountLinkingRequestTest,
+      ParseResponse_SuccessWithoutActionToken_AccountLinkingEligibilitySetToFalse);
   FRIEND_TEST_ALL_PREFIXES(GetDetailsForPixAccountLinkingRequestTest,
                            ParseResponseNotCalled_ResponseNotComplete);
   FRIEND_TEST_ALL_PREFIXES(GetDetailsForPixAccountLinkingRequestTest,
@@ -71,6 +76,7 @@ class GetDetailsForPixAccountLinkingRequest
 
   // Response properties
   bool is_eligible_for_pix_account_linking_ = false;
+  std::vector<uint8_t> action_token_;
 };
 
 }  // namespace payments::facilitated

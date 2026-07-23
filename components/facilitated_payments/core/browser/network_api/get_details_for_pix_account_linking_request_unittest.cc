@@ -55,9 +55,9 @@ TEST_F(GetDetailsForPixAccountLinkingRequestTest,
   auto request = std::make_unique<GetDetailsForPixAccountLinkingRequest>(
       123, std::vector<uint8_t>{}, /*response_callback=*/base::DoNothing(),
       /*app_locale=*/"US", /*full_sync_enabled=*/true);
-  std::optional<base::Value> response =
-      base::JSONReader::Read("{\"pix_account_linking_details\":{}}",
-                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      R"({"pix_account_linking_details":{"action_token":"YWJj"}})",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   request->ParseResponse(response->GetDict());
 
@@ -65,9 +65,65 @@ TEST_F(GetDetailsForPixAccountLinkingRequestTest,
   EXPECT_TRUE(request->is_eligible_for_pix_account_linking_);
 }
 
+TEST_F(GetDetailsForPixAccountLinkingRequestTest,
+       ParseResponse_SuccessWithActionToken) {
+  std::vector<uint8_t> result_action_token;
+  auto request = std::make_unique<GetDetailsForPixAccountLinkingRequest>(
+      123, std::vector<uint8_t>{},
+      base::BindOnce(
+          [](std::vector<uint8_t>* out_token,
+             autofill::payments::PaymentsAutofillClient::PaymentsRpcResult
+                 result,
+             bool is_eligible, const std::vector<uint8_t>& action_token) {
+            *out_token = action_token;
+          },
+          &result_action_token),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+
+  // "YWJj" is Base64 for "abc" ({'a', 'b', 'c'})
+  std::optional<base::Value> response = base::JSONReader::Read(
+      R"({"pix_account_linking_details":{"action_token":"YWJj"}})",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+
+  request->ParseResponse(response->GetDict());
+  request->RespondToDelegate(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
+
+  EXPECT_TRUE(request->is_eligible_for_pix_account_linking_);
+  EXPECT_EQ(result_action_token, (std::vector<uint8_t>{'a', 'b', 'c'}));
+}
+
 TEST_F(
     GetDetailsForPixAccountLinkingRequestTest,
-    ParseResponse_SuccessWithoutPixAccountLinkingDetails_AccountLinkingEligibilitySetToTrue) {
+    ParseResponse_SuccessWithoutActionToken_AccountLinkingEligibilitySetToFalse) {
+  std::vector<uint8_t> result_action_token;
+  auto request = std::make_unique<GetDetailsForPixAccountLinkingRequest>(
+      123, std::vector<uint8_t>{},
+      base::BindOnce(
+          [](std::vector<uint8_t>* out_token,
+             autofill::payments::PaymentsAutofillClient::PaymentsRpcResult
+                 result,
+             bool is_eligible, const std::vector<uint8_t>& action_token) {
+            *out_token = action_token;
+          },
+          &result_action_token),
+      /*app_locale=*/"US", /*full_sync_enabled=*/true);
+
+  std::optional<base::Value> response =
+      base::JSONReader::Read(R"({"pix_account_linking_details":{}})",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+
+  request->ParseResponse(response->GetDict());
+  request->RespondToDelegate(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
+
+  EXPECT_FALSE(request->is_eligible_for_pix_account_linking_);
+  EXPECT_TRUE(result_action_token.empty());
+}
+
+TEST_F(
+    GetDetailsForPixAccountLinkingRequestTest,
+    ParseResponse_SuccessWithoutPixAccountLinkingDetails_AccountLinkingEligibilitySetToFalse) {
   auto request = std::make_unique<GetDetailsForPixAccountLinkingRequest>(
       123, std::vector<uint8_t>{}, /*response_callback=*/base::DoNothing(),
       /*app_locale=*/"US", /*full_sync_enabled=*/true);

@@ -163,18 +163,34 @@ TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
 }
 
 TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
-       GetDetailsForCreatePaymentInstrument_Success) {
+       GetDetailsForCreatePaymentInstrument_SuccessWithoutActionToken_AccountLinkingEligibilitySetToFalse) {
   SendGetDetailsForCreatePaymentInstrumentRequest();
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{\"pix_account_linking_details\":{}}");
 
-  // Verify that a success result was received because the response contained
-  // the pix_account_linking_details.
+  // Verify that a success result was received, but eligibility is false
+  // because the response contained no action token.
+  EXPECT_EQ(
+      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      result_);
+  EXPECT_FALSE(is_eligible_for_pix_account_linking_);
+  EXPECT_TRUE(action_token_.empty());
+}
+
+TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
+       GetDetailsForCreatePaymentInstrument_SuccessWithActionToken) {
+  SendGetDetailsForCreatePaymentInstrumentRequest();
+  IssueOAuthToken();
+  ReturnResponse(
+      net::HTTP_OK,
+      "{\"pix_account_linking_details\":{\"action_token\":\"YWJj\"}}");
+
   EXPECT_EQ(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       result_);
   EXPECT_TRUE(is_eligible_for_pix_account_linking_);
-  EXPECT_TRUE(action_token_.empty());
+  std::vector<uint8_t> expected_action_token = {'a', 'b', 'c'};
+  EXPECT_EQ(expected_action_token, action_token_);
 }
 
 TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
