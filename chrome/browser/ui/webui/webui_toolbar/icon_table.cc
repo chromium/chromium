@@ -227,6 +227,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:feedback", IconType::kIconSet}},
           {{&vector_icons::kGTranslateIcon},
            {"webui-toolbar:g_translate", IconType::kIconSet}},
+          {{&vector_icons::kGoogleColorIcon},
+           {"webui-toolbar:google_color", IconType::kIconSet}},
           {{&vector_icons::kHistoryChromeRefreshOldIcon},
            {"webui-toolbar:history", IconType::kIconSet}},
           {{&vector_icons::kHistoryIcon},
