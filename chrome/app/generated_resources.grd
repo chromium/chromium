@@ -9721,6 +9721,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LINE_FOCUS_OFF_LABEL" desc="Dropdown option for turning off line focus.">
         Off
       </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_ON_LABEL" desc="Dropdown option for turning on line focus.">
+        On
+      </message>
       <message name="IDS_READING_MODE_LINE_FOCUS_SMALL_FOCUS_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for the small height window line focus option.">
         Small focus style
       </message>
@@ -9740,7 +9743,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Follow cursor movement
       </message>
       <message name="IDS_READING_MODE_LINE_FOCUS_OFF_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for turning off line focus.">
-        Off (no line focus)
+        Off (disable line focus)
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_ON_LABEL_SCREENREADER" desc="Screen reader label for the dropdown option for turning on line focus.">
+        On (enable line focus)
       </message>
       <if expr="is_macosx">
         <message name="IDS_READING_MODE_KEYBOARD_SHORTCUT_IPH_BODY" desc="Text for the help bubble describing the keyboard shortcut used to open and close reading mode.">
