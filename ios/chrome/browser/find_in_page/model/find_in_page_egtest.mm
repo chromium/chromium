@@ -180,10 +180,25 @@ FindInPageTestCrossOriginFramePageHttpResponse(
 
   ConditionBlock condition = ^{
     NSError* error = nil;
+    id<GREYMatcher> labelMatcher;
+    if (@available(iOS 27, *)) {
+      labelMatcher = [[GREYElementMatcherBlock alloc]
+          initWithMatchesBlock:^BOOL(id element) {
+            if (![element respondsToSelector:@selector(text)]) {
+              return NO;
+            }
+            return [[element text] isEqualToString:expectedResultsString];
+          }
+          descriptionBlock:^(id<GREYDescription> description) {
+            [description appendText:@"resultLabelText"];
+          }];
+    } else {
+      labelMatcher = chrome_test_util::StaticTextWithAccessibilityLabel(
+          expectedResultsString);
+    }
     [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                             @(kFindInPageResultLabelID))]
-        assertWithMatcher:chrome_test_util::StaticTextWithAccessibilityLabel(
-                              expectedResultsString)
+        assertWithMatcher:labelMatcher
                     error:&error];
     return (error == nil);
   };
@@ -193,17 +208,34 @@ FindInPageTestCrossOriginFramePageHttpResponse(
       @"Timeout waiting for correct Find in Page results string to appear");
 }
 
-// Asserts that there is a string "0 of 0" present in the results count label,
-// or that the label is not visible. Waits for up to 1 second for this to
-// happen.
+// Asserts that there is an empty string in the results count label, or that the
+// result count is "0". Waits for up to 1 second for this to happen.
 - (void)assertResultStringIsEmptyOrZero {
   ConditionBlock condition = ^{
     NSError* error = nil;
+    id<GREYMatcher> labelMatcher;
+    if (@available(iOS 27, *)) {
+      id<GREYMatcher> emptyOrZeroMatcher = [[GREYElementMatcherBlock alloc]
+          initWithMatchesBlock:^BOOL(id element) {
+            if (![element respondsToSelector:@selector(text)]) {
+              return NO;
+            }
+            NSString* text = [element text];
+            return text.length == 0 || [text isEqualToString:@"0"] ||
+                   [text hasPrefix:@"0 of 0"];
+          }
+          descriptionBlock:^(id<GREYDescription> description) {
+            [description appendText:@"emptyOrZeroResultLabel"];
+          }];
+      labelMatcher = grey_anyOf(emptyOrZeroMatcher, grey_notVisible(), nil);
+    } else {
+      labelMatcher =
+          grey_anyOf(chrome_test_util::StaticTextWithAccessibilityLabel(@"0"),
+                     grey_notVisible(), nil);
+    }
     [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                             @(kFindInPageResultLabelID))]
-        assertWithMatcher:
-            grey_anyOf(chrome_test_util::StaticTextWithAccessibilityLabel(@"0"),
-                       grey_notVisible(), nil)
+        assertWithMatcher:labelMatcher
                     error:&error];
     return (error == nil);
   };
@@ -218,12 +250,28 @@ FindInPageTestCrossOriginFramePageHttpResponse(
 - (void)assertResultStringIsNonZero {
   ConditionBlock condition = ^{
     NSError* error = nil;
+    id<GREYMatcher> labelMatcher;
+    if (@available(iOS 27, *)) {
+      labelMatcher = [[GREYElementMatcherBlock alloc]
+          initWithMatchesBlock:^BOOL(id element) {
+            if (![element respondsToSelector:@selector(text)]) {
+              return NO;
+            }
+            NSString* text = [element text];
+            return text.length > 0 && ![text isEqualToString:@"0"] &&
+                   ![text hasPrefix:@"0 of 0"];
+          }
+          descriptionBlock:^(id<GREYDescription> description) {
+            [description appendText:@"nonZeroResultLabel"];
+          }];
+    } else {
+      labelMatcher = grey_not(
+          grey_anyOf(chrome_test_util::StaticTextWithAccessibilityLabel(@"0"),
+                     grey_notVisible(), nil));
+    }
     [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                             @(kFindInPageResultLabelID))]
-        assertWithMatcher:
-            grey_not(grey_anyOf(
-                chrome_test_util::StaticTextWithAccessibilityLabel(@"0"),
-                grey_notVisible(), nil))
+        assertWithMatcher:labelMatcher
                     error:&error];
     return (error == nil);
   };
@@ -280,6 +328,9 @@ FindInPageTestCrossOriginFramePageHttpResponse(
 - (id<GREYMatcher>)matcherForText:(NSString*)text {
   NSString* prefix = @"hasText";
   GREYMatchesBlock matchesBlock = ^BOOL(id element) {
+    if (![element respondsToSelector:@selector(text)]) {
+      return NO;
+    }
     return [[element text] isEqualToString:text];
   };
 
