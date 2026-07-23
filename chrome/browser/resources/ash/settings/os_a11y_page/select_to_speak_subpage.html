@@ -125,17 +125,14 @@ found in the LICENSE file.
         menu-options="[[languagesMenuOptions_]]">
     </settings-dropdown-menu>
   </div>
-  <div class="settings-box">
-    <div class="start settings-box-text">
-      $i18n{selectToSpeakOptionsVoiceDescription}
-    </div>
-    <settings-dropdown-menu id="voiceDropdown"
-        label="$i18n{selectToSpeakOptionsVoiceDescription}"
-        pref="{{prefs.settings.a11y.select_to_speak_voice_name}}"
-        menu-options="[[localVoicesMenuOptions_]]"
-        deep-link-focus-id$="[[Setting.kSelectToSpeakVoice]]">
-      </settings-dropdown-menu>
-  </div>
+  <settings-dropdown-row id="voiceDropdown"
+      label="$i18n{selectToSpeakOptionsVoiceDescription}"
+      pref="{{prefs.settings.a11y.select_to_speak_voice_name}}"
+      options="[[localVoicesMenuOptions_]]"
+      learn-more-url="[[selectToSpeakLearnMoreUrl_]]"
+      deep-link-focus-id$="[[Setting.kSelectToSpeakVoice]]">
+  </settings-dropdown-row>
+
   <div class="settings-box">
     <div id="voicePreview" class="start settings-box-text">
       $i18n{selectToSpeakOptionsVoicePreview}
@@ -167,57 +164,8 @@ found in the LICENSE file.
       pref="{{prefs.settings.a11y.select_to_speak_voice_switching}}"
       label="$i18n{selectToSpeakOptionsVoiceSwitchingDescription}"
       deep-link-focus-id$="[[Setting.kSelectToSpeakVoiceSwitching]]"
-      disabled="[[prefs.settings.a11y.select_to_speak_enhanced_network_voices.value]]"
       aria-show-label aria-show-sublabel>
   </settings-toggle-button>
-  <settings-toggle-button
-      id="enhancedNetworkVoicesToggle"
-      class="settings-box"
-      pref="[[enhancedNetworkVoicesVirtualPref_]]"
-      label="$i18n{selectToSpeakOptionsEnhancedNetworkVoicesDescription}"
-      sub-label="$i18n{selectToSpeakOptionsEnhancedNetworkVoicesSubtitle}"
-      learn-more-url="[[selectToSpeakLearnMoreUrl_]]"
-      on-settings-boolean-control-change="onEnhancedNetworkVoicesToggleChanged_"
-      deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoices]]"
-      disabled="[[prefs.settings.a11y.select_to_speak_voice_switching.value]]"
-      aria-show-label aria-show-sublabel
-      no-set-pref>
-  </settings-toggle-button>
-  <template is="dom-if" if="[[enhancedNetworkVoicesVirtualPref_.value]]">
-    <div class="indented" id="enhancedNetworkVoiceControls">
-      <div class="settings-box">
-        <div class="start settings-box-text">
-          $i18n{selectToSpeakOptionsEnhancedNetworkVoice}
-        </div>
-        <settings-dropdown-menu id="enhancedNetworkVoiceDropdown"
-            class="continuation"
-            label="$i18n{selectToSpeakOptionsEnhancedNetworkVoice}"
-            pref="{{prefs.settings.a11y.select_to_speak_enhanced_voice_name}}"
-            menu-options="[[networkVoicesMenuOptions_]]"
-            deep-link-focus-id$="[[Setting.kSelectToSpeakEnhancedNetworkVoice]]">
-        </settings-dropdown-menu>
-      </div>
-      <div class="settings-box">
-        <div id="enhancedNetworkVoicePreview" class="start settings-box-text">
-          $i18n{selectToSpeakOptionsNaturalVoicePreview}
-        </div>
-        <cr-input id="enhancedNetworkVoicePreviewInput"
-            class="preview-input"
-            aria-labelledby="enhancedNetworkVoicePreview"
-            value="{{enhancedNetworkVoicePreviewText_}}"
-            disabled="[[isPreviewing_]]">
-          <cr-button id="enhancedNetworkVoicePreviewButton"
-              on-click="onEnhancedNetworkVoicePreviewClick_"
-              disabled$="[[!enablePreviewButton_(networkVoicesMenuOptions_,
-                          isPreviewing_,
-                          enhancedNetworkVoicePreviewText_)]]"
-              slot="suffix">
-            $i18n{textToSpeechPreviewPlay}
-          </cr-button>
-        </cr-input>
-      </div>
-    </div>
-  </template>
 </div>
 
 <h2>$i18n{selectToSpeakOptionsHighlight}</h2>
