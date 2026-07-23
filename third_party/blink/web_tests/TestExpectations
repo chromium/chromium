@@ -2846,8 +2846,6 @@ crbug.com/536956106 external/wpt/css/css-inline/text-box-trim/text-box-trim-star
 crbug.com/536956106 external/wpt/css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vrl,ideographic [ Failure ]
 crbug.com/536956106 external/wpt/css/css-inline/text-box-trim/text-box-trim-start-001.html?class=vrl,ideographic-ink [ Failure ]
 crbug.com/536952793 [ Mac ] external/wpt/css/css-ui/text-overflow-with-selection.html [ Failure ]
-crbug.com/536956053 [ Linux ] external/wpt/css/printing/conic-gradient-skia-crash-print.html [ Failure ]
-crbug.com/536956053 [ Win ] external/wpt/css/printing/conic-gradient-skia-crash-print.html [ Failure ]
 crbug.com/536952791 external/wpt/digital-credentials/get-opaque-origin-combinations.https.html [ Failure Pass ]
 crbug.com/536952619 [ Win ] external/wpt/dom/nodes/node-creation-realm.html [ Pass Timeout ]
 crbug.com/536937898 external/wpt/webdriver/tests/bidi/emulation/set_locale_override/locale.py [ Failure ]

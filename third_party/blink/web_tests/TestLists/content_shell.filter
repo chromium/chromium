@@ -729,7 +729,7 @@ external/wpt/css/css-shapes/spec-examples/shape-outside-014.html
 external/wpt/css/css-shapes/spec-examples/shape-outside-015.html
 external/wpt/css/css-shapes/spec-examples/shape-outside-016.html
 external/wpt/css/css-shapes/spec-examples/shape-outside-017.html
-external/wpt/css/printing/input-file-print.html
+external/wpt/css/printing/*
 virtual/fragmented-oof-in-cb/*
 
 # Print tests that don't run reliably on headless, see bugs linked from
@@ -805,7 +805,7 @@ virtual/scalefactor200/external/wpt/css/filter-effects/filtered-html-is-not-cont
 virtual/scalefactor200/external/wpt/css/filter-effects/clip-under-filter-*
 virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-on-span.html
 virtual/scalefactor200/external/wpt/css/filter-effects/repaint-added-backdrop-filter.html
-virtual/scalefactor200/external/wpt/css/printing/input-file-print.html
+virtual/scalefactor200/external/wpt/css/printing/*
 virtual/scalefactor200/external/wpt/largest-contentful-paint/animated/observe-cross-origin-tao-animated-image.tentative.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/image-not-fully-visible.html
 virtual/scalefactor200/external/wpt/largest-contentful-paint/multiple-image-same-src.html
