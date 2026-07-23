@@ -22,6 +22,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -206,6 +207,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.StateOnActuationRequest",
       syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+      GlicExperimentalTriggeringIncomingMessageResult::kSuccess, 1);
 
   // Verify that a new tab was created and it is in the background.
   EXPECT_EQ(GetTabListInterface()->GetTabCount(), initial_tab_count + 1);
@@ -1837,5 +1841,67 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<TestScenarioParam>& info) {
       return info.param.test_name;
     });
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testIncomingMessageResultMetricsForFailures) {
+  {
+    base::HistogramTester histogram_tester;
+    auto message = CreateTriggeringMessage();
+    message.mutable_glic_experimental_triggering()
+        ->mutable_request()
+        ->mutable_trigger_actuation_request();
+    message.mutable_glic_experimental_triggering()->clear_task_metadata();
+    SendMessageAndWait(std::move(message));
+    histogram_tester.ExpectUniqueSample(
+        "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+        GlicExperimentalTriggeringIncomingMessageResult::kMissingTaskMetadata,
+        1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    auto message = CreateTriggeringMessage();
+    message.mutable_glic_experimental_triggering()
+        ->set_glic_experimental_triggering_version(999);
+    SendMessageAndWait(std::move(message));
+    histogram_tester.ExpectUniqueSample(
+        "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+        GlicExperimentalTriggeringIncomingMessageResult::
+            kVersionMismatchOrUnavailable,
+        1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    auto message = CreateTriggeringMessage();
+    message.clear_server_channel_configuration();
+    SendMessageAndWait(std::move(message));
+    histogram_tester.ExpectUniqueSample(
+        "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+        GlicExperimentalTriggeringIncomingMessageResult::kMissingServerChannel,
+        1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    auto message = CreateTriggeringMessage();
+    SendMessageAndWait(std::move(message));
+    histogram_tester.ExpectUniqueSample(
+        "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+        GlicExperimentalTriggeringIncomingMessageResult::kMissingPayload, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    auto message = CreateTriggeringMessage();
+    message.mutable_glic_experimental_triggering()
+        ->mutable_request()
+        ->mutable_trigger_actuation_request();
+    SendMessageAndWait(std::move(message));
+    histogram_tester.ExpectUniqueSample(
+        "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
+        GlicExperimentalTriggeringIncomingMessageResult::kUserNotOptedIn, 1);
+  }
+}
 
 }  // namespace glic

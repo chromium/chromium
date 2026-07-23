@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -193,6 +194,9 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   CHECK(base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering));
   CHECK(message.has_glic_experimental_triggering());
 
+  glic::ScopedIncomingMessageResultLogger result_logger(
+      glic::ScopedIncomingMessageResultLogger::Channel::kSharingMessage);
+
   const auto& request = message.glic_experimental_triggering();
   // If no `context_id` is present in the request, we generate one that
   // may be used by the sender in follow up actuation requests.
@@ -223,6 +227,9 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
 
   if (request.has_glic_experimental_triggering_version() &&
       !IsVersionSupported(request.glic_experimental_triggering_version())) {
+    result_logger.set_result(
+        glic::GlicExperimentalTriggeringIncomingMessageResult::
+            kVersionMismatchOrUnavailable);
     std::move(done_callback)
         .Run(CreateResponseMessage(
             context_id, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
@@ -232,6 +239,9 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   }
 
   if (!message.has_server_channel_configuration()) {
+    result_logger.set_result(
+        glic::GlicExperimentalTriggeringIncomingMessageResult::
+            kMissingServerChannel);
     std::move(done_callback)
         .Run(CreateResponseMessage(
             context_id, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
@@ -249,6 +259,8 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
           actor_service, "GlicExperimentalTriggering", "", request);
     }
 
+    result_logger.set_result(
+        glic::GlicExperimentalTriggeringIncomingMessageResult::kMissingPayload);
     std::move(done_callback)
         .Run(CreateResponseMessage(
             context_id, TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
@@ -307,6 +319,7 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
 
   std::optional<glic::ExperimentalTriggeringResponse> domain_response =
       coordinator_->OnRequest(context_id, domain_request,
+                              std::move(result_logger),
                               std::move(update_callback));
 
   if (domain_response.has_value()) {

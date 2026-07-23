@@ -662,6 +662,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ExperimentalTriggering.IncomingMessageResult.{Channel}"
+    enum="GlicExperimentalTriggeringIncomingMessageResult"
+    expires_after="2027-07-21">
+  <owner>nyquist@chromium.org</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records the outcome or failure reason when an incoming Glic experimental
+    triggering message received over {Channel} is processed by the client.
+    Recorded each time a GlicExperimentalTriggering message is received on that
+    channel.
+  </summary>
+  <token key="Channel">
+    <variant name="BrowserActuatorTransport"
+        summary="the browser_actuator transport layer"/>
+    <variant name="SharingMessage" summary="the Sharing FCM message channel"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.ExperimentalTriggering.OptIn.Accepted.Version"
     enum="GlicRequiredExperimentalOptIn" expires_after="2027-05-18">
   <owner>sauski@google.com</owner>

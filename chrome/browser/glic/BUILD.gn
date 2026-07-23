@@ -18,6 +18,7 @@ source_set("glic") {
   sources = [
     "common/local_hotkey_manager.h",
     "experimental_triggering/glic_experimental_triggering_coordinator.h",
+    "experimental_triggering/glic_experimental_triggering_metrics.h",
     "experimental_triggering/glic_experimental_triggering_types.h",
     "gemini_act_on_web_settings_policy_handler.h",
     "glic_hotkey.h",
@@ -309,6 +310,7 @@ source_set("impl") {
     "experimental_triggering/glic_experimental_triggering_coordinator.cc",
     "experimental_triggering/glic_experimental_triggering_manager.cc",
     "experimental_triggering/glic_experimental_triggering_manager.h",
+    "experimental_triggering/glic_experimental_triggering_metrics.cc",
     "gemini_act_on_web_settings_policy_handler.cc",
     "glic_hotkey.cc",
     "glic_metrics.cc",

@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
 
 class Profile;
@@ -39,9 +40,13 @@ class GlicExperimentalTriggeringCoordinator {
   virtual ~GlicExperimentalTriggeringCoordinator();
 
   // Handles an incoming domain request for experimental triggering.
+  // `result_logger` carries the responsibility for recording the
+  // Glic.ExperimentalTriggering.IncomingMessageResult histogram; the
+  // coordinator sets the result for every exit path it owns.
   virtual std::optional<ExperimentalTriggeringResponse> OnRequest(
       const std::string& context_id,
       const ExperimentalTriggeringRequest& request,
+      ScopedIncomingMessageResultLogger result_logger,
       GlicExperimentalTriggeringUpdateCallback update_callback);
 
   size_t GetUpdatesHandlerMapSizeForTesting() const {

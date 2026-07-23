@@ -286,6 +286,29 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/experimental_opt_in/experimental_opt_in.ts:GlicExperimentalTriggeringErrorType) -->
 
+<!-- LINT.IfChange(GlicExperimentalTriggeringIncomingMessageResult) -->
+
+<enum name="GlicExperimentalTriggeringIncomingMessageResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Missing Task Metadata"/>
+  <int value="2" label="Version Mismatch Or Unavailable"/>
+  <int value="3" label="Missing Server Channel"/>
+  <int value="4" label="Missing Payload"/>
+  <int value="5" label="Coordinator Unavailable"/>
+  <int value="6" label="User Not Opted In"/>
+  <int value="7" label="No Browser Window"/>
+  <int value="8" label="Glic Service Unavailable"/>
+  <int value="9" label="No Instance"/>
+  <int value="10" label="Triggering Manager Unavailable"/>
+  <int value="11" label="No Web Contents For Opt-In"/>
+  <int value="12" label="Android Opt-In Unsupported"/>
+  <int value="13" label="No Actionable Request"/>
+  <int value="14" label="Unexpected Request Payload"/>
+  <int value="15" label="Result Not Set (instrumentation gap)"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/experimental_triggering/glic_experimental_triggering_metrics.h:GlicExperimentalTriggeringIncomingMessageResult) -->
+
 <!-- LINT.IfChange(GlicExperimentalTriggeringState) -->
 
 <enum name="GlicExperimentalTriggeringState">
