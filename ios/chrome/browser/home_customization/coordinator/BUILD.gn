@@ -55,6 +55,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/home_customization/ui:constants",
     "//ios/chrome/browser/home_customization/utils",
     "//ios/chrome/browser/image_fetcher/model",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
     "//ios/chrome/browser/ntp/model:set_up_list_prefs",
     "//ios/chrome/browser/ntp/search_engine_logo/mediator",

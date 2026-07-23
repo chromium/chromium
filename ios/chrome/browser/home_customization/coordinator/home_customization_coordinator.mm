@@ -28,6 +28,8 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_search_engine_logo_mediator_provider.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
@@ -40,6 +42,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -107,11 +110,20 @@ CGFloat const kSheetCornerRadius = 30;
 
 @end
 
-@implementation HomeCustomizationCoordinator
+@implementation HomeCustomizationCoordinator {
+  // Command handler for the gemini floaty.
+  __weak id<GeminiCommands> _geminiHandler;
+}
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  if (IsPageActionMenuEnabled()) {
+    if ([dispatcher dispatchingForProtocol:@protocol(GeminiCommands)]) {
+      _geminiHandler = HandlerForProtocol(dispatcher, GeminiCommands);
+    }
+  }
   _activeSearchEngineLogoMediator = [NSMutableDictionary dictionary];
   _backgroundService =
       HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
@@ -145,13 +157,32 @@ CGFloat const kSheetCornerRadius = 30;
   // the first page.
   _currentPageViewController = self.baseViewController;
 
+  if (IsPageActionMenuEnabled()) {
+    [_geminiHandler
+        hideFloatyIfInvokedAnimated:YES
+                         fromSource:gemini::FloatyUpdateSource::ViewTransition];
+  }
+
   [super start];
 }
 
 - (void)stop {
   [_backgroundConfigurationMediator saveCurrentTheme];
 
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  if (IsPageActionMenuEnabled()) {
+    __weak id<GeminiCommands> geminiHandler = _geminiHandler;
+    [self.baseViewController
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [geminiHandler
+                                 updateFloatyVisibilityIfEligibleAnimated:NO
+                                                               fromSource:
+                                                                   gemini::FloatyUpdateSource::
+                                                                       ViewTransition];
+                           }];
+  } else {
+    [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  }
 
   [self dismissBackgroundPickerActionSheet];
 
