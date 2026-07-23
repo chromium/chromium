@@ -37,8 +37,8 @@ if (!is_android) {
     "../../chrome/browser/nearby_sharing/internal/nearby_share_internal_strings.grd",
     "../../chrome/browser/resources/downloads/internal/icons.html",
     "../../chrome/browser/resources/history/internal/icons.html",
-    "../../chrome/browser/resources/settings/internal/icons.ts",
-    "../../chrome/browser/resources/webui_toolbar/internal/icons.html.ts",
+    "../../chrome/browser/resources/settings/internal/icons.html",
+    "../../chrome/browser/resources/webui_toolbar/internal/icons.ts",
     "../../third_party/search_engines_data/resources_internal/search_engine_descriptions_strings.grd",
     "../../third_party/widevine/cdm/linux/x64/manifest.json",
   ]
