@@ -115,6 +115,9 @@ class LitTemplateFormatterTest(unittest.TestCase):
     self._run_test("test_multiline_attribute_expression.html.ts",
                    "test_multiline_attribute_expression.html.ts")
 
+  def testRetainNewlines(self):
+    self._run_test("retain_newlines.html.ts", "retain_newlines.html.ts")
+
   def testDryRunModeFormatted(self):
     filename = "test_basic_expressions.html.ts"
     expected_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",

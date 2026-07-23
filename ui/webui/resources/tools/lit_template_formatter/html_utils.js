@@ -41,6 +41,7 @@ export const VOID_ELEMENTS = [
 export const INDENT_SIZE = 2;
 export const LINE_LENGTH_LIMIT = 80;
 export const WRAPPED_LINE_INDENT_SIZE = 4;
+export const TRAILING_NEWLINE_REGEX = /\n[ \t]*$/;
 
 export const EXPR_PREFIX = 'lit-expr-placeholder';
 export const TEMPLATE_PREFIX = 'lit-placeholder';

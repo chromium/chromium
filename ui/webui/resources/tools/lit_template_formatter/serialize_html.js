@@ -4,7 +4,7 @@
 
 import assert from 'node:assert';
 
-import {EXPR_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getDepthForTagName, getIndentationPrefix, INDENT_SIZE, LINE_LENGTH_LIMIT, PROP_PREFIX, RESTRICTED_TAGS, VOID_ELEMENTS, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
+import {EXPR_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getDepthForTagName, getIndentationPrefix, INDENT_SIZE, LINE_LENGTH_LIMIT, PROP_PREFIX, RESTRICTED_TAGS, TRAILING_NEWLINE_REGEX, VOID_ELEMENTS, WRAPPED_LINE_INDENT_SIZE} from './html_utils.js';
 
 const PREFIX_REGEX = /^[?.]/;
 
@@ -288,6 +288,10 @@ export function serializeNode(node, depth, placeholderMap, sortAttributes) {
           endTag}`;
     }
 
+    if (TRAILING_NEWLINE_REGEX.test(childrenHtml)) {
+      return `${startTag}${
+          childrenHtml.replace(TRAILING_NEWLINE_REGEX, endTagIndent)}${endTag}`;
+    }
     return `${startTag}${childrenHtml.trimEnd()}${endTagIndent}${endTag}`;
   }
 

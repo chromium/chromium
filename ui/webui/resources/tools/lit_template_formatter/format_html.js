@@ -6,7 +6,7 @@ import assert from 'node:assert';
 
 import {parseFragment} from '../../../../../third_party/node/node_modules/parse5/lib/index.js';
 
-import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getIndentationPrefix, INDENT_SIZE, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, VOID_ELEMENTS} from './html_utils.js';
+import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForNode, getDepthForNode, getIndentationPrefix, INDENT_SIZE, PROP_PREFIX, RESTRICTED_TAGS, TEMPLATE_PREFIX, TRAILING_NEWLINE_REGEX, VOID_ELEMENTS} from './html_utils.js';
 
 /**
  * Adds the correct newline and indentation before a child node.
@@ -17,11 +17,11 @@ import {EXPR_PREFIX, FALSE_TEMPLATE_PREFIX, FORMAT_OFF_PREFIX, getChildDepthForN
 function ensureNewlineAndIndent(children, depth) {
   const prevChild = children.at(-1) || null;
   const endsWithNewline = prevChild && prevChild.nodeName === '#text' &&
-      /\n\s*$/.test(prevChild.value);
+      TRAILING_NEWLINE_REGEX.test(prevChild.value);
 
   if (endsWithNewline) {
     prevChild.value = prevChild.value.replace(
-        /\n\s*$/, getIndentationPrefix(depth * INDENT_SIZE));
+        TRAILING_NEWLINE_REGEX, getIndentationPrefix(depth * INDENT_SIZE));
   } else {
     children.push({
       nodeName: '#text',
@@ -86,7 +86,8 @@ function format(node, depth, placeholderMap) {
   }
 
   const nonEmptyChildren = node.childNodes.filter(
-      child => child.nodeName !== '#text' || child.value.trim() !== '');
+      child => child.nodeName !== '#text' || child.value.trim() !== '' ||
+          (child.value.match(/\n/g) || []).length > 1);
 
   // Track if this is the first element child of the parent, to ensure it
   // always gets a newline and indentation.
@@ -117,11 +118,11 @@ function format(node, depth, placeholderMap) {
           // If the child node has trailing whitespace, initially set it to the
           // parent's indentation (for the closing tag). If it has a subsequent
           // sibling, this will be overwritten later by ensureNewlineAndIndent.
-          if (/\n\s*$/.test(child.value)) {
+          if (TRAILING_NEWLINE_REGEX.test(child.value)) {
             const trailingIndent =
                 getDepthForNode(node, depth - 1) * INDENT_SIZE;
             child.value = child.value.replace(
-                /\n\s*$/, getIndentationPrefix(trailingIndent));
+                TRAILING_NEWLINE_REGEX, getIndentationPrefix(trailingIndent));
           }
         }
       }
@@ -181,10 +182,17 @@ function format(node, depth, placeholderMap) {
   if (node.nodeName !== '#document-fragment' &&
       newChildren.some(c => !c.nodeName.startsWith('#'))) {
     const closeIndent = getDepthForNode(node, depth - 1) * INDENT_SIZE;
-    newChildren.push({
-      nodeName: '#text',
-      value: getIndentationPrefix(closeIndent),
-    });
+    const prevChild = newChildren.at(-1) || null;
+    if (prevChild && prevChild.nodeName === '#text' &&
+        TRAILING_NEWLINE_REGEX.test(prevChild.value)) {
+      prevChild.value = prevChild.value.replace(
+          TRAILING_NEWLINE_REGEX, getIndentationPrefix(closeIndent));
+    } else {
+      newChildren.push({
+        nodeName: '#text',
+        value: getIndentationPrefix(closeIndent),
+      });
+    }
   }
 
   node.childNodes = newChildren;
