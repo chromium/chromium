@@ -60,8 +60,8 @@ build_webui("build") {
     "file_thumbnail.html.ts",
     "file_thumbnail.ts",
     "icons.html.ts",
-    "recent_tab_chip.html.ts",
-    "recent_tab_chip.ts",
+    "current_tab_chip.html.ts",
+    "current_tab_chip.ts",
     "threads_rail.html.ts",
     "threads_rail.ts",
     "window_proxy.ts",
@@ -84,7 +84,7 @@ build_webui("build") {
     "error_scrim.css",
     "file_carousel.css",
     "file_thumbnail.css",
-    "recent_tab_chip.css",
+    "current_tab_chip.css",
     "threads_rail.css",
   ]
 

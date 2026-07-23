@@ -213,7 +213,7 @@ export interface DriveUpload {
 
 export enum TabUploadOrigin {
   CONTEXT_MENU = 0,
-  RECENT_TAB_CHIP = 1,
+  CURRENT_TAB_CHIP = 1,
   ACTION_CHIP = 2,
   AUTO_ACTIVE = 3,
   OTHER = 4,

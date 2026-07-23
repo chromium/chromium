@@ -32,7 +32,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="ContextMenu"/>
   <int value="1" label="CopyPaste"/>
   <int value="2" label="DragAndDrop"/>
-  <int value="3" label="RecentTabChip"/>
+  <int value="3" label="CurrentTabChip"/>
 </enum>
 
 <!-- LINT.ThenChange(//ui/webui/resources/cr_components/search/constants.ts:ComposeboxContextAddedMethod) -->

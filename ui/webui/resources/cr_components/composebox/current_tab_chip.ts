@@ -1,9 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
-import './composebox_tab_favicon.js';
 
 import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/constants.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
@@ -14,14 +13,14 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
-import {getCss} from './recent_tab_chip.css.js';
-import {getHtml} from './recent_tab_chip.html.js';
+import {getCss} from './current_tab_chip.css.js';
+import {getHtml} from './current_tab_chip.html.js';
 
-const RecentTabChipBase = I18nMixinLit(CrLitElement);
+const CurrentTabChipBase = I18nMixinLit(CrLitElement);
 
-export class RecentTabChipElement extends RecentTabChipBase {
+export class CurrentTabChipElement extends CurrentTabChipBase {
   static get is() {
-    return 'composebox-recent-tab-chip';
+    return 'composebox-current-tab-chip';
   }
 
   static override get styles() {
@@ -37,53 +36,51 @@ export class RecentTabChipElement extends RecentTabChipBase {
       // =========================================================================
       // Public properties
       // =========================================================================
-      recentTab: {type: Object},
+      currentTab: {type: Object},
     };
   }
 
-  accessor recentTab: TabInfo|undefined = undefined;
+  accessor currentTab: TabInfo|undefined = undefined;
 
-  private delayTabUploads_: boolean =
-      loadTimeData.getBoolean('addTabUploadDelayOnRecentTabChipClick');
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
 
-  protected getRecentTabChipTitle_(): string {
-    if (!this.recentTab) {
+  protected getCurrentTabChipTitle_(): string {
+    if (!this.currentTab) {
       return '';
     }
-    const url = new URL(this.recentTab.url);
+    const url = new URL(this.currentTab.url);
     const domain = url.hostname.replace(/^www\./, '');
     // Escape the title and domain as they are passed as arguments to i18n(),
     // which uses `parseHtmlSubset` to sanitize the localized string. If the
     // title contains restricted HTML tags (like <style>), parseHtmlSubset will
     // throw an error.
-    return `${htmlEscape(this.recentTab.title)} - ${htmlEscape(domain)}`;
+    return `${htmlEscape(this.currentTab.title)} - ${htmlEscape(domain)}`;
   }
 
-  protected onRecentTabButtonClick_(e: Event) {
+  protected onCurrentTabButtonClick_(e: Event) {
     e.stopPropagation();
-    assert(this.recentTab);
+    assert(this.currentTab);
 
     chrome.histograms.recordUserAction(
-        `ContextualSearch.RecentTabChipClick.${this.composeboxSource_}`);
+        `ContextualSearch.CurrentTabChipClick.${this.composeboxSource_}`);
 
     this.fire('add-tab-context', {
-      id: this.recentTab.tabId,
-      title: this.recentTab.title,
-      url: this.recentTab.url,
-      delayUpload: this.delayTabUploads_,
-      origin: TabUploadOrigin.RECENT_TAB_CHIP,
+      id: this.currentTab.tabId,
+      title: this.currentTab.title,
+      url: this.currentTab.url,
+      delayUpload: false,
+      origin: TabUploadOrigin.CURRENT_TAB_CHIP,
     });
     recordContextAdditionMethod(
-        ComposeboxContextAddedMethod.RECENT_TAB_CHIP, this.composeboxSource_);
+        ComposeboxContextAddedMethod.CURRENT_TAB_CHIP, this.composeboxSource_);
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'composebox-recent-tab-chip': RecentTabChipElement;
+    'composebox-current-tab-chip': CurrentTabChipElement;
   }
 }
 
-customElements.define(RecentTabChipElement.is, RecentTabChipElement);
+customElements.define(CurrentTabChipElement.is, CurrentTabChipElement);

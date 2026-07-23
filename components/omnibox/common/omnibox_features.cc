@@ -585,6 +585,8 @@ const base::FeatureParam<bool> kAskGLensChipRoute{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGLensChipRoute", false};
 const base::FeatureParam<bool> kAskGSwapIcon{
     &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGSwapIcon", false};
+const base::FeatureParam<bool> kAskGCurrentTabChip{
+    &kWebUIOmniboxAskGAboutThisPage, "Omnibox_AskGCurrentTabChip", false};
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

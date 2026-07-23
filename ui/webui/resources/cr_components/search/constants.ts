@@ -24,8 +24,8 @@ export const enum ComposeboxContextAddedMethod {
   CONTEXT_MENU = 0,
   COPY_PASTE = 1,
   DRAG_AND_DROP = 2,
-  RECENT_TAB_CHIP = 3,
-  MAX_VALUE = RECENT_TAB_CHIP,
+  CURRENT_TAB_CHIP = 3,
+  MAX_VALUE = CURRENT_TAB_CHIP,
 }
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextAddedMethod)

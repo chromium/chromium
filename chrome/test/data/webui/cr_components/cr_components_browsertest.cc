@@ -329,8 +329,8 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, LensSearch) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, RecentTabChip) {
-  RunTest("cr_components/composebox/recent_tab_chip_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, CurrentTabChip) {
+  RunTest("cr_components/composebox/current_tab_chip_test.js", "mocha.run()");
 }
 #endif
 

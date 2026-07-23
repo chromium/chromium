@@ -2205,7 +2205,7 @@ suite('ContextualTasksComposeboxTest', () => {
                       title: 'Shared tab',
                       url: {url: 'https://example.com/'},
                       delayUpload: false,
-                      origin: TabUploadOrigin.RECENT_TAB_CHIP,
+                      origin: TabUploadOrigin.CURRENT_TAB_CHIP,
                     },
                     bubbles: true,
                     composed: true,

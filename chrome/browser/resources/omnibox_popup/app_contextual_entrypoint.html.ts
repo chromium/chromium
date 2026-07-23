@@ -22,6 +22,13 @@ export function getHtml(this: OmniboxPopupAppElement) {
         @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}">
     </cr-composebox-contextual-entrypoint-button>
   `}
+  ${this.isCurrentTabChipShown_ ? html`
+    <composebox-current-tab-chip id="currentTabChip"
+        class="upload-button contextual-chip"
+        .currentTab="${this.currentTabForChip_!}"
+        @add-tab-context="${this.onAddTabContext_}">
+    </composebox-current-tab-chip>
+  ` : nothing}
   ${this.isLensChipShown_ ? html`
     <cr-composebox-lens-search id="lensSearchChip"
         class="upload-button contextual-chip"

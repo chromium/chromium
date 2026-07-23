@@ -10,6 +10,7 @@ import type {OmniboxPopupAppElement} from 'chrome://omnibox-popup.top-chrome/omn
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -55,6 +56,52 @@ suite('AppTest', function() {
         new Event('contextmenu', {cancelable: true}));
     const e = await whenFired;
     assertTrue(e.defaultPrevented);
+  });
+
+  test('CurrentTabChipShown', async () => {
+    loadTimeData.overrideValues({
+      composeboxShowCurrentTabChip: true,
+      composeboxShowLensSearchChip: true,
+    });
+
+    // Re-create app to apply loadTimeData overrides.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    app = document.createElement('omnibox-popup-app');
+    document.body.appendChild(app);
+    testProxy.initVisibilityPrefs();
+    await microtasksFinished();
+
+    const mockTab: TabInfo = {
+      tabId: 1,
+      title: 'Tab 1',
+      url: 'https://tab1.com/',
+      showInCurrentTabChip: true,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: 1n},
+    };
+
+    testProxy.handler.setPromiseResolveFor('getRecentTabs', {tabs: [mockTab]});
+
+    // Set eligibility.
+    testProxy.page.updateLensSearchEligibility(true);
+    testProxy.page.updateContentSharingPolicy(true);
+
+    // Set autocomplete result with empty input.
+    const result = createAutocompleteResultForTesting({
+      input: '',
+      matches: [],
+    });
+    testProxy.page.autocompleteResultChanged(result);
+    await microtasksFinished();
+
+    // Trigger show.
+    callbackRouter.onShow();
+    await testProxy.handler.whenCalled('getRecentTabs');
+    await microtasksFinished();
+
+    const chip = app.shadowRoot.querySelector('composebox-current-tab-chip');
+    assertTrue(!!chip);
+    assertTrue(isVisible(chip));
   });
 
   test('OnlyShowsDropdownIfVisibleMatches', async () => {

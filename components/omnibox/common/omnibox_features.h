@@ -263,6 +263,8 @@ extern const base::FeatureParam<bool> kAskGComposeBox;
 extern const base::FeatureParam<bool> kAskGLensChipRoute;
 // Whether to swap the icon to spark loupe for the AskG button.
 extern const base::FeatureParam<bool> kAskGSwapIcon;
+// Whether to show the current tab chip.
+extern const base::FeatureParam<bool> kAskGCurrentTabChip;
 // Note: no new flags beyond this point.
 
 namespace flag_descriptions {

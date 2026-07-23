@@ -952,7 +952,7 @@ function disableAnimationsRecursively(element: Element) {
                     title,
                     url,
                     delayUpload: false,
-                    origin: TabUploadOrigin.RECENT_TAB_CHIP,
+                    origin: TabUploadOrigin.CURRENT_TAB_CHIP,
                   },
                   bubbles: true,
                   composed: true,
