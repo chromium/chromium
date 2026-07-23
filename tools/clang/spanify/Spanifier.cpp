@@ -668,6 +668,25 @@ clang::SourceRange GetExprRange(const clang::Expr& expr,
     return {begin_loc, end_loc.getLocWithOffset(name.size())};
   }
 
+  // CXXOperatorCallExpr inherits from CallExpr, but for infix binary operators
+  // (like `a == b`), both getBeginLoc() and getRParenLoc() point to the
+  // operator token itself rather than the arguments. We specialize here to
+  // return the full range from LHS to RHS for infix operators.
+  if (const auto* op_call =
+          clang::dyn_cast<clang::CXXOperatorCallExpr>(&expr)) {
+    if (op_call->getNumArgs() == 2) {
+      clang::SourceLocation op_loc = op_call->getOperatorLoc();
+      clang::SourceLocation arg0_begin = op_call->getArg(0)->getBeginLoc();
+      if (op_loc.isValid() && arg0_begin.isValid() &&
+          source_manager.isBeforeInTranslationUnit(arg0_begin, op_loc)) {
+        return {GetExprRange(*op_call->getArg(0), source_manager, lang_opts)
+                    .getBegin(),
+                GetExprRange(*op_call->getArg(1), source_manager, lang_opts)
+                    .getEnd()};
+      }
+    }
+  }
+
   if (const auto* call_expr = clang::dyn_cast<clang::CallExpr>(&expr)) {
     // Disclaimer: This doesn't support edge cases like following.
     //     #define MY_MACRO(func) func
@@ -1577,7 +1596,7 @@ void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
 void RewriteComparisonWithNullptr(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::LangOptions& lang_opts = result.Context->getLangOpts();
-  const auto* binary_op = GetNodeOrCrash<clang::BinaryOperator>(
+  const auto* binary_op_expr = GetNodeOrCrash<clang::Expr>(
       result, "compare_with_nullptr_op", __FUNCTION__);
   const auto* pointer_expr =
       GetNodeOrCrash<clang::Expr>(result, "rhs_expr", __FUNCTION__);
@@ -1589,17 +1608,27 @@ void RewriteComparisonWithNullptr(const MatchFinder::MatchResult& result) {
           source_manager, lang_opts)
           .str();
 
+  bool is_equal = false;
+  if (auto* b = clang::dyn_cast<clang::BinaryOperator>(binary_op_expr)) {
+    is_equal = (b->getOpcode() == clang::BO_EQ);
+    assert(is_equal || b->getOpcode() == clang::BO_NE);
+  } else {
+    auto* c = clang::cast<clang::CXXOperatorCallExpr>(binary_op_expr);
+    is_equal = (c->getOperator() == clang::OO_EqualEqual);
+    assert(is_equal || c->getOperator() == clang::OO_ExclaimEqual);
+  }
+
   std::string replacement;
-  if (binary_op->getOpcode() == clang::BO_EQ) {
+  if (is_equal) {
     replacement = pointer_expr_text + ".empty()";
   } else {
-    assert(binary_op->getOpcode() == clang::BO_NE);
     replacement = "!" + pointer_expr_text + ".empty()";
   }
 
-  EmitReplacement(key, GetReplacementDirective(
-                           GetExprRange(*binary_op, source_manager, lang_opts),
-                           replacement, source_manager));
+  EmitReplacement(key,
+                  GetReplacementDirective(
+                      GetExprRange(*binary_op_expr, source_manager, lang_opts),
+                      replacement, source_manager));
 }
 
 // Erases the member call expression. For example:

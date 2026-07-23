@@ -5,6 +5,8 @@
 #ifndef TOOLS_CLANG_SPANIFY_TESTS_CHROME_BASE_MEMORY_RAW_PTR_H_
 #define TOOLS_CLANG_SPANIFY_TESTS_CHROME_BASE_MEMORY_RAW_PTR_H_
 
+#include <cstddef>
+
 namespace base {
 
 // No-op mock traits. Only used to support trait utterances that would
@@ -53,6 +55,19 @@ class raw_ptr {
   T* get() { return data_; }
 
   constexpr explicit operator bool() const { return !!data_; }
+
+  friend bool operator==(const raw_ptr& lhs, std::nullptr_t) {
+    return lhs.data_ == nullptr;
+  }
+  friend bool operator!=(const raw_ptr& lhs, std::nullptr_t) {
+    return lhs.data_ != nullptr;
+  }
+  friend bool operator==(std::nullptr_t, const raw_ptr& rhs) {
+    return nullptr == rhs.data_;
+  }
+  friend bool operator!=(std::nullptr_t, const raw_ptr& rhs) {
+    return nullptr != rhs.data_;
+  }
 
  private:
   T* data_;

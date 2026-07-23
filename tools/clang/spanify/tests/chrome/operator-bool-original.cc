@@ -138,3 +138,27 @@ void test_nullptr_comparison() {
   if (nullptr != buf) {
   }
 }
+
+void test_nullptr_comparison_smart_ptr() {
+  // Expected rewrite:
+  // base::raw_span<int> buf = {};
+  raw_ptr<int> buf = nullptr;
+  std::ignore = buf[UnsafeIndex()];
+
+  // Expected rewrite:
+  // if (buf.empty()) {
+  if (buf == nullptr) {
+  }
+  // Expected rewrite:
+  // if (!buf.empty()) {
+  if (buf != nullptr) {
+  }
+  // Expected rewrite:
+  // if (buf.empty()) {
+  if (nullptr == buf) {
+  }
+  // Expected rewrite:
+  // if (!buf.empty()) {
+  if (nullptr != buf) {
+  }
+}
