@@ -62,11 +62,21 @@ struct BLINK_COMMON_EXPORT RecordContentToVisibleTimeRequest {
   friend auto operator<=>(const RecordContentToVisibleTimeRequest&,
                           const RecordContentToVisibleTimeRequest&) = default;
 
+  // Moves all the events with reason TabSwitchReason to a new request and
+  // returns it (or returns nullopt if there are none). Note this may leave
+  // `events` empty.
+  std::optional<RecordContentToVisibleTimeRequest> ExtractAllTabSwitchEvents();
+
   // Moves all the events with reason TabSwitchReason and
   // `had_saved_frame_at_start` to a new request and returns it (or returns
   // nullopt if there are none). Note this may leave `events` empty.
   std::optional<RecordContentToVisibleTimeRequest>
   ExtractTabSwitchEventsWithSavedFrame();
+
+  // Returns true if the request has one or more events, and all of them have
+  // reason TabSwitchReason. This will always be true for a request returned by
+  // ExtractAllTabSwitchEvents().
+  bool AllEventsAreTabSwitches() const;
 
   // Returns true if the request has one or more events, and all of them have
   // reason TabSwitchReason and `had_saved_frame_at_start` set to true. This
