@@ -43,6 +43,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace autofill {
 namespace {
@@ -274,6 +275,13 @@ class TouchToFillPaymentMethodDelegateAndroidImplUnitTest
         });
   }
 
+  void set_last_committed_primary_main_frame_url(const GURL& url) {
+    autofill_client().set_last_committed_primary_main_frame_url(url);
+    for (auto& field : test_api(form_).fields()) {
+      field.set_origin(url::Origin::Create(url));
+    }
+  }
+
   // Helper method to add the given `card` and create a card form.
   void ConfigureForCreditCards(const CreditCard& card) {
     form_ = test::CreateTestCreditCardFormData(/*is_https=*/true,
@@ -307,8 +315,7 @@ class TouchToFillPaymentMethodDelegateAndroidImplUnitTest
     form_ = test::CreateTestLoyaltyCardFormData();
     test_api(form_).field(0).set_is_focusable(true);
     // The current URL matches the loyalty card merchant domain.
-    autofill_client().set_last_committed_primary_main_frame_url(
-        GURL("https://domain.example"));
+    set_last_committed_primary_main_frame_url(GURL("https://domain.example"));
   }
 
   void OnFormsSeen() {
@@ -822,8 +829,7 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest,
 TEST_F(TouchToFillPaymentMethodDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillFailsIfClientIsNotSecure) {
   // Simulate non-secure client.
-  autofill_client().set_last_committed_primary_main_frame_url(
-      GURL("http://example.test"));
+  set_last_committed_primary_main_frame_url(GURL("http://example.test"));
 
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
@@ -1431,8 +1437,7 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplLoyaltyCardUnitTest,
   LoyaltyCard card2 = test::CreateLoyaltyCard2();
   std::vector<LoyaltyCard> loyalty_cards{card2, card1};
   // Makes sure there is at least one affiliated card available.
-  autofill_client().set_last_committed_primary_main_frame_url(
-      card1.merchant_domains()[0]);
+  set_last_committed_primary_main_frame_url(card1.merchant_domains()[0]);
   test_api(*autofill_client().GetValuablesDataManager())
       .SetLoyaltyCards(loyalty_cards);
 
@@ -1445,7 +1450,7 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplLoyaltyCardUnitTest,
 
 TEST_F(TouchToFillPaymentMethodDelegateAndroidImplLoyaltyCardUnitTest,
        TryToShowTouchToFillFailsIfNoMatchingDomains) {
-  autofill_client().set_last_committed_primary_main_frame_url(
+  set_last_committed_primary_main_frame_url(
       GURL("https://non-matching.domain"));
   std::vector<LoyaltyCard> loyalty_cards{test::CreateLoyaltyCard()};
   test_api(*autofill_client().GetValuablesDataManager())
@@ -1551,8 +1556,7 @@ class TouchToFillPaymentMethodDelegateAndroidImplEmailOrLoyaltyCardUnitTest
     form_ = test::CreateTestEmailOrLoyaltyCardFormData();
     test_api(form_).field(0).set_is_focusable(true);
     // The current URL matches the loyalty card merchant domain.
-    autofill_client().set_last_committed_primary_main_frame_url(
-        GURL("https://domain.example"));
+    set_last_committed_primary_main_frame_url(GURL("https://domain.example"));
   }
 };
 
@@ -1564,8 +1568,7 @@ TEST_F(TouchToFillPaymentMethodDelegateAndroidImplEmailOrLoyaltyCardUnitTest,
   LoyaltyCard card2 = test::CreateLoyaltyCard2();
   std::vector<LoyaltyCard> loyalty_cards{card2, card1};
   // Makes sure there is at least one affiliated card available.
-  autofill_client().set_last_committed_primary_main_frame_url(
-      card1.merchant_domains()[0]);
+  set_last_committed_primary_main_frame_url(card1.merchant_domains()[0]);
   test_api(*autofill_client().GetValuablesDataManager())
       .SetLoyaltyCards(loyalty_cards);
 

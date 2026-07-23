@@ -326,7 +326,9 @@ void LoyaltyCardSuggestionGenerator::GenerateSuggestions(
       all_loyalty_cards, [&](const LoyaltyCard& card) {
         return card.GetAffiliationCategory(
                    client.GetLastCommittedPrimaryMainFrameURL()) ==
-               LoyaltyCard::AffiliationCategory::kAffiliated;
+                   LoyaltyCard::AffiliationCategory::kAffiliated &&
+               client.GetLastCommittedPrimaryMainFrameOrigin() ==
+                   trigger_field.origin();
       });
 
   base::span<const LoyaltyCard> affiliated_cards =
