@@ -1182,10 +1182,11 @@ void FieldTrialList::Register(FieldTrial* trial, bool is_randomized_trial) {
   DCHECK(global_);
 
   AutoLock auto_lock(global_->lock_);
-  CHECK(!global_->PreLockedFind(trial->trial_name())) << trial->trial_name();
+  auto [_, inserted] =
+      global_->registered_.try_emplace(trial->trial_name(), trial);
+  CHECK(inserted) << trial->trial_name();
   trial->AddRef();
   trial->SetTrialRegistered();
-  global_->registered_[trial->trial_name()] = trial;
 
   if (is_randomized_trial) {
     ++global_->num_registered_randomized_trials_;
