@@ -5,7 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {DeviceModeTestRunner} from 'device_mode_test_runner';
 
-import * as Emulation from 'devtools/panels/emulation/emulation.js';
+import * as EmulationModel from 'devtools/models/emulation/emulation.js';
 import * as Geometry from 'devtools/models/geometry/geometry.js'
 
 (async function() {
@@ -14,57 +14,55 @@ import * as Geometry from 'devtools/models/geometry/geometry.js'
   var phone0 = DeviceModeTestRunner.buildFakePhone();
   var phone1 = DeviceModeTestRunner.buildFakePhone();
 
-  var view = new Emulation.DeviceModeView.DeviceModeView();
-  var toolbar = view.toolbar;
-  var model = view.model;
+  var model = EmulationModel.DeviceModeModel.DeviceModeModel.instance();
   var viewportSize = new Geometry.Size(320, 480);
   model.setAvailableSize(viewportSize, viewportSize);
 
   TestRunner.addResult(
       '\nSetting device mode to responsive mode with viewport of size: ' + JSON.stringify(viewportSize));
-  toolbar.switchToResponsive();
+  model.emulate(EmulationModel.DeviceModeModel.Type.Responsive, null, null);
   dumpModelInfo();
 
   var width = viewportSize.width - 1;
   TestRunner.addResult('Setting width to ' + width);
-  toolbar.model.setWidthAndScaleToFit(width);
+  model.setWidthAndScaleToFit(width);
   dumpModelInfo();
 
   width = viewportSize.width + 1;
   TestRunner.addResult('Setting width to ' + width);
-  toolbar.model.setWidthAndScaleToFit(width);
+  model.setWidthAndScaleToFit(width);
   dumpModelInfo();
 
   TestRunner.addResult('Setting width to ' + viewportSize.width);
-  toolbar.model.setWidthAndScaleToFit(viewportSize.width);
+  model.setWidthAndScaleToFit(viewportSize.width);
   dumpModelInfo();
 
 
   var height = viewportSize.height - 1;
   TestRunner.addResult('Setting height to ' + height);
-  toolbar.model.setHeightAndScaleToFit(height);
+  model.setHeightAndScaleToFit(height);
   dumpModelInfo();
 
   height = viewportSize.height + 1;
   TestRunner.addResult('Setting height to ' + height);
-  toolbar.model.setHeightAndScaleToFit(height);
+  model.setHeightAndScaleToFit(height);
   dumpModelInfo();
 
   TestRunner.addResult('Setting height to ' + viewportSize.height);
-  toolbar.model.setHeightAndScaleToFit(viewportSize.height);
+  model.setHeightAndScaleToFit(viewportSize.height);
   dumpModelInfo();
 
 
   TestRunner.addResult('\nSetting scale to 0.5');
-  toolbar.model.scaleSetting().set(0.5);
+  model.scaleSetting().set(0.5);
   dumpModelInfo();
 
   TestRunner.addResult('Setting scale to 1');
-  toolbar.model.scaleSetting().set(1);
+  model.scaleSetting().set(1);
   dumpModelInfo();
 
   TestRunner.addResult('Setting scale to 1.25');
-  toolbar.model.scaleSetting().set(1.25);
+  model.scaleSetting().set(1.25);
   dumpModelInfo();
 
   TestRunner.completeTest();
