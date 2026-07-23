@@ -74,6 +74,11 @@ base::DictValue ProvisioningDomainConfigToDict(
 base::DictValue ProvisioningDomainProxyConfigToDict(
     const ProvisioningDomainProxyConfig& proxy_config);
 
+// Parses a single "proxy-match" routing rule dictionary into a RoutingRule
+// struct.
+std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
+    const base::DictValue& match_dict);
+
 }  // namespace enterprise_net
 
 #endif  // COMPONENTS_ENTERPRISE_NET_CORE_UTILS_H_

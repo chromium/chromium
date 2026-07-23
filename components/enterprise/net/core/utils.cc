@@ -252,6 +252,8 @@ ParseProxy(const base::DictValue& proxy_dict) {
           std::move(proxy_chain), std::move(auth), std::move(extra_headers)));
 }
 
+}  // namespace
+
 std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
     const base::DictValue& match_dict) {
   std::vector<std::string> proxies;
@@ -289,6 +291,11 @@ std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
   std::vector<uint16_t> ports;
   if (const base::ListValue* ports_list = match_dict.FindList(kPortsKey)) {
     for (const auto& port_value : *ports_list) {
+      // TODO(crbug.com/538199264): PvD standard supports port range strings
+      // (e.g. "1024-65535"), and ProxyHostMatchingRules is missing support
+      // for this. Only viable method for now is to create a single port matcher
+      // for each port in the range, but it can lead to memory explosion.
+      // We should add proper port range support to ProxyHostMatchingRules.
       if (port_value.is_string()) {
         uint32_t port = 0;
         if (base::StringToUint(port_value.GetString(), &port) &&
@@ -319,13 +326,22 @@ std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
   } else {
     // Combine domains and ports.
     for (const auto& domain : domains) {
-      if (!ports.empty()) {
-        for (uint16_t port : ports) {
-          destination_matchers.AddRuleFromString(
-              base::StrCat({domain, ":", base::NumberToString(port)}));
+      std::vector<std::string> patterns_to_add = {domain};
+      if (domain.starts_with("*.")) {
+        // By PvD proxy routing standard, entries that include a wildcard prefix
+        // (*.domain.com) also match the FQDN with no subdomain (domain.com)
+        patterns_to_add.push_back(domain.substr(2));
+      }
+
+      for (const auto& pattern : patterns_to_add) {
+        if (!ports.empty()) {
+          for (uint16_t port : ports) {
+            destination_matchers.AddRuleFromString(
+                base::StrCat({pattern, ":", base::NumberToString(port)}));
+          }
+        } else {
+          destination_matchers.AddRuleFromString(pattern);
         }
-      } else {
-        destination_matchers.AddRuleFromString(domain);
       }
     }
 
@@ -345,8 +361,6 @@ std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
   return ProvisioningDomainProxyConfig::RoutingRule(
       std::move(proxies), std::move(destination_matchers));
 }
-
-}  // namespace
 
 net::ProxyServer::Scheme ParseProvisioningDomainProxyProtocol(
     std::string_view protocol_str) {

@@ -530,5 +530,67 @@ TEST(ProvisioningDomainProxyConfigToDictTest, ParseAndSerializeRoundtrip) {
   EXPECT_EQ("test.domain.com:443", (*rule0_matchers)[0].GetString());
 }
 
+TEST(ParseRoutingRuleTest, WildcardApexDomainExpansion) {
+  base::DictValue match_dict;
+  base::ListValue domains;
+  domains.Append("*.ifconfig.co");
+  match_dict.Set("domains", std::move(domains));
+
+  base::ListValue proxies;
+  proxies.Append("proxy1");
+  match_dict.Set("proxies", std::move(proxies));
+
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> rule =
+      ParseRoutingRule(match_dict);
+  ASSERT_TRUE(rule.has_value());
+
+  // Verify that both subdomains (sub.ifconfig.co) and the apex domain
+  // (ifconfig.co) match.
+  EXPECT_TRUE(
+      rule->destination_matchers.Matches(GURL("https://sub.ifconfig.co/")));
+  EXPECT_TRUE(rule->destination_matchers.Matches(GURL("https://ifconfig.co/")));
+  EXPECT_FALSE(
+      rule->destination_matchers.Matches(GURL("https://notifconfig.co/")));
+  EXPECT_FALSE(
+      rule->destination_matchers.Matches(GURL("https://otherdomain.co/")));
+}
+
+TEST(ParseRoutingRuleTest, SinglePortParsingAndIgnoredPortRanges) {
+  base::DictValue match_dict;
+  base::ListValue domains;
+  domains.Append("example.com");
+  match_dict.Set("domains", std::move(domains));
+
+  base::ListValue ports;
+  // Single string port and integer port should work as expected.
+  ports.Append("80");
+  ports.Append(8080);
+  // TODO(crbug.com/538199264): Port range strings like "80-82" are required
+  // by the PvD standard. Support to be added, but we are ignoring these for
+  // now.
+  ports.Append("8000-8005");
+  match_dict.Set("ports", std::move(ports));
+
+  base::ListValue proxies;
+  proxies.Append("proxy1");
+  match_dict.Set("proxies", std::move(proxies));
+
+  std::optional<ProvisioningDomainProxyConfig::RoutingRule> rule =
+      ParseRoutingRule(match_dict);
+  ASSERT_TRUE(rule.has_value());
+
+  // Single ports match.
+  EXPECT_TRUE(
+      rule->destination_matchers.Matches(GURL("http://example.com:80/")));
+  EXPECT_TRUE(
+      rule->destination_matchers.Matches(GURL("http://example.com:8080/")));
+
+  // Unlisted single ports and ignored port ranges do not match.
+  EXPECT_FALSE(
+      rule->destination_matchers.Matches(GURL("http://example.com:81/")));
+  EXPECT_FALSE(
+      rule->destination_matchers.Matches(GURL("http://example.com:8001/")));
+}
+
 }  // namespace
 }  // namespace enterprise_net
