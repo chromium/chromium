@@ -1923,8 +1923,7 @@ class TabImpl implements Tab, TabInternal {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_IN_TAB)) return false;
 
         // TODO(crbug.com/456164910): Use the URL path to open deeplinks into Settings.
-        SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(assumeNonNull(getActivity()));
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext());
         goBack(); // Keep showing the previous contents in the tab.
         return true;
     }
