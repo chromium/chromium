@@ -150,7 +150,7 @@ id<GREYMatcher> KeyboardAccessoryPasswordSuggestion(NSString* realm) {
   return grey_allOf(grey_text(chip_text),
                     grey_ancestor(grey_accessibilityID(
                         kFormInputAccessoryViewAccessibilityID)),
-                    nil);
+                    grey_interactable(), nil);
 }
 
 // Matcher for the autofill backup password suggestion chip in the keyboard
@@ -757,8 +757,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [self testFillCreditCardFieldsOnForm];
 
   // Focus on the cvc field to fill it.
-  [ChromeEarlGrey evaluateJavaScriptForSideEffect:
-                      @"document.getElementById('cvc').focus();"];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("cvc")];
   // Wait some time so the keyboard has time to show up then slowly type the CVC
   // number.
   base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(200));
