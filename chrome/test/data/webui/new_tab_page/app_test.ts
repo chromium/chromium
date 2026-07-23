@@ -1646,7 +1646,46 @@ suite('NewTabPageAppTest', () => {
                   ' voice search again',
           );
         });
+
+    suite('invariant checks', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          ntpRealboxNextEnabled: true,
+        });
+      });
+
+      test('initial height matches searchbox height before expanding', async () => {
+        const searchbox = $$(app, '#searchbox');
+        assertTrue(!!searchbox);
+
+        // Arrange: dispatch open-composebox event.
+        (searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {text: '', files: []},
+        })));
+        await app.updateComplete;
+
+        const composeboxElement =
+            app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
+        assertTrue(!!composeboxElement);
+
+        // Force/ensure the composebox is in the folded state for
+        // style measurement.
+        composeboxElement.setAttribute('should-remain-folded_', '');
+        await composeboxElement.updateComplete;
+
+        const composeboxContainer =
+            composeboxElement.shadowRoot.querySelector('#composebox');
+        assertTrue(!!composeboxContainer);
+
+        const searchboxHeight = window.getComputedStyle(searchbox).height;
+        assertEquals(
+            searchboxHeight,
+            window.getComputedStyle(composeboxContainer).height,
+            'Initial composebox height should match searchbox height to prevent layout jump');
+      });
+    });
   });
+
 
   suite('WallpaperSearch', () => {
     setup(async () => {

@@ -30,6 +30,7 @@
 
 #composebox {
   border-radius: inherit;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   height: calc-size(auto, size);
@@ -37,6 +38,10 @@
   pointer-events: auto;
   position: relative;
   overflow: hidden;
+}
+
+:host(:not([is-collapsible])[should-remain-folded_]) #composebox {
+  max-height: 56px;
 }
 
 #inputContainer {
