@@ -61,9 +61,9 @@ export class CrTabsElement extends PolymerElement {
     };
   }
 
-  tabIcons: string[];
-  tabNames: string[];
-  selected: number;
+  declare tabIcons: string[];
+  declare tabNames: string[];
+  declare selected: number;
 
   private isRtl_: boolean = false;
   private lastSelected_: number|null = null;

@@ -43,9 +43,9 @@ export class CrDrawerElement extends PolymerElement {
     };
   }
 
-  heading: string;
-  align: 'ltr'|'rtl';
-  private show_: boolean;
+  declare heading: string;
+  declare align: 'ltr'|'rtl';
+  declare private show_: boolean;
 
   private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(

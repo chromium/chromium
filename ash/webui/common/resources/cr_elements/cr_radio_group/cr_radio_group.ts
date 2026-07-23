@@ -63,11 +63,11 @@ export class CrRadioGroupElement extends PolymerElement {
     };
   }
 
-  disabled: boolean;
-  selected: string;
-  selectableElements: string;
-  nestedSelectable: boolean;
-  private selectableRegExp_: RegExp;
+  declare disabled: boolean;
+  declare selected: string;
+  declare selectableElements: string;
+  declare nestedSelectable: boolean;
+  declare private selectableRegExp_: RegExp;
 
   private buttons_: CrRadioButtonElement[]|null = null;
   private buttonEventTracker_: EventTracker = new EventTracker();

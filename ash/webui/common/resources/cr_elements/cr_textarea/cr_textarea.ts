@@ -154,20 +154,20 @@ export class CrTextareaElement extends PolymerElement {
     };
   }
 
-  override autofocus: boolean;
-  disabled: boolean;
-  readonly: boolean;
-  required: boolean;
-  maxlength: number;
-  rows: number;
-  label: string;
-  value: string;
-  placeholder: string;
-  autogrow: boolean;
-  hasMaxHeight: boolean;
-  invalid: boolean;
-  firstFooter: string;
-  secondFooter: string;
+  declare autofocus: boolean;
+  declare disabled: boolean;
+  declare readonly: boolean;
+  declare required: boolean;
+  declare maxlength: number;
+  declare rows: number;
+  declare label: string;
+  declare value: string;
+  declare placeholder: string;
+  declare autogrow: boolean;
+  declare hasMaxHeight: boolean;
+  declare invalid: boolean;
+  declare firstFooter: string;
+  declare secondFooter: string;
 
   focusInput() {
     this.$.input.focus();

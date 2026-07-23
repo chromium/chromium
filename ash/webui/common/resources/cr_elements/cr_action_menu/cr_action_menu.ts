@@ -154,10 +154,10 @@ export class CrActionMenuElement extends PolymerElement {
     };
   }
 
-  accessibilityLabel: string;
-  autoReposition: boolean;
-  open: boolean;
-  roleDescription: string;
+  declare accessibilityLabel: string;
+  declare autoReposition: boolean;
+  declare open: boolean;
+  declare roleDescription: string;
 
   private boundClose_: (() => void)|null = null;
   private resizeObserver_: ResizeObserver|null = null;

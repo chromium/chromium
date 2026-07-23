@@ -79,13 +79,13 @@ export class CrToolbarSearchFieldElement extends
     };
   }
 
-  narrow: boolean;
-  showingSearch: boolean;
-  disabled: boolean;
-  override autofocus: boolean;
-  spinnerActive: boolean;
-  private isSpinnerShown_: boolean;
-  private searchFocused_: boolean;
+  declare narrow: boolean;
+  declare showingSearch: boolean;
+  declare disabled: boolean;
+  declare autofocus: boolean;
+  declare spinnerActive: boolean;
+  declare private isSpinnerShown_: boolean;
+  declare private searchFocused_: boolean;
 
   override ready() {
     super.ready();

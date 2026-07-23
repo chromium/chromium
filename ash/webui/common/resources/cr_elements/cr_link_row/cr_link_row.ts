@@ -98,17 +98,17 @@ export class CrLinkRowElement extends PolymerElement {
     };
   }
 
-  ariaShowLabel: boolean;
-  ariaShowSublabel: boolean;
-  startIcon: string;
-  label: string;
-  subLabel: string;
-  disabled: boolean;
-  external: boolean;
-  usingSlottedLabel: boolean;
-  roleDescription: string;
-  buttonAriaDescription: string;
-  private hideLabelWrapper_: boolean;
+  declare ariaShowLabel: boolean;
+  declare ariaShowSublabel: boolean;
+  declare startIcon: string;
+  declare label: string;
+  declare subLabel: string;
+  declare disabled: boolean;
+  declare external: boolean;
+  declare usingSlottedLabel: boolean;
+  declare roleDescription: string;
+  declare buttonAriaDescription: string;
+  declare private hideLabelWrapper_: boolean;
 
   override focus() {
     this.$.icon.focus();

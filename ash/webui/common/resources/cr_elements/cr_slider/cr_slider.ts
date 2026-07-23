@@ -193,23 +193,23 @@ export class CrSliderElement extends CrSliderElementBase {
     ];
   }
 
-  disabled: boolean;
-  dragging: boolean;
-  updatingFromKey: boolean;
-  keyPressSliderIncrement: number;
-  markerCount: number;
-  max: number;
-  min: number;
-  noKeybindings: boolean;
-  snaps: boolean;
-  ticks: SliderTick[]|number[];
-  value: number;
+  declare disabled: boolean;
+  declare dragging: boolean;
+  declare updatingFromKey: boolean;
+  declare keyPressSliderIncrement: number;
+  declare markerCount: number;
+  declare max: number;
+  declare min: number;
+  declare noKeybindings: boolean;
+  declare snaps: boolean;
+  declare ticks: SliderTick[]|number[];
+  declare value: number;
 
-  private disabled_: boolean;
-  private label_: string;
-  private showLabel_: boolean;
-  private isRtl_: boolean;
-  private transiting_: boolean;
+  declare private disabled_: boolean;
+  declare private label_: string;
+  declare private showLabel_: boolean;
+  declare private isRtl_: boolean;
+  declare private transiting_: boolean;
 
   private deltaKeyMap_: Map<string, number>|null = null;
   private draggingEventTracker_: EventTracker|null = null;

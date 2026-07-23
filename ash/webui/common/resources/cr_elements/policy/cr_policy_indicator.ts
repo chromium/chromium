@@ -40,8 +40,8 @@ export class CrPolicyIndicatorElement extends CrPolicyIndicatorElementBase {
     };
   }
 
-  iconAriaLabel: string;
-  private indicatorTooltip_: string;
+  declare iconAriaLabel: string;
+  declare private indicatorTooltip_: string;
 
   /**
    * @param indicatorSourceName The name associated with the indicator.

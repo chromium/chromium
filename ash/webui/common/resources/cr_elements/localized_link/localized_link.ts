@@ -86,10 +86,10 @@ export class LocalizedLinkElement extends PolymerElement {
     };
   }
 
-  localizedString: string|TrustedHTML;
-  linkUrl: string;
-  linkDisabled: boolean;
-  private containerInnerHTML_: string;
+  declare localizedString: string|TrustedHTML;
+  declare linkUrl: string;
+  declare linkDisabled: boolean;
+  declare private containerInnerHTML_: string;
 
   /**
    * Attaches aria attributes and optionally provided link to the provided

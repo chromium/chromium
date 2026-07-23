@@ -67,11 +67,11 @@ export class CrPolicyPrefIndicatorElement extends
     };
   }
 
-  iconAriaLabel: string;
-  override indicatorType: CrPolicyIndicatorType;
-  indicatorTooltip: string;
-  pref?: chrome.settingsPrivate.PrefObject;
-  associatedValue?: any;
+  declare iconAriaLabel: string;
+  declare indicatorType: CrPolicyIndicatorType;
+  declare indicatorTooltip: string;
+  declare pref?: chrome.settingsPrivate.PrefObject;
+  declare associatedValue?: any;
 
   /**
    * @return The indicator type based on |pref| and |associatedValue|.

@@ -43,10 +43,10 @@ export class CrTooltipIconElement extends PolymerElement {
     };
   }
 
-  iconAriaLabel: string;
-  iconClass: string;
-  tooltipText: string;
-  tooltipPosition: string;
+  declare iconAriaLabel: string;
+  declare iconClass: string;
+  declare tooltipText: string;
+  declare tooltipPosition: string;
 
   getFocusableElement(): HTMLElement {
     return this.$.indicator;

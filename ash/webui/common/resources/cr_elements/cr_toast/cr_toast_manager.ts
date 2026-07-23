@@ -55,7 +55,7 @@ export class CrToastManagerElement extends PolymerElement {
     };
   }
 
-  duration: number;
+  declare duration: number;
 
   get isToastOpen(): boolean {
     return this.$.toast.open;

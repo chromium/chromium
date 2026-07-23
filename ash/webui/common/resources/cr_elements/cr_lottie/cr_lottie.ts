@@ -101,10 +101,10 @@ export class CrLottieElement extends PolymerElement {
     };
   }
 
-  animationUrl: string;
-  autoplay: boolean;
-  override hidden: boolean;
-  singleLoop: boolean;
+  declare animationUrl: string;
+  declare autoplay: boolean;
+  declare hidden: boolean;
+  declare singleLoop: boolean;
 
   private canvasElement_: CanvasElementWithOffscreen|null = null;
   private isAnimationLoaded_: boolean = false;

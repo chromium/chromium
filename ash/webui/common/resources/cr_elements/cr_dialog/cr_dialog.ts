@@ -120,15 +120,15 @@ export class CrDialogElement extends CrDialogElementBase {
     };
   }
 
-  closeText: string;
-  consumeKeydownEvent: boolean;
-  ignoreEnterKey: boolean;
-  ignorePopstate: boolean;
-  noCancel: boolean;
-  open: boolean;
-  showCloseButton: boolean;
-  showOnAttach: boolean;
-  ariaDescriptionText: string;
+  declare closeText: string;
+  declare consumeKeydownEvent: boolean;
+  declare ignoreEnterKey: boolean;
+  declare ignorePopstate: boolean;
+  declare noCancel: boolean;
+  declare open: boolean;
+  declare showCloseButton: boolean;
+  declare showOnAttach: boolean;
+  declare ariaDescriptionText: string;
 
   private intersectionObserver_: IntersectionObserver|null = null;
   private mutationObserver_: MutationObserver|null = null;

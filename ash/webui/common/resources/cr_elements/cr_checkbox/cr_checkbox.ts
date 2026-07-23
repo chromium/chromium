@@ -81,11 +81,11 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     };
   }
 
-  checked: boolean;
-  disabled: boolean;
-  override ariaDescription: string|null;
-  ariaLabelOverride: string;
-  override tabIndex: number;
+  declare checked: boolean;
+  declare disabled: boolean;
+  declare ariaDescription: string|null;
+  declare ariaLabelOverride: string;
+  declare tabIndex: number;
 
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
   override _rippleContainer: Element;

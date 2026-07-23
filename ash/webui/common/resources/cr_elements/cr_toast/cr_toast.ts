@@ -41,8 +41,8 @@ export class CrToastElement extends PolymerElement {
     };
   }
 
-  duration: number;
-  open: boolean;
+  declare duration: number;
+  declare open: boolean;
   private hideTimeoutId_: number|null = null;
 
   static get observers() {

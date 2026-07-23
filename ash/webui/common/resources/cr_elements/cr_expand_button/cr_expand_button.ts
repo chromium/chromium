@@ -94,15 +94,15 @@ export class CrExpandButtonElement extends PolymerElement {
     };
   }
 
-  expanded: boolean;
-  disabled: boolean;
-  override ariaLabel: string;
-  override tabIndex: number;
-  expandIcon: string;
-  collapseIcon: string;
-  expandTitle: string;
-  collapseTitle: string;
-  private tooltipText_: string;
+  declare expanded: boolean;
+  declare disabled: boolean;
+  declare ariaLabel: string;
+  declare tabIndex: number;
+  declare expandIcon: string;
+  declare collapseIcon: string;
+  declare expandTitle: string;
+  declare collapseTitle: string;
+  declare private tooltipText_: string;
 
   static get observers() {
     return ['updateAriaExpanded_(disabled, expanded)'];

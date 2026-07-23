@@ -93,18 +93,18 @@ export class CrToolbarElement extends PolymerElement {
     };
   }
 
-  pageName: string;
-  searchPrompt: string;
-  clearLabel: string;
-  menuLabel: string;
-  spinnerActive: boolean;
-  showMenu: boolean;
-  showSearch: boolean;
-  override autofocus: boolean;
-  narrow: boolean;
-  narrowThreshold: number;
-  alwaysShowLogo: boolean;
-  private showingSearch_: boolean;
+  declare pageName: string;
+  declare searchPrompt: string;
+  declare clearLabel: string;
+  declare menuLabel: string;
+  declare spinnerActive: boolean;
+  declare showMenu: boolean;
+  declare showSearch: boolean;
+  declare autofocus: boolean;
+  declare narrow: boolean;
+  declare narrowThreshold: number;
+  declare alwaysShowLogo: boolean;
+  declare private showingSearch_: boolean;
 
   getSearchField(): CrToolbarSearchFieldElement {
     return this.$.search;

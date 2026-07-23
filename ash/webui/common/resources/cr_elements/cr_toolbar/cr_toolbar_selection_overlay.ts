@@ -59,11 +59,11 @@ export class CrToolbarSelectionOverlayElement extends PolymerElement {
     ];
   }
 
-  show: boolean;
-  cancelLabel: string;
-  selectionLabel: string;
-  private hasShown_: boolean;
-  private selectionLabel_: string;
+  declare show: boolean;
+  declare cancelLabel: string;
+  declare selectionLabel: string;
+  declare private hasShown_: boolean;
+  declare private selectionLabel_: string;
   private debouncer_: Debouncer;
 
   override ready() {

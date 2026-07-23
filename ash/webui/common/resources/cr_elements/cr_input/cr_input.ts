@@ -200,29 +200,29 @@ export class CrInputElement extends PolymerElement {
     };
   }
 
-  override ariaDescription: string|null;
-  override ariaLabel: string;
-  override autofocus: boolean;
-  autoValidate: boolean;
-  disabled: boolean;
-  errorMessage: string;
-  inputmode: string;
-  inputTabindex: number;
-  invalid: boolean;
-  label: string;
-  max: number;
-  min: number;
-  maxlength: number;
-  minlength: number;
-  pattern: string;
-  placeholder: string|null;
-  readonly: boolean;
-  required: boolean;
-  type: string;
-  value: string;
+  declare ariaDescription: string|null;
+  declare ariaLabel: string;
+  declare autofocus: boolean;
+  declare autoValidate: boolean;
+  declare disabled: boolean;
+  declare errorMessage: string;
+  declare inputmode: string;
+  declare inputTabindex: number;
+  declare invalid: boolean;
+  declare label: string;
+  declare max: number;
+  declare min: number;
+  declare maxlength: number;
+  declare minlength: number;
+  declare pattern: string;
+  declare placeholder: string|null;
+  declare readonly: boolean;
+  declare required: boolean;
+  declare type: string;
+  declare value: string;
 
-  private displayErrorMessage_: string;
-  private focused_: boolean;
+  declare private displayErrorMessage_: string;
+  declare private focused_: boolean;
 
   override ready() {
     super.ready();
