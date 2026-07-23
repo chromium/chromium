@@ -36,7 +36,8 @@ bool TouchToFillAutofillViewImpl::ShowPersonalContextNotice(
   if (!java_object_) {
     java_object_ = Java_TouchToFillAutofillViewBridge_create(
         env, reinterpret_cast<intptr_t>(this),
-        web_contents_->GetTopLevelNativeWindow()->GetJavaObject());
+        web_contents_->GetTopLevelNativeWindow()->GetJavaObject(),
+        web_contents_->GetJavaWebContents());
     if (!java_object_) {
       return false;
     }

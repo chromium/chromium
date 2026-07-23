@@ -92,7 +92,9 @@ class TouchToFillAutofillMediator {
 
     void onDismissed() {
         if (!dismiss()) return;
-        assumeNonNull(mDelegate).onDismissed();
+        if (mDelegate != null) {
+            mDelegate.onDismissed();
+        }
         recordNoticeInteraction(NoticeInteraction.DISMISSED);
     }
 

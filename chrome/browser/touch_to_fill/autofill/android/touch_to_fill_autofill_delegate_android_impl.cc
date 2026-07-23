@@ -10,6 +10,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -28,6 +29,10 @@ TouchToFillAutofillDelegateAndroidImpl::
 bool TouchToFillAutofillDelegateAndroidImpl::IntendsToShowTouchToFill(
     FormGlobalId form_id,
     FieldGlobalId field_id) {
+  if (ttf_autofill_state_ == TouchToFillAutofillState::kSuppressing &&
+      field_id == query_field_id_) {
+    return false;
+  }
   if (!manager_->client().ShouldShowPersonalContextAmbientAutofillNotice()) {
     return false;
   }
@@ -73,17 +78,26 @@ bool TouchToFillAutofillDelegateAndroidImpl::IntendsToShowTouchToFill(
 bool TouchToFillAutofillDelegateAndroidImpl::TryToShowTouchToFill(
     const FormData& form,
     const FormFieldData& field) {
-  if (ttf_autofill_state_ ==
-      TouchToFillAutofillState::kShowingPersonalContextNotice) {
-    return true;
+  switch (ttf_autofill_state_) {
+    case TouchToFillAutofillState::kShowing:
+    case TouchToFillAutofillState::kNavigatingAway:
+      return true;
+    case TouchToFillAutofillState::kSuppressing:
+      ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
+      if (field.global_id() == query_field_id_) {
+        return false;
+      }
+      break;
+    case TouchToFillAutofillState::kInactive:
+      break;
   }
   if (!IntendsToShowTouchToFill(form.global_id(), field.global_id())) {
     return false;
   }
   if (manager_->client().ShowAmbientAutoFillNotice(
           weak_ptr_factory_.GetWeakPtr())) {
-    ttf_autofill_state_ =
-        TouchToFillAutofillState::kShowingPersonalContextNotice;
+    ttf_autofill_state_ = TouchToFillAutofillState::kShowing;
+    query_field_id_ = field.global_id();
     OnShow();
     return true;
   }
@@ -91,14 +105,26 @@ bool TouchToFillAutofillDelegateAndroidImpl::TryToShowTouchToFill(
 }
 
 bool TouchToFillAutofillDelegateAndroidImpl::IsShowingTouchToFill() {
-  return ttf_autofill_state_ ==
-         TouchToFillAutofillState::kShowingPersonalContextNotice;
+  switch (ttf_autofill_state_) {
+    case TouchToFillAutofillState::kShowing:
+      return true;
+    case TouchToFillAutofillState::kInactive:
+    case TouchToFillAutofillState::kNavigatingAway:
+    case TouchToFillAutofillState::kSuppressing:
+      return false;
+  }
 }
 
 void TouchToFillAutofillDelegateAndroidImpl::HideTouchToFill() {
-  if (IsShowingTouchToFill()) {
-    manager_->client().HideAmbientAutoFillNotice();
-    ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
+  switch (ttf_autofill_state_) {
+    case TouchToFillAutofillState::kShowing:
+      manager_->client().HideAmbientAutoFillNotice();
+      ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
+      break;
+    case TouchToFillAutofillState::kNavigatingAway:
+    case TouchToFillAutofillState::kSuppressing:
+    case TouchToFillAutofillState::kInactive:
+      break;
   }
 }
 
@@ -108,10 +134,11 @@ void TouchToFillAutofillDelegateAndroidImpl::OnShow() {
 
 void TouchToFillAutofillDelegateAndroidImpl::OnNoticeAcknowledged() {
   manager_->client().MarkPersonalContextAmbientAutofillNoticeAsAcknowledged();
-  ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
 }
 
 void TouchToFillAutofillDelegateAndroidImpl::OnSettingsLinkClicked() {
+  ttf_autofill_state_ = TouchToFillAutofillState::kNavigatingAway;
+
   content::WebContents* web_contents =
       static_cast<ContentAutofillClient&>(manager_->client()).web_contents();
   if (!web_contents) {
@@ -120,11 +147,31 @@ void TouchToFillAutofillDelegateAndroidImpl::OnSettingsLinkClicked() {
   ShowAutofillPersonalContextSettings(
       web_contents,
       AutofillOptionsReferrer::kPersonalContextAmbientAutofillNotice);
-  ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
 }
 
 void TouchToFillAutofillDelegateAndroidImpl::OnDismissed() {
-  ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
+  switch (ttf_autofill_state_) {
+    case TouchToFillAutofillState::kInactive:
+    case TouchToFillAutofillState::kSuppressing:
+      return;
+    case TouchToFillAutofillState::kNavigatingAway:
+      ttf_autofill_state_ = TouchToFillAutofillState::kInactive;
+      break;
+    case TouchToFillAutofillState::kShowing:
+      ttf_autofill_state_ = TouchToFillAutofillState::kSuppressing;
+      TriggerAskForValuesToFill();
+      break;
+  }
+}
+
+void TouchToFillAutofillDelegateAndroidImpl::TriggerAskForValuesToFill() {
+  if (ttf_autofill_state_ != TouchToFillAutofillState::kSuppressing) {
+    return;
+  }
+
+  manager_->driver().RendererShouldTriggerSuggestions(
+      query_field_id_,
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
 }  // namespace autofill

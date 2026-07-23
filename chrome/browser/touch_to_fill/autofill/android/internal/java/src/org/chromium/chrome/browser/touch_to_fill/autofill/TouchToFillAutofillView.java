@@ -37,6 +37,7 @@ class TouchToFillAutofillView implements BottomSheetContent {
                         return;
                     }
                     super.onSheetClosed(reason);
+                    mIsShowing = false;
                     if (mDismissHandler != null) {
                         mDismissHandler.run();
                     }

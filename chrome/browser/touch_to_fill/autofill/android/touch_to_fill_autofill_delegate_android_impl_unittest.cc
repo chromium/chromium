@@ -51,6 +51,9 @@ class TouchToFillAutofillDelegateAndroidImplTest
     : public testing::Test,
       public WithTestAutofillClientDriverManager<NiceMock<MockAutofillClient>> {
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
   TouchToFillAutofillDelegateAndroidImplTest() = default;
   ~TouchToFillAutofillDelegateAndroidImplTest() override = default;
 
@@ -102,13 +105,14 @@ class TouchToFillAutofillDelegateAndroidImplTest
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
   std::unique_ptr<TouchToFillAutofillDelegateAndroidImpl> delegate_;
 };
 
+// Verifies that the delegate intends to show TouchToFill when the client allows
+// it and personal context suggestions are available.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
        IntendsToShowTouchToFillWhenClientShouldShow) {
   auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
@@ -121,6 +125,8 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   EXPECT_TRUE(delegate().IntendsToShowTouchToFill(form_id, field_id));
 }
 
+// Verifies that the delegate does not intend to show TouchToFill when the
+// client disallows it.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
        DoesNotIntendToShowTouchToFillWhenClientShouldNotShow) {
   EXPECT_CALL(autofill_client(), ShouldShowPersonalContextAmbientAutofillNotice)
@@ -129,6 +135,8 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   EXPECT_FALSE(delegate().IntendsToShowTouchToFill(form_id, field_id));
 }
 
+// Verifies that acknowledging the notice notifies the client to mark it as
+// acknowledged.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
        OnNoticeAcknowledgedNotifiesClient) {
   EXPECT_CALL(autofill_client(),
@@ -136,6 +144,8 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   delegate().OnNoticeAcknowledged();
 }
 
+// Verifies that trying to show TouchToFill successfully triggers the notice on
+// the client and updates the internal state.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
        TryToShowTouchToFillTriggersClientNotice) {
   auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
@@ -154,6 +164,8 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   EXPECT_TRUE(delegate().IsShowingTouchToFill());
 }
 
+// Verifies that trying to show TouchToFill returns false if the client fails to
+// show the notice.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
        TryToShowTouchToFillReturnsFalseWhenClientFails) {
   auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
@@ -172,6 +184,8 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   EXPECT_FALSE(delegate().IsShowingTouchToFill());
 }
 
+// Verifies that trying to show TouchToFill returns false if the client
+// disallows showing it.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
        TryToShowTouchToFillReturnsFalseWhenClientShouldNotShow) {
   EXPECT_CALL(autofill_client(), ShouldShowPersonalContextAmbientAutofillNotice)
@@ -183,6 +197,8 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
   EXPECT_FALSE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
 }
 
+// Verifies that HideTouchToFill hides the notice via the client and updates the
+// state.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest, HideTouchToFillHidesNotice) {
   auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
       autofill_client().GetAutofillAiManager());
@@ -203,6 +219,7 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest, HideTouchToFillHidesNotice) {
   EXPECT_FALSE(delegate().IsShowingTouchToFill());
 }
 
+// Verifies that OnDismissed resets the showing state to inactive.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest, OnDismissedResetsState) {
   auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
       autofill_client().GetAutofillAiManager());
@@ -222,6 +239,198 @@ TEST_F(TouchToFillAutofillDelegateAndroidImplTest, OnDismissedResetsState) {
   EXPECT_FALSE(delegate().IsShowingTouchToFill());
 }
 
+// Verifies that OnDismissed triggers standard suggestions and temporarily
+// suppresses TouchToFill for the next immediate attempt.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       OnDismissedFiresTaskAndSuppressesTtf) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePersonalContextSuggestions()));
+  EXPECT_CALL(autofill_client(), ShouldShowPersonalContextAmbientAutofillNotice)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+      .WillRepeatedly(Return(true));
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+  ASSERT_TRUE(delegate().IsShowingTouchToFill());
+
+  delegate().OnDismissed();
+  EXPECT_FALSE(delegate().IsShowingTouchToFill());
+
+  // Trying to show again immediately should return false due to suppression.
+  EXPECT_FALSE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+
+  // Subsequent queries should succeed because suppression was consumed.
+  EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+}
+
+// Verifies that acknowledging the notice triggers standard suggestions and
+// temporarily suppresses TouchToFill after the sheet is dismissed.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       AcknowledgeFiresTaskAndSuppressesTtf) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePersonalContextSuggestions()));
+  EXPECT_CALL(autofill_client(), ShouldShowPersonalContextAmbientAutofillNotice)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+      .WillRepeatedly(Return(true));
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+  ASSERT_TRUE(delegate().IsShowingTouchToFill());
+
+  // Acknowledge notice.
+  EXPECT_CALL(autofill_client(),
+              MarkPersonalContextAmbientAutofillNoticeAsAcknowledged);
+  delegate().OnNoticeAcknowledged();
+
+  // State should still be showing (waiting for dismissal callback).
+  EXPECT_TRUE(delegate().IsShowingTouchToFill());
+
+  // Simulate sheet closed callback.
+  delegate().OnDismissed();
+  EXPECT_FALSE(delegate().IsShowingTouchToFill());
+
+  // Trying to show again immediately should return false due to suppression.
+  EXPECT_FALSE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+
+  // Subsequent queries should succeed because suppression was consumed.
+  EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+}
+
+// Verifies that OnDismissed does not suppress TouchToFill for different fields
+// than the one that was dismissed.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       OnDismissedDoesNotSuppressOtherFields) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePersonalContextSuggestions()));
+  EXPECT_CALL(autofill_client(), ShouldShowPersonalContextAmbientAutofillNotice)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+      .WillRepeatedly(Return(true));
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+
+  // Show for field 0.
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+  ASSERT_TRUE(delegate().IsShowingTouchToFill());
+
+  // Dismiss. State transitions to kSuppressing (for field 0).
+  delegate().OnDismissed();
+  EXPECT_FALSE(delegate().IsShowingTouchToFill());
+
+  // Try to show for field 1 (different field).
+  // It should NOT be suppressed, so TryToShow should return true.
+  EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[1]));
+  EXPECT_TRUE(delegate().IsShowingTouchToFill());
+}
+
+// Verifies that acknowledging the notice notifies the client, even if forms
+// have been seen.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       OnNoticeLinkClickedOrAcknowledgedOnDismissedMatches) {
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+
+  // Verify that onsettingslink or notice acknowledge triggers OnDismissed
+  EXPECT_CALL(autofill_client(),
+              MarkPersonalContextAmbientAutofillNoticeAsAcknowledged);
+  delegate().OnNoticeAcknowledged();
+}
+
+// Verifies that clicking the settings link transitions the state to navigating
+// away, which bypasses temporary suppression and suggestion triggering on
+// dismissal.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       OnSettingsLinkClickedSetsStateInactiveDirectly) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePersonalContextSuggestions()));
+  EXPECT_CALL(autofill_client(), ShouldShowPersonalContextAmbientAutofillNotice)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+      .WillRepeatedly(Return(true));
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+  ASSERT_TRUE(delegate().IsShowingTouchToFill());
+
+  delegate().OnSettingsLinkClicked();
+  EXPECT_FALSE(delegate().IsShowingTouchToFill());
+
+  delegate().OnDismissed();  // Simulate sheet closing
+
+  // Trying to show again immediately should succeed since suppression was not
+  // activated.
+  EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+}
+
+// Verifies that temporary suppression works correctly even if suggestions are
+// returned asynchronously after dismissal.
+TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
+       AsynchronousSuggestionsSuppressCorrectly) {
+  auto* mock_ai_manager = static_cast<MockAutofillAiManager*>(
+      autofill_client().GetAutofillAiManager());
+
+  // Setup mock to return suggestions initially so the sheet can be shown.
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePersonalContextSuggestions()));
+  EXPECT_CALL(autofill_client(), ShouldShowPersonalContextAmbientAutofillNotice)
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(autofill_client(), ShowAmbientAutoFillNotice)
+      .WillRepeatedly(Return(true));
+
+  FormData form = test::CreateTestPersonalInformationFormData();
+  autofill_manager().AddSeenForm(
+      form, std::vector<FieldType>(form.fields().size(), UNKNOWN_TYPE));
+
+  // Show the ttf first.
+  ASSERT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+  ASSERT_TRUE(delegate().IsShowingTouchToFill());
+
+  // Setup mock to return NO suggestions during the sync
+  // TriggerAskForValuesToFill query, simulating asynchronous DB latency.
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(std::vector<Suggestion>{}));
+
+  // Dismiss the ttf.
+  delegate().OnDismissed();
+  EXPECT_FALSE(delegate().IsShowingTouchToFill());
+
+  // Return personal context suggestions (simulates DB callback completing).
+  ON_CALL(*mock_ai_manager, GetSuggestions)
+      .WillByDefault(Return(CreatePersonalContextSuggestions()));
+
+  // Manually call TryToShowTouchToFill (simulating asynchronous callback).
+  // It should see suppress_touch_to_fill_ is still true, consume it, and
+  // return false.
+  EXPECT_FALSE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+
+  // Subsequent queries should succeed because suppression was consumed.
+  EXPECT_TRUE(delegate().TryToShowTouchToFill(form, form.fields()[0]));
+}
+
+// Verifies that the delegate does not intend to show TouchToFill if there are
+// no personal context suggestions available.
 TEST_F(TouchToFillAutofillDelegateAndroidImplTest,
        DoesNotIntendToShowTouchToFillWhenSuggestionsAreMissing) {
   EXPECT_CALL(autofill_client(), ShouldShowPersonalContextAmbientAutofillNotice)
