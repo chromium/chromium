@@ -477,6 +477,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/back_button/BackButtonMediatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomBarConstraintsSupplierUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsViewBinderTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/home_button/HomeButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/incognito/IncognitoIndicatorCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/load_progress/LoadProgressMediatorTest.java",

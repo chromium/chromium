@@ -70,6 +70,7 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.ref.WeakReference;
 import java.util.function.Supplier;
 
 /** Unit tests for {@link BottomControlsMediator}. */
@@ -275,6 +276,13 @@ public class BottomControlsMediatorTest {
         // At rest (bottomControlOffset = 0), it should translate to 0 (padding handles shift)
         bottomAppBarMediator.onBrowserControlsOffsetUpdate(-DEFAULT_INSET);
         assertEquals(0, mModel.get(BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y));
+        assertEquals(DEFAULT_INSET, mModel.get(BottomControlsProperties.BOTTOM_PADDING));
+
+        // When entering split screen (top-half app), isDrawingToEdge becomes false
+        when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(false);
+        bottomAppBarMediator.onBrowserControlsOffsetUpdate(0);
+        assertEquals(0, mModel.get(BottomControlsProperties.BOTTOM_PADDING));
+        assertEquals(0, mModel.get(BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y));
 
         // During scroll-off (bottomControlOffset = 30), it should translate to 30
         doReturn(30).when(mBrowserControlsVisibilityManager).getBottomControlOffset();
@@ -466,7 +474,7 @@ public class BottomControlsMediatorTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":disable_on_ntp/false"})
     public void testEdgeToEdge_BottomPadding() {
         BottomControlsMediator bottomAppBarMediator =
                 new BottomControlsMediator(
@@ -485,8 +493,14 @@ public class BottomControlsMediatorTest {
                         mTabObservableSupplier,
                         mReadAloudRestoringSupplier);
 
+        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(activity));
+
         Tab tab = Mockito.mock(Tab.class);
         when(tab.isIncognito()).thenReturn(false);
+        NativePage ntp = Mockito.mock(NativePage.class);
+        when(ntp.getHost()).thenReturn("newtab");
+        when(tab.getNativePage()).thenReturn(ntp);
         mTabObservableSupplier.set(tab);
 
         when(mEdgeToEdgeController.isDrawingToEdge()).thenReturn(true);

@@ -83,12 +83,22 @@ class BottomControlsViewBinder {
             shadow.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
         } else if (BottomControlsProperties.BOTTOM_PADDING == propertyKey) {
             int padding = model.get(BottomControlsProperties.BOTTOM_PADDING);
-            view.root.setPadding(
-                    view.root.getPaddingLeft(),
-                    view.root.getPaddingTop(),
-                    view.root.getPaddingRight(),
-                    padding);
-            view.sceneLayer.setBottomPadding(padding);
+            if (view.root.getPaddingBottom() != padding) {
+                view.root.setPadding(
+                        view.root.getPaddingLeft(),
+                        view.root.getPaddingTop(),
+                        view.root.getPaddingRight(),
+                        padding);
+                view.sceneLayer.setBottomPadding(padding);
+                view.root.onModelTokenChange(new Object());
+                view.sceneLayer.setIsVisible(false);
+                DynamicResourceReadyOnceCallback.onNext(
+                        view.root.getResourceAdapter(),
+                        (resource) ->
+                                view.sceneLayer.setIsVisible(
+                                        model.get(
+                                                BottomControlsProperties.COMPOSITED_VIEW_VISIBLE)));
+            }
         } else {
             assert false : "Unhandled property detected in BottomControlsViewBinder!";
         }

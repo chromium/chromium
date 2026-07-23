@@ -99,6 +99,7 @@ class BottomControlsMediator
 
     private @Nullable CurrentTabObserver mTabObserver;
     private @Nullable EdgeToEdgeController mActiveEdgeToEdgeController;
+    private boolean mWasNtpScrollOffEnabled;
 
     /** The bottom controls visibility. */
     private boolean mIsBottomControlsVisible;
@@ -324,6 +325,23 @@ class BottomControlsMediator
         return mIsBottomControlsVisible && !mIsKeyboardVisible && !isInFullscreenMode();
     }
 
+    private boolean isNtpScrollOffEnabled() {
+        Tab tab = mTabSupplier.get();
+        Context context =
+                mWindowAndroid.getContext() != null ? mWindowAndroid.getContext().get() : null;
+        return mLayerType == LayerType.BOTTOM_APP_BAR
+                && BottomBarConfigUtils.isNtpScrollOffEnabled(tab, context);
+    }
+
+    private int calculateBottomPadding() {
+        if (isNtpScrollOffEnabled()
+                && mActiveEdgeToEdgeController != null
+                && mActiveEdgeToEdgeController.isDrawingToEdge()) {
+            return mActiveEdgeToEdgeController.getBottomInsetPx();
+        }
+        return 0;
+    }
+
     /**
      * The Android View is the interactive view. The composited view should always be behind the
      * Android view which means we hide the Android view whenever the composited view is hidden. We
@@ -331,6 +349,9 @@ class BottomControlsMediator
      * checking if {@link BrowserControlsStateProvider#getBottomControlOffset()} is non-zero.
      */
     private void updateAndroidViewVisibility() {
+        int bottomPadding = calculateBottomPadding();
+        mModel.set(BottomControlsProperties.BOTTOM_PADDING, bottomPadding);
+
         // NOTE: For native pages (like NTP), the page itself is rendered as a Java View on top of
         // the CompositorView. If we hide the Android view during NTP scroll-off and rely on
         // compositor textures, the bottom controls will be drawn *behind* the NTP view, making
@@ -349,13 +370,8 @@ class BottomControlsMediator
             // Translate view so that its bottom is aligned with the "base" y_offset, or the
             // y_offset when the bottom controls aren't offset.
             int translationY;
-            Tab tab = mTabSupplier.get();
-            Context context =
-                    mWindowAndroid.getContext() != null ? mWindowAndroid.getContext().get() : null;
             EdgeToEdgeController edgeToEdgeController = mActiveEdgeToEdgeController;
-            int bottomPadding = mModel.get(BottomControlsProperties.BOTTOM_PADDING);
-            if (BottomBarConfigUtils.isNtpScrollOffEnabled(tab, context)
-                    && mLayerType == LayerType.BOTTOM_APP_BAR
+            if (isNtpScrollOffEnabled()
                     && edgeToEdgeController != null
                     && edgeToEdgeController.isDrawingToEdge()) {
                 int chinHeight = edgeToEdgeController.getBottomInsetPx();
@@ -387,16 +403,17 @@ class BottomControlsMediator
 
     private void updateEdgeToEdgeAndPadding() {
         int androidViewHeight = mBottomControlsHeight;
-        int bottomPadding = 0;
-        if (mLayerType == LayerType.BOTTOM_APP_BAR
-                && mActiveEdgeToEdgeController != null
-                && mActiveEdgeToEdgeController.isDrawingToEdge()) {
-            bottomPadding = mActiveEdgeToEdgeController.getBottomInsetPx();
-        }
+        boolean isNtpScrollOffEnabled = isNtpScrollOffEnabled();
+        int bottomPadding = calculateBottomPadding();
+
+        int oldBottomPadding = mModel.get(BottomControlsProperties.BOTTOM_PADDING);
         mModel.set(BottomControlsProperties.ANDROID_VIEW_HEIGHT_NO_PADDING, androidViewHeight);
-        mModel.set(BottomControlsProperties.BOTTOM_PADDING, bottomPadding);
         updateAndroidViewVisibility();
         mBottomControlsStacker.requestLayerUpdate(false);
+        if (oldBottomPadding != bottomPadding || mWasNtpScrollOffEnabled != isNtpScrollOffEnabled) {
+            mBrowserControlsVisibilityDelegate.showControlsTransient();
+        }
+        mWasNtpScrollOffEnabled = isNtpScrollOffEnabled;
     }
 
     @Override
