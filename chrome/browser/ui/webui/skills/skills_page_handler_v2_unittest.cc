@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
+#include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/skills/public/skill.h"
@@ -23,6 +24,13 @@
 
 namespace skills {
 namespace {
+
+class MockSkillsDialogDelegate : public SkillsDialogDelegate {
+ public:
+  MOCK_METHOD(void, CloseDialog, (), (override));
+  MOCK_METHOD(void, OnSkillSaved, (const std::string& skill_id), (override));
+  MOCK_METHOD(void, OnSkillDeleted, (const std::string& skill_id), (override));
+};
 
 class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
  public:
@@ -82,6 +90,22 @@ TEST_F(SkillsPageHandlerV2Test, InvokeSkill) {
 
   remote_handler_->InvokeSkill("test_skill_id");
   remote_handler_.FlushForTesting();
+}
+
+TEST_F(SkillsPageHandlerV2Test, CloseDialog) {
+  MockSkillsDialogDelegate mock_delegate;
+  base::WeakPtrFactory<SkillsDialogDelegate> weak_factory(&mock_delegate);
+
+  mojo::Remote<::skills::mojom::SkillsPageHandler> remote_handler;
+  auto handler = std::make_unique<SkillsPageHandlerV2>(
+      remote_handler.BindNewPipeAndPassReceiver(), profile(),
+      identity_test_env_.identity_manager(), web_contents(),
+      weak_factory.GetWeakPtr());
+
+  EXPECT_CALL(mock_delegate, CloseDialog()).Times(1);
+
+  remote_handler->CloseDialog();
+  remote_handler.FlushForTesting();
 }
 
 }  // namespace

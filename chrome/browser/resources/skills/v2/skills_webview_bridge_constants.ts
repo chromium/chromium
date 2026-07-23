@@ -14,6 +14,9 @@ export const SKILLS_SHOW_TOAST = 'show-toast';
 /** Message type used by the guest to request invoking a skill. */
 export const SKILLS_INVOKE_SKILL = 'invoke-skill';
 
+/** Message type used by the guest to close the dialog. */
+export const SKILLS_CLOSE_DIALOG = 'close-dialog';
+
 /**
  * Interval in milliseconds between successive handshake pings sent by the
  * host.

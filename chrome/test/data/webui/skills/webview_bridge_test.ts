@@ -75,6 +75,7 @@ suite('SkillsWebviewBridgeTest', () => {
       onShowToast: () => {},
       onInvokeSkill: () => {},
       onUrlChanged: () => {},
+      onCloseDialog: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
@@ -149,6 +150,7 @@ suite('SkillsWebviewBridgeTest', () => {
       onShowToast: () => {},
       onInvokeSkill: () => {},
       onUrlChanged: () => {},
+      onCloseDialog: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
@@ -182,6 +184,7 @@ suite('SkillsWebviewBridgeTest', () => {
       },
       onInvokeSkill: () => {},
       onUrlChanged: () => {},
+      onCloseDialog: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
@@ -224,6 +227,7 @@ suite('SkillsWebviewBridgeTest', () => {
         receivedSkillId = skillId;
       },
       onUrlChanged: () => {},
+      onCloseDialog: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 
@@ -266,6 +270,7 @@ suite('SkillsWebviewBridgeTest', () => {
       onUrlChanged: (url: URL) => {
         received.url = url;
       },
+      onCloseDialog: () => {},
     };
     bridge = new SkillsWebviewBridge(webview, delegate);
 

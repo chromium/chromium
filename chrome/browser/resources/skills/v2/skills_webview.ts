@@ -39,6 +39,7 @@ export class SkillsWebview {
       onShowToast: (toastType: ToastType) => this.handler.showToast(toastType),
       onInvokeSkill: (skillId: string) => this.handler.invokeSkill(skillId),
       onUrlChanged: (url: URL) => this.handleUrlChanged(url),
+      onCloseDialog: () => this.handler.closeDialog(),
     };
 
     // Initiate handshake. Show error page on failure.

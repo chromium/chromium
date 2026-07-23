@@ -11,6 +11,7 @@
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -22,7 +23,8 @@ SkillsPageHandlerV2::SkillsPageHandlerV2(
     mojo::PendingReceiver<::skills::mojom::SkillsPageHandler> receiver,
     Profile* profile,
     signin::IdentityManager* identity_manager,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    base::WeakPtr<SkillsDialogDelegate> delegate)
     : receiver_(this, std::move(receiver)),
       profile_(CHECK_DEREF(profile)),
       web_contents_(CHECK_DEREF(web_contents)),
@@ -33,7 +35,8 @@ SkillsPageHandlerV2::SkillsPageHandlerV2(
               &profile_.get(),
               chrome::kChromeUISkillsHost,
               /*partition_name=*/"glicskillspart",
-              /*in_memory=*/true))) {}
+              /*in_memory=*/true))),
+      delegate_(delegate) {}
 
 SkillsPageHandlerV2::~SkillsPageHandlerV2() = default;
 
@@ -68,6 +71,12 @@ void SkillsPageHandlerV2::InvokeSkill(const std::string& skill_id) {
   }
   if (auto* tab_controller = SkillsUiTabControllerInterface::From(tab)) {
     tab_controller->InvokeSkill(skill_id);
+  }
+}
+
+void SkillsPageHandlerV2::CloseDialog() {
+  if (delegate_) {
+    delegate_->CloseDialog();
   }
 }
 

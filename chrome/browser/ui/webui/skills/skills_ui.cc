@@ -209,7 +209,7 @@ void SkillsUI::BindInterface(
   page_handler_v2_ = std::make_unique<skills::SkillsPageHandlerV2>(
       std::move(receiver), profile,
       IdentityManagerFactory::GetForProfile(profile),
-      web_ui()->GetWebContents());
+      web_ui()->GetWebContents(), delegate_);
 }
 
 void SkillsUI::CreatePageHandler(

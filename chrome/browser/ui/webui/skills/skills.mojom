@@ -149,5 +149,8 @@ interface SkillsPageHandler {
 
   // Invokes a skill.
   InvokeSkill(string skill_id);
+
+  // Closes the skills dialog.
+  CloseDialog();
 };
 
