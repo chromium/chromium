@@ -3887,14 +3887,7 @@ const char kChromeAppStoreUrl[] =
 
 - (void)showAppStoreReviewPrompt {
   if (IsAppStoreRatingEnabled()) {
-    if (@available(iOS 18.0, *)) {
-      [AppStoreReviewAdapter requestReviewInScene:self.sceneState.scene];
-    }
-#if !defined(__IPHONE_18_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_18_0
-    else {
-      [SKStoreReviewController requestReviewInScene:self.sceneState.scene];
-    }
-#endif
+    [AppStoreReviewAdapter requestReviewInScene:self.sceneState.scene];
 
     // Apple doesn't tell whether the app store review window will show or
     // provide a callback for when it is dismissed, so alert the coordinator
