@@ -42,6 +42,14 @@ TEST(ConsentKitUrlBuilderTest, BuildMinimalUrl) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "ppc", &value));
   EXPECT_FALSE(value.empty());
 
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "theme", &value));
+  EXPECT_EQ(value, "1");
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "color_scheme", &value));
+  EXPECT_EQ(value, "light");
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "ppc", &value));
+
   std::optional<base::Value> parsed_ppc =
       base::JSONReader::Read(value, base::JSON_PARSE_RFC);
   ASSERT_TRUE(parsed_ppc.has_value());
@@ -128,6 +136,14 @@ TEST(ConsentKitUrlBuilderTest, BuildFullUrl) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(url, "ppc", &value));
   EXPECT_FALSE(value.empty());
 
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "theme", &value));
+  EXPECT_EQ(value, "1");
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "color_scheme", &value));
+  EXPECT_EQ(value, "light");
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "ppc", &value));
+
   std::optional<base::Value> parsed_ppc =
       base::JSONReader::Read(value, base::JSON_PARSE_RFC);
   ASSERT_TRUE(parsed_ppc.has_value());
@@ -180,6 +196,32 @@ TEST(ConsentKitUrlBuilderTest, BuildFullUrl) {
             2);  // session_index set via SetSessionIndex(2)
   EXPECT_EQ(web_platform_params[1].GetInt(),
             1);  // integration_type = WEB_SEARCH_EMBEDDED
+}
+
+TEST(ConsentKitUrlBuilderTest, BuildUrlWithDarkMode) {
+  ConsentKitUrlBuilder builder;
+  builder.SetDarkMode(true);
+
+  GURL url = builder.Build();
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "theme", &value));
+  EXPECT_EQ(value, "2");
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "color_scheme", &value));
+  EXPECT_EQ(value, "dark");
+
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "ppc", &value));
+  std::optional<base::Value> parsed_ppc =
+      base::JSONReader::Read(value, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(parsed_ppc.has_value());
+  const base::ListValue& ppc_list = parsed_ppc->GetList();
+  ASSERT_EQ(ppc_list.size(), 5u);
+
+  // Field 3: PresentationParams [locale, color_theme]
+  const base::ListValue& presentation_params = ppc_list[3].GetList();
+  ASSERT_EQ(presentation_params.size(), 2u);
+  EXPECT_EQ(presentation_params[1].GetInt(), 2);  // 2 is DARK
 }
 
 }  // namespace drive
