@@ -4252,10 +4252,7 @@ impl Arg {
     /// Get the short option name and its visible aliases, if any
     #[inline]
     pub fn get_short_and_visible_aliases(&self) -> Option<Vec<char>> {
-        let mut shorts = match self.short {
-            Some(short) => vec![short],
-            None => return None,
-        };
+        let mut shorts = vec![self.short?];
         if let Some(aliases) = self.get_visible_short_aliases() {
             shorts.extend(aliases);
         }
@@ -4296,10 +4293,7 @@ impl Arg {
     /// Get the long option name and its visible aliases, if any
     #[inline]
     pub fn get_long_and_visible_aliases(&self) -> Option<Vec<&str>> {
-        let mut longs = match self.get_long() {
-            Some(long) => vec![long],
-            None => return None,
-        };
+        let mut longs = vec![self.get_long()?];
         if let Some(aliases) = self.get_visible_aliases() {
             longs.extend(aliases);
         }

@@ -49,7 +49,7 @@ fn main() {
             )
             .exit();
         }
-        ver.to_string()
+        ver.to_owned()
     } else {
         // Increment the one requested (in a real program, we'd reset the lower numbers)
         let (maj, min, pat) = (cli.major, cli.minor, cli.patch);

@@ -342,7 +342,7 @@ mod tests {
     #[test]
     #[cfg(feature = "string")]
     fn from_cow_owned() {
-        let cow = Cow::Owned("world".to_string());
+        let cow = Cow::Owned("world".to_owned());
         let str = Str::from(cow);
         assert_eq!(str, Str::from("world"));
     }

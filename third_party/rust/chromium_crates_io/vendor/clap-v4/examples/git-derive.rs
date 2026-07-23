@@ -157,7 +157,7 @@ fn main() {
             }
         }
         Commands::External(args) => {
-            println!("Calling out to {:?} with {:?}", &args[0], &args[1..]);
+            println!("Calling out to {:?} with {:?}", args[0], &args[1..]);
         }
     }
 

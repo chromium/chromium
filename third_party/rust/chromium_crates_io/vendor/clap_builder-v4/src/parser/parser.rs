@@ -862,7 +862,7 @@ impl<'cmd> Parser<'cmd> {
                 )
             }
         } else if let Some(sc_name) = self.possible_long_flag_subcommand(long_arg) {
-            Ok(ParseResult::FlagSubCommand(sc_name.to_string()))
+            Ok(ParseResult::FlagSubCommand(sc_name.to_owned()))
         } else if self
             .cmd
             .get_keymap()
@@ -995,7 +995,7 @@ impl<'cmd> Parser<'cmd> {
                 self.cur_idx.set(self.cur_idx.get() + 1);
                 debug!("Parser::parse_short_arg: cur_idx:={}", self.cur_idx.get());
 
-                let name = sc_name.to_string();
+                let name = sc_name.to_owned();
                 // Get the index of the previously saved flag subcommand in the group of flags (if exists).
                 // If it is a new flag subcommand, then the formentioned index should be the current one
                 // (ie. `cur_idx`), and should be registered.

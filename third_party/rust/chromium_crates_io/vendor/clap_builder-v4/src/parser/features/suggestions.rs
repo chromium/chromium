@@ -78,7 +78,7 @@ where
 
                 let candidate = some!(did_you_mean(arg, longs).pop());
                 let score = some!(remaining_args.iter().position(|x| subcommand_name == *x));
-                Some((score, (candidate, Some(subcommand_name.to_string()))))
+                Some((score, (candidate, Some(subcommand_name.to_owned()))))
             })
             .min_by_key(|(x, _)| *x)
             .map(|(_, suggestion)| suggestion),

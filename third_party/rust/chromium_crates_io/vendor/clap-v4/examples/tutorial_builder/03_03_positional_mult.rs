@@ -11,5 +11,5 @@ fn main() {
         .map(|v| v.as_str())
         .collect::<Vec<_>>();
 
-    println!("names: {:?}", &args);
+    println!("names: {args:?}");
 }

@@ -1146,7 +1146,7 @@ impl Command {
 
     pub(crate) fn render_usage_(&mut self) -> Option<StyledStr> {
         // If there are global arguments, or settings we need to propagate them down to subcommands
-        // before parsing incase we run into a subcommand
+        // before parsing in case we run into a subcommand
         self._build_self(false);
 
         Usage::new(self).create_usage_with_title(&[])

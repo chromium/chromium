@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "clap_builder"
-version = "4.6.0"
+version = "4.6.2"
 build = false
 include = [
     "build.rs",
@@ -107,7 +107,7 @@ version = "1.0.0"
 optional = true
 
 [dependencies.anstyle]
-version = "1.0.13"
+version = "1.0.14"
 
 [dependencies.backtrace]
 version = "0.3.76"
@@ -121,7 +121,7 @@ version = "0.11.1"
 optional = true
 
 [dependencies.terminal_size]
-version = "0.4.3"
+version = "0.4.4"
 optional = true
 
 [dependencies.unicase]
@@ -136,7 +136,7 @@ optional = true
 version = "0.3.7"
 
 [dev-dependencies.snapbox]
-version = "1.1.0"
+version = "1.2.0"
 
 [dev-dependencies.static_assertions]
 version = "1.1.0"
@@ -196,6 +196,8 @@ result_large_err = "allow"
 same_functions_in_if_condition = "warn"
 self_named_module_files = "warn"
 semicolon_if_nothing_returned = "warn"
+str_to_string = "warn"
+string_add = "warn"
 string_add_assign = "warn"
 string_lit_as_bytes = "warn"
 todo = "warn"

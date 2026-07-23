@@ -830,8 +830,9 @@ impl HelpTemplate<'_, '_> {
         als.extend(long_als);
 
         if !als.is_empty() {
+            let plural = pluralize(als.len(), "", "es");
             let als = als.join(&val_sep);
-            spec_vals.push(format!("{ctx}[aliases: {ctx:#}{als}{ctx}]{ctx:#}"));
+            spec_vals.push(format!("{ctx}[alias{plural}: {ctx:#}{als}{ctx}]{ctx:#}"));
         }
 
         if !a.is_hide_possible_values_set() && !self.use_long_pv(a) {
@@ -1040,7 +1041,10 @@ impl HelpTemplate<'_, '_> {
                 "HelpTemplate::spec_vals: Found long flag aliases...{:?}",
                 a.get_all_long_flag_aliases().collect::<Vec<_>>()
             );
-            spec_vals.push(format!("{ctx}[aliases: {ctx:#}{all_als}{ctx}]{ctx:#}"));
+            let plural = pluralize(short_als.len(), "", "es");
+            spec_vals.push(format!(
+                "{ctx}[alias{plural}: {ctx:#}{all_als}{ctx}]{ctx:#}"
+            ));
         }
 
         spec_vals.join(" ")
@@ -1077,6 +1081,10 @@ impl HelpTemplate<'_, '_> {
     }
 }
 
+fn pluralize<'s>(values: usize, single: &'s str, plural: &'s str) -> &'s str {
+    if values == 1 { single } else { plural }
+}
+
 const NEXT_LINE_INDENT: &str = "        ";
 
 type ArgSortKey = fn(arg: &Arg) -> (usize, String);
@@ -1099,7 +1107,7 @@ fn option_sort_key(arg: &Arg) -> (usize, String) {
         s.push(if x.is_ascii_lowercase() { '0' } else { '1' });
         s
     } else if let Some(x) = arg.get_long() {
-        x.to_string()
+        x.to_owned()
     } else {
         let mut s = '{'.to_string();
         s.push_str(arg.get_id().as_str());

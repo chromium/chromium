@@ -40,7 +40,7 @@ impl<'cmd> Validator<'cmd> {
             let bn = self.cmd.get_bin_name_fallback();
             return Err(Error::missing_subcommand(
                 self.cmd,
-                bn.to_string(),
+                bn.to_owned(),
                 self.cmd
                     .all_subcommand_names()
                     .map(|s| s.to_owned())

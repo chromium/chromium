@@ -49,7 +49,7 @@ fn main() {
     // See if --set_ver was used to set the version manually
     let vers = &cli.vers;
     let version = if let Some(ver) = vers.set_ver.as_deref() {
-        ver.to_string()
+        ver.to_owned()
     } else {
         // Increment the one requested (in a real program, we'd reset the lower numbers)
         let (maj, min, pat) = (vers.major, vers.minor, vers.patch);

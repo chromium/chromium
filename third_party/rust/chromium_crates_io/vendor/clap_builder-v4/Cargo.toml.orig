@@ -1,6 +1,6 @@
 [package]
 name = "clap_builder"
-version = "4.6.0"
+version = "4.6.2"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 categories = ["command-line-interface"]
 keywords = [
@@ -62,8 +62,8 @@ clap_lex = { path = "../clap_lex", version = "1.0.0" }
 unicase = { version = "2.9.0", optional = true }
 strsim = { version = "0.11.1",  optional = true }
 anstream = { version = "1.0.0", optional = true }
-anstyle = "1.0.13"
-terminal_size = { version = "0.4.3", optional = true }
+anstyle = "1.0.14"
+terminal_size = { version = "0.4.4", optional = true }
 backtrace = { version = "0.3.76", optional = true }
 unicode-width = { version = "0.2.2", optional = true }
 
@@ -71,7 +71,7 @@ unicode-width = { version = "0.2.2", optional = true }
 static_assertions = "1.1.0"
 unic-emoji-char = "0.9.0"
 color-print = "0.3.7"
-snapbox = { version = "1.1.0" }
+snapbox = { version = "1.2.0" }
 
 [lints]
 workspace = true

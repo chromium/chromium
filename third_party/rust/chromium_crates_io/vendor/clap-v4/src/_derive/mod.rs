@@ -520,6 +520,7 @@
 //!   [`Command::debug_assert`][crate::Command::debug_assert] in a test
 //!   ([example][_tutorial#testing])
 //! - Always remember to [document](#doc-comments) args and commands with `#![deny(missing_docs)]`
+//!   or `#[deny(clippy::missing_docs_in_private_items)]`
 
 // Point people here that search for attributes that don't exist in the derive (a subset of magic
 // attributes)

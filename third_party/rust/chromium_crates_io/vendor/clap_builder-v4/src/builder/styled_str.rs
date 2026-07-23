@@ -280,7 +280,7 @@ mod tests {
 
     #[test]
     fn from_cow_owned() {
-        let cow = Cow::Owned("world".to_string());
+        let cow = Cow::Owned("world".to_owned());
         let styled = StyledStr::from(cow);
         assert_eq!(styled, StyledStr::from("world"));
     }
