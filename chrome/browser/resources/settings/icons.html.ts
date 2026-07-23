@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import '//resources/cr_elements/cr_icon/cr_iconset.js';
+
+import {getTrustedHTML} from '//resources/js/static_types.js';
+
+const div = document.createElement('div');
+div.innerHTML = getTrustedHTML`
 <!--
 List icons here rather than importing large sets of (e.g. Polymer) icons.
 Keep in alphabetical ordering.
@@ -231,3 +241,9 @@ NOTE: Chrome OS icons go in ./chromeos/os_icons.html.
     </defs>
   </svg>
 </cr-iconset>
+`;
+
+const iconsets = div.querySelectorAll('cr-iconset');
+for (const iconset of iconsets) {
+  document.head.appendChild(iconset);
+}
