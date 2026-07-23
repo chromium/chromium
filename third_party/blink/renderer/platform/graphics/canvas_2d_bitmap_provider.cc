@@ -203,7 +203,6 @@ scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
 std::optional<cc::PaintRecord> Canvas2DBitmapProvider::Flush(
     bool preserve_recording) {
   CHECK(Recorder().HasReleasableDrawOps());
-  ScopedRasterTimer timer(nullptr, *this);
 
   clear_frame_ = false;
   cc::PaintRecord recording;

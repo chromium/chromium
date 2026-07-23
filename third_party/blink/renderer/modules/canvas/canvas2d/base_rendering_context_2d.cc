@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
+#include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -749,6 +750,10 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
                        reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;
   if (shared_image_provider) {
+    ScopedRasterTimer timer(shared_image_provider->IsAccelerated()
+                                ? shared_image_provider->RasterInterface()
+                                : nullptr,
+                            *shared_image_provider);
     bool preserve_recording =
         want_to_print && shared_image_provider->clear_frame();
     recording = shared_image_provider->Flush(preserve_recording);
@@ -756,6 +761,7 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
       shared_image_provider->ReleaseImageProviderImages();
     }
   } else if (bitmap_provider) {
+    ScopedRasterTimer timer(nullptr, *bitmap_provider);
     bool preserve_recording = want_to_print && bitmap_provider->clear_frame();
     recording = bitmap_provider->Flush(preserve_recording);
     if (recording) {

@@ -623,7 +623,6 @@ Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
 }
 
 void Canvas2DResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
-  ScopedRasterTimer timer(IsAccelerated() ? RasterInterface() : nullptr, *this);
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
     if (!skia_canvas_) {

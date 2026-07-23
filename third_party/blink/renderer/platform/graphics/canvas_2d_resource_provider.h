@@ -260,6 +260,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
 
   virtual void RasterRecord(cc::PaintRecord last_recording);
+  gpu::raster::RasterInterface* RasterInterface() const;
   MemoryManagedPaintCanvas& GetCanvasForTesting();
   void RestoreBackBuffer(const cc::PaintImage&);
 
@@ -341,7 +342,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   SkSurfaceProps GetSkSurfaceProps() const;
   virtual sk_sp<SkSurface> CreateSkSurface() const;
-  gpu::raster::RasterInterface* RasterInterface() const;
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
 
