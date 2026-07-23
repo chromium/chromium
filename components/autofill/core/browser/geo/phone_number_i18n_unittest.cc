@@ -71,10 +71,10 @@ TEST_P(ParseNumberTest, ParsePhoneNumber) {
   std::u16string country_code, city_code, number;
   std::string deduced_region;
   ::i18n::phonenumbers::PhoneNumber unused_i18n_number;
-  EXPECT_EQ(test_case.is_possible_number,
-            ParsePhoneNumber(test_case.input, test_case.assumed_region,
+  EXPECT_EQ(ParsePhoneNumber(test_case.input, test_case.assumed_region,
                              &country_code, &city_code, &number,
-                             &deduced_region, &unused_i18n_number));
+                             &deduced_region, &unused_i18n_number),
+            test_case.is_possible_number);
   EXPECT_EQ(test_case.number, number);
   EXPECT_EQ(test_case.city_code, city_code);
   EXPECT_EQ(test_case.country_code, country_code);
@@ -177,31 +177,31 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(PhoneNumberI18NTest, ConstructPhoneNumber) {
   std::u16string number;
   EXPECT_TRUE(ConstructPhoneNumber(u"16502345678", "US", &number));
-  EXPECT_EQ(u"+1 650-234-5678", number);
+  EXPECT_EQ(number, u"+1 650-234-5678");
   EXPECT_TRUE(ConstructPhoneNumber(u"6502345678", "US", &number));
-  EXPECT_EQ(u"(650) 234-5678", number);
+  EXPECT_EQ(number, u"(650) 234-5678");
 
   // Invalid number, too long.
   EXPECT_FALSE(ConstructPhoneNumber(u"650234567890", "US", &number));
-  EXPECT_EQ(std::u16string(), number);
+  EXPECT_EQ(number, std::u16string());
   // Italian number
   EXPECT_TRUE(ConstructPhoneNumber(base::StrCat({u"39", u"347", u"2345678"}),
                                    "IT", &number));
-  EXPECT_EQ(u"+39 347 234 5678", number);
+  EXPECT_EQ(number, u"+39 347 234 5678");
   EXPECT_TRUE(ConstructPhoneNumber(u"39 347 2345678", "IT", &number));
-  EXPECT_EQ(u"+39 347 234 5678", number);
+  EXPECT_EQ(number, u"+39 347 234 5678");
   EXPECT_TRUE(
       ConstructPhoneNumber(base::StrCat({u"347", u"2345678"}), "IT", &number));
-  EXPECT_EQ(u"347 234 5678", number);
+  EXPECT_EQ(number, u"347 234 5678");
   // German number.
   // Not a strictly correct number, because the zero trunk prefix in 024 does
   // not belong there.
   EXPECT_TRUE(ConstructPhoneNumber(base::StrCat({u"49", u"024", u"2345678901"}),
                                    "DE", &number));
-  EXPECT_EQ(u"+49 2423 45678901", number);
+  EXPECT_EQ(number, u"+49 2423 45678901");
   EXPECT_TRUE(ConstructPhoneNumber(base::StrCat({u"024", u"2345678901"}), "DE",
                                    &number));
-  EXPECT_EQ(u"02423 45678901", number);
+  EXPECT_EQ(number, u"02423 45678901");
 }
 
 TEST(PhoneNumberI18NTest, PhoneNumbersMatch) {
@@ -241,59 +241,59 @@ TEST(PhoneNumberI18NTest, PhoneNumbersMatch) {
 // Tests that the phone numbers are correctly formatted for the Payment
 // Response.
 TEST(PhoneNumberUtilTest, FormatPhoneForResponse) {
-  EXPECT_EQ("+15152231234",
-            i18n::FormatPhoneForResponse("(515) 223-1234", "US"));
-  EXPECT_EQ("+15152231234",
-            i18n::FormatPhoneForResponse("(1) 515-223-1234", "US"));
-  EXPECT_EQ("+33142685300",
-            i18n::FormatPhoneForResponse("1 42 68 53 00", "FR"));
+  EXPECT_EQ(i18n::FormatPhoneForResponse("(515) 223-1234", "US"),
+            "+15152231234");
+  EXPECT_EQ(i18n::FormatPhoneForResponse("(1) 515-223-1234", "US"),
+            "+15152231234");
+  EXPECT_EQ(i18n::FormatPhoneForResponse("1 42 68 53 00", "FR"),
+            "+33142685300");
 
   // Invalid numbers are not formatted.
-  EXPECT_EQ("(515) 123-1234",
-            i18n::FormatPhoneForResponse("(515) 123-1234", "US"));
-  EXPECT_EQ("(1) 515-123-1234",
-            i18n::FormatPhoneForResponse("(1) 515-123-1234", "US"));
+  EXPECT_EQ(i18n::FormatPhoneForResponse("(515) 123-1234", "US"),
+            "(515) 123-1234");
+  EXPECT_EQ(i18n::FormatPhoneForResponse("(1) 515-123-1234", "US"),
+            "(1) 515-123-1234");
 }
 
 // Tests that phone numbers are correctly formatted in a national format.
 TEST(PhoneNumberUtilTest, FormatPhoneNationallyForDisplay) {
   // Invalid US and Brazilian numbers are not formatted.
-  EXPECT_EQ("1234567890",
-            i18n::FormatPhoneNationallyForDisplay("1234567890", "US"));
-  EXPECT_EQ("(11) 13333-4444",
-            i18n::FormatPhoneNationallyForDisplay("(11) 13333-4444", "BR"));
-  EXPECT_EQ("(11) 13333-4444",
-            i18n::FormatPhoneNationallyForDisplay("(11) 13333-4444", "IN"));
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("1234567890", "US"),
+            "1234567890");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("(11) 13333-4444", "BR"),
+            "(11) 13333-4444");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("(11) 13333-4444", "IN"),
+            "(11) 13333-4444");
 
   // Valid US, Canadian, UK, and Brazilian numbers are nationally formatted.
-  EXPECT_EQ("(202) 444-0000",
-            i18n::FormatPhoneNationallyForDisplay("2024440000", "US"));
-  EXPECT_EQ("(202) 444-0000",
-            i18n::FormatPhoneNationallyForDisplay("+1(202)4440000", "US"));
-  EXPECT_EQ("(202) 444-0000",
-            i18n::FormatPhoneNationallyForDisplay("12024440000", "US"));
-  EXPECT_EQ("(202) 444-0000",
-            i18n::FormatPhoneNationallyForDisplay("(202)4440000", "US"));
-  EXPECT_EQ("(202) 444-0000",
-            i18n::FormatPhoneNationallyForDisplay("202-444-0000", "US"));
-  EXPECT_EQ("(819) 555-9999",
-            i18n::FormatPhoneNationallyForDisplay("+1(819)555 9999", "CA"));
-  EXPECT_EQ("(819) 555-9999",
-            i18n::FormatPhoneNationallyForDisplay("18195559999", "CA"));
-  EXPECT_EQ("020 7601 4444",
-            i18n::FormatPhoneNationallyForDisplay("+4402076014444", "UK"));
-  EXPECT_EQ("(21) 3883-5600",
-            i18n::FormatPhoneNationallyForDisplay("2138835600", "BR"));
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("2024440000", "US"),
+            "(202) 444-0000");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("+1(202)4440000", "US"),
+            "(202) 444-0000");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("12024440000", "US"),
+            "(202) 444-0000");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("(202)4440000", "US"),
+            "(202) 444-0000");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("202-444-0000", "US"),
+            "(202) 444-0000");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("+1(819)555 9999", "CA"),
+            "(819) 555-9999");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("18195559999", "CA"),
+            "(819) 555-9999");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("+4402076014444", "UK"),
+            "020 7601 4444");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("2138835600", "BR"),
+            "(21) 3883-5600");
 }
 
 // Tests that the phone numbers are correctly formatted to display to the user.
 TEST(PhoneNumberUtilTest, FormatPhoneForDisplay) {
   // Invalid number is not formatted.
-  EXPECT_EQ("5151231234", i18n::FormatPhoneForDisplay("5151231234", "US"));
+  EXPECT_EQ(i18n::FormatPhoneForDisplay("5151231234", "US"), "5151231234");
   // Valid number is formatted.
-  EXPECT_EQ("+1 515-223-1234", i18n::FormatPhoneForDisplay("5152231234", "US"));
-  EXPECT_EQ("+33 1 42 68 53 00",
-            i18n::FormatPhoneForDisplay("142685300", "FR"));
+  EXPECT_EQ(i18n::FormatPhoneForDisplay("5152231234", "US"), "+1 515-223-1234");
+  EXPECT_EQ(i18n::FormatPhoneForDisplay("142685300", "FR"),
+            "+33 1 42 68 53 00");
 }
 
 // Test for the GetFormattedPhoneNumberForDisplay method.
@@ -321,8 +321,8 @@ TEST_P(GetFormattedPhoneNumberForDisplayTest,
   AutofillProfile profile(
       AddressCountryCode(base::UTF16ToUTF8(GetParam().country)));
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, GetParam().phone);
-  EXPECT_EQ(GetParam().expected_format, i18n::GetFormattedPhoneNumberForDisplay(
-                                            profile, GetParam().locale));
+  EXPECT_EQ(i18n::GetFormattedPhoneNumberForDisplay(profile, GetParam().locale),
+            GetParam().expected_format);
 }
 
 INSTANTIATE_TEST_SUITE_P(
