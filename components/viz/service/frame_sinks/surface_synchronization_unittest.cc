@@ -3571,6 +3571,70 @@ TEST_F(SurfaceSynchronizationTestDrawImmediatelyWithActivationAck,
   EXPECT_TRUE(child_surface1()->HasUnackedActiveFrame());
 }
 
+// Tests that the parent's active frame can be replaced by a pending frame while
+// the parent is recomputing its referenced surfaces. This happens when
+// processing a referenced surface causes a child to activate, which in turn
+// resolves the activation dependency of the parent's pending frame.
+TEST_F(SurfaceSynchronizationTest,
+       PendingFrameActivatesWhileRecomputingReferences) {
+  const SurfaceId parent_id = MakeSurfaceId(kParentFrameSink, 1);
+  // Two SurfaceIds in the same allocation group with incomparable sequence
+  // numbers so that neither is considered newer than the other.
+  const SurfaceId child_id1a = MakeSurfaceId(kChildFrameSink1, 1, 2);
+  const SurfaceId child_id1b = MakeSurfaceId(kChildFrameSink1, 2, 1);
+  const SurfaceId child_id2 = MakeSurfaceId(kChildFrameSink2, 1);
+  const SurfaceId arbitrary_id = MakeSurfaceId(kArbitraryFrameSink, 1);
+
+  // Submit the first parent frame referencing both child allocation groups.
+  // Neither child exists yet so the frame activates immediately and the parent
+  // becomes an active embedder of both groups.
+  parent_support().SubmitCompositorFrame(
+      parent_id.local_surface_id(),
+      MakeCompositorFrame(empty_surface_ids(),
+                          {SurfaceRange(std::nullopt, child_id1a),
+                           SurfaceRange(std::nullopt, child_id2),
+                           SurfaceRange(std::nullopt, child_id1b),
+                           SurfaceRange(std::nullopt, arbitrary_id)},
+                          std::vector<TransferableResource>()));
+  EXPECT_TRUE(parent_surface()->HasActiveFrame());
+  EXPECT_FALSE(parent_surface()->HasPendingFrame());
+  // Submit a second parent frame that depends on |child_id1a|. It stays
+  // pending and the parent becomes a blocked embedder of |child_id1a|'s
+  // allocation group.
+  parent_support().SubmitCompositorFrame(
+      parent_id.local_surface_id(),
+      MakeCompositorFrame({child_id1a}, empty_surface_ranges(),
+                          std::vector<TransferableResource>(),
+                          MakeDefaultDeadline()));
+  EXPECT_TRUE(parent_surface()->HasActiveFrame());
+  EXPECT_TRUE(parent_surface()->HasPendingFrame());
+  EXPECT_THAT(parent_surface()->activation_dependencies(),
+              UnorderedElementsAre(child_id1a));
+  // Submit a frame to |child_id1a| that depends on a surface that will never
+  // exist. It stays pending.
+  child_support1().SubmitCompositorFrame(
+      child_id1a.local_surface_id(),
+      MakeCompositorFrame({arbitrary_id}, empty_surface_ranges(),
+                          std::vector<TransferableResource>(),
+                          MakeDefaultDeadline()));
+  EXPECT_FALSE(child_surface1()->HasActiveFrame());
+  EXPECT_TRUE(child_surface1()->HasPendingFrame());
+  // Submit a frame to |child_id2| with no dependencies. Its activation
+  // notifies the parent, which recomputes its referenced surfaces. While
+  // processing the |child_id1a| reference, that child is force-activated which
+  // in turn resolves the dependency of the parent's pending frame, replacing
+  // the parent's active frame mid-iteration. This must not crash.
+  child_support2().SubmitCompositorFrame(
+      child_id2.local_surface_id(),
+      MakeCompositorFrame(empty_surface_ids(), empty_surface_ranges(),
+                          std::vector<TransferableResource>()));
+
+  EXPECT_TRUE(child_surface1()->HasActiveFrame());
+  EXPECT_TRUE(parent_surface()->HasActiveFrame());
+  EXPECT_FALSE(parent_surface()->HasPendingFrame());
+  EXPECT_THAT(parent_surface()->activation_dependencies(), IsEmpty());
+}
+
 // Tests that when a CompositorFrame for an Embedded Surface arrives after its
 // Embedder has submitted new ActivationDependencies, that it is immediately
 // ACKed, even if normally it would not be due to damage. This way we don't have
