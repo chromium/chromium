@@ -2785,7 +2785,8 @@
       "svg/dom/getCTM-zoom-invariance.html",
       "svg/zoom/page/zoom-getbbox-invariance.html",
       "svg/zoom/page/zoom-getctm-invariance.html",
-      "svg/zoom/page/zoom-getscreenctm-getboundingclientrect-parity.html"
+      "svg/zoom/page/zoom-getscreenctm-getboundingclientrect-parity.html",
+      "external/wpt/css/css-overflow/scroll-axis-lock.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"

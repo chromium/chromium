@@ -565,6 +565,8 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
                 ui::ScrollGranularity::kScrollByPrecisePixel) {
           gesture_event->data.scroll_update.delta_x *= scale;
           gesture_event->data.scroll_update.delta_y *= scale;
+          gesture_event->data.scroll_update.delta_x_unconstrained *= scale;
+          gesture_event->data.scroll_update.delta_y_unconstrained *= scale;
         }
         break;
       case blink::WebInputEvent::Type::kGestureScrollBegin:
@@ -872,6 +874,8 @@ std::unique_ptr<WebGestureEvent> CreateWebGestureEventFromGestureEventAndroid(
   } else if (event_type == WebInputEvent::Type::kGestureScrollUpdate) {
     web_event->data.scroll_update.delta_x = event.delta_x();
     web_event->data.scroll_update.delta_y = event.delta_y();
+    web_event->data.scroll_update.delta_x_unconstrained = event.delta_x();
+    web_event->data.scroll_update.delta_y_unconstrained = event.delta_y();
   } else if (event_type == WebInputEvent::Type::kGestureFlingStart) {
     web_event->data.fling_start.velocity_x = event.velocity_x();
     web_event->data.fling_start.velocity_y = event.velocity_y();
