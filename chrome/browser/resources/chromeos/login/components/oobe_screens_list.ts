@@ -68,9 +68,9 @@ export class OobeScreensList extends OobeScreensListBase {
     };
   }
 
-  private screensList: OobeScreensListData;
-  private screensSelected: string[];
-  private selectedScreensCount: number;
+  declare private screensList: OobeScreensListData;
+  declare private screensSelected: string[];
+  declare private selectedScreensCount: number;
 
   /**
    * Initialize the list of screens.

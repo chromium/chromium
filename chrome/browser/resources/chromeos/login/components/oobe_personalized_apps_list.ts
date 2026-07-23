@@ -93,11 +93,11 @@ export class OobePersonalizedAppsList extends OobePersonalizedAppsListBase {
     };
   }
 
-  private categoriesMapApps: CategoriesAppsMap;
-  private appsList: OobeAppsListData;
-  private selectedAppsCount: number;
-  private loadedIconsCount: number;
-  private categoriesItemRendered: CategoriesItemList;
+  declare private categoriesMapApps: CategoriesAppsMap;
+  declare private appsList: OobeAppsListData;
+  declare private selectedAppsCount: number;
+  declare private loadedIconsCount: number;
+  declare private categoriesItemRendered: CategoriesItemList;
 
   // Observe the name sub-property on the user object
   static get observers() {

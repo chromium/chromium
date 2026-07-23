@@ -48,11 +48,11 @@ class QuickStartPin extends PolymerElement {
     };
   }
 
-  private pin: string;
-  private digit0: string;
-  private digit1: string;
-  private digit2: string;
-  private digit3: string;
+  declare private pin: string;
+  declare private digit0: string;
+  declare private digit1: string;
+  declare private digit2: string;
+  declare private digit3: string;
 
   private extractDigits(pin: string, position: number): string {
     assert(pin.length === 4, 'PIN must be 4 digits long!');

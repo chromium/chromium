@@ -44,17 +44,25 @@ export class HealthdInternalsConfigSliderElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this.sliderTitle = '';
+    this.ticks = [];
+    this.markerCounts = 0;
+    this.tickedIndex = 0;
+  }
+
   // Set in `initTitle`.
-  private sliderTitle: string = '';
+  declare private sliderTitle: string;
 
   // Set in `initSlider`.
-  private ticks: SliderTick[] = [];
-  private markerCounts: number = 0;
+  declare private ticks: SliderTick[];
+  declare private markerCounts: number;
   private startTick: number = 0;
   private tickStepSize: number = 0;
 
   // Set in `setTickValue`.
-  private tickedIndex: number = 0;
+  declare private tickedIndex: number;
 
   initTitle(title: string) {
     this.sliderTitle = title;

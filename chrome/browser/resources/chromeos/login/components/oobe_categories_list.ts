@@ -90,11 +90,11 @@ export class OobeCategoriesList extends OobeCategoriesListBase {
     };
   }
 
-  private categoriesList: OobeCategoriesListData;
-  private categoriesSelected: string[];
-  private selectedCategoriesCount: number;
-  private loadedIconsCount: number;
-  private itemRendered: number;
+  declare private categoriesList: OobeCategoriesListData;
+  declare private categoriesSelected: string[];
+  declare private selectedCategoriesCount: number;
+  declare private loadedIconsCount: number;
+  declare private itemRendered: number;
 
   /**
    * Initialize the list of categories.

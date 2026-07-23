@@ -46,7 +46,7 @@ export class DeviceInfoElement extends PolymerElement {
     this.parse();
   }
 
-  private deviceInfoParsed: DeviceInfoInterface;
+  declare private deviceInfoParsed: DeviceInfoInterface;
 
   private parse(): void {
     // Define and parse the device information.

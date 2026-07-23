@@ -56,10 +56,10 @@ export class OobeLoadingDialog extends OobeLoadingDialogBase {
     };
   }
 
-  private titleKey: string;
-  private titleLabelKey: string;
-  private subtitleKey: string;
-  private canCancel: boolean;
+  declare private titleKey: string;
+  declare private titleLabelKey: string;
+  declare private subtitleKey: string;
+  declare private canCancel: boolean;
 
   private getSpinner(): OobeCrLottie {
     const spinner = this.shadowRoot?.querySelector('#spinner');

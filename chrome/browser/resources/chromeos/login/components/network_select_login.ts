@@ -93,11 +93,11 @@ export class NetworkSelectLogin extends PolymerElement {
     };
   }
 
-  private isNetworkConnected: boolean;
-  private isQuickStartVisible: boolean;
-  private configureConnected: boolean;
-  enableWifiScans: boolean;
-  private showTechnologyBadge: boolean;
+  declare private isNetworkConnected: boolean;
+  declare private isQuickStartVisible: boolean;
+  declare private configureConnected: boolean;
+  declare enableWifiScans: boolean;
+  declare private showTechnologyBadge: boolean;
 
   /**
    * GUID of the user-selected network. It is remembered after user taps on

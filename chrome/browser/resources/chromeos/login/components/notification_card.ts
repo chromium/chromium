@@ -37,8 +37,8 @@ class NotificationCard extends PolymerElement {
     };
   }
 
-  private buttonLabel: string;
-  private linkLabel: string;
+  declare private buttonLabel: string;
+  declare private linkLabel: string;
 
   private buttonClicked(): void {
     this.dispatchEvent(new CustomEvent('buttonclick',

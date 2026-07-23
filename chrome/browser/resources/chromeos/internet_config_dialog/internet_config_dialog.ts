@@ -100,14 +100,14 @@ export class InternetConfigDialogElement extends
     };
   }
 
-  private shareAllowEnable_: boolean;
-  private shareDefault_: boolean;
-  private guid_: string;
-  private type_: string;
-  private prefilledProperties_: ConfigProperties|null;
-  private enableConnect_: boolean;
-  private connectClicked_: boolean;
-  private error_: string;
+  declare private shareAllowEnable_: boolean;
+  declare private shareDefault_: boolean;
+  declare private guid_: string;
+  declare private type_: string;
+  declare private prefilledProperties_: ConfigProperties|null;
+  declare private enableConnect_: boolean;
+  declare private connectClicked_: boolean;
+  declare private error_: string;
 
   override connectedCallback() {
     super.connectedCallback();

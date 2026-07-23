@@ -48,8 +48,8 @@ export class OobeAppsList extends OobeAppsListBase {
     };
   }
 
-  appList: any[];
-  appsSelected: number;
+  declare appList: any[];
+  declare appsSelected: number;
   private loadingTimer: number|undefined;
   allSelected: boolean;
   loadedImagesCount: number;

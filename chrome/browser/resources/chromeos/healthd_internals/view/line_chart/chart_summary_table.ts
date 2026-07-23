@@ -52,11 +52,17 @@ export class HealthdInternalsChartSummaryTableElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this.displayedData = [];
+    this.isCustomCategory = true;
+  }
+
   // Data displayed in the chart summary table.
-  private displayedData: DisplayedLineInfo[] = [];
+  declare private displayedData: DisplayedLineInfo[];
 
   // Whether the current category is custom.
-  private isCustomCategory: boolean = true;
+  declare private isCustomCategory: boolean;
 
   /**
    * Sets whether the current category is custom.

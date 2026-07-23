@@ -66,11 +66,11 @@ export class ProgressListItem extends ProgressListItemBase {
     };
   }
 
-  textKey: string;
-  activeKey: string;
-  completedKey: string;
-  active: boolean;
-  completed: boolean;
+  declare textKey: string;
+  declare activeKey: string;
+  declare completedKey: string;
+  declare active: boolean;
+  declare completed: boolean;
 
   private hidePending(active: boolean, completed: boolean): boolean {
     return active || completed;

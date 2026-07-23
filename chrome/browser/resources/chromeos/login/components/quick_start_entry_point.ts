@@ -42,7 +42,7 @@ export class QuickStartEntryPoint extends QuickStartEntryPointBase {
     };
   }
 
-  private quickStartTextKey: string;
+  declare private quickStartTextKey: string;
 
   quickStartButtonClicked(): void {
     this.dispatchEvent(new CustomEvent('activate-quick-start', {

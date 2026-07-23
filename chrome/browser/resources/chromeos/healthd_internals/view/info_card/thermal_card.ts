@@ -43,8 +43,13 @@ export class HealthdInternalsThermalCardElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this.temperatureUnit = TemperatureUnitEnum.CELSIUS;
+  }
+
   // Displayed temperature unit.
-  private temperatureUnit: TemperatureUnitEnum = TemperatureUnitEnum.CELSIUS;
+  declare private temperatureUnit: TemperatureUnitEnum;
 
   // The latest telemetry data to display thermal info.
   private latestTelemetryData?: HealthdApiTelemetryResult;

@@ -49,6 +49,11 @@ export class HealthdInternalsTelemetryElement extends PolymerElement implements
     };
   }
 
+  constructor() {
+    super();
+    this.lastUpdateTime = '';
+  }
+
 
   override connectedCallback() {
     super.connectedCallback();
@@ -69,7 +74,7 @@ export class HealthdInternalsTelemetryElement extends PolymerElement implements
   private updateHelper: UiUpdateHelper;
 
   // The time that the telemetry data is last updated.
-  private lastUpdateTime: string = '';
+  declare private lastUpdateTime: string;
 
   updateTelemetryData(data: HealthdApiTelemetryResult) {
     const isInitilized: boolean = this.healthdData !== undefined;

@@ -46,10 +46,10 @@ export class HdIronIcon extends PolymerElement {
     };
   }
 
-  icon1x: string;
-  icon2x: string;
-  src1x: string;
-  src2x: string;
+  declare icon1x: string;
+  declare icon2x: string;
+  declare src1x: string;
+  declare src2x: string;
 }
 
 declare global {

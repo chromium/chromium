@@ -129,15 +129,15 @@ export class QuickStartDebugger extends QuickStartDebuggerBase {
     };
   }
 
-  private mainWindowHidden: boolean;
-  private startAdvertisingPending: boolean;
-  private stopAdvertisingPending: boolean;
-  private usePinForAuth: boolean;
-  private username: string;
-  private deviceId: string;
-  private wifiSsid: string;
-  private wifiPwd: string;
-  private connCloseReasons: ConnectionClosedReason;
+  declare private mainWindowHidden: boolean;
+  declare private startAdvertisingPending: boolean;
+  declare private stopAdvertisingPending: boolean;
+  declare private usePinForAuth: boolean;
+  declare private username: string;
+  declare private deviceId: string;
+  declare private wifiSsid: string;
+  declare private wifiPwd: string;
+  declare private connCloseReasons: ConnectionClosedReason;
 
   constructor() {
     super();

@@ -35,6 +35,11 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this.memoryUnit = MemoryUnitEnum.AUTO;
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -45,7 +50,7 @@ export class HealthdInternalsMemoryCardElement extends PolymerElement {
   }
 
   // Displayed memory unit.
-  private memoryUnit: MemoryUnitEnum = MemoryUnitEnum.AUTO;
+  declare private memoryUnit: MemoryUnitEnum;
 
   // The latest memory data to display.
   private latestMemoryInfo?: HealthdApiMemoryResult;

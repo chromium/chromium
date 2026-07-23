@@ -225,27 +225,27 @@ export class GaiaDialog extends GaiaDialogBase {
     ];
   }
 
-  private videoEnabled: boolean;
-  private authFlow: number;
-  private gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType;
-  private isClosable: boolean;
-  private isSamlSsoVisible: boolean;
-  private isDefaultSsoProvider: boolean;
-  private hideBackButtonIfCantGoBack: boolean;
-  private authDomain: string;
-  private navigationEnabled: boolean;
-  private navigationHidden: boolean;
-  private webviewName: string;
-  private primaryActionButtonLabel: string;
-  private primaryActionButtonEnabled: boolean;
-  private secondaryActionButtonLabel: string;
-  private secondaryActionButtonEnabled: boolean;
-  private canGoBack: boolean;
-  private isPopUpOverlayVisible: boolean;
-  private samlBackButtonHidden: boolean;
-  private clientPrimaryActionButtonLabel: string;
-  private clientAdditionalPrimaryActionButtonLabel: string;
-  isQuickStartEnabled: boolean;
+  declare private videoEnabled: boolean;
+  declare private authFlow: number;
+  declare private gaiaDialogButtonsType: OobeTypes.GaiaDialogButtonsType;
+  declare private isClosable: boolean;
+  declare private isSamlSsoVisible: boolean;
+  declare private isDefaultSsoProvider: boolean;
+  declare private hideBackButtonIfCantGoBack: boolean;
+  declare private authDomain: string;
+  declare private navigationEnabled: boolean;
+  declare private navigationHidden: boolean;
+  declare private webviewName: string;
+  declare private primaryActionButtonLabel: string;
+  declare private primaryActionButtonEnabled: boolean;
+  declare private secondaryActionButtonLabel: string;
+  declare private secondaryActionButtonEnabled: boolean;
+  declare private canGoBack: boolean;
+  declare private isPopUpOverlayVisible: boolean;
+  declare private samlBackButtonHidden: boolean;
+  declare private clientPrimaryActionButtonLabel: string;
+  declare private clientAdditionalPrimaryActionButtonLabel: string;
+  declare isQuickStartEnabled: boolean;
   private clickPrimaryActionButtonForTesting: boolean;
   private authenticator: Authenticator|undefined;
 

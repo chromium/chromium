@@ -45,7 +45,7 @@ class OobeSlide extends PolymerElement {
     };
   }
 
-  private isWarning: boolean;
+  declare private isWarning: boolean;
 }
 
 declare global {

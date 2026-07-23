@@ -52,23 +52,29 @@ export class ReportingHistoryElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this.filterOptions = [
+      ReportingHistoryElement.allEvents,
+      ReportingHistoryElement.allButUploads,
+      'QueueAction',
+      'Enqueue',
+      'Flush',
+      'Confirm',
+      'Upload',
+      'BlockedRecord',
+      'BlockedDestinations',
+    ];
+    this.selectedOption = ReportingHistoryElement.allEvents;
+  }
+
   // Filtering options for the table.
   private static allEvents: string = 'All events';
   private static allButUploads: string = 'All events except uploads';
-  private filterOptions: string[] = [
-    ReportingHistoryElement.allEvents,
-    ReportingHistoryElement.allButUploads,
-    'QueueAction',
-    'Enqueue',
-    'Flush',
-    'Confirm',
-    'Upload',
-    'BlockedRecord',
-    'BlockedDestinations',
-  ];
-  private selectedOption: string = ReportingHistoryElement.allEvents;
+  declare private filterOptions: string[];
+  declare private selectedOption: string;
   private currentHistory: ErpHistoryData;
-  private loggingState: boolean;
+  declare private loggingState: boolean;
 
   loggingStateToString(checked: boolean) {
     return checked ? 'On' : 'Off';

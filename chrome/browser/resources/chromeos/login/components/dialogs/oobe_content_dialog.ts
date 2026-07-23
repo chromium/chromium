@@ -51,8 +51,8 @@ export class OobeContentDialog extends OobeContentDialogBase {
     };
   }
 
-  private noButtons: boolean;
-  private noLazy: boolean;
+  declare private noButtons: boolean;
+  declare private noLazy: boolean;
 
   private getLazyRender(): CrLazyRenderElement<HTMLElement> {
     const lazyRender = this.shadowRoot?.querySelector('#lazy');

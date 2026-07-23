@@ -27,7 +27,7 @@ export class ThrobberNotice extends ThrobberNoticeBase {
     return {textKey: String};
   }
 
-  private textKey: string;
+  declare private textKey: string;
 
   /**
    * Returns the a11y message to be shown on this throbber,

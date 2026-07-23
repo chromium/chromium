@@ -47,6 +47,13 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this.uiUpdateInterval = 2;
+    this.dataPollingCycle = 500;
+    this.dataRetentionDuration = 3;
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -61,11 +68,11 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
   }
 
   // UI update interval in seconds.
-  private uiUpdateInterval: number = 2;
+  declare private uiUpdateInterval: number;
   // Healthd data polling cycle in milliseconds.
-  private dataPollingCycle: number = 500;
+  declare private dataPollingCycle: number;
   // Data retention duration for line charts in hours.
-  private dataRetentionDuration: number = 3;
+  declare private dataRetentionDuration: number;
 
   openSettingsDialog() {
     this.$.uiUpdateIntervalSlider.setTickValue(this.uiUpdateInterval);

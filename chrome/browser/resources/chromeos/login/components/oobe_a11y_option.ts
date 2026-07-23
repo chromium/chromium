@@ -51,9 +51,9 @@ export class OobeA11yOption extends PolymerElement {
     };
   }
 
-  checked: boolean;
-  private labelForAria: string;
-  chromeMessage: string;
+  declare checked: boolean;
+  declare private labelForAria: string;
+  declare chromeMessage: string;
 
   override focus(): void {
     const button = this.shadowRoot?.querySelector('#button');

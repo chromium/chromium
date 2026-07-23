@@ -84,6 +84,13 @@ export class HealthdInternalsAppElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this.pageList = [];
+    this.currentPath = PagePath.NONE;
+    this.selectedIndex = -1;
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -150,12 +157,12 @@ export class HealthdInternalsAppElement extends PolymerElement {
   // The content pages for chrome://healthd-internals. It is also used for
   // rendering the tabs in the sidebar menu.
   // It will be empty if the feature flag (HealthdInternalsTabs) is disabled.
-  private pageList: Page[] = [];
+  declare private pageList: Page[];
   // This current path updated by `iron-location`.
-  private currentPath: string = PagePath.NONE;
+  declare private currentPath: string;
   // The selected index updated by `cr-menu-selector`. If `pageList` is empty,
   // this index will always be -1 and no page will be displayed.
-  private selectedIndex: number = -1;
+  declare private selectedIndex: number;
 
   // Return true if the menu tabs are not displayed.
   private areTabsHidden(): boolean {

@@ -98,12 +98,12 @@ export class OobeCarousel extends OobeCarouselBase {
     };
   }
 
-  private slideIndex: number;
-  private autoTransition: boolean;
-  private slideDurationInSeconds: number;
-  private slideLabel: string;
-  private selectedButtonLabel: string;
-  private unselectedButtonLabel: string;
+  declare private slideIndex: number;
+  declare private autoTransition: boolean;
+  declare private slideDurationInSeconds: number;
+  declare private slideLabel: string;
+  declare private selectedButtonLabel: string;
+  declare private unselectedButtonLabel: string;
   private dots: number[];
   private slides: HTMLElement[];
   private totalSlides: number;

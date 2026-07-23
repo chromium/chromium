@@ -102,12 +102,12 @@ export class SecurityTokenPin extends SecurityTokenPinBase {
     };
   }
 
-  parameters: object;
-  private processingCompletion: boolean;
-  private hasValue: boolean;
-  private userEdited: boolean;
-  private canEdit: boolean;
-  private canSubmit: boolean;
+  declare parameters: object;
+  declare private processingCompletion: boolean;
+  declare private hasValue: boolean;
+  declare private userEdited: boolean;
+  declare private canEdit: boolean;
+  declare private canSubmit: boolean;
 
   override focus(): void {
     // Note: setting the focus synchronously, to avoid flakiness in tests due to

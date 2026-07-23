@@ -88,11 +88,11 @@ export class OobeModalDialog extends OobeModalDialogBase {
     };
   }
 
-  private titleKey: string;
-  private contentKey: string;
-  private shouldHideCloseButton: boolean;
-  private shouldHideTitleRow: boolean;
-  private shouldHideBackdrop: boolean;
+  declare private titleKey: string;
+  declare private contentKey: string;
+  declare private shouldHideCloseButton: boolean;
+  declare private shouldHideTitleRow: boolean;
+  declare private shouldHideBackdrop: boolean;
 
   private getModalDialog(): CrDialogElement {
     const modalDialog = this.shadowRoot?.querySelector('#modalDialog');

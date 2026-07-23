@@ -86,10 +86,10 @@ export class OobeAdaptiveDialog extends PolymerElement {
     };
   }
 
-  private noLazy: boolean;
-  private readMore: boolean;
-  private singleColumn: boolean;
-  private showReadMoreButton: boolean;
+  declare private noLazy: boolean;
+  declare private readMore: boolean;
+  declare private singleColumn: boolean;
+  declare private showReadMoreButton: boolean;
   private resizeObserver?: ResizeObserver;
   private readMoreState: ReadMoreState;
 

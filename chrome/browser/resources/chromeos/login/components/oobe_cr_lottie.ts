@@ -66,11 +66,11 @@ export class OobeCrLottie extends OobeCrLottieBase {
     };
   }
 
-  playing: boolean;
-  private animationUrl: string;
-  private hidePlayPauseIcon: boolean;
-  private preload: boolean;
-  private dynamic: boolean;
+  declare playing: boolean;
+  declare private animationUrl: string;
+  declare private hidePlayPauseIcon: boolean;
+  declare private preload: boolean;
+  declare private dynamic: boolean;
   private animationPlayer: LottieRenderer|null;
 
   constructor() {

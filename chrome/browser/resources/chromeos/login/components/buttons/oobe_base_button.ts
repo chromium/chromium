@@ -46,10 +46,10 @@ export abstract class OobeBaseButton extends OobeBaseButtonBase {
     };
   }
 
-  textKey: string;
-  disabled: boolean;
-  labelForAria: string;
-  private labelForAria_: string;
+  declare textKey: string;
+  declare disabled: boolean;
+  declare labelForAria: string;
+  declare private labelForAria_: string;
 
   override focus(): void {
     this.$.button.focus();

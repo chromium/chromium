@@ -43,8 +43,8 @@ export class GaiaButton extends GaiaButtonBase {
     };
   }
 
-  disabled: boolean;
-  link: boolean;
+  declare disabled: boolean;
+  declare link: boolean;
 
   private getButton(): CrButtonElement {
     const button = this.shadowRoot?.querySelector('#button');

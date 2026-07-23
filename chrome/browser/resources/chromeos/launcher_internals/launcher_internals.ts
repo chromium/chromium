@@ -29,11 +29,18 @@ class LauncherInternalsElement extends PolymerElement {
   }
 
   static get properties() {
-    return {query: String, keywords: [String]};
+    return {
+      query: String,
+
+      keywords: {
+        type: Array,
+        value: () => [],
+      },
+    };
   }
 
-  private query: string;
-  private keywords: string[];
+  declare private query: string;
+  declare private keywords: string[];
   private listenerIds: number[];
   private router: PageCallbackRouter;
 

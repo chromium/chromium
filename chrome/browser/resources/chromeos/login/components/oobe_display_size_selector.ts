@@ -68,10 +68,10 @@ export class OobeDisplaySizeSelector extends OobeDisplaySizeSelectorBase {
     };
   }
 
-  private availableSizesTicks: SizeTick[];
-  private markerCounts: number;
-  private tickedSizeIndex: number;
-  private apps: App[];
+  declare private availableSizesTicks: SizeTick[];
+  declare private markerCounts: number;
+  declare private tickedSizeIndex: number;
+  declare private apps: App[];
 
   /**
    * Initialize the list of screens.

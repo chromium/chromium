@@ -32,11 +32,17 @@ export class HealthdInternalsDataSeriesCheckboxElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    this.checkboxTitle = '';
+    this.checkboxData = [];
+  }
+
   // Set in `init`.
-  private checkboxTitle: string = '';
+  declare private checkboxTitle: string;
 
   // Stored the data from checkboxes.
-  private checkboxData: DataSeriesCheckboxData[] = [];
+  declare private checkboxData: DataSeriesCheckboxData[];
 
   /**
    * Init the checkboxes.

@@ -31,7 +31,7 @@ export class ApiKeysNoticeElement extends PolymerElement {
     };
   }
 
-  private noticeContent: string;
+  declare private noticeContent: string;
 
   constructor() {
     super();

@@ -67,6 +67,24 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
     };
   }
 
+  constructor() {
+    super();
+    this.isSummaryTableDisplayed = true;
+    this.displayedCategories = [
+      CategoryTypeEnum.CPU_USAGE,
+      CategoryTypeEnum.CPU_FREQUENCY,
+      CategoryTypeEnum.MEMORY,
+      CategoryTypeEnum.ZRAM,
+      CategoryTypeEnum.BATTERY,
+      CategoryTypeEnum.THERMAL,
+      CategoryTypeEnum.CUSTOM,
+    ];
+    this.selectedCategory = this.displayedCategories[0];
+    this.displayedStartTime = '';
+    this.displayedEndTime = '';
+    this.displayedDuration = '';
+  }
+
   override connectedCallback() {
     super.connectedCallback();
 
@@ -91,28 +109,20 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
   private updateHelper: UiUpdateHelper;
 
   // Whether the chart summary table is displayed.
-  private isSummaryTableDisplayed: boolean = true;
+  declare private isSummaryTableDisplayed: boolean;
 
   // The available sources for system trend page.
-  private readonly displayedCategories: CategoryTypeEnum[] = [
-    CategoryTypeEnum.CPU_USAGE,
-    CategoryTypeEnum.CPU_FREQUENCY,
-    CategoryTypeEnum.MEMORY,
-    CategoryTypeEnum.ZRAM,
-    CategoryTypeEnum.BATTERY,
-    CategoryTypeEnum.THERMAL,
-    CategoryTypeEnum.CUSTOM,
-  ];
+  declare private readonly displayedCategories: CategoryTypeEnum[];
 
   // The current selected category.
-  private selectedCategory: CategoryTypeEnum = this.displayedCategories[0];
+  declare private selectedCategory: CategoryTypeEnum;
 
   // The start and end time in the visible part of line chart.
-  private displayedStartTime: string = '';
-  private displayedEndTime: string = '';
+  declare private displayedStartTime: string;
+  declare private displayedEndTime: string;
 
   // The time duration for lines in the chart summary table.
-  private displayedDuration: string = '';
+  declare private displayedDuration: string;
 
   getController(): SystemTrendController {
     return this.controller;

@@ -52,10 +52,9 @@ class OobeI18nDropdown extends PolymerElement {
     };
   }
 
-  private items: I18nMenuItem[];
-  private labelforAria: string;
-  private idToItem: Map<string,I18nMenuItem>|null;
-  labelForAria: string;
+  declare private items: I18nMenuItem[];
+  private idToItem: Map<string, I18nMenuItem>|null;
+  declare labelForAria: string;
 
   constructor() {
     super();

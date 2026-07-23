@@ -148,18 +148,18 @@ class LockReauthElement extends LockReauthElementBase {
     };
   }
 
-  email: string;
-  authDomain: string;
+  declare email: string;
+  declare authDomain: string;
   isButtonsEnabled: boolean;
-  isErrorDisplayed: boolean;
-  isSigninFrameDisplayed: boolean;
-  isSaml: boolean;
-  isDefaultSsoProvider: boolean;
-  isConfirmPassword: boolean;
-  isManualInput: boolean;
-  isPasswordChanged: boolean;
-  passwordConfirmAttempt: number;
-  passwordChangeAttempt: number;
+  declare isErrorDisplayed: boolean;
+  declare isSigninFrameDisplayed: boolean;
+  declare isSaml: boolean;
+  declare isDefaultSsoProvider: boolean;
+  declare isConfirmPassword: boolean;
+  declare isManualInput: boolean;
+  declare isPasswordChanged: boolean;
+  declare passwordConfirmAttempt: number;
+  declare passwordChangeAttempt: number;
 
   /**
    * Saved authenticator load params.
