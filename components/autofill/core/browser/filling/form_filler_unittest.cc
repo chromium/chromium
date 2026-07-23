@@ -2300,8 +2300,9 @@ TEST_F(RefillTest, SelectOptionsChanged_IrrelevantSelectField) {
   FormsSeen({form});
   AutofillForm(form, form.fields().front(), &profile);
   EXPECT_CALL(mock_form_filler(), ScheduleRefill).Times(0);
-  autofill_manager().OnSelectFieldOptionsDidChangeImpl(
-      form, form.fields().back().global_id());
+  autofill_manager().OnSelectFieldOptionsDidChange(
+      form, form.fields().back().global_id(),
+      AutofillManagerTestApi::pass_key());
 }
 
 // Test fixture for FormFiller::SuppressAutomaticRefills().

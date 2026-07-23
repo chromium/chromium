@@ -897,7 +897,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_LogFunnelMetrics) {
   delegate->OnSuggestionsShown(suggestions, std::nullopt);
 
   // Reset the manager to trigger logger destruction and metrics logging.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   histogram_tester.ExpectUniqueSample("Autofill.Funnel.ParsedAsType.CreditCard",
                                       true, 1);
@@ -927,7 +927,7 @@ TEST_F(OmniboxAutofillDelegateTest, OnSuggestionsShown_DoesNotLogKeyMetrics) {
   delegate->OnSuggestionsShown(suggestions, std::nullopt);
 
   // Reset the manager to trigger logger destruction and metrics logging.
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 
   // Key metrics are only logged upon submission. Since there was no submission,
   // they should not be logged.

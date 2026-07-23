@@ -78,13 +78,16 @@ constexpr char kExp[] = "12/2035";
 constexpr char kCvc[] = "123";
 
 // Adds waiting capabilities to BrowserAutofillManager.
-class TestAutofillManager : public BrowserAutofillManager {
+class TestAutofillManager : public BrowserAutofillManager,
+                            public AutofillManager::Observer {
  public:
   explicit TestAutofillManager(ContentAutofillDriver* driver)
       : BrowserAutofillManager(driver) {
     test_api(test_api(*this).form_filler())
         .set_limit_before_refill(base::Hours(1));
+    AddObserver(this);
   }
+  ~TestAutofillManager() override { RemoveObserver(this); }
 
   static TestAutofillManager& GetForRenderFrameHost(
       content::RenderFrameHost* rfh) {
@@ -106,9 +109,8 @@ class TestAutofillManager : public BrowserAutofillManager {
     return form_submitted_.Wait(num_awaited_calls);
   }
 
-  void OnFormSubmittedImpl(const FormData& form,
-                           mojom::SubmissionSource source) override {
-    BrowserAutofillManager::OnFormSubmittedImpl(form, source);
+  void OnAfterFormSubmitted(AutofillManager& manager,
+                            const FormData& form) override {
     // The submitted form does not end up in the form cache, so we need to catch
     // it here.
     submitted_form_ = form;

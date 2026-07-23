@@ -72,6 +72,8 @@ class AutofillManagerTestApi {
 
   void ClearFormStructures() { manager_->form_structures_.clear(); }
 
+  void Reset() { manager_->Reset(); }
+
  private:
   raw_ref<AutofillManager> manager_;
 };

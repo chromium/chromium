@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -111,7 +112,7 @@ TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
 }
 
 void TestBrowserAutofillManager::Reset() {
-  autofill::TestBrowserAutofillManager::Reset();
+  test_api(*this).ResetBrowserAutofillManagerWithoutDynamicDispatch();
   test_api(*this).set_credit_card_access_manager(
       std::make_unique<NiceMock<MockCreditCardAccessManager>>(this));
 }

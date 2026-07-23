@@ -6381,12 +6381,14 @@ TEST_F(BrowserAutofillManagerTest, OnFocusOnFormField_FocusReporting) {
   EXPECT_FALSE(field1->was_focused());
 
   // Focus field0 and verify expectations.
-  autofill_manager().OnFocusOnFormFieldImpl(form, form.fields()[0].global_id());
+  autofill_manager().OnFocusOnFormField(form, form.fields()[0].global_id(),
+                                        AutofillManagerTestApi::pass_key());
   EXPECT_TRUE(field0->was_focused());
   EXPECT_FALSE(field1->was_focused());
 
   // Focus field1 and verify expectations.
-  autofill_manager().OnFocusOnFormFieldImpl(form, form.fields()[1].global_id());
+  autofill_manager().OnFocusOnFormField(form, form.fields()[1].global_id(),
+                                        AutofillManagerTestApi::pass_key());
   EXPECT_TRUE(field0->was_focused());
   EXPECT_TRUE(field1->was_focused());
 

@@ -207,7 +207,7 @@ TEST_F(CreditCardAccessManagerTest, CallsObserverOnDestruction) {
     credit_card_access_manager().RemoveObserver(&observer);
   });
   credit_card_access_manager().AddObserver(&observer);
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 }
 
 // Tests that UpdateCreditCardFormEventLogger() correctly logs the number of
@@ -326,7 +326,7 @@ TEST_P(CreditCardAccessManagerAuthFlowTest, ResetsOnDestruction) {
   PrepareToFetchCreditCardAndWaitForCallbacks();
   FetchCreditCardAndCompleteRiskBasedAuthIfAvailable(card);
 
-  autofill_manager().Reset();
+  test_api(autofill_manager()).Reset();
 }
 
 // Ensures that a "try again" response from payments does not end the flow.

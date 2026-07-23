@@ -35,6 +35,10 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   explicit BrowserAutofillManagerTestApi(BrowserAutofillManager* manager)
       : AutofillManagerTestApi(manager), manager_(*manager) {}
 
+  void ResetBrowserAutofillManagerWithoutDynamicDispatch() {
+    manager_->BrowserAutofillManager::Reset();
+  }
+
   void SetExternalDelegate(
       std::unique_ptr<AutofillExternalDelegate> external_delegate) {
     manager_->external_delegate_ = std::move(external_delegate);

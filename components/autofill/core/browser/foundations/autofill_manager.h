@@ -525,7 +525,7 @@ class AutofillManager
   struct AsyncContext;
 
   // OnFooImpl() is called, potentially asynchronously after parsing the form,
-  // by the renderer event OnFoo().
+  // by the renderer event OnFoo(). There should be no other callers.
   virtual void OnFormSubmittedImpl(const FormData& form,
                                    mojom::SubmissionSource source) = 0;
   virtual void OnFormWithEmailVerificationTokenSubmittedImpl(

@@ -284,28 +284,6 @@ class BrowserAutofillManager : public AutofillManager {
   // AutofillManager:
   base::WeakPtr<AutofillManager> GetWeakPtr() override;
   bool ShouldClearPreviewedForm() override;
-  void OnFocusOnNonFormFieldImpl() override;
-  void OnFocusOnFormFieldImpl(const FormData& form,
-                              const FieldGlobalId& field_id) override;
-  void OnDidAutofillFormImpl(const FormData& form) override;
-  void SuppressAutomaticRefillsImpl(const FillId& fill_id) override;
-  void RequestRefillImpl(const FillId& fill_id) override;
-  void OnDidEndTextFieldEditingImpl() override;
-  void OnHidePopupImpl() override;
-  void OnSelectFieldOptionsDidChangeImpl(
-      const FormData& form,
-      const FieldGlobalId& field_id) override;
-  void OnJavaScriptChangedAutofilledValueImpl(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const std::u16string& old_value) override;
-  void OnLoadedServerPredictionsImpl(
-      base::span<const raw_ref<FormStructure>> forms) override;
-  void OnDidDetectJavaScriptAutofillImpl(
-      const FormData& form,
-      const FieldGlobalId& trigger_field_id,
-      const std::vector<FieldGlobalId>& field_ids) override;
-  void Reset() override;
 
   base::WeakPtr<BrowserAutofillManager> GetBrowserAutofillManagerWeakPtr();
 
@@ -374,6 +352,39 @@ class BrowserAutofillManager : public AutofillManager {
   virtual const gfx::Image& GetCardImage(const CreditCard& credit_card);
 
   // AutofillManager:
+  bool ShouldParseForms() override;
+  void OnBeforeProcessParsedForms() override;
+  void OnFormProcessed(const FormStructure& form) override;
+
+ private:
+  friend class BrowserAutofillManagerTestApi;
+
+  // AutofillManager:
+  void Reset() override;
+
+  // AutofillManager:
+  // These functions should be called only by AutofillManager::OnFoo().
+  void OnFocusOnNonFormFieldImpl() override;
+  void OnFocusOnFormFieldImpl(const FormData& form,
+                              const FieldGlobalId& field_id) override;
+  void OnDidAutofillFormImpl(const FormData& form) override;
+  void SuppressAutomaticRefillsImpl(const FillId& fill_id) override;
+  void RequestRefillImpl(const FillId& fill_id) override;
+  void OnDidEndTextFieldEditingImpl() override;
+  void OnHidePopupImpl() override;
+  void OnSelectFieldOptionsDidChangeImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id) override;
+  void OnJavaScriptChangedAutofilledValueImpl(
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const std::u16string& old_value) override;
+  void OnLoadedServerPredictionsImpl(
+      base::span<const raw_ref<FormStructure>> forms) override;
+  void OnDidDetectJavaScriptAutofillImpl(
+      const FormData& form,
+      const FieldGlobalId& trigger_field_id,
+      const std::vector<FieldGlobalId>& field_ids) override;
   void OnFormSubmittedImpl(const FormData& form,
                            mojom::SubmissionSource source) override;
   void OnFormWithEmailVerificationTokenSubmittedImpl(
@@ -396,12 +407,6 @@ class BrowserAutofillManager : public AutofillManager {
   void OnSelectControlSelectionChangedImpl(
       const FormData& form,
       const FieldGlobalId& field_id) override;
-  bool ShouldParseForms() override;
-  void OnBeforeProcessParsedForms() override;
-  void OnFormProcessed(const FormStructure& form) override;
-
- private:
-  friend class BrowserAutofillManagerTestApi;
 
   // Mutable version of `FindFormAndField`.
   MutableFormAndField FindMutableFormAndField(const FormGlobalId& form_id,

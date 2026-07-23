@@ -64,7 +64,7 @@ TestBrowserAutofillManagerWithTestCCAM::
     ~TestBrowserAutofillManagerWithTestCCAM() = default;
 
 void TestBrowserAutofillManagerWithTestCCAM::Reset() {
-  TestBrowserAutofillManager::Reset();
+  test_api(*this).ResetBrowserAutofillManagerWithoutDynamicDispatch();
   test_api(*this).set_credit_card_access_manager(
       std::make_unique<TestCreditCardAccessManager>(this));
 }
