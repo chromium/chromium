@@ -419,6 +419,8 @@ static_library("common") {
     "chromoting_host.h",
     "chromoting_host_context.cc",
     "chromoting_host_context.h",
+    "client_session.cc",
+    "client_session.h",
     "client_session_events.h",
     "cloud_heartbeat_service_client.cc",
     "cloud_heartbeat_service_client.h",

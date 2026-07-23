@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_PEER_SESSION_IMPL_H_
-#define REMOTING_HOST_PEER_SESSION_IMPL_H_
+#ifndef REMOTING_HOST_CLIENT_SESSION_H_
+#define REMOTING_HOST_CLIENT_SESSION_H_
 
 #include <cstdint>
 #include <map>
@@ -82,42 +82,42 @@ class IceConfigFetcher;
 class VideoLayout;
 }  // namespace protocol
 
-// A PeerSessionImpl keeps a reference to a connection to a client, and
-// maintains per-client state.
-class PeerSessionImpl : public protocol::HostStub,
-                        public protocol::ConnectionToClient::EventHandler,
-                        public protocol::Session::EventHandler,
-                        public ClientSessionControl,
-                        public ClientSessionEvents,
-                        public CursorVisibilityNotifier::EventHandler,
-                        public AudioInjector::Delegate,
-                        public protocol::MouseCursorMonitor::Callback,
-                        public mojom::ChromotingSessionServices {
+// A ClientSession keeps a reference to a connection to a client, and maintains
+// per-client state.
+class ClientSession : public protocol::HostStub,
+                      public protocol::ConnectionToClient::EventHandler,
+                      public protocol::Session::EventHandler,
+                      public ClientSessionControl,
+                      public ClientSessionEvents,
+                      public CursorVisibilityNotifier::EventHandler,
+                      public AudioInjector::Delegate,
+                      public protocol::MouseCursorMonitor::Callback,
+                      public mojom::ChromotingSessionServices {
  public:
   // Callback interface for passing events to the ChromotingHost.
   class EventHandler {
    public:
     // Called after authentication has started.
-    virtual void OnSessionAuthenticating(PeerSessionImpl* client) = 0;
+    virtual void OnSessionAuthenticating(ClientSession* client) = 0;
 
     // Called after authentication has finished successfully.
-    virtual void OnSessionAuthenticated(PeerSessionImpl* client) = 0;
+    virtual void OnSessionAuthenticated(ClientSession* client) = 0;
 
     // Called after we've finished connecting all channels.
-    virtual void OnSessionChannelsConnected(PeerSessionImpl* client) = 0;
+    virtual void OnSessionChannelsConnected(ClientSession* client) = 0;
 
     // Called after authentication has failed. Must not tear down this
     // object. OnSessionClosed() is notified after this handler
     // returns.
-    virtual void OnSessionAuthenticationFailed(PeerSessionImpl* client) = 0;
+    virtual void OnSessionAuthenticationFailed(ClientSession* client) = 0;
 
     // Called after connection has failed or after the client closed it.
-    virtual void OnSessionClosed(PeerSessionImpl* client) = 0;
+    virtual void OnSessionClosed(ClientSession* client) = 0;
 
     // Called on notification of a route change event, when a channel is
     // connected.
     virtual void OnSessionRouteChange(
-        PeerSessionImpl* client,
+        ClientSession* client,
         const std::string& channel_name,
         const protocol::TransportRoute& route) = 0;
 
@@ -133,7 +133,7 @@ class PeerSessionImpl : public protocol::HostStub,
 
   // |event_handler| and |desktop_environment_factory| must outlive |this|.
   // All |HostExtension|s in |extensions| must outlive |this|.
-  PeerSessionImpl(
+  ClientSession(
       EventHandler* event_handler,
       std::unique_ptr<protocol::Session> session,
       std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
@@ -144,10 +144,10 @@ class PeerSessionImpl : public protocol::HostStub,
       const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
       const LocalSessionPoliciesProvider* local_session_policies_provider);
 
-  PeerSessionImpl(const PeerSessionImpl&) = delete;
-  PeerSessionImpl& operator=(const PeerSessionImpl&) = delete;
+  ClientSession(const ClientSession&) = delete;
+  ClientSession& operator=(const ClientSession&) = delete;
 
-  ~PeerSessionImpl() override;
+  ~ClientSession() override;
 
   // Returns the set of capabilities negotiated between client and host.
   const std::string& capabilities() const { return capabilities_; }
@@ -260,7 +260,7 @@ class PeerSessionImpl : public protocol::HostStub,
   friend class ClientSessionTest;
   friend class ChromotingHostTest;
 
-  PeerSessionImpl(
+  ClientSession(
       EventHandler* event_handler,
       std::unique_ptr<protocol::Session> session,
       std::unique_ptr<protocol::ConnectionToClient> connection,
@@ -491,9 +491,9 @@ class PeerSessionImpl : public protocol::HostStub,
 
   // Used to disable callbacks to |this| once DisconnectSession() has been
   // called.
-  base::WeakPtrFactory<PeerSessionImpl> weak_factory_{this};
+  base::WeakPtrFactory<ClientSession> weak_factory_{this};
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_PEER_SESSION_IMPL_H_
+#endif  // REMOTING_HOST_CLIENT_SESSION_H_
