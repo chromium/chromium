@@ -342,6 +342,50 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMetadataDisabledBrowserTest,
   EXPECT_EQ(task_update.metadata_size(), 0);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       testLatestServerChannelConfigurationWinsForUpdates) {
+  OptIn();
+
+  auto message1 = CreateTriggeringMessage(42, "config_1");
+  auto* triggering1 = message1.mutable_glic_experimental_triggering();
+  triggering1->set_context_id("test-context-id");
+  triggering1->mutable_request()->mutable_device_opt_in_request();
+
+  base::test::TestFuture<components_sharing_message::ServerChannelConfiguration,
+                         components_sharing_message::SharingMessage>
+      update_future;
+
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _))
+      .WillRepeatedly(
+          [&](const components_sharing_message::ServerChannelConfiguration&
+                  server_channel,
+              base::TimeDelta,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::ResponseCallback) {
+            update_future.SetValue(server_channel, std::move(message));
+            return base::OnceClosure();
+          });
+
+  handler_->OnMessage(std::move(message1), base::DoNothing());
+
+  auto message2 = CreateTriggeringMessage(43, "config_2");
+  auto* triggering2 = message2.mutable_glic_experimental_triggering();
+  triggering2->set_context_id("test-context-id");
+  triggering2->mutable_request()->mutable_device_opt_in_request();
+
+  handler_->OnMessage(std::move(message2), base::DoNothing());
+
+  // Close the active tab to trigger dialog teardown/rejection.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  auto [server_channel, received_message] = update_future.Take();
+  EXPECT_EQ(server_channel.configuration(), "config_2");
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                        testRelaysUpdatesWithSequenceNumbers) {
   OptIn();
