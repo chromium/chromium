@@ -346,13 +346,11 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   // are throttled by the network service.
   if (connection_count_tracker_handle_.IncrementAndCheckStatus() ==
       ConnectionCountTrackerHandle::CountStatus::kShouldNotConnect) {
-    StringBuilder message;
-    message.Append("WebSocket connection to '");
-    message.Append(url.GetString());
-    message.Append("' failed: Insufficient resources");
+    String message = StrCat({"WebSocket connection to '", url.GetString(),
+                             "' failed: Insufficient resources"});
     execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kNetwork,
-        mojom::blink::ConsoleMessageLevel::kError, message.ToString()));
+        mojom::blink::ConsoleMessageLevel::kError, message));
     execution_context_->GetTaskRunner(TaskType::kNetworking)
         ->PostTask(FROM_HERE,
                    BindOnce(&WebSocketChannelImpl::TearDownFailedConnection,

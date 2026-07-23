@@ -250,30 +250,27 @@ void EventSource::DidReceiveResponse(uint64_t identifier,
     response_is_valid =
         charset.empty() || EqualIgnoringAsciiCase(charset, "UTF-8");
     if (!response_is_valid) {
-      StringBuilder message;
-      message.Append("EventSource's response has a charset (\"");
-      message.Append(charset);
-      message.Append("\") that is not UTF-8. Aborting the connection.");
+      String message =
+          StrCat({"EventSource's response has a charset (\"", charset,
+                  "\") that is not UTF-8. Aborting the connection."});
       // FIXME: We are missing the source line.
       GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
-              mojom::ConsoleMessageSource::kJavaScript,
-              mojom::ConsoleMessageLevel::kError, message.ToString()));
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kError, message));
     }
   } else {
     // To keep the signal-to-noise ratio low, we only log 200-response with an
     // invalid MIME type.
     if (status_code == 200 && !mime_type_is_valid) {
-      StringBuilder message;
-      message.Append("EventSource's response has a MIME type (\"");
-      message.Append(response.MimeType());
-      message.Append(
-          "\") that is not \"text/event-stream\". Aborting the connection.");
+      String message = StrCat(
+          {"EventSource's response has a MIME type (\"", response.MimeType(),
+           "\") that is not \"text/event-stream\". Aborting the connection."});
       // FIXME: We are missing the source line.
       GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
-              mojom::ConsoleMessageSource::kJavaScript,
-              mojom::ConsoleMessageLevel::kError, message.ToString()));
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kError, message));
     }
   }
 

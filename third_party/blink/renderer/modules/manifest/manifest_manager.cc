@@ -248,10 +248,9 @@ void ManifestManager::OnManifestFetchComplete(
   if (response.HttpStatusCode() >= 200 && response.HttpStatusCode() < 400) {
     ParseManifestFromPage(document_url, response.CurrentRequestUrl(), data);
   } else {
-    const String message =
-        String::Format("Manifest fetch from %s failed, code %d",
-                       response.CurrentRequestUrl().GetString().Utf8().c_str(),
-                       response.HttpStatusCode());
+    const String message = StrCat(
+        {"Manifest fetch from ", response.CurrentRequestUrl().GetString(),
+         " failed, code ", String::Number(response.HttpStatusCode())});
 
     GetSupplementable()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,

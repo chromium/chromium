@@ -114,19 +114,17 @@ CanvasRenderingContext::GetEnclosingContextForDrawElement(
     Element* element,
     const String& func_name,
     ExceptionState& exception_state) {
-  HTMLCanvasElement* canvas =
-      DynamicTo<HTMLCanvasElement>(element->parentNode());
+  auto* canvas = DynamicTo<HTMLCanvasElement>(element->parentNode());
   if (!canvas) {
-    exception_state.ThrowTypeError(
-        "Only immediate children of the <canvas> element can be passed to " +
-        func_name + ".");
-
+    exception_state.ThrowTypeError(StrCat(
+        {"Only immediate children of the <canvas> element can be passed to ",
+         func_name, "."}));
     return nullptr;
   }
   CanvasRenderingContext* context = canvas->RenderingContext();
   if (!context) {
-    exception_state.ThrowTypeError(
-        func_name + ": containing canvas does not have a rendering context.");
+    exception_state.ThrowTypeError(StrCat(
+        {func_name, ": containing canvas does not have a rendering context."}));
     return nullptr;
   }
   if (!context->IsDrawElementImageEligible(element, func_name,

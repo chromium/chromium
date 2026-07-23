@@ -131,12 +131,8 @@ String ViewTransitionStyleBuilder::AddKeyframes(
     const ContainerProperties& source_properties,
     const CapturedCssProperties& animated_css_properties,
     const gfx::Transform& parent_transform) {
-  String keyframe_name = [&tag]() {
-    StringBuilder builder;
-    builder.Append(kKeyframeNamePrefix);
-    builder.Append(DOMWindowCSS::escape(tag));
-    return builder.ReleaseString();
-  }();
+  String keyframe_name =
+      StrCat({kKeyframeNamePrefix, DOMWindowCSS::escape(tag)});
 
   builder_.Append("@keyframes ");
   builder_.Append(keyframe_name);
@@ -164,12 +160,8 @@ String ViewTransitionStyleBuilder::AddKeyframes(
 String ViewTransitionStyleBuilder::AddGroupChildrenKeyframes(
     const String& tag,
     const CapturedCssProperties& properties) {
-  String keyframe_name = [&tag]() {
-    StringBuilder builder;
-    builder.Append(kGroupChildrenKeyframeNamePrefix);
-    builder.Append(DOMWindowCSS::escape(tag));
-    return builder.ReleaseString();
-  }();
+  String keyframe_name =
+      StrCat({kGroupChildrenKeyframeNamePrefix, DOMWindowCSS::escape(tag)});
 
   builder_.Append("@keyframes ");
   builder_.Append(keyframe_name);

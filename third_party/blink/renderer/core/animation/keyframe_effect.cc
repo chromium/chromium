@@ -78,14 +78,11 @@ bool ValidatePseudoElement(String& pseudo, ExceptionState& exception_state) {
 
   switch (pseudo_id) {
     case kPseudoIdInvalid:
-    case kPseudoIdNone: {
-      StringBuilder sb;
-      sb.Append(pseudo);
-      sb.Append(" is a syntactically invalid pseudo-element");
-      exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                        sb.ToString());
+    case kPseudoIdNone:
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kSyntaxError,
+          StrCat({pseudo, " is a syntactically invalid pseudo-element"}));
       return false;
-    }
 
       // From the spec:
       // Syntactically invalid pseudo-elements as well as pseudo-elements for
@@ -99,10 +96,7 @@ bool ValidatePseudoElement(String& pseudo, ExceptionState& exception_state) {
     default:
       // Convert to canonical form.
       if (!pseudo.starts_with("::")) {
-        StringBuilder sb;
-        sb.Append(":");
-        sb.Append(pseudo);
-        pseudo = sb.ToString();
+        pseudo = StrCat({":", pseudo});
       }
       pseudo = pseudo.ToAsciiLower();
       return true;

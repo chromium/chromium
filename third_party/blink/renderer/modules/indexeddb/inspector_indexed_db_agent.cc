@@ -1102,8 +1102,8 @@ class GetMetadata final : public ExecutableWithDatabase<GetMetadataCallback> {
     if (exception_state.HadException()) {
       ExceptionCode ec = exception_state.Code();
       request_callback_->sendFailure(protocol::Response::ServerError(
-          String::Format("Could not count entries in object store '%s': %d",
-                         object_store_name_.Latin1().c_str(), ec)
+          StrCat({"Could not count entries in object store '",
+                  object_store_name_, "': ", String::Number(ec)})
               .Utf8()));
       return;
     }
@@ -1328,8 +1328,8 @@ class ClearObjectStore final
     if (exception_state.HadException()) {
       ExceptionCode ec = exception_state.Code();
       request_callback_->sendFailure(protocol::Response::ServerError(
-          String::Format("Could not clear object store '%s': %d",
-                         object_store_name_.Latin1().c_str(), ec)
+          StrCat({"Could not clear object store '", object_store_name_,
+                  "': ", String::Number(ec)})
               .Utf8()));
       return;
     }
