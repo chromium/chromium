@@ -104,7 +104,7 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
                                             bool is_encrypted,
                                             bool is_directory,
                                             bool contents_valid) {
-  if (!is_encrypted) {
+  if (!is_encrypted && !is_directory) {
     nested_analyzer_ = ArchiveAnalyzer::CreateForArchiveType(GetFileType(path));
     if (nested_analyzer_) {
       // Archive analyzers expect to start at the beginning of the

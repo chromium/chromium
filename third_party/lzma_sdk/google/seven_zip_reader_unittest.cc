@@ -31,6 +31,10 @@
 //   values with 0.
 //
 //   echo "This is not an exe" > file.exe
+//   mkdir folder.zip
+//   7z a archive_named_folder.7z file.exe folder.zip
+//
+//   echo "This is not an exe" > file.exe
 //   7z a -p encrypted.7z file.exe  # Provided 1234 as the password
 //
 //   echo "This is not an exe" > file.exe
