@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_options.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -72,8 +73,8 @@ class CobrowseTabHelperTest : public PlatformTest {
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
 
-    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()
-                                            sceneSessionID:"FakeScene"];
+    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
+    [scene_state_ connectWithOptions:{.identifier = "FakeScene"}];
 
     // Create a mock command handler for SceneCommands and register it.
     mock_scene_commands_handler_ = OCMProtocolMock(@protocol(SceneCommands));
