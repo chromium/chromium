@@ -314,8 +314,13 @@ void RemoteFrameView::Dispose() {
 }
 
 void RemoteFrameView::SetFrameRect(const gfx::Rect& rect) {
+  const std::optional<gfx::Size> old_frozen_size = frozen_size_;
   UpdateFrozenSize();
+  const bool frame_rect_changed = FrameRect() != rect;
   EmbeddedContentView::SetFrameRect(rect);
+  if (frame_rect_changed || old_frozen_size != frozen_size_) {
+    UpdateCompositingRect();
+  }
   if (needs_frame_rect_propagation_)
     PropagateFrameRects();
 }

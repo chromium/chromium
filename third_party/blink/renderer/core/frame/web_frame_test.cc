@@ -159,6 +159,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
+#include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -14453,6 +14454,44 @@ TEST_F(WebFrameTest, DownloadReferrerPolicy) {
   }
 
   web_view_helper.Reset();
+}
+
+TEST_F(WebFrameTest, RemoteFrameCompositingRectUpdatesWithFrameRect) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebViewImpl* web_view = web_view_helper.GetWebView();
+  web_view->Resize(gfx::Size(800, 800));
+  InitializeWithHTML(*web_view->MainFrameImpl()->GetFrame(), R"HTML(
+      <!DOCTYPE html>
+      <style>
+        iframe {
+          width: 120px;
+          height: 120px;
+          border: none;
+        }
+      </style>
+      <iframe></iframe>
+  )HTML");
+
+  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
+  frame_test_helpers::SwapRemoteFrame(
+      web_view_helper.LocalMainFrame()->FirstChild(), remote_frame);
+  remote_frame->SetReplicatedOrigin(
+      WebSecurityOrigin(SecurityOrigin::CreateUniqueOpaque()), false);
+
+  web_view->MainFrameImpl()
+      ->GetFrame()
+      ->View()
+      ->UpdateAllLifecyclePhasesForTest();
+  RunPendingTasks();
+
+  RemoteFrameView* remote_frame_view = remote_frame->GetFrame()->View();
+  ASSERT_EQ(remote_frame_view->GetCompositingRect(), gfx::Rect(0, 0, 120, 120));
+
+  remote_frame_view->SetFrameRect(gfx::Rect(0, 0, 520, 320));
+
+  EXPECT_EQ(remote_frame_view->GetCompositingRect(), gfx::Rect(0, 0, 520, 320));
 }
 
 TEST_F(WebFrameTest, RemoteFrameCompositingScaleFactor) {
