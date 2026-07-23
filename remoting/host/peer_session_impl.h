@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_CLIENT_SESSION_H_
-#define REMOTING_HOST_CLIENT_SESSION_H_
+#ifndef REMOTING_HOST_PEER_SESSION_IMPL_H_
+#define REMOTING_HOST_PEER_SESSION_IMPL_H_
 
 #include <cstdint>
 #include <map>
@@ -496,4 +496,4 @@ class ClientSession : public protocol::HostStub,
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_CLIENT_SESSION_H_
+#endif  // REMOTING_HOST_PEER_SESSION_IMPL_H_
