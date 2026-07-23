@@ -74,8 +74,8 @@ TEST_F(ActionFactoryTest, BookmarkAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolAddBookmarkAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_ADDTOBOOKMARKS);
 
@@ -92,7 +92,7 @@ TEST_F(ActionFactoryTest, CloseRegularTabAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSETAB);
 
@@ -109,7 +109,7 @@ TEST_F(ActionFactoryTest, ClosePinnedTabAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB);
 
@@ -125,7 +125,7 @@ TEST_F(ActionFactoryTest, CopyAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kLinkActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolLinkAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE);
 
@@ -142,7 +142,7 @@ TEST_F(ActionFactoryTest, ShareAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kShareSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolShare, kSymbolActionPointSize);
   NSString* expectedTitle = l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL);
 
   UIAction* action = [factory actionToShareWithBlock:^{
@@ -158,7 +158,7 @@ TEST_F(ActionFactoryTest, DeleteAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolDeleteAction, kSymbolActionPointSize);
   NSString* expectedTitle = l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE);
 
   UIAction* action = [factory actionToDeleteWithBlock:^{
@@ -174,8 +174,8 @@ TEST_F(ActionFactoryTest, ReadLaterAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kReadLaterActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolReadLaterAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST);
 
@@ -192,7 +192,7 @@ TEST_F(ActionFactoryTest, RemoveAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolHideAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE);
 
@@ -209,7 +209,7 @@ TEST_F(ActionFactoryTest, EditAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolEditAction, kSymbolActionPointSize);
   NSString* expectedTitle = l10n_util::GetNSString(IDS_IOS_EDIT_ACTION_TITLE);
 
   UIAction* action = [factory actionToEditWithBlock:^{
@@ -225,7 +225,7 @@ TEST_F(ActionFactoryTest, openAllTabsAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolPlus, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPEN_ALL_LINKS);
 
@@ -242,7 +242,7 @@ TEST_F(ActionFactoryTest, hideAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolHideAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_RECENT_TABS_HIDE_MENU_OPTION);
 
@@ -259,7 +259,7 @@ TEST_F(ActionFactoryTest, MoveFolderAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kMoveFolderSymbol, kSymbolActionPointSize));
+      SymbolWithPointSize(SymbolMoveFolder, kSymbolActionPointSize));
 
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
@@ -276,8 +276,8 @@ TEST_F(ActionFactoryTest, markAsReadAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kMarkAsReadActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolMarkAsReadAction, kSymbolActionPointSize);
 
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MARK_AS_READ_ACTION);
@@ -294,8 +294,8 @@ TEST_F(ActionFactoryTest, markAsUnreadAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kMarkAsUnreadActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolMarkAsUnreadAction, kSymbolActionPointSize);
 
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION);
@@ -313,8 +313,8 @@ TEST_F(ActionFactoryTest, viewOfflineVersion) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kCheckmarkCircleSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolCheckmarkCircle, kSymbolActionPointSize);
 
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON);
@@ -331,8 +331,8 @@ TEST_F(ActionFactoryTest, SaveImageAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kSaveImageActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolSaveImageAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE);
 
@@ -349,7 +349,7 @@ TEST_F(ActionFactoryTest, CopyImageAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kCopyActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolCopyAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_COPYIMAGE);
 
@@ -366,7 +366,7 @@ TEST_F(ActionFactoryTest, CloseAllTabsAction) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize);
 
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS);
@@ -383,8 +383,8 @@ TEST_F(ActionFactoryTest, SelectTabsAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kCheckmarkCircleSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolCheckmarkCircle, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SELECTTABS);
 
@@ -401,8 +401,8 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupInSubmenuAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolNewTabGroupAction, kSymbolActionPointSize);
   NSString* expectedTitle = l10n_util::GetNSString(
       IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU);
 
@@ -421,8 +421,8 @@ TEST_F(ActionFactoryTest, AddTabsToNewGroupOutOfMenuAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolNewTabGroupAction, kSymbolActionPointSize);
   NSString* expectedTitle = l10n_util::GetPluralNSStringF(
       IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 2);
 
@@ -461,8 +461,8 @@ TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
   ASSERT_EQ(2u, menu.children.count);
 
   EXPECT_TRUE([menu.children[0] isKindOfClass:UIAction.class]);
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolNewTabGroupAction, kSymbolActionPointSize);
   NSString* expectedTitle = l10n_util::GetNSString(
       IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU);
   EXPECT_NSEQ(expectedTitle, menu.children[0].title);
@@ -502,8 +502,8 @@ TEST_F(ActionFactoryTest, AddTabsToGroupNoGroups) {
 
   EXPECT_TRUE([menu_element isKindOfClass:UIAction.class]);
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolNewTabGroupAction, kSymbolActionPointSize);
   NSString* expectedTitle = l10n_util::GetPluralNSStringF(
       IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 2);
   EXPECT_NSEQ(expectedTitle, menu_element.title);
@@ -537,8 +537,8 @@ TEST_F(ActionFactoryTest, MoveTabFromGroup) {
   ASSERT_EQ(2u, menu.children.count);
 
   EXPECT_TRUE([menu.children[0] isKindOfClass:UIAction.class]);
-  UIImage* expectedImage = DefaultSymbolWithPointSize(
-      kRemoveTabFromGroupActionSymbol, kSymbolActionPointSize);
+  UIImage* expectedImage = SymbolWithPointSize(SymbolRemoveTabFromGroupAction,
+                                               kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_REMOVEFROMGROUP);
   EXPECT_NSEQ(expectedTitle, menu.children[0].title);
@@ -565,8 +565,8 @@ TEST_F(ActionFactoryTest, UngroupTabGroup) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kUngroupTabGroupSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolUngroupTabGroup, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_UNGROUP);
 
@@ -583,7 +583,7 @@ TEST_F(ActionFactoryTest, DeleteTabGroup) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolDeleteAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETEGROUP);
 
@@ -601,7 +601,7 @@ TEST_F(ActionFactoryTest, CloseTabGroup) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP);
 
@@ -619,7 +619,7 @@ TEST_F(ActionFactoryTest, ManageTabGroup) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolPersonPlus, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP);
 
@@ -636,7 +636,7 @@ TEST_F(ActionFactoryTest, ShareTabGroup) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolPersonPlus, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP);
 
@@ -653,7 +653,7 @@ TEST_F(ActionFactoryTest, LeaveSharedTabGroup) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kMinusInCircleSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolMinusInCircle, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP);
 
@@ -671,7 +671,7 @@ TEST_F(ActionFactoryTest, DeleteSharedTabGroup) {
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolDeleteAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP);
 

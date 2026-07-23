@@ -77,7 +77,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToCopyURLWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kLinkActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolLinkAction, kSymbolActionPointSize);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE)
                 image:image
@@ -99,8 +99,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToShareWithBlock:(ProceduralBlock)block {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kShareSymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolShare, kSymbolActionPointSize);
   return
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_SHARE_BUTTON_LABEL)
                       image:image
@@ -109,8 +108,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToPinTabWithBlock:(ProceduralBlock)block {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kPinSymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolPin, kSymbolActionPointSize);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_PINTAB)
                 image:image
@@ -119,8 +117,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToUnpinTabWithBlock:(ProceduralBlock)block {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kPinSlashSymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolPinSlash, kSymbolActionPointSize);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_UNPINTAB)
                 image:image
@@ -130,7 +127,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToDeleteWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolDeleteAction, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)
                       image:image
@@ -142,7 +139,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToOpenInNewTabWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kNewTabActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolNewTabAction, kSymbolActionPointSize);
   ProceduralBlock completionBlock =
       [self recordMobileWebContextMenuOpenTabActionWithBlock:block];
 
@@ -154,17 +151,17 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToOpenAllTabsWithBlock:(ProceduralBlock)block {
-  return [self actionWithTitle:l10n_util::GetNSString(
-                                   IDS_IOS_CONTENT_CONTEXT_OPEN_ALL_LINKS)
-                         image:DefaultSymbolWithPointSize(
-                                   kPlusSymbol, kSymbolActionPointSize)
-                          type:MenuActionType::OpenAllInNewTabs
-                         block:block];
+  return [self
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_CONTENT_CONTEXT_OPEN_ALL_LINKS)
+                image:SymbolWithPointSize(SymbolPlus, kSymbolActionPointSize)
+                 type:MenuActionType::OpenAllInNewTabs
+                block:block];
 }
 
 - (UIAction*)actionToRemoveWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolHideAction, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE)
@@ -177,7 +174,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToEditWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolEditAction, kSymbolActionPointSize);
   return [self actionWithTitle:l10n_util::GetNSString(IDS_IOS_EDIT_ACTION_TITLE)
                          image:image
                           type:MenuActionType::Edit
@@ -186,7 +183,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToHideWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolHideAction, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_RECENT_TABS_HIDE_MENU_OPTION)
@@ -200,7 +197,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 - (UIAction*)actionToMoveFolderWithBlock:(ProceduralBlock)block {
   // Use multi color to make sure the arrow is visible.
   UIImage* image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kMoveFolderSymbol, kSymbolActionPointSize));
+      SymbolWithPointSize(SymbolMoveFolder, kSymbolActionPointSize));
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE)
                 image:image
@@ -209,8 +206,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToMarkAsReadWithBlock:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kMarkAsReadActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolMarkAsReadAction, kSymbolActionPointSize);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_READING_LIST_MARK_AS_READ_ACTION)
                          image:image
@@ -219,8 +216,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToMarkAsUnreadWithBlock:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kMarkAsUnreadActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolMarkAsUnreadAction, kSymbolActionPointSize);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION)
                          image:image
@@ -230,8 +227,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToOpenOfflineVersionInNewTabWithBlock:
     (ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kCheckmarkCircleSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolCheckmarkCircle, kSymbolActionPointSize);
   ProceduralBlock completionBlock =
       [self recordMobileWebContextMenuOpenTabActionWithBlock:block];
 
@@ -243,8 +240,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToAddToReadingListWithBlock:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kReadLaterActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolReadLaterAction, kSymbolActionPointSize);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST)
                          image:image
@@ -253,8 +250,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToBookmarkWithBlock:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kAddBookmarkActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolAddBookmarkAction, kSymbolActionPointSize);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTOBOOKMARKS)
                          image:image
@@ -264,7 +261,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToEditBookmarkWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolEditAction, kSymbolActionPointSize);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT)
                 image:image
@@ -286,8 +283,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 - (UIAction*)actionToCloseAllOtherTabsWithBlock:(ProceduralBlock)block {
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEOTHERTABS);
-  UIImage* image =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize);
   UIAction* action = [self actionWithTitle:title
                                      image:image
                                       type:MenuActionType::CloseAllOtherTabs
@@ -298,7 +294,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToDeleteBrowsingDataWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolDeleteAction, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA)
@@ -310,8 +306,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kSaveImageActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolSaveImageAction, kSymbolActionPointSize);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE)
                 image:image
@@ -322,7 +318,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionCopyImageWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kCopyActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolCopyAction, kSymbolActionPointSize);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_COPYIMAGE)
                 image:image
@@ -333,8 +329,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionSearchImageWithTitle:(NSString*)title
                                   Block:(ProceduralBlock)block {
-  UIImage* image = CustomSymbolWithPointSize(kPhotoBadgeMagnifyingglassSymbol,
-                                             kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolPhotoBadgeMagnifyingglass,
+                                       kSymbolActionPointSize);
   UIAction* action = [self actionWithTitle:title
                                      image:image
                                       type:MenuActionType::SearchImage
@@ -343,8 +339,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToCloseAllTabsWithBlock:(ProceduralBlock)block {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS)
@@ -356,8 +351,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToSelectTabsWithBlock:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kCheckmarkCircleSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolCheckmarkCircle, kSymbolActionPointSize);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SELECTTABS)
                 image:image
@@ -368,7 +363,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToSearchImageUsingLensWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      CustomSymbolWithPointSize(kCameraLensSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolCameraLens, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE)
@@ -389,8 +384,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToCreateEmptyTabGroupWithBlock:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolNewTabGroupAction, kSymbolActionPointSize);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(
                           IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU)
@@ -403,8 +398,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 - (UIAction*)actionToAddTabsToNewGroupWithTabsNumber:(int)tabsNumber
                                            inSubmenu:(BOOL)inSubmenu
                                                block:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolNewTabGroupAction, kSymbolActionPointSize);
   NSString* title =
       inSubmenu ? l10n_util::GetNSString(
                       IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU)
@@ -419,8 +414,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToOpenLinkInNewGroupWithBlock:(ProceduralBlock)block
                                        inSubmenu:(BOOL)inSubmenu {
-  UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolNewTabGroupAction, kSymbolActionPointSize);
   NSString* title =
       inSubmenu ? l10n_util::GetNSString(
                       IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU)
@@ -468,8 +463,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
     menu
   ];
 
-  UIImage* image = DefaultSymbolWithPointSize(kMoveTabToGroupActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolMoveTabToGroupAction, kSymbolActionPointSize);
 
   return [UIMenu
       menuWithTitle:l10n_util::GetPluralNSStringF(
@@ -500,8 +495,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
   NSArray<UIMenuElement*>* moveTabFromGroupMenuElements =
       @[ [self actionToRemoveTabFromGroup:removeBlock], menu ];
 
-  UIImage* image = DefaultSymbolWithPointSize(kMoveTabToGroupActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolMoveTabToGroupAction, kSymbolActionPointSize);
   return [UIMenu menuWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_MOVETABTOGROUP)
                          image:image
@@ -542,8 +537,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
     menu
   ];
 
-  UIImage* image = DefaultSymbolWithPointSize(kMoveTabToGroupActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolMoveTabToGroupAction, kSymbolActionPointSize);
 
   return [UIMenu menuWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP)
@@ -555,7 +550,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolEditAction, kSymbolActionPointSize);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_EDITGROUP)
                 image:image
@@ -565,8 +560,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToAddNewTabInGroupWithBlock:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolNewTabGroupAction, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP)
@@ -577,8 +572,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToUngroupTabGroupWithBlock:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kUngroupTabGroupSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image =
+      SymbolWithPointSize(SymbolUngroupTabGroup, kSymbolActionPointSize);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_UNGROUP)
                 image:image
@@ -589,7 +584,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToDeleteTabGroupWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolDeleteAction, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)
@@ -601,8 +596,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize);
   UIAction* action = [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP)
                 image:image
@@ -614,7 +608,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToLeaveSharedTabGroupWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kMinusInCircleSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolMinusInCircle, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_LEAVESHAREDGROUP)
@@ -627,7 +621,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToDeleteSharedTabGroupWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kDeleteActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolDeleteAction, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP)
@@ -640,7 +634,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToShareTabGroupWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolPersonPlus, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP)
@@ -652,7 +646,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToManageTabGroupWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kPersonPlusSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolPersonPlus, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP)
@@ -667,8 +661,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 // Creates a UIAction instance for closing a tab with a provided `title`.
 - (UIAction*)actionToCloseTabWithTitle:(NSString*)title
                                  block:(ProceduralBlock)block {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize);
   UIAction* action = [self actionWithTitle:title
                                      image:image
                                       type:MenuActionType::CloseTab
@@ -679,8 +672,8 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 // Creates a UIAction instance for removing a tab from a group.
 - (UIAction*)actionToRemoveTabFromGroup:(ProceduralBlock)block {
-  UIImage* image = DefaultSymbolWithPointSize(kRemoveTabFromGroupActionSymbol,
-                                              kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolRemoveTabFromGroupAction,
+                                       kSymbolActionPointSize);
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_REMOVEFROMGROUP);
   UIAction* action = [self actionWithTitle:title
@@ -692,7 +685,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToShowDetailsWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolInfoCircle, kSymbolActionPointSize);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_SHOW_DETAILS_ACTION_TITLE)
                 image:image
@@ -709,7 +702,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
   NSMutableArray<UIMenuElement*>* groupsMenu = [[NSMutableArray alloc] init];
 
   UIImage* circleImage =
-      DefaultSymbolWithPointSize(kCircleFillSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolCircleFill, kSymbolActionPointSize);
   circleImage =
       [circleImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
   for (const TabGroup* group : groups) {
@@ -805,8 +798,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToShowRecentActivity:(ProceduralBlock)block {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kHistorySymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolHistory, kSymbolActionPointSize);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY)
                          image:image
@@ -849,8 +841,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 }
 
 - (UIAction*)actionToPinSiteToMostVisitedTileWithBlock:(ProceduralBlock)block {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kPinSymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolPin, kSymbolActionPointSize);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE)
                          image:image
@@ -860,8 +851,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToUnpinSiteFromMostVisitedTileWithBlock:
     (ProceduralBlock)block {
-  UIImage* image =
-      DefaultSymbolWithPointSize(kPinSlashSymbol, kSymbolActionPointSize);
+  UIImage* image = SymbolWithPointSize(SymbolPinSlash, kSymbolActionPointSize);
   UIAction* action =
       [self actionWithTitle:l10n_util::GetNSString(
                                 IDS_IOS_CONTENT_SUGGESTIONS_UNPIN_SITE)
@@ -875,7 +865,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 - (UIAction*)actionToEditPinnedSiteOnMostVisitedTileWithBlock:
     (ProceduralBlock)block {
   UIImage* image =
-      DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolEditAction, kSymbolActionPointSize);
   return [self actionWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_CONTENT_SUGGESTIONS_EDIT_PINNED_SITE)
                          image:image
@@ -885,7 +875,7 @@ constexpr CGFloat kEmojiCanvasPaddingRatio = 1.3;
 
 - (UIAction*)actionToSendTabToSelfWithBlock:(ProceduralBlock)block {
   UIImage* image =
-      CustomSymbolWithPointSize(kRecentTabsSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolRecentTabs, kSymbolActionPointSize);
   return [self actionWithTitle:l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF)
                          image:image
                           type:MenuActionType::SendTabToSelf

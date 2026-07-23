@@ -115,7 +115,7 @@ TEST_F(BrowserActionFactoryTest, OpenInNewTabAction_URL) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kNewTabActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolNewTabAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
 
@@ -140,7 +140,7 @@ TEST_F(BrowserActionFactoryTest, OpenInNewIncognitoTabAction_URL) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolIncognito, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE);
 
@@ -164,8 +164,8 @@ TEST_F(BrowserActionFactoryTest, OpenInNewWindowAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kNewWindowActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolNewWindowAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
 
@@ -195,8 +195,8 @@ TEST_F(BrowserActionFactoryTest, OpenImageAction) {
 
   GURL testURL = GURL("https://example.com/logo.png");
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kOpenImageActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolOpenImageAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE);
 
@@ -218,7 +218,7 @@ TEST_F(BrowserActionFactoryTest, OpenImageInNewTabAction) {
   UrlLoadParams testParams = UrlLoadParams::InNewTab(testURL);
 
   UIImage* expectedImage =
-      CustomSymbolWithPointSize(kPhotoBadgePlusSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolPhotoBadgePlus, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
 
@@ -238,7 +238,7 @@ TEST_F(BrowserActionFactoryTest, OpenNewTabAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kNewTabActionSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolNewTabAction, kSymbolActionPointSize);
   NSString* expectedTitle = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB);
 
   UIAction* action = [factory actionToOpenNewTab];
@@ -263,7 +263,7 @@ TEST_F(BrowserActionFactoryTest, OpenNewIncognitoTabAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolIncognito, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 
@@ -289,7 +289,7 @@ TEST_F(BrowserActionFactoryTest, CloseCurrentTabAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolXMark, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB);
 
@@ -306,8 +306,8 @@ TEST_F(BrowserActionFactoryTest, ShowQRScannerAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kQRCodeFinderActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolQRCodeFinderAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_QR_SCANNER);
 
@@ -324,7 +324,7 @@ TEST_F(BrowserActionFactoryTest, StartVoiceSearchAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kMicrophoneSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolMicrophone, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH);
 
@@ -341,7 +341,7 @@ TEST_F(BrowserActionFactoryTest, StartNewSearchAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      DefaultSymbolWithPointSize(kSearchSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolSearch, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_SEARCH);
 
@@ -367,7 +367,7 @@ TEST_F(BrowserActionFactoryTest, NewIncognitoSearchAction) {
                                            scenario:kTestMenuScenario];
 
   UIImage* expectedImage =
-      CustomSymbolWithPointSize(kIncognitoSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolIncognito, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH);
 
@@ -392,8 +392,8 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedImageAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kClipboardActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolClipboardAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE);
 
@@ -409,8 +409,8 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedURLAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kClipboardActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolClipboardAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK);
 
@@ -426,8 +426,8 @@ TEST_F(BrowserActionFactoryTest, SearchCopiedTextAction) {
       [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                            scenario:kTestMenuScenario];
 
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kClipboardActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolClipboardAction, kSymbolActionPointSize);
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT);
 
@@ -445,10 +445,10 @@ TEST_F(BrowserActionFactoryTest, SaveImageInGooglePhotosAction) {
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* expectedImage =
-      CustomSymbolWithPointSize(kGooglePhotosSymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolGooglePhotos, kSymbolActionPointSize);
 #else
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kSaveImageActionSymbol,
-                                                      kSymbolActionPointSize);
+  UIImage* expectedImage =
+      SymbolWithPointSize(SymbolSaveImageAction, kSymbolActionPointSize);
 #endif
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SAVE_IMAGE_TO_PHOTOS);
