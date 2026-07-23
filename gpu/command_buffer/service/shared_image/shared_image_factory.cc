@@ -173,7 +173,7 @@ SharedImageFactory::SharedImageFactory(
                                       : GrContextType::kNone),
       gpu_preferences_(gpu_preferences),
 #if BUILDFLAG(IS_MAC)
-      texture_target_for_io_surfaces_(GetTextureTargetForIOSurfaces()),
+      texture_target_for_io_surfaces_(GL_TEXTURE_2D),
 #endif
       workarounds_(workarounds) {
   factory_ref_ = base::MakeRefCounted<SharedImageFactoryRef>(this);
