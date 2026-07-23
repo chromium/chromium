@@ -1006,10 +1006,18 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
   EndTransform();
   scrolling_contents_list->Finalize();
 
+  const auto* clip = scroll_translation.ScrollNode()->OverflowClipNode();
+  gfx::RectF clip_rect;
+  if (clip) {
+    clip_rect = clip->PaintClipRect().Rect();
+  } else {
+    // In very rare cases, the scroller doesn't clip its contents.
+    clip = &chunk_to_layer_mapper_.ChunkState().Clip();
+    clip_rect = gfx::RectF(InfiniteIntRect());
+  }
   gfx::Rect visual_rect = chunk_to_layer_mapper_.MapVisualRectFromState(
-      scroll_translation.ScrollNode()->ContainerRect(),
-      PropertyTreeState(*scroll_container_transform,
-                        *scroll_translation.ScrollNode()->OverflowClipNode(),
+      gfx::ToEnclosingRect(clip_rect),
+      PropertyTreeState(*scroll_container_transform, *clip,
                         // The effect state doesn't matter.
                         chunk_to_layer_mapper_.LayerState().Effect()));
   result_.PushDrawScrollingContentsOp(
@@ -1018,9 +1026,7 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
 
   // Accumulate effect bounds in case the scrolling contents op is a part of an
   // effect group.
-  UpdateEffectBounds(
-      gfx::RectF(scroll_translation.ScrollNode()->ContainerRect()),
-      *scroll_container_transform);
+  UpdateEffectBounds(clip_rect, *scroll_container_transform);
 }
 
 template <>

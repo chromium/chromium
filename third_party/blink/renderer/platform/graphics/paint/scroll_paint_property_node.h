@@ -152,6 +152,11 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
                      state_.contents_rect.size());
   }
 
+  // The overflow clip node which clips the scrolling contents. It's not null
+  // in most cases, except for
+  // - the root scroll node,
+  // - the inner viewport scroll node,
+  // - scrollers that don't clip contents (see LocalFrame::ClipsContent()).
   const ClipPaintPropertyNode* OverflowClipNode() const {
     return state_.overflow_clip_node.Get();
   }

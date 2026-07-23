@@ -1277,6 +1277,52 @@ TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
   }
 }
 
+TEST_P(PaintChunksToCcLayerTest,
+       ScrollingContentsWithoutOverflowClipIntoDisplayItemList) {
+  auto* scroll_translation = CreateScrollTranslation(
+      t0(), *t0().ScrollNode(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200), /*overflow_clip=*/nullptr);
+  PropertyTreeState scroll_state(*scroll_translation, c0(), e0());
+
+  TestChunks chunks;
+  chunks.AddChunk(t0(), c0(), e0());
+  chunks.AddChunk(scroll_state);
+  chunks.AddChunk(t0(), c0(), e0());
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), PropertyTreeState::Root(),
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_THAT(cc_list->paint_op_buffer(),
+                ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                            PaintOpIs<cc::DrawScrollingContentsOp>(),
+                            PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+    EXPECT_EQ(
+        InfiniteIntRect(),
+        cc_list->raster_inducing_scrolls()
+            .at(scroll_translation->ScrollNode()->GetCompositorElementId())
+            .visual_rect);
+    const auto& scrolling_contents_op =
+        static_cast<const cc::DrawScrollingContentsOp&>(
+            cc_list->paint_op_buffer().GetOpAtForTesting(1));
+    ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+              scrolling_contents_op.GetType());
+    EXPECT_THAT(scrolling_contents_op.display_item_list->paint_op_buffer(),
+                ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 1
+  } else {
+    EXPECT_THAT(
+        cc_list->paint_op_buffer(),
+        ElementsAre(
+            PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+            PaintOpIs<cc::SaveOp>(),
+            PaintOpEq<cc::TranslateOp>(-50, -60),  // <scroll-translation>
+            PaintOpIs<cc::DrawRecordOp>(),         // chunk 1
+            PaintOpIs<cc::RestoreOp>(),            // </scroll-translation>
+            PaintOpIs<cc::DrawRecordOp>()));       // chunk 2
+  }
+}
+
 // Test for https://crbug.com/413078309.
 TEST_P(PaintChunksToCcLayerTest, VeryTallScrollingContentsIntoDisplayItemList) {
   // A value larger than InfiniteIntRect can represent.
