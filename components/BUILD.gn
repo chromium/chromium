@@ -178,8 +178,8 @@ test("components_unittests") {
     ]
   }
 
-  # Add only ":unit_tests" dependencies here.If your tests have dependencies
-  #(this would at least include the component itself), they should be on the
+  # Add only ":unit_tests" dependencies here. If your tests have dependencies
+  # (this would at least include the component itself), they should be on the
   # test source set and not here.
 
   deps = [
@@ -411,18 +411,6 @@ test("components_unittests") {
     "//components/webui/flags:unit_tests",
   ]
 
-  if (!is_fuchsia) {
-    deps += [
-      "//components/enterprise:unit_tests",
-      "//components/enterprise/common:unit_tests",
-      "//components/enterprise/connectors/core:cloud_content_scanning_unit_tests",
-      "//components/enterprise/connectors/core:unit_tests",
-      "//components/enterprise/data_protection:unit_tests",
-      "//components/enterprise/isolated_mode:unit_tests",
-      "//components/enterprise/obfuscation/core:unit_tests",
-    ]
-  }
-
   if (enable_supervised_users) {
     deps += [
       "//components/supervised_user/core/browser:unit_tests",
@@ -433,13 +421,6 @@ test("components_unittests") {
 
   if (is_linux || is_mac) {
     deps += [ "//components/gapis:unit_tests" ]
-  }
-
-  if (is_android) {
-    deps += [
-      "//components/security_state/content/android:unit_tests",
-      "//components/supervised_user/core/browser/android:unit_tests",
-    ]
   }
 
   if (build_allocation_stack_trace_recorder) {
@@ -473,6 +454,13 @@ test("components_unittests") {
     # TODO(crbug.com/40818181): Enable all relevant tests on Fuchsia too.
     deps += [
       "//components/browser_sync:unit_tests",
+      "//components/enterprise:unit_tests",
+      "//components/enterprise/common:unit_tests",
+      "//components/enterprise/connectors/core:cloud_content_scanning_unit_tests",
+      "//components/enterprise/connectors/core:unit_tests",
+      "//components/enterprise/data_protection:unit_tests",
+      "//components/enterprise/isolated_mode:unit_tests",
+      "//components/enterprise/obfuscation/core:unit_tests",
       "//components/send_tab_to_self:unit_tests",
       "//components/sync_sessions:unit_tests",
       "//components/update_client:unit_tests",
@@ -597,6 +585,14 @@ test("components_unittests") {
       "//components/webrtc_logging:unit_tests",
       "//components/webrtc_logging/browser:unit_tests",
       "//components/webrtc_logging/common:unit_tests",
+    ]
+
+    # guest_contents is a supporting component for any solution that embeds
+    # unowned inner WebContents. As it is for embedding WebContents, only
+    # add the deps when use_blink is true.
+    deps += [
+      "//components/guest_contents/browser:unit_tests",
+      "//components/surface_embed/renderer:unit_tests",
     ]
   }
 
@@ -736,11 +732,13 @@ test("components_unittests") {
       "//components/saved_tab_groups/internal:native_java_unittests_java",
       "//components/search_engines/android:java",
       "//components/search_engines/android:test_utils_java",
+      "//components/security_state/content/android:unit_tests",
       "//components/sensitive_content:unit_tests",
       "//components/signin/core/browser",
       "//components/signin/public/android:java",
       "//components/signin/public/android:signin_java_test_support",
       "//components/spellcheck/browser/android:java",
+      "//components/supervised_user/core/browser/android:unit_tests",
       "//components/sync_preferences/cross_device_pref_tracker/android:java",
       "//components/translate/content/android:unit_tests",
       "//components/variations:variations_associated_data",
@@ -766,6 +764,13 @@ test("components_unittests") {
     }
   } else {  #!is_android
     deps += [
+      "//components/commerce/core:account_checker_unittests",
+      "//components/commerce/core:commerce_heuristics_data_unittests",
+      "//components/commerce/core:feature_list_unittests",
+      "//components/commerce/core/subscriptions:subscriptions_unit_tests",
+      "//components/commerce/core/webui:unit_tests",
+      "//components/feedback:unit_tests",
+      "//components/feedback/redaction_tool:unit_tests",
       "//components/keep_alive_registry:unit_tests",
       "//components/manta:unit_tests",
       "//components/trusted_vault:unit_tests",
@@ -800,36 +805,11 @@ test("components_unittests") {
     ]
   }
 
-  if (use_blink) {
-    # guest_contents is a supporting component for any solution that embeds
-    # unowned inner WebContents. As it is for embedding WebContents, only
-    # add the deps when use_blink is true.
-    deps += [
-      "//components/guest_contents/browser:unit_tests",
-      "//components/surface_embed/renderer:unit_tests",
-    ]
-  }
-
   if (enable_guest_view) {
     deps += [ "//components/guest_view/browser:unit_tests" ]
     if (!enable_extensions_core) {
       deps += [ "//components/guest_view/browser/slim_web_view:unit_tests" ]
     }
-  }
-
-  if (!is_android) {
-    deps += [ "//components/feedback:unit_tests" ]
-    deps += [ "//components/feedback/redaction_tool:unit_tests" ]
-  }
-
-  if (!is_android) {
-    deps += [
-      "//components/commerce/core:account_checker_unittests",
-      "//components/commerce/core:commerce_heuristics_data_unittests",
-      "//components/commerce/core:feature_list_unittests",
-      "//components/commerce/core/subscriptions:subscriptions_unit_tests",
-      "//components/commerce/core/webui:unit_tests",
-    ]
   }
 
   if (enable_library_cdms) {
@@ -857,8 +837,11 @@ test("components_unittests") {
     deps += [ "//components/constrained_window:unit_tests" ]
   }
 
-  if (is_win || is_linux || is_chromeos || is_mac) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
+      "//components/metrics/private_metrics:unit_tests",
+      "//components/metrics/structured:unit_tests",
+      "//components/metrics/structured/mojom:unit_tests",
       "//components/stability_report:unit_tests",
       "//components/webapps/isolated_web_apps:unit_tests",
     ]
@@ -952,14 +935,6 @@ test("components_unittests") {
     deps += [
       "//components/pdf/browser:unit_tests",
       "//components/pdf/renderer:unit_tests",
-    ]
-  }
-
-  if (is_win || is_mac || is_linux || is_chromeos) {
-    deps += [
-      "//components/metrics/private_metrics:unit_tests",
-      "//components/metrics/structured:unit_tests",
-      "//components/metrics/structured/mojom:unit_tests",
     ]
   }
 
@@ -1482,6 +1457,7 @@ if (use_blink) {
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
+
 if (is_android) {
   robolectric_binary("components_junit_tests") {
     deps = [
