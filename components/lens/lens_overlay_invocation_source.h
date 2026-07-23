@@ -87,7 +87,10 @@ enum class LensOverlayInvocationSource {
   // The cobrowse pinned toolbar button.
   kCobrowsePinnedToolbarButton = 20,
 
-  kMaxValue = kCobrowsePinnedToolbarButton
+  // Action chips shown on the new tab page.
+  kNtpActionChips = 21,
+
+  kMaxValue = kNtpActionChips
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

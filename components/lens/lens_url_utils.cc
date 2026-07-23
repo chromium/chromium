@@ -60,6 +60,7 @@ inline constexpr char kInvocationSourceOmniboxContextualQuery[] = "obic";
 inline constexpr char kInvocationSourceCobrowseToolbarButton[] = "cct";
 inline constexpr char kInvocationSourceCobrowsePinnedToolbarButton[] = "ccpt";
 inline constexpr char kInvocationSourceContextualTasksComposeBox[] = "cntk";
+inline constexpr char kInvocationSourceNtpActionChips[] = "ac";
 
 void AppendQueryParam(std::string* query_string,
                       const char name[],
@@ -332,6 +333,9 @@ GURL AppendInvocationSourceParamToURL(
       break;
     case lens::LensOverlayInvocationSource::kContextualTasksComposebox:
       param_value += kInvocationSourceContextualTasksComposeBox;
+      break;
+    case lens::LensOverlayInvocationSource::kNtpActionChips:
+      param_value += kInvocationSourceNtpActionChips;
       break;
     case lens::LensOverlayInvocationSource::kLVFShutterButton:
     case lens::LensOverlayInvocationSource::kLVFGallery:

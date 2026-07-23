@@ -65,6 +65,8 @@ std::string InvocationSourceToString(
       return "CobrowseToolbarButton";
     case LensOverlayInvocationSource::kCobrowsePinnedToolbarButton:
       return "CobrowsePinnedToolbarButton";
+    case LensOverlayInvocationSource::kNtpActionChips:
+      return "NtpActionChips";
   }
 }
 
@@ -501,6 +503,7 @@ void RecordTimeToFirstInteraction(
       // first interaction in this case is essentially zero.
       break;
     case lens::LensOverlayInvocationSource::kNtpContextualQuery:
+    case lens::LensOverlayInvocationSource::kNtpActionChips:
     case lens::LensOverlayInvocationSource::kOmniboxContextualQuery:
     case lens::LensOverlayInvocationSource::kCobrowseToolbarButton:
     case lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton:
