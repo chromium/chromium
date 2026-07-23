@@ -31,8 +31,11 @@ class BASE_EXPORT SubstringSetMatcher {
   ~SubstringSetMatcher();
 
   // Registers all |patterns|. Each pattern needs to have a unique ID and all
-  // pattern strings must be unique. Build() should be called exactly once
-  // (before it is called, the tree is empty).
+  // pattern strings must be unique. If duplicate pattern strings are passed,
+  // it will trigger a CHECK failure in DCHECK-enabled builds. In release
+  // builds, duplicate patterns are silently ignored (only the first one is
+  // registered) to prevent memory corruption. Build() should be called
+  // exactly once (before it is called, the tree is empty).
   //
   // Complexity:
   //    Let n = number of patterns.
@@ -202,7 +205,11 @@ class BASE_EXPORT SubstringSetMatcher {
     void SetFailure(NodeID failure);
 
     void SetMatchID(MatcherStringPattern::ID id) {
-      DCHECK(!IsEndOfPattern());
+      // A node ends at most one pattern; a duplicate would add a second
+      // kMatchIDLabel edge that can overflow the node's storage in SetEdge().
+      if (IsEndOfPattern()) {
+        return;
+      }
       DCHECK(id < kInvalidNodeID);  // This is enforced by Build().
       SetEdge(kMatchIDLabel, static_cast<NodeID>(id));
       has_outputs_ = true;

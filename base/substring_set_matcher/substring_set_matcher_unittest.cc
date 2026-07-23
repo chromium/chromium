@@ -228,4 +228,47 @@ TEST(SubstringSetMatcherTest, LotsOfEdges) {
   matcher.Build(patterns);
 }
 
+// In DCHECK-enabled builds, duplicate patterns trigger a CHECK failure as they
+// violate the API contract. In release builds, duplicate patterns are silently
+// ignored (only the first one is registered) to prevent memory corruption.
+#if !DCHECK_IS_ON()
+TEST(SubstringSetMatcherTest, DuplicatePatterns) {
+  std::vector<MatcherStringPattern> patterns;
+  MatcherStringPattern::ID id = 0;
+
+  // "a" is a pattern so node "ba" gets a non-root failure edge.
+  patterns.emplace_back("a", id++); // ID 0
+
+  // Four identical "ba" patterns.
+  patterns.emplace_back("ba", id++); // ID 1
+  patterns.emplace_back("ba", id++); // ID 2
+  patterns.emplace_back("ba", id++); // ID 3
+  patterns.emplace_back("ba", id++); // ID 4
+
+  // 256 character children on node "ba" to fill capacity.
+  for (int i = 0; i < 256; ++i) {
+    std::string str;
+    str.push_back('b');
+    str.push_back('a');
+    str.push_back(static_cast<char>(i));
+    patterns.emplace_back(str, id++);
+  }
+
+  SubstringSetMatcher matcher;
+  ASSERT_TRUE(matcher.Build(patterns));
+
+  std::set<MatcherStringPattern::ID> matches;
+  matcher.Match("ba", &matches);
+
+  // We expect to match "a" (ID 0) and the first "ba" pattern (ID 1).
+  // Duplicate "ba" patterns (IDs 2-4) should be ignored.
+  EXPECT_EQ(2u, matches.size());
+  EXPECT_TRUE(matches.find(0) != matches.end());
+  EXPECT_TRUE(matches.find(1) != matches.end());
+  EXPECT_TRUE(matches.find(2) == matches.end());
+  EXPECT_TRUE(matches.find(3) == matches.end());
+  EXPECT_TRUE(matches.find(4) == matches.end());
+}
+#endif  // !DCHECK_IS_ON()
+
 }  // namespace base
