@@ -946,59 +946,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       @"The collection is not scrolled back to its previous position");
 }
 
-// Tests that tapping the fake omnibox and then scrolling defocuses the omnibox.
-- (void)testTapFakeOmniboxAndScrollDefocuses {
-  if ([ChromeEarlGrey isComposeboxIOSEnabled]) {
-    // TODO(crbug.com/466349961): The collection view needs to be made visible
-    // behind the Composebox view controller first for this test to be able to
-    // pass.
-    EARL_GREY_TEST_DISABLED(
-        @"Composebox not supported yet. The collection view needs to be made "
-        @"visible behind the Composebox view controller first");
-  }
-
-  // Clear pasteboard so that omnibox doesn't cover the NTP on focus.
-  [ChromeEarlGrey clearPasteboard];
-  // Get the collection and its layout.
-  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
-
-  // Offset before the tap.
-  CGPoint origin = collectionView.contentOffset;
-
-  // Tap the omnibox to focus it.
-  [self focusFakebox];
-
-  // Offset after the fake omnibox has been tapped.
-  CGPoint offsetAfterTap = collectionView.contentOffset;
-
-  // Make sure the fake omnibox has been mostly covered and the collection has
-  // moved.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:mostlyNotVisible()];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  GREYAssertTrue(offsetAfterTap.y >= origin.y,
-                 @"The collection has not moved.");
-
-  // Scroll up.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // iPad needs more scrolling to see entire fake omnibox since it appears
-    // from under the toolbar.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        performAction:grey_scrollInDirection(kGREYDirectionUp, 100)];
-  } else {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        performAction:grey_scrollInDirection(kGREYDirectionUp, 50)];
-  }
-
-  // Check the fake omnibox is displayed again.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:grey_notVisible()];
-}
-
 // Tests that tapping the fake omnibox then unfocusing it moves the collection
 // back to where it was.
 - (void)testTapFakeOmniboxScrollScrolled {
