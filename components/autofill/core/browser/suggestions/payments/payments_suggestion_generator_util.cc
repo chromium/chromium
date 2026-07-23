@@ -83,6 +83,19 @@ constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 static constexpr int kPrefixLength = 2;
 static constexpr int kSuffixLength = 4;
 
+bool IsCardNumberFieldEmpty(const FormStructure* form_structure) {
+  if (!form_structure) {
+    return false;
+  }
+  return std::ranges::none_of(
+      form_structure->fields(),
+      [](const std::unique_ptr<AutofillField>& form_field) {
+        return form_field->Type().GetCreditCardType() ==
+                   FieldType::CREDIT_CARD_NUMBER &&
+               !SanitizedFieldIsEmpty(form_field->value());
+      });
+}
+
 // The priority ranking for deduplicating a duplicate card is:
 // 1. RecordType::kMaskedServerCard
 // 2. RecordType::kLocalCard
@@ -871,16 +884,7 @@ bool ShouldCreateBnplSuggestionForTouchToFill(BrowserAutofillManager& manager,
     const FormStructure* form_structure = manager.FindCachedFormById(form_id);
     // Checks whether the credit card number field is empty. If the number field
     // is not empty, privacy restrictions prohibit showing the BNPL option.
-    passes_credit_card_number_check =
-        form_structure
-            ? std::ranges::none_of(
-                  form_structure->fields(),
-                  [](const std::unique_ptr<AutofillField>& form_field) {
-                    return form_field->Type().GetCreditCardType() ==
-                               FieldType::CREDIT_CARD_NUMBER &&
-                           !SanitizedFieldIsEmpty(form_field->value());
-                  })
-            : false;
+    passes_credit_card_number_check = IsCardNumberFieldEmpty(form_structure);
   }
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableBuyNowPayLater) &&
@@ -979,6 +983,12 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
                                  .payments_data_manager()
                                  .GetBnplIssuers(),
                              /*extracted_amount_in_micros=*/std::nullopt));
+    if (payments::BnplManager* bnpl_manager =
+            manager.GetPaymentsBnplManager()) {
+      const FormStructure* form_structure = manager.FindCachedFormById(form_id);
+      bnpl_manager->SetIsCardNumberFieldEmpty(
+          IsCardNumberFieldEmpty(form_structure));
+    }
     manager.GetCreditCardFormEventLogger().OnBnplSuggestionShown();
     manager.client()
         .GetPersonalDataManager()

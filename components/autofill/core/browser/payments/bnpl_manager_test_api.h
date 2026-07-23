@@ -110,6 +110,10 @@ class BnplManagerTestApi {
     bnpl_manager_->is_card_number_field_empty_ = is_card_number_field_empty;
   }
 
+  bool GetIsCardNumberFieldEmpty() {
+    return bnpl_manager_->is_card_number_field_empty_;
+  }
+
   void SetCachedSuggestions(std::vector<Suggestion> suggestions) {
     bnpl_manager_->cached_suggestions_ = std::move(suggestions);
   }

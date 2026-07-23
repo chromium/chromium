@@ -458,20 +458,28 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
     CHECK(payments_autofill_client().GetBnplStrategy());
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnablePayNowPayLaterTabs)) {
+      std::vector<BnplIssuerContext> issuer_contexts =
+          GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
+                                     /*checkout_amount=*/std::nullopt,
+                                     result.error());
       using enum BnplStrategy::BnplAiBasedAmountExtractionReturnedNextAction;
       switch (payments_autofill_client()
                   .GetBnplStrategy()
                   ->GetNextActionOnAiBasedAmountExtractionReturned()) {
         case kReplaceLoadingThrobberWithIssuerSuggestionsOnDesktop: {
-          std::vector<BnplIssuerContext> issuer_contexts =
-              GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
-                                         /*checkout_amount=*/std::nullopt,
-                                         result.error());
           ReplaceLoadingThrobberWithIssuerSuggestions(issuer_contexts);
           break;
         }
         case kSwitchToIssuerSelectionScreenOnAndroid:
-          // TODO(viplavkadam): Implement Android flow.
+          payments_autofill_client().OnPurchaseAmountExtracted(
+              issuer_contexts,
+              /*checkout_amount=*/std::nullopt,
+              /*is_amount_supported_by_any_issuer=*/false,
+              ongoing_flow_state_->app_locale,
+              base::BindOnce(&BnplManager::OnIssuerAccepted,
+                             weak_factory_.GetWeakPtr()),
+              base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
+
           break;
       }
     } else {
@@ -522,6 +530,12 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
     std::vector<BnplIssuerContext> issuer_contexts =
         GetSortedBnplIssuerContext(browser_autofill_manager_->client(),
                                    ongoing_flow_state_->final_checkout_amount);
+    bool is_amount_supported_by_any_issuer =
+        IsExtractedAmountSupportedByAnyBnplIssuer(
+            payments_autofill_client()
+                .GetPaymentsDataManager()
+                .GetBnplIssuers(),
+            ongoing_flow_state_->final_checkout_amount);
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnablePayNowPayLaterTabs)) {
       using enum BnplStrategy::BnplAiBasedAmountExtractionReturnedNextAction;
@@ -533,16 +547,16 @@ void BnplManager::OnAmountExtractionReturnedFromAi(
           break;
         }
         case kSwitchToIssuerSelectionScreenOnAndroid:
-          // TODO(viplavkadam): Implement Android flow.
+          payments_autofill_client().OnPurchaseAmountExtracted(
+              issuer_contexts, ongoing_flow_state_->final_checkout_amount,
+              is_amount_supported_by_any_issuer,
+              ongoing_flow_state_->app_locale,
+              base::BindOnce(&BnplManager::OnIssuerAccepted,
+                             weak_factory_.GetWeakPtr()),
+              base::BindOnce(&BnplManager::Reset, weak_factory_.GetWeakPtr()));
           break;
       }
     } else {
-      bool is_amount_supported_by_any_issuer =
-          IsExtractedAmountSupportedByAnyBnplIssuer(
-              payments_autofill_client()
-                  .GetPaymentsDataManager()
-                  .GetBnplIssuers(),
-              ongoing_flow_state_->final_checkout_amount);
       // If the accepted issuer is not eligible, update UI.
       CHECK_DEREF(payments_autofill_client().GetBnplUiDelegate())
           .UpdateBnplIssuerUi(

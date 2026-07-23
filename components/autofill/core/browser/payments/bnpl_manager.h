@@ -126,6 +126,11 @@ class BnplManager : public AutofillManager::Observer {
   // cancel any ongoing requests if its false.
   std::vector<Suggestion> GetBnplSuggestions(bool is_card_number_field_empty);
 
+  // Sets whether the card number field is empty.
+  void SetIsCardNumberFieldEmpty(bool is_empty) {
+    is_card_number_field_empty_ = is_empty;
+  }
+
   // Cancels in-progress requests to `PaymentsNetworkInterface` and invalidates
   // `BnplManager` weak pointers from the factory.
   virtual void CancelOngoingRequests();

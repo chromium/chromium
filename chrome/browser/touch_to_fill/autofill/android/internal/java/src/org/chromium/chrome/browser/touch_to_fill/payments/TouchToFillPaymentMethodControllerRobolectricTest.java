@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -3393,6 +3394,20 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
     @Test
     @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS})
     public void testSwitchingTabsUpdatesSheetItems() {
+        // Stub the delegate to show BNPL issuers when Pay Later tab is selected
+        doAnswer(
+                        invocation -> {
+                            mCoordinator.onPurchaseAmountExtracted(
+                                    List.of(
+                                            BNPL_ISSUER_CONTEXT_AFFIRM_LINKED,
+                                            BNPL_ISSUER_CONTEXT_KLARNA_LINKED),
+                                    /* extractedAmount= */ null,
+                                    /* isAmountSupportedByAnyIssuer= */ false);
+                            return null;
+                        })
+                .when(mDelegateMock)
+                .bnplSuggestionSelected(null);
+
         mCoordinator.showPaymentMethods(
                 List.of(VISA_SUGGESTION, BNPL_SUGGESTION), new TouchToFillDisplayOptions());
 
@@ -3402,9 +3417,12 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         // Verify selected tab index is updated
         assertThat(mTouchToFillPaymentMethodModel.get(SELECTED_TAB_INDEX), is(PAY_LATER));
 
-        // Verify the list now doesn't contain the credit card
+        // Verify the list now contains the BNPL issuers and terms, but no credit cards
         ModelList itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(0));
+        assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(2));
+        assertThat(getModelsOfType(itemList, BNPL_SELECTION_PROGRESS_TERMS).size(), is(1));
+        assertThat(getModelsOfType(itemList, PROGRESS_ICON).size(), is(0));
 
         // Switch back to tab PAY_NOW (Pay Now) by invoking the selection callback
         mTouchToFillPaymentMethodModel.get(TAB_SELECTION_HANDLER).onResult(PAY_NOW);
@@ -3416,6 +3434,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         itemList = mTouchToFillPaymentMethodModel.get(SHEET_ITEMS);
         assertThat(getModelsOfType(itemList, CREDIT_CARD).size(), is(1));
         assertThat(getModelsOfType(itemList, BNPL).size(), is(0));
+        assertThat(getModelsOfType(itemList, BNPL_ISSUER).size(), is(0));
     }
 
     private static List<PropertyModel> getModelsOfType(ModelList items, int type) {

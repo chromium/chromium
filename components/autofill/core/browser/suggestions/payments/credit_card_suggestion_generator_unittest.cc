@@ -3202,6 +3202,8 @@ TEST_F(
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
   EXPECT_EQ(suggestions[1].type, SuggestionType::kCreditCardEntry);
   EXPECT_EQ(suggestions[2].type, SuggestionType::kBnplEntry);
+  EXPECT_TRUE(payments::test_api(*autofill_manager().GetPaymentsBnplManager())
+                  .GetIsCardNumberFieldEmpty());
 }
 
 TEST_F(
