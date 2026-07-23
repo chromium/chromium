@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_auto_suggestion_manager.h"
@@ -77,6 +78,7 @@ class TabInterface;
 class ContextualTasksInternalsPageHandler;
 
 class ContextualTasksPageHandler;
+class Profile;
 
 class ContextualTasksUI
     : public contextual_tasks::ContextualTasksUIInterface,
@@ -126,6 +128,9 @@ class ContextualTasksUI
   ContextualTasksUI(const ContextualTasksUI&) = delete;
   ContextualTasksUI& operator=(const ContextualTasksUI&) = delete;
   ~ContextualTasksUI() override;
+
+  static content::WebUIDataSource* RegisterWebUIDataSource(Profile* profile);
+  static base::DictValue GetContextualTasksLoadTimeData(Profile* profile);
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   using SlimWebViewPageHandlerFactory::BindInterface;
