@@ -50,20 +50,20 @@ def gen(old_file, new_file, patch_file, output_file, is_raw, is_win):
   if is_raw:
     zuc_cmd.append('-raw')
   # Generate a new patch.
-  ret = subprocess.call(zuc_cmd + [old_file, new_file, patch_file],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
-  if ret:
+  result = subprocess.run(zuc_cmd + [old_file, new_file, patch_file],
+                          check=False)
+  if result.returncode:
     logging.error('Patch generation failed for ({}, {})'.format(old_file,
                                                                 new_file))
-    return ret
+    return result.returncode
   # Binary encode the protobuf pair.
-  ret = subprocess.call([sys.executable,
-                         os.path.join(ABS_PATH, 'create_seed_file_pair.py'),
-                         os.path.abspath(protoc), old_file, patch_file,
-                         output_file])
+  result = subprocess.run(
+      [sys.executable,
+       os.path.join(ABS_PATH, 'create_seed_file_pair.py'),
+       os.path.abspath(protoc), old_file, patch_file, output_file],
+      check=False)
   os.remove(patch_file)
-  return ret
+  return result.returncode
 
 
 def main():
@@ -78,4 +78,3 @@ def main():
 
 if __name__ == '__main__':
   sys.exit(main())
-
