@@ -66,6 +66,31 @@ class CORE_EXPORT EventPath final : public GarbageCollected<EventPath> {
   }
   NodeEventContext& Last() { return node_event_contexts_[size() - 1]; }
 
+  HeapVector<NodeEventContext>::iterator begin() {
+    return node_event_contexts_.begin();
+  }
+  HeapVector<NodeEventContext>::iterator end() {
+    return node_event_contexts_.end();
+  }
+  HeapVector<NodeEventContext>::const_iterator begin() const {
+    return node_event_contexts_.begin();
+  }
+  HeapVector<NodeEventContext>::const_iterator end() const {
+    return node_event_contexts_.end();
+  }
+  HeapVector<NodeEventContext>::reverse_iterator rbegin() {
+    return node_event_contexts_.rbegin();
+  }
+  HeapVector<NodeEventContext>::reverse_iterator rend() {
+    return node_event_contexts_.rend();
+  }
+  HeapVector<NodeEventContext>::const_reverse_iterator rbegin() const {
+    return node_event_contexts_.rbegin();
+  }
+  HeapVector<NodeEventContext>::const_reverse_iterator rend() const {
+    return node_event_contexts_.rend();
+  }
+
   WindowEventContext& GetWindowEventContext() {
     DCHECK(window_event_context_);
     return *window_event_context_;

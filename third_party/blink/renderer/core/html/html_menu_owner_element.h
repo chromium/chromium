@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class HTMLMenuItemElement;
+
 class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
                                          public TypeAheadDataSource {
  public:
@@ -19,8 +21,11 @@ class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
   MenuItemList ItemList() const;
 
   bool ShouldIgnoreDescendantsForElementTraversals(Element* element) const;
+  bool IsTopLevelOwner() const;
 
   void DefaultEventHandler(Event&) override;
+
+  void Trace(Visitor*) const override;
 
   // TypeAheadDataSource implementation
   int IndexOfSelectedOption() const override;
@@ -31,6 +36,10 @@ class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
   HTMLMenuOwnerElement(HTMLQualifiedName, Document&);
 
   TypeAhead type_ahead_;
+
+ private:
+  Member<HTMLMenuItemElement> last_mouseup_menu_item_;
+  bool processing_click_ = false;
 };
 
 template <>
