@@ -50,14 +50,13 @@ namespace remoting {
 
 namespace {
 
-// Internal switches that are not meant to be used by users directly.
 constexpr char kUserNameSwitch[] = "user-name";
-constexpr char kGetMultiProcessConfigSwitch[] = "get-multi-process-config";
-constexpr char kCleanupMultiProcessConfigSwitch[] =
-    "cleanup-multi-process-config";
+constexpr char kKeepConfigSwitch[] = "keep-config";
+
+// Internal switches that are not meant to be used by users directly.
 constexpr char kSaveMultiProcessPairingsSwitch[] =
     "save-multi-process-pairings";
-constexpr char kKeepConfigSwitch[] = "keep-config";
+constexpr char kSaveSingleProcessStateSwitch[] = "save-single-process-state";
 
 // Runs the current program with sudo.
 // `args`: The arguments to pass to the program.
@@ -161,35 +160,36 @@ bool RunWithSudo(base::span<const std::string_view> args,
   return true;
 }
 
-bool DisableService(const std::string& unit_name) {
+bool IsServiceActive(const std::string& unit_name) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.InitFromArgv({"systemctl", "is-active", unit_name});
+  std::string output;
+  return base::GetAppOutputAndError(command_line, &output);
+}
+
+bool DisableAndStopService(const std::string& unit_name) {
   std::cout << "Disabling service: " << unit_name << "\n";
-  base::LaunchOptions options;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.InitFromArgv({"systemctl", "disable", "--now", unit_name});
-  if (getuid() != 0) {
-    options.allow_new_privs = true;
-    command_line.PrependWrapper("/usr/bin/sudo");
-  }
-
-  int exit_code = -1;
-  auto process = base::LaunchProcess(command_line, options);
-  if (!process.IsValid() || !process.WaitForExit(&exit_code)) {
-    std::cerr << "Failed to disable host service (" << unit_name << ").\n";
+  std::string output;
+  if (!base::GetAppOutputAndError(command_line, &output)) {
+    std::cerr << "Failed to disable host service (" << unit_name
+              << "): " << output << "\n";
     return false;
   }
+  return true;
+}
 
-  if (exit_code == -1) {
-    std::cerr << "Service disable process terminated unexpectedly: "
-              << command_line.GetCommandLineString() << "\n";
+bool EnableAndStartService(const std::string& unit_name) {
+  std::cout << "Starting service: " << unit_name << "\n";
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.InitFromArgv({"systemctl", "enable", "--now", unit_name});
+  std::string output;
+  if (!base::GetAppOutputAndError(command_line, &output)) {
+    std::cerr << "Failed to enable host service (" << unit_name
+              << "): " << output << "\n";
     return false;
   }
-
-  if (exit_code != 0) {
-    std::cerr << "Service disable process exited with status " << exit_code
-              << ": " << command_line.GetCommandLineString() << "\n";
-    return false;
-  }
-
   return true;
 }
 
@@ -198,36 +198,6 @@ void OnDaemonControllerDone(DaemonController::AsyncResult* out_result,
                             DaemonController::AsyncResult result) {
   *out_result = result;
   std::move(quit_closure).Run();
-}
-
-bool GetMultiProcessConfigAsRoot() {
-  CHECK_EQ(getuid(), 0u);
-
-  base::FilePath config_path =
-      DaemonControllerDelegateLinuxMultiProcess::GetPrivilegedConfigPath();
-  std::optional<base::DictValue> config = HostConfigFromJsonFile(config_path);
-  if (!config) {
-    std::cerr << "Failed to read multi-process host config.\n";
-    return false;
-  }
-
-  PairingRegistryDelegateLinux pairing_delegate(
-      PairingRegistryDelegateLinux::GetDefaultRegistryPath(),
-      /*use_unprivileged_file=*/false);
-  base::ListValue pairings = pairing_delegate.LoadAll();
-
-  base::DictValue result;
-  result.Set("host_config", std::move(*config));
-  result.Set("pairings", std::move(pairings));
-
-  std::string json;
-  if (!base::JSONWriter::Write(result, &json)) {
-    std::cerr << "Failed to serialize multi-process state to JSON.\n";
-    return false;
-  }
-
-  std::cout << json << std::endl;
-  return true;
 }
 
 bool CleanupMultiProcessConfigAsRoot() {
@@ -300,69 +270,81 @@ bool SaveMultiProcessPairingsAsNetworkUser() {
   return true;
 }
 
-bool MigrateToMultiProcess(const base::CommandLine& command_line) {
-  if (getuid() != 0) {
-    std::string user_name_switch =
-        base::StringPrintf("--%s=%s", kUserNameSwitch, GetUsername().c_str());
+bool SaveSingleProcessStateAsUser() {
+  std::string json;
+  if (!base::ReadStreamToString(stdin, &json)) {
+    std::cerr << "Failed to read single-process state from stdin.\n";
+    return false;
+  }
 
-    const base::CommandLine::StringVector& args = command_line.GetArgs();
-    CHECK_GE(args.size(), 1u);
-    std::string_view host_type = args[0];
+  std::optional<base::Value> state_value =
+      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
+  if (!state_value || !state_value->is_dict()) {
+    std::cerr << "Failed to parse single-process state JSON from stdin.\n";
+    return false;
+  }
 
-    // The code below the if clause will be executed in the child process
-    // elevated with sudo.
-    if (!RunWithSudo({host_type, user_name_switch})) {
+  const base::DictValue& state_dict = state_value->GetDict();
+  const base::DictValue* host_config = state_dict.FindDict("host_config");
+  const base::ListValue* pairings = state_dict.FindList("pairings");
+  if (!host_config || !pairings) {
+    std::cerr << "Single-process state JSON is missing fields.\n";
+    return false;
+  }
+
+  PairingRegistryDelegateLinux user_pairing_delegate;
+  for (const auto& pairing_value : *pairings) {
+    if (!pairing_value.is_dict()) {
+      continue;
+    }
+    if (!user_pairing_delegate.Save(
+            protocol::PairingRegistry::Pairing::CreateFromValue(
+                pairing_value.GetDict()))) {
+      std::cerr << "Failed to save a pairing to single-process registry.\n";
+    }
+  }
+
+  base::FilePath config_path =
+      DaemonControllerDelegateLinuxSingleProcess::GetConfigPath();
+  base::FilePath config_dir = config_path.DirName();
+  if (!base::DirectoryExists(config_dir)) {
+    base::File::Error error;
+    if (!base::CreateDirectoryAndGetError(config_dir, &error)) {
+      std::cerr << "Failed to create user config directory: "
+                << base::File::ErrorToString(error) << "\n";
       return false;
     }
+  }
 
-    if (command_line.HasSwitch(kKeepConfigSwitch)) {
-      std::cout << "Keeping old single-process config as requested.\n";
-    } else {
-      // Deleting the old pairing directory as the user.
-      std::cout << "Deleting old single-process config.\n";
-      base::FilePath user_config_dir = GetConfigDir();
-      base::FilePath config_file =
-          user_config_dir.Append(GetHostHash() + ".json");
-      base::FilePath user_pairing_dir = user_config_dir.Append(
-          PairingRegistryDelegateLinux::kRegistryDirectory);
+  if (!HostConfigToJsonFile(host_config->Clone(), config_path)) {
+    std::cerr << "Failed to write single-process host config file.\n";
+    return false;
+  }
 
-      if (base::PathExists(user_pairing_dir) &&
-          !base::DeletePathRecursively(user_pairing_dir)) {
-        std::cerr << "Failed to delete old pairing directory.\n";
-        return false;
-      }
-      if (base::PathExists(config_file) && !base::DeleteFile(config_file)) {
-        std::cerr << "Failed to delete old host config file.\n";
-        return false;
-      }
-    }
+  return true;
+}
 
-    std::cout << "Successfully migrated to multi-process host.\n";
+bool MigrateToMultiProcess(const base::CommandLine& command_line,
+                           const PasswdUserInfo& user_info) {
+  CHECK_EQ(getuid(), 0u);
+
+  if (IsServiceActive("chrome-remote-desktop.service")) {
+    std::cout << "Host is already multi-process. Nothing to do.\n";
     return true;
   }
 
-  // Code below is run as root.
-  std::cout << "Migrating from single-process host to multi-process host.\n";
-
-  std::string user_name = command_line.GetSwitchValueASCII(kUserNameSwitch);
-  if (user_name.empty()) {
-    std::cerr << "--" << kUserNameSwitch
-              << " must be provided when run as root.\n";
-    return false;
-  }
-
-  auto user_info = GetPasswdUserInfo(user_name);
-  if (!user_info.has_value()) {
-    std::cerr << "Failed to look up user: " << user_name << ": "
-              << user_info.error() << "\n";
-    return false;
-  }
-
   base::FilePath user_config_dir =
-      user_info->home_dir.Append(GetPerUserConfigRelativeDir());
+      user_info.home_dir.Append(GetPerUserConfigRelativeDir());
   base::FilePath config_file = user_config_dir.Append(GetHostHash() + ".json");
 
-  // The privileged config files are only readable by root.
+  if (!base::PathExists(config_file)) {
+    std::cerr << "Host migration can only be performed when the host is "
+                 "already started.\n";
+    return false;
+  }
+
+  std::cout << "Migrating from single-process host to multi-process host.\n";
+
   std::optional<base::DictValue> config = HostConfigFromJsonFile(config_file);
   if (!config) {
     std::cerr << "Failed to read single-process host config at "
@@ -402,7 +384,8 @@ bool MigrateToMultiProcess(const base::CommandLine& command_line) {
   DaemonController::AsyncResult result = DaemonController::RESULT_FAILED;
 
   std::cout << "Disabling single-process host.\n";
-  if (!DisableService("chrome-remote-desktop@" + user_name + ".service")) {
+  if (!DisableAndStopService("chrome-remote-desktop@" + user_info.username +
+                             ".service")) {
     return false;
   }
 
@@ -419,71 +402,83 @@ bool MigrateToMultiProcess(const base::CommandLine& command_line) {
     return false;
   }
 
+  if (command_line.HasSwitch(kKeepConfigSwitch)) {
+    std::cout << "Keeping old single-process config as requested.\n";
+  } else {
+    std::cout << "Deleting old single-process config.\n";
+    if (base::PathExists(user_pairing_dir) &&
+        !base::DeletePathRecursively(user_pairing_dir)) {
+      std::cerr << "Failed to delete old pairing directory.\n";
+      return false;
+    }
+    if (base::PathExists(config_file) && !base::DeleteFile(config_file)) {
+      std::cerr << "Failed to delete old host config file.\n";
+      return false;
+    }
+  }
+
+  std::cout << "Successfully migrated to multi-process host.\n";
   return true;
 }
 
-bool MigrateToSingleProcess(const base::CommandLine& command_line) {
-  if (getuid() == 0) {
-    std::cerr << "Migration to single-process host cannot be run as root.\n";
+bool MigrateToSingleProcess(const base::CommandLine& command_line,
+                            const PasswdUserInfo& user_info) {
+  CHECK_EQ(getuid(), 0u);
+
+  if (IsServiceActive("chrome-remote-desktop@" + user_info.username +
+                      ".service")) {
+    std::cout << "Host is already single-process. Nothing to do.\n";
+    return true;
+  }
+
+  base::FilePath config_path =
+      DaemonControllerDelegateLinuxMultiProcess::GetPrivilegedConfigPath();
+  if (!base::PathExists(config_path)) {
+    std::cerr << "Host migration can only be performed when the host is "
+                 "already started.\n";
     return false;
   }
 
   std::cout << "Migrating from multi-process host to single-process host.\n";
-  std::cout << "Elevating to read current multi-process config.\n";
 
-  // This is needed because the privileged config files are only readable by
-  // root.
-  std::string output;
-  if (!RunWithSudo({"--" + std::string(kGetMultiProcessConfigSwitch)},
-                   /*user_name=*/{}, /*input=*/{}, &output)) {
-    std::cerr << "Failed to get multi-process config.\n";
+  std::optional<base::DictValue> host_config =
+      HostConfigFromJsonFile(config_path);
+  if (!host_config) {
+    std::cerr << "Failed to read multi-process host config.\n";
     return false;
   }
 
-  std::optional<base::Value> multi_state =
-      base::JSONReader::Read(output, base::JSON_PARSE_RFC);
-  if (!multi_state || !multi_state->is_dict()) {
-    std::cerr << "Failed to parse multi-process config JSON.\n";
+  PairingRegistryDelegateLinux multi_pairing_delegate(
+      PairingRegistryDelegateLinux::GetDefaultRegistryPath(),
+      /*use_unprivileged_file=*/false);
+  base::ListValue pairings = multi_pairing_delegate.LoadAll();
+
+  base::DictValue state_dict;
+  state_dict.Set("host_config", std::move(*host_config));
+  state_dict.Set("pairings", std::move(pairings));
+
+  std::string state_json;
+  if (!base::JSONWriter::Write(state_dict, &state_json)) {
+    std::cerr << "Failed to serialize single-process state to JSON.\n";
     return false;
   }
 
-  const base::DictValue& multi_dict = multi_state->GetDict();
-  const base::DictValue* host_config = multi_dict.FindDict("host_config");
-  const base::ListValue* pairings = multi_dict.FindList("pairings");
-
-  if (!host_config || !pairings) {
-    std::cerr << "Multi-process config JSON is missing fields.\n";
+  // We can't use `DaemonController` here because the single-process host
+  // delegate only works when the process is run as the user.
+  std::cout << "Saving state to single-process registry.\n";
+  if (!RunWithSudo({"--" + std::string(kSaveSingleProcessStateSwitch)},
+                   user_info.username, state_json)) {
+    std::cerr << "Failed to save state to single-process registry.\n";
     return false;
-  }
-
-  // Save pairings to single-process registry.
-  PairingRegistryDelegateLinux user_pairing_delegate;
-  for (const auto& pairing_value : *pairings) {
-    if (!pairing_value.is_dict()) {
-      continue;
-    }
-    user_pairing_delegate.Save(
-        protocol::PairingRegistry::Pairing::CreateFromValue(
-            pairing_value.GetDict()));
   }
 
   std::cout << "Disabling multi-process host.\n";
-  if (!DisableService("chrome-remote-desktop.service")) {
+  if (!DisableAndStopService("chrome-remote-desktop.service")) {
     return false;
   }
 
-  auto daemon_controller = DaemonController::Create();
-  base::RunLoop run_loop;
-  DaemonController::AsyncResult result = DaemonController::RESULT_FAILED;
-  std::cout << "Starting single-process host.\n";
-  // Note: the `consent` parameter is not used in Linux, and the
-  // `usage_stats_consent` value in the host config is used instead.
-  daemon_controller->SetConfigAndStart(
-      host_config->Clone(), /*consent=*/true,
-      base::BindOnce(&OnDaemonControllerDone, &result, run_loop.QuitClosure()));
-  run_loop.Run();
-
-  if (result != DaemonController::RESULT_OK) {
+  if (!EnableAndStartService("chrome-remote-desktop@" + user_info.username +
+                             ".service")) {
     std::cerr << "Failed to start single-process host.\n";
     return false;
   }
@@ -491,8 +486,7 @@ bool MigrateToSingleProcess(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(kKeepConfigSwitch)) {
     std::cout << "Keeping multi-process host state as requested.\n";
   } else {
-    std::cout << "Elevating to clean up multi-process host state.\n";
-    if (!RunWithSudo({"--" + std::string(kCleanupMultiProcessConfigSwitch)})) {
+    if (!CleanupMultiProcessConfigAsRoot()) {
       std::cerr << "Failed to clean up multi-process host state.\n";
       return false;
     }
@@ -514,31 +508,18 @@ int MigrateHostMain(int argc, char** argv) {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  if (command_line.HasSwitch(kGetMultiProcessConfigSwitch)) {
-    if (getuid() != 0) {
-      std::cerr << "--" << kGetMultiProcessConfigSwitch
-                << " must be run as root.\n";
-      return -1;
-    }
-    return GetMultiProcessConfigAsRoot() ? 0 : -1;
-  }
-
-  if (command_line.HasSwitch(kCleanupMultiProcessConfigSwitch)) {
-    if (getuid() != 0) {
-      std::cerr << "--" << kCleanupMultiProcessConfigSwitch
-                << " must be run as root.\n";
-      return -1;
-    }
-    return CleanupMultiProcessConfigAsRoot() ? 0 : -1;
-  }
-
   if (command_line.HasSwitch(kSaveMultiProcessPairingsSwitch)) {
     return SaveMultiProcessPairingsAsNetworkUser() ? 0 : -1;
   }
 
+  if (command_line.HasSwitch(kSaveSingleProcessStateSwitch)) {
+    return SaveSingleProcessStateAsUser() ? 0 : -1;
+  }
+
   const base::CommandLine::StringVector& args = command_line.GetArgs();
   if (args.empty()) {
-    std::cerr << "Usage: migrate_host <host_type> [--keep-config]\n\n";
+    std::cerr << "Usage: migrate_host <host_type> [--user-name=<username>] "
+                 "[--keep-config]\n\n";
     // Internal switches are not documented here.
     HostType::PrintHostTypeHelp();
     return -1;
@@ -552,37 +533,61 @@ int MigrateHostMain(int argc, char** argv) {
     return -1;
   }
 
-  // Skip the state check when run as root and --user-name is set. This only
-  // happens when the process is elevated from the user process and the state
-  // check has already been performed. The state check won't work for root
-  // because the single-process host is not run as root.
-  if (getuid() != 0 || !command_line.HasSwitch(kUserNameSwitch)) {
-    scoped_refptr<DaemonController> daemon_controller =
-        DaemonController::Create();
+  if (getuid() != 0) {
+    std::string user_name = command_line.GetSwitchValueASCII(kUserNameSwitch);
+    if (user_name.empty()) {
+      user_name = GetUsername();
+    }
 
-    if (daemon_controller->GetState() != DaemonController::STATE_STARTED) {
-      std::cerr << "Host migration can only be performed when the host is "
-                   "already started.\n";
+    base::CommandLine sudo_command_line(base::CommandLine::NO_PROGRAM);
+    std::vector<std::string> full_args{
+        "/usr/bin/sudo",
+        "-k",
+        "--",
+        command_line.GetProgram().value(),
+        host_type_str,
+        base::StringPrintf("--%s=%s", kUserNameSwitch, user_name.c_str())};
+
+    if (command_line.HasSwitch(kKeepConfigSwitch)) {
+      full_args.push_back(base::StringPrintf("--%s", kKeepConfigSwitch));
+    }
+
+    sudo_command_line.InitFromArgv(full_args);
+
+    base::LaunchOptions options;
+    options.allow_new_privs = true;
+
+    int exit_code = -1;
+    auto process = base::LaunchProcess(sudo_command_line, options);
+    if (!process.IsValid() || !process.WaitForExit(&exit_code)) {
+      std::cerr << "Failed to launch elevated migrate_host process.\n";
       return -1;
     }
 
-    bool is_multi_process = daemon_controller->is_multi_process();
-    if (is_multi_process == target_host_type->is_multi_process()) {
-      // We will add more multi-process host types, but for now there is nothing
-      // to do.
-      std::cout << "Host is already "
-                << (is_multi_process ? "multi-process" : "single-process")
-                << ". Nothing to do.\n";
-      return 0;
-    }
+    return exit_code;
+  }
+
+  // Code below is run as root.
+  std::string user_name = command_line.GetSwitchValueASCII(kUserNameSwitch);
+  if (user_name.empty()) {
+    std::cerr << "--" << kUserNameSwitch
+              << " must be provided when run as root.\n";
+    return -1;
+  }
+
+  auto user_info = GetPasswdUserInfo(user_name);
+  if (!user_info.has_value()) {
+    std::cerr << "Failed to look up user: " << user_name << ": "
+              << user_info.error() << "\n";
+    return -1;
   }
 
   bool success = false;
   DaemonController::SetHostType(target_host_type);
   if (target_host_type->is_multi_process()) {
-    success = MigrateToMultiProcess(command_line);
+    success = MigrateToMultiProcess(command_line, *user_info);
   } else {
-    success = MigrateToSingleProcess(command_line);
+    success = MigrateToSingleProcess(command_line, *user_info);
   }
 
   return success ? 0 : -1;
