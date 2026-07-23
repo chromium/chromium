@@ -1627,6 +1627,9 @@ void Request::RedirectTo(const GURL& idp_config_url,
   params.initiator_frame_token = render_frame_host().GetFrameToken();
   params.initiator_process_id = render_frame_host().GetProcess()->GetID();
   params.initiator_origin = origin();
+  params.initiator_navigation_state =
+      RenderFrameHostImpl::From(&render_frame_host())
+          ->CreateInitiatorStateFromCurrentFrame();
   params.source_site_instance = render_frame_host().GetSiteInstance();
   params.referrer =
       Referrer(intercepted_url_, network::mojom::ReferrerPolicy::kDefault);
