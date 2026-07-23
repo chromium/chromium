@@ -1079,12 +1079,7 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAiWalletPrivatePasses};
   // Simulate that the can_use_model_execution_features() capability is false.
-  signin::IdentityManager* identity_manager = client().GetIdentityManager();
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  AccountCapabilitiesTestMutator(&account_info)
-      .set_can_use_model_execution_features(false);
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  client().SetCanUseModelExecutionFeatures(false);
   // Expect that Wallet imports for public passes are allowed.
   EXPECT_TRUE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
@@ -1102,12 +1097,7 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
       /*disabled_features=*/{});
   // Simulate that the supports_wallet_private_passes_in_autofill() capability
   // is false.
-  signin::IdentityManager* identity_manager = client().GetIdentityManager();
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  AccountCapabilitiesTestMutator(&account_info)
-      .set_supports_wallet_private_passes_in_autofill(false);
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  client().SetSupportsWalletPrivatePassesInAutofill(false);
   // Expect that Wallet imports for public passes are allowed.
   EXPECT_TRUE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));

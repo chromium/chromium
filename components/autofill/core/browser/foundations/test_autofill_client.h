@@ -666,6 +666,7 @@ class TestAutofillClientTemplate : public T {
     identity_test_environment().MakePrimaryAccountAvailable(
         "foo@gmail.com", signin::ConsentLevel::kSignin);
     SetCanUseModelExecutionFeatures(true);
+    SetSupportsWalletPrivatePassesInAutofill(true);
     SetVariationConfigCountryCode(GeoIpCountryCode("US"));
     return SetAutofillAiOptInStatus(*this, AutofillAiOptInStatus::kOptedIn);
   }
@@ -679,6 +680,18 @@ class TestAutofillClientTemplate : public T {
     CHECK(!account_info.account_id.empty());
     AccountCapabilitiesTestMutator(&account_info)
         .set_can_use_model_execution_features(can_use_model_execution);
+    signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
+  }
+
+  // Updates whether the currently signed in primary account has the Wallet
+  // private passes capability enabled.
+  void SetSupportsWalletPrivatePassesInAutofill(bool supported) {
+    AccountInfo account_info = GetIdentityManager()->FindExtendedAccountInfo(
+        GetIdentityManager()->GetPrimaryAccountInfo(
+            signin::ConsentLevel::kSignin));
+    CHECK(!account_info.account_id.empty());
+    AccountCapabilitiesTestMutator(&account_info)
+        .set_supports_wallet_private_passes_in_autofill(supported);
     signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);
   }
 
