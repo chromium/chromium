@@ -11,10 +11,8 @@
 @protocol BrowserProvider;
 class ProfileIOS;
 
-// Test double for SceneState, created with appropriate interface objects backed
-// by a browser. No incognito interface is created by default.
-// Any test using objects of this class must include a TaskEnvironment member
-// because of the embedded test profile.
+// Test double for SceneState that create a regular and an incognito Browsers
+// and connect them to be accessible via the BrowserProviderInterface.
 @interface FakeSceneState : SceneState
 
 // Designated initializer.
