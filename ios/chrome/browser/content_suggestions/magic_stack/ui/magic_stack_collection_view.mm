@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_config.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 namespace {
@@ -109,6 +110,12 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 
 - (void)reset {
   [self populateWithPlaceholders];
+}
+
+- (void)updateCollectionViewLayout:(UICollectionViewLayout*)layout {
+  // Trigger view loading if not yet loaded.
+  [self loadViewIfNeeded];
+  _collectionView.collectionViewLayout = layout;
 }
 
 #pragma mark - MagicStackConsumer
@@ -409,7 +416,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   [snapshot appendSectionsWithIdentifiers:@[ kMagicStackSectionIdentifier ]];
   [snapshot appendItemsWithIdentifiers:items
              intoSectionWithIdentifier:kMagicStackSectionIdentifier];
-  if (!isPlaceholder) {
+  if (!isPlaceholder && !IsNTPRedesignEnabled()) {
     [snapshot
         appendSectionsWithIdentifiers:@[ kMagicStackEditSectionIdentifier ]];
     [snapshot appendItemsWithIdentifiers:@[ [[EditButtonConfig alloc] init] ]
@@ -463,6 +470,9 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 // or right aligned depending on whether the module is first, in the middle, or
 // last.
 - (CGFloat)peekOffsetForMagicStackPage:(NSInteger)page {
+  if (IsNTPRedesignEnabled()) {
+    return 0;
+  }
   NSInteger numberOfItems = [self.diffableDataSource.snapshot
       numberOfItemsInSection:kMagicStackSectionIdentifier];
 

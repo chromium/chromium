@@ -50,6 +50,9 @@
 // The Most Visited Tiles (MVTs) view controller.
 @property(nonatomic, strong) UIViewController* mostVisitedViewController;
 
+// The Magic Stack view controller.
+@property(nonatomic, strong) UIViewController* magicStackViewController;
+
 // Sets the feed view controller to embed in the redesign bottom sheet.
 - (void)setFeedViewController:(UIViewController*)feedViewController;
 

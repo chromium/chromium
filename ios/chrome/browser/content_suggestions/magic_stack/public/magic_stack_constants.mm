@@ -24,6 +24,8 @@ const int kMaxTextSizeForStyleFootnote = 24;
 const NSDirectionalEdgeInsets kMagicStackContainerInsets = {
     kContentTopInset, kContentHorizontalInset, 0, kContentHorizontalInset};
 
+const CGFloat kMagicStackHeight = 140.0f;
+
 const CGFloat kMagicStackSpacing = 12.0f;
 
 const CGFloat kMagicStackPeekInset = kMagicStackSpacing + 10;

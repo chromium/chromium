@@ -17,6 +17,9 @@ extern const int kMaxTextSizeForStyleFootnote;
 // The insets of the magic stack module container.
 extern const NSDirectionalEdgeInsets kMagicStackContainerInsets;
 
+// The height of the Magic Stack module collection view container.
+extern const CGFloat kMagicStackHeight;
+
 // The spacing between modules in the Magic Stack.
 extern const CGFloat kMagicStackSpacing;
 

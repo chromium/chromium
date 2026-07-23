@@ -159,6 +159,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/composebox/menu/coordinator",
     "//ios/chrome/browser/content_suggestions/coordinator",
     "//ios/chrome/browser/content_suggestions/coordinator:public",
+    "//ios/chrome/browser/content_suggestions/magic_stack/ui",
     "//ios/chrome/browser/content_suggestions/ui:ui_util",
     "//ios/chrome/browser/context_menu/ui_bundled/link_preview",
     "//ios/chrome/browser/discover_feed/model",

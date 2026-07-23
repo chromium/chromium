@@ -6,6 +6,8 @@
 
 #import <cmath>
 
+#import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/scroll_delegate_proxy.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -19,6 +21,7 @@ typedef NS_ENUM(NSInteger, BottomSheetSnappingState) {
 
 // Spacing/margin constants for content container.
 constexpr CGFloat kContentContainerTopMargin = 16.0;
+constexpr CGFloat kMagicStackToFeedSpacing = 16.0;
 
 // Minimum drag velocity required to trigger a state transition.
 constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
@@ -32,6 +35,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
 @implementation NewTabPageBottomSheetViewController {
   UIView* _dragHandle;
+  UIView* _magicStackContainerView;
   UIView* _contentContainerView;
   NSLayoutConstraint* _contentContainerTopConstraint;
   BottomSheetSnappingState _sheetState;
@@ -77,6 +81,23 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
     [_dragHandle.heightAnchor constraintEqualToConstant:5],
   ]];
 
+  // Add magic stack container view.
+  _magicStackContainerView = [[UIView alloc] init];
+  _magicStackContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  [visualEffectView.contentView addSubview:_magicStackContainerView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_magicStackContainerView.leadingAnchor
+        constraintEqualToAnchor:visualEffectView.contentView.leadingAnchor],
+    [_magicStackContainerView.trailingAnchor
+        constraintEqualToAnchor:visualEffectView.contentView.trailingAnchor],
+    [_magicStackContainerView.topAnchor
+        constraintEqualToAnchor:_dragHandle.bottomAnchor
+                       constant:kContentContainerTopMargin],
+    [_magicStackContainerView.heightAnchor
+        constraintEqualToConstant:kMagicStackHeight],
+  ]];
+
   // Add content container view.
   _contentContainerView = [[UIView alloc] init];
   _contentContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -102,6 +123,13 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
                                               action:@selector(handlePan:)];
   _sheetPanGesture.delegate = self;
   [self.view addGestureRecognizer:_sheetPanGesture];
+
+  [self updateContentContainerInsetForOffset:
+            [self targetOffsetForState:_sheetState]];
+
+  if (_magicStackViewController) {
+    [self embedMagicStackViewController];
+  }
 
   if (_feedViewController) {
     [self embedFeedViewController];
@@ -131,6 +159,7 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   _scrollProxy = nil;
   self.delegate = nil;
   self.feedViewController = nil;
+  self.magicStackViewController = nil;
 }
 
 #pragma mark - Action Targets
@@ -211,6 +240,41 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
 
   _feedViewController.view.hidden = NO;
   [self updateFeedScrollViewReference];
+}
+
+- (void)setMagicStackViewController:
+    (UIViewController*)magicStackViewController {
+  if (_magicStackViewController == magicStackViewController) {
+    return;
+  }
+  if (_magicStackViewController) {
+    [_magicStackViewController willMoveToParentViewController:nil];
+    [_magicStackViewController.view removeFromSuperview];
+    [_magicStackViewController removeFromParentViewController];
+  }
+  _magicStackViewController = magicStackViewController;
+  if (self.isViewLoaded && _magicStackViewController) {
+    [self embedMagicStackViewController];
+  }
+}
+
+- (void)embedMagicStackViewController {
+  if (!_magicStackViewController || !_magicStackContainerView) {
+    return;
+  }
+  if (_magicStackViewController.parentViewController == self) {
+    return;
+  }
+  if (_magicStackViewController.parentViewController) {
+    [_magicStackViewController willMoveToParentViewController:nil];
+    [_magicStackViewController.view removeFromSuperview];
+    [_magicStackViewController removeFromParentViewController];
+  }
+  [self addChildViewController:_magicStackViewController];
+  _magicStackViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [_magicStackContainerView addSubview:_magicStackViewController.view];
+  AddSameConstraints(_magicStackViewController.view, _magicStackContainerView);
+  [_magicStackViewController didMoveToParentViewController:self];
 }
 
 #pragma mark - Snapping Offsets
@@ -357,16 +421,20 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
   CGFloat resting = [self restingOffset];
   if (resting <= expanded) {
     _contentContainerTopConstraint.constant = kContentContainerTopMargin;
+    _magicStackContainerView.alpha = 1.0;
     return;
   }
   CGFloat progress = (topOffset - expanded) / (resting - expanded);
   progress = MIN(1.0, MAX(0.0, progress));
 
-  // When expanded (progress = 0.0), inset is 88.0.
-  // When resting/collapsed (progress = 1.0), inset is 16.0.
-  CGFloat extraPadding = 72.0;  // omniboxHeight (56) + spacing (16)
+  _magicStackContainerView.alpha = progress;
+
+  CGFloat expandedTopPadding =
+      content_suggestions::FakeOmniboxHeight() + kContentContainerTopMargin;
+  CGFloat restingTopPadding = kMagicStackHeight + kMagicStackToFeedSpacing;
+
   _contentContainerTopConstraint.constant =
-      kContentContainerTopMargin + (1.0 - progress) * extraPadding;
+      progress * restingTopPadding + (1.0 - progress) * expandedTopPadding;
 }
 
 - (void)handlePan:(UIPanGestureRecognizer*)gesture {
@@ -402,6 +470,11 @@ constexpr CGFloat kMinimumDragVelocityToChangeState = 250.0;
     targetConstant = minOffset;
   } else if (targetConstant > maxOffset) {
     targetConstant = maxOffset;
+  }
+
+  if (targetConstant > minOffset && _feedScrollView &&
+      _feedScrollView.contentOffset.y > 0) {
+    [_feedScrollView setContentOffset:CGPointZero animated:NO];
   }
 
   _bottomSheetTopConstraint.constant = targetConstant;

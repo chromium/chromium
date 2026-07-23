@@ -27,6 +27,9 @@ typedef UICollectionViewDiffableDataSource<NSString*, MagicStackModule*>
 // Called when the module width has changed.
 - (void)moduleWidthDidUpdate;
 
+// Sets a custom collection view layout on the collection view.
+- (void)updateCollectionViewLayout:(UICollectionViewLayout*)layout;
+
 // Resets the Magic Stack.
 - (void)reset;
 

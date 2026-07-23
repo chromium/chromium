@@ -12,6 +12,8 @@ source_set("ui") {
     "magic_stack_custom_layout.mm",
     "magic_stack_layout_configurator.h",
     "magic_stack_layout_configurator.mm",
+    "magic_stack_smart_stack_layout.h",
+    "magic_stack_smart_stack_layout.mm",
     "placeholder_config.h",
     "placeholder_config.mm",
   ]
@@ -27,7 +29,9 @@ source_set("ui") {
     "//ios/chrome/browser/content_suggestions/shop_card/ui",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/ntp/ui_bundled:theme",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
   ]
   frameworks = [ "UIKit.framework" ]

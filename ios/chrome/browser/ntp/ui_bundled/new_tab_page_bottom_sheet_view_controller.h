@@ -38,6 +38,9 @@
 // The feed view controller embedded under the "Read" tab.
 @property(nonatomic, strong) UIViewController* feedViewController;
 
+// The magic stack view controller.
+@property(nonatomic, strong) UIViewController* magicStackViewController;
+
 // Clears state and delegates.
 - (void)invalidate;
 
