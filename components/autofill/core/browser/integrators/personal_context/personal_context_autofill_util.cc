@@ -53,15 +53,15 @@ bool ShouldShowPersonalContextAutofillSetting(
       subscription_service, eligibility_service->GetEligibilityState(),
       AutofillAiAction::kShowAmbientAutofillInSettings);
 
-  const bool at_memory_enabled =
-      MayPerformAtMemoryAction(AtMemoryAction::kShowAtMemoryInSettings,
-                               eligibility_service, subscription_service, prefs,
+  const bool at_memory_enabled = MayPerformAtMemoryActionBase(
+      AtMemoryAction::kShowAtMemoryInSettings, eligibility_service,
+      subscription_service, prefs,
 #if !BUILDFLAG(IS_FUCHSIA)
-                               google_groups_manager,
+      google_groups_manager,
 #else
-                               /*google_groups_manager=*/nullptr,
+      /*google_groups_manager=*/nullptr,
 #endif
-                               /*decider=*/nullptr, /*url=*/std::nullopt);
+      /*decider=*/nullptr);
 
   return ambient_autofill_enabled || at_memory_enabled;
 }

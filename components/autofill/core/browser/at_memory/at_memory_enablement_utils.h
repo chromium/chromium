@@ -7,8 +7,15 @@
 
 #include <string>
 
+#include "base/containers/span.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
+#include "base/memory/stack_allocated.h"
 #include "base/types/optional_ref.h"
+#include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 
 class GoogleGroupsManager;
 class GURL;
@@ -45,11 +52,40 @@ enum class AtMemoryAction {
   kShowIph,
   // Show the AtMemory button in the Autocomplete dialog.
   kShowAutocompleteAtMemoryButton,
+  // Retrieve/Fill Payments data.
+  kRetrievePaymentsForFilling,
+  // Retrieve/Fill Contact Info data.
+  kRetrieveContactInfoForFilling,
+  // Retrieve/Fill Identity Docs data.
+  kRetrieveIdentityDocsForFilling,
+  // Retrieve/Fill Travel data.
+  kRetrieveTravelDataForFilling,
+  // Retrieve/Fill Shopping data.
+  kRetrieveShoppingDataForFilling,
 };
 // LINT.ThenChange(/chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.cc:AtMemoryAction,
 // /components/autofill/core/browser/autofill_and_password_manager_internals/autofill_and_password_manager_internals.ts:AtMemoryAction)
 
+// Parameters used specifically for evaluating actions that retrieve AtMemory
+// data for filling (e.g. `AtMemoryAction::kRetrievePaymentsForFilling`).
+struct RetrieveForFillingParams {
+  STACK_ALLOCATED();
+
+ public:
+  bool is_spii = false;
+  base::span<const MemoryEntrySource> sources;
+  bool is_context_secure = false;
+};
+
 class AutofillOptimizationGuideDecider;
+
+// Returns true if the action retrieves data for filling.
+[[nodiscard]] bool IsRetrieveForFillingAction(AtMemoryAction action);
+
+// Translates an entry type from the accessibility annotator to an
+// Autofill-specific AtMemoryAction for retrieving data for filling.
+std::optional<AtMemoryAction> ToAtMemoryRetrieveForFillingAction(
+    accessibility_annotator::MemoryDataType type);
 
 // Returns whether all permission-related requirements are met for `action`.
 //
@@ -60,9 +96,20 @@ class AutofillOptimizationGuideDecider;
     AtMemoryAction action,
     const AutofillClient& client,
     base::optional_ref<const GURL> url = std::nullopt,
+    base::optional_ref<const RetrieveForFillingParams> retrieve_params =
+        std::nullopt,
     std::string* debug_message = nullptr);
 
-[[nodiscard]] bool MayPerformAtMemoryAction(
+// Returns whether the base permission-related requirements are met for
+// `action`.
+//
+// Note: For retrieve-for-filling actions, specific security/policy checks (e.g.
+// SPII device reauth or Enterprise policy constraints) are ONLY evaluated by
+// `MayPerformAtMemoryAction` above. This base function only verifies core
+// eligibility (feature flags, preferences, etc).
+// TODO(crbug.com/503254452) Figure out how these 2 functions should be named
+// and work together.
+[[nodiscard]] bool MayPerformAtMemoryActionBase(
     AtMemoryAction action,
     personal_context::PersonalContextEligibilityService*
         personal_context_service,

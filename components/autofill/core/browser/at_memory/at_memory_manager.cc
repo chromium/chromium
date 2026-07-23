@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
+#include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/at_memory/at_memory_utils.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -51,10 +52,12 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/personal_context/core/personal_context_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -666,6 +669,23 @@ std::vector<EntryMetadata> GetMetadataFromSuggestion(
   return metadata;
 }
 
+bool ShouldEraseMemorySearchResult(accessibility_annotator::MemoryDataType type,
+                                   base::span<const MemoryEntrySource> sources,
+                                   AutofillClient& client,
+                                   bool is_context_secure) {
+  std::optional<AtMemoryAction> action =
+      ToAtMemoryRetrieveForFillingAction(type);
+  if (!action) {
+    return false;
+  }
+  return !MayPerformAtMemoryAction(
+      *action, client,
+      /*url=*/std::nullopt,
+      RetrieveForFillingParams{.is_spii = IsSpiiMemoryDataType(type),
+                               .sources = sources,
+                               .is_context_secure = is_context_secure});
+}
+
 }  // namespace
 
 AtMemoryManager::AtMemoryManager(BrowserAutofillManager* manager)
@@ -1113,22 +1133,6 @@ void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
     return;
   }
 
-  // If the context is insecure or the device doesn't support OS reauth, filter
-  // out any SPII entries and metadata from the results.
-  if (!is_context_secure_ ||
-      (!owner_->client().SupportsDeviceReauth() &&
-       !base::FeatureList::IsEnabled(
-           features::debug::kAtMemoryNoDeviceReauthCheck))) {
-    std::erase_if(result.entries, [](const MemorySearchResult& entry) {
-      return IsSpiiMemoryDataType(entry.type);
-    });
-    for (MemorySearchResult& entry : result.entries) {
-      std::erase_if(entry.metadata_list, [](const EntryMetadata& metadata) {
-        return IsSpiiMemoryDataType(metadata.type);
-      });
-    }
-  }
-
   bool expecting_more_data =
       result.status == MemorySearchStatus::kPartialResponseSuccess;
   if (!expecting_more_data) {
@@ -1139,11 +1143,25 @@ void AtMemoryManager::OnSearchResultsReceived(const std::u16string& query,
     at_memory_metrics_recorder_->OnQueryResponseReceived(result);
   }
 
-  // If there are results, just return the results as-is.
   if (!result.entries.empty()) {
-    SendSuggestions(
-        base::ToVector(result.entries, TransformResultIntoSuggestion));
-    return;
+    std::erase_if(result.entries, [this](const MemorySearchResult& entry) {
+      return ShouldEraseMemorySearchResult(
+          entry.type, entry.sources, owner_->client(), is_context_secure_);
+    });
+    for (MemorySearchResult& entry : result.entries) {
+      std::erase_if(entry.metadata_list, [this, &entry](
+                                             const EntryMetadata& metadata) {
+        return ShouldEraseMemorySearchResult(
+            metadata.type, entry.sources, owner_->client(), is_context_secure_);
+      });
+    }
+
+    if (!result.entries.empty()) {
+      // If there are remaining results after filtering, return them.
+      SendSuggestions(
+          base::ToVector(result.entries, TransformResultIntoSuggestion));
+      return;
+    }
   }
 
   // When search returns no entries, show the appropriate special

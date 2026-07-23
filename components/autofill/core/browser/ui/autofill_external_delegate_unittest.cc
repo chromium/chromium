@@ -97,6 +97,10 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/personal_context/core/mock_personal_context_eligibility_service.h"
+#include "components/personal_context/core/personal_context_prefs.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -284,6 +288,13 @@ class MockAutofillClient : public TestAutofillClient {
               (),
               (override));
 
+  // `IsAutofillTypeBlockedByPolicy` is needed in the mock because it is called
+  // by `MayPerformAtMemoryAction` to evaluate enablement.
+  MOCK_METHOD(bool,
+              IsAutofillTypeBlockedByPolicy,
+              (const GURL&, AutofillClient::AutofillPolicyDataCategory),
+              (const, override));
+
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
               (std::string),
@@ -385,9 +396,32 @@ class AutofillExternalDelegateTest : public testing::Test,
                                          NiceMock<MockAutofillDriver>,
                                          NiceMock<MockBrowserAutofillManager>,
                                          MockPaymentsAutofillClient> {
+ public:
+  AutofillExternalDelegateTest() {
+    scoped_feature_list_.InitWithFeatures({features::kAutofillAtMemory}, {});
+  }
+
  protected:
   void SetUp() override {
     InitAutofillClient();
+    mock_personal_context_service_ = std::make_unique<testing::NiceMock<
+        personal_context::MockPersonalContextEligibilityService>>();
+    ON_CALL(*mock_personal_context_service_, GetEligibilityState())
+        .WillByDefault(testing::Return(
+            personal_context::PersonalContextEligibilityState::kEligible));
+    autofill_client().set_personal_context_eligibility_service(
+        mock_personal_context_service_.get());
+    autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
+        optimization_guide::prefs::kGeminiSettings,
+        std::to_underlying(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+    autofill_client().GetPrefs()->SetBoolean(
+        personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+        true);
+    autofill_client().GetPrefs()->SetInteger(
+        optimization_guide::prefs::kGeminiSettings,
+        std::to_underlying(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
     autofill_client().set_entity_data_manager(
         std::make_unique<EntityDataManager>(
             autofill_client().GetPrefs(),
@@ -400,6 +434,8 @@ class AutofillExternalDelegateTest : public testing::Test,
             /*variation_country_code=*/GeoIpCountryCode("US")));
     CreateAutofillDriver();
   }
+
+  void TearDown() override { DestroyAutofillClient(); }
 
   // Issue an OnQuery call.
   void IssueOnQuery(FormData form_data,
@@ -577,6 +613,11 @@ class AutofillExternalDelegateTest : public testing::Test,
 
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<testing::NiceMock<
+      personal_context::MockPersonalContextEligibilityService>>
+      mock_personal_context_service_;
 
   // Form containing the triggering field that initialized the external delegate
   // `OnQuery`.
@@ -2990,6 +3031,9 @@ class AutofillExternalDelegateWithWalletPrivatePassesTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<testing::NiceMock<
+      personal_context::MockPersonalContextEligibilityService>>
+      mock_personal_context_service_;
 };
 
 // Tests that when accepting a `kFillAutofillAi` suggestion that would fill a
@@ -3194,6 +3238,9 @@ class AutofillExternalDelegateWithAmbientAutofillTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<testing::NiceMock<
+      personal_context::MockPersonalContextEligibilityService>>
+      mock_personal_context_service_;
   std::unique_ptr<MockAutofillAiPersonalContextAccessManager>
       personal_context_manager_;
 };

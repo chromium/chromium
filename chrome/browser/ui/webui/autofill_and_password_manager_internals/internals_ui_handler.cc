@@ -291,6 +291,16 @@ void InternalsUIHandler::CheckAtMemoryPermissions(const base::ListValue& args) {
     action = AtMemoryAction::kShowIph;
   } else if (action_str == "kShowAutocompleteAtMemoryButton") {
     action = AtMemoryAction::kShowAutocompleteAtMemoryButton;
+  } else if (action_str == "kRetrievePaymentsForFilling") {
+    action = AtMemoryAction::kRetrievePaymentsForFilling;
+  } else if (action_str == "kRetrieveContactInfoForFilling") {
+    action = AtMemoryAction::kRetrieveContactInfoForFilling;
+  } else if (action_str == "kRetrieveIdentityDocsForFilling") {
+    action = AtMemoryAction::kRetrieveIdentityDocsForFilling;
+  } else if (action_str == "kRetrieveTravelDataForFilling") {
+    action = AtMemoryAction::kRetrieveTravelDataForFilling;
+  } else if (action_str == "kRetrieveShoppingDataForFilling") {
+    action = AtMemoryAction::kRetrieveShoppingDataForFilling;
   }
   // LINT.ThenChange(/components/autofill/core/browser/at_memory/at_memory_enablement_utils.h:AtMemoryAction)
   if (!action.has_value()) {
@@ -305,12 +315,21 @@ void InternalsUIHandler::CheckAtMemoryPermissions(const base::ListValue& args) {
     }
   }
 
+  ContentAutofillClient& client = CHECK_DEREF(
+      ContentAutofillClient::FromWebContents(web_ui()->GetWebContents()));
   std::string debug_message;
+  const auto sources =
+      std::to_array({MemoryEntrySource{MemoryEntrySourceType::kAutofill}});
+  std::optional<RetrieveForFillingParams> retrieve_params;
+  if (IsRetrieveForFillingAction(*action)) {
+    retrieve_params =
+        RetrieveForFillingParams{.is_spii = false,
+                                 .sources = sources,
+                                 .is_context_secure = client.IsContextSecure()};
+  }
+
   const bool may_perform = MayPerformAtMemoryAction(
-      *action,
-      CHECK_DEREF(
-          ContentAutofillClient::FromWebContents(web_ui()->GetWebContents())),
-      url, &debug_message);
+      *action, client, url, retrieve_params, &debug_message);
   FireWebUIListener(
       "on-at-memory-permission-check-done",
       base::Value(may_perform

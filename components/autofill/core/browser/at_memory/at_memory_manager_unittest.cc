@@ -50,6 +50,11 @@
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/optimization_guide/core/optimization_guide_prefs.h"
+#include "components/personal_context/core/mock_personal_context_eligibility_service.h"
+#include "components/personal_context/core/personal_context_prefs.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -98,6 +103,20 @@ class MockAutofillClient : public TestAutofillClient {
               HideSuggestions,
               (SuggestionHidingReason, std::optional<FillingProduct>),
               (override));
+
+  // Overridden to simulate policy-based blocking using profile preferences.
+  // This allows `AtMemoryManagerPolicyTest` and `AtMemoryManagerPrefTest`
+  // to toggle policy states without complex mock expectations.
+  bool IsAutofillTypeBlockedByPolicy(
+      const GURL& url,
+      AutofillClient::AutofillPolicyDataCategory category) const override {
+    if (category == AutofillClient::AutofillPolicyDataCategory::kPayments) {
+      if (!GetPrefs()->GetBoolean(prefs::kAutofillCreditCardEnabled)) {
+        return true;
+      }
+    }
+    return TestAutofillClient::IsAutofillTypeBlockedByPolicy(url, category);
+  }
 };
 
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
@@ -137,8 +156,30 @@ class AtMemoryManagerTest : public Test,
                                 TestAutofillDriver,
                                 NiceMock<MockBrowserAutofillManager>> {
  public:
+  AtMemoryManagerTest() {
+    feature_list_.InitWithFeatures({features::kAutofillAtMemory}, {});
+  }
+
   void SetUp() override {
     InitAutofillClient();
+    mock_personal_context_service_ = std::make_unique<testing::NiceMock<
+        personal_context::MockPersonalContextEligibilityService>>();
+    ON_CALL(*mock_personal_context_service_, GetEligibilityState())
+        .WillByDefault(testing::Return(
+            personal_context::PersonalContextEligibilityState::kEligible));
+    autofill_client().set_personal_context_eligibility_service(
+        mock_personal_context_service_.get());
+    autofill_client().GetPrefs()->registry()->RegisterIntegerPref(
+        optimization_guide::prefs::kGeminiSettings,
+        static_cast<int>(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+    autofill_client().GetPrefs()->SetBoolean(
+        personal_context::prefs::kPersonalContextInAutofillSettingsToggleStatus,
+        true);
+    autofill_client().GetPrefs()->SetInteger(
+        optimization_guide::prefs::kGeminiSettings,
+        static_cast<int>(
+            optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
     auto mock_query_service =
         std::make_unique<NiceMock<MockAtMemoryQueryService>>();
     mock_query_service_ptr_ = mock_query_service.get();
@@ -216,12 +257,18 @@ class AtMemoryManagerTest : public Test,
       std::make_unique<EntityTable>()};
   base::MockCallback<AtMemoryManager::UpdateSuggestionsCallback>
       update_callback_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<testing::NiceMock<
+      personal_context::MockPersonalContextEligibilityService>>
+      mock_personal_context_service_;
 };
 
 // Matches a Suggestion of type `kAtMemorySearchResult` with the given
 // `memory_data_type` and matching children suggestions.
 Matcher<Suggestion> EqualsAtMemorySuggestion(
-    MemoryDataType memory_data_type,
+    accessibility_annotator::MemoryDataType memory_data_type,
     Matcher<std::vector<Suggestion>> children_matcher) {
   return AllOf(
       EqualsSuggestion(SuggestionType::kAtMemorySearchResult),
@@ -237,7 +284,7 @@ Matcher<Suggestion> EqualsAtMemorySuggestion(
 // `memory_data_type` and matching children suggestions.
 template <typename... Matchers>
 Matcher<Suggestion> EqualsSuggestionWithManageEnhancedAutofillFooter(
-    MemoryDataType memory_data_type,
+    accessibility_annotator::MemoryDataType memory_data_type,
     Matchers&&... matchers) {
   auto attribution_matcher = AllOf(
       EqualsSuggestion(
@@ -267,7 +314,7 @@ Matcher<Suggestion> EqualsSuggestionWithManageEnhancedAutofillFooter(
 // Matches a Suggestion with the given `memory_data_type` and a single footer
 // suggestion to manage address settings.
 Matcher<Suggestion> EqualsSuggestionWithManageAddressFooter(
-    MemoryDataType memory_data_type) {
+    accessibility_annotator::MemoryDataType memory_data_type) {
   return EqualsAtMemorySuggestion(
       memory_data_type,
       ElementsAre(EqualsSuggestion(SuggestionType::kManageAddress)));
@@ -428,8 +475,8 @@ TEST_F(AtMemoryManagerTest,
 
   // Simulate search results returning from the query service.
   std::vector<MemorySearchResult> entries;
-  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
-                       u"Full Address");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kAddressFull,
+                       u"Address", u"Full Address");
   MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
                               std::move(entries));
 
@@ -458,7 +505,8 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  entries.emplace_back(MemoryDataType::kUnknown, u"", u"Some Value");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kUnknown, u"",
+                       u"Some Value");
 
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kFinalResponseSuccess,
@@ -472,8 +520,9 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_SchemalessResultHasEmptyLabels) {
   EXPECT_TRUE(final_suggestions[0].labels.empty());
 }
 
-// Tests that when a search result has `MemoryDataType::kUnknown`, the generated
-// suggestion uses the entry's type name for the label.
+// Tests that when a search result has
+// `accessibility_annotator::MemoryDataType::kUnknown`, the generated suggestion
+// uses the entry's type name for the label.
 TEST_F(AtMemoryManagerTest,
        OnSearchSubmitted_UnknownTypeWithTypeName_UsesTypeNameInLabel) {
   auto [form_id, field_id] = SeeForm();
@@ -485,7 +534,8 @@ TEST_F(AtMemoryManagerTest,
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  entries.emplace_back(MemoryDataType::kUnknown, u"Custom Type", u"Some Value");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kUnknown,
+                       u"Custom Type", u"Some Value");
 
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kFinalResponseSuccess,
@@ -514,8 +564,9 @@ TEST_F(AtMemoryManagerTest,
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
-                           u"Full Address");
+  MemorySearchResult entry(
+      accessibility_annotator::MemoryDataType::kAddressFull, u"Address",
+      u"Full Address");
   entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
   entries.push_back(std::move(entry));
 
@@ -527,7 +578,7 @@ TEST_F(AtMemoryManagerTest,
 
   EXPECT_THAT(final_suggestions,
               ElementsAre(EqualsSuggestionWithManageAddressFooter(
-                  MemoryDataType::kAddressFull)));
+                  accessibility_annotator::MemoryDataType::kAddressFull)));
 }
 
 TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
@@ -543,8 +594,9 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  MemorySearchResult entry(MemoryDataType::kFlightReservationFull, u"Label",
-                           u"Value");
+  MemorySearchResult entry(
+      accessibility_annotator::MemoryDataType::kFlightReservationFull, u"Label",
+      u"Value");
   entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
   entries.push_back(std::move(entry));
 
@@ -557,7 +609,7 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
   EXPECT_THAT(
       final_suggestions,
       ElementsAre(EqualsAtMemorySuggestion(
-          MemoryDataType::kFlightReservationFull,
+          accessibility_annotator::MemoryDataType::kFlightReservationFull,
           ElementsAre(EqualsSuggestion(
               SuggestionType::kManageAutofillAiTravel,
               l10n_util::GetStringUTF16(
@@ -576,7 +628,8 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Unknown_NoFooter) {
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  MemorySearchResult entry(MemoryDataType::kUnknown, u"Label", u"Value");
+  MemorySearchResult entry(accessibility_annotator::MemoryDataType::kUnknown,
+                           u"Label", u"Value");
   entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
   entries.push_back(std::move(entry));
 
@@ -586,8 +639,10 @@ TEST_F(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Unknown_NoFooter) {
 
   manager().OnSearchSubmitted(u"query");
 
-  EXPECT_THAT(final_suggestions, ElementsAre(EqualsAtMemorySuggestion(
-                                     MemoryDataType::kUnknown, IsEmpty())));
+  EXPECT_THAT(
+      final_suggestions,
+      ElementsAre(EqualsAtMemorySuggestion(
+          accessibility_annotator::MemoryDataType::kUnknown, IsEmpty())));
 }
 
 // Tests that Personal Context-sourced data (e.g. from Gmail) displays the
@@ -604,8 +659,9 @@ TEST_F(AtMemoryManagerTest,
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  MemorySearchResult entry(MemoryDataType::kAddressFull, u"Address",
-                           u"Full Address");
+  MemorySearchResult entry(
+      accessibility_annotator::MemoryDataType::kAddressFull, u"Address",
+      u"Full Address");
   entry.sources.emplace_back(MemoryEntrySourceType::kGmail);
   entries.push_back(std::move(entry));
 
@@ -617,7 +673,7 @@ TEST_F(AtMemoryManagerTest,
 
   EXPECT_THAT(final_suggestions,
               ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
-                  MemoryDataType::kAddressFull)));
+                  accessibility_annotator::MemoryDataType::kAddressFull)));
 }
 
 // Tests that data with no source defaults to displaying the Gemini attribution
@@ -634,8 +690,8 @@ TEST_F(
 
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
-                       u"Full Address");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kAddressFull,
+                       u"Address", u"Full Address");
 
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kFinalResponseSuccess,
@@ -645,7 +701,7 @@ TEST_F(
 
   EXPECT_THAT(final_suggestions,
               ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
-                  MemoryDataType::kAddressFull)));
+                  accessibility_annotator::MemoryDataType::kAddressFull)));
 }
 
 // Tests that when the user is offline, the manager displays the no connection
@@ -692,8 +748,9 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
-                             u"some text");
+    MemorySearchResult entry(
+        accessibility_annotator::MemoryDataType::kPassportNumber, u"Passport",
+        u"some text");
     entry.identifier = passport.guid().value();
     entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
     MockQueryResultsAndExpectCallback(u"query",
@@ -775,8 +832,9 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kPassportFull, u"Passport",
-                             u"some text");
+    MemorySearchResult entry(
+        accessibility_annotator::MemoryDataType::kPassportFull, u"Passport",
+        u"some text");
     entry.identifier = passport.guid().value();
     entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
     MockQueryResultsAndExpectCallback(u"query",
@@ -854,12 +912,14 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
-                             u"1234");
+    MemorySearchResult entry(
+        accessibility_annotator::MemoryDataType::kPassportNumber, u"Passport",
+        u"1234");
     entry.identifier = "personal-context-guid";
     entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
-    entry.metadata_list.emplace_back(MemoryDataType::kPassportExpirationDate,
-                                     u"Expiration Date", u"2030-01-01");
+    entry.metadata_list.emplace_back(
+        accessibility_annotator::MemoryDataType::kPassportExpirationDate,
+        u"Expiration Date", u"2030-01-01");
     MockQueryResultsAndExpectCallback(u"query",
                                       MemorySearchStatus::kFinalResponseSuccess,
                                       {entry}, final_suggestions);
@@ -999,8 +1059,9 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
-                             u"1234");
+    MemorySearchResult entry(
+        accessibility_annotator::MemoryDataType::kPassportNumber, u"Passport",
+        u"1234");
     entry.identifier = "personal-context-guid";
     entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
     MockQueryResultsAndExpectCallback(u"query",
@@ -1015,7 +1076,8 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_FetchFailed) {
           Ref(autofill_client()),
           GetAuthenticationMessage(
               autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-          Eq(u"1234"), MemoryDataType::kPassportNumber, _, _))
+          Eq(u"1234"), accessibility_annotator::MemoryDataType::kPassportNumber,
+          _, _))
       .WillOnce(RunOnceCallback<5>(base::unexpected(
           AtMemoryQueryService::SpiiRetrievalFailureReason::kFetchFailed)));
 
@@ -1049,8 +1111,9 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
-                             u"some text");
+    MemorySearchResult entry(
+        accessibility_annotator::MemoryDataType::kPassportNumber, u"Passport",
+        u"some text");
     entry.identifier = passport.guid().value();
     entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
     MockQueryResultsAndExpectCallback(u"query",
@@ -1130,8 +1193,9 @@ TEST_F(AtMemoryManagerTest, FillCreditCard_Success) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kCreditCardNumber, u"Card",
-                             u"some text");
+    MemorySearchResult entry(
+        accessibility_annotator::MemoryDataType::kCreditCardNumber, u"Card",
+        u"some text");
     entry.identifier = card.guid();
     entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
     MockQueryResultsAndExpectCallback(u"query",
@@ -1191,17 +1255,20 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
 
   std::vector<MemorySearchResult> entries;
   // Non-SPII entry.
-  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
-                       u"Full Address");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kAddressFull,
+                       u"Address", u"Full Address");
   // SPII entry.
-  entries.emplace_back(MemoryDataType::kPassportNumber, u"IBAN", u"1234");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kPassportNumber,
+                       u"IBAN", u"1234");
 
   // Non-SPII entry with mixed metadata.
-  MemorySearchResult mixed_entry(MemoryDataType::kPhone, u"Phone", u"123");
-  mixed_entry.metadata_list.emplace_back(MemoryDataType::kPhone, u"Phone meta",
-                                         u"123");
-  mixed_entry.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
-                                         u"IBAN meta", u"1234");
+  MemorySearchResult mixed_entry(
+      accessibility_annotator::MemoryDataType::kPhone, u"Phone", u"123");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kPhone, u"Phone meta", u"123");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kPassportNumber, u"IBAN meta",
+      u"1234");
   entries.push_back(std::move(mixed_entry));
 
   MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
@@ -1209,14 +1276,15 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
 
   search_callback.Run(std::move(results));
 
-  EXPECT_THAT(resulting_suggestions,
-              ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
-                              MemoryDataType::kAddressFull),
-                          EqualsSuggestionWithManageEnhancedAutofillFooter(
-                              MemoryDataType::kPhone,
-                              EqualsAtMemorySuggestion(
-                                  MemoryDataType::kPhone,
-                                  /*children_matcher=*/IsEmpty()))));
+  EXPECT_THAT(
+      resulting_suggestions,
+      ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
+                      accessibility_annotator::MemoryDataType::kAddressFull),
+                  EqualsSuggestionWithManageEnhancedAutofillFooter(
+                      accessibility_annotator::MemoryDataType::kPhone,
+                      EqualsAtMemorySuggestion(
+                          accessibility_annotator::MemoryDataType::kPhone,
+                          /*children_matcher=*/IsEmpty()))));
 }
 
 // Tests that SPII entries and metadata are filtered out from the search
@@ -1227,17 +1295,21 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
   // The search results delivered by the server.
   std::vector<MemorySearchResult> entries;
   // Non-SPII entry.
-  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
-                       u"Full Address");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kAddressFull,
+                       u"Address", u"Full Address");
   // SPII entry.
-  entries.emplace_back(MemoryDataType::kIban, u"IBAN", u"1234");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kIban, u"IBAN",
+                       u"1234");
   // Non-SPII entry with mixed metadata.
-  MemorySearchResult mixed_entry(MemoryDataType::kDriversLicenseName, u"Name",
-                                 u"John");
-  mixed_entry.metadata_list.emplace_back(MemoryDataType::kDriversLicenseState,
-                                         u"State", u"CA");
-  mixed_entry.metadata_list.emplace_back(MemoryDataType::kDriversLicenseNumber,
-                                         u"Number", u"56789");
+  MemorySearchResult mixed_entry(
+      accessibility_annotator::MemoryDataType::kDriversLicenseName, u"Name",
+      u"John");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kDriversLicenseState, u"State",
+      u"CA");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kDriversLicenseNumber, u"Number",
+      u"56789");
   entries.push_back(std::move(mixed_entry));
 
   MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
@@ -1259,15 +1331,18 @@ TEST_F(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
   // returning search results.
   EXPECT_CALL(update_callback_,
               Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
-  EXPECT_CALL(update_callback_,
-              Run(ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
-                                  MemoryDataType::kAddressFull),
-                              EqualsSuggestionWithManageEnhancedAutofillFooter(
-                                  MemoryDataType::kDriversLicenseName,
-                                  EqualsAtMemorySuggestion(
-                                      MemoryDataType::kDriversLicenseState,
-                                      /*children_matcher=*/IsEmpty()))),
-                  AutofillSuggestionTriggerSource::kAtMemory));
+  EXPECT_CALL(
+      update_callback_,
+      Run(ElementsAre(
+              EqualsSuggestionWithManageEnhancedAutofillFooter(
+                  accessibility_annotator::MemoryDataType::kAddressFull),
+              EqualsSuggestionWithManageEnhancedAutofillFooter(
+                  accessibility_annotator::MemoryDataType::kDriversLicenseName,
+                  EqualsAtMemorySuggestion(
+                      accessibility_annotator::MemoryDataType::
+                          kDriversLicenseState,
+                      /*children_matcher=*/IsEmpty()))),
+          AutofillSuggestionTriggerSource::kAtMemory));
 
   manager().OnSearchSubmitted(u"query");
 }
@@ -1282,7 +1357,8 @@ TEST_F(AtMemoryManagerTest,
 
   MemorySearchResults results(
       MemorySearchStatus::kFinalResponseSuccess,
-      {MemorySearchResult(MemoryDataType::kIban, u"IBAN", u"1234")});
+      {MemorySearchResult(accessibility_annotator::MemoryDataType::kIban,
+                          u"IBAN", u"1234")});
 
   auto [form_id, field_id] = SeeForm();
   manager().OnPopupShown(form_id, field_id,
@@ -1302,7 +1378,7 @@ TEST_F(AtMemoryManagerTest,
               Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemory));
   EXPECT_CALL(update_callback_,
               Run(ElementsAre(EqualsSuggestionWithManageEnhancedAutofillFooter(
-                      MemoryDataType::kIban)),
+                      accessibility_annotator::MemoryDataType::kIban)),
                   AutofillSuggestionTriggerSource::kAtMemory));
 
   manager().OnSearchSubmitted(u"query");
@@ -1332,17 +1408,20 @@ TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
 
   std::vector<MemorySearchResult> entries;
   // Non-SPII entry.
-  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
-                       u"Full Address");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kAddressFull,
+                       u"Address", u"Full Address");
   // SPII entry.
-  entries.emplace_back(MemoryDataType::kPassportNumber, u"IBAN", u"1234");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kPassportNumber,
+                       u"IBAN", u"1234");
 
   // Non-SPII entry with mixed metadata.
-  MemorySearchResult mixed_entry(MemoryDataType::kPhone, u"Phone", u"123");
-  mixed_entry.metadata_list.emplace_back(MemoryDataType::kPhone, u"Phone meta",
-                                         u"123");
-  mixed_entry.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
-                                         u"IBAN meta", u"1234");
+  MemorySearchResult mixed_entry(
+      accessibility_annotator::MemoryDataType::kPhone, u"Phone", u"123");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kPhone, u"Phone meta", u"123");
+  mixed_entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kPassportNumber, u"IBAN meta",
+      u"1234");
   entries.push_back(std::move(mixed_entry));
 
   MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
@@ -1354,16 +1433,173 @@ TEST_F(AtMemoryManagerTest, KeepsSpiiInSecureContext) {
       resulting_suggestions,
       ElementsAre(
           EqualsSuggestionWithManageEnhancedAutofillFooter(
-              MemoryDataType::kAddressFull),
+              accessibility_annotator::MemoryDataType::kAddressFull),
           EqualsSuggestionWithManageEnhancedAutofillFooter(
-              MemoryDataType::kPassportNumber),
+              accessibility_annotator::MemoryDataType::kPassportNumber),
           EqualsSuggestionWithManageEnhancedAutofillFooter(
-              MemoryDataType::kPhone,
-              EqualsAtMemorySuggestion(MemoryDataType::kPhone,
-                                       /*children_matcher=*/IsEmpty()),
-              EqualsAtMemorySuggestion(MemoryDataType::kPassportNumber,
-                                       /*children_matcher=*/IsEmpty()))));
+              accessibility_annotator::MemoryDataType::kPhone,
+              EqualsAtMemorySuggestion(
+                  accessibility_annotator::MemoryDataType::kPhone,
+                  /*children_matcher=*/IsEmpty()),
+              EqualsAtMemorySuggestion(
+                  accessibility_annotator::MemoryDataType::kPassportNumber,
+                  /*children_matcher=*/IsEmpty()))));
 }
+
+struct AtMemoryManagerFilterTestCase {
+  accessibility_annotator::MemoryDataType type;
+  std::u16string type_name;
+  std::u16string value;
+  MemoryEntrySourceType source;
+  bool should_be_kept;
+};
+
+class AtMemoryManagerPolicyTest
+    : public AtMemoryManagerTest,
+      public testing::WithParamInterface<AtMemoryManagerFilterTestCase> {};
+
+class AtMemoryManagerPrefTest
+    : public AtMemoryManagerTest,
+      public testing::WithParamInterface<AtMemoryManagerFilterTestCase> {};
+
+// Tests that suggestions are filtered out when blocked by policy.
+TEST_P(AtMemoryManagerPolicyTest, RespectsEnterprisePolicy) {
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  // Block payments and identity docs.
+  autofill_client().SetAutofillTypeBlockedByPolicy(
+      AutofillClient::AutofillPolicyDataCategory::kPayments, true);
+  autofill_client().SetAutofillTypeBlockedByPolicy(
+      AutofillClient::AutofillPolicyDataCategory::kIdentityDocs, true);
+
+  base::RepeatingCallback<void(MemorySearchResults)> search_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(SaveArg<3>(&search_callback));
+
+  std::vector<Suggestion> resulting_suggestions;
+  EXPECT_CALL(update_callback_,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillRepeatedly(SaveArg<0>(&resulting_suggestions));
+
+  manager().OnSearchSubmitted(u"query");
+
+  std::vector<MemorySearchResult> entries;
+  MemorySearchResult entry(GetParam().type, GetParam().type_name,
+                           GetParam().value);
+  entry.sources.emplace_back(GetParam().source);
+  entries.push_back(std::move(entry));
+
+  MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
+                              std::move(entries));
+
+  search_callback.Run(std::move(results));
+
+  if (GetParam().should_be_kept) {
+    EXPECT_THAT(resulting_suggestions,
+                ElementsAre(EqualsAtMemorySuggestion(GetParam().type, _)));
+    ASSERT_EQ(resulting_suggestions.size(), 1u);
+    EXPECT_EQ(resulting_suggestions[0].main_text.value, GetParam().value);
+  } else {
+    ASSERT_EQ(resulting_suggestions.size(), 1u);
+    EXPECT_EQ(resulting_suggestions[0].type,
+              SuggestionType::kAtMemorySearchResult);
+    EXPECT_EQ(resulting_suggestions[0].acceptability,
+              Suggestion::Acceptability::kUnacceptable);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AtMemoryManagerPolicyTest,
+    testing::Values(
+        AtMemoryManagerFilterTestCase{
+            accessibility_annotator::MemoryDataType::kAddressFull, u"Address",
+            u"Full Address", MemoryEntrySourceType::kAutofill, true},
+        AtMemoryManagerFilterTestCase{
+            accessibility_annotator::MemoryDataType::kCreditCardNumber,
+            u"Credit Card", u"1111", MemoryEntrySourceType::kAutofill, false},
+        AtMemoryManagerFilterTestCase{
+            accessibility_annotator::MemoryDataType::kCreditCardNumber,
+            u"Credit Card", u"2222", MemoryEntrySourceType::kGmail, true},
+        AtMemoryManagerFilterTestCase{
+            accessibility_annotator::MemoryDataType::kPassportNumber,
+            u"Passport", u"1234", MemoryEntrySourceType::kAutofill, false},
+        AtMemoryManagerFilterTestCase{
+            accessibility_annotator::MemoryDataType::kPassportNumber,
+            u"Passport", u"5678", MemoryEntrySourceType::kGmail, true}));
+
+// Tests that credit card suggestions are filtered out when the credit card
+// autofill preference is disabled.
+TEST_P(AtMemoryManagerPrefTest, FiltersOutCreditCardsWhenPrefDisabled) {
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  // Disable credit card autofill preference.
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+
+  base::RepeatingCallback<void(MemorySearchResults)> search_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"query"), _, _, _))
+      .WillOnce(SaveArg<3>(&search_callback));
+
+  std::vector<Suggestion> resulting_suggestions;
+  EXPECT_CALL(update_callback_,
+              Run(_, AutofillSuggestionTriggerSource::kAtMemory))
+      .WillRepeatedly(SaveArg<0>(&resulting_suggestions));
+
+  manager().OnSearchSubmitted(u"query");
+
+  std::vector<MemorySearchResult> entries;
+  MemorySearchResult entry(GetParam().type, GetParam().type_name,
+                           GetParam().value);
+  entry.sources.emplace_back(GetParam().source);
+  entries.push_back(std::move(entry));
+
+  MemorySearchResults results(MemorySearchStatus::kFinalResponseSuccess,
+                              std::move(entries));
+
+  search_callback.Run(std::move(results));
+
+  if (GetParam().should_be_kept) {
+    EXPECT_THAT(resulting_suggestions,
+                ElementsAre(EqualsAtMemorySuggestion(GetParam().type, _)));
+    ASSERT_EQ(resulting_suggestions.size(), 1u);
+    EXPECT_EQ(resulting_suggestions[0].main_text.value, GetParam().value);
+  } else {
+    ASSERT_EQ(resulting_suggestions.size(), 1u);
+    EXPECT_EQ(resulting_suggestions[0].type,
+              SuggestionType::kAtMemorySearchResult);
+    EXPECT_EQ(resulting_suggestions[0].acceptability,
+              Suggestion::Acceptability::kUnacceptable);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AtMemoryManagerPrefTest,
+    testing::Values(
+        AtMemoryManagerFilterTestCase{
+            accessibility_annotator::MemoryDataType::kAddressFull, u"Address",
+            u"Full Address", MemoryEntrySourceType::kAutofill, true},
+        AtMemoryManagerFilterTestCase{
+            accessibility_annotator::MemoryDataType::kCreditCardNumber,
+            u"Credit Card", u"1111", MemoryEntrySourceType::kAutofill, false},
+        AtMemoryManagerFilterTestCase{
+            accessibility_annotator::MemoryDataType::kCreditCardNumber,
+            u"Credit Card", u"2222", MemoryEntrySourceType::kGmail, true}));
+
+// Tests that non-SPII data fills correctly and records the funnel metrics.
 
 // Tests that non-SPII data fills correctly and records the funnel metrics.
 TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
@@ -1391,7 +1627,8 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveData_Success) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kNameFull, u"Name", u"John Doe");
+    MemorySearchResult entry(accessibility_annotator::MemoryDataType::kNameFull,
+                             u"Name", u"John Doe");
     entry.identifier = profile.guid();
     MockQueryResultsAndExpectCallback(u"query",
                                       MemorySearchStatus::kFinalResponseSuccess,
@@ -1440,7 +1677,8 @@ TEST_F(AtMemoryManagerTest, FillOverlappingPopups) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kIban, u"IBAN", u"some text");
+    MemorySearchResult entry(accessibility_annotator::MemoryDataType::kIban,
+                             u"IBAN", u"some text");
     entry.identifier = "12345678-1234-1234-1234-123456789012";
     MockQueryResultsAndExpectCallback(u"query",
                                       MemorySearchStatus::kFinalResponseSuccess,
@@ -1595,7 +1833,8 @@ TEST_F(AtMemoryManagerTest, PersonalContext_NoticePositioning_SearchResults) {
 
   // Mock search results returned by the query service.
   std::vector<MemorySearchResult> entries;
-  entries.emplace_back(MemoryDataType::kUnknown, u"", u"Some Value");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kUnknown, u"",
+                       u"Some Value");
 
   EXPECT_CALL(mock_query_service(),
               Query(std::u16string_view(u"query"), _, _, _))
@@ -1702,8 +1941,8 @@ TEST_F(AtMemoryManagerTest,
   base::HistogramTester histogram_tester;
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
-                       u"Full Address");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kAddressFull,
+                       u"Address", u"Full Address");
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kPartialResponseSuccess,
                                     std::move(entries), final_suggestions);
@@ -1726,8 +1965,8 @@ TEST_F(AtMemoryManagerTest,
   base::HistogramTester histogram_tester;
   std::vector<Suggestion> final_suggestions;
   std::vector<MemorySearchResult> entries;
-  entries.emplace_back(MemoryDataType::kAddressFull, u"Address",
-                       u"Full Address");
+  entries.emplace_back(accessibility_annotator::MemoryDataType::kAddressFull,
+                       u"Address", u"Full Address");
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kFinalResponseSuccess,
                                     std::move(entries), final_suggestions);
@@ -1758,10 +1997,11 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
                          ukm::kInvalidSourceId);
   // Create an entry where the primary value is sensitive and metadata is
   // non-sensitive.
-  MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport Number",
-                           u"987654321");
-  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
-                                   u"John Doe");
+  MemorySearchResult entry(
+      accessibility_annotator::MemoryDataType::kPassportNumber,
+      u"Passport Number", u"987654321");
+  entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kNameFull, u"Name", u"John Doe");
   std::vector<Suggestion> final_suggestions;
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kFinalResponseSuccess,
@@ -1801,7 +2041,8 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMainValue_Obfuscated) {
           Ref(autofill_client()),
           GetAuthenticationMessage(
               autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-          Eq(u"987654321"), MemoryDataType::kPassportNumber, _, _))
+          Eq(u"987654321"),
+          accessibility_annotator::MemoryDataType::kPassportNumber, _, _))
       .WillOnce(RunOnceCallback<5>(u"987654321"));
 
   EXPECT_CALL(autofill_manager(),
@@ -1825,13 +2066,14 @@ TEST_F(AtMemoryManagerTest, CvcMetadata_ExcludedFromLabels) {
                          ukm::kInvalidSourceId);
 
   // Create a credit card entry with CVC and Name in metadata.
-  MemorySearchResult entry(MemoryDataType::kCreditCardNumber, u"Card Number",
-                           u"1234567890123456");
-  entry.metadata_list.emplace_back(MemoryDataType::kCreditCardSecurityCode,
-                                   u"CVC",
-                                   std::u16string(3, kMidlineEllipsisPlainDot));
-  entry.metadata_list.emplace_back(MemoryDataType::kNameFull, u"Name",
-                                   u"John Doe");
+  MemorySearchResult entry(
+      accessibility_annotator::MemoryDataType::kCreditCardNumber,
+      u"Card Number", u"1234567890123456");
+  entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kCreditCardSecurityCode, u"CVC",
+      std::u16string(3, kMidlineEllipsisPlainDot));
+  entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kNameFull, u"Name", u"John Doe");
 
   std::vector<Suggestion> final_suggestions;
   MockQueryResultsAndExpectCallback(u"query",
@@ -1866,11 +2108,12 @@ TEST_F(AtMemoryManagerTest,
                          /*is_context_secure=*/true, update_callback_.Get(),
                          ukm::kInvalidSourceId);
 
-  MemorySearchResult entry(MemoryDataType::kFlightReservationFlightNumber,
-                           u"Flight number", u"UA123");
+  MemorySearchResult entry(
+      accessibility_annotator::MemoryDataType::kFlightReservationFlightNumber,
+      u"Flight number", u"UA123");
   entry.metadata_list.emplace_back(
-      MemoryDataType::kFlightReservationArrivalAirport, u"Destination airport",
-      u"SFO");
+      accessibility_annotator::MemoryDataType::kFlightReservationArrivalAirport,
+      u"Destination airport", u"SFO");
 
   std::vector<Suggestion> final_suggestions;
   MockQueryResultsAndExpectCallback(u"query",
@@ -1907,9 +2150,11 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
                          ukm::kInvalidSourceId);
   // Create an entry where the primary value is non-sensitive and metadata is
   // sensitive.
-  MemorySearchResult entry(MemoryDataType::kNameFull, u"Name", u"John Doe");
-  entry.metadata_list.emplace_back(MemoryDataType::kPassportNumber,
-                                   u"Passport Number", u"987654321");
+  MemorySearchResult entry(accessibility_annotator::MemoryDataType::kNameFull,
+                           u"Name", u"John Doe");
+  entry.metadata_list.emplace_back(
+      accessibility_annotator::MemoryDataType::kPassportNumber,
+      u"Passport Number", u"987654321");
   std::vector<Suggestion> final_suggestions;
   MockQueryResultsAndExpectCallback(u"query",
                                     MemorySearchStatus::kFinalResponseSuccess,
@@ -1957,10 +2202,12 @@ TEST_F(AtMemoryManagerTest, RemoteSensitiveMetadata_Obfuscated) {
           Ref(autofill_client()),
           GetAuthenticationMessage(
               autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-          Eq(u"987654321"), MemoryDataType::kPassportNumber, _, _))
+          Eq(u"987654321"),
+          accessibility_annotator::MemoryDataType::kPassportNumber, _, _))
       .WillOnce(
           [&](const AutofillClient& client, const std::u16string& auth_message,
-              std::u16string_view masked_value, MemoryDataType data_type,
+              std::u16string_view masked_value,
+              accessibility_annotator::MemoryDataType data_type,
               base::span<const EntryMetadata> metadata_list,
               AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback callback) {
             std::move(callback).Run(u"987654321");
@@ -2053,8 +2300,9 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveCreditCard) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kCreditCardNameOnCard, u"Name",
-                             card.GetRawInfo(CREDIT_CARD_NAME_FULL));
+    MemorySearchResult entry(
+        accessibility_annotator::MemoryDataType::kCreditCardNameOnCard, u"Name",
+        card.GetRawInfo(CREDIT_CARD_NAME_FULL));
     entry.identifier = card.guid();
     entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
     MockQueryResultsAndExpectCallback(u"query",
@@ -2109,8 +2357,9 @@ TEST_F(AtMemoryManagerTest, FillNonSensitiveAutofillAi) {
 
   std::vector<Suggestion> final_suggestions;
   {
-    MemorySearchResult entry(MemoryDataType::kPassportName, u"Passport Name",
-                             u"John Doe");
+    MemorySearchResult entry(
+        accessibility_annotator::MemoryDataType::kPassportName,
+        u"Passport Name", u"John Doe");
     entry.identifier = passport.guid().value();
     entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
     MockQueryResultsAndExpectCallback(u"query",
@@ -2182,35 +2431,37 @@ TEST_P(AtMemoryManagerIconTest,
                          ukm::kInvalidSourceId);
 
   struct TestCase {
-    MemoryDataType type;
+    accessibility_annotator::MemoryDataType type;
     Suggestion::Icon regular_icon;
     Suggestion::Icon sparkly_icon;
   };
   const std::vector<TestCase> test_cases = {
-      {MemoryDataType::kAddressFull, Suggestion::Icon::kLocation,
-       Suggestion::Icon::kLocationSpark},
-      {MemoryDataType::kVehicle, Suggestion::Icon::kVehicle,
-       Suggestion::Icon::kVehicleSpark},
-      {MemoryDataType::kPassportFull, Suggestion::Icon::kPassport,
-       Suggestion::Icon::kPassportSpark},
-      {MemoryDataType::kFlightReservationFull, Suggestion::Icon::kFlight,
-       Suggestion::Icon::kFlightSpark},
-      {MemoryDataType::kDriversLicenseFull, Suggestion::Icon::kIdCard,
-       Suggestion::Icon::kIdCardSpark},
-      {MemoryDataType::kKnownTravelerNumberFull, Suggestion::Icon::kIdCard2,
-       Suggestion::Icon::kIdCard2Spark},
-      {MemoryDataType::kCreditCardNumber, Suggestion::Icon::kCardGenericVector,
+      {accessibility_annotator::MemoryDataType::kAddressFull,
+       Suggestion::Icon::kLocation, Suggestion::Icon::kLocationSpark},
+      {accessibility_annotator::MemoryDataType::kVehicle,
+       Suggestion::Icon::kVehicle, Suggestion::Icon::kVehicleSpark},
+      {accessibility_annotator::MemoryDataType::kPassportFull,
+       Suggestion::Icon::kPassport, Suggestion::Icon::kPassportSpark},
+      {accessibility_annotator::MemoryDataType::kFlightReservationFull,
+       Suggestion::Icon::kFlight, Suggestion::Icon::kFlightSpark},
+      {accessibility_annotator::MemoryDataType::kDriversLicenseFull,
+       Suggestion::Icon::kIdCard, Suggestion::Icon::kIdCardSpark},
+      {accessibility_annotator::MemoryDataType::kKnownTravelerNumberFull,
+       Suggestion::Icon::kIdCard2, Suggestion::Icon::kIdCard2Spark},
+      {accessibility_annotator::MemoryDataType::kCreditCardNumber,
+       Suggestion::Icon::kCardGenericVector,
        Suggestion::Icon::kCardGenericSpark},
-      {MemoryDataType::kIban, Suggestion::Icon::kCardGenericVector,
+      {accessibility_annotator::MemoryDataType::kIban,
+       Suggestion::Icon::kCardGenericVector,
        Suggestion::Icon::kCardGenericSpark},
-      {MemoryDataType::kOrderFull, Suggestion::Icon::kOrder,
-       Suggestion::Icon::kOrderSpark},
-      {MemoryDataType::kShipmentFull, Suggestion::Icon::kShipment,
-       Suggestion::Icon::kShipmentSpark},
-      {MemoryDataType::kEmail, Suggestion::Icon::kNoIcon,
-       Suggestion::Icon::kTextSpark},
-      {MemoryDataType::kUnknown, Suggestion::Icon::kNoIcon,
-       Suggestion::Icon::kTextSpark},
+      {accessibility_annotator::MemoryDataType::kOrderFull,
+       Suggestion::Icon::kOrder, Suggestion::Icon::kOrderSpark},
+      {accessibility_annotator::MemoryDataType::kShipmentFull,
+       Suggestion::Icon::kShipment, Suggestion::Icon::kShipmentSpark},
+      {accessibility_annotator::MemoryDataType::kEmail,
+       Suggestion::Icon::kNoIcon, Suggestion::Icon::kTextSpark},
+      {accessibility_annotator::MemoryDataType::kUnknown,
+       Suggestion::Icon::kNoIcon, Suggestion::Icon::kTextSpark},
   };
 
   std::vector<MemorySearchResult> entries =
@@ -2234,7 +2485,8 @@ TEST_P(AtMemoryManagerIconTest,
     Suggestion::Icon expected_icon =
         expect_sparkly ? test_case.sparkly_icon : test_case.regular_icon;
     EXPECT_EQ(suggestion.icon, expected_icon)
-        << "For MemoryDataType: " << static_cast<int>(test_case.type)
+        << "For accessibility_annotator::MemoryDataType: "
+        << static_cast<int>(test_case.type)
         << " in scenario: " << static_cast<int>(scenario());
   }
 }
@@ -2278,7 +2530,7 @@ TEST_F(AtMemoryManagerTest, OnPopupShown_SubPopup_NoCrashWhenRecorderMovedOut) {
   // 2. Fill a suggestion, which moves out at_memory_metrics_recorder_.
   Suggestion suggestion(u"test", SuggestionType::kAtMemorySearchResult);
   Suggestion::AtMemoryPayload payload;
-  payload.memory_data_type = MemoryDataType::kIban;
+  payload.memory_data_type = accessibility_annotator::MemoryDataType::kIban;
   payload.identifier = Iban::Guid("guid");
   suggestion.payload = std::move(payload);
 

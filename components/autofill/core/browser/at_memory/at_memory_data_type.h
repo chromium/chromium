@@ -9,8 +9,10 @@
 #include <variant>
 
 #include "components/accessibility_annotator/core/annotation_reducer/memory_data_type.h"
+#include "components/autofill/core/browser/at_memory/at_memory_enablement_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 
 namespace autofill {
 
@@ -23,6 +25,10 @@ using AtMemoryDataType = std::variant<FieldType, EntityType, AttributeType>;
 // Autofill-specific data type.
 std::optional<AtMemoryDataType> ToAtMemoryDataType(
     accessibility_annotator::MemoryDataType memory_data_type);
+
+// Maps AtMemoryDataType to AutofillPolicyDataCategory.
+std::optional<AutofillClient::AutofillPolicyDataCategory>
+ToAutofillPolicyDataCategory(const AtMemoryDataType& type);
 
 }  // namespace autofill
 

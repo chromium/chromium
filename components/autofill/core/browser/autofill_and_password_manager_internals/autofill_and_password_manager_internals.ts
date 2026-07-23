@@ -565,6 +565,26 @@ function setUpCheckAtMemoryPermissions() {
         value: 'kShowAutocompleteAtMemoryButton',
         text: 'Show autocomplete AtMemory button',
       },
+      {
+        value: 'kRetrievePaymentsForFilling',
+        text: 'Retrieve payments for filling',
+      },
+      {
+        value: 'kRetrieveContactInfoForFilling',
+        text: 'Retrieve contact info for filling',
+      },
+      {
+        value: 'kRetrieveIdentityDocsForFilling',
+        text: 'Retrieve identity docs for filling',
+      },
+      {
+        value: 'kRetrieveTravelDataForFilling',
+        text: 'Retrieve travel data for filling',
+      },
+      {
+        value: 'kRetrieveShoppingDataForFilling',
+        text: 'Retrieve shopping data for filling',
+      },
     ];
     // LINT.ThenChange(/components/autofill/core/browser/at_memory/at_memory_enablement_utils.h:AtMemoryAction)
     for (const action of actions) {
