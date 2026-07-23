@@ -106,3 +106,20 @@ TEST_F(SigninScreenPolicyProviderTest, DenyRandomNonPolicyExtension) {
   EXPECT_FALSE(provider_.UserMayLoad(extension.get(), &error));
   EXPECT_FALSE(error.empty());
 }
+
+TEST_F(SigninScreenPolicyProviderTest, AllowAccessibilityExtensions) {
+  // Accessibility extensions should be allowed on the sign-in screen.
+  const std::string kAccessibilityIds[] = {
+      extension_misc::kSelectToSpeakExtensionId,
+      extension_misc::kEnhancedNetworkTtsExtensionId,
+      extension_misc::kAccessibilityCommonExtensionId,
+  };
+  for (const std::string& id : kAccessibilityIds) {
+    scoped_refptr<const extensions::Extension> extension =
+        CreateTestApp(id, ManifestLocation::kComponent);
+    std::u16string error;
+    EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error))
+        << "Extension " << id << " should be allowed on sign-in screen.";
+    EXPECT_TRUE(error.empty());
+  }
+}

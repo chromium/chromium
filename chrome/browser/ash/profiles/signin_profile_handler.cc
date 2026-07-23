@@ -44,6 +44,9 @@ constexpr const char* kNonRiskyExtensionsIdsHashes[] = {
     "3C654B3B6682CA194E75AD044CEDE927675DDEE8",  // Easy unlock
     "75C7F4B720314B6CB1B5817CD86089DB95CD2461",  // ChromeVox
     "4D725C894DA4CF1F4D96C60F0D83BD745EB530CA",  // Switch Access
+    "DDF36D85CB9C1646841F433F8ABAA2798F47D849",  // Select-to-speak
+    "D715AF563195BCD1B11CD5764B3B1CEAF8929D73",  // Enhanced Network TTS
+    "371AC6869D2138CE58123741E69F67469206909F",  // Accessibility Common
 };
 
 void WrapAsBrowsersCloseCallback(const base::RepeatingClosure& callback,
