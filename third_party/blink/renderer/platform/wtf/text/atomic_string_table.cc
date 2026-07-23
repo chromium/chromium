@@ -8,7 +8,11 @@
 #include <array>
 #include <atomic>
 #include <cstdint>
+#include <cstring>
+#include <type_traits>
+#include <utility>
 
+#include "base/bit_cast.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -21,6 +25,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 
@@ -28,48 +33,144 @@ namespace {
 
 constexpr auto kGoldenRatio64 = 0x9e3779b97f4a7c15ull;
 
-// A global, direct-mapped cache for small 8-bit AtomicStrings (<= 7 bytes)
-// that avoids the overhead of rapidhash computation and pointer dereferences of
-// the main AtomicStringTable.
-struct SmallStringCache {
-  // The cache size is 2^10 = 1024 entries.
-  static constexpr size_t kLogSize = 10;
+// A thread-local, direct-mapped cache for small 8-bit AtomicStrings (<= 16
+// bytes) that avoids the overhead of table locking, hash computation, and
+// pointer dereferences of the main AtomicStringTable. The cache keeps the
+// strings strongly.
+// TODO(537744910): The cache keeps the strings strongly. Since it's
+// thread-local, it's safe to clean the entries with use-count being 1.
+// Consider doing this from an idle task if memory becomes an issue.
+// Alternatively, use the cache only for the main thread.
+struct alignas(64) SmallStringCache {
+  // The cache size is 2^13 = 8192 entries (256 KB per thread).
+  static constexpr size_t kLogSize = 13;
   static constexpr size_t kSize = 1 << kLogSize;
   static constexpr size_t kHashShift = 64 - kLogSize;
 
-  static SmallStringCache& Instance() {
-    DEFINE_STATIC_LOCAL(SmallStringCache, cache, ());
-    return cache;
-  }
-
-  struct Entry {
+  struct alignas(32) Entry {
     String string;
-    uint64_t signature = 0;
+    uint64_t sig_low = 0;
+    uint64_t sig_high = 0;
+    uint32_t length = 0;
+    uint32_t unused = 0;
   };
 
-  base::Lock lock;
-  std::array<Entry, kSize> entries;
+  alignas(64) std::array<Entry, kSize> entries;
 };
 
-template <typename Generator>
-ALWAYS_INLINE String SmallStringCacheGetOrInsert(uint64_t signature,
-                                                 Generator generator) {
-  // Fibonacci hash using the golden ratio constant to fastly distribute strings
-  // evenly across the cache.
-  const size_t index =
-      (signature * kGoldenRatio64) >> SmallStringCache::kHashShift;
+NOINLINE SmallStringCache* SmallStringCacheInstance() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<SmallStringCache>, cache, ());
+  return cache;
+}
 
-  auto& cache = SmallStringCache::Instance();
-  base::AutoLock lock(cache.lock);
-  auto& entry = cache.entries[index];
-  if (entry.signature == signature) {
+constinit thread_local SmallStringCache* g_small_string_cache = nullptr;
+
+template <typename Generator>
+ALWAYS_INLINE String SmallStringCacheGetOrInsert(uint64_t sig_low,
+                                                 uint64_t sig_high,
+                                                 uint32_t length,
+                                                 Generator generator) {
+  // Fibonacci hash using the golden ratio constant to distribute strings
+  // evenly across the cache.
+  uint64_t hash_key = sig_low ^ sig_high ^ length;
+  const size_t index =
+      (hash_key * kGoldenRatio64) >> SmallStringCache::kHashShift;
+
+  SmallStringCache* cache = g_small_string_cache;
+  if (!cache) [[unlikely]] {
+    g_small_string_cache = SmallStringCacheInstance();
+    cache = g_small_string_cache;
+  }
+
+  auto& entry = cache->entries[index];
+  if (entry.sig_low == sig_low && entry.sig_high == sig_high &&
+      entry.length == length) [[likely]] {
     return entry.string;
   }
 
   String result = generator();
   entry.string = result;
-  entry.signature = signature;
+  entry.sig_low = sig_low;
+  entry.sig_high = sig_high;
+  entry.length = length;
   return result;
+}
+
+template <typename T, typename U, size_t N>
+ALWAYS_INLINE static T BitCastRead(base::span<const U, N> span) {
+  static_assert(std::is_trivially_copyable_v<T>);
+  static_assert(sizeof(T) == N * sizeof(U));
+  using Array = std::array<U, N>;
+  // SAFETY: `span` has fixed extent N matching exactly `sizeof(T)`.
+  return base::bit_cast<T>(*reinterpret_cast<const Array*>(span.data()));
+}
+
+ALWAYS_INLINE static uint16_t Compress2UCharsToUint16(
+    base::span<const UChar, 2> chars) {
+  return static_cast<uint16_t>(static_cast<uint8_t>(chars[0])) |
+         (static_cast<uint16_t>(static_cast<uint8_t>(chars[1])) << 8);
+}
+
+ALWAYS_INLINE static uint32_t Compress4UCharsToUint32(
+    base::span<const UChar, 4> chars) {
+  return static_cast<uint32_t>(static_cast<uint8_t>(chars[0])) |
+         (static_cast<uint32_t>(static_cast<uint8_t>(chars[1])) << 8) |
+         (static_cast<uint32_t>(static_cast<uint8_t>(chars[2])) << 16) |
+         (static_cast<uint32_t>(static_cast<uint8_t>(chars[3])) << 24);
+}
+
+ALWAYS_INLINE static uint64_t Compress8UCharsToUint64(
+    base::span<const UChar, 8> chars) {
+  return static_cast<uint64_t>(static_cast<uint8_t>(chars[0])) |
+         (static_cast<uint64_t>(static_cast<uint8_t>(chars[1])) << 8) |
+         (static_cast<uint64_t>(static_cast<uint8_t>(chars[2])) << 16) |
+         (static_cast<uint64_t>(static_cast<uint8_t>(chars[3])) << 24) |
+         (static_cast<uint64_t>(static_cast<uint8_t>(chars[4])) << 32) |
+         (static_cast<uint64_t>(static_cast<uint8_t>(chars[5])) << 40) |
+         (static_cast<uint64_t>(static_cast<uint8_t>(chars[6])) << 48) |
+         (static_cast<uint64_t>(static_cast<uint8_t>(chars[7])) << 56);
+}
+
+ALWAYS_INLINE static std::pair<uint64_t, uint64_t> ComputeSmallStringSignature(
+    base::span<const LChar> chars) {
+  const size_t length = chars.size();
+  DCHECK(length >= 1 && length <= 16);
+  if (length >= 8) {
+    return {BitCastRead<uint64_t>(chars.first<8>()),
+            BitCastRead<uint64_t>(chars.last<8>())};
+  }
+  if (length >= 4) {
+    uint32_t low32 = BitCastRead<uint32_t>(chars.first<4>());
+    uint32_t high32 = BitCastRead<uint32_t>(chars.last<4>());
+    return {low32 | (static_cast<uint64_t>(high32) << 32), 0};
+  }
+  if (length >= 2) {
+    uint16_t low16 = BitCastRead<uint16_t>(chars.first<2>());
+    uint16_t high16 = BitCastRead<uint16_t>(chars.last<2>());
+    return {low16 | (static_cast<uint64_t>(high16) << 16), 0};
+  }
+  return {chars[0], 0};
+}
+
+ALWAYS_INLINE static std::pair<uint64_t, uint64_t> ComputeSmallStringSignature(
+    base::span<const UChar> chars) {
+  const size_t length = chars.size();
+  DCHECK(length >= 1 && length <= 16);
+  if (length >= 8) {
+    return {Compress8UCharsToUint64(chars.first<8>()),
+            Compress8UCharsToUint64(chars.last<8>())};
+  }
+  if (length >= 4) {
+    uint32_t low32 = Compress4UCharsToUint32(chars.first<4>());
+    uint32_t high32 = Compress4UCharsToUint32(chars.last<4>());
+    return {low32 | (static_cast<uint64_t>(high32) << 32), 0};
+  }
+  if (length >= 2) {
+    uint16_t low16 = Compress2UCharsToUint16(chars.first<2>());
+    uint16_t high16 = Compress2UCharsToUint16(chars.last<2>());
+    return {low16 | (static_cast<uint64_t>(high16) << 16), 0};
+  }
+  return {static_cast<uint8_t>(chars[0]), 0};
 }
 
 // The compiler will conveniently combine this into a single 64-bit load for us,
@@ -334,16 +435,13 @@ String AtomicStringTable::Add(base::span<const UChar> chars,
   }
 
   const auto length = chars.size();
-  if (encoding == AtomicStringUCharEncoding::kIs8Bit && length <= 7) {
-    uint64_t signature = length;
-    for (UChar ch : chars) {
-      signature = (signature << 8) | static_cast<uint16_t>(ch);
-    }
-
-    return SmallStringCacheGetOrInsert(signature, [this, &chars]() {
-      return AddToStringTable<UCharBuffer, UCharBufferTranslator>(
-          UCharBuffer(chars, AtomicStringUCharEncoding::kIs8Bit));
-    });
+  if (encoding == AtomicStringUCharEncoding::kIs8Bit && length <= 16) {
+    const auto [sig_low, sig_high] = ComputeSmallStringSignature(chars);
+    return SmallStringCacheGetOrInsert(
+        sig_low, sig_high, static_cast<uint32_t>(length), [this, &chars]() {
+          return AddToStringTable<UCharBuffer, UCharBufferTranslator>(
+              UCharBuffer(chars, AtomicStringUCharEncoding::kIs8Bit));
+        });
   }
 
   UCharBuffer buffer(chars, encoding);
@@ -399,17 +497,14 @@ String AtomicStringTable::Add(const StringView& string_view) {
   }
 
   const auto length = string_view.length();
-  if (length <= 7 && string_view.Is8Bit()) {
+  if (length <= 16 && string_view.Is8Bit()) {
     base::span<const LChar> chars = string_view.Span8();
-    uint64_t signature = length;
-    for (LChar ch : chars) {
-      signature = (signature << 8) | static_cast<uint8_t>(ch);
-    }
-
-    return SmallStringCacheGetOrInsert(signature, [this, &chars]() {
-      return AddToStringTable<LCharBuffer, LCharBufferTranslator>(
-          LCharBuffer(chars));
-    });
+    const auto [sig_low, sig_high] = ComputeSmallStringSignature(chars);
+    return SmallStringCacheGetOrInsert(
+        sig_low, sig_high, static_cast<uint32_t>(length), [this, &chars]() {
+          return AddToStringTable<LCharBuffer, LCharBufferTranslator>(
+              LCharBuffer(chars));
+        });
   }
 
   if (string_view.Is8Bit()) {
@@ -431,16 +526,13 @@ String AtomicStringTable::Add(base::span<const LChar> chars) {
   }
 
   const auto length = chars.size();
-  if (length <= 7) {
-    uint64_t signature = length;
-    for (LChar ch : chars) {
-      signature = (signature << 8) | static_cast<uint8_t>(ch);
-    }
-
-    return SmallStringCacheGetOrInsert(signature, [this, &chars]() {
-      return AddToStringTable<LCharBuffer, LCharBufferTranslator>(
-          LCharBuffer(chars));
-    });
+  if (length <= 16) {
+    const auto [sig_low, sig_high] = ComputeSmallStringSignature(chars);
+    return SmallStringCacheGetOrInsert(
+        sig_low, sig_high, static_cast<uint32_t>(length), [this, &chars]() {
+          return AddToStringTable<LCharBuffer, LCharBufferTranslator>(
+              LCharBuffer(chars));
+        });
   }
 
   return AddToStringTable<LCharBuffer, LCharBufferTranslator>(

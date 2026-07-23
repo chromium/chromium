@@ -15,11 +15,13 @@ class V8ElementTest : public BindingTestSupportingGC {
  protected:
   void SetUp() override {
     // Precondition: test strings should not be in the AtomicStringTable yet.
+    // Note: use strings longer than 16 characters to avoid SmallStringCache
+    // holding references during teardown and reference count verification.
     DCHECK(AtomicStringTable::Instance()
-               .WeakFindForTesting("test-attribute")
+               .WeakFindForTesting("test-attribute-name")
                .IsNull());
     DCHECK(AtomicStringTable::Instance()
-               .WeakFindForTesting("test-value")
+               .WeakFindForTesting("test-attribute-value")
                .IsNull());
   }
 
@@ -29,10 +31,10 @@ class V8ElementTest : public BindingTestSupportingGC {
     // Postcondition: test strings should have been released from the
     // AtomicStringTable
     DCHECK(AtomicStringTable::Instance()
-               .WeakFindForTesting("test-attribute")
+               .WeakFindForTesting("test-attribute-name")
                .IsNull());
     DCHECK(AtomicStringTable::Instance()
-               .WeakFindForTesting("test-value")
+               .WeakFindForTesting("test-attribute-value")
                .IsNull());
   }
 };
@@ -46,17 +48,21 @@ v8::Local<v8::Value> Eval(const String& source, V8TestingScope& scope) {
 TEST_F(V8ElementTest, SetAttributeOperationCallback) {
   V8TestingScope scope;
 
-  Eval("document.body.setAttribute('test-attribute', 'test-value')", scope);
+  Eval(
+      "document.body.setAttribute('test-attribute-name', "
+      "'test-attribute-value')",
+      scope);
   EXPECT_FALSE(AtomicStringTable::Instance()
-                   .WeakFindForTesting("test-attribute")
+                   .WeakFindForTesting("test-attribute-name")
                    .IsNull());
-  EXPECT_FALSE(
-      AtomicStringTable::Instance().WeakFindForTesting("test-value").IsNull());
+  EXPECT_FALSE(AtomicStringTable::Instance()
+                   .WeakFindForTesting("test-attribute-value")
+                   .IsNull());
 
 #if DCHECK_IS_ON()
-  AtomicString test_attribute("test-attribute");
+  AtomicString test_attribute("test-attribute-name");
   EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 10u);
-  AtomicString test_value("test-value");
+  AtomicString test_value("test-attribute-value");
   EXPECT_EQ(test_value.Impl()->RefCountChangeCountForTesting(), 8u);
 #endif
 
@@ -69,15 +75,16 @@ TEST_F(V8ElementTest, SetAttributeOperationCallback) {
 TEST_F(V8ElementTest, GetAttributeOperationCallback_NonExisting) {
   V8TestingScope scope;
 
-  Eval("document.body.getAttribute('test-attribute')", scope);
+  Eval("document.body.getAttribute('test-attribute-name')", scope);
   EXPECT_FALSE(AtomicStringTable::Instance()
-                   .WeakFindForTesting("test-attribute")
+                   .WeakFindForTesting("test-attribute-name")
                    .IsNull());
-  EXPECT_TRUE(
-      AtomicStringTable::Instance().WeakFindForTesting("test-value").IsNull());
+  EXPECT_TRUE(AtomicStringTable::Instance()
+                  .WeakFindForTesting("test-attribute-value")
+                  .IsNull());
 
 #if DCHECK_IS_ON()
-  AtomicString test_attribute("test-attribute");
+  AtomicString test_attribute("test-attribute-name");
   EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 5u);
 #endif
 
@@ -90,21 +97,25 @@ TEST_F(V8ElementTest, GetAttributeOperationCallback_NonExisting) {
 TEST_F(V8ElementTest, GetAttributeOperationCallback_Existing) {
   V8TestingScope scope;
 
-  Eval("document.body.setAttribute('test-attribute', 'test-value')", scope);
+  Eval(
+      "document.body.setAttribute('test-attribute-name', "
+      "'test-attribute-value')",
+      scope);
   EXPECT_FALSE(AtomicStringTable::Instance()
-                   .WeakFindForTesting("test-attribute")
+                   .WeakFindForTesting("test-attribute-name")
                    .IsNull());
-  EXPECT_FALSE(
-      AtomicStringTable::Instance().WeakFindForTesting("test-value").IsNull());
+  EXPECT_FALSE(AtomicStringTable::Instance()
+                   .WeakFindForTesting("test-attribute-value")
+                   .IsNull());
 
 #if DCHECK_IS_ON()
-  AtomicString test_attribute("test-attribute");
+  AtomicString test_attribute("test-attribute-name");
   test_attribute.Impl()->ResetRefCountChangeCountForTesting();
-  AtomicString test_value("test-value");
+  AtomicString test_value("test-attribute-value");
   test_value.Impl()->ResetRefCountChangeCountForTesting();
 #endif
 
-  Eval("document.body.getAttribute('test-attribute')", scope);
+  Eval("document.body.getAttribute('test-attribute-name')", scope);
 
 #if DCHECK_IS_ON()
   EXPECT_EQ(test_attribute.Impl()->RefCountChangeCountForTesting(), 4u);
