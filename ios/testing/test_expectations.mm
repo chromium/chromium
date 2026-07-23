@@ -13,6 +13,66 @@
 #import "ui/base/device_form_factor.h"
 
 @implementation TestExpectationEntry
+
+- (NSString*)expectedOutcomeDescription {
+  NSMutableArray<NSString*>* outcomes = [NSMutableArray array];
+  if (self.type & TestExpectationTypePass) {
+    [outcomes addObject:@"pass"];
+  }
+  if (self.type & TestExpectationTypeFailure) {
+    [outcomes addObject:@"fail"];
+  }
+  if (self.type & TestExpectationTypeCrash) {
+    [outcomes addObject:@"crash"];
+  }
+  if (self.type & TestExpectationTypeSkip) {
+    [outcomes addObject:@"skip"];
+  }
+
+  if (outcomes.count == 0) {
+    return @"pass";
+  }
+  NSMutableString* result = [NSMutableString string];
+  for (NSUInteger i = 0; i < outcomes.count; ++i) {
+    if (i > 0) {
+      if (i == outcomes.count - 1) {
+        [result appendString:(outcomes.count > 2) ? @", or " : @" or "];
+      } else {
+        [result appendString:@", "];
+      }
+    }
+    [result appendString:outcomes[i]];
+  }
+  return result;
+}
+
+// Returns a formatted string describing the line number and file path.
+- (NSString*)locationDescription {
+  if (self.filePath.length > 0) {
+    return [NSString stringWithFormat:@"line %lu in %@",
+                                      (unsigned long)self.lineNumber,
+                                      self.filePath];
+  }
+  return
+      [NSString stringWithFormat:@"line %lu", (unsigned long)self.lineNumber];
+}
+
+- (NSString*)documentationMessage {
+  NSString* outcome = [self expectedOutcomeDescription];
+
+  return [NSString stringWithFormat:@"This test is expected to %@ (%@).",
+                                    outcome, [self locationDescription]];
+}
+
+- (NSString*)unmetExpectationMessageWithActualOutcome:(NSString*)actualOutcome {
+  NSString* expectedOutcome = [self expectedOutcomeDescription];
+
+  return [NSString
+      stringWithFormat:@"Unmet test expectation (%@): expected %@, actual %@.",
+                       [self locationDescription], expectedOutcome,
+                       actualOutcome];
+}
+
 @end
 
 @interface TestExpectations ()
@@ -49,6 +109,9 @@ TagCategory GetTagCategory(NSString* tag) {
 
   // Store original content for reparsing if tags are overridden.
   NSString* _content;
+
+  // Path to the expectations file.
+  NSString* _filePath;
 }
 
 - (instancetype)initWithFilePath:(NSString*)path {
@@ -58,7 +121,7 @@ TagCategory GetTagCategory(NSString* tag) {
                                                    error:&error];
   CHECK(content && !error) << "Error reading expectations file at " << path
                            << ": " << error;
-  return [self initWithContent:content];
+  return [self initWithContent:content filePath:path];
 }
 
 + (instancetype)sharedInstance {
@@ -73,9 +136,15 @@ TagCategory GetTagCategory(NSString* tag) {
 }
 
 - (instancetype)initWithContent:(NSString*)content {
+  return [self initWithContent:content filePath:nil];
+}
+
+- (instancetype)initWithContent:(NSString*)content
+                       filePath:(NSString*)filePath {
   self = [super init];
   if (self) {
     _content = [content copy];
+    _filePath = [filePath copy];
     _expectations = [NSMutableDictionary dictionary];
     [self parseExpectations:_content];
   }
@@ -159,7 +228,9 @@ TagCategory GetTagCategory(NSString* tag) {
   CHECK(!error) << "Failed to compile regex: " << error;
 
   NSArray<NSString*>* lines = [content componentsSeparatedByString:@"\n"];
+  NSUInteger lineNumber = 0;
   for (NSString* line in lines) {
+    lineNumber++;
     NSString* trimmed =
         [line stringByTrimmingCharactersInSet:[NSCharacterSet
                                                   whitespaceCharacterSet]];
@@ -223,7 +294,7 @@ TagCategory GetTagCategory(NSString* tag) {
     }
 
     if (type == TestExpectationTypeNone) {
-      continue;
+      type = TestExpectationTypePass;
     }
 
     // Normalize test ID and store
@@ -231,6 +302,8 @@ TagCategory GetTagCategory(NSString* tag) {
     TestExpectationEntry* entry = [[TestExpectationEntry alloc] init];
     entry.bug = bug ? bug : @"Expected failure";
     entry.type = type;
+    entry.lineNumber = lineNumber;
+    entry.filePath = _filePath;
     _expectations[normalizedTestId] = entry;
   }
 }
