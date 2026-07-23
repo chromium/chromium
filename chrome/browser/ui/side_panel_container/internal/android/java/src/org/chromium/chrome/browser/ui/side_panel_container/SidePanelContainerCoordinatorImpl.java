@@ -370,22 +370,18 @@ final class SidePanelContainerCoordinatorImpl
             @Px int newWidth,
             @HeightType int oldHeightType,
             @HeightType int newHeightType) {
-        // The side panel is fully opened.
-        if (oldWidth == 0 && newWidth > 0 && mSidePanelCoordinatorAndroid != null) {
-            mSidePanelCoordinatorAndroid.onPanelOpened();
+        if (mSidePanelCoordinatorAndroid != null) {
+            mSidePanelCoordinatorAndroid.onPanelContainerUpdated(oldWidth, newWidth);
+        }
 
+        // Accessibility support for opening/closing the panel.
+        if (oldWidth == 0 && newWidth > 0) {
             CharSequence paneTitle = mCurrentContent != null ? mCurrentContent.mTitle : null;
             notifyAccessibilityStateChanged(
                     AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_APPEARED,
                     paneTitle,
                     /* requestFocus= */ true);
-            return;
-        }
-
-        // The side panel is fully closed.
-        if (oldWidth > 0 && newWidth == 0 && mSidePanelCoordinatorAndroid != null) {
-            mSidePanelCoordinatorAndroid.onPanelClosed();
-
+        } else if (oldWidth > 0 && newWidth == 0) {
             notifyAccessibilityStateChanged(
                     AccessibilityEvent.CONTENT_CHANGE_TYPE_PANE_DISAPPEARED,
                     /* title= */ null,

@@ -55,8 +55,7 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void Destroy();
   void ClosePanel();
   bool HasContentToShow();
-  void OnPanelClosed();
-  void OnPanelOpened();
+  void OnPanelContainerUpdated(int old_width, int new_width);
   void OnPanelContentReplaced();
   void OnWillAutoClose();
   void OnWillAutoRestore();
@@ -141,12 +140,24 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
   // Starts opening the side panel.
   // This should only be called when the side panel isn't currently shown.
-  // `OnPanelOpened()` will be called when the side panel is fully opened.
+  // `FinishOpeningPanel()` will be called when the side panel is fully opened.
   void StartOpeningPanel(
       SidePanelEntry* entry,
       const UniqueKey& unique_key,
       bool suppress_animations,
       std::unique_ptr<SidePanelNativeViewAndroid> native_view);
+
+  // Completes the state updates for opening the side panel.
+  void FinishOpeningPanel();
+
+  // Starts closing the side panel.
+  // This should only be called when the side panel is currently shown.
+  // `FinishClosingPanel()` will be called when the side panel is fully closed.
+  void StartClosingPanel(SidePanelEntryHideReason hide_reason,
+                         bool suppress_animations);
+
+  // Completes the state updates for closing the side panel.
+  void FinishClosingPanel();
 
   // Starts replacing the entry shown in the side panel.
   // This should only be called when the side panel is already shown.

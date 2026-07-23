@@ -76,20 +76,12 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     }
 
     @Override
-    public void onPanelOpened() {
-        log(TAG, "onPanelOpened");
+    public void onPanelContainerUpdated(int oldWidth, int newWidth) {
+        log(TAG, "onPanelContainerUpdated", oldWidth, newWidth);
         if (mNativeSidePanelCoordinatorAndroid != 0) {
             SidePanelCoordinatorAndroidImplJni.get()
-                    .onPanelOpened(mNativeSidePanelCoordinatorAndroid);
-        }
-    }
-
-    @Override
-    public void onPanelClosed() {
-        log(TAG, "onPanelClosed");
-        if (mNativeSidePanelCoordinatorAndroid != 0) {
-            SidePanelCoordinatorAndroidImplJni.get()
-                    .onPanelClosed(mNativeSidePanelCoordinatorAndroid);
+                    .onPanelContainerUpdated(
+                            mNativeSidePanelCoordinatorAndroid, oldWidth, newWidth);
         }
     }
 
@@ -263,30 +255,6 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         void closePanel(long nativeSidePanelCoordinatorAndroid);
 
         /**
-         * Notifies the underlying native object that the panel has been closed.
-         *
-         * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
-         *     SidePanelCoordinatorAndroid}.
-         */
-        void onPanelClosed(long nativeSidePanelCoordinatorAndroid);
-
-        /**
-         * Notifies the underlying native object that the panel has been opened.
-         *
-         * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
-         *     SidePanelCoordinatorAndroid}.
-         */
-        void onPanelOpened(long nativeSidePanelCoordinatorAndroid);
-
-        /**
-         * Notifies the underlying native object that the panel content has been replaced.
-         *
-         * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
-         *     SidePanelCoordinatorAndroid}.
-         */
-        void onPanelContentReplaced(long nativeSidePanelCoordinatorAndroid);
-
-        /**
          * Initializes the native coordinator and restores the active entry if one exists.
          *
          * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
@@ -294,14 +262,15 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
          */
         void init(long nativeSidePanelCoordinatorAndroid);
 
-        /**
-         * Returns whether the native coordinator has content to show.
-         *
-         * @param nativeSidePanelCoordinatorAndroid The address of the native {@code
-         *     SidePanelCoordinatorAndroid}.
-         * @see org.chromium.chrome.browser.ui.side_ui.SideUiContainer#hasContentToShow
-         */
+        /** See {@link SidePanelCoordinatorAndroid#hasContentToShow}. */
         boolean hasContentToShow(long nativeSidePanelCoordinatorAndroid);
+
+        /** See {@link SidePanelCoordinatorAndroid#onPanelContainerUpdated}. */
+        void onPanelContainerUpdated(
+                long nativeSidePanelCoordinatorAndroid, int oldWidth, int newWidth);
+
+        /** See {@link SidePanelCoordinatorAndroid#onPanelContentReplaced}. */
+        void onPanelContentReplaced(long nativeSidePanelCoordinatorAndroid);
 
         /**
          * See {@link SidePanelCoordinatorAndroid#onWillAutoClose()}.

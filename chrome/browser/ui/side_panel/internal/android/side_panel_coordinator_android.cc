@@ -116,61 +116,28 @@ bool SidePanelCoordinatorAndroid::HasContentToShow() {
   }
 }
 
-void SidePanelCoordinatorAndroid::OnPanelOpened() {
-  SPLOG("OnPanelOpened");
-  CHECK(state_ == SidePanelState::kOpening)
-      << "Should only receive OnPanelOpened() when side panel is opening.";
+void SidePanelCoordinatorAndroid::OnPanelContainerUpdated(int old_width,
+                                                          int new_width) {
+  SPLOG("OnPanelContainerUpdated - old_width: "
+        << old_width << ", new_width: " << new_width
+        << ", state: " << ToString(state_));
 
-  state_ = SidePanelState::kShown;
-}
-
-void SidePanelCoordinatorAndroid::OnPanelClosed() {
-  SPLOG("OnPanelClosed");
-  CHECK(state_ == SidePanelState::kClosing)
-      << "Should only receive OnPanelClosed() when side panel is closing.";
-
-  SidePanelEntry* entry = GetEntryForCurrentKeyNonNull();
-
-  SetCurrentKey(/*new_key=*/std::nullopt);
-
-  // Now that the animation has completed, we can update our local state to be
-  // closed, and trigger the entry hidden callbacks.
-  if (pending_hide_reason_) {
-    entry->OnEntryHidden();
-    entry->OnEntryHiddenWithReason(*pending_hide_reason_);
-    pending_hide_reason_ = std::nullopt;
-
-    // We need to explicitly reset the active entry for the "close side panel"
-    // case.
-    //
-    // Context as of Apr 15, 2026:
-    //
-    // `SidePanelRegistry` observes all its `SidePanelEntries` via
-    // `SidePanelEntryObserver`.
-    //
-    // For the "open side panel" case, the active entry is set via
-    // `SidePanelEntry::OnEntryShown()` -> `SidePanelRegistry::OnEntryShown()`.
-    //
-    // For the "close side panel" case, `SidePanelRegistry` doesn't implement
-    // `SidePanelEntryObserver::OnEntryHidden()` or
-    // `SidePanelEntryObserver::OnEntryHiddenWithReason()`, so
-    // `SidePanelEntry::OnEntryHidden()` and
-    // `SidePanelEntry::OnEntryHiddenWithReason()` can't reset the active entry.
-    //
-    // TODO(crbug.com/503113522): Consider having `SidePanelRegistry` _reset_
-    // the active entry so it's consistent with how the active entry is _set_.
-    if (auto* contextual_registry = GetActiveContextualRegistry()) {
-      contextual_registry->ResetActiveEntry();
-    }
-    if (auto* window_registry = SidePanelRegistry::From(browser())) {
-      window_registry->ResetActiveEntry();
-    }
-    ClearCachedEntryViews();
-
-    SidePanelMetrics::RecordSidePanelClosed(opened_timestamp());
+  if (old_width == new_width) {
+    return;
   }
 
-  state_ = SidePanelState::kClosed;
+  // The side panel has finished opening.
+  if (old_width == 0 && new_width > 0) {
+    CHECK_EQ(state_, SidePanelState::kOpening);
+    FinishOpeningPanel();
+    return;
+  }
+
+  // The side panel has finished closing.
+  if (old_width > 0 && new_width == 0) {
+    CHECK_EQ(state_, SidePanelState::kClosing);
+    FinishClosingPanel();
+  }
 }
 
 void SidePanelCoordinatorAndroid::OnPanelContentReplaced() {
@@ -220,14 +187,7 @@ void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
   // stable state.
   EndAnimations();
 
-  // When we start to close, we will update state to closing, and send a remove
-  // request to Java, which will handle animations and call back when done.
-  state_ = SidePanelState::kClosing;
-  SidePanelEntry* entry = GetEntryForCurrentKeyNonNull();
-  entry->OnEntryWillHide(hide_reason);
-  pending_hide_reason_ = hide_reason;
-  Java_SidePanelCoordinatorAndroidImpl_startClosingPanel(
-      AttachCurrentThread(), java_coordinator(), suppress_animations);
+  StartClosingPanel(hide_reason, suppress_animations);
 }
 
 void SidePanelCoordinatorAndroid::OnTabClosed(TabAndroid* tab) {
@@ -550,7 +510,7 @@ void SidePanelCoordinatorAndroid::StartOpeningPanel(
     const UniqueKey& unique_key,
     bool suppress_animations,
     std::unique_ptr<SidePanelNativeViewAndroid> native_view) {
-  SPLOG("StartOpeningPanel.");
+  SPLOG("StartOpeningPanel - suppress_animations: " << suppress_animations);
   state_ = SidePanelState::kOpening;
   SetCurrentKey(unique_key);
   entry->OnEntryShown();
@@ -576,6 +536,77 @@ void SidePanelCoordinatorAndroid::StartOpeningPanel(
       entry->should_show_header(), start_bounds.x(), start_bounds.y(),
       start_bounds.width(), start_bounds.height(), suppress_animations);
   entry->CacheView(std::move(native_view));
+}
+
+void SidePanelCoordinatorAndroid::FinishOpeningPanel() {
+  SPLOG("FinishOpeningPanel");
+  CHECK(state_ == SidePanelState::kOpening)
+      << "Should only call FinishOpeningPanel() when side panel is opening.";
+  state_ = SidePanelState::kShown;
+}
+
+void SidePanelCoordinatorAndroid::StartClosingPanel(
+    SidePanelEntryHideReason hide_reason,
+    bool suppress_animations) {
+  SPLOG("StartClosingPanel - hide_reason: " << ToString(hide_reason)
+                                            << ", suppress_animations: "
+                                            << suppress_animations);
+
+  state_ = SidePanelState::kClosing;
+  SidePanelEntry* entry = GetEntryForCurrentKeyNonNull();
+  entry->OnEntryWillHide(hide_reason);
+  pending_hide_reason_ = hide_reason;
+  Java_SidePanelCoordinatorAndroidImpl_startClosingPanel(
+      AttachCurrentThread(), java_coordinator(), suppress_animations);
+}
+
+void SidePanelCoordinatorAndroid::FinishClosingPanel() {
+  SPLOG("FinishClosingPanel");
+  CHECK(state_ == SidePanelState::kClosing)
+      << "Should only call FinishClosingPanel() when side panel is closing.";
+
+  SidePanelEntry* entry = GetEntryForCurrentKeyNonNull();
+
+  SetCurrentKey(/*new_key=*/std::nullopt);
+
+  // Now that the animation has completed, we can update our local state to be
+  // closed, and trigger the entry hidden callbacks.
+  if (pending_hide_reason_) {
+    entry->OnEntryHidden();
+    entry->OnEntryHiddenWithReason(*pending_hide_reason_);
+    pending_hide_reason_ = std::nullopt;
+
+    // We need to explicitly reset the active entry for the "close side panel"
+    // case.
+    //
+    // Context as of Apr 15, 2026:
+    //
+    // `SidePanelRegistry` observes all its `SidePanelEntries` via
+    // `SidePanelEntryObserver`.
+    //
+    // For the "open side panel" case, the active entry is set via
+    // `SidePanelEntry::OnEntryShown()` -> `SidePanelRegistry::OnEntryShown()`.
+    //
+    // For the "close side panel" case, `SidePanelRegistry` doesn't implement
+    // `SidePanelEntryObserver::OnEntryHidden()` or
+    // `SidePanelEntryObserver::OnEntryHiddenWithReason()`, so
+    // `SidePanelEntry::OnEntryHidden()` and
+    // `SidePanelEntry::OnEntryHiddenWithReason()` can't reset the active entry.
+    //
+    // TODO(crbug.com/503113522): Consider having `SidePanelRegistry` _reset_
+    // the active entry so it's consistent with how the active entry is _set_.
+    if (auto* contextual_registry = GetActiveContextualRegistry()) {
+      contextual_registry->ResetActiveEntry();
+    }
+    if (auto* window_registry = SidePanelRegistry::From(browser())) {
+      window_registry->ResetActiveEntry();
+    }
+    ClearCachedEntryViews();
+
+    SidePanelMetrics::RecordSidePanelClosed(opened_timestamp());
+  }
+
+  state_ = SidePanelState::kClosed;
 }
 
 void SidePanelCoordinatorAndroid::StartReplacingPanelContent(
