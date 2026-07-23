@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 
+#include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -40,12 +41,13 @@ class FakeRasterCommandsCompleted : public viz::TestRasterInterface {
 class ScopedRasterTimerTest : public Test {};
 
 TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::ScopedMockElapsedTimersForTest mock_timer;
   ScopedRasterTimer::Host host;
   base::HistogramTester histograms;
 
   {
-    ScopedRasterTimer timer(nullptr, host, /*always_measure_for_testing=*/true);
+    ScopedRasterTimer timer(nullptr, host);
   }
 
   histograms.ExpectUniqueSample(
@@ -60,6 +62,7 @@ TEST_F(ScopedRasterTimerTest, UnacceleratedRasterDuration) {
 }
 
 TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
   base::ScopedMockElapsedTimersForTest mock_timer;
   ScopedRasterTimer::Host host;
   base::HistogramTester histograms;
@@ -67,8 +70,7 @@ TEST_F(ScopedRasterTimerTest, AcceleratedRasterDuration) {
   FakeRasterCommandsCompleted fake_raster;
 
   {
-    ScopedRasterTimer timer(&fake_raster, host,
-                            /*always_measure_for_testing=*/true);
+    ScopedRasterTimer timer(&fake_raster, host);
   }
 
   host.CheckGpuTimers(&fake_raster);

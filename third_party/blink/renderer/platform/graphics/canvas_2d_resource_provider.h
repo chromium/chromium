@@ -259,9 +259,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   // token.
   void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
 
-  void AlwaysEnableRasterTimersForTesting(bool value) {
-    always_enable_raster_timers_for_testing_ = value;
-  }
   virtual void RasterRecord(cc::PaintRecord last_recording);
   MemoryManagedPaintCanvas& GetCanvasForTesting();
   void RestoreBackBuffer(const cc::PaintImage&);
@@ -418,7 +415,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   bool clear_frame_ = true;
   std::optional<cc::PaintRecord> last_recording_;
-  bool always_enable_raster_timers_for_testing_ = false;
 
   base::WeakPtrFactory<Canvas2DResourceProvider> weak_ptr_factory_{this};
 };

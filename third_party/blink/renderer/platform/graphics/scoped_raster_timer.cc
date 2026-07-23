@@ -12,13 +12,11 @@ namespace blink {
 
 ScopedRasterTimer::ScopedRasterTimer(
     gpu::raster::RasterInterface* raster_interface,
-    Host& host,
-    bool always_measure_for_testing)
+    Host& host)
     : raster_interface_(raster_interface), host_(host) {
   // Subsample the RasterTimer metrics to reduce overhead.
   constexpr float kRasterMetricProbability = 0.01;
-  if (!base::ShouldRecordSubsampledMetric(kRasterMetricProbability) &&
-      !always_measure_for_testing) {
+  if (!base::ShouldRecordSubsampledMetric(kRasterMetricProbability)) {
     return;
   }
 

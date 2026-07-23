@@ -20,9 +20,7 @@ class PLATFORM_EXPORT ScopedRasterTimer {
  public:
   class Host;
   // raster_interface: pass null if rasterization is not gpu-accelerated
-  ScopedRasterTimer(gpu::raster::RasterInterface* raster_interface,
-                    Host& host,
-                    bool always_measure_for_testing);
+  ScopedRasterTimer(gpu::raster::RasterInterface* raster_interface, Host& host);
   ~ScopedRasterTimer();
 
   // Histogram names.
