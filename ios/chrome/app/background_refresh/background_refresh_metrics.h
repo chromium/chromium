@@ -67,6 +67,18 @@ extern const char kExecutionDurationHistogram[];
 // Histogram for the duration of the background refresh task when it times out.
 extern const char kExecutionDurationTimeoutHistogram[];
 
+// Histogram for the duration of the background refresh task when no providers
+// were due.
+extern const char kExecutionDurationNoOpHistogram[];
+
+// Histogram for the overall duration of the background refresh task (from
+// trigger to completion).
+extern const char kTaskDurationHistogram[];
+
+// Histogram for the overall duration of the background refresh task when it
+// times out.
+extern const char kTaskDurationTimeoutHistogram[];
+
 // Histogram for the number of active providers when the background refresh task
 // times out.
 extern const char kActiveProviderCountAtTimeoutHistogram[];

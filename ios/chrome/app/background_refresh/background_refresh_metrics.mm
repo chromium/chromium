@@ -22,6 +22,14 @@ const char kExecutionDurationHistogram[] =
 const char kExecutionDurationTimeoutHistogram[] =
     "IOS.BackgroundRefresh.ExecutionDuration.Timeout";
 
+const char kExecutionDurationNoOpHistogram[] =
+    "IOS.BackgroundRefresh.ExecutionDuration.NoOp";
+
+const char kTaskDurationHistogram[] = "IOS.BackgroundRefresh.TaskDuration";
+
+const char kTaskDurationTimeoutHistogram[] =
+    "IOS.BackgroundRefresh.TaskDuration.Timeout";
+
 const char kActiveProviderCountAtTimeoutHistogram[] =
     "IOS.BackgroundRefresh.Timeout.ActiveProviderCount";
 

@@ -102,9 +102,13 @@
 // corresponding main-thread methods have names beginning with `handle`.
 
 @implementation BackgroundRefreshAppAgent {
-  base::Time _refresh_start;
+  // Start time when iOS called the task.
+  // *set* once on a non-main thread.
+  // *read* after that point only.
+  base::TimeTicks _taskStart;
+  // Start time when main thread execution of the providers started.
+  base::TimeTicks _executionStart;
   BGTask* _pendingTask;
-  base::Time _pendingTaskStartTime;
   base::TimeDelta _startupWaitDuration;
   BOOL _hasStartupWaitDuration;
   SEQUENCE_CHECKER(_sequenceChecker);
@@ -167,6 +171,8 @@
   // of the things that must be implemented for this to work correctly:
   //  - No processing if this is a safe mode launch.
 
+  // Set start time for the task.
+  _taskStart = base::TimeTicks::Now();
   __weak __typeof(self) weakSelf = self;
   __weak __typeof(task) weakTask = task;
   [task setExpirationHandler:^{
@@ -182,6 +188,10 @@
 // Handle task expiration. This is called by the (OS) background task scheduler
 // shortly before the task expires; it is **not called on the main thread**.
 - (void)systemTriggeredExpirationForTask:(BGTask*)task {
+  // Log the time iOS gave the task.
+  base::UmaHistogramMediumTimes(kTaskDurationTimeoutHistogram,
+                                base::TimeTicks::Now() - _taskStart);
+
   // Hop to main thread to cancel tasks.
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -227,21 +237,23 @@
     [self executeProvidersForTask:task];
   } else {
     _pendingTask = task;
-    _pendingTaskStartTime = base::Time::Now();
   }
 }
 
 - (void)executeProvidersForTask:(BGTask*)task {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
+  // Set the start time of actual task execution.
+  base::TimeTicks start = base::TimeTicks::Now();
+  _executionStart = start;
+
+  if (_pendingTask) {
+    _startupWaitDuration = start - _taskStart;
+    _hasStartupWaitDuration = YES;
+  }
+
   // Remove any pending task.
   _pendingTask = nil;
-
-  if (!_pendingTaskStartTime.is_null()) {
-    _startupWaitDuration = base::Time::Now() - _pendingTaskStartTime;
-    _hasStartupWaitDuration = YES;
-    _pendingTaskStartTime = base::Time();
-  }
 
   [self refreshStarted];
   self.providerCount = 0;
@@ -262,11 +274,18 @@
 
   // If none of the providers were due, mark the refresh complete.
   if (self.activeProviders.count == 0) {
+    [task setTaskCompletedWithSuccess:YES];
+    base::TimeTicks finish = base::TimeTicks::Now();
+    // Log the time since iOS triggered the task.
+    base::UmaHistogramMediumTimes(kTaskDurationHistogram, finish - _taskStart);
+    // Log the (very small) actual execution time.
+    base::UmaHistogramMediumTimes(kExecutionDurationNoOpHistogram,
+                                  finish - _executionStart);
     if (_hasStartupWaitDuration) {
+      // If there was a startup wait, log its duration.
       base::UmaHistogramMediumTimes(kStartupWaitDurationCompletedHistogram,
                                     _startupWaitDuration);
     }
-    [task setTaskCompletedWithSuccess:YES];
     [self refreshComplete];
   }
 }
@@ -278,8 +297,10 @@
   // expiration, there's no mechanism for looging or informing the app as a
   // whole that this has happened.
 
+  base::TimeTicks expiration = base::TimeTicks::Now();
+
   base::UmaHistogramMediumTimes(kExecutionDurationTimeoutHistogram,
-                                base::Time::Now() - _refresh_start);
+                                expiration - _executionStart);
   base::UmaHistogramCounts100(kActiveProviderCountAtTimeoutHistogram,
                               self.activeProviders.count);
   base::UmaHistogramCounts100(kTotalProviderCountAtTimeoutHistogram,
@@ -288,10 +309,11 @@
   // If the task is still pending, then the refresh has timed out before startup
   // finished kBrowserObjectsForBackgroundHandlers, and thus
   // -executeProvidersForTask was never called. Record the
-  // "NeverStarted" delay time.
-  if (_pendingTask && !_pendingTaskStartTime.is_null()) {
+  // "NeverStarted" delay time, since _startupWaitDuration won't have been
+  // computed yet.
+  if (_pendingTask) {
     base::UmaHistogramMediumTimes(kStartupWaitDurationNeverStartedHistogram,
-                                  base::Time::Now() - _pendingTaskStartTime);
+                                  expiration - _taskStart);
   } else if (_hasStartupWaitDuration) {
     base::UmaHistogramMediumTimes(kStartupWaitDurationTimeoutHistogram,
                                   _startupWaitDuration);
@@ -299,7 +321,6 @@
 
   // Remove any pending task.
   _pendingTask = nil;
-  _pendingTaskStartTime = base::Time();
 
   // Cancel all provider tasks. The completion callback will not be called.
   for (AppRefreshProvider* provider in self.activeProviders) {
@@ -328,26 +349,30 @@
 
   [self.activeProviders removeObject:provider];
   if (self.activeProviders.count == 0) {
+    self.providerCount = 0;
+    [task setTaskCompletedWithSuccess:YES];
+    // Log the time since iOS triggered the task.
+    base::UmaHistogramMediumTimes(kTaskDurationHistogram,
+                                  base::TimeTicks::Now() - _taskStart);
+    // Log the time since execution started.
+    base::UmaHistogramMediumTimes(kExecutionDurationHistogram,
+                                  base::TimeTicks::Now() - _executionStart);
     if (_hasStartupWaitDuration) {
+      // If there was a startup wait, log its duration.
       base::UmaHistogramMediumTimes(kStartupWaitDurationCompletedHistogram,
                                     _startupWaitDuration);
     }
-    self.providerCount = 0;
-    [task setTaskCompletedWithSuccess:YES];
     [self refreshComplete];
   }
 }
 
 - (void)refreshStarted {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  _refresh_start = base::Time::Now();
   [self.audience backgroundRefreshDidStart];
 }
 
 - (void)refreshComplete {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  base::UmaHistogramMediumTimes(kExecutionDurationHistogram,
-                                base::Time::Now() - _refresh_start);
   [self.audience backgroundRefreshDidEnd];
 }
 

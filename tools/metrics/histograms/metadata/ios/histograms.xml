@@ -416,8 +416,21 @@ chromium-metrics-reviews@google.com.
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
-    Logged when a background refresh task completes successfully. Logs the
-    duration of the execution.
+    Logged when a background refresh task completes successfully and at least
+    one refresh provider was executed. Logs the duration of the execution,
+    starting when Chrome starts executing refresh providers.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundRefresh.ExecutionDuration.NoOp" units="ms"
+    expires_after="2027-01-03">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when a background refresh task completes successfully but no task
+    execution occurred because no refresh providers were due. Logs the duration
+    of the execution, starting when Chrome starts executing refresh providers
+    (which is expected to be very small).
   </summary>
 </histogram>
 
@@ -427,7 +440,8 @@ chromium-metrics-reviews@google.com.
   <owner>marq@chromium.org</owner>
   <summary>
     Logged when a background refresh task expires (times out). Logs the duration
-    of the execution up to the timeout.
+    of the execution, starting when Chrome starts executing refresh providers,
+    up to the timeout.
   </summary>
 </histogram>
 
@@ -470,8 +484,9 @@ chromium-metrics-reviews@google.com.
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
-    Logged when a background refresh task completes. Logs the duration that the
-    task waited for the app to reach the required init stage, if any.
+    Logged when a background refresh task completes successfully (either after
+    running providers or as a no-op). Logs the duration that the task waited for
+    the app to reach the required init stage, if any.
   </summary>
 </histogram>
 
@@ -481,7 +496,7 @@ chromium-metrics-reviews@google.com.
   <owner>marq@chromium.org</owner>
   <summary>
     Logged when a background refresh task expires (times out) without being able
-    to start aby refresh providers. Logs the duration that the task waited for
+    to start any refresh providers. Logs the duration that the task waited for
     the app to reach the required init stage, if any.
   </summary>
 </histogram>
@@ -493,6 +508,28 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged when a background refresh task expires (times out). Logs the duration
     that the task waited for the app to reach the required init stage, if any.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundRefresh.TaskDuration" units="ms"
+    expires_after="2027-01-03">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when a background refresh task completes successfully. Logs the
+    overall duration of the task, from when the OS executed the callback to when
+    the task completed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.BackgroundRefresh.TaskDuration.Timeout" units="ms"
+    expires_after="2027-01-03">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    Logged when the background refresh task expires (times out). Logs the
+    overall duration of the task, from when the OS executed the callback up to
+    the timeout.
   </summary>
 </histogram>
 
