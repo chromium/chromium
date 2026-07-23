@@ -512,7 +512,7 @@ class InteractiveGlicTestMixin : public T {
     return Api::Do([this]() {
       auto* host = GetHost();
       CHECK(host);
-      host->DetachPanel(host->GetPrimaryPageHandlerForTesting());
+      host->DetachPanel();
     });
   }
 
@@ -608,20 +608,20 @@ class InteractiveGlicTestMixin : public T {
           WaitForGlicOpen(), WaitForWebUIState(mojom::WebUiState::kReady),
           WaitUntil(
               [this]() -> std::string {
-                auto* handler = GetHost()->GetPrimaryPageHandlerForTesting();
-                if (!handler) {
-                  return "no page handler";
+                auto* host = GetHost();
+                if (!host) {
+                  return "no host";
                 }
-                if (!handler->GetGuestMainFrame()) {
+                if (!host->GetGuestMainFrame()) {
                   return "no guest frame";
                 }
                 return "ok";
               },
               "ok"),
           Api::Do([this, where = where]() {
-            auto* handler = GetHost()->GetPrimaryPageHandlerForTesting();
-            CHECK(handler) << "No page handler";
-            auto* frame = handler->GetGuestMainFrame();
+            auto* host = GetHost();
+            CHECK(host) << "No host";
+            auto* frame = host->GetGuestMainFrame();
             CHECK(frame) << "No guest frame";
             CHECK(content::ExecJs(frame, "()=>document.querySelector(\"" +
                                              where[0] + "\").click()"));
@@ -778,15 +778,7 @@ class InteractiveGlicTestMixin : public T {
 
   content::RenderFrameHost* FindGlicGuestMainFrame() {
     Host* host = GetHost();
-    if (!host) {
-      return nullptr;
-    }
-    for (GlicPageHandler* handler : GetHost()->GetPageHandlersForTesting()) {
-      if (handler->GetGuestMainFrame()) {
-        return handler->GetGuestMainFrame();
-      }
-    }
-    return nullptr;
+    return host ? host->GetGuestMainFrame() : nullptr;
   }
 
   content::WebContents* FindGlicWebUIContents() {

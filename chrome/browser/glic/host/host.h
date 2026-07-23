@@ -335,8 +335,7 @@ class Host : public GlicSharingManagerProvider {
                          mojom::WebUiState new_state);
 
   // Called when the web client changes its mode.
-  void OnInteractionModeChange(GlicPageHandler* page_handler,
-                               mojom::WebClientMode new_mode);
+  void OnInteractionModeChange(mojom::WebClientMode new_mode);
 
   // Called when the microphone status changes in the web client.
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status);
@@ -345,24 +344,22 @@ class Host : public GlicSharingManagerProvider {
   // runs when the animation finishes or is destroyed, or soon if the window
   // doesn't exist yet. In this last case `size` will be used for the
   // initial size when creating the widget later.
-  void ResizePanel(GlicPageHandler* page_handler,
-                   const gfx::Size& size,
+  void ResizePanel(const gfx::Size& size,
                    base::TimeDelta duration,
                    base::OnceClosure callback);
 
   // Allows the user to manually resize the widget by dragging. If the widget
   // hasn't been created yet, apply this setting when it is created. No effect
   // if the widget doesn't exist or the feature flag is disabled.
-  void EnableDragResize(GlicPageHandler* page_handler, bool enabled);
+  void EnableDragResize(bool enabled);
 
-  void AttachPanel(GlicPageHandler* page_handler);
-  void DetachPanel(GlicPageHandler* page_handler);
-  void ClosePanel(GlicPageHandler* page_handler);
+  void AttachPanel();
+  void DetachPanel();
+  void ClosePanel();
 
   // Sets the minimum widget size that the widget will allow the user to resize
   // to.
-  void SetMinimumWidgetSize(GlicPageHandler* page_handler,
-                            const gfx::Size& size);
+  void SetMinimumWidgetSize(const gfx::Size& size);
 
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);

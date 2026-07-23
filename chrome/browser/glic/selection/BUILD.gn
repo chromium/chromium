@@ -16,10 +16,12 @@ source_set("selection") {
     "selection_overlay_untrusted_ui.h",
   ]
 
-  public_deps = [ "//chrome/browser/ui/lens" ]
+  public_deps = [
+    ":mojo_bindings",
+    "//chrome/browser/ui/lens",
+  ]
 
   deps = [
-    ":mojo_bindings",
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/glic",

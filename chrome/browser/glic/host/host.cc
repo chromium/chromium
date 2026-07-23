@@ -37,10 +37,13 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#else
+#include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"  // nogncheck
 #endif
 
 namespace glic {
@@ -120,11 +123,8 @@ bool Host::IsWebContentPresentAndMatches(
   if (contents && contents->GetPrimaryMainFrame() == render_frame_host) {
     return true;
   }
-  auto* handler = page_handler();
-  if (handler) {
-    if (handler->GetGuestMainFrame() == render_frame_host) {
-      return true;
-    }
+  if (GetGuestMainFrame() == render_frame_host) {
+    return true;
   }
   return false;
 }
@@ -507,10 +507,44 @@ bool Host::IsGlicWebUiHost(content::RenderProcessHost* host) const {
 }
 
 content::RenderFrameHost* Host::GetGuestMainFrame() const {
-  if (page_handler()) {
-    return page_handler()->GetGuestMainFrame();
+  content::WebContents* contents = webui_contents();
+  if (!contents) {
+    return nullptr;
   }
-  return nullptr;
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  extensions::WebViewGuest* web_view_guest = nullptr;
+  content::RenderFrameHost* webui_frame = contents->GetPrimaryMainFrame();
+  if (!webui_frame) {
+    return nullptr;
+  }
+  webui_frame->ForEachRenderFrameHostWithAction(
+      [&web_view_guest](content::RenderFrameHost* rfh) {
+        auto* web_view = extensions::WebViewGuest::FromRenderFrameHost(rfh);
+        if (web_view && web_view->attached()) {
+          web_view_guest = web_view;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+  return web_view_guest ? web_view_guest->GetGuestMainFrame() : nullptr;
+#else
+  guest_view::SlimWebViewGuest* slim_web_view_guest = nullptr;
+  content::RenderFrameHost* webui_frame = contents->GetPrimaryMainFrame();
+  if (!webui_frame) {
+    return nullptr;
+  }
+  webui_frame->ForEachRenderFrameHostWithAction(
+      [&slim_web_view_guest](content::RenderFrameHost* rfh) {
+        auto* web_view = guest_view::SlimWebViewGuest::FromRenderFrameHost(rfh);
+        if (web_view && web_view->attached()) {
+          slim_web_view_guest = web_view;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+  return slim_web_view_guest ? slim_web_view_guest->GetGuestMainFrame()
+                             : nullptr;
+#endif
 }
 
 bool Host::IsGlicWebUi(content::WebContents* contents) const {
@@ -562,9 +596,12 @@ void Host::WebUiStateChanged(GlicPageHandler* page_handler,
 void Host::NotifyZeroStateSuggestion(
     mojom::ZeroStateSuggestionsV2Ptr suggestions,
     mojom::ZeroStateSuggestionsOptions options) {
-  if (handler_info_) {
-    handler_info_->page_handler->ZeroStateSuggestionChanged(
-        std::move(suggestions), std::move(options));
+  if (handler_info_ && handler_info_->web_client) {
+    auto opt = mojom::ZeroStateSuggestionsOptions::New();
+    opt->is_first_run = std::move(options.is_first_run);
+    opt->supported_tools = std::move(options.supported_tools);
+    handler_info_->web_client->NotifyZeroStateSuggestionsChanged(
+        std::move(suggestions), std::move(opt));
   }
 }
 
@@ -602,8 +639,7 @@ content::RenderProcessHost* Host::GetWebClientRenderProcessHost() const {
   return nullptr;
 }
 
-void Host::OnInteractionModeChange(GlicPageHandler* page_handler,
-                                   mojom::WebClientMode new_mode) {
+void Host::OnInteractionModeChange(mojom::WebClientMode new_mode) {
   instance_delegate_->OnInteractionModeChange(new_mode);
 }
 
@@ -612,40 +648,30 @@ void Host::OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) {
   delegate_->OnMicrophoneStatusChanged(status);
 }
 
-void Host::ResizePanel(GlicPageHandler* page_handler,
-                       const gfx::Size& size,
+void Host::ResizePanel(const gfx::Size& size,
                        base::TimeDelta duration,
                        base::OnceClosure callback) {
   delegate_->Resize(size, duration, std::move(callback));
 }
 
-void Host::EnableDragResize(GlicPageHandler* page_handler, bool enabled) {
-  if (handler_info_ && handler_info_->page_handler == page_handler) {
-    delegate_->EnableDragResize(enabled);
-  }
+void Host::EnableDragResize(bool enabled) {
+  delegate_->EnableDragResize(enabled);
 }
 
-void Host::AttachPanel(GlicPageHandler* page_handler) {
-  if (handler_info_ && handler_info_->page_handler == page_handler) {
-    delegate_->Attach();
-  }
+void Host::AttachPanel() {
+  delegate_->Attach();
 }
 
-void Host::DetachPanel(GlicPageHandler* page_handler) {
-  if (handler_info_ && handler_info_->page_handler == page_handler) {
-    delegate_->Detach();
-  }
+void Host::DetachPanel() {
+  delegate_->Detach();
 }
 
-void Host::ClosePanel(GlicPageHandler* page_handler) {
+void Host::ClosePanel() {
   delegate_->ClosePanel();
 }
 
-void Host::SetMinimumWidgetSize(GlicPageHandler* page_handler,
-                                const gfx::Size& size) {
-  if (handler_info_ && handler_info_->page_handler == page_handler) {
-    delegate_->SetMinimumWidgetSize(size);
-  }
+void Host::SetMinimumWidgetSize(const gfx::Size& size) {
+  delegate_->SetMinimumWidgetSize(size);
 }
 
 void Host::CaptureScreenshot(

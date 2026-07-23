@@ -18,7 +18,6 @@
 
 namespace content {
 class BrowserContext;
-class RenderFrameHost;
 class WebContents;
 }  // namespace content
 namespace gfx {
@@ -27,7 +26,6 @@ class Size;
 
 namespace glic {
 class GlicKeyedService;
-class GlicWebClientHandler;
 
 // Handles the Mojo requests coming from the Glic WebUI.
 class GlicPageHandler : public glic::mojom::PageHandler,
@@ -43,15 +41,13 @@ class GlicPageHandler : public glic::mojom::PageHandler,
 
   ~GlicPageHandler() override;
 
-  content::WebContents* webui_contents() { return webui_contents_; }
+  content::WebContents* webui_contents();
 
   void NotifyWindowIntentToShow();
 
   void Zoom(mojom::ZoomAction zoom_action);
 
-  // Returns the main frame of the guest view that lives within this WebUI. May
-  // be null.
-  content::RenderFrameHost* GetGuestMainFrame();
+  Host& host();
 
   // glic::mojom::PageHandler implementation.
 
@@ -88,10 +84,6 @@ class GlicPageHandler : public glic::mojom::PageHandler,
   void SetProfileReadyState(glic::mojom::ProfileReadyState ready_state);
   void UpdateProfileReadyState();
 
-  // Notifies the web client about zero state suggestions.
-  void ZeroStateSuggestionChanged(mojom::ZeroStateSuggestionsV2Ptr suggestions,
-                                  mojom::ZeroStateSuggestionsOptions options);
-
   void WebUiStateChanged(glic::mojom::WebUiState new_state) override;
 
   // PanelStateObserver implementation.
@@ -99,7 +91,6 @@ class GlicPageHandler : public glic::mojom::PageHandler,
 
   void UpdatePageState(mojom::PanelStateKind panelStateKind);
 
-  Host& host() { return *host_; }
 
  private:
   GlicKeyedService* GetGlicService();
@@ -108,7 +99,7 @@ class GlicPageHandler : public glic::mojom::PageHandler,
   raw_ptr<Host> host_;
   // There should at most one WebClientHandler at a time. A new one is created
   // each time the webview loads a page.
-  std::unique_ptr<GlicWebClientHandler> web_client_handler_;
+  std::unique_ptr<GlicWebClientAccess> web_client_handler_;
   raw_ptr<content::WebContents> webui_contents_;
   raw_ptr<content::BrowserContext> browser_context_;
   mojo::Receiver<glic::mojom::PageHandler> receiver_;

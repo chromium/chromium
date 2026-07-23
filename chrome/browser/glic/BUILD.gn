@@ -373,6 +373,8 @@ source_set("impl") {
     "host/glic_synthetic_trial_manager.cc",
     "host/glic_synthetic_trial_manager.h",
     "host/glic_ui.cc",
+    "host/glic_web_client_handler.cc",
+    "host/glic_web_client_handler.h",
     "host/glic_web_contents_warming_pool.cc",
     "host/glic_web_contents_warming_pool.h",
     "host/guest_util.cc",
@@ -511,6 +513,7 @@ source_set("impl") {
   if (!is_android) {
     # TODO(b/470059315): Make these work on Android, or move them to the
     # desktop-only section.
+    public_deps += [ "//chrome/browser/glic/selection" ]
     sources += [
       "common/view_scoped_registration_delegate_impl.cc",
       "experimental_opt_in/glic_experimental_opt_in_controller.cc",
