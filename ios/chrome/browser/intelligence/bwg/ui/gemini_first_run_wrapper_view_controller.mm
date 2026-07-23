@@ -231,6 +231,8 @@ const CGFloat kInsetAdjustment = 20;
   wrapperStackView.translatesAutoresizingMaskIntoConstraints = NO;
   wrapperStackView.directionalLayoutMargins =
       NSDirectionalEdgeInsetsMake(kLogoTopGap, 0, 0, 0);
+  wrapperStackView.accessibilityIdentifier =
+      kGeminiFirstRunWrapperStackAccessibilityIdentifier;
   [self.contentView addSubview:wrapperStackView];
   [self.contentView setContentHuggingPriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];

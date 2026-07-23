@@ -103,6 +103,10 @@ NSString* const kGeminiFootNoteTextViewAccessibilityIdentifier =
 
 const int kGeminiContextualCueChipSlidingWindow = 2;
 
+// The accessibility ID of the Gemini wrapper stack in the first run flow.
+NSString* const kGeminiFirstRunWrapperStackAccessibilityIdentifier =
+    @"GeminiFirstRunWrapperStackAccessibilityIdentifier";
+
 @implementation GeminiStartupState
 
 - (instancetype)initWithEntryPoint:(gemini::EntryPoint)entryPoint {
