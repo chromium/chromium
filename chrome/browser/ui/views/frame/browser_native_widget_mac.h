@@ -104,6 +104,7 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   raw_ptr<BrowserView> browser_view_;  // Weak. Our ClientView.
   BrowserWindowTouchBarViewsDelegate* __strong touch_bar_delegate_;
   NSView* __strong background_view_;
+  NSView* __strong tint_view_;
 
   std::optional<ui::NativeTheme::PreferredColorScheme>
       last_preferred_color_scheme_;

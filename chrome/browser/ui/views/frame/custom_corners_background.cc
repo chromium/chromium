@@ -142,9 +142,9 @@ CustomCornersBackground::Corner CustomCornersBackground::GetWindowCorner(
 
 void CustomCornersBackground::SetUseBackgroundBlur(bool use_background_blur) {
   static const bool background_blur_enabled =
-      features::kBackgroundBlurOpacity.Get() < 1.0f;
+      features::kGlassExpandOnHoverOpacity.Get() < 1.0f;
   static const float background_blur_radius =
-      features::kBackgroundBlurBlurRadius.Get();
+      static_cast<float>(features::kGlassExpandOnHoverBlurRadius.Get());
   use_background_blur &=
       background_blur_enabled && background_blur_radius > 0.0f;
   if (!view_->layer()) {

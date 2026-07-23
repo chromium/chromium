@@ -43,6 +43,37 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacInteractiveTest,
   observer.Wait();
 }
 
+namespace {
+
+struct GlassViews {
+  NSView* glass_view = nil;
+  NSView* tint_view = nil;
+};
+
+GlassViews GetGlassViews(NSView* content_view) {
+  Class background_view_class = NSClassFromString(@"GlassFrameBackgroundView");
+  NSView* glass_view = nil;
+  for (NSView* subview in content_view.subviews) {
+    if ([subview isKindOfClass:background_view_class]) {
+      glass_view = subview;
+      break;
+    }
+  }
+
+  NSView* tint_view = nil;
+  if (glass_view) {
+    for (NSView* subview in glass_view.subviews) {
+      if ([NSStringFromClass([subview class]) isEqualToString:@"NSView"]) {
+        tint_view = subview;
+        break;
+      }
+    }
+  }
+  return {glass_view, tint_view};
+}
+
+}  // namespace
+
 class TestNativeWidgetMac : public views::NativeWidgetMac {
  public:
   static views::NativeWidgetMacNSWindowHost* GetHost(
@@ -75,18 +106,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest, ActiveInactiveTintOpacit
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   ASSERT_TRUE(widget->IsActive());
 
-  Class tint_view_class = NSClassFromString(@"GlassFrameTintView");
-  Class background_view_class = NSClassFromString(@"GlassFrameBackgroundView");
-
-  NSView* tint_view = nil;
-  NSView* glass_view = nil;
-  for (NSView* subview in content_view.subviews) {
-    if ([subview isKindOfClass:tint_view_class]) {
-      tint_view = subview;
-    } else if ([subview isKindOfClass:background_view_class]) {
-      glass_view = subview;
-    }
-  }
+  auto [glass_view, tint_view] = GetGlassViews(content_view);
 
   // Get active and inactive colors.
   const ui::ColorProvider* color_provider = browser_view->GetColorProvider();
@@ -94,6 +114,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest, ActiveInactiveTintOpacit
   SkColor inactive_color = color_provider->GetColor(ui::kColorFrameInactive);
 
   auto get_sk_color = [](CGColorRef cg_color) {
+    if (!cg_color) {
+      return SK_ColorTRANSPARENT;
+    }
     NSColor* ns_color = [NSColor colorWithCGColor:cg_color];
     NSColor* srgb_color = [ns_color colorUsingColorSpace:[NSColorSpace sRGBColorSpace]];
     return SkColorSetARGB(
@@ -132,16 +155,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNativeWidgetMacGlassTest, ActiveInactiveTintOpacit
   base::RunLoop().RunUntilIdle();
 
   // Find views again.
-  tint_view = nil;
-  glass_view = nil;
-  for (NSView* subview in content_view.subviews) {
-    if ([subview isKindOfClass:tint_view_class]) {
-      tint_view = subview;
-    } else if ([subview isKindOfClass:background_view_class]) {
-      glass_view = subview;
-    }
-  }
+  auto [glass_view_deactivated, tint_view_deactivated] =
+      GetGlassViews(content_view);
 
-  SkColor deactivated_color = get_color_from_views(tint_view, glass_view);
+  SkColor deactivated_color =
+      get_color_from_views(tint_view_deactivated, glass_view_deactivated);
   EXPECT_EQ(SkColorSetA(deactivated_color, 255), SkColorSetA(inactive_color, 255));
 }

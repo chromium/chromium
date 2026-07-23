@@ -508,10 +508,10 @@ BASE_FEATURE(kSplitViewLinkOpen, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDesktopGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlassFrame, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(double, kTintOpacityForLightMode, &kGlassFrame, -1.0);
-BASE_FEATURE_PARAM(double, kTintOpacityForDarkMode, &kGlassFrame, -1.0);
-BASE_FEATURE_PARAM(double, kBackgroundBlurOpacity, &kGlassFrame, 1.0);
-BASE_FEATURE_PARAM(double, kBackgroundBlurBlurRadius, &kGlassFrame, 5.0);
+BASE_FEATURE_PARAM(double, kGlassTintOpacityForLightMode, &kGlassFrame, -1.0);
+BASE_FEATURE_PARAM(double, kGlassTintOpacityForDarkMode, &kGlassFrame, -1.0);
+BASE_FEATURE_PARAM(double, kGlassExpandOnHoverOpacity, &kGlassFrame, 1.0);
+BASE_FEATURE_PARAM(double, kGlassExpandOnHoverBlurRadius, &kGlassFrame, 5.0);
 
 BASE_FEATURE(kRoundedIcons, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebUIRoundedIcons, base::FEATURE_DISABLED_BY_DEFAULT);

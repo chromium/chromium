@@ -98,13 +98,17 @@ bool ShouldHandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) {
 }
 
 double GetGlassFrameTintOpacity(bool is_dark_mode, bool is_vertical_tabs) {
-  constexpr double kLiquidGlassOpacity = 0.55;
-
   double opacity_value = is_dark_mode
-                             ? features::kTintOpacityForDarkMode.Get()
-                             : features::kTintOpacityForLightMode.Get();
+                             ? features::kGlassTintOpacityForDarkMode.Get()
+                             : features::kGlassTintOpacityForLightMode.Get();
 
-  double opacity = opacity_value >= 0.0 ? opacity_value : kLiquidGlassOpacity;
+  constexpr double kLiquidGlassOpacityLightMode = 0.55;
+  constexpr double kLiquidGlassOpacityDarkMode = 0.80;
+
+  double opacity = opacity_value >= 0.0
+                       ? opacity_value
+                       : (is_dark_mode ? kLiquidGlassOpacityDarkMode
+                                       : kLiquidGlassOpacityLightMode);
 
   return std::clamp(opacity, 0.0, 1.0);
 }
@@ -804,9 +808,13 @@ void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {
       [ns_window setBackgroundColor:[NSColor windowBackgroundColor]];
       [background_view_ removeFromSuperview];
       background_view_ = nil;
-      last_preferred_color_scheme_.reset();
-      last_theme_color_.reset();
     }
+    if (tint_view_) {
+      [tint_view_ removeFromSuperview];
+      tint_view_ = nil;
+    }
+    last_preferred_color_scheme_.reset();
+    last_theme_color_.reset();
     return;
   }
 
@@ -822,13 +830,6 @@ void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {
     return;
   }
 
-  if (background_view_) {
-    [background_view_ removeFromSuperview];
-    background_view_ = nil;
-  }
-
-  NSView* const content_view = [ns_window contentView];
-
   last_preferred_color_scheme_ = color_scheme;
   last_theme_color_ = theme_color;
 
@@ -842,7 +843,7 @@ void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {
   const CGFloat g = SkColorGetG(theme_color) / 255.0;
   const CGFloat b = SkColorGetB(theme_color) / 255.0;
   const CGFloat a =
-      GetGlassFrameTintOpacity(last_preferred_color_scheme_ !=
+      GetGlassFrameTintOpacity(last_preferred_color_scheme_ ==
                                    ui::NativeTheme::PreferredColorScheme::kDark,
                                is_vertical_tabs);
 
@@ -853,17 +854,35 @@ void BrowserNativeWidgetMac::UpdateBackground(bool is_eligible) {
   [ns_window setBackgroundColor:[[NSColor windowBackgroundColor]
                                     colorWithAlphaComponent:0.001]];
 
-  if (@available(macOS 26.0, *)) {
-    NSGlassEffectView* const glass_view =
-        [[GlassFrameBackgroundView alloc] initWithFrame:content_view.bounds];
-    glass_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    glass_view.style = NSGlassEffectViewStyleRegular;
+  if (tint_view_) {
+    tint_view_.layer.backgroundColor =
+        [NSColor colorWithSRGBRed:r green:g blue:b alpha:a].CGColor;
+  } else {
+    DCHECK(!background_view_);
+    NSView* const content_view = [ns_window contentView];
 
-    glass_view.tintColor = [NSColor colorWithSRGBRed:r green:g blue:b alpha:a];
+    if (@available(macOS 26.0, *)) {
+      NSGlassEffectView* const glass_view =
+          [[GlassFrameBackgroundView alloc] initWithFrame:content_view.bounds];
+      glass_view.wantsLayer = YES;
+      glass_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+      glass_view.style = NSGlassEffectViewStyleRegular;
 
-    background_view_ = glass_view;
-    [content_view addSubview:background_view_
-                  positioned:NSWindowBelow
-                  relativeTo:nil];
+      glass_view.tintColor = [NSColor clearColor];
+
+      NSView* tint_view = [[NSView alloc] initWithFrame:glass_view.bounds];
+      tint_view.wantsLayer = YES;
+      tint_view.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+      tint_view.layer.backgroundColor =
+          [NSColor colorWithSRGBRed:r green:g blue:b alpha:a].CGColor;
+
+      tint_view_ = tint_view;
+      [glass_view addSubview:tint_view_];
+
+      background_view_ = glass_view;
+      [content_view addSubview:background_view_
+                    positioned:NSWindowBelow
+                    relativeTo:nil];
+    }
   }
 }

@@ -795,7 +795,7 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
     layout.AddChild(
         views().vertical_tab_strip_background_blur_backdrop,
         vertical_tab_strip_bounds,
-        in_glass_mode() && features::kBackgroundBlurOpacity.Get() < 1.0 &&
+        in_glass_mode() && features::kGlassExpandOnHoverOpacity.Get() < 1.0 &&
             layout_data_->vertical_tab_strip_animation.expand_on_hover > 0.0f);
   }
 
@@ -1443,7 +1443,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
           std::powf(static_cast<float>(animation.expand_on_hover), 0.2f);
       auto vertical_tabs_background_color = frame_color;
       static const float expand_on_hover_opacity =
-          static_cast<float>(features::kBackgroundBlurOpacity.Get());
+          static_cast<float>(features::kGlassExpandOnHoverOpacity.Get());
       vertical_tabs_background_color.opacity =
           (1.0f - scaled_percent) * frame_color.opacity +
           scaled_percent * expand_on_hover_opacity;
