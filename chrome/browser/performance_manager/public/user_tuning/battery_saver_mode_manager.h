@@ -93,6 +93,10 @@ class BatterySaverModeManager {
     // Can be used by the UI to show a promo if BSM isn't configured to be
     // enabled when on battery power under a certain threshold.
     virtual void OnBatteryThresholdReached() {}
+
+    // Raised when BatterySaverModeManager is being destroyed. Observers that
+    // outlive the manager should use this to reset their observations.
+    virtual void OnBatterySaverModeManagerDestroyed() {}
   };
 
   // Returns whether a BatterySaverModeManager was created and installed.

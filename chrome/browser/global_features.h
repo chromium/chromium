@@ -129,6 +129,7 @@ class GlobalFeatures {
   // called immediately after construction, before any other
   // initialization.
   void Init();
+  void PreMainMessageLoopRun();
 
   // Each of these is called exactly once when the browser starts to shutdown,
   // in the named browser shutdown lifecycle phases. Importantly,

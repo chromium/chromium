@@ -184,14 +184,6 @@ void GlobalFeatures::PostBrowserProcessInit() {
   tab_drag_session_manager_ = std::make_unique<tabs_api::TabDragSessionManager>(
       std::make_unique<tabs_api::TabDragSessionDesktopInjector>());
 #endif
-
-#if BUILDFLAG(IS_MAC)
-  if (features::IsGlassFrameEnabled()) {
-    glass_frame_service_ =
-        GetUserDataFactory().CreateInstance<GlassFrameService>(
-            *g_browser_process, *g_browser_process);
-  }
-#endif  // BUILDFLAG(IS_MAC)
 }
 
 void GlobalFeatures::PostBrowserProcessInitCore() {
@@ -252,6 +244,16 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
 
 void GlobalFeatures::Init() {
   global_browser_collection_ = CreateGlobalBrowserCollection();
+}
+
+void GlobalFeatures::PreMainMessageLoopRun() {
+#if BUILDFLAG(IS_MAC)
+  if (features::IsGlassFrameEnabled()) {
+    glass_frame_service_ =
+        GetUserDataFactory().CreateInstance<GlassFrameService>(
+            *g_browser_process, *g_browser_process);
+  }
+#endif
 }
 
 void GlobalFeatures::PostMainMessageLoopRun() {

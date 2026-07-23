@@ -439,6 +439,7 @@ TEST_F(BatterySaverModeManagerTest, LowBatteryThresholdRaised) {
 
   // A new sample under the threshold won't trigger the event again
   sampling_source_->SimulateEvent();
+  manager()->RemoveObserver(&obs);
 }
 
 TEST_F(BatterySaverModeManagerTest, BSMEnabledUnderThreshold) {
@@ -568,6 +569,7 @@ TEST_F(BatterySaverModeManagerTest, HasBatteryChanged) {
       }));
   sampling_source_->SimulateEvent();
   EXPECT_FALSE(manager()->DeviceHasBattery());
+  manager()->RemoveObserver(&obs);
 }
 
 TEST_F(BatterySaverModeManagerTest,

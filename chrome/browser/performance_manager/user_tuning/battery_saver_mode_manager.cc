@@ -510,6 +510,7 @@ BatterySaverModeManager* BatterySaverModeManager::GetInstance() {
 BatterySaverModeManager::~BatterySaverModeManager() {
   DCHECK_EQ(this, g_battery_saver_mode_manager);
   g_battery_saver_mode_manager = nullptr;
+  observers_.Notify(&Observer::OnBatterySaverModeManagerDestroyed);
 }
 
 void BatterySaverModeManager::AddObserver(Observer* o) {

@@ -1641,6 +1641,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
   storage_monitor::StorageMonitor::Create();
 #endif
 
+  features_->PreMainMessageLoopRun();
   platform_part_->PreMainMessageLoopRun();
 
   InitializeNetworkTimeTracker();

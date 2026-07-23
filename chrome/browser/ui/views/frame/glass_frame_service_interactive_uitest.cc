@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -290,13 +291,53 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
 }
 
 #if !BUILDFLAG(IS_MAC)
-#define MAYBE_GetInstanceDoesNotConstructService \
-  GetInstanceDoesNotConstructService
-#else
-#define MAYBE_GetInstanceDoesNotConstructService \
-  DISABLED_GetInstanceDoesNotConstructService
-#endif  // !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
-                       MAYBE_GetInstanceDoesNotConstructService) {
+                       GetInstanceDoesNotConstructService) {
   EXPECT_EQ(GlassFrameService::GetInstance(), nullptr);
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, BatterySaverMode) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  GlassFrameService* const glass_frame_service =
+      GlassFrameService::GetInstance();
+
+  BrowserWindowInterface* const browser1 = browser();
+
+  bool browser1_eligible =
+      glass_frame_service->IsBrowserWindowEligible(browser1);
+  base::CallbackListSubscription sub1 =
+      glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
+          browser1, base::BindRepeating(
+                        [](bool* out_eligible, bool is_eligible) {
+                          *out_eligible = is_eligible;
+                        },
+                        &browser1_eligible));
+
+  // Initially BSM is not active, so browser1 is eligible.
+  EXPECT_TRUE(browser1_eligible);
+
+  // Enable Battery Saver Mode.
+  g_browser_process->local_state()->SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kEnabled));
+
+  // Wait until BSM is active. GlassFrameService should report browser1 as
+  // ineligible.
+  ASSERT_TRUE(base::test::RunUntil([&] { return !browser1_eligible; }));
+  EXPECT_FALSE(glass_frame_service->IsBrowserWindowEligible(browser1));
+
+  // Disable Battery Saver Mode.
+  g_browser_process->local_state()->SetInteger(
+      performance_manager::user_tuning::prefs::kBatterySaverModeState,
+      static_cast<int>(performance_manager::user_tuning::prefs::
+                           BatterySaverModeState::kDisabled));
+
+  // Wait until BSM is inactive and browser1 is eligible again.
+  ASSERT_TRUE(base::test::RunUntil([&] { return browser1_eligible; }));
+  EXPECT_TRUE(glass_frame_service->IsBrowserWindowEligible(browser1));
 }

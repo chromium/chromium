@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -22,7 +23,9 @@ class PrefRegistrySimple;
 
 // A singleton service that is the single source of truth for whether
 // a browser window should display the glass frame or not.
-class GlassFrameService : public BrowserCollectionObserver {
+class GlassFrameService : public BrowserCollectionObserver,
+                          public performance_manager::user_tuning::
+                              BatterySaverModeManager::Observer {
  public:
   DECLARE_USER_DATA(GlassFrameService);
 
@@ -56,6 +59,10 @@ class GlassFrameService : public BrowserCollectionObserver {
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
+  // BatterySaverModeManager::Observer:
+  void OnBatterySaverActiveChanged(bool is_active) override;
+  void OnBatterySaverModeManagerDestroyed() override;
+
  private:
   // Returns the set of BrowserWindowInterfaces for the most recently activated
   // browser window interfaces. The returned set has at most `kMaxGlassWindows`
@@ -79,7 +86,13 @@ class GlassFrameService : public BrowserCollectionObserver {
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
+  base::ScopedObservation<
+      performance_manager::user_tuning::BatterySaverModeManager,
+      performance_manager::user_tuning::BatterySaverModeManager::Observer>
+      battery_saver_observation_{this};
+
   PrefChangeRegistrar pref_change_registrar_;
+  bool is_battery_saver_mode_active_ = false;
   ::ui::ScopedUnownedUserData<GlassFrameService> scoped_unowned_user_data_;
 };
 
