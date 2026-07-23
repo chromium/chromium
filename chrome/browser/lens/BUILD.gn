@@ -109,8 +109,12 @@ if (is_android) {
   }
 
   robolectric_library("junit") {
-    sources = [ "java/src/org/chromium/chrome/browser/lens/LensSupportStatusHelperUnitTest.java" ]
+    sources = [
+      "java/src/org/chromium/chrome/browser/lens/LensControllerTest.java",
+      "java/src/org/chromium/chrome/browser/lens/LensSupportStatusHelperUnitTest.java",
+    ]
     deps = [
+      ":java",
       ":util_java",
       "//base:base_java",
       "//base:base_java_test_support",

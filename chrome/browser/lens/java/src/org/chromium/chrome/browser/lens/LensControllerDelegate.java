@@ -101,11 +101,12 @@ public class LensControllerDelegate {
     }
 
     /**
-     * Retrieve the Lens icon resource id.
-     * Need to put the resource id on the base class to suppress the UnusedResources warning.
+     * Retrieve the Lens icon resource id. Need to put the resource id on the base class to suppress
+     * the UnusedResources warning.
+     *
      * @return The resource id for Lens icon.
      */
-    protected @DrawableRes int getLensIconResourceId() {
+    public @DrawableRes int getLensIconResourceId() {
         return R.drawable.lens_icon;
     }
 

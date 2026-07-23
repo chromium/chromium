@@ -5,6 +5,8 @@ package org.chromium.chrome.browser.lens;
 
 import android.content.Context;
 
+import androidx.annotation.DrawableRes;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
@@ -39,6 +41,15 @@ public class LensController {
             delegate = new LensControllerDelegate();
         }
         mDelegate = delegate;
+    }
+
+    /**
+     * Retrieve the Lens icon resource id.
+     *
+     * @return The resource id for the Lens icon.
+     */
+    public @DrawableRes int getLensIconResourceId() {
+        return mDelegate.getLensIconResourceId();
     }
 
     /**
