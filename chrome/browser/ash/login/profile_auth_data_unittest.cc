@@ -149,13 +149,6 @@ void ProfileAuthDataTest::Transfer(
       &user_browser_context_, transfer_auth_cookies_on_first_login,
       transfer_saml_auth_cookies_on_subsequent_login, run_loop.QuitClosure());
   run_loop.Run();
-  if (!transfer_auth_cookies_on_first_login &&
-      !transfer_saml_auth_cookies_on_subsequent_login) {
-    // When only proxy auth state is being transferred, the completion callback
-    // is invoked before the transfer has actually completed. Spin the loop once
-    // more to allow the transfer to complete.
-    base::RunLoop().RunUntilIdle();
-  }
 }
 
 net::CookieList ProfileAuthDataTest::GetUserCookies() {
