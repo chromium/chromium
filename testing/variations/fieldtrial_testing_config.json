@@ -8283,21 +8283,6 @@
             ]
         }
     ],
-    "DefaultBrowserPromoIpadInstructions": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DefaultBrowserPromoIpadInstructions"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultBrowserRound3Phase1": [
         {
             "platforms": [

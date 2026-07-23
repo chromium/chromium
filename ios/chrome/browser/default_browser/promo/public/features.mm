@@ -16,7 +16,7 @@ const char kDefaultBrowserPictureInPictureParamEnabledDefaultApps[] =
     "EnabledDefaultApps";
 
 BASE_FEATURE(kDefaultBrowserPromoIpadInstructions,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDefaultBrowserPictureInPicture, base::FEATURE_ENABLED_BY_DEFAULT);
 
