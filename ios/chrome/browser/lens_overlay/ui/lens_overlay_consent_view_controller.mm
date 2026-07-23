@@ -272,8 +272,8 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
                            scale:UIImageSymbolScaleMedium];
   [button setPreferredSymbolConfiguration:symbolConfig
                           forImageInState:UIControlStateNormal];
-  [button setImage:DefaultSymbolWithPointSize(kPauseButton,
-                                              kLensOverlayOnboaridingSymbolSize)
+  [button setImage:SymbolWithPointSize(SymbolPauseButton,
+                                       kLensOverlayOnboaridingSymbolSize)
           forState:UIControlStateNormal];
   button.imageView.contentMode = UIViewContentModeScaleAspectFit;
 
@@ -285,14 +285,14 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
 
   if (_isAnimationPlaying) {
     [_animationPlayerButton
-        setImage:DefaultSymbolWithPointSize(kPauseButton,
-                                            kLensOverlayOnboaridingSymbolSize)
+        setImage:SymbolWithPointSize(SymbolPauseButton,
+                                     kLensOverlayOnboaridingSymbolSize)
         forState:UIControlStateNormal];
     [_animationViewWrapper play];
   } else {
     [_animationPlayerButton
-        setImage:DefaultSymbolWithPointSize(kPlayButton,
-                                            kLensOverlayOnboaridingSymbolSize)
+        setImage:SymbolWithPointSize(SymbolPlayButton,
+                                     kLensOverlayOnboaridingSymbolSize)
         forState:UIControlStateNormal];
     [_animationViewWrapper pause];
   }

@@ -50,8 +50,8 @@ const CGFloat kVisibilityIndicatorSize = 30.0;
     [self setPreferredSymbolConfiguration:symbolConfig
                           forImageInState:UIControlStateNormal];
 
-    [self setImage:CustomSymbolWithPointSize(kCameraLensSymbol,
-                                             kLensCameraSymbolPointSize)
+    [self setImage:SymbolWithPointSize(SymbolCameraLens,
+                                       kLensCameraSymbolPointSize)
           forState:UIControlStateNormal];
     self.imageView.contentMode = UIViewContentModeScaleAspectFit;
 

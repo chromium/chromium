@@ -160,8 +160,7 @@ const CGFloat kGrabberTopPadding = 5;
   [self.view addSubview:_omniboxPopupContainer];
 
   // Back Button.
-  UIImage* image =
-      DefaultSymbolWithPointSize(kChevronBackwardSymbol, kBackButtonSize);
+  UIImage* image = SymbolWithPointSize(SymbolChevronBackward, kBackButtonSize);
   UIButtonConfiguration* backButtonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
   backButtonConfiguration.image = image;

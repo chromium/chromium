@@ -50,7 +50,7 @@ const CGFloat kMenuSymbolSize = 18;
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMonochrome(
-      CustomSymbolWithPointSize(kGoogleIconSymbol, kMenuSymbolSize));
+      SymbolWithPointSize(SymbolGoogleIcon, kMenuSymbolSize));
 #endif
 
   return [self openURLInNewTabAction:GURL(kMyActivityURL)
@@ -64,7 +64,7 @@ const CGFloat kMenuSymbolSize = 18;
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMonochrome(
-      DefaultSymbolWithPointSize(kInfoCircleSymbol, kMenuSymbolSize));
+      SymbolWithPointSize(SymbolInfoCircle, kMenuSymbolSize));
 #endif
 
   return [self openURLInNewTabAction:GURL(kLearnMoreLensURL)
@@ -101,7 +101,7 @@ const CGFloat kMenuSymbolSize = 18;
   UIImage* image;
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   image = MakeSymbolMonochrome(
-      CustomSymbolWithPointSize(kCameraLensSymbol, kMenuSymbolSize));
+      SymbolWithPointSize(SymbolCameraLens, kMenuSymbolSize));
 #endif
 
   return [UIAction actionWithTitle:title
