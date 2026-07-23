@@ -726,6 +726,41 @@ ffmpeg -y \
   iamf_alternating_sine_waves_stereo.mp4
 ```
 
+#### iamf_alternating_sine_waves_714_flac_96khz.mp4
+Fragmented MP4 containing an IAMF audio stream (7.1.4 layout, using FLAC codec at 96kHz) and a H.264 video track.
+Generated using:
+```
+ffmpeg -y \
+  -f lavfi -i "aevalsrc=exprs='if(between(t\,0.0\,0.5)\,sin(2*PI*440*t)\,0)|if(between(t\,0.5\,1.0)\,sin(2*PI*440*t)\,0)|if(between(t\,1.0\,1.5)\,sin(2*PI*440*t)\,0)|if(between(t\,1.5\,2.0)\,sin(2*PI*440*t)\,0)|if(between(t\,2.0\,2.5)\,sin(2*PI*440*t)\,0)|if(between(t\,2.5\,3.0)\,sin(2*PI*440*t)\,0)|if(between(t\,3.0\,3.5)\,sin(2*PI*440*t)\,0)|if(between(t\,3.5\,4.0)\,sin(2*PI*440*t)\,0)|if(between(t\,4.0\,4.5)\,sin(2*PI*440*t)\,0)|if(between(t\,4.5\,5.0)\,sin(2*PI*440*t)\,0)|if(between(t\,5.0\,5.5)\,sin(2*PI*440*t)\,0)|if(between(t\,5.5\,6.0)\,sin(2*PI*440*t)\,0)':sample_rate=96000:duration=6" \
+  -f lavfi -i "color=c=black:s=1920x1080:r=25:d=6" \
+  -filter_complex "[0:a]asplit=7[s0][s1][s2][s3][s4][s5][s6];[s0]pan=stereo|c0=c0|c1=c1[FRONT];[s1]pan=stereo|c0=c2|c1=c3[SIDE];[s2]pan=stereo|c0=c4|c1=c5[BACK];[s3]pan=stereo|c0=c6|c1=c7[TOP_FRONT];[s4]pan=stereo|c0=c8|c1=c9[TOP_BACK];[s5]pan=mono|c0=c10[CENTER];[s6]pan=mono|c0=c11[LFE]" \
+  -map "[FRONT]" -map "[SIDE]" -map "[BACK]" -map "[TOP_FRONT]" -map "[TOP_BACK]" -map "[CENTER]" -map "[LFE]" -map "1:v:0" \
+  -stream_group "type=iamf_audio_element:id=1:st=0:st=1:st=2:st=3:st=4:st=5:st=6:audio_element_type=channel,layer=ch_layout=7.1.4" \
+  -stream_group "type=iamf_mix_presentation:id=3:stg=0:annotations=en-us=default_mix_presentation,submix=parameter_id=100:parameter_rate=48000:default_mix_gain=0.0|element=stg=0:headphones_rendering_mode=binaural:annotations=en-us=7.1.4:parameter_id=101:parameter_rate=48000:default_mix_gain=0.0|layout=sound_system=stereo:integrated_loudness=0.0:digital_peak=0.0" \
+  -streamid "0:0" -streamid "1:1" -streamid "2:2" -streamid "3:3" -streamid "4:4" -streamid "5:5" -streamid "6:6" -streamid "7:7" \
+  -c:a flac -sample_fmt s16 \
+  -c:v libx264 -pix_fmt yuv420p -g 25 \
+  -movflags frag_keyframe+empty_moov+default_base_moof \
+  iamf_alternating_sine_waves_714_flac_96khz.mp4
+```
+
+#### iamf_alternating_sine_waves_stereo_flac_96khz.mp4
+Fragmented MP4 containing an IAMF audio stream (stereo layout, using FLAC codec at 96kHz) and a H.264 video track.
+Generated using:
+```
+ffmpeg -y \
+  -f lavfi -i "aevalsrc=exprs='if(lt(mod(t\,1.0)\,0.5)\,sin(2*PI*440*t)\,0)|if(gte(mod(t\,1.0)\,0.5)\,sin(2*PI*440*t)\,0)':sample_rate=96000:duration=6" \
+  -f lavfi -i "color=c=black:s=1920x1080:r=25:d=6" \
+  -map 0:a -map 1:v:0 \
+  -stream_group "type=iamf_audio_element:id=1:st=0:audio_element_type=channel,layer=ch_layout=stereo" \
+  -stream_group "type=iamf_mix_presentation:id=3:stg=0:annotations=en-us=default_mix_presentation,submix=parameter_id=100:parameter_rate=48000:default_mix_gain=0.0|element=stg=0:headphones_rendering_mode=stereo:annotations=en-us=stereo:parameter_id=101:parameter_rate=48000:default_mix_gain=0.0|layout=sound_system=stereo:integrated_loudness=0.0:digital_peak=0.0" \
+  -streamid "0:0" -streamid "1:1" \
+  -c:a flac -sample_fmt s16 \
+  -c:v libx264 -pix_fmt yuv420p -g 25 \
+  -movflags frag_keyframe+empty_moov+default_base_moof \
+  iamf_alternating_sine_waves_stereo_flac_96khz.mp4
+```
+
 ## Encrypted Test Files
 
 [Shaka Packager]: https://github.com/google/shaka-packager
