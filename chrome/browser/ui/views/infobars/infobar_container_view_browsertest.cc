@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
@@ -244,6 +245,12 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
 
 IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
                        PromotionRestoresFocusWhenFocusWasInInfobars) {
+  // Ensure the browser window is active to avoid focus races.
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  widget->Activate();
+  views::test::WaitForWidgetActive(widget, true);
+
   infobars::InfoBar* first = AddInfoBar(
       infobars::InfoBarDelegate::InfobarPriority::kDefault, "Default 1");
   AddInfoBar(infobars::InfoBarDelegate::InfobarPriority::kDefault,
