@@ -111,10 +111,7 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     profile_state_ = [[ProfileState alloc] initWithAppState:nil];
     profile_state_.profile = profile_.get();
     scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
-    UIWindow* window = [[UIWindow alloc]
-        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
-    window.frame = CGRectMake(0, 0, 320, 520);
-    scene_state_.window = window;
+    scene_state_.window = scoped_window_.Get();
     scene_state_.profileState = profile_state_;
     Browser* browser =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
