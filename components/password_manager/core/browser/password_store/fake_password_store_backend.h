@@ -43,7 +43,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   FakePasswordStoreBackend();
   explicit FakePasswordStoreBackend(
       IsAccountStore is_account_store,
-      scoped_refptr<base::SequencedTaskRunner> tapsk_runner = nullptr);
+      scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr);
   FakePasswordStoreBackend(
       IsAccountStore is_account_store,
       UpdateAlwaysSucceeds update_always_succeeds,
@@ -66,7 +66,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
 
   IsAccountStore is_account_store() const { return is_account_store_; }
 
- private:
   // Implements PasswordStoreBackend interface.
   void InitBackend(RemoteChangesReceived remote_form_changes_received,
                    base::RepeatingClosure sync_enabled_or_disabled_cb,
@@ -109,6 +108,18 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   // `base::SequencedTaskRunner::GetCurrentDefault` if none is injected.
   const scoped_refptr<base::SequencedTaskRunner>& GetTaskRunner() const;
 
+  // Posts `task` to the task runner and replies with its result via `callback`.
+  // If `password_store_backend_error_` has been set (e.g. via
+  // `ReturnErrorOnRequest`), skips executing `task` and asynchronously returns
+  // the simulated error instead.
+  void PostTaskAndReplyWithResultOrSimulateError(
+      base::OnceCallback<PasswordStoreChangeList()> task,
+      PasswordChangesOrErrorReply callback);
+  void PostTaskAndReplyWithResultOrSimulateError(
+      base::OnceCallback<BackendLoginsResult()> task,
+      BackendLoginsOrErrorReply callback);
+
+ private:
   BackendLoginsResult GetAllLoginsInternal();
   BackendLoginsResult GetAutofillableLoginsInternal();
   BackendLoginsResult FillMatchingLoginsInternal(

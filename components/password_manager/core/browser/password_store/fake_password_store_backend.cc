@@ -166,17 +166,10 @@ ActionableError FakePasswordStoreBackend::GetError() {
 
 void FakePasswordStoreBackend::GetAllLoginsAsync(
     BackendLoginsOrErrorReply callback) {
-  if (password_store_backend_error_.has_value()) {
-    GetTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  password_store_backend_error_.value()));
-  } else {
-    GetTaskRunner()->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&FakePasswordStoreBackend::GetAllLoginsInternal,
-                       base::Unretained(this)),
-        std::move(callback));
-  }
+  PostTaskAndReplyWithResultOrSimulateError(
+      base::BindOnce(&FakePasswordStoreBackend::GetAllLoginsInternal,
+                     base::Unretained(this)),
+      std::move(callback));
 }
 
 void FakePasswordStoreBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
@@ -188,8 +181,7 @@ void FakePasswordStoreBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
 
 void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
     BackendLoginsOrErrorReply callback) {
-  GetTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  PostTaskAndReplyWithResultOrSimulateError(
       base::BindOnce(&FakePasswordStoreBackend::GetAutofillableLoginsInternal,
                      base::Unretained(this)),
       std::move(callback));
@@ -199,8 +191,7 @@ void FakePasswordStoreBackend::FillMatchingLoginsAsync(
     BackendLoginsOrErrorReply callback,
     bool include_psl,
     const std::vector<PasswordFormDigest>& forms) {
-  GetTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  PostTaskAndReplyWithResultOrSimulateError(
       base::BindOnce(&FakePasswordStoreBackend::FillMatchingLoginsInternal,
                      base::Unretained(this), forms, include_psl),
       std::move(callback));
@@ -210,8 +201,7 @@ void FakePasswordStoreBackend::GetGroupedMatchingLoginsAsync(
     const PasswordFormDigest& form_digest,
     BackendLoginsOrErrorReply callback) {
 #if BUILDFLAG(IS_ANDROID)
-  GetTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  PostTaskAndReplyWithResultOrSimulateError(
       base::BindOnce(
           &FakePasswordStoreBackend::GetGroupedMatchingLoginsInternal,
           base::Unretained(this), form_digest),
@@ -225,8 +215,7 @@ void FakePasswordStoreBackend::GetGroupedMatchingLoginsAsync(
 void FakePasswordStoreBackend::AddLoginAsync(
     StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
-  GetTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  PostTaskAndReplyWithResultOrSimulateError(
       base::BindOnce(&FakePasswordStoreBackend::AddLoginInternal,
                      base::Unretained(this), std::move(cred)),
       std::move(callback));
@@ -235,8 +224,7 @@ void FakePasswordStoreBackend::AddLoginAsync(
 void FakePasswordStoreBackend::UpdateLoginAsync(
     StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
-  GetTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  PostTaskAndReplyWithResultOrSimulateError(
       base::BindOnce(&FakePasswordStoreBackend::UpdateLoginInternal,
                      base::Unretained(this), std::move(cred)),
       std::move(callback));
@@ -246,8 +234,7 @@ void FakePasswordStoreBackend::RemoveLoginAsync(
     const base::Location& location,
     StoredCredential cred,
     PasswordChangesOrErrorReply callback) {
-  GetTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  PostTaskAndReplyWithResultOrSimulateError(
       base::BindOnce(&FakePasswordStoreBackend::RemoveLoginInternal,
                      base::Unretained(this), std::move(cred)),
       std::move(callback));
@@ -258,8 +245,7 @@ void FakePasswordStoreBackend::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
     PasswordChangesOrErrorReply callback) {
-  GetTaskRunner()->PostTaskAndReplyWithResult(
-      FROM_HERE,
+  PostTaskAndReplyWithResultOrSimulateError(
       base::BindOnce(
           &FakePasswordStoreBackend::RemoveLoginsCreatedBetweenInternal,
           base::Unretained(this), delete_begin, delete_end),
@@ -294,6 +280,38 @@ void FakePasswordStoreBackend::OnSyncServiceInitialized(
 
 base::WeakPtr<PasswordStoreBackend> FakePasswordStoreBackend::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void FakePasswordStoreBackend::PostTaskAndReplyWithResultOrSimulateError(
+    base::OnceCallback<PasswordStoreChangeList()> task,
+    PasswordChangesOrErrorReply callback) {
+  if (password_store_backend_error_.has_value()) {
+    GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       PasswordChangesOrError(
+                           std::in_place_type<PasswordStoreBackendError>,
+                           password_store_backend_error_.value())));
+    return;
+  }
+  GetTaskRunner()->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                              std::move(callback));
+}
+
+void FakePasswordStoreBackend::PostTaskAndReplyWithResultOrSimulateError(
+    base::OnceCallback<BackendLoginsResult()> task,
+    BackendLoginsOrErrorReply callback) {
+  if (password_store_backend_error_.has_value()) {
+    GetTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       BackendLoginsResultOrError(
+                           std::in_place_type<PasswordStoreBackendError>,
+                           password_store_backend_error_.value())));
+    return;
+  }
+  GetTaskRunner()->PostTaskAndReplyWithResult(FROM_HERE, std::move(task),
+                                              std::move(callback));
 }
 
 BackendLoginsResult FakePasswordStoreBackend::GetAllLoginsInternal() {
