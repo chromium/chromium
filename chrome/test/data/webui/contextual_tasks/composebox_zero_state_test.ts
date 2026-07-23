@@ -16,6 +16,7 @@ import {GlowAnimationState} from 'chrome://resources/cr_components/search/consta
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
@@ -64,8 +65,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
   let contextualTasksApp: ContextualTasksAppElement;
   let composebox: any;
   let testProxy: TestContextualTasksBrowserProxy;
-  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>;
-  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
+  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+      ComposeboxPageHandlerRemote;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
   let windowProxy: TestMock<WindowProxy>;
   let mockTimer: MockTimer;
@@ -79,7 +82,13 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
   }
 
   setup(async () => {
-    const win = window as any;
+    const win = window as unknown as {
+      chrome: {
+        histograms?: Pick<
+            typeof chrome.histograms,
+            'recordEnumerationValue' | 'recordUserAction' | 'recordBoolean'>,
+      },
+    };
 
     if (!win.chrome) {
       win.chrome = {};
@@ -126,7 +135,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-        mockComposeboxPageHandler as any, mockSearchboxPageHandler as any,
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
         searchboxCallbackRouter));
 
     contextualTasksApp = document.createElement('contextual-tasks-app');
@@ -891,8 +900,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
     const innerComposebox = contextualComposebox.$.composebox;
 
-    const token1 = {high: 0n, low: 1n} as any;
-    const token2 = {high: 0n, low: 2n} as any;
+    const token1 = {high: 0n, low: 1n} as unknown as UnguessableToken;
+    const token2 = {high: 0n, low: 2n} as unknown as UnguessableToken;
     innerComposebox.addFileContextForTesting(
         {type: 'image/png', uuid: token1} as ComposeboxFile);
     innerComposebox.addFileContextForTesting(
@@ -909,7 +918,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
     const innerComposebox = contextualComposebox.$.composebox;
 
-    const token = {high: 0n, low: 1n} as any;
+    const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
     innerComposebox.addFileContextForTesting(
         {type: 'tab', uuid: token} as ComposeboxFile);
     await contextualComposebox.updateComplete;
@@ -924,7 +933,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
     const innerComposebox = contextualComposebox.$.composebox;
 
-    const token = {high: 0n, low: 1n} as any;
+    const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
     innerComposebox.addFileContextForTesting(
         {type: 'image/png', uuid: token} as ComposeboxFile);
     await contextualComposebox.updateComplete;
@@ -939,7 +948,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
     const innerComposebox = contextualComposebox.$.composebox;
 
-    const token = {high: 0n, low: 1n} as any;
+    const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
     innerComposebox.addFileContextForTesting(
         {type: 'application/pdf', uuid: token} as ComposeboxFile);
     await contextualComposebox.updateComplete;
@@ -954,7 +963,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
     const innerComposebox = contextualComposebox.$.composebox;
 
-    const token = {high: 0n, low: 1n} as any;
+    const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
     innerComposebox.addFileContextForTesting(
         {type: 'unknown/type', uuid: token} as ComposeboxFile);
     await contextualComposebox.updateComplete;
@@ -972,7 +981,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     contextualComposebox.isOverlayOpenForAimVisualSearch = true;
 
     // Add an image file.
-    const token = {high: 0n, low: 1n} as any;
+    const token = {high: 0n, low: 1n} as unknown as UnguessableToken;
     innerComposebox.addFileContextForTesting(
         {type: 'image/png', uuid: token} as ComposeboxFile);
 

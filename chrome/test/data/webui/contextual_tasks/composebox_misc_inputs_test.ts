@@ -96,8 +96,10 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
   let contextualTasksApp: ContextualTasksAppElement;
   let composebox: any;
   let testProxy: TestContextualTasksBrowserProxy;
-  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>;
-  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
+  let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>&
+      ComposeboxPageHandlerRemote;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
   let mockTimer: MockTimer;
 
@@ -140,7 +142,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-        mockComposeboxPageHandler as any, mockSearchboxPageHandler as any,
+        mockComposeboxPageHandler, mockSearchboxPageHandler,
         searchboxCallbackRouter));
 
     contextualTasksApp = document.createElement('contextual-tasks-app');
@@ -163,22 +165,23 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
 
   function getThumbnailForTab(token: string, expectExists: boolean = true):
-      ComposeboxFileThumbnailElement {
-    const allThumbnails =
-        composebox.$.carousel.shadowRoot.querySelectorAll('.file-thumbnail');
+      ComposeboxFileThumbnailElement|null {
+    const allThumbnails: ComposeboxFileThumbnailElement[] = Array.from(
+        composebox.$.carousel.shadowRoot.querySelectorAll('.file-thumbnail'));
 
-    const tabThumbnail: ComposeboxFileThumbnailElement =
-        Array.from(allThumbnails).find((el: any) => {
-          const elementId = el.file?.uuid?.token || el.file?.uuid;
+    const tabThumbnail = allThumbnails.find((el) => {
+      const uuid = el.file?.uuid as unknown as ({token?: string} | string);
+      const elementId =
+          typeof uuid === 'object' && uuid !== null ? uuid.token || uuid : uuid;
 
-          return elementId === token;
-        }) as any;
+      return elementId === token;
+    });
     if (expectExists) {
       assertTrue(!!tabThumbnail, 'Could not find the tab thumbnail in the DOM');
     } else {
       assertFalse(!!tabThumbnail, 'Tab thumbnail should not exist in the DOM');
     }
-    return tabThumbnail;
+    return tabThumbnail || null;
   }
 
   test('sets is-dragging-file attribute on dragenter', async () => {
@@ -459,7 +462,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
 
     assertTrue(
-        tabThumbnail.getIsUploadingForTesting(),
+        tabThumbnail!.getIsUploadingForTesting(),
         'Tab thumbnail spinner should trigger for uploadStarted tab');
 
     // Upload processing state.
@@ -478,7 +481,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
     // Check that spinner exists + uploading tab.
     assertTrue(
-        tabThumbnail.getIsUploadingForTesting(),
+        tabThumbnail!.getIsUploadingForTesting(),
         'Tab thumbnail spinner should trigger for processing regular tab');
 
     assertEquals(
@@ -505,7 +508,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
 
     assertTrue(
-        tabThumbnail.getIsUploadingForTesting(),
+        tabThumbnail!.getIsUploadingForTesting(),
         'tab thumbnail spinner should trigger' +
             ' for suggest signals ready processing tab');
 
@@ -533,7 +536,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
     // Spinner should not exist + tab should not be uploading.
     assertFalse(
-        tabThumbnail.getIsUploadingForTesting(),
+        tabThumbnail!.getIsUploadingForTesting(),
         'tab thumbnail spinner should not trigger for successful upload');
 
     assertEquals(
@@ -573,7 +576,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
     let tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
 
-    assertFalse(tabThumbnail.getIsUploadingForTesting());
+    assertFalse(tabThumbnail!.getIsUploadingForTesting());
 
     assertEquals(
         0, composebox.pendingUploads.size, '0 tabs should be uploading');
@@ -595,7 +598,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
 
     assertTrue(
-        tabThumbnail.getIsUploadingForTesting(),
+        tabThumbnail!.getIsUploadingForTesting(),
         'Tab thumbnail spinner should trigger for processing autochip tab');
 
     assertEquals(
@@ -660,7 +663,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         'Tabs should be finished uploading since not uploaded');
 
     assertFalse(
-        tabThumbnail.getIsUploadingForTesting(),
+        tabThumbnail!.getIsUploadingForTesting(),
         'not uploading so no tab spinner');
 
     // Tab is processing, but since `delayUpload` is true, spinner should not
@@ -679,7 +682,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
 
     assertTrue(
-        tabThumbnail.getIsUploadingForTesting(),
+        tabThumbnail!.getIsUploadingForTesting(),
         'autochip tab thumbnail spinner should be triggered for processing tab');
 
     assertEquals(

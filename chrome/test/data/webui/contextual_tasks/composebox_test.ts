@@ -6,6 +6,7 @@ import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
+import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {GlifAnimationState, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
@@ -1005,9 +1006,9 @@ suite('ContextualTasksComposeboxTest', () => {
 
     // Wait for files to populate
     await innerComposebox.updateComplete;
-    let files = Array.from(innerComposebox.files.values()) as any[];
+    let files: ComposeboxFile[] = Array.from(innerComposebox.files.values());
     assertEquals(1, files.length);
-    const initialFile = files[0];
+    const initialFile = files[0]!;
     assertEquals('Initial Title', initialFile.name);
     assertEquals(1, initialFile.tabId);
     assertEquals('https://example.com', initialFile.url);
@@ -1023,9 +1024,9 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
     await innerComposebox.updateComplete;
 
-    files = Array.from(innerComposebox.files.values()) as any[];
+    files = Array.from(innerComposebox.files.values());
     assertEquals(1, files.length);
-    const updatedFile = files[0];
+    const updatedFile = files[0]!;
     assertEquals('Updated Title', updatedFile.name);
     assertEquals(initialFile.uuid, updatedFile.uuid);
     assertEquals(initialFile.tabId, updatedFile.tabId);
@@ -1046,7 +1047,7 @@ suite('ContextualTasksComposeboxTest', () => {
     await microtasksFinished();
     await innerComposebox.updateComplete;
 
-    files = Array.from(innerComposebox.files.values()) as any[];
+    files = Array.from(innerComposebox.files.values());
     assertEquals(1, files.length);
     // Reference should be exactly the same (no re-allocation or modification)
     assertEquals(updatedFile, files[0]);
