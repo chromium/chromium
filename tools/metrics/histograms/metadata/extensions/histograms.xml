@@ -3161,6 +3161,16 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Install.PinReason" enum="ExtensionPinReason"
+    expires_after="2026-12-31">
+  <owner>evasu@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Logged every time an extension is installed. Records the reason why the
+    extension was or wasn't automatically pinned to the toolbar.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.InstallFrictionDialogAction"
     enum="ExtensionInstallFrictionDialogAction" expires_after="2026-06-07">
   <owner>jeffcyr@google.com</owner>

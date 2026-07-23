@@ -3313,6 +3313,30 @@ Called by update_extension_permission.py.-->
   <int value="272" label="kBluetoothPeripheral"/>
 </enum>
 
+<enum name="ExtensionPinReason">
+  <int value="0" label="Pinned by default">
+    The extension was successfully pinned to the toolbar because the
+    kExtensionsPinnedByDefault feature flag is enabled, the user's &quot;Pin new
+    extensions&quot; toggle is ON, and no policy prevents it.
+  </int>
+  <int value="1" label="Not pinned (Toggle OFF)">
+    The extension was not pinned because the user disabled the &quot;Pin new
+    extensions&quot; toggle in chrome://extensions.
+  </int>
+  <int value="2" label="Not pinned (Feature Disabled)">
+    The extension was not pinned because the kExtensionsPinnedByDefault feature
+    is disabled.
+  </int>
+  <int value="3" label="Overridden by policy">
+    The pinning behavior was dictated by an enterprise policy. Because
+    enterprise policy takes precedence, it overrides both the feature flag and
+    user preference.
+  </int>
+  <int value="4" label="Not pinned (No action)">
+    The extension does not have a toolbar action, so pinning is not applicable.
+  </int>
+</enum>
+
 <enum name="ExtensionPolicyReinstallReason">
   <int value="0" label="Tried to load a corrupted extension"/>
   <int value="1" label="Corrupted Chrome Web Store extension"/>

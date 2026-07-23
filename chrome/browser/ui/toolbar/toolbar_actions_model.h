@@ -58,6 +58,17 @@ class ToolbarActionsModel
 
   ~ToolbarActionsModel() override;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ExtensionPinReason {
+    kPinnedByDefault = 0,
+    kNotPinnedToggleOff = 1,
+    kNotPinnedFeatureDisabled = 2,
+    kOverriddenByPolicy = 3,
+    kNotPinnedNoAction = 4,
+    kMaxValue = kNotPinnedNoAction,
+  };
+
   // A class which is informed of changes to the model; represents the view of
   // MVC. Also used for signaling view changes such as showing extension popups.
   // TODO(devlin): Should this really be an observer? It acts more like a
