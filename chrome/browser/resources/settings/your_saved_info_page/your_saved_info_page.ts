@@ -8,11 +8,17 @@
  * and manage their saved info.
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './account_card.js';
 import './category_reference_card.js';
 import './collapsible_autofill_settings_card.js';
 import '/shared/settings/prefs/prefs.js';
 import '../settings_page/settings_section.js';
+import '../icons.html.js';
+// <if expr="_google_chrome">
+import '../internal/icons.html.js';
+
+// </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -115,6 +121,19 @@ export class SettingsYourSavedInfoPageElement extends
           return loadTimeData.getBoolean('showSuggestionsFromGeminiSettings');
         },
       },
+      spark_: {
+        type: String,
+        value: () => {
+          // <if expr="_google_chrome">
+          return loadTimeData.getBoolean('glicAssetsV2Enabled') ?
+              'settings-internal:sparkv2' :
+              'settings-internal:spark';
+          // </if>
+          // <if expr="not _google_chrome">
+          return 'settings20:lightbulb';
+          // </if>
+        },
+      },
     };
   }
 
@@ -141,6 +160,7 @@ export class SettingsYourSavedInfoPageElement extends
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
   private onAutofillAiEntitiesChangedListener_: EntityInstancesChangedListener|
       null = null;
+  declare private spark_: string;
 
   override connectedCallback() {
     super.connectedCallback();
