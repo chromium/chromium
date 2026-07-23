@@ -124,6 +124,17 @@ std::string GetTransformString(
       ->CssText()
       .Utf8();
 }
+
+void AppendProperties(
+    const ViewTransitionStyleBuilder::CapturedCssProperties& properties,
+    StringBuilder& builder) {
+  for (const auto& [id, value] : properties) {
+    builder.Append(CSSProperty::Get(id).GetPropertyNameAtomicString());
+    builder.Append(": ");
+    builder.Append(value);
+    builder.Append(";\n");
+  }
+}
 }  // namespace
 
 String ViewTransitionStyleBuilder::AddKeyframes(
@@ -147,12 +158,7 @@ String ViewTransitionStyleBuilder::AddKeyframes(
       source_properties.GroupSize().width.ToFloat(),
       source_properties.GroupSize().height.ToFloat());
 
-  for (const auto& [id, value] : animated_css_properties) {
-    builder_.AppendFormat(
-        "%s: %s;\n",
-        CSSProperty::Get(id).GetPropertyNameAtomicString().Utf8().c_str(),
-        value.Utf8().c_str());
-  }
+  AppendProperties(animated_css_properties, builder_);
   builder_.Append("}}");
   return keyframe_name;
 }
@@ -167,12 +173,7 @@ String ViewTransitionStyleBuilder::AddGroupChildrenKeyframes(
   builder_.Append(keyframe_name);
   builder_.Append("{\n from {\n");
 
-  for (const auto& [id, value] : properties) {
-    builder_.AppendFormat(
-        "%s: %s;\n",
-        CSSProperty::Get(id).GetPropertyNameAtomicString().Utf8().c_str(),
-        value.Utf8().c_str());
-  }
+  AppendProperties(properties, builder_);
   builder_.Append("}}");
   return keyframe_name;
 }
@@ -192,13 +193,8 @@ void ViewTransitionStyleBuilder::AddContainerStyles(
       properties.GroupSize().width.ToFloat(),
       properties.GroupSize().height.ToFloat(),
       GetTransformString(properties, parent_transform).c_str());
-  for (const auto& [id, value] : captured_css_properties) {
-    group_rule_builder.AppendFormat(
-        "%s: %s;\n",
-        CSSProperty::Get(id).GetPropertyNameAtomicString().Utf8().c_str(),
-        value.Utf8().c_str());
-  }
 
+  AppendProperties(captured_css_properties, group_rule_builder);
   AddRules(kGroupTagName, tag, group_rule_builder.ReleaseString());
 }
 
@@ -210,12 +206,7 @@ void ViewTransitionStyleBuilder::AddGroupChildrenStyles(
   }
 
   StringBuilder builder;
-  for (const auto& [id, value] : captured_css_properties) {
-    builder.Append(CSSProperty::Get(id).GetPropertyNameAtomicString());
-    builder.Append(": ");
-    builder.Append(value);
-    builder.Append(";\n");
-  }
+  AppendProperties(captured_css_properties, builder);
   AddRules(kGroupChildrenTagName, name, builder.ReleaseString());
 }
 
