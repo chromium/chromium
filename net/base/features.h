@@ -62,6 +62,8 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 
 // Enables fail-fast and retry behavior for DNS_PLATFORM queries.
 NET_EXPORT BASE_DECLARE_FEATURE(kDnsPlatformFailFastAndRetry);
+NET_EXPORT extern const base::FeatureParam<bool>
+    kDnsPlatformCancelPreviousAttemptOnRetry;
 
 // Enables querying HTTPS DNS records that will affect results from HostResolver
 // and may be used to affect connection behavior. Whether or not those results

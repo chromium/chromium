@@ -702,7 +702,7 @@ class DnsTransactionImpl final : public DnsTransaction {
     attempts_.push_back(std::make_unique<DnsUDPAttempt>(
         server_index, std::move(socket), config.nameservers[server_index],
         std::move(query), session_->udp_tracker()));
-    ++attempts_count_;
+    ++attempts_count_for_current_name_;
 
     DnsAttempt* attempt = attempts_.back().get();
     net_log_.AddEventReferencingSource(NetLogEventType::DNS_TRANSACTION_ATTEMPT,
@@ -732,7 +732,7 @@ class DnsTransactionImpl final : public DnsTransaction {
                             opt_rdata_, &attempts_,
                             resolve_context_->url_request_context(),
                             request_priority_, /*is_probe=*/false);
-    ++attempts_count_;
+    ++attempts_count_for_current_name_;
     DnsAttempt* attempt = attempts_.back().get();
     // Associate this attempt with the DoH request in NetLog.
     net_log_.AddEventReferencingSource(
@@ -804,7 +804,7 @@ class DnsTransactionImpl final : public DnsTransaction {
 
     attempts_.push_back(std::make_unique<DnsTCPAttempt>(
         server_index, std::move(socket), std::move(query)));
-    ++attempts_count_;
+    ++attempts_count_for_current_name_;
 
     DnsAttempt* attempt = attempts_.back().get();
     net_log_.AddEventReferencingSource(
@@ -826,6 +826,7 @@ class DnsTransactionImpl final : public DnsTransaction {
         dotted_qname.value_or("???MALFORMED_NAME???"));
 
     attempts_.clear();
+    attempts_count_for_current_name_ = 0;
     had_tcp_retry_ = false;
     switch (attempt_mode_) {
       case DnsTransactionFactory::AttemptMode::kHttp:
@@ -1052,6 +1053,10 @@ class DnsTransactionImpl final : public DnsTransaction {
 
   AttemptResult MakePlatformAttempt() {
     RecordAttemptUma(DnsAttemptType::kPlatform);
+    const size_t fallback_attempt_number = attempts_count_for_current_name_;
+    if (features::kDnsPlatformCancelPreviousAttemptOnRetry.Get()) {
+      ClearAttempts(/*leave_attempt=*/nullptr);
+    }
     const size_t attempt_number = attempts_.size();
     const size_t server_index = dns_server_iterator_->GetNextAttemptIndex();
 
@@ -1061,7 +1066,7 @@ class DnsTransactionImpl final : public DnsTransaction {
             ->CreateDnsPlatformAttempt(server_index, qnames_.front(), qtype_,
                                        target_network_, net_log_));
 
-    ++attempts_count_;
+    ++attempts_count_for_current_name_;
 
     DnsAttempt* attempt = attempts_.back().get();
     const bool record_rtt =
@@ -1072,7 +1077,7 @@ class DnsTransactionImpl final : public DnsTransaction {
     if (rv == ERR_IO_PENDING) {
       base::TimeDelta fallback_period =
           resolve_context_->NextPlatformFallbackPeriod(
-              server_index, attempt_number, session_.get());
+              server_index, fallback_attempt_number, session_.get());
       timer_.Start(FROM_HERE, fallback_period, this,
                    &DnsTransactionImpl::OnFallbackPeriodExpired);
     }
@@ -1100,10 +1105,12 @@ class DnsTransactionImpl final : public DnsTransaction {
   base::circular_deque<std::vector<uint8_t>> qnames_;
   size_t qnames_initial_size_ = 0;
 
-  // List of attempts for the current name.
+  // List of attempts for the current name. Reset in StartQuery(). Note:
+  // if kDnsPlatformCancelPreviousAttemptOnRetry is enabled, kPlatform clears
+  // pending attempts in this list every time it makes a new attempt.
   std::vector<std::unique_ptr<DnsAttempt>> attempts_;
-  // Count of attempts, not reset when |attempts_| vector is cleared.
-  int attempts_count_ = 0;
+  // Count of attempts for the current name. Reset in StartQuery().
+  int attempts_count_for_current_name_ = 0;
 
   // Records when an attempt was retried via TCP due to a truncation error.
   bool had_tcp_retry_ = false;

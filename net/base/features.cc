@@ -64,6 +64,8 @@ const base::FeatureParam<base::TimeDelta> kDnsMinTransactionTimeout{
     base::Seconds(12)};
 
 BASE_FEATURE(kDnsPlatformFailFastAndRetry, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kDnsPlatformCancelPreviousAttemptOnRetry{
+    &kDnsPlatformFailFastAndRetry, "cancel_previous_attempt_on_retry", false};
 
 BASE_FEATURE(kUseDnsHttpsSvcb, base::FEATURE_ENABLED_BY_DEFAULT);
 

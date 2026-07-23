@@ -4636,6 +4636,71 @@ TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptRetryAndFallback) {
 }
 
 TEST_F(DnsTransactionTestWithMockTime,
+       PlatformAttemptRetryCancelsPreviousAttemptWhenParamSet) {
+  if (__builtin_available(android 29, *)) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        features::kDnsPlatformFailFastAndRetry,
+        {{"cancel_previous_attempt_on_retry", "true"}});
+
+    config_.attempts = 2;
+    ConfigureFactory();
+
+    auto [first_query_fd, first_query_write_fd] =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithNoData();
+    auto [second_query_fd, second_query_write_fd] =
+        MockAndroidDnsPlatformAttemptDelegate::CreateFdWithUnreadData();
+
+    // Ensure the first attempt is closed before the second attempt is started.
+    testing::InSequence s;
+
+    // First attempt query.
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
+                      dns_protocol::kTypeA, ANDROID_RESOLV_NO_RETRY))
+        .WillOnce(Return(first_query_fd.get()));
+
+    // When the fallback period expires, the first attempt must be closed
+    // BEFORE starting second attempt. Otherwise, the platform might pool the
+    // second attempt onto the first one.
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Close(first_query_fd.get()))
+        .WillOnce([&]() { first_query_fd.reset(); });
+
+    // Second attempt query.
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
+                      dns_protocol::kTypeA, ANDROID_RESOLV_NO_RETRY))
+        .WillOnce(Return(second_query_fd.get()));
+
+    EXPECT_CALL(mock_dns_platform_android_attempt_delegate_,
+                Result(second_query_fd.get(), _, _))
+        .WillOnce([&](int, int* rcode, base::span<uint8_t> answer) {
+          std::ranges::copy(kSuccessfulDnsResponse, answer.begin());
+          return kSuccessfulDnsResponse.size();
+        });
+
+    TransactionHelper helper(/*expected_answer_count=*/1);
+    helper.StartTransaction(
+        transaction_factory_.get(), "www.google.com", dns_protocol::kTypeA,
+        DnsTransactionFactory::AttemptMode::kPlatform, resolve_context_.get());
+    EXPECT_FALSE(helper.has_completed());
+
+    base::TimeDelta fallback_period =
+        resolve_context_->NextPlatformFallbackPeriod(/*server_index=*/0u,
+                                                     /*attempt=*/0,
+                                                     session_.get());
+    FastForwardBy(fallback_period);
+
+    helper.RunUntilComplete();
+    ASSERT_TRUE(helper.has_completed());
+    EXPECT_EQ(helper.response()->rcode(), dns_protocol::kRcodeNOERROR);
+  } else {
+    GTEST_SKIP_("Skip test on Android version below 29.");
+  }
+}
+
+TEST_F(DnsTransactionTestWithMockTime,
        PlatformAttemptRecordsStatsAndUpdatesTimeout) {
   if (__builtin_available(android 29, *)) {
     base::test::ScopedFeatureList scoped_feature_list;
