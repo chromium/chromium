@@ -75,6 +75,7 @@ using FilePathTest = PlatformTest;
 TEST_F(FilePathTest, DirName) {
   const auto cases = std::to_array<UnaryTestData>({
       {FPL(""), FPL(".")},
+      {FPL("."), FPL(".")},
       {FPL("aa"), FPL(".")},
       {FPL("/aa/bb"), FPL("/aa")},
       {FPL("/aa/bb/"), FPL("/aa")},
