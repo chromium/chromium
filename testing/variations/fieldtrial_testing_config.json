@@ -9121,6 +9121,22 @@
             ]
         }
     ],
+    "DeviceBoundSessionsRetryTransientRefreshErrors": [
+        {
+            "platforms": [
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeviceBoundSessionsRetryTransientRefreshErrors"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiacriticsOnPhysicalKeyboardLongpressOnByDefault": [
         {
             "platforms": [
