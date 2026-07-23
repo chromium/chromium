@@ -9,6 +9,8 @@
 #include <windows.system.h>
 #include <wrl/client.h>
 
+#include <optional>
+
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -27,6 +29,8 @@ class SystemMediaSourceWin {
 
   Status SystemPermissionStatus(ContentSettingsType type);
 
+  void SetMockStatus(ContentSettingsType type, std::optional<Status> status);
+
  private:
   SystemMediaSourceWin();
   SystemMediaSourceWin(const SystemMediaSourceWin&) = delete;
@@ -43,13 +47,8 @@ class SystemMediaSourceWin {
   Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IAsyncOperation<bool>>
       launch_uri_op_;
 
-  // AppCapability objects for camera and microphone
-  Microsoft::WRL::ComPtr<ABI::Windows::Security::Authorization::
-                             AppCapabilityAccess::IAppCapability>
-      camera_capability_;
-  Microsoft::WRL::ComPtr<ABI::Windows::Security::Authorization::
-                             AppCapabilityAccess::IAppCapability>
-      microphone_capability_;
+  std::optional<Status> camera_status_for_testing_;
+  std::optional<Status> mic_status_for_testing_;
 
   base::WeakPtrFactory<SystemMediaSourceWin> weak_factory_{this};
 };

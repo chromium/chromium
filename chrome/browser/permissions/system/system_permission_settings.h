@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
+#include "chrome/browser/permissions/system/system_permission_common.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 namespace content {
@@ -19,12 +20,6 @@ class WebContents;
 namespace system_permission_settings {
 
 class PlatformHandle;
-
-using SystemPermissionResponseCallback = base::OnceCallback<void()>;
-using content_settings::mojom::ContentSettingsType;
-using SystemPermissionChangedCallback =
-    base::RepeatingCallback<void(ContentSettingsType /*type*/,
-                                 bool /*is_blocked*/)>;
 
 class ScopedObservation {
  protected:
@@ -67,7 +62,6 @@ bool IsAllowed(ContentSettingsType type);
 // Checks whether the system blocks access to the specified content type.
 // As opposed to the functions above, this triggers a fresh check from the OS
 // and does not rely on any internal cached value.
-using SystemPermissionDeniedCallback = base::OnceCallback<void(bool)>;
 void IsDeniedFresh(ContentSettingsType type,
                    SystemPermissionDeniedCallback callback);
 

@@ -9,6 +9,7 @@ source_set("system") {
   public = [
     "media_authorization_wrapper_mac.h",
     "platform_handle.h",
+    "system_permission_common.h",
     "system_permission_settings.h",
   ]
 
@@ -27,11 +28,21 @@ source_set("system") {
   ]
 
   deps = [
+    "//chrome/browser:after_startup_task_utils",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/profiles",
     "//services/device/public/cpp/geolocation",
   ]
+
+  if (!is_android) {
+    public += [ "system_media_permission_cache.h" ]
+    sources += [
+      "system_media_permission_cache.cc",
+      "system_media_permission_cache.h",
+    ]
+    deps += [ "//chrome/browser:browser_public_dependencies" ]
+  }
 
   if (is_mac) {
     public += [ "system_media_capture_permissions_mac.h" ]
@@ -53,6 +64,7 @@ source_set("system") {
       "//chrome/browser/web_applications",
     ]
   } else if (is_win) {
+    public += [ "system_media_source_win.h" ]
     sources += [
       "system_media_source_win.cc",
       "system_media_source_win.h",

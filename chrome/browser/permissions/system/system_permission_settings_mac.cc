@@ -8,19 +8,14 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/mac/mac_util.h"
 #include "base/notreached.h"
-#include "base/scoped_observation.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/permissions/system/geolocation_observation.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
-#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/permissions/system/system_media_permission_cache.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
@@ -33,66 +28,27 @@ static_assert(BUILDFLAG(IS_MAC));
 namespace system_permission_settings {
 
 namespace {
-bool IsSystemPermissionDenied(
-    system_permission_settings::SystemPermission permission) {
-  return system_permission_settings::SystemPermission::kDenied == permission ||
-         system_permission_settings::SystemPermission::kRestricted ==
-             permission;
-}
 
-bool IsSystemPermissionPrompt(
-    system_permission_settings::SystemPermission permission) {
-  return system_permission_settings::SystemPermission::kNotDetermined ==
-         permission;
-}
-bool IsSystemPermissionAllowed(
-    system_permission_settings::SystemPermission permission) {
-  return system_permission_settings::SystemPermission::kAllowed == permission;
-}
-
-struct SystemPermissionState {
-  SystemPermission camera = SystemPermission::kNotDetermined;
-  SystemPermission mic = SystemPermission::kNotDetermined;
-};
-
-class PlatformHandleImpl : public PlatformHandle,
-                           public BrowserCollectionObserver {
+class PlatformHandleImpl : public PlatformHandle {
  public:
-  PlatformHandleImpl() {
-    if (base::SequencedTaskRunner::HasCurrentDefault()) {
-      AfterStartupTaskUtils::PostTask(
-          FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
-          base::BindOnce(&PlatformHandleImpl::RefreshSystemPermissionSettings,
-                         weak_factory_.GetWeakPtr(), base::DoNothing()));
-    } else {
-      browser_collection_observation_.Observe(
-          GlobalBrowserCollection::GetInstance());
-    }
-  }
+  PlatformHandleImpl()
+      : media_cache_(
+            base::BindOnce(&base::ThreadPool::CreateSequencedTaskRunner),
+            base::BindRepeating(&CheckSystemVideoCapturePermission),
+            base::BindRepeating(&CheckSystemAudioCapturePermission)) {}
 
   PlatformHandleImpl(const PlatformHandleImpl&) = delete;
   PlatformHandleImpl& operator=(const PlatformHandleImpl&) = delete;
 
   ~PlatformHandleImpl() override = default;
 
-  // BrowserCollectionObserver:
-  void OnBrowserActivated(BrowserWindowInterface* browser) override {
-    // When the browser window is activated, it's a good opportunity to check
-    // system permission settings again, since the settings would very likely be
-    // changed while the browser windows is not active.
-    RefreshSystemPermissionSettings();
-  }
-
   // PlatformHandle:
   bool CanPrompt(ContentSettingsType type) override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
       case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-        return IsSystemPermissionPrompt(
-            GetCachedSystemPermission(ContentSettingsType::MEDIASTREAM_CAMERA));
       case ContentSettingsType::MEDIASTREAM_MIC:
-        return IsSystemPermissionPrompt(
-            GetCachedSystemPermission(ContentSettingsType::MEDIASTREAM_MIC));
+        return media_cache_.CanPrompt(type);
       case ContentSettingsType::GEOLOCATION:
         return device::GeolocationSystemPermissionManager::GetInstance()
                    ->GetSystemPermission() ==
@@ -109,11 +65,8 @@ class PlatformHandleImpl : public PlatformHandle,
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
       case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-        return IsSystemPermissionDenied(
-            GetCachedSystemPermission(ContentSettingsType::MEDIASTREAM_CAMERA));
       case ContentSettingsType::MEDIASTREAM_MIC:
-        return IsSystemPermissionDenied(
-            GetCachedSystemPermission(ContentSettingsType::MEDIASTREAM_MIC));
+        return media_cache_.IsDenied(type);
       case ContentSettingsType::GEOLOCATION:
         return device::GeolocationSystemPermissionManager::GetInstance()
                    ->GetSystemPermission() ==
@@ -130,11 +83,8 @@ class PlatformHandleImpl : public PlatformHandle,
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_CAMERA:
       case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-        return IsSystemPermissionAllowed(
-            GetCachedSystemPermission(ContentSettingsType::MEDIASTREAM_CAMERA));
       case ContentSettingsType::MEDIASTREAM_MIC:
-        return IsSystemPermissionAllowed(
-            GetCachedSystemPermission(ContentSettingsType::MEDIASTREAM_MIC));
+        return media_cache_.IsAllowed(type);
       case ContentSettingsType::GEOLOCATION:
         return device::GeolocationSystemPermissionManager::GetInstance()
                    ->GetSystemPermission() ==
@@ -151,23 +101,9 @@ class PlatformHandleImpl : public PlatformHandle,
                      SystemPermissionDeniedCallback callback) override {
     switch (type) {
       case ContentSettingsType::MEDIASTREAM_MIC:
-        base::ThreadPool::PostTaskAndReplyWithResult(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-            base::BindOnce(
-                &system_permission_settings::CheckSystemAudioCapturePermission),
-            base::BindOnce(&PlatformHandleImpl::ProcessDeniedPermissionResult,
-                           weak_factory_.GetWeakPtr(), type)
-                .Then(std::move(callback)));
-        return;
       case ContentSettingsType::MEDIASTREAM_CAMERA:
       case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-        base::ThreadPool::PostTaskAndReplyWithResult(
-            FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-            base::BindOnce(
-                &system_permission_settings::CheckSystemVideoCapturePermission),
-            base::BindOnce(&PlatformHandleImpl::ProcessDeniedPermissionResult,
-                           weak_factory_.GetWeakPtr(), type)
-                .Then(std::move(callback)));
+        media_cache_.IsDeniedFresh(type, std::move(callback));
         return;
       default:
         std::move(callback).Run(IsDenied(type));
@@ -269,79 +205,15 @@ class PlatformHandleImpl : public PlatformHandle,
   }
 
  private:
-  void RefreshSystemPermissionSettings(
-      base::OnceClosure callback = base::DoNothing()) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce([]() {
-          return SystemPermissionState{
-              system_permission_settings::CheckSystemVideoCapturePermission(),
-              system_permission_settings::CheckSystemAudioCapturePermission()};
-        }),
-        base::BindOnce(&PlatformHandleImpl::OnSystemPermissionSettingsRefreshed,
-                       weak_factory_.GetWeakPtr())
-            .Then(std::move(callback)));
-  }
-
-  void OnSystemPermissionSettingsRefreshed(SystemPermissionState state) {
-    UpdateSystemPermissionCacheEntry(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                     state.camera);
-    UpdateSystemPermissionCacheEntry(ContentSettingsType::MEDIASTREAM_MIC,
-                                     state.mic);
-    if (!browser_collection_observation_.IsObserving()) {
-      browser_collection_observation_.Observe(
-          GlobalBrowserCollection::GetInstance());
-    }
-  }
-
-  void UpdateSystemPermissionCacheEntry(ContentSettingsType type,
-                                        SystemPermission result) {
-    if (type == ContentSettingsType::MEDIASTREAM_CAMERA ||
-        type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
-      camera_status_ = result;
-    } else if (type == ContentSettingsType::MEDIASTREAM_MIC) {
-      mic_status_ = result;
-    }
-  }
-
-  // This function is static because Chromium prevents binding non-void member
-  // functions to WeakPtrs. Making it static allows passing the WeakPtr as a
-  // normal parameter and returning a value that can be chained using `.Then()`.
-  static bool ProcessDeniedPermissionResult(
-      base::WeakPtr<PlatformHandleImpl> platform_handle,
-      ContentSettingsType type,
-      SystemPermission result) {
-    if (platform_handle) {
-      platform_handle->UpdateSystemPermissionCacheEntry(type, result);
-    }
-    return IsSystemPermissionDenied(result);
-  }
-
   void OnSystemPermissionRequestFinished(
       ContentSettingsType type,
       SystemPermissionResponseCallback callback) {
-    // Since a permission request has likely updated the permission statuses,
-    // update the cache first, and only then call the callback since it's
-    // expected the calling code will want to check the permission status
-    // immediately when the callback runs.
-    RefreshSystemPermissionSettings(std::move(callback));
-  }
-
-  SystemPermission GetCachedSystemPermission(ContentSettingsType type) {
-    if (type == ContentSettingsType::MEDIASTREAM_CAMERA ||
-        type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
-      return camera_status_;
-    } else if (type == ContentSettingsType::MEDIASTREAM_MIC) {
-      return mic_status_;
-    }
-    NOTREACHED();
+    media_cache_.RefreshSystemPermissionSettings(std::move(callback));
   }
 
   void OnSystemPermissionUpdated(ContentSettingsType content_type,
                                  bool /*is_blocked*/) {
     CHECK(content_type == ContentSettingsType::GEOLOCATION);
-    // No further observation needed as all the current requests will now be
-    // resolved
     observation_.reset();
     FlushGeolocationCallbacks();
   }
@@ -353,13 +225,9 @@ class PlatformHandleImpl : public PlatformHandle,
     }
   }
 
-  SystemPermission camera_status_ = SystemPermission::kNotDetermined;
-  SystemPermission mic_status_ = SystemPermission::kNotDetermined;
-
+  SystemMediaPermissionCache media_cache_;
   std::vector<SystemPermissionResponseCallback> geolocation_callbacks_;
   std::unique_ptr<ScopedObservation> observation_;
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
   base::WeakPtrFactory<PlatformHandleImpl> weak_factory_{this};
 };
 

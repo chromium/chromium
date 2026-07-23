@@ -41,32 +41,6 @@ ComPtr<IAppCapability> CreateAppCapability(std::string_view name) {
   return app_capability;
 }
 
-SystemMediaSourceWin::Status SystemPermissionStatusImpl(
-    ComPtr<IAppCapability> app_capability) {
-  using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
-      AppCapabilityAccessStatus;
-  using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
-      AppCapabilityAccessStatus_Allowed;
-  using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
-      AppCapabilityAccessStatus_UserPromptRequired;
-  if (!app_capability) {
-    return SystemMediaSourceWin::Status::kNotDetermined;
-  }
-  AppCapabilityAccessStatus access_status;
-  HRESULT hr = app_capability->CheckAccess(&access_status);
-  if (FAILED(hr)) {
-    return SystemMediaSourceWin::Status::kNotDetermined;
-  }
-
-  if (access_status == AppCapabilityAccessStatus_Allowed) {
-    return SystemMediaSourceWin::Status::kAllowed;
-  }
-  if (access_status == AppCapabilityAccessStatus_UserPromptRequired) {
-    return SystemMediaSourceWin::Status::kNotDetermined;
-  }
-  return SystemMediaSourceWin::Status::kDenied;
-}
-
 // COM message filter that suppresses window message dispatching during
 // cross-apartment COM calls, preventing re-entrancy crashes.
 class SuppressMessagePumpFilter
@@ -97,13 +71,15 @@ class SuppressMessagePumpFilter
   }
 };
 
-}  // namespace
+SystemMediaSourceWin::Status SystemPermissionStatusImpl(
+    std::string_view capability_name) {
+  using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
+      AppCapabilityAccessStatus;
+  using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
+      AppCapabilityAccessStatus_Allowed;
+  using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
+      AppCapabilityAccessStatus_UserPromptRequired;
 
-using ::Microsoft::WRL::ComPtr;
-
-SystemMediaSourceWin::SystemMediaSourceWin() {
-  // Suppress window message dispatching during RoGetActivationFactory to
-  // prevent re-entrancy crashes (see CCliModalLoop::MessagePending).
   APTTYPE apt_type;
   APTTYPEQUALIFIER apt_qualifier;
   bool has_sta = SUCCEEDED(CoGetApartmentType(&apt_type, &apt_qualifier)) &&
@@ -115,13 +91,37 @@ SystemMediaSourceWin::SystemMediaSourceWin() {
     CoRegisterMessageFilter(filter.Get(), &old_filter);
   }
 
-  camera_capability_ = CreateAppCapability("webcam");
-  microphone_capability_ = CreateAppCapability("microphone");
+  ComPtr<IAppCapability> app_capability = CreateAppCapability(capability_name);
+
+  // Make sure to check status before removing the filter.
+  AppCapabilityAccessStatus access_status;
+  HRESULT hr = S_OK;
+  if (app_capability) {
+    hr = app_capability->CheckAccess(&access_status);
+  }
 
   if (has_sta) {
     CoRegisterMessageFilter(old_filter.Get(), nullptr);
   }
+
+  if (!app_capability || FAILED(hr)) {
+    return SystemMediaSourceWin::Status::kNotDetermined;
+  }
+
+  if (access_status == AppCapabilityAccessStatus_Allowed) {
+    return SystemMediaSourceWin::Status::kAllowed;
+  }
+  if (access_status == AppCapabilityAccessStatus_UserPromptRequired) {
+    return SystemMediaSourceWin::Status::kNotDetermined;
+  }
+  return SystemMediaSourceWin::Status::kDenied;
 }
+
+}  // namespace
+
+using ::Microsoft::WRL::ComPtr;
+
+SystemMediaSourceWin::SystemMediaSourceWin() = default;
 
 SystemMediaSourceWin::~SystemMediaSourceWin() = default;
 
@@ -201,13 +201,33 @@ void SystemMediaSourceWin::OpenSystemPermissionSetting(
 
 SystemMediaSourceWin::Status SystemMediaSourceWin::SystemPermissionStatus(
     ContentSettingsType type) {
+  if (type == ContentSettingsType::MEDIASTREAM_MIC &&
+      mic_status_for_testing_.has_value()) {
+    return mic_status_for_testing_.value();
+  }
+  if ((type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+       type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) &&
+      camera_status_for_testing_.has_value()) {
+    return camera_status_for_testing_.value();
+  }
+
   switch (type) {
     case ContentSettingsType::MEDIASTREAM_MIC:
-      return SystemPermissionStatusImpl(microphone_capability_);
+      return SystemPermissionStatusImpl("microphone");
     case ContentSettingsType::MEDIASTREAM_CAMERA:
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      return SystemPermissionStatusImpl(camera_capability_);
+      return SystemPermissionStatusImpl("webcam");
     default:
       NOTREACHED();
+  }
+}
+
+void SystemMediaSourceWin::SetMockStatus(ContentSettingsType type,
+                                         std::optional<Status> status) {
+  if (type == ContentSettingsType::MEDIASTREAM_MIC) {
+    mic_status_for_testing_ = status;
+  } else if (type == ContentSettingsType::MEDIASTREAM_CAMERA ||
+             type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
+    camera_status_for_testing_ = status;
   }
 }
