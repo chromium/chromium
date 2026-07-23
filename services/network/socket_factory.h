@@ -20,6 +20,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/restricted_udp_socket.mojom.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "services/network/tcp_bound_socket.h"
@@ -43,7 +44,8 @@ class SimpleHostResolver;
 // Helper class that handles socket requests. It takes care of destroying
 // socket implementation instances when mojo pipes are broken.
 class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
-    : public TCPServerSocket::Delegate {
+    : public mojom::SocketFactory,
+      public TCPServerSocket::Delegate {
  public:
   // Constructs a SocketFactory. If |net_log| is non-null, it is used to
   // log NetLog events when logging is enabled. |net_log| must outlive |this|.
@@ -53,11 +55,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
   SocketFactory(const SocketFactory&) = delete;
   SocketFactory& operator=(const SocketFactory&) = delete;
 
-  virtual ~SocketFactory();
+  ~SocketFactory() override;
 
-  // These all correspond to the NetworkContext methods of the same name.
-  void CreateUDPSocket(mojo::PendingReceiver<mojom::UDPSocket> receiver,
-                       mojo::PendingRemote<mojom::UDPSocketListener> listener);
+  // mojom::SocketFactory implementation:
+  void CreateUDPSocket(
+      mojo::PendingReceiver<mojom::UDPSocket> receiver,
+      mojo::PendingRemote<mojom::UDPSocketListener> listener) override;
+  void CreateTCPConnectedSocket(
+      const std::optional<net::IPEndPoint>& local_addr,
+      const net::AddressList& remote_addr_list,
+      mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver,
+      mojo::PendingRemote<mojom::SocketObserver> observer,
+      mojom::SocketFactory::CreateTCPConnectedSocketCallback callback) override;
   void CreateRestrictedUDPSocket(
       const net::IPEndPoint& addr,
       mojom::RestrictedUDPSocketMode mode,
@@ -75,14 +86,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketFactory
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingReceiver<mojom::TCPServerSocket> receiver,
       mojom::NetworkContext::CreateTCPServerSocketCallback callback);
-  void CreateTCPConnectedSocket(
-      const std::optional<net::IPEndPoint>& local_addr,
-      const net::AddressList& remote_addr_list,
-      mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver,
-      mojo::PendingRemote<mojom::SocketObserver> observer,
-      mojom::NetworkContext::CreateTCPConnectedSocketCallback callback);
   void CreateTCPBoundSocket(
       const net::IPEndPoint& local_addr,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,

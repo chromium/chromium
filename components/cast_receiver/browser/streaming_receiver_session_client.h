@@ -13,8 +13,11 @@
 #include "base/time/time.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_receiver/browser/public/streaming_config_manager.h"
-#include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
+#include "components/cast_streaming/browser/public/socket_factory_getter.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/network_context_getter.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -185,6 +188,8 @@ class StreamingReceiverSessionClient
   // Tracks if this session should be initiated as audio or video only.
   bool supports_audio_ = true;
   bool supports_video_ = true;
+
+  mojo::Remote<network::mojom::SocketFactory> socket_factory_;
 
   base::WeakPtrFactory<StreamingReceiverSessionClient> weak_factory_;
 };

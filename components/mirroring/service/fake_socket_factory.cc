@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/mirroring/service/fake_network_service.h"
+#include "components/mirroring/service/fake_socket_factory.h"
 
 #include <algorithm>
 #include <memory>
@@ -86,12 +86,12 @@ void MockUdpSocket::VerifySendingPacket(const media::cast::Packet& packet) {
   EXPECT_TRUE(std::ranges::equal(packet, *sending_packet_));
 }
 
-MockNetworkContext::MockNetworkContext(
-    mojo::PendingReceiver<network::mojom::NetworkContext> receiver)
+MockSocketFactory::MockSocketFactory(
+    mojo::PendingReceiver<network::mojom::SocketFactory> receiver)
     : receiver_(this, std::move(receiver)) {}
-MockNetworkContext::~MockNetworkContext() = default;
+MockSocketFactory::~MockSocketFactory() = default;
 
-void MockNetworkContext::CreateUDPSocket(
+void MockSocketFactory::CreateUDPSocket(
     mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener) {
   udp_socket_ =
@@ -99,12 +99,17 @@ void MockNetworkContext::CreateUDPSocket(
   OnUDPSocketCreated();
 }
 
-void MockNetworkContext::CreateURLLoaderFactory(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    network::mojom::URLLoaderFactoryParamsPtr params) {
-  ASSERT_TRUE(params);
-  mojo::MakeSelfOwnedReceiver(std::make_unique<network::TestURLLoaderFactory>(),
-                              std::move(receiver));
+void MockSocketFactory::CreateTCPConnectedSocket(
+    const std::optional<net::IPEndPoint>& local_addr,
+    const net::AddressList& remote_addr_list,
+    network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+    mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
+    mojo::PendingRemote<network::mojom::SocketObserver> observer,
+    CreateTCPConnectedSocketCallback callback) {
+  std::move(callback).Run(net::ERR_FAILED, std::nullopt, std::nullopt,
+                          mojo::ScopedDataPipeConsumerHandle{},
+                          mojo::ScopedDataPipeProducerHandle{});
 }
 
 }  // namespace mirroring

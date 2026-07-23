@@ -31,7 +31,9 @@
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
-#include "components/cast_streaming/browser/public/network_context_getter.h"  // nogncheck
+#include "components/cast_streaming/browser/public/socket_factory_getter.h"  // nogncheck
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
 #endif
 
 ContextImpl::ContextImpl(
@@ -53,6 +55,11 @@ ContextImpl::ContextImpl(
 ContextImpl::~ContextImpl() {
   TRACE_EVENT(kWebEngineFidlCategory, "fuchsia.web/Context destroyed",
               perfetto::TerminatingFlow::FromPointer(this));
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+  if (cast_streaming_enabled_) {
+    cast_streaming::SocketFactoryGetter::Clear();
+  }
+#endif
 }
 
 void ContextImpl::DestroyFrame(FrameImpl* frame) {
@@ -68,8 +75,24 @@ bool ContextImpl::IsJavaScriptInjectionAllowed() {
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
 void ContextImpl::SetCastStreamingEnabled() {
   cast_streaming_enabled_ = true;
-  cast_streaming::SetNetworkContextGetter(base::BindRepeating(
-      &ContextImpl::GetNetworkContext, base::Unretained(this)));
+  cast_streaming::SocketFactoryGetter::Set(base::BindRepeating(
+      [](ContextImpl* context_impl) -> network::mojom::SocketFactory* {
+        if (!context_impl->socket_factory_.is_bound()) {
+          network::mojom::NetworkContext* context =
+              context_impl->GetNetworkContext();
+          if (context) {
+            context->CreateSocketFactory(
+                context_impl->socket_factory_.BindNewPipeAndPassReceiver());
+            context_impl->socket_factory_.set_disconnect_handler(base::BindOnce(
+                [](mojo::Remote<network::mojom::SocketFactory>* remote) {
+                  remote->reset();
+                },
+                &context_impl->socket_factory_));
+          }
+        }
+        return context_impl->socket_factory_.get();
+      },
+      base::Unretained(this)));
 }
 #endif
 

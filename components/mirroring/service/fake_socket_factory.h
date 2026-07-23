@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_MIRRORING_SERVICE_FAKE_NETWORK_SERVICE_H_
-#define COMPONENTS_MIRRORING_SERVICE_FAKE_NETWORK_SERVICE_H_
+#ifndef COMPONENTS_MIRRORING_SERVICE_FAKE_SOCKET_FACTORY_H_
+#define COMPONENTS_MIRRORING_SERVICE_FAKE_SOCKET_FACTORY_H_
 
 #include "base/functional/callback.h"
 #include "media/cast/common/packet.h"
@@ -12,8 +12,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
+#include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
-#include "services/network/test/test_network_context.h"
 #include "services/network/test/test_udp_socket.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,33 +68,39 @@ class MockUdpSocket final : public network::TestUDPSocket {
   int num_ask_for_receive_ = 0;
 };
 
-class MockNetworkContext : public network::TestNetworkContext {
+class MockSocketFactory : public network::mojom::SocketFactory {
  public:
-  explicit MockNetworkContext(
-      mojo::PendingReceiver<network::mojom::NetworkContext> receiver);
+  explicit MockSocketFactory(
+      mojo::PendingReceiver<network::mojom::SocketFactory> receiver);
 
-  MockNetworkContext(const MockNetworkContext&) = delete;
-  MockNetworkContext& operator=(const MockNetworkContext&) = delete;
+  MockSocketFactory(const MockSocketFactory&) = delete;
+  MockSocketFactory& operator=(const MockSocketFactory&) = delete;
 
-  ~MockNetworkContext() override;
+  ~MockSocketFactory() override;
 
   MOCK_METHOD0(OnUDPSocketCreated, void());
 
-  // network::mojom::NetworkContext implementation:
+  // network::mojom::SocketFactory implementation:
   void CreateUDPSocket(
       mojo::PendingReceiver<network::mojom::UDPSocket> receiver,
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener) override;
-  void CreateURLLoaderFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      network::mojom::URLLoaderFactoryParamsPtr params) override;
+
+  void CreateTCPConnectedSocket(
+      const std::optional<net::IPEndPoint>& local_addr,
+      const net::AddressList& remote_addr_list,
+      network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
+      mojo::PendingRemote<network::mojom::SocketObserver> observer,
+      CreateTCPConnectedSocketCallback callback) override;
 
   MockUdpSocket* udp_socket() const { return udp_socket_.get(); }
 
  private:
-  mojo::Receiver<network::mojom::NetworkContext> receiver_;
+  mojo::Receiver<network::mojom::SocketFactory> receiver_;
   std::unique_ptr<MockUdpSocket> udp_socket_;
 };
 
 }  // namespace mirroring
 
-#endif  // COMPONENTS_MIRRORING_SERVICE_FAKE_NETWORK_SERVICE_H_
+#endif  // COMPONENTS_MIRRORING_SERVICE_FAKE_SOCKET_FACTORY_H_

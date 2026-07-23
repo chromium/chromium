@@ -159,8 +159,8 @@ class TLSClientSocketTestBase {
     factory_->CreateTCPConnectedSocket(
         std::nullopt /* local_addr */, remote_addr_list,
         nullptr /* tcp_connected_socket_options */,
-        TRAFFIC_ANNOTATION_FOR_TESTS, std::move(receiver),
-        pre_tls_observer()->GetObserverRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        std::move(receiver), pre_tls_observer()->GetObserverRemote(),
         base::BindLambdaForTesting(
             [&](int result,
                 const std::optional<net::IPEndPoint>& actual_local_addr,

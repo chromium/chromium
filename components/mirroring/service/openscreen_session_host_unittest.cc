@@ -20,7 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/mirroring/service/fake_network_service.h"
+#include "components/mirroring/service/fake_socket_factory.h"
 #include "components/mirroring/service/fake_video_capture_host.h"
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/mirroring_features.h"
@@ -209,7 +209,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   MOCK_METHOD(void, OnRemotingStateChanged, (bool is_remoting));
 
   MOCK_METHOD(void, OnGetVideoCaptureHost, ());
-  MOCK_METHOD(void, OnGetNetworkContext, ());
+  MOCK_METHOD(void, OnGetSocketFactory, ());
   MOCK_METHOD(void, OnCreateAudioStream, ());
   MOCK_METHOD(void, OnConnectToRemotingSource, ());
 
@@ -269,11 +269,11 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
       mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver)
       override {}
 
-  void GetNetworkContext(
-      mojo::PendingReceiver<network::mojom::NetworkContext> receiver) override {
-    network_context_ =
-        std::make_unique<NiceMock<MockNetworkContext>>(std::move(receiver));
-    OnGetNetworkContext();
+  void GetSocketFactory(
+      mojo::PendingReceiver<network::mojom::SocketFactory> receiver) override {
+    socket_factory_ =
+        std::make_unique<NiceMock<MockSocketFactory>>(std::move(receiver));
+    OnGetSocketFactory();
   }
 
   void CreateAudioStream(
@@ -363,7 +363,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     outbound_channel_receiver_.Bind(
         outbound_channel_remote.InitWithNewPipeAndPassReceiver());
     // Expect to send OFFER message when session is created.
-    EXPECT_CALL(*this, OnGetNetworkContext());
+    EXPECT_CALL(*this, OnGetSocketFactory());
     EXPECT_CALL(*this, OnError(_)).Times(0);
     EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer));
     EXPECT_CALL(*this, OnInitialized());
@@ -442,12 +442,12 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     ASSERT_EQ(cast_mode_, "mirroring");
     ASSERT_TRUE(video_host_);
     // Expect to send out some UDP packets.
-    EXPECT_CALL(*network_context_->udp_socket(), OnSendTo()).Times(AtLeast(1));
+    EXPECT_CALL(*socket_factory_->udp_socket(), OnSendTo()).Times(AtLeast(1));
     EXPECT_CALL(*video_host_, ReleaseBuffer(_, _, _));
     // Send one video frame to the consumer.
     video_host_->SendOneFrame(gfx::Size(64, 32), base::TimeTicks::Now());
     task_environment_.RunUntilIdle();
-    Mock::VerifyAndClear(network_context_.get());
+    Mock::VerifyAndClear(socket_factory_.get());
     Mock::VerifyAndClear(video_host_.get());
   }
 
@@ -764,7 +764,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   bool force_letterboxing_{false};
 
   base::OnceClosure session_host_deletion_cb_;
-  std::unique_ptr<MockNetworkContext> network_context_;
+  std::unique_ptr<MockSocketFactory> socket_factory_;
   std::unique_ptr<openscreen::cast::Answer> answer_;
 
   int next_receiver_ssrc_{35336};

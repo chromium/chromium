@@ -83,8 +83,8 @@ source_set("unittests") {
   sources = [
     "audio_capturing_callback_unittest.cc",
     "captured_audio_input_unittest.cc",
-    "fake_network_service.cc",
-    "fake_network_service.h",
+    "fake_socket_factory.cc",
+    "fake_socket_factory.h",
     "fake_video_capture_host.cc",
     "fake_video_capture_host.h",
     "media_remoter_unittest.cc",

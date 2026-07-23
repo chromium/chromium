@@ -9,5 +9,6 @@ include_rules = [
   "+third_party/openscreen/src/cast/streaming",
   "+third_party/openscreen/src/platform",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+ui/gfx/geometry",
 ]

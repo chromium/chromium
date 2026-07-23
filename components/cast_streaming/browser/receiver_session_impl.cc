@@ -6,8 +6,8 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/browser/cast_message_port_converter.h"
-#include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/public/receiver_config.h"
+#include "components/cast_streaming/browser/public/socket_factory_getter.h"
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
@@ -60,7 +60,7 @@ void ReceiverSessionImpl::StartStreamingAsync(
 
 void ReceiverSessionImpl::StartStreamingAsyncInternal(
     mojo::AssociatedRemote<mojom::DemuxerConnector> demuxer_connector) {
-  DCHECK(HasNetworkContextGetter());
+  DCHECK(SocketFactoryGetter::IsSet());
 
   DVLOG(1) << __func__;
   demuxer_connector_ = std::move(demuxer_connector);

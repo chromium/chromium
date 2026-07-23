@@ -39,8 +39,8 @@
 #include "components/mirroring/service/remoting_sender.h"
 #include "components/mirroring/service/rpc_dispatcher_impl.h"
 #include "components/mirroring/service/video_capture_client.h"
-#include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/network_util.h"
+#include "components/openscreen_platform/socket_factory.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/audio/audio_input_device.h"
@@ -176,18 +176,18 @@ OpenscreenSessionHost::OpenscreenSessionHost(
   openscreen_platform::EventTraceLoggingPlatform::EnsureInstance();
 
   mirror_settings_.SetMaxResolutionConstraints(max_resolution);
-  resource_provider_->GetNetworkContext(
-      network_context_.BindNewPipeAndPassReceiver());
+  resource_provider_->GetSocketFactory(
+      socket_factory_.BindNewPipeAndPassReceiver());
 
-  // Access to the network context for Open Screen components is granted only
-  // by our `resource_provider_`'s NetworkContext mojo interface.
-  if (!openscreen_platform::HasNetworkContextGetter()) {
-    set_network_context_proxy_ = true;
+  // Access to the socket factory for Open Screen components is granted only
+  // by our `resource_provider_`'s SocketFactory mojo interface.
+  if (!openscreen_platform::SocketFactoryGetter::IsSet()) {
+    set_socket_factory_proxy_ = true;
 
     // NOTE: use of `base::Unretained` is safe since we clear the getter on
     // destruction.
-    openscreen_platform::SetNetworkContextGetter(base::BindRepeating(
-        &OpenscreenSessionHost::GetNetworkContext, base::Unretained(this)));
+    openscreen_platform::SocketFactoryGetter::Set(base::BindRepeating(
+        &OpenscreenSessionHost::GetSocketFactory, base::Unretained(this)));
   }
 
   // In order to access the mojo Network interface, all of the networking
@@ -238,9 +238,9 @@ OpenscreenSessionHost::~OpenscreenSessionHost() {
   // Tear down the cast environment now that the session has been stopped.
   cast_environment_.reset();
 
-  // If we provided access to our network context proxy, we need to clear it.
-  if (set_network_context_proxy_) {
-    openscreen_platform::ClearNetworkContextGetter();
+  // If we provided access to our socket factory proxy, we need to clear it.
+  if (set_socket_factory_proxy_) {
+    openscreen_platform::SocketFactoryGetter::Clear();
   }
 
   if (deletion_cb_) {
@@ -1265,8 +1265,8 @@ bool OpenscreenSessionHost::TryResumeCapturingVideo() {
   return false;
 }
 
-network::mojom::NetworkContext* OpenscreenSessionHost::GetNetworkContext() {
-  return network_context_.get();
+network::mojom::SocketFactory* OpenscreenSessionHost::GetSocketFactory() {
+  return socket_factory_.get();
 }
 
 base::DictValue OpenscreenSessionHost::GetMirroringStats() const {

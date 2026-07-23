@@ -383,7 +383,8 @@ class TCPSocketTest : public testing::Test {
     int net_error = net::ERR_FAILED;
     factory_->CreateTCPConnectedSocket(
         local_addr, remote_addr_list, std::move(tcp_connected_socket_options),
-        TRAFFIC_ANNOTATION_FOR_TESTS, std::move(receiver), std::move(observer),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+        std::move(receiver), std::move(observer),
         base::BindLambdaForTesting(
             [&](int result,
                 const std::optional<net::IPEndPoint>& actual_local_addr,
@@ -1567,7 +1568,8 @@ TEST_F(TCPSocketWithMockSocketTest, SocketDestroyedBeforeConnectCompletes) {
   base::RunLoop run_loop;
   factory()->CreateTCPConnectedSocket(
       std::nullopt, remote_addr_list,
-      nullptr /* tcp_connected_socket_options */, TRAFFIC_ANNOTATION_FOR_TESTS,
+      nullptr /* tcp_connected_socket_options */,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       client_socket.BindNewPipeAndPassReceiver(), mojo::NullRemote(),
       base::BindLambdaForTesting(
           [&](int result,

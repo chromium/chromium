@@ -38,7 +38,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
 #include "third_party/openscreen/src/cast/streaming/public/sender_session.h"
 
 using openscreen::cast::capture_recommendations::Recommendations;
@@ -248,7 +248,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   bool TryResumeCapturingVideo();
 
   // Called to provide Open Screen with access to this host's network proxy.
-  network::mojom::NetworkContext* GetNetworkContext();
+  network::mojom::SocketFactory* GetSocketFactory();
 
   // Called to disable the given hardware codec for the remainder of the
   // session, if it has not already been disabled.
@@ -312,9 +312,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // negotiation.
   std::unique_ptr<openscreen::cast::SenderSession> session_;
 
-  // Used to provide access to UDP sockets and URL loading.
-  mojo::Remote<network::mojom::NetworkContext> network_context_;
-  bool set_network_context_proxy_ = false;
+  // Used to provide access to UDP sockets.
+  mojo::Remote<network::mojom::SocketFactory> socket_factory_;
+  bool set_socket_factory_proxy_ = false;
 
   // Stored as part of generating an OFFER.
   // NOTE: currently we only support Opus audio, but may provide a variety of

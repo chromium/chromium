@@ -5,7 +5,7 @@
 module mirroring.mojom;
 
 import "media/capture/mojom/video_capture.mojom";
-import "services/network/public/mojom/network_context.mojom";
+import "services/network/public/mojom/socket_factory.mojom";
 import "media/mojo/mojom/remoting.mojom";
 import "media/mojo/mojom/audio_data_pipe.mojom";
 import "media/mojo/mojom/audio_input_stream.mojom";
@@ -43,7 +43,7 @@ interface ResourceProvider {
       pending_receiver<media.mojom.VideoEncoderMetricsProvider> receiver);
 
   [AllowedContext=sandbox.mojom.Context.kPrivilegedUtility]
-  GetNetworkContext(pending_receiver<network.mojom.NetworkContext> receiver);
+  GetSocketFactory(pending_receiver<network.mojom.SocketFactory> receiver);
   CreateAudioStream(pending_remote<AudioStreamCreatorClient> client,
                     media.mojom.AudioParameters param,
                     uint32 shared_memory_count);

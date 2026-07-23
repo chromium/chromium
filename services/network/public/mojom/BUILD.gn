@@ -1961,6 +1961,7 @@ mojom("mojom") {
     "restricted_udp_socket.mojom",
     "socket_broker.mojom",
     "socket_connection_tracker.mojom",
+    "socket_factory.mojom",
     "ssl_config.mojom",
     "system_dns_resolution.mojom",
     "tcp_socket.mojom",

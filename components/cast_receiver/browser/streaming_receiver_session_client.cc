@@ -14,6 +14,9 @@
 #include "components/cast_receiver/browser/streaming_controller_base.h"
 #include "components/cast_streaming/common/public/cast_streaming_url.h"
 #include "media/base/video_decoder_config.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
 
 namespace cast_receiver {
 
@@ -58,7 +61,24 @@ StreamingReceiverSessionClient::StreamingReceiverSessionClient(
   DCHECK(!network_context_getter.is_null());
   DCHECK(config_manager);
 
-  cast_streaming::SetNetworkContextGetter(std::move(network_context_getter));
+  cast_streaming::SocketFactoryGetter::Set(base::BindRepeating(
+      [](StreamingReceiverSessionClient* client,
+         network::NetworkContextGetter g) -> network::mojom::SocketFactory* {
+        if (!client->socket_factory_.is_bound()) {
+          network::mojom::NetworkContext* context = g.Run();
+          if (context) {
+            context->CreateSocketFactory(
+                client->socket_factory_.BindNewPipeAndPassReceiver());
+            client->socket_factory_.set_disconnect_handler(base::BindOnce(
+                [](mojo::Remote<network::mojom::SocketFactory>* remote) {
+                  remote->reset();
+                },
+                &client->socket_factory_));
+          }
+        }
+        return client->socket_factory_.get();
+      },
+      base::Unretained(this), std::move(network_context_getter)));
 
   DVLOG(1) << "Streaming Receiver Session start pending...";
   config_manager->AddConfigObserver(*this);
@@ -85,7 +105,7 @@ StreamingReceiverSessionClient::~StreamingReceiverSessionClient() {
            << "\n\tLaunch called: " << is_streaming_launch_pending()
            << "\n\tAV Settings Received: " << has_received_av_settings();
 
-  cast_streaming::SetNetworkContextGetter({});
+  cast_streaming::SocketFactoryGetter::Clear();
 }
 
 StreamingReceiverSessionClient::Handler::~Handler() = default;

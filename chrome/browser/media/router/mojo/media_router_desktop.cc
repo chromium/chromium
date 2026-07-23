@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -43,13 +44,14 @@
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/media_router/common/providers/cast/channel/cast_socket_service.h"
-#include "components/openscreen_platform/network_context.h"
+#include "components/openscreen_platform/socket_factory.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -746,11 +748,30 @@ void MediaRouterDesktop::InitializeMediaRouteProviders() {
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableMediaRouteProvidersForTestSwitch));
 
-  if (!openscreen_platform::HasNetworkContextGetter()) {
-    openscreen_platform::SetNetworkContextGetter(base::BindRepeating([] {
-      DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-      return g_browser_process->system_network_context_manager()->GetContext();
-    }));
+  if (!openscreen_platform::SocketFactoryGetter::IsSet()) {
+    openscreen_platform::SocketFactoryGetter::Set(
+        base::BindRepeating([]() -> network::mojom::SocketFactory* {
+          DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+          static base::NoDestructor<mojo::Remote<network::mojom::SocketFactory>>
+              socket_factory;
+          if (!socket_factory->is_bound()) {
+            network::mojom::NetworkContext* context =
+                g_browser_process->system_network_context_manager()
+                    ->GetContext();
+            if (context) {
+              context->CreateSocketFactory(
+                  socket_factory->BindNewPipeAndPassReceiver());
+              mojo::Remote<network::mojom::SocketFactory>* raw_remote =
+                  socket_factory.get();
+              socket_factory->set_disconnect_handler(base::BindOnce(
+                  [](mojo::Remote<network::mojom::SocketFactory>* remote) {
+                    remote->reset();
+                  },
+                  raw_remote));
+            }
+          }
+          return socket_factory->get();
+        }));
   }
 
   InitializeWiredDisplayMediaRouteProvider();

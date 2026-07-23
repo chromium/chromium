@@ -9,13 +9,13 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/network_util.h"
+#include "components/openscreen_platform/socket_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/address_family.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
 #include "third_party/openscreen/src/platform/base/udp_packet.h"
 
 // Open Screen expects us to provide linked implementations of some of its
@@ -27,9 +27,9 @@ ErrorOr<std::unique_ptr<UdpSocket>> UdpSocket::Create(
     TaskRunner& task_runner,
     Client* client,
     const IPEndpoint& local_endpoint) {
-  network::mojom::NetworkContext* const network_context =
-      openscreen_platform::GetNetworkContext();
-  if (!network_context) {
+  network::mojom::SocketFactory* const socket_factory =
+      openscreen_platform::GetSocketFactory();
+  if (!socket_factory) {
     return Error::Code::kInitializationFailure;
   }
 
@@ -38,8 +38,8 @@ ErrorOr<std::unique_ptr<UdpSocket>> UdpSocket::Create(
       listener_remote.InitWithNewPipeAndPassReceiver();
 
   mojo::Remote<network::mojom::UDPSocket> socket;
-  network_context->CreateUDPSocket(socket.BindNewPipeAndPassReceiver(),
-                                   std::move(listener_remote));
+  socket_factory->CreateUDPSocket(socket.BindNewPipeAndPassReceiver(),
+                                  std::move(listener_remote));
 
   return ErrorOr<std::unique_ptr<UdpSocket>>(
       std::make_unique<openscreen_platform::UdpSocket>(

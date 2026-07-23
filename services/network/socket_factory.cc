@@ -178,13 +178,14 @@ void SocketFactory::CreateTCPConnectedSocket(
     const std::optional<net::IPEndPoint>& local_addr,
     const net::AddressList& remote_addr_list,
     mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<mojom::TCPConnectedSocket> receiver,
     mojo::PendingRemote<mojom::SocketObserver> observer,
-    mojom::NetworkContext::CreateTCPConnectedSocketCallback callback) {
+    mojom::SocketFactory::CreateTCPConnectedSocketCallback callback) {
   auto socket = std::make_unique<TCPConnectedSocket>(
       std::move(observer), net_log_, &tls_socket_factory_,
-      client_socket_factory_, traffic_annotation);
+      client_socket_factory_,
+      static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation));
   TCPConnectedSocket* socket_raw = socket.get();
   tcp_connected_socket_receiver_.Add(std::move(socket), std::move(receiver));
   socket_raw->Connect(local_addr, remote_addr_list,

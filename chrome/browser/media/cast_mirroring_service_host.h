@@ -91,8 +91,8 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   void GetVideoEncoderMetricsProvider(
       mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver)
       override;
-  void GetNetworkContext(
-      mojo::PendingReceiver<network::mojom::NetworkContext> receiver) override;
+  void GetSocketFactory(
+      mojo::PendingReceiver<network::mojom::SocketFactory> receiver) override;
   void CreateAudioStream(
       mojo::PendingRemote<mojom::AudioStreamCreatorClient> requestor,
       const media::AudioParameters& params,

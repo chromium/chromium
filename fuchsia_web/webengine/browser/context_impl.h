@@ -18,6 +18,11 @@
 #include "fuchsia_web/webengine/browser/cookie_manager_impl.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 
+#if BUILDFLAG(ENABLE_CAST_RECEIVER)
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
+#endif
+
 namespace content {
 class BrowserContext;
 class WebContents;
@@ -116,6 +121,8 @@ class WEB_ENGINE_EXPORT ContextImpl final : public fuchsia::web::Context {
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
   // True if this instance should allows Frames to use CastStreaming.
   bool cast_streaming_enabled_ = false;
+
+  mojo::Remote<network::mojom::SocketFactory> socket_factory_;
 #endif
 
   // Tracks all active FrameImpl instances, so that we can request their

@@ -10,11 +10,11 @@ visibility = [ ":*" ]
 # Incompatible with ":openscreen_platform_using_net_sockets".
 source_set("openscreen_platform") {
   visibility += [ "*" ]
-  public = [ "network_context.h" ]
+  public = [ "socket_factory.h" ]
 
   sources = [
-    "network_context.cc",
-    "network_context.h",
+    "socket_factory.cc",
+    "socket_factory.h",
     "tls_client_connection.cc",
     "tls_client_connection.h",
     "tls_connection_factory.cc",

@@ -1,0 +1,58 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/tcp_socket.mojom";
+import "services/network/public/mojom/udp_socket.mojom";
+import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+
+// A restricted interface for creating TCP connected sockets and UDP sockets.
+//
+// This interface provides a limited subset of `NetworkContext` functionality to
+// clients (such as the Mirroring Service) that only require raw socket creation
+// capabilities. By passing a `SocketFactory` remote instead of a full
+// `NetworkContext` remote, privileged network operations (e.g. cookie
+// management, URL loading) are kept inaccessible to less trusted clients.
+//
+// Implemented by the Network Service and bound via
+// `NetworkContext::CreateSocketFactory`.
+interface SocketFactory {
+  // Creates a TCP socket connected to `remote_addr_list`. `observer` if
+  // non-null will be used to listen for any network connection error on the
+  // newly established connection. The socket created can only be used for the
+  // purpose specified in `traffic_annotation`, and cannot be reused for other
+  // purposes. `local_addr` should be set to null unless the caller wants to
+  // bind the socket to a specific address and port.
+  //
+  // On success, `result` is net::OK. Caller is to use `send_stream` to send
+  // data and `receive_stream` to receive data over the connection. On failure,
+  // `result` is a network error code.
+  //
+  // Any sockets that are created but are yet to be destroyed will be destroyed
+  // when the underlying NetworkContext goes away.
+  CreateTCPConnectedSocket(
+      IPEndPoint? local_addr,
+      AddressList remote_addr_list,
+      TCPConnectedSocketOptions? tcp_connected_socket_options,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
+      pending_receiver<TCPConnectedSocket> socket,
+      pending_remote<SocketObserver>? observer)
+      => (int32 result,
+          IPEndPoint? local_addr,
+          IPEndPoint? peer_addr,
+          handle<data_pipe_consumer>? receive_stream,
+          handle<data_pipe_producer>? send_stream);
+
+  // Creates a UDP socket. Caller can supply a `listener` interface pointer
+  // to listen for incoming datagrams. A null `listener` is acceptable if caller
+  // is not interested in incoming data.
+  //
+  // Any sockets that are created but are yet to be destroyed will be destroyed
+  // when the underlying NetworkContext goes away.
+  CreateUDPSocket(pending_receiver<UDPSocket> receiver,
+                  pending_remote<UDPSocketListener>? listener);
+};

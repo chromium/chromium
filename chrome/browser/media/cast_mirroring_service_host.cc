@@ -37,7 +37,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_streams_registry.h"
 #include "content/public/browser/gpu_client.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_process_host.h"
@@ -54,7 +53,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/socket_factory.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/display/display.h"
@@ -332,13 +331,13 @@ void CastMirroringServiceHost::SetVideoCaptureHost(
   video_capture_host_ = video_capture_host;
 }
 
-void CastMirroringServiceHost::GetNetworkContext(
-    mojo::PendingReceiver<network::mojom::NetworkContext> receiver) {
-  network::mojom::NetworkContextParamsPtr network_context_params =
-      g_browser_process->system_network_context_manager()
-          ->CreateDefaultNetworkContextParams();
-  content::CreateNetworkContextInNetworkService(
-      std::move(receiver), std::move(network_context_params));
+void CastMirroringServiceHost::GetSocketFactory(
+    mojo::PendingReceiver<network::mojom::SocketFactory> receiver) {
+  network::mojom::NetworkContext* context =
+      g_browser_process->system_network_context_manager()->GetContext();
+  if (context) {
+    context->CreateSocketFactory(std::move(receiver));
+  }
 }
 
 void CastMirroringServiceHost::CreateAudioStream(

@@ -4,11 +4,14 @@
 
 import("//testing/test.gni")
 
-source_set("network_context") {
-  public = [ "public/network_context_getter.h" ]
-  sources = [ "network_context_getter.cc" ]
+source_set("socket_factory") {
+  public = [ "public/socket_factory_getter.h" ]
+  sources = [ "socket_factory_getter.cc" ]
   public_deps = [ "//base" ]
-  deps = [ "//components/openscreen_platform" ]
+  deps = [
+    "//components/openscreen_platform",
+    "//services/network/public/mojom",
+  ]
 }
 
 source_set("receiver_config") {
@@ -33,8 +36,8 @@ source_set("browser") {
     "receiver_session_impl.h",
   ]
   public_deps = [
-    ":network_context",
     ":receiver_config",
+    ":socket_factory",
     "//base",
     "//components/cast_streaming/common:mojom",
     "//mojo/public/cpp/bindings",
@@ -69,7 +72,7 @@ source_set("browser") {
       "cast_message_port_impl.h",
     ]
     deps += [
-      ":network_context",
+      ":socket_factory",
       "//components/cast/message_port",
       "//components/openscreen_platform",
       "//mojo/public/cpp/bindings",
