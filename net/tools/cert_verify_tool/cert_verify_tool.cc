@@ -233,6 +233,20 @@ class DummySystemTrustStore : public net::SystemTrustStore {
     return nullptr;
   }
 
+  std::optional<bssl::VerifyCertificateChainDelegate::MTCCosigner>
+  GetMtcMirrorKey(base::span<const uint8_t> cosigner_id) const override {
+    return std::nullopt;
+  }
+
+  bool IsMtcCosignerPolicySatisfied(
+      const bssl::ParsedCertificate& target_cert,
+      base::Time current_time,
+      const bssl::MTCAnchor* mtc_anchor,
+      base::span<const std::vector<uint8_t>> valid_additional_cosigners)
+      const override {
+    return false;
+  }
+
   std::optional<int32_t> GetCrsRootIdForCert(
       const bssl::CertPathBuilderResultPath* path) const override {
     return std::nullopt;

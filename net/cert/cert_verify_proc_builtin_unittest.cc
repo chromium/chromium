@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/containers/transparent_hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -25,6 +26,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/network_time/time_tracker/time_tracker.h"
+#include "crypto/keypair.h"
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/ip_address.h"
@@ -60,6 +62,7 @@
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/pki/parse_certificate.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
@@ -269,6 +272,50 @@ class MockSystemTrustStore : public SystemTrustStore {
                : nullptr;
   }
 
+  void SetMockMtcMirrors(
+      const std::vector<MtcLogBuilder::Cosigner*>& mock_mtc_mirrors) {
+    mock_mtc_mirrors_.clear();
+    for (const auto* cosigner : mock_mtc_mirrors) {
+      mock_mtc_mirrors_[cosigner->id] =
+          bssl::VerifyCertificateChainDelegate::MTCCosigner{
+              cosigner->signature_algorithm,
+              x509_util::CreateCryptoBuffer(
+                  cosigner->key.ToSubjectPublicKeyInfo())};
+    }
+  }
+
+  std::optional<bssl::VerifyCertificateChainDelegate::MTCCosigner>
+  GetMtcMirrorKey(base::span<const uint8_t> cosigner_id) const override {
+    auto it = mock_mtc_mirrors_.find(cosigner_id);
+    if (it == mock_mtc_mirrors_.end()) {
+      return std::nullopt;
+    }
+    return bssl::VerifyCertificateChainDelegate::MTCCosigner{
+        it->second.signature_algorithm, bssl::UpRef(it->second.key)};
+  }
+
+  void SetMockIsMtcCosignerPolicySatisfied(bool value) {
+    mock_is_mtc_cosigner_policy_satisfied_ = value;
+  }
+
+  std::optional<std::vector<std::vector<uint8_t>>>
+  TakeLastValidAdditionalCosigners() {
+    auto result = std::move(got_valid_additional_cosigners_);
+    got_valid_additional_cosigners_ = std::nullopt;
+    return result;
+  }
+
+  bool IsMtcCosignerPolicySatisfied(
+      const bssl::ParsedCertificate& target_cert,
+      base::Time current_time,
+      const bssl::MTCAnchor* mtc_anchor,
+      base::span<const std::vector<uint8_t>> valid_additional_cosigners)
+      const override {
+    got_valid_additional_cosigners_ =
+        base::ToVector(valid_additional_cosigners);
+    return mock_is_mtc_cosigner_policy_satisfied_;
+  }
+
   void SetMockCrsRootId(std::optional<int32_t> crs_root_id) {
     mock_crs_root_id_ = crs_root_id;
   }
@@ -307,6 +354,14 @@ class MockSystemTrustStore : public SystemTrustStore {
   std::optional<TrustStoreChrome::MtcAnchorExtraData>
       mock_mtc_anchor_extra_data_;
   bool mock_is_locally_trusted_root_ = false;
+  absl::flat_hash_map<std::vector<uint8_t>,
+                      bssl::VerifyCertificateChainDelegate::MTCCosigner,
+                      base::TransparentHashAs<base::span<const uint8_t>>,
+                      base::TransparentEqualAs<base::span<const uint8_t>>>
+      mock_mtc_mirrors_;
+  mutable std::optional<std::vector<std::vector<uint8_t>>>
+      got_valid_additional_cosigners_;
+  bool mock_is_mtc_cosigner_policy_satisfied_ = false;
   std::optional<int32_t> mock_crs_root_id_;
   std::vector<ChromeRootCertConstraints> mock_chrome_root_constraints_;
   bssl::TrustStoreInMemory eutl_trust_store_;
@@ -547,6 +602,20 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     mock_system_trust_store_->SetMockMTCAnchorData(std::move(data));
   }
 
+  void SetMockMtcMirrors(
+      const std::vector<MtcLogBuilder::Cosigner*>& mock_mtc_mirrors) {
+    mock_system_trust_store_->SetMockMtcMirrors(mock_mtc_mirrors);
+  }
+
+  void SetMockIsMtcCosignerPolicySatisfied(bool value) {
+    mock_system_trust_store_->SetMockIsMtcCosignerPolicySatisfied(value);
+  }
+
+  std::optional<std::vector<std::vector<uint8_t>>>
+  TakeLastValidAdditionalCosigners() {
+    return mock_system_trust_store_->TakeLastValidAdditionalCosigners();
+  }
+
   void SetMockCrsRootId(std::optional<int32_t> crs_root_id) {
     mock_system_trust_store_->SetMockCrsRootId(crs_root_id);
   }
@@ -649,7 +718,7 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   histograms.ExpectTotalCount("Net.Certificate.TrustAnchor2.Verify", 0u);
 }
 
-TEST_F(CertVerifyProcBuiltinTest, SimpleSignaturelessMtcSuccess) {
+TEST_F(CertVerifyProcBuiltinTest, SimpleSignaturelessDavidben08MtcSuccess) {
   constexpr uint8_t kMtcLogId[] = {0x09, 0x08, 0x07};
   net::MtcLogBuilder mtc_log(kMtcLogId);
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
@@ -712,7 +781,7 @@ TEST_F(CertVerifyProcBuiltinTest, SimpleSignaturelessMtcSuccess) {
   }
 }
 
-TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcNonTrivialProof) {
+TEST_F(CertVerifyProcBuiltinTest, SignaturelessDavidben08MtcNonTrivialProof) {
   constexpr uint8_t kMtcLogId[] = {0x09, 0x08, 0x07};
   net::MtcLogBuilder mtc_log(kMtcLogId);
   // TODO(crbug.com/469624806): improve interface for creating MTC cert
@@ -749,7 +818,317 @@ TEST_F(CertVerifyProcBuiltinTest, SignaturelessMtcNonTrivialProof) {
   }
 }
 
+TEST_F(CertVerifyProcBuiltinTest, SignaturelessPlants04MtcNonTrivialProof) {
+  constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
+  constexpr uint16_t kLogNumber = 1;
+  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  // TODO(crbug.com/469624806): improve interface for creating MTC cert
+  // builders.
+  std::unique_ptr<net::CertBuilder> mtc_leaf1 =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+
+  mtc_log.AddUnusedEntries(27);
+  uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf1);
+  mtc_log.AddUnusedEntries(13);
+  mtc_log.AdvanceLandmark();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+  // The CA key isn't actually used by this test, but one is needed to
+  // initialize the MTCAnchor object.
+  auto ca_key = crypto::keypair::PrivateKey::GenerateEcP256();
+
+  bssl::TrustStoreInMemory trust_store;
+  std::map<uint16_t, std::vector<bssl::TrustedSubtree>> subtree_hashes;
+  subtree_hashes[kLogNumber] = mtc_log.GetLandmarkSubtreeHashes();
+  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      kMtcCaId, bssl::SignatureAlgorithm::kEcdsaSha256,
+      x509_util::CreateCryptoBuffer(ca_key.ToSubjectPublicKeyInfo()),
+      subtree_hashes);
+  ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+  AddTrustStore(&trust_store);
+
+  {
+    scoped_refptr<X509Certificate> cert1 = X509Certificate::CreateFromBytes(
+        *mtc_log.CreateSignaturelessCertificate(leaf_index));
+    ASSERT_TRUE(cert1);
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(cert1.get(), "www.example.com", /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+  }
+}
+
+TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcVerification) {
+  constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
+  constexpr uint16_t kLogNumber = 1;
+  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  // TODO(crbug.com/469624806): improve interface for creating MTC cert
+  // builders.
+  std::unique_ptr<net::CertBuilder> mtc_leaf1 =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+  uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf1);
+  mtc_log.AdvanceLandmark();
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+  MtcLogBuilder::Cosigner ca_cosigner = {
+      base::ToVector(kMtcCaId), crypto::keypair::PrivateKey::GenerateEcP256(),
+      bssl::SignatureAlgorithm::kEcdsaSha256};
+
+  auto leaf_der =
+      mtc_log.CreateStandaloneCertificate(leaf_index, {&ca_cosigner});
+  ASSERT_TRUE(leaf_der);
+  scoped_refptr<X509Certificate> leaf =
+      X509Certificate::CreateFromBytes(*leaf_der);
+  ASSERT_TRUE(leaf);
+
+  SetMockIsKnownRoot(false);
+  SetMockIsKnownMtcAnchor(false);
+
+  bssl::TrustStoreInMemory trust_store;
+  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      ca_cosigner.id, ca_cosigner.signature_algorithm,
+      x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
+      std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+  ASSERT_EQ(mtc_anchor->spec_version(), bssl::MTCAnchor::kPlants04);
+  ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+  AddTrustStore(&trust_store);
+
+  // Standalone MTC verifies successfully.
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf.get(), "www.example.com", /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+
+    EXPECT_EQ(2u, verify_result.verified_cert->cert_buffers().size());
+    EXPECT_TRUE(leaf->EqualsExcludingChain(verify_result.verified_cert.get()));
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        mtc_anchor->AsCert()->cert_buffer(),
+        verify_result.verified_cert->cert_buffers()[1].get()));
+    EXPECT_FALSE(verify_result.is_issued_by_known_root);
+  }
+
+  // Standalone MTC verification fails if the MTCAnchor in the trust store has
+  // a different key than used to sign the MTC.
+  trust_store.Clear();
+  auto different_key = crypto::keypair::PrivateKey::GenerateEcP256();
+  mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      ca_cosigner.id, ca_cosigner.signature_algorithm,
+      x509_util::CreateCryptoBuffer(different_key.ToSubjectPublicKeyInfo()),
+      std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+  ASSERT_EQ(mtc_anchor->spec_version(), bssl::MTCAnchor::kPlants04);
+  ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+  {
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf.get(), "www.example.com", /*flags=*/0, &verify_result,
+           &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+
+    EXPECT_EQ(2u, verify_result.verified_cert->cert_buffers().size());
+    EXPECT_TRUE(leaf->EqualsExcludingChain(verify_result.verified_cert.get()));
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        mtc_anchor->AsCert()->cert_buffer(),
+        verify_result.verified_cert->cert_buffers()[1].get()));
+    EXPECT_FALSE(verify_result.is_issued_by_known_root);
+  }
+}
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+TEST_F(CertVerifyProcBuiltinTest, StandaloneMtcCosignerPolicy) {
+  constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
+  constexpr uint16_t kLogNumber = 1;
+  net::MtcLogBuilder mtc_log(kMtcCaId, kLogNumber);
+  // TODO(crbug.com/469624806): improve interface for creating MTC cert
+  // builders.
+  std::unique_ptr<net::CertBuilder> mtc_leaf1 =
+      std::move(net::CertBuilder::CreateSimpleChain(1u)[0]);
+  mtc_log.AddUnusedEntries(27);
+  uint64_t leaf_index = mtc_log.AddEntry(*mtc_leaf1);
+
+  InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
+
+  MtcLogBuilder::Cosigner ca_cosigner = {
+      base::ToVector(kMtcCaId), crypto::keypair::PrivateKey::GenerateMldsa44(),
+      bssl::SignatureAlgorithm::kMldsa44};
+  MtcLogBuilder::Cosigner mirror_cosigner = {
+      {0x05, 0x04},
+      crypto::keypair::PrivateKey::GenerateMldsa44(),
+      bssl::SignatureAlgorithm::kMldsa44};
+  MtcLogBuilder::Cosigner unknown_cosigner = {
+      {0x06, 0x08},
+      crypto::keypair::PrivateKey::GenerateMldsa44(),
+      bssl::SignatureAlgorithm::kMldsa44};
+
+  SetMockMtcMirrors({&mirror_cosigner});
+
+  bssl::TrustStoreInMemory trust_store;
+  auto mtc_anchor = std::make_shared<const bssl::MTCAnchor>(
+      ca_cosigner.id, ca_cosigner.signature_algorithm,
+      x509_util::CreateCryptoBuffer(ca_cosigner.key.ToSubjectPublicKeyInfo()),
+      std::map<uint16_t, std::vector<bssl::TrustedSubtree>>());
+  ASSERT_EQ(mtc_anchor->spec_version(), bssl::MTCAnchor::kPlants04);
+  ASSERT_TRUE(trust_store.AddMTCTrustAnchor(mtc_anchor));
+  AddTrustStore(&trust_store);
+
+  auto leaf_with_ca_only_der =
+      mtc_log.CreateStandaloneCertificate(leaf_index, {&ca_cosigner});
+  ASSERT_TRUE(leaf_with_ca_only_der);
+  scoped_refptr<X509Certificate> leaf_with_ca_only =
+      X509Certificate::CreateFromBytes(*leaf_with_ca_only_der);
+  ASSERT_TRUE(leaf_with_ca_only);
+
+  auto leaf_with_ca_and_mirror_der = mtc_log.CreateStandaloneCertificate(
+      leaf_index, {&ca_cosigner, &mirror_cosigner, &unknown_cosigner});
+  ASSERT_TRUE(leaf_with_ca_and_mirror_der);
+  scoped_refptr<X509Certificate> leaf_with_ca_and_mirror =
+      X509Certificate::CreateFromBytes(*leaf_with_ca_and_mirror_der);
+  ASSERT_TRUE(leaf_with_ca_and_mirror);
+
+  auto leaf_with_mirror_only_der =
+      mtc_log.CreateStandaloneCertificate(leaf_index, {&mirror_cosigner});
+  ASSERT_TRUE(leaf_with_mirror_only_der);
+  scoped_refptr<X509Certificate> leaf_with_mirror_only =
+      X509Certificate::CreateFromBytes(*leaf_with_mirror_only_der);
+  ASSERT_TRUE(leaf_with_mirror_only);
+
+  // MTCs don't use IsKnownRoot, so this returning true shouldn't mark it as a
+  // known root.
+  SetMockIsKnownRoot(true);
+
+  // If the MTC CA is not a known one, can verify successfully without
+  // checking cosigner policy. Setting the IsMtcCosignerPolicySatisfied
+  // result to false doesn't affect the result for the first round of tests
+  // with SetMockIsKnownMtcAnchor(false) since it won't be called.
+  SetMockIsKnownMtcAnchor(false);
+  SetMockIsMtcCosignerPolicySatisfied(false);
+
+  {
+    // MTC with only CA signature should validate successfully when mirror
+    // policy is not enforced.
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf_with_ca_only.get(), "www.example.com", /*flags=*/0,
+           &verify_result, &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+
+    EXPECT_EQ(2u, verify_result.verified_cert->cert_buffers().size());
+    EXPECT_TRUE(leaf_with_ca_only->EqualsExcludingChain(
+        verify_result.verified_cert.get()));
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        mtc_anchor->AsCert()->cert_buffer(),
+        verify_result.verified_cert->cert_buffers()[1].get()));
+    EXPECT_FALSE(verify_result.is_issued_by_known_root);
+  }
+
+  {
+    // MTC with CA signature and a mirror signature should validate
+    // successfully when mirror policy is not enforced. The mirror signature is
+    // not required, but being present does not affect the result.
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf_with_ca_and_mirror.get(), "www.example.com", /*flags=*/0,
+           &verify_result, &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+
+    EXPECT_EQ(2u, verify_result.verified_cert->cert_buffers().size());
+    EXPECT_TRUE(leaf_with_ca_and_mirror->EqualsExcludingChain(
+        verify_result.verified_cert.get()));
+    EXPECT_TRUE(x509_util::CryptoBufferEqual(
+        mtc_anchor->AsCert()->cert_buffer(),
+        verify_result.verified_cert->cert_buffers()[1].get()));
+    EXPECT_FALSE(verify_result.is_issued_by_known_root);
+  }
+
+  {
+    // MTC with no CA signature should fail regardless.
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf_with_mirror_only.get(), "www.example.com", /*flags=*/0,
+           &verify_result, &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+  }
+
+  // Second round of tests, with KnownMtcAnchor=true.
+  // These tests check that GetMtcMirrorKey and IsMtcCosignerPolicySatisfied
+  // are correctly used.
+  SetMockIsKnownRoot(false);
+  SetMockIsKnownMtcAnchor(true);
+
+  {
+    // MTC validation should fail when mirror policy is enforced and not
+    // satisfied.
+    SetMockIsMtcCosignerPolicySatisfied(false);
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf_with_ca_only.get(), "www.example.com", /*flags=*/0,
+           &verify_result, &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_EQ(std::vector<std::vector<uint8_t>>{},
+              TakeLastValidAdditionalCosigners());
+  }
+  {
+    // MTC validation should succeed when mirror policy is enforced and
+    // satisfied.
+    SetMockIsMtcCosignerPolicySatisfied(true);
+
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf_with_ca_and_mirror.get(), "www.example.com", /*flags=*/0,
+           &verify_result, &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsOk());
+    EXPECT_TRUE(verify_result.is_issued_by_known_root);
+    // IsCosignatureVerificationResultAcceptable should have received
+    // indication that mirror cosignature validated successfully.
+    EXPECT_EQ(std::vector<std::vector<uint8_t>>{mirror_cosigner.id},
+              TakeLastValidAdditionalCosigners());
+  }
+  {
+    // MTC with no CA signature should fail regardless.
+    CertVerifyResult verify_result;
+    NetLogSource verify_net_log_source;
+    TestCompletionCallback callback;
+    Verify(leaf_with_mirror_only.get(), "www.example.com", /*flags=*/0,
+           &verify_result, &verify_net_log_source, callback.callback());
+
+    int error = callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    // IsCosignatureVerificationResultAcceptable should not have been called,
+    // since verification of the CA signature failed.
+    EXPECT_EQ(std::nullopt, TakeLastValidAdditionalCosigners());
+  }
+}
+
 TEST_F(CertVerifyProcBuiltinTest, CrsAnchorUsageHistogram) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
   InitializeVerifyProc(CreateParams(

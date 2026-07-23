@@ -83,6 +83,16 @@ class SystemTrustStore {
   virtual const TrustStoreChrome::MtcAnchorExtraData* GetMTCAnchorData(
       base::span<const uint8_t> log_id) const = 0;
 
+  virtual std::optional<bssl::VerifyCertificateChainDelegate::MTCCosigner>
+  GetMtcMirrorKey(base::span<const uint8_t> cosigner_id) const = 0;
+
+  virtual bool IsMtcCosignerPolicySatisfied(
+      const bssl::ParsedCertificate& target_cert,
+      base::Time current_time,
+      const bssl::MTCAnchor* mtc_anchor,
+      base::span<const std::vector<uint8_t>> valid_additional_cosigners)
+      const = 0;
+
   // Returns the crs_root_id for `path`, or nullopt if unknown.
   virtual std::optional<int32_t> GetCrsRootIdForCert(
       const bssl::CertPathBuilderResultPath* path) const = 0;
