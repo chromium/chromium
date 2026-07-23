@@ -459,6 +459,10 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
     state->host_capabilities.push_back(mojom::HostCapability::kNoWebUiLoader);
   }
 
+  if (base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
+    state->host_capabilities.push_back(mojom::HostCapability::kImgWebDragDrop);
+  }
+
   if (GlicEnabling::IsAutoOpenForPdfEnabled(profile)) {
     state->host_capabilities.push_back(mojom::HostCapability::kPdfZeroState);
   }
