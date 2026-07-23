@@ -45,7 +45,12 @@
   <div id="qualityLoggingCard" class="card"
       hidden$="[[!showQualityLogging_(prefs.generated.find_and_fill_with_gemini.value, isAtMemoryEnabled_)]]">
     <div class="cr-row first">
-      <h2 class="flex">$i18n{suggestionsFromGeminiQualityLoggingTitle}</h2>
+      <div class="flex cr-padded-text">
+        <h2 class="flex">$i18n{suggestionsFromGeminiQualityLoggingTitle}</h2>
+        <div class="secondary">
+          $i18n{suggestionsFromGeminiQualityLoggingSubtitle}
+        </div>
+      </div>
     </div>
     <div class="settings-columned-section">
       <div class="column">

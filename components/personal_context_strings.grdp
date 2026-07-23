@@ -65,7 +65,7 @@
       Things to consider
     </message>
     <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_HUMANS_NOTICE_ANDROID" desc="Bullet point text under 'Things to consider' detailing the privacy implications and human review process of the shared data." formatter_data="android_java">
-      Your requests, page titles, and URLs are sent to Google and may be reviewed by humans
+      Your requests, page titles, and URLs are sent to Google and may be reviewed to improve enhanced autofill
     </message>
     <message name="IDS_PERSONAL_CONTEXT_AUTOFILL_SETTINGS_NEVER_SEEN_NOTICE_ANDROID" desc="Bullet point text under 'Things to consider' reassuring the user about the privacy of the actual form data they populate." formatter_data="android_java">
       The info you autofill is never seen by anyone
