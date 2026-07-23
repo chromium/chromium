@@ -105,6 +105,10 @@ class POLICY_EXPORT ManagementStatusProvider {
   const std::string& cache_pref_name() const { return cache_pref_name_; }
 
  private:
+  // TODO(crbug.com/531448879): Remove this when AzureAD logic migration is
+  // complete.
+  friend class ManagementService;
+
   std::variant<PrefService*, scoped_refptr<PersistentPrefStore>> cache_ =
       nullptr;
   const std::string cache_pref_name_;
@@ -147,6 +151,13 @@ class POLICY_EXPORT ManagementService {
 
   // Returns the highest trustworthiness of the active management authorities.
   ManagementAuthorityTrustworthiness GetManagementAuthorityTrustworthiness();
+
+  // TODO(crbug.com/531448879): Remove this function when AzureAD logic
+  // migration is complete. Returns the trustworthiness of active management
+  // authorities for policy loading. By default, returns
+  // `GetManagementAuthorityTrustworthiness()`.
+  ManagementAuthorityTrustworthiness
+  GetManagementAuthorityTrustworthinessForPolicyLoading();
 
   // Returns whether there is any management authority at all.
   bool IsManaged();

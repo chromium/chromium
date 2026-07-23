@@ -44,6 +44,12 @@ namespace policy_prefs {
 inline constexpr char kAzureActiveDirectoryManagement[] =
     "management.platform.azure_active_directory";
 
+// TODO(crbug.com/531448879): Revert this change when AzureAD logic migration is
+// complete.
+// Integer pref that stores Azure Active Directory device management authority.
+inline constexpr char kAzureActiveDirectoryDeviceManagement[] =
+    "management.platform.azure_active_directory_device";
+
 // Integer pref that stores the Windows enterprise MDM management authority.
 inline constexpr char kEnterpriseMDMManagementWindows[] =
     "management.platform.enterprise_mdm_win";
