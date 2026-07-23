@@ -415,6 +415,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(1, 2, 4));
 
 TEST_P(DiceResponseHandlerParamTest, Signin_PrimaryConnected) {
+  base::HistogramTester histogram_tester;
+  identity_test_env_.MakePrimaryAccountAvailable("primary@example.com",
+                                                 signin::ConsentLevel::kSignin);
   const size_t account_count = GetAccountCount();
   const int initiator_index = 0;
   DiceResponseParams dice_params = MakeMultiSigninDiceParams(
@@ -434,6 +437,9 @@ TEST_P(DiceResponseHandlerParamTest, Signin_PrimaryConnected) {
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Dice.InvalidPrimaryConnectedInUnsignedProfile", false, 1);
 
   // Check that GaiaAuthFetchers have been created and URL is correct.
   for (size_t i = 0; i < account_count; ++i) {
@@ -681,6 +687,8 @@ TEST_P(DiceResponseHandlerParamTest,
        SigninWithMtlsTokenBinding_PrimaryConnected) {
   base::test::ScopedFeatureList scoped_feature_list(
       switches::kEnableMtlsTokenBinding);
+  identity_test_env_.MakePrimaryAccountAvailable("primary@example.com",
+                                                 signin::ConsentLevel::kSignin);
 
   const size_t account_count = GetAccountCount();
   const int initiator_index = 0;
@@ -733,6 +741,8 @@ TEST_P(DiceResponseHandlerParamTest,
 
 // Checks that a SIGNIN action triggers a token exchange request.
 TEST_P(DiceResponseHandlerParamTest, SigninWithBoundToken_PrimaryConnected) {
+  identity_test_env_.MakePrimaryAccountAvailable("primary@example.com",
+                                                 signin::ConsentLevel::kSignin);
   const size_t account_count = GetAccountCount();
   EnableTokenBindingRegistration();
   DiceResponseParams dice_params = MakeMultiSigninDiceParams(
@@ -1348,6 +1358,8 @@ TEST_P(DiceResponseHandlerParamTest, Reauth) {
 
 // Checks that a GaiaAuthFetcher failure is handled correctly.
 TEST_P(DiceResponseHandlerParamTest, SigninFailure) {
+  identity_test_env_.MakePrimaryAccountAvailable("primary@example.com",
+                                                 signin::ConsentLevel::kSignin);
   const size_t account_count = GetAccountCount();
   const int initiator_index = 0;
   DiceResponseParams dice_params = MakeMultiSigninDiceParams(
@@ -1399,6 +1411,8 @@ TEST_P(DiceResponseHandlerParamTest, SigninFailure) {
 // from being added.
 TEST_F(DiceResponseHandlerTest,
        MultipleAccounts_InitiatorFails_SecondarySucceeds) {
+  identity_test_env_.MakePrimaryAccountAvailable("primary@example.com",
+                                                 signin::ConsentLevel::kSignin);
   const int account_count = 2;
   const int initiator_index = 0;
   DiceResponseParams dice_params =
@@ -2295,5 +2309,48 @@ TEST_F(DiceResponseHandlerTest,
   // list to be filtered out by the profile creator.
   EXPECT_THAT(completed_secondary_accounts_,
               testing::UnorderedElementsAre(secondary_account_id));
+}
+
+TEST_F(DiceResponseHandlerTest, InvalidPrimaryConnectedInUnsignedProfile) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, /*account_count=*/2,
+      /*primary_is_connected=*/signin::Tribool::kTrue,
+      /*eligible_for_token_binding=*/false, /*mtls_token_binding=*/false,
+      /*initiator_index=*/0);
+
+  dice_response_handler_->ProcessDiceHeader(
+      std::move(dice_params),
+      std::make_unique<TestProcessDiceHeaderDelegate>(this));
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Dice.InvalidPrimaryConnectedInUnsignedProfile", true, 1);
+
+  // Because primary_is_connected was normalized from kTrue to kFalse,
+  // FetchMode::kInitiatorFirst is used instead of FetchMode::kAll. Therefore,
+  // only 1 token fetcher (for the initiator) should be pending initially.
+  EXPECT_EQ(1u, signin_client_.GetTestURLLoaderFactory()->NumPending());
+
+  // Complete the initiator fetcher to trigger the secondary fetcher.
+  GaiaAuthConsumer* consumer = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer, testing::NotNull());
+  consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_0", "access_token", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+
+  // Now the secondary fetcher should be created.
+  EXPECT_EQ(1u, signin_client_.GetTestURLLoaderFactory()->NumPending());
+  consumer = signin_client_.GetAndClearConsumer();
+  ASSERT_THAT(consumer, testing::NotNull());
+  consumer->OnClientOAuthSuccess(GaiaAuthConsumer::ClientOAuthResult(
+      "refresh_token_1", "access_token", /*expires_in_secs=*/10,
+      /*is_under_advanced_protection=*/false, /*is_bound_to_key=*/false));
+
+  EXPECT_EQ(
+      0u, dice_response_handler_->GetPendingDiceTokenFetchersCountForTesting());
 }
 }  // namespace
