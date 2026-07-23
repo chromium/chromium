@@ -393,6 +393,19 @@ base::FilePath StartupTracingController::BasenameToPath(
 #endif
 }
 
+base::FilePath StartupTracingController::RebasePathIfNeeded(
+    const base::FilePath& path) {
+#if BUILDFLAG(IS_IOS)
+  // Relative paths specified at the command line are rebased to the app's user
+  // documents directory on iOS to avoid issues with file system permissions.
+  if (!path.empty() && !path.IsAbsolute()) {
+    return BasenameToPath(path.AsUTF8Unsafe());
+  }
+#endif
+  // Should we do something similar on Android?
+  return path;
+}
+
 StartupTracingController::StartupTracingController(
 #if BUILDFLAG(IS_ANDROID)
     AndroidPathGeneratorCallback android_path_generator_callback,
@@ -416,7 +429,7 @@ base::FilePath StartupTracingController::GetOutputPath() {
   base::FilePath path_from_config =
       tracing::TraceStartupConfig::GetInstance().GetResultFile();
   if (!path_from_config.empty()) {
-    return path_from_config;
+    return RebasePathIfNeeded(path_from_config);
   }
 
   // If --trace-startup-file is specified, use it.
@@ -426,7 +439,7 @@ base::FilePath StartupTracingController::GetOutputPath() {
     if (result.empty()) {
       return BasenameToPath("chrome.pftrace");
     }
-    return result;
+    return RebasePathIfNeeded(result);
   }
 
   base::FilePath result =
@@ -439,7 +452,7 @@ base::FilePath StartupTracingController::GetOutputPath() {
 
   // If a non-directory path is specified, use it.
   if (!result.empty() && !result.EndsWithSeparator()) {
-    return result;
+    return RebasePathIfNeeded(result);
   }
 
   std::string_view basename = GetGlobalDefaultBasename();

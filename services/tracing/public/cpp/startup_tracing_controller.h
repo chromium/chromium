@@ -101,6 +101,7 @@ class COMPONENT_EXPORT(TRACING_CPP) StartupTracingController {
   void OnStoppedOnUIThread();
 
   base::FilePath BasenameToPath(std::string_view basename);
+  base::FilePath RebasePathIfNeeded(const base::FilePath& path);
   base::FilePath GetOutputPath();
 
   enum class State {
