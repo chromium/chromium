@@ -210,7 +210,7 @@ void ChromotingHost::OnSessionAuthenticated(ClientSession* client) {
   std::string client_id;
   SplitSignalingIdResource(client->client_jid(), &client_id, nullptr);
 
-  // Disconnect all clients with the same client ID, except |client|.
+  // Disconnect all clients with the same client ID, except `client`.
   base::WeakPtr<ChromotingHost> self = weak_factory_.GetWeakPtr();
   auto [it, end] = clients_.equal_range(client_id);
   while (it != end) {

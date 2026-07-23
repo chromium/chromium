@@ -92,7 +92,9 @@ void FakeSession::Close(ErrorCode error,
   }
   closed_ = true;
   error_ = error;
-  event_handler_->OnSessionStateChange(CLOSED);
+  if (event_handler_) {
+    event_handler_->OnSessionStateChange(CLOSED);
+  }
 
   base::WeakPtr<FakeSession> peer = peer_;
   if (peer) {

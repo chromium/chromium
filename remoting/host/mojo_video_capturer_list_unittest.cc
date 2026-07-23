@@ -7,6 +7,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/protocol/fake_desktop_capturer.h"

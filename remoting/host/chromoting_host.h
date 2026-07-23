@@ -107,10 +107,10 @@ class ChromotingHost :
   using GetIceConfigFetcherCallback =
       base::RepeatingCallback<std::unique_ptr<protocol::IceConfigFetcher>()>;
 
-  // |per_session_policies_validator|: Extra SessionPolicies validator in
+  // `per_session_policies_validator`: Extra SessionPolicies validator in
   //   addition to the ones in ClientSession. Pass base::NullCallback() if there
   //   is no extra validator.
-  // |desktop_environment_factory| must outlive this object.
+  // `desktop_environment_factory` must outlive this object.
   ChromotingHost(
       DesktopEnvironmentFactory* desktop_environment_factory,
       std::unique_ptr<protocol::SessionManager> session_manager,

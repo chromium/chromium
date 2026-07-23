@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -141,35 +141,32 @@ namespace remoting {
 using protocol::ActionRequest;
 
 PeerSessionImpl::PeerSessionImpl(
-    EventHandler* event_handler,
-    std::unique_ptr<protocol::Session> session,
+    PeerSession::EventHandler* event_handler,
+    const std::string& client_jid,
     std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
     scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
     DesktopEnvironmentFactory* desktop_environment_factory,
     const DesktopEnvironmentOptions& desktop_environment_options,
     scoped_refptr<protocol::PairingRegistry> pairing_registry,
-    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
-    const LocalSessionPoliciesProvider* local_session_policies_provider)
+    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions)
     : PeerSessionImpl(event_handler,
-                      std::move(session),
+                      client_jid,
                       std::make_unique<protocol::WebrtcConnectionToClient>(
                           std::move(ice_config_fetcher),
                           audio_task_runner),
                       desktop_environment_factory,
                       desktop_environment_options,
                       pairing_registry,
-                      extensions,
-                      local_session_policies_provider) {}
+                      extensions) {}
 
 PeerSessionImpl::PeerSessionImpl(
-    EventHandler* event_handler,
-    std::unique_ptr<protocol::Session> session,
+    PeerSession::EventHandler* event_handler,
+    const std::string& client_jid,
     std::unique_ptr<protocol::ConnectionToClient> connection,
     DesktopEnvironmentFactory* desktop_environment_factory,
     const DesktopEnvironmentOptions& desktop_environment_options,
     scoped_refptr<protocol::PairingRegistry> pairing_registry,
-    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
-    const LocalSessionPoliciesProvider* local_session_policies_provider)
+    const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions)
     : event_handler_(event_handler),
       desktop_environment_factory_(desktop_environment_factory),
       desktop_environment_options_(desktop_environment_options),
@@ -177,26 +174,64 @@ PeerSessionImpl::PeerSessionImpl(
       client_clipboard_filter_(clipboard_echo_filter_.client_filter()),
       client_clipboard_factory_(&client_clipboard_filter_),
       input_pipeline_(&coordinate_converter_, this),
-      pairing_registry_(pairing_registry),
+      pairing_registry_(std::move(pairing_registry)),
       connection_(std::move(connection)),
-      session_(std::move(session)),
-      client_jid_(session_->jid()),
-      local_session_policies_provider_(local_session_policies_provider) {
-  session_->AddPlugin(&host_experiment_session_plugin_);
+      client_jid_(client_jid),
+      extensions_(extensions) {
   connection_->SetEventHandler(this);
-  session_->SetEventHandler(this);
 
-  HostExtensionSessionManager::HostExtensions all_extensions = extensions;
-  bool gnubby_policy_enabled = true;
-  if (local_session_policies_provider) {
-    gnubby_policy_enabled =
-        local_session_policies_provider->get_local_policies()
-            .allow_gnubby_forwarding.value_or(true);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  // LocalMouseInputMonitorWin and LocalPointerInputMonitorChromeos filter out
+  // an echo of the injected input before it reaches `remote_input_filter_`.
+  input_pipeline_.remote_input_filter()->SetExpectLocalEcho(false);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+}
+
+void PeerSessionImpl::Start(const SessionPolicies& session_policies,
+                            const SessionOptions& session_options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  effective_policies_ = session_policies;
+
+  base::TimeDelta max_duration =
+      effective_policies_.maximum_session_duration.value_or(base::TimeDelta());
+  if (max_duration.is_positive()) {
+    max_duration_timer_.Start(
+        FROM_HERE, max_duration,
+        base::BindOnce(&PeerSessionImpl::DisconnectSession,
+                       base::Unretained(this), ErrorCode::MAX_SESSION_LENGTH,
+                       "Maximum session duration has been reached.",
+                       FROM_HERE));
   }
-  // TODO(b/517007701): Create SecurityKeyAuthHandler after authentication once
-  // we have completed the data channel migration.
-  if (desktop_environment_options.enable_security_key() &&
-      gnubby_policy_enabled) {
+
+  connection_->ApplySessionOptions(session_options);
+  connection_->ApplyNetworkSettings(
+      protocol::NetworkSettings(effective_policies_));
+  connection_->Start();
+
+  DesktopEnvironmentOptions options = desktop_environment_options_;
+  if (effective_policies_.curtain_required.has_value()) {
+    options.set_enable_curtaining(*effective_policies_.curtain_required);
+  }
+  // `allow_webauthn_forwarding` should not override the existing value for
+  // `enable_remote_webauthn` if it was not enabled for this connection mode.
+  if (options.enable_remote_webauthn() &&
+      effective_policies_.allow_webauthn_forwarding.has_value()) {
+    options.set_enable_remote_webauthn(
+        *effective_policies_.allow_webauthn_forwarding);
+  }
+  if (options.enable_security_key() &&
+      effective_policies_.allow_gnubby_forwarding.has_value()) {
+    options.set_enable_security_key(
+        *effective_policies_.allow_gnubby_forwarding);
+  }
+
+  HostExtensionSessionManager::HostExtensions all_extensions = extensions_;
+  bool allow_gnubby =
+      desktop_environment_options_.enable_security_key() &&
+      effective_policies_.allow_gnubby_forwarding.value_or(true);
+  if (allow_gnubby) {
+    // TODO(b/517007701): Create SecurityKeyAuthHandler after authentication
+    // once we have completed the data channel migration.
     security_key_auth_handler_ = SecurityKeyAuthHandler::Create();
     if (security_key_auth_handler_) {
       security_key_extension_ = std::make_unique<SecurityKeyExtension>(
@@ -209,21 +244,40 @@ PeerSessionImpl::PeerSessionImpl(
   extension_manager_ =
       std::make_unique<HostExtensionSessionManager>(all_extensions);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  // LocalMouseInputMonitorWin and LocalPointerInputMonitorChromeos filter out
-  // an echo of the injected input before it reaches `remote_input_filter_`.
-  input_pipeline_.remote_input_filter()->SetExpectLocalEcho(false);
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  // Create the desktop environment.
+  // Note: The handlers for various other events use the created desktop
+  // environment. Since those events may occur before the desktop environment
+  // creation has finished, each such event handler must include a prologue to
+  // check if the desktop environment has been created, and add itself to a
+  // list of deferred handlers if not.
+  // TODO(rkjnsn): During a future refactor, see if this can be improved. E.g.,
+  // perhaps ensuring at a higher layer that additional events don't occur
+  // until the ClientSession is ready, or using co_await (once approved in
+  // Chromium) to wait for the desktop environment more simply and safely when
+  // it is used.
+  desktop_environment_factory_->Create(
+      weak_factory_.GetWeakPtr(), weak_factory_.GetWeakPtr(), options,
+      base::BindOnce(&PeerSessionImpl::OnDesktopEnvironmentCreated,
+                     weak_factory_.GetWeakPtr()));
 }
 
 PeerSessionImpl::~PeerSessionImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!audio_stream_);
-  DCHECK(!desktop_environment_);
-  DCHECK(!input_injector_);
-  DCHECK(!screen_controls_);
-  DCHECK(!terminal_session_manager_);
-  DCHECK(video_streams_.empty());
+  // If `PeerSessionImpl` is destroyed unexpectedly without
+  // `OnConnectionClosed()` running first, unbind callbacks and release pressed
+  // keys/buttons on the host OS to prevent dangling pointers and stuck inputs.
+  if (!is_closing_) {
+    if (connection_) {
+      connection_->SetEventHandler(nullptr);
+      connection_->set_host_stub(nullptr);
+      connection_->set_input_stub(nullptr);
+      connection_->set_clipboard_stub(nullptr);
+    }
+    if (input_injector_) {
+      input_pipeline_.input_tracker()->ReleaseAll();
+      input_pipeline_.SetInputStub(nullptr);
+    }
+  }
 }
 
 void PeerSessionImpl::NotifyClientResolution(
@@ -270,7 +324,8 @@ void PeerSessionImpl::NotifyClientResolution(
   screen_controls_->SetScreenResolution(screen_resolution, screen_id);
 }
 
-void PeerSessionImpl::ControlVideo(const protocol::VideoControl& video_control) {
+void PeerSessionImpl::ControlVideo(
+    const protocol::VideoControl& video_control) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Note that |video_stream_| may be null, depending upon whether
@@ -329,7 +384,8 @@ void PeerSessionImpl::ControlVideo(const protocol::VideoControl& video_control) 
   }
 }
 
-void PeerSessionImpl::ControlAudio(const protocol::AudioControl& audio_control) {
+void PeerSessionImpl::ControlAudio(
+    const protocol::AudioControl& audio_control) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (audio_control.has_enable()) {
@@ -383,8 +439,9 @@ void PeerSessionImpl::SetCapabilities(
   if (HasCapability(capabilities_, protocol::kRtcLogTransferCapability)) {
     data_channel_manager_.RegisterCreateHandlerCallback(
         kRtcLogTransferDataChannelPrefix,
-        base::BindRepeating(&PeerSessionImpl::CreateRtcLogTransferMessageHandler,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &PeerSessionImpl::CreateRtcLogTransferMessageHandler,
+            base::Unretained(this)));
   }
 
   if (HasCapability(capabilities_, protocol::kRemoteOpenUrlCapability)) {
@@ -402,15 +459,17 @@ void PeerSessionImpl::SetCapabilities(
   if (HasCapability(capabilities_, protocol::kRemoteWebAuthnCapability)) {
     data_channel_manager_.RegisterCreateHandlerCallback(
         kRemoteWebAuthnDataChannelName,
-        base::BindRepeating(&PeerSessionImpl::CreateRemoteWebAuthnMessageHandler,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &PeerSessionImpl::CreateRemoteWebAuthnMessageHandler,
+            base::Unretained(this)));
   }
 
   if (HasCapability(capabilities_, protocol::kSecurityKeyV2Capability)) {
     data_channel_manager_.RegisterCreateHandlerCallback(
         SecurityKeyDataChannelHandler::kChannelName,
-        base::BindRepeating(&PeerSessionImpl::CreateSecurityKeyDataChannelHandler,
-                            base::Unretained(this)));
+        base::BindRepeating(
+            &PeerSessionImpl::CreateSecurityKeyDataChannelHandler,
+            base::Unretained(this)));
   }
 
   std::vector<ActionRequest::Action> supported_actions;
@@ -497,11 +556,11 @@ void PeerSessionImpl::RequestPairing(
 
 void PeerSessionImpl::DeliverClientMessage(
     const protocol::ExtensionMessage& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (message.has_type()) {
-    if (extension_manager_->OnExtensionMessage(message)) {
+    if (extension_manager_ && extension_manager_->OnExtensionMessage(message)) {
       return;
     }
-
     DLOG(INFO) << "Unexpected message received: " << message.type() << ": "
                << message.data();
   }
@@ -547,7 +606,8 @@ void PeerSessionImpl::ControlPeerConnection(
   }
 }
 
-void PeerSessionImpl::SetVideoLayout(const protocol::VideoLayout& video_layout) {
+void PeerSessionImpl::SetVideoLayout(
+    const protocol::VideoLayout& video_layout) {
   for (int i = 0; i < video_layout.video_track_size(); i++) {
     const auto& track = video_layout.video_track(i);
     if (track.width() < 0 || track.height() < 0) {
@@ -616,7 +676,7 @@ void PeerSessionImpl::ControlTerminal(
 }
 
 void PeerSessionImpl::SendTerminalOutput(int32_t terminal_id,
-                                       const std::string& data) {
+                                         const std::string& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   protocol::TerminalControl response;
   auto* output = response.mutable_terminal_output();
@@ -630,108 +690,6 @@ void PeerSessionImpl::OnTerminalExited(int32_t terminal_id) {
   protocol::TerminalControl response;
   response.mutable_close_terminal()->set_terminal_id(terminal_id);
   connection_->client_stub()->DeliverTerminalControl(response);
-}
-
-void PeerSessionImpl::OnConnectionAuthenticating() {
-  event_handler_->OnSessionAuthenticating(this);
-}
-
-void PeerSessionImpl::OnConnectionAuthenticated(
-    const SessionPolicies* session_policies) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!audio_stream_);
-  DCHECK(!desktop_environment_);
-  DCHECK(!input_injector_);
-  DCHECK(!screen_controls_);
-  DCHECK(video_streams_.empty());
-
-  is_authenticated_ = true;
-
-  desktop_display_info_.Reset();
-
-  if (session_policies) {
-    effective_policies_ = *session_policies;
-    HOST_LOG << "Connection authenticated with remote session policies: "
-             << effective_policies_;
-  } else {
-    effective_policies_ =
-        local_session_policies_provider_->get_local_policies();
-    local_session_policy_update_subscription_ =
-        local_session_policies_provider_->AddLocalPoliciesChangedCallback(
-            base::BindRepeating(&PeerSessionImpl::OnLocalSessionPoliciesChanged,
-                                weak_factory_.GetWeakPtr()));
-    HOST_LOG << "Connection authenticated with local session policies: "
-             << effective_policies_;
-  }
-
-  std::optional<ErrorCode> validation_result =
-      event_handler_->OnSessionPoliciesReceived(effective_policies_);
-
-  if (validation_result.has_value()) {
-    // TODO: crbug.com/382334458 - Include error details and location in the
-    // validation result.
-    std::string error_details = base::StringPrintf(
-        "Session policies disallowed by validator. Error code: %d",
-        static_cast<int>(*validation_result));
-    DisconnectSession(*validation_result, error_details, FROM_HERE);
-    return;
-  }
-
-  base::TimeDelta max_duration =
-      effective_policies_.maximum_session_duration.value_or(base::TimeDelta());
-  if (max_duration.is_positive()) {
-    max_duration_timer_.Start(
-        FROM_HERE, max_duration,
-        base::BindOnce(&PeerSessionImpl::DisconnectSession,
-                       base::Unretained(this), ErrorCode::MAX_SESSION_LENGTH,
-                       "Maximum session duration has been reached.",
-                       FROM_HERE));
-  }
-
-  // Notify EventHandler.
-  event_handler_->OnSessionAuthenticated(this);
-
-  const SessionOptions session_options(
-      host_experiment_session_plugin_.configuration());
-
-  connection_->ApplySessionOptions(session_options);
-  connection_->ApplyNetworkSettings(
-      protocol::NetworkSettings(effective_policies_));
-
-  session_->SetTransport(connection_->transport());
-  connection_->Start();
-
-  DesktopEnvironmentOptions options = desktop_environment_options_;
-  options.ApplySessionOptions(session_options);
-  if (effective_policies_.curtain_required.has_value()) {
-    options.set_enable_curtaining(*effective_policies_.curtain_required);
-  }
-  // `allow_webauthn_forwarding` should not override the existing value for
-  // `enable_remote_webauthn` if it was not enabled for this connection mode.
-  if (options.enable_remote_webauthn() &&
-      effective_policies_.allow_webauthn_forwarding.has_value()) {
-    options.set_enable_remote_webauthn(
-        *effective_policies_.allow_webauthn_forwarding);
-  }
-  if (options.enable_security_key() &&
-      effective_policies_.allow_gnubby_forwarding.has_value()) {
-    options.set_enable_security_key(
-        *effective_policies_.allow_gnubby_forwarding);
-  }
-  // Create the desktop environment.
-  // Note: The handlers for various other events use the created desktop
-  // environment. Since those events may occur before the desktop environment
-  // creation has finished, each such event handler must include a prologue to
-  // check if the desktop environment has been created, and add itself to a list
-  // of deferred handlers if not.
-  // TODO(rkjnsn): During a future refactor, see if this can be improved. E.g.,
-  // perhaps ensuring at a higher layer that additional events don't occur until
-  // the ClientSession is ready, or using co_await (once approved in Chromium)
-  // to wait for the desktop environment more simply and safely when it is used.
-  desktop_environment_factory_->Create(
-      weak_factory_.GetWeakPtr(), weak_factory_.GetWeakPtr(), options,
-      base::BindOnce(&PeerSessionImpl::OnDesktopEnvironmentCreated,
-                     weak_factory_.GetWeakPtr()));
 }
 
 void PeerSessionImpl::CreateMediaStreams() {
@@ -880,12 +838,14 @@ void PeerSessionImpl::OnConnectionChannelsConnected() {
   }
 
   // Notify the event handler that all our channels are now connected.
-  event_handler_->OnSessionChannelsConnected(this);
+  if (event_handler_) {
+    event_handler_->OnSessionChannelsConnected();
+  }
 }
 
 void PeerSessionImpl::OnConnectionClosed(protocol::ErrorCode error,
-                                       std::string_view error_details,
-                                       const SourceLocation& error_location) {
+                                         std::string_view error_details,
+                                         const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (is_closing_) {
@@ -893,21 +853,11 @@ void PeerSessionImpl::OnConnectionClosed(protocol::ErrorCode error,
   }
   is_closing_ = true;
 
-  if (session_) {
-    std::unique_ptr<protocol::Session> session = std::move(session_);
-    session->Close(error, error_details, error_location);
-  }
-
   HOST_LOG << "Client disconnected: " << client_jid_
            << "; error = " << ErrorCodeToString(error);
 
   // Ignore any further callbacks.
   weak_factory_.InvalidateWeakPtrs();
-
-  // If the client never authenticated then the session failed.
-  if (!is_authenticated_) {
-    event_handler_->OnSessionAuthenticationFailed(this);
-  }
 
   // ReleaseAll() requires an InputInjector, which might not be present if a
   // connection wasn't established.
@@ -933,8 +883,10 @@ void PeerSessionImpl::OnConnectionClosed(protocol::ErrorCode error,
   desktop_environment_.reset();
   terminal_session_manager_.reset();
 
-  // Notify the ChromotingHost that this client is disconnected.
-  event_handler_->OnSessionClosed(this);
+  // Notify the ClientSession that this client is disconnected.
+  if (event_handler_) {
+    event_handler_->OnSessionClosed(error, error_details, error_location);
+  }
 }
 
 void PeerSessionImpl::OnTransportProtocolChange(const std::string& protocol) {
@@ -946,9 +898,11 @@ void PeerSessionImpl::OnTransportProtocolChange(const std::string& protocol) {
 }
 
 void PeerSessionImpl::OnRouteChange(const std::string& channel_name,
-                                  const protocol::TransportRoute& route) {
+                                    const protocol::TransportRoute& route) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  event_handler_->OnSessionRouteChange(this, channel_name, route);
+  if (event_handler_) {
+    event_handler_->OnSessionRouteChange(channel_name, route);
+  }
 }
 
 void PeerSessionImpl::OnIncomingDataChannel(
@@ -976,17 +930,24 @@ const std::string& PeerSessionImpl::client_jid() const {
   return client_jid_;
 }
 
+protocol::Transport* PeerSessionImpl::transport() const {
+  return connection_ ? connection_->transport() : nullptr;
+}
+
 void PeerSessionImpl::DisconnectSession(ErrorCode error,
-                                      std::string_view error_details,
-                                      const SourceLocation& error_location) {
+                                        std::string_view error_details,
+                                        const SourceLocation& error_location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(connection_.get());
 
   max_duration_timer_.Stop();
 
-  // Disconnect() notifies event_handler_->OnConnectionClosed(), which closes
-  // session_ and executes session teardown.
-  connection_->Disconnect(error, error_details, error_location);
+  if (connection_) {
+    // Disconnect() notifies event_handler_->OnConnectionClosed(), which closes
+    // session_ and executes session teardown.
+    connection_->Disconnect(error, error_details, error_location);
+    return;
+  }
+  OnConnectionClosed(error, error_details, error_location);
 }
 
 void PeerSessionImpl::OnLocalKeyPressed(std::uint32_t usb_keycode) {
@@ -1002,7 +963,7 @@ void PeerSessionImpl::OnLocalKeyPressed(std::uint32_t usb_keycode) {
 }
 
 void PeerSessionImpl::OnLocalPointerMoved(const webrtc::DesktopVector& position,
-                                        ui::EventType type) {
+                                          ui::EventType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_local =
       input_pipeline_.remote_input_filter()->LocalPointerMoved(position, type);
@@ -1121,40 +1082,8 @@ void PeerSessionImpl::SetEventTimestampsSourceForTests(
   }
 }
 
-void PeerSessionImpl::OnSessionStateChange(protocol::Session::State state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(connection_);
-
-  switch (state) {
-    case protocol::Session::INITIALIZING:
-    case protocol::Session::CONNECTING:
-    case protocol::Session::ACCEPTING:
-    case protocol::Session::ACCEPTED:
-      // Don't care about these events.
-      break;
-
-    case protocol::Session::AUTHENTICATING:
-      OnConnectionAuthenticating();
-      break;
-
-    case protocol::Session::AUTHENTICATED:
-      OnConnectionAuthenticated(session_->authenticator().GetSessionPolicies());
-      break;
-
-    case protocol::Session::CLOSED:
-    case protocol::Session::FAILED: {
-      ErrorCode error = (state == protocol::Session::CLOSED || !session_)
-                            ? ErrorCode::OK
-                            : session_->error();
-      // Disconnect() notifies event_handler_->OnConnectionClosed(), which
-      // executes session teardown.
-      connection_->Disconnect(error, /* error_details= */ {}, FROM_HERE);
-      break;
-    }
-  }
-}
-
-std::unique_ptr<protocol::ClipboardStub> PeerSessionImpl::CreateClipboardProxy() {
+std::unique_ptr<protocol::ClipboardStub>
+PeerSessionImpl::CreateClipboardProxy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<protocol::ClipboardThreadProxy>(
       client_clipboard_factory_.GetWeakPtr(),
@@ -1177,10 +1106,6 @@ void PeerSessionImpl::OnDesktopEnvironmentCreated(
 
   // Collate the set of capabilities to offer the client, if it supports them.
   host_capabilities_ = desktop_environment_->GetCapabilities();
-  if (!host_capabilities_.empty()) {
-    host_capabilities_.append(" ");
-  }
-  host_capabilities_.append(extension_manager_->GetCapabilities());
 
   if (!host_capabilities_.empty()) {
     host_capabilities_.append(" ");
@@ -1213,6 +1138,14 @@ void PeerSessionImpl::OnDesktopEnvironmentCreated(
 
   host_capabilities_.append(" ");
   host_capabilities_.append(protocol::kTerminalModeCapability);
+
+  if (extension_manager_) {
+    std::string extension_capabilities = extension_manager_->GetCapabilities();
+    if (!extension_capabilities.empty()) {
+      host_capabilities_.append(" ");
+      host_capabilities_.append(extension_capabilities);
+    }
+  }
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();
@@ -1271,14 +1204,6 @@ void PeerSessionImpl::CreateAudioInjectorAndBuffer() {
       }
     }
   }
-}
-
-void PeerSessionImpl::OnLocalSessionPoliciesChanged(
-    const SessionPolicies& new_policies) {
-  DCHECK(local_session_policy_update_subscription_);
-  DisconnectSession(ErrorCode::SESSION_POLICIES_CHANGED,
-                    "Effective policies have changed. Terminating session.",
-                    FROM_HERE);
 }
 
 void PeerSessionImpl::OnDesktopDisplayChanged(
@@ -1497,9 +1422,10 @@ void PeerSessionImpl::CreateActionMessageHandler(
     const std::string& channel_name,
     std::unique_ptr<protocol::MessagePipe> pipe) {
   if (!desktop_environment_) {
-    desktop_environment_ready_callbacks_.push_back(base::BindOnce(
-        &PeerSessionImpl::CreateActionMessageHandler, weak_factory_.GetWeakPtr(),
-        std::move(capabilities), channel_name, std::move(pipe)));
+    desktop_environment_ready_callbacks_.push_back(
+        base::BindOnce(&PeerSessionImpl::CreateActionMessageHandler,
+                       weak_factory_.GetWeakPtr(), std::move(capabilities),
+                       channel_name, std::move(pipe)));
     return;
   }
   std::unique_ptr<ActionExecutor> action_executor =
@@ -1588,7 +1514,10 @@ void PeerSessionImpl::CreateSecurityKeyDataChannelHandler(
 void PeerSessionImpl::DestroySecurityKeyExtensionSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   HOST_LOG << "Destroying legacy security key extension session (takeover).";
-  extension_manager_->RemoveExtensionSession(SecurityKeyExtension::kCapability);
+  if (extension_manager_) {
+    extension_manager_->RemoveExtensionSession(
+        SecurityKeyExtension::kCapability);
+  }
 }
 
 void PeerSessionImpl::BoostFramerateOnInput(

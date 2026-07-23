@@ -100,6 +100,10 @@ class FakeConnectionToClient : public ConnectionToClient {
   ErrorCode disconnect_error() { return disconnect_error_; }
   const NetworkSettings& network_settings() const { return network_settings_; }
 
+  base::WeakPtr<FakeConnectionToClient> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // TODO(crbug.com/40115219): Remove the requirement that ConnectionToClient
   // retains a pointer to the capturer if the relative pointer experiment is
@@ -120,6 +124,8 @@ class FakeConnectionToClient : public ConnectionToClient {
   ErrorCode disconnect_error_ = ErrorCode::OK;
   NetworkSettings network_settings_;
   std::unique_ptr<FifoBufferWriter> audio_writer_;
+
+  base::WeakPtrFactory<FakeConnectionToClient> weak_factory_{this};
 };
 
 }  // namespace remoting::protocol

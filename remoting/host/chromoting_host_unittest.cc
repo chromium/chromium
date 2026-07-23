@@ -141,18 +141,17 @@ class ChromotingHostTest : public testing::Test {
                                 bool reject) {
     std::unique_ptr<protocol::ConnectionToClient> connection =
         std::move((connection_index == 0) ? connection1_ : connection2_);
-    protocol::ConnectionToClient* connection_ptr = connection.get();
     std::unique_ptr<protocol::Session> session =
         (connection_index == 0) ? std::move(session1_) : std::move(session2_);
     auto client = base::WrapUnique(new ClientSession(
-        host_.get(), std::move(session), std::move(connection),
-        desktop_environment_factory_.get(),
+        host_.get(), std::move(session), /* ice_config_fetcher= */ nullptr,
+        /* audio_task_runner= */ nullptr, desktop_environment_factory_.get(),
         DesktopEnvironmentOptions::CreateDefault(), nullptr,
         std::vector<raw_ptr<HostExtension, VectorExperimental>>(),
         &local_session_policies_provider_));
+    client->set_connection_for_testing(std::move(connection));
     ClientSession* client_ptr = client.get();
 
-    connection_ptr->set_host_stub(client.get());
     get_client(connection_index) = client_ptr;
 
     // |host| is responsible for deleting |client| from now on.
@@ -168,18 +167,22 @@ class ChromotingHostTest : public testing::Test {
       }
       client_ptr->OnConnectionAuthenticated(nullptr);
       if (!reject) {
-        client_ptr->OnConnectionChannelsConnected();
+        client_ptr->peer_session()->OnConnectionChannelsConnected();
       }
     } else {
       PrepareForClientDisconnection(connection_index);
-      client_ptr->OnConnectionClosed(ErrorCode::AUTHENTICATION_FAILED, {},
-                                     FROM_HERE);
+      client_ptr->DisconnectSession(ErrorCode::AUTHENTICATION_FAILED, {},
+                                    FROM_HERE);
     }
   }
 
   void CloseClientConnection(ClientSession* client,
                              ErrorCode error = ErrorCode::OK) {
-    client->OnConnectionClosed(error, {}, FROM_HERE);
+    // Clear raw pointers to session event handlers to prevent dangling pointer
+    // access or redundant OnSessionStateChange(CLOSED) calls after teardown.
+    session_unowned1_event_handler_ = nullptr;
+    session_unowned2_event_handler_ = nullptr;
+    client->DisconnectSession(error, {}, FROM_HERE);
   }
 
   void TearDown() override {
@@ -245,6 +248,10 @@ class ChromotingHostTest : public testing::Test {
   ClientSession* PrepareForClientDisconnection(int connection_index) {
     // A client disconnecting will destroy the session and client.
     // Clear both the session and client and return the client to the caller.
+    // Also clear raw pointers to session event handlers to prevent dangling
+    // pointers or redundant OnSessionStateChange(CLOSED) calls after teardown.
+    session_unowned1_event_handler_ = nullptr;
+    session_unowned2_event_handler_ = nullptr;
     switch (connection_index) {
       case 0:
         session1_ = nullptr;
@@ -596,7 +603,7 @@ TEST_F(ChromotingHostTest, ExtraSessionPoliciesValidator) {
 
   StartHost();
 
-  EXPECT_CALL(host_status_observer_, OnClientDisconnected(get_session_jid(0)));
+  EXPECT_CALL(host_status_observer_, OnClientAccessDenied(get_session_jid(0)));
 
   SimulateClientConnection(0, /* authenticate= */ true, /* reject= */ true);
 }

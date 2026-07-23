@@ -489,6 +489,7 @@ static_library("common") {
     "pairing_registry_delegate.h",
     "passthrough_register_support_host_request.cc",
     "passthrough_register_support_host_request.h",
+    "peer_session.h",
     "peer_session_impl.cc",
     "peer_session_impl.h",
     "persistent_display_layout_manager.cc",

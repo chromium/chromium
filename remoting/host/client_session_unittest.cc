@@ -39,6 +39,8 @@
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_extension_session.h"
 #include "remoting/host/host_mock_objects.h"
+#include "remoting/host/peer_session.h"
+#include "remoting/host/peer_session_impl.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/security_key/security_key_data_channel_handler.h"
 #include "remoting/host/security_key/security_key_extension.h"
@@ -235,9 +237,19 @@ class ClientSessionTest : public testing::Test {
   MockClientStub client_stub_;
 
   // ClientSession owns |connection_| but tests need it to inject fake events.
-  raw_ptr<protocol::FakeConnectionToClient, DanglingUntriaged> connection_;
+  base::WeakPtr<protocol::FakeConnectionToClient> connection_;
+
+  raw_ptr<protocol::FakeSession, DisableDanglingPtrDetection> session_;
 
   std::unique_ptr<FakeDesktopEnvironmentFactory> desktop_environment_factory_;
+
+  PeerSessionImpl* peer_session_impl() {
+    return static_cast<PeerSessionImpl*>(client_session_->peer_session());
+  }
+
+  bool is_connected() const {
+    return connection_ && connection_->is_connected();
+  }
 
   DesktopEnvironmentOptions desktop_environment_options_;
 };
@@ -261,10 +273,11 @@ void ClientSessionTest::SetUp() {
 
 void ClientSessionTest::TearDown() {
   if (client_session_) {
-    if (connection_->is_connected()) {
+    if (is_connected()) {
       client_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
     }
     client_session_.reset();
+    session_ = nullptr;
     desktop_environment_factory_.reset();
   }
 
@@ -277,18 +290,21 @@ void ClientSessionTest::TearDown() {
 void ClientSessionTest::CreateClientSession(
     std::unique_ptr<protocol::FakeSession> session) {
   DCHECK(session);
+  session_ = session.get();
 
   // Mock protocol::ConnectionToClient APIs called directly by ClientSession.
   // HostStub is not touched by ClientSession, so we can safely pass nullptr.
   std::unique_ptr<protocol::FakeConnectionToClient> connection(
       new protocol::FakeConnectionToClient());
   connection->set_client_stub(&client_stub_);
-  connection_ = connection.get();
+  connection_ = connection->GetWeakPtr();
 
   client_session_ = base::WrapUnique(new ClientSession(
-      &session_event_handler_, std::move(session), std::move(connection),
+      &session_event_handler_, std::move(session),
+      /* ice_config_fetcher= */ nullptr, /* audio_task_runner= */ nullptr,
       desktop_environment_factory_.get(), desktop_environment_options_, nullptr,
       extensions_, &local_session_policies_provider_));
+  client_session_->set_connection_for_testing(std::move(connection));
 }
 
 void ClientSessionTest::CreateClientSession() {
@@ -315,8 +331,8 @@ void ClientSessionTest::ConnectClientSession(
   EXPECT_FALSE(connection_->input_stub());
 
   AuthenticateClientSession(session_policies);
-  client_session_->CreateMediaStreams();
-  client_session_->OnConnectionChannelsConnected();
+  client_session_->peer_session()->CreateMediaStreams();
+  client_session_->peer_session()->OnConnectionChannelsConnected();
   future.Get();
 
   EXPECT_TRUE(connection_->clipboard_stub());
@@ -344,13 +360,13 @@ void ClientSessionTest::AddDisplayToLayout(protocol::VideoLayout* displays,
 
 void ClientSessionTest::NotifyDesktopDisplaySize(
     std::unique_ptr<protocol::VideoLayout> displays) {
-  client_session_->OnDesktopDisplayChanged(std::move(displays));
+  peer_session_impl()->OnDesktopDisplayChanged(std::move(displays));
 }
 
 void ClientSessionTest::NotifySelectDesktopDisplay(std::string id) {
   protocol::SelectDesktopDisplayRequest req;
   req.set_id(id);
-  client_session_->SelectDesktopDisplay(req);
+  peer_session_impl()->SelectDesktopDisplay(req);
 }
 
 void ClientSessionTest::ResetDisplayInfo() {
@@ -389,11 +405,11 @@ TEST_F(
   CreateClientSession();
   ConnectClientSession(&remote_policies);
 
-  EXPECT_TRUE(connection_->is_connected());
+  EXPECT_TRUE(is_connected());
   SessionPolicies new_policies;
   new_policies.maximum_session_duration = base::Hours(23);
   local_session_policies_provider_.set_local_policies(new_policies);
-  EXPECT_TRUE(connection_->is_connected());
+  EXPECT_TRUE(is_connected());
 }
 
 TEST_F(ClientSessionTest,
@@ -401,9 +417,9 @@ TEST_F(ClientSessionTest,
   CreateClientSession();
   ConnectClientSession();
 
-  EXPECT_TRUE(connection_->is_connected());
+  EXPECT_TRUE(is_connected());
   local_session_policies_provider_.set_local_policies(initial_local_policies_);
-  EXPECT_TRUE(connection_->is_connected());
+  EXPECT_TRUE(is_connected());
 }
 
 TEST_F(ClientSessionTest,
@@ -411,25 +427,25 @@ TEST_F(ClientSessionTest,
   CreateClientSession();
   ConnectClientSession();
 
-  EXPECT_TRUE(connection_->is_connected());
+  EXPECT_TRUE(is_connected());
   SessionPolicies local_policies;
   local_policies.maximum_session_duration = base::Hours(23);
   local_session_policies_provider_.set_local_policies(local_policies);
-  EXPECT_FALSE(connection_->is_connected());
+  EXPECT_FALSE(is_connected());
 }
 
 TEST_F(ClientSessionTest, DisconnectsAfterMaxSessionDurationIsReached) {
   CreateClientSession();
   ConnectClientSession();
 
-  EXPECT_TRUE(connection_->is_connected());
+  EXPECT_TRUE(is_connected());
   // Calling FastForwardBy() would result in a livelock, so we just advance the
   // clock and run all the scheduled tasks, which includes the max duration
   // timer.
   task_environment_.AdvanceClock(
       *initial_local_policies_.maximum_session_duration + base::Minutes(1));
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(connection_->is_connected());
+  EXPECT_FALSE(is_connected());
 }
 
 TEST_F(ClientSessionTest, DisconnectsIfOnSessionPoliciesReceivedReturnsError) {
@@ -440,8 +456,8 @@ TEST_F(ClientSessionTest, DisconnectsIfOnSessionPoliciesReceivedReturnsError) {
   CreateClientSession();
   AuthenticateClientSession(nullptr);
 
-  EXPECT_FALSE(connection_->is_connected());
-  EXPECT_EQ(connection_->disconnect_error(), ErrorCode::DISALLOWED_BY_POLICY);
+  EXPECT_FALSE(client_session_->is_authenticated());
+  EXPECT_EQ(session_->error(), ErrorCode::DISALLOWED_BY_POLICY);
 }
 
 TEST_F(ClientSessionTest,
@@ -521,7 +537,7 @@ TEST_F(ClientSessionTest, DisableInputs) {
       MakeFractionalMouseMoveEvent(100, 101));
 
   // Disable input.
-  client_session_->SetDisableInputs(true);
+  peer_session_impl()->SetDisableInputs(true);
 
   // These events shouldn't get though to the input injector.
   connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("b"));
@@ -531,7 +547,7 @@ TEST_F(ClientSessionTest, DisableInputs) {
       MakeFractionalMouseMoveEvent(200, 201));
 
   // Enable input again.
-  client_session_->SetDisableInputs(false);
+  peer_session_impl()->SetDisableInputs(false);
   connection_->clipboard_stub()->InjectClipboardEvent(MakeClipboardEvent("c"));
   connection_->input_stub()->InjectKeyEvent(MakeKeyEvent(true, 3));
   connection_->input_stub()->InjectMouseEvent(
@@ -634,8 +650,8 @@ TEST_F(ClientSessionTest, LocalInputTest) {
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // The OS echoes the injected event back.
-  client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
-                                       ui::EventType::kMouseMoved);
+  peer_session_impl()->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
+                                           ui::EventType::kMouseMoved);
 #endif  // !BUILDFLAG(IS_WIN)
 
   // This one should get throught as well.
@@ -643,8 +659,8 @@ TEST_F(ClientSessionTest, LocalInputTest) {
       MakeFractionalMouseMoveEvent(200, 201));
 
   // Now this is a genuine local event.
-  client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
-                                       ui::EventType::kMouseMoved);
+  peer_session_impl()->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
+                                           ui::EventType::kMouseMoved);
 
   // This one should be blocked because of the previous local input event.
   connection_->input_stub()->InjectMouseEvent(
@@ -656,7 +672,7 @@ TEST_F(ClientSessionTest, LocalInputTest) {
   EXPECT_THAT(mouse_events_[1], EqualsMouseMoveEvent(200, 201));
 
   // Verify that we're still connected.
-  EXPECT_TRUE(connection_->is_connected());
+  EXPECT_TRUE(is_connected());
 
   // TODO(jamiewalch): Verify that remote inputs are re-enabled
   // eventually (via dependency injection, not sleep!)
@@ -668,9 +684,9 @@ TEST_F(ClientSessionTest, DisconnectOnLocalInputTest) {
   ConnectClientSession();
   SetupSingleDisplay();
 
-  client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
-                                       ui::EventType::kMouseMoved);
-  EXPECT_FALSE(connection_->is_connected());
+  peer_session_impl()->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
+                                           ui::EventType::kMouseMoved);
+  EXPECT_FALSE(is_connected());
 }
 
 TEST_F(ClientSessionTest, RestoreEventState) {
@@ -769,21 +785,21 @@ TEST_F(ClientSessionTest, Extensions) {
   // Mimic the client reporting an overlapping set of capabilities.
   protocol::Capabilities capabilities_message;
   capabilities_message.set_capabilities("cap1 cap4 default");
-  client_session_->SetCapabilities(capabilities_message);
+  peer_session_impl()->SetCapabilities(capabilities_message);
 
   // Verify that the correct extension messages are delivered, and dropped.
   protocol::ExtensionMessage message1;
   message1.set_type("ext1");
   message1.set_data("data");
-  client_session_->DeliverClientMessage(message1);
+  peer_session_impl()->DeliverClientMessage(message1);
   protocol::ExtensionMessage message3;
   message3.set_type("ext3");
   message3.set_data("data");
-  client_session_->DeliverClientMessage(message3);
+  peer_session_impl()->DeliverClientMessage(message3);
   protocol::ExtensionMessage message4;
   message4.set_type("ext4");
   message4.set_data("data");
-  client_session_->DeliverClientMessage(message4);
+  peer_session_impl()->DeliverClientMessage(message4);
 
   base::RunLoop().RunUntilIdle();
 
@@ -806,19 +822,20 @@ TEST_F(ClientSessionTest, DataChannelCallbackIsCalled) {
   bool callback_called = false;
 
   CreateClientSession();
-  client_session_->RegisterCreateHandlerCallbackForTesting(
+  ConnectClientSession();
+
+  peer_session_impl()->RegisterCreateHandlerCallbackForTesting(
       kTestDataChannelCallbackName,
       base::BindRepeating([](bool* callback_was_called, const std::string& name,
                              std::unique_ptr<protocol::MessagePipe> pipe)
                               -> void { *callback_was_called = true; },
                           &callback_called));
-  ConnectClientSession();
 
   std::unique_ptr<protocol::MessagePipe> pipe =
       base::WrapUnique(new protocol::FakeMessagePipe(false));
 
-  client_session_->OnIncomingDataChannel(kTestDataChannelCallbackName,
-                                         std::move(pipe));
+  client_session_->peer_session()->OnIncomingDataChannel(
+      kTestDataChannelCallbackName, std::move(pipe));
 
   ASSERT_TRUE(callback_called);
 }
@@ -863,7 +880,7 @@ TEST_F(ClientSessionTest, ActiveDisplayMessageSent) {
 
   protocol::Capabilities client_capabilities;
   client_capabilities.set_capabilities(protocol::kMultiStreamCapability);
-  client_session_->SetCapabilities(client_capabilities);
+  peer_session_impl()->SetCapabilities(client_capabilities);
 
   auto monitor = desktop_environment_factory_->last_desktop_environment()
                      ->last_active_display_monitor();
@@ -936,11 +953,11 @@ TEST_F(ClientSessionSecurityKeyTest, DataChannelTakeoverDestroysLegacySession) {
   capabilities_message.set_capabilities(
       std::string(SecurityKeyExtension::kCapability) + " " +
       protocol::kSecurityKeyV2Capability);
-  client_session_->SetCapabilities(capabilities_message);
+  peer_session_impl()->SetCapabilities(capabilities_message);
 
   // The signaling session should have been created.
   HostExtensionSession* extension_session =
-      client_session_->extension_manager_for_tests()->FindExtensionSession(
+      peer_session_impl()->extension_manager_for_tests()->FindExtensionSession(
           SecurityKeyExtension::kCapability);
   ASSERT_TRUE(extension_session);
 
@@ -956,7 +973,7 @@ TEST_F(ClientSessionSecurityKeyTest, DataChannelTakeoverDestroysLegacySession) {
 
   // We can verify that the extension session is destroyed by checking the
   // manager.
-  client_session_->OnIncomingDataChannel(
+  client_session_->peer_session()->OnIncomingDataChannel(
       SecurityKeyDataChannelHandler::kChannelName, pipe->Wrap());
 
   // Open the pipe to trigger OnConnected() and the takeover.
@@ -964,7 +981,8 @@ TEST_F(ClientSessionSecurityKeyTest, DataChannelTakeoverDestroysLegacySession) {
 
   // Wait until the legacy extension session is destroyed.
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !client_session_->extension_manager_for_tests()
+    return !peer_session_impl()
+                ->extension_manager_for_tests()
                 ->FindExtensionSession(SecurityKeyExtension::kCapability);
   }));
 
@@ -990,7 +1008,7 @@ TEST_F(ClientSessionTest, NotifyClientResolution_Bad) {
   invalid_resolution.set_height_pixels(600);
   invalid_resolution.set_x_dpi(96);
   invalid_resolution.set_y_dpi(96);
-  client_session_->NotifyClientResolution(invalid_resolution);
+  peer_session_impl()->NotifyClientResolution(invalid_resolution);
   EXPECT_FALSE(screen_controls->set_resolution_called());
 
   // Reset state on mock controls.
@@ -999,7 +1017,7 @@ TEST_F(ClientSessionTest, NotifyClientResolution_Bad) {
   // Send invalid resolution with negative height.
   invalid_resolution.set_width_pixels(800);
   invalid_resolution.set_height_pixels(-600);
-  client_session_->NotifyClientResolution(invalid_resolution);
+  peer_session_impl()->NotifyClientResolution(invalid_resolution);
   EXPECT_FALSE(screen_controls->set_resolution_called());
 }
 
@@ -1023,7 +1041,7 @@ TEST_F(ClientSessionTest, SetVideoLayout_Bad) {
   invalid_track_width->set_x_dpi(96);
   invalid_track_width->set_y_dpi(96);
   invalid_track_width->set_screen_id(kDisplay1Id);
-  client_session_->SetVideoLayout(invalid_layout_width);
+  peer_session_impl()->SetVideoLayout(invalid_layout_width);
   EXPECT_FALSE(screen_controls->set_video_layout_called());
 
   // Reset state.
@@ -1038,7 +1056,7 @@ TEST_F(ClientSessionTest, SetVideoLayout_Bad) {
   invalid_track_height->set_x_dpi(96);
   invalid_track_height->set_y_dpi(96);
   invalid_track_height->set_screen_id(kDisplay1Id);
-  client_session_->SetVideoLayout(invalid_layout_height);
+  peer_session_impl()->SetVideoLayout(invalid_layout_height);
   EXPECT_FALSE(screen_controls->set_video_layout_called());
 }
 
@@ -1048,7 +1066,7 @@ TEST_F(ClientSessionTest, ControlTerminal_CreateTerminal) {
 
   protocol::Capabilities capabilities;
   capabilities.set_capabilities(protocol::kTerminalModeCapability);
-  client_session_->SetCapabilities(capabilities);
+  peer_session_impl()->SetCapabilities(capabilities);
 
   // Expect client_stub to receive the create response.
   protocol::TerminalControl create_response;
@@ -1059,7 +1077,7 @@ TEST_F(ClientSessionTest, ControlTerminal_CreateTerminal) {
 
   protocol::TerminalControl create_req;
   create_req.mutable_create_request();
-  client_session_->ControlTerminal(create_req);
+  peer_session_impl()->ControlTerminal(create_req);
 
   // We should have a valid terminal ID returned.
   ASSERT_TRUE(create_response.has_create_response());
@@ -1075,13 +1093,13 @@ TEST_F(ClientSessionTest, ControlTerminal_InputAndResize) {
 
   protocol::Capabilities capabilities;
   capabilities.set_capabilities(protocol::kTerminalModeCapability);
-  client_session_->SetCapabilities(capabilities);
+  peer_session_impl()->SetCapabilities(capabilities);
 
   // Create a terminal
   EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(1);
   protocol::TerminalControl create_req;
   create_req.mutable_create_request();
-  client_session_->ControlTerminal(create_req);
+  peer_session_impl()->ControlTerminal(create_req);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
   ASSERT_EQ(sessions.size(), 1u);
@@ -1093,7 +1111,7 @@ TEST_F(ClientSessionTest, ControlTerminal_InputAndResize) {
   auto* input = input_req.mutable_terminal_input();
   input->set_terminal_id(1);
   input->set_input("hello");
-  client_session_->ControlTerminal(input_req);
+  peer_session_impl()->ControlTerminal(input_req);
 
   EXPECT_EQ(sessions[0]->inputs().size(), 1u);
   EXPECT_EQ(sessions[0]->inputs()[0], "hello");
@@ -1104,7 +1122,7 @@ TEST_F(ClientSessionTest, ControlTerminal_InputAndResize) {
   resize->set_terminal_id(1);
   resize->set_width(80);
   resize->set_height(24);
-  client_session_->ControlTerminal(resize_req);
+  peer_session_impl()->ControlTerminal(resize_req);
 
   EXPECT_EQ(sessions[0]->resizes().size(), 1u);
   EXPECT_EQ(sessions[0]->resizes()[0].first, 80u);
@@ -1120,13 +1138,13 @@ TEST_F(ClientSessionTest, ControlTerminal_OutputAndExit) {
 
   protocol::Capabilities capabilities;
   capabilities.set_capabilities(protocol::kTerminalModeCapability);
-  client_session_->SetCapabilities(capabilities);
+  peer_session_impl()->SetCapabilities(capabilities);
 
   // Create a terminal
   EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(1);
   protocol::TerminalControl create_req;
   create_req.mutable_create_request();
-  client_session_->ControlTerminal(create_req);
+  peer_session_impl()->ControlTerminal(create_req);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
   ASSERT_EQ(sessions.size(), 1u);
@@ -1179,14 +1197,14 @@ TEST_F(ClientSessionTest, ControlTerminal_RemoveRequest) {
 
   protocol::Capabilities capabilities;
   capabilities.set_capabilities(protocol::kTerminalModeCapability);
-  client_session_->SetCapabilities(capabilities);
+  peer_session_impl()->SetCapabilities(capabilities);
 
   // Create two terminals
   EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(2);
   protocol::TerminalControl create_req;
   create_req.mutable_create_request();
-  client_session_->ControlTerminal(create_req);
-  client_session_->ControlTerminal(create_req);
+  peer_session_impl()->ControlTerminal(create_req);
+  peer_session_impl()->ControlTerminal(create_req);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
   ASSERT_EQ(sessions.size(), 2u);
@@ -1196,14 +1214,14 @@ TEST_F(ClientSessionTest, ControlTerminal_RemoveRequest) {
   // Send remove_request for terminal 1
   protocol::TerminalControl remove_req1;
   remove_req1.mutable_remove_request()->set_terminal_id(1);
-  client_session_->ControlTerminal(remove_req1);
+  peer_session_impl()->ControlTerminal(remove_req1);
 
   EXPECT_TRUE(FakeTerminalSession::WasTerminated(1));
 
   // Send remove_request for terminal 2
   protocol::TerminalControl remove_req2;
   remove_req2.mutable_remove_request()->set_terminal_id(2);
-  client_session_->ControlTerminal(remove_req2);
+  peer_session_impl()->ControlTerminal(remove_req2);
 
   EXPECT_TRUE(FakeTerminalSession::WasTerminated(2));
   EXPECT_TRUE(FakeTerminalSession::GetActiveSessions().empty());

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,7 +25,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/errors.h"
-#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/host/audio_injector.h"
 #include "remoting/host/base/desktop_environment_options.h"
@@ -34,12 +32,13 @@
 #include "remoting/host/client_session_events.h"
 #include "remoting/host/cursor_visibility_notifier.h"
 #include "remoting/host/desktop_display_info.h"
-#include "remoting/host/host_experiment_session_plugin.h"
 #include "remoting/host/host_extension_session_manager.h"
 #include "remoting/host/input_pipeline.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
+#include "remoting/host/peer_session.h"
+#include "remoting/host/security_key/security_key_extension.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/clipboard_echo_filter.h"
@@ -53,7 +52,6 @@
 #include "remoting/protocol/input_event_timestamps.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/pairing_registry.h"
-#include "remoting/protocol/session.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/video_stream.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
@@ -64,8 +62,6 @@
 namespace remoting {
 
 class ActiveDisplayMonitor;
-class SecurityKeyAuthHandler;
-class SecurityKeyExtension;
 class DesktopEnvironment;
 class DesktopEnvironmentFactory;
 class InputInjector;
@@ -74,6 +70,7 @@ class MouseShapePump;
 class RemoteOpenUrlMessageHandler;
 class RemoteWebAuthnMessageHandler;
 class ScreenControls;
+class SecurityKeyAuthHandler;
 class TerminalSessionManager;
 
 namespace protocol {
@@ -84,9 +81,7 @@ class VideoLayout;
 
 // A PeerSessionImpl keeps a reference to a connection to a client, and
 // maintains per-client state.
-class PeerSessionImpl : public protocol::HostStub,
-                        public protocol::ConnectionToClient::EventHandler,
-                        public protocol::Session::EventHandler,
+class PeerSessionImpl : public PeerSession,
                         public ClientSessionControl,
                         public ClientSessionEvents,
                         public CursorVisibilityNotifier::EventHandler,
@@ -94,60 +89,40 @@ class PeerSessionImpl : public protocol::HostStub,
                         public protocol::MouseCursorMonitor::Callback,
                         public mojom::ChromotingSessionServices {
  public:
-  // Callback interface for passing events to the ChromotingHost.
-  class EventHandler {
-   public:
-    // Called after authentication has started.
-    virtual void OnSessionAuthenticating(PeerSessionImpl* client) = 0;
-
-    // Called after authentication has finished successfully.
-    virtual void OnSessionAuthenticated(PeerSessionImpl* client) = 0;
-
-    // Called after we've finished connecting all channels.
-    virtual void OnSessionChannelsConnected(PeerSessionImpl* client) = 0;
-
-    // Called after authentication has failed. Must not tear down this
-    // object. OnSessionClosed() is notified after this handler
-    // returns.
-    virtual void OnSessionAuthenticationFailed(PeerSessionImpl* client) = 0;
-
-    // Called after connection has failed or after the client closed it.
-    virtual void OnSessionClosed(PeerSessionImpl* client) = 0;
-
-    // Called on notification of a route change event, when a channel is
-    // connected.
-    virtual void OnSessionRouteChange(
-        PeerSessionImpl* client,
-        const std::string& channel_name,
-        const protocol::TransportRoute& route) = 0;
-
-    // Called when session policies are received. Returns nullopt if the session
-    // policies are valid; otherwise returns an error code, which will be used
-    // to close the session with.
-    virtual std::optional<ErrorCode> OnSessionPoliciesReceived(
-        const SessionPolicies& policies) = 0;
-
-   protected:
-    virtual ~EventHandler() {}
-  };
-
-  // |event_handler| and |desktop_environment_factory| must outlive |this|.
-  // All |HostExtension|s in |extensions| must outlive |this|.
+  // `event_handler` and `desktop_environment_factory` must outlive `this`.
+  // All `HostExtension`s in `extensions` must outlive `this`.
   PeerSessionImpl(
-      EventHandler* event_handler,
-      std::unique_ptr<protocol::Session> session,
+      PeerSession::EventHandler* event_handler,
+      const std::string& client_jid,
       std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       DesktopEnvironmentFactory* desktop_environment_factory,
       const DesktopEnvironmentOptions& desktop_environment_options,
       scoped_refptr<protocol::PairingRegistry> pairing_registry,
-      const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
-      const LocalSessionPoliciesProvider* local_session_policies_provider);
+      const std::vector<raw_ptr<HostExtension, VectorExperimental>>&
+          extensions);
+
+  PeerSessionImpl(PeerSession::EventHandler* event_handler,
+                  const std::string& client_jid,
+                  std::unique_ptr<protocol::ConnectionToClient> connection,
+                  DesktopEnvironmentFactory* desktop_environment_factory,
+                  const DesktopEnvironmentOptions& desktop_environment_options,
+                  scoped_refptr<protocol::PairingRegistry> pairing_registry,
+                  const std::vector<raw_ptr<HostExtension, VectorExperimental>>&
+                      extensions);
 
   PeerSessionImpl(const PeerSessionImpl&) = delete;
   PeerSessionImpl& operator=(const PeerSessionImpl&) = delete;
 
   ~PeerSessionImpl() override;
+
+  // PeerSession interface.
+  void Start(const SessionPolicies& session_policies,
+             const SessionOptions& session_options) override;
+
+  HostExtensionSessionManager* extension_manager_for_tests() const {
+    return extension_manager_.get();
+  }
 
   // Returns the set of capabilities negotiated between client and host.
   const std::string& capabilities() const { return capabilities_; }
@@ -208,9 +183,6 @@ class PeerSessionImpl : public protocol::HostStub,
       mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
       override;
 
-  // protocol::Session::EventHandler interface.
-  void OnSessionStateChange(protocol::Session::State state) override;
-
   // CursorVisibilityNotifier::EventHandler interface
   void OnCursorVisibilityChanged(bool visible) override;
 
@@ -229,9 +201,7 @@ class PeerSessionImpl : public protocol::HostStub,
       mojo::PendingReceiver<mojom::SecurityKeyForwarder> receiver) override;
 #endif
 
-  protocol::ConnectionToClient* connection() const { return connection_.get(); }
-
-  bool is_authenticated() const { return is_authenticated_; }
+  protocol::Transport* transport() const override;
 
   bool channels_connected() const { return channels_connected_; }
 
@@ -252,33 +222,14 @@ class PeerSessionImpl : public protocol::HostStub,
     return effective_policies_;
   }
 
-  HostExtensionSessionManager* extension_manager_for_tests() const {
-    return extension_manager_.get();
-  }
-
  private:
   friend class ClientSessionTest;
   friend class ChromotingHostTest;
-
-  PeerSessionImpl(
-      EventHandler* event_handler,
-      std::unique_ptr<protocol::Session> session,
-      std::unique_ptr<protocol::ConnectionToClient> connection,
-      DesktopEnvironmentFactory* desktop_environment_factory,
-      const DesktopEnvironmentOptions& desktop_environment_options,
-      scoped_refptr<protocol::PairingRegistry> pairing_registry,
-      const std::vector<raw_ptr<HostExtension, VectorExperimental>>& extensions,
-      const LocalSessionPoliciesProvider* local_session_policies_provider);
-
-  void OnConnectionAuthenticating();
-  void OnConnectionAuthenticated(const SessionPolicies* session_policies);
 
   void OnDesktopEnvironmentCreated(
       std::unique_ptr<DesktopEnvironment> desktop_environment);
 
   void CreateAudioInjectorAndBuffer();
-
-  void OnLocalSessionPoliciesChanged(const SessionPolicies& new_policies);
 
   // Creates a proxy for sending clipboard events to the client.
   std::unique_ptr<protocol::ClipboardStub> CreateClipboardProxy();
@@ -319,8 +270,8 @@ class PeerSessionImpl : public protocol::HostStub,
 
   void CreatePerMonitorVideoStreams();
 
-  // Boosts the framerate using |capture_interval| for |boost_duration| based on
-  // the type of input |event| received.
+  // Boosts the framerate using `capture_interval` for `boost_duration` based on
+  // the type of input `event` received.
   void BoostFramerateOnInput(base::TimeDelta capture_interval,
                              base::TimeDelta boost_duration,
                              bool& mouse_button_down,
@@ -340,7 +291,7 @@ class PeerSessionImpl : public protocol::HostStub,
 
   void OnTerminalExited(int32_t terminal_id);
 
-  raw_ptr<EventHandler> event_handler_;
+  raw_ptr<PeerSession::EventHandler> event_handler_;
 
   // Used to create a DesktopEnvironment instance for this session.
   raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
@@ -370,7 +321,7 @@ class PeerSessionImpl : public protocol::HostStub,
   protocol::ClipboardFilter client_clipboard_filter_;
 
   // Factory for weak pointers to the client clipboard stub.
-  // This must appear after |clipboard_echo_filter_|, so that it won't outlive
+  // This must appear after `clipboard_echo_filter_`, so that it won't outlive
   // it.
   base::WeakPtrFactory<protocol::ClipboardStub> client_clipboard_factory_;
 
@@ -422,9 +373,6 @@ class PeerSessionImpl : public protocol::HostStub,
   // Used to dispatch new data channels to factory methods.
   protocol::DataChannelManager data_channel_manager_;
 
-  // Set to true if the client was authenticated successfully.
-  bool is_authenticated_ = false;
-
   // Set to true after all data channels have been connected.
   bool channels_connected_ = false;
 
@@ -435,35 +383,29 @@ class PeerSessionImpl : public protocol::HostStub,
   int target_framerate_ = kTargetFrameRate;
 
   // VideoLayout is sent only after the control channel is connected. Until
-  // then it's stored in |pending_video_layout_message_|.
+  // then it's stored in `pending_video_layout_message_`.
   std::unique_ptr<protocol::VideoLayout> pending_video_layout_message_;
 
   scoped_refptr<protocol::InputEventTimestampsSource>
       event_timestamp_source_for_tests_;
 
-  HostExperimentSessionPlugin host_experiment_session_plugin_;
-
   // The connection to the client.
   std::unique_ptr<protocol::ConnectionToClient> connection_;
 
-  // The signaling session.
-  std::unique_ptr<protocol::Session> session_;
-
-  // True if ClientSession teardown has already begun. Prevents re-entrant
+  // True if PeerSessionImpl teardown has already begun. Prevents re-entrant
   // execution of OnConnectionClosed() when callbacks fire during teardown.
   bool is_closing_ = false;
 
   std::string client_jid_;
 
-  std::unique_ptr<SecurityKeyAuthHandler> security_key_auth_handler_;
-  std::unique_ptr<SecurityKeyExtension> security_key_extension_;
-
-  // Used to manage extension functionality.
-  std::unique_ptr<HostExtensionSessionManager> extension_manager_;
-
   // Objects to monitor and send updates for mouse shape and keyboard layout.
   std::unique_ptr<MouseShapePump> mouse_shape_pump_;
   std::unique_ptr<KeyboardLayoutMonitor> keyboard_layout_monitor_;
+
+  std::unique_ptr<SecurityKeyAuthHandler> security_key_auth_handler_;
+  std::unique_ptr<SecurityKeyExtension> security_key_extension_;
+  std::unique_ptr<HostExtensionSessionManager> extension_manager_;
+  std::vector<raw_ptr<HostExtension, VectorExperimental>> extensions_;
 
   base::WeakPtr<RemoteWebAuthnMessageHandler> remote_webauthn_message_handler_;
   base::WeakPtr<RemoteOpenUrlMessageHandler> remote_open_url_message_handler_;
@@ -475,13 +417,6 @@ class PeerSessionImpl : public protocol::HostStub,
 
   SessionPolicies effective_policies_;
 
-  raw_ptr<const LocalSessionPoliciesProvider> local_session_policies_provider_;
-
-  // If `effective_policies` does not come from local session policies, the
-  // subscription will be null and OnLocalSessionPoliciesChanged() will never
-  // be called.
-  base::CallbackListSubscription local_session_policy_update_subscription_;
-
   bool host_cursor_rendered_by_client_ = false;
   bool cursor_visible_ = false;
 
@@ -489,7 +424,7 @@ class PeerSessionImpl : public protocol::HostStub,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Used to disable callbacks to |this| once DisconnectSession() has been
+  // Used to disable callbacks to `this` once DisconnectSession() has been
   // called.
   base::WeakPtrFactory<PeerSessionImpl> weak_factory_{this};
 };
