@@ -25,9 +25,7 @@ namespace tab_groups {
 
 class SavedTabGroupTabsMenuModelBrowserTest : public InProcessBrowserTest {
  public:
-  SavedTabGroupTabsMenuModelBrowserTest() {
-    feature_list_.InitAndDisableFeature(tab_groups::kProjectsPanel);
-  }
+  SavedTabGroupTabsMenuModelBrowserTest() = default;
 
   int GetNextCommandId() { return next_command_id_++; }
 
@@ -64,8 +62,6 @@ class SavedTabGroupTabsMenuModelBrowserTest : public InProcessBrowserTest {
   TabGroupSyncService* GetSyncService() {
     return TabGroupSyncServiceFactory::GetForProfile(browser()->GetProfile());
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
  private:
   int next_command_id_ = 1;

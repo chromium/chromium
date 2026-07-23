@@ -29,9 +29,6 @@
 
 class TabGroupMenuBridgeTest : public BrowserWithTestWindowTest {
  public:
-  TabGroupMenuBridgeTest() {
-    feature_list_.InitAndDisableFeature(tab_groups::kProjectsPanel);
-  }
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
@@ -111,7 +108,6 @@ class TabGroupMenuBridgeTest : public BrowserWithTestWindowTest {
     }
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<tab_groups::TabGroupSyncService> service_;
   NSMenu* __strong main_menu_;
   NSMenuItem* __strong tab_groups_menu_root_;

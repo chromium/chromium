@@ -45,14 +45,13 @@ class SavedTabGroupBarBrowserTest : public InProcessBrowserTest,
  public:
   SavedTabGroupBarBrowserTest() {
     if (GetParam()) {
-      features_.InitWithFeatures({data_sharing::features::kDataSharingFeature},
-                                 {data_sharing::features::kDataSharingJoinOnly,
-                                  tab_groups::kProjectsPanel});
+      features_.InitWithFeatures(
+          {data_sharing::features::kDataSharingFeature},
+          {data_sharing::features::kDataSharingJoinOnly});
     } else {
-      features_.InitWithFeatures({},
-                                 {data_sharing::features::kDataSharingFeature,
-                                  data_sharing::features::kDataSharingJoinOnly,
-                                  tab_groups::kProjectsPanel});
+      features_.InitWithFeatures(
+          {}, {data_sharing::features::kDataSharingFeature,
+               data_sharing::features::kDataSharingJoinOnly});
     }
   }
   void Wait() {
@@ -250,8 +249,7 @@ class SavedTabGroupBarNtpSimplificationBrowserTest
   SavedTabGroupBarNtpSimplificationBrowserTest() {
     features_.InitWithFeatures({data_sharing::features::kDataSharingFeature,
                                 ntp_features::kNtpSimplificationBookmarkBar},
-                               {data_sharing::features::kDataSharingJoinOnly,
-                                tab_groups::kProjectsPanel});
+                               {data_sharing::features::kDataSharingJoinOnly});
   }
   void Wait() {
     base::RunLoop run_loop;

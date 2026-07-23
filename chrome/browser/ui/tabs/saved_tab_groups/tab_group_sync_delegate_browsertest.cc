@@ -66,8 +66,6 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
                                         public TabGroupSyncService::Observer {
  public:
   TabGroupSyncDelegateBrowserTest() {
-    features_.InitWithFeatures({}, {tab_groups::kProjectsPanel});
-
     dependency_manager_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
@@ -174,7 +172,6 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
     return std::move(service);
   }
 
-  base::test::ScopedFeatureList features_;
   base::CallbackListSubscription subscription_;
   raw_ptr<SavedTabGroupModel> model_;
   raw_ptr<TabGroupSyncService> service_;

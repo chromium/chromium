@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
-#include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_observer.h"
@@ -31,17 +30,12 @@ class ViewShadow;
 }  // namespace views
 
 class BrowserWindowInterface;
-
-class ProjectsPanelController;
 class ProjectsPanelStateController;
 
-// Parent view of the Projects Panel - holds together the views
-// hierarchy including controls and close action.
 class ProjectsPanelView : public views::View,
                           public views::FocusChangeListener,
                           public views::FocusTraversable,
-                          public gfx::AnimationDelegate,
-                          ProjectsPanelController::Observer {
+                          public gfx::AnimationDelegate {
   METADATA_HEADER(ProjectsPanelView, views::View)
 
  public:
@@ -92,18 +86,6 @@ class ProjectsPanelView : public views::View,
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
-  // ProjectsPanelController::Observer:
-  void OnTabGroupsInitialized(
-      const std::vector<tab_groups::SavedTabGroup>& tab_groups) override;
-  void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
-                       int index) override;
-  void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group) override;
-  void OnTabGroupRemoved(const base::Uuid& sync_id, int old_index) override;
-  void OnTabGroupsReordered(
-      const std::vector<tab_groups::SavedTabGroup>& tab_groups) override;
-  void OnThreadsInitialized(
-      const std::vector<contextual_tasks::Thread>& threads) override;
-
   views::View* content_container_for_testing() { return content_container_; }
   ProjectsPanelControlsView* controls_view_for_testing() {
     return controls_view_;
@@ -143,7 +125,6 @@ class ProjectsPanelView : public views::View,
   std::unique_ptr<views::ViewShadow> content_shadow_;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
-  std::unique_ptr<ProjectsPanelController> panel_controller_;
   const raw_ptr<ProjectsPanelStateController> state_controller_ = nullptr;
 
   // Animation when opening and closing the panel.
@@ -176,10 +157,6 @@ class ProjectsPanelView : public views::View,
   // Tracks the last focused view before opening the panel, so focus can be
   // restored when the panel is closed.
   views::ViewTracker last_focused_view_before_opening_;
-
-  base::ScopedObservation<ProjectsPanelController,
-                          ProjectsPanelController::Observer>
-      panel_controller_observer_{this};
 
   base::WeakPtrFactory<ProjectsPanelView> weak_ptr_factory_{this};
 };

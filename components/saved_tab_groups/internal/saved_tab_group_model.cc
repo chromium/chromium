@@ -741,15 +741,6 @@ const SavedTabGroupTab* SavedTabGroupModel::MergeRemoteTab(
   return group->GetTab(tab_guid);
 }
 
-void SavedTabGroupModel::UpdateGroupPinnedPositionForMigration(
-    const base::Uuid& guid,
-    std::optional<size_t> pinned_position) {
-  CHECK(Contains(guid));
-
-  auto* group = GetMutableGroup(guid);
-  group->SetPinnedPositionForMigration(pinned_position);
-}
-
 void SavedTabGroupModel::ReorderGroupLocally(const base::Uuid& id,
                                              int new_index) {
   ReorderGroupImpl(id, new_index);
@@ -966,51 +957,6 @@ void SavedTabGroupModel::AddObserver(SavedTabGroupModelObserver* observer) {
 
 void SavedTabGroupModel::RemoveObserver(SavedTabGroupModelObserver* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void SavedTabGroupModel::MigratePinnedPositionToProjectsPosition() {
-  CHECK(tab_groups::IsProjectsPanelFeatureEnabled());
-
-  // Keep the ordering of pinned groups. For any unpinned groups, order them by
-  // most to least recent creation time after the pinned groups.
-  std::stable_sort(
-      saved_tab_groups_.begin(), saved_tab_groups_.end(),
-      [](const tab_groups::SavedTabGroup& left,
-         const tab_groups::SavedTabGroup& right) {
-        const bool left_pinned =
-            left.pinned_position_for_migration().has_value();
-        const bool right_pinned =
-            right.pinned_position_for_migration().has_value();
-
-        if (left_pinned != right_pinned) {
-          return left_pinned;
-        }
-
-        if (!left_pinned) {
-          return left.creation_time() > right.creation_time();
-        }
-
-        const size_t left_pos = left.pinned_position_for_migration().value();
-        const size_t right_pos = right.pinned_position_for_migration().value();
-
-        // If two groups have the same pinned_position, order the
-        // more recently updated group first. This matches how
-        // conflicts with pinned_position are resolved in
-        // ShouldPlaceBefore.
-        if (left_pos == right_pos) {
-          return left.update_time() > right.update_time();
-        }
-
-        return left_pos < right_pos;
-      });
-
-  for (size_t i = 0; i < saved_tab_groups_.size(); ++i) {
-    saved_tab_groups_[i].SetPosition(i);
-    for (auto& observer : observers_) {
-      observer.SavedTabGroupUpdatedLocally(saved_tab_groups_[i].saved_guid(),
-                                           /*tab_guid=*/std::nullopt);
-    }
-  }
 }
 
 void SavedTabGroupModel::MarkTransitionedToShared(

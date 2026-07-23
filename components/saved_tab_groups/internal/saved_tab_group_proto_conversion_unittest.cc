@@ -82,8 +82,6 @@ class SavedTabGroupConversionTest : public testing::Test {
     EXPECT_EQ(group1.color(), group2.color());
     EXPECT_EQ(group1.saved_guid(), group2.saved_guid());
     EXPECT_EQ(group1.position(), group2.position());
-    EXPECT_EQ(group1.pinned_position_for_migration(),
-              group2.pinned_position_for_migration());
     EXPECT_EQ(group1.creation_time(), group2.creation_time());
     EXPECT_EQ(group1.update_time(), group2.update_time());
     EXPECT_EQ(group1.last_user_interaction_time(),

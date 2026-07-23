@@ -577,13 +577,9 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
     if (projects_panel::IsProjectsPanelVisibleForProfile(profile)) {
-      glic::GlicKeyedService* glic_service =
-          glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
       projects_panel_state_controller_ =
           GetUserDataFactory().CreateInstance<ProjectsPanelStateController>(
-              *browser, browser, browser_actions_->root_action_item(),
-              AimEligibilityServiceFactory::GetForProfile(profile),
-              glic_service ? &glic_service->enabling() : nullptr);
+              *browser, browser, browser_actions_->root_action_item());
     }
 
     if (tabs::IsVerticalTabsFeatureEnabled()) {

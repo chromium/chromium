@@ -1528,24 +1528,6 @@ TEST_F(SavedTabGroupModelTest, UpdatePositionForSharedGroupFromSyncFromSync) {
   }
 }
 
-TEST_F(SavedTabGroupModelTest, UpdateGroupPinnedPositionForMigration) {
-  SavedTabGroup group = test::CreateTestSavedTabGroup();
-  base::Uuid guid = group.saved_guid();
-  saved_tab_group_model_->AddedLocally(group);
-
-  EXPECT_EQ(std::nullopt,
-            saved_tab_group_model_->Get(guid)->pinned_position_for_migration());
-
-  saved_tab_group_model_->UpdateGroupPinnedPositionForMigration(guid, 10);
-  EXPECT_EQ(10u,
-            saved_tab_group_model_->Get(guid)->pinned_position_for_migration());
-
-  saved_tab_group_model_->UpdateGroupPinnedPositionForMigration(guid,
-                                                                std::nullopt);
-  EXPECT_EQ(std::nullopt,
-            saved_tab_group_model_->Get(guid)->pinned_position_for_migration());
-}
-
 }  // namespace
 
 }  // namespace tab_groups

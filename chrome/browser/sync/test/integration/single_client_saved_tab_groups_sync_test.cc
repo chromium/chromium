@@ -66,8 +66,7 @@ class SingleClientSavedTabGroupsSyncTest
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          {tab_groups::kProjectsPanel});
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
   ~SingleClientSavedTabGroupsSyncTest() override = default;
   SingleClientSavedTabGroupsSyncTest(
@@ -590,38 +589,6 @@ IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
 
   // Verify guid2 has no position set even the position in the proto is set.
   EXPECT_EQ(std::nullopt, service->GetGroup(guid2)->position());
-}
-
-IN_PROC_BROWSER_TEST_P(SingleClientSavedTabGroupsSyncTest,
-                       V3BrowserWithV2Proto_ProjectsPanelDisabled) {
-  auto guid1 = base::Uuid::GenerateRandomV4();
-  AddDataToFakeServer(
-      CreateSavedTabGroupSpecific(guid1, TabGroupsUiVersion::V2, 0));
-  SavedTabGroupTab tab1(GURL("about:blank"), u"about:blank", guid1,
-                        /*position=*/0);
-  AddTabToFakeServer(tab1);
-
-  ASSERT_TRUE(SetupSync());
-  TabGroupSyncService* service = GetService();
-
-  // Verify guid1 is added to the model.
-  ASSERT_TRUE(tab_groups::SavedTabOrGroupExistsChecker(service, guid1).Wait());
-
-  // Verify guid1 has its position set.
-  EXPECT_EQ(0, service->GetGroup(guid1)->position());
-
-  auto guid2 = base::Uuid::GenerateRandomV4();
-  AddDataToFakeServer(
-      CreateSavedTabGroupSpecific(guid2, TabGroupsUiVersion::V2, 1));
-  SavedTabGroupTab tab2(GURL("about:blank"), u"about:blank", guid2,
-                        /*position=*/0);
-  AddTabToFakeServer(tab2);
-
-  // Verify guid2 is added to the model.
-  ASSERT_TRUE(tab_groups::SavedTabOrGroupExistsChecker(service, guid2).Wait());
-
-  // Verify guid2 has its position set.
-  EXPECT_EQ(1, service->GetGroup(guid2)->position());
 }
 
 }  // namespace

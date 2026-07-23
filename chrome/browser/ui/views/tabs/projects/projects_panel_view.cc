@@ -13,7 +13,6 @@
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
-#include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view_layout.h"
 #include "chrome/grit/generated_resources.h"
@@ -78,13 +76,6 @@ ProjectsPanelView::ProjectsPanelView(
   content_shadow_->SetRoundedCornerRadius(kProjectPanelRightCornerRadius);
 
   SetIsElevated(true);
-
-  panel_controller_ = std::make_unique<ProjectsPanelController>(
-      browser_, state_controller_,
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser->GetProfile()),
-      nullptr);
-  panel_controller_observer_.Observe(panel_controller_.get());
 
   controls_view_ = content_container_->AddChildView(
       std::make_unique<ProjectsPanelControlsView>(root_action_item_.get()));
@@ -296,24 +287,6 @@ void ProjectsPanelView::AnimationEnded(const gfx::Animation* animation) {
 void ProjectsPanelView::AnimationCanceled(const gfx::Animation* animation) {
   AnimationEnded(animation);
 }
-
-void ProjectsPanelView::OnTabGroupsInitialized(
-    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {}
-
-void ProjectsPanelView::OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
-                                        int index) {}
-
-void ProjectsPanelView::OnTabGroupUpdated(
-    const tab_groups::SavedTabGroup& group) {}
-
-void ProjectsPanelView::OnTabGroupRemoved(const base::Uuid& sync_id,
-                                          int old_index) {}
-
-void ProjectsPanelView::OnTabGroupsReordered(
-    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {}
-
-void ProjectsPanelView::OnThreadsInitialized(
-    const std::vector<contextual_tasks::Thread>& threads) {}
 
 // static
 void ProjectsPanelView::disable_animations_for_testing() {

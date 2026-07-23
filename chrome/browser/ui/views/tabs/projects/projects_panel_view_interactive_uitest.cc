@@ -19,7 +19,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -37,53 +36,12 @@ constexpr int kBrowserWindowHeight = 800;
 
 namespace base::test {
 
-class MockProjectsPanelStateController : public ProjectsPanelStateController {
- public:
-  MockProjectsPanelStateController(BrowserWindowInterface* browser_window,
-                                   bool is_aim_eligible,
-                                   bool is_gemini_eligible)
-      : ProjectsPanelStateController(browser_window,
-                                     /*root_action_item=*/nullptr,
-                                     /*aim_eligibility_service=*/nullptr,
-                                     /*glic_enabling=*/nullptr),
-        is_aim_eligible_(is_aim_eligible),
-        is_gemini_eligible_(is_gemini_eligible) {}
-
-  bool CanShowAimThreads() override { return is_aim_eligible_; }
-  bool CanShowGeminiThreads() override { return is_gemini_eligible_; }
-
- private:
-  bool is_aim_eligible_ = false;
-  bool is_gemini_eligible_ = false;
-};
-
 class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
  public:
-  explicit ProjectsPanelInteractiveUiTest(bool is_aim_eligible = true,
-                                          bool is_gemini_eligible = true)
-      : is_aim_eligible_(is_aim_eligible),
-        is_gemini_eligible_(is_gemini_eligible) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{tabs::kVerticalTabs, {}},
-         {tab_groups::kProjectsPanel,
-          {{tab_groups::kProjectsPanelWithThreads.name, "true"}}}},
-        {});
+  ProjectsPanelInteractiveUiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {tabs::kVerticalTabs, tab_groups::kProjectsPanel}, {});
     ProjectsPanelView::disable_animations_for_testing();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    InteractiveBrowserTest::SetUpInProcessBrowserTestFixture();
-    projects_panel_state_controller_override_ =
-        BrowserWindowFeatures::GetUserDataFactoryForTesting()
-            .AddOverrideForTesting<MockProjectsPanelStateController>(
-                base::BindRepeating(
-                    [](bool is_aim_eligible, bool is_gemini_eligible,
-                       BrowserWindowInterface& browser)
-                        -> std::unique_ptr<MockProjectsPanelStateController> {
-                      return std::make_unique<MockProjectsPanelStateController>(
-                          &browser, is_aim_eligible, is_gemini_eligible);
-                    },
-                    is_aim_eligible_, is_gemini_eligible_));
   }
 
   void SetUpOnMainThread() override {
@@ -98,12 +56,6 @@ class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
     tabs::VerticalTabStripStateController::From(browser())
         ->SetVerticalTabsEnabled(true);
     RunScheduledLayouts();
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    projects_panel_state_controller_override_ =
-        ui::UserDataFactory::ScopedOverride();
-    InteractiveBrowserTest::TearDownInProcessBrowserTestFixture();
   }
 
   auto OpenProjectsPanel() {
@@ -153,9 +105,6 @@ class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
   }
 
  private:
-  bool is_aim_eligible_ = false;
-  bool is_gemini_eligible_ = false;
-  ui::UserDataFactory::ScopedOverride projects_panel_state_controller_override_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
