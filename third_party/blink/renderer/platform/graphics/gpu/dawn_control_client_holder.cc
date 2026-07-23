@@ -13,7 +13,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/dawn_command_serializers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -172,7 +171,17 @@ std::vector<wgpu::WGSLLanguageFeatureName> GatherWGSLLanguageFeatures() {
 #if BUILDFLAG(USE_DAWN)
   // Create a dawn::wire::WireClient on a noop serializer, to get an instance
   // from it.
-  DawnNoopCommandSerializer noop_serializer;
+  class NoopSerializer : public dawn::wire::CommandSerializer {
+   public:
+    size_t GetMaximumAllocationSize() const override { return sizeof(buf); }
+    void* GetCmdSpace(size_t size) override { return buf; }
+    bool Flush() override { return true; }
+
+   private:
+    char buf[1024];
+  };
+
+  NoopSerializer noop_serializer;
   dawn::wire::WireClient client{{.serializer = &noop_serializer}};
 
   // Control which WGSL features are exposed based on flags.

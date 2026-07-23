@@ -37,7 +37,6 @@
 #include "gpu/command_buffer/service/dawn_platform.h"
 #include "gpu/command_buffer/service/dawn_service_memory_transfer_service.h"
 #include "gpu/command_buffer/service/dawn_service_serializer.h"
-#include "gpu/command_buffer/service/dawn_wire_server.h"
 #include "gpu/command_buffer/service/decoder_client.h"
 #include "gpu/command_buffer/service/graphite_utils.h"
 #include "gpu/command_buffer/service/isolation_key_provider.h"
@@ -115,17 +114,59 @@ WGPUStringView MakeStringView() {
 }
 
 // This variable is set to DawnWireServer's parent decoder during execution of
-// HandleCommands. It is cleared to nullptr after. This enables some of the
-// overridden procs to be overridden with a WebGPUDecoderImpl member function.
-// The proc will be set to a plain-old C function pointer, which loads the
-// WebGPUDecoderImpl from thread-local storage and forwards the call to the
-// member function.
+// HandleCommands. It is cleared to nullptr after.
 class WebGPUDecoderImpl;
 constinit thread_local WebGPUDecoderImpl* parent_decoder = nullptr;
-base::AutoReset<WebGPUDecoderImpl*> ScopedParentDecoder(
-    WebGPUDecoderImpl* parent) {
-  return base::AutoReset<WebGPUDecoderImpl*>{&parent_decoder, parent};
-}
+
+// DawnWireServer is a wrapper around dawn::wire::WireServer which allows
+// overriding some of the WGPU procs the server delegates calls to.
+// It has a special feature that around HandleDawnCommands, its owning
+// WebGPUDecoderImpl is stored in thread-local storage. This enables
+// some of the overridden procs to be overridden with a WebGPUDecoderImpl
+// member function. The proc will be set to a plain-old C function pointer,
+// which loads the WebGPUDecoderImpl from thread-local storage and forwards
+// the call to the member function.
+class DawnWireServer : public dawn::wire::WireServer {
+ public:
+  template <typename... Procs>
+  static std::unique_ptr<DawnWireServer> Create(
+      WebGPUDecoderImpl* decoder,
+      dawn::wire::CommandSerializer* serializer,
+      dawn::wire::server::MemoryTransferService* memory_transfer_service,
+      const DawnProcTable& procs) {
+    dawn::wire::WireServerDescriptor descriptor = {};
+    descriptor.procs = &procs;
+    descriptor.serializer = serializer;
+    descriptor.memoryTransferService = memory_transfer_service;
+    descriptor.useSpontaneousCallbacks =
+        features::kWebGPUSpontaneousWireServer.Get();
+
+    return base::WrapUnique(new DawnWireServer(decoder, descriptor));
+  }
+
+  ~DawnWireServer() override = default;
+
+  base::AutoReset<WebGPUDecoderImpl*> ScopedParentDecoder() {
+    return base::AutoReset<WebGPUDecoderImpl*>{&parent_decoder, decoder_};
+  }
+
+  // Handle Dawn commands. Forward the call to the base class, but
+  // set |parent_decoder| around it.
+  const volatile char* HandleCommands(const volatile char* commands,
+                                      size_t size) override {
+    const auto resetter = ScopedParentDecoder();
+    const volatile char* rv =
+        dawn::wire::WireServer::HandleCommands(commands, size);
+    return rv;
+  }
+
+ private:
+  DawnWireServer(WebGPUDecoderImpl* decoder,
+                 const dawn::wire::WireServerDescriptor& desc)
+      : dawn::wire::WireServer(desc), decoder_(decoder) {}
+
+  raw_ptr<WebGPUDecoderImpl> decoder_;
+};
 
 class WebGPUDecoderImpl final : public WebGPUDecoder {
  public:
@@ -1179,7 +1220,7 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
 
   use_spontaneous_wire_server_ = features::kWebGPUSpontaneousWireServer.Get();
   wire_server_ = DawnWireServer::Create(
-      wire_serializer_.get(), memory_transfer_service_.get(), wire_procs);
+      this, wire_serializer_.get(), memory_transfer_service_.get(), wire_procs);
 
   wire_server_->InjectInstance(dawn_instance_->Get(), {1, 0});
 
@@ -1369,7 +1410,7 @@ WGPUFuture WebGPUDecoderImpl::RequestAdapterImpl(
         [](WebGPUDecoderImpl* self, wgpu::Adapter adapter,
            CallbackInfo callback_info, bool run) {
           // Set parent_decoder so that the callback can call into webgpu procs.
-          const auto resetter = ScopedParentDecoder(self);
+          const auto resetter = self->wire_server_->ScopedParentDecoder();
           if (run) {
             callback_info.callback(WGPURequestAdapterStatus_Success,
                                    adapter.MoveToCHandle(), MakeStringView(),
@@ -1951,13 +1992,13 @@ error::Error WebGPUDecoderImpl::HandleDawnCommands(
       *static_cast<const volatile webgpu::cmds::DawnCommands*>(cmd_data);
   uint32_t trace_id_high = static_cast<uint32_t>(c.trace_id_high);
   uint32_t trace_id_low = static_cast<uint32_t>(c.trace_id_low);
-  size_t size = static_cast<size_t>(c.size);
+  uint32_t size = static_cast<uint32_t>(c.size);
   uint32_t commands_shm_id = static_cast<uint32_t>(c.commands_shm_id);
   uint32_t commands_shm_offset = static_cast<uint32_t>(c.commands_shm_offset);
 
-  auto shm_commands =
-      GetSharedMemoryAsSpan(commands_shm_id, commands_shm_offset, size);
-  if (!shm_commands) {
+  const volatile char* shm_commands = GetSharedMemoryAs<const volatile char*>(
+      commands_shm_id, commands_shm_offset, size);
+  if (shm_commands == nullptr) {
     return error::kOutOfBounds;
   }
 
@@ -1969,11 +2010,8 @@ error::Error WebGPUDecoderImpl::HandleDawnCommands(
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
                "WebGPUDecoderImpl::HandleDawnCommands", "bytes", size);
 
-  {
-    const auto resetter = ScopedParentDecoder(this);
-    if (!wire_server_->HandleCommands(*shm_commands)) {
-      return error::kLostContext;
-    }
+  if (!wire_server_->HandleCommands(shm_commands, size)) {
+    return error::kLostContext;
   }
 
   // TODO(crbug.com/40167398): This is O(N) where N is the number of devices.

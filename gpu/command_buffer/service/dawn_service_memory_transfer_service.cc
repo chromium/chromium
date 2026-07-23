@@ -70,24 +70,6 @@ class MemoryHandleImpl
     // copy into client-visible shared memory.
     buffer_data_view_.subspan(offset, size).copy_from(data);
   }
-  void SerializeDataUpdate(std::span<volatile std::byte> serialize_data,
-                           size_t offset,
-                           size_t size,
-                           std::span<const std::byte> data) const override {
-    DCHECK(serialize_data.size() == GetSerializeDataUpdateSize(offset, size));
-    DCHECK(data.size() == size);
-    // TODO(crbug.com/526518083): A compromised renderer could have a shared
-    // memory size not large enough to fit the GPU buffer contents. Instead of
-    // DCHECK, do a CHECK here to crash the release build. Add to
-    // dawn::wire::server the validation that offset + size fits in the
-    // MemoryHandle.
-    CHECK_LE(offset, buffer_data_view_.size());
-    CHECK_LE(size, buffer_data_view_.size() - offset);
-    // Copy the data into the shared memory allocation.
-    // In the case of buffer mapping, this is the mapped GPU memory which we
-    // copy into client-visible shared memory.
-    buffer_data_view_.subspan(offset, size).copy_from(data);
-  }
 
   bool DeserializeDataUpdate(std::span<const std::byte> deserialize_data,
                              size_t offset,

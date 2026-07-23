@@ -40,25 +40,6 @@ class DawnClientMemoryTransferService::MemoryHandleImpl
         base::as_writable_bytes(target_untyped));
     target[0] = handle_;
   }
-  void SerializeCreate(
-      std::span<volatile std::byte> serialize_space) const override {
-    // Note that we cannot use base::subtle::reinterpret_span here because
-    // std::span for volatile types require volatile move/copy constructors
-    // which would make the element type no longer trivially_copyable and hence
-    // fail the check in base::subtle::reinterpret_span.
-    CHECK(serialize_space.size() == GetSerializeCreateSize());
-    CHECK(reinterpret_cast<uintptr_t>(serialize_space.data()) %
-              alignof(MemoryTransferHandle) ==
-          0u);
-
-    // SAFETY: We checked the alignment and size above.
-    auto* handle =
-        UNSAFE_BUFFERS(reinterpret_cast<volatile MemoryTransferHandle*>(
-            serialize_space.data()));
-    handle->size = handle_.size;
-    handle->shm_id = handle_.shm_id;
-    handle->shm_offset = handle_.shm_offset;
-  }
 
   std::span<std::byte> GetData() const override { return buffer_; }
 
@@ -67,12 +48,6 @@ class DawnClientMemoryTransferService::MemoryHandleImpl
     return 0;
   }
   void SerializeDataUpdate(std::span<std::byte> serialize_data,
-                           size_t offset,
-                           size_t size) const override {
-    // No data is serialized because we're using shared memory.
-    DCHECK(serialize_data.size() == GetSerializeDataUpdateSize(offset, size));
-  }
-  void SerializeDataUpdate(std::span<volatile std::byte> serialize_data,
                            size_t offset,
                            size_t size) const override {
     // No data is serialized because we're using shared memory.

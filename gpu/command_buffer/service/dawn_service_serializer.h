@@ -9,10 +9,7 @@
 
 #include <atomic>
 #include <memory>
-#include <optional>
-#include <span>
 
-#include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/condition_variable.h"
@@ -38,8 +35,6 @@ class DawnServiceSerializer : public dawn::wire::CommandSerializer {
   // the wire to address the issue.
   size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
-  std::optional<std::span<volatile std::byte>> GetCommandSpace(
-      size_t size) final;
   bool Flush() final;
 
   // This helper only exists for now to continue supporting the non-spontaneous
@@ -55,24 +50,21 @@ class DawnServiceSerializer : public dawn::wire::CommandSerializer {
     explicit CommandBuffer(size_t size);
     ~CommandBuffer();
 
-    base::AlignedHeapArray<std::byte> buffer;
+    std::vector<uint8_t> buffer;
     size_t put_offset;
   };
 
   // Common helpers that are used with the internal CommandBuffer struct used
   // both in the main and worker threads.
-  std::optional<std::span<volatile std::byte>> GetCommandSpace(
-      CommandBuffer& cmd_buffer,
-      size_t size);
+  void* GetCmdSpace(CommandBuffer& cmd_buffer, size_t size);
   void Flush(CommandBuffer& cmd_buffer);
 
   // Main thread handlers for dawn::wire::CommandSerializer implementation.
-  std::optional<std::span<volatile std::byte>> GetCommandSpaceMain(size_t size);
+  void* GetCmdSpaceMain(size_t size);
   void FlushMain();
 
   // Worker thread handlers for dawn::wire::CommandSerializer implementation.
-  std::optional<std::span<volatile std::byte>> GetCommandSpaceWorker(
-      size_t size);
+  void* GetCmdSpaceWorker(size_t size);
   void FlushWorker();
   // Helper used to toggle whether a particular worker thread is pending. This
   // returns true if the worker's state was changed.

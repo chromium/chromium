@@ -1055,8 +1055,6 @@ component("platform") {
     "graphics/generated_image.h",
     "graphics/gpu/canvas_utils.cc",
     "graphics/gpu/canvas_utils.h",
-    "graphics/gpu/dawn_command_serializers.cc",
-    "graphics/gpu/dawn_command_serializers.h",
     "graphics/gpu/dawn_control_client_holder.cc",
     "graphics/gpu/dawn_control_client_holder.h",
     "graphics/gpu/drawing_buffer.cc",

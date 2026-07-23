@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "gpu/command_buffer/client/dawn_client_memory_transfer_service.h"
 #include "gpu/command_buffer/client/dawn_client_serializer.h"
-#include "gpu/command_buffer/client/dawn_wire_client.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
 #include "gpu/command_buffer/client/implementation_base.h"
 #include "gpu/command_buffer/client/logging.h"
@@ -49,8 +48,7 @@ class DawnWireServices : public APIChannel {
 
   void Disconnect() override;
 
-  void HandleCommands(uint64_t trace_id,
-                      base::span<const volatile uint8_t> commands);
+  void HandleCommands(const cmds::DawnReturnCommandsInfo& info, size_t size);
   void ProcessEvents();
   dawn::wire::ReservedBuffer ReserveBuffer(WGPUDevice device,
                                            const WGPUBufferDescriptor* desc);
@@ -70,7 +68,7 @@ class DawnWireServices : public APIChannel {
   bool disconnected_ = false;
   DawnClientMemoryTransferService memory_transfer_service_;
   DawnClientSerializer serializer_;
-  DawnWireClient wire_client_;
+  dawn::wire::WireClient wire_client_;
   WGPUInstance wgpu_instance_;
   base::WeakPtrFactory<DawnWireServices> weak_ptr_factory_{this};
 };
