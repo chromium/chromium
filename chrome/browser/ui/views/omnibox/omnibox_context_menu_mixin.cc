@@ -352,6 +352,18 @@ bool OmniboxContextMenuMixinBase::HandleIsContextMenuTextEditingCommandEnabled(
   }
 }
 
+bool OmniboxContextMenuMixinBase::HandleGetAcceleratorForCommandId(
+    int command_id,
+    ui::Accelerator* accelerator) const {
+  if (views::Textfield::GetStandardAcceleratorForCommandId(command_id,
+                                                           accelerator)) {
+    return true;
+  }
+  return text_services_context_menu_ &&
+         text_services_context_menu_->GetAcceleratorForCommandId(command_id,
+                                                                 accelerator);
+}
+
 void OmniboxContextMenuMixinBase::PrepareToShowContextMenu(
     base::OnceClosure closure) {
   GetClipboardText(

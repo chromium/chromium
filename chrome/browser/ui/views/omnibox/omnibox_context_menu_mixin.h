@@ -94,6 +94,9 @@ class OmniboxContextMenuMixinBase {
       int command_id,
       const content::ContextMenuParams& menu_params) const;
 
+  bool HandleGetAcceleratorForCommandId(int command_id,
+                                        ui::Accelerator* accelerator) const;
+
   // Asynchronously calls `closure` once preparations to show the context
   // menu (examining the clipboard) have been done.
   void PrepareToShowContextMenu(base::OnceClosure closure);

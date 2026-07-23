@@ -123,6 +123,12 @@ void OmniboxFullPopupWebUIContent::ExecuteCommand(int command_id,
                                                event_flags);
 }
 
+bool OmniboxFullPopupWebUIContent::GetAcceleratorForCommandId(
+    int command_id,
+    ui::Accelerator* accelerator) const {
+  return HandleGetAcceleratorForCommandId(command_id, accelerator);
+}
+
 bool OmniboxFullPopupWebUIContent::IsContextMenuForReadOnlyOmnibox() const {
   return !params_.is_editable;
 }

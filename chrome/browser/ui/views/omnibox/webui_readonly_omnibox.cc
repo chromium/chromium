@@ -408,6 +408,12 @@ void WebUIReadOnlyOmnibox::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
+bool WebUIReadOnlyOmnibox::GetAcceleratorForCommandId(
+    int command_id,
+    ui::Accelerator* accelerator) const {
+  return HandleGetAcceleratorForCommandId(command_id, accelerator);
+}
+
 bool WebUIReadOnlyOmnibox::IsContextMenuForReadOnlyOmnibox() const {
   // TODO(http://crbug.com/470042732): Once WebUILocationBar can be used for
   // popups, this will need to return true for those.

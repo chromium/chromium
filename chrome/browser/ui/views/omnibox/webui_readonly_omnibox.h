@@ -137,6 +137,8 @@ class WebUIReadOnlyOmnibox
 
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override;
 
   // OmniboxContextMenuMixinBase:
   bool IsContextMenuForReadOnlyOmnibox() const override;
