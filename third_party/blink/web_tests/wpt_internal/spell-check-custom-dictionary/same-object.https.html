@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>SpellCheckCustomDictionary: [SameObject] identity</title>
+<link rel="help" href="https://github.com/Igalia/explainers/tree/main/spell-check-dictionary">
+<meta name="assert" content="document.spellCheckCustomDictionary is annotated [SameObject], so the getter returns the identical object on every access.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+// The interface is [SecureContext] and gated behind the experimental
+// SpellCheckCustomDictionaryAPI runtime flag. Web tests run content_shell with
+// --enable-blink-test-features (which enables experimental features) and serve
+// over a loopback origin (a secure context), so the attribute is exposed here.
+test(() => {
+  assert_not_equals(document.spellCheckCustomDictionary, undefined,
+                    "attribute should be exposed in a secure context with the " +
+                    "SpellCheckCustomDictionaryAPI feature enabled");
+}, "document.spellCheckCustomDictionary is exposed");
+
+test(() => {
+  assert_equals(document.spellCheckCustomDictionary,
+                document.spellCheckCustomDictionary,
+                "[SameObject] getter must return the identical object");
+}, "document.spellCheckCustomDictionary is [SameObject]");
+
+test(() => {
+  // The identity must be stable across a reference held over time, not just
+  // within a single expression.
+  const first = document.spellCheckCustomDictionary;
+  const second = document.spellCheckCustomDictionary;
+  assert_true(first === second,
+              "repeated accesses must yield the same object");
+  assert_true(first instanceof SpellCheckCustomDictionary,
+              "the attribute should be a SpellCheckCustomDictionary");
+}, "document.spellCheckCustomDictionary identity is stable across accesses");
+</script>

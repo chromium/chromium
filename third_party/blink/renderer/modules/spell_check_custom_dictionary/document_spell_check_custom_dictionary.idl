@@ -9,5 +9,5 @@
     SecureContext,
     RuntimeEnabled=SpellCheckCustomDictionaryAPI
 ] partial interface Document {
-  readonly attribute SpellCheckCustomDictionary spellCheckCustomDictionary;
+  [SameObject] readonly attribute SpellCheckCustomDictionary spellCheckCustomDictionary;
 };
