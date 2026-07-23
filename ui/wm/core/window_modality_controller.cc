@@ -169,6 +169,8 @@ void WindowModalityController::OnWindowPropertyChanged(aura::Window* window,
       window->GetProperty(aura::client::kModalKey) !=
           ui::mojom::ModalType::kNone &&
       window->IsVisible()) {
+    // Block the deletion of `window`.
+    aura::Window::ScopedDeleteBlocker blocker(window);
     ActivateWindow(window);
     CancelTouchesOnTransientWindowTree(window);
   }
