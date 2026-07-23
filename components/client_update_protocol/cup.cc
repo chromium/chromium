@@ -7,8 +7,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <iterator>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/base64url.h"
@@ -17,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "crypto/random.h"
 #include "crypto/sign.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -25,73 +28,108 @@ namespace client_update_protocol {
 
 class SigningStrategy {
  public:
+  SigningStrategy(int key_version, crypto::keypair::PublicKey public_key)
+      : key_version_(key_version), public_key_(std::move(public_key)) {}
+  SigningStrategy(const SigningStrategy&) = delete;
+  SigningStrategy& operator=(const SigningStrategy&) = delete;
+
   virtual ~SigningStrategy() = default;
 
-  virtual std::string GetKeyId(int key_version) const = 0;
-  virtual bool HasValidSignatureLength(
+  std::string GetKeyId(int key_version = -1) const {
+    int version = key_version < 0 ? key_version_ : key_version;
+    return GetKeyIdForVersion(version);
+  }
+
+  bool HasValidSignatureLength(base::span<const uint8_t> signature) const {
+    return HasValidSignatureLengthImpl(signature);
+  }
+
+  bool VerifySignature(base::span<const uint8_t> digest,
+                       base::span<const uint8_t> signature) const {
+    return crypto::sign::Verify(GetSignatureKind(), public_key_, digest,
+                                signature);
+  }
+
+ private:
+  virtual std::string GetKeyIdForVersion(int version) const = 0;
+  virtual crypto::sign::SignatureKind GetSignatureKind() const = 0;
+  virtual bool HasValidSignatureLengthImpl(
       base::span<const uint8_t> signature) const = 0;
-  virtual bool VerifySignature(const crypto::keypair::PublicKey& public_key,
-                               base::span<const uint8_t> digest,
-                               base::span<const uint8_t> signature) const = 0;
+
+  // The server keeps multiple signing keys; a version must be sent so that
+  // the correct signing key is used to sign the assembled message.
+  const int key_version_;
+
+  // The public key (ECDSA or ML-DSA-44) to use for verifying response
+  // signatures.
+  const crypto::keypair::PublicKey public_key_;
 };
+
+namespace {
 
 class EcdsaSigningStrategy : public SigningStrategy {
  public:
-  std::string GetKeyId(int key_version) const override {
-    return base::NumberToString(key_version);
+  using SigningStrategy::SigningStrategy;
+
+ private:
+  std::string GetKeyIdForVersion(int version) const override {
+    return base::NumberToString(version);
   }
 
-  bool HasValidSignatureLength(
+  crypto::sign::SignatureKind GetSignatureKind() const override {
+    return crypto::sign::SignatureKind::ECDSA_SHA256;
+  }
+
+  bool HasValidSignatureLengthImpl(
       base::span<const uint8_t> signature) const override {
     // Ensure this is a valid ECDSA signature, which must have a length between
     // 8 and 72 bytes, inclusive.
     return signature.size() >= 8 && signature.size() <= 72;
   }
-
-  bool VerifySignature(const crypto::keypair::PublicKey& public_key,
-                       base::span<const uint8_t> digest,
-                       base::span<const uint8_t> signature) const override {
-    return crypto::sign::Verify(crypto::sign::SignatureKind::ECDSA_SHA256,
-                                public_key, digest, signature);
-  }
 };
 
 class Mldsa44SigningStrategy : public SigningStrategy {
  public:
-  std::string GetKeyId(int key_version) const override {
-    return absl::StrFormat("ML-DSA-44-%d", key_version);
+  using SigningStrategy::SigningStrategy;
+
+ private:
+  std::string GetKeyIdForVersion(int version) const override {
+    return absl::StrFormat("ML-DSA-44-%d", version);
   }
 
-  bool HasValidSignatureLength(
+  crypto::sign::SignatureKind GetSignatureKind() const override {
+    return crypto::sign::SignatureKind::MLDSA_44;
+  }
+
+  bool HasValidSignatureLengthImpl(
       base::span<const uint8_t> signature) const override {
     // Valid ML-DSA-44 signatures are exactly 2,420 bytes.
     return signature.size() == 2420;
   }
-
-  bool VerifySignature(const crypto::keypair::PublicKey& public_key,
-                       base::span<const uint8_t> digest,
-                       base::span<const uint8_t> signature) const override {
-    return crypto::sign::Verify(crypto::sign::SignatureKind::MLDSA_44,
-                                public_key, digest, signature);
-  }
 };
 
+}  // namespace
+
 std::unique_ptr<const SigningStrategy> Cup::CreateSigningStrategy(
-    const crypto::keypair::PublicKey& public_key) {
-  if (public_key.IsMldsa44()) {
-    return std::make_unique<Mldsa44SigningStrategy>();
+    int key_version,
+    base::span<const uint8_t> public_key) {
+  std::optional<crypto::keypair::PublicKey> key =
+      crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key);
+  if (!key) {
+    return nullptr;
   }
-  if (public_key.IsEc()) {
-    return std::make_unique<EcdsaSigningStrategy>();
+  if (key->IsMldsa44()) {
+    return std::make_unique<Mldsa44SigningStrategy>(key_version,
+                                                    std::move(*key));
+  }
+  if (key->IsEc()) {
+    return std::make_unique<EcdsaSigningStrategy>(key_version, std::move(*key));
   }
   return nullptr;
 }
 
 Cup::Cup(int key_version, base::span<const uint8_t> public_key)
-    : pub_key_version_(key_version),
-      public_key_(
-          *crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(public_key)),
-      strategy_(CreateSigningStrategy(public_key_)) {
+    : strategy_(CreateSigningStrategy(key_version, public_key)) {
   CHECK_GT(key_version, 0);
   CHECK(strategy_);
 }
@@ -99,8 +137,7 @@ Cup::Cup(int key_version, base::span<const uint8_t> public_key)
 Cup::~Cup() = default;
 
 std::string Cup::GetKeyId(int key_version) const {
-  int version = key_version < 0 ? pub_key_version_ : key_version;
-  return strategy_->GetKeyId(version);
+  return strategy_->GetKeyId(key_version);
 }
 
 bool Cup::ParseETagHeader(std::string_view etag_header_value_in,
@@ -220,7 +257,7 @@ bool Cup::ValidateResponse(std::string_view response_body,
   //   was modified, or a different nonce value was used.
   //
   // Note that the signature is taken over a hash of inner_hash.
-  return strategy_->VerifySignature(public_key_, inner_hash, signature);
+  return strategy_->VerifySignature(inner_hash, signature);
 }
 
 }  // namespace client_update_protocol

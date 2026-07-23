@@ -14,7 +14,6 @@
 
 #include "base/containers/span.h"
 #include "crypto/hash.h"
-#include "crypto/keypair.h"
 
 namespace client_update_protocol {
 
@@ -69,21 +68,14 @@ class Cup {
 
  private:
   static std::unique_ptr<const SigningStrategy> CreateSigningStrategy(
-      const crypto::keypair::PublicKey& public_key);
+      int key_version,
+      base::span<const uint8_t> public_key);
 
   std::string GetKeyId(int key_version = -1) const;
 
   bool ParseETagHeader(std::string_view etag_header_value_in,
                        std::vector<uint8_t>* signature_out,
                        std::vector<uint8_t>* request_hash_out) const;
-
-  // The server keeps multiple signing keys; a version must be sent so that
-  // the correct signing key is used to sign the assembled message.
-  const int pub_key_version_;
-
-  // The public key (ECDSA or ML-DSA-44) to use for verifying response
-  // signatures.
-  const crypto::keypair::PublicKey public_key_;
 
   // Strategy instance selected based on the public key algorithm.
   const std::unique_ptr<const SigningStrategy> strategy_;
