@@ -6,7 +6,10 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
+#include "base/test/launcher/unit_test_launcher.h"
+#include "base/test/test_suite.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
@@ -20,8 +23,32 @@
 #include "rlz/lib/rlz_value_store.h"
 #endif
 
+class RlzTestSuite : public base::TestSuite {
+ public:
+  RlzTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+
+ protected:
+  int RunAllTests() override {
+    int ret = base::TestSuite::RunAllTests();
+    if (ret == 0) {
+      // Now re-run all the tests using a supplementary brand code.  This brand
+      // code will remain in effect for the lifetime of the branding object.
+#if BUILDFLAG(IS_POSIX)
+      // Set a temporary directory for RLZ here, because SupplementaryBranding
+      // creates and owns RlzValueStore object for its lifetime.
+      base::ScopedTempDir temp_dir;
+      if (temp_dir.CreateUniqueTempDir()) {
+        rlz_lib::testing::SetRlzStoreDirectory(temp_dir.GetPath());
+      }
+#endif
+      rlz_lib::SupplementaryBranding branding("TEST");
+      ret = base::TestSuite::RunAllTests();
+    }
+    return ret;
+  }
+};
+
 int main(int argc, char **argv) {
-  base::AtExitManager at_exit;
   base::CommandLine::Init(argc, argv);
 
   testing::InitGoogleMock(&argc, argv);
@@ -29,26 +56,9 @@ int main(int argc, char **argv) {
 
   mojo::core::Init();
 
-  // RlzLibTest uses base::test::TaskEnvironment that needs TestTimeouts.
-  TestTimeouts::Initialize();
+  RlzTestSuite test_suite(argc, argv);
 
-  // Initialize ICU for time formatting.
-  CHECK(base::i18n::InitializeICU());
-
-  int ret = RUN_ALL_TESTS();
-  if (ret == 0) {
-    // Now re-run all the tests using a supplementary brand code.  This brand
-    // code will remain in effect for the lifetime of the branding object.
-#if BUILDFLAG(IS_POSIX)
-    // Set a temporary directory for RLZ here, because SupplementaryBranding
-    // creates and owns RlzValueStore object for its lifetime.
-    base::ScopedTempDir temp_dir;
-    if (temp_dir.CreateUniqueTempDir())
-      rlz_lib::testing::SetRlzStoreDirectory(temp_dir.GetPath());
-#endif
-    rlz_lib::SupplementaryBranding branding("TEST");
-    ret = RUN_ALL_TESTS();
-  }
-
-  return ret;
+  return base::LaunchUnitTests(
+      argc, argv,
+      base::BindOnce(&RlzTestSuite::Run, base::Unretained(&test_suite)));
 }
