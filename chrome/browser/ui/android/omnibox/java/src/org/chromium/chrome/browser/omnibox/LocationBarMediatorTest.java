@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLay
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
@@ -249,6 +250,7 @@ public class LocationBarMediatorTest {
     @Mock private View mNavigateButton;
     @Mock private View mPlusButton;
     @Mock private Callback<Integer> mAutocompleteStateObserverMock;
+    @Mock private OmniboxResourceProvider mOmniboxResourceProvider;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -393,6 +395,7 @@ public class LocationBarMediatorTest {
                         mContext,
                         mLocationBarLayout,
                         mLocationBarDataProvider,
+                        mOmniboxResourceProvider,
                         mUiOverrides,
                         mProfileSupplier,
                         mOverrideUrlLoadingDelegate,
@@ -463,6 +466,7 @@ public class LocationBarMediatorTest {
                         mContext,
                         mLocationBarTablet,
                         mLocationBarDataProvider,
+                        mOmniboxResourceProvider,
                         mUiOverrides,
                         mProfileSupplier,
                         mOverrideUrlLoadingDelegate,
@@ -1553,6 +1557,7 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         verify(mAutocompleteCoordinator)
                 .updateVisualsForState(BrandedColorScheme.LIGHT_BRANDED_THEME);
+        verify(mOmniboxResourceProvider).setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test
@@ -1565,6 +1570,7 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         verify(mAutocompleteCoordinator)
                 .updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
+        verify(mOmniboxResourceProvider).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
     @Test
@@ -1579,6 +1585,7 @@ public class LocationBarMediatorTest {
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
         verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
         verify(mAutocompleteCoordinator).updateVisualsForState(BrandedColorScheme.INCOGNITO);
+        verify(mOmniboxResourceProvider).setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
     }
 
     @Test
@@ -1588,6 +1595,7 @@ public class LocationBarMediatorTest {
         verify(mLocationBarLayout).setDeleteButtonTint(any(ColorStateList.class));
         verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
         verify(mAutocompleteCoordinator).updateVisualsForState(BrandedColorScheme.APP_DEFAULT);
+        verify(mOmniboxResourceProvider).setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
     }
 
     @Test
@@ -1603,6 +1611,7 @@ public class LocationBarMediatorTest {
         verify(mStatusCoordinator).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
         verify(mAutocompleteCoordinator)
                 .updateVisualsForState(BrandedColorScheme.DARK_BRANDED_THEME);
+        verify(mOmniboxResourceProvider).setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
     }
 
     @Test
@@ -1783,6 +1792,7 @@ public class LocationBarMediatorTest {
                         mContext,
                         mLocationBarLayout,
                         mLocationBarDataProvider,
+                        mOmniboxResourceProvider,
                         mUiOverrides,
                         mProfileSupplier,
                         mOverrideUrlLoadingDelegate,

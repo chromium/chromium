@@ -223,6 +223,7 @@ class LocationBarMediator
 
     private final LocationBarLayout mLocationBarLayout;
     private final LocationBarDataProvider mLocationBarDataProvider;
+    private final OmniboxResourceProvider mResourceProvider;
     private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final LocationBarEmbedderUiOverrides mEmbedderUiOverrides;
     private final LocationBarEmbedder mLocationBarEmbedder;
@@ -315,6 +316,7 @@ class LocationBarMediator
             Context context,
             LocationBarLayout locationBarLayout,
             LocationBarDataProvider locationBarDataProvider,
+            OmniboxResourceProvider resourceProvider,
             LocationBarEmbedderUiOverrides embedderUiOverrides,
             MonotonicObservableSupplier<Profile> profileSupplier,
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
@@ -339,6 +341,7 @@ class LocationBarMediator
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
+        mResourceProvider = resourceProvider;
         mLocationBarEmbedder = locationBarEmbedder;
         mFuseboxCoordinator = fuseboxCoordinator;
         mExactMatchUrlSupplier = exactMatchUrlSupplier;
@@ -2001,6 +2004,7 @@ class LocationBarMediator
         if (newScheme == mBrandedColorScheme && mHasEverUpdatedBrandedColorScheme) return;
         mHasEverUpdatedBrandedColorScheme = true;
         mBrandedColorScheme = newScheme;
+        mResourceProvider.setBrandedColorScheme(mBrandedColorScheme);
 
         // The delete button only appears when the url bar has focus, so its tint is rather static,
         // and need not be assigned in updateButtonTints().

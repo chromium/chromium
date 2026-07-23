@@ -377,6 +377,7 @@ public class LocationBarCoordinator
                         context,
                         mLocationBarLayout,
                         locationBarDataProvider,
+                        mResourceProvider,
                         uiOverrides,
                         profileObservableSupplier,
                         overrideUrlLoadingDelegate,
