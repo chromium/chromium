@@ -413,7 +413,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   }
 
   attacher.Create<data_controls::DataControlsTabHelper>();
-  if (IsEnableScreenshotProtectionIOSEnabled()) {
+  if (IsEnableScreenshotProtectionIOSEnabled() ||
+      IsEnableEnterpriseWatermarkingIOS()) {
     attacher.Create<DataProtectionTabHelper>();
   }
   attacher.Create<CaptivePortalTabHelper>();

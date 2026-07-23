@@ -16,4 +16,7 @@ BASE_DECLARE_FEATURE(kEnableEnterpriseWatermarkingIOS);
 // Returns true if the EnableScreenshotProtectionIOS feature is enabled.
 bool IsEnableScreenshotProtectionIOSEnabled();
 
+// Returns true if the EnableEnterpriseWatermarkingIOS feature is enabled.
+bool IsEnableEnterpriseWatermarkingIOS();
+
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_PUBLIC_FEATURES_H_

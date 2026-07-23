@@ -12,3 +12,7 @@ BASE_FEATURE(kEnableEnterpriseWatermarkingIOS,
 bool IsEnableScreenshotProtectionIOSEnabled() {
   return base::FeatureList::IsEnabled(kEnableScreenshotProtectionIOS);
 }
+
+bool IsEnableEnterpriseWatermarkingIOS() {
+  return base::FeatureList::IsEnabled(kEnableEnterpriseWatermarkingIOS);
+}
