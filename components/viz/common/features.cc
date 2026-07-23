@@ -255,6 +255,10 @@ BASE_FEATURE(kUseAndroidCustomFrameDeadlines,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kAndroidCustomFrameDeadlinePresentationOffset{
     &kUseAndroidCustomFrameDeadlines, "presentation_offset", 0};
+const base::FeatureParam<base::TimeDelta>
+    kAndroidCustomFrameDeadlineMaxIdleDuration{&kUseAndroidCustomFrameDeadlines,
+                                               "max_idle_duration",
+                                               base::Milliseconds(50)};
 #endif
 
 // When enabled, SDR maximum luminance nits of then current display will be used

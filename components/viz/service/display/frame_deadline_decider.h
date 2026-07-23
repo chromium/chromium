@@ -46,20 +46,23 @@ class VIZ_SERVICE_EXPORT FrameDeadlineDecider {
                         base::TimeTicks frame_time,
                         std::optional<base::TimeTicks> earliest_input_time);
 
-  // Called when the display scheduler goes idle or invisible, to reset sequence
-  // state.
-  void OnGoIdle();
+  // Called when the display becomes invisible.
+  void OnDisplayInvisible();
 
  private:
+  bool IsPartOfOngoingFrameSequence(base::TimeTicks frame_time) const;
+
   size_t FindClosestDeadlineByPresentation(
       const PossibleDeadlines& possible_deadlines) const;
 
   struct FrameSequenceState {
     base::TimeDelta present_delta;
     size_t deadline_index = 0;
+    base::TimeTicks last_frame_time;
   };
 
   std::optional<FrameSequenceState> frame_sequence_state_;
+  const base::TimeDelta max_idle_duration_;
   const bool use_platform_preferred_deadlines_;
 };
 

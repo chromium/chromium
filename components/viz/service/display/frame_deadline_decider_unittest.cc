@@ -199,6 +199,7 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SequenceLockingAndReset) {
       {{"presentation_offset", "0"}});
 
   FrameDeadlineDecider decider(false);
+  base::TimeTicks base_time = base::TimeTicks() + base::Milliseconds(1000);
 
   // 1. Start sequence: max_pending_swaps = 4. Target = (4+1)*8 = 40ms.
   // Deadlines: [16ms (pref), 40ms]
@@ -211,10 +212,10 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SequenceLockingAndReset) {
                               base::Milliseconds(40))  // Custom target
          });
   EXPECT_EQ(1u, decider.SelectDeadline(deadlines_1, k120HzVsyncInterval,
-                                       k120HzAllowedBuffers, base::TimeTicks(),
+                                       k120HzAllowedBuffers, base_time,
                                        std::nullopt));
 
-  // 2. Subsequent frame: max_pending_swaps = 2.
+  // 2. Subsequent frame 30ms later: max_pending_swaps = 2.
   // Recalculated target would be (2+1)*8 = 24ms.
   // Deadlines: [16ms (pref), 24ms, 40ms]
   // If locked, should select index 2 (40ms) because it is closest to previous
@@ -229,16 +230,15 @@ TEST_F(AndroidFrameDeadlineDeciderTest, SequenceLockingAndReset) {
                               base::Milliseconds(40))  // Lock target
          });
   EXPECT_EQ(2u, decider.SelectDeadline(deadlines_2, k120HzVsyncInterval, 3,
-                                       base::TimeTicks(), std::nullopt));
+                                       base_time + base::Milliseconds(30),
+                                       std::nullopt));
 
-  // 3. Go idle. This should reset the sequence.
-  decider.OnGoIdle();
-
-  // 4. New frame: max_pending_swaps = 2. Target = 24ms.
-  // Deadlines: [16ms (pref), 24ms, 40ms]
+  // 3. New frame 90ms after start (60ms gap > 50ms timeout).
+  // Target = 24ms. Deadlines: [16ms (pref), 24ms, 40ms]
   // Should recalculate and select index 1 (24ms).
   EXPECT_EQ(1u, decider.SelectDeadline(deadlines_2, k120HzVsyncInterval, 3,
-                                       base::TimeTicks(), std::nullopt));
+                                       base_time + base::Milliseconds(90),
+                                       std::nullopt));
 }
 
 TEST_F(AndroidFrameDeadlineDeciderTest,

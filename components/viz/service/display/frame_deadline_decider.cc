@@ -15,9 +15,27 @@ namespace viz {
 
 FrameDeadlineDecider::FrameDeadlineDecider(
     bool use_platform_preferred_deadlines)
-    : use_platform_preferred_deadlines_(use_platform_preferred_deadlines) {}
+    : max_idle_duration_(
+#if BUILDFLAG(IS_ANDROID)
+          features::kAndroidCustomFrameDeadlineMaxIdleDuration.Get()
+#else
+          base::Milliseconds(50)
+#endif
+              ),
+      use_platform_preferred_deadlines_(use_platform_preferred_deadlines) {
+}
 
 FrameDeadlineDecider::~FrameDeadlineDecider() = default;
+
+bool FrameDeadlineDecider::IsPartOfOngoingFrameSequence(
+    base::TimeTicks frame_time) const {
+  if (!frame_sequence_state_.has_value()) {
+    return false;
+  }
+  base::TimeDelta time_since_last_frame =
+      frame_time - frame_sequence_state_->last_frame_time;
+  return time_since_last_frame <= max_idle_duration_;
+}
 
 size_t FrameDeadlineDecider::QueryDeadline(
     const PossibleDeadlines& possible_deadlines,
@@ -31,7 +49,7 @@ size_t FrameDeadlineDecider::QueryDeadline(
     return possible_deadlines.os_preferred_index;
   }
 
-  if (frame_sequence_state_.has_value()) {
+  if (IsPartOfOngoingFrameSequence(frame_time)) {
     return FindClosestDeadlineByPresentation(possible_deadlines);
   }
 
@@ -113,6 +131,7 @@ size_t FrameDeadlineDecider::SelectDeadline(
   frame_sequence_state_ = FrameSequenceState{
       .present_delta = possible_deadlines.deadlines[result_index].present_delta,
       .deadline_index = result_index,
+      .last_frame_time = frame_time,
   };
 
   TRACE_EVENT_END(
@@ -130,9 +149,7 @@ size_t FrameDeadlineDecider::SelectDeadline(
   return result_index;
 }
 
-void FrameDeadlineDecider::OnGoIdle() {
-  // TODO(crbug.com/500826814): Handle cases where scheduler goes to idle and
-  // then immediately kicks off again, so we don't break the frame sequence.
+void FrameDeadlineDecider::OnDisplayInvisible() {
   frame_sequence_state_.reset();
 }
 

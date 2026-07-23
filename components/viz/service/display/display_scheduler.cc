@@ -163,6 +163,7 @@ void DisplayScheduler::SetVisible(bool visible) {
   visible_ = visible;
   if (!visible_) {
     last_undrawn_begin_frame_args_ = std::nullopt;
+    decider_.OnDisplayInvisible();
   }
   // If going invisible, we'll stop observing begin frames once we try
   // to draw and fail.
@@ -580,7 +581,6 @@ void DisplayScheduler::StartObservingBeginFrames() {
 }
 
 void DisplayScheduler::StopObservingBeginFrames() {
-  decider_.OnGoIdle();
   if (observing_begin_frame_source_) {
     begin_frame_source_->RemoveObserver(&begin_frame_observer_);
     observing_begin_frame_source_ = false;
