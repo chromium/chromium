@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
@@ -944,6 +945,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL second_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_allowed": [
@@ -951,7 +953,9 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
@@ -986,13 +990,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   base::HistogramTester histogram_tester;
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
      {
        "navigation_allowed": [
          { "from": "[*.]example.com", "to": "[*.]example.com" }
        ]
      }
-   )json");
+   )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
 
@@ -1017,13 +1024,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   base::HistogramTester histogram_tester;
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
      {
        "navigation_blocked": [
          { "from": "[*.]example.com", "to": "[*.]example.com" }
        ]
      }
-   )json");
+   )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
 
@@ -1038,13 +1048,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   base::HistogramTester histogram_tester;
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/empty.html");
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]example.com", "to": "[*.]example.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
 
@@ -1073,6 +1086,7 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_allowed": [
@@ -1082,7 +1096,9 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
@@ -1107,13 +1123,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   OpenGlicAndCreateTask();
   actor_task().GetExecutionEngine().AddWritableMainframeOrigins(
@@ -1149,13 +1168,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL allowed_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_allowed": [
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   OpenGlicAndCreateTask();
 
@@ -1190,13 +1212,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
@@ -1225,13 +1250,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        NavigationBlockedByStaticList_CrossOriginIframe) {
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "blocked.example.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
   base::HistogramTester histogram_tester;
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/iframe.html");
@@ -1277,13 +1305,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   base::HistogramTester histogram_tester;
   const GURL blocked_url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "[*.]example.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Quit();
 
   OpenGlicAndCreateTask();
 
@@ -1311,13 +1342,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
   const GURL sandboxed_url = embedded_https_test_server().GetURL(
       "foo.com", "/actor/sandbox_main_frame_csp.html");
 
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "[*.]example.com", "to": "[*.]foo.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
@@ -1348,13 +1382,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        BlocklistAppliesToMayActOnTab) {
   const GURL start_url = embedded_https_test_server().GetURL(
       "bad.example.com", "/actor/link.html");
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
      {
        "navigation_blocked": [
          { "from": "*", "to": "[*.]bad.example.com" }
        ]
      }
-)json");
+)json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
 
@@ -1994,13 +2031,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBlocklistDisabledBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "[*.]foo.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
   OpenGlicAndCreateTask();
@@ -2020,13 +2060,16 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineBlocklistDisabledBrowserTest,
   const GURL blocked_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
 
+  base::RunLoop run_loop;
   SafetyListManager::GetInstance()->ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
         { "from": "*", "to": "[*.]foo.com" }
       ]
     }
-  )json");
+  )json",
+                                                     run_loop.QuitClosure());
+  run_loop.Run();
 
   ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
   OpenGlicAndCreateTask();

@@ -5,10 +5,14 @@
 #include "components/actor/core/safety_list_manager.h"
 
 #include <cstddef>
+#include <memory>
 #include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/timer/timer.h"
 #include "components/actor/core/actor_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -47,11 +51,11 @@ class SafetyListManagerTest : public ::testing::TestWithParam<bool> {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  // `manager_` is made optional to delay its construction until after
-  // `scoped_feature_list_` has been initialized. This ensures that the Finch
-  // feature flags are correctly set when `SafetyListManager`'s constructor
-  // is called.
-  std::optional<SafetyListManager> manager_;
+  // `manager_` delays its construction until after `scoped_feature_list_` has
+  // been initialized. This ensures that the Finch feature flags are correctly
+  // set when `SafetyListManager`'s constructor is called.
+  std::unique_ptr<SafetyListManager> manager_ = nullptr;
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_P(SafetyListManagerTest, DefaultInstance) {
@@ -65,8 +69,8 @@ TEST_P(SafetyListManagerTest, DefaultInstance) {
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
   struct InvalidListTestCase {
-    std::string_view desc;
-    std::string_view json;
+    std::string desc;
+    std::string json;
     ParseResult expected_allowed;
     ParseResult expected_blocked;
     size_t expected_allowed_count;
@@ -298,11 +302,11 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
   };
 
   for (const auto& test_case : kTestCases) {
-    // Reset the manager to ensure a clean state for each test case.
-    manager() = SafetyListManager::CreateForTesting();
     SCOPED_TRACE(test_case.desc);
     base::HistogramTester histogram_tester;
-    manager().ParseSafetyLists(test_case.json);
+    base::test::TestFuture<void> future;
+    manager().ParseSafetyLists(test_case.json, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
 
     histogram_tester.ExpectUniqueSample(
         "Actor.SafetyListParseResult.NavigationAllowed",
@@ -315,6 +319,7 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
   base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> future;
   manager().ParseSafetyLists(R"json(
     {
       "navigation_allowed": [
@@ -327,7 +332,9 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
         { "from": "blocked.com", "to": "not-allowed.com"}
       ]
     }
-  )json");
+  )json",
+                             future.GetCallback());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(manager().Find(GURL("https://www.google.com"),
                            GURL("https://youtube.com")),
             Decision::kAllow);
@@ -353,6 +360,7 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_ValidPatterns) {
 
 TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
   base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> future1;
   manager().ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
@@ -360,13 +368,16 @@ TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
         { "from": "foo.com", "to": "[*.]bar.com" }
       ]
     }
-  )json");
+  )json",
+                             future1.GetCallback());
+  ASSERT_TRUE(future1.Wait());
   EXPECT_EQ(manager().Find(GURL("https://www.google.com"),
                            GURL("https://youtube.com")),
             ExpectedBlocklistDecision());
   EXPECT_EQ(manager().Find(GURL("http://foo.com"), GURL("https://sub.bar.com")),
             ExpectedBlocklistDecision());
 
+  base::test::TestFuture<void> future2;
   manager().ParseSafetyLists(R"json(
     {
       "navigation_blocked": [
@@ -374,7 +385,9 @@ TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
         { "from": "bar.com", "to": "[*.]foo.com" }
       ]
     }
-  )json");
+  )json",
+                             future2.GetCallback());
+  ASSERT_TRUE(future2.Wait());
   EXPECT_EQ(manager().Find(GURL("https://www.google.com"),
                            GURL("https://youtube.com")),
             Decision::kNone);
@@ -395,6 +408,7 @@ TEST_P(SafetyListManagerTest, ParseBlockLists_MultipleParses) {
 
 TEST_P(SafetyListManagerTest, ParseSafetyLists_BlockedListInvalid) {
   base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> future;
   manager().ParseSafetyLists(R"json(
     {
       "navigation_allowed": [],
@@ -402,7 +416,9 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_BlockedListInvalid) {
         { "from": "a.*.com", "to": "b.com" }
       ]
     }
-  )json");
+  )json",
+                             future.GetCallback());
+  ASSERT_TRUE(future.Wait());
   histogram_tester.ExpectUniqueSample(
       "Actor.SafetyListParseResult.NavigationBlocked",
       ParseResult::kInvalidFromUrlPattern, 1);
@@ -413,10 +429,10 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_BlockedListInvalid) {
 
 TEST_P(SafetyListManagerTest, Find) {
   const struct {
-    std::string_view desc;
-    std::string_view json;
-    std::string_view from_url;
-    std::string_view to_url;
+    std::string desc;
+    std::string json;
+    std::string from_url;
+    std::string to_url;
     Decision expected;
   } kTestCases[] = {
       {
@@ -620,7 +636,9 @@ TEST_P(SafetyListManagerTest, Find) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
-    manager().ParseSafetyLists(test_case.json);
+    base::test::TestFuture<void> future;
+    manager().ParseSafetyLists(test_case.json, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
     EXPECT_EQ(manager().Find(GURL(test_case.from_url), GURL(test_case.to_url)),
               test_case.expected);
   }
@@ -628,8 +646,8 @@ TEST_P(SafetyListManagerTest, Find) {
 
 TEST_P(SafetyListManagerTest, Find_SameOrigin) {
   const struct {
-    std::string_view desc;
-    std::string_view json;
+    std::string desc;
+    std::string json;
     Decision expected;
   } kTestCases[] = {
       {
@@ -682,7 +700,9 @@ TEST_P(SafetyListManagerTest, Find_SameOrigin) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
-    manager().ParseSafetyLists(test_case.json);
+    base::test::TestFuture<void> future;
+    manager().ParseSafetyLists(test_case.json, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
     EXPECT_EQ(manager().Find(url, url), test_case.expected);
   }
 }

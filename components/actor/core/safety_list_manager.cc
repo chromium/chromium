@@ -4,13 +4,19 @@
 
 #include "components/actor/core/safety_list_manager.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/sequence_checker.h"
+#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/actor/core/actor_features.h"
@@ -109,15 +115,16 @@ SafetyListManager* SafetyListManager::GetInstance() {
 }
 
 // static
-SafetyListManager SafetyListManager::CreateForTesting() {
-  return SafetyListManager();
+std::unique_ptr<SafetyListManager> SafetyListManager::CreateForTesting() {
+  return base::WrapUnique(new SafetyListManager());
 }
 
 SafetyListManager::Decision SafetyListManager::Find(
     const GURL& source,
     const GURL& destination) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const content_settings::RuleEntry* rule_entry =
-      navigation_settings_.Find(source, destination);
+      navigation_settings_->Find(source, destination);
 
   if (!rule_entry) {
     return Decision::kNone;
@@ -144,17 +151,19 @@ SafetyListManager::Decision SafetyListManager::Find(
 SafetyListManager::SafetyListManager() = default;
 SafetyListManager::~SafetyListManager() = default;
 
-SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
-    std::string_view json_string) {
+// static
+SafetyListManager::ParseResultsAndSettings
+SafetyListManager::ParseSafetyListsInternal(std::string_view json_string) {
   std::optional<base::Value> json =
       base::JSONReader::Read(json_string, base::JSON_PARSE_RFC);
   if (!json.has_value()) {
-    return {ParseResult::kInvalidJson, ParseResult::kInvalidJson};
+    return {SafetyListManager::ParseResult::kInvalidJson,
+            SafetyListManager::ParseResult::kInvalidJson, nullptr};
   }
 
   base::DictValue* json_dict = json->GetIfDict();
   if (!json_dict) {
-    return {ParseResult::kInvalidJson, ParseResult::kInvalidJson};
+    return {ParseResult::kInvalidJson, ParseResult::kInvalidJson, nullptr};
   }
 
   auto parse_one_list = [&json_dict](std::string_view field_name)
@@ -169,29 +178,58 @@ SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
     return std::vector<SafetyListEntry>();
   };
 
-  base::expected<std::vector<SafetyListEntry>, ParseResult> allowed_result =
-      parse_one_list(kNavigationAllowedFieldName);
-  base::expected<std::vector<SafetyListEntry>, ParseResult> blocked_result =
-      parse_one_list(kNavigationBlockedFieldName);
+  base::expected<std::vector<SafetyListEntry>, SafetyListManager::ParseResult>
+      allowed_result = parse_one_list(kNavigationAllowedFieldName);
+  base::expected<std::vector<SafetyListEntry>, SafetyListManager::ParseResult>
+      blocked_result = parse_one_list(kNavigationBlockedFieldName);
+  std::unique_ptr<content_settings::HostIndexedContentSettings>
+      navigation_settings = nullptr;
   if (allowed_result.has_value() || blocked_result.has_value()) {
-    navigation_settings_.Clear();
+    navigation_settings =
+        std::make_unique<content_settings::HostIndexedContentSettings>();
     SetAll(SpanOverExpected(allowed_result),
-           ContentSetting::CONTENT_SETTING_ALLOW, navigation_settings_);
+           ContentSetting::CONTENT_SETTING_ALLOW, *navigation_settings.get());
     SetAll(SpanOverExpected(blocked_result),
-           ContentSetting::CONTENT_SETTING_BLOCK, navigation_settings_);
+           ContentSetting::CONTENT_SETTING_BLOCK, *navigation_settings.get());
   }
 
   return {allowed_result.error_or(ParseResult::kSuccess),
-          blocked_result.error_or(ParseResult::kSuccess)};
+          blocked_result.error_or(ParseResult::kSuccess),
+          std::move(navigation_settings)};
 }
 
-void SafetyListManager::ParseSafetyLists(std::string_view json_string) {
-  ParseStatus status = ParseSafetyListsInternal(json_string);
-
+// static
+std::unique_ptr<content_settings::HostIndexedContentSettings>
+SafetyListManager::DoParseSafetyLists(std::string json_string) {
+  SafetyListManager::ParseResultsAndSettings result =
+      ParseSafetyListsInternal(json_string);
   base::UmaHistogramEnumeration(kNavigationAllowedHistogramName,
-                                status.allowed_result);
+                                result.allowed_result);
   base::UmaHistogramEnumeration(kNavigationBlockedHistogramName,
-                                status.blocked_result);
+                                result.blocked_result);
+  return std::move(result.settings);
+}
+
+void SafetyListManager::OnParsedSafetyLists(
+    base::OnceClosure done_callback,
+    std::unique_ptr<content_settings::HostIndexedContentSettings>
+        new_navigation_settings) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (new_navigation_settings) {
+    navigation_settings_ = std::move(new_navigation_settings);
+  }
+  if (done_callback) {
+    std::move(done_callback).Run();
+  }
+}
+
+void SafetyListManager::ParseSafetyLists(std::string json_string,
+                                         base::OnceClosure done_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DoParseSafetyLists, std::move(json_string)),
+      base::BindOnce(&SafetyListManager::OnParsedSafetyLists,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)));
 }
 
 }  // namespace actor

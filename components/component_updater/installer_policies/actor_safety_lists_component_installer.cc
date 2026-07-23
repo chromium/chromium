@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -143,8 +144,13 @@ void RegisterActorSafetyListsComponent(
           base::BindRepeating(
               [](const std::optional<std::string>& raw_metadata) {
                 if (raw_metadata.has_value()) {
+                  // The safety lists are used by the actor component which will
+                  // not need them until long after startup completes. So we are
+                  // fine passing NullCallback and having
+                  // SafetyListManager::Find return kNone in the time before the
+                  // list is parsed.
                   actor::SafetyListManager::GetInstance()->ParseSafetyLists(
-                      *raw_metadata);
+                      *raw_metadata, base::NullCallback());
                 }
               })));
   policy->Register(cus, std::move(callback));

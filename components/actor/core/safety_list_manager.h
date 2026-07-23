@@ -5,8 +5,14 @@
 #ifndef COMPONENTS_ACTOR_CORE_SAFETY_LIST_MANAGER_H_
 #define COMPONENTS_ACTOR_CORE_SAFETY_LIST_MANAGER_H_
 
+#include <memory>
+#include <optional>
 #include <string_view>
 
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 
@@ -57,32 +63,51 @@ class SafetyListManager {
 
   SafetyListManager(const SafetyListManager&) = delete;
   SafetyListManager& operator=(const SafetyListManager&) = delete;
-  SafetyListManager(SafetyListManager&&) = default;
-  SafetyListManager& operator=(SafetyListManager&&) = default;
+  SafetyListManager(SafetyListManager&&) = delete;
+  SafetyListManager& operator=(SafetyListManager&&) = delete;
 
   static SafetyListManager* GetInstance();
-  static SafetyListManager CreateForTesting();
+  static std::unique_ptr<SafetyListManager> CreateForTesting();
 
   // Looks up the most specific rule applying to a navigation from `source` to
   // `destination`. If no such rule exists, returns `Decision::kNone`.
   Decision Find(const GURL& source, const GURL& destination) const;
 
-  void ParseSafetyLists(std::string_view json);
+  // ParseSafetyLists parses the input JSON off the main thread and
+  // posts the reply back. Callback is invoked when parsing is complete
+  // and is used for testing only.
+  void ParseSafetyLists(std::string json_string,
+                        base::OnceClosure done_callback);
 
  private:
   // For singleton pattern.
   friend class base::NoDestructor<SafetyListManager>;
   SafetyListManager();
 
-  struct ParseStatus {
+  struct ParseResultsAndSettings {
     ParseResult allowed_result;
     ParseResult blocked_result;
+    std::unique_ptr<content_settings::HostIndexedContentSettings> settings;
   };
 
-  ParseStatus ParseSafetyListsInternal(std::string_view json_string);
+  // Private static so it can use ParseResultsAndSettings.
+  static ParseResultsAndSettings ParseSafetyListsInternal(
+      std::string_view json_string);
+  // Private static so it can use ParseSafetyListsInternal.
+  static std::unique_ptr<content_settings::HostIndexedContentSettings>
+  DoParseSafetyLists(std::string json_string);
+  void OnParsedSafetyLists(
+      base::OnceClosure done_callback,
+      std::unique_ptr<content_settings::HostIndexedContentSettings>
+          new_navigation_settings);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Settings for allowing/blocking navigations.
-  content_settings::HostIndexedContentSettings navigation_settings_;
+  std::unique_ptr<content_settings::HostIndexedContentSettings>
+      navigation_settings_ GUARDED_BY_CONTEXT(sequence_checker_) =
+          std::make_unique<content_settings::HostIndexedContentSettings>();
+  base::WeakPtrFactory<SafetyListManager> weak_ptr_factory_{this};
 };
 
 }  // namespace actor
