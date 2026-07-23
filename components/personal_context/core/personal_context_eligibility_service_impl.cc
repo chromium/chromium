@@ -248,6 +248,11 @@ PersonalContextEligibilityServiceImpl::GetEligibilityState() {
   return eligibility_state_;
 }
 
+std::optional<PersonalContextNonEligibilityReason>
+PersonalContextEligibilityServiceImpl::GetNonEligibilityReason() const {
+  return last_non_eligibility_reason_;
+}
+
 std::pair<PersonalContextEligibilityState,
           std::optional<PersonalContextNonEligibilityReason>>
 PersonalContextEligibilityServiceImpl::ComputeEligibilityState() {

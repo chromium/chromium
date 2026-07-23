@@ -39,6 +39,12 @@ class PersonalContextEligibilityService : public KeyedService {
   // Sync getter for the current eligibility state. Checks whether the profile
   // is eligible to use Personal Context.
   virtual PersonalContextEligibilityState GetEligibilityState() = 0;
+
+  // Sync getter for the specific reason why the profile is currently
+  // ineligible for Personal Context. Returns `std::nullopt` if eligibility has
+  // not yet been or could not be evaluated.
+  virtual std::optional<PersonalContextNonEligibilityReason>
+  GetNonEligibilityReason() const = 0;
 };
 
 }  // namespace personal_context

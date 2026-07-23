@@ -19,11 +19,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/personal_context_metrics.h"
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_personal_context_enablement_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/personal_context/core/context_memory_error.h"
@@ -34,6 +37,7 @@
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/personal_context/proto/features/ambient_autofill.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "net/base/backoff_entry.h"
 
 namespace autofill {
@@ -54,6 +58,13 @@ constexpr net::BackoffEntry::Policy kBackoffPolicy = {
     // manager.
     .entry_lifetime_ms = -1,
     .always_use_initial_delay = false};
+
+// Delay before logging the non-eligibility reason on startup. Instead of
+// reporting immediately at startup (which would incorrectly report non-eligible
+// before preferences are loaded from disk), this delay ensures initial
+// preference and device state have been populated.
+constexpr base::TimeDelta kNonEligibilityLoggingDelayOnStartup =
+    base::Seconds(30);
 
 bool IsPersonalContextEligible(
     personal_context::PersonalContextEligibilityState state) {
@@ -106,7 +117,28 @@ AutofillAiPersonalContextAccessManagerImpl::
         base::BindRepeating(&AutofillAiPersonalContextAccessManagerImpl::
                                 OnPersonalContextSettingsToggleChanged,
                             base::Unretained(this)));
+    pref_registrar_.Add(
+        subscription_eligibility::prefs::kAiSubscriptionTier,
+        base::BindRepeating(&AutofillAiPersonalContextAccessManagerImpl::
+                                ComputeAndMaybeLogNonEligibilityReason,
+                            base::Unretained(this)));
   }
+
+  // Called after the startup delay (`kNonEligibilityLoggingDelayOnStartup`)
+  // has elapsed to enable non-eligibility UMA logging and record the initial
+  // reason.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<AutofillAiPersonalContextAccessManagerImpl> self) {
+            if (!self) {
+              return;
+            }
+            self->is_non_eligibility_startup_delay_elapsed_ = true;
+            self->ComputeAndMaybeLogNonEligibilityReason();
+          },
+          weak_factory_.GetWeakPtr()),
+      kNonEligibilityLoggingDelayOnStartup);
 }
 
 AutofillAiPersonalContextAccessManagerImpl::
@@ -476,6 +508,7 @@ void AutofillAiPersonalContextAccessManagerImpl::WipeCache() {
 
 void AutofillAiPersonalContextAccessManagerImpl::OnEligibilityStateChanged(
     personal_context::PersonalContextEligibilityState new_state) {
+  ComputeAndMaybeLogNonEligibilityReason();
   if (!IsPersonalContextEligible(new_state)) {
     WipeCache();
   }
@@ -488,6 +521,39 @@ void AutofillAiPersonalContextAccessManagerImpl::
           personal_context::prefs::
               kPersonalContextInAutofillSettingsToggleStatus)) {
     WipeCache();
+  }
+}
+
+void AutofillAiPersonalContextAccessManagerImpl::
+    ComputeAndMaybeLogNonEligibilityReason() {
+  using personal_context::PersonalContextNonEligibilityReason;
+  if (!pref_service_ || !is_non_eligibility_startup_delay_elapsed_) {
+    return;
+  }
+
+  // TODO(crbug.com/537686190): Consolidate this non-eligibility logic with the
+  // permission checks in `autofill_ai_permission_utils.cc`.
+  std::optional<PersonalContextNonEligibilityReason> non_eligibility_reason =
+      personal_context_eligibility_service_->GetNonEligibilityReason();
+  const int32_t tier = pref_service_->GetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier);
+
+  if (non_eligibility_reason ==
+          PersonalContextNonEligibilityReason::kEligible &&
+      !GetAutofillAmbientAutofillEligibleTiers().contains(tier) &&
+      !IsAndroidDeviceEligibleForAmbientAutofill()) {
+    non_eligibility_reason = PersonalContextNonEligibilityReason::
+        kNotG1SubscriberOrAndroidPremiumDevice;
+  }
+
+  if (last_non_eligibility_reason_ == non_eligibility_reason) {
+    return;
+  }
+  last_non_eligibility_reason_ = non_eligibility_reason;
+  if (last_non_eligibility_reason_) {
+    base::UmaHistogramEnumeration(
+        "Autofill.Ai.PersonalContext.NonEligibilityReason",
+        *last_non_eligibility_reason_);
   }
 }
 

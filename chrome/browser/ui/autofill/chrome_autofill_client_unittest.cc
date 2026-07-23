@@ -144,6 +144,11 @@ class MockPersonalContextEligibilityService
               GetEligibilityState,
               (),
               (override));
+  MOCK_METHOD(
+      std::optional<personal_context::PersonalContextNonEligibilityReason>,
+      GetNonEligibilityReason,
+      (),
+      (const, override));
 };
 
 #if !BUILDFLAG(IS_ANDROID)

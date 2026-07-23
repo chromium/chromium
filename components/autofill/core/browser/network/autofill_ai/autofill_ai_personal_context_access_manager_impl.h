@@ -192,6 +192,16 @@ class AutofillAiPersonalContextAccessManagerImpl
   // request start time is valid.
   void LogPrefetchTotalLatency(EntityType type);
 
+  // Computes the non-eligibility reason specific to personal context in
+  // Autofill AI (e.g. G1 subscription status or Android premium device status)
+  // and logs it to UMA if the reason has changed and the startup delay has
+  // elapsed.
+  void ComputeAndMaybeLogNonEligibilityReason();
+
+  // Indicates whether `kNonEligibilityLoggingDelayOnStartup` has elapsed,
+  // preventing premature UMA logging during browser startup.
+  bool is_non_eligibility_startup_delay_elapsed_ = false;
+
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
   const raw_ref<personal_context::PersonalContextEligibilityService>
@@ -227,6 +237,11 @@ class AutofillAiPersonalContextAccessManagerImpl
   // this signal after
   // `kAutofillAmbientAutofillPrefetchedEntitiesAndSignalsCacheTTL`.
   base::flat_set<SpiiEntityPresenceSignal> spii_presence_signal_cache_;
+
+  // The last reported non-eligibility reason for personal context in Autofill
+  // AI.
+  std::optional<personal_context::PersonalContextNonEligibilityReason>
+      last_non_eligibility_reason_;
 
   base::ObserverList<AutofillAiPersonalContextAccessManager::Observer>
       observers_;

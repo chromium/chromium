@@ -38,6 +38,10 @@ class MockPersonalContextEligibilityService
               GetEligibilityState,
               (),
               (override));
+  MOCK_METHOD(std::optional<PersonalContextNonEligibilityReason>,
+              GetNonEligibilityReason,
+              (),
+              (const, override));
 };
 
 class PersonalContextFirstRunServiceImplTest : public testing::Test {

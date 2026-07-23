@@ -37,6 +37,11 @@ class MockPersonalContextEligibilityService
               GetEligibilityState,
               (),
               (override));
+  MOCK_METHOD(
+      std::optional<personal_context::PersonalContextNonEligibilityReason>,
+      GetNonEligibilityReason,
+      (),
+      (const, override));
 };
 
 class PersonalContextAutofillUtilTest : public testing::Test {

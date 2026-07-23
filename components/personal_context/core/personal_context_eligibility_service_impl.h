@@ -42,6 +42,8 @@ class PersonalContextEligibilityServiceImpl
   void RemoveObserver(
       PersonalContextEligibilityService::Observer* observer) override;
   PersonalContextEligibilityState GetEligibilityState() override;
+  std::optional<PersonalContextNonEligibilityReason> GetNonEligibilityReason()
+      const override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(

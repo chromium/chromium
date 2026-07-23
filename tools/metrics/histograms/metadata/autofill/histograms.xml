@@ -1939,6 +1939,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Ai.PersonalContext.NonEligibilityReason"
+    enum="PersonalContextNonEligibilityReason" expires_after="2027-03-09">
+  <owner>picarella@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Tracks the reason why a user is not eligible for Personal Context. Emitted
+    on browser startup (profile initialization) and on any relevant eligibility
+    reason change. Emitted with a short delay on browser startup and on any
+    relevant eligibility state change. Note that this metric stacks on top of
+    Autofill.PersonalContext.NonEligibilityReason.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.PersonalContext.Prefetch.TotalLatency{EntityType}"
     units="ms" expires_after="2026-12-12">
   <owner>vidhanj@google.com</owner>
