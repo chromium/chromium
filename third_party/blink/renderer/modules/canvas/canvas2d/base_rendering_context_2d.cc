@@ -754,14 +754,21 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
                                 ? shared_image_provider->RasterInterface()
                                 : nullptr,
                             *shared_image_provider);
-    bool preserve_recording =
-        want_to_print && shared_image_provider->clear_frame();
-    shared_image_provider->Flush(recording, preserve_recording);
+    if (want_to_print && shared_image_provider->clear_frame()) {
+      shared_image_provider->SetLastRecording(recording);
+    } else {
+      shared_image_provider->ClearLastRecording();
+    }
+    shared_image_provider->Flush(recording);
     shared_image_provider->ReleaseImageProviderImages();
   } else if (bitmap_provider) {
     ScopedRasterTimer timer(nullptr, *bitmap_provider);
-    bool preserve_recording = want_to_print && bitmap_provider->clear_frame();
-    bitmap_provider->Flush(recording, preserve_recording);
+    if (want_to_print && bitmap_provider->clear_frame()) {
+      bitmap_provider->SetLastRecording(recording);
+    } else {
+      bitmap_provider->ClearLastRecording();
+    }
+    bitmap_provider->Flush(recording);
     bitmap_provider->ReleaseImageProviderImages();
   }
   if (Host()) {
