@@ -4030,6 +4030,7 @@ suite('NewTabPageAppReducedMotionTest', () => {
       searchboxShowComposebox: true,
       searchboxShowComposeEntrypoint: true,
       actionChipsEnabled: true,
+      energyEffectAnimationEnabled: false,
     });
   });
 
@@ -4214,8 +4215,6 @@ suite('NewTabPageAppReducedMotionTest', () => {
           });
     });
   });
-
-
 });
 
 suite('NewTabPageAppContextMenuAnimationTest', () => {

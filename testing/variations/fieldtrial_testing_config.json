@@ -10745,6 +10745,24 @@
             ]
         }
     ],
+    "EnergyEffectMotionStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Treatment",
+                    "enable_features": [
+                        "EnergyEffectAnimation"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnergyEffectVisdStudy": [
         {
             "platforms": [

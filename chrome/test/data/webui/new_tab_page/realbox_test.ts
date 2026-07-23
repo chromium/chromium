@@ -187,6 +187,7 @@ suite('NewTabPageRealboxNextTest', () => {
       searchboxLensSearch: true,
       searchboxSeparator: ' - ',
       searchboxVoiceSearch: true,
+      energyEffectAnimationEnabled: false,
     });
   });
 
