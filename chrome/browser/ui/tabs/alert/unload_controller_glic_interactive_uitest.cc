@@ -37,6 +37,7 @@ views::Widget* GetActorDialogWidget(UnloadController* controller) {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
 
+// TODO(crbug.com/537847367): Migrate this test suite to GlicBrowserTest.
 class UnloadControllerGlicInteractiveUiTest
     : public glic::test::InteractiveGlicTest {
  public:

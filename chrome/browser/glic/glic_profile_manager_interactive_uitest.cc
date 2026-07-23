@@ -27,6 +27,7 @@ namespace glic {
 // TODO(b/445924847): This test does not work with multi-instance, which is now
 // launched. It needs updated if we want to pursue launching the GlicWarming
 // feature.
+// TODO(crbug.com/537847083): Migrate this test suite to GlicBrowserTest.
 class DISABLED_GlicProfileManagerUiTest : public test::InteractiveGlicTest {
  public:
   DISABLED_GlicProfileManagerUiTest() {

@@ -490,6 +490,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
 // TODO(b/533465625): Ideally we could also make this a child of
 // DictationBrowserTestBase so we get all the helpers.
+// TODO(crbug.com/537848278): Simplify this test suite to GlicBrowserTest.
 class DictationGlicBrowserTest : public glic::NonInteractiveGlicTest {
  public:
   DictationGlicBrowserTest()

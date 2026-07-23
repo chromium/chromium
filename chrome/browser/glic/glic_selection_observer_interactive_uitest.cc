@@ -18,6 +18,7 @@
 namespace glic {
 namespace {
 
+// TODO(crbug.com/537847327): Migrate this test suite to GlicBrowserTest.
 class GlicSelectionObserverInteractiveUiTest
     : public test::InteractiveGlicTest {
  public:

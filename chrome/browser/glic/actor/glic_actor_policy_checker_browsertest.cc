@@ -90,6 +90,7 @@ constexpr TestAccount kEnterpriseAccount = {"foo@testenterprise.com",
                                             "testenterprise.com"};
 }  // namespace
 
+// TODO(crbug.com/537849136): Simplify this test suite to GlicBrowserTest.
 class GlicActorPolicyCheckerBrowserTestBase : public NonInteractiveGlicTest {
  public:
   GlicActorPolicyCheckerBrowserTestBase() {

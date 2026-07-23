@@ -12,6 +12,7 @@
 
 namespace glic {
 
+// TODO(crbug.com/537848933): Simplify this test suite to GlicBrowserTest.
 class SelectionOverlayBrowserTest : public NonInteractiveGlicTest {
  public:
   SelectionOverlayBrowserTest() {

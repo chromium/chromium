@@ -18,6 +18,7 @@ namespace apc = ::optimization_guide::proto;
 using apc::Actions;
 using apc::TypeAction;
 
+// TODO(crbug.com/537846361): Migrate this test suite to GlicBrowserTest.
 class GlicActorTypeToolUiTest : public GlicActorUiTest {
  public:
   GlicActorUiTest::MultiStep TypeAction(

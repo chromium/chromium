@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "base/test/run_until.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
@@ -23,6 +22,7 @@
 
 namespace glic {
 
+// TODO(crbug.com/537849149): Simplify this test suite to GlicBrowserTest.
 class GlicActiveInstanceSharingManagerBrowserTest
     : public NonInteractiveGlicTest {
  public:

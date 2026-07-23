@@ -28,6 +28,7 @@
 
 namespace glic {
 
+// TODO(crbug.com/537847029): Migrate this test suite to GlicBrowserTest.
 class GlicNudgeControllerInteractiveUiTest : public test::InteractiveGlicTest {
  public:
   GlicNudgeControllerInteractiveUiTest() {

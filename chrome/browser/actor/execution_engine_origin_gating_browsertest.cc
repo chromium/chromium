@@ -117,6 +117,7 @@ constexpr std::string_view kSameSiteInitiatorHistogram =
 
 }  // namespace
 
+// TODO(crbug.com/537849016): Simplify this test suite to GlicBrowserTest.
 class ExecutionEngineOriginGatingBrowserTestBase
     : public glic::NonInteractiveGlicTest {
  public:

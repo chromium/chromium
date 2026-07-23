@@ -25,6 +25,7 @@
 
 namespace glic {
 
+// TODO(crbug.com/537848621): Simplify this test suite to GlicBrowserTest.
 class GlicActivePinnedFocusedTabManagerBrowserTest
     : public NonInteractiveGlicTest {
  public:

@@ -8696,6 +8696,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksChannelWebViewTest, InspectElement) {
   }
 }
 
+// TODO(crbug.com/537849253): Simplify this test suite to GlicBrowserTest.
 class GlicChannelWebViewTest
     : public glic::NonInteractiveGlicTest,
       public testing::WithParamInterface<version_info::Channel> {

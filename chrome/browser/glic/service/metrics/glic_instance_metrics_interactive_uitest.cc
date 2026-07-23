@@ -42,6 +42,7 @@ constexpr base::TimeDelta kStartTimerMs = base::Milliseconds(5);
 constexpr base::TimeDelta kDebounceTimeoutMs = base::Milliseconds(1);
 }  // namespace
 
+// TODO(crbug.com/537846973): Migrate this test suite to GlicBrowserTest.
 class GlicInstanceMetricsTest : public test::InteractiveGlicTest {
  public:
   GlicInstanceMetricsTest() {

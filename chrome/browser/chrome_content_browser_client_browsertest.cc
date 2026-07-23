@@ -446,6 +446,7 @@ IN_PROC_BROWSER_TEST_F(PageColorsBrowserClientTest,
                    "getPropertyValue('color').toString()"));
 }
 
+// TODO(crbug.com/537849089): Simplify this test suite to GlicBrowserTest.
 using PrefersColorSchemeTestBase = glic::NonInteractiveGlicTest;
 
 // Tests for the preferred color scheme for a given WebContents. The first param

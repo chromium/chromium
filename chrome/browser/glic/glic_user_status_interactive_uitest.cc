@@ -33,6 +33,7 @@ namespace {
 // hides based on the user's Glic status. It also checks the state of the Glic
 // settings bubble, ensuring that for signed-in users, a "cr-domain" icon is
 // visible and relevant controls are disabled.
+// TODO(crbug.com/537846755): Migrate this test suite to GlicBrowserTest.
 class GlicUserStatusInteractiveUiTest : public test::InteractiveGlicTest {
  public:
   GlicUserStatusInteractiveUiTest() {

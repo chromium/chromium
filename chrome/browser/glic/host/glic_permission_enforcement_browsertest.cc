@@ -18,6 +18,7 @@ namespace glic {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
 
+// TODO(crbug.com/537847154): Migrate this test suite to GlicApiBrowserTest.
 class GlicPermissionEnforcementUiTest : public NonInteractiveGlicTest {
  public:
   GlicPermissionEnforcementUiTest()

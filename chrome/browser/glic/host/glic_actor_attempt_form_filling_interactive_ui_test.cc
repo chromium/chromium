@@ -104,6 +104,7 @@ class MockExecutionEngine : public ExecutionEngine {
               (override));
 };
 
+// TODO(crbug.com/537846598): Migrate this test suite to GlicApiBrowserTest.
 class GlicActorAttemptFormFillingUiTest : public GlicActorUiTest {
  public:
   GlicActorAttemptFormFillingUiTest() {

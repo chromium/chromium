@@ -16,6 +16,7 @@ namespace {
 
 namespace apc = ::optimization_guide::proto;
 
+// TODO(crbug.com/537846734): Migrate this test suite to GlicBrowserTest.
 class GlicActorAutofillDisabledUiTest : public GlicActorUiTest {
  public:
   GlicActorAutofillDisabledUiTest() {
