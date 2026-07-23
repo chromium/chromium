@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <limits>
 
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -285,9 +284,8 @@ gfx::Rect RenderSurfaceImpl::CalculateClippedAccumulatedContentRect() {
     return gfx::Rect();
 
   gfx::Rect clipped_accumulated_rect_in_local_space =
-      MathUtil::ProjectEnclosingClippedRectIgnoringError(
-          target_to_surface, clipped_accumulated_rect_in_target_space,
-          std::numeric_limits<float>::epsilon());
+      MathUtil::ProjectEnclosingClippedRect(
+          target_to_surface, clipped_accumulated_rect_in_target_space);
   // Bringing clipped accumulated rect back to local space may result
   // in inflation due to axis-alignment.
   clipped_accumulated_rect_in_local_space.Intersect(accumulated_content_rect());
@@ -418,9 +416,8 @@ void RenderSurfaceImpl::AccumulateContentRectFromContributingRenderSurface(
   // The content rect of contributing surface is in its own space. Instead, we
   // will use contributing surface's DrawableContentRect which is in target
   // space (local space for this render surface) as required.
-  accumulated_content_rect_.Union(gfx::ToEnclosingRectIgnoringError(
-      contributing_surface->DrawableContentRect(),
-      std::numeric_limits<float>::epsilon()));
+  accumulated_content_rect_.Union(
+      gfx::ToEnclosedRect(contributing_surface->DrawableContentRect()));
 
   // Now if contributing surface is a *matching* view transition element,
   // meaning that we're doing a capture, then above we ensure that we can use
