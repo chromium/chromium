@@ -37,17 +37,13 @@ class ChromeClientSideDetectionHostDelegate
 
   // ClientSideDetectionHost::Delegate implementation.
   bool HasSafeBrowsingUserInteractionObserver() override;
-  PrefService* GetPrefs() override;
   scoped_refptr<SafeBrowsingDatabaseManager> GetSafeBrowsingDBManager()
       override;
   scoped_refptr<BaseUIManager> GetSafeBrowsingUIManager() override;
-  base::WeakPtr<ClientSideDetectionService> GetClientSideDetectionService()
-      override;
   void AddReferrerChain(ClientPhishingRequest* verdict,
                         GURL current_url,
                         const content::GlobalRenderFrameHostId&
                             current_outermost_main_frame_id) override;
-  VerdictCacheManager* GetCacheManager() override;
   ChromeUserPopulation GetUserPopulation() override;
   void GetInnerText(HostInnerTextCallback callback) override;
   void MaybeStartGeminiAntiscamProtection(

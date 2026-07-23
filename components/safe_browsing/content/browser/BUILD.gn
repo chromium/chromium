@@ -166,12 +166,10 @@ source_set("unit_tests") {
     "async_check_tracker_unittest.cc",
     "client_report_util_unittest.cc",
     "client_side_detection_feature_cache_unittest.cc",
-    "credit_card_form_event_unittest.cc",
   ]
 
   deps = [
     ":client_side_detection_images_cache",
-    ":credit_card_form_event",
     "//base",
     "//base/test:test_support",
     "//components/optimization_guide/core",
@@ -250,19 +248,6 @@ source_set("client_side_detection_images_cache") {
   }
 }
 
-source_set("credit_card_form_event") {
-  sources = [
-    "credit_card_form_event.cc",
-    "credit_card_form_event.h",
-  ]
-
-  deps = [ "//base" ]
-
-  if (is_android) {
-    deps += [ "//components/safe_browsing/core/browser:referring_app_info" ]
-  }
-}
-
 if (safe_browsing_mode != 0) {
   source_set("client_side_detection_service") {
     sources = [
@@ -306,16 +291,15 @@ if (safe_browsing_mode != 0) {
     deps = [
       ":client_side_detection_images_cache",
       ":client_side_detection_service",
-      ":credit_card_form_event",
       "//base",
       "//components/autofill/content/browser",
-      "//components/autofill/core/browser",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/permissions",
       "//components/prefs",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/browser",
       "//components/safe_browsing/content/common:interfaces",
+      "//components/safe_browsing/core/browser",
       "//components/safe_browsing/core/browser:intelligent_scan_delegate",
       "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/browser:verdict_cache_manager",

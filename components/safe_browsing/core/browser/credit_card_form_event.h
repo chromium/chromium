@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CREDIT_CARD_FORM_EVENT_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CREDIT_CARD_FORM_EVENT_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CREDIT_CARD_FORM_EVENT_H_
+#define COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CREDIT_CARD_FORM_EVENT_H_
 
 #include <string_view>
 
@@ -128,4 +128,4 @@ void LogDedupedEvent(SiteVisit site_visit,
 
 }  // namespace safe_browsing::credit_card_form
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_CREDIT_CARD_FORM_EVENT_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_CREDIT_CARD_FORM_EVENT_H_

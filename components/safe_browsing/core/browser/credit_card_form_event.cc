@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/credit_card_form_event.h"
+#include "components/safe_browsing/core/browser/credit_card_form_event.h"
 
 #include <optional>
 

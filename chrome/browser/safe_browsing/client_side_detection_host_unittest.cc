@@ -56,15 +56,16 @@
 #include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
-#include "components/safe_browsing/content/browser/credit_card_form_event.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
+#include "components/safe_browsing/core/browser/credit_card_form_event.h"
 #include "components/safe_browsing/core/browser/csd_model_type.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -498,7 +499,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
     csd_host_ =
         ChromeClientSideDetectionHostDelegate::CreateHost(web_contents());
-    csd_host_->set_client_side_detection_service(csd_service_->GetWeakPtr());
+    csd_host_->set_client_side_detection_service_for_testing(
+        csd_service_->GetWeakPtr());
     csd_host_->set_ui_manager(ui_manager_.get());
     csd_host_->set_database_manager(database_manager_.get());
     csd_host_->set_tick_clock_for_testing(&clock_);
@@ -2662,7 +2664,7 @@ class ClientSideDetectionHostCreditCardFormTest
       ADD_FAILURE();
     }
 
-    csd_host_->set_history_service_for_testing(history_service_.get());
+    csd_host_->SetAndObserveHistoryServiceForTesting(history_service_.get());
   }
 
   void TearDown() override {

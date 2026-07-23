@@ -4,6 +4,10 @@
 
 source_set("browser") {
   sources = [
+    "client_side_detection_host_base.cc",
+    "client_side_detection_host_base.h",
+    "credit_card_form_event.cc",
+    "credit_card_form_event.h",
     "database_manager_mechanism.cc",
     "database_manager_mechanism.h",
     "hash_realtime_mechanism.cc",
@@ -37,12 +41,16 @@ source_set("browser") {
   ]
 
   deps = [
+    ":verdict_cache_manager",
     "//base",
+    "//components/autofill/core/browser",
     "//components/content_settings/core/browser",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
+    "//components/safe_browsing/core/browser:intelligent_scan_delegate",
     "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser:sync_observer",
     "//components/safe_browsing/core/browser:token_fetcher",
@@ -111,13 +119,19 @@ source_set("client_side_detection_service_base_unittest") {
   testonly = true
   sources = [
     "client_side_detection_feature_cache_base_unittest.cc",
+    "client_side_detection_host_base_unittest.cc",
     "client_side_detection_service_base_unittest.cc",
     "client_side_phishing_model_unittest.cc",
+    "credit_card_form_event_unittest.cc",
   ]
   deps = [
     ":browser",
     ":client_side_detection_service_base",
+    ":referring_app_info",
+    ":verdict_cache_manager",
     "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/history/core/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -128,6 +142,7 @@ source_set("client_side_detection_service_base_unittest") {
     "//components/safe_browsing/core/common/fbs:client_model",
     "//components/safe_browsing/core/common/proto:client_model_proto",
     "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/sync_preferences:test_support",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

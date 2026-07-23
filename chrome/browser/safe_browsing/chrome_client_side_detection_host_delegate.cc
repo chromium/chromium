@@ -44,12 +44,15 @@ std::unique_ptr<ClientSideDetectionHost>
 ChromeClientSideDetectionHostDelegate::CreateHost(content::WebContents* tab) {
   content::BrowserContext* browser_context = tab->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
+  ClientSideDetectionService* csd_service =
+      ClientSideDetectionServiceFactory::GetForProfile(profile);
   return ClientSideDetectionHost::Create(
       tab, std::make_unique<ChromeClientSideDetectionHostDelegate>(tab),
       ClientSideDetectionIntelligentScanDelegateFactory::GetForProfile(profile),
-      profile->GetPrefs(),
+      profile->GetPrefs(), VerdictCacheManagerFactory::GetForProfile(profile),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::IMPLICIT_ACCESS),
+      csd_service ? csd_service->GetWeakPtr() : nullptr,
       std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
           IdentityManagerFactory::GetForProfile(profile)),
       profile->IsOffTheRecord(),
@@ -66,12 +69,6 @@ ChromeClientSideDetectionHostDelegate::
 bool ChromeClientSideDetectionHostDelegate::
     HasSafeBrowsingUserInteractionObserver() {
   return SafeBrowsingUserInteractionObserver::FromWebContents(web_contents_);
-}
-
-PrefService* ChromeClientSideDetectionHostDelegate::GetPrefs() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-  return profile ? profile->GetPrefs() : nullptr;
 }
 
 scoped_refptr<SafeBrowsingDatabaseManager>
@@ -94,19 +91,6 @@ scoped_refptr<BaseUIManager>
 ChromeClientSideDetectionHostDelegate::GetSafeBrowsingUIManager() {
   SafeBrowsingService* sb_service = g_browser_process->safe_browsing_service();
   return sb_service ? sb_service->ui_manager() : nullptr;
-}
-
-base::WeakPtr<ClientSideDetectionService>
-ChromeClientSideDetectionHostDelegate::GetClientSideDetectionService() {
-  ClientSideDetectionService* service =
-      ClientSideDetectionServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-  return service ? service->GetWeakPtr() : nullptr;
-}
-
-VerdictCacheManager* ChromeClientSideDetectionHostDelegate::GetCacheManager() {
-  return VerdictCacheManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
 }
 
 void ChromeClientSideDetectionHostDelegate::AddReferrerChain(
