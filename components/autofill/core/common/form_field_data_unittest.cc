@@ -506,7 +506,7 @@ TEST(FormFieldDataTest, IsTextInputElement) {
     SCOPED_TRACE(testing::Message() << test_case.form_control_type);
     FormFieldData data;
     data.set_form_control_type(test_case.form_control_type);
-    EXPECT_EQ(test_case.expected, data.IsTextInputElement());
+    EXPECT_EQ(data.IsTextInputElement(), test_case.expected);
   }
 }
 
