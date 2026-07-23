@@ -1899,6 +1899,13 @@
         {}
        ]
       ],
+      "update-delay-of-paused-animation.html": [
+       "2795a58f5a83f8d2f47948700677dece1a09dbe8",
+       [
+        null,
+        {}
+       ]
+      ],
       "webkit-filter-default-arg.html": [
        "f08af7ac21ce56e7c240f73db6cc8f6976943a78",
        [
@@ -3997,6 +4004,13 @@
      "crashtests": {
       "anonymous-block-merge.html": [
        "cd34a5e4a76930d8c2171bd6311d431881b57958",
+       [
+        null,
+        {}
+       ]
+      ],
+      "fragmented-anon-box-remove.html": [
+       "cfdd05207c6005059e8e54a31b5843a9e0fe9443",
        [
         null,
         {}
@@ -6120,6 +6134,13 @@
      },
      "text-child-crash.html": [
       "16e435823458eba768a23a652803882608ed5185",
+      [
+       null,
+       {}
+      ]
+     ],
+     "textarea-text-overflow-ellipsis-crash.html": [
+      "90cf1460f7b5d63568ef88b8302aab2b405f787e",
       [
        null,
        {}
@@ -32278,7 +32299,7 @@
       ]
      ],
      "fragmented-inline-block-002-print.html": [
-      "c5390aad6c09085b76ffb2d5355f7f4a2def001d",
+      "f2203a10915f331d0f8bf9e35f33149b9852539f",
       [
        null,
        [
@@ -97883,7 +97904,7 @@
        ]
       ],
       "corner-shape-bevel.html": [
-       "257f077ff2f46fad301e3fc339f02bf29137edf3",
+       "8ffbe74c703474fb9967871fcbedc007e224ef45",
        [
         null,
         [
@@ -97899,11 +97920,11 @@
            [
             [
              0,
-             13
+             120
             ],
             [
              0,
-             135
+             200
             ]
            ]
           ]
@@ -98028,7 +98049,7 @@
        ]
       ],
       "corner-shape-inset-shadow.html": [
-       "5a84f7e27cd6eca750cf6b324b5f08ba2b1792b3",
+       "f40200b5cf85a4ac301e5e134af32534a44342e4",
        [
         null,
         [
@@ -98048,7 +98069,7 @@
             ],
             [
              0,
-             360
+             450
             ]
            ]
           ]
@@ -98070,7 +98091,7 @@
        ]
       ],
       "corner-shape-notch-mixed.html": [
-       "d0afc2f64d66e96baa03d57728f374b37842b532",
+       "e73544df7db7b79672472f87081363ad77267ccf",
        [
         null,
         [
@@ -98079,11 +98100,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             120
+            ],
+            [
+             0,
+             40
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "corner-shape-notch.html": [
-       "627d08d505ca5dad92a71df0d02022aa13c60c36",
+       "a74063c532553590bedece66ebeeb3c4dd0b0fcb",
        [
         null,
         [
@@ -98099,11 +98136,11 @@
            [
             [
              0,
-             2
+             120
             ],
             [
              0,
-             20
+             40
             ]
            ]
           ]
@@ -98141,7 +98178,7 @@
        ]
       ],
       "corner-shape-scoop.html": [
-       "6b3baa7ee4546c02e76072783db7e6a3aed29ec4",
+       "8305aaa0c382f453c4c257e46ffa53968d15315c",
        [
         null,
         [
@@ -98157,7 +98194,7 @@
            [
             [
              0,
-             43
+             143
             ],
             [
              0,
@@ -98225,7 +98262,7 @@
        ]
       ],
       "corner-shape-superellipse-bevel.html": [
-       "0a5542ba0556b022c3a725efeca55c7bc6bd03b5",
+       "a8d1748651fc0b9731dd33b595e24ac60654b0f4",
        [
         null,
         [
@@ -98241,11 +98278,11 @@
            [
             [
              0,
-             1
+             120
             ],
             [
              0,
-             50
+             200
             ]
            ]
           ]
@@ -98254,7 +98291,7 @@
        ]
       ],
       "corner-shape-superellipse-negative-100.html": [
-       "f7866c46f2eb75880554554d08c8df1d9fd66076",
+       "282c7b0f30c116f1f0af12b5655168b6f6ef3564",
        [
         null,
         [
@@ -98263,11 +98300,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             120
+            ],
+            [
+             0,
+             40
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "corner-shape-superellipse-negative-inf.html": [
-       "68016c709fb63f54ec4dbfd1aa45aaeeb5707204",
+       "40a7f8939f9b3214f556fa8ce722260efb2b900d",
        [
         null,
         [
@@ -98276,11 +98329,27 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             120
+            ],
+            [
+             0,
+             40
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "corner-shape-superellipse-scoop.html": [
-       "e95f02e7287fccbf7d7f5d10ede7a77c4eb0516f",
+       "23b4daa1b1b5cb91fe647a7fe62f3acdb45e4f54",
        [
         null,
         [
@@ -98296,10 +98365,10 @@
            [
             [
              0,
-             43
+             143
             ],
             [
-             374,
+             0,
              374
             ]
            ]
@@ -98380,7 +98449,7 @@
        ]
       ],
       "render-corner-shape.html": [
-       "57c4a354ecb27f2f97c6eaf87aab02642d4c14e8",
+       "36bc09ed69802de8c54b8671a9536417ec7a42c3",
        [
         "css/css-borders/corner-shape/render-corner-shape.html?border-radius=25&corner-shape=2&shadow-spread=10",
         [
@@ -98396,11 +98465,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98422,11 +98491,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98448,11 +98517,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98474,11 +98543,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98500,11 +98569,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98526,11 +98595,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98552,11 +98621,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98578,11 +98647,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98604,11 +98673,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98630,11 +98699,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98656,11 +98725,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98682,11 +98751,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98708,11 +98777,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98734,11 +98803,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98760,11 +98829,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98786,11 +98855,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98812,11 +98881,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98838,11 +98907,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98864,11 +98933,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98890,11 +98959,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98916,11 +98985,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98942,11 +99011,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98968,11 +99037,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -98994,11 +99063,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99020,11 +99089,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99046,11 +99115,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99072,11 +99141,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99098,11 +99167,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99124,11 +99193,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99150,11 +99219,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99176,11 +99245,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99202,11 +99271,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99228,11 +99297,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99254,11 +99323,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99280,11 +99349,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99306,11 +99375,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99332,11 +99401,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99358,11 +99427,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99384,11 +99453,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99410,11 +99479,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99436,11 +99505,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99462,11 +99531,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99488,11 +99557,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99514,11 +99583,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -99540,11 +99609,11 @@
            [
             [
              0,
-             64
+             200
             ],
             [
              0,
-             128
+             400
             ]
            ]
           ]
@@ -193418,6 +193487,19 @@
          {}
         ]
        ],
+       "clip-path-shape-interpolation-with-zoom.html": [
+        "2a3d8e0991f2c3fb47bad36fb5330b884dc66c12",
+        [
+         null,
+         [
+          [
+           "/css/css-masking/clip-path/animations/clip-path-path-interpolation-with-zoom-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "clip-path-shape-transition-with-zoom.html": [
         "da6190702e0061db35ac49474de26291509fe2c6",
         [
@@ -198016,6 +198098,32 @@
         {}
        ]
       ],
+      "backdrop-filter-mask-image-multi-layer-after-load.tentative.html": [
+       "5726440f99ce4a48cac3fec420dabb3a2aeb1453",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/mask-image/backdrop-filter-mask-image-multi-layer-after-load-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "backdrop-filter-mask-image-multi-layer-while-loading.tentative.html": [
+       "9b45b3f12d387b3d5594ee0bd6a166765819ebf7",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/mask-image/backdrop-filter-mask-image-multi-layer-hidden-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "backdrop-filter-mask-image-while-loading.html": [
        "9b046830e3222536555ef4044259e308fd1500a7",
        [
@@ -198829,6 +198937,19 @@
         [
          [
           "/css/css-masking/mask-image/reference/mask-image-inline-sliced-1-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "mask-image-multi-layer-while-loading.tentative.html": [
+       "2431f364507e24870148484dd7c3790c2f6a9113",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/mask-image/mask-image-multi-layer-while-loading-ref.html",
           "=="
          ]
         ],
@@ -302493,6 +302614,19 @@
         {}
        ]
       ],
+      "border-width-keywords.html": [
+       "cd348b89423bbad5c94dfa5f04cf0d9920581f31",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/border-width-keywords-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "border-width.html": [
        "da853666efbcccfb27c338dbc898926a6daa43d8",
        [
@@ -302552,6 +302686,32 @@
         [
          [
           "/css/css-viewport/zoom/reference/column-gap-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "column-rule-width-keywords.html": [
+       "b3a97a79ef6268dd410733531d6878baeb3ef616",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/column-rule-width-keywords-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "column-rule-width.html": [
+       "02403d34bcfeeaf16e0b636a1e582cbc034fa19e",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/column-rule-width-ref.html",
           "=="
          ]
         ],
@@ -303161,6 +303321,45 @@
         {}
        ]
       ],
+      "outline-offset.html": [
+       "a7994f98c9af4ee0075886026c0cc14f76c61b1e",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/outline-offset-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "outline-width-keywords.html": [
+       "bac0b0d4cd193e672cd96de56b721a1d6dd5d3d8",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/outline-width-keywords-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "outline-width.html": [
+       "5c90f300e5de0aa1f577a8f1092a9f705e9320e9",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/outline-width-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "perspective.html": [
        "43a1699c61c60f66beef9cb8dd8b9284cc6fc105",
        [
@@ -303236,6 +303435,84 @@
         [
          [
           "/css/css-viewport/zoom/reference/scroll-padding-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "shape-outside-circle.html": [
+       "db030112531c9f58cee20f5d0cce0fe6d0f05e28",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/shape-outside-circle-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "shape-outside-ellipse.html": [
+       "9a06efa55b2b11f7941de36d62f388228ca5baeb",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/shape-outside-ellipse-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "shape-outside-inset.html": [
+       "94ce17eee3abb91f7b6de5eea6cb11e8bcd4f7f5",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/shape-outside-inset-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "shape-outside-polygon.html": [
+       "58364767757e4a61bbb0cb2fc98568e23762c977",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/shape-outside-polygon-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "shape-outside-rect.html": [
+       "0fa9cf7545c4de980499fd31d694e2af056dc8c6",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/shape-outside-rect-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "shape-outside-xywh.html": [
+       "86a3d6290acfadfb1fdc2b52417ac141951d22c2",
+       [
+        null,
+        [
+         [
+          "/css/css-viewport/zoom/reference/shape-outside-xywh-ref.html",
           "=="
          ]
         ],
@@ -347537,6 +347814,19 @@
         [
          [
           "/html/rendering/widgets/text-control-flow-root-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "textarea-multicol.html": [
+       "37cc240019cb594eb489032b7c6f63564a108ac4",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/textarea-multicol-ref.html",
           "=="
          ]
         ],
@@ -420283,6 +420573,14 @@
        "885078eb284865c868e50368528d35193b759857",
        []
       ],
+      "backdrop-filter-mask-image-multi-layer-after-load-ref.html": [
+       "659e584c918f49e5ad549aff237cf37f8f8694ca",
+       []
+      ],
+      "backdrop-filter-mask-image-multi-layer-hidden-ref.html": [
+       "1c84d05fb1f196bf9cb2f26f66ed346518d92f80",
+       []
+      ],
       "mask-clip-1-ref.html": [
        "3925bd4f1db4fa25b93e9e121afdf0940ae0bd4b",
        []
@@ -420361,6 +420659,10 @@
       ],
       "mask-image-cors-001-styles.sub.css": [
        "b489a9e75eb8af6a03114c8e021e15f948e979af",
+       []
+      ],
+      "mask-image-multi-layer-while-loading-ref.html": [
+       "8570c94172f220d5bd314c8afb6b331f38ea31f8",
        []
       ],
       "mask-mode-luminance-with-mask-size-ref.html": [
@@ -439528,10 +439830,6 @@
       "0842b7d40383937ea899510960cf67a3bc826b69",
       []
      ],
-     "random-item-computed-expected.txt": [
-      "49c8cf53275d6898a64609cc6704548506549b2f",
-      []
-     ],
      "random-item-in-keyframe-expected.txt": [
       "af73204343bf728ebb7b31a38ac3dc85cf37f034",
       []
@@ -439941,10 +440239,6 @@
       ],
       "sibling-function-descriptors.tentative-expected.txt": [
        "af9e75c66ba1693a8135b1f34424a9f28c2426ff",
-       []
-      ],
-      "tree-scoped-sibling-function-expected.txt": [
-       "dcacba6b4501e74b0306d8fc998227e1bcc6a5ff",
        []
       ]
      },
@@ -441346,6 +441640,10 @@
         "cec4adccaab309b2f543fe075bc3ed44c2507fa3",
         []
        ],
+       "border-width-keywords-ref.html": [
+        "b4312c6f81f4cc7f38e3c88fab4e364102c37397",
+        []
+       ],
        "box-shadow-inset-spread-ref.html": [
         "1e6bfde661634ba39c270c242bbb281a78b17b54",
         []
@@ -441356,6 +441654,14 @@
        ],
        "column-gap-ref.html": [
         "7a01269c4bf5bcab9d7199744d923606386956d4",
+        []
+       ],
+       "column-rule-width-keywords-ref.html": [
+        "391bfc8df82f0fea1c4d095fad97739a887768c9",
+        []
+       ],
+       "column-rule-width-ref.html": [
+        "b4e47b1847b5b914447734c458b0cef87e1581fb",
         []
        ],
        "column-width-ref.html": [
@@ -441414,6 +441720,18 @@
         "588b66f04a34dcc43bbb9c8e75756a43e7aa0ae8",
         []
        ],
+       "outline-offset-ref.html": [
+        "dffad3922918497f1a3fccd6458a69fc7e614dc3",
+        []
+       ],
+       "outline-width-keywords-ref.html": [
+        "24d7735b3c71b0b86d2cefdc9391da84fb33ff90",
+        []
+       ],
+       "outline-width-ref.html": [
+        "d1209cdc222a436f06b3aaf09017395badc9f806",
+        []
+       ],
        "perspective-ref.html": [
         "8e807989602aad00d856c5ca2cc71e82b8a3a8c4",
         []
@@ -441428,6 +441746,30 @@
        ],
        "scroll-padding-ref.html": [
         "51a0ffb2ed15a82aca6866dbfada078019251a2f",
+        []
+       ],
+       "shape-outside-circle-ref.html": [
+        "777a1e6033d6a8145ba52387e91d15f29e0d2d7e",
+        []
+       ],
+       "shape-outside-ellipse-ref.html": [
+        "3bee30c15ab098dc017c8a92afe6d67f1bf3277f",
+        []
+       ],
+       "shape-outside-inset-ref.html": [
+        "19f1c01744b0c339f6d02272367182e79065ecce",
+        []
+       ],
+       "shape-outside-polygon-ref.html": [
+        "52aaf23fcc064637117676176a74b40d8bf52971",
+        []
+       ],
+       "shape-outside-rect-ref.html": [
+        "3f034ab5c2660f0d3747539e2663037c440477d6",
+        []
+       ],
+       "shape-outside-xywh-ref.html": [
+        "2064452a087aaa78ea9766dcd736ec1a575c55da",
         []
        ],
        "stroke-ref.html": [
@@ -446481,7 +446823,7 @@
       []
      ],
      "fragmented-inline-block-002-print-ref.html": [
-      "dcfa3a1385628a90cb2d1be17e8bf6da09cde20e",
+      "33e593cc0d25f76dc1136832cb52112aea310c52",
       []
      ],
      "input-file-print-ref.html": [
@@ -454234,6 +454576,10 @@
       "19f5effa1127eebf36f02de48fbf51683f540824",
       []
      ],
+     "compressed-large-resources-001.tentative.https-expected.txt": [
+      "a2dda21a8e2dd5d06f692707939ddc94cdbd5e84",
+      []
+     ],
      "dictionary-fetch-with-link-connect-src-nonce.tentative.https.html.headers": [
       "97f2d0d2c018dd6accc36aaba7a3bc85273a57bc",
       []
@@ -454260,7 +454606,7 @@
        []
       ],
       "compression-dictionary-util.sub.js": [
-       "0625f4ee644a6dc05b7a3c6073c744a8504dd19c",
+       "d081dea203f7ed2ac671e2d419459789d155b219",
        []
       ],
       "dictionary-fetch-timing-001-subframe.https.html": [
@@ -454300,7 +454646,7 @@
        []
       ],
       "fetch-options-worker.js": [
-       "1fff3e11afc0205186cc3eaa42f099c649e8eb40",
+       "8782e2c01e91d9f901e075133c60766635e0e0b2",
        []
       ],
       "handler_utils.py": [
@@ -454318,7 +454664,149 @@
       "register-dictionary.py": [
        "6ef9bd5586c2bcd30a79bca17c05029ae782660d",
        []
-      ]
+      ],
+      "static": {
+       "Makefile": [
+        "90901b097aef3afb136eff3a77cdbe7f8f866623",
+        []
+       ],
+       "dcb-header": [
+        "60573deb5cdad1a91bdc0fc72163a3c40fa53af3",
+        []
+       ],
+       "dcz-header": [
+        "d185f292dcb23cc08101d9ab23fb998d0a85275b",
+        []
+       ],
+       "image-001.png": [
+        "d65838b7f02b830e2fc05b7e20fee2e2d7ebd45d",
+        []
+       ],
+       "image-001.png.headers": [
+        "d61d7ee522c51a1556ffaf6c96c5f5e597ba253d",
+        []
+       ],
+       "script-001.js": [
+        "4a250aaacaf01f12ef8575215a0c670017f23e98",
+        []
+       ],
+       "script-001.js.headers": [
+        "d61d7ee522c51a1556ffaf6c96c5f5e597ba253d",
+        []
+       ],
+       "self-compressed-image-001.png.dcb": [
+        "5e0b90c088e808284565ec074abe3c0adef95eca",
+        []
+       ],
+       "self-compressed-image-001.png.dcb.headers": [
+        "2bb5d5586dc33615a01cdac02fb2546d1e359c2a",
+        []
+       ],
+       "self-compressed-image-001.png.dcz": [
+        "9a9697ed91ab1791fb4d3353a608d5d1a4ea4db8",
+        []
+       ],
+       "self-compressed-image-001.png.dcz.headers": [
+        "1a7248948f961a42500743b618aa3781fb0b22b7",
+        []
+       ],
+       "self-compressed-script-001.js.dcb": [
+        "8448c1b95004b8ace008aaea8ddbbe144c181efd",
+        []
+       ],
+       "self-compressed-script-001.js.dcb.headers": [
+        "2fde04cb09651db829aac752326c1fbaa82490c9",
+        []
+       ],
+       "self-compressed-script-001.js.dcz": [
+        "27dc21e877a30e9aa3a6bf0016b4dd04011ba6e9",
+        []
+       ],
+       "self-compressed-script-001.js.dcz.headers": [
+        "c850def7b25313743c9b933cf11f2ac3b2ceb7c1",
+        []
+       ],
+       "self-compressed-style-001.css.dcb": [
+        "c1ce52f19591af8ddf739fcfbf9d4f1acb2ccb3a",
+        []
+       ],
+       "self-compressed-style-001.css.dcb.headers": [
+        "8c5017ddfb819996ac90b097eaea8294e0058d5b",
+        []
+       ],
+       "self-compressed-style-001.css.dcz": [
+        "6e62e01b4f1c5599821b749a4a31f937622d46df",
+        []
+       ],
+       "self-compressed-style-001.css.dcz.headers": [
+        "cae4a3b80e849e874b1e5f9433d4d500cb3a457f",
+        []
+       ],
+       "self-compressed-subframe-001.html.dcb": [
+        "5ad3038785f2c04bdf9c907bd0753eee6f0156a3",
+        []
+       ],
+       "self-compressed-subframe-001.html.dcb.headers": [
+        "d735b6fe530b83b65716f5559ff158f2d362349e",
+        []
+       ],
+       "self-compressed-subframe-001.html.dcz": [
+        "11383ff3134f3e8551230d994f189d70fc5e94a8",
+        []
+       ],
+       "self-compressed-subframe-001.html.dcz.headers": [
+        "b2244c9c0b190c6295f9540685b1536b59825261",
+        []
+       ],
+       "style-001.css": [
+        "09d437f437e8e446d1ed6a09189df18b68d50d51",
+        []
+       ],
+       "style-001.css.headers": [
+        "d61d7ee522c51a1556ffaf6c96c5f5e597ba253d",
+        []
+       ],
+       "subframe-001-compressed-by-script-001.html.dcb": [
+        "2e06c57852ea6cc30cda846089d274879c66a701",
+        []
+       ],
+       "subframe-001-compressed-by-script-001.html.dcb.headers": [
+        "d735b6fe530b83b65716f5559ff158f2d362349e",
+        []
+       ],
+       "subframe-001-compressed-by-script-001.html.dcz": [
+        "141f8e782e67ee206690bdf5a607a2df7db89431",
+        []
+       ],
+       "subframe-001-compressed-by-script-001.html.dcz.headers": [
+        "b2244c9c0b190c6295f9540685b1536b59825261",
+        []
+       ],
+       "subframe-001-compressed-by-style-001.html.dcb": [
+        "1276cbb11ba687d6190ac3e30dccd761476a5643",
+        []
+       ],
+       "subframe-001-compressed-by-style-001.html.dcb.headers": [
+        "d735b6fe530b83b65716f5559ff158f2d362349e",
+        []
+       ],
+       "subframe-001-compressed-by-style-001.html.dcz": [
+        "e5c5b872ce0ae63d35720bb0eb5a586319c10cb8",
+        []
+       ],
+       "subframe-001-compressed-by-style-001.html.dcz.headers": [
+        "b2244c9c0b190c6295f9540685b1536b59825261",
+        []
+       ],
+       "subframe-001.html": [
+        "89209f4c2cd2c77cb02e60aed592afc8e7582723",
+        []
+       ],
+       "subframe-001.html.headers": [
+        "d61d7ee522c51a1556ffaf6c96c5f5e597ba253d",
+        []
+       ]
+      }
      }
     },
     "connection-pool": {
@@ -471101,6 +471589,10 @@
        "df2783540d87462a6c0f99c7d2e6bf6e7fd657a1",
        []
       ],
+      "textarea-multicol-ref.html": [
+       "6d1040ef691295a1ef86fb2522afa5641a316dab",
+       []
+      ],
       "the-select-element": {
        "WEB_FEATURES.yml": [
         "edf7e2201b631cdb97c42aa359a1899603de7600",
@@ -477123,7 +477615,7 @@
         []
        ],
        "html5test-com.dat": [
-        "dca5e975ffbe3170f98952256e0b22a8d7808d5f",
+        "baa21f26bc10254478f41b03f5fd0f64b87e0283",
         []
        ],
        "inbody01.dat": [
@@ -477163,11 +477655,11 @@
         []
        ],
        "plain-text-unsafe.dat": [
-        "ac7d1f72877244bc5309995b521316b7e3d027ec",
+        "2d01b92573c9509148533ea4314b32f75349f650",
         []
        ],
        "processing-instructions.dat": [
-        "095f13a91f7aca7dec9ed5c1f391061f6f81d401",
+        "c516eab0943042edb5cca8562c4087329843814b",
         []
        ],
        "quirks01.dat": [
@@ -483505,7 +483997,7 @@
     }
    },
    "lint.ignore": [
-    "d29d3fe2945bdb3e0d50e3139dfdce474b2cc2ec",
+    "9269ded9cf9a69f7b0e283a859dfdc1e71c4a984",
     []
    ],
    "loading": {
@@ -488944,6 +489436,10 @@
       "fe25f034826249e99da51f3590092f8479b8f6ff",
       []
      ],
+     "permissions-policy-speaker-selection.html": [
+      "2f80d1b34c847ca3cd9353c695ebd21a38f6a873",
+      []
+     ],
      "permissions-policy-usb-worker.html": [
       "e50ac55a27669a88bffc1434042c3cc5fa9fc259",
       []
@@ -488976,7 +489472,15 @@
       "ff7ae4135338e3e525f6f5e0bfe38865c16b30e1",
       []
      ]
-    }
+    },
+    "speaker-selection-allowed-by-permissions-policy.https.sub.html.headers": [
+     "3f6ec8fd863890d764a6863fc3279bcd89e73d36",
+     []
+    ],
+    "speaker-selection-disabled-by-permissions-policy.https.sub.html.headers": [
+     "c5540a2ed9f7574e0d302a618ed49562ff8cb89d",
+     []
+    ]
    },
    "permissions-request": {
     "META.yml": [
@@ -505957,7 +506461,7 @@
       []
      ],
      "rendersizehint-robustness-helper.js": [
-      "8c93ad35546f777dd73622684e317267002fd0de",
+      "04b957d8e2abd4191015da0fcfe3c66c3979836a",
       []
      ],
      "rendersizehint-testing.js": [
@@ -562646,6 +563150,13 @@
        }
       ]
      ],
+     "iframe-connectionallowlist-reflection.html": [
+      "c08cc10c8686b17689709bf40886f7551b3fd260",
+      [
+       null,
+       {}
+      ]
+     ],
      "iframe-contentwindow-injection.sub.window.js": [
       "b682d442284228c83f1581cc14ef83661e969216",
       [
@@ -596216,6 +596727,13 @@
          null,
          {}
         ]
+       ],
+       "clip-path-shape-hittest.html": [
+        "e7fca513b32496652139d54670a79645c237ff60",
+        [
+         null,
+         {}
+        ]
        ]
       },
       "clip-path-path-with-zoom-hittest.html": [
@@ -624272,7 +624790,7 @@
       ]
      ],
      "child-indexed-pseudo-class.html": [
-      "2e496d854184796be55d66566af8739fd4a7f776",
+      "0cd025fa535f7474cce6b358529f74d703f676df",
       [
        null,
        {}
@@ -664930,6 +665448,24 @@
      }
     },
     "compression-dictionary": {
+     "compressed-large-resources-001.tentative.https.html": [
+      "981ba03d50a71de2a4d81175062d5e5b1e532702",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "compressed-large-resources-002.tentative.https.html": [
+      "e634489d46de5df13271dc4a171554c67f87c050",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "dictionary-clear-site-data-cache.tentative.https.html": [
       "b9764291bbb1c3edd73aceaa6cab2203762e85c4",
       [
@@ -664950,6 +665486,15 @@
      ],
      "dictionary-clear-site-data-storage.tentative.https.html": [
       "873c915a315226b1bbbcda1829d39018f8f95a1a",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "dictionary-compressed-fetch-with-link-match-dest.tentative.https.html": [
+      "4e66e4f1f8bc4f1bab0c0c967480b1b8f911cf61",
       [
        null,
        {
@@ -665155,6 +665700,15 @@
      ],
      "dictionary-registration.tentative.https.html": [
       "c932ad305ad7817b79c75e2070d38c5372ee0d55",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "fetch-destination.tentative.https.html": [
+      "41168cd4d108338a1065235ee6d4aa9e98cb190b",
       [
        null,
        {
@@ -768538,7 +769092,21 @@
        {}
       ]
      ]
-    }
+    },
+    "speaker-selection-allowed-by-permissions-policy.https.sub.html": [
+     "a4f4f220ff92530905a0d880b7b4f3ee236718e4",
+     [
+      null,
+      {}
+     ]
+    ],
+    "speaker-selection-disabled-by-permissions-policy.https.sub.html": [
+     "d54adb65c8b4f6cb536d59bebf42d1fb050381f7",
+     [
+      null,
+      {}
+     ]
+    ]
    },
    "permissions-request": {
     "idlharness.any.js": [
@@ -836455,7 +837023,7 @@
      },
      "the-scriptprocessornode-interface": {
       "scriptprocessor-rendersizehint.https.html": [
-       "adecfac8ceb8a0de469a260971ee3b0fb2979922",
+       "045879b50fddefa73211e1a76697e18974c2f597",
        [
         null,
         {}
