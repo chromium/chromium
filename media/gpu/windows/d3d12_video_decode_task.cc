@@ -14,7 +14,13 @@ namespace media {
 D3D12VideoDecoderTask::D3D12VideoDecoderTask() = default;
 
 D3D12VideoDecoderTask::~D3D12VideoDecoderTask() {
-  WaitForCompletion();
+  // The GPU may still be reading resources owned by this task (e.g.
+  // |command_allocator_|, |compressed_bitstream_|), so we must not let them be
+  // released until the fence has signaled. If the wait cannot be performed
+  // (only under catastrophic conditions such as being out of memory, where
+  // CreateEvent()/SetEventOnCompletion() fail), crash deterministically rather
+  // than freeing GPU-referenced resources out from under the driver.
+  CHECK(WaitForCompletion());
 }
 
 void D3D12VideoDecoderTask::SetFenceAndValue(scoped_refptr<D3D12Fence> fence,
