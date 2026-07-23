@@ -133,6 +133,16 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
         embedder_host, extension_host->GetFrameTreeNodeId());
   }
 
+  void SetUpStreamWithExtensionAndContent(
+      content::RenderFrameHost* embedder_host,
+      content::RenderFrameHost* extension_host,
+      content::FrameTreeNodeId content_frame_tree_node_id,
+      bool embedded) {
+    SetUpStreamWithExtension(embedder_host, extension_host, embedded);
+    mime_handler_stream_manager()->SetContentFrameTreeNodeIdForTesting(
+        embedder_host, content_frame_tree_node_id);
+  }
+
   // Notifies registry observers that an extension with `extension_id` was
   // unloaded with `reason`.
   void TriggerOnExtensionUnloaded(const ExtensionId& extension_id,
@@ -382,17 +392,16 @@ TEST_F(MimeHandlerStreamManagerTest, IsContentHost) {
   auto* content_host = CreateAndNavigateChild(extension_host, pdf_url);
   auto* other_host = CreateChildRenderFrameHost(extension_host);
 
-  SetUpStreamWithExtension(embedder_host, extension_host,
-                           /*embedded=*/true);
+  // In a real navigation, `stream_url_host` and `content_host` would be
+  // different RenderFrameHosts in the same FrameTreeNode (sharing the same
+  // FrameTreeNodeId). However, the test infrastructure creates them as
+  // separate FrameTreeNodes. To simulate the navigation, the stream's content
+  // frame tree node ID is set to `stream_url_host`'s FrameTreeNodeId.
+  SetUpStreamWithExtensionAndContent(embedder_host, extension_host,
+                                     stream_url_host->GetFrameTreeNodeId(),
+                                     /*embedded=*/true);
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
-
-  // `stream_url_host` and `content_host` should have the same frame tree node
-  // ID, but this isn't possible with the current test infrastructure. For
-  // testing purposes, it's okay to set the content frame tree node ID to the
-  // initial RFH.
-  manager->SetContentFrameTreeNodeIdForTesting(
-      embedder_host, stream_url_host->GetFrameTreeNodeId());
 
   // `stream_url_host` should be considered a content host, even if it isn't
   // navigating to the original URL.
@@ -584,17 +593,16 @@ TEST_F(MimeHandlerStreamManagerTest, ContentRenderFrameHostChanged) {
   auto* content_host = CreateAndNavigateChild(extension_host, pdf_url);
   auto* new_host = CreateChildRenderFrameHost(extension_host);
 
-  SetUpStreamWithExtension(embedder_host, extension_host,
-                           /*embedded=*/true);
+  // In a real navigation, `stream_url_host` and `content_host` would be
+  // different RenderFrameHosts in the same FrameTreeNode (sharing the same
+  // FrameTreeNodeId). However, the test infrastructure creates them as
+  // separate FrameTreeNodes. To simulate the navigation, the stream's content
+  // frame tree node ID is set to `stream_url_host`'s FrameTreeNodeId.
+  SetUpStreamWithExtensionAndContent(embedder_host, extension_host,
+                                     stream_url_host->GetFrameTreeNodeId(),
+                                     /*embedded=*/true);
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
-
-  // `stream_url_host` and `content_host` should have the same frame tree node
-  // ID, but this isn't possible with the current test infrastructure. For
-  // testing purposes, it's okay to set the content frame tree node ID to the
-  // initial RFH.
-  manager->SetContentFrameTreeNodeIdForTesting(
-      embedder_host, stream_url_host->GetFrameTreeNodeId());
 
   // Changing `stream_url_host` to `content_host` shouldn't delete the stream.
   manager->RenderFrameHostChanged(stream_url_host, content_host);
@@ -626,11 +634,10 @@ TEST_F(MimeHandlerStreamManagerTest,
       CreateAndNavigateChild(extension_host, pdf_url_with_fragment);
   auto* new_host = CreateChildRenderFrameHost(extension_host);
 
-  SetUpStreamWithExtension(embedder_host, extension_host,
-                           /*embedded=*/true);
+  SetUpStreamWithExtensionAndContent(embedder_host, extension_host,
+                                     content_host->GetFrameTreeNodeId(),
+                                     /*embedded=*/true);
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->SetContentFrameTreeNodeIdForTesting(
-      embedder_host, content_host->GetFrameTreeNodeId());
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
 
   // Changing the content host should delete the stream.
@@ -720,14 +727,11 @@ TEST_F(MimeHandlerStreamManagerTest, ContentFrameDeleted) {
   content::FrameTreeNodeId frame_tree_node_id =
       content_host->GetFrameTreeNodeId();
 
-  SetUpSimpleStream(embedder_host, /*container_number=*/1, /*embedded=*/true);
+  SetUpStreamWithExtensionAndContent(embedder_host, extension_host,
+                                     content_host->GetFrameTreeNodeId(),
+                                     /*embedded=*/true);
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
   ASSERT_TRUE(manager->GetStreamContainer(embedder_host));
-
-  // Set the content frame tree node ID so the stream can be deleted when the
-  // content host is deleted.
-  manager->SetContentFrameTreeNodeIdForTesting(embedder_host,
-                                               frame_tree_node_id);
 
   // Deleting the content host should cause the stream to be deleted.
   manager->FrameDeleted(frame_tree_node_id);
@@ -1414,11 +1418,10 @@ TEST_F(MimeHandlerStreamManagerTest, HostPrivilegeBypassWithPushState) {
   auto* extension_host = CreateChildRenderFrameHost(embedder_host);
   auto* content_host = CreateAndNavigateChild(extension_host, pdf_url);
 
-  SetUpStreamWithExtension(embedder_host, extension_host,
-                           /*embedded=*/true);
+  SetUpStreamWithExtensionAndContent(embedder_host, extension_host,
+                                     content_host->GetFrameTreeNodeId(),
+                                     /*embedded=*/true);
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->SetContentFrameTreeNodeIdForTesting(
-      embedder_host, content_host->GetFrameTreeNodeId());
 
   content::OverrideLastCommittedOrigin(
       extension_host,
@@ -1450,11 +1453,10 @@ TEST_F(MimeHandlerStreamManagerTest, AllowsFragmentNavigation) {
   auto* extension_host = CreateChildRenderFrameHost(embedder_host);
   auto* content_host = CreateAndNavigateChild(extension_host, pdf_url);
 
-  SetUpStreamWithExtension(embedder_host, extension_host,
-                           /*embedded=*/false);
+  SetUpStreamWithExtensionAndContent(embedder_host, extension_host,
+                                     content_host->GetFrameTreeNodeId(),
+                                     /*embedded=*/false);
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->SetContentFrameTreeNodeIdForTesting(
-      embedder_host, content_host->GetFrameTreeNodeId());
 
   content::OverrideLastCommittedOrigin(
       extension_host,
@@ -1521,11 +1523,10 @@ TEST_F(MimeHandlerStreamManagerTest,
   auto* content_host = CreateAndNavigateChild(extension_host, pdf_url);
   auto* new_host = CreateChildRenderFrameHost(extension_host);
 
-  SetUpStreamWithExtension(embedder_host, extension_host,
-                           /*embedded=*/true);
+  SetUpStreamWithExtensionAndContent(embedder_host, extension_host,
+                                     content_host->GetFrameTreeNodeId(),
+                                     /*embedded=*/true);
   MimeHandlerStreamManager* manager = mime_handler_stream_manager();
-  manager->SetContentFrameTreeNodeIdForTesting(
-      embedder_host, content_host->GetFrameTreeNodeId());
 
   // Simulate pushState URL spoofing on the embedder host.
   auto simulator = content::NavigationSimulator::CreateRendererInitiated(
