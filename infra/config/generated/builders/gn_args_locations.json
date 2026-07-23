@@ -982,6 +982,7 @@
     "win-updater-try-builder-rel": "try/win-updater-try-builder-rel/gn-args.json"
   },
   "tryserver.chromium.win": {
+    "gpu-fyi-cq-win-arm64": "try/gpu-fyi-cq-win-arm64/gn-args.json",
     "gpu-fyi-try-win10-amd-rel-64": "try/gpu-fyi-try-win10-amd-rel-64/gn-args.json",
     "gpu-fyi-try-win10-intel-exp-64": "try/gpu-fyi-try-win10-intel-exp-64/gn-args.json",
     "gpu-fyi-try-win10-intel-rel-64": "try/gpu-fyi-try-win10-intel-rel-64/gn-args.json",

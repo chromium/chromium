@@ -55,6 +55,7 @@ consoles.console_view(
     branch_selector = [
         branches.selector.ANDROID_BRANCHES,
         branches.selector.MAC_BRANCHES,
+        branches.selector.WINDOWS_BRANCHES,
     ],
     ordering = {
         None: ["Windows", "Mac", "Linux"],
@@ -3695,6 +3696,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Runs release GPU tests on stable Windows 11/Snapdragon X Elite configs (Dell Latitude 7455)",
     parent = "GPU FYI Win arm64 Builder",
     builder_spec = builder_config.builder_spec(
@@ -3782,6 +3784,7 @@ ci.thin_tester(
 
 gpu_fyi_windows_builder(
     name = "GPU FYI Win arm64 Builder",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Builds release Windows arm64 binaries for GPU testing",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
