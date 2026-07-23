@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "url/gurl.h"
 
-@class CommandDispatcher;
 @protocol BrowserProvider;
 class ProfileIOS;
 
@@ -21,15 +20,9 @@ class ProfileIOS;
 // Designated initializer.
 - (instancetype)initWithProfile:(ProfileIOS*)profile
                  sceneSessionID:(std::string)sceneSessionID
-              commandDispatcher:(CommandDispatcher*)commandDispatcher
     NS_DESIGNATED_INITIALIZER;
 
-// Convenience initializer that uses a default value for `commandDispatcher`.
-- (instancetype)initWithProfile:(ProfileIOS*)profile
-                 sceneSessionID:(std::string)sceneSessionID;
-
-// Convenience initializer that uses default values for `sceneSessionID`
-// and `commandDispatcher`.
+// Convenience initializer that uses default values for `sceneSessionID`.
 - (instancetype)initWithProfile:(ProfileIOS*)profile;
 
 - (instancetype)init NS_UNAVAILABLE;

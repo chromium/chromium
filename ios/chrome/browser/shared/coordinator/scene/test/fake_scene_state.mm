@@ -32,8 +32,7 @@
 @synthesize window = _window;
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile
-                 sceneSessionID:(std::string)sceneSessionID
-              commandDispatcher:(CommandDispatcher*)commandDispatcher {
+                 sceneSessionID:(std::string)sceneSessionID {
   if ((self = [super init])) {
     DCHECK(profile);
     DCHECK(!profile->IsOffTheRecord());
@@ -43,12 +42,6 @@
     std::ignore = _browser->CreateInactiveBrowser();
     _incognito_browser =
         std::make_unique<TestBrowser>(profile->GetOffTheRecordProfile(), self);
-
-    if (commandDispatcher) {
-      // Only override the command dispatcher if non-nil (since TestBrowser
-      // creates a default command dispatcher in its constructor).
-      _browser->SetCommandDispatcher(commandDispatcher);
-    }
 
     _browserProviderInterface = [[StubBrowserProviderInterface alloc]
          initWithBrowser:_browser.get()
@@ -61,15 +54,8 @@
   return self;
 }
 
-- (instancetype)initWithProfile:(ProfileIOS*)profile
-                 sceneSessionID:(std::string)sceneSessionID {
-  return [self initWithProfile:profile
-                sceneSessionID:std::move(sceneSessionID)
-             commandDispatcher:nil];
-}
-
 - (instancetype)initWithProfile:(ProfileIOS*)profile {
-  return [self initWithProfile:profile sceneSessionID:{} commandDispatcher:nil];
+  return [self initWithProfile:profile sceneSessionID:{}];
 }
 
 - (id<BrowserProviderInterface>)browserProviderInterface {
