@@ -114,7 +114,7 @@ TEST_F(AppStartupParamsTest,
                sourceAppID:youtubeAppID
            applicationMode:ApplicationModeForTabOpening::NORMAL
       forceApplicationMode:NO];
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     [helper_ setMode:applicationMode];
   }];
@@ -139,7 +139,7 @@ TEST_F(AppStartupParamsTest,
                sourceAppID:youtubeAppID
            applicationMode:ApplicationModeForTabOpening::NORMAL
       forceApplicationMode:NO];
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     [helper_ setMode:applicationMode];
   }];
@@ -161,7 +161,7 @@ TEST_F(AppStartupParamsTest, TestNonIncognitoModeRequestForAllowedSourceApp) {
                sourceAppID:youtubeAppID
            applicationMode:ApplicationModeForTabOpening::NORMAL
       forceApplicationMode:NO];
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     [helper_ setMode:applicationMode];
   }];
@@ -184,7 +184,7 @@ TEST_F(AppStartupParamsTest, TestAppModeRequestTimeOutForAllowedSourceApp) {
                sourceAppID:youtubeAppID
            applicationMode:ApplicationModeForTabOpening::NORMAL
       forceApplicationMode:NO];
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     [helper_ setMode:applicationMode];
   }];
@@ -208,7 +208,7 @@ TEST_F(AppStartupParamsTest,
                sourceAppID:nil
            applicationMode:ApplicationModeForTabOpening::NORMAL
       forceApplicationMode:NO];
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     [helper_ setMode:applicationMode];
   }];
@@ -230,7 +230,7 @@ TEST_F(AppStartupParamsTest,
                sourceAppID:nil
            applicationMode:ApplicationModeForTabOpening::NORMAL
       forceApplicationMode:NO];
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     [helper_ setMode:applicationMode];
   }];
@@ -250,7 +250,7 @@ TEST_F(AppStartupParamsTest, TestNonIncognitoModeRequestForUnallowedSourceApp) {
                sourceAppID:nil
            applicationMode:ApplicationModeForTabOpening::NORMAL
       forceApplicationMode:NO];
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     [helper_ setMode:applicationMode];
   }];

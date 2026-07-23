@@ -356,7 +356,7 @@ TEST_F(AppStartupParametersTest, ParseSearchWidgetKit) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     EXPECT_NE(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   }];
@@ -381,7 +381,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitSearch) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     EXPECT_NE(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   }];
@@ -405,7 +405,7 @@ TEST_F(AppStartupParametersTest, ParseQuickActionsWidgetKitIncognito) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   }];
@@ -553,7 +553,7 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherSearch) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     EXPECT_NE(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   }];
@@ -576,7 +576,7 @@ TEST_F(AppStartupParametersTest, ParseLockscreenLauncherIncognito) {
 
   EXPECT_EQ(params.externalURL.spec(), expected_url_string);
   EXPECT_EQ(params.postOpeningAction, FOCUS_OMNIBOX);
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   }];
@@ -637,7 +637,7 @@ TEST_F(AppStartupParametersTest, ParseSearchPasswordsWidgetKit) {
 
   EXPECT_TRUE(params.externalURL.is_empty());
   EXPECT_EQ(params.postOpeningAction, SEARCH_PASSWORDS);
-  [params requestApplicationModeWithBlock:^(
+  [params fetchAppSwitcherParamsWithBlock:^(
               ApplicationModeForTabOpening applicationMode) {
     EXPECT_NE(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
   }];

@@ -540,7 +540,7 @@ TEST_F(UserActivityBrowserAgentTest, HandleStartupParamsWithExternalFile) {
   EXPECT_EQ(external_url,
             scene_controller_.urlLoadParams.web_params.virtual_url);
   [connection_information_.startupParameters
-      requestApplicationModeWithBlock:^(
+      fetchAppSwitcherParamsWithBlock:^(
           ApplicationModeForTabOpening applicationMode) {
         EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
       }];
@@ -595,7 +595,7 @@ TEST_F(UserActivityBrowserAgentTest,
             ? ApplicationModeForTabOpening::INCOGNITO
             : ApplicationModeForTabOpening::NORMAL;
     [connection_information_.startupParameters
-        requestApplicationModeWithBlock:^(
+        fetchAppSwitcherParamsWithBlock:^(
             ApplicationModeForTabOpening applicationMode) {
           EXPECT_EQ(applicationMode, app_mode);
         }];
@@ -676,7 +676,7 @@ TEST_F(UserActivityBrowserAgentTest,
             connection_information_.startupParameters.externalURL);
 
   [connection_information_.startupParameters
-      requestApplicationModeWithBlock:^(
+      fetchAppSwitcherParamsWithBlock:^(
           ApplicationModeForTabOpening applicationMode) {
         EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::NORMAL);
       }];
@@ -947,7 +947,7 @@ TEST_F(UserActivityBrowserAgentTest,
   user_activity_browser_agent_->ContinueUserActivity(mock_user_activity, YES);
 
   [connection_information_.startupParameters
-      requestApplicationModeWithBlock:^(
+      fetchAppSwitcherParamsWithBlock:^(
           ApplicationModeForTabOpening applicationMode) {
         EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::INCOGNITO);
       }];
@@ -972,7 +972,7 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityIntentSearchInChrome) {
   user_activity_browser_agent_->ContinueUserActivity(mock_user_activity, YES);
 
   [connection_information_.startupParameters
-      requestApplicationModeWithBlock:^(
+      fetchAppSwitcherParamsWithBlock:^(
           ApplicationModeForTabOpening applicationMode) {
         EXPECT_EQ(applicationMode, ApplicationModeForTabOpening::NORMAL);
       }];

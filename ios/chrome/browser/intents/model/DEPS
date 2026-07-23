@@ -2,6 +2,7 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/credential_exchange/model",
   "+ios/chrome/browser/credential_provider/model/features.h",
+  "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/lens",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/policy/model",

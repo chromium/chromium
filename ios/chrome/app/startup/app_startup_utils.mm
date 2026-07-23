@@ -104,7 +104,3 @@ bool IsCallerAppAllowListedForApplicationMode(NSString* caller_app_id) {
   }
   return false;
 }
-
-bool IsCallerAppAllowListed(NSString* caller_app_id) {
-  return IsCallerAppAllowListedForApplicationMode(caller_app_id);
-}

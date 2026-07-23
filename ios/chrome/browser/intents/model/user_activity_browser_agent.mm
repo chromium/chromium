@@ -30,6 +30,7 @@
 #import "ios/chrome/app/unexpected_mode_toast_util.h"
 #import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
@@ -483,7 +484,7 @@ void UserActivityBrowserAgent::RouteToCorrectTab() {
       base::BindOnce(&UserActivityBrowserAgent::HandleRouteToCorrectTab,
                      weak_ptr_factory_.GetWeakPtr());
   [connection_information_.startupParameters
-      requestApplicationModeWithBlock:base::CallbackToBlock(
+      fetchAppSwitcherParamsWithBlock:base::CallbackToBlock(
                                           std::move(completion))];
 }
 
@@ -668,7 +669,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
         base::BindOnce(&UserActivityBrowserAgent::HandleUrlOpening,
                        weak_ptr_factory_.GetWeakPtr(), webpage_GURL);
     [connection_information_.startupParameters
-        requestApplicationModeWithBlock:base::CallbackToBlock(
+        fetchAppSwitcherParamsWithBlock:base::CallbackToBlock(
                                             std::move(completion))];
     return YES;
   }
@@ -699,9 +700,9 @@ void UserActivityBrowserAgent::OpenMultipleTabs() {
       base::BindOnce(&UserActivityBrowserAgent::HandleMultipleUrlsOpening,
                      weak_ptr_factory_.GetWeakPtr(), URLs);
   [connection_information_.startupParameters
-      requestApplicationModeWithBlock:base::CallbackToBlock(
+      fetchAppSwitcherParamsWithBlock:base::CallbackToBlock(
                                           std::move(completion))];
-  }
+}
 
 GURL UserActivityBrowserAgent::GenerateResultGURLFromSearchQuery(
     NSString* search_query) {

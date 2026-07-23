@@ -6,9 +6,12 @@
 
 #import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/startup/app_startup_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/public/provider/chrome/browser/app_switcher/app_switcher_api.h"
 #import "ios/public/provider/chrome/browser/application_mode_fetcher/application_mode_fetcher_api.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
@@ -35,21 +38,26 @@ enum class AppModeFetchingOutcomeType {
   kMaxValue = kTimeOut
 };
 
-// Returns a `ApplicationModeRequestStatus` based on the source `app_ID`, the
-// `ApplicationModeRequestStatus` and if the mode is forced or not.
-ApplicationModeRequestStatus ApplicationModeAvailability(
+// Returns a `AppSwitcherParamsRequestStatus` based on the source `app_ID`, the
+// `AppSwitcherParamsRequestStatus` and if the mode is forced or not.
+AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
     NSString* app_id,
     ApplicationModeForTabOpening mode,
     bool application_mode_forced) {
-  // The `ApplicationModeRequestStatus` is considered available if, either it
-  // can't be requested (based on the source app requesting the opening of the
-  // URL) or it is incognito forced.
-  if ((application_mode_forced &&
-       mode == ApplicationModeForTabOpening::INCOGNITO) ||
-      !IsCallerAppAllowListed(app_id)) {
-    return ApplicationModeRequestStatus::kAvailable;
+  if (IsAppSwitcherAISummarizationEnabled()) {
+    if (IsCallerAppAllowListedForAISummarization(app_id)) {
+      return AppSwitcherParamsRequestStatus::kUnavailable;
+    }
   }
-  return ApplicationModeRequestStatus::kUnavailable;
+
+  if (IsCallerAppAllowListedForApplicationMode(app_id)) {
+    if (!(application_mode_forced &&
+          mode == ApplicationModeForTabOpening::INCOGNITO)) {
+      return AppSwitcherParamsRequestStatus::kUnavailable;
+    }
+  }
+
+  return AppSwitcherParamsRequestStatus::kAvailable;
 }
 
 }  // namespace
@@ -58,7 +66,7 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
   GURL _externalURL;
   GURL _completeURL;
   std::vector<GURL> _URLs;
-  ApplicationModeRequestStatus _applicationModeRequestStatus;
+  AppSwitcherParamsRequestStatus _appSwitcherParamsRequestStatus;
   NSString* _sourceAppID;
 
   // The mode in which the tab must be opened. Defaults to UNDETERMINED.
@@ -69,7 +77,7 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
   BOOL _forceApplicationMode;
 
   // An array of blocks to execute once the `applicationMode` is available.
-  NSMutableArray<AppModeRequestBlock>* _pendingBlocks;
+  NSMutableArray<AppSwitcherParamsRequestBlock>* _pendingBlocks;
 }
 
 @synthesize inputURLs = _inputURLs;
@@ -93,7 +101,8 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
     _externalURL = externalURL;
     _completeURL = completeURL;
     _applicationMode = mode;
-    _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
+    _appSwitcherParamsRequestStatus =
+        AppSwitcherParamsRequestStatus::kAvailable;
     _forceApplicationMode = forceApplicationMode;
   }
   return self;
@@ -110,8 +119,8 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
     _completeURL = completeURL;
     _sourceAppID = [sourceAppID copy];
     _applicationMode = mode;
-    _applicationModeRequestStatus =
-        ApplicationModeAvailability(sourceAppID, mode, forceApplicationMode);
+    _appSwitcherParamsRequestStatus =
+        AppSwitcherParamsAvailability(sourceAppID, mode, forceApplicationMode);
     _forceApplicationMode = forceApplicationMode;
   }
   return self;
@@ -255,36 +264,71 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
   }
 }
 
-- (void)requestApplicationModeWithBlock:(AppModeRequestBlock)block {
-  switch (_applicationModeRequestStatus) {
-    case ApplicationModeRequestStatus::kAvailable:
+- (void)fetchAppSwitcherParamsWithBlock:(AppSwitcherParamsRequestBlock)block {
+  switch (_appSwitcherParamsRequestStatus) {
+    case AppSwitcherParamsRequestStatus::kAvailable:
       CHECK(!_pendingBlocks);
       block(_applicationMode);
       break;
-    case ApplicationModeRequestStatus::kRequested:
+    case AppSwitcherParamsRequestStatus::kRequested:
       CHECK(_pendingBlocks);
       [_pendingBlocks addObject:block];
       break;
-    case ApplicationModeRequestStatus::kUnavailable: {
+    case AppSwitcherParamsRequestStatus::kUnavailable: {
       CHECK(!_pendingBlocks);
       _pendingBlocks = [[NSMutableArray alloc] init];
       [_pendingBlocks addObject:block];
-      _applicationModeRequestStatus = ApplicationModeRequestStatus::kRequested;
+      _appSwitcherParamsRequestStatus =
+          AppSwitcherParamsRequestStatus::kRequested;
       __weak __typeof(self) weakSelf = self;
-      auto fetching_response = base::BindOnce(
-          [](AppStartupParameters* startupParams,
-             base::TimeTicks startFetchTime, bool isAppSwitcherIncognito,
-             NSError* error) {
-            [startupParams handleApplicationModeRequest:isAppSwitcherIncognito
-                                                  error:error
-                                         startFetchTime:startFetchTime];
-          },
-          weakSelf, base::TimeTicks::Now());
-      ios::provider::FetchApplicationMode(_externalURL, _sourceAppID,
-                                          std::move(fetching_response));
+      base::TimeTicks startFetchTime = base::TimeTicks::Now();
+
+      if (IsAppSwitcherAISummarizationEnabled()) {
+        auto fetching_response = base::BindOnce(
+            ^(ios::provider::AppSwitcherUrlOpeningResult result) {
+              [weakSelf handleAppSwitcherParamsRequest:result
+                                        startFetchTime:startFetchTime];
+            });
+        ios::provider::FetchAppSwitcherParams(
+            _externalURL, base::SysNSStringToUTF8(_sourceAppID),
+            std::move(fetching_response));
+      } else {
+        auto fetching_response = base::BindOnce(
+            ^(bool isAppSwitcherIncognito, NSError* error) {
+              [weakSelf handleApplicationModeRequest:isAppSwitcherIncognito
+                                                    error:error
+                                           startFetchTime:startFetchTime];
+            });
+        ios::provider::FetchApplicationMode(_externalURL, _sourceAppID,
+                                            std::move(fetching_response));
+      }
       break;
     }
   }
+}
+
+// Handles the callback from the App Switcher parameters fetcher.
+- (void)handleAppSwitcherParamsRequest:
+            (ios::provider::AppSwitcherUrlOpeningResult)result
+                        startFetchTime:(base::TimeTicks)startFetchTime {
+  _appSwitcherParamsRequestStatus = AppSwitcherParamsRequestStatus::kAvailable;
+
+  if (IsCallerAppAllowListedForAISummarization(_sourceAppID)) {
+    if (!result.error && result.is_ai_summarization) {
+      self.postOpeningAction = START_GEMINI_AI_SUMMARIZATION;
+    }
+  }
+
+  if (IsCallerAppAllowListedForApplicationMode(_sourceAppID)) {
+    [self handleApplicationModeRequest:result.is_incognito
+                                 error:result.error
+                        startFetchTime:startFetchTime];
+  }
+
+  for (AppSwitcherParamsRequestBlock block in _pendingBlocks) {
+    block(_applicationMode);
+  }
+  _pendingBlocks = nil;
 }
 
 - (void)setApplicationMode:(ApplicationModeForTabOpening)applicationMode
@@ -312,7 +356,20 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
 - (void)handleApplicationModeRequest:(BOOL)isAppSwitcherIncognito
                                error:(NSError*)error
                       startFetchTime:(base::TimeTicks)startFetchTime {
-  _applicationModeRequestStatus = ApplicationModeRequestStatus::kAvailable;
+  _appSwitcherParamsRequestStatus = AppSwitcherParamsRequestStatus::kAvailable;
+  // If the application mode was forced, ignore the fetched application mode
+  // result. When `IsAppSwitcherAISummarizationEnabled()` is enabled,
+  // `handleAppSwitcherParamsRequest:` handles executing pending blocks.
+  if (_forceApplicationMode) {
+    if (!IsAppSwitcherAISummarizationEnabled()) {
+      for (AppSwitcherParamsRequestBlock block in _pendingBlocks) {
+        block(_applicationMode);
+      }
+      _pendingBlocks = nil;
+    }
+    return;
+  }
+
   AppModeFetchingOutcomeType outcome =
       AppModeFetchingOutcomeType::kNonIncognito;
   if (isAppSwitcherIncognito) {
@@ -331,10 +388,12 @@ ApplicationModeRequestStatus ApplicationModeAvailability(
     }
   }
 
-  for (AppModeRequestBlock block in _pendingBlocks) {
-    block(_applicationMode);
+  if (!IsAppSwitcherAISummarizationEnabled()) {
+    for (AppSwitcherParamsRequestBlock block in _pendingBlocks) {
+      block(_applicationMode);
+    }
+    _pendingBlocks = nil;
   }
-  _pendingBlocks = nil;
   UMA_HISTOGRAM_ENUMERATION("IOS.AppModeFetching.Outcome", outcome);
   UMA_HISTOGRAM_TIMES("IOS.AppModeFetching.Duration",
                       base::TimeTicks::Now() - startFetchTime);

@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 source_set("model") {
-  sources = [ "app_switcher_url_opening_response.h" ]
+  sources = [
+    "app_switcher_params_request_status.h",
+    "app_switcher_url_opening_response.h",
+  ]
   deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]
 }
