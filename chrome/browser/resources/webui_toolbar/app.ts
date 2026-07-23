@@ -399,10 +399,14 @@ export class ToolbarAppElement extends AppElementBase {
       '#back',
       '#forward',
       '#reload',
-      '#split-tabs',
       '#home',
-      '#app-menu',
+      '#split-tabs',
+      '#location-bar',
+      '#extensions',
+      '#pinnedToolbarActions',
+      '#battery-saver',
       '#avatar',
+      '#app-menu',
     ];
     const promises =
         waitSelectors.map(s => this.shadowRoot.querySelector<CrLitElement>(s))
