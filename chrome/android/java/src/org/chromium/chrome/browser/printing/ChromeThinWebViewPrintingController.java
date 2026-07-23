@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.ServiceImpl;
+import org.chromium.chrome.browser.contextual_tasks.ContextualTasksUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.thinwebview.ThinWebViewPrintingController;
@@ -25,6 +26,10 @@ import org.chromium.ui.base.WindowAndroid;
 public class ChromeThinWebViewPrintingController implements ThinWebViewPrintingController {
     @Override
     public boolean isPrintSupported(WebContents webContents) {
+        if (webContents != null
+                && ContextualTasksUtils.isContextualTasksUrl(webContents.getVisibleUrl())) {
+            return false;
+        }
         Profile profile = Profile.fromWebContents(webContents);
         if (profile == null) return false;
         return UserPrefs.get(profile).getBoolean(Pref.PRINTING_ENABLED);

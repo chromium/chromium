@@ -111,6 +111,7 @@ specific_include_rules = {
   ],
   'TabContextMenuItemDelegate\\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupFeatureUtils.java",
+    "+chrome/browser/contextual_tasks/android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUtils.java",
   ],
   'TabImpl\\.java': [
     "+chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java",
