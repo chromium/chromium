@@ -127,6 +127,7 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
     @Override
     public void setSurfaceStereoMode(@XrSurfaceEntityStereoMode int stereoMode) {
         assertDisposed();
+        if (getSurfaceStereoMode() == stereoMode) return;
         StereoMode surfaceStereoMode = STEREO_MODE_MAP.get(stereoMode);
         if (surfaceStereoMode != null) {
             mEntity.setStereoMode(surfaceStereoMode);
@@ -151,9 +152,31 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
         }
     }
 
+    private void notifySurfaceCreated(Surface surface) {
+        for (Callback callback : mCallbacks) {
+            callback.surfaceCreated(surface);
+        }
+    }
+
+    private void updateSurfaceCallbacks(@Nullable Surface oldSurface, @Nullable Surface newSurface) {
+        if (oldSurface != newSurface) {
+            if (oldSurface != null) {
+                notifySurfaceDestroyed();
+            }
+            if (newSurface != null && newSurface.isValid()) {
+                notifySurfaceCreated(newSurface);
+                notifySurfaceChanged();
+            }
+        } else {
+            notifySurfaceChanged();
+        }
+    }
+
     @Override
     public void setSurfaceShape(@XrSurfaceEntityShape int shape) {
         assertDisposed();
+        if (getSurfaceShape() == shape) return;
+        Surface oldSurface = getSurface();
         switch (shape) {
             case XrSurfaceEntityShape.QUAD:
                 mEntity.setShape(new Shape.Quad(new FloatSize2d(1f, 1f)));
@@ -167,13 +190,18 @@ public class XrSurfaceEntityHolderImpl extends XrTransformableEntityHolderImpl<S
             default:
                 throw new IllegalArgumentException("Invalid surface shape: " + shape);
         }
+        Surface newSurface = getSurface();
+        updateSurfaceCallbacks(oldSurface, newSurface);
     }
 
     @Override
     public void setSurfaceShape(XrMeshData[] meshDatas) {
         Shape.CustomMesh customMesh = XrSurfaceEntityUtils.createCustomMesh(meshDatas);
         if (customMesh != null) {
+            Surface oldSurface = getSurface();
             mEntity.setShape(customMesh);
+            Surface newSurface = getSurface();
+            updateSurfaceCallbacks(oldSurface, newSurface);
         }
     }
 

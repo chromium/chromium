@@ -128,6 +128,13 @@ public class XrSurfaceEntityHolderImplTest {
     }
 
     @Test
+    public void testSetSurfaceShape_NotifiesCallback() {
+        mHolder.addCallback(mCallback);
+        mHolder.setSurfaceShape(XrSurfaceEntityShape.SPHERE);
+        verify(mCallback, org.mockito.Mockito.times(2)).surfaceChanged(any(), eq(1), eq(1));
+    }
+
+    @Test
     public void testSetEntitySize_Quad() {
         mHolder.setSurfaceShape(XrSurfaceEntityShape.QUAD);
         mHolder.setEntitySize(10f, 20f);
