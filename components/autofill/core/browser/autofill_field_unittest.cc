@@ -358,14 +358,14 @@ class AutofillFieldTest_MLPredictions : public AutofillFieldTest {
 TEST_F(AutofillFieldTest_MLPredictions, PredictionsUsed) {
   field().set_heuristic_type(kMlSource, ADDRESS_HOME_STREET_ADDRESS);
   field().set_heuristic_type(kRegexSource, ADDRESS_HOME_LINE1);
-  EXPECT_EQ(ADDRESS_HOME_STREET_ADDRESS, field().heuristic_type());
+  EXPECT_EQ(field().heuristic_type(), ADDRESS_HOME_STREET_ADDRESS);
 }
 
 // Test that the regex prediction is used if the model returned NO_SERVER_DATA.
 TEST_F(AutofillFieldTest_MLPredictions, FallbackToRegex_OnNoServerData) {
   field().set_heuristic_type(kMlSource, NO_SERVER_DATA);
   field().set_heuristic_type(kRegexSource, ADDRESS_HOME_LINE1);
-  EXPECT_EQ(ADDRESS_HOME_LINE1, field().heuristic_type());
+  EXPECT_EQ(field().heuristic_type(), ADDRESS_HOME_LINE1);
 }
 
 // Test that the regex prediction is used if the regex prediction is a type
@@ -373,11 +373,11 @@ TEST_F(AutofillFieldTest_MLPredictions, FallbackToRegex_OnNoServerData) {
 TEST_F(AutofillFieldTest_MLPredictions, FallbackToRegex_OnUnsupportedType) {
   field().set_heuristic_type(kMlSource, NAME_FIRST);
   field().set_heuristic_type(kRegexSource, IBAN_VALUE);
-  EXPECT_EQ(IBAN_VALUE, field().heuristic_type());
+  EXPECT_EQ(field().heuristic_type(), IBAN_VALUE);
 
   field().set_heuristic_type(kMlSource, NAME_FIRST);
   field().set_heuristic_type(kRegexSource, PASSPORT_NUMBER);
-  EXPECT_EQ(PASSPORT_NUMBER, field().heuristic_type());
+  EXPECT_EQ(field().heuristic_type(), PASSPORT_NUMBER);
 }
 
 class AutofillFieldWithAutofillAiTest : public base::test::WithFeatureOverride,
