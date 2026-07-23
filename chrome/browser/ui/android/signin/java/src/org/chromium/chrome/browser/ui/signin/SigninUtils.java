@@ -132,19 +132,33 @@ public final class SigninUtils {
         String userName = profileData.getFullNameOrFallbackName(context);
         if (profileData.hasDisplayableEmailAddress()) {
             String email = profileData.getAccountEmail();
+            if (identityError != UserActionableError.NONE) {
+                return context.getString(
+                        R.string.accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
+                        userName,
+                        email);
+            }
+            if (profileData.hasAiTierRing()) {
+                return context.getString(
+                        R.string
+                                .accessibility_toolbar_btn_identity_disc_with_name_and_email_ai_tier,
+                        userName,
+                        email);
+            }
             return context.getString(
-                    identityError == UserActionableError.NONE
-                            ? R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email
-                            : R.string
-                                    .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
+                    R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email,
                     userName,
                     email);
         }
-
+        if (identityError != UserActionableError.NONE) {
+            return context.getString(
+                    R.string.accessibility_toolbar_btn_identity_disc_error_with_name, userName);
+        }
+        if (profileData.hasAiTierRing()) {
+            return context.getString(
+                    R.string.accessibility_toolbar_btn_identity_disc_with_name_ai_tier, userName);
+        }
         return context.getString(
-                identityError == UserActionableError.NONE
-                        ? R.string.accessibility_toolbar_btn_identity_disc_with_name
-                        : R.string.accessibility_toolbar_btn_identity_disc_error_with_name,
-                userName);
+                R.string.accessibility_toolbar_btn_identity_disc_with_name, userName);
     }
 }
