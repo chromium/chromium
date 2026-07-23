@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.prefs.LocalStatePrefs;
 import org.chromium.chrome.browser.prefs.LocalStatePrefsJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -103,6 +104,7 @@ public class GlicSettingsUnitTest {
         when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfileMock))
                 .thenReturn(mGlicKeyedServiceMock);
         when(mGlicEnablingJniMock.shouldShowWebActuationToggle(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
         when(mLocalStatePrefsJniMock.getPrefService()).thenReturn(mLocalPrefServiceMock);
         doNothing().when(mCustomTabLauncher).openUrlInCct(any(Context.class), anyString());
 
@@ -163,7 +165,8 @@ public class GlicSettingsUnitTest {
         // Flush shadow main looper to run the posted scroll/highlight runnables
         org.robolectric.shadows.ShadowLooper.idleMainLooper();
 
-        ChromeSwitchPreference locationPref = fragment.findPreference(GlicSettings.PERMISSION_LOCATION);
+        ChromeSwitchPreference locationPref =
+                fragment.findPreference(GlicSettings.PERMISSION_LOCATION);
         assertTrue("Location preference should be visible", locationPref.isVisible());
     }
 
@@ -392,14 +395,22 @@ public class GlicSettingsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_glic_geofencing/true")
     public void testGlicButtonPreference_AndroidBottomBarEnabled() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(false);
+
         GlicSettings fragment = launchFragment();
         Preference preference = fragment.findPreference("glic_button");
         assertFalse("Preference glic_button should not be visible", preference.isVisible());
+        Preference bottomBarToggle =
+                fragment.findPreference(GlicSettings.PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE);
+        assertTrue(
+                "Preference glic_bottom_bar_button_toggle should be visible",
+                bottomBarToggle.isVisible());
         Preference preferenceCategory = fragment.findPreference("glic_preference_section");
-        assertFalse(
-                "Preference glic_preference_section should not be visible",
+        assertTrue(
+                "Preference glic_preference_section should be visible",
                 preferenceCategory.isVisible());
     }
 
@@ -571,5 +582,29 @@ public class GlicSettingsUnitTest {
                         GlicSettings.class.getName(),
                         GlicSettings.PREFERENCE_BUTTON,
                         R.string.settings_glic_button_toggle_sublabel);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_glic_geofencing/true")
+    @DisableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testBottomBarGlicButtonToggle() {
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isDisabledByPolicy(any())).thenReturn(false);
+
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference togglePref =
+                fragment.findPreference(GlicSettings.PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE);
+        assertTrue(togglePref.isVisible());
+        assertTrue(togglePref.isChecked());
+
+        togglePref.performClick();
+        assertFalse(BottomBarConfigUtils.isGlicButtonEnabled());
+        assertEquals(
+                1, mUserActionTester.getActionCount("Glic.Settings.BottomBarGlicButton.Disabled"));
+
+        togglePref.performClick();
+        assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());
+        assertEquals(
+                1, mUserActionTester.getActionCount("Glic.Settings.BottomBarGlicButton.Enabled"));
     }
 }

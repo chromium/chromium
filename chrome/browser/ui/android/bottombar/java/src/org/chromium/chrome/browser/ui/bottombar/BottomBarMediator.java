@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.SystemClock;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -20,6 +22,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -47,6 +50,7 @@ public class BottomBarMediator
                 BottomBarButtonManager.Listener,
                 BottomBarPromoDialogCoordinator.BottomBarPromoDialogListener,
                 LayoutStateObserver,
+                SharedPreferences.OnSharedPreferenceChangeListener,
                 Destroyable {
     /** Delegate for compositor-level visibility changes. */
     public interface VisibilityDelegate {
@@ -174,6 +178,7 @@ public class BottomBarMediator
         if (mShouldIncludeHomeButton) {
             mHomepageEnabledSupplier.addSyncObserverAndCallIfNonNull(mHomepageEnabledObserver);
         }
+        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         // Safe to set the listener after all observers are initialized to trigger the immediate
         // callback with the correct state.
@@ -355,6 +360,14 @@ public class BottomBarMediator
         updateExtraActionVisibility(mProfileSupplier.get());
     }
 
+    @Override
+    public void onSharedPreferenceChanged(
+            SharedPreferences sharedPreferences, @Nullable String key) {
+        if (ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED.equals(key)) {
+            updateExtraActionVisibility(mProfileSupplier.get());
+        }
+    }
+
     private void onHomepageEnabledChanged(boolean isEnabled) {
         setButtonVisibility(ActionId.HOME_BUTTON, isEnabled);
     }
@@ -501,6 +514,7 @@ public class BottomBarMediator
         if (mShouldIncludeHomeButton) {
             mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         }
+        ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
         mProfileSupplier.removeObserver(mProfileObserver);
         if (mGlicKeyedService != null) {
             mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);

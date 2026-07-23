@@ -32,6 +32,12 @@ found in the LICENSE file.
             android:defaultValue="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+            android:key="glic_bottom_bar_button_toggle"
+            android:title="@string/settings_show_gemini_in_bottom_bar_title"
+            android:summary="@string/settings_show_gemini_in_bottom_bar_summary"
+            android:defaultValue="true" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
             android:key="glic_launcher_enabled"
             android:title="@string/settings_glic_launcher_enabled_title"
             android:summary="@string/settings_glic_os_widget_toggle_sublabel"

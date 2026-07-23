@@ -30,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -655,6 +657,17 @@ public class BottomBarMediatorUnitTest {
 
         verify(mLayoutStateProvider, never()).addObserver(any());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
+    }
+
+    @Test
+    public void testOnSharedPreferenceChanged_TogglesGlicVisibility() {
+        createMediator(/* shouldIncludeHomeButton= */ false);
+
+        assertNotNull(mMediator);
+        mMediator.onSharedPreferenceChanged(
+                ContextUtils.getAppSharedPreferences(),
+                ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED);
+        verify(mButtonManager, times(2)).setButtonVisibility(ActionId.GLIC, false);
     }
 
     private void createMediator(boolean shouldIncludeHomeButton) {

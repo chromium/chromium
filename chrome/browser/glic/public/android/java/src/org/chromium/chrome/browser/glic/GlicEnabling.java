@@ -113,13 +113,22 @@ public class GlicEnabling {
     /** Returns true if Glic is disabled by policy for the given profile. */
     public static boolean isDisabledByPolicy(@Nullable Profile profile) {
         if (profile == null) return false;
+        if (sIsEnabledForTesting != null) return false;
         return GlicEnablingJni.get().isDisabledByPolicy(profile);
     }
 
     /** Returns true if the profile is managed by enterprise. */
     public static boolean isProfileManaged(@Nullable Profile profile) {
         if (profile == null) return false;
+        if (sIsEnabledForTesting != null) return false;
         return GlicEnablingJni.get().isProfileManaged(profile);
+    }
+
+    /** Returns true if Glic settings are enforced by enterprise policy. */
+    public static boolean isPolicyEnforced(@Nullable Profile profile) {
+        if (profile == null) return false;
+        if (sIsEnabledForTesting != null) return false;
+        return GlicEnablingJni.get().isPolicyEnforced(profile);
     }
 
     @NativeMethods
@@ -141,6 +150,8 @@ public class GlicEnabling {
         boolean isDisabledByPolicy(@JniType("Profile*") Profile profile);
 
         boolean isProfileManaged(@JniType("Profile*") Profile profile);
+
+        boolean isPolicyEnforced(@JniType("Profile*") Profile profile);
 
         void setBypassEnablementChecksForTesting(boolean bypass);
     }

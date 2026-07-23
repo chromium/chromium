@@ -267,4 +267,15 @@ public class BottomBarConfigUtilsUnitTest {
         assertTrue(
                 BottomBarConfigUtils.shouldForceBothConstraintsForBottomControls(mTab, mContext));
     }
+
+    @Test
+    public void testIsGlicButtonEnabled() {
+        assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());
+
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
+        assertFalse(BottomBarConfigUtils.isGlicButtonEnabled());
+
+        BottomBarConfigUtils.setGlicButtonEnabled(true);
+        assertTrue(BottomBarConfigUtils.isGlicButtonEnabled());
+    }
 }

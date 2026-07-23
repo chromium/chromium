@@ -16097,6 +16097,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Settings.BottomBarGlicButton.Disabled">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <description>
+    Logged if the user disables the Gemini button in bottom toolbar settings.
+  </description>
+</action>
+
+<action name="Glic.Settings.BottomBarGlicButton.Enabled">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <description>
+    Logged if the user enables the Gemini button in bottom toolbar settings.
+  </description>
+</action>
+
 <action name="Glic.Settings.ClosedCaptions.Disabled">
   <owner>sanaakbani@google.com</owner>
   <owner>iwells@chromium.org</owner>

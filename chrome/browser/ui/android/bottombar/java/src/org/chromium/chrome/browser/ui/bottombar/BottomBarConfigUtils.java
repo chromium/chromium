@@ -12,6 +12,8 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -115,5 +117,17 @@ public class BottomBarConfigUtils {
         return tab != null
                 && tab.getNativePage() != null
                 && "newtab".equals(tab.getNativePage().getHost());
+    }
+
+    /** Returns whether the GLIC button is enabled by the user in the bottom bar. */
+    public static boolean isGlicButtonEnabled() {
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED, true);
+    }
+
+    /** Sets whether the GLIC button is enabled in the bottom bar. */
+    public static void setGlicButtonEnabled(boolean enabled) {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED, enabled);
     }
 }

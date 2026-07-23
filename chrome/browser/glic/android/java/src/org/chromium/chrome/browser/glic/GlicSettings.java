@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarActionEligibility;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference;
@@ -66,6 +67,10 @@ import org.chromium.ui.util.AttrUtils;
 public class GlicSettings extends ChromeBaseSettingsFragment {
     @VisibleForTesting static final String PREFERENCE_BUTTON = "glic_button";
     @VisibleForTesting static final String PREFERENCE_BUTTON_TOGGLE = "glic_button_toggle";
+
+    @VisibleForTesting
+    static final String PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE = "glic_bottom_bar_button_toggle";
+
     @VisibleForTesting static final String PERMISSION_LOCATION = "permissions_location";
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
@@ -178,12 +183,26 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         ChromeSwitchPreference buttonTogglePref =
                 assertNonNull(findPreference(PREFERENCE_BUTTON_TOGGLE));
 
+        // Toggle for Android Bottom Bar GLIC button.
+        ChromeSwitchPreference bottomBarButtonTogglePref =
+                assertNonNull(findPreference(PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE));
+
         Context context = getContext();
 
+        boolean isBottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(context);
         // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar Glic
         // supported on LFF
-        if (AndroidSidePanelEnabledFn.isEnabled()) {
+        boolean isSidePanelEnabled = AndroidSidePanelEnabledFn.isEnabled();
+        if (isBottomBarEnabled) {
+            updateBottomBarButtonPreference(
+                    bottomBarButtonTogglePref,
+                    buttonTogglePref,
+                    buttonPref,
+                    /* attachListener= */ true);
+        } else if (isSidePanelEnabled) {
             buttonPref.setVisible(false); // Hide the phone UI.
+            bottomBarButtonTogglePref.setVisible(false);
+            buttonTogglePref.setVisible(true);
             boolean isPinned = GlicUtils.isButtonPinnedToTabStrip(getProfile());
             buttonTogglePref.setChecked(isPinned);
             buttonTogglePref.setOnPreferenceChangeListener(
@@ -210,20 +229,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             }
         } else {
             buttonTogglePref.setVisible(false); // Hide the toggle.
-
-            // If the bottom bar is enabled there is a permanent entry point elsewhere remove all
-            // the settings here.
-            if (BottomBarConfigUtils.isBottomBarEnabled(context)) {
-                buttonPref.setVisible(false);
-                Preference preferenceCategory = findPreference("glic_preference_section");
-                if (preferenceCategory != null) {
-                    preferenceCategory.setVisible(false);
-                }
-                // TODO(crbug.com/505362079): Enable the toggle pref here to hide the permanent
-                // button, but wire it differently.
-            } else {
-                updateButtonPreference(buttonPref);
-            }
+            bottomBarButtonTogglePref.setVisible(false);
+            buttonPref.setVisible(true);
+            updateButtonPreference(buttonPref);
         }
 
         mLauncherEnabledPref = findPreference(PREF_LAUNCHER_ENABLED);
@@ -362,6 +370,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
             String[] prefsToDisable = {
                 PREFERENCE_BUTTON,
                 PREFERENCE_BUTTON_TOGGLE,
+                PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE,
                 PERMISSION_LOCATION,
                 PREF_KEY_GLIC_PERMISSIONS_ACTIVITY,
                 PREF_KEY_GLIC_EXTENSIONS,
@@ -399,18 +408,78 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     @Override
     public void onResume() {
         super.onResume();
-        // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar Glic
-        // supported on LFF
-        if (AndroidSidePanelEnabledFn.isEnabled()) {
-            ChromeSwitchPreference buttonTogglePref = findPreference(PREFERENCE_BUTTON_TOGGLE);
+        ChromeSwitchPreference bottomBarButtonTogglePref =
+                findPreference(PREFERENCE_BOTTOM_BAR_BUTTON_TOGGLE);
+        ChromeSwitchPreference buttonTogglePref = findPreference(PREFERENCE_BUTTON_TOGGLE);
+        Preference buttonPref = findPreference(PREFERENCE_BUTTON);
+
+        if (BottomBarConfigUtils.isBottomBarEnabled(getContext())) {
+            // Refresh preference UI state. Listener was already attached in onCreatePreferences.
+            updateBottomBarButtonPreference(
+                    bottomBarButtonTogglePref,
+                    buttonTogglePref,
+                    buttonPref,
+                    /* attachListener= */ false);
+
+            // TODO(crbug.com/503082430): Change to tab strip visibility check once toolbar Glic
+            // supported on LFF
+        } else if (AndroidSidePanelEnabledFn.isEnabled()) {
+            if (bottomBarButtonTogglePref != null) bottomBarButtonTogglePref.setVisible(false);
             if (buttonTogglePref != null) {
                 boolean isPinned = GlicUtils.isButtonPinnedToTabStrip(getProfile());
                 buttonTogglePref.setChecked(isPinned);
             }
         } else {
-            Preference buttonPref = findPreference(PREFERENCE_BUTTON);
+            if (bottomBarButtonTogglePref != null) bottomBarButtonTogglePref.setVisible(false);
+            if (buttonTogglePref != null) buttonTogglePref.setVisible(false);
+
             if (buttonPref != null) {
                 updateButtonPreference(buttonPref);
+            }
+        }
+    }
+
+    private void updateBottomBarButtonPreference(
+            @Nullable ChromeSwitchPreference bottomBarButtonTogglePref,
+            @Nullable ChromeSwitchPreference buttonTogglePref,
+            @Nullable Preference buttonPref,
+            boolean attachListener) {
+        if (buttonPref != null) buttonPref.setVisible(false);
+        if (buttonTogglePref != null) buttonTogglePref.setVisible(false);
+
+        if (bottomBarButtonTogglePref != null) {
+            boolean isGlicAllowed = BottomBarActionEligibility.shouldShowGlicSettings(getProfile());
+            bottomBarButtonTogglePref.setVisible(isGlicAllowed);
+            if (isGlicAllowed) {
+                boolean isManaged = GlicEnabling.isPolicyEnforced(getProfile());
+                boolean isDisabledByPolicy = GlicEnabling.isDisabledByPolicy(getProfile());
+
+                if (isDisabledByPolicy) {
+                    bottomBarButtonTogglePref.setChecked(false);
+                    bottomBarButtonTogglePref.setEnabled(false);
+                } else if (isManaged) {
+                    bottomBarButtonTogglePref.setChecked(true);
+                    bottomBarButtonTogglePref.setEnabled(false);
+                } else {
+                    bottomBarButtonTogglePref.setEnabled(true);
+                    bottomBarButtonTogglePref.setChecked(
+                            BottomBarConfigUtils.isGlicButtonEnabled());
+                    if (attachListener) {
+                        bottomBarButtonTogglePref.setOnPreferenceChangeListener(
+                                (preference, newValue) -> {
+                                    boolean enabled = (boolean) newValue;
+                                    BottomBarConfigUtils.setGlicButtonEnabled(enabled);
+                                    if (enabled) {
+                                        RecordUserAction.record(
+                                                "Glic.Settings.BottomBarGlicButton.Enabled");
+                                    } else {
+                                        RecordUserAction.record(
+                                                "Glic.Settings.BottomBarGlicButton.Disabled");
+                                    }
+                                    return true;
+                                });
+                    }
+                }
             }
         }
     }

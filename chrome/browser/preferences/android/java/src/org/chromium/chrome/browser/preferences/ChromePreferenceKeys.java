@@ -141,6 +141,10 @@ public final class ChromePreferenceKeys {
     public static final String BOOKMARKS_SORT_ORDER = "Chrome.Bookmarks.BookmarkRowSortOrder";
     public static final String BOOKMARKS_VISUALS_PREF = "Chrome.Bookmarks.BookmarkRowDisplay";
 
+    /** Whether the GLIC button is enabled by the user in the bottom bar. */
+    public static final String BOTTOM_BAR_GLIC_BUTTON_ENABLED =
+            "Chrome.BottomBar.GlicButtonEnabled";
+
     /** Whether Chrome is set as the default browser. Default value is false. */
     public static final String CHROME_DEFAULT_BROWSER = "applink.chrome_default_browser";
 
@@ -1188,6 +1192,7 @@ public final class ChromePreferenceKeys {
                 BLUETOOTH_NOTIFICATION_IDS,
                 BOOKMARKS_SORT_ORDER,
                 BOOKMARKS_VISUALS_PREF,
+                BOTTOM_BAR_GLIC_BUTTON_ENABLED,
                 CLIPBOARD_SHARED_URI,
                 CLIPBOARD_SHARED_URI_TIMESTAMP,
                 CLOUD_MANAGEMENT_CLIENT_ID,

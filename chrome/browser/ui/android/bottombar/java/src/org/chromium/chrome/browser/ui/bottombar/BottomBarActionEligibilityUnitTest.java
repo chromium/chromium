@@ -49,6 +49,7 @@ public class BottomBarActionEligibilityUnitTest {
         BottomBarActionEligibility.setCountrySupplier(() -> mCountry);
         // By default, mock the DSE to be Google.
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
     }
 
     @org.junit.After
@@ -150,5 +151,19 @@ public class BottomBarActionEligibilityUnitTest {
 
         // Should return AI_MODE even in France!
         assertEquals(ActionId.AI_MODE, BottomBarActionEligibility.getEligibleExtraAction(mProfile));
+    }
+
+    @Test
+    public void testGetEligibleExtraAction_GlicButtonDisabledByUser() {
+        mCountry = "us";
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+
+        BottomBarConfigUtils.setGlicButtonEnabled(false);
+        assertEquals(
+                BottomBarActionEligibility.ACTION_NONE,
+                BottomBarActionEligibility.getEligibleExtraAction(mProfile));
+
+        BottomBarConfigUtils.setGlicButtonEnabled(true);
+        assertEquals(ActionId.GLIC, BottomBarActionEligibility.getEligibleExtraAction(mProfile));
     }
 }
