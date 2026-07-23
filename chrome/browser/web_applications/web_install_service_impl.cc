@@ -346,7 +346,16 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
     blink::mojom::ManifestInstallOptionsPtr options,
     InstallFromManifestCallback callback,
     bool triggered_from_element) {
+  // The manifest URL flow always installs a background document (a remote
+  // manifest), never the current document.
+  EmitInstallTypeUma(triggered_from_element,
+                     web_app::WebInstallServiceType::kBackgroundDocument);
+
   if (IsInstallInProgress()) {
+    // Emit the result UMA but no UKM: this exits before any per-install metrics
+    // context is set up.
+    EmitInstallResultUma(triggered_from_element,
+                         web_app::WebInstallServiceResult::kInstallInProgress);
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError);
     return;
   }
@@ -356,16 +365,19 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
   // service, and needs to detect if the page navigated away at any point.
   initiating_page_ = render_frame_host().GetPage().GetWeakPtr();
 
-  // Wrap the callback so the install guard is released on every exit path.
-  // TODO(crbug.com/525409692): Include manifest URL telemetry. This should
-  // eventually mirror `callback_with_metrics`.
-  auto callback_with_guard = base::BindOnce(
+  // Wrap the blink callback in another that records result UMA and releases
+  // the install guard before running the blink callback.
+  // TODO(crbug.com/525409692): Emit UKMs for the manifest URL flow.
+  auto callback_with_metrics = base::BindOnce(
       [](InstallFromManifestCallback callback,
-         base::ScopedClosureRunner install_guard,
+         base::ScopedClosureRunner install_guard, bool triggered_from_element,
+         web_app::WebInstallServiceResult metrics_result,
          blink::mojom::WebInstallServiceResult result) {
+        EmitInstallResultUma(triggered_from_element, metrics_result);
+        // `install_guard` releases the guard when it goes out of scope.
         std::move(callback).Run(result);
       },
-      std::move(callback), std::move(install_guard));
+      std::move(callback), std::move(install_guard), triggered_from_element);
 
   const GURL install_target = options->manifest_url;
 
@@ -374,8 +386,9 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
                             (install_target.SchemeIs(url::kHttpScheme) &&
                              net::IsLocalhost(install_target));
   if (!can_fetch_manifest) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kDataError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kDataError);
     return;
   }
 
@@ -390,8 +403,9 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
   webapps::MLInstallabilityPromoter* promoter =
       webapps::MLInstallabilityPromoter::FromWebContents(web_contents);
   if (promoter && promoter->HasCurrentInstall()) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kInstallInProgress,
+             blink::mojom::WebInstallServiceResult::kAbortError);
     return;
   }
 
@@ -405,8 +419,9 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
   // `IsInstallingForWebContents` will always be false.
   if (provider &&
       provider->command_manager().IsInstallingForWebContents(web_contents)) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kInstallInProgress,
+             blink::mojom::WebInstallServiceResult::kAbortError);
     return;
   }
 
@@ -426,12 +441,12 @@ void WebInstallServiceImpl::InstallFromManifestInternal(
 
   manifest_fetcher_->Fetch(base::BindOnce(
       &WebInstallServiceImpl::OnManifestFetched, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback_with_guard), std::move(options),
+      std::move(callback_with_metrics), std::move(options),
       std::move(install_tracker), triggered_from_element));
 }
 
 void WebInstallServiceImpl::OnManifestFetched(
-    InstallFromManifestCallbackWithGuard callback_with_guard,
+    InstallFromManifestCallbackWithMetrics callback_with_metrics,
     blink::mojom::ManifestInstallOptionsPtr options,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     bool triggered_from_element,
@@ -439,8 +454,9 @@ void WebInstallServiceImpl::OnManifestFetched(
   manifest_fetcher_.reset();
 
   if (!result.has_value()) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kDataError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kInstallCommandFailed,
+             blink::mojom::WebInstallServiceResult::kDataError);
     return;
   }
 
@@ -453,8 +469,9 @@ void WebInstallServiceImpl::OnManifestFetched(
       AreWebAppsEnabled(profile) ? profile : profile->GetOriginalProfile();
   auto* provider = WebAppProvider::GetForWebApps(provider_profile);
   if (!provider) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError);
     return;
   }
 
@@ -464,12 +481,12 @@ void WebInstallServiceImpl::OnManifestFetched(
           manifest_url, std::move(*result),
           base::BindOnce(&WebInstallServiceImpl::OnManifestParsed,
                          weak_ptr_factory_.GetWeakPtr(),
-                         std::move(callback_with_guard), std::move(options),
+                         std::move(callback_with_metrics), std::move(options),
                          std::move(install_tracker), triggered_from_element)));
 }
 
 void WebInstallServiceImpl::OnManifestParsed(
-    InstallFromManifestCallbackWithGuard callback_with_guard,
+    InstallFromManifestCallbackWithMetrics callback_with_metrics,
     blink::mojom::ManifestInstallOptionsPtr options,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     bool triggered_from_element,
@@ -477,8 +494,9 @@ void WebInstallServiceImpl::OnManifestParsed(
   // Null manifest means the command failed (invalid JSON, empty, or missing
   // required fields like start_url/name).
   if (!parsed_manifest) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kDataError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kInstallCommandFailed,
+             blink::mojom::WebInstallServiceResult::kDataError);
     return;
   }
 
@@ -486,16 +504,18 @@ void WebInstallServiceImpl::OnManifestParsed(
   // parsed and computed.
   if (options->manifest_id.has_value()) {
     if (parsed_manifest->id != *options->manifest_id) {
-      std::move(callback_with_guard)
-          .Run(blink::mojom::WebInstallServiceResult::kDataError);
+      std::move(callback_with_metrics)
+          .Run(web_app::WebInstallServiceResult::kManifestIdMismatch,
+               blink::mojom::WebInstallServiceResult::kDataError);
       return;
     }
   } else {
     // The developer did not provide a manifest ID, so the parsed manifest
     // must have declared one.
     if (!parsed_manifest->has_custom_id) {
-      std::move(callback_with_guard)
-          .Run(blink::mojom::WebInstallServiceResult::kDataError);
+      std::move(callback_with_metrics)
+          .Run(web_app::WebInstallServiceResult::kNoCustomManifestId,
+               blink::mojom::WebInstallServiceResult::kDataError);
       return;
     }
   }
@@ -512,7 +532,7 @@ void WebInstallServiceImpl::OnManifestParsed(
         profile,
         base::BindOnce(
             &WebInstallServiceImpl::OnManifestInstallNotSupportedDialogClosed,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback_with_guard)));
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback_with_metrics)));
     return;
   }
 
@@ -522,8 +542,9 @@ void WebInstallServiceImpl::OnManifestParsed(
   // DataErrors remain reachable regardless of permission outcome.
   if (!render_frame_host().IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kWebAppInstallation)) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kPermissionDenied,
+             blink::mojom::WebInstallServiceResult::kAbortError);
     return;
   }
 
@@ -533,8 +554,8 @@ void WebInstallServiceImpl::OnManifestParsed(
   // TODO(liahiscock): Add test coverage for this branch once its publicly
   // reachable.
   if (triggered_from_element) {
-    ContinueManifestInstall(std::move(callback_with_guard), std::move(options),
-                            std::move(install_tracker),
+    ContinueManifestInstall(std::move(callback_with_metrics),
+                            std::move(options), std::move(install_tracker),
                             std::move(parsed_manifest));
     return;
   }
@@ -542,20 +563,21 @@ void WebInstallServiceImpl::OnManifestParsed(
   RequestWebInstallPermission(
       base::BindOnce(&WebInstallServiceImpl::OnManifestPermissionDecided,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_with_guard), std::move(options),
+                     std::move(callback_with_metrics), std::move(options),
                      std::move(install_tracker), std::move(parsed_manifest)));
 }
 
 void WebInstallServiceImpl::OnManifestInstallNotSupportedDialogClosed(
-    InstallFromManifestCallbackWithGuard callback_with_guard) {
+    InstallFromManifestCallbackWithMetrics callback_with_metrics) {
   // This dialog is informational only; No "accepted" value is needed, closure
   // always results in an abort error.
-  std::move(callback_with_guard)
-      .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+  std::move(callback_with_metrics)
+      .Run(web_app::WebInstallServiceResult::kUnsupportedProfile,
+           blink::mojom::WebInstallServiceResult::kAbortError);
 }
 
 void WebInstallServiceImpl::OnManifestPermissionDecided(
-    InstallFromManifestCallbackWithGuard callback_with_guard,
+    InstallFromManifestCallbackWithMetrics callback_with_metrics,
     blink::mojom::ManifestInstallOptionsPtr options,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     blink::mojom::ManifestPtr manifest,
@@ -565,17 +587,18 @@ void WebInstallServiceImpl::OnManifestPermissionDecided(
   CHECK_EQ(permission_result.size(), 1u);
 
   if (permission_result[0].status != PermissionStatus::GRANTED) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kPermissionDenied,
+             blink::mojom::WebInstallServiceResult::kAbortError);
     return;
   }
 
-  ContinueManifestInstall(std::move(callback_with_guard), std::move(options),
+  ContinueManifestInstall(std::move(callback_with_metrics), std::move(options),
                           std::move(install_tracker), std::move(manifest));
 }
 
 void WebInstallServiceImpl::ContinueManifestInstall(
-    InstallFromManifestCallbackWithGuard callback_with_guard,
+    InstallFromManifestCallbackWithMetrics callback_with_metrics,
     blink::mojom::ManifestInstallOptionsPtr options,
     std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     blink::mojom::ManifestPtr manifest) {
@@ -588,8 +611,9 @@ void WebInstallServiceImpl::ContinueManifestInstall(
   // non browser embedder-owned WebContents, etc.). These WebContents are not
   // expected to call the Web Install API, but must still be handled gracefully.
   if (!install_tracker) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError);
     return;
   }
 
@@ -609,20 +633,22 @@ void WebInstallServiceImpl::ContinueManifestInstall(
       std::move(manifest), options->manifest_url, last_committed_url_,
       base::BindOnce(&WebInstallServiceImpl::OnAppInstalledFromManifest,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_with_guard)));
+                     std::move(callback_with_metrics)));
 }
 
 void WebInstallServiceImpl::OnAppInstalledFromManifest(
-    InstallFromManifestCallbackWithGuard callback_with_guard,
+    InstallFromManifestCallbackWithMetrics callback_with_metrics,
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   if (webapps::IsSuccess(code)) {
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kSuccess);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kSuccess,
+             blink::mojom::WebInstallServiceResult::kSuccess);
   } else {
     // TODO(liahiscock): Narrow abort error to user cancellations only.
-    std::move(callback_with_guard)
-        .Run(blink::mojom::WebInstallServiceResult::kAbortError);
+    std::move(callback_with_metrics)
+        .Run(web_app::WebInstallServiceResult::kUnexpectedFailure,
+             blink::mojom::WebInstallServiceResult::kAbortError);
   }
 }
 
@@ -1215,9 +1241,8 @@ void WebInstallServiceImpl::OnAppInstalled(
         Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
     auto* provider = WebAppProvider::GetForWebApps(profile);
     CHECK(provider);
-    manifest_id_result =
-        webapps::ManifestId::Create(
-            provider->registrar_unsafe().GetComputedManifestId(app_id));
+    manifest_id_result = webapps::ManifestId::Create(
+        provider->registrar_unsafe().GetComputedManifestId(app_id));
     CHECK(manifest_id_result.has_value());
 
   } else {

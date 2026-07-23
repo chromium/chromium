@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_install_service_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -113,6 +114,14 @@ class WebInstallDialogShownWatcher {
   bool shown_ = false;
   views::AnyWidgetObserver observer_{views::test::AnyWidgetTestPasskey{}};
 };
+
+// Telemetry emitted by the manifest URL install flow.
+constexpr char kInstallResultUma[] = "WebApp.WebInstallApi.Result";
+constexpr char kInstallTypeUma[] = "WebApp.WebInstallApi.InstallType";
+constexpr char kVariantedInstallResultUma[] =
+    "WebApp.WebInstallService.Api.Result";
+constexpr char kVariantedInstallTypeUma[] =
+    "WebApp.WebInstallService.Api.InstallType";
 
 // Browser tests for the navigator.install({manifest: ...}) flow.
 // These require a real renderer because manifest parsing uses the
@@ -265,6 +274,7 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
 // Valid manifest with custom id, no id option provided.
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
                        ManifestOnly_Succeeds) {
+  base::HistogramTester histograms;
   NavigateToValidUrl();
   SetPermissionResponse(/*permission_granted=*/true);
   base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
@@ -275,7 +285,6 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
       embedded_https_test_server().GetURL("/banners/manifest_with_id.json");
 
   permissions::PermissionRequestObserver observer(web_contents());
-  base::HistogramTester histograms;
   ASSERT_TRUE(TryInstallFromManifest(manifest_url));
   observer.Wait();
 
@@ -312,11 +321,22 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
                                blink::mojom::WebDXFeature::kNavigatorInstall,
                                1);
+
+  // Install succeeded end-to-end: type/result UMA record kSuccess.
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kSuccess, 1);
 }
 
 // Valid manifest with custom id, matching id option.
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
                        ManifestAndId_Succeeds) {
+  base::HistogramTester histograms;
   NavigateToValidUrl();
   SetPermissionResponse(/*permission_granted=*/true);
   base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
@@ -330,7 +350,6 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   GURL manifest_id = embedded_https_test_server().GetURL("/some_id");
 
   permissions::PermissionRequestObserver observer(web_contents());
-  base::HistogramTester histograms;
   ASSERT_TRUE(TryInstallFromManifestWithId(manifest_url, manifest_id));
   observer.Wait();
 
@@ -366,12 +385,23 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   histograms.ExpectBucketCount("Blink.UseCounter.WebDXFeatures",
                                blink::mojom::WebDXFeature::kNavigatorInstall,
                                1);
+
+  // Install succeeded end-to-end: type/result UMA record kSuccess.
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kSuccess, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kSuccess, 1);
 }
 
 // When the user denies the Web Install permission prompt, the install is
 // rejected with AbortError.
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
                        PermissionDenied_AbortError) {
+  base::HistogramTester histograms;
   NavigateToValidUrl();
   GURL manifest_url =
       embedded_https_test_server().GetURL("/banners/manifest_with_id.json");
@@ -387,10 +417,22 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
+
+  // Parse+id validation ran before the prompt; result UMA records the
+  // permission-denied outcome.
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kPermissionDenied, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kPermissionDenied, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
                        PermissionsPolicyDisallowed_SecurityError) {
+  base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_https_test_server().GetURL("/disallow_web_install.html")));
@@ -407,6 +449,12 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   EXPECT_FALSE(ResultExists());
   ASSERT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kSecurityError);
+
+  // Blink rejects in the renderer before calling the browser, so no telemetry.
+  histograms.ExpectTotalCount(kInstallResultUma, 0);
+  histograms.ExpectTotalCount(kVariantedInstallResultUma, 0);
+  histograms.ExpectTotalCount(kInstallTypeUma, 0);
+  histograms.ExpectTotalCount(kVariantedInstallTypeUma, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
@@ -795,6 +843,7 @@ class WebInstallFromManifestPrivacyInvariantTest
 // return DataError identically in regular and Incognito modes.
 IN_PROC_BROWSER_TEST_P(WebInstallFromManifestPrivacyInvariantTest,
                        MissingManifestId_DataError) {
+  base::HistogramTester histograms;
   content::WebContents* wc = NavigateAndGetWebContents();
   GURL manifest_url = embedded_https_test_server().GetURL(kValidManifestNoId);
 
@@ -802,12 +851,23 @@ IN_PROC_BROWSER_TEST_P(WebInstallFromManifestPrivacyInvariantTest,
 
   ASSERT_TRUE(ErrorExists(wc));
   EXPECT_EQ(GetErrorName(wc), kDataError);
+
+  // Result UMA records the no-custom-id outcome.
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kNoCustomManifestId, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kNoCustomManifestId, 1);
 }
 
 // A valid manifest with a custom id, but a non-matching id option, should
 // return DataError identically in regular and Incognito modes.
 IN_PROC_BROWSER_TEST_P(WebInstallFromManifestPrivacyInvariantTest,
                        MismatchedManifestId_DataError) {
+  base::HistogramTester histograms;
   content::WebContents* wc = NavigateAndGetWebContents();
   GURL manifest_url =
       embedded_https_test_server().GetURL("/banners/manifest_with_id.json");
@@ -817,12 +877,24 @@ IN_PROC_BROWSER_TEST_P(WebInstallFromManifestPrivacyInvariantTest,
 
   ASSERT_TRUE(ErrorExists(wc));
   EXPECT_EQ(GetErrorName(wc), kDataError);
+
+  // Parse succeeded and id validation ran; result UMA records the
+  // manifest-id-mismatch outcome.
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kManifestIdMismatch, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kManifestIdMismatch, 1);
 }
 
 // Invalid JSON causes a parse failure that should return DataError identically
 // in regular and Incognito modes.
 IN_PROC_BROWSER_TEST_P(WebInstallFromManifestPrivacyInvariantTest,
                        InvalidJson_DataError) {
+  base::HistogramTester histograms;
   SetDynamicManifestResponse("this is not valid json {{{");
 
   content::WebContents* wc = NavigateAndGetWebContents();
@@ -833,6 +905,17 @@ IN_PROC_BROWSER_TEST_P(WebInstallFromManifestPrivacyInvariantTest,
 
   ASSERT_TRUE(ErrorExists(wc));
   EXPECT_EQ(GetErrorName(wc), kDataError);
+
+  // Result UMA records the install-command-failed outcome.
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(
+      kInstallResultUma, WebInstallServiceResult::kInstallCommandFailed, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kInstallCommandFailed,
+                               1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -849,6 +932,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
                        Incognito_ValidManifest_ShowsNotSupportedDialog) {
   // A valid manifest in Incognito should show the "not supported" dialog
   // and reject with AbortError (not DataError).
+  base::HistogramTester histograms;
   GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   Browser* incognito_browser = CreateIncognitoBrowser();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, test_url));
@@ -883,6 +967,17 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
   // Validate JS results - should be AbortError, not DataError.
   ASSERT_TRUE(ErrorExists(incognito_web_contents));
   EXPECT_EQ(GetErrorName(incognito_web_contents), kAbortError);
+
+  // Parse succeeded before the profile check; result UMA records the
+  // unsupported-profile outcome.
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kUnsupportedProfile, 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -911,6 +1006,7 @@ class WebInstallFromManifestGuestModeTest
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestGuestModeTest,
                        GuestMode_NotSupportedDialog) {
+  base::HistogramTester histograms;
 #if BUILDFLAG(IS_CHROMEOS)
   Browser* guest_browser = browser();
 #else
@@ -947,6 +1043,15 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestGuestModeTest,
   EXPECT_FALSE(ResultExists(guest_web_contents));
   EXPECT_TRUE(ErrorExists(guest_web_contents));
   EXPECT_EQ(GetErrorName(guest_web_contents), kAbortError);
+
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kUnsupportedProfile, 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -984,6 +1089,7 @@ class WebInstallFromManifestPolicyDisabledTest
 
 IN_PROC_BROWSER_TEST_F(WebInstallFromManifestPolicyDisabledTest,
                        PolicyDisabled_NotSupportedDialog) {
+  base::HistogramTester histograms;
   ASSERT_FALSE(
       web_app::IsWebAppInstallByUserPolicyEnabled(browser()->GetProfile()));
 
@@ -1013,6 +1119,15 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestPolicyDisabledTest,
   EXPECT_FALSE(ResultExists());
   EXPECT_TRUE(ErrorExists());
   EXPECT_EQ(GetErrorName(), kAbortError);
+
+  histograms.ExpectBucketCount(kInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kVariantedInstallTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectBucketCount(kInstallResultUma,
+                               WebInstallServiceResult::kUnsupportedProfile, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kUnsupportedProfile, 1);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

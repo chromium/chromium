@@ -82,10 +82,11 @@ using InstallCallbackWithMetrics =
                             blink::mojom::WebInstallServiceResult,
                             std::optional<webapps::ManifestId>)>;
 
-// Wraps the `InstallFromManifestCallback` so that the install-in-progress guard
-// is automatically released on every exit path.
-using InstallFromManifestCallbackWithGuard =
-    base::OnceCallback<void(blink::mojom::WebInstallServiceResult)>;
+// Wraps `InstallFromManifestCallback` to record result UMA/UKMs and release the
+// install-in-progress guard before running the blink callback.
+using InstallFromManifestCallbackWithMetrics =
+    base::OnceCallback<void(web_app::WebInstallServiceResult,
+                            blink::mojom::WebInstallServiceResult)>;
 
 // Service side implementation for the Blink Web Install API. Takes the
 // parameters from the API call in the form of `InstallOptionsPtr`, and decides
@@ -222,7 +223,7 @@ class WebInstallServiceImpl
   // holds the registered current-install state for the web contents; dropping
   // it on any failure path releases the registration.
   void OnManifestFetched(
-      InstallFromManifestCallbackWithGuard callback_with_guard,
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
       blink::mojom::ManifestInstallOptionsPtr options,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       bool triggered_from_element,
@@ -230,18 +231,18 @@ class WebInstallServiceImpl
 
   // Callback for when the manifest parse command completes.
   void OnManifestParsed(
-      InstallFromManifestCallbackWithGuard callback_with_guard,
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
       blink::mojom::ManifestInstallOptionsPtr options,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       bool triggered_from_element,
       blink::mojom::ManifestPtr manifest);
 
   void OnManifestInstallNotSupportedDialogClosed(
-      InstallFromManifestCallbackWithGuard callback_with_guard);
+      InstallFromManifestCallbackWithMetrics callback_with_metrics);
 
   // Callback for when the manifest URL permission prompt completes.
   void OnManifestPermissionDecided(
-      InstallFromManifestCallbackWithGuard callback_with_guard,
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
       blink::mojom::ManifestInstallOptionsPtr options,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       blink::mojom::ManifestPtr manifest,
@@ -250,14 +251,14 @@ class WebInstallServiceImpl
   // Shared "permission granted, proceed to install" step for the manifest URL
   // flow.
   void ContinueManifestInstall(
-      InstallFromManifestCallbackWithGuard callback_with_guard,
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
       blink::mojom::ManifestInstallOptionsPtr options,
       std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       blink::mojom::ManifestPtr manifest);
 
   // Callback for when the manifest URL install command completes.
   void OnAppInstalledFromManifest(
-      InstallFromManifestCallbackWithGuard callback_with_guard,
+      InstallFromManifestCallbackWithMetrics callback_with_metrics,
       const webapps::AppId& app_id,
       webapps::InstallResultCode code);
 

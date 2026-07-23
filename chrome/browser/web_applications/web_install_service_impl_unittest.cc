@@ -7,6 +7,7 @@
 #include <array>
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -24,7 +25,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/net_errors.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -170,18 +174,31 @@ class WebInstallServiceImplTest : public WebAppTest {
     page_state.manifest_url = GURL(kManifestUrl);
   }
 
-  // Calls InstallFromManifest() with the given manifest URL and waits for the
-  // mojo callback.
+  // Calls InstallFromManifest() (or ElementInstallFromManifest() when
+  // `from_element` is true) with the given manifest URL and waits for the mojo
+  // callback.
   blink::mojom::WebInstallServiceResult InstallFromManifestUrl(
-      const GURL& manifest_url) {
+      const GURL& manifest_url,
+      const std::optional<GURL>& manifest_id = std::nullopt,
+      bool from_element = false) {
     auto options = blink::mojom::ManifestInstallOptions::New();
     options->manifest_url = manifest_url;
+    options->manifest_id = manifest_id;
 
     base::test::TestFuture<blink::mojom::WebInstallServiceResult> future;
-    service_remote_->InstallFromManifest(std::move(options),
-                                         future.GetCallback());
+    if (from_element) {
+      service_remote_->ElementInstallFromManifest(std::move(options),
+                                                  future.GetCallback());
+    } else {
+      service_remote_->InstallFromManifest(std::move(options),
+                                           future.GetCallback());
+    }
     EXPECT_TRUE(future.Wait());
     return future.Get();
+  }
+
+  mojo::Remote<blink::mojom::WebInstallService>& service_remote() {
+    return service_remote_;
   }
 
  private:
@@ -796,6 +813,96 @@ TEST_F(WebInstallServiceImplTest, InstallFromManifest_ChromeSchemeRejected) {
   BindService();
   EXPECT_EQ(InstallFromManifestUrl(GURL("chrome://settings/manifest.json")),
             blink::mojom::WebInstallServiceResult::kDataError);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// InstallFromManifest telemetry tests.
+// Verify the manifest URL flow records the expected UMAs, exercising
+// pre-parse exits (reached without serving a manifest).
+///////////////////////////////////////////////////////////////////////////////
+
+// The <install> element manifest entry point (ElementInstallFromManifest)
+// shares InstallFromManifestInternal, so it must record to the Element-variant
+// UMA rather than the Api ones. Uses an HTTPS URL with a mocked fetch failure.
+TEST_F(WebInstallServiceImplTest,
+       ElementInstallFromManifest_RecordsElementVariantTelemetry) {
+  base::HistogramTester histograms;
+  BindService();
+
+  profile_url_loader_factory().AddResponse(
+      GURL(kManifestUrl), network::mojom::URLResponseHead::New(),
+      /*content=*/std::string(),
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED));
+
+  EXPECT_EQ(InstallFromManifestUrl(GURL(kManifestUrl),
+                                   /*manifest_id=*/std::nullopt,
+                                   /*from_element=*/true),
+            blink::mojom::WebInstallServiceResult::kDataError);
+
+  // Records to the Element histograms, not the Api ones.
+  histograms.ExpectBucketCount(kInstallElementResultUma,
+                               WebInstallServiceResult::kInstallCommandFailed,
+                               1);
+  histograms.ExpectBucketCount(kVariantedElementResultUma,
+                               WebInstallServiceResult::kInstallCommandFailed,
+                               1);
+  histograms.ExpectBucketCount(kInstallElementTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+  histograms.ExpectTotalCount(kInstallApiResultUma, 0);
+  histograms.ExpectTotalCount(kInstallApiTypeUma, 0);
+}
+
+// A concurrent manifest install reports kInstallInProgress for the rejected
+// call.
+TEST_F(WebInstallServiceImplTest,
+       InstallFromManifest_ConcurrentInstall_ReportsInProgress) {
+  BindService();
+
+  // Start a first install whose manifest fetch never completes (no response is
+  // registered), holding the install-in-progress guard. Flush so the guard is
+  // reserved before the second install below.
+  auto options = blink::mojom::ManifestInstallOptions::New();
+  options->manifest_url = GURL(kManifestUrl);
+  service_remote()->InstallFromManifest(std::move(options), base::DoNothing());
+  service_remote().FlushForTesting();
+
+  // Only measure the second (rejected) call.
+  base::HistogramTester histograms;
+
+  EXPECT_EQ(InstallFromManifestUrl(GURL(kManifestUrl)),
+            blink::mojom::WebInstallServiceResult::kAbortError);
+
+  histograms.ExpectBucketCount(kInstallApiResultUma,
+                               WebInstallServiceResult::kInstallInProgress, 1);
+  histograms.ExpectBucketCount(kInstallApiTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
+}
+
+// A manifest fetch failure (network error) exits before parsing with
+// kInstallCommandFailed.
+TEST_F(WebInstallServiceImplTest,
+       InstallFromManifest_FetchFailureRecordsCommandFailed) {
+  base::HistogramTester histograms;
+  BindService();
+
+  // Simulate a network error for the manifest fetch. A minimal response
+  // head is paired with the net error to avoid an inconsistent
+  // TestURLLoaderFactory state.
+  profile_url_loader_factory().AddResponse(
+      GURL(kManifestUrl), network::mojom::URLResponseHead::New(),
+      /*content=*/std::string(),
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED));
+
+  EXPECT_EQ(InstallFromManifestUrl(GURL(kManifestUrl)),
+            blink::mojom::WebInstallServiceResult::kDataError);
+
+  histograms.ExpectBucketCount(
+      kInstallApiResultUma, WebInstallServiceResult::kInstallCommandFailed, 1);
+  histograms.ExpectBucketCount(kVariantedInstallResultUma,
+                               WebInstallServiceResult::kInstallCommandFailed,
+                               1);
+  histograms.ExpectBucketCount(kInstallApiTypeUma,
+                               WebInstallServiceType::kBackgroundDocument, 1);
 }
 
 }  // namespace
