@@ -16,10 +16,21 @@
 
 namespace chrome_pdf {
 namespace {
-typedef ChunkStream<10> TestChunkStream;
+using TestChunkStream = ChunkStream<10>;
 
 std::unique_ptr<TestChunkStream::ChunkData> CreateChunkData() {
   return std::make_unique<TestChunkStream::ChunkData>();
+}
+
+// Creates a chunk and populates it with incrementing values starting from
+// `start_value`.
+std::unique_ptr<TestChunkStream::ChunkData> CreateAndFillChunkData(
+    uint8_t start_value) {
+  std::unique_ptr<TestChunkStream::ChunkData> chunk = CreateChunkData();
+  for (uint8_t& byte : *chunk) {
+    byte = start_value++;
+  }
+  return chunk;
 }
 }  // namespace
 
@@ -97,30 +108,19 @@ TEST(ChunkStreamTest, ReadEmptyRange) {
 TEST(ChunkStreamTest, Read) {
   TestChunkStream stream;
   stream.set_eof_pos(25);
-  constexpr uint8_t start_value = 33;
-  uint8_t value = start_value;
-  auto chunk_0 = CreateChunkData();
-  for (auto& it : *chunk_0) {
-    it = ++value;
-  }
-  auto chunk_1 = CreateChunkData();
-  for (auto& it : *chunk_1) {
-    it = ++value;
-  }
-  auto chunk_2 = CreateChunkData();
-  for (auto& it : *chunk_2) {
-    it = ++value;
-  }
-  stream.SetChunkData(0, std::move(chunk_0));
-  stream.SetChunkData(2, std::move(chunk_2));
-  stream.SetChunkData(1, std::move(chunk_1));
+  constexpr uint8_t kStartValue = 34;
+  stream.SetChunkData(0, CreateAndFillChunkData(kStartValue));
+  stream.SetChunkData(
+      2, CreateAndFillChunkData(kStartValue + 2 * TestChunkStream::kChunkSize));
+  stream.SetChunkData(
+      1, CreateAndFillChunkData(kStartValue + TestChunkStream::kChunkSize));
 
   std::array<uint8_t, 25> result_data;
   EXPECT_TRUE(stream.ReadData(gfx::Range(0, 25), result_data));
 
-  value = start_value;
-  for (const auto& it : result_data) {
-    EXPECT_EQ(++value, it);
+  uint8_t value = kStartValue;
+  for (uint8_t byte : result_data) {
+    EXPECT_EQ(value++, byte);
   }
 }
 }  // namespace chrome_pdf
