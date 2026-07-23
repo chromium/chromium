@@ -10,9 +10,11 @@ import android.view.ViewStub;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
@@ -28,6 +30,7 @@ public final class SideUiCoordinatorFactory {
      * @param parentActivity The {@link Activity} containing all Side UIs.
      * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for {@code
      *     parentActivity}.
+     * @param layoutStateProviderSupplier Supplier for the {@link LayoutStateProvider}.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to adjust for
      *     top controls changes.
      * @param anchorContainerParent The {@link ViewGroup} that is the parent for the side UI
@@ -43,6 +46,7 @@ public final class SideUiCoordinatorFactory {
     public static SideUiCoordinator create(
             Activity parentActivity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             @Nullable ViewGroup anchorContainerParent,
             @Nullable ViewStub leftAnchorContainerStub,
@@ -65,6 +69,7 @@ public final class SideUiCoordinatorFactory {
         return new SideUiCoordinatorImpl(
                 parentActivity,
                 lifecycleDispatcher,
+                layoutStateProviderSupplier,
                 browserControlsStateProvider,
                 anchorContainerParent,
                 leftAnchorContainerStub,

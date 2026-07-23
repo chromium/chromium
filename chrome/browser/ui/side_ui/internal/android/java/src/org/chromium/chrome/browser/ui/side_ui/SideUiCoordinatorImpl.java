@@ -25,15 +25,19 @@ import androidx.core.view.animation.PathInterpolatorCompat;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
-import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs.SideUiSize;
 import org.chromium.ui.base.ViewUtils;
 
@@ -52,6 +56,10 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private final ViewGroup mAnchorContainerParent;
+
+    private final CallbackController mCallbackController = new CallbackController();
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
+    private @Nullable LayoutStateObserver mLayoutStateObserver;
 
     private final NonNullObservableSupplier<Integer> mTopMarginSupplier;
     private final Callback<Integer> mTopMarginObserver;
@@ -81,6 +89,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      * @param parentActivity The {@link Activity} containing all Side UIs.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for {@code
      *     parentActivity}.
+     * @param layoutStateProviderSupplier Supplier for the {@link LayoutStateProvider}.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to adjust for
      *     top controls changes.
      * @param anchorContainerParent The {@link ViewGroup} that is the parent for the side UI
@@ -94,6 +103,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     /* package */ SideUiCoordinatorImpl(
             Activity parentActivity,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             ViewGroup anchorContainerParent,
             ViewStub leftAnchorContainerStub,
@@ -124,6 +134,9 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
                         browserControlsStateProvider,
                         /* sideUiStateProvider= */ this,
                         webContentHairlineContainer);
+
+        layoutStateProviderSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::onLayoutStateProviderAvailable));
 
         mActivityLifecycleDispatcher.register(this);
     }
@@ -176,6 +189,12 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     @Override
     public void destroy() {
         ThreadUtils.assertOnUiThread();
+        if (mLayoutStateProvider != null && mLayoutStateObserver != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+            mLayoutStateProvider = null;
+            mLayoutStateObserver = null;
+        }
+        mCallbackController.destroy();
         mSideUiContainers.clear();
         mTopMarginSupplier.removeObserver(mTopMarginObserver);
         mWebContentsHairlineManager.destroy();
@@ -228,6 +247,40 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         var sideUiShowability = determineSideUiShowability(windowWidth, minWebContentsWidth);
 
         return sideUiShowability.mShowableSideUiIds.contains(sideUiId);
+    }
+
+    private void onLayoutStateProviderAvailable(LayoutStateProvider layoutStateProvider) {
+        mLayoutStateProvider = layoutStateProvider;
+        mLayoutStateObserver =
+                new LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.HUB) {
+                            setHideSideUiView(true);
+                        }
+                    }
+
+                    @Override
+                    public void onStartedHiding(@LayoutType int layoutType) {
+                        if (layoutType == LayoutType.HUB) {
+                            setHideSideUiView(false);
+                        }
+                    }
+                };
+        mLayoutStateProvider.addObserver(mLayoutStateObserver);
+        if (mLayoutStateProvider.isLayoutVisible(LayoutType.HUB)) {
+            setHideSideUiView(true);
+        }
+    }
+
+    private void setHideSideUiView(boolean hide) {
+        ThreadUtils.assertOnUiThread();
+        int visibility = hide ? View.INVISIBLE : View.VISIBLE;
+        for (ViewGroup container : mAnchorContainers.values()) {
+            if (container.getVisibility() != View.GONE) {
+                container.setVisibility(visibility);
+            }
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -648,7 +701,10 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
 
         // Attach to the target parent.
         targetParent.addView(sideUiContainerView);
-        targetParent.setVisibility(View.VISIBLE);
+        targetParent.setVisibility(
+                mLayoutStateProvider != null && mLayoutStateProvider.isLayoutVisible(LayoutType.HUB)
+                        ? View.INVISIBLE
+                        : View.VISIBLE);
     }
 
     /**

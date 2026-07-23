@@ -2235,6 +2235,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 SideUiCoordinatorFactory.create(
                         mActivity,
                         mActivityLifecycleDispatcher,
+                        mLayoutStateProviderOneShotSupplier,
                         mBrowserControlsManager,
                         anchorContainerParent,
                         sideUiStartAnchorContainerStub,

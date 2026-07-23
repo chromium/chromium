@@ -37,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,10 +46,14 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiId;
@@ -72,13 +77,18 @@ public class SideUiCoordinatorImplTest {
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ViewStub mLeftAnchorContainerStub;
     @Mock private ViewStub mRightAnchorContainerStub;
     @Mock private ViewStub mWebContentHairlineContainerStub;
     @Mock private SideUiObserver mSideUiObserver;
 
+    @Captor private ArgumentCaptor<LayoutStateObserver> mLayoutStateObserverCaptor;
+
     private final SettableNonNullObservableSupplier<Integer> mTopMarginSupplier =
             ObservableSuppliers.createNonNull(0);
+    private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
+            new OneshotSupplierImpl<>();
 
     private Activity mTestActivity;
     private ViewGroup mLeftAnchorContainer;
@@ -128,6 +138,7 @@ public class SideUiCoordinatorImplTest {
                 new SideUiCoordinatorImpl(
                         mTestActivity,
                         mActivityLifecycleDispatcher,
+                        mLayoutStateProviderSupplier,
                         mBrowserControlsStateProvider,
                         anchorContainerParent,
                         mLeftAnchorContainerStub,
@@ -156,9 +167,12 @@ public class SideUiCoordinatorImplTest {
 
     @Test
     public void testDestroy_UnregisterListeners() {
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        RobolectricUtil.runAllBackgroundAndUi();
         mCoordinator.destroy();
 
         verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
+        verify(mLayoutStateProvider).removeObserver(any());
         assertEquals(0, mTopMarginSupplier.getObserverCount());
     }
 
@@ -785,5 +799,50 @@ public class SideUiCoordinatorImplTest {
                 new UiUpdateRequest(sideUiContainer.getSideUiId(), /* suppressAnimations= */ true));
 
         verify(mBrowserControlsStateProvider).getTopVisibleContentOffset();
+    }
+
+    @Test
+    public void testLayoutStateObserver_HubLayout_HidesAndShowsView() {
+        mLeftAnchorContainer.setVisibility(View.VISIBLE);
+        mRightAnchorContainer.setVisibility(View.GONE);
+
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
+        LayoutStateObserver observer = mLayoutStateObserverCaptor.getValue();
+
+        observer.onFinishedShowing(LayoutType.HUB);
+        assertEquals(View.INVISIBLE, mLeftAnchorContainer.getVisibility());
+        assertEquals(View.GONE, mRightAnchorContainer.getVisibility());
+
+        observer.onStartedHiding(LayoutType.HUB);
+        assertEquals(View.VISIBLE, mLeftAnchorContainer.getVisibility());
+        assertEquals(View.GONE, mRightAnchorContainer.getVisibility());
+    }
+
+    @Test
+    public void testLayoutStateObserver_HubLayoutAlreadyVisible() {
+        mLeftAnchorContainer.setVisibility(View.VISIBLE);
+        doReturn(true).when(mLayoutStateProvider).isLayoutVisible(LayoutType.HUB);
+
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertEquals(View.INVISIBLE, mLeftAnchorContainer.getVisibility());
+    }
+
+    @Test
+    public void testLayoutStateObserver_OtherLayoutsIgnored() {
+        mLeftAnchorContainer.setVisibility(View.VISIBLE);
+
+        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
+        LayoutStateObserver observer = mLayoutStateObserverCaptor.getValue();
+
+        observer.onFinishedShowing(LayoutType.BROWSING);
+        assertEquals(View.VISIBLE, mLeftAnchorContainer.getVisibility());
+
+        observer.onStartedHiding(LayoutType.BROWSING);
+        assertEquals(View.VISIBLE, mLeftAnchorContainer.getVisibility());
     }
 }
