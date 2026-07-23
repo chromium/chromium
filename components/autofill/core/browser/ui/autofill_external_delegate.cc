@@ -1024,11 +1024,26 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       manager_->driver().RendererShouldTriggerSuggestions(
           last_query_.field_id, AutofillSuggestionTriggerSource::kAtMemory);
       break;
-    case SuggestionType::kAtMemorySearchResult:
-      manager_->GetAtMemoryManager().FillOrPreviewSearchResult(
-          mojom::ActionPersistence::kFill, last_query_.form_id,
-          last_query_.field_id, suggestion, metadata);
+    case SuggestionType::kAtMemorySearchResult: {
+      const IsAsync is_async =
+          manager_->GetAtMemoryManager().FillOrPreviewSearchResult(
+              mojom::ActionPersistence::kFill, last_query_.form_id,
+              last_query_.field_id, suggestion, metadata);
+      if (is_async) {
+        manager_->client().UpdateAutofillSuggestions(
+            PrepareLoadingStateSuggestions(
+                base::ToVector(manager_->client().GetAutofillSuggestions()),
+                suggestion),
+            FillingProduct::kAtMemory, trigger_source_,
+            AutofillSuggestionsIgnoreFocusLoss(true));
+        // If the filled suggestion is sensitive and obfuscated,
+        // `AtMemoryManager` fetches the entity asynchronously from the server
+        // or reauthenticates. The popup has to remain open and show the loading
+        // UI.
+        return;
+      }
       break;
+    }
     case SuggestionType::kOpenGemini:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       manager_->client().OpenGeminiInSidebar(

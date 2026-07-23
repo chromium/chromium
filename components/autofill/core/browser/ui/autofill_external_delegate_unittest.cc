@@ -4086,6 +4086,43 @@ TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_UsesSpecialAction) {
       suggestion, SuggestionPosition{.multi_index = {0}});
 }
 
+// Tests that when an AtMemory search result requires async fetching,
+// accepting the suggestion triggers a loading state UI update.
+TEST_F(AutofillExternalDelegateTest,
+       AtMemorySearchResult_Async_TriggersLoadingState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::debug::kAtMemoryNoDeviceReauthCheck);
+
+  autofill_client().set_last_committed_primary_main_frame_url(
+      GURL("https://example.com"));
+  autofill_client().set_at_memory_query_service(
+      std::make_unique<NiceMock<MockAtMemoryQueryService>>());
+  StartAtMemorySession();
+
+  Suggestion suggestion(u"Passport", SuggestionType::kAtMemorySearchResult);
+  Suggestion::AtMemoryPayload at_memory_payload(
+      u"1234", accessibility_annotator::MemoryDataType::kPassportNumber);
+  at_memory_payload.identifier = std::string("personal-context-guid");
+  at_memory_payload.is_personal_context_sourced = true;
+  suggestion.payload = std::move(at_memory_payload);
+
+  std::vector<Suggestion> suggestions = {suggestion};
+  ON_CALL(autofill_client(), GetAutofillSuggestions)
+      .WillByDefault(Return(suggestions));
+
+  EXPECT_CALL(
+      autofill_client(),
+      UpdateAutofillSuggestions(ElementsAre(Field(&Suggestion::is_loading,
+                                                  Suggestion::IsLoading(true))),
+                                FillingProduct::kAtMemory,
+                                AutofillSuggestionTriggerSource::kAtMemory,
+                                AutofillSuggestionsIgnoreFocusLoss(true)));
+
+  external_delegate().DidAcceptSuggestion(
+      suggestion, SuggestionPosition{.multi_index = {0}});
+}
+
 // Tests that accepting an AtMemory suggestion for an IBAN attempts to fetch the
 // value from the IbanAccessManager.
 TEST_F(AutofillExternalDelegateTest, AtMemorySearchResult_RevealsIban) {

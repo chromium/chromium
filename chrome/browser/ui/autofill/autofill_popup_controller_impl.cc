@@ -494,8 +494,10 @@ void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
       *ignore_focus_loss_ || (view_ && view_->HasFocus());
   // The end editing signal is sent when the currently focused field in the
   // renderer loses focus.
-  if (ignore_focus_loss && (reason == SuggestionHidingReason::kFocusChanged ||
-                            reason == SuggestionHidingReason::kEndEditing)) {
+  if (ignore_focus_loss &&
+      (reason == SuggestionHidingReason::kFocusChanged ||
+       reason == SuggestionHidingReason::kEndEditing ||
+       reason == SuggestionHidingReason::kSearchBarFocusLost)) {
     return;
   }
 

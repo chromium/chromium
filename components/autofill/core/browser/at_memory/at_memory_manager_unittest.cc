@@ -94,6 +94,10 @@ class MockAutofillClient : public TestAutofillClient {
               ShowAutofillAiFetchEntityFailureNotification,
               (),
               (override));
+  MOCK_METHOD(void,
+              HideSuggestions,
+              (SuggestionHidingReason, std::optional<FillingProduct>),
+              (override));
 };
 
 class MockBrowserAutofillManager : public TestBrowserAutofillManager {
@@ -712,27 +716,35 @@ TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
       passport.attribute(AttributeType(AttributeTypeName::kPassportNumber));
   ASSERT_TRUE(passport_attribute.has_value());
 
-  EXPECT_CALL(*mock_ai_access_manager_ptr,
-              FetchEntityInstance(Eq(passport), true, _))
-      .WillOnce([&](EntityInstance entity, bool will_fill,
-                    AutofillAiAccessManager::OnEntityInstanceFetchedCallback
-                        callback) {
-        std::move(callback).Run(entity, /*reauth_attempted=*/false);
-        return true;
-      });
-
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
-                         passport_attribute->GetCompleteRawInfo(),
-                         FillingProduct::kAtMemory, _));
-
   int64_t initial_use_count = passport.use_count();
   task_environment_.FastForwardBy(base::Seconds(60));
 
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+  {
+    InSequence seq;
+    EXPECT_CALL(
+        *mock_ai_access_manager_ptr,
+        FetchEntityInstance(passport, /*will_fill_sensitive_info=*/true, _))
+        .WillOnce([&](EntityInstance entity, bool will_fill,
+                      AutofillAiAccessManager::OnEntityInstanceFetchedCallback
+                          callback) {
+          std::move(callback).Run(entity, /*reauth_attempted=*/false);
+          return true;
+        });
+    EXPECT_CALL(autofill_client(),
+                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                std::optional(FillingProduct::kAtMemory)));
+    EXPECT_CALL(
+        autofill_manager(),
+        FillOrPreviewField(mojom::ActionPersistence::kFill,
+                           mojom::FieldActionType::kReplaceAtMemoryTrigger, _,
+                           _, passport_attribute->GetCompleteRawInfo(),
+                           FillingProduct::kAtMemory, _));
+  }
+
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);
@@ -854,35 +866,119 @@ TEST_F(AtMemoryManagerTest, FillSensitivePersonalContextData_Success) {
   }
   manager().OnSearchSubmitted(u"query");
 
-  EXPECT_CALL(
-      mock_query_service(),
-      AuthenticateAndFetchPiiEntity(
-          Ref(autofill_client()),
-          GetAuthenticationMessage(
-              autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
-          Eq(u"1234"), MemoryDataType::kPassportNumber, _, _))
-      .WillOnce(
-          [&](const AutofillClient& client, const std::u16string& auth_message,
-              std::u16string_view masked_value, MemoryDataType data_type,
-              base::span<const EntryMetadata> metadata_list,
-              AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback callback) {
-            ASSERT_EQ(metadata_list.size(), 1u);
-            EXPECT_EQ(metadata_list[0].type,
-                      MemoryDataType::kPassportExpirationDate);
-            EXPECT_EQ(metadata_list[0].value, u"2030-01-01");
-            std::move(callback).Run(u"unmasked_passport_1234");
-          });
-
-  EXPECT_CALL(
-      autofill_manager(),
-      FillOrPreviewField(mojom::ActionPersistence::kFill,
-                         mojom::FieldActionType::kReplaceAtMemoryTrigger,
-                         form_id, field_id, Eq(u"unmasked_passport_1234"),
-                         FillingProduct::kAtMemory, Eq(std::nullopt)));
-
   ASSERT_FALSE(final_suggestions.empty());
-  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form_id,
-                                      field_id, final_suggestions[0]);
+
+  {
+    InSequence seq;
+    EXPECT_CALL(
+        mock_query_service(),
+        AuthenticateAndFetchPiiEntity(
+            Ref(autofill_client()),
+            GetAuthenticationMessage(
+                autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
+            std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _,
+            _))
+        .WillOnce([&](const AutofillClient& client,
+                      const std::u16string& auth_message,
+                      std::u16string_view masked_value,
+                      MemoryDataType data_type,
+                      base::span<const EntryMetadata> metadata_list,
+                      AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback
+                          callback) {
+          ASSERT_EQ(metadata_list.size(), 1u);
+          EXPECT_EQ(metadata_list[0].type,
+                    MemoryDataType::kPassportExpirationDate);
+          EXPECT_EQ(metadata_list[0].value, u"2030-01-01");
+          std::move(callback).Run(u"unmasked_passport_1234");
+        });
+
+    EXPECT_CALL(autofill_client(),
+                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                std::optional(FillingProduct::kAtMemory)));
+    EXPECT_CALL(autofill_manager(),
+                FillOrPreviewField(
+                    mojom::ActionPersistence::kFill,
+                    mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id,
+                    field_id, std::u16string(u"unmasked_passport_1234"),
+                    FillingProduct::kAtMemory, std::optional<FieldType>()));
+  }
+
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
+}
+
+// Tests that when fetching sensitive Personal Context data is pending
+// asynchronously and the user clicks away (hides popup), the field is still
+// filled when the fetch completes and metrics are recorded correctly.
+TEST_F(AtMemoryManagerTest,
+       FillSensitivePersonalContextData_PendingFetch_UserClicksAway) {
+  base::HistogramTester histogram_tester;
+  auto [form_id, field_id] = SeeForm();
+  manager().OnPopupShown(form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemory,
+                         std::nullopt,
+                         /*is_context_secure=*/true, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kPassportNumber, u"Passport",
+                             u"1234");
+    entry.identifier = "personal-context-guid";
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kGmail)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_FALSE(final_suggestions.empty());
+
+  AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback captured_callback;
+  {
+    InSequence seq;
+    EXPECT_CALL(
+        mock_query_service(),
+        AuthenticateAndFetchPiiEntity(
+            Ref(autofill_client()),
+            GetAuthenticationMessage(
+                autofill_client().GetLastCommittedPrimaryMainFrameOrigin()),
+            std::u16string_view(u"1234"), MemoryDataType::kPassportNumber, _,
+            _))
+        .WillOnce([&](const AutofillClient& client,
+                      const std::u16string& auth_message,
+                      std::u16string_view masked_value,
+                      MemoryDataType data_type,
+                      base::span<const EntryMetadata> metadata_list,
+                      AtMemoryQueryService::FetchUnmaskedPiiEntitiesCallback
+                          callback) {
+          manager().OnPopupHidden();
+          captured_callback = std::move(callback);
+        });
+
+    EXPECT_CALL(autofill_client(),
+                HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                std::optional(FillingProduct::kAtMemory)));
+    EXPECT_CALL(autofill_manager(),
+                FillOrPreviewField(
+                    mojom::ActionPersistence::kFill,
+                    mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id,
+                    field_id, std::u16string(u"unmasked_passport_1234"),
+                    FillingProduct::kAtMemory, std::optional<FieldType>()));
+  }
+
+  EXPECT_EQ(manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill,
+                                                form_id, field_id,
+                                                final_suggestions[0]),
+            IsAsync(true));
+
+  std::move(captured_callback).Run(u"unmasked_passport_1234");
 
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
                                       true, 1);

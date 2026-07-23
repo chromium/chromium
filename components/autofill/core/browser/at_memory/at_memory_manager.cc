@@ -757,7 +757,7 @@ void AtMemoryManager::OnPopupHidden() {
   is_context_secure_ = false;
 }
 
-void AtMemoryManager::FillOrPreviewSearchResult(
+IsAsync AtMemoryManager::FillOrPreviewSearchResult(
     mojom::ActionPersistence action_persistence,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
@@ -776,15 +776,14 @@ void AtMemoryManager::FillOrPreviewSearchResult(
                               payload.is_personal_context_sourced),
           FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
-      break;
+      return IsAsync(false);
     case mojom::ActionPersistence::kFill: {
-      FillSearchResult(form_id, field_id, suggestion, metadata);
-      break;
+      return FillSearchResult(form_id, field_id, suggestion, metadata);
     }
   }
 }
 
-void AtMemoryManager::FillSearchResult(
+IsAsync AtMemoryManager::FillSearchResult(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     const Suggestion& suggestion,
@@ -817,14 +816,17 @@ void AtMemoryManager::FillSearchResult(
                          [](const std::string&) { NOTREACHED(); },
                          [](const EntityInstance::EntityId&) { NOTREACHED(); }},
           payload.identifier);
-      break;
+      // TODO(crbug.com/531988037): Implement spinning loader logic for IBANs.
+      return IsAsync(false);
     }
     case MemoryDataType::kCreditCardNumber:
     case MemoryDataType::kCreditCardSecurityCode: {
       CHECK(std::holds_alternative<std::string>(payload.identifier));
       FillCreditCard(std::get<std::string>(payload.identifier), form_id,
                      field_id, suggestion, std::move(metrics));
-      break;
+      // TODO(crbug.com/531988037): Implement spinning loader logic for credit
+      // cards.
+      return IsAsync(false);
     }
     case MemoryDataType::kPassportFull:
     case MemoryDataType::kDriversLicenseFull:
@@ -836,9 +838,8 @@ void AtMemoryManager::FillSearchResult(
     case MemoryDataType::kNationalIdCardNumber:
     case MemoryDataType::kKnownTravelerNumberNumber:
     case MemoryDataType::kRedressNumberNumber: {
-      FillSensitiveAutofillAiOrPersonalContextData(
+      return FillSensitiveAutofillAiOrPersonalContextData(
           form_id, field_id, suggestion, std::move(metrics));
-      break;
     }
 
     case MemoryDataType::kNameFull:
@@ -860,7 +861,7 @@ void AtMemoryManager::FillSearchResult(
           mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
           payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
-      break;
+      return IsAsync(false);
     }
 
     case MemoryDataType::kCreditCardExpirationDate:
@@ -874,7 +875,7 @@ void AtMemoryManager::FillSearchResult(
           mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
           payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
-      break;
+      return IsAsync(false);
     }
 
     case MemoryDataType::kVehicle:
@@ -935,7 +936,7 @@ void AtMemoryManager::FillSearchResult(
           mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
           payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
-      break;
+      return IsAsync(false);
     }
 
     case MemoryDataType::kCreditCardNickname:
@@ -949,9 +950,10 @@ void AtMemoryManager::FillSearchResult(
           mojom::FieldActionType::kReplaceAtMemoryTrigger, form_id, field_id,
           payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
-      break;
+      return IsAsync(false);
     }
   }
+  NOTREACHED();
 }
 
 void AtMemoryManager::RecordAddressProfileUse(
@@ -1310,7 +1312,7 @@ void AtMemoryManager::FillCreditCard(
           std::move(metrics)));
 }
 
-void AtMemoryManager::FillSensitivePersonalContextData(
+IsAsync AtMemoryManager::FillSensitivePersonalContextData(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     const Suggestion& suggestion,
@@ -1319,7 +1321,7 @@ void AtMemoryManager::FillSensitivePersonalContextData(
       owner_->client().GetAtMemoryQueryService();
 
   if (!query_service) {
-    return;
+    return IsAsync(false);
   }
 
   const Suggestion::AtMemoryPayload& payload =
@@ -1339,6 +1341,7 @@ void AtMemoryManager::FillSensitivePersonalContextData(
       base::BindOnce(&AtMemoryManager::OnSensitivePersonalContextDataFetched,
                      fill_weak_ptr_factory_.GetWeakPtr(), form_id, field_id,
                      std::move(metrics)));
+  return IsAsync(true);
 }
 
 void AtMemoryManager::OnSensitivePersonalContextDataFetched(
@@ -1346,13 +1349,15 @@ void AtMemoryManager::OnSensitivePersonalContextDataFetched(
     const FieldGlobalId& field_id,
     std::unique_ptr<AtMemoryMetricsRecorder> metrics,
     AtMemoryQueryService::SpiiRetrievalResult result) {
+  owner_->client().HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                   FillingProduct::kAtMemory);
+
   if (!result.has_value()) {
     if (metrics) {
       metrics->OnFetchPersonalContextPiiDataFailed(result.error());
     }
     return;
   }
-
   if (metrics) {
     metrics->OnFetchPiiCompleted();
     metrics->MarkFilled();
@@ -1365,7 +1370,7 @@ void AtMemoryManager::OnSensitivePersonalContextDataFetched(
                              /*field_type_used=*/std::nullopt);
 }
 
-void AtMemoryManager::FillSensitiveAutofillAiOrPersonalContextData(
+IsAsync AtMemoryManager::FillSensitiveAutofillAiOrPersonalContextData(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     const Suggestion& suggestion,
@@ -1379,20 +1384,19 @@ void AtMemoryManager::FillSensitiveAutofillAiOrPersonalContextData(
                       std::holds_alternative<EntityType>(*data_type)));
 
   if (payload.is_personal_context_sourced) {
-    FillSensitivePersonalContextData(form_id, field_id, suggestion,
-                                     std::move(metrics));
-    return;
+    return FillSensitivePersonalContextData(form_id, field_id, suggestion,
+                                            std::move(metrics));
   } else if (const EntityInstance::EntityId* entity_id =
                  std::get_if<EntityInstance::EntityId>(&payload.identifier);
              entity_id) {
-    FillSensitiveAutofillAiData(*entity_id, form_id, field_id, suggestion,
-                                *data_type, std::move(metrics));
-    return;
+    return FillSensitiveAutofillAiData(*entity_id, form_id, field_id,
+                                       suggestion, *data_type,
+                                       std::move(metrics));
   }
   NOTREACHED();
 }
 
-void AtMemoryManager::FillSensitiveAutofillAiData(
+IsAsync AtMemoryManager::FillSensitiveAutofillAiData(
     const EntityInstance::EntityId& entity_id,
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
@@ -1406,7 +1410,7 @@ void AtMemoryManager::FillSensitiveAutofillAiData(
   base::optional_ref<const EntityInstance> entity =
       entity_data_manager->GetEntityInstance(entity_id);
   if (!entity) {
-    return;
+    return IsAsync(false);
   }
 
   if (metrics) {
@@ -1414,11 +1418,11 @@ void AtMemoryManager::FillSensitiveAutofillAiData(
         AtMemoryMetricsRecorder::FetchPiiSource::kAutofillAi);
   }
 
-  owner_->GetAutofillAiAccessManager().FetchEntityInstance(
+  return IsAsync(owner_->GetAutofillAiAccessManager().FetchEntityInstance(
       *entity, /*will_fill_sensitive_info=*/true,
       base::BindOnce(&AtMemoryManager::OnAutofillAiFetched,
                      fill_weak_ptr_factory_.GetWeakPtr(), form_id, field_id,
-                     suggestion, data_type, std::move(metrics)));
+                     suggestion, data_type, std::move(metrics))));
 }
 
 void AtMemoryManager::OnAutofillAiFetched(
@@ -1430,6 +1434,8 @@ void AtMemoryManager::OnAutofillAiFetched(
     base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
         result,
     bool reauth_attempted) {
+  owner_->client().HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                   FillingProduct::kAtMemory);
   if (!result.has_value()) {
     if (result.error() ==
         AutofillAiAccessManager::FailureReason::kFetchFailed) {
