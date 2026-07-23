@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/system/handle_signals_state.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
@@ -233,12 +234,23 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   // |owner| as a RaceNetworkResponse's response, we stop the race and back the
   // response to the fetch handler only instead, so that we guarantee the fetch
   // handler completion.
+  // For robustness, ensure non-HTTP(S) redirect URLs are replaced with "data:,"
+  // before forwarding to the client in the renderer process, matching the
+  // behavior of manual redirects handled by CorsURLLoader. The original
+  // redirect info is still passed to `owner_` in the kWithoutServiceWorker
+  // case where the redirect is handled directly within the browser process.
+  net::RedirectInfo forwarding_redirect_info = redirect_info;
+  if (!redirect_info.new_url.SchemeIsHTTPOrHTTPS()) {
+    forwarding_redirect_info.new_url = GURL("data:,");
+  }
+
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       // This happens when the response is faster than the fetch handler.
       owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
-      forwarding_client_->OnReceiveRedirect(redirect_info, std::move(head));
+      forwarding_client_->OnReceiveRedirect(forwarding_redirect_info,
+                                            std::move(head));
       MaybeCompleteRedirectResponse(/*run_completion_callback=*/false);
       return;
     case FetchResponseFrom::kServiceWorker:
@@ -247,7 +259,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
       // handler is already executed but in rare case in-flight request may be
       // used. Let the fetch handler side client to handle the rest. The fetch
       // handler side close the connection if it's not needed anyway.
-      forwarding_client_->OnReceiveRedirect(redirect_info, std::move(head));
+      forwarding_client_->OnReceiveRedirect(forwarding_redirect_info,
+                                            std::move(head));
       MaybeCompleteRedirectResponse(/*run_completion_callback=*/true);
       return;
     case FetchResponseFrom::kWithoutServiceWorker:
