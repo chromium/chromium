@@ -939,8 +939,8 @@ TEST_P(MergeStatesWithCanonicalNamesTest, MergeTest) {
   SetTestValues(newer_address.Root(), newer_values);
 
   EXPECT_EQ(
-      test_case.is_mergeable,
-      older_address.Root()->IsMergeableWithComponent(*newer_address.Root()));
+      older_address.Root()->IsMergeableWithComponent(*newer_address.Root()),
+      test_case.is_mergeable);
 
   AddressComponentsStore expectation_address =
       i18n_model_definition::CreateAddressComponentModel();
