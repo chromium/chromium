@@ -500,6 +500,7 @@
 <translation id="1376836354785490390">顯示較少</translation>
 <translation id="1377438103060664754">如果你的密碼在資料侵害事件中外洩，Google 密碼管理工具會詢問你是否要改用高強度密碼</translation>
 <translation id="1378613616312864539">這項設定目前受「<ph name="NAME" />」控制</translation>
+<translation id="1378715594598306389">查看更多分頁</translation>
 <translation id="1380028686461971526">自動連線至網路</translation>
 <translation id="1381567580865186407">系統會將<ph name="LANGUAGE" />語音內容傳送給 Google 處理</translation>
 <translation id="1382174183118245544">信用卡號</translation>
@@ -1229,6 +1230,7 @@
 <translation id="194174710521904357">你已暫時允許這個網站使用第三方 Cookie。此時瀏覽防護程度較低，但會增加網站功能正常運作的機率。</translation>
 <translation id="1942128823046546853">讀取及變更你在所有網站上的所有資料</translation>
 <translation id="1944535645109964458">沒有密碼金鑰</translation>
+<translation id="1944921356641260203">找到更新</translation>
 <translation id="1947136734041527201">讓你透過身分識別服務使用你擁有的帳戶登入網站</translation>
 <translation id="1948528728718281125">允許系統服務和具有攝影機權限的應用程式與網站存取攝影機</translation>
 <translation id="1949332606889020901">當機 ID</translation>
@@ -1811,7 +1813,6 @@
 <translation id="2424424966051154874">{0,plural, =1{訪客}other{訪客 (#)}}</translation>
 <translation id="2426805022920575512">選擇其他帳戶</translation>
 <translation id="2427507373259914951">按左鍵</translation>
-<translation id="2428120669821109648">分頁樣式</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 個帳戶，密碼只會儲存到這部裝置。瞭解詳情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 個帳戶，密碼只會儲存到這部裝置。瞭解詳情}}</translation>
 <translation id="2428510569851653187">說明分頁當掉時你正在執行的動作</translation>
 <translation id="2428939361789119025">關閉 Wi-Fi</translation>
@@ -2527,6 +2528,7 @@
 <translation id="2955048943983973430">相關 Google 服務</translation>
 <translation id="2956070239128776395">群組中有巢狀區段：<ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">開啟開發人員模式即可使用這項擴充功能。請注意，Chrome 線上應用程式商店無法審查這項擴充功能。</translation>
+<translation id="2957987442574819977">Gemini 生成的結果不符合預期</translation>
 <translation id="2958721676848865875">封裝擴充功能警告</translation>
 <translation id="2959127025785722291">發生錯誤，無法完成掃描作業。請再試一次。</translation>
 <translation id="2959474507964749987">這個加密的檔案可能是病毒或惡意軟體。<ph name="LINE_BREAK" />如要檢查檔案是否不安全，你可以將檔案和密碼提供給 Google 安全瀏覽功能。檔案掃描作業通常需要幾秒鐘的時間。<ph name="LINE_BREAK" />如要掃描，請提供檔案的密碼。</translation>
@@ -3511,6 +3513,7 @@
 <translation id="3708295717182051206">隱藏式輔助字幕</translation>
 <translation id="3708684582558000260">禁止已關閉的網站完成資料收發作業</translation>
 <translation id="3709244229496787112">瀏覽器在下載尚未完成時遭到關閉。</translation>
+<translation id="3710438437470197252">前往 Google 雲端硬碟查看更多資訊</translation>
 <translation id="3710501561113687889">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的<ph name="FIELDS_STRING" />提供給這個網站。</translation>
 <translation id="3711931198657368127">貼上 <ph name="URL" /> 並前往該網址 (&amp;S)</translation>
 <translation id="3711945201266135623">在印表機伺服器上找到 <ph name="NUM_PRINTERS" /> 台印表機</translation>
@@ -5154,6 +5157,7 @@
 <translation id="4963789650715167449">移除目前的分頁</translation>
 <translation id="4964455510556214366">排列</translation>
 <translation id="4964544790384916627">將視窗移到底部</translation>
+<translation id="4964673849688379040">檢查中...</translation>
 <translation id="4966972803217407697">目前為無痕模式</translation>
 <translation id="4967227914555989138">新增附註</translation>
 <translation id="4967360192915400530">下載危險的檔案</translation>
@@ -5344,6 +5348,7 @@
 <translation id="5112577000029535889">開發人員工具(&amp;D)</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{已移動 1 個檔案}other{已移動 {NUM_OF_FILES} 個檔案}}</translation>
 <translation id="511313294362309725">開啟快速配對</translation>
+<translation id="5113992879909788634">進一步瞭解 Chrome 自動瀏覽功能</translation>
 <translation id="51143538739122961">插入並輕觸安全金鑰</translation>
 <translation id="5115338116365931134">單一登入 (SSO)</translation>
 <translation id="5116628073786783676">另存音訊(&amp;V)...</translation>
@@ -7024,6 +7029,7 @@
 <translation id="6470823736074966819">忽略通知</translation>
 <translation id="6472893788822429178">顯示 [首頁] 按鈕</translation>
 <translation id="6473315466413288899">請選擇</translation>
+<translation id="6474021817475285003">前往 Google 日曆查看更多資訊</translation>
 <translation id="6474498546677193336">某個應用程式正在使用這個資料夾，因此無法取消分享。系統會在下次關閉 Linux 時取消分享這個資料夾。</translation>
 <translation id="6474884162850599008">取消連結 Google 雲端硬碟帳戶</translation>
 <translation id="6476482583633999078">語音速度</translation>
@@ -9115,6 +9121,7 @@
 <translation id="8082132721957920509">卡片已儲存</translation>
 <translation id="8082390128630131497">停用 ADB 偵錯會將這部 <ph name="DEVICE_TYPE" /> 恢復原廠設定。所有使用者帳戶和本機資料都將遭到清除。</translation>
 <translation id="8084114998886531721">已儲存的密碼</translation>
+<translation id="8084417885464859041">安全地使用 Gemini</translation>
 <translation id="8084429490152575036">行動網路 APN 設定</translation>
 <translation id="8084628902026812045">這個網站未使用安全連線，且檔案可能已遭竄改</translation>
 <translation id="808488435221187916">只要在裝置上登入帳戶，即可在 Google 錢包查看你的資訊</translation>
@@ -9709,6 +9716,7 @@
 <translation id="8553342806078037065">管理其他使用者</translation>
 <translation id="8554642222921881444">針對所選文字顯示的浮動式選單</translation>
 <translation id="8554899698005018844">未指定語言</translation>
+<translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - 已顯示展開的內容</translation>
 <translation id="8555444629041783356">自動更新日落時刻表</translation>
 <translation id="8557022314818157177">請持續輕觸安全金鑰，直到指紋擷取完成</translation>
 <translation id="8557100046150195444">使用 Touch ID 以繼續操作</translation>

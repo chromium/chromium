@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. <ph name="USER_EMAIL" />. അക്കൗണ്ട് മെനു തുറക്കുക.</translation>
 <translation id="1397144142234474689">ചരിത്രം മറയ്ക്കുക</translation>
 <translation id="1399268420835656394">നിങ്ങൾ കുട്ടിയല്ലെങ്കിൽ, ഈ ഉപകരണത്തിലെ Apple Account-ൽ പ്രായം പരിശോധിക്കുക. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">മുമ്പ് പൂരിപ്പിച്ചത്</translation>
 <translation id="1407135791313364759">എല്ലാം തുറക്കുക</translation>
 <translation id="1408847409015257906">"സ്വകാര്യതയും സുരക്ഷയും" ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1411386976162024013">Lens വിഷ്വൽ തിരയൽ</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ രക്ഷിതാവാണ്.
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">മാറ്റി</translation>
+<translation id="1481450969185702334">കണ്ടെത്തി പൂരിപ്പിക്കുക</translation>
 <translation id="1483493594462132177">അയയ്‌ക്കുക</translation>
 <translation id="1486096554574027028">പാസ്‌വേഡുകള്‍ തിരയുക</translation>
 <translation id="1486593497476255523">ടാബ് ഗ്രൂപ്പുകൾ പൂർത്തിയായി!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">നിങ്ങളുടെ സ്വകാര്യത പരിരക്ഷിക്കാൻ, Chrome ഈ ഫീൽഡിൽ പാസ്‌വേഡ് സ്വയമേവ പൂരിപ്പിക്കില്ല.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{ഒരു സൈറ്റ് (സമന്വയിപ്പിച്ച ഉപകരണങ്ങളിൽ ഇതിൽ കൂടുതൽ)}other{# സൈറ്റുകൾ (സമന്വയിപ്പിച്ച ഉപകരണങ്ങളിൽ ഇതിൽ കൂടുതൽ)}}</translation>
+<translation id="2865392654629180917">എന്തും ചോദിക്കൂ, AI ലഭ്യമാക്കുന്ന പ്രതികരണങ്ങൾ നേടൂ</translation>
 <translation id="2870560284913253234">സൈറ്റ്</translation>
 <translation id="2876369937070532032">നിങ്ങളുടെ സുരക്ഷ അപകടത്തിലാകുമ്പോൾ നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകളുടെ URL-കൾ Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="2883151425485251736">നിങ്ങളുടെ അക്കൗണ്ടിൽ നിന്ന് മറച്ച വിഷയങ്ങൾ കാണുക, എഡിറ്റ് ചെയ്യുക</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">പുതിയ ടാബ് ഗ്രൂപ്പ്...</translation>
 <translation id="3185760469172949183">ക്യാമറ ഉപയോഗിച്ചുള്ള തിരയൽ പൂർത്തിയായി!</translation>
 <translation id="3186796054637504691">ചരിത്രവും വെബ്‌സൈറ്റ് ഡാറ്റയും മായ്‌ക്കുക</translation>
+<translation id="3190558889382726167">പാസ്‌വേഡ് സംരക്ഷിച്ചു</translation>
 <translation id="3190736958609431397">ട്രാക്ക് ചെയ്യുന്നത് അവസാനിപ്പിക്കുക</translation>
 <translation id="3208260410153224535">നിങ്ങളുടെ സ്ഥാപനം, സൈൻ ഇൻ ചെയ്യൽ ഓഫാക്കി. പുതിയ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ.</translation>
 <translation id="3211969308836412674">സൈറ്റ് അൺപിൻ ചെയ്യുക</translation>

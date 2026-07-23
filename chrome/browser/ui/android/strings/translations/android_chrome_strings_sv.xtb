@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den tas bort från alla enheter.</translation>
 <translation id="1142732900304639782">Erbjud inte att översätta dessa webbplatser</translation>
 <translation id="1143193470214071120">Stäng ett fönster eller hantera fönster</translation>
+<translation id="1143486892058798649">Spara länken som …</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> genomsöks</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Du har inga sparade lösenord i Google Lösenordshantering.</translation>
@@ -142,6 +143,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1544826120773021464">Tryck på knappen Hantera kontot om du vill hantera ditt Google-konto</translation>
 <translation id="1549000191223877751">Flytta till annat fönster</translation>
 <translation id="1553358976309200471">Uppdatera Chrome</translation>
+<translation id="1554352084785952638"><ph name="SEARCH_ENGINE" /> för <ph name="SEARCH_TERMS" /></translation>
 <translation id="1554532453982918912">Hjälp oss att göra Chrome bättre för den som använder programmet på samma sätt som du</translation>
 <translation id="1568636008098739136">Lyssna på sidan. Tryck länge om du vill ändra det här kortkommandot.</translation>
 <translation id="1571041387761170095">Inga svaga eller återanvända lösenord</translation>
@@ -313,6 +315,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2330186936255788117">Fler bokmärken</translation>
 <translation id="2332515770639153015">Förbättrad säker webbsökning har aktiverats</translation>
 <translation id="233375395665273385">Radera och logga ut</translation>
+<translation id="2334275697832662087">Med Chromes AI-baserade säkerhet skyddas du mot hot online, så att du kan känna dig säker när du surfar</translation>
 <translation id="2341410551640223969">Det gick inte att installera <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total data som används av Chrome, inklusive konton, bokmärken och sparade inställningar</translation>
 <translation id="2354001756790975382">Övriga bokmärken</translation>
@@ -614,6 +617,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3577473026931028326">Något gick fel. Försök igen.</translation>
 <translation id="3577558748185201054">Hantera dina intressen och inställningar</translation>
 <translation id="3587482841069643663">Alla</translation>
+<translation id="3598421953808879451">Spara video som …</translation>
 <translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3614126103057878858">Prisinformation</translation>
 <translation id="3616113530831147358">Ljud</translation>
@@ -725,6 +729,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4044708993631234325">Ark på nedre delen av skärmen</translation>
 <translation id="4045441967987592849">Öppna igen</translation>
 <translation id="4049920046559074950">Fler alternativ för <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051548576872472315">Här hittar du dina nyligen stängda flikar och fönster</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Öppna i ett inkognitofönster}other{Öppna alla (#) i ett inkognitofönster}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardflik med ny aktivitet i delade flikgrupper}other{<ph name="TABS_COUNT_MANY" /> standardflikar med ny aktivitet i delade flikgrupper}}</translation>
 <translation id="405365679581583349">Uppdatera Google Play-tjänsterna</translation>
@@ -1525,6 +1530,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="71503698506017927">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
 
 Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">Spara bild som …</translation>
 <translation id="7165972437814027679">Läs mer om varför vissa filer blockeras i Chrome</translation>
 <translation id="7168323970702333693">Inloggad som <ph name="USER_NAME" />. Öppnar inställningarna.</translation>
 <translation id="7170930892977483182">Alla säkerhetskoder som sparas på enheten och i Google Wallet raderas</translation>
@@ -1698,6 +1704,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7824665136384946951">Organisationen har inaktiverat Säker webbsökning</translation>
 <translation id="7825973332242257878">Flikgrupper</translation>
 <translation id="7826342993930002256">Chrome på ditt sätt, överallt</translation>
+<translation id="7845155831233417403">Du kan ha upp till <ph name="MAX_INSTANCE_COUNT" /> fönster. Stäng ett fönster för att fortsätta.</translation>
 <translation id="7846161022626028328">Något gick fel. Försök igen.</translation>
 <translation id="7846296061357476882">Googles tjänster</translation>
 <translation id="784652447248278262">Aktuellt fönster</translation>
@@ -1821,6 +1828,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8282297628636750033">Använd mörkt tema på webbplatser när det är möjligt</translation>
 <translation id="8282950411412455249">Öppna säkerhetsinställningarna</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Stäng 1 inkognitofönster}other{Stäng # inkognitofönster}}</translation>
+<translation id="8289602658021943461">Spara videobildruta som …</translation>
 <translation id="8313599942510782709">Uppgiften pågår fortfarande</translation>
 <translation id="8317318757008452355">Öppna alternativ för att skriva ut</translation>
 <translation id="8320212361750431956">Senaste aktiviteter</translation>

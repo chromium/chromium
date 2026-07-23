@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Accediste como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre el menú de la cuenta.</translation>
 <translation id="1397144142234474689">Ocultar Historial</translation>
 <translation id="1399268420835656394">Si no eres un niño o niña, es posible que quieras verificar la edad en la cuenta de Apple de este dispositivo. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Completado previamente</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408847409015257906">Presiona "Privacidad y seguridad".</translation>
 <translation id="1411386976162024013">Búsqueda visual de Lens</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Tu madre o padre administra tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Se cambió</translation>
+<translation id="1481450969185702334">Buscar y completar</translation>
 <translation id="1483493594462132177">Enviar</translation>
 <translation id="1486096554574027028">Buscar contraseñas</translation>
 <translation id="1486593497476255523">Se completó la tarea de los grupos de pestañas.</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Para proteger tu privacidad, Chrome no completará de forma automática tu contraseña en este campo.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sitio (y más en dispositivos sincronizados)}other{# sitios (y más en dispositivos sincronizados)}}</translation>
+<translation id="2865392654629180917">Pregunta lo que quieras y obtén respuestas potenciadas por IA</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Enviar a Google las URL de algunas páginas que visitas, cuando tu seguridad esté en riesgo</translation>
 <translation id="2883151425485251736">Ve y edita los temas que ocultaste en tu cuenta</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Nuevo grupo de pestañas…</translation>
 <translation id="3185760469172949183">Se completó la tarea de búsqueda con la cámara.</translation>
 <translation id="3186796054637504691">Borrar historial y datos del sitio web</translation>
+<translation id="3190558889382726167">Se guardó la contraseña</translation>
 <translation id="3190736958609431397">Dejar de realizar el seguimiento</translation>
 <translation id="3208260410153224535">Tu organización desactivó el acceso. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
 <translation id="3211969308836412674">Dejar de fijar el sitio</translation>

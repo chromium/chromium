@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">Эгер аны өчүрсөңүз, бардык колдонуучулар "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүнөн дароо ажырап, ал бардык түзмөктөрдөн өчүрүлөт.</translation>
 <translation id="1142732900304639782">Төмөнкү сайттарды которуу сунушталбасын</translation>
 <translation id="1143193470214071120">Терезени жаап же терезелерди тескеңиз</translation>
+<translation id="1143486892058798649">Шилтемени төмөнкүдөй сактоо…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> скандалууда</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз.</translation>
 <translation id="1154555449933432029">Сырсөздөрдү башкаргычта сакталган сырсөздөр жок.</translation>
@@ -313,6 +314,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2330186936255788117">Дагы башка кыстармалар</translation>
 <translation id="2332515770639153015">Өркүндөтүлгөн коопсуз серептөө күйүк</translation>
 <translation id="233375395665273385">Өчүрүү жана аккаунттан чыгуу</translation>
+<translation id="2334275697832662087">Chrome'дун ЖИ менен иштеген коопсуздук тутуму Интернеттеги коркунучтардан коргоп, серептөө учурунда коопсуздукту камсыздайт</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> орнотулган жок.</translation>
 <translation id="2349710944427398404">Chrome пайдаланган жалпы дайындардын, анын ичинде каттоо эсептери, кыстармалар жана сакталган параметрлердин жалпы өлчөмү</translation>
 <translation id="2354001756790975382">Башка кыстармалар</translation>
@@ -614,6 +616,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3577473026931028326">Бир жерден ката кетти. Кайталап көрүңүз.</translation>
 <translation id="3577558748185201054">Кызыккан нерселер менен параметрлерди тескеңиз</translation>
 <translation id="3587482841069643663">Баары</translation>
+<translation id="3598421953808879451">Видеону төмөнкүдөй сактоо…</translation>
 <translation id="3602290021589620013">Алдн-ала көз жүгртүү</translation>
 <translation id="3614126103057878858">Баалардын статистикасы</translation>
 <translation id="3616113530831147358">Аудио</translation>
@@ -724,6 +727,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4044708993631234325">Ылдыйкы экран</translation>
 <translation id="4045441967987592849">Кайра ачуу</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" />: кошумча параметрлер</translation>
+<translation id="4051548576872472315">Жакында жабылган өтмөктөрдү жана терезелерди ушул жерден табасыз</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Жашыруун терезеде ачуу}other{Баарын (#) жашыруун терезеде ачуу}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Бөлүшүлгөн өтмөк топторундагы жаңы аракет менен <ph name="TABS_COUNT_ONE" /> стандарттуу өтмөк}other{Бөлүшүлгөн өтмөк топторундагы жаңы аракет менен <ph name="TABS_COUNT_MANY" /> стандарттуу өтмөк}}</translation>
 <translation id="405365679581583349">Google Play кызматтарын жаңыртуу</translation>
@@ -1524,6 +1528,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="71503698506017927">Сыр сүйлөм менен шифрлөө Google Pay'деги төлөм ыкмалары менен даректерге карата колдонулбайт.
 
 Бул параметрди өзгөртүү үчүн <ph name="BEGIN_LINK" />аккаунтуңуздагы Chrome маалыматын өчүрүңүз<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">Сүрөттү төмөнкүдөй сактоо…</translation>
 <translation id="7165972437814027679">Chrome эмне үчүн айрым файлдарды бөгөттөгөнүн билип алыңыз</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> катары кирдиңиз. Параметрлерди ачат.</translation>
 <translation id="7170930892977483182">Түзмөгүңүздө жана Google Капчыкта сакталган бардык коргоочу коддор өчүрүлөт</translation>
@@ -1697,6 +1702,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7824665136384946951">Уюмуңуз Коопсуз серептөөнү өчүрүп койду</translation>
 <translation id="7825973332242257878">Өтмөктөр тобу</translation>
 <translation id="7826342993930002256">Chrome'ду каалаган жерде колдоносуз</translation>
+<translation id="7845155831233417403"><ph name="MAX_INSTANCE_COUNT" /> терезеге чейин ачсаңыз болот. Улантуу үчүн терезени жабыңыз.</translation>
 <translation id="7846161022626028328">Ката кетти. Кайра аракет кылыңыз.</translation>
 <translation id="7846296061357476882">Google кызматтары</translation>
 <translation id="784652447248278262">Учурдагы терезе</translation>
@@ -1820,6 +1826,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8282297628636750033">Cайттарга караңгы теманы колдонуу (мүмкүн болгондо)</translation>
 <translation id="8282950411412455249">Коопсуздук параметрлерине өтүү</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 жашыруун терезени жабуу}other{Жашыруун # терезени жабуу}}</translation>
+<translation id="8289602658021943461">Видео алкакты төмөнкүдөй сактоо…</translation>
 <translation id="8313599942510782709">Тапшырма дагы эле аткарылууда</translation>
 <translation id="8317318757008452355">Басып чыгаруу варианттарын ачуу</translation>
 <translation id="8320212361750431956">Соңку аракеттер</translation>

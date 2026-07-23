@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">如果删除，所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除。</translation>
 <translation id="1142732900304639782">不询问是否翻译这些网站</translation>
 <translation id="1143193470214071120">关闭窗口或管理窗口</translation>
+<translation id="1143486892058798649">链接另存为…</translation>
 <translation id="1149725087019908252">正在扫描 <ph name="FILE_NAME" /></translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
 <translation id="1154555449933432029">您未在 Google 密码管理工具中保存任何密码。</translation>
@@ -313,6 +314,7 @@
 <translation id="2330186936255788117">更多书签</translation>
 <translation id="2332515770639153015">“增强型安全浏览”已开启</translation>
 <translation id="233375395665273385">删除数据并退出账号</translation>
+<translation id="2334275697832662087">Chrome 依托 AI 技术的安全功能可帮助您防范在线威胁，让您安心地浏览网页</translation>
 <translation id="2341410551640223969">无法安装 <ph name="WEBAPK_NAME" />。</translation>
 <translation id="2349710944427398404">Chrome 所使用的数据总量，包括账号、书签和已保存的设置</translation>
 <translation id="2354001756790975382">其他书签</translation>
@@ -614,6 +616,7 @@
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577558748185201054">管理您的兴趣和偏好设置</translation>
 <translation id="3587482841069643663">全部</translation>
+<translation id="3598421953808879451">视频另存为…</translation>
 <translation id="3602290021589620013">预览</translation>
 <translation id="3614126103057878858">价格分析</translation>
 <translation id="3616113530831147358">音频</translation>
@@ -724,6 +727,7 @@
 <translation id="4044708993631234325">底部动作条</translation>
 <translation id="4045441967987592849">重新打开</translation>
 <translation id="4049920046559074950">“<ph name="INSTANCE_TITLE" />”的更多选项</translation>
+<translation id="4051548576872472315">在此处可以找到最近关闭的标签页和窗口</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{在无痕式窗口中打开}other{在无痕式窗口中打开全部（# 个）书签}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标准标签页，在分享的标签页分组中有新活动}other{<ph name="TABS_COUNT_MANY" /> 个标准标签页，在分享的标签页分组中有新活动}}</translation>
 <translation id="405365679581583349">更新 Google Play 服务</translation>
@@ -1522,6 +1526,7 @@
 <translation id="7148400116894863598">从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处<ph name="BEGIN_LINK" />获取更多信息<ph name="END_LINK" />。</translation>
 <translation id="7149893636342594995">过去 24 小时</translation>
 <translation id="71503698506017927">口令加密不涵盖 Google Pay 中的付款方式和地址。如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
+<translation id="7159399361248977424">图片另存为…</translation>
 <translation id="7165972437814027679">详细了解 Chrome 为何屏蔽某些文件</translation>
 <translation id="7168323970702333693">您已使用<ph name="USER_NAME" />的身份登录。打开设置。</translation>
 <translation id="7170930892977483182">您的设备和 Google 钱包中保存的所有安全码都将删除</translation>
@@ -1695,6 +1700,7 @@
 <translation id="7824665136384946951">您的组织已关闭“安全浏览”功能</translation>
 <translation id="7825973332242257878">标签页分组</translation>
 <translation id="7826342993930002256">您的专属 Chrome 浏览器，走到哪带到哪</translation>
+<translation id="7845155831233417403">您最多只能打开 <ph name="MAX_INSTANCE_COUNT" /> 个窗口。请关闭一个窗口以继续。</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="7846296061357476882">Google 服务</translation>
 <translation id="784652447248278262">当前窗口</translation>
@@ -1818,6 +1824,7 @@
 <translation id="8282297628636750033">尽可能对网站应用深色主题</translation>
 <translation id="8282950411412455249">前往安全设置</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{关闭 1 个无痕式窗口}other{关闭 # 个无痕式窗口}}</translation>
+<translation id="8289602658021943461">视频帧另存为…</translation>
 <translation id="8313599942510782709">您的任务仍在进行中</translation>
 <translation id="8317318757008452355">打开打印网页的选项</translation>
 <translation id="8320212361750431956">近期活动</translation>

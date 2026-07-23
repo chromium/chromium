@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otwórz menu konta.</translation>
 <translation id="1397144142234474689">Ukryj opcję Historia</translation>
 <translation id="1399268420835656394">Jeśli nie jesteś dzieckiem, warto sprawdzić ustawienia wieku na koncie Apple na tym urządzeniu. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Wcześniej wypełnione</translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="1408847409015257906">Kliknij „Prywatność i bezpieczeństwo”.</translation>
 <translation id="1411386976162024013">Wyszukiwanie wizualne za pomocą Obiektywu</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Twoim kontem zarządza rodzic.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Zmieniono</translation>
+<translation id="1481450969185702334">Znajdź i wypełnij</translation>
 <translation id="1483493594462132177">Wyślij</translation>
 <translation id="1486096554574027028">Szukaj haseł</translation>
 <translation id="1486593497476255523">Grupy kart – ukończono.</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Aby chronić Twoją prywatność, Chrome nie będzie autouzupełniać hasła w tym polu.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 witryna (więcej na zsynchronizowanych urządzeniach)}few{# witryny (więcej na zsynchronizowanych urządzeniach)}many{# witryn (więcej na zsynchronizowanych urządzeniach)}other{# witryny (więcej na zsynchronizowanych urządzeniach)}}</translation>
+<translation id="2865392654629180917">Pytaj o cokolwiek i otrzymuj odpowiedzi generowane przez AI</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2876369937070532032">Gdy Twoje bezpieczeństwo jest zagrożone, wysyła do Google adresy URL odwiedzanych stron</translation>
 <translation id="2883151425485251736">Wyświetl tematy, które na Twoim koncie zostały ukryte, i wprowadź w nich zmiany</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Nowa grupa kart…</translation>
 <translation id="3185760469172949183">Wyszukiwanie za pomocą aparatu – ukończono.</translation>
 <translation id="3186796054637504691">Wyczyść historię i dane witryn</translation>
+<translation id="3190558889382726167">Hasło zostało zapisane</translation>
 <translation id="3190736958609431397">Wyłącz śledzenie</translation>
 <translation id="3208260410153224535">Twoja organizacja wyłączyła logowanie się. Nowe zakładki, hasła i inne ustawienia będą zapisywane tylko na tym urządzeniu.</translation>
 <translation id="3211969308836412674">Odepnij witrynę</translation>

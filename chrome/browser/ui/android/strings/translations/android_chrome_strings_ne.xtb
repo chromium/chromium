@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">तपाईंले यो ट्याब समूह हटाउनुभयो भने सबै जना तत्कालै "<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउने छन् र यसलाई सबै डिभाइसहरूबाट मेटाइने छ।</translation>
 <translation id="1142732900304639782">यी साइटहरू अनुवाद गर्ने प्रस्ताव नगर्नुहोस्</translation>
 <translation id="1143193470214071120">विन्डो बन्द गर्नुहोस् वा विन्डोहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="1143486892058798649">लिंकलाई यसका रूपमा सेभ गर्नुहोस्…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्क्यान गरिँदै</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="1154555449933432029">तपाईंले Google पासवर्ड म्यानेजरमा कुनै पनि पासवर्ड सेभ गर्नुभएको छैन।</translation>
@@ -313,6 +314,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2330186936255788117">थप बुकमार्कहरू</translation>
 <translation id="2332515770639153015">परिष्कृत Safe Browsing अन छ</translation>
 <translation id="233375395665273385">मेटाउनुहोस् र साइन आउट गर्नुहोस्</translation>
+<translation id="2334275697832662087">Chrome को AI मा आधारित सुरक्षाले तपाईंलाई अनलाइन जोखिमहरूबाट सुरक्षित राख्न मद्दत गर्छ र तपाईंलाई ब्राउज गर्दा आत्मविश्वास प्रदान गर्छ</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इन्स्टल गर्न सकिएन।</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
 <translation id="2354001756790975382">अन्य बुकमार्कहरू</translation>
@@ -614,6 +616,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3577558748185201054">आफ्ना रुचि तथा प्राथमिकताहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3587482841069643663">सबै</translation>
+<translation id="3598421953808879451">भिडियोलाई यसका रूपमा सेभ गर्नुहोस्…</translation>
 <translation id="3602290021589620013">प्रिभ्यु गर्नुहोस्</translation>
 <translation id="3614126103057878858">मूल्यसम्बन्धी इनसाइटहरू</translation>
 <translation id="3616113530831147358">अडियो</translation>
@@ -724,6 +727,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4044708993631234325">पुछारको पाना</translation>
 <translation id="4045441967987592849">फेरि खोल्नुहोस्</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> का थप विकल्पहरू</translation>
+<translation id="4051548576872472315">यहाँ गई आफूले हालसालै बन्द गरेका ट्याब तथा विन्डोहरू भेट्टाउनुहोस्</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{इन्कोग्निटो विन्डोमा खोल्नुहोस्}other{सबै (#) इन्कोग्निटो विन्डोमा खोल्नुहोस्}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_ONE" /> सामान्य ट्याब}other{सेयर गरिएका ट्याब समूहमा नयाँ गतिविधि भएको <ph name="TABS_COUNT_MANY" /> वटा सामान्य ट्याब}}</translation>
 <translation id="405365679581583349">Google Play services अपडेट गर्नुहोस्</translation>
@@ -1523,6 +1527,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="71503698506017927">पासफ्रेज इन्क्रिप्सनमा Google Pay मा भएका भुक्तानी विधि र ठेगानाहरू समावेश हुँदैनन्।
 
 यो सेटिङ परिवर्तन गर्न <ph name="BEGIN_LINK" />आफ्नो खातामा भएको Chrome को डेटा मेटाउनुहोस्<ph name="END_LINK" />।</translation>
+<translation id="7159399361248977424">फोटोलाई यसका रूपमा सेभ गर्नुहोस्…</translation>
 <translation id="7165972437814027679">Chrome ले केही फाइल ब्लक गर्नुको कारणका बारेमा थप जान्नुहोस्</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। सेटिङ खोल्छ।</translation>
 <translation id="7170930892977483182">तपाईंको डिभाइस र Google Wallet मा सेभ गरिएका सबै सुरक्षा कोडहरू मेटाइने छन्</translation>
@@ -1696,6 +1701,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7824665136384946951">तपाईंको सङ्गठनले Safe Browsing अफ गरेको छ</translation>
 <translation id="7825973332242257878">ट्याब समूहहरू</translation>
 <translation id="7826342993930002256">जुनसुकै ठाउँबाट Chrome एक्सेस गर्नुहोस्</translation>
+<translation id="7845155831233417403">तपाईं बढीमा <ph name="MAX_INSTANCE_COUNT" /> वटा विन्डो खुला राख्न सक्नुहुन्छ। जारी राख्न कुनै विन्डो बन्द गर्नुहोस्।</translation>
 <translation id="7846161022626028328">कुनै त्रुटि भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7846296061357476882">Google का सेवाहरू</translation>
 <translation id="784652447248278262">हालको विन्डो</translation>
@@ -1819,6 +1825,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8282297628636750033">साइटहरूमा सकेसम्म अँध्यारो थिम लागू गर्नु…</translation>
 <translation id="8282950411412455249">सुरक्षासम्बन्धी सेटिङमा जानुहोस्</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{एउटा इन्कोग्निटो विन्डो बन्द गर्नुहोस्}other{# वटा इन्कोग्निटो विन्डो बन्द गर्नुहोस्}}</translation>
+<translation id="8289602658021943461">भिडियो फ्रेमलाई यसका रूपमा सेभ गर्नुहोस्…</translation>
 <translation id="8313599942510782709">तपाईंको कार्य अझै पनि पूरा भएको छैन</translation>
 <translation id="8317318757008452355">प्रिन्ट गर्ने विकल्पहरू खोल्नुहोस्</translation>
 <translation id="8320212361750431956">हालसालैको क्रियाकलाप</translation>

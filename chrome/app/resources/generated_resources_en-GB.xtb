@@ -500,6 +500,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1376836354785490390">Show Less</translation>
 <translation id="1377438103060664754">If one of your passwords is found in a data breach, Google Password Manager asks if you want it changed to a strong password</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> is controlling this setting</translation>
+<translation id="1378715594598306389">See more tabs</translation>
 <translation id="1380028686461971526">Auto connect to network</translation>
 <translation id="1381567580865186407"><ph name="LANGUAGE" /> speech is sent to Google for processing</translation>
 <translation id="1382174183118245544">Credit card numbers</translation>
@@ -1239,6 +1240,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="194174710521904357">You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected.</translation>
 <translation id="1942128823046546853">Read and change all your data on all websites</translation>
 <translation id="1944535645109964458">No passkeys available</translation>
+<translation id="1944921356641260203">Update found</translation>
 <translation id="1947136734041527201">Lets you sign in to websites using the account that you have with an identity service</translation>
 <translation id="1948528728718281125">Camera access is allowed for apps, websites with the camera permission and system services</translation>
 <translation id="1949332606889020901">Crash IDs</translation>
@@ -1824,7 +1826,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2424424966051154874">{0,plural, =1{Guest}other{Guest (#)}}</translation>
 <translation id="2426805022920575512">Choose another account</translation>
 <translation id="2427507373259914951">Left click</translation>
-<translation id="2428120669821109648">Tab styling</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> one account, password saved only to this device. More details}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} accounts, password saved only to this device. More details}}</translation>
 <translation id="2428510569851653187">Describe what you were doing when the tab crashed</translation>
 <translation id="2428939361789119025">Turn off Wi-Fi</translation>
@@ -2540,6 +2541,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2955048943983973430">Related Google services</translation>
 <translation id="2956070239128776395">Section nested in group: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Turn on developer mode to use this extension, which can't be reviewed by the Chrome Web Store.</translation>
+<translation id="2957987442574819977">Unexpected results from Gemini</translation>
 <translation id="2958721676848865875">Pack extension warning</translation>
 <translation id="2959127025785722291">Something went wrong. Scanning could not be completed. Please try again.</translation>
 <translation id="2959474507964749987">This encrypted file might be a virus or malware.<ph name="LINE_BREAK" />To check if it's unsafe, you can send the file and password to Google Safe Browsing. Scans usually take a few seconds.<ph name="LINE_BREAK" />To scan, add the file's password.</translation>
@@ -3527,6 +3529,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3708295717182051206">Closed captions</translation>
 <translation id="3708684582558000260">Don't allow closed sites to finish sending or receiving data</translation>
 <translation id="3709244229496787112">The browser was shut down before the download completed.</translation>
+<translation id="3710438437470197252">See more in Google Drive</translation>
 <translation id="3710501561113687889">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your <ph name="FIELDS_STRING" /> with this site.</translation>
 <translation id="3711931198657368127">Paste and Go to <ph name="URL" /></translation>
 <translation id="3711945201266135623">Found <ph name="NUM_PRINTERS" /> printers from the print server</translation>
@@ -5175,6 +5178,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4963789650715167449">Remove current tab</translation>
 <translation id="4964455510556214366">Arrangement</translation>
 <translation id="4964544790384916627">Dock window</translation>
+<translation id="4964673849688379040">Checking...</translation>
 <translation id="4966972803217407697">You're Incognito</translation>
 <translation id="4967227914555989138">Add a note</translation>
 <translation id="4967360192915400530">Download dangerous file</translation>
@@ -5365,6 +5369,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5112577000029535889">&amp;Developer Tools</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{Moved 1 file}other{Moved {NUM_OF_FILES} files}}</translation>
 <translation id="511313294362309725">Turn on Fast Pair</translation>
+<translation id="5113992879909788634">Learn more about Chrome auto browse</translation>
 <translation id="51143538739122961">Insert your security key and touch it</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Sa&amp;ve Audio As...</translation>
@@ -7049,6 +7054,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6470823736074966819">Mute notifications</translation>
 <translation id="6472893788822429178">Show Home button</translation>
 <translation id="6473315466413288899">Select an option</translation>
+<translation id="6474021817475285003">See more in Google Calendar</translation>
 <translation id="6474498546677193336">Couldn't unshare because an application is using this folder. The folder will be unshared when Linux is next shut down.</translation>
 <translation id="6474884162850599008">Disconnect Google Drive account</translation>
 <translation id="6476482583633999078">Speech speed</translation>
@@ -9141,6 +9147,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8082132721957920509">Your card is saved</translation>
 <translation id="8082390128630131497">Disabling ADB debugging will reset this <ph name="DEVICE_TYPE" /> to factory settings. All user accounts and local data will be deleted.</translation>
 <translation id="8084114998886531721">Saved password</translation>
+<translation id="8084417885464859041">Use Gemini safely</translation>
 <translation id="8084429490152575036">Cellular APN settings</translation>
 <translation id="8084628902026812045">This site isn't using a secure connection and the file may have been tampered with</translation>
 <translation id="808488435221187916">Your info is available in Google Wallet on any signed-in device</translation>
@@ -9735,6 +9742,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8553342806078037065">Manage other people</translation>
 <translation id="8554642222921881444">Floating menu on selected text</translation>
 <translation id="8554899698005018844">No language</translation>
+<translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – expanded contents shown</translation>
 <translation id="8555444629041783356">Automatic sunset schedule</translation>
 <translation id="8557022314818157177">Keep touching your security key until your fingerprint is captured</translation>
 <translation id="8557100046150195444">Touch ID to continue</translation>

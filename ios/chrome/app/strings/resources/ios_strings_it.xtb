@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Accesso eseguito come <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Apri il menu dell'account.</translation>
 <translation id="1397144142234474689">Nascondi Cronologia</translation>
 <translation id="1399268420835656394">Se non sei un bambino, ti consigliamo di controllare l'età nell'Apple Account su questo dispositivo. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Compilato in precedenza</translation>
 <translation id="1407135791313364759">Apri tutte</translation>
 <translation id="1408847409015257906">Tocca l'opzione "Privacy e sicurezza".</translation>
 <translation id="1411386976162024013">Ricerca visiva di Lens</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Il tuo account è gestito da un genitore.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Modificata</translation>
+<translation id="1481450969185702334">Trova e compila</translation>
 <translation id="1483493594462132177">Invia</translation>
 <translation id="1486096554574027028">Cerca password</translation>
 <translation id="1486593497476255523">Gruppi di schede completati.</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Per tutelare la tua privacy, Chrome non compilerà automaticamente questo campo con la tua password.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 sito (altro sui dispositivi sincronizzati)}other{# siti (altro sui dispositivi sincronizzati)}}</translation>
+<translation id="2865392654629180917">Chiedi qualsiasi cosa e ricevi risposte basate sull'AI</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2876369937070532032">Invia a Google gli URL di alcune pagine che visiti quando la tua sicurezza è a rischio</translation>
 <translation id="2883151425485251736">Visualizza e modifica gli argomenti che hai nascosto dal tuo account</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Nuovo gruppo di schede...</translation>
 <translation id="3185760469172949183">Ricerca con la fotocamera completata.</translation>
 <translation id="3186796054637504691">Cancella dati siti web e cronologia</translation>
+<translation id="3190558889382726167">Password salvata</translation>
 <translation id="3190736958609431397">Annulla monitoraggio</translation>
 <translation id="3208260410153224535">La tua organizzazione ha disattivato l'accesso. I nuovi preferiti, le nuove password e altri dati verranno salvati solo su questo dispositivo.</translation>
 <translation id="3211969308836412674">Stacca sito</translation>

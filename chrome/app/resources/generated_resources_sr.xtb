@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">Ставка <ph name="ITEM" /> није изабрана. <ph name="INDEX" />. од <ph name="COUNT" />. Да бисте изабрали, притисните тастер за претрагу и размак.</translation>
 <translation id="1086486568852410168">Претражите помоћу Google објектива</translation>
 <translation id="1090126737595388931">Није покренута ниједна позадинска апликација</translation>
+<translation id="109038914521989341">Унесите разлог за копирање ових података:</translation>
 <translation id="1090541560108055381">Пре упаривања се уверите да је овај кôд исти на оба уређаја</translation>
 <translation id="1093457606523402488">Видљиве мреже:</translation>
 <translation id="1093645050124056515">ctrl + alt + стрелица надоле</translation>
@@ -500,6 +501,7 @@
 <translation id="1376836354785490390">Прикажи мање</translation>
 <translation id="1377438103060664754">Када се нека од ваших лозинки пронађе у повреди података, Google менаџер лозинки вас пита да ли желите да је замените јаком лозинком</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> контролише ово подешавање</translation>
+<translation id="1378715594598306389">Прикажи још картица</translation>
 <translation id="1380028686461971526">Аутоматско повезивање на мрежу</translation>
 <translation id="1381567580865186407">Говор (<ph name="LANGUAGE" />) се шаље Google-у ради обраде</translation>
 <translation id="1382174183118245544">Бројеви кредитних картица</translation>
@@ -1229,6 +1231,7 @@
 <translation id="194174710521904357">Привремено сте дозволили овом сајту да користи колачиће треће стране, што значи мање заштите при прегледању, али је већа вероватноћа да ће функције сајта радити према очекивањима.</translation>
 <translation id="1942128823046546853">да чита и мења све ваше податке на свим веб-сајтовима</translation>
 <translation id="1944535645109964458">Није доступан ниједан приступни кôд</translation>
+<translation id="1944921356641260203">Ажурирање је пронађено</translation>
 <translation id="1947136734041527201">Омогућава вам да се пријављујете на веб-сајтове помоћу налога који имате у услузи за идентитет</translation>
 <translation id="1948528728718281125">Приступ камери је дозвољен за апликације, веб-сајтове са дозволом за камеру и системске услуге</translation>
 <translation id="1949332606889020901">ИД-ови отказивања</translation>
@@ -1810,7 +1813,6 @@
 <translation id="2424424966051154874">{0,plural, =1{Гост}one{Гост (#)}few{Гост (#)}other{Гост (#)}}</translation>
 <translation id="2426805022920575512">Изаберите други налог</translation>
 <translation id="2427507373259914951">Леви клик</translation>
-<translation id="2428120669821109648">Стилизовање картица</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 налог, лозинка је сачувана само на овом уређају. Још детаља}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} налог, лозинка је сачувана само на овом уређају. Још детаља}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} налога, лозинка је сачувана само на овом уређају. Још детаља}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} налога, лозинка је сачувана само на овом уређају. Још детаља}}</translation>
 <translation id="2428510569851653187">Опишите шта сте радили када је картица отказала</translation>
 <translation id="2428939361789119025">Искључите WiFi</translation>
@@ -2526,6 +2528,7 @@
 <translation id="2955048943983973430">Повезане Google услуге</translation>
 <translation id="2956070239128776395">Одељак угнежден у групу: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Укључите режим програмера да бисте користили овај додатак који Chrome веб-продавница не може да прегледа.</translation>
+<translation id="2957987442574819977">Неочекивани резултати од Gemini-ја</translation>
 <translation id="2958721676848865875">Упозорење о паковању додатка</translation>
 <translation id="2959127025785722291">Дошло је до грешке. Скенирање није довршено. Пробајте поново.</translation>
 <translation id="2959474507964749987">Овај шифровани фајл је можда вирус или малвер.<ph name="LINE_BREAK" />Да бисте проверили да ли је небезбедан, можете да пошаљете фајл и лозинку у Google безбедно прегледање. Скенирање обично траје неколико секунди.<ph name="LINE_BREAK" />Да бисте скенирали, додајте лозинку за фајл.</translation>
@@ -3513,6 +3516,7 @@
 <translation id="3708295717182051206">Титл</translation>
 <translation id="3708684582558000260">Не дозвољавај затвореним сајтовима да доврше слање или пријем података</translation>
 <translation id="3709244229496787112">Прегледач је затворен пре него што је преузимање завршено.</translation>
+<translation id="3710438437470197252">Прикажи више на Google диску</translation>
 <translation id="3710501561113687889">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити <ph name="FIELDS_STRING" /> са овим сајтом.</translation>
 <translation id="3711931198657368127">Налепи и иди на <ph name="URL" /></translation>
 <translation id="3711945201266135623">Пронађени штампачи са сервера за штампање: <ph name="NUM_PRINTERS" /></translation>
@@ -5161,6 +5165,7 @@
 <translation id="4963789650715167449">Уклони актуелну картицу</translation>
 <translation id="4964455510556214366">Распоред</translation>
 <translation id="4964544790384916627">Фиксирање прозора</translation>
+<translation id="4964673849688379040">Проверава се...</translation>
 <translation id="4966972803217407697">Користите режим без архивирања</translation>
 <translation id="4967227914555989138">Додај белешку</translation>
 <translation id="4967360192915400530">Преузми опасан фајл</translation>
@@ -5351,6 +5356,7 @@
 <translation id="5112577000029535889">&amp;Алатке за програмере</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{Премештен је 1 фајл}one{Премештен је {NUM_OF_FILES} фајл}few{Премештена су {NUM_OF_FILES} фајла}other{Премештено је {NUM_OF_FILES} фајлова}}</translation>
 <translation id="511313294362309725">Укључи Брзо упаривање</translation>
+<translation id="5113992879909788634">Сазнајте више о Chrome аутоматском прегледању</translation>
 <translation id="51143538739122961">Уметните безбедносни кључ и додирните га</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Са&amp;чувај аудио снимак као...</translation>
@@ -7034,6 +7040,7 @@
 <translation id="6470823736074966819">Искључите звук обавештења</translation>
 <translation id="6472893788822429178">Прикажи дугме Почетак</translation>
 <translation id="6473315466413288899">Изаберите опцију</translation>
+<translation id="6474021817475285003">Прикажи више у Google календару</translation>
 <translation id="6474498546677193336">Опозивање дељења није успело јер једна апликација користи овај фолдер. Дељење фолдера ће бити опозвано када се Linux следећи пут затвори.</translation>
 <translation id="6474884162850599008">Прекини везу са налогом Google диска</translation>
 <translation id="6476482583633999078">Брзина говора</translation>
@@ -9130,6 +9137,7 @@
 <translation id="8082132721957920509">Картица је сачувана</translation>
 <translation id="8082390128630131497">Ако онемогућите ADB отклањање грешака, <ph name="DEVICE_TYPE" /> ће се ресетовати на фабричка подешавања. Сви кориснички налози и локални подаци ће бити обрисани.</translation>
 <translation id="8084114998886531721">Сачувана лозинка</translation>
+<translation id="8084417885464859041">Безбедно користите Gemini</translation>
 <translation id="8084429490152575036">Подешавања назива приступне тачке мобилне мреже</translation>
 <translation id="8084628902026812045">Овај сајт не користи безбедну везу и фајл је можда неовлашћено мењан</translation>
 <translation id="808488435221187916">Информације су доступне у Google новчанику на свим уређајима на којима сте пријављени</translation>
@@ -9724,6 +9732,7 @@
 <translation id="8553342806078037065">Управљање другим људима</translation>
 <translation id="8554642222921881444">Плутајући мени на изабраном тексту</translation>
 <translation id="8554899698005018844">Без језика</translation>
+<translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> – приказује се проширени садржај</translation>
 <translation id="8555444629041783356">Аутоматски распоред заласка сунца</translation>
 <translation id="8557022314818157177">Наставите да додирујете безбедносни кључ док не снимимо отисак прста</translation>
 <translation id="8557100046150195444">Употребите Touch ID да бисте наставили</translation>

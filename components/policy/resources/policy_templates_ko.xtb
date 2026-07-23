@@ -1375,6 +1375,18 @@ false로 설정되면 사용자 식별을 위해 사용할 수 있는 정보가 
         |TIME_LIMITS|은(는) 일일 사용 제한을 적용하여 지정된 날짜에서 제한에 도달한 후에는 앱을 사용할 수 없게 합니다. 사용 제한은 |daily_limit_mins|에 지정됩니다. 사용 제한은 매일 |reset_at|(UTC 기준)에 재설정됩니다.
         이 정책은 자녀 사용자에게만 사용됩니다.
         이 정책은 'UsageTimeLimit'을 보완합니다. 기기 사용 시간 및 취침 시간과 같이 'UsageTimeLimit'에 지정된 제한은 'PerAppTimeLimits'와 관계없이 시행됩니다.</translation>
+<translation id="19133869326547269">클릭 투 콜 기능이 Chrome에서 삭제되었으므로 이 정책은 지원 중단되었으며 아무런 영향을 미치지 않습니다.
+
+원래 설명:
+사용자가 로그인되어 있으면 Chrome 데스크톱에서 Android 기기로 전화번호를 전송하도록 허용하는 클릭 투 콜 기능을 사용 설정합니다. 자세한 내용은 고객센터 도움말을 참고하세요. https://support.google.com/chrome/answer/9430554?hl=ko
+
+이 정책이 사용 설정된 경우 Chrome 사용자가 Android 기기로 전화번호를 전송할 수 있습니다.
+
+사용 중지된 경우 Chrome 사용자가 Android 기기로 전화번호를 전송할 수 없습니다.
+
+이 정책을 설정하면 사용자가 변경하거나 재정의할 수 없습니다.
+
+정책을 설정하지 않으면 클릭 투 콜 기능이 기본적으로 사용 설정됩니다.</translation>
 <translation id="1913629775420987861">사용자가 종료하려고 할 때 경고 대화상자 표시</translation>
 <translation id="1915242485679279502">확장된 기업 툴바 배지 표시</translation>
 <translation id="1916266055944569995">정책을 설정하면 주어진 원본의 Managed Configuration API 반환 값이 정의됩니다.
@@ -3757,15 +3769,6 @@ false로 설정된 경우 기존 및 신규 Crostini 컨테이너에 대한 루�
 <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" />를 사용하여 특정 최상위 출처에 대한 서드 파티 저장용량 파티셔닝을 사용 중지합니다. 서드 파티 저장용량 파티셔닝에 관한 자세한 내용은 https://developers.google.com/privacy-sandbox/cookies/storage-partitioning 페이지를 참고하세요.
 
 이 정책은 Chrome 145에서 삭제되었으므로 requestStorageAccess 메서드를 사용하는 것이 좋습니다(https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess). https://crbug.com/425248669에 의견을 남길 수 있습니다.</translation>
-<translation id="3405361833556012520">이 정책은 브라우저 트래픽에만 적용됩니다. Play 스토어, Android 앱의 웹 탐색, 기타 사용자 트래픽(예: Linux VM 트래픽 또는 인쇄 작업)은 상시 사용 설정 VPN에서 부과하는 제한사항을 여전히 준수합니다. 이 정책은 VPN이 연결되지 않은 상태에서 사용자 브라우저 트래픽에 대해서만 시행됩니다. 이 정책이 시행되는 동안 시스템 트래픽은 상시 사용 설정 VPN을 우회하여 정책 가져오기 및 시스템 시계 동기화와 같은 작업을 수행할 수도 있습니다.
-
-이 정책을 사용하면 https://support.google.com/chrome/a?p=url_blocklist_filter_format에 지정된 형식을 통해 특정 스키마, 다른 도메인의 하위 도메인, 포트 또는 특정 경로에 대한 예외 목록을 열 수 있습니다. 가장 구체적인 필터에 따라 URL 차단 또는 허용 여부가 결정됩니다.
-
-<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책이 설정되어 있으면 상시 사용 설정 VPN이 구성되고, 상시 사용 설정 VPN이 연결되지 않으며, <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책에서 허용하는 호스트를 제외한 모든 호스트로의 이동이 차단됩니다. 이 기기 상태에서 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책은 무시됩니다. 상시 사용 설정 VPN이 연결되면, <ph name="URL_BLOCKLIST_POLICY_NAME" /> 및 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 정책이 적용되고 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 정책은 무시됩니다.
-
-정책의 항목은 1,000개로 제한됩니다.
-
-정책을 설정하지 않으면 엄격 모드에서 상시 사용 설정 VPN이 활성화되고 VPN이 연결되지 않은 동안 브라우저 탐색이 차단됩니다.</translation>
 <translation id="3405997282295704902">사용자가 <ph name="PRODUCT_NAME" />을(를) 사용하도록 허용 안함</translation>
 <translation id="3406122462682235653">사용자에게 확인하지 않음(다운로드 즉시 시작)</translation>
 <translation id="3410534959501660670">텍스트 캡처 기능 설정</translation>
@@ -7976,16 +7979,6 @@ URL이 <ph name="AUTOMATIC_DOWNLOADS_ALLOWED_FOR_URLS_POLICY_NAME" /> 및 <ph na
 단축키를 구성할 수 있습니다.</translation>
 <translation id="6019162469732742754">자동 모드 사용</translation>
 <translation id="6019606564278029236">원격 지원 세션에서 원격 사용자가 관리자 창과 상호작용할 수 있도록 허용</translation>
-<translation id="602038990586229155">이 정책은 사용자가 Google 관리 콘솔에 승인 요청을 보낼 수 있도록 허용하는 <ph name="PRODUCT_NAME" /> 확장 프로그램 설치 요청을 제어합니다.
-
-<ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 정책이 설정되지 않거나 사용 중지되면 정책이 무시되며 확장 프로그램 설치 요청이 생성 또는 업로드되지 않습니다.
-정책이 설정되지 않거나 사용 중지되면 확장 프로그램 설치 요청은 생성 또는 업로드되지 않습니다.
-정책이 사용 설정되면 확장 프로그램 설치 요청이 생성되고 Google 관리 콘솔에 업로드됩니다.
-
-사용자가 <ph name="EXTENSION_INSTALL_ALLOWLIST" /> 또는 <ph name="EXTENSION_SETTINGS" />에서 허용되지 않는 확장 프로그램을 설치하려고 하면 확장 프로그램 설치 요청이 생성됩니다.
-
-<ph name="PRODUCT_NAME" />의 경우 정책은 기기가 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />에 등록되어 있을 때만 적용됩니다.
-<ph name="PRODUCT_OS_NAME" />의 경우 정책이 항상 적용됩니다.</translation>
 <translation id="6020795917180493154">M119부터 정책을 false로 설정하거나 설정하지 않으면, WebSQL이 사용 중지되지만 Chrome 신고 'web-sql-access'를 통해 사용 설정할 수 있습니다. 정책을 true로 설정하면 WebSQL 액세스가 사용 설정됩니다.
 이 정책은 M124부터 지원이 중단됩니다.</translation>
 <translation id="6022948604095165524">시작 시 동작</translation>
@@ -8135,6 +8128,14 @@ ArcEnabled 및 UnaffiliatedArcAllowed 정책에서 적용하는 제한사항과 
 
 이 정책이 사용 중지되면 키 바로가기 앱이 읽기 전용 모드로 전환되어 맞춤설정을 허용하지 않습니다.</translation>
 <translation id="6150320133676152520">잠금 및 로그인 화면에서 PIN 자동 제출 사용 안함</translation>
+<translation id="6152224988699207920">관리자가 데이터 손실 방지(DLP) 규칙에 따라 적용된 워터마크의 모양을 맞춤설정할 수 있습니다. 여기에는 채우기/윤곽선 불투명도 설정, 글꼴 크기 정의, 타임스탬프 시간대 설정이 포함됩니다.
+정책 또는 일부 값을 설정하지 않으면 Chrome에서 기본 워터마크 동작을 사용합니다.
+기본값은 채우기 불투명도 4, 윤곽선 불투명도 6, 글꼴 크기 24, 타임스탬프 시간대 'user_device'(사용자의 로컬 기기 시간대)입니다.
+
+'채우기 불투명도'는 0(완전 투명)에서 100(완전 불투명) 사이의 백분율입니다.
+'윤곽선 불투명도'는 0(완전 투명)에서 100(완전 불투명) 사이의 백분율입니다.
+'글꼴 크기'는 포인트 단위로 지정됩니다.
+'타임스탬프 시간대'는 IANA 시간대 데이터베이스(https://www.iana.org/time-zones)의 이름을 따르는 워터마크 타임스탬프(Chrome 152 이상에서 지원)의 형식을 지정하는 데 사용되는 IANA 시간대 식별자(예: 'America/Toronto')를 지정합니다.</translation>
 <translation id="6155350825868160236">사용자가 맞춤법 오류를 해결하는 Google 웹 서비스의 사용 여부를 선택하도록 허용</translation>
 <translation id="6155936611791017817">로그인 화면에서 큰 커서의 기본 상태를 설정</translation>
 <translation id="6157537876488211233">쉼표로 구분된 프록시 우회 규칙 목록</translation>
@@ -12943,6 +12944,7 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 커넥터 설정 정책</translation>
 <translation id="9088433379343318874">관리 대상 사용자 콘텐츠 제공업체 사용</translation>
 <translation id="9088444059179765143">자동 시간대 감지 방법 설정</translation>
+<translation id="9091741086777905807">워터마크 타임스탬프의 형식을 지정하는 데 사용되는 IANA 시간대 식별자(예: 'America/Toronto')이며, Chrome 152 이상에서 지원됩니다. 기본값은 'user_device'입니다.</translation>
 <translation id="9094681501120769194"><ph name="PRODUCT_NAME" />의 PDF 뷰어에서 프로세스 외부 iframe(OOPIF)을 사용할지 여부를 제어합니다. 더 간단해지고 새로운 기능을 더 쉽게 추가할 수 있으므로 향후 새로운 PDF 뷰어 아키텍처가 될 것입니다. 기존 GuestView PDF 뷰어는 오래되고 복잡한 아키텍처로서 지원이 중단됩니다.
 
 정책을 '사용'으로 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 OOPIF PDF 뷰어 아키텍처를 사용할 수 있습니다. 사용 설정하거나 설정하지 않으면 <ph name="PRODUCT_NAME" />에서 기본 동작을 결정합니다.

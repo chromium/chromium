@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">మీరు దీన్ని తొలగించినట్లయితే, అందరూ వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్ కోల్పోతారు, ఇంకా ఇది అన్ని పరికరాల నుండి తొలగించబడుతుంది.</translation>
 <translation id="1142732900304639782">ఈ సైట్‌లను అనువాదం చేసే సదుపాయాన్ని అందించవద్దు</translation>
 <translation id="1143193470214071120">విండోను మూసివేయండి లేదా విండోలను మేనేజ్ చేయండి</translation>
+<translation id="1143486892058798649">లింక్‌ను ఇలా సేవ్ చేయండి…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" />ను స్కాన్ చేస్తోంది</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలకు<ph name="END_LINK2" /> అంగీకరిస్తున్నారు.</translation>
 <translation id="1154555449933432029">మీరు Google Password Managerలో పాస్‌వర్డ్‌లను సేవ్ చేయలేదు.</translation>
@@ -313,6 +314,7 @@
 <translation id="2330186936255788117">మరిన్ని బుక్‌మార్క్‌లు</translation>
 <translation id="2332515770639153015">మెరుగైన సురక్షిత బ్రౌజింగ్ ఆన్‌లో ఉంది</translation>
 <translation id="233375395665273385">తొలగించి, సైన్ అవుట్ చేయండి</translation>
+<translation id="2334275697832662087">Chrome AI-ఆధారిత సెక్యూరిటీ ఆన్‌లైన్ ప్రమాదాల నుండి మిమ్మల్ని రక్షించడంలో సహాయపడుతుంది, మీరు బ్రౌజ్ చేస్తున్నప్పుడు మీకు విశ్వాసాన్ని అందిస్తుంది</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" />ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="2349710944427398404">ఖాతాలు, బుక్‌మార్క్‌లు, సేవ్ చేసిన సెట్టింగ్‌లతో సహా Chrome ఉపయోగించిన మొత్తం డేటా</translation>
 <translation id="2354001756790975382">ఇతర బుక్‌మార్క్‌లు</translation>
@@ -614,6 +616,7 @@
 <translation id="3577473026931028326">ఏదో తప్పు జరిగింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3577558748185201054">మీ ఆసక్తులను, ప్రాధాన్యతలను మేనేజ్ చేసుకోండి</translation>
 <translation id="3587482841069643663">మొత్తం</translation>
+<translation id="3598421953808879451">వీడియోను ఇలా సేవ్ చేయండి…</translation>
 <translation id="3602290021589620013">ప్రివ్యూ</translation>
 <translation id="3614126103057878858">ధరల గణాంకాలు</translation>
 <translation id="3616113530831147358">ఆడియో</translation>
@@ -724,6 +727,7 @@
 <translation id="4044708993631234325">దిగువున ఉన్న షీట్</translation>
 <translation id="4045441967987592849">మళ్లీ తెరవండి</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> కోసం మరిన్ని ఆప్షన్‌లు</translation>
+<translation id="4051548576872472315">మీరు ఇటీవల మూసివేసిన ట్యాబ్‌లను, విండోలను ఇక్కడ కనుగొనండి</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{అజ్ఞాత విండోలో తెరవండి}other{అన్నింటినీ (#) అజ్ఞాత విండోలో తెరవండి}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{షేర్ చేసిన ట్యాబ్ గ్రూప్‌లలో కొత్త యాక్టివిటీతో <ph name="TABS_COUNT_ONE" /> స్టాండర్డ్ ట్యాబ్}other{షేర్ చేసిన ట్యాబ్ గ్రూప్‌లలో కొత్త యాక్టివిటీతో <ph name="TABS_COUNT_MANY" /> స్టాండర్డ్ ట్యాబ్‌లు}}</translation>
 <translation id="405365679581583349">Google Play సర్వీస్‌లను అప్‌డేట్ చేయండి</translation>
@@ -1522,6 +1526,7 @@
 <translation id="71503698506017927">రహస్య పదబంధం ఎన్‌క్రిప్షన్‌లో Google Pay నుండి పేమెంట్ ఆప్షన్‌లు, అడ్రస్‌లు ఉండవు.
 
 ఈ సెట్టింగ్‌ను మార్చడానికి, <ph name="BEGIN_LINK" />మీ ఖాతాలోని Chrome డేటాను తొలగించండి<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">ఇమేజ్‌ను ఇలా సేవ్ చేయండి…</translation>
 <translation id="7165972437814027679">Chrome కొన్ని ఫైల్స్‌ను ఎందుకు బ్లాక్ చేస్తుందనే దాని గురించి, మరింతగా తెలుసుకోండి</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="7170930892977483182">మీ డివైజ్‌లో, Google Walletలో సేవ్ అయ్యి ఉన్న సెక్యూరిటీ కోడ్‌లన్నీ తొలగించబడతాయి</translation>
@@ -1695,6 +1700,7 @@
 <translation id="7824665136384946951">మీ సంస్థ సురక్షిత బ్రౌజింగ్‌ను ఆఫ్ చేసింది</translation>
 <translation id="7825973332242257878">ట్యాబ్ గ్రూప్‌లు</translation>
 <translation id="7826342993930002256">మీ Chrome, ప్రతిచోటా</translation>
+<translation id="7845155831233417403">గరిష్ఠంగా <ph name="MAX_INSTANCE_COUNT" /> విండోలను మాత్రమే ఉపయోగించగలరు. కొనసాగించడానికి విండోను మూసివేయండి.</translation>
 <translation id="7846161022626028328">ఎర్రర్ ఏర్పడింది. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7846296061357476882">Google సర్వీస్‌లు</translation>
 <translation id="784652447248278262">ప్రస్తుత విండో</translation>
@@ -1818,6 +1824,7 @@
 <translation id="8282297628636750033">సైట్‌ల కోసం డార్క్ థీమ్‌</translation>
 <translation id="8282950411412455249">సెక్యూరిటీ సెట్టింగ్‌లకు వెళ్లండి</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 అజ్ఞాత విండోను మూసివేయండి}other{# అజ్ఞాత విండోలను మూసివేయండి}}</translation>
+<translation id="8289602658021943461">వీడియో ఫ్రేమ్ ఇలా సేవ్ చేయండి…</translation>
 <translation id="8313599942510782709">మీ టాస్క్ ఇంకా ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="8317318757008452355">ప్రింట్ చేయడానికి గల ఆప్షన్‌లను తెరవండి</translation>
 <translation id="8320212361750431956">ఇటీవలి యాక్టివిటీ</translation>

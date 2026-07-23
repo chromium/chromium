@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। <ph name="USER_EMAIL" />। ଆକାଉଣ୍ଟ ମେନୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="1397144142234474689">ଇତିହାସକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="1399268420835656394">ଯଦି ଆପଣ ଜଣେ ପିଲା ନୁହଁନ୍ତି, ତେବେ ଏହି ଡିଭାଇସରେ Apple ଆକାଉଣ୍ଟରେ ବୟସ ଯାଞ୍ଚ କରିବାକୁ ଆପଣ ଚାହିଁପାରନ୍ତି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">ପୂର୍ବରୁ ପୂରଣ କରାଯାଇଛି</translation>
 <translation id="1407135791313364759">ସବୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="1408847409015257906">“ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷା”ରେ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="1411386976162024013">Lens ଭିଜୁଆଲ ସର୍ଚ୍ଚ</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">ତୁମର ଆକାଉଣ୍ଟ ତୁମ ବାପାମାଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।
 <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣ<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
+<translation id="1481450969185702334">ଖୋଜି ପୂରଣ କରନ୍ତୁ</translation>
 <translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
 <translation id="1486096554574027028">ପାସୱାର୍ଡଗୁଡ଼ିକ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1486593497476255523">ଟାବ ଗ୍ରୁପ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">ଆପଣଙ୍କର ଗୋପନୀୟତାର ସୁରକ୍ଷା ପାଇଁ ଏହି ଫିଲ୍ଡରେ Chrome ଆପଣଙ୍କର ପାସୱର୍ଡକୁ ସ୍ୱତଃପୂରଣ କରିବ ନାହିଁ।</translation>
 <translation id="2858951819750638913">Gemini ଲାଇଭ</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 ସାଇଟ (ସିଙ୍କ ହୋଇଥିବା ଡିଭାଇସରେ ଅଧିକ)}other{# ସାଇଟ (ସିଙ୍କ ହୋଇଥିବା ଡିଭାଇସରେ ଅଧିକ)}}</translation>
+<translation id="2865392654629180917">ଯେ କୌଣସି ପ୍ରଶ୍ନ ପଚାରନ୍ତୁ ଏବଂ AI-ପରିଚାଳିତ ଉତ୍ତରଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="2870560284913253234">ସାଇଟ୍</translation>
 <translation id="2876369937070532032">ଆପଣଙ୍କର ସୁରକ୍ଷା ବିପଦରେ ଥିବା ବେଳେ, Googleକୁ ଆପଣ ଯାଇଥିବା କିଛି ପୃଷ୍ଠାର URL ପଠାଏ</translation>
 <translation id="2883151425485251736">ଆପଣ ଆପଣଙ୍କ ଆକାଉଣ୍ଟରୁ ଲୁଚାଇଥିବା ବିଷୟଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ ଏବଂ ଏଡିଟ କରନ୍ତୁ</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">ନୂଆ ଟାବ ଗ୍ରୁପ...</translation>
 <translation id="3185760469172949183">କେମେରା ମାଧ୍ୟମରେ ସର୍ଚ୍ଚ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
 <translation id="3186796054637504691">ଇତିହାସ ଏବଂ ୱେବସାଇଟ ଡାଟାକୁ ଖାଲି କରନ୍ତୁ</translation>
+<translation id="3190558889382726167">ପାସୱାର୍ଡ ସେଭ୍‍ କରାଯାଇଛି</translation>
 <translation id="3190736958609431397">ଅନଟ୍ରାକ କରନ୍ତୁ</translation>
 <translation id="3208260410153224535">ଆପଣଙ୍କ ସଂସ୍ଥା ସାଇନ-ଇନ କରିବାକୁ ବନ୍ଦ କରିଦେଇଛି। ନୂଆ ବୁକମାର୍କ, ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ କେବଳ ଏହି ଡିଭାଇସରେ ସେଭ କରାଯିବ।</translation>
 <translation id="3211969308836412674">ସାଇଟକୁ ଅନପିନ କରନ୍ତୁ</translation>

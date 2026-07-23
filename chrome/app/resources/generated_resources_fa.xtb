@@ -500,6 +500,7 @@
 <translation id="1376836354785490390">کمتر نشان دادن</translation>
 <translation id="1377438103060664754">‏اگر یکی از گذرواژه‌هایتان در یک سرقت اطلاعات شبکه پیدا شود، «مدیر گذرواژه Google» می‌پرسد آیا مایلید آن را به یک گذرواژه قوی تغییر دهید</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> در حال کنترل این تنظیمات است</translation>
+<translation id="1378715594598306389">دیدن زبانه‌های بیشتر</translation>
 <translation id="1380028686461971526">اتصال خودکار به شبکه</translation>
 <translation id="1381567580865186407">‏گفتار <ph name="LANGUAGE" /> برای پردازش به Google ارسال می‌شود</translation>
 <translation id="1382174183118245544">شماره کارت اعتباری</translation>
@@ -1238,6 +1239,7 @@
 <translation id="194174710521904357">موقتاْ به این سایت اجازه دادید از کوکی‌های طرف سوم استفاده کند. این کار به معنی محافظت کمتر هنگام مرور است اما ویژگی‌های سایت به احتمال زیاد عملکرد موردنظر را خواهد داشت.</translation>
 <translation id="1942128823046546853">همه داده‌های شما را در همه وب‌سایت‌ها بخواند و تغییر دهد</translation>
 <translation id="1944535645109964458">گذرکلیدی موجود نیست</translation>
+<translation id="1944921356641260203">به‌روزرسانی پیدا شد</translation>
 <translation id="1947136734041527201">مجاز می‌شوید بااستفاده از حسابی که در سرویس مدیریت هویت دارید به سیستم سایت وارد شوید</translation>
 <translation id="1948528728718281125">دسترسی به دوربین برای برنامه‌ها، وب‌سایت‌های دارای اجازه دوربین، و خدمات سیستم مجاز می‌شود</translation>
 <translation id="1949332606889020901">شناسه‌های خرابی</translation>
@@ -1823,7 +1825,6 @@
 <translation id="2424424966051154874">{0,plural, =1{مهمان}one{مهمان (#)}other{مهمان (#)}}</translation>
 <translation id="2426805022920575512">انتخاب یک حساب دیگر</translation>
 <translation id="2427507373259914951">کلیک چپ</translation>
-<translation id="2428120669821109648">سبک‌بندی زبانه</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> ۱ حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} حساب، گذرواژه فقط در این دستگاه ذخیره شد. جزئیات بیشتر}}</translation>
 <translation id="2428510569851653187">توضیح دهید وقتی برگه خراب شد مشغول انجام چه کاری بودید</translation>
 <translation id="2428939361789119025">‏خاموش کردن Wi-Fi</translation>
@@ -2539,6 +2540,7 @@
 <translation id="2955048943983973430">‏سرویس‌های Google مرتبط</translation>
 <translation id="2956070239128776395">بخش در گروه قرار گرفت: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">‏برای استفاده از این افزونه، حالت توسعه‌دهنده را روشن کنید. «نت‌بازار Chrome» نمی‌تواند این افزونه را بررسی کند.</translation>
+<translation id="2957987442574819977">‏نتایج غیرمنتظره از Gemini</translation>
 <translation id="2958721676848865875">هشدار در مورد بسته‌بندی افزونه</translation>
 <translation id="2959127025785722291">مشکلی پیش آمد. اسکن کامل نشد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="2959474507964749987">‏این فایل رمزگذاری‌شده ممکن است ویروس یا بدافزار باشد.<ph name="LINE_BREAK" />برای بررسی ایمن بودن آن، می‌توانید فایل و گذرواژه را به «مرور ایمن Google» ارسال کنید. اسکن معمولاً چند ثانیه طول می‌کشد.<ph name="LINE_BREAK" />برای اسکن کردن، گذرواژه فایل را اضافه کنید.</translation>
@@ -3526,6 +3528,7 @@
 <translation id="3708295717182051206">زیرنویس ناشنوایان</translation>
 <translation id="3708684582558000260">به سایت‌های بسته‌شده اجازه داده نشود ارسال و دریافت داده را تکمیل کنند</translation>
 <translation id="3709244229496787112">مرور قبل از اتمام بارگیری بسته شد.</translation>
+<translation id="3710438437470197252">‏دیدن موارد بیشتر در Google Drive</translation>
 <translation id="3710501561113687889">برای ادامه دادن، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> شما را با این سایت هم‌رسانی خواهد کرد.</translation>
 <translation id="3711931198657368127">جای‌گذاری و رفتن به <ph name="URL" /></translation>
 <translation id="3711945201266135623"><ph name="NUM_PRINTERS" /> چاپگر از سرور چاپ پیدا شد</translation>
@@ -5174,6 +5177,7 @@
 <translation id="4963789650715167449">برداشتن زبانه فعلی</translation>
 <translation id="4964455510556214366">ترتیب</translation>
 <translation id="4964544790384916627">متصل کردن پنجره</translation>
+<translation id="4964673849688379040">درحال بررسی...</translation>
 <translation id="4966972803217407697">در «حالت ناشناس» هستید</translation>
 <translation id="4967227914555989138">افزودن یادداشت</translation>
 <translation id="4967360192915400530">بارگیری فایل خطرناک</translation>
@@ -5364,6 +5368,7 @@
 <translation id="5112577000029535889">ابزارهای &amp;برنامه نویس</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{یک فایل منتقل شد}one{{NUM_OF_FILES} فایل منتقل شد}other{{NUM_OF_FILES} فایل منتقل شد}}</translation>
 <translation id="511313294362309725">روشن کردن «جفت‌سازی سریع»</translation>
+<translation id="5113992879909788634">‏درباره مرور خودکار Chrome بیشتر بدانید</translation>
 <translation id="51143538739122961">کلید امنیتی را وارد و لمس کنید</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">ذ&amp;خیره فایل صوتی به‌عنوان...</translation>
@@ -7048,6 +7053,7 @@
 <translation id="6470823736074966819">صامت کردن اعلان‌ها</translation>
 <translation id="6472893788822429178">نمایش دکمه صفحه اصلی</translation>
 <translation id="6473315466413288899">انتخاب یک گزینه</translation>
+<translation id="6474021817475285003">‏دیدن موارد بیشتر در «تقویم Google»</translation>
 <translation id="6474498546677193336">‏لغو هم‌رسانی امکان‌پذیر نیست زیرا برنامه‌ای از این پوشه استفاده می‌کند. دفعه بعد که Linux را خاموش کنید، پوشه لغو هم‌رسانی می‌شود.</translation>
 <translation id="6474884162850599008">‏قطع ارتباط حساب Google Drive</translation>
 <translation id="6476482583633999078">سرعت گفتار</translation>
@@ -9142,6 +9148,7 @@
 <translation id="8082132721957920509">کارتتان ذخیره شد</translation>
 <translation id="8082390128630131497">‏غیرفعال کردن اشکال‌زدایی ADB (پل اشکال‌زدایی Android)، <ph name="DEVICE_TYPE" /> را به تنظیمات کارخانه بازنشانی می‌کند. همه حساب‌های کاربر و داده‌های محلی حذف می‌شوند.</translation>
 <translation id="8084114998886531721">گذرواژه ذخیره‌شده</translation>
+<translation id="8084417885464859041">‏استفاده ایمن از Gemini</translation>
 <translation id="8084429490152575036">تنظیمات «نام نقطه دستیابی» شبکه تلفن همراه</translation>
 <translation id="8084628902026812045">این سایت از اتصال ایمن استفاده نمی‌کند و ممکن است فایل دستکاری شده باشد</translation>
 <translation id="808488435221187916">‏اطلاعات شما در «کیف پول Google» هر دستگاه وارد‌شده به سیستم دردسترس است</translation>
@@ -9736,6 +9743,7 @@
 <translation id="8553342806078037065">مدیریت افراد دیگر</translation>
 <translation id="8554642222921881444">منو شناور در نوشتار انتخاب‌شده</translation>
 <translation id="8554899698005018844">زبانی موجود نیست</translation>
+<translation id="8555069853078399592">‫<ph name="ACTION_TOOLTIP" /> - محتوای ازهم بازشده نشان داده شد</translation>
 <translation id="8555444629041783356">زمان‌بندی خودکار غروب</translation>
 <translation id="8557022314818157177">کلید امنیتی را تازمانی‌که اثرانگشت ثبت شود، لمس کنید</translation>
 <translation id="8557100046150195444">‏برای ادامه دادن، از Touch ID استفاده کنید</translation>

@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Skráð(ur) inn sem <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opnaðu reikningsvalmyndina.</translation>
 <translation id="1397144142234474689">Fela „Ferill“</translation>
 <translation id="1399268420835656394">Ef þú ert ekki barn væri ráðlegt að athuga aldurinn á Apple-reikningnum í þessu tæki. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Áður fyllt út</translation>
 <translation id="1407135791313364759">Opna alla</translation>
 <translation id="1408847409015257906">Ýttu á „Persónuvernd og öryggi“.</translation>
 <translation id="1411386976162024013">Myndleit Linsu</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Foreldri þitt stjórnar reikningnum þínum.
 <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Breytt</translation>
+<translation id="1481450969185702334">Finna og fylla út</translation>
 <translation id="1483493594462132177">Senda</translation>
 <translation id="1486096554574027028">Leita að aðgangsorðum</translation>
 <translation id="1486593497476255523">Flipahópum lokið!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Til að tryggja persónuvernd þína fyllir Chrome ekki sjálfkrafa út aðgangsorðið þitt í þennan reit.</translation>
 <translation id="2858951819750638913">Raunspjall við Gemini</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{Eitt vefsvæði (fleiri í samstilltum tækjum)}one{# vefsvæði (fleiri í samstilltum tækjum)}other{# vefsvæði (fleiri í samstilltum tækjum)}}</translation>
+<translation id="2865392654629180917">Spurðu að hverju sem er og fáðu svör frá gervigreind</translation>
 <translation id="2870560284913253234">Vefsvæði</translation>
 <translation id="2876369937070532032">Sendir vefslóð sumra síðna sem þú skoðar til Google, þegar öryggi þitt er í hættu</translation>
 <translation id="2883151425485251736">Skoðaðu og breyttu umfjöllunarefnum sem þú hefur falið á reikningnum þínum</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Nýr flipahópur</translation>
 <translation id="3185760469172949183">Leit með myndavél lokið!</translation>
 <translation id="3186796054637504691">Hreinsa feril og gögn vefsvæðis</translation>
+<translation id="3190558889382726167">Aðgangsorð vistað</translation>
 <translation id="3190736958609431397">Hætta að vakta</translation>
 <translation id="3208260410153224535">Fyrirtækið þitt slökkti á innskráningu. Ný bókamerki, aðgangsorð og fleira verður aðeins vistað í þessu tæki.</translation>
 <translation id="3211969308836412674">Losa vefsvæði</translation>

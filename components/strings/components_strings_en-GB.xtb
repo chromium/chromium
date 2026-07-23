@@ -61,6 +61,7 @@
 <translation id="1090629319939036170">VR Menu</translation>
 <translation id="1091463901118115503">Continue reading</translation>
 <translation id="1091779689406092804">screenshots</translation>
+<translation id="1095093219235104018">Find and fill with Gemini</translation>
 <translation id="1096545575934602868">This field should not have more than <ph name="MAX_ITEMS_LIMIT" /> entries. All further entries will be discarded.</translation>
 <translation id="1097803577928227769">Regional parks and gardens</translation>
 <translation id="1099928364755383720">automatic picture-in-picture</translation>
@@ -260,7 +261,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1393071644879491291">Attackers on the site that you tried visiting might trick you into installing software or revealing things like your passwords, phone or credit card numbers. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Sites that you add here won't be referenced for responses, even if the tab is open. If a site that you add is currently being used in a thread, it can take up to 30 minutes for the thread to stop referencing it.</translation>
 <translation id="1402151528875251561">Show history in side panel</translation>
-<translation id="1404026649028693342">Always show AI Mode</translation>
 <translation id="1405567553485452995">Light green</translation>
 <translation id="1406370515365284486">Your payment methods will still be saved</translation>
 <translation id="1406500794671479665">Verifying...</translation>
@@ -322,6 +322,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Cleaning Services</translation>
 <translation id="1476595624592550506">Change your password</translation>
+<translation id="1481450969185702334">Find and fill</translation>
 <translation id="1482372785911828880">Extra thin</translation>
 <translation id="1482879811280872320">Cycling</translation>
 <translation id="1483493594462132177">Send</translation>
@@ -366,6 +367,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 
       &lt;p&gt;Please adjust the date and time from the &lt;strong&gt;General&lt;/strong&gt; section of the &lt;strong&gt;Settings&lt;/strong&gt; app.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Your administrator will restart your device at <ph name="TIME" /> on <ph name="DATE" /></translation>
+<translation id="1562601408588733317">Manage finding and filling info with Gemini</translation>
 <translation id="1562805467275776390">Car racing</translation>
 <translation id="1563755205047885671">Action and platform games</translation>
 <translation id="1564634006476980707">HTTPS scheme recommended for search URL: <ph name="SEARCH_URL" /></translation>
@@ -673,7 +675,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2059202684901022309">22 in x 34 in</translation>
 <translation id="2064568741209980952">Credit and Lending</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}other{# suggestions}}</translation>
-<translation id="2066690553719545730">Always show AI Mode</translation>
 <translation id="2066969741541525119">The site ahead is blocked by your organisation</translation>
 <translation id="2069913043427250781">Vehicle and traffic safety</translation>
 <translation id="2071156619270205202">This card is not eligible for virtual card number.</translation>
@@ -832,6 +833,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2268044343513325586">Refine</translation>
 <translation id="2268966938956566076">Upload in <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Phone number</translation>
+<translation id="2274179746480077483">Autofill info from apps such as Gmail and Photos. Powered by Personal Intelligence.</translation>
 <translation id="2276057643614339130">Print base</translation>
 <translation id="2277103315734023688">Seek forwards</translation>
 <translation id="2277753418458118549">Show connection details</translation>
@@ -1172,6 +1174,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2784949926578158345">The connection was reset.</translation>
 <translation id="2786008859124691917">Bicycles and Accessories</translation>
 <translation id="2792012897584536778">Administrators of this device have set up security certificates that may allow them to see the content of websites that you visit.</translation>
+<translation id="2793425367785017642">To better understand and fill forms, the content and URLs of the pages that you visit can be processed in a private space in the cloud.</translation>
 <translation id="2794233252405721443">Site blocked</translation>
 <translation id="2794629552137076216">Glass (surfaced)</translation>
 <translation id="2799223571221894425">Relaunch</translation>
@@ -1279,7 +1282,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Writers Resources</translation>
 <translation id="2980742331521553164">This card's CVC will be encrypted and saved in your Google Account for faster checkout</translation>
-<translation id="2983311431122838216">Ask AI Mode in Google Search</translation>
 <translation id="2983666748527428214">Open Incognito Tab</translation>
 <translation id="2985398929374701810">Enter a valid address</translation>
 <translation id="2986485254770343131">Saving camera files</translation>
@@ -1544,6 +1546,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3391482648489541560">file editing</translation>
 <translation id="3392028486601120379">The URL pattern '<ph name="URL_PATTERN" />' has a path specified. Paths are not supported for this key; please remove the path and try again, e.g. *://example.com/ =&gt; *://example.com".</translation>
 <translation id="3395827396354264108">Pickup method</translation>
+<translation id="3397968074427155329">Resize window to continue chatting</translation>
 <translation id="3399161914051569225">Wearable technology</translation>
 <translation id="3399952811970034796">Delivery address</translation>
 <translation id="3402261774528610252">The connection used to load this site used TLS 1.0 or TLS 1.1, which are deprecated and will be disabled in the future. Once disabled, users will be prevented from loading this site. The server should enable TLS 1.2 or later.</translation>
@@ -1883,6 +1886,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="390391808978419508">Opening timed out</translation>
 <translation id="3905894480064208252">{0,plural, =1{File blocked from transferring}other{<ph name="FILE_COUNT" /> files blocked from transferring}}</translation>
 <translation id="3906022360148923497">Payment instrument icon</translation>
+<translation id="3906234161316839040">Other orders</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Learn more about embedded content</translation>
@@ -2584,6 +2588,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5001526427543320409">Third-party cookies</translation>
 <translation id="5007344584818503324">Shared tab groups activity</translation>
 <translation id="5007392906805964215">Review</translation>
+<translation id="5008767248670679254">All your deliveries</translation>
 <translation id="5011561501798487822">Detected language</translation>
 <translation id="5015510746216210676">Machine name:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2629,6 +2634,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5074134429918579056">Trousers and Shorts</translation>
 <translation id="5077767274537436092">Use a different passkey</translation>
 <translation id="5078060223219502807">The password that you just used was found in a data breach. To secure your accounts, Password Manager recommends changing it now and then checking your saved passwords.</translation>
+<translation id="5082949343606863311">System data, including form fields and feature performance, is analysed to improve future suggestions</translation>
 <translation id="5087286274860437796">Server's certificate is not valid at this time.</translation>
 <translation id="5087580092889165836">Add card</translation>
 <translation id="5088142053160410913">Message to operator</translation>
@@ -2641,7 +2647,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5097099694988056070">Device statistics such as CPU/RAM usage</translation>
 <translation id="5097468150760963273">27 in x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Press Tab then Enter to ask AI Mode</translation>
 <translation id="5105442806410269908">Manage other Google data</translation>
 <translation id="510644072453496781">Cardboard (end)</translation>
 <translation id="5106648964679263509">Virtual card for <ph name="BNPL_ISSUER_NAME" /> filled</translation>
@@ -3066,6 +3071,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5728246486828755318">Can ask to use advanced printer features</translation>
 <translation id="5729442113829771034">Early childhood education</translation>
 <translation id="5730040223043577876">Chrome recommends resetting your password if you reused it on other sites.</translation>
+<translation id="5731983613206445054">You're helping improve enhanced autofill</translation>
 <translation id="5735174108294025227">Verified email addresses will appear here</translation>
 <translation id="573555826359077410">Create form button, activate to quickly create a new form in Google Forms</translation>
 <translation id="5738385766833540397">Manage how you receive price drop alerts for products that you track</translation>
@@ -3744,7 +3750,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787094689637422836">We’re launching new privacy features that give you more choice over the ads that you see.</translation>
-<translation id="6788615780749001893">AI Mode button, press Enter to ask AI Mode</translation>
 <translation id="6789062271869667677">Continuous (long)</translation>
 <translation id="678982761784843853">Protected content IDs</translation>
 <translation id="6790428901817661496">Play</translation>
@@ -3816,6 +3821,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6898699227549475383">Organisation (O)</translation>
 <translation id="6900702165119149418">You're signed out</translation>
 <translation id="6907458757809079309">Fitness</translation>
+<translation id="6910211073230771657">Deleted</translation>
 <translation id="691024665142758461">Download multiple files</translation>
 <translation id="691046363691324218">Redress number</translation>
 <translation id="6915804003454593391">User:</translation>
@@ -3894,6 +3900,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="7011763495818914549">Identity card</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Can ask to lock and use your mouse</translation>
+<translation id="7013844825046560088">Chrome logs how you use the feature, such as your requests and your behaviour when you accept or ignore suggestions</translation>
 <translation id="7014042602717177828">Car Audio</translation>
 <translation id="7014741021609395734">Zoom level</translation>
 <translation id="7016992613359344582">These charges could be one-off or recurring and may not be obvious.</translation>
@@ -4123,6 +4130,7 @@ Additional details:
 <translation id="7393161616326137353">Adventure games</translation>
 <translation id="7393475648162498734">Show which rewards and benefits are available for your cards at checkout</translation>
 <translation id="7393971683644170444">Connecting to your card provider…</translation>
+<translation id="7394497897677511168">Other deliveries</translation>
 <translation id="739728382607845710">Payment handler icon</translation>
 <translation id="7399616692258236448">Location requests are automatically blocked for all sites except ones that you allow</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4570,6 +4578,7 @@ Additional details:
 <translation id="803771048473350947">File</translation>
 <translation id="8038182528865038593">Red 2</translation>
 <translation id="8041089156583427627">Send feedback</translation>
+<translation id="8042898384266617514">Your requests, page titles and URLs are sent to Google and may be reviewed by humans</translation>
 <translation id="8043255123207491407">See seller's terms and conditions</translation>
 <translation id="8044986521421349135">Your most recent tab</translation>
 <translation id="8046360364391076336">Industrial Materials and Equipment</translation>
@@ -5012,7 +5021,9 @@ Additional details:
 <translation id="877348612833018844">{0,plural, =1{Move confidential file?}other{Move confidential files?}}</translation>
 <translation id="8775347646940100151">Paper (letterhead)</translation>
 <translation id="8775863327608679820">Buy-now, pay-later issuers available for pay over time opened at half height.</translation>
+<translation id="8776789089819232268">All your orders</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8781233757384402598">When you make a request for enhanced autofill, your usage data, requests and page details are shared with Google to improve the autofill experience</translation>
 <translation id="8781278378794969337">Translate page button, activate to translate this page with Google Translate</translation>
 <translation id="8785658048882205566">Motorcycles</translation>
 <translation id="8790007591277257123">&amp;Redo delete</translation>

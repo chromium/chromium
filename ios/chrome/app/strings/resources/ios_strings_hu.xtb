@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Bejelentkezve a következőként: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fiókhoz tartozó menü megnyitása.</translation>
 <translation id="1397144142234474689">Előzmények elrejtése</translation>
 <translation id="1399268420835656394">Ha nem gyermek, érdemes lehet ellenőriznie az életkorát az Apple-fiókjában ezen az eszközön. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="140486444381639942">Korábban kitöltött</translation>
 <translation id="1407135791313364759">Összes megnyitása</translation>
 <translation id="1408847409015257906">Koppintson az „Adatvédelem és biztonság” lehetőségre.</translation>
 <translation id="1411386976162024013">Lens vizuális keresés</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">A fiókodat az egyik szülőd kezeli.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Módosítva</translation>
+<translation id="1481450969185702334">Keresés és kitöltés</translation>
 <translation id="1483493594462132177">Küldés</translation>
 <translation id="1486096554574027028">Jelszavak keresése</translation>
 <translation id="1486593497476255523">A lapcsoportokkal kapcsolatos feladat befejeződött.</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Adatai védelme érdekében a Chrome nem tölti ki automatikusan a jelszavát ebben a mezőben.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 webhely (még több a szinkronizált eszközökön)}other{# webhely (még több a szinkronizált eszközökön)}}</translation>
+<translation id="2865392654629180917">Bármit megkérdezhet, és AI-alapú válaszokat kaphat</translation>
 <translation id="2870560284913253234">Webhely</translation>
 <translation id="2876369937070532032">Elküldi egyes felkeresett oldalak URL-jét a Google-nak, ha veszélyben van az Ön biztonsága</translation>
 <translation id="2883151425485251736">Megtekintheti és szerkesztheti a fiókjában elrejtett témákat</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Új lapcsoport…</translation>
 <translation id="3185760469172949183">A kamerával való keresés befejeződött.</translation>
 <translation id="3186796054637504691">Előzmények és webhelyadatok törlése</translation>
+<translation id="3190558889382726167">A jelszó mentése megtörtént</translation>
 <translation id="3190736958609431397">Nyomon követés megszüntetése</translation>
 <translation id="3208260410153224535">Szervezete kikapcsolta a bejelentkezést. Az új könyvjelzők, jelszavak és egyebek csak erre az eszközre lesznek mentve.</translation>
 <translation id="3211969308836412674">Webhely kitűzésének megszüntetése</translation>

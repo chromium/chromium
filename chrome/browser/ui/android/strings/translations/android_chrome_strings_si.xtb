@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">ඔබ එය මකා දැමුවහොත්, සෑම කෙනෙකුටම වහාම "<ph name="GROUP_NAME" />" පටිති සමූහයට ප්‍රවේශය අහිමි වනු ඇති අතර, එය සියලු උපාංගවලින් මකා දැමෙනු ඇත.</translation>
 <translation id="1142732900304639782">මෙම අඩවි පරිවර්තනය කිරීමට පිරිනමන්න එපා</translation>
 <translation id="1143193470214071120">කවුළුවක් වසන්න හෝ කවුළු කළමනාකරණය කරන්න</translation>
+<translation id="1143486892058798649">සබැඳිය මෙලෙස සුරකින්න…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> ස්කෑන් කිරීම</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome තුළ විවෘත වනු ඇත. ඉදිරියට යාමෙන්, ඔබ <ph name="BEGIN_LINK1" />Google සේවා නියම<ph name="END_LINK1" /> සහ <ph name="BEGIN_LINK2" />Google Chrome සහ ChromeOS අතිරේක සේවා නියම<ph name="END_LINK2" /> සමග එකඟ වේ.</translation>
 <translation id="1154555449933432029">ඔබ Google මුරපද කළමනාකරු තුළ සුරකින ලද මුරපද නොමැත.</translation>
@@ -313,6 +314,7 @@
 <translation id="2330186936255788117">තවත් පිටුසන්</translation>
 <translation id="2332515770639153015">ඉහළ නැංවූ සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මකයි</translation>
 <translation id="233375395665273385">මකා දමා වරන්න</translation>
+<translation id="2334275697832662087">Chrome හි AI-බලගන්වන ලද ආරක්ෂාව ඔබ බ්‍රවුස් කරන විට ඔබට විශ්වාසය ලබා දෙමින්, සබැඳි තර්ජන වලින් ඔබව ආරක්ෂා කිරීමට උදවු කරයි</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ස්ථාපනය කළ නොහැකි විය.</translation>
 <translation id="2349710944427398404">ගිණුම්, පිටුසන්, සහ සුරැකි සැකසීම් ඇතුළුව, Chrome භාවිතා කළ මුළු දත්ත</translation>
 <translation id="2354001756790975382">වෙනත් පිටු සලකුණු</translation>
@@ -614,6 +616,7 @@
 <translation id="3577473026931028326">යම් දෙයක් වැරදිණි. නැවත උත්සාහ කරන්න.</translation>
 <translation id="3577558748185201054">ඔබේ ලැදිකම් සහ මනාප කළමනාකරණය කරන්න</translation>
 <translation id="3587482841069643663">සියළු</translation>
+<translation id="3598421953808879451">වීඩියෝව මෙලෙස සුරකින්න…</translation>
 <translation id="3602290021589620013">පෙරදසුන</translation>
 <translation id="3614126103057878858">මිල ඇතුළාන්ත</translation>
 <translation id="3616113530831147358">ශබ්ද</translation>
@@ -724,6 +727,7 @@
 <translation id="4044708993631234325">පහළ පත්‍රය</translation>
 <translation id="4045441967987592849">යළි විවෘත කරන්න</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> සඳහා තව විකල්ප</translation>
+<translation id="4051548576872472315">ඔබේ මෑතක දී වසා දැමූ පටිති සහ කවුළු මෙතැනින් සොයා ගන්න</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{අප්‍රසිද්ධ කවුළුව තුළ විවෘත කරන්න}one{සියල්ල (#) අප්‍රසිද්ධ කවුළුව තුළ විවෘත කරන්න}other{සියල්ල (#) අප්‍රසිද්ධ කවුළුව තුළ විවෘත කරන්න}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{බෙදා ගත් පටිති සමූහවල නව ක්‍රියාකාරකම් සහිත <ph name="TABS_COUNT_ONE" /> සම්මත පටිත්තක්}one{බෙදා ගත් පටිති සමූහවල නව ක්‍රියාකාරකම් සහිත සම්මත පටිති <ph name="TABS_COUNT_MANY" />ක්}other{බෙදා ගත් පටිති සමූහවල නව ක්‍රියාකාරකම් සහිත සම්මත පටිති <ph name="TABS_COUNT_MANY" />ක්}}</translation>
 <translation id="405365679581583349">Google Play සේවා යාවත්කාලීන කරන්න</translation>
@@ -1524,6 +1528,7 @@
 <translation id="71503698506017927">මුර වැකිකඩ සංකේතනයට Google Pay වෙතින් ලැබෙන ගෙවීම් ක්‍රම සහ ලිපින ඇතුළත් නොවේ.
 
 මෙම සැකසීම වෙනස් කිරීමට <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">රූපය මෙලෙස සුරකින්න…</translation>
 <translation id="7165972437814027679">Chrome සමහර ගොනු අවහිර කරන්නේ මන්දැයි තව දැන ගන්න</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> ලෙස පුරනය වී ඇත. සැකසීම් විවෘත කරයි.</translation>
 <translation id="7170930892977483182">ඔබේ උපාංගයේ සහ Google Wallet හි සුරකින ලද සියලු ආරක්ෂක කේත මකනු ඇත</translation>
@@ -1697,6 +1702,7 @@
 <translation id="7824665136384946951">ඔබේ සංවිධානය සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාවිරහිත කර ඇත</translation>
 <translation id="7825973332242257878">පටිති සමූහ</translation>
 <translation id="7826342993930002256">ඔබේ Chrome, සෑම තැනකම</translation>
+<translation id="7845155831233417403">ඔබට කවුළු <ph name="MAX_INSTANCE_COUNT" />ක් දක්වා තිබිය හැක. ඉදිරියට යාමට කවුළුවක් වසන්න.</translation>
 <translation id="7846161022626028328">දෝෂයක් සිදු විය. නැවත උත්සාහ කරන්න.</translation>
 <translation id="7846296061357476882">Google සේවා</translation>
 <translation id="784652447248278262">වත්මන් කවුළුව</translation>
@@ -1820,6 +1826,7 @@
 <translation id="8282297628636750033">හැකි විට, අඩවිවලට අඳුරු තේමාව යොදන්න</translation>
 <translation id="8282950411412455249">ආරක්ෂක සැකසීම් වෙත යන්න</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 අප්‍රසිද්ධ කවුළුවක් වසන්න}one{අප්‍රසිද්ධ කවුළු #ක් වසන්න}other{අප්‍රසිද්ධ කවුළු #ක් වසන්න}}</translation>
+<translation id="8289602658021943461">වීඩියෝ රාමුව මෙලෙස සුරකින්න…</translation>
 <translation id="8313599942510782709">ඔබේ කාර්යය තවමත් සිදු වෙමින් පවතී</translation>
 <translation id="8317318757008452355">මුද්‍රණය කිරීමට විකල්ප විවෘත කරන්න</translation>
 <translation id="8320212361750431956">මෑත ක්‍රියාකාරකම</translation>

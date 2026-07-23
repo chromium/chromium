@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvrez le menu du compte.</translation>
 <translation id="1397144142234474689">Masquer l'historique</translation>
 <translation id="1399268420835656394">Si vous n'êtes pas un enfant, vous pouvez vérifier l'âge indiqué dans le compte Apple sur cet appareil. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Précédemment rempli</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1408847409015257906">Touchez « Confidentialité et sécurité ».</translation>
 <translation id="1411386976162024013">Recherche visuelle de Lentille</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Ton compte est géré par ton parent.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Modifié</translation>
+<translation id="1481450969185702334">Trouver et remplir</translation>
 <translation id="1483493594462132177">Envoi</translation>
 <translation id="1486096554574027028">Recherche de mots de passe</translation>
 <translation id="1486593497476255523">La tâche Groupes d'onglets a bien été effectuée!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Afin de protéger votre confidentialité, Chrome ne remplira pas automatiquement ce champ avec votre mot de passe.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (et plus sur les appareils synchronisés)}one{# site (et plus sur les appareils synchronisés)}other{# sites (et plus sur les appareils synchronisés)}}</translation>
+<translation id="2865392654629180917">Obtenez des réponses à vos questions propulsées par l'IA</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Envoie des URL de certaines pages que vous visitez à Google, lorsque votre sécurité pourrait être compromise</translation>
 <translation id="2883151425485251736">Affichez et modifiez les sujets que vous avez masqués dans votre compte</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Nouveau groupe d'onglets…</translation>
 <translation id="3185760469172949183">La tâche de recherche avec l'appareil photo a bien été effectuée!</translation>
 <translation id="3186796054637504691">Effacer l'historique et les données du site Web</translation>
+<translation id="3190558889382726167">Mot de passe enregistré</translation>
 <translation id="3190736958609431397">Annuler le suivi</translation>
 <translation id="3208260410153224535">Votre organisation a désactivé la connexion. Les nouveaux favoris, mots de passe et plus ne seront enregistrés que sur cet appareil.</translation>
 <translation id="3211969308836412674">Annuler l'épinglage du site</translation>

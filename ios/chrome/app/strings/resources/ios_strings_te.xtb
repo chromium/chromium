@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" />‌గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. ఖాతా మెనూను తెరవండి.</translation>
 <translation id="1397144142234474689">హిస్టరీని దాచండి</translation>
 <translation id="1399268420835656394">మీరు చిన్నారి కాకపోతే, ఈ డివైజ్‌లోని Apple ఖాతాలో వయస్సును చెక్ చేసుకోవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">గతంలో ఫిల్ చేసినవి</translation>
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
 <translation id="1408847409015257906">"గోప్యత &amp; సెక్యూరిటీ"ని ట్యాప్ చేయండి.</translation>
 <translation id="1411386976162024013">Lens విజువల్ సెర్చ్</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">మీ ఖాతాను మీ తల్లి/తండ్రి మేనేజ్ చేస్తున్నారు.
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">మార్చబడింది</translation>
+<translation id="1481450969185702334">కనుగొని, ఫిల్ చేయండి</translation>
 <translation id="1483493594462132177">పంపు</translation>
 <translation id="1486096554574027028">పాస్‌వర్డ్‌లను వెతకండి</translation>
 <translation id="1486593497476255523">ట్యాబ్ గ్రూప్‌లు పూర్తయ్యాయి!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">మీ గోప్యతను సంరక్షించడానికి, Chrome ఈ ఫీల్డ్‌లో మీ పాస్‌వర్డ్‌ను ఆటోమేటిక్‌గా పూరించదు.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 సైట్ (సింక్ చేసిన పరికరాల్లో మరిన్ని)}other{# సైట్‌లు (సింక్ చేసిన పరికరాల్లో మరిన్ని)}}</translation>
+<translation id="2865392654629180917">ఏదైనా అడగండి, AI-ఆధారిత సమాధానాలను పొందండి</translation>
 <translation id="2870560284913253234">సైట్</translation>
 <translation id="2876369937070532032">మీ భద్రతకు ప్రమాదం పొంచి ఉన్నప్పుడు, మీరు సందర్శించే కొన్ని పేజీల URLలను Googleకు పంపుతుంది</translation>
 <translation id="2883151425485251736">మీ ఖాతా నుండి దాచిన టాపిక్‌లను చూడండి, ఎడిట్ చేయండి</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">కొత్త ట్యాబ్ గ్రూప్...</translation>
 <translation id="3185760469172949183">కెమెరాతో సెర్చ్ పూర్తయింది!</translation>
 <translation id="3186796054637504691">హిస్టరీ, వెబ్‌సైట్ డేటాను క్లియర్ చేయండి</translation>
+<translation id="3190558889382726167">పాస్‌వర్డ్ సేవ్ చేయబడింది</translation>
 <translation id="3190736958609431397">అన్‌ట్రాక్ చేయండి</translation>
 <translation id="3208260410153224535">సైన్ ఇన్‌ను మీ సంస్థ ఆఫ్ చేసింది. కొత్త బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌లు, ఇంకా మరిన్ని ఈ పరికరంలో మాత్రమే సేవ్ అవుతాయి.</translation>
 <translation id="3211969308836412674">సైట్‌ను అన్‌పిన్ చేయండి</translation>

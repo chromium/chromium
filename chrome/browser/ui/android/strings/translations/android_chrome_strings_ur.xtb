@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">اگر آپ اسے حذف کرتے ہیں تو ہر کوئی فوری طور پر "<ph name="GROUP_NAME" />" ٹیب گروپ تک رسائی سے محروم ہو جائے گا اور اسے تمام آلات سے حذف کر دیا جائے گا۔</translation>
 <translation id="1142732900304639782">ان سائٹس کو ترجمہ کرنے کی پیشکش نہ کریں</translation>
 <translation id="1143193470214071120">کوئی ونڈو بند کریں یا ونڈوز کا نظم کریں</translation>
+<translation id="1143486892058798649">لنک بطور درج ذیل محفوظ کریں…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> اسکین ہو رہی ہے…</translation>
 <translation id="1150263420752757504">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔</translation>
 <translation id="1154555449933432029">‏آپ کے پاس Google پاس ورڈ مینیجر میں پاس ورڈز محفوظ نہیں ہیں۔</translation>
@@ -313,6 +314,7 @@
 <translation id="2330186936255788117">مزید بُک مارکس</translation>
 <translation id="2332515770639153015">بہتر کردہ محفوظ براؤزنگ آن ہے</translation>
 <translation id="233375395665273385">حذف کریں اور سائن آؤٹ کریں</translation>
+<translation id="2334275697832662087">‏‫Chrome کی AI تقویت یافتہ سیکیورٹی آپ کو آن لائن خطرات سے بچانے میں مدد کرتی ہے، جس سے آپ کو براؤز کرتے وقت اعتماد ملتا ہے</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> انسٹال نہیں کی جا سکی۔</translation>
 <translation id="2349710944427398404">‏اکاؤنٹس، بُک مارکس اور محفوظ کردہ ترتیبات سمیت، Chrome کے ذریعے استعمال کردہ کُل ڈیٹا</translation>
 <translation id="2354001756790975382">دیگر بُک مارکس</translation>
@@ -614,6 +616,7 @@
 <translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3577558748185201054">اپنی دلچسپیوں اور ترجیحات کا نظم کریں</translation>
 <translation id="3587482841069643663">سبھی</translation>
+<translation id="3598421953808879451">ویڈیو بطور درج ذیل محفوظ کریں…</translation>
 <translation id="3602290021589620013">پیش منظر</translation>
 <translation id="3614126103057878858">قیمت سے متعلق حقائق</translation>
 <translation id="3616113530831147358">آڈیو</translation>
@@ -724,6 +727,7 @@
 <translation id="4044708993631234325">نیچے کی شیٹ</translation>
 <translation id="4045441967987592849">دوبارہ کھولیں</translation>
 <translation id="4049920046559074950">‫<ph name="INSTANCE_TITLE" /> کیلئے مزید اختیارات</translation>
+<translation id="4051548576872472315">اپنے حال ہی میں بند کردہ ٹیبز اور ونڈوز یہاں تلاش کریں</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{پوشیدگی ونڈو میں کھولیں}other{سبھی (#) کو پوشیدگی ونڈو میں کھولیں}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_ONE" /> معیاری ٹیب}other{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_MANY" /> معیاری ٹیبز}}</translation>
 <translation id="405365679581583349">‏Google Play سروسز اپ ڈیٹ کریں</translation>
@@ -1524,6 +1528,7 @@
 <translation id="71503698506017927">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور اس میں موجود پتے شامل نہیں ہوتے ہیں۔
 
 اس ترتیب کو تبدیل کرنے کے لیے، <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف کریں<ph name="END_LINK" />۔</translation>
+<translation id="7159399361248977424">تصویر بطور درج ذیل محفوظ کریں…</translation>
 <translation id="7165972437814027679">‏اس بارے میں مزید جانیں کہ Chrome کچھ فائلوں کو کیوں بلاک کرتا ہے</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> کے بطور سائن ان کردہ۔ ترتیبات کھولتا ہے۔</translation>
 <translation id="7170930892977483182">‏آپ کے آلے اور Google والٹ میں محفوظ کردہ تمام سیکیورٹی کوڈز کو حذف کر دیا جائے گا</translation>
@@ -1697,6 +1702,7 @@
 <translation id="7824665136384946951">آپ کی تنظیم نے محفوظ براؤزنگ کو آف کر دیا ہے</translation>
 <translation id="7825973332242257878">ٹیب گروپس</translation>
 <translation id="7826342993930002256">‏آپ کا Chrome، ہر جگہ</translation>
+<translation id="7845155831233417403">آپ کے پاس <ph name="MAX_INSTANCE_COUNT" /> ونڈوز تک ہو سکتی ہیں۔ جاری رکھنے کے لیے ایک ونڈو بند کریں۔</translation>
 <translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7846296061357476882">‏Google سروسز</translation>
 <translation id="784652447248278262">موجودہ ونڈو</translation>
@@ -1820,6 +1826,7 @@
 <translation id="8282297628636750033">ممکن ہو تو سائٹس پر گہری تھیم لاگو کریں</translation>
 <translation id="8282950411412455249">سیکیورٹی کی ترتیبات پر جائیں</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{‫1 پوشیدگی ونڈو بند کریں}other{‫# پوشیدگی ونڈو بند کریں}}</translation>
+<translation id="8289602658021943461">ویڈیو فریم بطور درج ذیل محفوظ کریں…</translation>
 <translation id="8313599942510782709">آپ کا ٹاسک ابھی بھی جاری ہے</translation>
 <translation id="8317318757008452355">پرنٹ کرنے کے لیے اختیارات کھولیں</translation>
 <translation id="8320212361750431956">حالیہ سرگرمی</translation>

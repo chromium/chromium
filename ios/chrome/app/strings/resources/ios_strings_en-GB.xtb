@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Open account menu.</translation>
 <translation id="1397144142234474689">Hide history</translation>
 <translation id="1399268420835656394">If you're not a child, you may want to check the age in the Apple Account on this device. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Previously filled</translation>
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1408847409015257906">Tap Privacy and Security</translation>
 <translation id="1411386976162024013">Lens visual search</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Your account is managed by your parent.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Changed</translation>
+<translation id="1481450969185702334">Find and fill</translation>
 <translation id="1483493594462132177">Send</translation>
 <translation id="1486096554574027028">Search passwords</translation>
 <translation id="1486593497476255523">Tab groups completed!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">To protect your privacy, Chrome will not auto-fill your password in this field.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 site (more on synced devices)}other{# sites (more on synced devices)}}</translation>
+<translation id="2865392654629180917">Ask anything and get AI-powered responses</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Sends URLs of some pages that you visit to Google, when your security is at risk</translation>
 <translation id="2883151425485251736">See and edit topics that you've hidden from your account</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">New tab group…</translation>
 <translation id="3185760469172949183">Search with camera completed!</translation>
 <translation id="3186796054637504691">Clear History and Website Data</translation>
+<translation id="3190558889382726167">Password saved</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="3208260410153224535">Your organisation turned off sign-in. New bookmarks, passwords and more will be saved only to this device.</translation>
 <translation id="3211969308836412674">Unpin site</translation>

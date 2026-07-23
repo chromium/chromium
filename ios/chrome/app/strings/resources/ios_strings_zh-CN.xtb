@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">目前登录的用户名是<ph name="USER_NAME" />，账号是 <ph name="USER_EMAIL" />。打开账号菜单。</translation>
 <translation id="1397144142234474689">隐藏历史记录</translation>
 <translation id="1399268420835656394">如果您不是儿童，建议检查一下此设备上的 Apple 账号中的年龄设置。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">之前填写的内容</translation>
 <translation id="1407135791313364759">全部打开</translation>
 <translation id="1408847409015257906">点按“隐私与安全”。</translation>
 <translation id="1411386976162024013">智能镜头视觉搜索</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">你的账号由家长管理。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">已更改</translation>
+<translation id="1481450969185702334">查找并填充</translation>
 <translation id="1483493594462132177">发送</translation>
 <translation id="1486096554574027028">搜索密码</translation>
 <translation id="1486593497476255523">“标签页分组”任务已完成！</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">为保护您的隐私，Chrome 不会在此字段中自动填充您的密码。</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 个网站（在已同步的设备上还有更多网站）}other{# 个网站（在已同步的设备上还有更多网站）}}</translation>
+<translation id="2865392654629180917">随心提问，获得 AI 生成的回答</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2876369937070532032">当您面临安全风险时，将您所访问的部分网页的网址发送给 Google</translation>
 <translation id="2883151425485251736">查看和修改您已在账号中设为隐藏的主题</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">新标签页分组…</translation>
 <translation id="3185760469172949183">“拍照搜索”任务已完成！</translation>
 <translation id="3186796054637504691">清除历史记录和网站数据</translation>
+<translation id="3190558889382726167">密码已保存</translation>
 <translation id="3190736958609431397">取消跟踪</translation>
 <translation id="3208260410153224535">您的组织关闭了登录功能。新的书签、密码等信息将会仅保存到此设备上。</translation>
 <translation id="3211969308836412674">取消固定网站</translation>

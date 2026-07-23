@@ -61,6 +61,7 @@
 <translation id="1090629319939036170">Menu VR</translation>
 <translation id="1091463901118115503">Czytaj dalej</translation>
 <translation id="1091779689406092804">zrzutów ekranu</translation>
+<translation id="1095093219235104018">Znajdź i wypełnij z Gemini</translation>
 <translation id="1096545575934602868">Maksymalna liczba wpisów w tym polu to <ph name="MAX_ITEMS_LIMIT" />. Kolejne wpisy zostaną odrzucone.</translation>
 <translation id="1097803577928227769">Regionalne parki i ogrody</translation>
 <translation id="1099928364755383720">automatyczny obraz w obrazie</translation>
@@ -260,7 +261,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1393071644879491291">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasła, numery telefonów czy numery kart kredytowych. Chrome zdecydowanie zaleca powrót do bezpieczeństwa. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji o tym ostrzeżeniu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Witryny dodane tutaj nie będą używane jako odniesienie w odpowiedziach, nawet wtedy, gdy karta będzie otwarta. Jeśli dodana witryna jest obecnie używana w wątku, może minąć do 30 minut, zanim wątek przestanie się do niej odwoływać.</translation>
 <translation id="1402151528875251561">Pokaż historię w panelu bocznym</translation>
-<translation id="1404026649028693342">Zawsze pokazuj Tryb AI</translation>
 <translation id="1405567553485452995">Jasnozielony</translation>
 <translation id="1406370515365284486">Twoje formy płatności nadal będą zapisane</translation>
 <translation id="1406500794671479665">Weryfikuję...</translation>
@@ -322,6 +322,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Firmy sprzątające</translation>
 <translation id="1476595624592550506">Zmień hasło</translation>
+<translation id="1481450969185702334">Znajdź i wypełnij</translation>
 <translation id="1482372785911828880">Bardzo cienki</translation>
 <translation id="1482879811280872320">Jazda na rowerze</translation>
 <translation id="1483493594462132177">Wyślij</translation>
@@ -366,6 +367,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 
       &lt;p&gt;Popraw datę i godzinę w sekcji &lt;strong&gt;Ogólne&lt;/strong&gt; w aplikacji &lt;strong&gt;Ustawienia&lt;/strong&gt;.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">Administrator uruchomi urządzenie ponownie o <ph name="TIME" /> w dniu <ph name="DATE" /></translation>
+<translation id="1562601408588733317">Zarządzaj znajdowaniem i wypełnianiem informacji z Gemini</translation>
 <translation id="1562805467275776390">Wyścigi samochodowe</translation>
 <translation id="1563755205047885671">Gry akcji i gry platformowe</translation>
 <translation id="1564634006476980707">Zalecany schemat HTTPS dla adresu URL wyszukiwania: <ph name="SEARCH_URL" /></translation>
@@ -673,7 +675,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2059202684901022309">22 x 34 cale</translation>
 <translation id="2064568741209980952">Kredyty i pożyczki</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 podpowiedź}few{# podpowiedzi}many{# podpowiedzi}other{# podpowiedzi}}</translation>
-<translation id="2066690553719545730">Zawsze pokazuj Tryb AI</translation>
 <translation id="2066969741541525119">Strona, którą chcesz otworzyć, została zablokowana przez Twoją organizację</translation>
 <translation id="2069913043427250781">Bezpieczeństwo pojazdów i bezpieczeństwo w ruchu drogowym</translation>
 <translation id="2071156619270205202">Ta karta nie kwalifikuje się do nadania numeru karty wirtualnej.</translation>
@@ -832,6 +833,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2268044343513325586">Zawęź</translation>
 <translation id="2268966938956566076">Prześlij za <ph name="MINUTES" /> min</translation>
 <translation id="2270484714375784793">Numer telefonu</translation>
+<translation id="2274179746480077483">Autouzupełnianie informacji z aplikacji takich jak Gmail i Zdjęcia. Funkcja oparta na spersonalizowanej inteligencji.</translation>
 <translation id="2276057643614339130">Podstawa wydruku</translation>
 <translation id="2277103315734023688">Przewiń do przodu</translation>
 <translation id="2277753418458118549">Pokaż szczegóły połączenia</translation>
@@ -1172,6 +1174,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2784949926578158345">Połączenie zostało zresetowane.</translation>
 <translation id="2786008859124691917">Rowery i akcesoria</translation>
 <translation id="2792012897584536778">Administratorzy tego urządzenia skonfigurowali certyfikaty zabezpieczeń, dzięki którym mogą zobaczyć zawartość stron internetowych, które odwiedzasz.</translation>
+<translation id="2793425367785017642">Aby ułatwić zrozumienie i wypełnianie formularzy, zawartość i adresy URL odwiedzanych stron mogą być przetwarzane w przestrzeni prywatnej w chmurze.</translation>
 <translation id="2794233252405721443">Strona zablokowana</translation>
 <translation id="2794629552137076216">Szkło (powierzchniowe)</translation>
 <translation id="2799223571221894425">Uruchom ponownie</translation>
@@ -1279,7 +1282,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2978824962390592855">Opera</translation>
 <translation id="2979424420072875974">Zasoby dla pisarzy</translation>
 <translation id="2980742331521553164">Kod CVC tej karty zostanie zaszyfrowany i zapisany na Twoim koncie Google – umożliwi to szybsze płatności</translation>
-<translation id="2983311431122838216">Zapytaj w trybie AI w wyszukiwarce Google</translation>
 <translation id="2983666748527428214">Otwórz kartę incognito</translation>
 <translation id="2985398929374701810">Wpisz prawidłowy adres</translation>
 <translation id="2986485254770343131">Zapisuję pliki z aparatu</translation>
@@ -1544,6 +1546,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3391482648489541560">edytowanie plików</translation>
 <translation id="3392028486601120379">Wzorzec adresu URL „<ph name="URL_PATTERN" />” ma określoną ścieżkę. W przypadku tego klucza ścieżki nie są obsługiwane. Usuń ścieżkę i spróbuj ponownie, np. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">Metoda odbioru</translation>
+<translation id="3397968074427155329">Zmień rozmiar okna, aby kontynuować rozmowę</translation>
 <translation id="3399161914051569225">Urządzenia do noszenia</translation>
 <translation id="3399952811970034796">Adres dostawy</translation>
 <translation id="3402261774528610252">Do połączenia z tą stroną użyto protokołu TLS 1.0 lub 1.1. Obie te wersje zostały wycofane, a w przyszłości zostaną wyłączone. Po ich wyłączeniu użytkownicy nie będą mogli otwierać tej strony. Serwer powinien korzystać z protokołu TLS w wersji 1.2 lub nowszej.</translation>
@@ -1883,6 +1886,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="390391808978419508">Upłynął limit czasu otwierania</translation>
 <translation id="3905894480064208252">{0,plural, =1{Przesyłanie pliku zostało zablokowane}few{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przesyłanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
 <translation id="3906022360148923497">Ikona instrumentu płatniczego</translation>
+<translation id="3906234161316839040">Inne zamówienia</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Więcej informacji o ustawieniu „Umieszczona treść”</translation>
@@ -2584,6 +2588,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5001526427543320409">Pliki cookie innych firm</translation>
 <translation id="5007344584818503324">Aktywność w udostępnianych grupach kart</translation>
 <translation id="5007392906805964215">Sprawdź</translation>
+<translation id="5008767248670679254">Wszystkie przesyłki</translation>
 <translation id="5011561501798487822">Wykryty język</translation>
 <translation id="5015510746216210676">Nazwa komputera:</translation>
 <translation id="5016205925109358554">Szeryfowa</translation>
@@ -2629,6 +2634,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5074134429918579056">Spodnie i szorty</translation>
 <translation id="5077767274537436092">Użyj innego klucza dostępu</translation>
 <translation id="5078060223219502807">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł zaleca natychmiastową zmianę tego hasła, a następnie sprawdzenie zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
+<translation id="5082949343606863311">Dane systemowe, w tym pola formularzy i wydajność funkcji, są analizowane w celu ulepszenia przyszłych sugestii</translation>
 <translation id="5087286274860437796">Certyfikat serwera nie jest obecnie ważny.</translation>
 <translation id="5087580092889165836">Dodaj kartę</translation>
 <translation id="5088142053160410913">Wiadomość do operatora</translation>
@@ -2641,7 +2647,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5097099694988056070">Statystyki na temat sprzętu, np. użycie procesora czy pamięci RAM</translation>
 <translation id="5097468150760963273">27 x 39 cali</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Naciśnij Tab, a potem Enter, aby zapytać w Trybie AI</translation>
 <translation id="5105442806410269908">Zarządzaj innymi danymi Google</translation>
 <translation id="510644072453496781">Karton (koniec)</translation>
 <translation id="5106648964679263509">Karta wirtualna dla: <ph name="BNPL_ISSUER_NAME" /> została wypełniona</translation>
@@ -3066,6 +3071,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5728246486828755318">Może prosić o dostęp do zaawansowanych funkcji drukarki</translation>
 <translation id="5729442113829771034">Wczesna edukacja dziecięca</translation>
 <translation id="5730040223043577876">Chrome zaleca zresetowanie hasła, jeśli zostało użyte na innej stronie.</translation>
+<translation id="5731983613206445054">Pomagasz nam udoskonalić ulepszone autouzupełnianie</translation>
 <translation id="5735174108294025227">Tutaj pojawią się zweryfikowane adresy e-mail</translation>
 <translation id="573555826359077410">Przycisk Utwórz formularz; aktywuj, aby szybko utworzyć nowy formularz w Formularzach Google</translation>
 <translation id="5738385766833540397">Zarządzaj sposobami otrzymywania alertów o obniżkach cen produktów, które śledzisz</translation>
@@ -3744,7 +3750,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6786145470008421571">Koperta 6 x 9 cali</translation>
 <translation id="6786747875388722282">Rozszerzenia</translation>
 <translation id="6787094689637422836">Wprowadzamy nowe funkcje ochrony prywatności, dzięki którym masz większą kontrolę nad tym, jakie reklamy Ci się pojawiają.</translation>
-<translation id="6788615780749001893">Przycisk trybu AI. Naciśnij Enter, aby zapytać w Trybie AI</translation>
 <translation id="6789062271869667677">Ciągły (długi)</translation>
 <translation id="678982761784843853">Identyfikatory treści chronionych</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
@@ -3816,6 +3821,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6898699227549475383">Organizacja (O)</translation>
 <translation id="6900702165119149418">Nie korzystasz teraz z konta</translation>
 <translation id="6907458757809079309">Fitness</translation>
+<translation id="6910211073230771657">Usunięto</translation>
 <translation id="691024665142758461">Pobranie wielu plików</translation>
 <translation id="691046363691324218">Numer Redress</translation>
 <translation id="6915804003454593391">Użytkownik:</translation>
@@ -3894,6 +3900,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7011763495818914549">Dowód tożsamości</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">Może poprosić o zablokowanie i używanie myszy</translation>
+<translation id="7013844825046560088">Chrome rejestruje sposób korzystania z tej funkcji, np. Twoje prośby i zachowanie, gdy akceptujesz lub ignorujesz sugestie</translation>
 <translation id="7014042602717177828">Sprzęt audio do samochodu</translation>
 <translation id="7014741021609395734">Poziom powiększenia</translation>
 <translation id="7016992613359344582">Może to być opłata jednorazowa lub cykliczna, a informacje o niej mogą nie być wyraźnie podane.</translation>
@@ -4123,6 +4130,7 @@ Dodatkowe informacje:
 <translation id="7393161616326137353">Gry przygodowe</translation>
 <translation id="7393475648162498734">W momencie płatności pokaż, jakie nagrody i korzyści są dostępne w przypadku Twoich kart</translation>
 <translation id="7393971683644170444">Łączę z dostawcą karty…</translation>
+<translation id="7394497897677511168">Inne przesyłki</translation>
 <translation id="739728382607845710">Ikona modułu obsługi płatności</translation>
 <translation id="7399616692258236448">Prośby o lokalizację są automatycznie blokowane w przypadku wszystkich stron oprócz tych, którym na nie zezwolisz</translation>
 <translation id="7400418766976504921">Adres URL</translation>
@@ -4570,6 +4578,7 @@ Dodatkowe informacje:
 <translation id="803771048473350947">Plik</translation>
 <translation id="8038182528865038593">Czerwony 2</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>
+<translation id="8042898384266617514">Twoje prośby, tytuły stron i adresy URL są wysyłane do Google i mogą być weryfikowane przez pracowników</translation>
 <translation id="8043255123207491407">Zobacz warunki korzystania z usługi sprzedawcy</translation>
 <translation id="8044986521421349135">Twoja najnowsza karta</translation>
 <translation id="8046360364391076336">Materiały i sprzęt przemysłowy</translation>
@@ -5012,7 +5021,9 @@ Dodatkowe informacje:
 <translation id="877348612833018844">{0,plural, =1{Przenieść poufny plik?}few{Przenieść poufne pliki?}many{Przenieść poufne pliki?}other{Przenieść poufne pliki?}}</translation>
 <translation id="8775347646940100151">Papier (firmowy)</translation>
 <translation id="8775863327608679820">Lista wydawców korzystających z opcji „Kup teraz, zapłać później” dostępnych w przypadku płatności ratalnych jest otwarta do połowy wysokości.</translation>
+<translation id="8776789089819232268">Wszystkie zamówienia</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8781233757384402598">Gdy wysyłasz prośbę o ulepszone autouzupełnianie, Twoje dane o korzystaniu, prośby i szczegóły strony są udostępniane Google, aby ulepszyć działanie autouzupełniania</translation>
 <translation id="8781278378794969337">Przycisk Przetłumacz stronę; aktywuj, aby przetłumaczyć tę stronę za pomocą Tłumacza Google</translation>
 <translation id="8785658048882205566">Motocykle</translation>
 <translation id="8790007591277257123">&amp;Ponów usunięcie</translation>

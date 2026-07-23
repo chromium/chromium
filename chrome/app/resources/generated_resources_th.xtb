@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">ไม่ได้เลือก<ph name="ITEM" /> <ph name="INDEX" /> จาก <ph name="COUNT" /> รายการ กดแป้นค้นหากับแป้นเว้นวรรคเพื่อเลือก</translation>
 <translation id="1086486568852410168">ค้นหาด้วย Google Lens</translation>
 <translation id="1090126737595388931">ไม่มีแอปพลิเคชันทำงานในพื้นหลัง</translation>
+<translation id="109038914521989341">โปรดป้อนเหตุผลของการคัดลอกข้อมูลนี้</translation>
 <translation id="1090541560108055381">ตรวจสอบว่ารหัสนี้เหมือนกันในอุปกรณ์ทั้ง 2 เครื่องก่อนที่จะจับคู่</translation>
 <translation id="1093457606523402488">เครือข่ายที่แสดงตัว:</translation>
 <translation id="1093645050124056515">Ctrl + Alt + ลูกศรลง</translation>
@@ -500,6 +501,7 @@
 <translation id="1376836354785490390">แสดงน้อยลง</translation>
 <translation id="1377438103060664754">หากพบรหัสผ่านของคุณในการละเมิดข้อมูล เครื่องมือจัดการรหัสผ่านบน Google จะถามว่าคุณต้องการเปลี่ยนรหัสผ่านเป็นรหัสผ่านที่รัดกุมไหม</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> กำลังควบคุมการตั้งค่านี้</translation>
+<translation id="1378715594598306389">ดูแท็บเพิ่มเติม</translation>
 <translation id="1380028686461971526">เชื่อมต่อกับเครือข่ายโดยอัตโนมัติ</translation>
 <translation id="1381567580865186407">ระบบจะส่งคำพูดภาษา<ph name="LANGUAGE" />ไปประมวลผลที่ Google</translation>
 <translation id="1382174183118245544">หมายเลขบัตรเครดิต</translation>
@@ -1229,6 +1231,7 @@
 <translation id="194174710521904357">คุณได้อนุญาตให้เว็บไซต์นี้ใช้คุกกี้ของบุคคลที่สามเป็นการชั่วคราว ซึ่งหมายความว่าจะมีการป้องกันขณะท่องเว็บน้อยลง แต่ฟีเจอร์ของเว็บไซต์จะทำงานตามที่คาดไว้ได้มากขึ้น</translation>
 <translation id="1942128823046546853">อ่านและเปลี่ยนแปลงข้อมูลทั้งหมดของคุณในทุกเว็บไซต์</translation>
 <translation id="1944535645109964458">ไม่มีพาสคีย์ที่ใช้งานได้</translation>
+<translation id="1944921356641260203">พบการอัปเดต</translation>
 <translation id="1947136734041527201">ช่วยให้ลงชื่อเข้าใช้เว็บไซต์ได้ผ่านบัญชีที่คุณมีด้วยบริการระบุตัวตน</translation>
 <translation id="1948528728718281125">อนุญาตให้เข้าถึงกล้องสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงกล้อง และบริการของระบบ</translation>
 <translation id="1949332606889020901">รหัสข้อขัดข้อง</translation>
@@ -1811,7 +1814,6 @@
 <translation id="2424424966051154874">{0,plural, =1{ผู้มาเยือน}other{ผู้มาเยือน (#)}}</translation>
 <translation id="2426805022920575512">เลือกบัญชีอื่น</translation>
 <translation id="2427507373259914951">คลิกซ้าย</translation>
-<translation id="2428120669821109648">การจัดรูปแบบแท็บ</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 บัญชี บันทึกรหัสผ่านลงในอุปกรณ์นี้เท่านั้นแล้ว รายละเอียดเพิ่มเติม}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} บัญชี บันทึกรหัสผ่านลงในอุปกรณ์นี้เท่านั้นแล้ว รายละเอียดเพิ่มเติม}}</translation>
 <translation id="2428510569851653187">อธิบายว่าคุณกำลังทำอะไรเมื่อแท็บขัดข้อง</translation>
 <translation id="2428939361789119025">ปิด Wi-Fi</translation>
@@ -2527,6 +2529,7 @@
 <translation id="2955048943983973430">บริการของ Google ที่เกี่ยวข้อง</translation>
 <translation id="2956070239128776395">ส่วนที่ฝังอยู่ในกลุ่ม: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">เปิดโหมดนักพัฒนาซอฟต์แวร์เพื่อใช้ส่วนขยายนี้ ซึ่ง Chrome เว็บสโตร์ไม่สามารถตรวจสอบได้</translation>
+<translation id="2957987442574819977">ผลลัพธ์ที่ไม่คาดคิดจาก Gemini</translation>
 <translation id="2958721676848865875">คำเตือนเกี่ยวกับการรวมแพ็กเกจส่วนขยาย</translation>
 <translation id="2959127025785722291">เกิดข้อผิดพลาด สแกนไม่สำเร็จ โปรดลองอีกครั้ง</translation>
 <translation id="2959474507964749987">ไฟล์ที่เข้ารหัสนี้อาจเป็นไวรัสหรือมัลแวร์<ph name="LINE_BREAK" />คุณส่งไฟล์และรหัสผ่านไปให้ Google Safe Browsing ตรวจสอบได้ว่าไฟล์ปลอดภัยหรือไม่ โดยปกติแล้ว การสแกนจะใช้เวลา 2-3 วินาที<ph name="LINE_BREAK" />โปรดใส่รหัสผ่านของไฟล์เพื่อสแกน</translation>
@@ -3512,6 +3515,7 @@
 <translation id="3708295717182051206">คำบรรยาย/คำบรรยายแทนเสียง</translation>
 <translation id="3708684582558000260">ไม่อนุญาตให้เว็บไซต์ที่ปิดไปแล้วส่งหรือรับข้อมูลต่อจนเสร็จ</translation>
 <translation id="3709244229496787112">เบราว์เซอร์ถูกปิดลงก่อนที่จะดาวน์โหลดเสร็จ</translation>
+<translation id="3710438437470197252">ดูเพิ่มเติมใน Google ไดรฟ์</translation>
 <translation id="3710501561113687889">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์<ph name="FIELDS_STRING" />ของคุณกับเว็บไซต์นี้</translation>
 <translation id="3711931198657368127">ว&amp;างและไปที่ <ph name="URL" /></translation>
 <translation id="3711945201266135623">พบเครื่องพิมพ์ <ph name="NUM_PRINTERS" /> เครื่องจากเซิร์ฟเวอร์การพิมพ์</translation>
@@ -5159,6 +5163,7 @@
 <translation id="4963789650715167449">นำแท็บปัจจุบันออก</translation>
 <translation id="4964455510556214366">การจัดเรียง</translation>
 <translation id="4964544790384916627">ตรึงหน้าต่าง</translation>
+<translation id="4964673849688379040">กำลังตรวจสอบ...</translation>
 <translation id="4966972803217407697">คุณอยู่ในโหมดไม่ระบุตัวตน</translation>
 <translation id="4967227914555989138">เพิ่มโน้ต</translation>
 <translation id="4967360192915400530">ดาวน์โหลดไฟล์อันตราย</translation>
@@ -5349,6 +5354,7 @@
 <translation id="5112577000029535889">&amp;เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{ย้าย 1 ไฟล์แล้ว}other{ย้าย {NUM_OF_FILES} ไฟล์แล้ว}}</translation>
 <translation id="511313294362309725">เปิดฟีเจอร์จับคู่ด่วน</translation>
+<translation id="5113992879909788634">ดูข้อมูลเพิ่มเติมเกี่ยวกับการท่องเว็บอัตโนมัติของ Chrome</translation>
 <translation id="51143538739122961">เสียบคีย์ความปลอดภัยแล้วแตะคีย์</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">บั&amp;นทึกเสียงเป็น...</translation>
@@ -7029,6 +7035,7 @@
 <translation id="6470823736074966819">ปิดเสียงการแจ้งเตือน</translation>
 <translation id="6472893788822429178">แสดงปุ่มหน้าแรก</translation>
 <translation id="6473315466413288899">เลือกตัวเลือก</translation>
+<translation id="6474021817475285003">ดูเพิ่มเติมใน Google ปฏิทิน</translation>
 <translation id="6474498546677193336">เลิกแชร์ไม่ได้เนื่องจากมีแอปพลิเคชันใช้โฟลเดอร์นี้อยู่ จะเลิกแชร์โฟลเดอร์เมื่อมีการปิด Linux ครั้งต่อไป</translation>
 <translation id="6474884162850599008">ยกเลิกการเชื่อมต่อบัญชี Google ไดรฟ์</translation>
 <translation id="6476482583633999078">ความเร็วในการพูด</translation>
@@ -9120,6 +9127,7 @@
 <translation id="8082132721957920509">บันทึกบัตรแล้ว</translation>
 <translation id="8082390128630131497">การปิดใช้การแก้ไขข้อบกพร่อง ADB จะรีเซ็ต <ph name="DEVICE_TYPE" /> เป็นค่าเริ่มต้น บัญชีผู้ใช้และข้อมูลในเครื่องทั้งหมดจะถูกลบ</translation>
 <translation id="8084114998886531721">รหัสผ่านที่บันทึกไว้</translation>
+<translation id="8084417885464859041">ใช้ Gemini อย่างปลอดภัย</translation>
 <translation id="8084429490152575036">การตั้งค่า APN เครือข่ายมือถือ</translation>
 <translation id="8084628902026812045">เว็บไซต์นี้ไม่ได้ใช้การเชื่อมต่อที่ปลอดภัยและไฟล์อาจมีการดัดแปลง</translation>
 <translation id="808488435221187916">ข้อมูลของคุณจะพร้อมใช้งานใน Google Wallet บนอุปกรณ์ใดก็ตามที่ลงชื่อเข้าใช้</translation>
@@ -9714,6 +9722,7 @@
 <translation id="8553342806078037065">จัดการบุคคลอื่นๆ</translation>
 <translation id="8554642222921881444">เมนูแบบลอยในข้อความที่เลือก</translation>
 <translation id="8554899698005018844">ไม่มีภาษา</translation>
+<translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - แสดงเนื้อหาที่ขยายแล้ว</translation>
 <translation id="8555444629041783356">กำหนดเวลาหยุดให้บริการอัตโนมัติ</translation>
 <translation id="8557022314818157177">แตะคีย์ความปลอดภัยซ้ำๆ จนกว่าระบบจะบันทึกลายนิ้วมือของคุณได้</translation>
 <translation id="8557100046150195444">Touch ID สำหรับดำเนินการต่อ</translation>

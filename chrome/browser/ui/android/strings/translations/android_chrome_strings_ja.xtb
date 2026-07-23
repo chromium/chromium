@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">削除すると、全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます。</translation>
 <translation id="1142732900304639782">これらのサイトを翻訳するか尋ねない</translation>
 <translation id="1143193470214071120">ウィンドウを閉じるか、管理してください</translation>
+<translation id="1143486892058798649">名前を付けてリンクを保存…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> をスキャンしています</translation>
 <translation id="1150263420752757504">Chrome で <ph name="APP_NAME" /> を開きます。続行すると、<ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />と <ph name="BEGIN_LINK2" />Google Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />に同意したものと見なされます。</translation>
 <translation id="1154555449933432029">パスワードは Google パスワード マネージャーに保存されていません。</translation>
@@ -313,6 +314,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2330186936255788117">その他のブックマーク</translation>
 <translation id="2332515770639153015">セーフ ブラウジング保護強化機能はオンになっています</translation>
 <translation id="233375395665273385">削除してログアウト</translation>
+<translation id="2334275697832662087">Chrome の AI を活用したセキュリティ機能により、オンラインの脅威から保護されるので、安心してブラウジングできます</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> をインストールできませんでした。</translation>
 <translation id="2349710944427398404">Chrome が使用するデータ全体（アカウント、ブックマーク、保存済みの設定など）</translation>
 <translation id="2354001756790975382">その他のブックマーク</translation>
@@ -614,6 +616,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3577473026931028326">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="3577558748185201054">興味や好みに関する情報を管理する</translation>
 <translation id="3587482841069643663">すべて</translation>
+<translation id="3598421953808879451">名前を付けて動画を保存…</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3614126103057878858">料金の詳細</translation>
 <translation id="3616113530831147358">音声</translation>
@@ -724,6 +727,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4044708993631234325">ボトムシート</translation>
 <translation id="4045441967987592849">再度開く</translation>
 <translation id="4049920046559074950">「<ph name="INSTANCE_TITLE" />」に関するその他のオプション</translation>
+<translation id="4051548576872472315">最近閉じたタブやウィンドウがここに表示されます</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{シークレット ウィンドウで開く}other{シークレット ウィンドウですべて（# 個）開く}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{新しいアクティビティがある共有タブグループの <ph name="TABS_COUNT_ONE" /> 個の標準のタブ}other{新しいアクティビティがある共有タブグループの <ph name="TABS_COUNT_MANY" /> 個の標準のタブ}}</translation>
 <translation id="405365679581583349">Google Play 開発者サービスの更新</translation>
@@ -1524,6 +1528,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="71503698506017927">Google Pay のお支払い方法と住所は、パスフレーズによる暗号化の対象には含まれません。
 
 この設定を変更するには、<ph name="BEGIN_LINK" />アカウントの Chrome データを削除<ph name="END_LINK" />します。</translation>
+<translation id="7159399361248977424">名前を付けて画像を保存…</translation>
 <translation id="7165972437814027679">Chrome で一部のファイルがブロックされる理由の詳細</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> としてログインしています。設定を開きます。</translation>
 <translation id="7170930892977483182">デバイスと Google ウォレットに保存されているセキュリティ コードがすべて削除されます</translation>
@@ -1697,6 +1702,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7824665136384946951">セーフ ブラウジングは組織によってオフにされています</translation>
 <translation id="7825973332242257878">タブグループ</translation>
 <translation id="7826342993930002256">あなたの Chrome をいつでもどこでも</translation>
+<translation id="7845155831233417403">同時に開くことができるウィンドウは最大 <ph name="MAX_INSTANCE_COUNT" /> 個です。続行するには、ウィンドウを閉じてください。</translation>
 <translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="7846296061357476882">Google のサービス</translation>
 <translation id="784652447248278262">現在のウィンドウ</translation>
@@ -1820,6 +1826,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8282297628636750033">可能な場合はダークモードをサイトに適用する</translation>
 <translation id="8282950411412455249">セキュリティ設定に移動</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 個のシークレット ウィンドウを閉じる}other{# 個のシークレット ウィンドウを閉じる}}</translation>
+<translation id="8289602658021943461">名前を付けて動画フレームを保存…</translation>
 <translation id="8313599942510782709">タスクはまだ進行中です</translation>
 <translation id="8317318757008452355">印刷オプションを開く</translation>
 <translation id="8320212361750431956">最近のアクティビティ</translation>

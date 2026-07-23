@@ -500,6 +500,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1376836354785490390">Shfaq më pak</translation>
 <translation id="1377438103060664754">Nëse një nga fjalëkalimet e tua gjendet në një nxjerrje të paautorizuar të të dhënave, "Menaxheri i fjalëkalimeve i Google" të pyet nëse dëshiron ta ndryshosh me një fjalëkalim të fortë</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> po e kontrollon këtë cilësim</translation>
+<translation id="1378715594598306389">Shiko më shumë skeda</translation>
 <translation id="1380028686461971526">Lidhu automatikisht me rrjetin</translation>
 <translation id="1381567580865186407">Ligjërimi në <ph name="LANGUAGE" /> dërgohet te Google për përpunim</translation>
 <translation id="1382174183118245544">Numrat e kartave të kreditit</translation>
@@ -1228,6 +1229,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="194174710521904357">Ke lejuar përkohësisht këtë sajt që të përdorë kukit e palëve të treta, gjë që do të thotë më pak mbrojtje të shfletimit, por veçoritë e sajtit ka më shumë mundësi të funksionojnë siç pritet.</translation>
 <translation id="1942128823046546853">Lexo dhe ndrysho të gjitha të dhënat e tua në të gjitha uebsajtet</translation>
 <translation id="1944535645109964458">Nuk ofrohet asnjë çelës kalimi</translation>
+<translation id="1944921356641260203">U gjet një përditësim</translation>
 <translation id="1947136734041527201">Të lejon që të identifikohesh në uebsajtet duke përdorur llogarinë që ke një shërbim identiteti</translation>
 <translation id="1948528728718281125">Qasja te kamera lejohet për aplikacionet, uebsajtet me lejen për kamerën, si dhe shërbimet e sistemit</translation>
 <translation id="1949332606889020901">ID-të e ndërprerjeve aksidentale</translation>
@@ -1811,7 +1813,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2424424966051154874">{0,plural, =1{I ftuar}other{I ftuar (#)}}</translation>
 <translation id="2426805022920575512">Zgjidh llogari tjetër</translation>
 <translation id="2427507373259914951">Klikimi me butonin majtas</translation>
-<translation id="2428120669821109648">Stili i skedës</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 llogari, fjalëkalimi u ruajt vetëm në këtë pajisje. Më shumë detaje}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} llogari, fjalëkalimi u ruajt vetëm në këtë pajisje. Më shumë detaje}}</translation>
 <translation id="2428510569851653187">Përshkruaj çfarë po bëje kur skeda pësoi një ndërprerje aksidentale</translation>
 <translation id="2428939361789119025">Çaktivizo Wi-Fi</translation>
@@ -2527,6 +2528,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2955048943983973430">Shërbimet e lidhura të Google</translation>
 <translation id="2956070239128776395">Seksioni i përfshirë në grup: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Aktivizo modalitetin "si zhvillues" për të përdorur këtë shtesë, e cila nuk mund të shqyrtohet nga "Dyqani i uebit i Chrome".</translation>
+<translation id="2957987442574819977">Rezultate të papritura nga Gemini</translation>
 <translation id="2958721676848865875">Paralajmërim i paketimit të shtesës</translation>
 <translation id="2959127025785722291">Ndodhi një gabim. Skanimi nuk mund të përfundohej. Provo përsëri.</translation>
 <translation id="2959474507964749987">Kjo skedar i enkriptuar mund të jetë një virus ose softuer keqdashës.<ph name="LINE_BREAK" />Për ta kontrolluar nëse ai është i pasigurt, mund të dërgosh skedarin dhe fjalëkalimin te "Shfletimi i sigurt i Google". Skanimet zakonisht zgjasin disa sekonda.<ph name="LINE_BREAK" />Për ta skanuar, shto fjalëkalimin e skedarit.</translation>
@@ -3514,6 +3516,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3708295717182051206">Titrat</translation>
 <translation id="3708684582558000260">Mos lejo që sajtet e mbyllura të përfundojnë dërgimin ose marrjen e të dhënave</translation>
 <translation id="3709244229496787112">Shfletuesi u mbyll përpara përfundimit të shkarkimit.</translation>
+<translation id="3710438437470197252">Shiko më shumë te "Disku i Google"</translation>
 <translation id="3710501561113687889">Për të vazhduar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> do të ndajë <ph name="FIELDS_STRING" /> me këtë sajt.</translation>
 <translation id="3711931198657368127">Ngj&amp;it dhe shko te <ph name="URL" /></translation>
 <translation id="3711945201266135623">U gjetën <ph name="NUM_PRINTERS" /> printerë nga serveri i printimit</translation>
@@ -5161,6 +5164,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4963789650715167449">Hiqe skedën aktuale</translation>
 <translation id="4964455510556214366">Sistemimi</translation>
 <translation id="4964544790384916627">Poziciono dritaren</translation>
+<translation id="4964673849688379040">Po kontrollon...</translation>
 <translation id="4966972803217407697">Je në modalitetin "e fshehtë"</translation>
 <translation id="4967227914555989138">Shto një shënim</translation>
 <translation id="4967360192915400530">Shkarko skedarin e rrezikshëm</translation>
@@ -5351,6 +5355,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5112577000029535889">&amp;Mjetet e zhvilluesit</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{U zhvendos 1 skedar}other{U zhvendosën {NUM_OF_FILES} skedarë}}</translation>
 <translation id="511313294362309725">Aktivizo "Çiftimin e shpejtë"</translation>
+<translation id="5113992879909788634">Mëso më shumë rreth shfletimit automatik të Chrome</translation>
 <translation id="51143538739122961">Fut kodin e sigurisë dhe preke</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Ru&amp;aje audion si...</translation>
@@ -7034,6 +7039,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6470823736074966819">Vendosi në heshtje njoftimet</translation>
 <translation id="6472893788822429178">Shfaq butonin "Faqja kryesore"</translation>
 <translation id="6473315466413288899">Zgjidh një opsion</translation>
+<translation id="6474021817475285003">Shiko më shumë në "Kalendarin e Google"</translation>
 <translation id="6474498546677193336">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur Linux të ndalojë punën më pas.</translation>
 <translation id="6474884162850599008">Shkëput llogarinë e "Diskut të Google"</translation>
 <translation id="6476482583633999078">Shpejtësia e të folurës</translation>
@@ -9125,6 +9131,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8082132721957920509">Karta është ruajtur</translation>
 <translation id="8082390128630131497">Çaktivizimi i korrigjimit të ADB-së do ta rivendosë këtë pajisje <ph name="DEVICE_TYPE" /> në cilësimet e fabrikës. Të gjitha llogaritë e përdoruesit dhe të dhënat lokale do të spastrohen.</translation>
 <translation id="8084114998886531721">Fjalëkalimi i ruajtur</translation>
+<translation id="8084417885464859041">Përdor Gemini në mënyrë të sigurt</translation>
 <translation id="8084429490152575036">Cilësimet e APN-së së rrjetit celular</translation>
 <translation id="8084628902026812045">Ky sajt nuk po përdor një lidhje të sigurt dhe mund të ketë pasur ndërhyrje te skedari</translation>
 <translation id="808488435221187916">Informacionet e tua ofrohen te "Portofoli i Google" në çdo pajisje ku je identifikuar</translation>
@@ -9719,6 +9726,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8553342806078037065">Menaxho kontaktet e tjera</translation>
 <translation id="8554642222921881444">Menyja pluskuese në tekstin e zgjedhur</translation>
 <translation id="8554899698005018844">Nuk ka gjuhë</translation>
+<translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - përmbajtjet e zgjeruara të shfaqura</translation>
 <translation id="8555444629041783356">Programi automatik i perëndimit të diellit</translation>
 <translation id="8557022314818157177">Vazhdo të prekësh çelësin e sigurisë deri sa gjurma e gishtit tënd të regjistrohet</translation>
 <translation id="8557100046150195444">Përdor Touch ID për të vazhduar</translation>

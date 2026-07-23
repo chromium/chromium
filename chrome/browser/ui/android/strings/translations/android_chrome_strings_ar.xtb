@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">في حال حذفها، سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع الأجهزة.</translation>
 <translation id="1142732900304639782">عدم اقتراح ترجمة لهذه المواقع الإلكترونية</translation>
 <translation id="1143193470214071120">يُرجى إغلاق نافذة أو إدارة النوافذ</translation>
+<translation id="1143486892058798649">حفظ الرابط كـ…</translation>
 <translation id="1149725087019908252">جارٍ فحص ملف <ph name="FILE_NAME" /></translation>
 <translation id="1150263420752757504">‏سيتم فتح تطبيق "<ph name="APP_NAME" />" في Chrome. تعني المتابعة موافقتك على <ph name="BEGIN_LINK1" />بنود خدمة Google<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">‏ليس لديك كلمات مرور محفوظة في "مدير كلمات المرور في Google".</translation>
@@ -142,6 +143,7 @@
 <translation id="1544826120773021464">‏لإدارة إعدادات حسابك على Google، يُرجى النقر على الزر "إدارة الحساب".</translation>
 <translation id="1549000191223877751">النقل إلى نافذة أخرى</translation>
 <translation id="1553358976309200471">‏تحديث Chrome‏</translation>
+<translation id="1554352084785952638">البحث في "<ph name="SEARCH_ENGINE" />" عن "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="1554532453982918912">‏المساعدة في تحسين متصفّح Chrome لغيرك من المستخدمين</translation>
 <translation id="1568636008098739136">يمكن الاستماع إلى هذه الصفحة. لتعديل هذا الاختصار، انقر مع الاستمرار.</translation>
 <translation id="1571041387761170095">ما مِن كلمات مرور ضعيفة أو مستخدَمة لحساب آخر</translation>
@@ -313,6 +315,7 @@
 <translation id="2330186936255788117">المزيد من الإشارات المرجعية</translation>
 <translation id="2332515770639153015">ميزة "الحماية المُحسَّنة للتصفّح الآمن" مفعَّلة</translation>
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
+<translation id="2334275697832662087">‏يوفّر لك Chrome وسائل أمان مستندة إلى الذكاء الاصطناعي لحمايتك من التهديدات على الإنترنت، ما يعزِّز ثقتك أثناء التصفُّح</translation>
 <translation id="2341410551640223969">تعذَّر تثبيت <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">‏إجمالي البيانات المُستخدَمة من قِبل Chrome، بما في ذلك الحسابات والإشارات المرجعية والإعدادات المحفوظة</translation>
 <translation id="2354001756790975382">الإشارات المرجعية الأخرى</translation>
@@ -615,6 +618,7 @@
 <translation id="3577473026931028326">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="3577558748185201054">يمكنك إدارة اهتماماتك وتفضيلاتك</translation>
 <translation id="3587482841069643663">الكل</translation>
+<translation id="3598421953808879451">حفظ الفيديو باسم…</translation>
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3614126103057878858">معلومات مفصّلة عن الأسعار</translation>
 <translation id="3616113530831147358">المقاطع الصوتية</translation>
@@ -725,6 +729,7 @@
 <translation id="4044708993631234325">بطاقة سفلية</translation>
 <translation id="4045441967987592849">إعادة فتح</translation>
 <translation id="4049920046559074950">خيارات إضافية لـ "<ph name="INSTANCE_TITLE" />"</translation>
+<translation id="4051548576872472315">يمكنك العثور هنا على علامات التبويب والنوافذ التي أغلقتها مؤخرًا</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{فتح في نافذة التصفُّح المتخفي}zero{فتح الكل (#) في نافذة التصفُّح المتخفي}two{فتح الكل (#) في نافذة التصفُّح المتخفي}few{فتح الكل (#) في نافذة التصفُّح المتخفي}many{فتح الكل (#) في نافذة التصفُّح المتخفي}other{فتح الكل (#) في نافذة التصفُّح المتخفي}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{علامة تبويب عادية واحدة (<ph name="TABS_COUNT_ONE" />) تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}zero{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}two{علامتا تبويب عاديتان (<ph name="TABS_COUNT_MANY" />) تتضمّنان نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}few{‫<ph name="TABS_COUNT_MANY" /> علامات تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}many{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}other{‫<ph name="TABS_COUNT_MANY" /> علامة تبويب عادية تتضمّن نشاطًا جديدًا في مجموعات علامات التبويب التي تمت مشاركتها}}</translation>
 <translation id="405365679581583349">‏تحديث "خدمات Google Play"</translation>
@@ -1526,6 +1531,7 @@
 <translation id="71503698506017927">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين من Google Pay.
 
 لتغيير هذه الإعدادات، يُرجى <ph name="BEGIN_LINK" />حذف بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">حفظ الصورة باسم…</translation>
 <translation id="7165972437814027679">‏مزيد من المعلومات حول سبب حظر Chrome لبعض الملفات</translation>
 <translation id="7168323970702333693">تم تسجيل الدخول باسم "<ph name="USER_NAME" />". يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="7170930892977483182">‏سيتم حذف كل رموز الأمان المحفوظة على جهازك وفي "محفظة Google"</translation>
@@ -1700,6 +1706,7 @@
 <translation id="7824665136384946951">أوقفت مؤسستك ميزة "التصفُّح الآمن".</translation>
 <translation id="7825973332242257878">مجموعات علامات التبويب</translation>
 <translation id="7826342993930002256">‏‫Chrome مرافقك أينما كنت</translation>
+<translation id="7845155831233417403">الحد الأقصى لعدد النوافذ التي يمكنك فتحها هو <ph name="MAX_INSTANCE_COUNT" />. يُرجى إغلاق إحدى النوافذ للمتابعة.</translation>
 <translation id="7846161022626028328">حدث خطأ. يُرجى إعادة المحاولة.</translation>
 <translation id="7846296061357476882">‏خدمات Google</translation>
 <translation id="784652447248278262">النافذة الحالية</translation>
@@ -1824,6 +1831,7 @@
 <translation id="8282297628636750033">تطبيق "المظهر الداكن" على المواقع، إن أمكن ذلك</translation>
 <translation id="8282950411412455249">الانتقال إلى إعدادات الأمان</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{إغلاق نافذة واحدة للتصفّح المتخفي}zero{إغلاق # نافذة للتصفّح المتخفي}two{إغلاق نافذتَي التصفّح المتخفي}few{إغلاق # نوافذ للتصفّح المتخفي}many{إغلاق # نافذة للتصفّح المتخفي}other{إغلاق # نافذة للتصفّح المتخفي}}</translation>
+<translation id="8289602658021943461">حفظ إطار الفيديو كـ…</translation>
 <translation id="8313599942510782709">لا تزال المَهمّة جارية</translation>
 <translation id="8317318757008452355">فتح الخيارات للطباعة</translation>
 <translation id="8320212361750431956">الأنشطة الحديثة</translation>

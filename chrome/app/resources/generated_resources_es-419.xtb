@@ -500,6 +500,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1376836354785490390">Mostrar menos</translation>
 <translation id="1377438103060664754">Si se encuentra una de tus contraseñas en una violación de la seguridad de los datos, el Administrador de contraseñas de Google te pregunta si quieres cambiarla por una contraseña segura.</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> controla esta configuración</translation>
+<translation id="1378715594598306389">Ver más pestañas</translation>
 <translation id="1380028686461971526">Conectarse automáticamente a una red</translation>
 <translation id="1381567580865186407">La enunciación en <ph name="LANGUAGE" /> se envía a Google para su procesamiento.</translation>
 <translation id="1382174183118245544">Números de tarjetas de crédito</translation>
@@ -1229,6 +1230,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="194174710521904357">Permitiste temporalmente que este sitio use cookies de terceros, lo que significa menos protección de navegación, pero es más probable que las funciones del sitio puedan usarse según lo previsto.</translation>
 <translation id="1942128823046546853">Leer y cambiar todos tus datos en todos los sitios web</translation>
 <translation id="1944535645109964458">No hay llaves de acceso disponibles</translation>
+<translation id="1944921356641260203">Actualización encontrada</translation>
 <translation id="1947136734041527201">Te permite acceder a sitios web a través de una cuenta con servicio de identidad</translation>
 <translation id="1948528728718281125">Se permite el acceso a la cámara para las apps, los sitios web con el permiso correspondiente y los servicios del sistema</translation>
 <translation id="1949332606889020901">IDs de falla</translation>
@@ -1811,7 +1813,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2424424966051154874">{0,plural, =1{Invitado}other{Invitado (#)}}</translation>
 <translation id="2426805022920575512">Seleccionar otra cuenta</translation>
 <translation id="2427507373259914951">Clic con botón izquierdo</translation>
-<translation id="2428120669821109648">Estilo de pestañas</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{1 cuenta de <ph name="DOMAIN_LINK" />; la contraseña se guardó solo en este dispositivo. Más detalles}other{{NUM_PASSWORDS} cuentas de <ph name="DOMAIN_LINK" />; la contraseña se guardó solo en este dispositivo. Más detalles}}</translation>
 <translation id="2428510569851653187">Describir lo que estabas haciendo cuando se bloqueó la pestaña</translation>
 <translation id="2428939361789119025">Desactivar Wi-Fi</translation>
@@ -2527,6 +2528,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2955048943983973430">Servicios de Google relacionados</translation>
 <translation id="2956070239128776395">Se anidó la sección en el grupo: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">Activa el modo de desarrollador para usar esta extensión, que no puede revisarse en Chrome Web Store.</translation>
+<translation id="2957987442574819977">Resultados inesperados de Gemini</translation>
 <translation id="2958721676848865875">Advertencia sobre el empaquetado de extensiones</translation>
 <translation id="2959127025785722291">Se produjo un error. No se completó el análisis. Vuelve a intentarlo.</translation>
 <translation id="2959474507964749987">Es posible que este archivo encriptado sea un virus o software malicioso.<ph name="LINE_BREAK" />Para comprobar que no es seguro, puedes enviar el archivo y la contraseña a la Navegación segura de Google. Los análisis suelen tardar unos segundos.<ph name="LINE_BREAK" />Agrega la contraseña del archivo para realizarlos.</translation>
@@ -3514,6 +3516,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3708295717182051206">Subtítulos</translation>
 <translation id="3708684582558000260">No permitir que los sitios cerrados terminen de enviar o recibir datos</translation>
 <translation id="3709244229496787112">El navegador se cerró antes de que finalizara la descarga.</translation>
+<translation id="3710438437470197252">Ver más en Google Drive</translation>
 <translation id="3710501561113687889">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu <ph name="FIELDS_STRING" /> con este sitio.</translation>
 <translation id="3711931198657368127">&amp;Pegar y dirigirse a <ph name="URL" /></translation>
 <translation id="3711945201266135623">Se encontraron <ph name="NUM_PRINTERS" /> impresoras en el servidor de impresión</translation>
@@ -5162,6 +5165,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4963789650715167449">Quitar pestaña actual</translation>
 <translation id="4964455510556214366">Disposición</translation>
 <translation id="4964544790384916627">Anclar ventana</translation>
+<translation id="4964673849688379040">Verificando…</translation>
 <translation id="4966972803217407697">Estás en modo Incógnito</translation>
 <translation id="4967227914555989138">Agregar nota</translation>
 <translation id="4967360192915400530">Descargar archivo peligroso</translation>
@@ -5352,6 +5356,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5112577000029535889">Herramientas del &amp;desarrollador</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{Se movió 1 archivo}other{Se movieron {NUM_OF_FILES} archivos}}</translation>
 <translation id="511313294362309725">Activar Vinculación rápida</translation>
+<translation id="5113992879909788634">Más información sobre la navegación automática de Chrome</translation>
 <translation id="51143538739122961">Inserta tu llave de seguridad y presiónala</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Gu&amp;ardar audio como...</translation>
@@ -7036,6 +7041,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6470823736074966819">Silenciar notificaciones</translation>
 <translation id="6472893788822429178">Mostrar el botón de la Página principal</translation>
 <translation id="6473315466413288899">Selecciona una opción</translation>
+<translation id="6474021817475285003">Ver más en el Calendario de Google</translation>
 <translation id="6474498546677193336">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre Linux.</translation>
 <translation id="6474884162850599008">Desconectar la cuenta de Google Drive</translation>
 <translation id="6476482583633999078">Velocidad de habla</translation>
@@ -9128,6 +9134,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8082132721957920509">Se guardó tu tarjeta</translation>
 <translation id="8082390128630131497">Si inhabilitas la depuración de adb, se restablecerá el dispositivo <ph name="DEVICE_TYPE" /> a la configuración de fábrica. Se borrarán todas las cuentas de usuario y los datos locales.</translation>
 <translation id="8084114998886531721">Se guardó la contraseña</translation>
+<translation id="8084417885464859041">Usa Gemini de forma segura</translation>
 <translation id="8084429490152575036">Configuración del APN de la red móvil</translation>
 <translation id="8084628902026812045">Este sitio no usa una conexión segura y es posible que el archivo se haya alterado</translation>
 <translation id="808488435221187916">Tu información está disponible en la Billetera de Google en cualquier dispositivo en el que accediste a tu cuenta</translation>
@@ -9722,6 +9729,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8553342806078037065">Administrar otras personas</translation>
 <translation id="8554642222921881444">Menú flotante en el texto seleccionado</translation>
 <translation id="8554899698005018844">Ningún idioma</translation>
+<translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" />: se muestra el contenido expandido</translation>
 <translation id="8555444629041783356">Programación automática de horario de cambio de modo</translation>
 <translation id="8557022314818157177">Continúa tocando la llave de seguridad hasta que se capture tu huella dactilar</translation>
 <translation id="8557100046150195444">Usa Touch ID para continuar</translation>

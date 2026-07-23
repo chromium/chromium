@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">Si vous le supprimez, tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", qui sera supprimé de tous les appareils.</translation>
 <translation id="1142732900304639782">Ne pas proposer de traduire ces sites</translation>
 <translation id="1143193470214071120">Fermez une fenêtre ou gérez les fenêtres</translation>
+<translation id="1143486892058798649">Enregistrer le lien sous…</translation>
 <translation id="1149725087019908252">Analyse du fichier <ph name="FILE_NAME" />…</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> va s'ouvrir dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />Conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Vous n'avez aucun mot de passe enregistré dans le Gestionnaire de mots de passe de Google.</translation>
@@ -313,6 +314,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2330186936255788117">Plus de favoris</translation>
 <translation id="2332515770639153015">Navigation sécurisée avec protection renforcée activée</translation>
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
+<translation id="2334275697832662087">La sécurité de Chrome, optimisée par l'IA, vous protège contre les menaces en ligne pour que vous puissiez naviguer l'esprit tranquille</translation>
 <translation id="2341410551640223969">Impossible d'installer <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Espace de stockage utilisé pour l'ensemble des données Chrome, y compris les comptes, favoris et paramètres enregistrés</translation>
 <translation id="2354001756790975382">Autres favoris</translation>
@@ -614,6 +616,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577558748185201054">Gérez vos centres d'intérêt et préférences</translation>
 <translation id="3587482841069643663">Complète</translation>
+<translation id="3598421953808879451">Enregistrer la vidéo sous…</translation>
 <translation id="3602290021589620013">Aperçu</translation>
 <translation id="3614126103057878858">Tendances des prix</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -724,6 +727,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4044708993631234325">Feuille en bas de l'écran</translation>
 <translation id="4045441967987592849">Rouvrir</translation>
 <translation id="4049920046559074950">Plus d'options pour <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051548576872472315">Retrouvez ici vos onglets et fenêtres récemment fermés</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Ouvrir dans une fenêtre de navigation privée}one{Tout ouvrir (#) dans une fenêtre de navigation privée}other{Tout ouvrir (#) dans une fenêtre de navigation privée}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet standard avec une nouvelle activité dans les groupes d'onglets partagés}one{<ph name="TABS_COUNT_MANY" /> onglet standard avec une nouvelle activité dans les groupes d'onglets partagés}other{<ph name="TABS_COUNT_MANY" /> onglets standards avec une nouvelle activité dans les groupes d'onglets partagés}}</translation>
 <translation id="405365679581583349">Mettre à jour les services Google Play</translation>
@@ -1524,6 +1528,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="71503698506017927">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses Google Pay.
 
 Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">Enregistrer l'image sous…</translation>
 <translation id="7165972437814027679">Découvrir pourquoi Chrome bloque certains fichiers</translation>
 <translation id="7168323970702333693">Connecté en tant que <ph name="USER_NAME" />. Ouvre les paramètres.</translation>
 <translation id="7170930892977483182">Tous les codes de sécurité enregistrés sur votre appareil et dans Google Wallet seront supprimés</translation>
@@ -1697,6 +1702,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7824665136384946951">Votre organisation a désactivé la navigation sécurisée</translation>
 <translation id="7825973332242257878">Groupes d'onglets</translation>
 <translation id="7826342993930002256">Votre Chrome, où que vous soyez</translation>
+<translation id="7845155831233417403">Vous pouvez ouvrir jusqu'à <ph name="MAX_INSTANCE_COUNT" /> fenêtres. Fermez une fenêtre pour continuer.</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
 <translation id="7846296061357476882">Services Google</translation>
 <translation id="784652447248278262">Fenêtre actuelle</translation>
@@ -1820,6 +1826,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8282297628636750033">Appliquer thème sombre aux sites</translation>
 <translation id="8282950411412455249">Accéder aux paramètres de sécurité</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Fermer 1 fenêtre de navigation privée}one{Fermer # fenêtre de navigation privée}other{Fermer # fenêtres de navigation privée}}</translation>
+<translation id="8289602658021943461">Enregistrer image vidéo sous…</translation>
 <translation id="8313599942510782709">Votre tâche est toujours en cours</translation>
 <translation id="8317318757008452355">Ouvrir les options d'impression</translation>
 <translation id="8320212361750431956">Activité récente</translation>

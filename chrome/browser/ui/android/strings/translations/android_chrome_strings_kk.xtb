@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">Жойсаңыз, барлығы "<ph name="GROUP_NAME" />" қойындылар тобын пайдалану рұқсатынан бірден айырылып қалады. Бұл топ барлық құрылғыдан жойылады.</translation>
 <translation id="1142732900304639782">Бұл сайттарды аударуды ұсынбау</translation>
 <translation id="1143193470214071120">Бір терезені жабыңыз немесе терезелерді реттеңіз.</translation>
+<translation id="1143486892058798649">Сілтемені басқаша сақтау…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> файлын сканерлеу</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> қолданбасы Chrome браузерінде ашылады. Жалғастыру арқылы <ph name="BEGIN_LINK1" />Google Қызмет көрсету шарттарына<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome және ChromeOS Қосымша қызмет көрсету шарттарына<ph name="END_LINK2" /> келісесіз.</translation>
 <translation id="1154555449933432029">Google Password Manager-де сақталған құпия сөздеріңіз жоқ.</translation>
@@ -313,6 +314,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="2330186936255788117">Басқа бетбелгілер</translation>
 <translation id="2332515770639153015">Күшейтілген Safe Browsing қосулы</translation>
 <translation id="233375395665273385">Жою және шығу</translation>
+<translation id="2334275697832662087">Chrome-ның жасанды интеллектіге негізделген қауіпсіздік жүйесі интернеттегі қауіптерден қорғап, браузерді сенімді түрде пайдалануға мүмкіндік береді.</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> орнатылмады.</translation>
 <translation id="2349710944427398404">Chrome пайдаланатын жалпы деректер, соның ішінде аккаунттар, бетбелгілер және сақталған параметрлер</translation>
 <translation id="2354001756790975382">Басқа бетбелгілер</translation>
@@ -614,6 +616,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="3577558748185201054">Қызығушылықтарыңыз бен параметрлеріңізді басқарыңыз.</translation>
 <translation id="3587482841069643663">Барлығы</translation>
+<translation id="3598421953808879451">Бейнені басқаша сақтау…</translation>
 <translation id="3602290021589620013">Алдын ала көру</translation>
 <translation id="3614126103057878858">Баға статистикасы</translation>
 <translation id="3616113530831147358">Аудио</translation>
@@ -724,6 +727,7 @@ Chrome тәжірибесін жақсарту үшін деректерді қ�
 <translation id="4044708993631234325">Төменгі парақша</translation>
 <translation id="4045441967987592849">Қайта ашу</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" />: басқа опциялар</translation>
+<translation id="4051548576872472315">Жақында жабылған қойындылар мен терезелерді осы жерден таба аласыз</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Инкогнито терезесінде ашу}other{Барлығын (#) инкогнито терезесінде ашу}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Ортақ қойындылар топтарындағы жаңа әрекет орын алған <ph name="TABS_COUNT_ONE" /> стандартты қойынды}other{Ортақ қойындылар топтарындағы жаңа әрекет орын алған <ph name="TABS_COUNT_MANY" /> стандартты қойынды}}</translation>
 <translation id="405365679581583349">Google Play Services қолданбасын жаңартыңыз</translation>
@@ -1524,6 +1528,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="71503698506017927">Құпия фразаны шифрлауға Google Pay қызметіндегі төлеу әдістері мен мекенжайлар кірмейді.
 
 Бұл параметрді өзгерту үшін <ph name="BEGIN_LINK" />аккаунтыңыздағы Chrome деректерін жойыңыз<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">Суретті басқаша сақтау…</translation>
 <translation id="7165972437814027679">Chrome-ның кейбір файлдарды блоктау себептері туралы толық ақпарат</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> аккаунтымен кірдіңіз. Параметрлерді ашады.</translation>
 <translation id="7170930892977483182">Құрылғы мен Google Wallet-те сақталған барлық қауіпсіздік коды жойылады.</translation>
@@ -1697,6 +1702,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7824665136384946951">Ұйымыңыз Safe Browsing функциясын өшірді.</translation>
 <translation id="7825973332242257878">Қойындылар топтары</translation>
 <translation id="7826342993930002256">Chrome-ды кез келген жерде пайдаланыңыз</translation>
+<translation id="7845155831233417403">Көп дегенде жалпы <ph name="MAX_INSTANCE_COUNT" /> терезе ашуға болады. Жалғастыру үшін терезені жабыңыз.</translation>
 <translation id="7846161022626028328">Қате пайда болды. Қайталап көріңіз.</translation>
 <translation id="7846296061357476882">Google қызметтері</translation>
 <translation id="784652447248278262">Қазіргі терезе</translation>
@@ -1820,6 +1826,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="8282297628636750033">Сайттарға мүмкіндігінше қараңғы режим қолдану</translation>
 <translation id="8282950411412455249">Қауіпсіздік параметрлеріне өту</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 инкогнито терезесін жабу}other{# инкогнито терезесін жабу}}</translation>
+<translation id="8289602658021943461">Бейнекадрды басқаша сақтау…</translation>
 <translation id="8313599942510782709">Тапсырмаңыз әлі орындалып жатыр</translation>
 <translation id="8317318757008452355">Басып шығару опцияларын ашу</translation>
 <translation id="8320212361750431956">Соңғы іс-әрекеттер</translation>

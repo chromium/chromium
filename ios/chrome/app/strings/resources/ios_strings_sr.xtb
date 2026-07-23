@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Пријављени сте као <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отвори мени налога.</translation>
 <translation id="1397144142234474689">Сакриј историју</translation>
 <translation id="1399268420835656394">Ако нисте дете, проверите узраст на Apple налогу на овом уређају. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Претходно попуњено</translation>
 <translation id="1407135791313364759">Отвори све</translation>
 <translation id="1408847409015257906">Додирните Приватност и безбедност.</translation>
 <translation id="1411386976162024013">Визуелна претрага Објектива</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Налогом управља родитељ.
 <ph name="BEGIN_LINK" />Сазнај више<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Промењено</translation>
+<translation id="1481450969185702334">Пронађите и попуните</translation>
 <translation id="1483493594462132177">Пошаљи</translation>
 <translation id="1486096554574027028">Претражите лозинке</translation>
 <translation id="1486593497476255523">Групе картица су завршене.</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Ради заштите приватности Chrome неће аутоматски уносити вашу лозинку у ово поље.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 сајт (више на синхронизованим уређајима)}one{# сајт (више на синхронизованим уређајима)}few{# сајта (више на синхронизованим уређајима)}other{# сајтова (више на синхронизованим уређајима)}}</translation>
+<translation id="2865392654629180917">Упитајте било шта и добијајте одговоре које омогућава вештачка интелигенција</translation>
 <translation id="2870560284913253234">Сајт</translation>
 <translation id="2876369937070532032">Шаље URL-ове неких страница које посећујете Google-у када је безбедност угрожена</translation>
 <translation id="2883151425485251736">Прегледајте и мењајте теме које сте сакрили са налога</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Нова група картица...</translation>
 <translation id="3185760469172949183">Претрага помоћу камере је завршена.</translation>
 <translation id="3186796054637504691">Clear History and Website Data (Обриши историју и податке веб-сајтова)</translation>
+<translation id="3190558889382726167">Лозинка је сачувана</translation>
 <translation id="3190736958609431397">Опозови праћење</translation>
 <translation id="3208260410153224535">Организација је искључила пријављивање. Нови обележивачи, лозинке и други садржај ће се чувати само на овом уређају.</translation>
 <translation id="3211969308836412674">Откачи сајт</translation>

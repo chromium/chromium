@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">Калі вы выдаліце яе, усе карыстальнікі адразу страцяць доступ да групы ўкладак "<ph name="GROUP_NAME" />" і яна будзе выдалена з усіх прылад.</translation>
 <translation id="1142732900304639782">Не прапаноўваць перакладаць гэтыя сайты</translation>
 <translation id="1143193470214071120">Закрыйце адно з вокнаў або ўпарадкуйце іх</translation>
+<translation id="1143486892058798649">Захаваць спасылку як…</translation>
 <translation id="1149725087019908252">Ідзе праверка файла "<ph name="FILE_NAME" />"</translation>
 <translation id="1150263420752757504">Праграма "<ph name="APP_NAME" />" адкрыецца ў Chrome. Працягваючы, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">У Менеджары пароляў Google няма захаваных пароляў.</translation>
@@ -142,6 +143,7 @@
 <translation id="1544826120773021464">Каб змяніць налады вашага ўліковага запісу Google, націсніце кнопку "Кіраваць уліковым запісам"</translation>
 <translation id="1549000191223877751">Перамясціць у іншае акно</translation>
 <translation id="1553358976309200471">Абнавіць Chrome</translation>
+<translation id="1554352084785952638"><ph name="SEARCH_ENGINE" />: "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="1554532453982918912">Дапамажыце палепшыць браўзер Chrome для карыстальнікаў, якія выкарыстоўваюць яго так, як і вы</translation>
 <translation id="1568636008098739136">Агучыць гэту старонку. Каб змяніць функцыю гэтай кнопкі, націсніце на яе і ўтрымлівайце.</translation>
 <translation id="1571041387761170095">Няма слабых або ўжытых раней пароляў</translation>
@@ -313,6 +315,7 @@
 <translation id="2330186936255788117">Іншыя закладкі</translation>
 <translation id="2332515770639153015">Палепшаны Бяспечны прагляд уключаны</translation>
 <translation id="233375395665273385">Выдаліць і выйсці</translation>
+<translation id="2334275697832662087">Бяспека на аснове AI ў Chrome дапамагае абараняць вас ад пагроз у інтэрнэце, каб вы маглі карыстацца ім з упэўненасцю</translation>
 <translation id="2341410551640223969">Не ўдалося ўсталяваць праграму "<ph name="WEBAPK_NAME" />".</translation>
 <translation id="2349710944427398404">Агульны аб’ём даных Chrome, у тым ліку закладкі, уліковыя запісы і захаваныя налады</translation>
 <translation id="2354001756790975382">Іншыя закладкі</translation>
@@ -614,6 +617,7 @@
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="3577558748185201054">Кіруйце сваімі інтарэсамі і параметрамі</translation>
 <translation id="3587482841069643663">Усе</translation>
+<translation id="3598421953808879451">Захаваць відэа як…</translation>
 <translation id="3602290021589620013">Перадпрагляд</translation>
 <translation id="3614126103057878858">Статыстыка цэн</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
@@ -1525,6 +1529,7 @@
 <translation id="71503698506017927">Шыфраванне фразай-паролем не прымяняецца да спосабаў аплаты і адрасоў з Google Pay.
 
 Каб змяніць гэту наладу, <ph name="BEGIN_LINK" />выдаліце даныя Chrome з уліковага запісу<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">Захаваць відарыс як…</translation>
 <translation id="7165972437814027679">Даведацца больш пра тое, чаму Chrome блакіруе некаторыя файлы</translation>
 <translation id="7168323970702333693">Вы ўвайшлі як <ph name="USER_NAME" />. Кнопка адкрывае налады.</translation>
 <translation id="7170930892977483182">Усе коды бяспекі, захаваныя на прыладзе і ў Google Кашальку, будуць выдалены</translation>
@@ -1822,6 +1827,7 @@
 <translation id="8282297628636750033">Прымяняць цёмную тэму, калі гэта магчыма</translation>
 <translation id="8282950411412455249">Перайсці ў налады бяспекі</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Закрыць 1 акно ў рэжыме інкогніта}one{Закрыць # акно ў рэжыме інкогніта}few{Закрыць # акна ў рэжыме інкогніта}many{Закрыць # акон у рэжыме інкогніта}other{Закрыць # акна ў рэжыме інкогніта}}</translation>
+<translation id="8289602658021943461">Захаваць кадр відэа як…</translation>
 <translation id="8313599942510782709">Задача яшчэ выконваецца</translation>
 <translation id="8317318757008452355">Адкрыць параметры друку</translation>
 <translation id="8320212361750431956">Нядаўнія дзеянні</translation>

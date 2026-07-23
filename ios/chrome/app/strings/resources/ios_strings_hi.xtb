@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. <ph name="USER_EMAIL" />. खाता मेन्यू खोलें.</translation>
 <translation id="1397144142234474689">'इतिहास' विकल्प को छिपाएं</translation>
 <translation id="1399268420835656394">अगर आप बच्चे नहीं हैं, तो आपको इस डिवाइस पर Apple खाते में जाकर उम्र की जानकारी देखनी चाहिए. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">भरी गई पिछली जानकारी</translation>
 <translation id="1407135791313364759">सभी बुकमार्क खोलें</translation>
 <translation id="1408847409015257906">“निजता और सुरक्षा” पर टैप करें.</translation>
 <translation id="1411386976162024013">Lens में इमेज या कैमरे की मदद से खोजें</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">आपके खाते को आपके माता-पिता/अभिभावक मैनेज करते हैं.
 <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">बदला गया</translation>
+<translation id="1481450969185702334">खोजें और भरें</translation>
 <translation id="1483493594462132177">भेजें</translation>
 <translation id="1486096554574027028">पासवर्ड खोजें</translation>
 <translation id="1486593497476255523">टैब ग्रुप बनाने की प्रोसेस पूरी हुई!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">आपकी निजता को सुरक्षित रखने के लिए, Chrome इस फ़ील्ड में आपके पासवर्ड को ऑटोमैटिक नहीं भरेगा.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 साइट (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)}one{# साइट (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)}other{# साइटें (सिंक किए गए डिवाइसों पर और भी साइटों का डेटा है)}}</translation>
+<translation id="2865392654629180917">कोई भी सवाल पूछें और एआई की मदद से जवाब पाएं</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">आपकी सुरक्षा को खतरा होने पर उन पेज के यूआरएल भेजे जाते हैं जिन पर आप Google के ज़रिए जाते हैं.</translation>
 <translation id="2883151425485251736">अपने खाते से छिपाए गए विषयों को देखें और उनमें बदलाव करें</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">नया टैब ग्रुप...</translation>
 <translation id="3185760469172949183">कैमरे की मदद से खोजने की सुविधा इस्तेमाल करने की प्रोसेस पूरी हुई!</translation>
 <translation id="3186796054637504691">इतिहास और वेबसाइट डेटा मिटाएं</translation>
+<translation id="3190558889382726167">पासवर्ड सेव किया गया</translation>
 <translation id="3190736958609431397">ट्रैक न करें</translation>
 <translation id="3208260410153224535">आपके संगठन ने साइन इन करने की सुविधा बंद कर दी है. नए बुकमार्क, पासवर्ड वगैरह सिर्फ़ इस डिवाइस में सेव किए जाएंगे.</translation>
 <translation id="3211969308836412674">साइट को अनपिन करें</translation>

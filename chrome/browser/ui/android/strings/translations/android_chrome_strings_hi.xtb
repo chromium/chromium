@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">अगर आपने इसे मिटा दिया, तो सभी लोगों के लिए "<ph name="GROUP_NAME" />" टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे सभी डिवाइसों से मिटा दिया जाएगा.</translation>
 <translation id="1142732900304639782">इन साइटों का अनुवाद करने की सुविधा न दें</translation>
 <translation id="1143193470214071120">विंडो बंद करें या मैनेज करें</translation>
+<translation id="1143486892058798649">लिंक को इस नाम से सेव करें…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्कैन हो रही है</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome में खुलेगा. जारी रखने का मतलब है कि आप <ph name="BEGIN_LINK1" />Google की सेवा की शर्तों<ph name="END_LINK1" /> के साथ-साथ <ph name="BEGIN_LINK2" />Google Chrome और ChromeOS की सेवा की अन्य शर्तों<ph name="END_LINK2" /> से सहमत हैं.</translation>
 <translation id="1154555449933432029">आपने Google Password Manager में कोई पासवर्ड सेव नहीं किया है.</translation>
@@ -314,6 +315,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2330186936255788117">ज़्यादा बुकमार्क</translation>
 <translation id="2332515770639153015">बेहतर सुरक्षित ब्राउज़िंग की सुविधा चालू है</translation>
 <translation id="233375395665273385">मिटाएं और साइन आउट करें</translation>
+<translation id="2334275697832662087">एआई की मदद से काम करने वाली Chrome की सुरक्षा, आपको ऑनलाइन खतरों से बचाती है, ताकि आप बेझिझक होकर ब्राउज़ कर सकें</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> को इंस्टॉल नहीं किया जा सका.</translation>
 <translation id="2349710944427398404">Chrome में अलग-अलग खाते, बुकमार्क, सेव की गई सेटिंग वगैरह के लिए इस्तेमाल हुआ कुल स्टोरेज स्पेस</translation>
 <translation id="2354001756790975382">अन्य बुकमार्क</translation>
@@ -615,6 +617,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3577473026931028326">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
 <translation id="3577558748185201054">अपनी पसंद और प्राथमिकताएं मैनेज करें</translation>
 <translation id="3587482841069643663">सभी</translation>
+<translation id="3598421953808879451">वीडियो को इस नाम से सेव करें…</translation>
 <translation id="3602290021589620013">झलक देखें</translation>
 <translation id="3614126103057878858">किराये की ब्यौरेवार जानकारी</translation>
 <translation id="3616113530831147358">ऑडियो</translation>
@@ -1526,6 +1529,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="71503698506017927">लंबे पासवर्ड से एन्क्रिप्ट (सुरक्षित) करने की सुविधा में, Google Pay पर जोड़े गए पेमेंट के तरीके और पते शामिल नहीं होते.
 
 इस सेटिंग को बदलने के लिए, <ph name="BEGIN_LINK" />अपने खाते से Chrome का डेटा मिटाएं<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">इमेज को इस नाम से सेव करें…</translation>
 <translation id="7165972437814027679">जानें कि Chrome कुछ फ़ाइलों को क्यों ब्लॉक करता है</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> के तौर पर साइन इन किया गया. इस बटन से सेटिंग खुलती है.</translation>
 <translation id="7170930892977483182">आपके डिवाइस और Google Wallet में सेव किए गए सभी सुरक्षा कोड मिटा दिए जाएंगे</translation>
@@ -1823,6 +1827,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8282297628636750033">जब भी हो सके, साइट पर गहरे रंग वाली थीम लागू करें</translation>
 <translation id="8282950411412455249">सुरक्षा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 गुप्त विंडो को बंद करें}one{# गुप्त विंडो को बंद करें}other{# गुप्त विंडो बंद करें}}</translation>
+<translation id="8289602658021943461">वीडियो फ़्रेम को इस नाम से सेव करें…</translation>
 <translation id="8313599942510782709">आपका टास्क अब भी जारी है</translation>
 <translation id="8317318757008452355">प्रिंट करने के विकल्प देखें</translation>
 <translation id="8320212361750431956">हाल की गतिविधि</translation>

@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">If you delete it, everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group and it will be deleted from all devices.</translation>
 <translation id="1142732900304639782">Don’t offer to translate these sites</translation>
 <translation id="1143193470214071120">Close a window or manage windows</translation>
+<translation id="1143486892058798649">Save link as…</translation>
 <translation id="1149725087019908252">Scanning <ph name="FILE_NAME" /></translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">You don't have passwords saved in Google Password Manager.</translation>
@@ -313,6 +314,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2330186936255788117">More bookmarks</translation>
 <translation id="2332515770639153015">Enhanced Safe Browsing is on</translation>
 <translation id="233375395665273385">Delete and sign out</translation>
+<translation id="2334275697832662087">Chrome's AI-powered security helps protect you against online threats, giving you confidence as you browse</translation>
 <translation id="2341410551640223969">Couldn’t install <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total data used by Chrome, including accounts, bookmarks and saved settings</translation>
 <translation id="2354001756790975382">Other bookmarks</translation>
@@ -614,6 +616,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3577558748185201054">Manage your interests and preferences</translation>
 <translation id="3587482841069643663">All</translation>
+<translation id="3598421953808879451">Save video as…</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3614126103057878858">Price insights</translation>
 <translation id="3616113530831147358">Audio</translation>
@@ -724,6 +727,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4044708993631234325">Bottom sheet</translation>
 <translation id="4045441967987592849">Re-open</translation>
 <translation id="4049920046559074950">More options for <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051548576872472315">Find your recently closed tabs and windows here</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Open in Incognito window}other{Open all (#) in Incognito window}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standard tab with new activity in shared tab groups}other{<ph name="TABS_COUNT_MANY" /> standard tabs with new activity in shared tab groups}}</translation>
 <translation id="405365679581583349">Update Google Play services</translation>
@@ -1524,6 +1528,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="71503698506017927">Passphrase encryption doesn't include payment methods and addresses from Google Pay.
 
 To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your account<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">Save image as…</translation>
 <translation id="7165972437814027679">Learn more about why Chrome blocks some files</translation>
 <translation id="7168323970702333693">Signed in as <ph name="USER_NAME" />. Opens settings.</translation>
 <translation id="7170930892977483182">All security codes saved on your device and in Google Wallet will be deleted</translation>
@@ -1697,6 +1702,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7824665136384946951">Your organisation has turned off Safe Browsing</translation>
 <translation id="7825973332242257878">Tab groups</translation>
 <translation id="7826342993930002256">Your Chrome, everywhere</translation>
+<translation id="7845155831233417403">You can have up to <ph name="MAX_INSTANCE_COUNT" /> windows. Close a window to continue.</translation>
 <translation id="7846161022626028328">There was an error. Try again.</translation>
 <translation id="7846296061357476882">Google services</translation>
 <translation id="784652447248278262">Current window</translation>
@@ -1820,6 +1826,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8282297628636750033">Apply Dark theme to sites, when possible</translation>
 <translation id="8282950411412455249">Go to security settings</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Close 1 Incognito window}other{Close # Incognito windows}}</translation>
+<translation id="8289602658021943461">Save video frame as…</translation>
 <translation id="8313599942510782709">Your task is still in progress</translation>
 <translation id="8317318757008452355">Open options to print</translation>
 <translation id="8320212361750431956">Recent activity</translation>

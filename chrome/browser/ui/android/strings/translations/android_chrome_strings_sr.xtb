@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">Ако је избришете, сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и она ће бити избрисана са свих уређаја.</translation>
 <translation id="1142732900304639782">Не нуди превод ових сајтова</translation>
 <translation id="1143193470214071120">Затворите прозор или управљајте прозорима</translation>
+<translation id="1143486892058798649">Сачувај линк као…</translation>
 <translation id="1149725087019908252">Скенира се <ph name="FILE_NAME" /></translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ће се отворити у Chrome-у. Ако наставите, прихватате <ph name="BEGIN_LINK1" />Google услове коришћења услуге<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />додатне услове коришћења услуге за Google Chrome и Chrome ОС<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Нисте сачували ниједну лозинку у Google менаџеру лозинки.</translation>
@@ -313,6 +314,7 @@
 <translation id="2330186936255788117">Још обележивача</translation>
 <translation id="2332515770639153015">Побољшано безбедно прегледање је укључено</translation>
 <translation id="233375395665273385">Избриши и одјави ме</translation>
+<translation id="2334275697832662087">Chrome безбедност коју омогућава вештачка интелигенција штити вас од онлајн претњи, а истовремено вам пружа осећај безбедности док прегледате</translation>
 <translation id="2341410551640223969">Инсталирање апликације <ph name="WEBAPK_NAME" /> није успело.</translation>
 <translation id="2349710944427398404">Сви подаци које користи Chrome, укључујући налоге, обележиваче и сачувана подешавања</translation>
 <translation id="2354001756790975382">Остали обележивачи</translation>
@@ -614,6 +616,7 @@
 <translation id="3577473026931028326">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="3577558748185201054">Управљајте интересовањима и подешавањима</translation>
 <translation id="3587482841069643663">Све</translation>
+<translation id="3598421953808879451">Сачувај видео као…</translation>
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3614126103057878858">Увид у цене</translation>
 <translation id="3616113530831147358">Аудио</translation>
@@ -724,6 +727,7 @@
 <translation id="4044708993631234325">Доња табела</translation>
 <translation id="4045441967987592849">Поново отвори</translation>
 <translation id="4049920046559074950">Још опција за <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051548576872472315">Овде можете да видите недавно затворене картице и прозоре</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Отвори у прозору без архивирања}one{Отвори све (#) у прозору без архивирања}few{Отвори све (#) у прозору без архивирања}other{Отвори све (#) у прозору без архивирања}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандардна картица са новом активношћу у дељеним групама картица}one{<ph name="TABS_COUNT_MANY" /> стандардна картица са новом активношћу у дељеним групама картица}few{<ph name="TABS_COUNT_MANY" /> стандардне картице са новом активношћу у дељеним групама картица}other{<ph name="TABS_COUNT_MANY" /> стандардних картица са новом активношћу у дељеним групама картица}}</translation>
 <translation id="405365679581583349">Ажурирајте Google Play услуге</translation>
@@ -1524,6 +1528,7 @@ Google налог можда има друге облике историје п�
 <translation id="71503698506017927">Шифровање помоћу приступне фразе не обухвата начине плаћања и адресе из Google Pay-а.
 
 Да бисте променили ово подешавање, <ph name="BEGIN_LINK" />избришите Chrome податке на налогу<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">Сачувај слику као…</translation>
 <translation id="7165972437814027679">Сазнајте више о томе зашто Chrome блокира неке фајлове</translation>
 <translation id="7168323970702333693">Пријављени сте као <ph name="USER_NAME" />. Отвара подешавања.</translation>
 <translation id="7170930892977483182">Сви безбедносни кодови сачувани на уређају и у Google новчанику биће избрисани</translation>
@@ -1697,6 +1702,7 @@ Google налог можда има друге облике историје п�
 <translation id="7824665136384946951">Организација је искључила Безбедно прегледање</translation>
 <translation id="7825973332242257878">Групе картица</translation>
 <translation id="7826342993930002256">Ваш Chrome, свуда</translation>
+<translation id="7845155831233417403">Максималан број прозора које можете да имате је <ph name="MAX_INSTANCE_COUNT" />. Затворите прозор да бисте наставили.</translation>
 <translation id="7846161022626028328">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="7846296061357476882">Google услуге</translation>
 <translation id="784652447248278262">Актуелни прозор</translation>
@@ -1820,6 +1826,7 @@ Google налог можда има друге облике историје п�
 <translation id="8282297628636750033">Примени тамну тему за сајтове, када је могуће</translation>
 <translation id="8282950411412455249">Иди у Безбедносна подешавања</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Затвори 1 прозор без архивирања}one{Затвори # прозор без архивирања}few{Затвори # прозора без архивирања}other{Затвори # прозора без архивирања}}</translation>
+<translation id="8289602658021943461">Сачувај кадар видеа као…</translation>
 <translation id="8313599942510782709">Задатак је још увек у току</translation>
 <translation id="8317318757008452355">Отворите опције за штампање</translation>
 <translation id="8320212361750431956">Недавна активност</translation>

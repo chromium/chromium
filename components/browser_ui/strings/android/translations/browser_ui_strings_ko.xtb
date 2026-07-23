@@ -192,6 +192,7 @@
 <translation id="2850913818900871965">모바일 뷰 요청</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
+<translation id="2890412325133442491">Chrome 기본값</translation>
 <translation id="2891975107962658722">사이트가 기기에 데이터를 저장하지 못하도록 차단</translation>
 <translation id="2903493209154104877">주소</translation>
 <translation id="2903764741244499151">사이트에서 PIP 모드를 자동으로 시작할 수 있습니다. 이렇게 하면 동영상을 계속 시청하면서 다른 작업을 위한 화면을 확보할 수 있습니다.</translation>
@@ -623,6 +624,7 @@
 <translation id="7423098979219808738">우선 확인</translation>
 <translation id="7423538860840206698">클립보드 액세스가 차단됨</translation>
 <translation id="7425915948813553151">사이트에 어두운 테마 적용</translation>
+<translation id="7429767477925996803">Chrome 색상</translation>
 <translation id="746412105358554870">JavaScript 최적화 및 보안</translation>
 <translation id="7478658909253570368">사이트에서 직렬 포트에 연결하도록 허용하지 않음</translation>
 <translation id="7488573225650545859">앱 목록의 탭 보기 숨기기</translation>

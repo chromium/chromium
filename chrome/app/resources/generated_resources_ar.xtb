@@ -500,6 +500,7 @@
 <translation id="1376836354785490390">إظهار أقسام أقل</translation>
 <translation id="1377438103060664754">‏إذا تبيّن أنّ إحدى كلمات مرورك قد تم الكشف عنها بعد عملية اختراق للبيانات، سيقترح عليك "مدير كلمات المرور في Google" تغييرها إلى كلمة مرور قوية</translation>
 <translation id="1378613616312864539">يتحكم <ph name="NAME" /> في هذا الإعداد</translation>
+<translation id="1378715594598306389">عرض المزيد من علامات التبويب</translation>
 <translation id="1380028686461971526">الاتصال التلقائي بالشبكة</translation>
 <translation id="1381567580865186407">‏سيتم إرسال ملفات التعرّف على الكلام باللغة <ph name="LANGUAGE" /> إلى Google لمعالجتها.</translation>
 <translation id="1382174183118245544">أرقام بطاقات الائتمان</translation>
@@ -1231,6 +1232,7 @@
 <translation id="194174710521904357">لقد سمحت مؤقتًا لهذا الموقع الإلكتروني باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية، ما يعني أنك ستحظى بمستوى حماية أقل خلال التصفّح، ولكن من المرجّح أكثر أن تعمل ميزات الموقع الإلكتروني على النحو المتوقّع.</translation>
 <translation id="1942128823046546853">الاطّلاع على جميع بياناتك وتغييرها على جميع المواقع الإلكترونية</translation>
 <translation id="1944535645109964458">ما مِن مفاتيح مرور متوفّرة</translation>
+<translation id="1944921356641260203">تم العثور على التحديث</translation>
 <translation id="1947136734041527201">بإمكانك تسجيل الدخول إلى المواقع الإلكترونية باستخدام حسابك من خلال خدمة تقديم الهويات.</translation>
 <translation id="1948528728718281125">يتم منح إذن الوصول إلى الكاميرا للتطبيقات والمواقع الإلكترونية التي لديها أذونات وصول إليها وكذلك خدمات النظام</translation>
 <translation id="1949332606889020901">معرفات الأعطال</translation>
@@ -1814,7 +1816,6 @@
 <translation id="2424424966051154874">{0,plural, =1{نافذة ضيف}zero{نافذة ضيف (#)}two{نافذة ضيف (#)}few{نافذة ضيف (#)}many{نافذة ضيف (#)}other{نافذة ضيف (#)}}</translation>
 <translation id="2426805022920575512">اختيار حساب آخر</translation>
 <translation id="2427507373259914951">النقر بالزر الأيسر</translation>
-<translation id="2428120669821109648">تصميم علامات التبويب</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{‫<ph name="DOMAIN_LINK" /> يتوفّر حساب واحد. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}zero{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حساب. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}two{‫<ph name="DOMAIN_LINK" /> يتوفّر حسابان ({NUM_PASSWORDS}). تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}few{‫<ph name="DOMAIN_LINK" /> تتوفّر {NUM_PASSWORDS} حسابات. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}many{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حسابًا. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}other{‫<ph name="DOMAIN_LINK" /> يتوفّر {NUM_PASSWORDS} حساب. تم حفظ كلمة المرور على هذا الجهاز فقط. مزيد من التفاصيل}}</translation>
 <translation id="2428510569851653187">وصف ما كنت تفعله عندما تعطّلت علامة التبويب</translation>
 <translation id="2428939361789119025">‏إيقاف شبكة Wi-Fi</translation>
@@ -2530,6 +2531,7 @@
 <translation id="2955048943983973430">‏خدمات Google ذات الصلة</translation>
 <translation id="2956070239128776395">تم دمج القسم في المجموعة: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">‏يمكنك تفعيل "وضع مطور البرامج" لاستخدام هذه الإضافة التي لا يمكن مراجعتها من قِبل "سوق Chrome الإلكتروني".</translation>
+<translation id="2957987442574819977">‏نتائج غير متوقَّعة من Gemini</translation>
 <translation id="2958721676848865875">تحذير حزمة الإضافة</translation>
 <translation id="2959127025785722291">حدث خطأ. تعذّر إكمال المسح. يُرجى إعادة المحاولة.</translation>
 <translation id="2959474507964749987">‏قد يكون هذا الملف المشفَّر فيروسًا أو برنامجًا ضارًا.<ph name="LINE_BREAK" />للتحقّق مما إذا كان الملف آمنًا، يمكنك إرسال الملف وكلمة المرور إلى ميزة "التصفُّح الآمن من Google". وتستغرق عمليات الفحص عادةً بضع ثوانٍ.<ph name="LINE_BREAK" />يُرجى إضافة كلمة مرور للملف لإجراء الفحص.</translation>
@@ -3517,6 +3519,7 @@
 <translation id="3708295717182051206">الترجمة والشرح</translation>
 <translation id="3708684582558000260">عدم السماح للمواقع الإلكترونية بإكمال عمليات إرسال البيانات أو تلقيّها</translation>
 <translation id="3709244229496787112">تم إيقاف المتصفح قبل انتهاء التنزيل.</translation>
+<translation id="3710438437470197252">‏مزيد من المعلومات في Google Drive</translation>
 <translation id="3710501561113687889">للمتابعة، سيشارك <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> مع هذا الموقع الإلكتروني.</translation>
 <translation id="3711931198657368127">ل&amp;صق والانتقال إلى <ph name="URL" /></translation>
 <translation id="3711945201266135623">تم العثور على <ph name="NUM_PRINTERS" /> طابعة من خادم الطباعة.</translation>
@@ -3855,6 +3858,7 @@
 <translation id="3930968231047618417">لون الخلفية</translation>
 <translation id="3932356525934356570">تثبيت <ph name="EXTENSION_NAME" /></translation>
 <translation id="3932477678113677556">الحدّ الأقصى لعدد الأحرف: <ph name="MAX" /></translation>
+<translation id="3932501527949942152">مشاركة الصوت الصادر من علامة التبويب</translation>
 <translation id="3933121352599513978">تصغير الطلبات غير المرغوب فيها (خيار مُقترَح)</translation>
 <translation id="3936260554100916852">‏يشارك <ph name="DEVICE_NAME" /> شبكة Wi-Fi معك.</translation>
 <translation id="3936390757709632190">&amp;فتح ملف الصوت في علامة تبويب جديدة</translation>
@@ -4337,6 +4341,7 @@
 <translation id="4325515113816851466">لن يتم تطبيق خيارات أحد والدَيك بعد تسجيل الخروج</translation>
 <translation id="4326146840124313313">‏يوفِّر Chrome أعلى مستويات الأمان لحمايتك من المواقع الإلكترونية وعمليات التنزيل والإضافات الخطيرة.</translation>
 <translation id="4327380114687339519">قائمة الإضافات</translation>
+<translation id="4328160087116165267">مشاركة صوت النظام</translation>
 <translation id="4330191372652740264">ماء مثلج</translation>
 <translation id="4330387663455830245">عدم ترجمة <ph name="LANGUAGE" /> مطلقًا</translation>
 <translation id="4330963457501417204">توسيع علامات التبويب المصغّرة عند التمرير فوقها</translation>
@@ -4836,6 +4841,7 @@
 <translation id="4722920479021006856"><ph name="APP_NAME" /> يشارك شاشتك.</translation>
 <translation id="4722989931633062466">مواقع إلكترونية لا يُسمح لها بعرض الطلبات بتسجيل الدخول في الخدمات التابعة لجهات خارجية</translation>
 <translation id="4723140812774948886">تبديل العنصر المختار مع العنصر التالي</translation>
+<translation id="4724031052727917178">مشاركة الصوت</translation>
 <translation id="4724450788351008910">تغيير الاقتران</translation>
 <translation id="4725511304875193254">كورجي</translation>
 <translation id="4726710355753484204">‏لتكبير الشاشة، اضغط على Ctrl ‏+ Alt + مفتاح رفع مستوى السطوع.
@@ -5163,6 +5169,7 @@
 <translation id="4963789650715167449">إزالة علامة التبويب الحالية</translation>
 <translation id="4964455510556214366">الترتيب</translation>
 <translation id="4964544790384916627">إرساء النافذة</translation>
+<translation id="4964673849688379040">جارٍ التحقق...</translation>
 <translation id="4966972803217407697">يتم استخدام وضع التصفُّح المُتخفي حاليًا.</translation>
 <translation id="4967227914555989138">إضافة ملاحظة</translation>
 <translation id="4967360192915400530">تنزيل ملف خطير</translation>
@@ -5353,6 +5360,7 @@
 <translation id="5112577000029535889">&amp;أدوات المطورين</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{تم نقل ملف واحد}zero{تم نقل {NUM_OF_FILES} ملف}two{تم نقل ملفين ({NUM_OF_FILES})}few{تم نقل {NUM_OF_FILES} ملفات}many{تم نقل {NUM_OF_FILES} ملفًا}other{تم نقل {NUM_OF_FILES} ملف}}</translation>
 <translation id="511313294362309725">تفعيل ميزة "الإقران السريع"</translation>
+<translation id="5113992879909788634">‏مزيد من المعلومات حول ميزة "التصفّح التلقائي" في Chrome</translation>
 <translation id="51143538739122961">أدخِل مفتاح الأمان والمسه</translation>
 <translation id="5115338116365931134">‏الدخول المُوحَّد (SSO)</translation>
 <translation id="5116628073786783676">حف&amp;ظ ملف الصوت باسم...</translation>
@@ -7037,6 +7045,7 @@
 <translation id="6470823736074966819">كتم صوت الإشعارات</translation>
 <translation id="6472893788822429178">عرض زر الصفحة الرئيسية</translation>
 <translation id="6473315466413288899">حدِّد خيارًا</translation>
+<translation id="6474021817475285003">‏عرض المزيد في "تقويم Google"</translation>
 <translation id="6474498546677193336">‏تعذّر إلغاء المشاركة بسبب استخدام تطبيق لهذا الملف. سيتم إلغاء مشاركة الملف عند إيقاف Linux.</translation>
 <translation id="6474884162850599008">‏إلغاء ربط حساب Google Drive</translation>
 <translation id="6476482583633999078">سرعة الكلام</translation>
@@ -7762,6 +7771,7 @@
 <translation id="701020165009334820">‏يمكنك تنزيل تطبيقات وألعاب Android من "متجر Play".</translation>
 <translation id="701080569351381435">عرض المصدر</translation>
 <translation id="7012430956470647760">أدوات رقابة الأهل على التطبيقات</translation>
+<translation id="7012873145982513962">يقترح هذا الموقع الإلكتروني مشاركة الصوت للاستفادة من جميع الميزات</translation>
 <translation id="7014174261166285193">تعذّر التثبيت.</translation>
 <translation id="7014480873681694324">إزالة التمييز</translation>
 <translation id="7014741021609395734">مستوى التكبير أو التصغير</translation>
@@ -9137,6 +9147,7 @@
 <translation id="8082132721957920509">تم حفظ بطاقتك</translation>
 <translation id="8082390128630131497">‏سيؤدي إيقاف خيار "تصحيح الأخطاء عبر ADB" إلى إعادة ضبط جهاز <ph name="DEVICE_TYPE" /> هذا على الإعدادات الأصلية. وسيتم محو جميع حسابات المستخدمين والبيانات المحلّية.</translation>
 <translation id="8084114998886531721">كلمة مرور محفوظة</translation>
+<translation id="8084417885464859041">‏استخدام Gemini بأمان</translation>
 <translation id="8084429490152575036">‏إعدادات اسم نقطة الوصول (APN) لشبكات الجوّال</translation>
 <translation id="8084628902026812045">لا يستخدم هذا الموقع الإلكتروني اتصالاً آمنًا وربما تمّ التلاعب بالملف.</translation>
 <translation id="808488435221187916">‏تتوفّر معلوماتك في "محفظة Google" على أي جهاز تم تسجيل الدخول إليه</translation>
@@ -9732,6 +9743,7 @@
 <translation id="8553342806078037065">إدارة الأشخاص الآخرين</translation>
 <translation id="8554642222921881444">إظهار قائمة عائمة عند تحديد النص</translation>
 <translation id="8554899698005018844">بدون لغة</translation>
+<translation id="8555069853078399592">‫<ph name="ACTION_TOOLTIP" /> - تم عرض المحتوى الموسّع</translation>
 <translation id="8555444629041783356">الجدول الزمني التلقائي للإيقاف النهائي</translation>
 <translation id="8557022314818157177">يُرجى الاستمرار في لمس مفتاح الأمان إلى أن يتم حِفظ بصمة الإصبع.</translation>
 <translation id="8557100046150195444">استخدِم بصمة الإصبع للمتابعة</translation>

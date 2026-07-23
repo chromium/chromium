@@ -500,6 +500,7 @@
 <translation id="1376836354785490390">کم دکھائیں</translation>
 <translation id="1377438103060664754">‏اگر آپ کے پاس ورڈز میں سے کوئی ڈیٹا کی خلاف ورزی میں پایا جاتا ہے تو Google پاس ورڈ مینیجر پوچھتا ہے کہ کیا آپ اسے مضبوط پاس ورڈ میں تبدیل کرنا چاہتے ہیں</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> اس ترتیب کو کنٹرول کر رہا ہے</translation>
+<translation id="1378715594598306389">مزید ٹیبز دیکھیں</translation>
 <translation id="1380028686461971526">نیٹ ورک سے خودکار طور پر منسلک ہوں</translation>
 <translation id="1381567580865186407">‏Google کو پروسیسنگ کے لیے <ph name="LANGUAGE" /> اسپیچ بھیجی جاتی ہے</translation>
 <translation id="1382174183118245544">کریڈٹ کارڈ نمبرز</translation>
@@ -1229,6 +1230,7 @@
 <translation id="194174710521904357">آپ نے عارضی طور پر اس سائٹ کو فریق ثالث کوکیز استعمال کرنے کی اجازت دی ہے، جس کا مطلب ہے کہ براؤزنگ کا تحفظ کم ہے لیکن سائٹ کی خصوصیات توقع کے مطابق کام کرنے کا زیادہ امکان ہے۔</translation>
 <translation id="1942128823046546853">سبھی ویب سائٹس پر اپنا سبھی ڈیٹا پڑھیں اور تبدیل کریں</translation>
 <translation id="1944535645109964458">کوئی پاس کی دستیاب نہیں ہے</translation>
+<translation id="1944921356641260203">اپ ڈیٹ ملا</translation>
 <translation id="1947136734041527201">آپ کو اس اکاؤنٹ کا استعمال کرتے ہوئے ویب سائٹس میں سائن ان کرنے دیتا ہے جن کی شناختی سروس آپ کے پاس ہے</translation>
 <translation id="1948528728718281125">ایپس، کیمرے کی اجازت والی ویب سائٹس اور سسٹم سروسز کے لیے کیمرے تک رسائی کی اجازت ہے</translation>
 <translation id="1949332606889020901">‏ناکام IDs</translation>
@@ -1811,7 +1813,6 @@
 <translation id="2424424966051154874">{0,plural, =1{مہمان}other{مہمان (#)}}</translation>
 <translation id="2426805022920575512">دوسرا اکاؤنٹ منتخب کریں</translation>
 <translation id="2427507373259914951">بائیں طرف کلک کریں</translation>
-<translation id="2428120669821109648">ٹیب اسٹائلنگ</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 اکاؤنٹ کا پاس ورڈ صرف اس آلے میں محفوظ کیا گیا ہے۔ مزید تفصیلات}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} اکاؤنٹس کا پاس ورڈ صرف اس آلے میں محفوظ کیا گیا ہے۔ مزید تفصیلات}}</translation>
 <translation id="2428510569851653187">بتائیں کہ ٹیب کے ناکام ہونے پر آپ کیا کر رہے تھے</translation>
 <translation id="2428939361789119025">‏WiFi آف کریں</translation>
@@ -2527,6 +2528,7 @@
 <translation id="2955048943983973430">‏‫Google کی متعلقہ سروسز</translation>
 <translation id="2956070239128776395">سیکشن گروپ میں ہے: <ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">‏اس ایکسٹینشن کا استعمال کرنے کے لیے ڈویلپر وضع آن کریں جس کا Chrome ویب اسٹور کے ذریعے جائزہ نہیں لیا جا سکتا ہے۔</translation>
+<translation id="2957987442574819977">‏‫Gemini سے غیر متوقع نتائج</translation>
 <translation id="2958721676848865875">پیک ایکسٹینشن کی وارننگ</translation>
 <translation id="2959127025785722291">کچھ غلط ہو گیا۔ اسکیننگ مکمل نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="2959474507964749987">‏یہ اینکرپٹ کردہ فائل ایک وائرس یا میلوئیر ہو سکتا ہے۔<ph name="LINE_BREAK" />یہ چیک کرنے کیلئے کہ آیا یہ غیر محفوظ ہے، آپ Google محفوظ براؤزنگ کو فائل اور پاس ورڈ بھیج سکتے ہیں۔ اسکینز میں عموماً کچھ سیکنڈ کا وقت لگتا ہے۔<ph name="LINE_BREAK" />اسکین کرنے کیلئے، فائل کا پاس ورڈ شامل کریں۔</translation>
@@ -3512,6 +3514,7 @@
 <translation id="3708295717182051206">سب ٹائٹلز</translation>
 <translation id="3708684582558000260">بند کی گئی سائٹس کو ڈیٹا بھیجنے اور موصول کرنے کے عمل کو مکمل کرنے کی اجازت نہ دیں</translation>
 <translation id="3709244229496787112">ڈاؤن لوڈ مکمل ہونے سے پہلے براؤزر بند کر دیا گیا۔</translation>
+<translation id="3710438437470197252">‏‫Google Drive میں مزید دیکھیں</translation>
 <translation id="3710501561113687889">جاری رکھنے کے لیے، <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> اس سائٹ کے ساتھ آپ کے <ph name="FIELDS_STRING" /> کا اشتراک کرے گا۔</translation>
 <translation id="3711931198657368127">پیسٹ کریں اور <ph name="URL" /> پر جائیں</translation>
 <translation id="3711945201266135623">پرنٹ سرور سے <ph name="NUM_PRINTERS" /> پرنٹرز ملے</translation>
@@ -5159,6 +5162,7 @@
 <translation id="4963789650715167449">موجودہ ٹیب ہٹائیں</translation>
 <translation id="4964455510556214366">انتظام</translation>
 <translation id="4964544790384916627">ڈاک ونڈو</translation>
+<translation id="4964673849688379040">چیک کیا جا رہا ہے…</translation>
 <translation id="4966972803217407697">آپ پوشیدگی وضع میں ہیں</translation>
 <translation id="4967227914555989138">ایک نوٹ شامل کریں</translation>
 <translation id="4967360192915400530">خطرناک فائل ڈاؤن لوڈ کریں</translation>
@@ -5349,6 +5353,7 @@
 <translation id="5112577000029535889">&amp;ڈیولپر ٹولز</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 فائل منتقل ہو گئی}other{{NUM_OF_FILES} فائلز منتقل ہو گئیں}}</translation>
 <translation id="511313294362309725">فاسٹ پئیر آن کریں</translation>
+<translation id="5113992879909788634">‏‫Chrome کے آٹو براؤز کے بارے میں مزید جانیں</translation>
 <translation id="51143538739122961">اپنی سیکیورٹی کلید داخل کریں اور اسے ٹچ کریں</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">آڈیو &amp;محفوظ کریں بطور…</translation>
@@ -7031,6 +7036,7 @@
 <translation id="6470823736074966819">اطلاعات کو خاموش کریں</translation>
 <translation id="6472893788822429178">ہوم بٹن دکھائیں</translation>
 <translation id="6473315466413288899">ایک اختیار منتخب کریں</translation>
+<translation id="6474021817475285003">‏‫Google کیلنڈر میں مزید دیکھیں</translation>
 <translation id="6474498546677193336">‏اشتراک ختم نہیں ہوسکا کیونکہ ایک ایپلیکیشن اس فولڈر کو استعمال کر رہی ہے۔ اگلی بار Linux بند ہونے پر فولڈر کا اشتراک ختم کر دیا جائے گا۔</translation>
 <translation id="6474884162850599008">‏Google Drive اکاؤنٹ منقطع کریں</translation>
 <translation id="6476482583633999078">اسپیچ کی رفتار</translation>
@@ -9122,6 +9128,7 @@
 <translation id="8082132721957920509">آپ کا کارڈ محفوظ ہو گیا</translation>
 <translation id="8082390128630131497">‏ADB ڈیبگنگ کو غیر فعال کرنے سے یہ <ph name="DEVICE_TYPE" /> فیکٹری کی ترتیبات پر ری سیٹ ہو جائے گا۔ صارف کے سبھی اکاؤنٹس اور مقامی ڈیٹا کو مٹا دیا جائے گا۔</translation>
 <translation id="8084114998886531721">محفوظ کیا گیا پاس ورڈ</translation>
+<translation id="8084417885464859041">‏‫Gemini کو محفوظ طریقے سے استعمال کریں</translation>
 <translation id="8084429490152575036">‏سیلولر APN کی ترتیبات</translation>
 <translation id="8084628902026812045">یہ سائٹ محفوظ کنکشن استعمال نہیں کر رہی ہے اور ہو سکتا ہے فائل کے ساتھ چھیڑ چھاڑ کی گئی ہو</translation>
 <translation id="808488435221187916">‏آپ کی معلومات کسی بھی سائن ان کردہ آلہ پر Google والٹ میں دستیاب ہے</translation>
@@ -9716,6 +9723,7 @@
 <translation id="8553342806078037065">دوسرے لوگوں کا نظم کریں</translation>
 <translation id="8554642222921881444">منتخب کردہ ٹیکسٹ پر فلوٹنگ مینیو</translation>
 <translation id="8554899698005018844">کوئی زبان نہیں</translation>
+<translation id="8555069853078399592">‫<ph name="ACTION_TOOLTIP" /> - توسیع شدہ مواد دکھایا گیا</translation>
 <translation id="8555444629041783356">غروب آفتاب کا خودکار شیڈول</translation>
 <translation id="8557022314818157177">آپ کے فنگر پرنٹ کیپچر ہو جانے تک اپنی سیکیورٹی کلید کو ٹچ کرتے رہیں</translation>
 <translation id="8557100046150195444">‏جاری رکھنے کے لیے ٹچ ID</translation>

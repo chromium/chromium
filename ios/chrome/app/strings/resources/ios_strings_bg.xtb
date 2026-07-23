@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отваряне на менюто на профила.</translation>
 <translation id="1397144142234474689">Скриване на „История“</translation>
 <translation id="1399268420835656394">Ако не сте дете, добре е да проверите възрастта в профила в Apple на това устройство. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">По-рано попълнено</translation>
 <translation id="1407135791313364759">Отваряне на всички</translation>
 <translation id="1408847409015257906">Докоснете „Поверителност и сигурност“.</translation>
 <translation id="1411386976162024013">Визуално търсене с Обектив</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Профилът ви се управлява от родителя ви.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Променено</translation>
+<translation id="1481450969185702334">Намиране и попълване</translation>
 <translation id="1483493594462132177">Изпращане</translation>
 <translation id="1486096554574027028">Търсене в паролите</translation>
 <translation id="1486593497476255523">Задачата за групи раздели е изпълнена!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">За да защити поверителността ви, Chrome няма да попълни автоматично паролата ви в това поле.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 сайт (още на синхронизираните устройства)}other{# сайта (още на синхронизираните устройства)}}</translation>
+<translation id="2865392654629180917">Задавайте въпроси и получавайте базирани на AI отговори</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">Когато сигурността ви е застрашена, изпраща до Google URL адресите на някои от страниците, които посещавате.</translation>
 <translation id="2883151425485251736">Преглеждайте и редактирайте темите, които сте скрили от профила си</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Нова група раздели...</translation>
 <translation id="3185760469172949183">Задачата за търсене с камерата е изпълнена!</translation>
 <translation id="3186796054637504691">Clear History and Website Data</translation>
+<translation id="3190558889382726167">Паролата бе запазена</translation>
 <translation id="3190736958609431397">Спиране на проследяването</translation>
 <translation id="3208260410153224535">Организацията ви изключи функцията за влизане в профил. Новите отметки, пароли и др. ще се запазват само на това устройство.</translation>
 <translation id="3211969308836412674">Освобождаване на сайта</translation>

@@ -261,7 +261,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1393071644879491291">Árásaraðilar á vefsvæðinu sem þú reyndir að opna gætu reynt að plata þig til að setja upp hugbúnað eða afhjúpa atriði á borð við aðgangsorðið þitt, símanúmer eða kreditkortanúmer. Chrome mælir eindregið með því að þú lokir vefsvæðinu. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar um þessa viðvörun<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">Ekki verður vísað í vefsvæði sem bætt er við hér í svörum, jafnvel þótt flipinn sé opinn. Ef vefsvæði sem þú bætir við er í notkun í þræði getur það tekið allt að 30 mínútur fyrir þráðinn að hætta að vísa í það.</translation>
 <translation id="1402151528875251561">Sýna feril í hliðarglugga</translation>
-<translation id="1404026649028693342">Alltaf sýna gervigreindarstillingu</translation>
 <translation id="1405567553485452995">Ljósgrænn</translation>
 <translation id="1406370515365284486">Greiðslumátarnir þínir verða vistaðir samt sem áður</translation>
 <translation id="1406500794671479665">Staðfestir…</translation>
@@ -323,6 +322,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Þrifaþjónusta</translation>
 <translation id="1476595624592550506">Breyta aðgangsorði</translation>
+<translation id="1481450969185702334">Finna og fylla út</translation>
 <translation id="1482372785911828880">Mjög mjó</translation>
 <translation id="1482879811280872320">Hjólreiðar</translation>
 <translation id="1483493594462132177">Senda</translation>
@@ -675,7 +675,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2059202684901022309">22 x 34 to.</translation>
 <translation id="2064568741209980952">Lánstraust og lán</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{Ein tillaga}one{# tillaga}other{# tillögur}}</translation>
-<translation id="2066690553719545730">Alltaf sýna gervigreindarstillingu</translation>
 <translation id="2066969741541525119">Fyrirtækið þitt hefur lokað á vefsvæðið sem þú ert að reyna að opna</translation>
 <translation id="2069913043427250781">Ökutækja- og umferðaröryggi</translation>
 <translation id="2071156619270205202">Þetta kort er ekki gjaldgengt fyrir sýndarkortsnúmer.</translation>
@@ -1283,7 +1282,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2978824962390592855">Ópera</translation>
 <translation id="2979424420072875974">Tilföng fyrir rithöfunda</translation>
 <translation id="2980742331521553164">CVC-númer þessa korts verður dulkóðað og vistað á Google-reikningnum þínum til að flýta fyrir greiðslu</translation>
-<translation id="2983311431122838216">Spurðu gervigreindarstillingu spurninga í Google-leit</translation>
 <translation id="2983666748527428214">Opna huliðsflipa</translation>
 <translation id="2985398929374701810">Færðu inn gilt heimilisfang</translation>
 <translation id="2986485254770343131">Vistar myndavélarskrár</translation>
@@ -1866,6 +1864,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="385489333361351399">Myndavélar og ljósmyndabúnaður</translation>
 <translation id="3858027520442213535">Uppfæra dagsetningu og tíma</translation>
 <translation id="3858860766373142691">Heiti</translation>
+<translation id="3864558817291331916">Sýna <ph name="AI_ENGINE_NAME" /> alltaf</translation>
 <translation id="3865339060090354361">Sjá skilmála <ph name="CREDIT_CARD_NAME" /> hér</translation>
 <translation id="3869939189466884821">Staðbundnu skránum þínum verður eytt eftir <ph name="MINUTES" /> mínútur</translation>
 <translation id="3872834068356954457">Vísindi</translation>
@@ -1888,6 +1887,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="390391808978419508">Opnun rann út á tíma</translation>
 <translation id="3905894480064208252">{0,plural, =1{Lokað er á flutning skráar}one{Lokað er á flutning <ph name="FILE_COUNT" /> skráar}other{Lokað er á flutning <ph name="FILE_COUNT" /> skráa}}</translation>
 <translation id="3906022360148923497">Greiðslumátatákn</translation>
+<translation id="3906234161316839040">Aðrar pantanir</translation>
 <translation id="3906954721959377182">Spjaldtölva</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">Nánar um innfellt efni</translation>
@@ -2589,6 +2589,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5001526427543320409">Fótspor þriðju aðila</translation>
 <translation id="5007344584818503324">Sameiginleg virkni flipahópa</translation>
 <translation id="5007392906805964215">Yfirfara</translation>
+<translation id="5008767248670679254">Allar sendingarnar þínar</translation>
 <translation id="5011561501798487822">Greint tungumál</translation>
 <translation id="5015510746216210676">Vélarheiti:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2647,7 +2648,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5097099694988056070">Talnagögn tækis eins og notkun örgjörva/vinnsluminnis</translation>
 <translation id="5097468150760963273">27 x 39 to.</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">Ýttu á dálkalykilinn (Tab) og svo Enter til að spyrja gervigreindarstillingu</translation>
 <translation id="5105442806410269908">Stjórna öðrum Google-gögnum</translation>
 <translation id="510644072453496781">Pappi (endar)</translation>
 <translation id="5106648964679263509">Númer <ph name="BNPL_ISSUER_NAME" />-sýndarkorts fyllt út</translation>
@@ -3363,6 +3363,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6177531123306197852">Umslag: C2</translation>
 <translation id="6180316780098470077">Tími milli tilrauna</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786">Ýttu á dálkalykilinn (Tab) og svo Enter til að spyrja <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="6189351761800074311">Textinn og síðuefnið þitt er sent til Google, en verður ekki notað til að bæta gervigreind.
     <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">Hnekktu tilteknum lyklum á lyklaborðinu þínu, t.d. Esc</translation>
@@ -3751,7 +3752,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6786145470008421571">Umslag: 16 x 23 cm</translation>
 <translation id="6786747875388722282">Viðbætur</translation>
 <translation id="6787094689637422836">Við kynnum nýja persónuverndareiginleika sem veita þér meira val um auglýsingarnar sem birtast þér.</translation>
-<translation id="6788615780749001893">Gervigreindarstillingarhnappur, ýttu á Enter til að spyrja gervigreindarstillingu</translation>
 <translation id="6789062271869667677">Samfelld prentun (löng)</translation>
 <translation id="678982761784843853">Kenni fyrir varið efni</translation>
 <translation id="6790428901817661496">Spila</translation>
@@ -3823,6 +3823,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6898699227549475383">Notendaskipan (O)</translation>
 <translation id="6900702165119149418">Þú ert skráð(ur) út</translation>
 <translation id="6907458757809079309">Hreysti</translation>
+<translation id="6910211073230771657">Eytt</translation>
 <translation id="691024665142758461">Sækja margar skrár</translation>
 <translation id="691046363691324218">Leiðréttingarnúmer</translation>
 <translation id="6915804003454593391">Notandi:</translation>
@@ -3990,6 +3991,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}one{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}other{<ph name="PAYMENT_METHOD_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> í viðbót}}</translation>
 <translation id="7156870133441232244">Uppfæra ætti þjóninn í TLS 1.2 eða nýrri útgáfu.</translation>
 <translation id="7156885531105222428">Síðan sem þú baðst um fannst ekki í forritinu</translation>
+<translation id="7157447397944182926">Spyrðu <ph name="AI_ENGINE_NAME" /> í <ph name="SEARCH_ENGINE_NAME" />-leit</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Til að senda þessa skrá með <ph name="FEATURE_NAME" /> skaltu losa um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu.}one{Til að senda þessar skrár með <ph name="FEATURE_NAME" /> skaltu losa um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu.}other{Til að senda þessar skrár með <ph name="FEATURE_NAME" /> skaltu losa um pláss (<ph name="DISK_SPACE_SIZE" />) í tækinu þínu.}}</translation>
 <translation id="7160999678034985039">Vistaðu það sem þú ert að vinna í og ræstu uppfærsluna þegar allt er klárt.</translation>
 <translation id="7162277662076933695">Snjallkortalesari</translation>
@@ -4130,6 +4132,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7393161616326137353">Ævintýraleikir</translation>
 <translation id="7393475648162498734">Sjáðu hvaða fríðindi eru í boði fyrir kortin þín þegar þú gengur frá greiðslu</translation>
 <translation id="7393971683644170444">Tengist kortaútgefanda ...</translation>
+<translation id="7394497897677511168">Aðrar sendingar</translation>
 <translation id="739728382607845710">Tákn greiðslumiðlara</translation>
 <translation id="7399616692258236448">Sjálfkrafa er lokað á staðsetningarbeiðnir fyrir öll vefsvæði nema þau sem þú hefur gefið leyfi</translation>
 <translation id="7400418766976504921">Vefslóð</translation>
@@ -4640,6 +4643,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="815036624016370447">Með upplýsingum af Google-reikningnum þínum <ph name="ACCOUNT" /> geturðu fyllt eyðublöð út hraðar í Chrome</translation>
 <translation id="8150722005171944719">Skráin á <ph name="URL" /> er ekki læsileg. Hún kann að hafa verið fjarlægð, færð eða skrárheimildir gætu hindrað aðgang að henni.</translation>
 <translation id="8151185429379586178">Forritunartól</translation>
+<translation id="8152194419479742504">Sláðu inn „@@“ í hvaða eyðublað sem er til að finna og fylla út upplýsingar án þess að skipta um flipa</translation>
 <translation id="8153865548451212769">{0,plural, =1{Regla kerfisstjóra mælir ekki með því að hlaða skránni niður í <ph name="DESTINATION_NAME" />}one{Regla kerfisstjóra mælir ekki með því að hlaða skránum niður í <ph name="DESTINATION_NAME" />}other{Regla kerfisstjóra mælir ekki með því að hlaða skránum niður í <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Síðustu flipar sem voru opnaðir</translation>
 <translation id="81563721597823545">Hokkíbúnaður</translation>
@@ -4660,6 +4664,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="8189557652711717875">Leitarvélin sem þú velur verður notuð við eiginleika á borð við að leita frá veffangastikunni og frá myndum á vefsíðum.</translation>
 <translation id="8190193880870196235">Stjórnað af viðbót</translation>
 <translation id="8194412401381329820">Ekki er hægt að nota þessa síðu af stýrðum reikningi í þessu tæki sem ekki er stýrt. Öllum stýrðum reikningum verður læst ef þú notar þessa síðu, að undanskildum reikningum með stýringu af hálfu sama aðila og stýrir þessu tæki (tengdir reikningar).</translation>
+<translation id="8194579937546982778">Sýna <ph name="AI_ENGINE_NAME" /> alltaf</translation>
 <translation id="8194797478851900357">Aft&amp;urkalla flutning</translation>
 <translation id="8194956568907463262">Skotleikir</translation>
 <translation id="8199437620497683918">Geisladiskur (glans)</translation>
@@ -5020,6 +5025,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="877348612833018844">{0,plural, =1{Flytja skrá sem er trúnaðarmál?}one{Flytja skrár sem eru trúnaðarmál?}other{Flytja skrár sem eru trúnaðarmál?}}</translation>
 <translation id="8775347646940100151">Pappír (bréfhaus)</translation>
 <translation id="8775863327608679820">Útgefendur „kauptu núna, borgaðu síðar“ fyrir raðgreiðslur, opnir í hálfri hæð.</translation>
+<translation id="8776789089819232268">Allar pantanirnar þínar</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781233757384402598">Þegar þú sendir beiðni um ítarlega sjálfvirka útfyllingu er notkunargögnum, beiðnum og upplýsingum um síður deilt með Google til að bæta upplifun af sjálfvirkri útfyllingu</translation>
 <translation id="8781278378794969337">Hnappurinn „Þýða síðu“, virkjaðu til að þýða þessa síðu með Google Translate</translation>
@@ -5344,6 +5350,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="979107176848483472">Vafranum þínum og prófílnum er stjórnað af <ph name="DOMAIN" /></translation>
 <translation id="979189555234810423">Sýningar og ráðstefnur</translation>
 <translation id="981121421437150478">Ónettengt</translation>
+<translation id="983587187183716432">Hnappurinn „<ph name="AI_ENGINE_NAME" />“, ýttu á Enter til að spyrja <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984101218975906499">Lyf og líftækni</translation>
 <translation id="984275831282074731">Greiðslumátar</translation>
 <translation id="985199708454569384">&lt;p&gt;Þessi villa birtist ef dagsetning og tími tölvunnar eða tækisins eru stillt rangt.&lt;/p&gt;

@@ -1370,6 +1370,18 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
         |TIME_LIMITS| áp dụng giới hạn mức sử dụng hằng ngày và khiến người dùng không thể sử dụng ứng dụng sau khi đạt đến giới hạn đó vào ngày cụ thể. Giới hạn mức sử dụng được chỉ định theo |daily_limit_mins|. Hằng ngày, hệ thống sẽ đặt lại giới hạn mức sử dụng vào thời gian (theo giờ UTC) đã chỉ định trong |reset_at|.
         Chính sách này chỉ dùng cho người dùng là trẻ em.
         Chính sách này sẽ bổ sung cho 'UsageTimeLimit'. Các giới hạn đã chỉ định trong 'UsageTimeLimit' như thời gian sử dụng thiết bị và giờ đi ngủ sẽ được thực thi bất kể 'PerAppTimeLimits' là như thế nào.</translation>
+<translation id="19133869326547269">Chính sách này không được dùng nữa và không có hiệu lực vì tính năng Nhấp để gọi đã bị loại bỏ khỏi Chrome.
+
+Nội dung mô tả gốc:
+Bật tính năng Nhấp để gọi. Tính năng này cho phép người dùng gửi số điện thoại từ Máy tính đang mở Chrome sang thiết bị Android khi người dùng đã đăng nhập. Để biết thêm thông tin, hãy xem bài viết trong trung tâm trợ giúp: https://support.google.com/chrome/answer/9430554?hl=vi.
+
+Nếu bạn đặt chính sách này thành bật, thì người dùng Chrome có thể gửi số điện thoại tới thiết bị Android.
+
+Nếu bạn đặt chính sách này thành tắt, thì người dùng Chrome sẽ không thể gửi số điện thoại tới thiết bị Android.
+
+Nếu bạn đặt chính sách này, thì người dùng sẽ không thể thay đổi hay ghi đè chính sách.
+
+Nếu bạn không đặt chính sách này, thì tính năng Nhấp để gọi sẽ bật theo mặc định.</translation>
 <translation id="1913629775420987861">Hiện hộp thoại nhắc nhở khi người dùng định thoát</translation>
 <translation id="1915242485679279502">Hiển thị huy hiệu doanh nghiệp mở rộng trên thanh công cụ</translation>
 <translation id="1916266055944569995">Việc đặt chính sách này sẽ xác định giá trị mà API Cấu hình được quản lý trả về cho nguồn gốc đã cho.
@@ -3742,15 +3754,6 @@ Nếu bạn đặt chính sách này thành 2 – BlockPartitioning (Chặn phâ
 Hãy sử dụng <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> để vô hiệu hoá tính năng phân vùng bộ nhớ của bên thứ ba cho những nguồn gốc cấp cao nhất cụ thể. Vui lòng truy cập vào https://developers.google.com/privacy-sandbox/cookies/storage-partitioning để biết thông tin chi tiết về tính năng phân vùng bộ nhớ của bên thứ ba.
 
 Tính năng này đã bị loại bỏ trong Chrome 145. Bạn nên sử dụng phương thức thay thế là requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Bạn có thể gửi ý kiến phản hồi tại https://crbug.com/425248669.</translation>
-<translation id="3405361833556012520">Chính sách này chỉ áp dụng cho lưu lượng truy cập trên trình duyệt; thao tác trên trang web trong ứng dụng Android, Cửa hàng Play và lưu lượng truy cập khác của người dùng như lưu lượng truy cập máy ảo Linux hoặc lệnh in. Chính sách này vẫn tuân thủ các quy định hạn chế áp dụng cho VPN luôn bật. Chính sách này chỉ thực thi khi VPN không được kết nối và chỉ áp dụng cho lưu lượng truy cập trên trình duyệt của người dùng. Khi chính sách này thực thi, lưu lượng truy cập hệ thống cũng có thể bỏ qua VPN luôn bật để thực hiện các nhiệm vụ như tìm nạp chính sách và đồng bộ hoá đồng hồ hệ thống.
-
-Hãy dùng danh sách này để mở các trường hợp ngoại lệ đối với một số tên giao thức, miền con của các miền khác, cổng hoặc đường dẫn cụ thể theo định dạng được nêu tại https://support.google.com/chrome/a?p=url_blocklist_filter_format. Bộ lọc cụ thể nhất sẽ quyết định liệu một URL bị chặn hay được cho phép.
-
-Nếu bạn đặt <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />, chính sách này sẽ định cấu hình một VPN luôn bật. Khi không kết nối VPN luôn bật, thì việc điều hướng đến tất cả máy chủ sẽ bị chặn, ngoại trừ những máy chủ được chính sách <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> cho phép. Ở trạng thái này của thiết bị, <ph name="URL_BLOCKLIST_POLICY_NAME" /> và <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ bị bỏ qua. Khi kết nối VPN luôn bật, các chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" /> và <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ được áp dụng và chính sách <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> sẽ bị bỏ qua.
-
-Chính sách này chỉ áp dụng cho 1.000 mục.
-
-Nếu bạn không đặt chính sách này, thì hệ thống sẽ ngăn mọi thao tác trên trình duyệt trong khi VPN luôn bật đang hoạt động ở chế độ nghiêm ngặt và không kết nối VPN.</translation>
 <translation id="3405997282295704902">Không cho phép người dùng sử dụng <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Không hỏi người dùng (bắt đầu tải xuống ngay)</translation>
 <translation id="3410534959501660670">Chế độ cài đặt cho tính năng Chụp văn bản</translation>
@@ -5011,6 +5014,7 @@ Các miền phải ở dạng tên miền đủ điều kiện (FQDN) hoặc d�
 Hệ thống sẽ bỏ qua các miền không đúng định dạng.</translation>
 <translation id="4238777612788632629">Chạy lại nhanh nếu đã lỗi thời</translation>
 <translation id="4239720644496144453">Bộ nhớ đệm không được sử dụng cho các ứng dụng Android. Nếu nhiều người dùng cài đặt cùng một ứng dụng Android thì ứng dụng sẽ được tải xuống lại cho từng người dùng.</translation>
+<translation id="4239949495354048254">Cho phép tải tệp lên Gemini trong Chrome.</translation>
 <translation id="4242583077375244471">Khi bạn đặt chính sách này thành bật, <ph name="PRODUCT_NAME" />
 sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn
 cùng với Chrome Root Store là nguồn tin cậy công khai để xác minh chứng chỉ máy chủ.
@@ -7961,16 +7965,6 @@ Nếu bạn không đặt chính sách này nhưng có đặt chính sách <ph n
 <translation id="6016304107003486747">Chính sách này xác định hành vi gán lại phím Delete trên trang con "gán lại phím". Trang con "gán lại phím" cho phép người dùng tuỳ chỉnh các phím trên bàn phím. Nếu bạn bật chính sách này thì người dùng sẽ không thể tuỳ chỉnh các chế độ gán lại cụ thể này. Nếu bạn không đặt chính sách này thì các phím tắt dựa trên phím tìm kiếm sẽ là phím tắt mặc định và người dùng sẽ có thể định cấu hình phím tắt.</translation>
 <translation id="6019162469732742754">Sử dụng chế độ Tự động</translation>
 <translation id="6019606564278029236">Cho phép người dùng từ xa tương tác với cửa sổ bật lên trong phiên hỗ trợ từ xa</translation>
-<translation id="602038990586229155">Chính sách này kiểm soát việc người dùng có thể gửi yêu cầu cài đặt tiện ích của <ph name="PRODUCT_NAME" /> đến Bảng điều khiển dành cho quản trị viên của Google để xin phê duyệt hay không.
-
-Khi bạn không đặt chính sách <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> hoặc đặt thành tắt, thì chính sách này sẽ bị bỏ qua, đồng thời các yêu cầu cài đặt tiện ích sẽ không được tạo hoặc tải lên.
-Khi bạn không đặt chính sách này hoặc đặt thành tắt, thì các yêu cầu cài đặt tiện ích sẽ không được tạo hoặc tải lên.
-Khi bạn đặt chính sách này thành bật, thì các yêu cầu cài đặt tiện ích sẽ được tạo và tải lên Bảng điều khiển dành cho quản trị viên của Google.
-
-Các yêu cầu cài đặt tiện ích sẽ được tạo khi người dùng cố gắng cài đặt một tiện ích mà <ph name="EXTENSION_INSTALL_ALLOWLIST" /> hoặc <ph name="EXTENSION_SETTINGS" /> không cho phép.
-
-Đối với <ph name="PRODUCT_NAME" />, chính sách này chỉ có hiệu lực khi máy đã đăng ký bằng <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
-Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6020795917180493154">Kể từ M119, nếu bạn không đặt hoặc đặt chính sách này thành false thì WebSQL sẽ tắt, nhưng bạn có thể bật thông qua cờ Chrome "web-sql-access". Nếu bạn đặt chính sách này thành true, thì quyền truy cập vào WebSQL sẽ bật.
 Chính sách này không còn được dùng kể từ M124.</translation>
 <translation id="6022948604095165524">Tác vụ khi khởi động</translation>
@@ -8127,6 +8121,14 @@ Khi bạn bật hoặc không đặt chính sách này, người dùng có thể
 
 Khi bạn tắt chính sách này, ứng dụng Phím tắt sẽ ở chế độ chỉ có thể đọc và không cho phép tuỳ chỉnh.</translation>
 <translation id="6150320133676152520">Tắt chế độ tự động gửi mã PIN trên màn hình đăng nhập và màn hình khoá</translation>
+<translation id="6152224988699207920">Cho phép quản trị viên tuỳ chỉnh hình thức của hình mờ được áp dụng theo quy tắc của quy trình Ngăn chặn mất dữ liệu (DLP). Điều này bao gồm việc cài đặt độ mờ của phần tô/viền, xác định cỡ chữ và cài đặt múi giờ của dấu thời gian.
+Nếu bạn không đặt chính sách này hoặc một số giá trị, Chrome sẽ sử dụng chế độ mặc định của hình mờ.
+Giá trị mặc định là: độ mờ của phần tô là 4, độ mờ của viền là 6, cỡ chữ là 24 và múi giờ của dấu thời gian được đặt thành "user_device" (múi giờ trên thiết bị của người dùng).
+
+"Độ mờ phần tô" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
+"Độ mờ viền" là tỷ lệ phần trăm từ 0 (trong suốt hoàn toàn) đến 100 (mờ hoàn toàn).
+"Cỡ chữ" được xác định theo điểm.
+"Múi giờ của dấu thời gian" chỉ định giá trị nhận dạng múi giờ IANA (ví dụ: "America/Toronto") dùng để định dạng dấu thời gian của hình mờ (được hỗ trợ từ Chrome 152 trở đi), theo tên trong Cơ sở dữ liệu múi giờ IANA ( https://www.iana.org/time-zones ).</translation>
 <translation id="6155350825868160236">Cho phép người dùng chọn xem có sử dụng các dịch vụ web của Google để sửa lỗi chính tả hay không</translation>
 <translation id="6155936611791017817">Đặt trạng thái của con trỏ lớn mặc định trên màn hình đăng nhập</translation>
 <translation id="6157537876488211233">Danh sách quy tắc bỏ qua proxy được phân cách bằng dấu phẩy</translation>
@@ -8406,6 +8408,7 @@ Nếu bạn đặt chính sách này, người dùng sẽ không thể thay đ�
 Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên bản đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên bản được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
+<translation id="6279539269393750872">Cài đặt tính năng Tải tệp lên Gemini trong Chrome</translation>
 <translation id="628084107912717806">Chỉ định xem hệ thống có thể gửi các mô-đun WebAssembly trên nhiều nguồn gốc hay không</translation>
 <translation id="6280973140313576289">Buộc hiển thị bộ chọn hồ sơ khi khởi động</translation>
 <translation id="6282524907402492171">Hiển thị cảnh báo về việc ngừng cung cấp <ph name="CLOUD_PRINT_NAME" /></translation>
@@ -11429,6 +11432,7 @@ Trên <ph name="MS_WIN_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="8102913158860568230">Cài đặt luồng truyền thông mặc định</translation>
 <translation id="8104962233214241919">Tự động chọn chứng chỉ ứng dụng khách cho các trang web này</translation>
 <translation id="8109762054721090517">Mẫu dành cho <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /></translation>
+<translation id="811012672754800797">Không cho phép tải tệp lên Gemini trong Chrome.</translation>
 <translation id="8111331908123507719">Thiết lập thời gian tính bằng giây mà thiết bị sẽ chờ ở trạng thái rảnh trước khi hiển thị trình bảo vệ màn hình trên màn hình khoá.
 
 Giá trị hợp lệ nằm trong khoảng từ 1 giây đến 9999 giây. Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng giá trị mặc định là 7 giây.
@@ -12933,6 +12937,7 @@ Lưu ý: Thao tác khởi động lại thiết bị sẽ xoá bộ nhớ đệm
 <translation id="9087652369391570821">Chính sách cấu hình dành cho Trình kết nối OnFileTransfer của Chrome Enterprise</translation>
 <translation id="9088433379343318874">Cho phép nhà cung cấp nội dung của người dùng được giám sát</translation>
 <translation id="9088444059179765143">Định cấu hình phương thức phát hiện múi giờ tự động</translation>
+<translation id="9091741086777905807">Giá trị nhận dạng múi giờ IANA (ví dụ: "America/Toronto") dùng để định dạng dấu thời gian của hình mờ (được hỗ trợ từ Chrome 152 trở đi). Giá trị mặc định là "user_device".</translation>
 <translation id="9094681501120769194">Kiểm soát việc trình xem PDF trong <ph name="PRODUCT_NAME" /> có sử dụng iframe ngoài quy trình (OOPIF) hay không. Đây sẽ là cấu trúc trình xem PDF mới trong tương lai, vì cấu trúc này có thiết kế đơn giản hơn và giúp bạn thêm các tính năng mới dễ dàng hơn. Trình xem PDF GuestView hiện có là một cấu trúc lỗi thời, phức tạp và sắp tới sẽ không được dùng nữa.
 
 Khi bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt thì <ph name="PRODUCT_NAME" /> sẽ có thể sử dụng cấu trúc trình xem PDF OOPIF. Sau khi bạn đặt chính sách này thành Enabled (Bật) hoặc không đặt, chế độ mặc định sẽ do <ph name="PRODUCT_NAME" /> quyết định.

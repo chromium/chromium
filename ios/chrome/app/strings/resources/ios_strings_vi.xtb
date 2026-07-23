@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Đã đăng nhập bằng <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Mở trình đơn tài khoản.</translation>
 <translation id="1397144142234474689">Ẩn tuỳ chọn Nhật ký</translation>
 <translation id="1399268420835656394">Nếu không phải trẻ em, bạn nên kiểm tra tuổi trong Tài khoản Apple trên thiết bị này. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Đã điền trước đó</translation>
 <translation id="1407135791313364759">Mở tất cả</translation>
 <translation id="1408847409015257906">Nhấn vào "Quyền riêng tư và bảo mật".</translation>
 <translation id="1411386976162024013">Tìm kiếm bằng hình ảnh qua Ống kính</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Tài khoản của bạn do cha mẹ bạn quản lý.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Đã thay đổi</translation>
+<translation id="1481450969185702334">Tìm và điền</translation>
 <translation id="1483493594462132177">Gửi</translation>
 <translation id="1486096554574027028">Tìm mật khẩu</translation>
 <translation id="1486593497476255523">Đã hoàn thành tác vụ với Nhóm thẻ!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Để bảo vệ quyền riêng tư của bạn, Chrome sẽ không tự động điền mật khẩu của bạn vào trường này.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 trang web (nhiều trang web khác trên các thiết bị đã đồng bộ hoá)}other{# trang web (nhiều trang web khác trên các thiết bị đã đồng bộ hoá)}}</translation>
+<translation id="2865392654629180917">Đặt câu hỏi để nhận câu trả lời dựa trên AI</translation>
 <translation id="2870560284913253234">Trang web</translation>
 <translation id="2876369937070532032">Gửi URL của một số trang mà bạn truy cập cho Google khi bạn gặp rủi ro về bảo mật</translation>
 <translation id="2883151425485251736">Xem và sửa những chủ đề bạn đã ẩn khỏi tài khoản</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Nhóm thẻ mới...</translation>
 <translation id="3185760469172949183">Đã hoàn thành tác vụ tìm kiếm bằng camera!</translation>
 <translation id="3186796054637504691">Xoá nhật ký và dữ liệu trang web</translation>
+<translation id="3190558889382726167">Đã lưu mật khẩu</translation>
 <translation id="3190736958609431397">Bỏ theo dõi</translation>
 <translation id="3208260410153224535">Tổ chức của bạn đã tắt tính năng đăng nhập. Dấu trang, mật khẩu mới và các nội dung khác sẽ chỉ được lưu vào thiết bị này.</translation>
 <translation id="3211969308836412674">Bỏ ghim trang web</translation>

@@ -1392,6 +1392,17 @@ Se la policy viene disattivata, <ph name="PRODUCT_NAME" /> chiude la scheda dopo
         |BLOCK| consente di non rendere disponibile l'app per l'utente. Se viene specificato un valore |daily_limit_mins| con il limite |BLOCK|, il valore |daily_limit_mins| viene ignorato.
         |TIME_LIMITS| consente di applicare un limite di utilizzo giornaliero e di non rendere disponibile l'app una volta raggiunto il limite nella giornata specifica. Il limite di utilizzo viene specificato tramite |daily_limit_mins| e viene reimpostato ogni giorno all'orario UTC impostato tramite |reset_at|.
         Questa policy viene usata soltanto per i bambini ed è complementare alla policy "UsageTimeLimit". I limiti specificati nella policy "UsageTimeLimit", ad esempio relativi al tempo di utilizzo e di interruzione dell'uso, verranno applicati a prescindere dalla policy "PerAppTimeLimits".</translation>
+<translation id="19133869326547269">Questa policy è deprecata e non ha più alcun effetto, in quanto la funzionalità Click-to-call è stata rimossa da Chrome.
+
+Attiva la funzionalità Click-to-call, che consente agli utenti di inviare numeri di telefono dalle versioni desktop di Chrome a un dispositivo Android quando hanno fatto l'accesso. Per ulteriori informazioni, leggi l'articolo del Centro assistenza all'indirizzo: https://support.google.com/chrome/answer/9430554?hl=it.
+
+Se questa policy viene attivata, la funzionalità di invio di numeri di telefono ai dispositivi Android verrà attivata per gli utenti di Chrome.
+
+Se questa policy viene disattivata, la funzionalità di invio di numeri di telefono ai dispositivi Android verrà disattivata per gli utenti di Chrome.
+
+Se imposti questa policy, gli utenti non potranno modificarla o ignorarla.
+
+Se questa policy non viene impostata, la funzionalità Click-to-call sarà attiva per impostazione predefinita.</translation>
 <translation id="1913629775420987861">Mostra una finestra di dialogo di avviso quando l'utente sta tentando di uscire</translation>
 <translation id="1915242485679279502">Mostra badge aziendale espanso nella barra degli strumenti</translation>
 <translation id="1916266055944569995">La configurazione della policy consente di definire il valore restituito dell'API Managed Configuration per una determinata origine.
@@ -3612,7 +3623,7 @@ Questa policy non ha alcun effetto sulle app di Chrome o web che hanno un URL di
 Se la policy viene impostata su true o non viene configurata, le app web verranno avviate anche se il dispositivo è offline.</translation>
 <translation id="3255624750680556186">Se la policy viene impostata su Attivata o se non viene configurata, la funzione Powerwash può essere attivata da un dispositivo.
 
-      Se viene impostata su Disattivata, la funzione non può essere attivata da un dispositivo. Si può verificare un'eccezione per l'attivazione della funzione Powerwash, se la policy <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> viene impostata su un valore che consente l'aggiornamento del firmware TPM, ma tale firmware non è ancora stato aggiornato.</translation>
+      Se viene impostata su Disattivata, la funzione non può essere attivata da un dispositivo. Si può verificare un'eccezione per l'attivazione della funzione Powerwash, se la policy <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_NAME" /> viene impostata su un valore che consente l'aggiornamento del firmware TPM, ma questo firmware non è ancora stato aggiornato.</translation>
 <translation id="3256920103934729145">Impedisci il clickthrough degli utenti su pagine di avviso SSL</translation>
 <translation id="3257786863492892609">Controlla le policy relative alla funzionalità Registra schermo.</translation>
 <translation id="3258380413685430793">Esegui tutti i contenuti di <ph name="FLASH_PLUGIN_NAME" /></translation>
@@ -3794,15 +3805,6 @@ Se la policy viene impostata su 2 - BlockPartitioning, il partizionamento dello 
 Utilizza <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> per disattivare il partizionamento dello spazio di archiviazione di terze parti per origini di primo livello specifiche. Visita la pagina https://developers.google.com/privacy-sandbox/cookies/storage-partitioning per informazioni dettagliate sul partizionamento dello spazio di archiviazione di terze parti.
 
 Questa opzione è stata rimossa in Chrome 145 e al suo posto si consiglia di utilizzare il metodo requestStorageAccess: https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess. Puoi lasciare un feedback all'indirizzo https://crbug.com/425248669.</translation>
-<translation id="3405361833556012520">Questa policy si applica solo al traffico del browser; il Play Store, la navigazione web delle app per Android e altro traffico generato dagli utenti, ad esempio il traffico delle VM Linux o i processi di stampa, continueranno a rispettare le limitazioni imposte dalla VPN sempre attiva. Questa policy viene applicata in modo forzato solo quando la VPN non è connessa e solo per il traffico generato dal browser degli utenti. Anche se questa policy viene applicata in modo forzato, il traffico generato dal sistema può anche ignorare la VPN sempre attiva per eseguire attività come il recupero delle policy e la sincronizzazione dell'orologio di sistema.
-
-Utilizza questa policy per aprire le eccezioni di alcuni schemi, sottodomini di altri domini, porte o percorsi specifici utilizzando il formato specificato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format. Il filtro più specifico consente di determinare se un URL è bloccato o consentito.
-
-Se la policy <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> viene impostata, viene configurata una VPN sempre attiva che non sarà connessa, la navigazione verrà bloccata verso tutti gli host, ad eccezione di quelli consentiti dalla policy <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" />. In questo stato del dispositivo, le policy <ph name="URL_BLOCKLIST_POLICY_NAME" /> e <ph name="URL_ALLOWLIST_POLICY_NAME" /> vengono ignorate. Quando la VPN sempre attiva si connette, vengono applicate le policy <ph name="URL_BLOCKLIST_POLICY_NAME" /> e <ph name="URL_ALLOWLIST_POLICY_NAME" />, mentre la policy <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> viene ignorata.
-
-Per questa policy è possibile definire al massimo 1000 voci.
-
-Se la policy non viene impostata, non è possibile navigare nel browser se è attiva la VPN sempre attiva in modalità con restrizioni e la VPN non è connessa.</translation>
 <translation id="3405997282295704902">Non consentire agli utenti di utilizzare <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">Non chiedere all'utente (il download inizia immediatamente)</translation>
 <translation id="3410534959501660670">Impostazioni per la funzionalità di acquisizione di testo</translation>
@@ -7955,16 +7957,6 @@ le scorciatoie basate sul tasto Ricerca saranno quelle predefinite e agli utenti
 la configurazione.</translation>
 <translation id="6019162469732742754">Usa la Modalità automatica</translation>
 <translation id="6019606564278029236">Attiva l'interazione degli utenti remoti con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
-<translation id="602038990586229155">Questa policy controlla le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /> consentendo agli utenti di inviare alla Console di amministrazione Google le richieste per l'approvazione.
-
-Se la policy <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurata o viene disattivata, questa policy viene ignorata e le richieste di installazione delle estensioni non vengono create né caricate.
-Se questa policy non viene configurata o viene disattivata, le richieste di installazione delle estensioni non vengono create né caricate.
-Se la policy viene attivata, le richieste di installazione delle estensioni vengono create e caricate nella Console di amministrazione Google.
-
-Le richieste di installazione delle estensioni vengono create quando gli utenti tentano di installare un'estensione non autorizzata da <ph name="EXTENSION_INSTALL_ALLOWLIST" /> o <ph name="EXTENSION_SETTINGS" />.
-
-Questa policy viene applicata soltanto se la macchina viene registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
-Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="6020795917180493154">A partire dalla versione M119, se questa policy viene impostata su false o se non viene configurata, WebSQL è disattivato, ma può essere attivato tramite il flag di Chrome "web-sql-access". Se la policy viene impostata su true, l'accesso a WebSQL viene attivato.
 Questa policy è stata ritirata a partire dalla versione M124.</translation>
 <translation id="6022948604095165524">Azione all'avvio</translation>
@@ -8114,6 +8106,14 @@ Se questa policy viene attivata o se non viene configurata, gli utenti potranno 
 
 Se questa policy viene disattivata, l'app Scorciatoie da tastiera sarà in modalità di sola lettura, impedendo qualsiasi personalizzazione.</translation>
 <translation id="6150320133676152520">Disattiva l'invio automatico del PIN nella schermata di blocco e accesso</translation>
+<translation id="6152224988699207920">Consente agli amministratori di personalizzare l'aspetto delle filigrane applicate dalle regole di Prevenzione della perdita di dati (DLP). Ciò include la possibilità di impostare l'opacità del riempimento e del contorno, definire le dimensioni del carattere e configurare il fuso orario del timestamp.
+Se questa policy o alcuni valori non vengono configurati, Chrome utilizzerà il comportamento predefinito per le filigrane.
+I valori predefiniti sono: opacità del riempimento a 4, opacità del contorno a 6, dimensioni del carattere a 24 e fuso orario del timestamp impostato su 'user_device' (ovvero il fuso orario del dispositivo locale dell'utente).
+
+"Opacità riempimento" è una percentuale compresa tra 0 (completamente trasparente) e 100 (completamente opaco).
+"Opacità contorno" è una percentuale compresa tra 0 (completamente trasparente) e 100 (completamente opaco).
+La voce "Dimensioni carattere" è espressa in punti.
+"Fuso orario timestamp" specifica l'identificatore del fuso orario IANA (ad es. "America/Toronto") utilizzato per formattare i timestamp della filigrana (supportato a partire da Chrome 152 e versioni successive), che segue i nomi nel database dei fusi orari IANA (https://www.iana.org/time-zones).</translation>
 <translation id="6155350825868160236">Consenti all'utente di decidere se usare o meno servizi web di Google per correggere gli errori ortografici</translation>
 <translation id="6155936611791017817">Impostazione stato predefinito del puntatore grande nella schermata di accesso</translation>
 <translation id="6157537876488211233">Elenco separato da virgole delle regole di bypass proxy</translation>
@@ -12929,6 +12929,7 @@ Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati r
 <translation id="9087652369391570821">Policy di configurazione per il connettore OnFileTransfer di Chrome Enterprise</translation>
 <translation id="9088433379343318874">Abilita il provider di contenuti dell'utente supervisionato</translation>
 <translation id="9088444059179765143">Configura il metodo di rilevamento automatico del fuso orario</translation>
+<translation id="9091741086777905807">Identificatore del fuso orario IANA (ad es. "America/Toronto") utilizzato per formattare i timestamp della filigrana (supportato a partire da Chrome 152 e versioni successive). Il valore predefinito è 'user_device'.</translation>
 <translation id="9094681501120769194">Consente di stabilire se il visualizzatore PDF in <ph name="PRODUCT_NAME" /> utilizza un iframe out-of-process (OOPIF). In futuro, questa sarà la nuova architettura di visualizzazione di PDF, in quanto è più semplice e semplificherà l'aggiunta di nuove funzionalità. Il visualizzatore PDF GuestView esistente è un'architettura obsoleta e complessa che verrà ritirata.
 
 Se questa policy viene attivata o se non viene configurata, <ph name="PRODUCT_NAME" /> potrà usare l'architettura del visualizzatore PDF OOPIF. Se la policy viene attivata o se non viene configurata, il comportamento predefinito verrà deciso da <ph name="PRODUCT_NAME" />.

@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Login sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Buka menu akun.</translation>
 <translation id="1397144142234474689">Sembunyikan Histori</translation>
 <translation id="1399268420835656394">Jika Anda bukan anak-anak, Anda mungkin perlu memeriksa usia di Akun Apple di perangkat ini. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Pernah diisi sebelumnya</translation>
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1408847409015257906">Ketuk “Privasi &amp; Keamanan”.</translation>
 <translation id="1411386976162024013">Penelusuran visual Lens</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Akunmu dikelola oleh orang tuamu.
 <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Berubah</translation>
+<translation id="1481450969185702334">Temukan dan isi</translation>
 <translation id="1483493594462132177">Kirim</translation>
 <translation id="1486096554574027028">Telusuri sandi</translation>
 <translation id="1486593497476255523">Grup Tab selesai.</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Untuk melindungi privasi Anda, Chrome tidak akan melakukan IsiOtomatis sandi di kolom ini.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 situs (lainnya di perangkat yang disinkronkan)}other{# situs (lainnya di perangkat yang disinkronkan)}}</translation>
+<translation id="2865392654629180917">Tanyakan apa saja dan dapatkan respons yang didukung AI</translation>
 <translation id="2870560284913253234">Situs</translation>
 <translation id="2876369937070532032">Mengirimkan URL beberapa halaman yang Anda kunjungi ke Google, jika keamanan Anda berisiko</translation>
 <translation id="2883151425485251736">Melihat dan mengedit topik yang disembunyikan dari akun Anda</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Grup Tab Baru...</translation>
 <translation id="3185760469172949183">Penelusuran dengan kamera selesai.</translation>
 <translation id="3186796054637504691">Hapus Histori dan Data Situs</translation>
+<translation id="3190558889382726167">Sandi tersimpan</translation>
 <translation id="3190736958609431397">Batalkan pemantauan</translation>
 <translation id="3208260410153224535">Organisasi Anda menonaktifkan login. Bookmark, sandi, dan data baru lainnya hanya akan disimpan ke perangkat ini.</translation>
 <translation id="3211969308836412674">Lepaskan sematan situs</translation>

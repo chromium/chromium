@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">तुम्ही तो हटवल्यास, सर्वजण लगेच "<ph name="GROUP_NAME" />" या टॅब गटाचा अ‍ॅक्सेस गमवतील आणि तो सर्व डिव्हाइसवरून हटवला जाईल.</translation>
 <translation id="1142732900304639782">या साइटचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="1143193470214071120">विंडो बंद करा किंवा विंडो व्यवस्थापित करा</translation>
+<translation id="1143486892058798649">या फॉरमॅटमध्ये लिंक सेव्ह करा…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> स्कॅन करत आहे</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व ChromeOS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता.</translation>
 <translation id="1154555449933432029">तुमच्याकडे Google Password Manager मध्ये सेव्ह केलेले पासवर्ड नाहीत.</translation>
@@ -313,6 +314,7 @@
 <translation id="2330186936255788117">आणखी बुकमार्क</translation>
 <translation id="2332515770639153015">वर्धित सुरक्षित ब्राउझिंग सुरू केलेले आहे</translation>
 <translation id="233375395665273385">हटवा आणि साइन आउट करा</translation>
+<translation id="2334275697832662087">Chrome ची AI द्वारे सक्षम केलेली सुरक्षा तुम्हाला ऑनलाइन धोक्यांपासून सुरक्षित ठेवण्यास मदत करते, ज्यामुळे ब्राउझिंग करताना तुम्हाला आत्मविश्वास मिळतो</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इंस्टॉल करता आले नाही.</translation>
 <translation id="2349710944427398404">खाती, बुकमार्क आणि सेव्ह केलेल्या सेटिंग्जसह, Chrome ने वापरलेला एकूण डेटा</translation>
 <translation id="2354001756790975382">इतर बुकमार्क</translation>
@@ -614,6 +616,7 @@
 <translation id="3577473026931028326">काहीतरी चूक झाली. पुन्हा प्रयत्न करा.</translation>
 <translation id="3577558748185201054">तुमची स्वारस्ये आणि प्राधान्ये व्यवस्थापित करा</translation>
 <translation id="3587482841069643663">सर्व</translation>
+<translation id="3598421953808879451">या फॉरमॅटमध्ये व्हिडिओ सेव्ह करा…</translation>
 <translation id="3602290021589620013">पूर्वावलोकन</translation>
 <translation id="3614126103057878858">किमतीचे इनसाइट</translation>
 <translation id="3616113530831147358">ऑडिओ</translation>
@@ -1525,6 +1528,7 @@
 <translation id="71503698506017927">पासफ्रेझ एन्क्रिप्शनमध्ये Google Pay वरील पेमेंट पद्धतींचा आणि पत्त्यांचा समावेश नसतो.
 
 हे सेटिंग बदलण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या खात्यामधील Chrome डेटा हटवणे<ph name="END_LINK" /> हे करा.</translation>
+<translation id="7159399361248977424">या फॉरमॅटमध्ये इमेज सेव्ह करा…</translation>
 <translation id="7165972437814027679">Chrome काही फाइल का ब्लॉक करते याबद्दल अधिक जाणून घ्या</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> म्हणून साइन इन केले. सेटिंग उघडते.</translation>
 <translation id="7170930892977483182">तुमच्या डिव्हाइसवर आणि Google Wallet मध्ये सेव्ह केलेले सर्व सुरक्षा कोड हटवले जातील</translation>
@@ -1822,6 +1826,7 @@
 <translation id="8282297628636750033">शक्य असेल तेव्हा, साइटवर गडद थीम लागू करा</translation>
 <translation id="8282950411412455249">सुरक्षा सेटिंग्जवर जा</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{१ गुप्त विंडो बंद करा}other{# गुप्त विंडो बंद करा}}</translation>
+<translation id="8289602658021943461">या फॉरमॅटमध्ये व्हिडिओ फ्रेम सेव्ह करा…</translation>
 <translation id="8313599942510782709">तुमची टास्क अजूनही प्रगतीपथावर आहे</translation>
 <translation id="8317318757008452355">प्रिंट करण्यासाठी पर्याय उघडा</translation>
 <translation id="8320212361750431956">अलीकडील अ‍ॅक्टिव्हिटी</translation>

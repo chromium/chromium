@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />। खाताको मेनु खोल्नुहोस्।</translation>
 <translation id="1397144142234474689">हिस्ट्री लुकाउनुहोस्</translation>
 <translation id="1399268420835656394">तपाईं बच्चा हुनुहुन्न भने तपाईंले यो डिभाइसमा भएको Apple खातामा उल्लेख गरिएको उमेर सही छ कि छैन भन्ने कुरा जाँच गर्दा राम्रो हुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">यसअघि भरिएको</translation>
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="1408847409015257906">"गोपनियता र सुरक्षा" मा ट्याप गर्नुहोस्।</translation>
 <translation id="1411386976162024013">लेन्सको भिजुअल सर्च</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">तपाईंका अभिभावक तपाईंको खाता व्यवस्थापन गर्नुहुन्छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">परिवर्तन गरिएको</translation>
+<translation id="1481450969185702334">भेट्टाउनुहोस् र भर्नुहोस्</translation>
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
 <translation id="1486096554574027028">खोज पासवर्डहरू</translation>
 <translation id="1486593497476255523">ट्याब समूहहरू पूरा गरिएका छन्!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">तपाईंको गोपनीयताको सुरक्षा गर्न Chrome ले यो फिल्डमा तपाईंको पासवर्ड स्वतः भर्ने छैन।</translation>
 <translation id="2858951819750638913">Gemini लाइभ</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{एउटा साइट (सिंक गरिएका डिभाइसमा थप साइट)}other{# वटा साइट (सिंक गरिएका डिभाइसमा थप साइट)}}</translation>
+<translation id="2865392654629180917">जुनसुकै कुरा सोध्नुहोस् र AI मा आधारित जवाफहरू प्राप्त गर्नुहोस्</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">यसले तपाईंको सुरक्षा जोखिममा हुँदा तपाईंले भ्रमण गर्ने केही पृष्ठका URL हरू Google मा पठाउँछ</translation>
 <translation id="2883151425485251736">तपाईंले आफ्नो खाताबाट लुकाएका विषयहरू हेर्नुहोस् र बदल्नुहोस्</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">नयाँ ट्याब समूह...</translation>
 <translation id="3185760469172949183">क्यामेरा प्रयोग गरी खोज्ने कार्य पूरा भयो!</translation>
 <translation id="3186796054637504691">हिस्ट्री र वेबसाइटको डेटा मेटाउनुहोस्</translation>
+<translation id="3190558889382726167">पासवर्ड सेभ गरियो</translation>
 <translation id="3190736958609431397">ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="3208260410153224535">तपाईंको सङ्गठनले साइन इन गर्ने सुविधा अफ गरेको छ। नयाँ बुकमार्क, पासवर्ड र अन्य कुराहरू यो डिभाइसमा मात्र सेभ गरिने छन्।</translation>
 <translation id="3211969308836412674">साइट अनपिन गर्नुहोस्</translation>

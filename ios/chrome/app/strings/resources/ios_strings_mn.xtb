@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" />-р нэвтэрсэн. <ph name="USER_EMAIL" />. Бүртгэлийн цэсийг нээнэ үү.</translation>
 <translation id="1397144142234474689">Түүхийг нуух</translation>
 <translation id="1399268420835656394">Хэрэв та хүүхэд биш бол энэ төхөөрөмж дээрх Apple Бүртгэл дэх насыг шалгаж үзэх нь зүйтэй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Өмнө нь бөглөсөн</translation>
 <translation id="1407135791313364759">Бүгдийг нээ</translation>
 <translation id="1408847409015257906">Нууцлал болон аюулгүй байдлыг товшино уу.</translation>
 <translation id="1411386976162024013">Lens-н визуал хайлт</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Таны бүртгэлийг танай эцэг эх удирддаг.
 <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Өөрчилсөн</translation>
+<translation id="1481450969185702334">Олоод, бөглөх</translation>
 <translation id="1483493594462132177">Илгээх</translation>
 <translation id="1486096554574027028">Нууц үгийг хайх</translation>
 <translation id="1486593497476255523">Табын бүлгүүдийг тохируулж дууслаа!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Таны нууцлалыг хамгаалахын тулд Chrome таны нууц үгийг энэ талбарт автоматаар бөглөхгүй.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 сайт (синк хийсэн төхөөрөмжүүд дээр илүү олон)}other{# сайт (синк хийсэн төхөөрөмжүүд дээр илүү олон)}}</translation>
+<translation id="2865392654629180917">Юу ч хамаагүй асууж, ХОУ-аар дэмжсэн хариулт аваарай</translation>
 <translation id="2870560284913253234">Ажлын талбар</translation>
 <translation id="2876369937070532032">Таны аюулгүй байдал эрсдэлд орох үед таны зочилдог зарим хуудсын URL-г Google-д илгээдэг</translation>
 <translation id="2883151425485251736">Таны бүртгэлээсээ нуусан сэдвийг харах болон засах</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Шинэ табын бүлэг...</translation>
 <translation id="3185760469172949183">Камераар хайж дууслаа!</translation>
 <translation id="3186796054637504691">Түүх, вебсайтын өгөгдлийг арилгах</translation>
+<translation id="3190558889382726167">Нууц үгийг хадгалсан</translation>
 <translation id="3190736958609431397">Хянахаа болих</translation>
 <translation id="3208260410153224535">Танай байгууллага нэвтрэхийг унтраасан. Шинэ хавчуурга, нууц үг болон бусад зүйлийг зөвхөн энэ төхөөрөмжид хадгална.</translation>
 <translation id="3211969308836412674">Сайтыг бэхэлснийг болиулах</translation>

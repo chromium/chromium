@@ -1321,6 +1321,18 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
         |TIME_LIMITS| 會對應用程式套用每日用量上限，當使用者達到當日的用量上限後，就會無法繼續使用該應用程式。你可以在 |daily_limit_mins| 中指定用量上限。系統每天會在 |reset_at| 欄位指定的時間 (採用世界標準時間) 重新設定用量上限。
         這項政策只適用於兒童使用者。
         這項政策與「UsageTimeLimit」彼此互補。系統會強制執行在「UsageTimeLimit」中指定的限制 (例如螢幕時間和就寢時間)，而忽略「PerAppTimeLimits」。</translation>
+<translation id="19133869326547269">由於 Chrome 已移除「點選通話」功能，這項政策已淘汰且不再具有任何效力。
+
+原始說明：
+啟用「點選通話」功能，讓登入 Google 帳戶的使用者可以將電話號碼從 Chrome 桌面傳送到 Android 裝置。詳情請參閱說明中心文章：https://support.google.com/chrome/answer/9430554?hl=zh-Hant。
+
+如果將這項政策設為啟用，Chrome 使用者便可以將電話號碼傳送到 Android 裝置。
+
+如果將這項政策設為停用，Chrome 使用者則無法將電話號碼傳送到 Android 裝置。
+
+設好這項政策後，使用者即無法變更或覆寫設定。
+
+如果不設定這項政策，系統預設會啟用「點選通話」功能。</translation>
 <translation id="1913629775420987861">使用者嘗試關閉瀏覽器時，會顯示警告對話方塊</translation>
 <translation id="1915242485679279502">顯示展開的企業工具列徽章</translation>
 <translation id="1916266055944569995">你可以透過這項政策定義 Managed Configuration API 針對指定來源傳回的值。
@@ -3627,15 +3639,6 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
 你可以使用 <ph name="THIRD_PARTY_STORAGE_PARTITIONING_BLOCKED_FOR_ORIGINS_POLICY_NAME" /> 停用特定頂層來源的第三方儲存空間分區。如要進一步瞭解第三方儲存空間分區，請參閱 https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。
 
 這項政策已於 Chrome 145 中移除，建議改用 requestStorageAccess 方法：https://developer.mozilla.org/en-US/docs/Web/API/Document/requestStorageAccess。如要提供意見，請前往 https://crbug.com/425248669。</translation>
-<translation id="3405361833556012520">這項政策僅適用於瀏覽器流量。Play 商店、Android 應用程式網頁瀏覽和其他使用者流量 (例如 Linux VM 流量或列印工作) 仍會適用「永久連線 VPN」所設定的限制。這項政策只會在未連上 VPN 的情況強制執行，而且只適用於使用者的瀏覽器流量。這項政策強制執行時，系統流量也可以略過「永久連線 VPN」，執行擷取政策和同步處理系統時鐘等工作。
-
-請使用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 網頁中指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。如要判定是否封鎖某個網址，系統會以條件最精確的篩選器做為判定依據。
-
-設定 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 後，如果「永久連線 VPN」已完成設定但未連線，系統將封鎖與所有主機的連線 (<ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策允許的連線除外)。在這個裝置狀態中，系統會忽略 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" />。「永久連線 VPN」連線時，系統會套用 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 和 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策並忽略 <ph name="ALWAYSON_VPN_PRE_CONNECT_URL_ALLOWLIST_POLICY_NAME" /> 政策。
-
-這項政策最多只能有 1,000 個項目。
-
-如果不設定這項政策，只要「永久連線 VPN」處於嚴格模式，但裝置未連上該 VPN，系統將禁止瀏覽器開啟網頁。</translation>
 <translation id="3405997282295704902">不允許使用者使用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="3406122462682235653">不詢問使用者 (立即開始下載)</translation>
 <translation id="3410534959501660670">文字擷取功能的設定</translation>
@@ -7666,16 +7669,6 @@ IP 位址空間覆寫有兩種形式：
 <translation id="6016304107003486747">這項政策會決定「重新對應按鍵」子頁面中 Delete 鍵重新對應的行為。「重新對應按鍵」子頁面可讓使用者自訂鍵盤按鍵。如果啟用這項政策，會禁止使用者自訂這類特定重新對應；如果不設定這項政策，預設會使用含有搜尋鍵的快速鍵，並允許使用者設定快速鍵。</translation>
 <translation id="6019162469732742754">使用自動模式</translation>
 <translation id="6019606564278029236">允許遠端使用者在遠端協助工作階段中操控權限較高的視窗</translation>
-<translation id="602038990586229155">這項政策可控管 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求，決定使用者能否將要求送交 Google 管理控制台審核。
-
-如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策，且不會建立或上傳擴充功能安裝要求。
-如果不設定這項政策或設為停用，系統不會建立或上傳擴充功能安裝要求。
-如果啟用這項政策，系統就會建立擴充功能安裝要求，並上傳到 Google 管理控制台。
-
-如果使用者嘗試安裝 <ph name="EXTENSION_INSTALL_ALLOWLIST" /> 或 <ph name="EXTENSION_SETTINGS" /> 不允許的擴充功能，系統就會建立擴充功能安裝要求。
-
-如果是 <ph name="PRODUCT_NAME" />，裝置必須使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊，這項政策才會生效。
-如果是 <ph name="PRODUCT_OS_NAME" />，這項政策一律會生效。</translation>
 <translation id="6020795917180493154">自 M119 起，如果將這項政策設為 False 或未設定，WebSQL 就會停用，但可以透過 Chrome 旗標「web-sql-access」啟用。如果將這項政策設為 True，系統就會啟用 WebSQL 存取。
 這項政策已在 M124 淘汰，</translation>
 <translation id="6022948604095165524">起始動作</translation>
@@ -7823,6 +7816,14 @@ IP 位址空間覆寫有兩種形式：
 
 如果停用這項政策，金鑰捷徑應用程式將進入唯讀模式，屆時將不允許自訂系統捷徑。</translation>
 <translation id="6150320133676152520">在鎖定畫面和登入畫面上停用 PIN 碼自動提交功能</translation>
+<translation id="6152224988699207920">允許管理員自訂資料遺失防護 (DLP) 規則套用的浮水印外觀，包括設定填滿/外框不透明度、定義字型大小，以及設定時間戳記時區。
+如果未設定這項政策或部分值，Chrome 會採用預設浮水印行為。
+預設值如下：填滿不透明度為 4、外框不透明度為 6、字型大小為 24，以及時間戳記時區設為「user_device」(使用者裝置的當地時區)。
+
+「填滿不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
+「外框不透明度」是百分比，範圍從 0 (完全透明) 到 100 (完全不透明)。
+「字型大小」以點為指定單位。
+「時間戳記時區」指定用於設定浮水印時間戳記格式的 IANA 時區 ID (例如「America/Toronto」)，支援 Chrome 152 以上版本。這個 ID 採用 IANA 時區資料庫 (https://www.iana.org/time-zones) 中的名稱。</translation>
 <translation id="6155350825868160236">允許使用者選擇是否要使用 Google 網路服務來解決拼字錯誤</translation>
 <translation id="6155936611791017817">設定大型游標在登入畫面的預設狀態</translation>
 <translation id="6157537876488211233">以逗號間隔的 Proxy 略過規則清單</translation>
@@ -12404,6 +12405,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="9087652369391570821">OnFileTransfer Chrome Enterprise 連接器的設定政策</translation>
 <translation id="9088433379343318874">啟用受監管的使用者內容提供者</translation>
 <translation id="9088444059179765143">設定自動偵測時區方式</translation>
+<translation id="9091741086777905807">用於設定浮水印時間戳記格式的 IANA 時區 ID (例如「America/Toronto」)，支援 Chrome 152 以上版本。預設值為「user_device」。</translation>
 <translation id="9094681501120769194">控制 <ph name="PRODUCT_NAME" /> 中的 PDF 檢視器是否使用獨立處理程序 iframe (OOPIF)。這個架構更為簡潔，且更易於新增功能，因此將成為未來的 PDF 檢視器架構。現有的 GuestView PDF 檢視器架構過時且複雜，即將遭到淘汰。
 
 如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 可以採用 OOPIF PDF 檢視器架構。在啟用或未設定的狀態下，預設行為將由 <ph name="PRODUCT_NAME" /> 決定。

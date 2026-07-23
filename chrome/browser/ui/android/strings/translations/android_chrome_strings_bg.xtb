@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">Ако я изтриете, всички хора незабавно ще загубят достъп до групата раздели „<ph name="GROUP_NAME" />“ и тя ще бъде изтрита от всички устройства.</translation>
 <translation id="1142732900304639782">Да не се предлага превод на тези сайтове</translation>
 <translation id="1143193470214071120">Затворете прозорец или управлявайте прозорците</translation>
+<translation id="1143486892058798649">Запазване на връзката като…</translation>
 <translation id="1149725087019908252">„<ph name="FILE_NAME" />“ се сканира</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Нямате запазени пароли в Google Мениджър на пароли.</translation>
@@ -314,6 +315,7 @@
 <translation id="2330186936255788117">Още отметки</translation>
 <translation id="2332515770639153015">Функцията за подобрена защита от Безопасно сърфиране е включена</translation>
 <translation id="233375395665273385">Изтриване и излизане от профила</translation>
+<translation id="2334275697832662087">Базираните на AI функции за сигурност на Chrome ви предпазват от онлайн заплахи, за да сърфирате уверено</translation>
 <translation id="2341410551640223969">Инсталирането на <ph name="WEBAPK_NAME" /> не бе успешно.</translation>
 <translation id="2349710944427398404">Общо място в хранилището, което се използва от Chrome, включително за профили, отметки и запазени настройки</translation>
 <translation id="2354001756790975382">Други отметки</translation>
@@ -615,6 +617,7 @@
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3577558748185201054">Управлявайте интересите и предпочитанията си</translation>
 <translation id="3587482841069643663">Всички</translation>
+<translation id="3598421953808879451">Запазване на видеоклипа като…</translation>
 <translation id="3602290021589620013">Визуализация</translation>
 <translation id="3614126103057878858">Статистика за цените</translation>
 <translation id="3616113530831147358">Аудио</translation>
@@ -725,6 +728,7 @@
 <translation id="4044708993631234325">Долен лист</translation>
 <translation id="4045441967987592849">Повторно отваряне</translation>
 <translation id="4049920046559074950">Още опции за <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051548576872472315">Намирайте наскоро затворените раздели и прозорци тук</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{Отваряне в прозорец в режим „инкогнито“}other{Отваряне на всички (#) в прозорец в режим „инкогнито“}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартен раздел с нова активност в споделените групи раздели}other{<ph name="TABS_COUNT_MANY" /> стандартни раздела с нова активност в споделените групи раздели}}</translation>
 <translation id="405365679581583349">Актуализиране на услугите за Google Play</translation>
@@ -1525,6 +1529,7 @@
 <translation id="71503698506017927">Шифроването с пропуск не включва начините на плащане и адресите от Google Pay.
 
 За да промените тази настройка, <ph name="BEGIN_LINK" />изтрийте данните от Chrome в профила си<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">Запазване на изображ. като…</translation>
 <translation id="7165972437814027679">Научете повече за това защо Chrome блокира някои файлове</translation>
 <translation id="7168323970702333693">Влезли сте като <ph name="USER_NAME" />. Отваря настройките.</translation>
 <translation id="7170930892977483182">Всички кодове за сигурност, запазени на устройството ви и в Google Wallet, ще бъдат изтрити</translation>
@@ -1698,6 +1703,7 @@
 <translation id="7824665136384946951">Организацията ви е изключила Безопасно сърфиране</translation>
 <translation id="7825973332242257878">Групи раздели</translation>
 <translation id="7826342993930002256">Вашият Chrome навсякъде</translation>
+<translation id="7845155831233417403">Можете да отворите най-много <ph name="MAX_INSTANCE_COUNT" /> прозореца. Затворете прозорец, за да продължите.</translation>
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="784652447248278262">Текущият прозорец</translation>
@@ -1821,6 +1827,7 @@
 <translation id="8282297628636750033">Тъмна тема за сайтовете при възможност</translation>
 <translation id="8282950411412455249">Към настройките за сигурност</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Затваряне на 1 прозорец в режим „инкогнито“}other{Затваряне на # прозореца в режим „инкогнито“}}</translation>
+<translation id="8289602658021943461">Запазв. на кадъра от клипа като…</translation>
 <translation id="8313599942510782709">Задачата ви все още се изпълнява</translation>
 <translation id="8317318757008452355">Отваряне на опциите за печат</translation>
 <translation id="8320212361750431956">Скорошна активност</translation>

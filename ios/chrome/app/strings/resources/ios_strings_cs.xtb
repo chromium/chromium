@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Jste přihlášeni jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otevřít nabídku účtů.</translation>
 <translation id="1397144142234474689">Skrýt možnost Historie</translation>
 <translation id="1399268420835656394">Pokud nejste dítě, doporučujeme zkontrolovat věk v účtu Apple na tomhle zařízení. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Dříve vyplněno</translation>
 <translation id="1407135791313364759">Otevřít vše</translation>
 <translation id="1408847409015257906">Klepněte na Ochrana soukromí a zabezpečení.</translation>
 <translation id="1411386976162024013">Vizuální vyhledávání Lens</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Tvůj účet spravuje rodič.
 <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Změněno</translation>
+<translation id="1481450969185702334">Najít a vyplnit</translation>
 <translation id="1483493594462132177">Odeslat</translation>
 <translation id="1486096554574027028">Prohledávat hesla</translation>
 <translation id="1486593497476255523">Skupiny karet – dokončeno!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Aby Chrome chránil vaše soukromí, nebude do tohoto pole automaticky vyplňovat heslo.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 web (další na synchronizovaných zařízeních)}few{# weby (další na synchronizovaných zařízeních)}many{# webu (další na synchronizovaných zařízeních)}other{# webů (další na synchronizovaných zařízeních)}}</translation>
+<translation id="2865392654629180917">Zeptejte se na cokoli a získejte odpovědi od AI</translation>
 <translation id="2870560284913253234">Weby</translation>
 <translation id="2876369937070532032">Když je ohrožena vaše bezpečnost, odesílá adresy URL některých navštívených stránek do Googlu</translation>
 <translation id="2883151425485251736">Zobrazení a úprava témat, která jste ve svém účtu skryli</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Nová skupina karet…</translation>
 <translation id="3185760469172949183">Vyhledávání pomocí fotoaparátu – dokončeno!</translation>
 <translation id="3186796054637504691">Smazat historii a data stránek</translation>
+<translation id="3190558889382726167">Heslo uloženo</translation>
 <translation id="3190736958609431397">Zrušit sledování</translation>
 <translation id="3208260410153224535">Vaše organizace vypnula přihlašování. Nové záložky, hesla a další položky se budou ukládat pouze do tohoto zařízení.</translation>
 <translation id="3211969308836412674">Odepnout web</translation>

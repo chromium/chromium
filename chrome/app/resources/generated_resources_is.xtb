@@ -136,6 +136,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1085618740036066768"><ph name="ITEM" /> ekki valið. <ph name="INDEX" /> af <ph name="COUNT" /> Ýttu á leit og bilslána til að velja.</translation>
 <translation id="1086486568852410168">Leita með Google linsu</translation>
 <translation id="1090126737595388931">Engin bakgrunnsforrit í gangi</translation>
+<translation id="109038914521989341">Tilgreindu ástæðu þess að þú ert að afrita þessi gögn:</translation>
 <translation id="1090541560108055381">Gakktu úr skugga um að þessi kóði birtist í báðum tækjunum áður en þú parar</translation>
 <translation id="1093457606523402488">Sýnileg net:</translation>
 <translation id="1093645050124056515">ctrl + alt + ör niður</translation>
@@ -1240,6 +1241,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="194174710521904357">Þú leyfðir þessu vefsvæði að nota fótspor þriðju aðila tímabundið. Þetta þýðir minni vernd við vefskoðun en líklegra er að eiginleikar vefsvæðisins virki sem skyldi.</translation>
 <translation id="1942128823046546853">Lesa og breyta öllum gögnum þínum á öllum vefsvæðum</translation>
 <translation id="1944535645109964458">Engir aðgangslyklar tiltækir</translation>
+<translation id="1944921356641260203">Uppfærsla fannst</translation>
 <translation id="1947136734041527201">Gerir þér kleift að skrá þig inn á vefsvæði með reikningi hjá auðkenningarþjónustu</translation>
 <translation id="1948528728718281125">Aðgangur að myndavél er heimill fyrir forrit, vefsvæði með myndavélarheimild og kerfisþjónustur</translation>
 <translation id="1949332606889020901">Auðkenni hruns</translation>
@@ -1825,7 +1827,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2424424966051154874">{0,plural, =1{Gestur}one{Gestur (#)}other{Gestur (#)}}</translation>
 <translation id="2426805022920575512">Velja annan reikning</translation>
 <translation id="2427507373259914951">Vinstrismella</translation>
-<translation id="2428120669821109648">Stílfæring flipa</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 reikningur, aðgangsorð aðeins vistað í þessu tæki. Nánar}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} reikningur, aðgangsorð aðeins vistað í þessu tæki. Nánar}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} reikningar, aðgangsorð aðeins vistað í þessu tæki. Nánar}}</translation>
 <translation id="2428510569851653187">Lýstu því hvað þú varst að gera þegar flipinn hrundi</translation>
 <translation id="2428939361789119025">Slökkva á Wi-Fi</translation>
@@ -5181,6 +5182,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4963789650715167449">Fjarlægja núverandi flipa</translation>
 <translation id="4964455510556214366">Fyrirkomulag</translation>
 <translation id="4964544790384916627">Festigluggi</translation>
+<translation id="4964673849688379040">Kannar...</translation>
 <translation id="4966972803217407697">Huliðsstilling er virk</translation>
 <translation id="4967227914555989138">Bæta við athugasemd</translation>
 <translation id="4967360192915400530">Sækja hættulega skrá</translation>

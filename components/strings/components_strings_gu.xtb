@@ -61,6 +61,7 @@
 <translation id="1090629319939036170">VR મેનૂ</translation>
 <translation id="1091463901118115503">વાંચન ચાલુ રાખો</translation>
 <translation id="1091779689406092804">સ્ક્રીનશૉટ</translation>
+<translation id="1095093219235104018">Gemini વડે શોધો અને ભરો</translation>
 <translation id="1096545575934602868">આ ફીલ્ડમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી. વધારાની બધી એન્ટ્રીને કાઢી નાખવામાં આવશે.</translation>
 <translation id="1097803577928227769">પ્રાદેશિક પાર્ક અને બગીચા</translation>
 <translation id="1099928364755383720">ઑટોમૅટિક રીતે ચિત્ર-માં-ચિત્ર મોડ</translation>
@@ -260,7 +261,6 @@
 <translation id="1393071644879491291">તમે જેની મુલાકાત લેવાનો પ્રયાસ કર્યો હતો તે સાઇટ પરના અટૅક કરનારા લોકો યુક્તિ અજમાવીને તમને સૉફ્ટવેર ઇન્સ્ટૉલ કરવા કે તમારા પાસવર્ડ, ફોન કે ક્રેડિટ કાર્ડ નંબર જેવી બાબતો જણાવવા છેતરી શકે છે. Chrome દ્વારા સલામતી પર પાછા ફરવાનો સુઝાવ ભારપૂર્વક આપવામાં આવે છે. <ph name="BEGIN_LEARN_MORE_LINK" />આ ચેતવણી વિશે વધુ જાણો<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">જો ટૅબ ખુલ્લું હોય તો પણ, તમે અહીં ઉમેરેલી સાઇટનો સંદર્ભ જવાબો માટે આપવામાં આવશે નહીં. જો તમે ઉમેરેલી સાઇટનો હાલમાં થ્રેડમાં ઉપયોગ થઈ રહ્યો હોય, તો થ્રેડને તેનો સંદર્ભ આપવાનું બંધ કરવામાં 30 મિનિટ જેટલો સમય લાગી શકે છે.</translation>
 <translation id="1402151528875251561">બાજુની પૅનલમાં ઇતિહાસ બતાવો</translation>
-<translation id="1404026649028693342">હંમેશાં AI મોડ બતાવો</translation>
 <translation id="1405567553485452995">આછો લીલો</translation>
 <translation id="1406370515365284486">તમારી ચુકવણી પદ્ધતિઓ હજી પણ સાચવવામાં આવશે</translation>
 <translation id="1406500794671479665">ચકાસી રહ્યું છે...</translation>
@@ -322,6 +322,7 @@
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">સફાઈ સેવાઓ</translation>
 <translation id="1476595624592550506">તમારો પાસવર્ડ બદલો</translation>
+<translation id="1481450969185702334">શોધો અને ભરો</translation>
 <translation id="1482372785911828880">વધુ પાતળું</translation>
 <translation id="1482879811280872320">સાઇકલિંગ</translation>
 <translation id="1483493594462132177">મોકલો</translation>
@@ -366,6 +367,7 @@
 
           &lt;p&gt;કૃપા કરીને &lt;strong&gt;સેટિંગ&lt;/strong&gt; અ‍ૅપના &lt;strong&gt;સામાન્ય&lt;/strong&gt; વિભાગમાં તારીખ અને સમય ગોઠવો.&lt;/p&gt;</translation>
 <translation id="1559839503761818503">તમારા ઍડમિનિસ્ટ્રેટર <ph name="DATE" />ના રોજ <ph name="TIME" /> વાગ્યે તમારું ડિવાઇસ ફરી શરૂ કરશે</translation>
+<translation id="1562601408588733317">Gemini વડે માહિતી શોધવા અને ભરવાનું મેનેજ કરો</translation>
 <translation id="1562805467275776390">ઑટો રેસિંગ</translation>
 <translation id="1563755205047885671">ઍક્શન અને પ્લૅટફૉર્મ ગેમ</translation>
 <translation id="1564634006476980707">શોધ URL માટે HTTPS સ્કીમનો સુઝાવ આપવામાં આવે છે: <ph name="SEARCH_URL" /></translation>
@@ -673,7 +675,6 @@
 <translation id="2059202684901022309">22 x 34 ઇંચ</translation>
 <translation id="2064568741209980952">જમા રાખવું અને ઉધાર આપવું</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 સૂચન}one{# સૂચન}other{# સૂચન}}</translation>
-<translation id="2066690553719545730">હંમેશાં AI મોડ બતાવો</translation>
 <translation id="2066969741541525119">આગળની સાઇટ તમારી સંસ્થા દ્વારા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2069913043427250781">વાહન અને ટ્રાફિક સલામતી</translation>
 <translation id="2071156619270205202">આ કાર્ડનો નંબર, વર્ચ્યુઅલ કાર્ડ નંબર તરીકે ઉપયોગ માટેની યોગ્યતા ધરાવતો નથી.</translation>
@@ -832,6 +833,7 @@
 <translation id="2268044343513325586">સુધારો</translation>
 <translation id="2268966938956566076">અપલોડ કરવાની પ્રક્રિયા <ph name="MINUTES" /> મિનિટમાં શરૂ થશે</translation>
 <translation id="2270484714375784793">ફોન નંબર</translation>
+<translation id="2274179746480077483">Gmail અને Photos જેવી ઍપમાંથી માહિતી ઑટોમૅટિક રીતે ભરો. પર્સનલ ઇન્ટેલિજન્સ દ્વારા સંચાલિત.</translation>
 <translation id="2276057643614339130">પ્રિન્ટ બેઝ</translation>
 <translation id="2277103315734023688">આગળ લઈ જાઓ</translation>
 <translation id="2277753418458118549">કનેક્શનની વિગતો બતાવો</translation>
@@ -1172,6 +1174,7 @@
 <translation id="2784949926578158345">કનેક્શન ફરીથી સેટ થયું.</translation>
 <translation id="2786008859124691917">સાઇકલ અને ઍક્સેસરી</translation>
 <translation id="2792012897584536778">આ ડિવાઇસના વ્યવસ્થાપકોએ સુરક્ષા પ્રમાણપત્રો સેટ અપ કર્યા છે, જેના કારણે તેમને તમે મુલાકાત લો તે વેબસાઇટનું કન્ટેન્ટ જોવાની મંજૂરી મળી શકે છે.</translation>
+<translation id="2793425367785017642">ફોર્મને વધુ સારી રીતે સમજવા અને ભરવા માટે, તમે મુલાકાત લો છો તે પેજના કન્ટેન્ટ અને URLs પર ક્લાઉડમાં ખાનગી સ્પેસમાં પ્રક્રિયા થઈ શકે છે.</translation>
 <translation id="2794233252405721443">સાઇટ અવરોધિત કરી</translation>
 <translation id="2794629552137076216">કાચ (સપાટીવાળો)</translation>
 <translation id="2799223571221894425">ફરીથી લોંચ કરો</translation>
@@ -1279,7 +1282,6 @@
 <translation id="2978824962390592855">ઑપેરા</translation>
 <translation id="2979424420072875974">લેખકો સંબંધિત સંસાધનો</translation>
 <translation id="2980742331521553164">આ કાર્ડના CVCનો એન્ક્રિપ્ટેડ હશે અને વધુ ઝડપી ચેકઆઉટ માટે તેને તમારા Google એકાઉન્ટમાં સાચવવામાં આવશે</translation>
-<translation id="2983311431122838216">Google Searchમાં AI મોડને પૂછો</translation>
 <translation id="2983666748527428214">છૂપી ટૅબ ખોલો</translation>
 <translation id="2985398929374701810">એક માન્ય સરનામું દાખલ કરો</translation>
 <translation id="2986485254770343131">કૅમેરાની ફાઇલો સાચવી રહ્યાં છીએ</translation>
@@ -1544,6 +1546,7 @@
 <translation id="3391482648489541560">ફાઇલમાં ફેરફાર</translation>
 <translation id="3392028486601120379">તમારા URLની પૅટર્ન "<ph name="URL_PATTERN" />"માં પથ ઉલ્લેખિત છે. આ કી માટે પથને સપોર્ટ કરવામાં આવતો નથી, કૃપા કરીને પથ કાઢી નાખો અને ફરીથી પ્રયાસ કરો. દા.ત. *://example.com/ =&gt; *://example.com",</translation>
 <translation id="3395827396354264108">પિકઅપ પદ્ધતિ</translation>
+<translation id="3397968074427155329">ચૅટ કરવાનું ચાલુ રાખવા માટે વિન્ડોનું કદ બદલો</translation>
 <translation id="3399161914051569225">પહેરી શકાય તેવી ટેક્નોલોજી</translation>
 <translation id="3399952811970034796">વિતરણ માટેનું સરનામું</translation>
 <translation id="3402261774528610252">આ સાઇટને લોડ કરવા માટે ઉપયોગમાં લેવાયેલા કનેક્શનમાં TLS 1.0 અથવા TLS 1.1નો ઉપયોગ કરવામાં આવે છે, જે જૂના છે અને ભવિષ્યમાં બંધ કરવામાં આવશે. એકવાર બંધ કરી દીધા, પછી વપરાશકર્તાઓને આ સાઇટ લોડ કરવાથી રોકવામાં આવશે. સર્વરે TLS 1.2 અથવા તે પછીનું વર્ઝન ચાલુ કરવું જોઈએ.</translation>
@@ -1883,6 +1886,7 @@
 <translation id="390391808978419508">ખોલવાનો સમય સમાપ્ત થયો</translation>
 <translation id="3905894480064208252">{0,plural, =1{ફાઇલ ટ્રાન્સફર કરવાથી બ્લૉક કરી છે}one{<ph name="FILE_COUNT" /> ફાઇલ ટ્રાન્સફર કરવાથી બ્લૉક કરી છે}other{<ph name="FILE_COUNT" /> ફાઇલ ટ્રાન્સફર કરવાથી બ્લૉક કરી છે}}</translation>
 <translation id="3906022360148923497">ચુકવણીના ઇન્સ્ટ્રુમેન્ટનું આઇકન</translation>
+<translation id="3906234161316839040">અન્ય ઑર્ડર</translation>
 <translation id="3906954721959377182">ટૅબ્લેટ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">શામેલ કરેલા કન્ટેન્ટ વિશે વધુ જાણો</translation>
@@ -2584,6 +2588,7 @@
 <translation id="5001526427543320409">ત્રીજા પક્ષની કુકી</translation>
 <translation id="5007344584818503324">શેર કરેલા ટૅબના ગ્રૂપની ઍક્ટિવિટી</translation>
 <translation id="5007392906805964215">રિવ્યૂ કરો</translation>
+<translation id="5008767248670679254">તમારા બધા શિપમેન્ટ</translation>
 <translation id="5011561501798487822">ઓળખવામાં આવેલી ભાષા</translation>
 <translation id="5015510746216210676">મશીનનું નામ:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2629,6 +2634,7 @@
 <translation id="5074134429918579056">પૅન્ટ અને શૉર્ટ પૅન્ટ</translation>
 <translation id="5077767274537436092">કોઈ જુદી પાસકીનો ઉપયોગ કરો</translation>
 <translation id="5078060223219502807">તમે હાલમાં જ ઉપયોગમાં લીધેલો પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળ્યો છે. તમારા એકાઉન્ટ સુરક્ષિત રાખવા માટે, Password Manager હમણાં જ તમારો પાસવર્ડ બદલવાનો અને પછી તમારા સાચવેલા પાસવર્ડ ચેક કરવાનો સુઝાવ આપે છે.</translation>
+<translation id="5082949343606863311">ફોર્મ ફીલ્ડ અને સુવિધાના પર્ફોર્મન્સ સહિતના સિસ્ટમ ડેટાનું વિશ્લેષણ ભવિષ્યના સૂચનોને બહેતર બનાવવા માટે કરવામાં આવે છે</translation>
 <translation id="5087286274860437796">સર્વરનું પ્રમાણપત્ર આ સમયે માન્ય નથી.</translation>
 <translation id="5087580092889165836">કાર્ડ ઉમેરો</translation>
 <translation id="5088142053160410913">ઑપરેટર માટે મેસેજ</translation>
@@ -2641,7 +2647,6 @@
 <translation id="5097099694988056070">CPU/RAM વપરાશ જેવા ડિવાઇસ આંકડા</translation>
 <translation id="5097468150760963273">27 x 39 ઇંચ</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">AI મોડને પૂછવા માટે Tab અને પછી Enter કી દબાવો</translation>
 <translation id="5105442806410269908">અન્ય Google ડેટા મેનેજ કરો</translation>
 <translation id="510644072453496781">કાર્ડબોર્ડ (અંત)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> માટે વર્ચ્યુઅલ કાર્ડ ભરવામાં આવ્યું</translation>
@@ -3066,6 +3071,7 @@
 <translation id="5728246486828755318">પ્રિન્ટરની વિગતવાર સુવિધાઓનો ઉપયોગ કરવા માટે પૂછી શકે છે</translation>
 <translation id="5729442113829771034">પ્રી-સ્કૂલ શિક્ષણ</translation>
 <translation id="5730040223043577876">જો તમે અન્ય સાઇટ પર તમારા પાસવર્ડનો ફરી ઉપયોગ કર્યો હોય, તો Chrome તેને રીસેટ કરવાનો સુઝાવ આપે છે.</translation>
+<translation id="5731983613206445054">તમે ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધાને વધુ સારી બનાવવામાં મદદ કરી રહ્યાં છો</translation>
 <translation id="5735174108294025227">ચકાસાયેલા ઇમેઇલ ઍડ્રેસ અહીં દેખાશે</translation>
 <translation id="573555826359077410">'ફોર્મ બનાવો' બટન, Google Formsમાં ઝડપથી કોઈ નવું ફોર્મ બનાવવા માટે સક્રિય કરો</translation>
 <translation id="5738385766833540397">તમે ટ્રૅક કરો છો તે પ્રોડક્ટની કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવવાની રીત મેનેજ કરો</translation>
@@ -3744,7 +3750,6 @@
 <translation id="6786145470008421571">એન્વલપ 6 x 9 ઇંચ</translation>
 <translation id="6786747875388722282">એક્સ્ટેન્શન</translation>
 <translation id="6787094689637422836">અમે પ્રાઇવસી સંબંધિત નવી સુવિધાઓ લૉન્ચ કરી રહ્યાં છીએ જે તમને કઈ જાહેરાતો જોવી કે ન જોવી, તે પસંદ કરવાના વધુ વિકલ્પો આપે છે.</translation>
-<translation id="6788615780749001893">AI મોડ બટન, AI મોડને પૂછવા માટે Enter કી દબાવો</translation>
 <translation id="6789062271869667677">સતત (લાંબુ)</translation>
 <translation id="678982761784843853">સંરક્ષિત કન્ટેન્ટ IDs</translation>
 <translation id="6790428901817661496">ચલાવો</translation>
@@ -3816,6 +3821,7 @@
 <translation id="6898699227549475383">ઑર્ગેનાઇઝેશન (O)</translation>
 <translation id="6900702165119149418">તમે સાઇન આઉટ થઈ ગયા છો</translation>
 <translation id="6907458757809079309">ફિટનેસ</translation>
+<translation id="6910211073230771657">કાઢી નાખ્યું</translation>
 <translation id="691024665142758461">બહુવિધ ફાઇલોને ડાઉનલોડ કરવા</translation>
 <translation id="691046363691324218">નિવારણ નંબર</translation>
 <translation id="6915804003454593391">વપરાશકર્તા: </translation>
@@ -3894,6 +3900,7 @@
 <translation id="7011763495818914549">ઓળખ કાર્ડ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">લૉક કરવા માટે પૂછી શકે છે અને તમારા માઉસનો ઉપયોગ કરી શકે છે</translation>
+<translation id="7013844825046560088">Chrome લૉગ કરે છે કે તમે સુવિધાનો ઉપયોગ કેવી રીતે કરો છો, જેમ કે તમારી વિનંતીઓ અને જ્યારે તમે સૂચનો સ્વીકારો છો અથવા અવગણો છો ત્યારે તમારું વર્તન</translation>
 <translation id="7014042602717177828">કાર ઑડિઓ</translation>
 <translation id="7014741021609395734">ઝૂમ લેવલ</translation>
 <translation id="7016992613359344582">આ શુલ્ક એક-સમયનું અથવા પુનરાવર્તિત હોઈ શકે છે અને કદાચ દેખીતા શુલ્ક ન પણ હોય.</translation>
@@ -4123,6 +4130,7 @@
 <translation id="7393161616326137353">સાહસવાળી ગેમ</translation>
 <translation id="7393475648162498734">ચેકઆઉટ વખતે તમારા કાર્ડ માટે કયા રિવૉર્ડ અને લાભ ઉપલબ્ધ હોય છે, તે બતાવે છે</translation>
 <translation id="7393971683644170444">તમારા કાર્ડના પ્રદાતા સાથે કનેક્ટ કરી રહ્યાં છીએ...</translation>
+<translation id="7394497897677511168">અન્ય શિપમેન્ટ</translation>
 <translation id="739728382607845710">ચુકવણી હૅન્ડલરનું આઇકન</translation>
 <translation id="7399616692258236448">તમે મંજૂરી આપો છો તે સિવાયની બધી સાઇટ માટે લોકેશનની વિનંતીઓને ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવે છે</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4570,6 +4578,7 @@
 <translation id="803771048473350947">ફાઇલ</translation>
 <translation id="8038182528865038593">લાલ 2</translation>
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
+<translation id="8042898384266617514">તમારી વિનંતીઓ, પેજના શીર્ષકો અને URLs Googleને મોકલવામાં આવે છે અને માનવો દ્વારા તેનો રિવ્યૂ કરવામાં આવી શકે છે</translation>
 <translation id="8043255123207491407">વિક્રેતાના નિયમો અને શરતો જુઓ</translation>
 <translation id="8044986521421349135">તમારું સૌથી તાજેતરનું ટૅબ</translation>
 <translation id="8046360364391076336">ઔદ્યોગિક સામગ્રી અને સાધન</translation>
@@ -5012,7 +5021,9 @@
 <translation id="877348612833018844">{0,plural, =1{શું ગોપનીય ફાઇલ ખસેડીએ?}one{શું ગોપનીય ફાઇલ ખસેડીએ?}other{શું ગોપનીય ફાઇલો ખસેડીએ?}}</translation>
 <translation id="8775347646940100151">પેપર (લેટરહેડ)</translation>
 <translation id="8775863327608679820">સમય જતાં ચુકવણી કરવા માટે ઉપલબ્ધ હમણાં ખરીદો, પછીથી ચુકવો વિકલ્પના જારીકર્તાઓની શીટ અડધી ઊંચાઈએ ખોલી.</translation>
+<translation id="8776789089819232268">તમારા બધા ઑર્ડર</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8781233757384402598">જ્યારે તમે ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધા માટે વિનંતી કરો, ત્યારે ઑટોમૅટિક રીતે ભરવાની સુવિધાનો અનુભવ બહેતર બનાવવા માટે તમારા વપરાશનો ડેટા, વિનંતીઓ અને પેજની વિગતો Google સાથે શેર કરવામાં આવે છે</translation>
 <translation id="8781278378794969337">'પેજનો અનુવાદ કરો' બટન, Google Translate વડે આ પેજનો અનુવાદ કરવા માટે સક્રિય કરો</translation>
 <translation id="8785658048882205566">મોટરસાઇકલ</translation>
 <translation id="8790007591277257123">&amp;ફરી ડિલીટ કરો</translation>

@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">ଯଦି ଆପଣ ଏହାକୁ ଡିଲିଟ କରନ୍ତି, ତେବେ ସମସ୍ତେ ତୁରନ୍ତ "<ph name="GROUP_NAME" />" ଟାବ ଗ୍ରୁପର ଆକ୍ସେସ ହରାଇବେ ଏବଂ ଏହା ସମସ୍ତ ଡିଭାଇସରୁ ଡିଲିଟ ହୋଇଯିବ।</translation>
 <translation id="1142732900304639782">ଏହି ସାଇଟଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ ଅଫର୍ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="1143193470214071120">ଏକ ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରନ୍ତୁ କିମ୍ବା ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="1143486892058798649">ଏହି ଭାବେ ଲିଙ୍କ ସେଭ କରନ୍ତୁ…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> ସ୍କାନ୍ ହେଉଛି</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeରେ ଖୋଲିବ। ଜାରି ରଖି, ଆପଣ <ph name="BEGIN_LINK1" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK1" /> ଏବଂ <ph name="BEGIN_LINK2" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_LINK2" />ରେ ସମ୍ମତ ହୁଅନ୍ତି।</translation>
 <translation id="1154555449933432029">Google Password Managerରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ ସେଭ କରାଯାଇନାହିଁ।</translation>
@@ -313,6 +314,7 @@
 <translation id="2330186936255788117">ଅଧିକ ବୁକମାର୍କ</translation>
 <translation id="2332515770639153015">ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଚାଲୁ ଅଛି</translation>
 <translation id="233375395665273385">ଡିଲିଟ କରି ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
+<translation id="2334275697832662087">Chromeର AI-ପରିଚାଳିତ ସିକ୍ୟୁରିଟି ଆପଣଙ୍କୁ ଅନଲାଇନ ବିପଦଗୁଡ଼ିକରୁ ସୁରକ୍ଷିତ ରଖିବାରେ ସାହାଯ୍ୟ କରେ, ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ଆତ୍ମବିଶ୍ୱାସ ଦିଏ</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" />କୁ ଇନଷ୍ଟଲ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="2349710944427398404">ଆକାଉଣ୍ଟ, ବୁକ୍‌ମାର୍କ୍ସ ତଥା ସେଭ୍ କରାଯାଇଥିବା ସେଟିଂସ୍ ସମେତ Chrome ଦ୍ୱାରା ବ୍ୟବହୃତ ସମୁଦାୟ ଡାଟା</translation>
 <translation id="2354001756790975382">ଅନ୍ୟ ବୁକମାର୍କସ୍</translation>
@@ -614,6 +616,7 @@
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3577558748185201054">ଆପଣଙ୍କ ରୁଚି ଏବଂ ପସନ୍ଦକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3587482841069643663">ସମସ୍ତ</translation>
+<translation id="3598421953808879451">ଏହି ଭାବେ ଭିଡିଓ ସେଭ କରନ୍ତୁ…</translation>
 <translation id="3602290021589620013">ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="3614126103057878858">ମୂଲ୍ୟ ଇନସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="3616113530831147358">ଅଡିଓ</translation>
@@ -724,6 +727,7 @@
 <translation id="4044708993631234325">ବଟମ ସିଟ</translation>
 <translation id="4045441967987592849">ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> ପାଇଁ ଅଧିକ ବିକଳ୍ପ</translation>
+<translation id="4051548576872472315">ଆପଣଙ୍କର ବର୍ତ୍ତମାନ ବନ୍ଦ ହୋଇଥିବା ଟାବ ଏବଂ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଏଠାରେ ଖୋଜନ୍ତୁ</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସବୁ (#) ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_ONE" /> ଷ୍ଟାଣ୍ଡାର୍ଡ ଟାବ}other{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_MANY" /> ଷ୍ଟାଣ୍ଡାର୍ଡ ଟାବ}}</translation>
 <translation id="405365679581583349">Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
@@ -1524,6 +1528,7 @@
 <translation id="71503698506017927">ପାସଫ୍ରେଜ ଏନକ୍ରିପସନ Google Payରୁ ପେମେଣ୍ଟ ପଦ୍ଧତି ଓ ଠିକଣାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରେ ନାହିଁ।
 
 ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chrome ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
+<translation id="7159399361248977424">ଏହି ଭାବେ ଇମେଜ ସେଭ କରନ୍ତୁ…</translation>
 <translation id="7165972437814027679">Chrome କାହିଁକି କିଛି ଫାଇଲକୁ ବ୍ଲକ କରେ ସେ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> ଭାବେ ସାଇନ ଇନ କରିଛନ୍ତି। ସେଟିଂସ ଖୋଲେ।</translation>
 <translation id="7170930892977483182">ଆପଣଙ୍କ ଡିଭାଇସ ଏବଂ Google Walletରେ ସେଭ କରାଯାଇଥିବା ସମସ୍ତ ସିକ୍ୟୁରିଟି କୋଡକୁ ଡିଲିଟ କରାଯିବ</translation>
@@ -1697,6 +1702,7 @@
 <translation id="7824665136384946951">ଆପଣଙ୍କ ସଂସ୍ଥା ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂକୁ ବନ୍ଦ କରିଦେଇଛି</translation>
 <translation id="7825973332242257878">ଟାବ ଗ୍ରୁପଗୁଡ଼ିକ</translation>
 <translation id="7826342993930002256">ଆପଣଙ୍କ Chrome, ସବୁ ସ୍ଥାନରେ ଉପଲବ୍ଧ</translation>
+<translation id="7845155831233417403">ଆପଣ <ph name="MAX_INSTANCE_COUNT" /> ପର୍ଯ୍ୟନ୍ତ ୱିଣ୍ଡୋକୁ ରଖିପାରିବେ। ଜାରି ରଖିବା ପାଇଁ ଏକ ୱିଣ୍ଡୋକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="7846161022626028328">ଏକ ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7846296061357476882">Google ସର୍ଭିସେସ</translation>
 <translation id="784652447248278262">ବର୍ତ୍ତମାନର ୱିଣ୍ଡୋ</translation>
@@ -1820,6 +1826,7 @@
 <translation id="8282297628636750033">ଯଦି ସମ୍ଭବ ସାଇଟରେ ଗାଢ଼ା ଥିମ ଲାଗୁକର</translation>
 <translation id="8282950411412455249">ସୁରକ୍ଷା ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{1 ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ}other{# ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ}}</translation>
+<translation id="8289602658021943461">ଏହି ଭାବେ ଭିଡିଓ ଫ୍ରେମ ସେଭ କର…</translation>
 <translation id="8313599942510782709">ଆପଣଙ୍କ ଟାସ୍କ ଏବେ ବି ଚାଲିଛି</translation>
 <translation id="8317318757008452355">ପ୍ରିଣ୍ଟ କରିବାର ବିକଳ୍ପଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ</translation>
 <translation id="8320212361750431956">ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପ</translation>

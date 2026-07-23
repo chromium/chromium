@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">നിങ്ങൾ ഇത് ഇല്ലാതാക്കുകയാണെങ്കിൽ, എല്ലാവർക്കും ഉടൻ തന്നെ "<ph name="GROUP_NAME" />" ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടമാകും, അത് എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും.</translation>
 <translation id="1142732900304639782">ഈ സൈറ്റുകൾ വിവർത്തനം ചെയ്യേണ്ട</translation>
 <translation id="1143193470214071120">ഒരു വിൻഡോ അടയ്ക്കുക അല്ലെങ്കിൽ വിൻഡോകൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="1143486892058798649">ലിങ്ക് ഇതായി സംരക്ഷിക്കുക…</translation>
 <translation id="1149725087019908252"><ph name="FILE_NAME" /> സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു.</translation>
 <translation id="1154555449933432029">Google Password Manager-ൽ നിങ്ങൾ പാസ്‌വേഡുകൾ സംരക്ഷിച്ചിട്ടില്ല.</translation>
@@ -313,6 +314,7 @@
 <translation id="2330186936255788117">കൂടുതൽ ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="2332515770639153015">മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗ് ഓണാണ്</translation>
 <translation id="233375395665273385">ഇല്ലാതാക്കിയ ശേഷം സൈൻ ഔട്ട് ചെയ്യുക</translation>
+<translation id="2334275697832662087">Chrome-ന്റെ AI ലഭ്യമാക്കുന്ന സുരക്ഷ, ഓൺലൈൻ ഭീഷണികളിൽ നിന്ന് നിങ്ങളെ പരിരക്ഷിക്കാൻ സഹായിക്കുന്നു, ബ്രൗസ് ചെയ്യുമ്പോൾ നിങ്ങൾക്ക് ആത്മവിശ്വാസം നൽകുന്നു</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="2349710944427398404">അക്കൗണ്ടുകളും ബുക്ക്‌മാർക്കുകളും സംരക്ഷിച്ച ക്രമീകരണവും ഉൾപ്പെടെ Chrome ഉപയോഗിക്കുന്ന മൊത്തം വിവരങ്ങൾ</translation>
 <translation id="2354001756790975382">മറ്റ് ബുക്‌മാര്‍ക്കുകള്‍</translation>
@@ -614,6 +616,7 @@
 <translation id="3577473026931028326">എന്തോ കുഴപ്പമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3577558748185201054">നിങ്ങളുടെ താൽപ്പര്യങ്ങളും മുൻഗണനകളും മാനേജ് ചെയ്യുക</translation>
 <translation id="3587482841069643663">എല്ലാം</translation>
+<translation id="3598421953808879451">വീഡിയോ ഇതായി സംരക്ഷിക്കുക…</translation>
 <translation id="3602290021589620013">പ്രിവ്യൂ</translation>
 <translation id="3614126103057878858">നിരക്ക് ഉൾക്കാഴ്‌ചകൾ</translation>
 <translation id="3616113530831147358">ഓഡിയോ</translation>
@@ -724,6 +727,7 @@
 <translation id="4044708993631234325">ബോട്ടം ഷീറ്റ്</translation>
 <translation id="4045441967987592849">വീണ്ടും തുറക്കുക</translation>
 <translation id="4049920046559074950"><ph name="INSTANCE_TITLE" /> എന്നതിനുള്ള കൂടുതൽ ഓപ്ഷനുകൾ</translation>
+<translation id="4051548576872472315">നിങ്ങൾ അടുത്തിടെ അടച്ച ടാബുകളും വിൻഡോകളും ഇവിടെ കണ്ടെത്തുക</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{അദൃശ്യ വിൻഡോയിൽ തുറക്കുക}other{എല്ലാം (#) അദൃശ്യ വിൻഡോയിൽ തുറക്കുക}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ പുതിയ ആക്റ്റിവിറ്റിയുള്ള <ph name="TABS_COUNT_ONE" /> സ്റ്റാൻഡേർഡ് ടാബ്}other{പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളിൽ പുതിയ ആക്റ്റിവിറ്റിയുള്ള <ph name="TABS_COUNT_MANY" /> സ്റ്റാൻഡേർഡ് ടാബുകൾ}}</translation>
 <translation id="405365679581583349">Google Play സേവനങ്ങൾ അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
@@ -1524,6 +1528,7 @@
 <translation id="71503698506017927">പാസ്ഫ്രെയ്‌സ് എൻക്രിപ്ഷനിൽ Google Pay-ൽ നിന്നുള്ള പേയ്മെന്റ് രീതികളും വിലാസങ്ങളും ഉൾപ്പെടുന്നില്ല.
 
 ഈ ക്രമീകരണം മാറ്റാൻ, <ph name="BEGIN_LINK" />നിങ്ങളുടെ അക്കൗണ്ടിലെ Chrome ഡാറ്റ ഇല്ലാതാക്കുക<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">ചിത്രം ഇതായി സംരക്ഷിക്കുക…</translation>
 <translation id="7165972437814027679">എന്തുകൊണ്ടാണ് Chrome ചില ഫയലുകൾ ബ്ലോക്ക് ചെയ്യുന്നത് എന്നതിനെക്കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="7170930892977483182">നിങ്ങളുടെ ഉപകരണത്തിലും Google Wallet-ലും സംരക്ഷിച്ചിരിക്കുന്ന എല്ലാ സുരക്ഷാ കോഡുകളും ഇല്ലാതാക്കും</translation>
@@ -1697,6 +1702,7 @@
 <translation id="7824665136384946951">നിങ്ങളുടെ സ്ഥാപനം സുരക്ഷിത ബ്രൗസിംഗ് ഓഫാക്കി</translation>
 <translation id="7825973332242257878">ടാബ് ഗ്രൂപ്പുകൾ</translation>
 <translation id="7826342993930002256">നിങ്ങളുടെ Chrome, എല്ലായിടത്തും</translation>
+<translation id="7845155831233417403">നിങ്ങൾക്ക് <ph name="MAX_INSTANCE_COUNT" /> വിൻഡോകൾ വരെ തുറക്കാനാകും. തുടരാൻ ഒരു വിൻഡോ അടയ്ക്കുക.</translation>
 <translation id="7846161022626028328">ഒരു പിശകുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7846296061357476882">Google സേവനങ്ങൾ</translation>
 <translation id="784652447248278262">നിലവിലെ വിൻഡോ</translation>
@@ -1820,6 +1826,7 @@
 <translation id="8282297628636750033">സാധ്യമാകുമ്പോൾ, സൈറ്റിന് ഡാർക്ക് തീം ബാധകമാക്കൂ</translation>
 <translation id="8282950411412455249">സുരക്ഷാ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{ഒരു അദൃശ്യ വിൻഡോ അടയ്ക്കുക}other{# അദൃശ്യ വിൻഡോകൾ അടയ്ക്കുക}}</translation>
+<translation id="8289602658021943461">വീഡിയോ ഫ്രെയിം സംരക്ഷിക്കൂ…</translation>
 <translation id="8313599942510782709">നിങ്ങളുടെ ടാസ്‌ക് ഇപ്പോഴും പുരോഗമിക്കുകയാണ്</translation>
 <translation id="8317318757008452355">പ്രിന്റ് ചെയ്യാനുള്ള ഓപ്ഷനുകൾ തുറക്കുക</translation>
 <translation id="8320212361750431956">സമീപകാല ആക്റ്റിവിറ്റി</translation>

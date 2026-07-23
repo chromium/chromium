@@ -61,6 +61,7 @@
 <translation id="1090629319939036170">‏VR مینو</translation>
 <translation id="1091463901118115503">پڑھنا جاری رکھیں</translation>
 <translation id="1091779689406092804">اسکرین شاٹس</translation>
+<translation id="1095093219235104018">‏‫Gemini کے ساتھ تلاش کریں اور پُر کریں</translation>
 <translation id="1096545575934602868">اس فیلڈ میں <ph name="MAX_ITEMS_LIMIT" /> سے زیادہ اندراجات نہیں ہونے چاہئیں۔ سبھی مزید اندراجات مسترد کر دیے جائیں گے۔</translation>
 <translation id="1097803577928227769">علاقائی پارکس اور باغیچے</translation>
 <translation id="1099928364755383720">خودکار تصویر میں تصویر</translation>
@@ -260,7 +261,6 @@
 <translation id="1393071644879491291">‏آپ نے جو سائٹ ملاحظہ کرنے کی کوشش کی ہے، اس پر حملہ آور دھوکے سے آپ سے سافٹ ویئر انسٹال کروا سکتے ہیں یا آپ کے پاس ورڈز، فون یا کریڈٹ کارڈ نمبرز جیسی چیزیں افشاء کروا سکتے ہیں۔ ‫Chrome تحفظ پر واپس جانے کا پُرزور مشورہ دیتا ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />اس وارننگ کے بارے میں مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">یہاں شامل کردہ سائٹس کو جوابات کے لیے حوالہ نہیں دیا جائے گا، چاہے ٹیب کھلا ہو۔ اگر آپ کی شامل کردہ سائٹ فی الحال کسی سلسلہ میں استعمال ہو رہی ہے تو سلسلہ کو اس کا حوالہ دینا بند کرنے میں 30 منٹ تک لگ سکتے ہیں۔</translation>
 <translation id="1402151528875251561">سائیڈ پینل میں سرگزشت دکھائیں</translation>
-<translation id="1404026649028693342">‏ہمیشہ AI وضع دکھائیں</translation>
 <translation id="1405567553485452995">ہلکا سبز</translation>
 <translation id="1406370515365284486">آپ کے ادائیگی کے طریقے اب بھی محفوظ کیے جائیں گے</translation>
 <translation id="1406500794671479665">توثیق ہو رہی ہے…</translation>
@@ -322,6 +322,7 @@
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">صفائی سروسز</translation>
 <translation id="1476595624592550506">اپنا پاس ورڈ تبدیل کریں</translation>
+<translation id="1481450969185702334">تلاش کریں اور پُر کریں</translation>
 <translation id="1482372785911828880">بہت پتلا</translation>
 <translation id="1482879811280872320">سائیکلنگ</translation>
 <translation id="1483493594462132177">بھیجیں</translation>
@@ -366,6 +367,7 @@
 
       &lt;p&gt;براہ کرم تاریخ اور وقت کو &lt;strong&gt;ترتیبات&lt;‎/strong&gt; ایپ کے &lt;strong&gt;عمومی&lt;‎/strong&gt; سیکشن سے ایڈجسٹ کریں۔&lt;‎/p&gt;</translation>
 <translation id="1559839503761818503"><ph name="DATE" /> کو <ph name="TIME" /> پر آپ کا منتظم آپ کے آلے کو ری سٹارٹ کرے گا</translation>
+<translation id="1562601408588733317">‏‫Gemini کے ساتھ معلومات تلاش کرنے اور پُر کرنے کا نظم کریں</translation>
 <translation id="1562805467275776390">آٹو ریسنگ</translation>
 <translation id="1563755205047885671">ایکشن اور پلیٹ فارم گیمز</translation>
 <translation id="1564634006476980707">‏تلاش URL کے لیے HTTPS اسکیم تجویز کی گئی: <ph name="SEARCH_URL" /></translation>
@@ -673,7 +675,6 @@
 <translation id="2059202684901022309">‏‎22 x 34 انچ</translation>
 <translation id="2064568741209980952">کریڈٹ اور قرض دینا</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 تجویز}other{# تجاویز}}</translation>
-<translation id="2066690553719545730">‏ہمیشہ AI وضع دکھائیں</translation>
 <translation id="2066969741541525119">آگے کی سائٹ کو آپ کی تنظیم نے مسدود کر دیا ہے</translation>
 <translation id="2069913043427250781">گاڑی اور ٹریفک میں حفاظت</translation>
 <translation id="2071156619270205202">یہ کارڈ ورچوئل کارڈ نمبر کیلئے اہل نہیں ہے۔</translation>
@@ -832,6 +833,7 @@
 <translation id="2268044343513325586">بہتر بنائیں</translation>
 <translation id="2268966938956566076">‫<ph name="MINUTES" /> منٹ میں اپ لوڈ کریں</translation>
 <translation id="2270484714375784793">فون نمبر</translation>
+<translation id="2274179746480077483">‏‫Gmail اور تصاویر جیسی ایپس سے معلومات کو آٹو فل کریں۔ ذاتی ذہانت کے ذریعے تقویت یافتہ۔</translation>
 <translation id="2276057643614339130">پرنٹ بیس</translation>
 <translation id="2277103315734023688">آگے کریں</translation>
 <translation id="2277753418458118549">کنکشن کی تفصیلات دکھائیں</translation>
@@ -1172,6 +1174,7 @@
 <translation id="2784949926578158345">کنکشن ری سیٹ ہو گیا تھا۔</translation>
 <translation id="2786008859124691917">بائیسکلز اور لوازمات</translation>
 <translation id="2792012897584536778">اس آلہ کے منتظمین نے سیکیورٹی سرٹیفکیٹس سیٹ کیے ہیں جو انہیں آپ کی ملاحظہ کردہ ویب سائٹس کا مواد دیکھنے کی اجازت دے سکتے ہیں۔</translation>
+<translation id="2793425367785017642">‏فارمز کو بہتر طور پر سمجھنے اور پُر کرنے کے لیے، آپ کے ملاحظہ کردہ صفحات کے مواد اور URLs پر کلاؤڈ میں پرائیویٹ اسپیس میں کارروائی کی جا سکتی ہے۔</translation>
 <translation id="2794233252405721443">سائٹ مسدود کر دی گئی</translation>
 <translation id="2794629552137076216">شیشہ (سطح والا)</translation>
 <translation id="2799223571221894425">دوبارہ شروع کریں</translation>
@@ -1279,7 +1282,6 @@
 <translation id="2978824962390592855">اوپیرا</translation>
 <translation id="2979424420072875974">قلمکاروں کے وسائل</translation>
 <translation id="2980742331521553164">‏اس کارڈ کا CVC تیزی سے چیک آؤٹ کے لیے آپ کے Google اکاؤنٹ میں مرموز اور محفوظ کیا جائے گا</translation>
-<translation id="2983311431122838216">‏‫Google تلاش میں AI وضع سے پوچھیں</translation>
 <translation id="2983666748527428214">پوشیدگی ٹیب کھولیں</translation>
 <translation id="2985398929374701810">ایک درست پتہ درج کریں</translation>
 <translation id="2986485254770343131">کیمرا فائلز محفوظ ہو رہی ہیں</translation>
@@ -1545,6 +1547,7 @@
 <translation id="3391482648489541560">فائل میں ترمیم کرنا</translation>
 <translation id="3392028486601120379">‏URL پیٹرن "<ph name="URL_PATTERN" />" میں ایک راستہ متعین کیا گیا ہے۔ اس کلید کے لیے راستے تعاون یافتہ نہیں ہیں براہ کرم راستہ ہٹائیں اور دوبارہ کوشش کریں۔ جیسے ,‎*://example.com/ =&gt; *://example.com"‎</translation>
 <translation id="3395827396354264108">پِک اپ کا طریقہ</translation>
+<translation id="3397968074427155329">چیٹنگ جاری رکھنے کے لیے ونڈو کا سائز تبدیل کریں</translation>
 <translation id="3399161914051569225">ویئرایبل ٹیکنالوجی</translation>
 <translation id="3399952811970034796">ڈیلیوری کا پتہ</translation>
 <translation id="3402261774528610252">‏اس سائٹ کو لوڈ کرنے کے لئے استعمال ہونے والے کنکشن میں TLS 1.0 یا TLS 1.1 استعمال کیا گیا تھا، جو فرسودہ ہیں اور مستقبل میں بھی غیر فعال کر دیے جائیں گے۔ ایک بار غیر فعال ہوجانے پر، صارفین کو اس سائٹ کو لوڈ کرنے سے روکا جائے گا۔ سرور کو TLS 1.2 یا اس سے اعلی ورژن کو فعال کرنا چاہیے۔</translation>
@@ -1884,6 +1887,7 @@
 <translation id="390391808978419508">کھولنے کا وقت ختم ہو گیا</translation>
 <translation id="3905894480064208252">{0,plural, =1{فائل کو منتقل ہونے سے مسدود کر دیا گیا}other{<ph name="FILE_COUNT" /> فائلز کو منتقل ہونے سے مسدود کر دیا گیا}}</translation>
 <translation id="3906022360148923497">ادائیگی کے طریقہ کا آئیکن</translation>
+<translation id="3906234161316839040">دیگر آرڈرز</translation>
 <translation id="3906954721959377182">ٹیبلیٹ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">سرایت کردہ مواد کے بارے میں مزید جانیں</translation>
@@ -2585,6 +2589,7 @@
 <translation id="5001526427543320409">فریق ثالث کوکیز</translation>
 <translation id="5007344584818503324">اشتراک کردہ ٹیب گروپس کی سرگرمی</translation>
 <translation id="5007392906805964215">جائزہ لیں</translation>
+<translation id="5008767248670679254">آپ کی تمام شپمنٹس</translation>
 <translation id="5011561501798487822">شناخت کردہ زبان</translation>
 <translation id="5015510746216210676">مشین کا نام:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2630,6 +2635,7 @@
 <translation id="5074134429918579056">پنٹس اور شارٹس</translation>
 <translation id="5077767274537436092">مختلف پاس کی استعمال کریں</translation>
 <translation id="5078060223219502807">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، پاس ورڈ مینیجر اسے ابھی تبدیل کرنے اور پھر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="5082949343606863311">مستقبل کی تجاویز کو بہتر بنانے کے لیے سسٹم ڈیٹا کا تجزیہ کیا جاتا ہے، بشمول فارم فیلڈز اور خصوصیت کی کارکردگی</translation>
 <translation id="5087286274860437796">سرور کا سرٹیفکیٹ اس وقت درست نہیں ہے۔</translation>
 <translation id="5087580092889165836">کارڈ شامل کریں</translation>
 <translation id="5088142053160410913">آپریٹر کو پیغام</translation>
@@ -2642,7 +2648,6 @@
 <translation id="5097099694988056070">‏CPU/RAM کے استعمال جیسے آلے کے اعداد و شمار</translation>
 <translation id="5097468150760963273">‏‎27 x 39 انچ</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">‏‫AI وضع کی درخواست کرنے کیلئے ٹیب پھر Enter دبائیں</translation>
 <translation id="5105442806410269908">‏دیگر Google ڈیٹا نظم کریں</translation>
 <translation id="510644072453496781">کارڈ بورڈ (اینڈ)</translation>
 <translation id="5106648964679263509">ورچوئل کارڈ <ph name="BNPL_ISSUER_NAME" /> کے لیے پر کیا گیا</translation>
@@ -3067,6 +3072,7 @@
 <translation id="5728246486828755318">پرنٹر کی جدید ترین خصوصیات استعمال کرنے کیلئے پوچھ سکتا ہے</translation>
 <translation id="5729442113829771034">ابتدائے طفولیت کی تعلیم</translation>
 <translation id="5730040223043577876">‏اگر آپ نے اپنا پاس ورڈ دیگر سائٹس پر دوبارہ استعمال کیا ہے تو Chrome آپ کو اپنا پاس ورڈ ری سیٹ کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="5731983613206445054">آپ بہتر کردہ آٹو فل کو بہتر بنانے میں مدد کر رہے ہیں</translation>
 <translation id="5735174108294025227">توثیق شدہ ای میل پتے یہاں ظاہر ہوں گے</translation>
 <translation id="573555826359077410">‏فارم تخلیق کریں بٹن، Google Forms میں تیزی سے نیا فارم تخلیق کرنے کے لیے فعال کریں</translation>
 <translation id="5738385766833540397">اس بات کا نظم کریں کہ آپ کو ان پروڈکٹس کے لیے قیمتوں میں کمی کے الرٹس کیسے موصول ہوتے ہیں جنہیں آپ ٹریک کرتے ہیں</translation>
@@ -3746,7 +3752,6 @@
 <translation id="6786145470008421571">‏‎6 x 9 انچ لفافہ</translation>
 <translation id="6786747875388722282">توسیعات</translation>
 <translation id="6787094689637422836">ہم رازداری کی نئی خصوصیات شروع کر رہے ہیں جو آپ کو دکھائی دینے والے اشتہارات پر مزید انتخاب فراہم کرتی ہیں۔</translation>
-<translation id="6788615780749001893">‏‫AI وضع بٹن، AI وضع کی درخواست کرنے کیلئے Enter دبائیں</translation>
 <translation id="6789062271869667677">مسلسل (بڑی)</translation>
 <translation id="678982761784843853">‏تحفظ یافتہ مواد کی IDs</translation>
 <translation id="6790428901817661496">چلائیں</translation>
@@ -3818,6 +3823,7 @@
 <translation id="6898699227549475383">‏تنظیم (O)</translation>
 <translation id="6900702165119149418">آپ سائن آؤٹ ہیں</translation>
 <translation id="6907458757809079309">تندرستی</translation>
+<translation id="6910211073230771657">حذف کردہ</translation>
 <translation id="691024665142758461">متعدد فائلیں ڈاؤن لوڈ کریں</translation>
 <translation id="691046363691324218">ریڈریس نمبر</translation>
 <translation id="6915804003454593391">صارف:</translation>
@@ -3896,6 +3902,7 @@
 <translation id="7011763495818914549">شناختی کارڈ</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7013835112918108252">آپ کے ماؤس کو مقفل کرنے اور استعمال کرنے کے لیے کہہ سکتی ہے</translation>
+<translation id="7013844825046560088">‏‫Chrome لاگ کرتا ہے کہ آپ اس خصوصیت کو کیسے استعمال کرتے ہیں، جیسے کہ آپ کی درخواستیں اور آپ کا رویہ جب آپ تجاویز کو قبول کرتے ہیں یا نظر انداز کرتے ہیں</translation>
 <translation id="7014042602717177828">کار آڈیو</translation>
 <translation id="7014741021609395734">زوم کی سطح</translation>
 <translation id="7016992613359344582">یہ چارجز ایک بار یا بار بار عائد ہوسکتے ہیں اور ہو سکتا ہے کہ واضح نہ ہوں۔</translation>
@@ -4124,6 +4131,7 @@
 <translation id="7393161616326137353">ایڈونچر گیمز</translation>
 <translation id="7393475648162498734">چیک آؤٹ کے وقت دکھائیں کہ آپ کے کارڈز کے لیے کون سے انعامات اور فوائد دستیاب ہیں</translation>
 <translation id="7393971683644170444">آپ کے کارڈ فراہم کنندہ سے منسلک ہو رہا ہے...</translation>
+<translation id="7394497897677511168">دیگر شپمنٹس</translation>
 <translation id="739728382607845710">ادائیگی ہینڈلر کا آئیکن</translation>
 <translation id="7399616692258236448">مقام کی درخواستیں تمام سائٹس کے لیے خودکار طور پر مسدود ہو جاتی ہیں سوائے ان کے جن کی آپ نے اجازت دی ہے</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4571,6 +4579,7 @@
 <translation id="803771048473350947">فائل</translation>
 <translation id="8038182528865038593">سرخ 2</translation>
 <translation id="8041089156583427627">تاثرات بھیجیں</translation>
+<translation id="8042898384266617514">‏آپ کی درخواستیں، صفحہ کے عنوانات اور URLs کو Google کو بھیجا جاتا ہے اور انسانوں کے ذریعے ان کا جائزہ لیا جا سکتا ہے</translation>
 <translation id="8043255123207491407">فروخت کنندہ کی شرائط و ضوابط دیکھیں</translation>
 <translation id="8044986521421349135">آپ کا حالیہ ترین ٹیب</translation>
 <translation id="8046360364391076336">صنعتی مواد اور ساز و سامان</translation>
@@ -5013,7 +5022,9 @@
 <translation id="877348612833018844">{0,plural, =1{رازدارانہ فائل کو منتقل کریں؟}other{رازدارانہ فائلز کو منتقل کریں؟}}</translation>
 <translation id="8775347646940100151">کاغذ (لیٹر ہیڈ)</translation>
 <translation id="8775863327608679820">'ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان وقت کے ساتھ ادائیگی کے لیے دستیاب ہیں' نصف اسکرین پر کھلی ہے۔</translation>
+<translation id="8776789089819232268">آپ کے تمام آرڈرز</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8781233757384402598">‏جب آپ بہتر کردہ آٹو فل کی درخواست کرتے ہیں تو آٹو فل کے تجربے کو بہتر بنانے کے لیے آپ کے استعمال کا ڈیٹا، درخواستیں اور صفحہ کی تفصیلات Google کے ساتھ اشتراک کی جاتی ہیں</translation>
 <translation id="8781278378794969337">‏صفحہ کا ترجمہ کریں بٹن، Google ترجمہ کے ساتھ اس صفحہ کا ترجمہ کرنے کے لیے فعال کریں</translation>
 <translation id="8785658048882205566">موٹر سائیکلیں</translation>
 <translation id="8790007591277257123">&amp;دوبارہ حذف کریں</translation>

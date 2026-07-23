@@ -500,6 +500,7 @@
 <translation id="1376836354785490390">收起</translation>
 <translation id="1377438103060664754">如果您的密码在某次公开数据泄露事件中外泄，Google 密码管理工具会询问您是否要将其更改为安全系数高的密码</translation>
 <translation id="1378613616312864539">此设置由“<ph name="NAME" />”控制</translation>
+<translation id="1378715594598306389">查看更多标签页</translation>
 <translation id="1380028686461971526">自动联网</translation>
 <translation id="1381567580865186407">系统会将<ph name="LANGUAGE" />语音发送给 Google 以供处理</translation>
 <translation id="1382174183118245544">信用卡号</translation>
@@ -1229,6 +1230,7 @@
 <translation id="194174710521904357">您已暂时允许此网站使用第三方 Cookie，这样浏览保护会降低，但网站功能更可能正常运行。</translation>
 <translation id="1942128823046546853">读取和更改您在所有网站上的所有数据</translation>
 <translation id="1944535645109964458">没有可用的通行密钥</translation>
+<translation id="1944921356641260203">发现更新</translation>
 <translation id="1947136734041527201">允许您使用您在身份服务中注册的账号登录网站</translation>
 <translation id="1948528728718281125">允许系统服务以及具有摄像头使用权限的应用和网站使用摄像头</translation>
 <translation id="1949332606889020901">崩溃 ID</translation>
@@ -1811,7 +1813,6 @@
 <translation id="2424424966051154874">{0,plural, =1{访客}other{访客 (#)}}</translation>
 <translation id="2426805022920575512">选择其他账号</translation>
 <translation id="2427507373259914951">点击鼠标左键</translation>
-<translation id="2428120669821109648">标签页样式</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" /> 1 个账号，密码仅保存在此设备上。更多详情}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} 个账号，密码仅保存在此设备上。更多详情}}</translation>
 <translation id="2428510569851653187">请说明此标签页崩溃时您在做什么</translation>
 <translation id="2428939361789119025">关闭 Wi-Fi</translation>
@@ -2527,6 +2528,7 @@
 <translation id="2955048943983973430">相关 Google 服务</translation>
 <translation id="2956070239128776395">有区段嵌套在分组中：<ph name="ERROR_LINE" /></translation>
 <translation id="2957124229512318478">开启开发者模式即可使用此扩展程序，但请注意，Chrome 应用商店无法审核此扩展程序。</translation>
+<translation id="2957987442574819977">Gemini 返回意外结果</translation>
 <translation id="2958721676848865875">打包扩展程序警告</translation>
 <translation id="2959127025785722291">出了点问题。无法完成扫描。请重试。</translation>
 <translation id="2959474507964749987">此加密文件可能是病毒或恶意软件。<ph name="LINE_BREAK" />若要确定它是否安全，您可将此文件及密码发送到 Google 安全浏览功能进行检查。扫描通常需要几秒钟的时间。<ph name="LINE_BREAK" />若要扫描，请添加此文件的密码。</translation>
@@ -3512,6 +3514,7 @@
 <translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">不允许已关闭的网站完成数据收发操作</translation>
 <translation id="3709244229496787112">浏览器已在下载完成前关闭。</translation>
+<translation id="3710438437470197252">在 Google 云端硬盘中查看更多信息</translation>
 <translation id="3710501561113687889">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 会将您的<ph name="FIELDS_STRING" />分享给此网站。</translation>
 <translation id="3711931198657368127">粘贴并转到 <ph name="URL" /></translation>
 <translation id="3711945201266135623">通过打印服务器找到了 <ph name="NUM_PRINTERS" /> 台打印机</translation>
@@ -5158,6 +5161,7 @@
 <translation id="4963789650715167449">移除当前标签页</translation>
 <translation id="4964455510556214366">排列方式</translation>
 <translation id="4964544790384916627">固定窗口</translation>
+<translation id="4964673849688379040">正在检查…</translation>
 <translation id="4966972803217407697">您正在使用无痕模式</translation>
 <translation id="4967227914555989138">添加备注</translation>
 <translation id="4967360192915400530">下载危险文件</translation>
@@ -5348,6 +5352,7 @@
 <translation id="5112577000029535889">开发者工具(&amp;D)</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{已移动 1 个文件}other{已移动 {NUM_OF_FILES} 个文件}}</translation>
 <translation id="511313294362309725">开启快速配对</translation>
+<translation id="5113992879909788634">详细了解 Chrome 自动浏览功能</translation>
 <translation id="51143538739122961">请插入您的安全密钥并轻触它</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">音频存储为(&amp;V)...</translation>
@@ -7028,6 +7033,7 @@
 <translation id="6470823736074966819">将通知静音</translation>
 <translation id="6472893788822429178">显示“主页”按钮</translation>
 <translation id="6473315466413288899">选择一个选项</translation>
+<translation id="6474021817475285003">在 Google 日历中查看更多信息</translation>
 <translation id="6474498546677193336">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Linux 时停止共享此文件夹。</translation>
 <translation id="6474884162850599008">取消与 Google 云端硬盘账号的关联</translation>
 <translation id="6476482583633999078">语速</translation>
@@ -9120,6 +9126,7 @@
 <translation id="8082132721957920509">您的卡已保存</translation>
 <translation id="8082390128630131497">停用 ADB 调试会将此<ph name="DEVICE_TYPE" />恢复出厂设置。所有用户账号和本地数据都会被清空。</translation>
 <translation id="8084114998886531721">保存的密码</translation>
+<translation id="8084417885464859041">安全使用 Gemini</translation>
 <translation id="8084429490152575036">移动网络 APN 设置</translation>
 <translation id="8084628902026812045">此网站使用的不是安全连接，该文件可能已被篡改</translation>
 <translation id="808488435221187916">您可以在任何已登录账号的设备上通过 Google 钱包查看您的信息</translation>
@@ -9714,6 +9721,7 @@
 <translation id="8553342806078037065">管理其他用户</translation>
 <translation id="8554642222921881444">选中文本时的悬浮菜单</translation>
 <translation id="8554899698005018844">无语言</translation>
+<translation id="8555069853078399592"><ph name="ACTION_TOOLTIP" /> - 已显示展开的内容</translation>
 <translation id="8555444629041783356">自动更新日落时间表</translation>
 <translation id="8557022314818157177">连续轻触您的安全密钥，直到您的指纹被捕获</translation>
 <translation id="8557100046150195444">使用触控 ID 继续</translation>

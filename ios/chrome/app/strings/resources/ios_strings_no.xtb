@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpne kontomenyen.</translation>
 <translation id="1397144142234474689">Skjul loggen</translation>
 <translation id="1399268420835656394">Hvis du ikke er et barn, kan du sjekke alderen i Apple-kontoen på denne enheten. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Tidligere fylt ut</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1408847409015257906">Trykk på «Personvern og sikkerhet».</translation>
 <translation id="1411386976162024013">Visuelt søk med Lens</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Kontoen din administreres av forelderen din.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Endret</translation>
+<translation id="1481450969185702334">Finn og fyll ut</translation>
 <translation id="1483493594462132177">Send</translation>
 <translation id="1486096554574027028">Søk i passord</translation>
 <translation id="1486593497476255523">Fanegruppene er fullført.</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">For å beskytte personvernet ditt legger ikke Chrome passordet ditt automatisk inn i dette feltet.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 nettsted (flere på synkroniserte enheter)}other{# nettsteder (flere på synkroniserte enheter)}}</translation>
+<translation id="2865392654629180917">Spør om hva som helst, og få AI-baserte svar</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2876369937070532032">Sender Google nettadressene til noen av sidene du besøker, når sikkerheten din står i fare</translation>
 <translation id="2883151425485251736">Se og rediger emner du har skjult for kontoen din</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Ny fanegruppe ...</translation>
 <translation id="3185760469172949183">Søket med kameraet er fullført.</translation>
 <translation id="3186796054637504691">Slett logg og nettsteddata</translation>
+<translation id="3190558889382726167">Passordet er lagret</translation>
 <translation id="3190736958609431397">Slutt å spore</translation>
 <translation id="3208260410153224535">Organisasjonen din har slått av pålogging. Nye bokmerker, passord med mer lagres bare på denne enheten.</translation>
 <translation id="3211969308836412674">Løsne nettstedet</translation>

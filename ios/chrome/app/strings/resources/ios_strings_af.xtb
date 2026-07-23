@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">Aangemeld as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Maak rekeningkieslys oop.</translation>
 <translation id="1397144142234474689">Versteek geskiedenis</translation>
 <translation id="1399268420835656394">As jy nie ’n kind is nie, moet jy dalk die ouderdom in die Apple-rekening op hierdie toestel nagaan. <ph name="BEGIN_LINK" />Vind meer uit<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Voorheen ingevul</translation>
 <translation id="1407135791313364759">Maak alles oop</translation>
 <translation id="1408847409015257906">Tik op “Privaatheid en Sekuriteit”.</translation>
 <translation id="1411386976162024013">Visuele soektog met Lens</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Jou rekening word deur jou ouer bestuur.
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Het verander</translation>
+<translation id="1481450969185702334">Kry en vul in</translation>
 <translation id="1483493594462132177">Stuur</translation>
 <translation id="1486096554574027028">Deursoek wagwoorde</translation>
 <translation id="1486593497476255523">Oortjiegroepe is voltooi!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Om jou privaatheid te beskerm, sal Chrome nie outomaties jou wagwoord in hierdie veld invul nie.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 werf (meer op gesinkroniseerde toestelle)}other{# werwe (meer op gesinkroniseerde toestelle)}}</translation>
+<translation id="2865392654629180917">Vra enigiets en kry KI-aangedrewe antwoorde</translation>
 <translation id="2870560284913253234">Werf</translation>
 <translation id="2876369937070532032">Stuur URL'e van sommige bladsye wat jy besoek aan Google wanneer jou sekuriteit bedreig word</translation>
 <translation id="2883151425485251736">Sien en wysig onderwerpe wat jy in jou rekening versteek het</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Nuwe oortjiegroep …</translation>
 <translation id="3185760469172949183">Soek Met Kamera is voltooi!</translation>
 <translation id="3186796054637504691">Vee geskiedenis en webwerfdata uit</translation>
+<translation id="3190558889382726167">Wagwoord is gestoor</translation>
 <translation id="3190736958609431397">Stop nasporing</translation>
 <translation id="3208260410153224535">Jou organisasie het aanmelding afgeskakel. Nuwe boekmerke, wagwoorde en meer sal slegs op hierdie toestel gestoor word.</translation>
 <translation id="3211969308836412674">Ontspeld werf</translation>

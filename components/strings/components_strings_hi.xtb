@@ -261,7 +261,6 @@
 <translation id="1393071644879491291">आपने जिस साइट पर जाने की कोशिश की है उससे जुड़े हमलावर, धोखे से आपके डिवाइस में सॉफ़्टवेयर इंस्टॉल करवा सकते हैं या आपके पासवर्ड, फ़ोन नंबर, क्रेडिट कार्ड नंबर वगैरह चुरा सकते हैं. Chrome का सुझाव है कि आप इस साइट पर न जाएं. <ph name="BEGIN_LEARN_MORE_LINK" />इस चेतावनी के बारे में ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">टैब खुला होने पर भी, यहां जोड़ी गई साइटों को जवाबों के लिए रेफ़रंस के तौर पर इस्तेमाल नहीं किया जाएगा. अगर आपने कोई ऐसी साइट जोड़ी है जिसका इस्तेमाल फ़िलहाल किसी थ्रेड में किया जा रहा है, तो थ्रेड को उस साइट का रेफ़रंस लेना बंद करने में 30 मिनट लग सकते हैं.</translation>
 <translation id="1402151528875251561">साइड पैनल में इतिहास दिखाएं</translation>
-<translation id="1404026649028693342">एआई मोड हमेशा दिखाएं</translation>
 <translation id="1405567553485452995">हल्का हरा</translation>
 <translation id="1406370515365284486">पेमेंट के तरीके अब भी सेव रहेंगे</translation>
 <translation id="1406500794671479665">सत्यापन हो रहा है...</translation>
@@ -323,6 +322,7 @@
 <translation id="147358896496811705">2ए0</translation>
 <translation id="1474576429883213321">साफ़-सफ़ाई की सेवाएं</translation>
 <translation id="1476595624592550506">अपना पासवर्ड बदलें</translation>
+<translation id="1481450969185702334">खोजें और भरें</translation>
 <translation id="1482372785911828880">बहुत पतला</translation>
 <translation id="1482879811280872320">साइकलिंग</translation>
 <translation id="1483493594462132177">भेजें</translation>
@@ -676,7 +676,6 @@
 <translation id="2059202684901022309">22 x 34 इंच</translation>
 <translation id="2064568741209980952">क्रेडिट और क़र्ज़</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 सुझाव}one{# सुझाव}other{# सुझाव}}</translation>
-<translation id="2066690553719545730">एआई मोड हमेशा दिखाएं</translation>
 <translation id="2066969741541525119">आपको जिस साइट पर जाना है उसे आपके संगठन ने ब्लॉक किया है</translation>
 <translation id="2069913043427250781">वाहन और ट्रैफ़िक से जुड़ी सुरक्षा</translation>
 <translation id="2071156619270205202">इस कार्ड को वर्चुअल कार्ड के तौर पर इस्तेमाल नहीं किया जा सकता.</translation>
@@ -1284,7 +1283,6 @@
 <translation id="2978824962390592855">ऑपरा</translation>
 <translation id="2979424420072875974">लेखक के रिसॉर्स</translation>
 <translation id="2980742331521553164">इस कार्ड के सीवीसी को एन्क्रिप्ट (सुरक्षित) करके आपके Google खाते में सेव किया जाएगा, ताकि आप तेज़ी से चेकआउट कर सकें</translation>
-<translation id="2983311431122838216">Google Search पर एआई मोड में सवाल पूछें</translation>
 <translation id="2983666748527428214">गुप्त टैब खोलें</translation>
 <translation id="2985398929374701810">मान्य पता डालें</translation>
 <translation id="2986485254770343131">कैमरे की फ़ाइलें सेव की जा रही हैं</translation>
@@ -1866,6 +1864,7 @@
 <translation id="385489333361351399">कैमरा और फ़ोटो इक्विपमेंट</translation>
 <translation id="3858027520442213535">तारीख और समय अपडेट करें</translation>
 <translation id="3858860766373142691">नाम</translation>
+<translation id="3864558817291331916">हमेशा <ph name="AI_ENGINE_NAME" /> दिखाएं</translation>
 <translation id="3865339060090354361"><ph name="CREDIT_CARD_NAME" /> से जुड़ी शर्तें यहां देखें</translation>
 <translation id="3869939189466884821">आपकी लोकल फ़ाइलें <ph name="MINUTES" /> मिनट में मिटा दी जाएंगी</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
@@ -1888,6 +1887,7 @@
 <translation id="390391808978419508">खोलने का समय खत्म हो गया</translation>
 <translation id="3905894480064208252">{0,plural, =1{फ़ाइल को ट्रांसफ़र करने से रोका गया है}one{<ph name="FILE_COUNT" /> फ़ाइल को ट्रांसफ़र करने से रोका गया है}other{<ph name="FILE_COUNT" /> फ़ाइलों को ट्रांसफ़र करने से रोका गया है}}</translation>
 <translation id="3906022360148923497">पेमेंट करने के तरीके का आइकॉन</translation>
+<translation id="3906234161316839040">अन्य ऑर्डर</translation>
 <translation id="3906954721959377182">टैबलेट</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3910231615117880630">एम्बेड किए गए कॉन्टेंट के बारे में ज़्यादा जानें</translation>
@@ -2589,6 +2589,7 @@
 <translation id="5001526427543320409">तीसरे पक्ष की कुकी</translation>
 <translation id="5007344584818503324">शेयर किए गए टैब ग्रुप से जुड़ी गतिविधि</translation>
 <translation id="5007392906805964215">समीक्षा करें</translation>
+<translation id="5008767248670679254">आपके सभी शिपमेंट</translation>
 <translation id="5011561501798487822">पहचानी गई भाषा</translation>
 <translation id="5015510746216210676">मशीन का नाम:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2647,7 +2648,6 @@
 <translation id="5097099694988056070">डिवाइस के आंकड़े जैसे कि सीपीयू (CPU)/RAM का इस्तेमाल</translation>
 <translation id="5097468150760963273">27 x 39 इंच</translation>
 <translation id="5097501891273180634">ए2</translation>
-<translation id="5102512728737175215">एआई मोड में सवाल पूछने के लिए, पहले tab और फिर enter दबाएं</translation>
 <translation id="5105442806410269908">Google का अन्य डेटा मैनेज करें</translation>
 <translation id="510644072453496781">कार्डबोर्ड (एंड)</translation>
 <translation id="5106648964679263509"><ph name="BNPL_ISSUER_NAME" /> की मदद से किए जाने वाले पेमेंट के लिए, वर्चुअल कार्ड की जानकारी भर दी गई है</translation>
@@ -3363,6 +3363,7 @@
 <translation id="6177531123306197852">C2 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6180316780098470077">बार-बार कोशिश किए जाने के बीच का समय</translation>
 <translation id="6182972682129119950">A4x5</translation>
+<translation id="6187575936001446786"><ph name="AI_ENGINE_NAME" /> में सवाल पूछने के लिए, पहले tab और फिर enter दबाएं</translation>
 <translation id="6189351761800074311">आपका टेक्स्ट और पेज का कॉन्टेंट, Google को भेजा जाता है. हालांकि, इनका इस्तेमाल एआई को बेहतर बनाने के लिए नहीं किया जाएगा.
     <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6190518157737269631">अपने कीबोर्ड पर Esc जैसे कुछ बटनों के इनपुट को बदलने की अनुमति दें</translation>
@@ -3751,7 +3752,6 @@
 <translation id="6786145470008421571">6 x 9 इंच का लिफ़ाफ़ा</translation>
 <translation id="6786747875388722282">एक्‍सटेंशन</translation>
 <translation id="6787094689637422836">हम निजता से जुड़ी नई सुविधाएं लॉन्च कर रहे हैं. इनकी मदद से, आपको अपने हिसाब से विज्ञापन देखने के ज़्यादा विकल्प मिलेंगे.</translation>
-<translation id="6788615780749001893">एआई मोड का बटन, एआई मोड में सवाल पूछने के लिए Enter दबाएं</translation>
 <translation id="6789062271869667677">कंटिन्यूअस (लॉन्ग)</translation>
 <translation id="678982761784843853">सुरक्षित कॉन्टेंट के आईडी</translation>
 <translation id="6790428901817661496">चलाएं</translation>
@@ -3823,6 +3823,7 @@
 <translation id="6898699227549475383">संगठन (O)</translation>
 <translation id="6900702165119149418">आपको साइन आउट कर दिया गया है</translation>
 <translation id="6907458757809079309">फ़िटनेस</translation>
+<translation id="6910211073230771657">हटाया गया</translation>
 <translation id="691024665142758461">एकाधिक फ़ाइलें डाउनलोड करें</translation>
 <translation id="691046363691324218">Redress Number</translation>
 <translation id="6915804003454593391">उपयोगकर्ता:</translation>
@@ -3991,6 +3992,7 @@
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}one{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}other{<ph name="PAYMENT_METHOD_PREVIEW" /> और <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> अन्य}}</translation>
 <translation id="7156870133441232244">इस सर्वर को TLS 1.2 या इसके बाद वाले वर्शन पर अपग्रेड करना होगा.</translation>
 <translation id="7156885531105222428">आपने जिस पेज के लिए अनुरोध किया है वह ऐप्लिकेशन में नहीं मिला</translation>
+<translation id="7157447397944182926"><ph name="SEARCH_ENGINE_NAME" /> Search में <ph name="AI_ENGINE_NAME" /> से पूछें</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> का इस्तेमाल करके यह फ़ाइल भेजने के लिए, अपने डिवाइस में जगह (<ph name="DISK_SPACE_SIZE" />) खाली करें}one{<ph name="FEATURE_NAME" /> का इस्तेमाल करके यह फ़ाइल भेजने के लिए, अपने डिवाइस में जगह (<ph name="DISK_SPACE_SIZE" />) खाली करें}other{<ph name="FEATURE_NAME" /> का इस्तेमाल करके इन फ़ाइलों को भेजने के लिए, अपने डिवाइस में जगह (<ph name="DISK_SPACE_SIZE" />) खाली करें}}</translation>
 <translation id="7160999678034985039">कृपया अपने काम को सेव करें और जब आप तैयार हों, तो अपडेट करना शुरू करें.</translation>
 <translation id="7162277662076933695">स्मार्ट कार्ड रीडर</translation>
@@ -4131,6 +4133,7 @@
 <translation id="7393161616326137353">एडवेंचर गेम</translation>
 <translation id="7393475648162498734">चेकआउट के समय दिखाएं कि मेरे कार्ड के लिए कौन-कौनसे इनाम और फ़ायदे उपलब्ध हैं</translation>
 <translation id="7393971683644170444">कार्ड की सेवा देने वाली कंपनी से कनेक्ट किया जा रहा है...</translation>
+<translation id="7394497897677511168">अन्य शिपमेंट</translation>
 <translation id="739728382607845710">पेमेंट हैंडलर आइकॉन</translation>
 <translation id="7399616692258236448">आपने जिन साइटों को अनुमति दी है उन्हें छोड़कर, दूसरी सभी साइटों के लिए जगह की जानकारी के अनुरोध अपने-आप ब्लॉक हो जाते हैं</translation>
 <translation id="7400418766976504921">URL</translation>
@@ -4641,6 +4644,7 @@
 <translation id="815036624016370447">Google खाते <ph name="ACCOUNT" /> में सेव की गई जानकारी से, आपको Chrome में फटाफट फ़ॉर्म भरने में मदद मिल सकती है</translation>
 <translation id="8150722005171944719"><ph name="URL" /> पर मौजूद फ़ाइल पढ़ने के लायक नहीं है.  हो सकता है कि इसे हटा दिया गया हो, कहीं ले जाया गया हो, या फ़ाइल की अनुमतियां एक्सेस को रोक रही हों.</translation>
 <translation id="8151185429379586178">डेवलपर टूल</translation>
+<translation id="8152194419479742504">बिना टैब स्विच किए जानकारी ढूंढने और उसे भरने के लिए, किसी भी फ़ॉर्म में @@ टाइप करें</translation>
 <translation id="8153865548451212769">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर डाउनलोड करने का सुझाव नहीं देती है}}</translation>
 <translation id="8155253549374198915">पिछली बार खोले गए टैब</translation>
 <translation id="81563721597823545">हॉकी इक्विपमेंट</translation>
@@ -4661,6 +4665,7 @@
 <translation id="8189557652711717875">आपके चुने हुए सर्च इंजन का इस्तेमाल, पता बार से और वेब पेजों पर मौजूद इमेज से खोज करने जैसी सुविधाओं के लिए किया जाएगा.</translation>
 <translation id="8190193880870196235">इसे उपयोगकर्ता के किसी एक्सटेंशन से मैनेज किया जाता है</translation>
 <translation id="8194412401381329820">मैनेज नहीं किए जा रहे इस डिवाइस पर, मैनेज किए जा रहे खाते से इस पेज का इस्तेमाल नहीं किया जा सकता. अगर इस पेज का इस्तेमाल किया जाता है, तो मैनेज किए जा रहे सभी खाते लॉक हो जाएंगे. हालांकि, इस डिवाइस को मैनेज करने वाली इकाई जिन खातों को मैनेज करती है उन्हें लॉक नहीं किया जाएगा (अफ़िलिएट खाते).</translation>
+<translation id="8194579937546982778">हमेशा <ph name="AI_ENGINE_NAME" /> दिखाएं</translation>
 <translation id="8194797478851900357">&amp;ले जाना वापस लाएं</translation>
 <translation id="8194956568907463262">शूटर गेम</translation>
 <translation id="8199437620497683918">ऑप्टिकल डिस्क (ग्लॉसी)</translation>
@@ -5022,6 +5027,7 @@
 <translation id="877348612833018844">{0,plural, =1{क्या गोपनीय फ़ाइल को किसी दूसरी जगह ट्रांसफ़र करना है?}one{क्या गोपनीय फ़ाइल को किसी दूसरी जगह ट्रांसफ़र करना है?}other{क्या गोपनीय फ़ाइलों को किसी दूसरी जगह ट्रांसफ़र करना है?}}</translation>
 <translation id="8775347646940100151">पेपर (लेटरहेड)</translation>
 <translation id="8775863327608679820">'अभी खरीदें, बाद में पेमेंट करें' सुविधा देने वाली कंपनियों की सूची, आधी स्क्रीन पर खुली है. ये कंपनियां, किस्तों में पेमेंट करने की सुविधा देती हैं.</translation>
+<translation id="8776789089819232268">आपके सभी ऑर्डर</translation>
 <translation id="877985182522063539">ए4</translation>
 <translation id="8781233757384402598">बेहतर ऑटोफ़िल की सुविधा का अनुरोध करने पर, इस्तेमाल से जुड़ा आपका डेटा, आपके अनुरोध, और पेज की जानकारी Google के साथ शेयर की जाती है. ऐसा ऑटोमैटिक तरीके से भरने की सुविधा को बेहतर बनाने के मकसद से किया जाता है</translation>
 <translation id="8781278378794969337">'पेज का अनुवाद करें' बटन, Google Translate की मदद से इस पेज का अनुवाद करने के लिए इसे चालू करें</translation>
@@ -5346,6 +5352,7 @@
 <translation id="979107176848483472"><ph name="DOMAIN" /> आपके ब्राउज़र और प्रोफ़ाइल को मैनेज करता है</translation>
 <translation id="979189555234810423">एक्सपो और सम्मेलन</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>
+<translation id="983587187183716432"><ph name="AI_ENGINE_NAME" /> बटन, <ph name="AI_ENGINE_NAME" /> में सवाल पूछने के लिए Enter दबाएं</translation>
 <translation id="984101218975906499">फ़ार्मास्यूटिकल और बायोटेक</translation>
 <translation id="984275831282074731">पेमेंट के तरीके</translation>
 <translation id="985199708454569384">&lt;p&gt;अगर आपके कंप्यूटर या मोबाइल डिवाइस की तारीख और समय गलत है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;

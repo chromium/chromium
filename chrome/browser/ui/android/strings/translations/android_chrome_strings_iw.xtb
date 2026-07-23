@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">אם הקבוצה תימחק, כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", והיא תימחק מכל המכשירים.</translation>
 <translation id="1142732900304639782">אין להציג את ההצעה לתרגם את האתרים האלה</translation>
 <translation id="1143193470214071120">אפשר לסגור חלון או לנהל חלונות</translation>
+<translation id="1143486892058798649">שמירת הקישור בשם…</translation>
 <translation id="1149725087019908252">מתבצעת סריקה של <ph name="FILE_NAME" /></translation>
 <translation id="1150263420752757504">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">‏אין לך סיסמאות שמורות במנהל הסיסמאות של Google.</translation>
@@ -147,6 +148,7 @@
 <translation id="1571041387761170095">אין סיסמאות חלשות או סיסמאות בשימוש חוזר</translation>
 <translation id="1578591621182011812">{NUM_PASSWORDS,plural, =1{יש במכשיר הזה סיסמה אחת שנחשפה}one{יש במכשיר הזה # סיסמאות שנחשפו}two{יש במכשיר הזה # סיסמאות שנחשפו}other{יש במכשיר הזה # סיסמאות שנחשפו}}</translation>
 <translation id="1594635596540195766">ברשימה שבהמשך יש <ph name="SUGGESTIONS_COUNT" /> הצעות לפריטים.</translation>
+<translation id="159689249463841786">בחירת תיקייה, התיקייה הנוכחית היא <ph name="FOLDER_NAME" /></translation>
 <translation id="1598163867407640634">יש לך אפשרות להשתמש באתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598770407402123677">‫<ph name="TAB_TITLE" />, כרטיסייה שהוצמדה והתוכן בה מוקלט</translation>
 <translation id="1600756129506222718">‫<ph name="TAB_TITLE" />, כרטיסייה שהתוכן בה משותף</translation>
@@ -277,6 +279,7 @@
 <translation id="2190355936436201913">(ריק)</translation>
 <translation id="219283042927675668">כרטיסיות בקבוצה</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
+<translation id="2196695604589508993">פתיחת ההיסטוריה</translation>
 <translation id="2205701497928406883">‫<ph name="TAB_TITLE" />, כרטיסייה שהוצמדה והתוכן בה משותף</translation>
 <translation id="22091350895006575">הוספה של שם המשתמש</translation>
 <translation id="221494669172414749">‏פתיחת Chrome בלי נעילת פרופיל תגרום להסרת הסיסמאות ואמצעי התשלום השמורים מהמכונית. שימוש בנעילת פרופיל עוזר לשמור על אבטחת הנתונים האלה.</translation>
@@ -311,6 +314,7 @@
 <translation id="2330186936255788117">עוד סימניות</translation>
 <translation id="2332515770639153015">הגרסה המשופרת של הגלישה הבטוחה מופעלת</translation>
 <translation id="233375395665273385">מחיקה ויציאה מהחשבון</translation>
+<translation id="2334275697832662087">‏אמצעי האבטחה של Chrome שמבוססים על AI מגינים עליך מפני איומים אונליין, ומעניקים לך יותר ביטחון בזמן הגלישה</translation>
 <translation id="2341410551640223969">לא הצלחנו להתקין את <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">‏סך כל הנתונים שבהם משתמש Chrome, כולל חשבונות, סימניות והגדרות שמורות</translation>
 <translation id="2354001756790975382">סימניות אחרות</translation>
@@ -558,7 +562,7 @@
 <translation id="3331974543021145906">פרטי האפליקציה</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
 <translation id="333863344734218290">קבלת אזהרה לגבי אתרים ציבוריים ופרטיים לא מאובטחים</translation>
-<translation id="3339788961947270565">מסיים את תהליך הכיבוי</translation>
+<translation id="3339788961947270565">תהליך הסגירה מסתיים</translation>
 <translation id="3340978935015468852">הגדרות</translation>
 <translation id="3351959803838327376">לוחצים לחיצה ארוכה על האתר ופותחים את התפריט</translation>
 <translation id="3359667936385849800">שימוש בספק השירות הנוכחי</translation>
@@ -612,6 +616,7 @@
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577558748185201054">אפשר לנהל את תחומי העניין וההעדפות</translation>
 <translation id="3587482841069643663">הכול</translation>
+<translation id="3598421953808879451">שמירת הסרטון בשם…</translation>
 <translation id="3602290021589620013">תצוגה מקדימה</translation>
 <translation id="3614126103057878858">מדדי מחירים</translation>
 <translation id="3616113530831147358">אודיו</translation>
@@ -722,6 +727,7 @@
 <translation id="4044708993631234325">גיליון תחתון</translation>
 <translation id="4045441967987592849">פתיחה מחדש</translation>
 <translation id="4049920046559074950">אפשרויות נוספות של <ph name="INSTANCE_TITLE" /></translation>
+<translation id="4051548576872472315">כאן אפשר למצוא את הכרטיסיות והחלונות שנסגרו לאחרונה</translation>
 <translation id="4051569243832293689">{NUM_BOOKMARKS,plural, =1{פתיחה בחלון פרטי}one{פתיחת כל הסימניות (#) בחלון פרטי}two{פתיחת כל הסימניות (#) בחלון פרטי}other{פתיחת כל הסימניות (#) בחלון פרטי}}</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{כרטיסייה רגילה אחת (<ph name="TABS_COUNT_ONE" />) עם פעילות חדשה בקבוצות המשותפות של הכרטיסיות}one{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות עם פעילות חדשה בקבוצות המשותפות של הכרטיסיות}two{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות עם פעילות חדשה בקבוצות המשותפות של הכרטיסיות}other{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות עם פעילות חדשה בקבוצות המשותפות של הכרטיסיות}}</translation>
 <translation id="405365679581583349">‏צריך לעדכן את Google Play Services</translation>
@@ -1250,7 +1256,7 @@
 <translation id="6246073558347462570">החלון הקופץ של "הוספת הקשר"</translation>
 <translation id="6247557882553405851">‏מנהל הסיסמאות של Google</translation>
 <translation id="6248988683584659830">חיפוש בהגדרות</translation>
-<translation id="6250486830372700930">יש לך אפשרות גם להסיר תוספים מהמכשיר הזה</translation>
+<translation id="6250486830372700930">הסרת התוספים מהמכשיר הזה</translation>
 <translation id="6250847299079540062">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת מתוך סדרת כרטיסיות שנבחרה</translation>
 <translation id="6251449557817521191">‏לצפייה בהיסטוריה ב-Chrome</translation>
 <translation id="6254139308321626268">‏מוצג לך קובץ PDF</translation>
@@ -1522,6 +1528,7 @@
 <translation id="71503698506017927">‏הצפנה של ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay.
 
 כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />למחוק את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">שמירת התמונה בשם…</translation>
 <translation id="7165972437814027679">‏מידע נוסף על חסימה של קבצים מסוימים ב-Chrome</translation>
 <translation id="7168323970702333693">נכנסת לחשבון בתור <ph name="USER_NAME" />. ההגדרות ייפתחו.</translation>
 <translation id="7170930892977483182">‏כל קודי האבטחה ששמורים במכשיר וב-Google Wallet יימחקו</translation>
@@ -1695,6 +1702,7 @@
 <translation id="7824665136384946951">הארגון שלך השבית את הגלישה הבטוחה</translation>
 <translation id="7825973332242257878">קבוצות של כרטיסיות</translation>
 <translation id="7826342993930002256">‏חשבון Chrome, בכל מקום</translation>
+<translation id="7845155831233417403">ניתן לפתוח עד <ph name="MAX_INSTANCE_COUNT" /> חלונות. כדי להמשיך, צריך לסגור חלון.</translation>
 <translation id="7846161022626028328">אירעה שגיאה. אפשר לנסות שוב.</translation>
 <translation id="7846296061357476882">‏שירותי Google</translation>
 <translation id="784652447248278262">חלון נוכחי</translation>
@@ -1818,10 +1826,12 @@
 <translation id="8282297628636750033">החלת עיצוב כהה על אתרים, כשאפשר</translation>
 <translation id="8282950411412455249">אל הגדרות האבטחה</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{סגירת החלון הפרטי}one{סגירת # החלונות הפרטיים}two{סגירת # החלונות הפרטיים}other{סגירת # החלונות הפרטיים}}</translation>
+<translation id="8289602658021943461">שמירת הפריים בשם…</translation>
 <translation id="8313599942510782709">המשימה עדיין בתהליך</translation>
 <translation id="8317318757008452355">פתיחת האפשרויות להדפסה</translation>
 <translation id="8320212361750431956">פעילות אחרונה</translation>
 <translation id="832514020744584629">‫<ph name="PREF_TITLE" />  <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
+<translation id="8333026248928723981">סימניות ורשימות</translation>
 <translation id="8342727528718219152">‏‫Chrome יודיע לך על אתרים שעלולים לשלוח יותר מדי התראות</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8348215005712416247">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שהוצמדה מתוך סדרת כרטיסיות שנבחרו והתוכן בה מוקלט</translation>
@@ -2063,6 +2073,7 @@
 <translation id="939598580284253335">הזנת ביטוי סיסמה</translation>
 <translation id="94161319503679839">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת, במצב "תמונה בתוך תמונה"</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
+<translation id="948276827484905248">‏יצירת קוד QR</translation>
 <translation id="95817756606698420">‏דפדפן Chrome יכול להשתמש ב-<ph name="BEGIN_BOLD" />Sogou‏<ph name="END_BOLD" /> כדי לבצע חיפוש מסין. אפשר לשנות את ההעדפה הזאת ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">מחיקת נתוני הגלישה</translation>
 <translation id="963246339335003378">פתיחת מנהל המשימות</translation>

@@ -136,6 +136,7 @@
 <translation id="1085618740036066768">Не выбрано: <ph name="ITEM" />. Позиция <ph name="INDEX" /> из <ph name="COUNT" />. Чтобы выбрать, нажмите Поиск плюс Пробел.</translation>
 <translation id="1086486568852410168">Поиск с Google Объективом</translation>
 <translation id="1090126737595388931">Нет приложений, работающих в фоновом режиме</translation>
+<translation id="109038914521989341">Укажите причину, по которой вы хотите скопировать эти данные:</translation>
 <translation id="1090541560108055381">Перед подключением убедитесь, что код одинаковый на обоих устройствах.</translation>
 <translation id="1093457606523402488">Доступные сети:</translation>
 <translation id="1093645050124056515">Ctrl + Alt + Стрелка вниз</translation>
@@ -1230,6 +1231,7 @@
 <translation id="194174710521904357">Вы временно разрешили этому сайту использовать сторонние файлы cookie. Браузер станет хуже защищен, но функции сайта могут начать работать правильно.</translation>
 <translation id="1942128823046546853">Просмотр и изменение ваших данных на всех сайтах</translation>
 <translation id="1944535645109964458">Ключи доступа не найдены</translation>
+<translation id="1944921356641260203">Найдено обновление</translation>
 <translation id="1947136734041527201">Позволяет выполнять вход на сайтах через сервисы подтверждения личности.</translation>
 <translation id="1948528728718281125">Камеру могут использовать приложения и сайты с разрешением на доступ к ней, а также системные сервисы</translation>
 <translation id="1949332606889020901">Идентификаторы сбоев</translation>
@@ -1812,7 +1814,6 @@
 <translation id="2424424966051154874">{0,plural, =1{Гость}one{Гость (#)}few{Гость (#)}many{Гость (#)}other{Гость (#)}}</translation>
 <translation id="2426805022920575512">Сменить аккаунт</translation>
 <translation id="2427507373259914951">Нажатие на левую кнопку мыши</translation>
-<translation id="2428120669821109648">Стиль вкладок</translation>
 <translation id="2428245692671442472">{NUM_PASSWORDS,plural, =1{<ph name="DOMAIN_LINK" />: 1 аккаунт, пароль сохранен только на этом устройстве. Подробнее…}one{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунт, пароль сохранен только на этом устройстве. Подробнее…}few{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунта, пароль сохранен только на этом устройстве. Подробнее…}many{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунтов, пароль сохранен только на этом устройстве. Подробнее…}other{<ph name="DOMAIN_LINK" /> {NUM_PASSWORDS} аккаунта, пароль сохранен только на этом устройстве. Подробнее…}}</translation>
 <translation id="2428510569851653187">Опишите, что вы делали, когда произошел сбой</translation>
 <translation id="2428939361789119025">Отключить Wi-Fi</translation>
@@ -3854,6 +3855,7 @@
 <translation id="3930968231047618417">Цвет фона</translation>
 <translation id="3932356525934356570">Закрепить расширение "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3932477678113677556">Максимальное количество символов: <ph name="MAX" /></translation>
+<translation id="3932501527949942152">Поделиться с аудио на вкладке</translation>
 <translation id="3933121352599513978">Свернуть ненужные запросы (рекомендуется)</translation>
 <translation id="3936260554100916852">Устройство "<ph name="DEVICE_NAME" />" передает данные для подключения к сети Wi-Fi.</translation>
 <translation id="3936390757709632190">&amp;Открыть аудиозапись на новой вкладке</translation>
@@ -4339,6 +4341,7 @@
 <translation id="4325515113816851466">Если ты выйдешь из аккаунта, родительские настройки перестанут действовать.</translation>
 <translation id="4326146840124313313">Это самый высокий уровень защиты в Chrome, который позволяет обезопасить вас от угроз на сайтах, а также от вредоносных расширений и загрузок.</translation>
 <translation id="4327380114687339519">Меню расширений</translation>
+<translation id="4328160087116165267">Поделиться с аудио в системе</translation>
 <translation id="4330191372652740264">Вода со льдом</translation>
 <translation id="4330387663455830245">Никогда не переводить <ph name="LANGUAGE" /></translation>
 <translation id="4330963457501417204">Разворачивать свернутые вкладки при наведении</translation>
@@ -4838,6 +4841,7 @@
 <translation id="4722920479021006856">Приложению <ph name="APP_NAME" /> предоставлен доступ к вашему экрану.</translation>
 <translation id="4722989931633062466">Запретить предложения войти в аккаунт через сторонние сервисы</translation>
 <translation id="4723140812774948886">Поменять местами со следующим</translation>
+<translation id="4724031052727917178">Поделиться с аудио</translation>
 <translation id="4724450788351008910">Изменение принадлежности</translation>
 <translation id="4725511304875193254">Корги</translation>
 <translation id="4726710355753484204">Чтобы увеличить масштаб, нажмите Ctrl + Alt + Увеличить яркость.
@@ -5164,6 +5168,7 @@
 <translation id="4963789650715167449">Удалить вкладку</translation>
 <translation id="4964455510556214366">Расположение</translation>
 <translation id="4964544790384916627">Прикрепление окна</translation>
+<translation id="4964673849688379040">Проверка...</translation>
 <translation id="4966972803217407697">Режим инкогнито</translation>
 <translation id="4967227914555989138">Добавить заметку</translation>
 <translation id="4967360192915400530">Скачать опасный файл</translation>
@@ -7763,6 +7768,7 @@
 <translation id="701020165009334820">Вы можете скачивать приложения и игры для Android в Google Play.</translation>
 <translation id="701080569351381435">Просмотр исходного кода</translation>
 <translation id="7012430956470647760">Родительский контроль для приложений</translation>
+<translation id="7012873145982513962">Для полноценной работы сайта рекомендуется предоставить доступ к аудио</translation>
 <translation id="7014174261166285193">Установка не выполнена.</translation>
 <translation id="7014480873681694324">Снять выделение</translation>
 <translation id="7014741021609395734">Масштаб</translation>

@@ -41,6 +41,7 @@
 <translation id="1140317858355046628">Ef þú eyðir honum munu allir notendur umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og honum verður eytt úr öllum tækjum.</translation>
 <translation id="1142732900304639782">Ekki bjóða upp á að þýða þessi vefsvæði</translation>
 <translation id="1143193470214071120">Lokaðu glugga eða stjórnaðu gluggum</translation>
+<translation id="1143486892058798649">Vista tengil sem…</translation>
 <translation id="1149725087019908252">Skannar <ph name="FILE_NAME" /></translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> opnast í Chrome. Með því að halda áfram samþykkirðu <ph name="BEGIN_LINK1" />þjónustuskilmála Google<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />viðbótarþjónustuskilmála Google Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Þú ert ekki með nein aðgangsorð vistuð í Google-aðgangsorðastjórnun.</translation>
@@ -314,6 +315,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2330186936255788117">Fleiri bókamerki</translation>
 <translation id="2332515770639153015">Kveikt er á enn öruggari vefskoðun</translation>
 <translation id="233375395665273385">Eyða og skrá út</translation>
+<translation id="2334275697832662087">Gervigreindarknúin öryggiskerfi Chrome stuðla að aukinni vernd fyrir þig gegn ógnum á netinu og veita þér öryggistilfinningu þegar þú vafrar</translation>
 <translation id="2341410551640223969">Ekki tókst að setja upp <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Gögn sem Chrome notar alls, þ.m.t. reikningar, bókamerki og vistaðar stillingar</translation>
 <translation id="2354001756790975382">Önnur bókamerki</translation>
@@ -615,6 +617,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3577473026931028326">Eitthvað fór úrskeiðis. Reyndu aftur.</translation>
 <translation id="3577558748185201054">Stjórnaðu áhugasviðum þínum og kjörstillingum</translation>
 <translation id="3587482841069643663">Allar</translation>
+<translation id="3598421953808879451">Vista myndskeið sem…</translation>
 <translation id="3602290021589620013">Forskoða</translation>
 <translation id="3614126103057878858">Verðinnsýn</translation>
 <translation id="3616113530831147358">Hljóð</translation>
@@ -1526,6 +1529,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="71503698506017927">Dulkóðun aðgangsorða felur ekki í sér greiðslumáta og heimilisföng á Google Pay.
 
 Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-gögnunum á reikningnum þínum<ph name="END_LINK" />.</translation>
+<translation id="7159399361248977424">Vista mynd sem…</translation>
 <translation id="7165972437814027679">Nánar um hvers vegna Chrome lokar fyrir vissar skrár</translation>
 <translation id="7168323970702333693">Skráð(ur) inn sem <ph name="USER_NAME" />. Opnar stillingar.</translation>
 <translation id="7170930892977483182">Öllum öryggiskóðum sem vistaðir eru í tækinu og í Google-veski verður eytt</translation>
@@ -1823,6 +1827,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8282297628636750033">Nota dökkt þema fyrir vefsvæði</translation>
 <translation id="8282950411412455249">Opna öryggisstillingar</translation>
 <translation id="8288688997999490824">{NUM_WINDOWS,plural, =1{Loka einum huliðsglugga}one{Loka # huliðsglugga}other{Loka # huliðsgluggum}}</translation>
+<translation id="8289602658021943461">Vista vídeóramma sem…</translation>
 <translation id="8313599942510782709">Verkefnið þitt er enn í vinnslu</translation>
 <translation id="8317318757008452355">Opna valkosti til að prenta</translation>
 <translation id="8320212361750431956">Nýlegar aðgerðir</translation>

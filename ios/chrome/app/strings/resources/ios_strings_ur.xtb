@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" /> کے بطور سائن ان کردہ۔ <ph name="USER_EMAIL" />۔ اکاؤنٹ مینیو کھولیں۔</translation>
 <translation id="1397144142234474689">سرگزشت چھپائیں</translation>
 <translation id="1399268420835656394">‏اگر آپ بچہ نہیں ہیں تو آپ اس آلے پر Apple اکاؤنٹ میں عمر چیک کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">پہلے سے پُر کردہ</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="1408847409015257906">"رازداری اور سیکیورٹی" پر تھپتھپائیں۔</translation>
 <translation id="1411386976162024013">لینز کی ویژوئل تلاش</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">آپ کا اکاؤنٹ آپ کے والد/والدہ کے زیر انتظام ہے۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">تبدیل کر دیا گیا</translation>
+<translation id="1481450969185702334">تلاش کریں اور پُر کریں</translation>
 <translation id="1483493594462132177">بھیجیں</translation>
 <translation id="1486096554574027028">پاس ورڈز تلاش کریں</translation>
 <translation id="1486593497476255523">'ٹیب کے گروپس' مکمل ہو گئے!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">‏آپ کی رازداری کے تحفظ کے لیے، Chrome اس فیلڈ میں آپ کا پاس ورڈ آٹو فل نہیں کرے گا۔</translation>
 <translation id="2858951819750638913">‫Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 سائٹ (مطابقت پذیر آلات پر مزید)}other{# سائٹس (مطابقت پذیر آلات پر مزید)}}</translation>
+<translation id="2865392654629180917">‏کچھ بھی پوچھیں اور AI تقویت یافتہ جوابات حاصل کریں</translation>
 <translation id="2870560284913253234">سائٹ</translation>
 <translation id="2876369937070532032">‏آپ کو سیکیورٹی کا خطرہ لاحق ہونے پر، Google کو آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs بھیجتا ہے</translation>
 <translation id="2883151425485251736">ان موضوعات کو دیکھیں اور ان میں ترمیم کریں جنہیں آپ نے اپنے اکاؤنٹ سے چھپایا ہے۔</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">نیا ٹیب گروپ...</translation>
 <translation id="3185760469172949183">'کیمرے کے ساتھ تلاش' مکمل ہو گئی!</translation>
 <translation id="3186796054637504691">سرگزشت اور ویب سائٹ کا ڈیٹا صاف کریں</translation>
+<translation id="3190558889382726167">پاس ورڈ محفوظ ہوگیا</translation>
 <translation id="3190736958609431397">ٹریک کو کالعدم کریں</translation>
 <translation id="3208260410153224535">آپ کی تنظیم نے سائن ان کو آف کر دیا ہے۔ نئے بُک مارکس، پاس ورڈز اور بہت کچھ کو صرف اس آلہ میں محفوظ کیا جائے گا۔</translation>
 <translation id="3211969308836412674">سائٹ سے پن ہٹائیں</translation>

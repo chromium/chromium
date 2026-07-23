@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" /> катары кирдиңиз. <ph name="USER_EMAIL" />. Аккаунт менюсун ачуу.</translation>
 <translation id="1397144142234474689">Таржымалды жашыруу</translation>
 <translation id="1399268420835656394">Эгер курагыңыз туура эмес аныкталып жатса, бул түзмөктөн Apple аккаунтуңузда көрсөтүлгөн куракты текшерсеңиз болот. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">Мурун толтурулган</translation>
 <translation id="1407135791313364759">Баарын ачуу</translation>
 <translation id="1408847409015257906">"Купуялык жана коопсуздукту" таптап коюңуз.</translation>
 <translation id="1411386976162024013">Lens аркылуу сүрөт менен издөө</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">Аккаунтуңду ата-энең тескейт.
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">Өзгөрдү</translation>
+<translation id="1481450969185702334">Таап, толтуруу</translation>
 <translation id="1483493594462132177">Жөнтүү</translation>
 <translation id="1486096554574027028">Сырсөздөрдү издөө</translation>
 <translation id="1486593497476255523">Өтмөктөр топтору боюнча тапшырма аткарылды!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">Купуялыгыңызды коргоо максатында, Chrome бул талаага сырсөзүңүздү автоматтык түрдө киргизбейт.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{1 сайт (шайкештирилген түзмөктөрдө көбүрөөк)}other{# сайт (шайкештирилген түзмөктөрдө көбүрөөк)}}</translation>
+<translation id="2865392654629180917">Каалаган сурооңузду берип, ЖИ жоопторун алыңыз</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2876369937070532032">Коопсуздугуңузга коркунуч жаралганда, баш баккан барактарыңыздын URL'дерин Google'га жөнөтөт</translation>
 <translation id="2883151425485251736">Аккаунтуңуздан жашырып койгон темаларды көрүп, түзөтүү</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">Жаңы өтмөктөр тобу...</translation>
 <translation id="3185760469172949183">Камера менен издөө боюнча тапшырма аткарылды!</translation>
 <translation id="3186796054637504691">Таржымалдагы жана вебсайттагы нерселерди тазалоо</translation>
+<translation id="3190558889382726167">Сырсөз сакталды</translation>
 <translation id="3190736958609431397">Көз салууну токтотуу</translation>
 <translation id="3208260410153224535">Уюмуңуз кирүү аракетин өчүрүп койду. Жаңы кыстармалар, сырсөздөр жана башкалар ушул түзмөккө гана сакталат.</translation>
 <translation id="3211969308836412674">Сайтты бошотуу</translation>

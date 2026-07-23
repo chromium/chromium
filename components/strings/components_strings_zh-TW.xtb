@@ -61,6 +61,7 @@
 <translation id="1090629319939036170">VR 選單</translation>
 <translation id="1091463901118115503">繼續閱讀</translation>
 <translation id="1091779689406092804">螢幕截圖</translation>
+<translation id="1095093219235104018">透過 Gemini 尋找並填入資訊</translation>
 <translation id="1096545575934602868">這個欄位最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，其餘將會捨棄。</translation>
 <translation id="1097803577928227769">地區公園與花園</translation>
 <translation id="1099928364755383720">自動進入子母畫面</translation>
@@ -260,7 +261,6 @@
 <translation id="1393071644879491291">你嘗試前往的網站可能有攻擊者，會誘騙你安裝軟體或提供資訊，例如密碼、電話號碼或信用卡號碼。Chrome 強烈建議你不要造訪這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1398743098754840707">這裡新增的網站即使在分頁中開啟，也不會用來生成回覆。如果你新增的網站目前正用於對話，系統最多需要 30 分鐘才會停止參考該網站。</translation>
 <translation id="1402151528875251561">在側邊面板中顯示歷史記錄</translation>
-<translation id="1404026649028693342">一律顯示 AI 模式</translation>
 <translation id="1405567553485452995">淺綠色</translation>
 <translation id="1406370515365284486">系統仍會保留付款方式</translation>
 <translation id="1406500794671479665">驗證中...</translation>
@@ -322,6 +322,7 @@
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">清潔服務</translation>
 <translation id="1476595624592550506">變更你的密碼</translation>
+<translation id="1481450969185702334">尋找並填入</translation>
 <translation id="1482372785911828880">極細</translation>
 <translation id="1482879811280872320">單車運動</translation>
 <translation id="1483493594462132177">傳送</translation>
@@ -365,6 +366,7 @@
 
       &lt;p&gt;請前往「設定」應用程式的「一般設定」專區調整日期和時間。&lt;strong&gt;&lt;/strong&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/p&gt;</translation>
 <translation id="1559839503761818503">系統管理員將在 <ph name="DATE" /><ph name="TIME" /> 重新啟動你的裝置。</translation>
+<translation id="1562601408588733317">管理 Gemini 尋找及填入資訊的方式</translation>
 <translation id="1562805467275776390">賽車</translation>
 <translation id="1563755205047885671">動作與平台遊戲</translation>
 <translation id="1564634006476980707">搜尋網址建議採用 HTTPS 配置：<ph name="SEARCH_URL" /></translation>
@@ -672,7 +674,6 @@
 <translation id="2059202684901022309">22 x 34 吋</translation>
 <translation id="2064568741209980952">信用與貸款</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 個建議項目}other{# 個建議項目}}</translation>
-<translation id="2066690553719545730">一律顯示 AI 模式</translation>
 <translation id="2066969741541525119">貴機構封鎖了你要瀏覽的網站</translation>
 <translation id="2069913043427250781">車輛和交通安全</translation>
 <translation id="2071156619270205202">這張卡片不能建立虛擬卡號。</translation>
@@ -831,6 +832,7 @@
 <translation id="2268044343513325586">調整文字</translation>
 <translation id="2268966938956566076"><ph name="MINUTES" /> 分鐘後上傳</translation>
 <translation id="2270484714375784793">電話號碼</translation>
+<translation id="2274179746480077483">自動填入 Gmail 和 Google 相簿等應用程式中的資訊。採用個人化智慧服務。</translation>
 <translation id="2276057643614339130">列印基底</translation>
 <translation id="2277103315734023688">快轉</translation>
 <translation id="2277753418458118549">顯示詳細連線資料</translation>
@@ -1171,6 +1173,7 @@
 <translation id="2784949926578158345">連線已重設。</translation>
 <translation id="2786008859124691917">腳踏車與配件</translation>
 <translation id="2792012897584536778">這個裝置的系統管理員已設定安全憑證，這些憑證將允許系統管理員檢視你所造訪的網站內容。</translation>
+<translation id="2793425367785017642">系統可能會在雲端私人空間處理你造訪的網頁內容和網址，以準確辨識表單並填入資訊。</translation>
 <translation id="2794233252405721443">網站遭到封鎖</translation>
 <translation id="2794629552137076216">玻璃 (磨光)</translation>
 <translation id="2799223571221894425">重新啟動</translation>
@@ -1278,7 +1281,6 @@
 <translation id="2978824962390592855">歌劇</translation>
 <translation id="2979424420072875974">寫作資源</translation>
 <translation id="2980742331521553164">為加快結帳速度，這張卡片的驗證碼會加密儲存在你的 Google 帳戶中</translation>
-<translation id="2983311431122838216">Google 搜尋中的問問 AI 模式</translation>
 <translation id="2983666748527428214">開啟無痕分頁</translation>
 <translation id="2985398929374701810">請輸入有效的地址</translation>
 <translation id="2986485254770343131">正在儲存相機檔案</translation>
@@ -1542,6 +1544,7 @@
 <translation id="3391482648489541560">檔案編輯</translation>
 <translation id="3392028486601120379">網址模式「<ph name="URL_PATTERN" />」已指定路徑。這個金鑰不支援路徑，請移除路徑然後再試一次。例如 *://example.com/ =&gt; *://example.com"。</translation>
 <translation id="3395827396354264108">取件方式</translation>
+<translation id="3397968074427155329">調整視窗大小即可繼續對話</translation>
 <translation id="3399161914051569225">穿戴式裝置</translation>
 <translation id="3399952811970034796">快遞地址</translation>
 <translation id="3402261774528610252">用來載入這個網站的連線使用傳輸層安全標準 (TLS) 1.0 或 1.1，現已不適用，並將在日後遭到停用。一旦停用，使用者將無法載入這個網站。伺服器應啟用傳輸層安全標準 (TLS) 1.2 以上版本。</translation>
@@ -1881,6 +1884,7 @@
 <translation id="390391808978419508">開啟作業逾時</translation>
 <translation id="3905894480064208252">{0,plural, =1{禁止傳送這個檔案}other{禁止傳送這 <ph name="FILE_COUNT" /> 個檔案}}</translation>
 <translation id="3906022360148923497">付款方式圖示</translation>
+<translation id="3906234161316839040">其他訂單</translation>
 <translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />：<ph name="ERROR" /></translation>
 <translation id="3910231615117880630">進一步瞭解嵌入的內容</translation>
@@ -2582,6 +2586,7 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5007344584818503324">共用的分頁群組活動</translation>
 <translation id="5007392906805964215">查看</translation>
+<translation id="5008767248670679254">所有包裹</translation>
 <translation id="5011561501798487822">偵測到的語言</translation>
 <translation id="5015510746216210676">裝置名稱：</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2627,6 +2632,7 @@
 <translation id="5074134429918579056">長褲和短褲</translation>
 <translation id="5077767274537436092">使用其他密碼金鑰</translation>
 <translation id="5078060223219502807">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，密碼管理工具建議你立即變更這組密碼，然後檢查已儲存的密碼。</translation>
+<translation id="5082949343606863311">系統會分析表單欄位和功能效能等系統資料，以持續改良日後的建議內容</translation>
 <translation id="5087286274860437796">伺服器憑證目前無效。</translation>
 <translation id="5087580092889165836">新增信用卡</translation>
 <translation id="5088142053160410913">給操作員的訊息</translation>
@@ -2639,7 +2645,6 @@
 <translation id="5097099694988056070">CPU/RAM 使用量等裝置統計資料</translation>
 <translation id="5097468150760963273">27 x 39 吋</translation>
 <translation id="5097501891273180634">A2</translation>
-<translation id="5102512728737175215">依序按下 Tab 鍵和 Enter 鍵，即可在 AI 模式中提問</translation>
 <translation id="5105442806410269908">管理其他 Google 資料</translation>
 <translation id="510644072453496781">紙板 (封邊)</translation>
 <translation id="5106648964679263509">已填入「<ph name="BNPL_ISSUER_NAME" />」的虛擬卡片資訊</translation>
@@ -3064,6 +3069,7 @@
 <translation id="5728246486828755318">可以要求使用進階印表機功能</translation>
 <translation id="5729442113829771034">幼兒教育</translation>
 <translation id="5730040223043577876">如果你在其他網站上重複使用過你的密碼，Chrome 會建議你重設密碼。</translation>
+<translation id="5731983613206445054">感謝你協助改良強化版自動填入功能</translation>
 <translation id="5735174108294025227">已驗證的電子郵件地址會顯示在這裡</translation>
 <translation id="573555826359077410">「建立表單」按鈕，啟動後即可在 Google 表單中快速建立新表單</translation>
 <translation id="5738385766833540397">管理如何接收追蹤產品的降價快訊</translation>
@@ -3742,7 +3748,6 @@
 <translation id="6786145470008421571">Envelope 6 x 9 in</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6787094689637422836">我們推出全新的隱私權功能，讓你更能掌控自己看到的廣告。</translation>
-<translation id="6788615780749001893">AI 模式按鈕，按下 Enter 鍵即可在 AI 模式中提問</translation>
 <translation id="6789062271869667677">連續 (長邊)</translation>
 <translation id="678982761784843853">受保護的內容 ID</translation>
 <translation id="6790428901817661496">播放</translation>
@@ -3814,6 +3819,7 @@
 <translation id="6898699227549475383">組織 (O)</translation>
 <translation id="6900702165119149418">你已登出帳戶</translation>
 <translation id="6907458757809079309">健身</translation>
+<translation id="6910211073230771657">已刪除</translation>
 <translation id="691024665142758461">下載多個檔案</translation>
 <translation id="691046363691324218">補救號碼 (redress number)</translation>
 <translation id="6915804003454593391">使用者：</translation>
@@ -3892,6 +3898,7 @@
 <translation id="7011763495818914549">身分證件</translation>
 <translation id="7012363358306927923">中國銀聯</translation>
 <translation id="7013835112918108252">可要求鎖定及使用滑鼠</translation>
+<translation id="7013844825046560088">Chrome 會記錄這項功能的使用方式，例如你的要求，以及你接受或忽略建議時的行為</translation>
 <translation id="7014042602717177828">汽車音響</translation>
 <translation id="7014741021609395734">縮放比例</translation>
 <translation id="7016992613359344582">這些費用可能只收取一次，也可能屬於週期性費用，而且你不一定會注意到自己需要付費。</translation>
@@ -4121,6 +4128,7 @@
 <translation id="7393161616326137353">冒險遊戲</translation>
 <translation id="7393475648162498734">顯示卡片在結帳時可用的獎勵和福利</translation>
 <translation id="7393971683644170444">正在連線到發卡機構...</translation>
+<translation id="7394497897677511168">其他包裹</translation>
 <translation id="739728382607845710">付款處理常式圖示</translation>
 <translation id="7399616692258236448">系統會自動封鎖所有網站的位置資訊要求 (你允許的網站除外)</translation>
 <translation id="7400418766976504921">網址</translation>
@@ -4568,6 +4576,7 @@
 <translation id="803771048473350947">檔案</translation>
 <translation id="8038182528865038593">紅色 2</translation>
 <translation id="8041089156583427627">提供意見</translation>
+<translation id="8042898384266617514">你的要求、網頁標題和網址會傳送給 Google，並可能交由人工審查</translation>
 <translation id="8043255123207491407">查看賣家的條款及細則</translation>
 <translation id="8044986521421349135">你最近使用的分頁</translation>
 <translation id="8046360364391076336">工業原料與設備</translation>
@@ -5010,7 +5019,9 @@
 <translation id="877348612833018844">{0,plural, =1{要移動機密檔案嗎？}other{要移動機密檔案嗎？}}</translation>
 <translation id="8775347646940100151">紙 (印頭)</translation>
 <translation id="8775863327608679820">提供分期付款服務的「先買後付」發卡機構已顯示在畫面下半部。</translation>
+<translation id="8776789089819232268">所有訂單</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8781233757384402598">當你的要求觸發強化版自動填入時，你的使用資料、要求和網頁詳細資料會提供給 Google，以提升自動填入體驗</translation>
 <translation id="8781278378794969337">「翻譯網頁」按鈕，啟動後即可使用 Google 翻譯來翻譯這個網頁</translation>
 <translation id="8785658048882205566">摩托車</translation>
 <translation id="8790007591277257123">重做刪除(&amp;R)</translation>

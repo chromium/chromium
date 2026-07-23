@@ -126,6 +126,7 @@
 <translation id="1396260204083880024">با حساب <ph name="USER_NAME" /> به سیستم وارد شده‌اید. <ph name="USER_EMAIL" />. منوِ حساب را باز کنید.</translation>
 <translation id="1397144142234474689">پنهان کردن سابقه</translation>
 <translation id="1399268420835656394">‏اگر کودک نیستید، بهتر است سن ثبت‌شده در «حساب Apple» در این دستگاه را بررسی کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">قبلاً تکمیل‌شده است</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1408847409015257906">روی «حریم خصوصی و امنیت» تک‌ضرب بزنید.</translation>
 <translation id="1411386976162024013">جستجوی تصویری «لنز»</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">حساب شما را ولی‌تان مدیریت می‌کند.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">تغییر کرده است</translation>
+<translation id="1481450969185702334">پیدا کردن و پر کردن</translation>
 <translation id="1483493594462132177">ارسال</translation>
 <translation id="1486096554574027028">جستجوی گذرواژه‌ها</translation>
 <translation id="1486593497476255523">«گروه‌های زبانه‌ها» تکمیل شد!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">‏برای محافظت از حریم‌خصوصی‌تان، Chrome از ویژگی تکمیل خودکار برای وارد کردن گذرواژه‌تان در این فیلد استفاده نخواهد کرد.</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{‫۱ سایت (سایت‌های بیشتر در دستگاه‌های همگام‌سازی‌شده)}one{‫# سایت (سایت‌های بیشتر در دستگاه‌های همگام‌سازی‌شده)}other{‫# سایت (سایت‌های بیشتر در دستگاه‌های همگام‌سازی‌شده)}}</translation>
+<translation id="2865392654629180917">هرچه می‌خواهید بپرسید و پاسخ‌هایی با بهره‌گیری از هوش مصنوعی بگیرید</translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2876369937070532032">‏اگر امنیتتان درخطر باشد، نشانی وب برخی از صفحه‌هایی را که بازدید می‌کنید به Google می‌فرستد</translation>
 <translation id="2883151425485251736">مشاهده و ویرایش موضوع‌هایی که در حسابتان پنهان کرده‌اید</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">گروه زبانه جدید…</translation>
 <translation id="3185760469172949183">جستجو با دوربین تکمیل شد!</translation>
 <translation id="3186796054637504691">‏‫Clear History and Website Data (پاک کردن داده‌های وب‌سایت و سابقه)</translation>
+<translation id="3190558889382726167">گذرواژه ذخیره شد</translation>
 <translation id="3190736958609431397">لغو پیگیری</translation>
 <translation id="3208260410153224535">سازمانتان ورود به سیستم را خاموش کرده است. نشانک‌ها، گذرواژه‌ها، و سایر اطلاعات جدید فقط در این دستگاه ذخیره خواهد شد.</translation>
 <translation id="3211969308836412674">برداشتن سنجاق سایت</translation>

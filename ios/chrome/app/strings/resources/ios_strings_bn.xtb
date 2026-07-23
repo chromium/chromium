@@ -126,6 +126,7 @@
 <translation id="1396260204083880024"><ph name="USER_NAME" /> হিসেবে সাইন-ইন করেছেন। <ph name="USER_EMAIL" />। অ্যাকাউন্ট মেনু খুলুন।</translation>
 <translation id="1397144142234474689">ইতিহাস লুকান</translation>
 <translation id="1399268420835656394">আপনি বাচ্চা না হলে, এই ডিভাইসের Apple অ্যাকাউন্টে নিজের বয়স চেক করতে পারেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="140486444381639942">আগে পূরণ করা হয়েছে</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1408847409015257906">"গোপনীয়তা ও সুরক্ষা" বিকল্পে ট্যাপ করুন।</translation>
 <translation id="1411386976162024013">Lens-এ ভিজ্যুয়াল সার্চ</translation>
@@ -148,6 +149,7 @@
 <translation id="1469381646033328562">তোমার অ্যাকাউন্ট তোমার অভিভাবক ম্যানেজ করেন।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="147982357559798527">পরিবর্তন করা হয়েছে</translation>
+<translation id="1481450969185702334">খুঁজুন ও পূরণ করুন</translation>
 <translation id="1483493594462132177">পাঠান</translation>
 <translation id="1486096554574027028">পাসওয়ার্ড খুঁজুন</translation>
 <translation id="1486593497476255523">ট্যাবগুলি একত্রিত করে গ্রুপ তৈরি করার প্রক্রিয়া সম্পূর্ণ হয়েছে!</translation>
@@ -575,6 +577,7 @@
 <translation id="2858204748079866344">আপনার গোপনীয়তা রক্ষার জন্য, Chrome এই ক্ষেত্রে আপনার পাসওয়ার্ডটি নিজে থেকে পূরণ করবে না।</translation>
 <translation id="2858951819750638913">Gemini Live</translation>
 <translation id="286382692684806520">{COUNT,plural, =1{১টি সাইট (সিঙ্ক করা ডিভাইসে আরও ডেটা রয়েছে)}one{#টি সাইট (সিঙ্ক করা ডিভাইসে আরও ডেটা রয়েছে)}other{#টি সাইট (সিঙ্ক করা ডিভাইসে আরও ডেটা রয়েছে)}}</translation>
+<translation id="2865392654629180917">যেকোনও প্রশ্ন জিজ্ঞাসা করুন ও AI দ্বারা পরিচালিত উত্তর পান</translation>
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2876369937070532032">নিরাপত্তা সংক্রান্ত কোনও ঝুঁকি থাকলে, আপনার দেখা কিছু পৃষ্ঠার ইউআরএল Google-কে পাঠায়</translation>
 <translation id="2883151425485251736">আপনার অ্যাকাউন্ট থেকে লুকিয়ে রাখা বিষয়গুলি দেখুন ও এডিট করুন</translation>
@@ -660,6 +663,7 @@
 <translation id="3183362380688692618">নতুন ট্যাব গ্রুপ...</translation>
 <translation id="3185760469172949183">ক্যামেরার সাহায্যে সার্চ করার প্রক্রিয়া সম্পূর্ণ হয়েছে!</translation>
 <translation id="3186796054637504691">ইতিহাস ও ওয়েবসাইটের ডেটা মুছুন</translation>
+<translation id="3190558889382726167">পাসওয়ার্ড সংরক্ষিত</translation>
 <translation id="3190736958609431397">ট্র্যাক করার বিকল্প বন্ধ করুন</translation>
 <translation id="3208260410153224535">আপনার প্রতিষ্ঠান সাইন-ইন করার সুবিধা বন্ধ করে দিয়েছে। নতুন বুকমার্ক, পাসওয়ার্ড ও আরও অনেক কিছু শুধুমাত্র এই ডিভাইসে সেভ হবে।</translation>
 <translation id="3211969308836412674">সাইট আনপিন করুন</translation>
