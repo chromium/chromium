@@ -1494,6 +1494,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unknown reason"/>
 </enum>
 
+<!-- LINT.IfChange(SyncMetadataConsistency) -->
+
+<enum name="SyncMetadataConsistency">
+  <int value="0" label="Metadata consistent"/>
+  <int value="1" label="Cache GUID mismatch"/>
+  <int value="2" label="Data type ID mismatch"/>
+  <int value="3" label="Empty persisted authenticated Gaia ID"/>
+  <int value="4" label="Authenticated Gaia ID mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/model/client_tag_based_data_type_processor.cc:SyncMetadataConsistency) -->
+
 <!-- LINT.IfChange(SyncModelError) -->
 
 <enum name="SyncModelError">
