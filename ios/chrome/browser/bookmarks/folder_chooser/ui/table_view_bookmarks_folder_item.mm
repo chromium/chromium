@@ -130,8 +130,8 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
                           forAxis:UILayoutConstraintAxisHorizontal];
 
     // Slashed cloud view.
-    UIImage* cloudSlashedImage = CustomSymbolWithPointSize(
-        kCloudSlashSymbol, kCloudSlashSymbolPointSize);
+    UIImage* cloudSlashedImage =
+        SymbolWithPointSize(SymbolCloudSlash, kCloudSlashSymbolPointSize);
     self.cloudSlashedView =
         [[UIImageView alloc] initWithImage:cloudSlashedImage];
     self.cloudSlashedView.tintColor = CloudSlashTintColor();

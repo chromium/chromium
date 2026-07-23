@@ -104,10 +104,9 @@ const NSInteger kNumberOfTitleLines = 2;
     if (_shouldDisplayCloudSlashIcon) {
       ImageContentConfiguration* imageConfiguration =
           [[ImageContentConfiguration alloc] init];
-      imageConfiguration.image =
-          SymbolWithPalette(CustomSymbolWithPointSize(
-                                kCloudSlashSymbol, kCloudSlashSymbolPointSize),
-                            @[ CloudSlashTintColor() ]);
+      imageConfiguration.image = SymbolWithPalette(
+          SymbolWithPointSize(SymbolCloudSlash, kCloudSlashSymbolPointSize),
+          @[ CloudSlashTintColor() ]);
 
       configuration.trailingConfiguration = imageConfiguration;
     }

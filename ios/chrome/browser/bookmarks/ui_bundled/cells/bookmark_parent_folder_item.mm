@@ -92,7 +92,7 @@
   // Slashed cloud view
   // TODO(crbug.com/40259682) Check with EGTest the cloud appears when expected.
   UIImage* cloudSlashedImage =
-      CustomSymbolWithPointSize(kCloudSlashSymbol, kCloudSlashSymbolPointSize);
+      SymbolWithPointSize(SymbolCloudSlash, kCloudSlashSymbolPointSize);
   self.cloudSlashedView = [[UIImageView alloc] initWithImage:cloudSlashedImage];
   self.cloudSlashedView.tintColor = CloudSlashTintColor();
   self.cloudSlashedView.hidden = YES;
