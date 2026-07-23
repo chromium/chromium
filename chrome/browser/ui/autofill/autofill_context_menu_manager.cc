@@ -358,13 +358,9 @@ bool AutofillContextMenuManager::MaybeAddAtMemoryItem() {
     return false;
   }
 
-  menu_model_->AddItemWithStringIdAndIcon(
+  menu_model_->AddItemWithStringId(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
-      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY,
-      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
-                                         ? vector_icons::kSearchIcon
-                                         : vector_icons::kSearchOldIcon,
-                                     ui::kColorIcon, kContextMenuIconSize));
+      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AT_MEMORY);
   return true;
 }
 
