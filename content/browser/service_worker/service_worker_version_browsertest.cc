@@ -98,6 +98,7 @@ struct FetchResult {
   blink::ServiceWorkerStatusCode status;
   ServiceWorkerFetchDispatcher::FetchEventResult result;
   blink::mojom::FetchAPIResponsePtr response;
+  blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors;
 };
 
 void RunWithDelay(base::OnceClosure closure, base::TimeDelta delay) {
@@ -405,15 +406,17 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
   void FetchOnRegisteredWorker(
       const std::string& path,
       ServiceWorkerFetchDispatcher::FetchEventResult* result,
-      blink::mojom::FetchAPIResponsePtr* response) {
-    FetchOnRegisteredWorker(path, "", result, response);
+      blink::mojom::FetchAPIResponsePtr* response,
+      blink::mojom::ServiceWorkerFetchHandlerErrorsPtr* errors = nullptr) {
+    FetchOnRegisteredWorker(path, "", result, response, errors);
   }
 
   void FetchOnRegisteredWorker(
       const std::string& path,
       const std::string& range_header,
       ServiceWorkerFetchDispatcher::FetchEventResult* result,
-      blink::mojom::FetchAPIResponsePtr* response) {
+      blink::mojom::FetchAPIResponsePtr* response,
+      blink::mojom::ServiceWorkerFetchHandlerErrorsPtr* errors = nullptr) {
     bool prepare_result = false;
     FetchResult fetch_result;
     fetch_result.status = blink::ServiceWorkerStatusCode::kErrorFailed;
@@ -424,6 +427,9 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(prepare_result);
     *result = fetch_result.result;
     *response = std::move(fetch_result.response);
+    if (errors) {
+      *errors = std::move(fetch_result.errors);
+    }
     ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, fetch_result.status);
   }
 
@@ -692,6 +698,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
       blink::mojom::FetchAPIResponsePtr actual_response,
       blink::mojom::ServiceWorkerStreamHandlePtr /* stream */,
       blink::mojom::ServiceWorkerFetchEventTimingPtr /* timing */,
+      blink::mojom::ServiceWorkerFetchHandlerErrorsPtr actual_errors,
       scoped_refptr<ServiceWorkerVersion> worker) {
     ASSERT_TRUE(BrowserThread::CurrentlyOn(BrowserThread::UI));
     ASSERT_TRUE(fetch_dispatcher_);
@@ -699,6 +706,7 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     out_result->status = actual_status;
     out_result->result = actual_result;
     out_result->response = std::move(actual_response);
+    out_result->errors = std::move(actual_errors);
     if (quit)
       std::move(quit).Run();
   }
@@ -1285,7 +1293,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   ConsoleListener console_listener;
   version_->embedded_worker()->AddObserver(&console_listener);
 
-  FetchOnRegisteredWorker("/service_worker/empty.html", &result, &response);
+  blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors;
+  FetchOnRegisteredWorker("/service_worker/empty.html", &result, &response,
+                          &errors);
   const std::u16string expected1 =
       u"resulted in a network error response: the promise was rejected.";
   const std::u16string expected2 =
@@ -1299,8 +1309,31 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
   ASSERT_EQ(ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse,
             result);
   EXPECT_EQ(0, response->status_code);
+  EXPECT_TRUE(!errors || (!errors->race_fetch_error_code.has_value() &&
+                          !errors->regular_fetch_error_code.has_value()));
 
   EXPECT_FALSE(response->blob);
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerVersionBrowserTest,
+                       FetchEvent_respondWithFetchError) {
+  StartServerAndNavigateToSetup();
+  ServiceWorkerFetchDispatcher::FetchEventResult result;
+  blink::mojom::FetchAPIResponsePtr response;
+  ASSERT_EQ(Install("/service_worker/fetch_event_respond_with_fetch.js"),
+            blink::ServiceWorkerStatusCode::kOk);
+  EXPECT_EQ(Activate(), blink::ServiceWorkerStatusCode::kOk);
+
+  blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors;
+  FetchOnRegisteredWorker("/close-socket", &result, &response, &errors);
+
+  ASSERT_EQ(ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse,
+            result);
+  EXPECT_EQ(0, response->status_code);
+  ASSERT_TRUE(errors);
+  EXPECT_FALSE(errors->race_fetch_error_code.has_value());
+  ASSERT_TRUE(errors->regular_fetch_error_code.has_value());
+  EXPECT_NE(0, *errors->regular_fetch_error_code);
 }
 
 // Tests that the browser cache is bypassed on update checks after 24 hours

@@ -353,7 +353,7 @@ bool ServiceWorkerSyntheticResponseManager::MaybeStartSyntheticResponse(
       blink::ServiceWorkerStatusCode::kOk,
       ServiceWorkerFetchDispatcher::FetchEventResult::kGotResponse,
       std::move(response), std::move(stream_handle), std::move(timing),
-      version_);
+      /*errors=*/nullptr, version_);
   did_start_synthetic_response_ = true;
 
   return true;

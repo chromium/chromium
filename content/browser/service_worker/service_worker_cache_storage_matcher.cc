@@ -274,7 +274,7 @@ void ServiceWorkerCacheStorageMatcher::RunCallback(
 
   std::move(fetch_callback_)
       .Run(status, fetch_result, std::move(response), std::move(body_as_stream),
-           std::move(timing), version_);
+           std::move(timing), /*errors=*/nullptr, version_);
 }
 
 }  // namespace content

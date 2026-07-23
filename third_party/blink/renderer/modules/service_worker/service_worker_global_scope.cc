@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fetch/fetch_request_data.h"
 #include "third_party/blink/renderer/core/fetch/global_fetch.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -814,6 +815,7 @@ void ServiceWorkerGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(controller_receivers_);
   visitor->Trace(remote_associated_interfaces_);
   visitor->Trace(associated_interfaces_receiver_);
+  visitor->Trace(active_fetch_respond_with_observers_);
   WorkerGlobalScope::Trace(visitor);
 }
 
@@ -821,6 +823,40 @@ bool ServiceWorkerGlobalScope::HasRelatedFetchEvent(
     const KURL& request_url) const {
   auto it = unresponded_fetch_event_counts_.find(request_url);
   return it != unresponded_fetch_event_counts_.end();
+}
+
+void ServiceWorkerGlobalScope::MaybeRecordFetchError(
+    int net_error_code,
+    const FetchRequestData* request_data) {
+  DCHECK(IsContextThread());
+  if (active_fetch_respond_with_observers_.empty()) {
+    return;
+  }
+  if (request_data && request_data->ServiceWorkerRaceNetworkRequestToken()) {
+    base::UnguessableToken token =
+        request_data->ServiceWorkerRaceNetworkRequestToken();
+    for (const auto& entry : active_fetch_respond_with_observers_) {
+      if (entry.value->race_network_request_token() &&
+          *entry.value->race_network_request_token() == token) {
+        entry.value->OnRaceFetchError(net_error_code);
+        return;
+      }
+    }
+    // TODO(crbug.com/532760255): If a race fetch error occurs after the
+    // matching observer was erased (e.g., fetch() called after respondWith()
+    // settled), we should record this error using another telemetry mechanism
+    // in the future to better understand the root cause of "failed to fetch"
+    // issues.
+    return;
+  }
+  if (request_data) {
+    for (const auto& entry : active_fetch_respond_with_observers_) {
+      if (entry.value->request_url() == request_data->Url()) {
+        entry.value->OnRegularFetchError(net_error_code);
+        return;
+      }
+    }
+  }
 }
 
 bool ServiceWorkerGlobalScope::HasRangeFetchEvent(
@@ -1013,7 +1049,8 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
     bool range_request,
     std::optional<network::DataElementChunkedDataPipe> request_body,
     base::TimeTicks event_dispatch_time,
-    base::TimeTicks respond_with_settled_time) {
+    base::TimeTicks respond_with_settled_time,
+    mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors) {
   DCHECK(IsContextThread());
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse",
@@ -1036,7 +1073,8 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithNoResponse(
     pending_streaming_upload_fetch_events_.insert(fetch_event_id, fetch_event);
   }
 
-  response_callback->OnFallback(std::move(request_body), std::move(timing));
+  response_callback->OnFallback(std::move(request_body), std::move(timing),
+                                std::move(errors));
 }
 void ServiceWorkerGlobalScope::OnStreamingUploadCompletion(int fetch_event_id) {
   pending_streaming_upload_fetch_events_.erase(fetch_event_id);
@@ -1048,7 +1086,8 @@ void ServiceWorkerGlobalScope::RespondToFetchEvent(
     bool range_request,
     mojom::blink::FetchAPIResponsePtr response,
     base::TimeTicks event_dispatch_time,
-    base::TimeTicks respond_with_settled_time) {
+    base::TimeTicks respond_with_settled_time,
+    mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors) {
   DCHECK(IsContextThread());
   TRACE_EVENT("ServiceWorker", "ServiceWorkerGlobalScope::RespondToFetchEvent",
               perfetto::Flow::ProcessScoped(
@@ -1067,7 +1106,8 @@ void ServiceWorkerGlobalScope::RespondToFetchEvent(
 
   NoteRespondedToFetchEvent(request_url, range_request);
 
-  response_callback->OnResponse(std::move(response), std::move(timing));
+  response_callback->OnResponse(std::move(response), std::move(timing),
+                                std::move(errors));
 }
 
 void ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream(
@@ -1077,7 +1117,8 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream(
     mojom::blink::FetchAPIResponsePtr response,
     mojom::blink::ServiceWorkerStreamHandlePtr body_as_stream,
     base::TimeTicks event_dispatch_time,
-    base::TimeTicks respond_with_settled_time) {
+    base::TimeTicks respond_with_settled_time,
+    mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors) {
   DCHECK(IsContextThread());
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream",
@@ -1096,8 +1137,9 @@ void ServiceWorkerGlobalScope::RespondToFetchEventWithResponseStream(
 
   NoteRespondedToFetchEvent(request_url, range_request);
 
-  response_callback->OnResponseStream(
-      std::move(response), std::move(body_as_stream), std::move(timing));
+  response_callback->OnResponseStream(std::move(response),
+                                      std::move(body_as_stream),
+                                      std::move(timing), std::move(errors));
 }
 
 void ServiceWorkerGlobalScope::DidHandleFetchEvent(
@@ -1110,6 +1152,8 @@ void ServiceWorkerGlobalScope::DidHandleFetchEvent(
               perfetto::TerminatingFlow::ProcessScoped(
                   event_id, kServiceWorkerGlobalScopeTraceScope),
               "status", MojoEnumToString(status));
+
+  active_fetch_respond_with_observers_.erase(event_id);
 
   // Delete the URLLoaderFactory for the RaceNetworkRequest if it's not used.
   RemoveItemFromRaceNetworkRequests(event_id);
@@ -1505,6 +1549,7 @@ void ServiceWorkerGlobalScope::AbortCallbackForFetchEvent(
     response_callback_iter->value->TakeValue().reset();
     fetch_response_callbacks_.erase(response_callback_iter);
   }
+  active_fetch_respond_with_observers_.erase(event_id);
   RemoveItemFromRaceNetworkRequests(event_id);
 
   // Run the event callback with the error code.
@@ -1544,6 +1589,7 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
   auto* respond_with_observer = MakeGarbageCollected<FetchRespondWithObserver>(
       this, event_id, std::move(corp_checker), *params->request,
       wait_until_observer);
+  active_fetch_respond_with_observers_.Set(event_id, respond_with_observer);
   FetchEventInit* event_init = FetchEventInit::Create();
   event_init->setCancelable(true);
   // Note on how clientId / resultingClientID are set:

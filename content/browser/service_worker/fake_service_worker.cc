@@ -145,7 +145,8 @@ void FakeServiceWorker::DispatchFetchEventForMainResource(
   auto now = base::TimeTicks::Now();
   timing->respond_with_settled_time = now;
   timing->dispatch_event_time = now;
-  response_callback->OnResponse(std::move(response), std::move(timing));
+  response_callback->OnResponse(std::move(response), std::move(timing),
+                                /*errors=*/nullptr);
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
 

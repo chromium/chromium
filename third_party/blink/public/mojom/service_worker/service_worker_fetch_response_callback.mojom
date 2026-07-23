@@ -20,6 +20,18 @@ struct ServiceWorkerFetchEventTiming {
   mojo_base.mojom.TimeTicks respond_with_settled_time;
 };
 
+// This struct contains errors occurred inside the Service Worker fetch handler
+// during fetch event execution.
+struct ServiceWorkerFetchHandlerErrors {
+  // If the race-network-and-fetch fetch(event.request) call inside the Service
+  // Worker fetch handler failed with a network error, this contains net::ERR_...
+  int32? race_fetch_error_code;
+
+  // If a regular (non-race) fetch() call inside the Service Worker fetch handler
+  // failed with a network error, this field contains the net::ERR_... code.
+  int32? regular_fetch_error_code;
+};
+
 // Callback interface which is passed to a controller service worker through
 // DispatchFetchEvent (either via ServiceWorker or via ControllerServiceWorker
 // interface).
@@ -27,16 +39,20 @@ struct ServiceWorkerFetchEventTiming {
 interface ServiceWorkerFetchResponseCallback {
   // Responds to the request with |response|.
   OnResponse(FetchAPIResponse response,
-             ServiceWorkerFetchEventTiming timing);
+             ServiceWorkerFetchEventTiming timing,
+             ServiceWorkerFetchHandlerErrors? errors);
   // Responds to the request with |response|. |response.blob| should be empty
   // since the body is provided as a stream.
   OnResponseStream(FetchAPIResponse response,
                    ServiceWorkerStreamHandle body_as_stream,
-                   ServiceWorkerFetchEventTiming timing);
+                   ServiceWorkerFetchEventTiming timing,
+                   ServiceWorkerFetchHandlerErrors? errors);
   // Provides no response to the request. The callee should fall back to the
   // network.
   // `request_body` is the original request body. It's provided only when the
   // request body is a streaming body.
   OnFallback(network.mojom.DataElementChunkedDataPipe? request_body,
-             ServiceWorkerFetchEventTiming timing);
+             ServiceWorkerFetchEventTiming timing,
+             ServiceWorkerFetchHandlerErrors? errors);
 };
+

@@ -328,6 +328,11 @@ class CONTENT_EXPORT ServiceWorkerClient final
   TakeInterceptingPreloadHandler(
       const network::ResourceRequest& resource_request);
 
+  // Returns the FrameTreeNodeId of the ongoing navigation for window clients.
+  FrameTreeNodeId GetFrameTreeNodeId() const {
+    return ongoing_navigation_frame_tree_node_id_;
+  }
+
   // For service worker clients.
   // The type of `ongoing_navigation_frame_tree_node_id_` (if any) for metrics.
   std::string GetFrameTreeNodeTypeStringBeforeCommit() const;

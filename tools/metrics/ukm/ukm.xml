@@ -22414,6 +22414,40 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ServiceWorker.MainResource.FetchHandlerError">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Recorded when a Service Worker fetch handler fails to load a main resource
+    due to a network error (such as &quot;failed to fetch&quot; errors occurring
+    in fetch() inside the fetch handler) or timing out during
+    race-network-and-fetch or normal fetch handler execution.
+  </summary>
+  <metric name="InitiatorType" enum="ServiceWorkerFetchHandlerInitiatorType">
+    <summary>
+      Indicates how the fetch handler was invoked.
+    </summary>
+  </metric>
+  <metric name="RaceFetchNetworkErrorCode">
+    <summary>
+      The specific net::ERR_ code indicating the reason for the failure.
+      (possible values are listed in net_error_list.h). Records the network
+      error that occurred when the Service Worker static routing API's
+      'race-network-and-fetch' handler deduplicates the network fetch with the
+      fetch() API call to the navigation URL. This metric is only populated when
+      this static routing strategy is active.
+    </summary>
+  </metric>
+  <metric name="RegularFetchNetworkErrorCode">
+    <summary>
+      The specific net::ERR_ code indicating the reason for the failure.
+      (possible values are listed in net_error_list.h). Records the network
+      error of the initial fetch() API call in cases where the deduplication
+      mentioned above does not apply.
+    </summary>
+  </metric>
+</event>
+
 <event name="ServiceWorker.MainResourceLoadCompleted">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>

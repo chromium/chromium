@@ -263,7 +263,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
     response_callback_->OnResponse(
         OkResponse(nullptr /* blob_body */, response_source_, response_time_,
                    cache_storage_cache_name_),
-        blink::mojom::ServiceWorkerFetchEventTiming::New());
+        blink::mojom::ServiceWorkerFetchEventTiming::New(), /*errors=*/nullptr);
     response_callback_.FlushForTesting();
     std::move(finish_callback_)
         .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
@@ -271,8 +271,8 @@ class FetchEventServiceWorker : public FakeServiceWorker {
   void FinishRespondWithCustomResponse(
       blink::mojom::FetchAPIResponsePtr response) {
     response_callback_->OnResponse(
-        std::move(response),
-        blink::mojom::ServiceWorkerFetchEventTiming::New());
+        std::move(response), blink::mojom::ServiceWorkerFetchEventTiming::New(),
+        /*errors=*/nullptr);
     response_callback_.FlushForTesting();
     std::move(finish_callback_)
         .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
@@ -349,7 +349,7 @@ class FetchEventServiceWorker : public FakeServiceWorker {
         response_callback->OnResponse(
             OkResponse(std::move(blob_body_), response_source_, response_time_,
                        cache_storage_cache_name_),
-            std::move(timing));
+            std::move(timing), /*errors=*/nullptr);
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
@@ -357,19 +357,20 @@ class FetchEventServiceWorker : public FakeServiceWorker {
         response_callback->OnResponseStream(
             OkResponse(nullptr /* blob_body */, response_source_,
                        response_time_, cache_storage_cache_name_),
-            std::move(stream_handle_), std::move(timing));
+            std::move(stream_handle_), std::move(timing), /*errors=*/nullptr);
 
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
       case ResponseMode::kFallbackResponse:
         response_callback->OnFallback(/*request_body=*/std::nullopt,
-                                      std::move(timing));
+                                      std::move(timing), /*errors=*/nullptr);
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
       case ResponseMode::kErrorResponse:
-        response_callback->OnResponse(ErrorResponse(), std::move(timing));
+        response_callback->OnResponse(ErrorResponse(), std::move(timing),
+                                      /*errors=*/nullptr);
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::REJECTED);
         break;
@@ -399,18 +400,18 @@ class FetchEventServiceWorker : public FakeServiceWorker {
         response_callback->OnResponse(
             OkResponse(nullptr /* blob_body */, response_source_,
                        response_time_, cache_storage_cache_name_),
-            std::move(timing));
+            std::move(timing), /*errors=*/nullptr);
         // Now the caller must call FinishWaitUntil() to finish the event.
         break;
       case ResponseMode::kRedirect:
         response_callback->OnResponse(RedirectResponse(redirected_url_.spec()),
-                                      std::move(timing));
+                                      std::move(timing), /*errors=*/nullptr);
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;
       case ResponseMode::kHeaders:
         response_callback->OnResponse(HeadersResponse(headers_),
-                                      std::move(timing));
+                                      std::move(timing), /*errors=*/nullptr);
         std::move(finish_callback)
             .Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
         break;

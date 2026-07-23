@@ -1289,6 +1289,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
               blink::mojom::FetchAPIResponsePtr response,
               blink::mojom::ServiceWorkerStreamHandlePtr,
               blink::mojom::ServiceWorkerFetchEventTimingPtr,
+              blink::mojom::ServiceWorkerFetchHandlerErrorsPtr,
               scoped_refptr<ServiceWorkerVersion>) {
             fetch_status = status;
             fetch_result = result;
@@ -1365,6 +1366,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
               blink::mojom::FetchAPIResponsePtr response,
               blink::mojom::ServiceWorkerStreamHandlePtr,
               blink::mojom::ServiceWorkerFetchEventTimingPtr,
+              blink::mojom::ServiceWorkerFetchHandlerErrorsPtr,
               scoped_refptr<ServiceWorkerVersion>) {
             fetch_status = status;
             fetch_result = result;

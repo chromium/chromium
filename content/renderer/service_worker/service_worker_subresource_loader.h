@@ -110,14 +110,17 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // blink::mojom::ServiceWorkerFetchResponseCallback overrides:
   void OnResponse(
       blink::mojom::FetchAPIResponsePtr response,
-      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+      blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors) override;
   void OnResponseStream(
       blink::mojom::FetchAPIResponsePtr response,
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
-      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+      blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors) override;
   void OnFallback(
       std::optional<network::DataElementChunkedDataPipe> request_body,
-      blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
+      blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+      blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors) override;
 
   void UpdateResponseTiming(
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing);

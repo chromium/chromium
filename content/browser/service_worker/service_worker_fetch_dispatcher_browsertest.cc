@@ -155,6 +155,7 @@ class ServiceWorkerFetchDispatcherBrowserTest : public ContentBrowserTest {
       blink::mojom::FetchAPIResponsePtr actual_response,
       blink::mojom::ServiceWorkerStreamHandlePtr /* stream */,
       blink::mojom::ServiceWorkerFetchEventTimingPtr /* timing */,
+      blink::mojom::ServiceWorkerFetchHandlerErrorsPtr /* errors */,
       scoped_refptr<ServiceWorkerVersion> worker) {
     out_result->status = actual_status;
     out_result->result = actual_result;

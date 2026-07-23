@@ -183,6 +183,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Got Response"/>
 </enum>
 
+<!-- LINT.IfChange(ServiceWorkerFetchHandlerInitiatorType) -->
+
+<enum name="ServiceWorkerFetchHandlerInitiatorType">
+  <int value="0" label="kFetchHandler"/>
+  <int value="1" label="kRaceNetworkAndFetchHandler"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_main_resource_loader.cc:ServiceWorkerFetchHandlerInitiatorType) -->
+
 <enum name="ServiceWorkerFetchHandlerSkipReason">
   <int value="0" label="No Fetch Handler"/>
   <int value="1" label="Not Skipped"/>

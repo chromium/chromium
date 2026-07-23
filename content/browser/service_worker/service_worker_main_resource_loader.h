@@ -33,6 +33,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom.h"
 
 namespace content {
@@ -133,6 +134,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       blink::mojom::FetchAPIResponsePtr response,
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+      blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors,
       scoped_refptr<ServiceWorkerVersion> version);
 
   void DidDispatchFetchEventForSyntheticResponse(
@@ -141,6 +143,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       blink::mojom::FetchAPIResponsePtr response,
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+      blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors,
       scoped_refptr<ServiceWorkerVersion> version);
 
   void StartResponse(blink::mojom::FetchAPIResponsePtr response,
@@ -240,6 +243,9 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Records metrics related to the fetch event handler execution.
   void RecordFetchEventHandlerMetrics(
       ServiceWorkerFetchDispatcher::FetchEventResult fetch_result);
+
+  void MaybeRecordFetchHandlerErrorUkm(
+      const blink::mojom::ServiceWorkerFetchHandlerErrorsPtr& errors);
 
   void RecordFindRegistrationTiming(bool is_fallback);
 

@@ -54,6 +54,7 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
                               blink::mojom::FetchAPIResponsePtr,
                               blink::mojom::ServiceWorkerStreamHandlePtr,
                               blink::mojom::ServiceWorkerFetchEventTimingPtr,
+                              blink::mojom::ServiceWorkerFetchHandlerErrorsPtr,
                               scoped_refptr<ServiceWorkerVersion>)>;
 
   explicit ServiceWorkerSyntheticResponseManager(

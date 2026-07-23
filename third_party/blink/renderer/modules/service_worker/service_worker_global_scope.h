@@ -72,6 +72,7 @@ namespace blink {
 class InterfaceRegistry;
 class ExceptionState;
 class FetchEvent;
+class FetchRespondWithObserver;
 class RespondWithObserver;
 class RequestInit;
 class ScriptState;
@@ -121,6 +122,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   bool IsServiceWorkerGlobalScope() const override { return true; }
   bool ShouldInstallV8Extensions() const final;
   void MaybeRecordNetworkRequestUrlForPushEvents(const KURL& url) override;
+  void MaybeRecordFetchError(int net_error_code,
+                             const FetchRequestData* request_data) override;
   bool IsInFencedFrame() const override;
   void NotifyWebSocketActivity() override;
 
@@ -252,16 +255,19 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       bool range_request,
       std::optional<network::DataElementChunkedDataPipe> request_body,
       base::TimeTicks event_dispatch_time,
-      base::TimeTicks respond_with_settled_time);
+      base::TimeTicks respond_with_settled_time,
+      mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors);
   void OnStreamingUploadCompletion(int fetch_event_id);
 
   // Responds to the fetch event with |response|.
-  void RespondToFetchEvent(int fetch_event_id,
-                           const KURL& request_url,
-                           bool range_request,
-                           mojom::blink::FetchAPIResponsePtr,
-                           base::TimeTicks event_dispatch_time,
-                           base::TimeTicks respond_with_settled_time);
+  void RespondToFetchEvent(
+      int fetch_event_id,
+      const KURL& request_url,
+      bool range_request,
+      mojom::blink::FetchAPIResponsePtr,
+      base::TimeTicks event_dispatch_time,
+      base::TimeTicks respond_with_settled_time,
+      mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors);
   // Responds to the fetch event with |response|, where body is
   // |body_as_stream|.
   void RespondToFetchEventWithResponseStream(
@@ -271,7 +277,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       mojom::blink::FetchAPIResponsePtr,
       mojom::blink::ServiceWorkerStreamHandlePtr,
       base::TimeTicks event_dispatch_time,
-      base::TimeTicks respond_with_settled_time);
+      base::TimeTicks respond_with_settled_time,
+      mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors);
 
   // RespondToAbortPaymentEvent will be called after the service worker
   // returns a response to a AbortPaymentEvent, and DidHandleAbortPaymentEvent
@@ -753,6 +760,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
     int range_count = 0;
   };
   HashMap<KURL, FetchEventCounts> unresponded_fetch_event_counts_;
+  HeapHashMap<int, Member<FetchRespondWithObserver>>
+      active_fetch_respond_with_observers_;
 
   // ServiceWorker event queue where all events are queued before
   // they are dispatched.

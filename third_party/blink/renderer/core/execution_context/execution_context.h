@@ -86,6 +86,7 @@ class CoreProbeSink;
 class DOMWrapperWorld;
 class ErrorEvent;
 class EventTarget;
+class FetchRequestData;
 class FrameOrWorkerScheduler;
 class KURL;
 class OriginTrialContext;
@@ -175,6 +176,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual bool ShouldInstallV8Extensions() const { return false; }
 
   virtual void MaybeRecordNetworkRequestUrlForPushEvents(const KURL& url) {}
+  virtual void MaybeRecordFetchError(int net_error_code,
+                                     const FetchRequestData* request_data) {}
 
   virtual void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature) {
   }

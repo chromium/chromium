@@ -222,18 +222,21 @@ class OnFallbackReceiver
   // mojom::blink::ServiceWorkerFetchResponseCallback overrides:
   void OnResponse(
       mojom::blink::FetchAPIResponsePtr response,
-      mojom::blink::ServiceWorkerFetchEventTimingPtr timing) override {
+      mojom::blink::ServiceWorkerFetchEventTimingPtr timing,
+      mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors) override {
     NOTREACHED();
   }
   void OnResponseStream(
       mojom::blink::FetchAPIResponsePtr response,
       mojom::blink::ServiceWorkerStreamHandlePtr body_as_stream,
-      mojom::blink::ServiceWorkerFetchEventTimingPtr timing) override {
+      mojom::blink::ServiceWorkerFetchEventTimingPtr timing,
+      mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors) override {
     NOTREACHED();
   }
   void OnFallback(
       std::optional<network::DataElementChunkedDataPipe> request_body,
-      mojom::blink::ServiceWorkerFetchEventTimingPtr timing) override {
+      mojom::blink::ServiceWorkerFetchEventTimingPtr timing,
+      mojom::blink::ServiceWorkerFetchHandlerErrorsPtr errors) override {
     fallback_request_body_ = std::move(request_body);
     response_callback_receiver_.reset();
     run_loop_.Quit();

@@ -51,6 +51,7 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
                               blink::mojom::FetchAPIResponsePtr,
                               blink::mojom::ServiceWorkerStreamHandlePtr,
                               blink::mojom::ServiceWorkerFetchEventTimingPtr,
+                              blink::mojom::ServiceWorkerFetchHandlerErrorsPtr,
                               scoped_refptr<ServiceWorkerVersion>)>;
   using WebContentsGetter = base::RepeatingCallback<WebContents*()>;
 
@@ -111,12 +112,14 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
                  FetchEventResult fetch_result,
                  blink::mojom::FetchAPIResponsePtr response,
                  blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
-                 blink::mojom::ServiceWorkerFetchEventTimingPtr timing);
+                 blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+                 blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors);
   void RunCallback(blink::ServiceWorkerStatusCode status,
                    FetchEventResult fetch_result,
                    blink::mojom::FetchAPIResponsePtr response,
                    blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
-                   blink::mojom::ServiceWorkerFetchEventTimingPtr timing);
+                   blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+                   blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors);
 
   // The fetch event stays open until all respondWith() and waitUntil() promises
   // are settled. This function is called once the renderer signals that

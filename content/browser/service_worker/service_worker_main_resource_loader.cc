@@ -25,6 +25,8 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/response_head_update_params.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
@@ -46,6 +48,8 @@
 #include "net/base/load_timing_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/document_isolation_policy.h"
@@ -56,6 +60,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
@@ -63,6 +68,14 @@
 namespace content {
 
 namespace {
+
+// LINT.IfChange(ServiceWorkerFetchHandlerInitiatorType)
+enum class ServiceWorkerFetchHandlerInitiatorType {
+  kFetchHandler = 0,
+  kRaceNetworkAndFetchHandler = 1,
+  kMaxValue = kRaceNetworkAndFetchHandler,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:ServiceWorkerFetchHandlerInitiatorType)
 
 perfetto::NamedTrack GetTracingTrack(
     const ServiceWorkerMainResourceLoader* loader) {
@@ -763,6 +776,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+    blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors,
     scoped_refptr<ServiceWorkerVersion> version) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -780,6 +794,8 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     CheckLifecycle();
     return;
   }
+
+  MaybeRecordFetchHandlerErrorUkm(errors);
 
   bool is_fallback =
       fetch_result ==
@@ -1047,6 +1063,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEventForSyntheticResponse(
     blink::mojom::FetchAPIResponsePtr response,
     blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
     blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
+    blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors,
     scoped_refptr<ServiceWorkerVersion> version) {
   // When it's ready, the header which the service worker locally storead is
   // passed to the client. To let this information to the renderer, set
@@ -1054,7 +1071,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEventForSyntheticResponse(
   response_head_->from_synthetic_response = true;
   DidDispatchFetchEvent(status, fetch_result, std::move(response),
                         std::move(body_as_stream), std::move(timing),
-                        std::move(version));
+                        std::move(errors), std::move(version));
 }
 
 void ServiceWorkerMainResourceLoader::Fallback(
@@ -1978,6 +1995,48 @@ void ServiceWorkerMainResourceLoader::RecordFetchEventHandlerMetrics(
       }),
       fetch_event_timing_->respond_with_settled_time -
           fetch_event_timing_->dispatch_event_time);
+}
+
+void ServiceWorkerMainResourceLoader::MaybeRecordFetchHandlerErrorUkm(
+    const blink::mojom::ServiceWorkerFetchHandlerErrorsPtr& errors) {
+  if (!errors ||
+      (!errors->race_fetch_error_code.has_value() &&
+       !errors->regular_fetch_error_code.has_value()) ||
+      !service_worker_client_) {
+    return;
+  }
+
+  FrameTreeNode* frame_tree_node = FrameTreeNode::GloballyFindByID(
+      service_worker_client_->GetFrameTreeNodeId());
+  if (!frame_tree_node) {
+    return;
+  }
+
+  NavigationRequest* request = frame_tree_node->navigation_request();
+  if (!request) {
+    return;
+  }
+
+  ukm::SourceId source_id = request->GetNextPageUkmSourceId();
+  if (source_id == ukm::kInvalidSourceId) {
+    return;
+  }
+
+  auto initiator = ServiceWorkerFetchHandlerInitiatorType::kFetchHandler;
+  if (dispatched_preload_type() == DispatchedPreloadType::kRaceNetworkRequest) {
+    initiator =
+        ServiceWorkerFetchHandlerInitiatorType::kRaceNetworkAndFetchHandler;
+  }
+  ukm::builders::ServiceWorker_MainResource_FetchHandlerError builder(
+      source_id);
+  builder.SetInitiatorType(static_cast<int64_t>(initiator));
+  if (errors->race_fetch_error_code.has_value()) {
+    builder.SetRaceFetchNetworkErrorCode(-*errors->race_fetch_error_code);
+  }
+  if (errors->regular_fetch_error_code.has_value()) {
+    builder.SetRegularFetchNetworkErrorCode(-*errors->regular_fetch_error_code);
+  }
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 void ServiceWorkerMainResourceLoader::TransitionToStatus(Status new_status) {

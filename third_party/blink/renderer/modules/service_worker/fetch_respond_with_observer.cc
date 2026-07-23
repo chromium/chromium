@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
@@ -229,6 +230,22 @@ class UploadingCompletionObserver
 
 }  // namespace
 
+mojom::blink::ServiceWorkerFetchHandlerErrorsPtr
+FetchRespondWithObserver::CreateFetchHandlerErrors() const {
+  if (!race_fetch_net_error_code_.has_value() &&
+      !regular_fetch_net_error_code_.has_value()) {
+    return nullptr;
+  }
+  auto errors = mojom::blink::ServiceWorkerFetchHandlerErrors::New();
+  if (race_fetch_net_error_code_.has_value()) {
+    errors->race_fetch_error_code = *race_fetch_net_error_code_;
+  }
+  if (regular_fetch_net_error_code_.has_value()) {
+    errors->regular_fetch_error_code = *regular_fetch_net_error_code_;
+  }
+  return errors;
+}
+
 // This function may be called when an exception is scheduled. Thus, it must
 // never invoke any code that might throw. In particular, it must never invoke
 // JavaScript.
@@ -249,7 +266,7 @@ void FetchRespondWithObserver::OnResponseRejected(
       To<ServiceWorkerGlobalScope>(GetExecutionContext());
   service_worker_global_scope->RespondToFetchEvent(
       event_id_, request_url_, range_request_, std::move(response),
-      event_dispatch_time_, base::TimeTicks::Now());
+      event_dispatch_time_, base::TimeTicks::Now(), CreateFetchHandlerErrors());
   event_->RejectHandledPromise(error_message);
 }
 
@@ -359,7 +376,7 @@ void FetchRespondWithObserver::OnResponseFulfilled(ScriptState* script_state,
       service_worker_global_scope->RespondToFetchEvent(
           event_id_, request_url_, range_request_,
           std::move(fetch_api_response), event_dispatch_time_,
-          base::TimeTicks::Now());
+          base::TimeTicks::Now(), CreateFetchHandlerErrors());
       event_->ResolveHandledPromise();
       return;
     }
@@ -387,13 +404,14 @@ void FetchRespondWithObserver::OnResponseFulfilled(ScriptState* script_state,
 
     service_worker_global_scope->RespondToFetchEventWithResponseStream(
         event_id_, request_url_, range_request_, std::move(fetch_api_response),
-        std::move(stream_handle), event_dispatch_time_, base::TimeTicks::Now());
+        std::move(stream_handle), event_dispatch_time_, base::TimeTicks::Now(),
+        CreateFetchHandlerErrors());
     event_->ResolveHandledPromise();
     return;
   }
   service_worker_global_scope->RespondToFetchEvent(
       event_id_, request_url_, range_request_, std::move(fetch_api_response),
-      event_dispatch_time_, base::TimeTicks::Now());
+      event_dispatch_time_, base::TimeTicks::Now(), CreateFetchHandlerErrors());
   event_->ResolveHandledPromise();
 }
 
@@ -436,7 +454,7 @@ void FetchRespondWithObserver::OnNoResponse(ScriptState* script_state) {
   service_worker_global_scope->RespondToFetchEventWithNoResponse(
       event_id_, event_.Get(), request_url_, range_request_,
       std::move(request_body_to_pass), event_dispatch_time_,
-      base::TimeTicks::Now());
+      base::TimeTicks::Now(), CreateFetchHandlerErrors());
   event_->ResolveHandledPromise();
 }
 
@@ -465,6 +483,8 @@ FetchRespondWithObserver::FetchRespondWithObserver(
       request_destination_(request.destination),
       request_body_has_source_(request.body.FormBody()),
       range_request_(request.headers.Contains(http_names::kRange)),
+      race_network_request_token_(
+          request.service_worker_race_network_request_token),
       corp_checker_(std::move(corp_checker)),
       task_runner_(context->GetTaskRunner(TaskType::kNetworking)) {}
 

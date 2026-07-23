@@ -851,6 +851,11 @@ void FetchManager::Loader::DidFinishLoading(uint64_t) {
 
 void FetchManager::Loader::DidFail(uint64_t identifier,
                                    const ResourceError& error) {
+  if (GetExecutionContext()) {
+    GetExecutionContext()->MaybeRecordFetchError(error.ErrorCode(),
+                                                 GetFetchRequestData());
+  }
+
   // Record the failures for blob fetch request.
   if (GetFetchRequestData() &&
       GetFetchRequestData()->Url().ProtocolIs("blob")) {
