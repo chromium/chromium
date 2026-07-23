@@ -110,7 +110,7 @@ const CGFloat kBadgeFontSize = 10.0;
   iconView.contentMode = UIViewContentModeScaleAspectFit;
   iconView.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   iconView.image =
-      image ?: DefaultSymbolWithPointSize(kGlobeAmericasSymbol, kFaviconSize);
+      image ?: SymbolWithPointSize(SymbolGlobeAmericas, kFaviconSize);
   return iconView;
 }
 

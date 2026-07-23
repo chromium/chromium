@@ -60,9 +60,9 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
                           weight:UIImageSymbolWeightLight
                            scale:UIImageSymbolScaleMedium];
 
-  return SymbolWithPalette(DefaultSymbolWithConfiguration(
-                               kXMarkCircleFillSymbol, symbolConfiguration),
-                           palette);
+  return SymbolWithPalette(
+      SymbolWithConfiguration(SymbolXMarkCircleFill, symbolConfiguration),
+      palette);
 }
 
 }  // namespace

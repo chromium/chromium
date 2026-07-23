@@ -86,8 +86,8 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
     switch (self.trailingIconType) {
       case TrailingIconType::kShare:
         // The arrow should point in the direction of the omnibox.
-        icon = DefaultSymbolWithPointSize(
-            kShareSymbol, kTrailingButtonIconPointSizeMedium * multiplier);
+        icon = SymbolWithPointSize(
+            SymbolShare, kTrailingButtonIconPointSizeMedium * multiplier);
         self.accessibilityIdentifier =
             kOmniboxPopupRowShareAccessibilityIdentifier;
         break;
@@ -97,18 +97,18 @@ const CGFloat kTrailingButtonIconPointSizeMedium = 15.0f;
         return;
       case TrailingIconType::kRefineQuery: {
         // The arrow should point in the direction of the omnibox.
-        NSString* iconName = self.refineQueryArrowDirectionDown
-                                 ? kRefineQueryDownSymbol
-                                 : kRefineQuerySymbol;
-        icon = DefaultSymbolWithPointSize(
-            iconName, kTrailingButtonIconPointSizeMedium * multiplier);
+        Symbol symbol = self.refineQueryArrowDirectionDown
+                            ? SymbolRefineQueryDown
+                            : SymbolRefineQuery;
+        icon = SymbolWithPointSize(
+            symbol, kTrailingButtonIconPointSizeMedium * multiplier);
         self.accessibilityIdentifier =
             kOmniboxPopupRowAppendAccessibilityIdentifier;
         break;
       }
       case TrailingIconType::kOpenExistingTab:
-        icon = DefaultSymbolWithPointSize(
-            kNavigateToTabSymbol,
+        icon = SymbolWithPointSize(
+            SymbolNavigateToTab,
             kTrailingButtonIconPointSizeMedium * multiplier);
         self.accessibilityIdentifier =
             kOmniboxPopupRowSwitchTabAccessibilityIdentifier;

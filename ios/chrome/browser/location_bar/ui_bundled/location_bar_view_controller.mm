@@ -381,11 +381,11 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   if (IsGeminiLiveEnabled()) {
     // Use the Gemini Live symbol.
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-    UIImage* image = CustomSymbolWithPointSize(kGeminiLiveLogoSymbol,
-                                               kGeminiLiveSymbolPointSize);
+    UIImage* image =
+        SymbolWithPointSize(SymbolGeminiLiveLogo, kGeminiLiveSymbolPointSize);
 #else
     UIImage* image =
-        DefaultSymbolWithPointSize(kWaveformSymbol, kGeminiLiveSymbolPointSize);
+        SymbolWithPointSize(SymbolWaveform, kGeminiLiveSymbolPointSize);
 #endif
 
     // Create the round container view.
@@ -804,7 +804,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
       // The system share image has uneven vertical padding. Add a small bottom
       // padding to balance it.
       UIImage* shareImage =
-          DefaultSymbolWithPointSize(kShareSymbol, kSymbolImagePointSize);
+          SymbolWithPointSize(SymbolShare, kSymbolImagePointSize);
 
       UIGraphicsImageRendererFormat* format =
           [UIGraphicsImageRendererFormat preferredFormat];
@@ -847,7 +847,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
           forControlEvents:UIControlEventTouchUpInside];
 
       UIImage* micImage =
-          DefaultSymbolWithPointSize(kMicrophoneSymbol, kSymbolImagePointSize);
+          SymbolWithPointSize(SymbolMicrophone, kSymbolImagePointSize);
       [self.locationBarSteadyView.trailingButton setImage:micImage
                                                  forState:UIControlStateNormal];
       self.locationBarSteadyView.trailingButton.accessibilityLabel =
@@ -921,9 +921,8 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 
 - (void)createAIMPlusButton {
   _plusButton = [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  [_plusButton
-      setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
-      forState:UIControlStateNormal];
+  [_plusButton setImage:SymbolWithPointSize(SymbolPlus, kSymbolActionPointSize)
+               forState:UIControlStateNormal];
   _plusButton.translatesAutoresizingMaskIntoConstraints = NO;
   _plusButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
   _plusButton.tintColor = [UIColor colorNamed:kToolbarButtonColor];
@@ -993,8 +992,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
       self.shareButtonEnabled) {
     base::UmaHistogramEnumeration("Mobile.ShareThisPage.Shown",
                                   ShareThisPageLocation::kOmniboxLongPress);
-    UIImage* image =
-        DefaultSymbolWithPointSize(kShareSymbol, kSymbolImagePointSize);
+    UIImage* image = SymbolWithPointSize(SymbolShare, kSymbolImagePointSize);
 
     UIAction* shareThisPageAction =
         [UIAction actionWithTitle:l10n_util::GetNSString(
@@ -1015,8 +1013,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 
   UIImage* pasteImage = nil;
   if (IsBottomOmniboxAvailable()) {
-    pasteImage =
-        DefaultSymbolWithPointSize(kPasteActionSymbol, kSymbolActionPointSize);
+    pasteImage = SymbolWithPointSize(SymbolPasteAction, kSymbolActionPointSize);
 
     // Copy link action.
     BOOL canShowCopyLinkAction = NO;
@@ -1030,8 +1027,8 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
     if (canShowCopyLinkAction) {
       UIAction* copyAction = [UIAction
           actionWithTitle:l10n_util::GetNSString(IDS_IOS_COPY_LINK_ACTION_TITLE)
-                    image:DefaultSymbolWithPointSize(kCopyActionSymbol,
-                                                     kSymbolActionPointSize)
+                    image:SymbolWithPointSize(SymbolCopyAction,
+                                              kSymbolActionPointSize)
                identifier:nil
                   handler:^(UIAction* action) {
                     [weakSelf.delegate locationBarCopyTapped];
@@ -1115,8 +1112,8 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   if (IsAssistantContainerDebugEnabled()) {
     UIAction* assistantAction = [UIAction
         actionWithTitle:l10n_util::GetNSString(IDS_IOS_APP_BAR_ASK_GEMINI)
-                  image:DefaultSymbolWithPointSize(kMagicStackSymbol,
-                                                   kSymbolActionPointSize)
+                  image:SymbolWithPointSize(SymbolMagicStack,
+                                            kSymbolActionPointSize)
              identifier:nil
                 handler:^(UIAction* action) {
                   [weakSelf.dispatcher showAssistant];
@@ -1140,13 +1137,13 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
     if (GetApplicationContext()->GetLocalState()->GetBoolean(
             omnibox::kIsOmniboxInBottomPosition)) {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX);
-      image = DefaultSymbolWithPointSize(kMovePlatterToTopPhoneSymbol,
-                                         kSymbolActionPointSize);
+      image = SymbolWithPointSize(SymbolMovePlatterToTopPhone,
+                                  kSymbolActionPointSize);
       targetToolbarType = ToolbarType::kPrimary;
     } else {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX);
-      image = DefaultSymbolWithPointSize(kMovePlatterToBottomPhoneSymbol,
-                                         kSymbolActionPointSize);
+      image = SymbolWithPointSize(SymbolMovePlatterToBottomPhone,
+                                  kSymbolActionPointSize);
       targetToolbarType = ToolbarType::kSecondary;
     }
     UIAction* moveAddressBarAction = [UIAction
@@ -1166,8 +1163,7 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   }
 
   if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
-    UIImage* image =
-        DefaultSymbolWithPointSize(kExpandSymbol, kSymbolActionPointSize);
+    UIImage* image = SymbolWithPointSize(SymbolExpand, kSymbolActionPointSize);
 
     UIAction* hideAddressBarAction =
         [UIAction actionWithTitle:l10n_util::GetNSString(

@@ -793,7 +793,7 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
                             weight:UIImageSymbolWeightBold
                              scale:UIImageSymbolScaleMedium];
     _incognitoImageView.image =
-        CustomSymbolWithConfiguration(kIncognitoSymbol, configuration);
+        SymbolWithConfiguration(SymbolIncognito, configuration);
     _incognitoImageView.tintColor = self.colorScheme.fontColor;
   }
 

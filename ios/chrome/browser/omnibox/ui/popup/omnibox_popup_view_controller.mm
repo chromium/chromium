@@ -1168,14 +1168,12 @@ const CGFloat kCloseButtonPadding = 16.0f;
       configurationWithPointSize:kCloseButtonSize
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
-  UIImage* buttonImage =
-      SymbolWithPalette(DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
-                                                       symbolConfiguration),
-                        @[
-                          [[UIColor tertiaryLabelColor]
-                              colorWithAlphaComponent:kCloseButtonAlpha],
-                          [UIColor tertiarySystemFillColor]
-                        ]);
+  UIImage* buttonImage = SymbolWithPalette(
+      SymbolWithConfiguration(SymbolXMarkCircleFill, symbolConfiguration), @[
+        [[UIColor tertiaryLabelColor]
+            colorWithAlphaComponent:kCloseButtonAlpha],
+        [UIColor tertiarySystemFillColor]
+      ]);
   [_closeButton setImage:buttonImage forState:UIControlStateNormal];
 
   [_closeButton addTarget:self

@@ -83,7 +83,7 @@ const CGFloat kTrailingMargin = 8.0;
       break;
     case ComposeboxInputItemType::kComposeboxInputItemTypeRawFile: {
       _leadingIconImageView.image =
-          DefaultSymbolWithPointSize(kPaperclipSymbol, kLeadingIconSize);
+          SymbolWithPointSize(SymbolPaperclip, kLeadingIconSize);
       _titleLabel.text = item.title;
     } break;
     case ComposeboxInputItemType::kComposeboxInputItemTypePDF: {
@@ -92,7 +92,7 @@ const CGFloat kTrailingMargin = 8.0;
                               weight:UIImageSymbolWeightMedium
                                scale:UIImageSymbolScaleLarge];
       UIImage* pdfSymbol = SymbolWithPalette(
-          CustomSymbolWithConfiguration(kPDFFillSymbol, configuration),
+          SymbolWithConfiguration(SymbolPDFFill, configuration),
           @[ theme.pdfSymbolColor ]);
       _leadingIconImageView.image = pdfSymbol;
       // The PDF symbol has a 2 points intrinsice padding. To normalize it to
@@ -107,8 +107,7 @@ const CGFloat kTrailingMargin = 8.0;
     case ComposeboxInputItemType::kComposeboxInputItemTypeTab:
       _leadingIconImageView.image =
           item.leadingIconImage
-              ?: DefaultSymbolWithPointSize(kGlobeAmericasSymbol,
-                                            kLeadingIconSize);
+              ?: SymbolWithPointSize(SymbolGlobeAmericas, kLeadingIconSize);
       _titleLabel.text = item.title;
       break;
     case ComposeboxInputItemType::kComposeboxInputItemTypeDrive: {
@@ -117,7 +116,7 @@ const CGFloat kTrailingMargin = 8.0;
                               weight:UIImageSymbolWeightMedium
                                scale:UIImageSymbolScaleLarge];
       _leadingIconImageView.image =
-          CustomSymbolWithConfiguration(kMyDriveSymbol, configuration);
+          SymbolWithConfiguration(SymbolMyDrive, configuration);
       _titleLabel.text = item.title;
     } break;
   }

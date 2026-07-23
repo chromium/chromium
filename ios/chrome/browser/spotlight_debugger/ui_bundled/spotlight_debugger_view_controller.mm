@@ -117,12 +117,11 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           content.secondaryText = spotlight::IsSpotlightAvailable()
                                       ? @"Available"
                                       : @"Not Available";
-          content.image =
-              spotlight::IsSpotlightAvailable()
-                  ? DefaultSymbolWithPointSize(@"checkmark.circle.fill",
-                                               kSymbolAccessoryPointSize)
-                  : DefaultSymbolWithPointSize(@"exclamationmark.triangle",
-                                               kSymbolAccessoryPointSize);
+          content.image = spotlight::IsSpotlightAvailable()
+                              ? SymbolWithPointSize(SymbolCheckmarkCircleFill,
+                                                    kSymbolAccessoryPointSize)
+                              : SymbolWithPointSize(SymbolWarning,
+                                                    kSymbolAccessoryPointSize);
           break;
         case LastIndexDateRow:
           content.text = @"Time since last reindexing";

@@ -125,7 +125,7 @@ const CGFloat kCloseButtonAlpha = 0.9;
   }
 
   UIImage* image = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseIconSize), @[
+      SymbolWithPointSize(SymbolXMarkCircleFill, kCloseIconSize), @[
         [UIColor colorNamed:kTextSecondaryColor],
         [theme.inputItemBackgroundColor
             colorWithAlphaComponent:kCloseButtonAlpha]
@@ -219,7 +219,7 @@ const CGFloat kCloseButtonAlpha = 0.9;
   UIImageSymbolConfiguration* symbolConfig =
       [UIImageSymbolConfiguration configurationWithPointSize:kSymbolSize];
   UIImage* errorImage =
-      DefaultSymbolWithConfiguration(kErrorCircleSymbol, symbolConfig);
+      SymbolWithConfiguration(SymbolErrorCircle, symbolConfig);
   _errorIconView = [[UIImageView alloc] initWithImage:errorImage];
   _errorIconView.translatesAutoresizingMaskIntoConstraints = NO;
   _errorIconView.tintColor = [UIColor whiteColor];

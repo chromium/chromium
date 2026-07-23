@@ -144,7 +144,7 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
               }];
   UIAction* aimEligibilityDebuggerAction = [UIAction
       actionWithTitle:@"AIM Eligibility"
-                image:CustomSymbolWithPointSize(kMagnifyingglassSparkSymbol, 16)
+                image:SymbolWithPointSize(SymbolMagnifyingglassSpark, 16)
            identifier:nil
               handler:^(UIAction* action) {
                 [weakSelf startAIMDebugger];

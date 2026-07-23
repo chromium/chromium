@@ -112,8 +112,8 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
       initWithTitle:l10n_util::GetNSString(
                         IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS)];
 
-  UIImage* image = DefaultSymbolTemplateWithPointSize(
-      kXMarkSymbol, kCloseButtonSymbolPointSize);
+  UIImage* image =
+      SymbolTemplateWithPointSize(SymbolXMark, kCloseButtonSymbolPointSize);
   UIButtonConfiguration* buttonConfiguration =
       CreateHeaderButtonConfiguration(image);
 
@@ -270,7 +270,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   if (tab.favicon) {
     content.image = tab.favicon;
   } else {
-    content.image = DefaultSymbolWithPointSize(kGlobeSymbol, kFaviconSize);
+    content.image = SymbolWithPointSize(SymbolGlobe, kFaviconSize);
   }
   content.imageProperties.maximumSize = CGSizeMake(kFaviconSize, kFaviconSize);
   content.imageProperties.cornerRadius = 4.0;
@@ -313,8 +313,7 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
 
   UIAction* removeAction = [UIAction
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_REMOVE_TAB)
-                image:DefaultSymbolWithPointSize(kTrashSymbol,
-                                                 kTrashSymbolPointSize)
+                image:SymbolWithPointSize(SymbolTrash, kTrashSymbolPointSize)
            identifier:nil
               handler:^(UIAction* action) {
                 [weakSelf removeTab:tab];
