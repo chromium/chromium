@@ -350,6 +350,7 @@ void AutofillAiManager::OnAutofillAiSuggestionsShown(
          {.suggested_entity_types =
               DenseSet<EntityType>(entities_suggested, &EntityInstance::type),
           .entity_type_accepted = std::nullopt,
+          .accepted_entity_record_type = std::nullopt,
           .autofill_ai_field_types = field.Type().GetAutofillAiTypes()}});
   }
 }
@@ -432,6 +433,7 @@ void AutofillAiManager::OnDidFillSuggestion(
   auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
   if (it != user_suggestion_interactions_per_form_.end()) {
     it->second.entity_type_accepted = entity.type();
+    it->second.accepted_entity_record_type = entity.record_type();
   }
 }
 
@@ -498,33 +500,20 @@ bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
   //    duplicate of data saved in Wallet, a save prompt to Wallet is shown. On
   //    acceptance, the local entity is removed.
   const bool form_imported = MaybeImportForm(form, ukm_source_id);
-  // Importing a form can already lead to a survey, therefore only show the
-  // filling hats survey if no prompt was shown.
-  if (!form_imported) {
-    auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
-    if (it == user_suggestion_interactions_per_form_.end()) {
-      return false;
-    }
+  auto it = user_suggestion_interactions_per_form_.Get(form.global_id());
+  if (it != user_suggestion_interactions_per_form_.end()) {
     const EntityDataManager* entity_manager = client_->GetEntityDataManager();
     if (!entity_manager) {
       LOG_AF(GetCurrentLogManager())
           << LoggingScope::kAutofillAi << LogMessage::kAutofillAi
           << "Entity data manager is not available";
-      return {};
+      return form_imported;
     }
-    if (it->second.entity_type_accepted) {
+    if (it->second.entity_type_accepted &&
+        it->second.accepted_entity_record_type ==
+            EntityInstance::RecordType::kPersonalContext) {
       client_->TriggerAutofillAiFillingJourneySurvey(
           /*suggestion_accepted=*/true, it->second.entity_type_accepted.value(),
-          GetSaveEntitiesTypesNames(entity_manager->GetEntityInstances()),
-          it->second.autofill_ai_field_types);
-    } else {
-      CHECK(!it->second.suggested_entity_types.empty());
-      // Normally only one entity type is shown to users. However, in the case
-      // where more than one type is shown and the user did not accept the
-      // suggestion, use the first type as the survey type.
-      client_->TriggerAutofillAiFillingJourneySurvey(
-          /*suggestion_accepted=*/false,
-          *(it->second.suggested_entity_types.begin()),
           GetSaveEntitiesTypesNames(entity_manager->GetEntityInstances()),
           it->second.autofill_ai_field_types);
     }
@@ -586,20 +575,7 @@ void AutofillAiManager::HandlePromptResult(
 
   AddOrClearImportPromptStrikes(prompt_type, result, form.url(), entity);
 
-  const bool prompt_accepted = DidUserExplicitlyAcceptedImportPrompt(result);
-
-  switch (prompt_type) {
-    case AutofillClient::AutofillAiImportPromptType::kSave:
-      client_->TriggerAutofillAiSavePromptSurvey(
-          prompt_accepted, entity.type(),
-          GetSaveEntitiesTypesNames(entity_manager.GetEntityInstances()));
-      break;
-    case AutofillClient::AutofillAiImportPromptType::kUpdate:
-    case AutofillClient::AutofillAiImportPromptType::kMigrate:
-      break;
-  }
-
-  if (!prompt_accepted) {
+  if (!DidUserExplicitlyAcceptedImportPrompt(result)) {
     return;
   }
 

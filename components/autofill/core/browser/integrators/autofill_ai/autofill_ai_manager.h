@@ -17,6 +17,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -122,6 +123,7 @@ class AutofillAiManager
     // generate the suggestions shown.
     DenseSet<EntityType> suggested_entity_types;
     std::optional<EntityType> entity_type_accepted;
+    std::optional<EntityInstance::RecordType> accepted_entity_record_type;
     // The types of the field where the suggestion was shown or accepted.
     FieldTypeSet autofill_ai_field_types;
   };
