@@ -20,8 +20,6 @@ import androidx.annotation.ColorInt;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.ui.util.ColorUtils;
 
 /**
  * Layout that sizes itself with constraints similar to DialogWhenLarge: on large screens and
@@ -40,8 +38,12 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
     /**
      * Wraps contentView into layout that resembles DialogWhenLarge. The layout centers the content
      * and dims the background to simulate a modal dialog.
+     *
+     * @param contentView The view to wrap.
+     * @param backgroundColor The color of the background upon which the dialog is showing.
      */
-    static View wrapInDialogWhenLargeLayout(View contentView) {
+    public static View wrapInDialogWhenLargeLayout(
+            View contentView, @ColorInt int backgroundColor) {
         DialogWhenLargeContentLayout layout =
                 new DialogWhenLargeContentLayout(contentView.getContext());
         layout.addView(contentView);
@@ -59,21 +61,17 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         Gravity.CENTER));
-        outerLayout.setBackgroundResource(R.color.modal_dialog_scrim_color);
+        outerLayout.setBackgroundColor(backgroundColor);
         return outerLayout;
     }
 
     /**
-     * Returns the color of the background upon which the dialog is showing. This logic should
-     * correspond to the logic set up in #wrapInDialogWhenLargeLayout().
+     * Wraps contentView into layout that resembles DialogWhenLarge. The layout centers the content
+     * and dims the background to simulate a modal dialog.
      */
-    public static @ColorInt int getDialogBackgroundColor(Context context) {
-        @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(context);
-        @ColorInt
-        int dialogScrimColor =
-                context.getResources()
-                        .getColor(R.color.modal_dialog_scrim_color, context.getTheme());
-        return ColorUtils.overlayColor(defaultBgColor, dialogScrimColor);
+    static View wrapInDialogWhenLargeLayout(View contentView) {
+        int backgroundColor = contentView.getContext().getColor(R.color.modal_dialog_scrim_color);
+        return wrapInDialogWhenLargeLayout(contentView, backgroundColor);
     }
 
     /**

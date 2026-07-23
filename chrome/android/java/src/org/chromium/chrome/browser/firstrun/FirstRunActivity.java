@@ -52,11 +52,11 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
-import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.metrics.LowEntropySource;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -427,8 +427,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     protected void initializeSystemBarColors(
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
         if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
-            @ColorInt
-            int backgroundColor = DialogWhenLargeContentLayout.getDialogBackgroundColor(this);
+            @ColorInt int backgroundColor = SemanticColorUtils.getColorSurfaceContainerLow(this);
 
             StatusBarColorController.setStatusBarColor(
                     edgeToEdgeSystemBarColorHelper, this, backgroundColor);
@@ -467,7 +466,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         mPager.setId(R.id.fre_pager);
         mPager.setOffscreenPageLimit(3);
-        return SigninUtils.wrapInDialogWhenLargeLayout(mPager);
+        return DialogWhenLargeContentLayout.wrapInDialogWhenLargeLayout(
+                mPager, SemanticColorUtils.getColorSurfaceContainerLow(this));
     }
 
     @Override

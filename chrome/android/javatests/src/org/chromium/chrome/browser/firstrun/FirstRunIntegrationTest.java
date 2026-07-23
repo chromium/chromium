@@ -107,8 +107,8 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.EnterpriseInfo;
-import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.policy.test.FakeEnterpriseInfo;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
@@ -1403,7 +1403,7 @@ public class FirstRunIntegrationTest {
                 activity.getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper();
         @ColorInt int backgroundColor;
         if (DialogWhenLargeContentLayout.shouldShowAsDialog(activity)) {
-            backgroundColor = DialogWhenLargeContentLayout.getDialogBackgroundColor(activity);
+            backgroundColor = SemanticColorUtils.getColorSurfaceContainerLow(activity);
         } else {
             backgroundColor = SemanticColorUtils.getDefaultBgColor(activity);
         }
@@ -1428,8 +1428,7 @@ public class FirstRunIntegrationTest {
         EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper =
                 activity.getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper();
 
-        @ColorInt
-        int backgroundColor = DialogWhenLargeContentLayout.getDialogBackgroundColor(activity);
+        @ColorInt int backgroundColor = SemanticColorUtils.getColorSurfaceContainerLow(activity);
         Assert.assertEquals(backgroundColor, edgeToEdgeSystemBarColorHelper.getStatusBarColor());
         Assert.assertEquals(
                 backgroundColor, edgeToEdgeSystemBarColorHelper.getNavigationBarColor());
