@@ -83,6 +83,8 @@ template("bidi_bundle") {
     outputs = [
       output_file
     ]
+
+    data = outputs
     
     args = [
       "--config", rebase_path("../rollup.config.mjs", root_build_dir),

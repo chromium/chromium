@@ -108,6 +108,7 @@ template("ts_library") {
     }
 
     outputs = output_files
+    data = output_files
 
     if (defined(deps)) {
       # Expose deps to Ninja builder chain

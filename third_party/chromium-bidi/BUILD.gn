@@ -15,9 +15,39 @@
 
 # Top-level GN build file for chromium-bidi
 
+import("//testing/test.gni")
+
 group("default") {
   testonly = true
   deps = [
     "src:all",
+  ]
+}
+
+script_test("webdriver_bidi_unittests") {
+  script = "tools/run_unittests.py"
+  args = [
+    "--gen-dir",
+    "@WrappedPath(gen)",
+    "--node-py",
+    "@WrappedPath(../../third_party/node/node.py)",
+    "--",
+    "--test",
+    "--test-reporter=spec",
+    "--test-reporter-destination=stdout",
+    "--test-reporter=./@WrappedPath(../../third_party/chromium-bidi/tools/unit-resultsink-reporter.mjs)",
+    "--test-reporter-destination=stdout",
+    "@WrappedPath(gen/third_party/chromium-bidi/src/**/*.test.js)",
+  ]
+
+  data = [
+    "tools/unit-resultsink-reporter.mjs",
+    "//third_party/node/",
+    "node_modules/",
+    "package.json",
+  ]
+
+  data_deps = [
+    "src:unit_tests",
   ]
 }

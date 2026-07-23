@@ -99,7 +99,6 @@ export default async function* customReporter(source) {
       }
 
       const stack = fileSuites.get(data.file) || [];
-      const fullName = [...stack.slice(0, data.nesting), data.name].join(' > ');
 
       if (!sinkData) {
         yield '';
@@ -122,12 +121,36 @@ export default async function* customReporter(source) {
         .replace(/^out\/[^/]+\/gen\//, '')
         .replace(/\.js$/, '.ts');
 
-      const testIdName = `${sourcePath} > ${fullName}`;
+      const escapeComponent = (s) =>
+        s.replace(/\\/g, '\\\\').replace(/:/g, '\\:');
+      const components = [...stack.slice(0, data.nesting), data.name].map((c) =>
+        escapeComponent(c.replace(/[\r\n]+/g, ' ').normalize('NFC')),
+      );
+      let coarseName = path.dirname(sourcePath);
+      if (!coarseName.endsWith('/')) {
+        coarseName += '/';
+      }
+      const fineName = path.basename(sourcePath);
+
+      const flatEscape = (s) => s.replace(/([!#:\\])/g, '\\$1');
+      const caseNameFlat = components
+        .map(flatEscape)
+        .join(':')
+        .substring(0, 512);
+      const coarseNameFlat = flatEscape(coarseName);
+      const fineNameFlat = flatEscape(fineName);
+
+      const testId = `:chromium-bidi!mocha:${coarseNameFlat}:${fineNameFlat}#${caseNameFlat}`;
+
       const testResult = {
-        testId: testIdName
-          .replace(/[\r\n]+/g, ' ')
-          .normalize('NFC')
-          .substring(0, 512),
+        testId,
+        testIdStructured: {
+          moduleName: 'chromium-bidi',
+          moduleScheme: 'mocha',
+          coarseName,
+          fineName,
+          caseNameComponents: components,
+        },
         status,
         expected,
         duration: `${(durationMs / 1000).toFixed(3)}s`,
