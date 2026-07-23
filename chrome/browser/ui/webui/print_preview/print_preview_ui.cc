@@ -584,10 +584,10 @@ bool PrintPreviewUI::ShouldUseCompositor() const {
 
   auto* dialog_controller = PrintPreviewDialogController::GetInstance();
   CHECK(dialog_controller);
-  const mojom::RequestPrintPreviewParams* request_params =
-      dialog_controller->GetRequestParams(web_ui()->GetWebContents());
-  CHECK(request_params);
-  return request_params->is_modifiable;
+  std::optional<bool> maybe_is_pdf =
+      dialog_controller->IsPrintingPdf(web_ui()->GetWebContents());
+  CHECK(maybe_is_pdf.has_value());
+  return !maybe_is_pdf.value();
 }
 
 void PrintPreviewUI::OnCompositePdfPageDone(

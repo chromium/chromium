@@ -673,17 +673,17 @@ void PrintPreviewHandler::HandleDoPrint(const base::ListValue& args) {
   }
   DCHECK(data->size());
 
-  // After validating |settings|, record metrics.
-  const mojom::RequestPrintPreviewParams* request_params = GetRequestParams();
-  CHECK(request_params);
-  bool is_pdf = !request_params->is_modifiable;
+  // After validating `settings`, record metrics.
+  std::optional<bool> maybe_is_pdf = IsPrintingPdf();
+  CHECK(maybe_is_pdf.has_value());
   if (last_preview_settings_.has_value()) {
-    ReportPrintSettingsStats(settings, last_preview_settings_.value(), is_pdf);
+    ReportPrintSettingsStats(settings, last_preview_settings_.value(),
+                             maybe_is_pdf.value());
   }
   {
     PrintDocumentTypeBuckets doc_type =
-        is_pdf ? PrintDocumentTypeBuckets::kPdfDocument
-               : PrintDocumentTypeBuckets::kHtmlDocument;
+        maybe_is_pdf.value() ? PrintDocumentTypeBuckets::kPdfDocument
+                             : PrintDocumentTypeBuckets::kHtmlDocument;
     ReportPrintDocumentTypeHistograms(doc_type);
   }
   ReportUserActionHistogram(user_action);
@@ -861,20 +861,33 @@ void PrintPreviewHandler::SendInitialSettings(
     const std::string& callback_id,
     base::DictValue policies,
     const std::string& default_printer) {
-  const mojom::RequestPrintPreviewParams* request_params = GetRequestParams();
+  bool is_pdf;
   mojom::RequestPrintPreviewParams dummy_params;
-  if (!request_params) {
+
+  // `request_params` and `maybe_is_pdf` should both be non-null or both be
+  // null.
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
+  const mojom::RequestPrintPreviewParams* request_params =
+      dialog_controller->GetRequestParams(preview_web_contents());
+  std::optional<bool> maybe_is_pdf = IsPrintingPdf();
+  if (request_params) {
+    CHECK(maybe_is_pdf.has_value());
+    is_pdf = maybe_is_pdf.value();
+  } else {
     // This only happens with a direct navigation to chrome://print, which can
     // happen in some tests. Just use `dummy_params` to set up the test with
     // some sane values, so it does not crash.
-    dummy_params.is_modifiable = true;
+    CHECK(!maybe_is_pdf.has_value());
+    constexpr bool kIsPdf = false;
+    is_pdf = kIsPdf;
+    dummy_params.is_modifiable = !kIsPdf;
     request_params = &dummy_params;
   }
 
   base::DictValue initial_settings;
   initial_settings.Set(kDocumentTitle, print_preview_ui()->initiator_title());
-  initial_settings.Set(kSettingPreviewModifiable,
-                       request_params->is_modifiable);
+  initial_settings.Set(kSettingPreviewModifiable, !is_pdf);
 #if BUILDFLAG(IS_CHROMEOS)
   initial_settings.Set(kSettingPreviewIsFromArc, request_params->is_from_arc);
 #endif
@@ -953,11 +966,10 @@ WebContents* PrintPreviewHandler::GetInitiator() {
   return dialog_controller->GetInitiator(preview_web_contents());
 }
 
-const mojom::RequestPrintPreviewParams*
-PrintPreviewHandler::GetRequestParams() {
+std::optional<bool> PrintPreviewHandler::IsPrintingPdf() {
   auto* dialog_controller = PrintPreviewDialogController::GetInstance();
   CHECK(dialog_controller);
-  return dialog_controller->GetRequestParams(preview_web_contents());
+  return dialog_controller->IsPrintingPdf(preview_web_contents());
 }
 
 void PrintPreviewHandler::OnPrintPreviewReady(

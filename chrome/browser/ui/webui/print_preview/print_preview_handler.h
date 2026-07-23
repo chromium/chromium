@@ -147,7 +147,9 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
   PrintPreviewUI* print_preview_ui();
 
-  const mojom::RequestPrintPreviewParams* GetRequestParams();
+  // Returns whether `this` is printing a PDF or not. Returns std::nullopt if
+  // the associated Print Preview dialog does not exist.
+  std::optional<bool> IsPrintingPdf();
 
   PrefService* GetPrefs();
 
