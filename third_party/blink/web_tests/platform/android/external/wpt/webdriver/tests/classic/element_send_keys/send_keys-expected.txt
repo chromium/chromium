@@ -3,7 +3,5 @@ This is a wdspec test.
   AssertionError: assert 'no such element' == 'no such window'
 [FAIL] test_no_such_element_with_shadow_root
   assert 500 == 404
-[FAIL] test_surrogates
-  AssertionError: unknown error (500): unknown error: ChromeDriver only supports characters in the BMP
 Harness: the test ran to completion.
 

@@ -24,7 +24,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/third_party/icu/icu_utf.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
@@ -53,15 +52,6 @@ Status FlattenStringArray(const base::ListValue* src, std::u16string* dest) {
       return Status(kUnknownError, "keys should be a string");
 
     std::u16string keys_list_part = base::UTF8ToUTF16(i.GetString());
-
-    for (char16_t ch : keys_list_part) {
-      if (CBU16_IS_SURROGATE(ch)) {
-        return Status(
-            kUnknownError,
-            base::StringPrintf("%s only supports characters in the BMP",
-                              kChromeDriverProductShortName));
-      }
-    }
 
     keys.append(keys_list_part);
   }

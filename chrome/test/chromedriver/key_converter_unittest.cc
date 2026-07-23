@@ -385,6 +385,34 @@ TEST(KeyConverter, ReleaseModifiers) {
   CheckEvents(keys, key_events, true /* release_modifiers */, 0);
 }
 
+TEST(KeyConverter, SurrogatePairValid) {
+  const std::string emoji = "\xF0\x9F\x98\x80";
+  std::vector<KeyEvent> key_events;
+  KeyEventBuilder builder;
+  builder.SetText(emoji, emoji)
+      ->SetKeyCode(ui::VKEY_UNKNOWN)
+      ->Generate(&key_events);
+
+  std::u16string keys = {0xD83Du, 0xDE00u};
+  CheckEventsReleaseModifiers(keys, key_events);
+}
+
+TEST(KeyConverter, LoneLeadSurrogateRejected) {
+  int modifiers = 0;
+  std::vector<KeyEvent> events;
+  std::u16string keys = {0xD83Du};
+  Status status = ConvertKeysToKeyEvents(keys, true, &modifiers, &events);
+  EXPECT_EQ(kUnknownError, status.code());
+}
+
+TEST(KeyConverter, LoneTrailSurrogateRejected) {
+  int modifiers = 0;
+  std::vector<KeyEvent> events;
+  std::u16string keys = {0xDE00u};
+  Status status = ConvertKeysToKeyEvents(keys, true, &modifiers, &events);
+  EXPECT_EQ(kUnknownError, status.code());
+}
+
 TEST(KeyConverter, CommandA) {
   // This is a regression test for chromedriver:4263
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
