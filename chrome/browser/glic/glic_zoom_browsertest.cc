@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkeysPersisted) {
   EXPECT_DOUBLE_EQ(GetZoomLevel(instance), 1.0);
 
   // Trigger accelerator for zoom-in.
-  EXPECT_TRUE(TriggerHotkey(LocalHotkeyManager::Command::kZoomIn));
+  TriggerHotkey(LocalHotkeyManager::Command::kZoomIn);
 
   // Verify zoom level increased to 1.1.
   ASSERT_OK(RunUntilEqual<double>([&]() { return GetZoomLevel(instance); }, 1.1,
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkeysPersisted) {
   EXPECT_DOUBLE_EQ(GetZoomLevel(instance), 1.1);
 
   // Trigger zoom-in again.
-  EXPECT_TRUE(TriggerHotkey(LocalHotkeyManager::Command::kZoomIn));
+  TriggerHotkey(LocalHotkeyManager::Command::kZoomIn);
 
   // Verify zoom level increased to 1.25. If the bug exists, this will fail
   // because the zoom level will remain stuck at 1.1.

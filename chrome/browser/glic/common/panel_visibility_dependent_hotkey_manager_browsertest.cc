@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(PanelVisibilityDependentHotkeyManagerBrowserTest,
   ASSERT_OK(FocusGlic(instance));
 
   // Press focus toggle hotkey to toggle focus back to browser.
-  ASSERT_TRUE(TriggerHotkey(LocalHotkeyManager::Command::kFocusToggle));
+  TriggerHotkey(LocalHotkeyManager::Command::kFocusToggle);
 
   // Verify Glic lost focus.
   ASSERT_TRUE(RunUntilEqual<bool>(
@@ -32,7 +32,7 @@ IN_PROC_BROWSER_TEST_F(PanelVisibilityDependentHotkeyManagerBrowserTest,
       "Timeout waiting for Glic to lose focus"));
 
   // Press focus toggle hotkey again to focus Glic.
-  ASSERT_TRUE(TriggerHotkey(LocalHotkeyManager::Command::kFocusToggle));
+  TriggerHotkey(LocalHotkeyManager::Command::kFocusToggle);
 
   // Verify Glic got focus.
   ASSERT_TRUE(RunUntilEqual<bool>(

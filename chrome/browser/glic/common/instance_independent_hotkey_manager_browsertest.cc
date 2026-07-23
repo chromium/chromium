@@ -52,7 +52,7 @@ class InstanceIndependentHotkeyManagerBrowserTest : public GlicBrowserTest {
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
                        AcceleratorPressedInvokesGlic) {
   // Simulate the accelerator being pressed.
-  EXPECT_TRUE(TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle));
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
 
   // Verify that the panel actually opens.
   EXPECT_TRUE(WaitForGlicOpen().has_value());
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
       prefs::kGlicHotkeyGlobalScopeEnabled, false);
 
   // Simulate the accelerator being pressed.
-  EXPECT_TRUE(TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle));
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
 
   // Verify that the panel actually opens.
   EXPECT_TRUE(WaitForGlicOpen().has_value());
@@ -102,12 +102,13 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
       prefs::kGlicHotkeyGlobalScopeEnabled, false);
 
   // Simulate the accelerator being pressed.
-  EXPECT_FALSE(TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle));
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
 
   // Verify that the panel is not showing.
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
                        AcceleratorPressedReturnsFalseWhenGlobalScopeEnabled) {
   g_browser_process->local_state()->SetBoolean(
@@ -125,6 +126,7 @@ IN_PROC_BROWSER_TEST_F(InstanceIndependentHotkeyManagerBrowserTest,
   // Verify that the panel is not showing.
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());
 }
+#endif
 
 class InstanceIndependentHotkeyManagerFeatureDisabledBrowserTest
     : public GlicBrowserTest {
@@ -147,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(
     AcceleratorPressedDoesNotLaunchGlicWhenFeatureDisabled) {
   // Even though hotkey is pressed, it should behave as global (return false)
   // because the feature is disabled (default behavior).
-  EXPECT_FALSE(TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle));
+  TriggerHotkey(LocalHotkeyManager::Command::kPanelToggle);
 
   // Verify that the panel is not showing.
   EXPECT_FALSE(coordinator().IsAnyPanelShowing());

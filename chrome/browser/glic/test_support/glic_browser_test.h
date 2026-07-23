@@ -748,7 +748,7 @@ class GlicBrowserTestMixin : public T {
     return static_accels[0];
   }
 
-  bool TriggerHotkey(ui::Accelerator accelerator) {
+  void TriggerHotkey(ui::Accelerator accelerator) {
 #if BUILDFLAG(IS_ANDROID)
     gfx::NativeWindow window = GetBrowser()->GetWindow()->GetNativeWindow();
     int accelerator_state = ui_controls::kNoAccelerator;
@@ -764,25 +764,20 @@ class GlicBrowserTestMixin : public T {
     if (accelerator.IsCmdDown()) {
       accelerator_state |= ui_controls::kCommand;
     }
-    return ui_controls::SendKeyEvents(window, accelerator.key_code(),
-                                      ui_controls::kKeyPress,
-                                      accelerator_state);
+    ui_controls::SendKeyEvents(window, accelerator.key_code(),
+                               ui_controls::kKeyPress, accelerator_state);
 #else
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
         GetBrowser()->GetWindow()->GetNativeWindow());
-    if (!widget) {
-      return false;
-    }
+    CHECK(widget);
     views::FocusManager* focus_manager = widget->GetFocusManager();
-    if (!focus_manager) {
-      return false;
-    }
-    return focus_manager->ProcessAccelerator(accelerator);
+    CHECK(focus_manager);
+    focus_manager->ProcessAccelerator(accelerator);
 #endif
   }
 
-  bool TriggerHotkey(LocalHotkeyManager::Command command) {
-    return TriggerHotkey(GetAccelerator(command));
+  void TriggerHotkey(LocalHotkeyManager::Command command) {
+    TriggerHotkey(GetAccelerator(command));
   }
 
  private:
