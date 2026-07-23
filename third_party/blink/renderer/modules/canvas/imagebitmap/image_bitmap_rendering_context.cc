@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "cc/layers/texture_layer.h"
@@ -40,6 +41,15 @@
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
+
+namespace {
+
+// Killswitch for removing MetadataOverride (alpha_type and color_space) in
+// ImageBitmapRenderingContext::PrepareTransferableResource.
+BASE_FEATURE(kImageBitmapUseMetadataOverride,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
 
 // static
 scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContext::MakeAccelerated(
@@ -274,16 +284,15 @@ bool ImageBitmapRenderingContext::PrepareTransferableResource(
     }
 
     auto shared_image = image_for_compositor->GetSharedImage();
-
     if (!shared_image) {
       return false;
     }
 
-    viz::TransferableResource::MetadataOverride overrides = {
-        .color_space = gfx::ColorSpace(),
-        .alpha_type = kPremul_SkAlphaType,
-    };
-
+    viz::TransferableResource::MetadataOverride overrides = {};
+    if (base::FeatureList::IsEnabled(kImageBitmapUseMetadataOverride)) {
+      overrides = {.color_space = gfx::ColorSpace(),
+                   .alpha_type = kPremul_SkAlphaType};
+    }
     *out_resource = viz::TransferableResource::Make(
         shared_image,
         viz::TransferableResource::ResourceSource::kImageLayerBridge,
