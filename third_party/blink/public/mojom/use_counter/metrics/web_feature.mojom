@@ -4412,7 +4412,7 @@ enum WebFeature {
       = 5110,
   kOBSOLETE_MaxInterStageShaderComponentsRequiredLimit = 5111,
   kShowPickerSelect = 5112,
-  kAudioContextPlayoutStats = 5113,
+  kOBSOLETE_AudioContextPlayoutStats = 5113,
   kOBSOLETE_ThirdPartyCookieBlocked = 5114,
   kV8PerformanceResourceTiming_WorkerRouterEvaluationStart_AttributeGetter =
       5115,

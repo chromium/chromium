@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_listener.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_playback_stats.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_playout_stats.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_sink_info.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet.h"
 #include "third_party/blink/renderer/modules/webaudio/media_element_audio_source_node.h"
@@ -183,7 +182,7 @@ const char* GetResumeErrorMessage(AudioContext::ResumeError error) {
 
 }  // namespace
 
-// Helper class that decides if the AudioPlayoutStats should be updated.
+// Helper class that decides if the AudioPlaybackStats should be updated.
 // It implements Privacy & Security mitigations as described here:
 // https://wicg.github.io/audio-context-playout-stats/#mitigations
 class AudioContext::StatsUpdateRestrictor {
@@ -755,7 +754,6 @@ void AudioContext::Trace(Visitor* visitor) const {
   visitor->Trace(close_resolver_);
   visitor->Trace(audio_context_manager_);
   visitor->Trace(audio_playback_stats_);
-  visitor->Trace(audio_playout_stats_);
   visitor->Trace(permission_service_);
   visitor->Trace(permission_receiver_);
   visitor->Trace(set_sink_id_resolvers_);
@@ -1288,13 +1286,6 @@ AudioPlaybackStats* AudioContext::playbackStats() {
   return audio_playback_stats_.Get();
 }
 
-AudioPlayoutStats* AudioContext::playoutStats() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
-  if (!audio_playout_stats_) {
-    audio_playout_stats_ = MakeGarbageCollected<AudioPlayoutStats>(this);
-  }
-  return audio_playout_stats_.Get();
-}
 
 ScriptPromise<IDLUndefined> AudioContext::setSinkId(
     ScriptState* script_state,

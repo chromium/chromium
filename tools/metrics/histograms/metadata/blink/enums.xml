@@ -5786,7 +5786,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5111"
       label="OBSOLETE_MaxInterStageShaderComponentsRequiredLimit"/>
   <int value="5112" label="ShowPickerSelect"/>
-  <int value="5113" label="AudioContextPlayoutStats"/>
+  <int value="5113" label="OBSOLETE_AudioContextPlayoutStats"/>
   <int value="5114" label="OBSOLETE_ThirdPartyCookieBlocked"/>
   <int value="5115"
       label="V8PerformanceResourceTiming_WorkerRouterEvaluationStart_AttributeGetter"/>

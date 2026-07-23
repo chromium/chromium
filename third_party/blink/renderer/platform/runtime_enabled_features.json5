@@ -741,13 +741,6 @@
       status: "stable",
     },
     {
-      // AudioContext.playoutStats interface.
-      // https://chromestatus.com/feature/5172818344148992
-      name: "AudioContextPlayoutStats",
-      origin_trial_feature_name: "AudioContextPlayoutStats",
-      status: "experimental",
-    },
-    {
       name: "AudioContextSetSinkId",
       status: "stable",
     },

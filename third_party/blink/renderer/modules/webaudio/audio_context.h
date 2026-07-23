@@ -44,7 +44,6 @@ namespace blink {
 class AudioContextOptions;
 class AudioTimestamp;
 class AudioPlaybackStats;
-class AudioPlayoutStats;
 class ExceptionState;
 class ExecutionContext;
 class HTMLMediaElement;
@@ -237,8 +236,6 @@ class MODULES_EXPORT AudioContext final
   // https://webaudio.github.io/web-audio-api/#AudioPlaybackStats
   AudioPlaybackStats* playbackStats();
 
-  //  To be removed at M147.
-  AudioPlayoutStats* playoutStats();
 
   // Cannot be called from the audio thread.
   RealtimeAudioDestinationNode* GetRealtimeAudioDestinationNode() const;
@@ -272,9 +269,9 @@ class MODULES_EXPORT AudioContext final
 
   void OnRenderError();
 
-  // A helper function for AudioPlayoutStats. Passes `audio_frame_stats_` to be
+  // A helper function for AudioPlaybackStats. Passes `audio_frame_stats_` to be
   // absorbed by `receiver`. See:
-  // https://wicg.github.io/web_audio_playout
+  // https://webaudio.github.io/web-audio-api/#AudioPlaybackStats
   void TransferAudioFrameStatsTo(AudioFrameStatsAccumulator& receiver);
 
   // Get the number of pending device list updates, to allow waiting until the
@@ -477,7 +474,6 @@ class MODULES_EXPORT AudioContext final
   AudioFrameStatsAccumulator audio_frame_stats_;
 
   Member<AudioPlaybackStats> audio_playback_stats_;
-  Member<AudioPlayoutStats> audio_playout_stats_;
 
   // Whether a user gesture is required to start this AudioContext.
   bool user_gesture_required_ = false;
