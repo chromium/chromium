@@ -202,24 +202,12 @@ bool AwaitWebAppQuiescence(
     std::vector<raw_ptr<Profile, VectorExperimental>> profiles) {
   FlushPendingOperations(profiles);
 
-  // If sync is off, then `AwaitQuiescence()` will crash. This code can be
-  // removed once https://crbug.com/40843470 is fixed.
   if (sync_datatype_helper::test()) {
     SyncTest* test = sync_datatype_helper::test();
-    bool is_sync_on = true;
-    for (SyncServiceImplHarness* client : test->GetSyncClients()) {
-      syncer::SyncService::TransportState transport_state =
-          client->service()->GetTransportState();
-      is_sync_on =
-          is_sync_on &&
-          (transport_state == syncer::SyncService::TransportState::ACTIVE ||
-           transport_state == syncer::SyncService::TransportState::CONFIGURING);
+    if (!test->AwaitQuiescence()) {
+      return false;
     }
-    if (is_sync_on) {
-      if (!test->AwaitQuiescence())
-        return false;
-      FlushPendingOperations(profiles);
-    }
+    FlushPendingOperations(profiles);
   }
 
   for (Profile* profile : profiles) {

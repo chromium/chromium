@@ -182,6 +182,7 @@ source_set("sync_integration_tests_impl") {
       "two_client_autocomplete_sync_test.cc",
       "two_client_autofill_sync_test.cc",
       "two_client_bookmarks_sync_test.cc",
+      "two_client_common_sync_test.cc",
       "two_client_contact_info_sync_test.cc",
       "two_client_custom_passphrase_sync_test.cc",
       "two_client_device_info_sync_test.cc",

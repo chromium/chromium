@@ -32,11 +32,13 @@ class UpdatedProgressMarkerChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // syncer::SyncServiceObserver implementation.
+  void OnStateChanged(syncer::SyncService* sync) override;
   void OnSyncCycleCompleted(syncer::SyncService* sync) override;
 
  private:
   void GotHasUnsyncedItems(bool has_unsynced_items);
 
+  bool waiting_for_engine_initialization_ = false;
   std::optional<bool> has_unsynced_items_;
 
   base::WeakPtrFactory<UpdatedProgressMarkerChecker> weak_ptr_factory_{this};
