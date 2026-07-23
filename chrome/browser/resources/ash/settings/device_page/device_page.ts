@@ -167,26 +167,26 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     ];
   }
 
-  languages: LanguagesModel|undefined;
-  languageHelper: LanguageHelper|undefined;
-  prefs: PrefsState|undefined;
+  declare languages: LanguagesModel|undefined;
+  declare languageHelper: LanguageHelper|undefined;
+  declare prefs: PrefsState|undefined;
 
-  protected pointingSticks: PointingStick[];
-  protected keyboards: Keyboard[];
-  protected keyboardPolicies: KeyboardPolicies;
-  protected touchpads: Touchpad[];
-  protected mice: Mouse[];
-  protected mousePolicies: MousePolicies;
-  protected graphicsTablets: GraphicsTablet[];
+  declare protected pointingSticks: PointingStick[];
+  declare protected keyboards: Keyboard[];
+  declare protected keyboardPolicies: KeyboardPolicies;
+  declare protected touchpads: Touchpad[];
+  declare protected mice: Mouse[];
+  declare protected mousePolicies: MousePolicies;
+  declare protected graphicsTablets: GraphicsTablet[];
   private browserProxy_: DevicePageBrowserProxy;
-  private hasMouse_: boolean;
-  private hasPointingStick_: boolean;
-  private hasStylus_: boolean;
-  private hasTouchpad_: boolean;
-  private hasHapticTouchpad_: boolean;
-  private inputMethodDisplayName_: string;
-  private isExternalStorageEnabled_: boolean;
-  private isPeripheralCustomizationEnabled: boolean;
+  declare private hasMouse_: boolean;
+  declare private hasPointingStick_: boolean;
+  declare private hasStylus_: boolean;
+  declare private hasTouchpad_: boolean;
+  declare private hasHapticTouchpad_: boolean;
+  declare private inputMethodDisplayName_: string;
+  declare private isExternalStorageEnabled_: boolean;
+  declare private isPeripheralCustomizationEnabled: boolean;
   private pointingStickSettingsObserverReceiver:
       PointingStickSettingsObserverReceiver;
   private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
@@ -195,7 +195,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
   private graphicsTabletSettingsObserverReceiver:
       GraphicsTabletSettingsObserverReceiver;
-  private section_: Section;
+  declare private section_: Section;
 
   constructor() {
     super();

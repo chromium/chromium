@@ -53,7 +53,7 @@ export class SettingsPerDevicePointingStickElement extends
     };
   }
 
-  protected pointingSticks: PointingStick[];
+  declare protected pointingSticks: PointingStick[];
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

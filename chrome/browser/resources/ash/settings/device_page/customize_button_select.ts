@@ -179,6 +179,11 @@ export class CustomizeButtonSelectElement extends
     };
   }
 
+  constructor() {
+    super();
+    this.metaKey = MetaKey.kSearch;
+  }
+
   static get observers(): string[] {
     return [
       'onSettingsChanged(selectedValue)',
@@ -187,20 +192,20 @@ export class CustomizeButtonSelectElement extends
     ];
   }
 
-  menu: DropdownMenuOptionList;
-  buttonRemappingList: ButtonRemapping[];
-  remappingIndex: number;
-  actionList: ActionChoice[];
-  selectedValue: string;
-  metaKey: MetaKey = MetaKey.kSearch;
+  declare menu: DropdownMenuOptionList;
+  declare buttonRemappingList: ButtonRemapping[];
+  declare remappingIndex: number;
+  declare actionList: ActionChoice[];
+  declare selectedValue: string;
+  declare metaKey: MetaKey;
   private isInitialized_: boolean;
-  private shouldShowDropdownMenu_: boolean;
-  private label_: string;
-  private buttonRemapping_: ButtonRemapping;
-  private inputKeys_: string[];
-  private remappedToKeyCombination_: boolean;
-  private highlightedValue_: string;
-  private focusTarget_: CustomizeButtonDropdownItemElement;
+  declare private shouldShowDropdownMenu_: boolean;
+  declare private label_: string;
+  declare private buttonRemapping_: ButtonRemapping;
+  declare private inputKeys_: string[];
+  declare private remappedToKeyCombination_: boolean;
+  declare private highlightedValue_: string;
+  declare private focusTarget_: CustomizeButtonDropdownItemElement;
 
   override connectedCallback(): void {
     super.connectedCallback();

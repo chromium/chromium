@@ -94,15 +94,15 @@ export class DisplayLayoutElement extends DisplayLayoutElementBase {
     };
   }
 
-  displays: DisplayUnitInfo[];
-  selectedDisplay?: DisplayUnitInfo;
-  visualScale: number;
+  declare displays: DisplayUnitInfo[];
+  declare selectedDisplay?: DisplayUnitInfo;
+  declare visualScale: number;
   private allowDisplayAlignmentApi_: boolean;
   private browserProxy_: DevicePageBrowserProxy;
   private hasDragStarted_: boolean;
   private invalidDisplayId_: string;
   private lastDragCoordinates_: {x: number, y: number}|null;
-  private mirroringDestinationIds_: string[];
+  declare private mirroringDestinationIds_: string[];
   private visualOffset_: {left: number, top: number};
 
   constructor() {

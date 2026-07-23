@@ -81,11 +81,11 @@ export class SettingsGraphicsTabletSubpageElement extends
     };
   }
 
-  prefs: PrefsState;
-  graphicsTablets: GraphicsTablet[];
-  private currentPenChanged: boolean;
-  private currentTabletChanged: boolean;
-  private deviceId: number;
+  declare prefs: PrefsState;
+  declare graphicsTablets: GraphicsTablet[];
+  declare private currentPenChanged: boolean;
+  declare private currentTabletChanged: boolean;
+  declare private deviceId: number;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
 

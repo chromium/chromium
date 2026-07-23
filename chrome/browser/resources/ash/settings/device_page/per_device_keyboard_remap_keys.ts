@@ -343,6 +343,21 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     };
   }
 
+  constructor() {
+    super();
+    this.defaultRemappings = {
+        [ModifierKey.kMeta]: ModifierKey.kMeta,
+        [ModifierKey.kControl]: ModifierKey.kControl,
+        [ModifierKey.kAlt]: ModifierKey.kAlt,
+        [ModifierKey.kEscape]: ModifierKey.kEscape,
+        [ModifierKey.kBackspace]: ModifierKey.kBackspace,
+        [ModifierKey.kAssistant]: ModifierKey.kAssistant,
+        [ModifierKey.kCapsLock]: ModifierKey.kCapsLock,
+        [ModifierKey.kQuickInsert]: ModifierKey.kQuickInsert,
+        [ModifierKey.kFunction]: ModifierKey.kFunction,
+      };
+  }
+
   static get observers(): string[] {
     return [
       'onSettingsChanged(fakeMetaPref.value,' +
@@ -371,48 +386,38 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     return ModifierKey;
   }
 
-  keyboard: Keyboard;
-  protected keyboardPolicies: KeyboardPolicies;
-  isAltClickAndSixPackCustomizationEnabled: boolean;
-  areF11andF12KeyShortcutsEnabled: boolean;
-  private keyboards: Keyboard[];
-  protected keyboardId: number;
-  protected defaultRemappings: {[key: number]: ModifierKey} = {
-    [ModifierKey.kMeta]: ModifierKey.kMeta,
-    [ModifierKey.kControl]: ModifierKey.kControl,
-    [ModifierKey.kAlt]: ModifierKey.kAlt,
-    [ModifierKey.kEscape]: ModifierKey.kEscape,
-    [ModifierKey.kBackspace]: ModifierKey.kBackspace,
-    [ModifierKey.kAssistant]: ModifierKey.kAssistant,
-    [ModifierKey.kCapsLock]: ModifierKey.kCapsLock,
-    [ModifierKey.kQuickInsert]: ModifierKey.kQuickInsert,
-    [ModifierKey.kFunction]: ModifierKey.kFunction,
-  };
+  declare keyboard: Keyboard;
+  declare protected keyboardPolicies: KeyboardPolicies;
+  declare isAltClickAndSixPackCustomizationEnabled: boolean;
+  declare areF11andF12KeyShortcutsEnabled: boolean;
+  declare private keyboards: Keyboard[];
+  declare protected keyboardId: number;
+  declare protected defaultRemappings: {[key: number]: ModifierKey};
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
-  private fakeAltPref: chrome.settingsPrivate.PrefObject;
-  private fakeAssistantPref: chrome.settingsPrivate.PrefObject;
-  private fakeBackspacePref: chrome.settingsPrivate.PrefObject;
-  private fakeCtrlPref: chrome.settingsPrivate.PrefObject;
-  private fakeCapsLockPref: chrome.settingsPrivate.PrefObject;
-  private fakeEscPref: chrome.settingsPrivate.PrefObject;
-  private fakeQuickInsertPref: chrome.settingsPrivate.PrefObject;
-  private fakeFunctionPref: chrome.settingsPrivate.PrefObject;
-  private fakeMetaPref: chrome.settingsPrivate.PrefObject;
-  private insertPref: chrome.settingsPrivate.PrefObject;
-  private pageUpPref: chrome.settingsPrivate.PrefObject;
-  private pageDownPref: chrome.settingsPrivate.PrefObject;
-  private endPref: chrome.settingsPrivate.PrefObject;
-  private deletePref: chrome.settingsPrivate.PrefObject;
-  private homePref: chrome.settingsPrivate.PrefObject;
-  private f11KeyPref: chrome.settingsPrivate.PrefObject;
-  private f12KeyPref: chrome.settingsPrivate.PrefObject;
-  private hasAssistantKey: boolean;
-  private hasCapsLockKey: boolean;
-  private hasQuickInsertKey: boolean;
-  private hasFunctionKey: boolean;
-  private metaKeyLabel: string;
-  private isInitialized: boolean;
+  declare private fakeAltPref: chrome.settingsPrivate.PrefObject;
+  declare private fakeAssistantPref: chrome.settingsPrivate.PrefObject;
+  declare private fakeBackspacePref: chrome.settingsPrivate.PrefObject;
+  declare private fakeCtrlPref: chrome.settingsPrivate.PrefObject;
+  declare private fakeCapsLockPref: chrome.settingsPrivate.PrefObject;
+  declare private fakeEscPref: chrome.settingsPrivate.PrefObject;
+  declare private fakeQuickInsertPref: chrome.settingsPrivate.PrefObject;
+  declare private fakeFunctionPref: chrome.settingsPrivate.PrefObject;
+  declare private fakeMetaPref: chrome.settingsPrivate.PrefObject;
+  declare private insertPref: chrome.settingsPrivate.PrefObject;
+  declare private pageUpPref: chrome.settingsPrivate.PrefObject;
+  declare private pageDownPref: chrome.settingsPrivate.PrefObject;
+  declare private endPref: chrome.settingsPrivate.PrefObject;
+  declare private deletePref: chrome.settingsPrivate.PrefObject;
+  declare private homePref: chrome.settingsPrivate.PrefObject;
+  declare private f11KeyPref: chrome.settingsPrivate.PrefObject;
+  declare private f12KeyPref: chrome.settingsPrivate.PrefObject;
+  declare private hasAssistantKey: boolean;
+  declare private hasCapsLockKey: boolean;
+  declare private hasQuickInsertKey: boolean;
+  declare private hasFunctionKey: boolean;
+  declare private metaKeyLabel: string;
+  declare private isInitialized: boolean;
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

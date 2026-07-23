@@ -54,9 +54,9 @@ class SettingsStorageExternalElement extends
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
   private browserProxy_: DevicePageBrowserProxy;
-  private externalStorages_: ExternalStorage[];
+  declare private externalStorages_: ExternalStorage[];
 
   constructor() {
     super();

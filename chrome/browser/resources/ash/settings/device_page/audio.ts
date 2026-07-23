@@ -154,29 +154,29 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     Setting.kLowBatterySound,
   ]);
 
-  protected isAllowAGCEnabled: boolean;
-  protected showAllowAGC: boolean;
-  protected isHfpMicSrEnabled: boolean;
+  declare protected isAllowAGCEnabled: boolean;
+  declare protected showAllowAGC: boolean;
+  declare protected isHfpMicSrEnabled: boolean;
   protected isHfpMicSrSupported: boolean;
-  protected showSpatialAudio: boolean;
-  protected showAudioFocusEnforcement: boolean;
+  declare protected showSpatialAudio: boolean;
+  declare protected showAudioFocusEnforcement: boolean;
 
   private audioAndCaptionsBrowserProxy_: AudioAndCaptionsPageBrowserProxy;
   private devicePageBrowserProxy_: DevicePageBrowserProxy;
-  private audioSystemProperties_: AudioSystemProperties;
+  declare private audioSystemProperties_: AudioSystemProperties;
   private audioSystemPropertiesObserverReceiver_:
       AudioSystemPropertiesObserverReceiver;
-  private crosAudioConfig_: CrosAudioConfigInterface;
-  private isOutputMuted_: boolean;
-  private isInputMuted_: boolean;
-  private showVoiceIsolationSubsection_: boolean;
-  private isSpatialAudioEnabled_: boolean;
+  declare private crosAudioConfig_: CrosAudioConfigInterface;
+  declare private isOutputMuted_: boolean;
+  declare private isInputMuted_: boolean;
+  declare private showVoiceIsolationSubsection_: boolean;
+  declare private isSpatialAudioEnabled_: boolean;
   private isSpatialAudioSupported_: boolean;
-  private outputVolume_: number;
-  private startupSoundEnabled_: boolean;
+  declare private outputVolume_: number;
+  declare private startupSoundEnabled_: boolean;
   private batteryStatus_: BatteryStatus|undefined;
-  private powerSoundsHidden_: boolean;
-  private voiceIsolationEffectModePrefValues_: {[key: string]: number};
+  declare private powerSoundsHidden_: boolean;
+  declare private voiceIsolationEffectModePrefValues_: {[key: string]: number};
 
   constructor() {
     super();

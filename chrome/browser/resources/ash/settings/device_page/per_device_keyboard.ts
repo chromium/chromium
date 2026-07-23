@@ -93,7 +93,7 @@ export class SettingsPerDeviceKeyboardElement extends
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -101,10 +101,10 @@ export class SettingsPerDeviceKeyboardElement extends
     Setting.kKeyboardShortcuts,
   ]);
 
-  protected keyboards: Keyboard[];
-  protected keyboardPolicies: KeyboardPolicies;
-  private autoRepeatDelays: number[];
-  private autoRepeatIntervals: number[];
+  declare protected keyboards: Keyboard[];
+  declare protected keyboardPolicies: KeyboardPolicies;
+  declare private autoRepeatDelays: number[];
+  declare private autoRepeatIntervals: number[];
   private browserProxy: DevicePageBrowserProxy =
       DevicePageBrowserProxyImpl.getInstance();
 

@@ -46,8 +46,8 @@ export class PerDeviceInstallRowElement extends PerDeviceInstallRowElementBase {
     };
   }
 
-  appInfo: CompanionAppInfo;
-  installAppLabel: string;
+  declare appInfo: CompanionAppInfo;
+  declare installAppLabel: string;
 
   private onInstallCompanionAppButtonClicked(): void {
     window.open(this.appInfo.actionLink);

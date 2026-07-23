@@ -57,8 +57,8 @@ export class SettingsPerDeviceMouseElement extends
     };
   }
 
-  protected mice: Mouse[];
-  protected mousePolicies: MousePolicies;
+  declare protected mice: Mouse[];
+  declare protected mousePolicies: MousePolicies;
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

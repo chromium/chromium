@@ -58,9 +58,9 @@ class StorageExternalEntryElement extends StorageExternalEntryElementBase {
     ];
   }
 
-  label: string;
-  uuid: string;
-  private visiblePref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare label: string;
+  declare uuid: string;
+  declare private visiblePref_: chrome.settingsPrivate.PrefObject<boolean>;
 
   /**
    * Handler for when the toggle button for this entry is clicked by a user.

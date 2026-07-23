@@ -109,10 +109,10 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
     };
   }
 
-  hasMouse: boolean;
-  hasPointingStick: boolean;
-  hasTouchpad: boolean;
-  hasHapticTouchpad: boolean;
+  declare hasMouse: boolean;
+  declare hasPointingStick: boolean;
+  declare hasTouchpad: boolean;
+  declare hasHapticTouchpad: boolean;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -132,12 +132,12 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
     Setting.kMouseSpeed,
   ]);
 
-  private readonly hapticClickSensitivityValues_:
+  declare private readonly hapticClickSensitivityValues_:
       Array<{value: number, ariaValue: number}>;
-  private readonly sensitivityValues_: number[];
-  private showHeadings_: boolean;
-  private subsectionClass_: string;
-  private swapPrimaryOptions_: Array<{value: boolean, name: string}>;
+  declare private readonly sensitivityValues_: number[];
+  declare private showHeadings_: boolean;
+  declare private subsectionClass_: string;
+  declare private swapPrimaryOptions_: Array<{value: boolean, name: string}>;
 
   /**
    * Headings should only be visible if more than one subsection is present.

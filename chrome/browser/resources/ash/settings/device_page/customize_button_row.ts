@@ -118,23 +118,28 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
     };
   }
 
+  constructor() {
+    super();
+    this.metaKey = MetaKey.kSearch;
+  }
+
   static get observers(): string[] {
     return [
       'initializeButtonRow_(buttonRemappingList.*, remappingIndex)',
     ];
   }
 
-  buttonRemappingList: ButtonRemapping[];
-  remappingIndex: number;
-  actionList: ActionChoice[];
-  metaKey: MetaKey = MetaKey.kSearch;
+  declare buttonRemappingList: ButtonRemapping[];
+  declare remappingIndex: number;
+  declare actionList: ActionChoice[];
+  declare metaKey: MetaKey;
   private buttonPressObserverReceiver: ButtonPressObserverReceiver;
-  private buttonRemapping_: ButtonRemapping;
-  private buttonRemappingName_: string;
+  declare private buttonRemapping_: ButtonRemapping;
+  declare private buttonRemappingName_: string;
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
-  private isBeingDragged_: boolean;
-  private lastMouseDownTarget_: HTMLElement|null;
+  declare private isBeingDragged_: boolean;
+  declare private lastMouseDownTarget_: HTMLElement|null;
 
   override connectedCallback(): void {
     super.connectedCallback();

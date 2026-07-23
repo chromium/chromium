@@ -54,8 +54,8 @@ export class CustomizeButtonDropdownItemElement extends PolymerElement {
     };
   }
 
-  selected: boolean;
-  option: DropdownMenuOption;
+  declare selected: boolean;
+  declare option: DropdownMenuOption;
 
   override focus(): void {
     super.focus();

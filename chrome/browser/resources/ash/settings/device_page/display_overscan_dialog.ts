@@ -55,8 +55,8 @@ export class SettingsDisplayOverscanDialogElement extends PolymerElement {
     };
   }
 
-  displayId: string;
-  private committed_: boolean;
+  declare displayId: string;
+  declare private committed_: boolean;
   private keyHandler_: (event: KeyboardEvent) => void;
 
   constructor() {

@@ -81,13 +81,18 @@ export class PerDeviceSubsectionHeaderElement extends
     };
   }
 
-  deviceImageDataUrl: string|null = null;
-  deviceKey: string;
-  deviceDisplayState: DeviceDisplayState;
-  name: string;
-  bluetoothDevice: BluetoothDeviceProperties|null;
-  batteryInfo: BatteryInfo|null;
-  icon: string;
+  constructor() {
+    super();
+    this.deviceImageDataUrl = null;
+  }
+
+  declare deviceImageDataUrl: string|null;
+  declare deviceKey: string;
+  declare deviceDisplayState: DeviceDisplayState;
+  declare name: string;
+  declare bluetoothDevice: BluetoothDeviceProperties|null;
+  declare batteryInfo: BatteryInfo|null;
+  declare icon: string;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
 

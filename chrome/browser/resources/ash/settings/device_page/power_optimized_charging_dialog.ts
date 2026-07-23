@@ -61,9 +61,9 @@ export class PowerOptimizedChargingDialogElement extends
   }
 
   private browserProxy_: DevicePageBrowserProxy;
-  private selectedOption_: OptimizedChargingButtons;
+  declare private selectedOption_: OptimizedChargingButtons;
 
-  previousStrategy: OptimizedChargingStrategy;
+  declare previousStrategy: OptimizedChargingStrategy;
 
   constructor() {
     super();

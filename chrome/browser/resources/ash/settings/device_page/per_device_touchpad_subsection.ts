@@ -254,27 +254,27 @@ export class SettingsPerDeviceTouchpadSubsectionElement extends
     Setting.kTouchpadSimulateRightClick,
   ]);
 
-  private touchpad: Touchpad;
-  private enableTapToClickPref: chrome.settingsPrivate.PrefObject;
-  private enableTapDraggingPref: chrome.settingsPrivate.PrefObject;
-  private accelerationPref: chrome.settingsPrivate.PrefObject;
-  private sensitivityPref: chrome.settingsPrivate.PrefObject;
-  private hapticClickSensitivityPref: chrome.settingsPrivate.PrefObject;
-  private simulateRightClickPref: chrome.settingsPrivate.PrefObject;
-  private reverseScrollValue: boolean;
-  private hapticFeedbackValue: boolean;
+  declare private touchpad: Touchpad;
+  declare private enableTapToClickPref: chrome.settingsPrivate.PrefObject;
+  declare private enableTapDraggingPref: chrome.settingsPrivate.PrefObject;
+  declare private accelerationPref: chrome.settingsPrivate.PrefObject;
+  declare private sensitivityPref: chrome.settingsPrivate.PrefObject;
+  declare private hapticClickSensitivityPref: chrome.settingsPrivate.PrefObject;
+  declare private simulateRightClickPref: chrome.settingsPrivate.PrefObject;
+  declare private reverseScrollValue: boolean;
+  declare private hapticFeedbackValue: boolean;
   private isInitialized: boolean = false;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
-  private touchpadIndex: number;
-  private isLastDevice: boolean;
-  isAltClickAndSixPackCustomizationEnabled: boolean;
-  protected mice: Mouse[];
+  declare private touchpadIndex: number;
+  declare private isLastDevice: boolean;
+  declare isAltClickAndSixPackCustomizationEnabled: boolean;
+  declare protected mice: Mouse[];
   private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
-  private readonly hapticClickSensitivityValues_:
+  declare private readonly hapticClickSensitivityValues_:
       Array<{value: number, ariaValue: number}>;
-  private readonly sensitivityValues_: number[];
-  private readonly simulateRightClickOptions_:
+  declare private readonly sensitivityValues_: number[];
+  declare private readonly simulateRightClickOptions_:
       Array<{value: number, name: string}>;
 
   constructor() {

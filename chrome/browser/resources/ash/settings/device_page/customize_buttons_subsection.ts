@@ -112,17 +112,22 @@ export class CustomizeButtonsSubsectionElement extends
     };
   }
 
-  buttonRemappingList: ButtonRemapping[];
-  actionList: ActionChoice[];
-  metaKey: MetaKey = MetaKey.kSearch;
-  private selectedButton_: ButtonRemapping;
-  private selectedButtonIndex_: number;
-  private selectedButtonName_: string;
+  constructor() {
+    super();
+    this.metaKey = MetaKey.kSearch;
+  }
+
+  declare buttonRemappingList: ButtonRemapping[];
+  declare actionList: ActionChoice[];
+  declare metaKey: MetaKey;
+  declare private selectedButton_: ButtonRemapping;
+  declare private selectedButtonIndex_: number;
+  declare private selectedButtonName_: string;
   private dragAndDropManager: DragAndDropManager = new DragAndDropManager();
-  private buttonNameInvalid_: boolean;
-  private isSaveButtonDisabled_: boolean;
-  private duplicateButtonName_: boolean;
-  private readonly maxInputLength: number;
+  declare private buttonNameInvalid_: boolean;
+  declare private isSaveButtonDisabled_: boolean;
+  declare private duplicateButtonName_: boolean;
+  declare private readonly maxInputLength: number;
 
   override connectedCallback(): void {
     super.connectedCallback();

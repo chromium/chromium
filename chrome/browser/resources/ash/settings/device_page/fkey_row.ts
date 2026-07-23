@@ -120,11 +120,11 @@ export class FkeyRowElement extends FkeyRowElementBase {
     };
   }
 
-  key: Fkey;
-  keyLabel: string;
-  pref: chrome.settingsPrivate.PrefObject;
-  keyboard: Keyboard;
-  shortcutOptions: DropdownMenuOptionList;
+  declare key: Fkey;
+  declare keyLabel: string;
+  declare pref: chrome.settingsPrivate.PrefObject;
+  declare keyboard: Keyboard;
+  declare shortcutOptions: DropdownMenuOptionList;
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

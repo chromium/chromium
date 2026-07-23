@@ -127,16 +127,16 @@ export class SettingsStorageElement extends SettingsStorageElementBase {
   }
 
   private browserProxy_: DevicePageBrowserProxy;
-  private isEphemeralUser_: boolean;
-  private showCrostiniStorage_: boolean;
-  private isDriveEnabled_: boolean;
-  private isExternalStorageEnabled_: boolean;
-  private showOtherUsers_: boolean;
-  private sizeStat_: StorageSizeStat;
+  declare private isEphemeralUser_: boolean;
+  declare private showCrostiniStorage_: boolean;
+  declare private isDriveEnabled_: boolean;
+  declare private isExternalStorageEnabled_: boolean;
+  declare private showOtherUsers_: boolean;
+  declare private sizeStat_: StorageSizeStat;
   private updateTimerId_: number;
-  private myFilesSizeSubLabel_: string;
-  private storageEncryptionSubLabel_: string;
-  private readonly isSkyVaultEnabled_: boolean;
+  declare private myFilesSizeSubLabel_: string;
+  declare private storageEncryptionSubLabel_: string;
+  declare private readonly isSkyVaultEnabled_: boolean;
 
   constructor() {
     super();

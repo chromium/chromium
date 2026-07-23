@@ -54,7 +54,7 @@ export class SettingsPerDeviceTouchpadElement extends
     };
   }
 
-  protected touchpads: Touchpad[];
+  declare protected touchpads: Touchpad[];
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

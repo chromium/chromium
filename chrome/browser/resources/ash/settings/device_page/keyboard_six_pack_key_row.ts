@@ -143,10 +143,10 @@ export class KeyboardSixPackKeyRowElement extends PolymerElement {
     };
   }
 
-  key: SixPackKey;
-  modifier: SixPackShortcutModifier;
-  pref: chrome.settingsPrivate.PrefObject;
-  keyLabel: string;
+  declare key: SixPackKey;
+  declare modifier: SixPackShortcutModifier;
+  declare pref: chrome.settingsPrivate.PrefObject;
+  declare keyLabel: string;
 
   protected computeMenuOptions(): DropdownMenuOptionList {
     assert(this.key in sixPackKeyProperties);

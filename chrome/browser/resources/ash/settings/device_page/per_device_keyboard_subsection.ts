@@ -187,13 +187,13 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
     Setting.kKeyboardRemapKeys,
   ]);
 
-  protected keyboard: Keyboard;
-  protected keyboardPolicies: KeyboardPolicies;
-  private topRowAreFunctionKeysPref: chrome.settingsPrivate.PrefObject;
-  private blockMetaFunctionKeyRewritesPref: chrome.settingsPrivate.PrefObject;
-  private keyboardBrightnessPercentPref: chrome.settingsPrivate.PrefObject;
-  private keyboardAutoBrightnessPref: chrome.settingsPrivate.PrefObject;
-  private remapKeyboardKeysSublabel: string;
+  declare protected keyboard: Keyboard;
+  declare protected keyboardPolicies: KeyboardPolicies;
+  declare private topRowAreFunctionKeysPref: chrome.settingsPrivate.PrefObject;
+  declare private blockMetaFunctionKeyRewritesPref: chrome.settingsPrivate.PrefObject;
+  declare private keyboardBrightnessPercentPref: chrome.settingsPrivate.PrefObject;
+  declare private keyboardAutoBrightnessPref: chrome.settingsPrivate.PrefObject;
+  declare private remapKeyboardKeysSublabel: string;
   private isInitialized: boolean = false;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
@@ -204,12 +204,12 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private keyboardAmbientLightSensorObserverReceiver:
       KeyboardAmbientLightSensorObserverReceiver;
   private lidStateObserverReceiver: LidStateObserverReceiver;
-  private keyboardIndex: number;
-  private isLastDevice: boolean;
-  private isRgbKeyboardSupported: boolean;
-  private hasKeyboardBacklight: boolean;
-  private hasAmbientLightSensor: boolean;
-  private isLidOpen: boolean;
+  declare private keyboardIndex: number;
+  declare private isLastDevice: boolean;
+  declare private isRgbKeyboardSupported: boolean;
+  declare private hasKeyboardBacklight: boolean;
+  declare private hasAmbientLightSensor: boolean;
+  declare private isLidOpen: boolean;
 
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();

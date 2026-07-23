@@ -155,7 +155,7 @@ export class SettingsDisplayNightLightElement extends
     ];
   }
 
-  isInternalDisplay: boolean;
+  declare isInternalDisplay: boolean;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -165,17 +165,17 @@ export class SettingsDisplayNightLightElement extends
 
   private displaySettingsProvider: DisplaySettingsProviderInterface =
       getDisplaySettingsProvider();
-  private geolocationWarningText_: string;
-  private nightLightScheduleSubLabel_: string;
-  private scheduleTypesList_: ScheduleType[];
-  private shouldOpenCustomScheduleCollapse_: boolean;
-  private shouldShowEnableGeolocationDialog_: boolean;
+  declare private geolocationWarningText_: string;
+  declare private nightLightScheduleSubLabel_: string;
+  declare private scheduleTypesList_: ScheduleType[];
+  declare private shouldOpenCustomScheduleCollapse_: boolean;
+  declare private shouldShowEnableGeolocationDialog_: boolean;
   private shouldShowGeolocationDialog_: boolean;
-  private shouldShowGeolocationWarningText_: boolean;
-  private currentNightLightStatus: boolean;
-  private currentScheduleType: NightLightScheduleType;
-  private sunriseTime_: string;
-  private sunsetTime_: string;
+  declare private shouldShowGeolocationWarningText_: boolean;
+  declare private currentNightLightStatus: boolean;
+  declare private currentScheduleType: NightLightScheduleType;
+  declare private sunriseTime_: string;
+  declare private sunsetTime_: string;
   private privacyHubBrowserProxy_: PrivacyHubBrowserProxy;
 
   constructor() {

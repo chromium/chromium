@@ -117,7 +117,7 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -127,15 +127,15 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     Setting.kShowDiacritic,
   ]);
 
-  private readonly autoRepeatDelays_: number[];
-  private readonly autoRepeatIntervals_: number[];
+  declare private readonly autoRepeatDelays_: number[];
+  declare private readonly autoRepeatIntervals_: number[];
   private browserProxy_: DevicePageBrowserProxy;
-  private hasAssistantKey_: boolean;
-  private hasLauncherKey_: boolean;
-  private keyMapTargets_: DropdownMenuOptionList;
-  private showAppleCommandKey_: boolean;
-  private showCapsLock_: boolean;
-  private showExternalMetaKey_: boolean;
+  declare private hasAssistantKey_: boolean;
+  declare private hasLauncherKey_: boolean;
+  declare private keyMapTargets_: DropdownMenuOptionList;
+  declare private showAppleCommandKey_: boolean;
+  declare private showCapsLock_: boolean;
+  declare private showExternalMetaKey_: boolean;
 
   constructor() {
     super();

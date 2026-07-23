@@ -47,8 +47,8 @@ export class PerDeviceAppInstalledRowElement extends
     };
   }
 
-  appInfo: CompanionAppInfo;
-  openAppLabel: string;
+  declare appInfo: CompanionAppInfo;
+  declare openAppLabel: string;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
 

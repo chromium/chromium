@@ -228,24 +228,24 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     Setting.kMouseSpeed,
   ]);
 
-  private mouse: Mouse;
-  protected mousePolicies: MousePolicies;
-  private primaryRightPref: chrome.settingsPrivate.PrefObject;
-  private accelerationPref: chrome.settingsPrivate.PrefObject;
-  private sensitivityPref: chrome.settingsPrivate.PrefObject;
-  private scrollSensitivityPref: chrome.settingsPrivate.PrefObject;
-  private reverseScrollValue: boolean;
-  private scrollAccelerationValue: boolean;
+  declare private mouse: Mouse;
+  declare protected mousePolicies: MousePolicies;
+  declare private primaryRightPref: chrome.settingsPrivate.PrefObject;
+  declare private accelerationPref: chrome.settingsPrivate.PrefObject;
+  declare private sensitivityPref: chrome.settingsPrivate.PrefObject;
+  declare private scrollSensitivityPref: chrome.settingsPrivate.PrefObject;
+  declare private reverseScrollValue: boolean;
+  declare private scrollAccelerationValue: boolean;
   private isInitialized: boolean = false;
-  private isPeripheralCustomizationEnabled_: boolean;
+  declare private isPeripheralCustomizationEnabled_: boolean;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
-  private mouseIndex: number;
-  private isLastDevice: boolean;
-  private customizationRestriction: CustomizationRestriction;
-  private currentMouseChanged: boolean;
-  private readonly sensitivityValues_: number[];
-  private readonly swapPrimaryOptions_: Array<{value: boolean, name: string}>;
+  declare private mouseIndex: number;
+  declare private isLastDevice: boolean;
+  declare private customizationRestriction: CustomizationRestriction;
+  declare private currentMouseChanged: boolean;
+  declare private readonly sensitivityValues_: number[];
+  declare private readonly swapPrimaryOptions_: Array<{value: boolean, name: string}>;
 
   private showCustomizeButtonRow(): boolean {
     return (this.customizationRestriction !==
