@@ -734,7 +734,7 @@ TabWebContentsDelegateAndroid::PreHandleKeyboardEvent(
     }
   }
 
-  return content::KeyboardEventProcessingResult::NOT_HANDLED;
+  return WebContentsDelegateAndroid::PreHandleKeyboardEvent(source, event);
 }
 
 void TabWebContentsDelegateAndroid::RequestPointerLock(

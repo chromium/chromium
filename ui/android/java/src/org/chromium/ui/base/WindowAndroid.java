@@ -270,6 +270,27 @@ public class WindowAndroid
     private final ObserverList<SelectionHandlesObserver> mSelectionHandlesObservers =
             new ObserverList<>();
 
+    /** Interface for delegating keyboard events. */
+    public interface KeyboardShortcutsDelegate {
+        /**
+         * Called before a keyboard event is dispatched to the page.
+         *
+         * @param event The KeyEvent to handle.
+         * @return true if the event was handled and should be consumed.
+         */
+        boolean preHandleKeyboardEvent(KeyEvent event);
+
+        /**
+         * Called to handle a keyboard event if it wasn't handled by the page.
+         *
+         * @param event The KeyEvent to handle.
+         * @return true if the event was handled and should be consumed.
+         */
+        boolean handleKeyboardEvent(KeyEvent event);
+    }
+
+    private @Nullable KeyboardShortcutsDelegate mKeyboardShortcutsDelegate;
+
     private boolean mAllowChangeRefreshRate;
 
     /** Gets the view for readback. */
@@ -1313,6 +1334,20 @@ public class WindowAndroid
      */
     public KeyboardVisibilityDelegate getKeyboardDelegate() {
         return mKeyboardVisibilityDelegate;
+    }
+
+    /**
+     * @param delegate The delegate to handle keyboard events.
+     */
+    public void setKeyboardShortcutsDelegate(KeyboardShortcutsDelegate delegate) {
+        mKeyboardShortcutsDelegate = delegate;
+    }
+
+    /**
+     * @return The delegate to handle keyboard events.
+     */
+    public @Nullable KeyboardShortcutsDelegate getKeyboardShortcutsDelegate() {
+        return mKeyboardShortcutsDelegate;
     }
 
     /** Returns the {@link InsetObserver} for the root view of the activity or null. */

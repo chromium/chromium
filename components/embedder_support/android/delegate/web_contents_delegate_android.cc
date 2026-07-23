@@ -39,6 +39,7 @@
 #include "ui/android/color_utils_android.h"
 #include "ui/android/resources/capture_result.h"
 #include "ui/android/view_android.h"
+#include "ui/android/window_android.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/android/rect_jni_conversion.h"
@@ -309,6 +310,24 @@ void WebContentsDelegateAndroid::UpdateTargetURL(WebContents* source,
       env, obj, url::GURLAndroid::FromNativeGURL(env, url));
 }
 
+content::KeyboardEventProcessingResult
+WebContentsDelegateAndroid::PreHandleKeyboardEvent(
+    WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
+  if (event.os_event.is_null()) {
+    return content::KeyboardEventProcessingResult::NOT_HANDLED;
+  }
+  ui::WindowAndroid* window = source->GetTopLevelNativeWindow();
+  if (window) {
+    JNIEnv* env = AttachCurrentThread();
+    if (Java_WebContentsDelegateAndroid_preHandleKeyboardEvent(
+            env, window->GetJavaObject(), event.os_event)) {
+      return content::KeyboardEventProcessingResult::HANDLED;
+    }
+  }
+  return content::KeyboardEventProcessingResult::NOT_HANDLED;
+}
+
 bool WebContentsDelegateAndroid::HandleKeyboardEvent(
     WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
@@ -316,12 +335,19 @@ bool WebContentsDelegateAndroid::HandleKeyboardEvent(
   if (!key_event.is_null()) {
     JNIEnv* env = AttachCurrentThread();
     ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
-    if (obj.is_null()) {
-      return true;
+    if (!obj.is_null()) {
+      Java_WebContentsDelegateAndroid_handleKeyboardEvent(env, obj, key_event);
     }
-    Java_WebContentsDelegateAndroid_handleKeyboardEvent(env, obj, key_event);
+
+    ui::WindowAndroid* window = source->GetTopLevelNativeWindow();
+    if (window) {
+      if (Java_WebContentsDelegateAndroid_handleKeyboardEventFallback(
+              env, window->GetJavaObject(), event.os_event)) {
+        return true;
+      }
+    }
   }
-  return true;
+  return WebContentsDelegate::HandleKeyboardEvent(source, event);
 }
 
 bool WebContentsDelegateAndroid::TakeFocus(WebContents* source, bool reverse) {

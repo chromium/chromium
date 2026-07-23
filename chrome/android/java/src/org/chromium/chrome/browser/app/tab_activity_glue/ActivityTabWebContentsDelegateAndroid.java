@@ -476,10 +476,13 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     @Override
     public void handleKeyboardEvent(KeyEvent event) {
         if (event.getAction() == KeyEvent.ACTION_DOWN && mActivity != null) {
-            if (mActivity.onKeyDown(event.getKeyCode(), event)) return;
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_KEYBOARD_HANDLING)) {
+                if (mActivity.onKeyDown(event.getKeyCode(), event)) return;
+            }
 
             // Handle the Escape key here (instead of in KeyboardShortcuts.java), so it doesn't
             // interfere with other parts of the activity (e.g. the URL bar).
+            // TODO(crbug.com/537851949): Audit Escape key usage and behavior.
             if (event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE && event.hasNoModifiers()) {
                 WebContents wc = mTab.getWebContents();
                 if (wc != null) wc.stop();

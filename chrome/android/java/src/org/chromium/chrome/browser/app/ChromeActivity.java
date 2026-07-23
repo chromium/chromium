@@ -81,6 +81,7 @@ import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.GracefulShutdownService;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.TabStateThemeResourceProvider;
 import org.chromium.chrome.browser.WarmupManager;
@@ -276,6 +277,7 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 import org.chromium.ui.display.DisplayUtil;
@@ -302,6 +304,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 AppMenuBlocker,
                 MenuOrKeyboardActionController,
                 CompositorViewHolder.Initializer,
+                KeyboardShortcutsDelegate,
                 TabModelInitializer,
                 ThemeResourceWrapperProvider,
                 UmaActivityObserver.UmaSessionAwareActivity {
@@ -519,13 +522,16 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
-        return new ChromeWindow(
-                /* activity= */ this,
-                mCompositorViewHolderSupplier,
-                getModalDialogManagerSupplier(),
-                mManualFillingComponentSupplier,
-                getIntentRequestTracker(),
-                getInsetObserver());
+        ActivityWindowAndroid window =
+                new ChromeWindow(
+                        /* activity= */ this,
+                        mCompositorViewHolderSupplier,
+                        getModalDialogManagerSupplier(),
+                        mManualFillingComponentSupplier,
+                        getIntentRequestTracker(),
+                        getInsetObserver());
+        window.setKeyboardShortcutsDelegate(this);
+        return window;
     }
 
     @Override
@@ -2115,12 +2121,86 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
     }
 
+    /**
+     * Helper method to explicitly process hardware accelerators (e.g. Alt+G) bypassing the standard
+     * dispatchKeyEvent flow. This is necessary when focus is in an input field and the IME has
+     * bypassed normal View dispatch, allowing the accelerator manager to still intercept shortcuts.
+     *
+     * @param event The KeyEvent to process.
+     * @return true if the event was handled and consumed as an accelerator.
+     */
+    protected boolean processAccelerator(KeyEvent event) {
+        return mAcceleratorManager != null && mAcceleratorManager.processKeyEvent(event);
+    }
+
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (mAcceleratorManager != null && mAcceleratorManager.processKeyEvent(event)) {
             return true;
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public boolean preHandleKeyboardEvent(KeyEvent event) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_KEYBOARD_HANDLING)) {
+            return false;
+        }
+
+        if (!didFinishNativeInitialization()) {
+            return false;
+        }
+
+        // First evaluate hardware accelerators (e.g. Alt+G, user-customizable shortcuts,
+        // or extensions shortcuts) that may have bypassed dispatchKeyEvent because the soft
+        // keyboard (IME) is active and intercepting hardware keys.
+        if (processAccelerator(event)) {
+            return true;
+        }
+
+        // If the soft keyboard (IME) is active, Android may bypass Activity.dispatchKeyEvent()
+        // and send hardware key events directly to the InputConnection. In that case, those
+        // events will eventually enter Chrome's PreHandleKeyboardEvent pipeline. We must
+        // explicitly call this method here in order to allow the browser to handle the
+        // shortcut before the page in some cases (e.g. F6 or F7).
+        Boolean dispatchResult =
+                KeyboardShortcuts.dispatchKeyEvent(
+                        event,
+                        didFinishNativeInitialization(),
+                        getFullscreenManager(),
+                        /* menuOrKeyboardActionController= */ this,
+                        /* context= */ this);
+        if (Boolean.TRUE.equals(dispatchResult)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean handleKeyboardEvent(KeyEvent event) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNIVERSAL_KEYBOARD_HANDLING)) {
+            return false;
+        }
+
+        // As a fallback, give dispatch-level shortcuts another chance.
+        Boolean dispatchResult =
+                KeyboardShortcuts.dispatchKeyEvent(
+                        event,
+                        didFinishNativeInitialization(),
+                        getFullscreenManager(),
+                        /* menuOrKeyboardActionController= */ this,
+                        /* context= */ this);
+        if (Boolean.TRUE.equals(dispatchResult)) {
+            return true;
+        }
+
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            return onKeyDown(event.getKeyCode(), event);
+        } else if (event.getAction() == KeyEvent.ACTION_UP) {
+            return onKeyUp(event.getKeyCode(), event);
+        }
+        return false;
     }
 
     /** Returns snackbar manager for all snackbar related operations. */

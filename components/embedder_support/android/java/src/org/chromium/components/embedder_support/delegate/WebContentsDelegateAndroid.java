@@ -26,6 +26,8 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
 import org.chromium.ui.resources.dynamics.CaptureResult;
 import org.chromium.url.GURL;
 
@@ -113,6 +115,26 @@ public class WebContentsDelegateAndroid {
     public void handleKeyboardEvent(KeyEvent event) {
         // TODO(bulach): we probably want to re-inject the KeyEvent back into
         // the system. Investigate if this is at all possible.
+    }
+
+    @CalledByNative
+    public static boolean preHandleKeyboardEvent(WindowAndroid window, KeyEvent event) {
+        if (window == null) return false;
+        KeyboardShortcutsDelegate delegate = window.getKeyboardShortcutsDelegate();
+        if (delegate != null) {
+            return delegate.preHandleKeyboardEvent(event);
+        }
+        return false;
+    }
+
+    @CalledByNative
+    public static boolean handleKeyboardEventFallback(WindowAndroid window, KeyEvent event) {
+        if (window == null) return false;
+        KeyboardShortcutsDelegate delegate = window.getKeyboardShortcutsDelegate();
+        if (delegate != null) {
+            return delegate.handleKeyboardEvent(event);
+        }
+        return false;
     }
 
     /**
