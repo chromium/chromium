@@ -165,6 +165,11 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
                         const gfx::Size& frame_size) override;
 
+  // tabs::ContentsObservingTabFeature:
+  void OnDiscardContents(tabs::TabInterface* tab,
+                         content::WebContents* old_contents,
+                         content::WebContents* new_contents) override;
+
   // content::TrackedElementObserver:
   void OnTrackedElementRectsChanged(const viz::TrackedElementRects& rects,
                                     float device_scale_factor) override;
@@ -205,6 +210,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   };
 
  private:
+  // Resets the page triggering and classification state.
+  void ResetTriggeringState();
+
   // Updates the visibility and states of all entry points.
   void UpdateEntryPointsState();
 

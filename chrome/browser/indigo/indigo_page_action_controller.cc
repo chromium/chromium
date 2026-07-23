@@ -521,11 +521,7 @@ void IndigoPageActionController::DidFinishNavigation(
 
   invoke_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  optimization_guide_decision_ =
-      optimization_guide::OptimizationGuideDecision::kUnknown;
-  page_has_allowed_category_by_heuristic_ = false;
-  metadata_remote_.reset();
-  UpdateEntryPointsState();
+  ResetTriggeringState();
 
   if (navigation_handle->IsSameDocument()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -628,6 +624,14 @@ IndigoPageActionController::DetermineTriggerSource() const {
     return IndigoTriggerSource::kLocalProductKeywordHeuristic;
   }
   return std::nullopt;
+}
+
+void IndigoPageActionController::ResetTriggeringState() {
+  optimization_guide_decision_ =
+      optimization_guide::OptimizationGuideDecision::kUnknown;
+  page_has_allowed_category_by_heuristic_ = false;
+  metadata_remote_.reset();
+  UpdateEntryPointsState();
 }
 
 void IndigoPageActionController::UpdateEntryPointsState() {
@@ -863,6 +867,18 @@ void IndigoPageActionController::UnregisterObserverFromHost(
       current_host_ = nullptr;
     }
   }
+}
+
+void IndigoPageActionController::OnDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  tabs::ContentsObservingTabFeature::OnDiscardContents(tab, old_contents,
+                                                       new_contents);
+
+  RegisterObserverWithHost(nullptr);
+  Reset(ResetType::kResetReplacementsAndContentScript);
+  ResetTriggeringState();
 }
 
 void IndigoPageActionController::OnTrackedElementRectsChanged(
