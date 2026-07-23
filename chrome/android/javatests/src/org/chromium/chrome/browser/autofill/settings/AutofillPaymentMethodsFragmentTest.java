@@ -137,7 +137,7 @@ public class AutofillPaymentMethodsFragmentTest {
     private static final CreditCard SAMPLE_CARD_VISA =
             new CreditCard(
                     /* guid= */ "",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "4444333322221111",
@@ -151,7 +151,7 @@ public class AutofillPaymentMethodsFragmentTest {
     private static final CreditCard SAMPLE_CARD_MASTERCARD =
             new CreditCard(
                     /* guid= */ "",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* name= */ "John Doe",
                     /* number= */ "5454545454545454",
@@ -165,7 +165,7 @@ public class AutofillPaymentMethodsFragmentTest {
     private static final CreditCard SAMPLE_LOCAL_CARD =
             new CreditCard(
                     /* guid= */ "",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ true,
                     /* name= */ "John Doe",
                     /* number= */ "4111111111111111",
@@ -179,7 +179,7 @@ public class AutofillPaymentMethodsFragmentTest {
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED =
             new CreditCard(
                     /* guid= */ "",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",
@@ -207,7 +207,7 @@ public class AutofillPaymentMethodsFragmentTest {
     private static final CreditCard SAMPLE_VIRTUAL_CARD_ENROLLED =
             new CreditCard(
                     /* guid= */ "",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",
@@ -234,7 +234,7 @@ public class AutofillPaymentMethodsFragmentTest {
     private static final CreditCard SAMPLE_CARD_WITH_CVC =
             new CreditCard(
                     /* guid= */ "",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",

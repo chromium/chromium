@@ -89,7 +89,7 @@ public class AutofillLocalCardEditorTest {
     private static CreditCard getSampleLocalCard() {
         return new CreditCard(
                 /* guid= */ "",
-                /* origin= */ "",
+                /* isUserConfirmed= */ false,
                 /* isLocal= */ true,
                 /* name= */ "John Doe",
                 /* number= */ NON_AMEX_CARD_NUMBER,
@@ -106,7 +106,7 @@ public class AutofillLocalCardEditorTest {
     private static CreditCard getSampleLocalCardWithCvc() {
         return new CreditCard(
                 /* guid= */ "",
-                /* origin= */ "",
+                /* isUserConfirmed= */ false,
                 /* isLocal= */ true,
                 /* isVirtual= */ false,
                 /* name= */ "John Doe",
@@ -137,7 +137,7 @@ public class AutofillLocalCardEditorTest {
     private static CreditCard getSampleAmexCardWithCvc() {
         return new CreditCard(
                 /* guid= */ "",
-                /* origin= */ "",
+                /* isUserConfirmed= */ false,
                 /* isLocal= */ true,
                 /* isVirtual= */ false,
                 /* name= */ "John Doe",

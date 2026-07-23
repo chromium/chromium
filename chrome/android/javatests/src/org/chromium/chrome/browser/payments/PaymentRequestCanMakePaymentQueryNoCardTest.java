@@ -47,7 +47,7 @@ public class PaymentRequestCanMakePaymentQueryNoCardTest {
                 .setCreditCard(
                         new CreditCard(
                                 "",
-                                "https://example.test",
+                                /* isUserConfirmed= */ true,
                                 true,
                                 /* name= */ "",
                                 "4111111111111111",

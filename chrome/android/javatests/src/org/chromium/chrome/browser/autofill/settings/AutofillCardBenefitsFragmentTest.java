@@ -67,7 +67,7 @@ public class AutofillCardBenefitsFragmentTest {
     private static final CreditCard SAMPLE_CARD_AMERICAN_EXPRESS_WITH_BENEFIT =
             new CreditCard(
                     /* guid= */ "",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "american express",
@@ -94,7 +94,7 @@ public class AutofillCardBenefitsFragmentTest {
     private static final CreditCard SAMPLE_CARD_BMO_WITH_BENEFIT =
             new CreditCard(
                     /* guid= */ "",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "bmo",
@@ -356,7 +356,7 @@ public class AutofillCardBenefitsFragmentTest {
         mAutofillTestHelper.addServerCreditCard(
                 new CreditCard(
                         /* guid= */ "",
-                        /* origin= */ "",
+                        /* isUserConfirmed= */ false,
                         /* isLocal= */ false,
                         /* isVirtual= */ false,
                         /* name= */ "american express",
@@ -395,7 +395,7 @@ public class AutofillCardBenefitsFragmentTest {
         mAutofillTestHelper.addServerCreditCard(
                 new CreditCard(
                         /* guid= */ "",
-                        /* origin= */ "",
+                        /* isUserConfirmed= */ false,
                         /* isLocal= */ false,
                         /* isVirtual= */ false,
                         /* name= */ "american express",
@@ -435,7 +435,7 @@ public class AutofillCardBenefitsFragmentTest {
         mAutofillTestHelper.addServerCreditCard(
                 new CreditCard(
                         /* guid= */ "",
-                        /* origin= */ "",
+                        /* isUserConfirmed= */ false,
                         /* isLocal= */ false,
                         /* isVirtual= */ false,
                         /* name= */ "bmo",
@@ -473,7 +473,7 @@ public class AutofillCardBenefitsFragmentTest {
         mAutofillTestHelper.addServerCreditCard(
                 new CreditCard(
                         /* guid= */ "",
-                        /* origin= */ "",
+                        /* isUserConfirmed= */ false,
                         /* isLocal= */ false,
                         /* isVirtual= */ false,
                         /* name= */ "american express",

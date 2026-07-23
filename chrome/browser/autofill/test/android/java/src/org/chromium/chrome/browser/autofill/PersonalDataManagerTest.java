@@ -338,7 +338,7 @@ public class PersonalDataManagerTest {
 
         CreditCard storedCard = mHelper.getCreditCard(cardOneGUID);
         assertEquals(cardOneGUID, storedCard.getGUID());
-        assertEquals("", storedCard.getOrigin());
+        assertFalse(storedCard.getIsUserConfirmed());
         assertEquals("Visa", storedCard.getName());
         assertEquals("10", storedCard.getMonth());
         assertEquals("4012888888881881", storedCard.getNumber());
@@ -437,7 +437,7 @@ public class PersonalDataManagerTest {
     @Feature({"Autofill"})
     public void testAddAndDeleteCreditCard() throws TimeoutException {
         CreditCard card = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
-        card.setOrigin("Chrome settings");
+        card.setIsUserConfirmed(true);
         String cardOneGUID = mHelper.setCreditCard(card);
         assertEquals(1, mHelper.getNumberOfCreditCardsForSettings());
 
@@ -756,10 +756,10 @@ public class PersonalDataManagerTest {
 
         CreditCard card2 =
                 createLocalCreditCard("American Express", "1234123412341234", "8", "2020");
-        card2.setOrigin("http://www.example.com");
+        card2.setIsUserConfirmed(false);
 
         CreditCard card3 = createLocalCreditCard("Mastercard", "1234123412341234", "11", "2020");
-        card3.setOrigin("http://www.example.com");
+        card3.setIsUserConfirmed(false);
 
         // The first credit card has the lowest use count but has most recently been used, making it
         // ranked first.
@@ -786,7 +786,7 @@ public class PersonalDataManagerTest {
         CreditCard card1 =
                 new CreditCard(
                         /* guid= */ "",
-                        /* origin= */ "",
+                        /* isUserConfirmed= */ false,
                         /* isLocal= */ true,
                         "John Doe",
                         "1234123412341234",
@@ -801,7 +801,7 @@ public class PersonalDataManagerTest {
         CreditCard card2 =
                 new CreditCard(
                         /* guid= */ "",
-                        /* origin= */ "",
+                        /* isUserConfirmed= */ false,
                         /* isLocal= */ false,
                         "John Doe",
                         "1234123412341234",
@@ -851,7 +851,7 @@ public class PersonalDataManagerTest {
                 mHelper.addCreditCardWithUseStatsForTesting(
                         new CreditCard(
                                 /* guid= */ "",
-                                /* origin= */ "",
+                                /* isUserConfirmed= */ false,
                                 /* isLocal= */ true,
                                 "John Doe",
                                 "1234123412341234",
@@ -904,7 +904,7 @@ public class PersonalDataManagerTest {
                 mHelper.addCreditCardWithUseStatsForTesting(
                         new CreditCard(
                                 /* guid= */ "",
-                                /* origin= */ "",
+                                /* isUserConfirmed= */ false,
                                 /* isLocal= */ true,
                                 "John Doe",
                                 "1234123412341234",
@@ -952,7 +952,7 @@ public class PersonalDataManagerTest {
         CreditCard localCard =
                 new CreditCard(
                         /* guid= */ "",
-                        /* origin= */ "",
+                        /* isUserConfirmed= */ false,
                         /* isLocal= */ true,
                         "John Doe",
                         "1234123412341234",
@@ -966,7 +966,7 @@ public class PersonalDataManagerTest {
         CreditCard serverCard =
                 new CreditCard(
                         /* guid= */ "serverGuid",
-                        /* origin= */ "",
+                        /* isUserConfirmed= */ false,
                         /* isLocal= */ false,
                         "John Doe Server",
                         "41111111111111111",

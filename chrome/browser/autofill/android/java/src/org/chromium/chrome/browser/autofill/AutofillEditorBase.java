@@ -49,10 +49,7 @@ public abstract class AutofillEditorBase extends Fragment
     /** We know which profile to edit based on the GUID stuffed in extras. */
     public static final String AUTOFILL_GUID = "guid";
 
-    /** Needs to be in sync with autofill::kSettingsOrigin[]. */
-    public static final String SETTINGS_ORIGIN = "Chrome settings";
-
-    /** GUID of the profile we are editing.  Empty if creating a new profile. */
+    /** GUID of the profile we are editing. Empty if creating a new profile. */
     protected String mGUID;
 
     /** Whether or not the editor is creating a new entry. */

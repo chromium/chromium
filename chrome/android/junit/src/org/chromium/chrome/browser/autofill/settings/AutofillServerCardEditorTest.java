@@ -115,7 +115,7 @@ public class AutofillServerCardEditorTest {
     private static final CreditCard SAMPLE_VIRTUAL_CARD_ENROLLED_CARD =
             new CreditCard(
                     /* guid= */ "1",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",
@@ -143,7 +143,7 @@ public class AutofillServerCardEditorTest {
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD =
             new CreditCard(
                     /* guid= */ "2",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",
@@ -172,7 +172,7 @@ public class AutofillServerCardEditorTest {
     private static final CreditCard SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_NOT_ELIGIBLE_CARD =
             new CreditCard(
                     /* guid= */ "3",
-                    /* origin= */ "",
+                    /* isUserConfirmed= */ false,
                     /* isLocal= */ false,
                     /* isVirtual= */ false,
                     /* name= */ "John Doe",

@@ -298,7 +298,7 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                 personalDataManager.getCreditCardForNumber(
                         removeSpaces(mNumberText.getText().toString()));
         card.setGUID(mGUID);
-        card.setOrigin(SETTINGS_ORIGIN);
+        card.setIsUserConfirmed(true);
         card.setName(mNameText.getText().toString().trim());
 
             assumeNonNull(mExpirationDate);

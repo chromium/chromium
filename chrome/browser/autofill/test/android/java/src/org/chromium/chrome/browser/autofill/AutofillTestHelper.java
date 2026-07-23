@@ -407,7 +407,7 @@ public class AutofillTestHelper {
     /** Creates a simple {@link CreditCard}. */
     public static CreditCard createLocalCreditCard(
             String name, String number, String month, String year) {
-        return new CreditCard("", "", true, name, number, "", month, year, "", 0, "", "");
+        return new CreditCard("", false, true, name, number, "", month, year, "", 0, "", "");
     }
 
     /** Creates a virtual credit card. */
@@ -422,7 +422,7 @@ public class AutofillTestHelper {
             String obfuscatedLastFourDigits) {
         return new CreditCard(
                 /* guid= */ "",
-                /* origin= */ "",
+                /* isUserConfirmed= */ false,
                 /* isLocal= */ false,
                 /* isVirtual= */ true,
                 /* name= */ name,
@@ -460,7 +460,7 @@ public class AutofillTestHelper {
             String network) {
         return new CreditCard(
                 /* guid= */ "",
-                /* origin= */ "",
+                /* isUserConfirmed= */ false,
                 /* isLocal= */ isLocal,
                 /* isVirtual= */ false,
                 /* name= */ name,

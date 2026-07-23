@@ -85,7 +85,7 @@ public class PersonalDataManager implements Destroyable {
         // Note that while some of these fields are numbers, they're predominantly read,
         // marshaled and compared as strings. To save conversions, we sometimes use strings.
         private String mGUID;
-        private String mOrigin;
+        private boolean mIsUserConfirmed;
         private final boolean mIsLocal;
         private final boolean mIsVirtual;
         private String mName;
@@ -116,7 +116,7 @@ public class PersonalDataManager implements Destroyable {
         @CalledByNative
         public static CreditCard create(
                 @JniType("std::string") String guid,
-                @JniType("std::string") String origin,
+                boolean isUserConfirmed,
                 boolean isLocal,
                 boolean isVirtual,
                 @JniType("std::u16string") String name,
@@ -142,7 +142,7 @@ public class PersonalDataManager implements Destroyable {
                 GURL productTermsUrl) {
             return new CreditCard(
                     guid,
-                    origin,
+                    isUserConfirmed,
                     isLocal,
                     isVirtual,
                     name,
@@ -170,7 +170,7 @@ public class PersonalDataManager implements Destroyable {
 
         public CreditCard(
                 String guid,
-                String origin,
+                boolean isUserConfirmed,
                 boolean isLocal,
                 String name,
                 String number,
@@ -183,7 +183,7 @@ public class PersonalDataManager implements Destroyable {
                 String serverId) {
             this(
                     guid,
-                    origin,
+                    isUserConfirmed,
                     isLocal,
                     /* isVirtual= */ false,
                     name,
@@ -211,7 +211,7 @@ public class PersonalDataManager implements Destroyable {
 
         public CreditCard(
                 String guid,
-                String origin,
+                boolean isUserConfirmed,
                 boolean isLocal,
                 boolean isVirtual,
                 String name,
@@ -236,7 +236,7 @@ public class PersonalDataManager implements Destroyable {
                 String benefitSource,
                 @Nullable GURL productTermsUrl) {
             mGUID = guid;
-            mOrigin = origin;
+            mIsUserConfirmed = isUserConfirmed;
             mIsLocal = isLocal;
             mIsVirtual = isVirtual;
             mName = name;
@@ -265,7 +265,7 @@ public class PersonalDataManager implements Destroyable {
         public CreditCard() {
             this(
                     /* guid= */ "",
-                    /* origin= */ AutofillEditorBase.SETTINGS_ORIGIN,
+                    /* isUserConfirmed= */ true,
                     /* isLocal= */ true,
                     /* name= */ "",
                     /* number= */ "",
@@ -284,8 +284,8 @@ public class PersonalDataManager implements Destroyable {
         }
 
         @CalledByNative
-        public @JniType("std::string") String getOrigin() {
-            return mOrigin;
+        public boolean getIsUserConfirmed() {
+            return mIsUserConfirmed;
         }
 
         @CalledByNative
@@ -416,8 +416,8 @@ public class PersonalDataManager implements Destroyable {
             mGUID = guid;
         }
 
-        public void setOrigin(String origin) {
-            mOrigin = origin;
+        public void setIsUserConfirmed(boolean isUserConfirmed) {
+            mIsUserConfirmed = isUserConfirmed;
         }
 
         public void setName(String name) {
