@@ -3562,28 +3562,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Dns.ResolveTimeDiff2.AddressRecordBeforeHTTPS" units="ms"
-    expires_after="2026-12-27">
-  <owner>bashi@chromium.org</owner>
-  <owner>chrome-network-stack@google.com</owner>
-  <summary>
-    Time difference between the first address record (A or AAAA) and HTTPS
-    record were resolved. Recorded when an address record was resolved before
-    HTTPS record.
-  </summary>
-</histogram>
-
 <histogram name="Net.Dns.ResolveTimeDiff2.{Variant}" units="ms"
-    expires_after="2026-12-16">
+    expires_after="2027-07-20">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
-    Time difference between A and AAAA records were resolved. Recorded when
+    Time difference between when DNS records were resolved. Recorded when
     {Variant}.
   </summary>
   <token key="Variant">
     <variant name="AAAABeforeA" summary="AAAA resolved before A"/>
     <variant name="ABeforeAAAA" summary="A resolved before AAAA"/>
+    <variant name="AddressRecordBeforeHTTPS"
+        summary="the first address record (A or AAAA) resolved before HTTPS"/>
+    <variant name="HTTPSBeforeFirstAddress"
+        summary="HTTPS resolved before the first address record (A or AAAA)"/>
+    <variant name="HTTPSBeforeLastAddress"
+        summary="HTTPS resolved before the last address record (A or AAAA)"/>
   </token>
 </histogram>
 

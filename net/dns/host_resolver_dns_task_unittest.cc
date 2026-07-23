@@ -16,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "net/base/features.h"
@@ -1292,6 +1293,88 @@ TEST_F(HostResolverDnsTaskWithSSLConfigTest,
     task.StartNextTransaction();
   }
   run_loop.Run();
+}
+
+TEST_F(HostResolverDnsTaskTest, HttpsBeforeAddressHistograms) {
+  base::HistogramTester histograms;
+  const char kName[] = "name.test";
+  DnsResourceRecord https_record = BuildTestHttpsServiceRecord(
+      kName, /*priority=*/1, /*service_name=*/".", /*params=*/{});
+  DnsResponse https_response =
+      BuildTestDnsResponse(kName, dns_protocol::kTypeHttps, {https_record});
+
+  MockDnsClientRuleList rules;
+  rules.emplace_back(kName, dns_protocol::kTypeHttps, /*secure=*/true,
+                     MockDnsClientRule::Result(std::move(https_response)),
+                     /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+  rules.emplace_back(
+      kName, dns_protocol::kTypeAAAA, /*secure=*/true,
+      MockDnsClientRule::Result(MockDnsClientRule::ResultType::kOk),
+      /*delay=*/true);
+
+  auto client =
+      std::make_unique<MockDnsClient>(CreateValidDnsConfig(), std::move(rules));
+
+  base::SimpleTestTickClock clock;
+  // Initialize clock to some non-null time.
+  clock.Advance(base::Seconds(1));
+
+  DnsQueryTypeSet types = {DnsQueryType::A, DnsQueryType::AAAA,
+                           DnsQueryType::HTTPS};
+  HostResolverDnsTask task(
+      client.get(),
+      HostResolver::Host(url::SchemeHostPort("https", "name.test", 443)),
+      NetworkAnonymizationKey(), types, resolve_context_.get(),
+      DnsTransactionFactory::AttemptMode::kHttp, SecureDnsMode::kAutomatic,
+      handles::kInvalidNetworkHandle, &mock_dns_task_delegate_,
+      NetLogWithSource(), &clock, /*fallback_available=*/false,
+      HostResolver::HttpsSvcbOptions());
+
+  // Start all transactions. They will be delayed.
+  while (task.num_additional_transactions_needed() > 0) {
+    task.StartNextTransaction();
+  }
+
+  // Complete HTTPS first.
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::HTTPS));
+
+  // No histograms should be recorded yet.
+  histograms.ExpectTotalCount(
+      "Net.Dns.ResolveTimeDiff2.HTTPSBeforeFirstAddress", 0);
+  histograms.ExpectTotalCount("Net.Dns.ResolveTimeDiff2.HTTPSBeforeLastAddress",
+                              0);
+
+  // Advance clock and complete AAAA (first address).
+  clock.Advance(base::Milliseconds(100));
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::AAAA));
+
+  histograms.ExpectUniqueTimeSample(
+      "Net.Dns.ResolveTimeDiff2.HTTPSBeforeFirstAddress",
+      base::Milliseconds(100), 1);
+  histograms.ExpectTotalCount("Net.Dns.ResolveTimeDiff2.HTTPSBeforeLastAddress",
+                              0);
+
+  // Advance clock and complete A (last address).
+  clock.Advance(base::Milliseconds(200));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_dns_task_delegate_, OnDnsTaskComplete(_, _, _, _))
+      .WillOnce([&](base::TimeTicks, bool, HostResolverDnsTask::Results results,
+                    DnsTransactionFactory::AttemptMode) { run_loop.Quit(); });
+
+  ASSERT_TRUE(client->CompleteOneDelayedTransactionOfType(DnsQueryType::A));
+  run_loop.Run();
+
+  histograms.ExpectUniqueTimeSample(
+      "Net.Dns.ResolveTimeDiff2.HTTPSBeforeFirstAddress",
+      base::Milliseconds(100), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Net.Dns.ResolveTimeDiff2.HTTPSBeforeLastAddress",
+      base::Milliseconds(300), 1);  // 100ms + 200ms
 }
 
 }  // namespace net

@@ -669,6 +669,15 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
         RecordResolveTimeDiff("AAAABeforeA", task_start_time_,
                               aaaa_record_end_time_, a_record_end_time_);
       }
+      if (!https_record_end_time_.is_null()) {
+        if (aaaa_record_end_time_.is_null()) {
+          RecordResolveTimeDiff("HTTPSBeforeFirstAddress", task_start_time_,
+                                https_record_end_time_, a_record_end_time_);
+        } else {
+          RecordResolveTimeDiff("HTTPSBeforeLastAddress", task_start_time_,
+                                https_record_end_time_, a_record_end_time_);
+        }
+      }
       break;
     case DnsQueryType::AAAA:
       aaaa_record_end_time_ = now;
@@ -676,8 +685,18 @@ void HostResolverDnsTask::OnDnsTransactionComplete(
         RecordResolveTimeDiff("ABeforeAAAA", task_start_time_,
                               a_record_end_time_, aaaa_record_end_time_);
       }
+      if (!https_record_end_time_.is_null()) {
+        if (a_record_end_time_.is_null()) {
+          RecordResolveTimeDiff("HTTPSBeforeFirstAddress", task_start_time_,
+                                https_record_end_time_, aaaa_record_end_time_);
+        } else {
+          RecordResolveTimeDiff("HTTPSBeforeLastAddress", task_start_time_,
+                                https_record_end_time_, aaaa_record_end_time_);
+        }
+      }
       break;
     case DnsQueryType::HTTPS: {
+      https_record_end_time_ = now;
       base::TimeTicks first_address_end_time =
           std::min(a_record_end_time_, aaaa_record_end_time_);
       if (!first_address_end_time.is_null()) {

@@ -282,6 +282,7 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask final {
   // For histograms.
   base::TimeTicks a_record_end_time_;
   base::TimeTicks aaaa_record_end_time_;
+  base::TimeTicks https_record_end_time_;
 
   Results saved_results_;
   std::unique_ptr<HostResolverInternalErrorResult> deferred_failure_;
