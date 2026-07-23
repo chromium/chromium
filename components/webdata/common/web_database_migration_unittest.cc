@@ -2007,4 +2007,51 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion151ToCurrent) {
   }
 }
 
+// Tests replacing the origin column with is_user_confirmed in credit_cards
+// table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion152ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_152.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(152, VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist("credit_cards", "origin"));
+    EXPECT_FALSE(
+        connection.DoesColumnExist("credit_cards", "is_user_confirmed"));
+
+    // Insert dummy credit cards to test that values are migrated correctly.
+    ASSERT_TRUE(connection.ExecuteScriptForTesting(R"(
+      INSERT INTO credit_cards (guid, origin) VALUES ('guid1', 'Chrome settings');
+      INSERT INTO credit_cards (guid, origin) VALUES ('guid2', 'http://www.example.com');
+      INSERT INTO credit_cards (guid, origin) VALUES ('guid3', '');
+    )"));
+  }
+  DoMigration();
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist("credit_cards", "origin"));
+    EXPECT_TRUE(
+        connection.DoesColumnExist("credit_cards", "is_user_confirmed"));
+
+    sql::Statement stmt(connection.GetUniqueStatement(
+        "SELECT guid, is_user_confirmed FROM credit_cards ORDER BY guid"));
+    ASSERT_TRUE(stmt.Step());
+    EXPECT_EQ("guid1", stmt.ColumnString(0));
+    EXPECT_TRUE(stmt.ColumnBool(1));
+
+    ASSERT_TRUE(stmt.Step());
+    EXPECT_EQ("guid2", stmt.ColumnString(0));
+    EXPECT_FALSE(stmt.ColumnBool(1));
+
+    ASSERT_TRUE(stmt.Step());
+    EXPECT_EQ("guid3", stmt.ColumnString(0));
+    EXPECT_FALSE(stmt.ColumnBool(1));
+
+    EXPECT_FALSE(stmt.Step());
+  }
+}
+
 }  // anonymous namespace

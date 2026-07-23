@@ -70,7 +70,7 @@ constexpr std::string_view kCardNumberEncrypted = "card_number_encrypted";
 constexpr std::string_view kUseCount = "use_count";
 constexpr std::string_view kUseDate = "use_date";
 constexpr std::string_view kDateModified = "date_modified";
-constexpr std::string_view kOrigin = "origin";
+constexpr std::string_view kIsUserConfirmed = "is_user_confirmed";
 constexpr std::string_view kBillingAddressId = "billing_address_id";
 constexpr std::string_view kNickname = "nickname";
 
@@ -289,11 +289,9 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   s->BindInt64(index++, credit_card.usage_history().use_count());
   s->BindInt64(index++, credit_card.usage_history().use_date().ToTimeT());
   s->BindInt64(index++, modification_date.ToTimeT());
-  s->BindString(index++, credit_card.is_user_confirmed()
-                             ? std::string(kSettingsOrigin)
-                             : std::string());
   s->BindString(index++, credit_card.billing_address_id());
   s->BindString16(index++, credit_card.nickname());
+  s->BindBool(index++, credit_card.is_user_confirmed());
 }
 
 void BindLocalStoredCvcToStatement(const std::string& guid,
@@ -436,11 +434,9 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
   credit_card->usage_history().set_modification_date(
       base::Time::FromTimeT(card_statement.ColumnInt64(index++)));
 
-  std::string origin = card_statement.ColumnString(index++);
-  credit_card->set_is_user_confirmed(origin == kSettingsOrigin);
-
   credit_card->set_billing_address_id(card_statement.ColumnString(index++));
   credit_card->SetNickname(card_statement.ColumnString16(index++));
+  credit_card->set_is_user_confirmed(card_statement.ColumnBool(index++));
   // Only set cvc if we retrieve cvc from local_stored_cvc table.
   if (cvc_statement) {
     credit_card->set_cvc(
@@ -626,6 +622,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 144:
       *update_compatible_version = false;
       return MigrateToVersion144AddCardCreationSourceColumn();
+    case 153:
+      *update_compatible_version = true;
+      return MigrateToVersion153ReplaceOriginWithIsUserConfirmed();
   }
   return true;
 }
@@ -765,8 +764,8 @@ bool PaymentsAutofillTable::AddCreditCard(const CreditCard& credit_card) {
   sql::CachedInsertBuilder(
       SQL_FROM_HERE, *db(), card_statement, kCreditCardsTable,
       {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
-       kCardNumberEncrypted, kUseCount, kUseDate, kDateModified, kOrigin,
-       kBillingAddressId, kNickname});
+       kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
+       kBillingAddressId, kNickname, kIsUserConfirmed});
   BindCreditCardToStatement(credit_card, AutofillClock::Now(), &card_statement,
                             *encryptor());
 
@@ -807,8 +806,8 @@ bool PaymentsAutofillTable::UpdateCreditCard(const CreditCard& credit_card) {
   sql::CachedUpdateBuilder(
       SQL_FROM_HERE, *db(), card_statement, kCreditCardsTable,
       {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
-       kCardNumberEncrypted, kUseCount, kUseDate, kDateModified, kOrigin,
-       kBillingAddressId, kNickname},
+       kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
+       kBillingAddressId, kNickname, kIsUserConfirmed},
       /*where_clause=*/"guid=?1");
   BindCreditCardToStatement(
       credit_card,
@@ -879,8 +878,8 @@ std::unique_ptr<CreditCard> PaymentsAutofillTable::GetCreditCard(
   sql::CachedSelectBuilder(
       SQL_FROM_HERE, *db(), card_statement, kCreditCardsTable,
       {kGuid, kNameOnCard, kExpirationMonth, kExpirationYear,
-       kCardNumberEncrypted, kUseCount, kUseDate, kDateModified, kOrigin,
-       kBillingAddressId, kNickname},
+       kCardNumberEncrypted, kUseCount, kUseDate, kDateModified,
+       kBillingAddressId, kNickname, kIsUserConfirmed},
       /*modifiers=*/"WHERE guid = ?");
   card_statement.BindString(0, guid);
 
@@ -2227,6 +2226,33 @@ bool PaymentsAutofillTable::MigrateToVersion144AddCardCreationSourceColumn() {
                               kCardCreationSource, "INTEGER DEFAULT 0");
 }
 
+bool PaymentsAutofillTable::
+    MigrateToVersion153ReplaceOriginWithIsUserConfirmed() {
+  sql::Transaction transaction(db());
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  if (!AddColumnIfNotExists(db(), kCreditCardsTable, kIsUserConfirmed,
+                            "INTEGER NOT NULL DEFAULT 0")) {
+    return false;
+  }
+
+  constexpr std::string_view kOrigin = "origin";
+  std::string migration_sql =
+      base::StrCat({"UPDATE ", kCreditCardsTable, " SET ", kIsUserConfirmed,
+                    " = 1 WHERE ", kOrigin, " = 'Chrome settings'"});
+  if (!db()->Execute(migration_sql)) {
+    return false;
+  }
+
+  if (!sql::DropColumn(*db(), kCreditCardsTable, kOrigin)) {
+    return false;
+  }
+
+  return transaction.Commit();
+}
+
 void PaymentsAutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK_GT(db()->transaction_nesting(), 0);
@@ -2298,18 +2324,19 @@ PaymentsAutofillTable::GetMerchantDomainsForBenefitId(
 }
 
 bool PaymentsAutofillTable::InitCreditCardsTable() {
-  return CreateTableIfNotExists(db(), kCreditCardsTable,
-                                {{kGuid, "VARCHAR PRIMARY KEY"},
-                                 {kNameOnCard, "VARCHAR"},
-                                 {kExpirationMonth, "INTEGER"},
-                                 {kExpirationYear, "INTEGER"},
-                                 {kCardNumberEncrypted, "BLOB"},
-                                 {kDateModified, "INTEGER NOT NULL DEFAULT 0"},
-                                 {kOrigin, "VARCHAR DEFAULT ''"},
-                                 {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
-                                 {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
-                                 {kBillingAddressId, "VARCHAR"},
-                                 {kNickname, "VARCHAR"}});
+  return CreateTableIfNotExists(
+      db(), kCreditCardsTable,
+      {{kGuid, "VARCHAR PRIMARY KEY"},
+       {kNameOnCard, "VARCHAR"},
+       {kExpirationMonth, "INTEGER"},
+       {kExpirationYear, "INTEGER"},
+       {kCardNumberEncrypted, "BLOB"},
+       {kDateModified, "INTEGER NOT NULL DEFAULT 0"},
+       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
+       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
+       {kBillingAddressId, "VARCHAR"},
+       {kNickname, "VARCHAR"},
+       {kIsUserConfirmed, "INTEGER NOT NULL DEFAULT 0"}});
 }
 
 bool PaymentsAutofillTable::InitLocalIbansTable() {
