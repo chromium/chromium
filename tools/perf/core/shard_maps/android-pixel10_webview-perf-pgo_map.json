@@ -95,7 +95,19 @@
             "embedder.crossbench": {
                 "crossbench_name": "embedder",
                 "arguments": [
-                    "None"
+                    "--wpr=crossbench_android_embedder_000.wprgo",
+                    "--skip-wpr-script-injection",
+                    "--embedder=../../clank/android_webview/tools/crossbench_config/cipd/arm64/Velvet_arm64.apk",
+                    "--splashscreen=skip",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/embedder_cuj_config.hjson",
+                    "--probe-config=../../clank/android_webview/tools/crossbench_config/agsa_probe_config.hjson",
+                    "--repetitions=50",
+                    "--cool-down-threshold=moderate",
+                    "--http-request-timeout=2s",
+                    "--ignore-partial-failures",
+                    "--embedder-process-name=googleapp",
+                    "--embedder-setup-command-config=../../clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson",
+                    "--embedder-drop-caches"
                 ]
             }
         },
@@ -110,7 +122,24 @@
             "gma.embedder.crossbench": {
                 "crossbench_name": "embedder",
                 "arguments": [
-                    "None"
+                    "--wpr=crossbench_android_gma_embedder_000.wprgo",
+                    "--wpr-http-port=8080",
+                    "--wpr-https-port=8081",
+                    "--embedder=../../clank/android_webview/tools/crossbench_config/cipd/arm64/webview_test_app_binary.apk",
+                    "--splashscreen=skip",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/gma_interstitial_cuj_config.hjson",
+                    "--skip-wpr-script-injection",
+                    "--repetitions=50",
+                    "--cool-down-threshold=moderate",
+                    "--embedder-setup-command-config=../../third_party/crossbench/config/team/woa/gma_device_setup.hjson",
+                    "--embedder-teardown-command-config=../../third_party/crossbench/config/team/woa/gma_device_teardown.hjson",
+                    "--probe-config=../../third_party/crossbench/config/team/woa/gma_wv_latency.probe.config.hjson",
+                    "--ignore-partial-failures",
+                    "--android-activity=MainActivity",
+                    "--android-action=",
+                    "--embedder-push-files=/b/swarming/w/ir/third_party/crossbench/config/team/woa/hosts:/data/local/tmp/hosts",
+                    "--embedder-push-files=/b/swarming/w/ir/third_party/crossbench/config/team/woa/dnsmasq.conf:/data/local/tmp/dnsmasq.conf",
+                    "--embedder-push-files=/b/swarming/w/ir/clank/android_webview/tools/crossbench_config/cipd/arm64/dummy_vpn.apk:/data/local/tmp/dummy_vpn.apk"
                 ]
             }
         },
@@ -137,7 +166,11 @@
             "loading.crossbench": {
                 "crossbench_name": "loading",
                 "arguments": [
-                    "None"
+                    "--wpr=crossbench_android_loading_000.wprgo",
+                    "--probe=chrome_histograms:{\"baseline\":false,\"metrics\":{\"Android.WebView.Startup.CreationTime.StartChromiumLocked\":[\"mean\"],\"Android.WebView.Startup.CreationTime.Stage1.FactoryInit\":[\"mean\"],\"PageLoad.PaintTiming.NavigationToFirstContentfulPaint\":[\"mean\"]}}",
+                    "--repetitions=50",
+                    "--cool-down-threshold=moderate",
+                    "--stories=cnn"
                 ]
             }
         }
@@ -263,7 +296,14 @@
             "shell.embedder.crossbench": {
                 "crossbench_name": "embedder",
                 "arguments": [
-                    "None"
+                    "--wpr=crossbench_android_loading_000.wprgo",
+                    "--embedder=webview_embedder",
+                    "--splashscreen=skip",
+                    "--probe-config=../../third_party/crossbench/config/team/woa/wv_shell_memory.probe.config.hjson",
+                    "--cuj-config=../../third_party/crossbench/config/team/woa/staggered_wv_startup_cuj_config.hjson",
+                    "--android-activity=ManuallyTriggeredStartupActivity",
+                    "--repetitions=50",
+                    "--cool-down-threshold=moderate"
                 ]
             }
         }
