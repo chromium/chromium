@@ -102,6 +102,7 @@ public class NtpCustomizationPolicyManager {
     public void destroy() {
         if (mPrefChangeRegistrar != null) {
             mPrefChangeRegistrar.removeObserver(Pref.NTP_CUSTOM_BACKGROUND_DICT);
+            mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
         }
         mProfile = null;

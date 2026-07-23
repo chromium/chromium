@@ -115,6 +115,7 @@ public class FeedSettingsMediator {
 
     void destroy() {
         mPrefChangeRegistrar.removeObserver(Pref.ARTICLES_LIST_VISIBLE);
+        mPrefChangeRegistrar.destroy();
         mBottomSheetPropertyModel.set(BACK_PRESS_HANDLER, null);
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, null);
         mFeedSettingsPropertyModel.set(FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER, null);
