@@ -102,8 +102,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox_Files_ForkFalse) {
           "\\\\(useContextualTasksComposeboxFork = false\\\\)')");
 }
 
+// TODO(crbug.com/480689282): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest,
-                       Composebox_AutoTab_ForkTrue) {
+                       DISABLED_Composebox_AutoTab_ForkTrue) {
   RunTest("contextual_tasks/composebox_files_test.js",
           "runMochaSuite('ContextualTasksComposeboxForkAutoTabTest "
           "\\\\(useContextualTasksComposeboxFork = true\\\\)')");
