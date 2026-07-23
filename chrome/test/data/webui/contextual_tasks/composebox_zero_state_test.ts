@@ -359,9 +359,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
         // Force the internal component state to represent a fully loaded,
         // non-zero state AI page.
-        contextualTasksApp['isInitialFrameLoad_'] = false;
-        contextualTasksApp['isAiPage_'] = true;
-        contextualTasksApp['pendingUrl_'] = '';
+        contextualTasksApp.setIsInitialFrameLoadForTesting(false);
+        contextualTasksApp.setIsAiPageForTesting(true);
+        contextualTasksApp.setPendingUrlForTesting('');
 
         // Verify starting baseline (no zero state).
         testProxy.callbackRouterRemote.onZeroStateChange(false);
@@ -427,13 +427,13 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await microtasksFinished();
 
         // Now, isInitialFrameLoad_ is false, so it's a subsequent navigation.
-        contextualTasksApp['isInitialFrameLoad_'] = false;
+        contextualTasksApp.setIsInitialFrameLoadForTesting(false);
 
         // Spy on playZeroStateAnimations_
         let playCount = 0;
-        contextualTasksApp['playZeroStateAnimations_'] = () => {
+        contextualTasksApp.setPlayZeroStateAnimationsForTesting(() => {
           playCount++;
-        };
+        });
 
         // 2. Simulate subsequent top level navigation to zero-state AI page.
         const mockEvent = {
@@ -445,13 +445,15 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         testProxy.handler.setIsAiPage(true);
         testProxy.handler.setIsZeroState(true);
 
-        // Trigger top-level navigation (which is async and awaits isAiPage/isZeroState).
+        // Trigger top-level navigation (which is async and
+        // awaits isAiPage/isZeroState).
         const navPromise =
-            contextualTasksApp['onThreadFrameTopLevelNavigation'](mockEvent);
+            contextualTasksApp.onThreadFrameTopLevelNavigationForTesting(
+                mockEvent);
 
         // Before the navigation async IPCs resolve, check:
         // isDomContentLoaded_ should be reset to false.
-        assertFalse(contextualTasksApp['isDomContentLoaded_']);
+        assertFalse(contextualTasksApp.getIsDomContentLoadedForTesting());
 
         // Wait for the navigation handler to complete.
         await navPromise;

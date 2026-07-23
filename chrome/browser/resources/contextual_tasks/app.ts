@@ -1772,6 +1772,31 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     return this.pendingBasicMode_;
   }
 
+  getDarkModeForTesting(): boolean {
+    return this.darkMode_;
+  }
+
+  setIsAiPageForTesting(isAiPage: boolean) {
+    this.isAiPage_ = isAiPage;
+  }
+
+  setPendingUrlForTesting(pendingUrl: string) {
+    this.pendingUrl_ = pendingUrl;
+  }
+
+  setPlayZeroStateAnimationsForTesting(fn: () => void) {
+    this.playZeroStateAnimations_ = fn;
+  }
+
+  async onThreadFrameTopLevelNavigationForTesting(
+      event: chrome.webviewTag.LoadStartEvent|Event) {
+    return this.onThreadFrameTopLevelNavigation(event);
+  }
+
+  getIsDomContentLoadedForTesting(): boolean {
+    return this.isDomContentLoaded_;
+  }
+
   private updateBackgroundColor_() {
     if (this.darkMode_) {
       document.body.style.backgroundColor = this.useStratusDarkModeColors_ ?

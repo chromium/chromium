@@ -387,7 +387,7 @@ suite('ContextualTasksAppTest', function() {
     const {appElement} =
         await createContextualTasksAppElement(/*url=*/ fixtureUrl);
     // Initial state should be light mode (or whatever default is).
-    assertFalse(appElement['darkMode_']);
+    assertFalse(appElement.getDarkModeForTesting());
     const urlWithCs1 = `${fixtureUrl}?cs=1`;
     // 1. Test that loadstart alone does NOT update theme.
     const eventStart = {
@@ -398,7 +398,7 @@ suite('ContextualTasksAppTest', function() {
     await microtasksFinished();
     // Should still be false because logic moved to
     // maybeOnThreadFrameTopLevelNavigation which is called on commit/redirect.
-    assertFalse(appElement['darkMode_']);
+    assertFalse(appElement.getDarkModeForTesting());
     // 2. Test that loadabort prevents update.
     const eventAbort = {
       url: urlWithCs1,
@@ -406,7 +406,7 @@ suite('ContextualTasksAppTest', function() {
     } as unknown as chrome.webviewTag.LoadAbortEvent;
     await appElement.onThreadFrameLoadAbortForTesting(eventAbort);
     await microtasksFinished();
-    assertFalse(appElement['darkMode_']);
+    assertFalse(appElement.getDarkModeForTesting());
     // 3. Test that loadcommit updates theme.
     // Need to call loadstart again to set lastThreadFrameLoadStartEvent_
     appElement.onThreadFrameLoadStartForTesting(eventStart);
@@ -417,7 +417,7 @@ suite('ContextualTasksAppTest', function() {
     } as unknown as chrome.webviewTag.LoadCommitEvent;
     appElement.onThreadFrameLoadCommitForTesting(eventCommit);
     await microtasksFinished();
-    assertTrue(appElement['darkMode_']);
+    assertTrue(appElement.getDarkModeForTesting());
   });
   // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
   test('isAiPage reflected in dom', async () => {
