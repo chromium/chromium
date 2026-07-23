@@ -386,6 +386,19 @@ source_set("unit_tests") {
       "//components/update_client",
     ]
   }
+
+  if (is_chrome_branded) {
+    sources += [ "recovery_improved_component_unittest.cc" ]
+    deps += [
+      "//components/crx_file",
+      "//components/services/unzip:in_process",
+      "//components/services/unzip/content",
+      "//components/update_client",
+      "//components/update_client:test_support",
+    ]
+    data_deps =
+        [ "//components/update_client:recovery_component_tests_bundle_data" ]
+  }
 }
 
 if (!is_android) {
