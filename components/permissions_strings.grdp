@@ -106,6 +106,9 @@
     <message name="IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android location permission when a website has requested access to location, but Chrome is missing the Android location permission.">
       Allow location?
     </message>
+    <message name="IDS_MESSAGE_MISSING_LOCAL_NETWORK_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android local network permission when a website has requested access to local network, but Chrome is missing the Android local network permission.">
+      Allow local network access?
+    </message>
     <message name="IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android microphone and camera permission when a website has requested access to microphone and camera, but Chrome is missing the Android microphone and camera permission.">
       Allow 2 permissions?
     </message>

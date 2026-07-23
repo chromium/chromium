@@ -604,6 +604,12 @@ void ContentBrowserClient::RequestFilesAccess(
       .Run(file_access::ScopedFileAccess::Allowed());
 }
 
+void ContentBrowserClient::RequestPlatformLocalNetworkPermission(
+    WebContents& web_contents,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(/*granted=*/false);
+}
+
 void ContentBrowserClient::AllowWorkerFileSystem(
     const GURL& url,
     BrowserContext* browser_context,

@@ -41,6 +41,14 @@ class PermissionUpdateMessageControllerAndroidTest
         std::move(callback));
   }
 
+  void ShowLocalNetwork(base::OnceCallback<void(bool)> callback) {
+    EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
+    GetController()->ShowMessageInternal(
+        {}, {}, {}, IDR_ANDROID_INFOBAR_LOCAL_NETWORK,
+        IDS_MESSAGE_MISSING_LOCAL_NETWORK_PERMISSION_TITLE,
+        IDS_MESSAGE_MISSING_LOCAL_NETWORK_PERMISSION_TEXT, std::move(callback));
+  }
+
   size_t GetMessageDelegatesSize() {
     return GetController()->message_delegates_.size();
   }
@@ -136,5 +144,21 @@ TEST_F(PermissionUpdateMessageControllerAndroidTest, OnPermissionResult) {
   EXPECT_CALL(mock_permission_update_callback2, Run(false));
   ExpectDismiss(messages::DismissReason::UNKNOWN);
   OnPermissionGranted(false);
+  EXPECT_EQ(0u, GetMessageDelegatesSize());
+}
+
+// Tests that Local Network Access permission missing reprompt messages are
+// correctly enqueued with IDR_ANDROID_INFOBAR_LOCAL_NETWORK (router icon
+// R.drawable.router_24), missing title, and missing text string resource IDs.
+TEST_F(PermissionUpdateMessageControllerAndroidTest,
+       ShowLocalNetworkPermission) {
+  base::MockOnceCallback<void(bool)> mock_permission_update_callback;
+  ShowLocalNetwork(mock_permission_update_callback.Get());
+  EXPECT_EQ(1u, GetMessageDelegatesSize());
+  EXPECT_CALL(mock_permission_update_callback, Run(true));
+
+  ExpectDismiss(messages::DismissReason::PRIMARY_ACTION);
+  DismissedByPrimaryAction();
+  OnPermissionGranted(true);
   EXPECT_EQ(0u, GetMessageDelegatesSize());
 }

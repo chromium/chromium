@@ -75,6 +75,13 @@ public class PermissionUtil {
         ANDROID_PERMISSION_SCENE_UNDERSTANDING_FINE
     };
 
+    public static final String ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK =
+            "android.permission.ACCESS_LOCAL_NETWORK";
+
+    private static final String[] LOCAL_NETWORK_PERMISSIONS = {
+        ANDROID_PERMISSION_ACCESS_LOCAL_NETWORK
+    };
+
     private static final String[] HAND_TRACKING_PERMISSIONS = {ANDROID_PERMISSION_HAND_TRACKING};
 
     /** Signifies there are no permissions associated. */
@@ -148,6 +155,12 @@ public class PermissionUtil {
                     return Arrays.copyOf(
                             NOTIFICATION_PERMISSIONS_POST_T,
                             NOTIFICATION_PERMISSIONS_POST_T.length);
+                }
+                return EMPTY_PERMISSIONS;
+            case ContentSettingsType.LOCAL_NETWORK_ACCESS, ContentSettingsType.LOCAL_NETWORK:
+                if (Build.VERSION.SDK_INT >= 37) {
+                    return Arrays.copyOf(
+                            LOCAL_NETWORK_PERMISSIONS, LOCAL_NETWORK_PERMISSIONS.length);
                 }
                 return EMPTY_PERMISSIONS;
             default:

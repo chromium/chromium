@@ -121,6 +121,9 @@ by a child template that "extends" this file.
     <!-- Needed for allowing cross-app and cross-profile communication over the loopback interface. -->
     <uses-permission android:name="android.permission.USE_LOOPBACK_INTERFACE"/>
 
+    <!-- Needed for checking local network connections. -->
+    <uses-permission android:name="android.permission.ACCESS_LOCAL_NETWORK"/>
+
     {% set enable_vr = enable_vr|default(0) %}
     {% if enable_vr == "true" %}
     <!-- Indicates use of Android's VR-mode, available only on Android N+. -->

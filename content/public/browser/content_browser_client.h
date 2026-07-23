@@ -1026,6 +1026,12 @@ class CONTENT_EXPORT ContentBrowserClient {
       base::OnceCallback<void(file_access::ScopedFileAccess)>
           continuation_callback);
 
+  // Requests platform-specific (OS-level) local network permission.
+  // The `callback` will be invoked with true if granted, or false otherwise.
+  virtual void RequestPlatformLocalNetworkPermission(
+      WebContents& web_contents,
+      base::OnceCallback<void(bool)> callback);
+
   // Allow the embedder to control if access to file system by a shared worker
   // is allowed.
   virtual void AllowWorkerFileSystem(

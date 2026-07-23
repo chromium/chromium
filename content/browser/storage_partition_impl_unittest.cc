@@ -1625,6 +1625,29 @@ TEST_F(StoragePartitionImplTest, RemoveDeviceBoundSessions) {
 // Local network access tests require there to be a (minimal) frame setup.
 using StoragePartitionImplLocalNetworkAccessTest = RenderViewHostTestHarness;
 
+// Mock ContentBrowserClient to test Android OS-level platform local network
+// permission requests delegated from StoragePartitionImpl.
+class PlatformPermissionTestContentBrowserClient : public ContentBrowserClient {
+ public:
+  void RequestPlatformLocalNetworkPermission(
+      WebContents& web_contents,
+      base::OnceCallback<void(bool)> callback) override {
+    requested_web_contents_ = &web_contents;
+    std::move(callback).Run(permission_to_return_);
+  }
+
+  void set_permission_to_return(bool permission) {
+    permission_to_return_ = permission;
+  }
+  WebContents* requested_web_contents() const {
+    return requested_web_contents_;
+  }
+
+ private:
+  raw_ptr<WebContents> requested_web_contents_ = nullptr;
+  bool permission_to_return_ = true;
+};
+
 // Tests triggering the Local Network Access permission check for a subresource
 // request.
 TEST_F(StoragePartitionImplLocalNetworkAccessTest,
@@ -1635,9 +1658,8 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
       browser_context()->GetDefaultStoragePartition());
 
   mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
-      partition->CreateURLLoaderNetworkObserverForFrame(
-          content::GlobalRenderFrameHostId(process()->GetID(),
-                                           main_rfh()->GetRoutingID())));
+      partition->CreateURLLoaderNetworkObserverForFrame(GlobalRenderFrameHostId(
+          process()->GetID(), main_rfh()->GetRoutingID())));
 
   base::test::TestFuture<network::mojom::LocalNetworkAccessResult> lna_result;
   observer->OnLocalNetworkAccessPermissionRequired(
@@ -1660,12 +1682,11 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
   // Set up a frame tree with a subframe, start a navigation in the subframe,
   // and get the NavigationRequest for that navigation.
   NavigateAndCommit(GURL("https://foo.com"));
-  content::RenderFrameHost* sub_frame =
-      content::RenderFrameHostTester::For(main_rfh())
-          ->AppendChild(std::string("child"));
-  std::unique_ptr<content::NavigationSimulator> simulator =
-      content::NavigationSimulator::CreateRendererInitiated(
-          GURL("http://test.local"), sub_frame);
+  RenderFrameHost* sub_frame =
+      RenderFrameHostTester::For(main_rfh())->AppendChild(std::string("child"));
+  std::unique_ptr<NavigationSimulator> simulator =
+      NavigationSimulator::CreateRendererInitiated(GURL("http://test.local"),
+                                                   sub_frame);
   simulator->Start();
   NavigationRequest* request =
       NavigationRequest::From(simulator->GetNavigationHandle());
@@ -1707,6 +1728,91 @@ TEST_F(StoragePartitionImplLocalNetworkAccessTest,
       base::BindOnce(lna_result.GetCallback()));
   EXPECT_EQ(network::mojom::LocalNetworkAccessResult::kDenied,
             lna_result.Get());
+}
+
+// Tests that OnPlatformLocalNetworkPermissionRequired correctly resolves the
+// RenderFrameHost to WebContents and invokes ContentBrowserClient when the OS
+// permission is granted.
+TEST_F(StoragePartitionImplLocalNetworkAccessTest,
+       PlatformLocalNetworkPermission_Granted) {
+  PlatformPermissionTestContentBrowserClient test_client;
+  test_client.set_permission_to_return(true);
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&test_client);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
+      partition->CreateURLLoaderNetworkObserverForFrame(GlobalRenderFrameHostId(
+          process()->GetID(), main_rfh()->GetRoutingID())));
+
+  base::test::TestFuture<bool> result;
+  observer->OnPlatformLocalNetworkPermissionRequired(
+      base::BindOnce(result.GetCallback()));
+  EXPECT_TRUE(result.Get());
+  EXPECT_EQ(web_contents(), test_client.requested_web_contents());
+
+  SetBrowserClientForTesting(old_client);
+}
+
+// Tests that OnPlatformLocalNetworkPermissionRequired returns false when the OS
+// platform local network permission is denied by the user.
+TEST_F(StoragePartitionImplLocalNetworkAccessTest,
+       PlatformLocalNetworkPermission_Denied) {
+  PlatformPermissionTestContentBrowserClient test_client;
+  test_client.set_permission_to_return(false);
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&test_client);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
+      partition->CreateURLLoaderNetworkObserverForFrame(GlobalRenderFrameHostId(
+          process()->GetID(), main_rfh()->GetRoutingID())));
+
+  base::test::TestFuture<bool> result;
+  observer->OnPlatformLocalNetworkPermissionRequired(
+      base::BindOnce(result.GetCallback()));
+  EXPECT_FALSE(result.Get());
+  EXPECT_EQ(web_contents(), test_client.requested_web_contents());
+
+  SetBrowserClientForTesting(old_client);
+}
+
+// Tests that OnPlatformLocalNetworkPermissionRequired returns false when the
+// request originates from a worker context (null WebContents).
+TEST_F(StoragePartitionImplLocalNetworkAccessTest,
+       PlatformLocalNetworkPermission_WorkerContext) {
+  // Install a mock ContentBrowserClient to capture
+  // RequestPlatformLocalNetworkPermission calls.
+  PlatformPermissionTestContentBrowserClient test_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&test_client);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+
+  const url::Origin worker_origin =
+      url::Origin::Create(GURL("https://foo.com"));
+
+  // Create an observer bound to a ServiceWorker / SharedWorker context.
+  // Background workers do not have an associated WebContents.
+  mojo::Remote<network::mojom::URLLoaderNetworkServiceObserver> observer(
+      partition->CreateURLLoaderNetworkObserverForServiceOrSharedWorker(
+          network::OriginatingProcessId::renderer(
+              network::RendererProcessId(1)),
+          worker_origin));
+
+  base::test::TestFuture<bool> result;
+  observer->OnPlatformLocalNetworkPermissionRequired(
+      base::BindOnce(result.GetCallback()));
+
+  // Since worker contexts have no associated WebContents,
+  // OnPlatformLocalNetworkPermissionRequired must return false early without
+  // attempting to prompt for OS permission.
+  EXPECT_FALSE(result.Get());
+  EXPECT_EQ(nullptr, test_client.requested_web_contents());
+
+  SetBrowserClientForTesting(old_client);
 }
 
 TEST_F(StoragePartitionImplTest, ClearDataStorageKeyDeletesPartitionedCookies) {

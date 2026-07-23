@@ -530,55 +530,9 @@ class CONTENT_EXPORT StoragePartitionImpl
     kDeviceBoundSessionContext,
   };
 
- private:
-  class DataDeletionHelper;
-  class ServiceWorkerCookieAccessObserver;
-  class ServiceWorkerTrustTokenAccessObserver;
-  class ServiceWorkerSharedDictionaryAccessObserver;
-  class ServiceWorkerDeviceBoundSessionAccessObserver;
-  struct NetworkContextOwner;
-
-  friend class BackgroundSyncManagerTest;
-  friend class BackgroundSyncServiceImplTestHarness;
-  friend class CookieStoreManagerTest;
-  friend class PaymentAppContentUnitTestBase;
-  friend class ServiceWorkerRegistrationTest;
-  friend class ServiceWorkerUpdateJobTest;
-  friend class StoragePartitionImplMap;
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionShaderClearTest, ClearShaderCache);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedDataForeverBoth);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedDataForeverOnlyTemporary);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedDataForeverOnlyPersistent);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedDataForeverNeither);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedDataForeverSpecificOrigin);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedDataForLastHour);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedDataForLastWeek);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedUnprotectedOrigins);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedProtectedSpecificOrigin);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedProtectedOrigins);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveQuotaManagedIgnoreDevTools);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest, RemoveCookieForever);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest, RemoveCookieLastHour);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveCookieWithDeleteInfo);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveUnprotectedLocalStorageForever);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveProtectedLocalStorageForever);
-  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
-                           RemoveLocalStorageForLastWeek);
-
+  // Public so that free helper functions in the anonymous namespace of
+  // storage_partition_impl.cc (e.g. ResolveLocalNetworkAccess) can reference
+  // it.
   class URLLoaderNetworkContext {
    public:
     struct NavigationRequestContext {
@@ -661,6 +615,55 @@ class CONTENT_EXPORT StoragePartitionImpl
 
     Context context_;
   };
+
+ private:
+  class DataDeletionHelper;
+  class ServiceWorkerCookieAccessObserver;
+  class ServiceWorkerTrustTokenAccessObserver;
+  class ServiceWorkerSharedDictionaryAccessObserver;
+  class ServiceWorkerDeviceBoundSessionAccessObserver;
+  struct NetworkContextOwner;
+
+  friend class BackgroundSyncManagerTest;
+  friend class BackgroundSyncServiceImplTestHarness;
+  friend class CookieStoreManagerTest;
+  friend class PaymentAppContentUnitTestBase;
+  friend class ServiceWorkerRegistrationTest;
+  friend class ServiceWorkerUpdateJobTest;
+  friend class StoragePartitionImplMap;
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionShaderClearTest, ClearShaderCache);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedDataForeverBoth);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedDataForeverOnlyTemporary);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedDataForeverOnlyPersistent);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedDataForeverNeither);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedDataForeverSpecificOrigin);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedDataForLastHour);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedDataForLastWeek);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedUnprotectedOrigins);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedProtectedSpecificOrigin);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedProtectedOrigins);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveQuotaManagedIgnoreDevTools);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest, RemoveCookieForever);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest, RemoveCookieLastHour);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveCookieWithDeleteInfo);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveUnprotectedLocalStorageForever);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveProtectedLocalStorageForever);
+  FRIEND_TEST_ALL_PREFIXES(StoragePartitionImplTest,
+                           RemoveLocalStorageForLastWeek);
 
   // `relative_partition_path` is the relative path under `profile_path` to the
   // StoragePartition's on-disk-storage.

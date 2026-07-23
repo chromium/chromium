@@ -625,6 +625,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
+#include "components/permissions/android/permissions_reprompt_controller_android.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -3483,6 +3484,23 @@ void ChromeContentBrowserClient::RequestFilesAccess(
 #else
   std::move(continuation_callback)
       .Run(file_access::ScopedFileAccess::Allowed());
+#endif
+}
+
+void ChromeContentBrowserClient::RequestPlatformLocalNetworkPermission(
+    content::WebContents& web_contents,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_ANDROID)
+  permissions::PermissionsRepromptControllerAndroid::CreateForWebContents(
+      &web_contents);
+  permissions::PermissionsRepromptControllerAndroid::FromWebContents(
+      &web_contents)
+      ->RepromptPermissionRequest({ContentSettingsType::LOCAL_NETWORK_ACCESS},
+                                  ContentSettingsType::LOCAL_NETWORK_ACCESS,
+                                  std::move(callback));
+#else
+  std::move(callback).Run(/*granted=*/false);
 #endif
 }
 

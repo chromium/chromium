@@ -111,6 +111,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/session_storage_usage_info.h"
@@ -118,6 +119,7 @@
 #include "content/public/browser/storage_notification_service.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
@@ -822,6 +824,113 @@ std::vector<GlobalRenderFrameHostId> GetRoutingIdsForOrigin(
 
   return *service_worker_context->GetWindowClientFrameRoutingIds(
       blink::StorageKey::CreateFirstParty(origin));
+}
+
+// Resulting decision for a local network access permission check.
+enum class LocalNetworkAccessDecision {
+  // The request should be blocked immediately (e.g., in fenced frames or
+  // prerendering main frames).
+  kBlock,
+  // The request is default-allowed without checking permissions (e.g., primary
+  // main frame navigations).
+  kAllow,
+  // The request should proceed to permission checking using the resolved `rfh`
+  // (if non-null) or worker context.
+  kProceed,
+};
+
+// Outcome of resolving local network access context for a network request.
+struct LocalNetworkAccessResolution {
+  LocalNetworkAccessDecision decision;
+  // The RenderFrameHost associated with the request context, if available.
+  // Null for worker contexts or when no specific frame applies.
+  raw_ptr<RenderFrameHost> rfh = nullptr;
+};
+
+// Resolves the frame context and initial decision for local network access
+// requests. Shared helper between Web LNA
+// (OnLocalNetworkAccessPermissionRequired) and Platform LNA
+// (OnPlatformLocalNetworkPermissionRequired).
+LocalNetworkAccessResolution ResolveLocalNetworkAccess(
+    const StoragePartitionImpl::URLLoaderNetworkContext& context) {
+  // Three different cases are handled here depending on the request context:
+  //   1. Document context (ContextType::kRenderFrameHostContext) covers fetch()
+  //      and subresource requests. These should check for existing permission
+  //      state, and if the state is ASK trigger the permission prompt. These
+  //      should also handle being delegated into subframe documents.
+  //   2. Navigation context (ContextType::kNavigationRequestContext) covers
+  //      all navigations. If the navigation is in a subframe, these should
+  //      check for existing permission state, and if the state is ASK trigger
+  //      the permission prompt. Nested subframes should be allowed iff
+  //      permission policy delegated the permission into the embedding frame.
+  //   3. Worker context (ContextType::kSharedOrServiceWorkerContext) covers
+  //      requests from service workers and shared workers. These may not have
+  //      an existing document around. These should check for the permission
+  //      state, but NOT trigger the permission prompt.
+
+  // Currently requesting the Local Network Access permission is restricted to
+  // subresource requests and subframe navigation requests.
+
+  if (!context.navigation_or_document()) {
+    // Workers and background tasks do not resolve to a RenderFrameHost, but we
+    // return kProceed here to let downstream handlers apply their own rules:
+    // - Web LNA: Evaluates worker permissions via PermissionController.
+    // - Platform LNA: Requires a UI tab (WebContents) to display dialogs. Since
+    //   background workers lack a UI tab, requests are safely denied early.
+    //   (See TODO below for potential future support via frame window IDs).
+    return {LocalNetworkAccessDecision::kProceed, nullptr};
+  }
+
+  // Case 1: Document context (covers fetch() and subresource requests).
+  if (RenderFrameHost* rfh = context.navigation_or_document()->GetDocument()) {
+    // Get the document that is making the request.
+    return {LocalNetworkAccessDecision::kProceed, rfh};
+  }
+
+  // Case 2: Navigation context.
+  if (auto* request =
+          context.navigation_or_document()->GetNavigationRequest()) {
+    // Currently the LNA permission only applies to subframe navigations.
+    // See content/browser/renderer_host/local_network_access_util.cc for
+    // current feature state to policy mapping logic.
+    //
+    // For other types of navigation, we either default-allow or default-block
+    // local network requests:
+    //  - Primary main frame: default-allow.
+    //  - Guest view main frame: default-allow.
+    //  - Prerender: default-block.
+    //  - Fenced frame: default-block. (See crbug.com/409303581.)
+    switch (request->GetNavigatingFrameType()) {
+      case FrameType::kPrimaryMainFrame:
+      case FrameType::kGuestMainFrame:
+        return {LocalNetworkAccessDecision::kAllow};
+      case FrameType::kFencedFrameRoot:
+      case FrameType::kPrerenderMainFrame:
+        return {LocalNetworkAccessDecision::kBlock};
+      case FrameType::kSubframe: {
+        // Get the document that initiated the navigation. Can be nullptr if
+        // the initiator has gone away, in which case we should just block the
+        // navigation.
+        if (!request->GetInitiatorFrameToken().has_value()) {
+          return {LocalNetworkAccessDecision::kBlock};
+        }
+
+        RenderFrameHost* initiator_rfh =
+            RenderFrameHost::FromFrameToken(GlobalRenderFrameHostToken(
+                request->GetInitiatorProcessId(),
+                request->GetInitiatorFrameToken().value()));
+
+        if (!initiator_rfh) {
+          return {LocalNetworkAccessDecision::kBlock};
+        }
+
+        return {LocalNetworkAccessDecision::kProceed, initiator_rfh};
+      }
+    }
+  }
+
+  // Fallback if neither document nor navigation request is available.
+  return {LocalNetworkAccessDecision::kBlock};
 }
 
 }  // namespace
@@ -2095,67 +2204,22 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
       NOTREACHED();
   }
 
-  // Three different cases are handled here depending on the request context:
-  //   1. Document context (ContextType::kRenderFrameHostContext) covers fetch()
-  //      and subresource requests. These should check for existing permission
-  //      state, and if the state is ASK trigger the permission prompt. These
-  //      should also handle being delegated into subframe documents.
-  //   2. Navigation context (ContextType::kNavigationRequestContext) covers
-  //      all navigations. If the navigation is in a subframe, these should
-  //      check for existing permission state, and if the state is ASK trigger
-  //      the permission prompt. Nested subframes should be allowed iff
-  //      permission policy delegated the permission into the embedding frame.
-  //   3. Worker context (ContextType::kSharedOrServiceWorkerContext) covers
-  //      requests from service workers and shared workers. These may not have
-  //      an existing document around. These should check for the permission
-  //      state, but NOT trigger the permission prompt.
+  LocalNetworkAccessResolution resolution = ResolveLocalNetworkAccess(context);
+  switch (resolution.decision) {
+    case LocalNetworkAccessDecision::kBlock:
+      std::move(callback).Run(
+          network::mojom::LocalNetworkAccessResult::kDenied);
+      return;
+    case LocalNetworkAccessDecision::kAllow:
+      std::move(callback).Run(
+          network::mojom::LocalNetworkAccessResult::kGranted);
+      return;
+    case LocalNetworkAccessDecision::kProceed:
+      break;
+  }
 
-  // Currently requesting the Local Network Access permission is restricted to
-  // subresource requests and subframe navigation requests.
-
-  // Handle document (Case 1) and navigation (Case 2) contexts.
   if (context.navigation_or_document()) {
-    RenderFrameHost* rfh = nullptr;
-    if (context.navigation_or_document()->GetDocument()) {
-      // Get the document that is making the request.
-      rfh = context.navigation_or_document()->GetDocument();
-    } else if (context.navigation_or_document()->GetNavigationRequest()) {
-      // Currently the LNA permission only applies to subframe navigations.
-      // See content/browser/renderer_host/local_network_access_util.cc for
-      // current feature state to policy mapping logic.
-      //
-      // For other types of navigation, we either default-allow or default-block
-      // local network requests:
-      //  - Primary main frame: default-allow.
-      //  - Guest view main frame: default-allow.
-      //  - Prerender: default-block.
-      //  - Fenced frame: default-block. (See crbug.com/409303581.)
-      auto* request = context.navigation_or_document()->GetNavigationRequest();
-      switch (request->GetNavigatingFrameType()) {
-        case FrameType::kPrimaryMainFrame:
-        case FrameType::kGuestMainFrame:
-          std::move(callback).Run(
-              network::mojom::LocalNetworkAccessResult::kGranted);
-          return;
-        case FrameType::kFencedFrameRoot:
-        case FrameType::kPrerenderMainFrame:
-          std::move(callback).Run(
-              network::mojom::LocalNetworkAccessResult::kDenied);
-          return;
-        case FrameType::kSubframe:
-          // Get the document that initiated the navigation. Can be nullptr if
-          // the initiator has gone away, in which case we should just block the
-          // navigation.
-          rfh = request->GetInitiatorFrameToken().has_value()
-                    ? RenderFrameHost::FromFrameToken(
-                          content::GlobalRenderFrameHostToken(
-                              request->GetInitiatorProcessId(),
-                              request->GetInitiatorFrameToken().value()))
-                    : nullptr;
-
-          break;
-      }
-    }
+    RenderFrameHost* rfh = resolution.rfh;
     if (!rfh) {
       std::move(callback).Run(
           network::mojom::LocalNetworkAccessResult::kDenied);
@@ -2277,10 +2341,59 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
   return;
 }
 
+// Called when an OS-level local network permission is required (e.g. Android
+// ACCESS_LOCAL_NETWORK permission).
+//
+// Relationship and differences with OnLocalNetworkAccessPermissionRequired():
+// 1. Web LNA (OnLocalNetworkAccessPermissionRequired):
+//    Implements W3C LNA spec checks for document requests.
+//
+// 2. Platform LNA (OnPlatformLocalNetworkPermissionRequired):
+//    Handles OS-level runtime permission checks when socket connection fails
+//    with ERR_LOCAL_NETWORK_PERMISSION_MISSING.
+//
+// Why parameters received by OnLocalNetworkAccessPermissionRequired()
+// (ip_address_space, transport_type) do not need to be plumbed to
+// OnPlatformLocalNetworkPermissionRequired():
+//    - `ip_address_space`: The target IP address space check has already been
+//      performed at the OS-level net stack when the socket connection was
+//      attempted. This method is triggered only after the OS net stack checked
+//      and rejected the connection due to missing OS permission, so re-checking
+//      `ip_address_space` here is unnecessary.
+//    - `transport_type`: This method is triggered only when an actual OS socket
+//      connection is rejected. Requests served from the HTTP cache do not
+//      attempt OS socket connections, so checking HTTP cache status is
+//      unnecessary.
 void StoragePartitionImpl::OnPlatformLocalNetworkPermissionRequired(
     OnPlatformLocalNetworkPermissionRequiredCallback callback) {
-  // TODO(crbug.com/506495945): Implement the logic to obtain permission.
-  std::move(callback).Run(/*granted=*/false);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+  URLLoaderNetworkContext& context =
+      url_loader_network_observers_.current_context();
+
+  LocalNetworkAccessResolution resolution = ResolveLocalNetworkAccess(context);
+  if (resolution.decision == LocalNetworkAccessDecision::kBlock) {
+    std::move(callback).Run(/*granted=*/false);
+    return;
+  }
+
+  WebContents* web_contents = context.GetWebContents();
+  // `web_contents` may be null in the following cases:
+  // 1. Requests originating from background worker contexts (ServiceWorkers /
+  //    SharedWorkers) which do not have an associated tab/frame UI.
+  //
+  //    TODO(crbug.com/404887282): Consider plumbing `frame_window_id` if
+  //    available to associate background worker requests with their hosting
+  //    frame's WebContents for permission reprompts.
+  // 2. The WebContents was destroyed asynchronously while the network request
+  //    was pending. Returning false is expected here as no UI remains to prompt
+  //    the user.
+  if (!web_contents) {
+    std::move(callback).Run(/*granted=*/false);
+    return;
+  }
+
+  GetContentClient()->browser()->RequestPlatformLocalNetworkPermission(
+      *web_contents, std::move(callback));
 }
 
 void StoragePartitionImpl::OnCertificateRequested(

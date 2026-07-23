@@ -376,6 +376,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& destination_url,
       base::OnceCallback<void(file_access::ScopedFileAccess)>
           continuation_callback) override;
+  void RequestPlatformLocalNetworkPermission(
+      content::WebContents& web_contents,
+      base::OnceCallback<void(bool)> callback) override;
   void AllowWorkerFileSystem(
       const GURL& url,
       content::BrowserContext* browser_context,
