@@ -87,6 +87,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/android/glic_keyed_service_android.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #else
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
@@ -559,24 +560,24 @@ GlicNudgeController* GlicKeyedService::GetOrCreateNudgeController(
   if (!browser) {
     return nullptr;
   }
-  auto it = nudge_controllers_.find(browser);
-  if (it != nudge_controllers_.end()) {
-    return it->second.get();
+  auto it = button_controllers_.find(browser);
+  if (it != button_controllers_.end()) {
+    return it->second->nudge_controller();
   }
 
-  auto controller = GlicNudgeController::CreateFor(browser);
-  auto* controller_ptr = controller.get();
-  nudge_controllers_[browser] = std::move(controller);
+  auto controller = std::make_unique<GlicSplitButtonController>(browser, this);
+  GlicNudgeController* nudge_controller = controller->nudge_controller();
+  button_controllers_[browser] = std::move(controller);
 
   window_close_subscriptions_[browser] =
       browser->RegisterBrowserDidClose(base::BindRepeating(
           &GlicKeyedService::OnBrowserWindowClosed, base::Unretained(this)));
 
-  return controller_ptr;
+  return nudge_controller;
 }
 
 void GlicKeyedService::OnBrowserWindowClosed(BrowserWindowInterface* browser) {
-  nudge_controllers_.erase(browser);
+  button_controllers_.erase(browser);
   window_close_subscriptions_.erase(browser);
 }
 #endif

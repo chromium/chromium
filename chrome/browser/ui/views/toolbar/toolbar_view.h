@@ -75,9 +75,7 @@ namespace glic {
 class ToolbarGlicButton;
 class ToolbarGlicActorTaskIcon;
 class GlicButtonInterface;
-class GlicButtonController;
-class GlicActorNudgeController;
-class GlicNudgeController;
+class GlicSplitButtonController;
 }  // namespace glic
 
 class GlicAndActorButtonsContainer;
@@ -400,9 +398,6 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
   raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
   raw_ptr<ToolbarDivider> glic_button_divider_ = nullptr;
-  base::WeakPtr<glic::GlicButtonController> glic_button_controller_;
-  base::WeakPtr<glic::GlicActorNudgeController> glic_actor_nudge_controller_;
-  base::WeakPtr<glic::GlicNudgeController> glic_nudge_controller_;
 
   // When locked, the container is unable to change its expanded state.
   // Changes will be staged until after this is unlocked.
@@ -416,6 +411,7 @@ class ToolbarView : public views::AccessiblePaneView,
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<BrowserView> browser_view_;
+  base::WeakPtr<glic::GlicSplitButtonController> glic_split_button_controller_;
 
   // ToolbarView may or may not serve as the `ToolbarButtonProvider` for a given
   // browser instance depending on the browser type (e.g. WebApp browsers set

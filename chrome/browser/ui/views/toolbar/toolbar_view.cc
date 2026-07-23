@@ -29,6 +29,7 @@
 #include "chrome/browser/glic/browser_ui/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -287,6 +288,10 @@ ToolbarView::ToolbarView(Browser* browser, BrowserView* browser_view)
 }
 
 ToolbarView::~ToolbarView() {
+  if (glic_split_button_controller_) {
+    glic_split_button_controller_->SetVerticalTabsDelegate(nullptr);
+  }
+
   if (display_mode_ != DisplayMode::kNormal) {
     return;
   }
@@ -295,18 +300,6 @@ ToolbarView::~ToolbarView() {
 
   for (const auto& view_and_command : GetViewCommandMap()) {
     chrome::RemoveCommandObserver(browser_, view_and_command.second, this);
-  }
-
-  if (glic_nudge_controller_) {
-    glic_nudge_controller_->SetVerticalTabsDelegate(nullptr);
-  }
-
-  if (glic_button_controller_) {
-    glic_button_controller_->SetVerticalTabsDelegate(nullptr);
-  }
-
-  if (glic_actor_nudge_controller_) {
-    glic_actor_nudge_controller_->SetVerticalTabsDelegate(nullptr);
   }
 }
 
@@ -656,18 +649,10 @@ void ToolbarView::Init() {
     }
   }
 
-  // `glic_nudge_controller_` will be null if feature is not enabled.
-  if (auto* controller = glic::GlicNudgeController::From(browser_)) {
-    glic_nudge_controller_ = controller->GetWeakPtr();
-    glic_nudge_controller_->SetVerticalTabsDelegate(this);
-  }
-  if (auto* controller = glic::GlicButtonController::From(browser_)) {
-    glic_button_controller_ = controller->GetWeakPtr();
-    glic_button_controller_->SetVerticalTabsDelegate(this);
-  }
-  if (auto* controller = glic::GlicActorNudgeController::From(browser_)) {
-    glic_actor_nudge_controller_ = controller->GetWeakPtr();
-    glic_actor_nudge_controller_->SetVerticalTabsDelegate(this);
+  if (auto* glic_split_button_controller =
+          glic::GlicSplitButtonController::From(browser_)) {
+    glic_split_button_controller_ = glic_split_button_controller->GetWeakPtr();
+    glic_split_button_controller_->SetVerticalTabsDelegate(this);
   }
 
   initialized_ = true;
@@ -776,6 +761,8 @@ std::unique_ptr<glic::ToolbarGlicButton> ToolbarView::CreateGlicButton() {
 }
 
 void ToolbarView::OnGlicButtonClicked() {
+  CHECK(glic_split_button_controller_);
+
   // Indicate that the glic button was pressed so that we can either close the
   // IPH promo (if present) or note that it has already been used to prevent
   // unnecessarily displaying the promo.
@@ -784,22 +771,18 @@ void ToolbarView::OnGlicButtonClicked() {
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 
   std::optional<std::string> prompt_suggestion;
-  glic::GlicNudgeController* glic_nudge_controller =
-      browser_->browser_window_features()->glic_nudge_controller();
-  if (glic_nudge_controller) {
-    prompt_suggestion = glic_nudge_controller->GetPromptSuggestion();
-    glic_nudge_controller->ClearPromptSuggestion();
-  }
+  glic::GlicNudgeController* nudge_controller =
+      glic_split_button_controller_->nudge_controller();
+  CHECK(nudge_controller);
+  prompt_suggestion = nudge_controller->GetPromptSuggestion();
+  nudge_controller->ClearPromptSuggestion();
 
   glic::mojom::InvocationSource source;
-  if (glic_button_controller_) {
-    source = glic_button_controller_->GetInvocationSource(
-        glic_button_->GetIsShowingNudge(), /*is_toolbar=*/true);
-  } else {
-    source = glic_button_->GetIsShowingNudge()
-                 ? glic::mojom::InvocationSource::kNudge
-                 : glic::mojom::InvocationSource::kToolbarButton;
-  }
+  glic::GlicButtonController* button_controller =
+      glic_split_button_controller_->button_controller();
+  CHECK(button_controller);
+  source = button_controller->GetInvocationSource(
+      glic_button_->GetIsShowingNudge(), /*is_toolbar=*/true);
 
   auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
       browser_view_->GetProfile());
@@ -816,8 +799,7 @@ void ToolbarView::OnGlicButtonClicked() {
   }
 
   if (glic_button_->GetIsShowingNudge()) {
-    glic_nudge_controller->OnNudgeActivity(
-        glic::GlicNudgeActivity::kNudgeClicked);
+    nudge_controller->OnNudgeActivity(glic::GlicNudgeActivity::kNudgeClicked);
   }
 
   ExecuteHideToolbarNudge(glic_button_);
@@ -827,8 +809,11 @@ void ToolbarView::OnGlicButtonClicked() {
 }
 
 void ToolbarView::OnGlicButtonDismissed() {
-  browser_->browser_window_features()->glic_nudge_controller()->OnNudgeActivity(
-      glic::GlicNudgeActivity::kNudgeDismissed);
+  CHECK(glic_split_button_controller_);
+  glic::GlicNudgeController* nudge_controller =
+      glic_split_button_controller_->nudge_controller();
+  CHECK(nudge_controller);
+  nudge_controller->OnNudgeActivity(glic::GlicNudgeActivity::kNudgeDismissed);
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideToolbarNudge(glic_button_);

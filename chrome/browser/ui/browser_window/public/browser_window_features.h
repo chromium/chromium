@@ -13,7 +13,6 @@
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 class ActorBorderViewController;
-class ActorTaskListBubbleController;
 class ActorUiWindowController;
 class BookmarkBarController;
 class BookmarksSidePanelCoordinator;
@@ -161,10 +160,9 @@ class ExtensionSidePanelManager;
 }  // namespace extensions
 
 namespace glic {
-class GlicActorNudgeController;
-class GlicButtonController;
 class GlicIphController;
 class GlicNudgeController;
+class GlicSplitButtonController;
 }  // namespace glic
 
 namespace lens {
@@ -354,9 +352,7 @@ class BrowserWindowFeatures {
     return glic_iph_controller_.get();
   }
 
-  glic::GlicNudgeController* glic_nudge_controller() {
-    return glic_nudge_controller_.get();
-  }
+  glic::GlicNudgeController* glic_nudge_controller();
 
   // Returns true if a FindBarController exists for this browser window.
   bool HasFindBarController() const;
@@ -596,12 +592,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<FindBarOwner> find_bar_owner_;
   std::unique_ptr<BrowserWindowFullscreenController> fullscreen_controller_;
-  std::unique_ptr<ActorTaskListBubbleController>
-      actor_task_list_bubble_controller_;
-  std::unique_ptr<glic::GlicActorNudgeController> glic_actor_nudge_controller_;
-  std::unique_ptr<glic::GlicButtonController> glic_button_controller_;
   std::unique_ptr<glic::GlicIphController> glic_iph_controller_;
-  std::unique_ptr<glic::GlicNudgeController> glic_nudge_controller_;
+  std::unique_ptr<glic::GlicSplitButtonController>
+      glic_split_button_controller_;
   std::unique_ptr<HistoryClustersSidePanelCoordinator>
       history_clusters_side_panel_coordinator_;
   std::unique_ptr<HistorySidePanelCoordinator> history_side_panel_coordinator_;

@@ -13,7 +13,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
-#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -30,10 +29,9 @@
 #include "chrome/browser/devtools/devtools_ui_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_ui_controller.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
-#include "chrome/browser/glic/browser_ui/glic_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_iph_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -550,25 +548,13 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
     if (glic::GlicEnabling::IsProfileEligible(profile)) {
-      glic::GlicKeyedService* glic_service =
-          glic::GlicKeyedService::Get(profile);
-      glic_iph_controller_ =
-          std::make_unique<glic::GlicIphController>(browser, *glic_service);
-      glic_nudge_controller_ = glic::GlicNudgeController::CreateFor(browser);
-      glic_button_controller_ = std::make_unique<glic::GlicButtonController>(
-          profile, *browser, glic_service);
-
-      if (base::FeatureList::IsEnabled(features::kGlicActor) &&
-          base::FeatureList::IsEnabled(features::kGlicActorUi) &&
-          features::kGlicActorUiTaskIcon.Get() && profile->IsRegularProfile()) {
-        // Must be before glic_actor_nudge_controller_.
-        actor_task_list_bubble_controller_ =
-            GetUserDataFactory().CreateInstance<ActorTaskListBubbleController>(
-                *browser, browser);
-        // Includes browser twice to enable injecting for testing.
-        glic_actor_nudge_controller_ =
-            GetUserDataFactory().CreateInstance<glic::GlicActorNudgeController>(
-                *browser, browser);
+      if (glic::GlicKeyedService* glic_service =
+              glic::GlicKeyedService::Get(profile)) {
+        glic_iph_controller_ =
+            std::make_unique<glic::GlicIphController>(browser, *glic_service);
+        glic_split_button_controller_ =
+            std::make_unique<glic::GlicSplitButtonController>(browser,
+                                                              glic_service);
       }
     }
 
@@ -948,7 +934,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
                                                                      browser);
     }
 
-
     if (MobilePromoOnDesktopEnabled()) {
       ios_promo_controller_ =
           GetUserDataFactory().CreateInstance<IOSPromoController>(*browser,
@@ -1160,11 +1145,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // Init (reverse).
 
   // TYPE_NORMAL members.
-  glic_actor_nudge_controller_.reset();
-  actor_task_list_bubble_controller_.reset();
-  glic_button_controller_.reset();
-  glic_nudge_controller_.reset();
   glic_iph_controller_.reset();
+  glic_split_button_controller_.reset();
   initial_web_ui_manager_.reset();
   ai_overlay_dialog_controller_.reset();
 
@@ -1192,6 +1174,12 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   }
   browser_animation_controller_.reset();
   actor_border_view_controller_.reset();
+}
+
+glic::GlicNudgeController* BrowserWindowFeatures::glic_nudge_controller() {
+  return glic_split_button_controller_
+             ? glic_split_button_controller_->nudge_controller()
+             : nullptr;
 }
 
 SidePanelUI* BrowserWindowFeatures::side_panel_ui() {

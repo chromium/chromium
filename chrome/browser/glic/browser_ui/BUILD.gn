@@ -10,6 +10,7 @@ import("//chrome/common/features.gni")
 source_set("browser_ui") {
   sources = [
     "glic_nudge_controller.h",
+    "glic_split_button_controller.h",
     "glic_split_button_delegate.h",
   ]
 
@@ -55,6 +56,7 @@ source_set("impl") {
     "glic_nudge_controller.cc",
     "glic_nudge_controller_impl.cc",
     "glic_nudge_controller_impl.h",
+    "glic_split_button_controller.cc",
     "glic_split_button_delegate.cc",
   ]
   if (!is_android) {

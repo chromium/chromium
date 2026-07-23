@@ -25,9 +25,7 @@ class Insets;
 }
 namespace glic {
 class TabStripGlicActorTaskIcon;
-class GlicNudgeController;
-class GlicButtonController;
-class GlicActorNudgeController;
+class GlicSplitButtonController;
 }
 class BrowserWindowInterface;
 class GlicAndActorButtonsContainer;
@@ -203,9 +201,6 @@ class TabStripActionContainer : public views::View,
 
   // The button currently holding the lock to be shown/hidden.
   raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
-  base::WeakPtr<glic::GlicNudgeController> glic_nudge_controller_;
-  base::WeakPtr<glic::GlicButtonController> glic_button_controller_;
-  base::WeakPtr<glic::GlicActorNudgeController> glic_actor_nudge_controller_;
 
   raw_ptr<views::Separator> separator_ = nullptr;
 
@@ -214,6 +209,7 @@ class TabStripActionContainer : public views::View,
   raw_ptr<glic::TabStripGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_ = nullptr;
+  base::WeakPtr<glic::GlicSplitButtonController> glic_split_button_controller_;
 
   // Timer for hiding tab_strip_nudge_button_ after show.
   base::OneShotTimer hide_tab_strip_nudge_timer_;

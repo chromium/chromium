@@ -49,8 +49,9 @@ class GlicButtonController {
 
   raw_ptr<Profile> profile_;
   raw_ref<BrowserWindowInterface> browser_;
-  raw_ptr<GlicSplitButtonDelegate> tab_strip_glic_controller_delegate_;
-  raw_ptr<GlicSplitButtonDelegate> toolbar_glic_controller_delegate_;
+  raw_ptr<GlicSplitButtonDelegate> tab_strip_glic_controller_delegate_ =
+      nullptr;
+  raw_ptr<GlicSplitButtonDelegate> toolbar_glic_controller_delegate_ = nullptr;
   raw_ptr<GlicKeyedService> glic_keyed_service_;
   PrefChangeRegistrar pref_registrar_;
 

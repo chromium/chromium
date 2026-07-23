@@ -9,6 +9,8 @@
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -128,7 +130,7 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     tab_strip_action_container_.reset();
-    glic_nudge_controller_.reset();
+    glic_split_button_controller_.reset();
     browser_window_interface_.reset();
     tab_interface_.reset();
     tab_list_bridge_.reset();
@@ -185,8 +187,12 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
     tab_strip_model_->AppendWebContents(std::move(web_contents_),
                                         /*foreground=*/true);
 
-    glic_nudge_controller_ =
-        glic::GlicNudgeController::CreateFor(browser_window_interface_.get());
+    Profile* profile = tab_strip_->GetBrowserWindowInterface()->GetProfile();
+    if (auto* glic_service = glic::GlicKeyedService::Get(profile)) {
+      glic_split_button_controller_ =
+          std::make_unique<glic::GlicSplitButtonController>(
+              browser_window_interface_.get(), glic_service);
+    }
 
     tab_strip_action_container_ = std::make_unique<TabStripActionContainer>(
         browser_window_interface_.get());
@@ -197,7 +203,14 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   std::unique_ptr<TabStrip> tab_strip_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TabListBridge> tab_list_bridge_;
-  std::unique_ptr<glic::GlicNudgeController> glic_nudge_controller_;
+  std::unique_ptr<glic::GlicSplitButtonController>
+      glic_split_button_controller_;
+
+  glic::GlicNudgeController* glic_nudge_controller() {
+    return glic_split_button_controller_
+               ? glic_split_button_controller_->nudge_controller()
+               : nullptr;
+  }
   std::unique_ptr<tabs::MockTabInterface> tab_interface_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   ui::UnownedUserDataHost data_host_;
@@ -299,7 +312,7 @@ TEST_F(TabStripActionContainerTest, MAYBE(OrdersButtonsCorrectlyWhenShown)) {
 
 TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
-  glic_nudge_controller_->UpdateNudgeLabel(
+  glic_nudge_controller()->UpdateNudgeLabel(
       web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
       /*activity=*/std::nullopt, base::NullCallback());
   ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
@@ -307,12 +320,9 @@ TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonUpdateLabel)) {
 
 TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
   BuildGlicContainer(/*use_otr_profile=*/false);
-  glic_nudge_controller_->SetHorizontalTabsDelegate(
-      tab_strip_action_container_.get());
-
   ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
 
-  glic_nudge_controller_->UpdateNudgeLabel(
+  glic_nudge_controller()->UpdateNudgeLabel(
       web_contents(), "TEST", /*prompt_suggestion=*/std::nullopt,
       /*activity=*/std::nullopt, base::NullCallback());
   ASSERT_TRUE(tab_strip_action_container_->GetIsShowingGlicNudge());

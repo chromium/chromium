@@ -300,8 +300,8 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   void OnBrowserWindowClosed(BrowserWindowInterface* browser);
 
   base::flat_map<BrowserWindowInterface*,
-                 std::unique_ptr<class GlicNudgeController>>
-      nudge_controllers_;
+                 std::unique_ptr<class GlicSplitButtonController>>
+      button_controllers_;
   base::flat_map<BrowserWindowInterface*, base::CallbackListSubscription>
       window_close_subscriptions_;
 #endif
