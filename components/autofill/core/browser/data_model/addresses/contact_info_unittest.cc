@@ -70,14 +70,14 @@ TEST_P(SetFullNameTest, SetFullName) {
   NameInfo name(/*alternative_names_supported=*/false);
   name.SetInfo(NAME_FULL, ASCIIToUTF16(test_case.full_name_input), "en-US");
   EXPECT_TRUE(name.FinalizeAfterImport());
-  EXPECT_EQ(ASCIIToUTF16(test_case.given_name_output),
-            name.GetInfo(NAME_FIRST, "en-US"));
-  EXPECT_EQ(ASCIIToUTF16(test_case.middle_name_output),
-            name.GetInfo(NAME_MIDDLE, "en-US"));
-  EXPECT_EQ(ASCIIToUTF16(test_case.family_name_output),
-            name.GetInfo(NAME_LAST, "en-US"));
-  EXPECT_EQ(ASCIIToUTF16(test_case.full_name_input),
-            name.GetInfo(NAME_FULL, "en-US"));
+  EXPECT_EQ(name.GetInfo(NAME_FIRST, "en-US"),
+            ASCIIToUTF16(test_case.given_name_output));
+  EXPECT_EQ(name.GetInfo(NAME_MIDDLE, "en-US"),
+            ASCIIToUTF16(test_case.middle_name_output));
+  EXPECT_EQ(name.GetInfo(NAME_LAST, "en-US"),
+            ASCIIToUTF16(test_case.family_name_output));
+  EXPECT_EQ(name.GetInfo(NAME_FULL, "en-US"),
+            ASCIIToUTF16(test_case.full_name_input));
 }
 
 class SetFullAlternativeNameTest
@@ -90,12 +90,12 @@ TEST_P(SetFullAlternativeNameTest, SetFullAlternativeName) {
   NameInfo name(/*alternative_names_supported=*/true);
   name.SetInfo(ALTERNATIVE_FULL_NAME, test_case.full_name_input, "ja");
   EXPECT_TRUE(name.FinalizeAfterImport());
-  EXPECT_EQ(test_case.given_name_output,
-            name.GetInfo(ALTERNATIVE_GIVEN_NAME, "ja"));
-  EXPECT_EQ(test_case.family_name_output,
-            name.GetInfo(ALTERNATIVE_FAMILY_NAME, "ja"));
-  EXPECT_EQ(test_case.full_name_input,
-            name.GetInfo(ALTERNATIVE_FULL_NAME, "ja"));
+  EXPECT_EQ(name.GetInfo(ALTERNATIVE_GIVEN_NAME, "ja"),
+            test_case.given_name_output);
+  EXPECT_EQ(name.GetInfo(ALTERNATIVE_FAMILY_NAME, "ja"),
+            test_case.family_name_output);
+  EXPECT_EQ(name.GetInfo(ALTERNATIVE_FULL_NAME, "ja"),
+            test_case.full_name_input);
 }
 
 INSTANTIATE_TEST_SUITE_P(
