@@ -154,9 +154,18 @@ bool XShmImagePool::Resize(const gfx::Size& pixel_size) {
   if (color_type == kUnknown_SkColorType)
     return false;
 
+  const auto* visual_info = connection_->GetVisualInfoFromId(visual_);
+  if (!visual_info) {
+    return false;
+  }
+  size_t row_bytes = RowBytesForVisualWidth(*visual_info, pixel_size.width());
+
   SkImageInfo image_info = SkImageInfo::Make(
       pixel_size.width(), pixel_size.height(), color_type, kPremul_SkAlphaType);
-  std::size_t needed_frame_bytes = image_info.computeMinByteSize();
+  std::size_t needed_frame_bytes = image_info.computeByteSize(row_bytes);
+  if (SkImageInfo::ByteSizeOverflowed(needed_frame_bytes)) {
+    return false;
+  }
 
   if (needed_frame_bytes > frame_bytes_ ||
       needed_frame_bytes < frame_bytes_ * kShmResizeShrinkThreshold) {
@@ -208,11 +217,6 @@ bool XShmImagePool::Resize(const gfx::Size& pixel_size) {
 #endif
     }
   }
-
-  const auto* visual_info = connection_->GetVisualInfoFromId(visual_);
-  if (!visual_info)
-    return false;
-  size_t row_bytes = RowBytesForVisualWidth(*visual_info, pixel_size.width());
 
   for (FrameState& state : frame_states_) {
     state.bitmap = SkBitmap();
