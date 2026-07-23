@@ -33,6 +33,11 @@ class SceneDelegateTest : public PlatformTest {
     id mock_session = OCMClassMock([UISceneSession class]);
     id mock_options = OCMClassMock([UISceneConnectionOptions class]);
 
+    // Attach the window to the UIWindowScene before connecting the
+    // scene as this is how UIKit uses the UIWindowSceneDelegate.
+    UIWindow* window = delegate_.window;
+    window.windowScene = mock_scene_;
+
     [delegate_ scene:mock_scene_
         willConnectToSession:mock_session
                      options:mock_options];
@@ -96,6 +101,11 @@ TEST_F(SceneDelegateTest, TestInitialConnectionWithShortcutSetsIntent) {
   OCMStub([mock_options shortcutItem]).andReturn(shortcut);
 
   EXPECT_FALSE(coldStartDelegate.sceneState.startupHadExternalIntent);
+
+  // Attach the window to the UIWindowScene before connecting the
+  // scene as this is how UIKit uses the UIWindowSceneDelegate.
+  UIWindow* window = coldStartDelegate.window;
+  window.windowScene = mock_scene_;
 
   [coldStartDelegate scene:mock_scene_
       willConnectToSession:OCMClassMock([UISceneSession class])

@@ -83,6 +83,7 @@ void SyncBreadcrumbsLog() {
 - (void)scene:(UIScene*)scene
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions {
+  CHECK(_window);
   CHECK(!_sceneState);
   MainApplicationDelegate* appDelegate =
       base::apple::ObjCCastStrict<MainApplicationDelegate>(
@@ -91,6 +92,7 @@ void SyncBreadcrumbsLog() {
   _sceneController = [[SceneController alloc] initWithSceneState:_sceneState];
   _sceneState.controller = _sceneController;
 
+  _sceneState.window = _window;
   _sceneState.scene = base::apple::ObjCCastStrict<UIWindowScene>(scene);
   _sceneState.currentOrigin = [self originFromSession:session
                                               options:connectionOptions];
@@ -131,7 +133,7 @@ void SyncBreadcrumbsLog() {
           UIApplication.sharedApplication.delegate);
   [appDelegate.appState sceneStateDisconnected:_sceneState];
 
-  _sceneState.window.rootViewController = nil;
+  _window.rootViewController = nil;
   _sceneState.activationLevel = SceneActivationLevelDisconnected;
   _sceneState = nil;
   // Setting the level to Disconnected had the side effect of tearing down the
