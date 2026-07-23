@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <type_traits>
+
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
 #include "third_party/blink/renderer/core/inspector/protocol/forward.h"
+#include "third_party/blink/renderer/core/inspector/v8_session_holder.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
@@ -75,7 +77,7 @@ class CORE_EXPORT DevToolsSession
   ~DevToolsSession() override;
 
   void ConnectToV8(v8_inspector::V8Inspector*, int context_group_id);
-  v8_inspector::V8InspectorSession* V8Session() { return v8_session_.get(); }
+  V8SessionHolder V8Session() { return v8_session_; }
 
   template <typename Agent, typename... Args>
   Agent* CreateAndAppend(Args&&... args) {
@@ -176,7 +178,7 @@ class CORE_EXPORT DevToolsSession
   HeapMojoAssociatedRemote<mojom::blink::DevToolsSessionHost> host_remote_{
       nullptr};
   IOSession* io_session_;
-  std::shared_ptr<v8_inspector::V8InspectorSession> v8_session_;
+  V8SessionHolder v8_session_;
   std::unique_ptr<protocol::UberDispatcher> inspector_backend_dispatcher_;
   InspectorSessionState session_state_;
   HeapVector<Member<InspectorAgent>> agents_;

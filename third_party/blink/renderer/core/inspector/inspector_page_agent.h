@@ -112,7 +112,6 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorPageAgent(InspectedFrames*,
                      Client*,
                      InspectorResourceContentLoader*,
-                     v8_inspector::V8InspectorSession*,
                      const String& script_to_evaluate_on_load,
                      InspectorInjectedScriptManager* injected_script_manager);
   InspectorPageAgent(const InspectorPageAgent&) = delete;
@@ -335,7 +334,6 @@ class CORE_EXPORT InspectorPageAgent final
   HeapHashMap<WeakMember<LocalFrame>, Vector<IsolatedWorldRequest>>
       pending_isolated_worlds_;
   HashMap<String, AdTracker::AdScriptAncestry> frame_ad_script_ancestry_;
-  v8_inspector::V8InspectorSession* v8_session_;
   Client* client_;
   Member<InspectorResourceContentLoader> inspector_resource_content_loader_;
   int resource_content_loader_client_id_;

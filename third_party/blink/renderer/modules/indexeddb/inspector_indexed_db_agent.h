@@ -49,13 +49,9 @@ class WorkerGlobalScope;
 class MODULES_EXPORT InspectorIndexedDBAgent final
     : public InspectorBaseAgent<protocol::IndexedDB::Metainfo> {
  public:
-  InspectorIndexedDBAgent(InspectedFrames*,
-                          WorkerGlobalScope*,
-                          v8_inspector::V8InspectorSession*);
+  InspectorIndexedDBAgent(InspectedFrames*, WorkerGlobalScope*);
   ~InspectorIndexedDBAgent() override;
   void Trace(Visitor*) const override;
-
-  v8_inspector::V8InspectorSession* v8_session() { return v8_session_; }
 
   void Dispose() override;
   void Restore() override;
@@ -122,8 +118,6 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
   Member<InspectedFrames> inspected_frames_;
   // This is null while inspecting frames.
   Member<WorkerGlobalScope> worker_global_scope_;
-  // This is null after `InspectorIndexedDBAgent` is disposed.
-  raw_ptr<v8_inspector::V8InspectorSession, DanglingUntriaged> v8_session_;
   InspectorAgentState::Boolean enabled_;
 };
 

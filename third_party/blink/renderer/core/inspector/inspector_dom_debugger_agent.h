@@ -63,9 +63,7 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
                                           v8::Local<v8::Value>,
                                           V8EventListenerInfoList* listeners);
 
-  InspectorDOMDebuggerAgent(v8::Isolate*,
-                            InspectorDOMAgent*,
-                            v8_inspector::V8InspectorSession*);
+  InspectorDOMDebuggerAgent(v8::Isolate*, InspectorDOMAgent*);
   InspectorDOMDebuggerAgent(const InspectorDOMDebuggerAgent&) = delete;
   InspectorDOMDebuggerAgent& operator=(const InspectorDOMDebuggerAgent&) =
       delete;
@@ -169,7 +167,6 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
 
   v8::Isolate* isolate_;
   Member<InspectorDOMAgent> dom_agent_;
-  v8_inspector::V8InspectorSession* v8_session_;
   HeapHashMap<Member<Node>, uint32_t> dom_breakpoints_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Boolean pause_on_all_xhrs_;

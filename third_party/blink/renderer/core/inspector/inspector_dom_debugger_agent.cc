@@ -202,11 +202,9 @@ void InspectorDOMDebuggerAgent::EventListenersInfoForTarget(
 
 InspectorDOMDebuggerAgent::InspectorDOMDebuggerAgent(
     v8::Isolate* isolate,
-    InspectorDOMAgent* dom_agent,
-    v8_inspector::V8InspectorSession* v8_session)
+    InspectorDOMAgent* dom_agent)
     : isolate_(isolate),
       dom_agent_(dom_agent),
-      v8_session_(v8_session),
       enabled_(&agent_state_, /*default_value=*/false),
       pause_on_all_xhrs_(&agent_state_, /*default_value=*/false),
       xhr_breakpoints_(&agent_state_, /*default_value=*/false),
@@ -445,7 +443,7 @@ protocol::Response InspectorDOMDebuggerAgent::getEventListeners(
   v8::Local<v8::Context> context;
   std::unique_ptr<v8_inspector::StringBuffer> error;
   std::unique_ptr<v8_inspector::StringBuffer> object_group;
-  if (!v8_session_->unwrapObject(&error, ToV8InspectorStringView(object_id),
+  if (!V8Session()->unwrapObject(&error, ToV8InspectorStringView(object_id),
                                  &object, &context, &object_group)) {
     return protocol::Response::ServerError(
         ToCoreString(std::move(error)).Utf8());
@@ -508,10 +506,11 @@ InspectorDOMDebuggerAgent::BuildObjectForEventListener(
           .setLineNumber(location.GetLineNumber())
           .setColumnNumber(location.GetColumnNumber())
           .build();
-  if (object_group_id.length()) {
-    value->setHandler(v8_session_->wrapObject(
-        context, function, object_group_id, false /* generatePreview */));
-    value->setOriginalHandler(v8_session_->wrapObject(
+  V8SessionHolder session = V8Session();
+  if (session && object_group_id.length()) {
+    value->setHandler(session->wrapObject(context, function, object_group_id,
+                                          false /* generatePreview */));
+    value->setOriginalHandler(session->wrapObject(
         context, info.handler, object_group_id, false /* generatePreview */));
   }
   if (info.backend_node_id)
@@ -581,7 +580,7 @@ void InspectorDOMDebuggerAgent::BreakProgramOnDOMEvent(Node* target,
   description->setString("type", DomTypeName(breakpoint_type));
   std::vector<uint8_t> json;
   ConvertCBORToJSON(SpanFrom(description->Serialize()), &json);
-  v8_session_->breakProgram(
+  V8Session()->breakProgram(
       ToV8InspectorStringView(
           v8_inspector::protocol::Debugger::API::Paused::ReasonEnum::DOM),
       v8_inspector::StringView(json.data(), json.size()));
@@ -635,9 +634,9 @@ void InspectorDOMDebuggerAgent::PauseOnNativeEventIfNeeded(
   auto listener = ToV8InspectorStringView(
       v8_inspector::protocol::Debugger::API::Paused::ReasonEnum::EventListener);
   if (synchronous)
-    v8_session_->breakProgram(listener, json_view);
+    V8Session()->breakProgram(listener, json_view);
   else
-    v8_session_->schedulePauseOnNextStatement(listener, json_view);
+    V8Session()->schedulePauseOnNextStatement(listener, json_view);
 }
 
 std::unique_ptr<protocol::DictionaryValue>
@@ -660,7 +659,7 @@ InspectorDOMDebuggerAgent::PreparePauseOnNativeEventData(
 }
 
 void InspectorDOMDebuggerAgent::CancelNativeBreakpoint() {
-  v8_session_->cancelPauseOnNextStatement();
+  V8Session()->cancelPauseOnNextStatement();
 }
 
 void InspectorDOMDebuggerAgent::Will(const probe::UserCallback& probe) {
@@ -724,7 +723,7 @@ void InspectorDOMDebuggerAgent::WillSendXMLHttpOrFetchNetworkRequest(
   event_data->setString("url", url);
   std::vector<uint8_t> json;
   ConvertCBORToJSON(SpanFrom(event_data->Serialize()), &json);
-  v8_session_->breakProgram(
+  V8Session()->breakProgram(
       ToV8InspectorStringView(
           v8_inspector::protocol::Debugger::API::Paused::ReasonEnum::XHR),
       v8_inspector::StringView(json.data(), json.size()));
@@ -798,7 +797,7 @@ void InspectorDOMDebuggerAgent::OnContentSecurityPolicyViolation(
   auto listener = ToV8InspectorStringView(
       v8_inspector::protocol::Debugger::API::Paused::ReasonEnum::CSPViolation);
 
-  v8_session_->breakProgram(listener, json_view);
+  V8Session()->breakProgram(listener, json_view);
 }
 
 }  // namespace blink

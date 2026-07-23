@@ -27,7 +27,7 @@ class DictionaryValue;
 class CORE_EXPORT InspectorEventBreakpointsAgent final
     : public InspectorBaseAgent<protocol::EventBreakpoints::Metainfo> {
  public:
-  explicit InspectorEventBreakpointsAgent(v8_inspector::V8InspectorSession*);
+  InspectorEventBreakpointsAgent();
   ~InspectorEventBreakpointsAgent() override;
 
   // Instrumentation probe methods.
@@ -67,7 +67,6 @@ class CORE_EXPORT InspectorEventBreakpointsAgent final
       const protocol::DictionaryValue& breakpoint_data);
   void UnscheduleAsyncBreakpoint();
 
-  v8_inspector::V8InspectorSession* const v8_session_;
   InspectorAgentState::BooleanMap event_listener_breakpoints_{
       &agent_state_, /*default_value=*/false};
 };

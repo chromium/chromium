@@ -67,11 +67,10 @@ class InspectorCSSAgentTest : public PageTestBase {
         MakeGarbageCollected<InspectedFrames>(frame);
     InspectorCSSAgent* agent = MakeGarbageCollected<InspectorCSSAgent>(
         MakeGarbageCollected<InspectorDOMAgent>(
-            GetDocument().GetExecutionContext()->GetIsolate(), inspected_frames,
-            nullptr),
+            GetDocument().GetExecutionContext()->GetIsolate(),
+            inspected_frames),
         inspected_frames,
-        MakeGarbageCollected<InspectorNetworkAgent>(inspected_frames, nullptr,
-                                                    nullptr),
+        MakeGarbageCollected<InspectorNetworkAgent>(inspected_frames, nullptr),
         MakeGarbageCollected<InspectorResourceContentLoader>(
             GetDocument().GetFrame()),
         MakeGarbageCollected<InspectorResourceContainer>(inspected_frames));

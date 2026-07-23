@@ -244,7 +244,7 @@ void DevToolsSession::ConnectToV8(v8_inspector::V8Inspector* inspector,
   const auto& cbor = v8_session_state_cbor_.Get();
   const auto* reattach_state = session_state_.ReattachState();
 
-  v8_session_ = inspector->connectShared(
+  v8_session_ = V8SessionHolder(inspector->connectShared(
       context_group_id, this,
       v8_inspector::StringView(cbor.data(), cbor.size()),
       client_is_trusted_ ? v8_inspector::V8Inspector::kFullyTrusted
@@ -255,7 +255,7 @@ void DevToolsSession::ConnectToV8(v8_inspector::V8Inspector* inspector,
       ConvertEmbedderState(
           reattach_state
               ? reattach_state->browser_originating_session_state.get()
-              : nullptr));
+              : nullptr)));
   injected_script_manager_->SetV8Session(v8_session_.get());
 }
 
@@ -266,7 +266,7 @@ bool DevToolsSession::IsDetached() {
 void DevToolsSession::Append(InspectorAgent* agent) {
   agents_.push_back(agent);
   agent->Init(agent_->probe_sink_.Get(), inspector_backend_dispatcher_.get(),
-              &session_state_);
+              &session_state_, v8_session_);
 }
 
 void DevToolsSession::Detach() {

@@ -494,7 +494,6 @@ class InspectorOverlayAgent::InspectorOverlayChromeClient final
 InspectorOverlayAgent::InspectorOverlayAgent(
     WebLocalFrameImpl* frame_impl,
     InspectedFrames* inspected_frames,
-    v8_inspector::V8InspectorSession* v8_session,
     InspectorDOMAgent* dom_agent)
     : frame_impl_(frame_impl),
       inspected_frames_(inspected_frames),
@@ -503,7 +502,6 @@ InspectorOverlayAgent::InspectorOverlayAgent(
           frame_impl->GetFrame()->GetTaskRunner(TaskType::kInternalInspector),
           this,
           &InspectorOverlayAgent::OnResizeTimer),
-      v8_session_(v8_session),
       dom_agent_(dom_agent),
       swallow_next_mouse_up_(false),
       backend_node_id_to_inspect_(0),
@@ -557,8 +555,9 @@ void InspectorOverlayAgent::Trace(Visitor* visitor) const {
 
 void InspectorOverlayAgent::Init(CoreProbeSink* instrumenting_agents,
                                  protocol::UberDispatcher* dispatcher,
-                                 InspectorSessionState* state) {
-  InspectorBaseAgent::Init(instrumenting_agents, dispatcher, state);
+                                 InspectorSessionState* state,
+                                 V8SessionHolder v8_session) {
+  InspectorBaseAgent::Init(instrumenting_agents, dispatcher, state, v8_session);
   const auto* reattach_state = state->ReattachState();
   if (reattach_state && reattach_state->browser_originating_session_state) {
     const auto& browser_state =
@@ -1848,7 +1847,7 @@ void InspectorOverlayAgent::PickTheRightTool() {
     inspect_tool = MakeGarbageCollected<ScreenshotTool>(this, GetFrontend());
   } else if (!paused_in_debugger_message_.empty()) {
     inspect_tool = MakeGarbageCollected<PausedInDebuggerTool>(
-        this, GetFrontend(), v8_session_, paused_in_debugger_message_);
+        this, GetFrontend(), V8Session().get(), paused_in_debugger_message_);
   } else if (persistent_tool_) {
     inspect_tool = persistent_tool_;
   }

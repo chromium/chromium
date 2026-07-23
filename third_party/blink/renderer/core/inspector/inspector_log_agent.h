@@ -10,10 +10,6 @@
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/log.h"
 
-namespace v8_inspector {
-class V8InspectorSession;
-}
-
 namespace blink {
 
 class ConsoleMessage;
@@ -23,9 +19,7 @@ class CORE_EXPORT InspectorLogAgent
     : public InspectorBaseAgent<protocol::Log::Metainfo>,
       public PerformanceMonitor::Client {
  public:
-  InspectorLogAgent(ConsoleMessageStorage*,
-                    PerformanceMonitor*,
-                    v8_inspector::V8InspectorSession*);
+  InspectorLogAgent(ConsoleMessageStorage*, PerformanceMonitor*);
   InspectorLogAgent(const InspectorLogAgent&) = delete;
   InspectorLogAgent& operator=(const InspectorLogAgent&) = delete;
   ~InspectorLogAgent() override;
@@ -56,7 +50,6 @@ class CORE_EXPORT InspectorLogAgent
 
   Member<ConsoleMessageStorage> storage_;
   Member<PerformanceMonitor> performance_monitor_;
-  v8_inspector::V8InspectorSession* v8_session_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::DoubleMap violation_thresholds_;
 };

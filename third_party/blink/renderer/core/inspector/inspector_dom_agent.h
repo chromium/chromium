@@ -88,9 +88,7 @@ class CORE_EXPORT InspectorDOMAgent final
       Document*);
   static ShadowRoot* UserAgentShadowRoot(Node*);
 
-  InspectorDOMAgent(v8::Isolate*,
-                    InspectedFrames*,
-                    v8_inspector::V8InspectorSession*);
+  InspectorDOMAgent(v8::Isolate*, InspectedFrames*);
   InspectorDOMAgent(const InspectorDOMAgent&) = delete;
   InspectorDOMAgent& operator=(const InspectorDOMAgent&) = delete;
   ~InspectorDOMAgent() override;
@@ -425,7 +423,6 @@ class CORE_EXPORT InspectorDOMAgent final
 
   v8::Isolate* isolate_;  // null after Dispose().
   Member<InspectedFrames> inspected_frames_;
-  v8_inspector::V8InspectorSession* v8_session_;  // null after Dispose().
   HeapHashSet<Member<DOMListener>> dom_listeners_;
   Member<NodeToIdMap> document_node_to_id_map_;
   // Owns node mappings for dangling nodes.

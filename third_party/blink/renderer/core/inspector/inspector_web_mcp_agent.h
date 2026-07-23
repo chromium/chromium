@@ -28,8 +28,7 @@ class ToolData;
 class CORE_EXPORT InspectorWebMCPAgent final
     : public InspectorBaseAgent<protocol::WebMCP::Metainfo> {
  public:
-  explicit InspectorWebMCPAgent(InspectedFrames* inspected_frames,
-                                v8_inspector::V8InspectorSession* v8_session);
+  explicit InspectorWebMCPAgent(InspectedFrames* inspected_frames);
   InspectorWebMCPAgent(const InspectorWebMCPAgent&) = delete;
   InspectorWebMCPAgent& operator=(const InspectorWebMCPAgent&) = delete;
   ~InspectorWebMCPAgent() override;
@@ -62,7 +61,6 @@ class CORE_EXPORT InspectorWebMCPAgent final
 
  private:
   Member<InspectedFrames> inspected_frames_;
-  v8_inspector::V8InspectorSession* v8_session_;
   InspectorAgentState::Boolean enabled_;
 
   ModelContext* GetModelContext(LocalFrame* frame);

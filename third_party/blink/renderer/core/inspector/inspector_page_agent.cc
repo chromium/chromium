@@ -499,11 +499,9 @@ InspectorPageAgent::InspectorPageAgent(
     InspectedFrames* inspected_frames,
     Client* client,
     InspectorResourceContentLoader* resource_content_loader,
-    v8_inspector::V8InspectorSession* v8_session,
     const String& script_to_evaluate_on_load,
     InspectorInjectedScriptManager* injected_script_manager)
     : inspected_frames_(inspected_frames),
-      v8_session_(v8_session),
       client_(client),
       inspector_resource_content_loader_(resource_content_loader),
       resource_content_loader_client_id_(
@@ -647,8 +645,8 @@ protocol::Response InspectorPageAgent::reload(
   }
   pending_script_injection_on_load_ =
       optional_script_to_evaluate_on_load.value_or("");
-  v8_session_->setSkipAllPauses(true);
-  v8_session_->resume(true /* terminate on resume */);
+  V8Session()->setSkipAllPauses(true);
+  V8Session()->resume(true /* terminate on resume */);
   return protocol::Response::Success();
 }
 
@@ -843,7 +841,7 @@ void InspectorPageAgent::SearchContentAfterResourcesContentLoaded(
     return;
   }
 
-  auto matches = v8_session_->searchInTextByLines(
+  auto matches = V8Session()->searchInTextByLines(
       ToV8InspectorStringView(content), ToV8InspectorStringView(query),
       case_sensitive, is_regex);
   callback->sendSuccess(
@@ -1055,11 +1053,11 @@ void InspectorPageAgent::DidCreateMainWorldContext(LocalFrame* frame) {
   }
   String script = std::move(script_injection_on_load_once_);
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
-  if (!script_state || !v8_session_) {
+  if (!script_state || !V8Session()) {
     return;
   }
 
-  v8_session_->evaluate(script_state->GetContext(),
+  V8Session()->evaluate(script_state->GetContext(),
                         ToV8InspectorStringView(script));
 }
 
@@ -2008,7 +2006,6 @@ void InspectorPageAgent::Trace(Visitor* visitor) const {
 void InspectorPageAgent::Dispose() {
   InspectorBaseAgent::Dispose();
   injected_script_manager_ = nullptr;
-  v8_session_ = nullptr;
 }
 
 protocol::Response InspectorPageAgent::getOriginTrials(

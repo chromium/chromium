@@ -14,16 +14,12 @@ namespace v8 {
 class Isolate;
 }
 
-namespace v8_inspector {
-class V8InspectorSession;
-}
-
 namespace blink {
 
 class CORE_EXPORT InspectorIOAgent final
     : public InspectorBaseAgent<protocol::IO::Metainfo> {
  public:
-  InspectorIOAgent(v8::Isolate*, v8_inspector::V8InspectorSession*);
+  explicit InspectorIOAgent(v8::Isolate*);
   InspectorIOAgent(const InspectorIOAgent&) = delete;
   InspectorIOAgent& operator=(const InspectorIOAgent&) = delete;
   ~InspectorIOAgent() override;
@@ -36,7 +32,6 @@ class CORE_EXPORT InspectorIOAgent final
                                  String* uuid) override;
 
   v8::Isolate* isolate_;
-  v8_inspector::V8InspectorSession* v8_session_;
 };
 
 }  // namespace blink

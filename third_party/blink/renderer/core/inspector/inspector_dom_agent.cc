@@ -466,13 +466,10 @@ PseudoId InspectorDOMAgent::ProtocolPseudoTypeToPseudoId(
   NOTREACHED();
 }
 
-InspectorDOMAgent::InspectorDOMAgent(
-    v8::Isolate* isolate,
-    InspectedFrames* inspected_frames,
-    v8_inspector::V8InspectorSession* v8_session)
+InspectorDOMAgent::InspectorDOMAgent(v8::Isolate* isolate,
+                                     InspectedFrames* inspected_frames)
     : isolate_(isolate),
       inspected_frames_(inspected_frames),
-      v8_session_(v8_session),
       document_node_to_id_map_(MakeGarbageCollected<NodeToIdMap>()),
       last_node_id_(1),
       suppress_attribute_modified_event_(false),
@@ -1650,10 +1647,10 @@ protocol::Response InspectorDOMAgent::NodeForRemoteObjectId(
   v8::Local<v8::Value> value;
   v8::Local<v8::Context> context;
   std::unique_ptr<v8_inspector::StringBuffer> error;
-  if (!v8_session_) {
+  if (!V8Session()) {
     return protocol::Response::ServerError("The agent has been detached");
   }
-  if (!v8_session_->unwrapObject(&error, ToV8InspectorStringView(object_id),
+  if (!V8Session()->unwrapObject(&error, ToV8InspectorStringView(object_id),
                                  &value, &context, nullptr)) {
     return protocol::Response::ServerError(
         ToCoreString(std::move(error)).Utf8());
@@ -1930,8 +1927,8 @@ protocol::Response InspectorDOMAgent::resolveNode(
   if (!node)
     return protocol::Response::ServerError("No node with given id found");
   // This should only be called via CDP, so agent should not be detached.
-  CHECK(v8_session_);
-  *result = ResolveNode(v8_session_, node, object_group_name,
+  CHECK(V8Session());
+  *result = ResolveNode(V8Session().get(), node, object_group_name,
                         std::move(execution_context_id));
   if (!*result) {
     return protocol::Response::ServerError(
@@ -3208,8 +3205,8 @@ protocol::Response InspectorDOMAgent::setInspectedNode(int node_id) {
   if (!response.IsSuccess())
     return response;
   // Method should only be called from CDP, so won't happen after detach.
-  CHECK(v8_session_);
-  v8_session_->addInspectedObject(std::make_unique<InspectableNode>(node));
+  CHECK(V8Session());
+  V8Session()->addInspectedObject(std::make_unique<InspectableNode>(node));
   return protocol::Response::Success();
 }
 
@@ -3344,12 +3341,12 @@ protocol::Response InspectorDOMAgent::getFileInfo(const String& object_id,
                                                   String* path) {
   // Method is only called from CDP, so will not be called after Detach().
   CHECK(isolate_);
-  CHECK(v8_session_);
+  CHECK(V8Session());
   v8::HandleScope handles(isolate_);
   v8::Local<v8::Value> value;
   v8::Local<v8::Context> context;
   std::unique_ptr<v8_inspector::StringBuffer> error;
-  if (!v8_session_->unwrapObject(&error, ToV8InspectorStringView(object_id),
+  if (!V8Session()->unwrapObject(&error, ToV8InspectorStringView(object_id),
                                  &value, &context, nullptr)) {
     return protocol::Response::ServerError(
         ToCoreString(std::move(error)).Utf8());
@@ -3445,7 +3442,6 @@ void InspectorDOMAgent::Trace(Visitor* visitor) const {
 void InspectorDOMAgent::Dispose() {
   InspectorBaseAgent<protocol::DOM::Metainfo>::Dispose();
   isolate_ = nullptr;
-  v8_session_ = nullptr;
 }
 
 }  // namespace blink

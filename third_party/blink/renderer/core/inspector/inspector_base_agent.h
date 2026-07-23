@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/inspector/inspector_session_state.h"
 #include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
+#include "third_party/blink/renderer/core/inspector/v8_session_holder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -55,7 +56,8 @@ class CORE_EXPORT InspectorAgent : public GarbageCollected<InspectorAgent> {
 
   virtual void Init(CoreProbeSink*,
                     protocol::UberDispatcher*,
-                    InspectorSessionState*) = 0;
+                    InspectorSessionState*,
+                    V8SessionHolder) = 0;
   virtual void Dispose() = 0;
 };
 
@@ -65,13 +67,15 @@ class InspectorBaseAgent : public InspectorAgent,
  public:
   void Init(CoreProbeSink* instrumenting_agents,
             protocol::UberDispatcher* dispatcher,
-            InspectorSessionState* session_state) override {
+            InspectorSessionState* session_state,
+            V8SessionHolder v8_session) override {
     instrumenting_agents_ = instrumenting_agents;
     frontend_.reset(
         new typename DomainMetainfo::FrontendClass(dispatcher->channel()));
     DomainMetainfo::DispatcherClass::wire(dispatcher, this);
 
     agent_state_.InitFrom(session_state);
+    v8_session_ = std::move(v8_session);
   }
 
   protocol::Response disable() override {
@@ -82,12 +86,15 @@ class InspectorBaseAgent : public InspectorAgent,
     disable();
     frontend_.reset();
     instrumenting_agents_ = nullptr;
+    v8_session_.reset();
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(instrumenting_agents_);
     InspectorAgent::Trace(visitor);
   }
+
+  V8SessionHolder V8Session() const { return v8_session_; }
 
  protected:
   InspectorBaseAgent() : agent_state_(DomainMetainfo::domainName) {}
@@ -97,11 +104,13 @@ class InspectorBaseAgent : public InspectorAgent,
   typename DomainMetainfo::FrontendClass* GetFrontend() const {
     return frontend_.get();
   }
+
   Member<CoreProbeSink> instrumenting_agents_;
   InspectorAgentState agent_state_;
 
  private:
   std::unique_ptr<typename DomainMetainfo::FrontendClass> frontend_;
+  V8SessionHolder v8_session_;
 };
 
 }  // namespace blink

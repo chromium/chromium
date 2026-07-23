@@ -141,6 +141,7 @@ blink_core_sources_inspector = [
   "thread_debugger_common_impl.h",
   "v8_inspector_string.cc",
   "v8_inspector_string.h",
+  "v8_session_holder.h",
   "worker_devtools_params.h",
   "worker_inspector_controller.cc",
   "worker_inspector_controller.h",

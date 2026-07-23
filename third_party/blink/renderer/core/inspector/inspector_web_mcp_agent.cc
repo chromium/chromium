@@ -16,11 +16,8 @@
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 namespace blink {
-InspectorWebMCPAgent::InspectorWebMCPAgent(
-    InspectedFrames* inspected_frames,
-    v8_inspector::V8InspectorSession* v8_session)
+InspectorWebMCPAgent::InspectorWebMCPAgent(InspectedFrames* inspected_frames)
     : inspected_frames_(inspected_frames),
-      v8_session_(v8_session),
       enabled_(&agent_state_, /*default_value=*/false) {}
 InspectorWebMCPAgent::~InspectorWebMCPAgent() = default;
 
@@ -235,7 +232,7 @@ void InspectorWebMCPAgent::WebMCPToolFailed(
   if (exception && !exception->first.IsEmpty()) {
     ScriptState* script_state = exception->second;
     ScriptState::Scope scope(script_state);
-    remote_object = v8_session_->wrapObject(script_state->GetContext(),
+    remote_object = V8Session()->wrapObject(script_state->GetContext(),
                                             exception->first.V8Value(),
                                             v8_inspector::StringView(), false);
   }

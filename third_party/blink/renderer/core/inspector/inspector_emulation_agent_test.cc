@@ -99,7 +99,8 @@ TEST_F(InspectorEmulationAgentTest, MultiSessionCPUThrottlingRestoreTest) {
 
   auto* agent_a = MakeGarbageCollected<InspectorEmulationAgent>(
       web_frame, *virtual_time_controller);
-  agent_a->Init(frame->GetProbeSink(), &dispatcher_a, &session_state_a);
+  agent_a->Init(frame->GetProbeSink(), &dispatcher_a, &session_state_a,
+                V8SessionHolder());
 
   DummyFrontendChannel channel_b;
   protocol::UberDispatcher dispatcher_b(&channel_b);
@@ -108,7 +109,8 @@ TEST_F(InspectorEmulationAgentTest, MultiSessionCPUThrottlingRestoreTest) {
 
   auto* agent_b = MakeGarbageCollected<InspectorEmulationAgent>(
       web_frame, *virtual_time_controller);
-  agent_b->Init(frame->GetProbeSink(), &dispatcher_b, &session_state_b);
+  agent_b->Init(frame->GetProbeSink(), &dispatcher_b, &session_state_b,
+                V8SessionHolder());
 
   // Initially, throttling thread should not exist (no throttling active).
   EXPECT_DOUBLE_EQ(blink::scheduler::ThreadCPUThrottler::GetInstance()
@@ -209,7 +211,8 @@ TEST_F(InspectorEmulationAgentTest, VirtualTimePolicyIteratorInvalidation) {
 
   auto* agent = MakeGarbageCollected<InspectorEmulationAgent>(
       web_frame, *virtual_time_controller);
-  agent->Init(frame->GetProbeSink(), &dispatcher, &session_state);
+  agent->Init(frame->GetProbeSink(), &dispatcher, &session_state,
+              V8SessionHolder());
 
   double base_ms = 0;
   agent->setVirtualTimePolicy(protocol::Emulation::VirtualTimePolicyEnum::Pause,

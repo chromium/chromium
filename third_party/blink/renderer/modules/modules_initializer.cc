@@ -295,7 +295,7 @@ void ModulesInitializer::InitInspectorAgentSession(
     InspectedFrames* inspected_frames,
     Page* page) const {
   session->CreateAndAppend<InspectorIndexedDBAgent>(
-      inspected_frames, /*worker_global_scope=*/nullptr, session->V8Session());
+      inspected_frames, /*worker_global_scope=*/nullptr);
   session->CreateAndAppend<DeviceOrientationInspectorAgent>(inspected_frames);
   session->CreateAndAppend<InspectorDOMStorageAgent>(inspected_frames);
   session->CreateAndAppend<InspectorAccessibilityAgent>(inspected_frames,
@@ -309,7 +309,7 @@ void ModulesInitializer::InitWorkerInspectorAgentSession(
     DevToolsSession* session,
     WorkerGlobalScope* worker_global_scope) const {
   session->CreateAndAppend<InspectorIndexedDBAgent>(
-      /*inspected_frames=*/nullptr, worker_global_scope, session->V8Session());
+      /*inspected_frames=*/nullptr, worker_global_scope);
 }
 
 void ModulesInitializer::OnClearWindowObjectInMainWorld(

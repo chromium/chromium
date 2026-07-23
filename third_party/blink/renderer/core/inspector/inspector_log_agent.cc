@@ -79,13 +79,10 @@ String MessageCategoryValue(mojom::blink::ConsoleMessageCategory category) {
 
 using protocol::Log::ViolationSetting;
 
-InspectorLogAgent::InspectorLogAgent(
-    ConsoleMessageStorage* storage,
-    PerformanceMonitor* performance_monitor,
-    v8_inspector::V8InspectorSession* v8_session)
+InspectorLogAgent::InspectorLogAgent(ConsoleMessageStorage* storage,
+                                     PerformanceMonitor* performance_monitor)
     : storage_(storage),
       performance_monitor_(performance_monitor),
-      v8_session_(v8_session),
       enabled_(&agent_state_, /*default_value=*/false),
       violation_thresholds_(&agent_state_, -1.0) {}
 
@@ -141,7 +138,7 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
     entry->setNetworkRequestId(message->RequestIdentifier());
   }
 
-  if (v8_session_ && message->Frame() && !message->Nodes().empty()) {
+  if (V8Session() && message->Frame() && !message->Nodes().empty()) {
     ScriptForbiddenScope::AllowUserAgentScript allow_script;
     auto remote_objects = std::make_unique<
         protocol::Array<v8_inspector::protocol::Runtime::API::RemoteObject>>();
@@ -150,11 +147,12 @@ void InspectorLogAgent::ConsoleMessageAdded(ConsoleMessage* message) {
           remote_object;
       Node* node = DOMNodeIds::NodeForId(node_id);
       if (node) {
-        remote_object = ResolveNode(v8_session_, node, "console", std::nullopt);
+        remote_object =
+            ResolveNode(V8Session().get(), node, "console", std::nullopt);
       }
       if (!remote_object) {
         remote_object =
-            NullRemoteObject(v8_session_, message->Frame(), "console");
+            NullRemoteObject(V8Session().get(), message->Frame(), "console");
       }
       if (remote_object) {
         remote_objects->emplace_back(std::move(remote_object));

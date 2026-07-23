@@ -86,11 +86,9 @@ double AsDoubleOrZero(Timing::V8Delay* value) {
 
 InspectorAnimationAgent::InspectorAnimationAgent(
     InspectedFrames* inspected_frames,
-    InspectorCSSAgent* css_agent,
-    v8_inspector::V8InspectorSession* v8_session)
+    InspectorCSSAgent* css_agent)
     : inspected_frames_(inspected_frames),
       css_agent_(css_agent),
-      v8_session_(v8_session),
       is_cloning_(false),
       enabled_(&agent_state_, /*default_value=*/false),
       playback_rate_(&agent_state_, /*default_value=*/1.0) {
@@ -509,9 +507,9 @@ protocol::Response InspectorAnimationAgent::resolveAnimation(
 
   ScriptState::Scope scope(script_state);
   static const char kAnimationObjectGroup[] = "animation";
-  v8_session_->releaseObjectGroup(
+  V8Session()->releaseObjectGroup(
       ToV8InspectorStringView(kAnimationObjectGroup));
-  *result = v8_session_->wrapObject(
+  *result = V8Session()->wrapObject(
       script_state->GetContext(),
       ToV8Traits<Animation>::ToV8(script_state, animation),
       ToV8InspectorStringView(kAnimationObjectGroup),
