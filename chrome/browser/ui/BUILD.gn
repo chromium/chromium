@@ -1704,7 +1704,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/new_tab_footer:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
-      "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings",
       "//chrome/browser/ui/webui/new_tab_page_third_party",
       "//chrome/browser/ui/webui/new_tab_page_third_party:impl",
       "//chrome/browser/ui/webui/ntp",
@@ -2296,10 +2295,7 @@ static_library("ui") {
     }
 
     if (!is_official_build) {
-      sources += [
-        "webui/new_tab_page/foo/foo_handler.cc",
-        "webui/new_tab_page/foo/foo_handler.h",
-      ]
+      deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
     }
   }
 

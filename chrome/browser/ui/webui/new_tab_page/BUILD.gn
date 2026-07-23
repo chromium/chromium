@@ -203,7 +203,10 @@ source_set("impl") {
   }
 
   if (!is_official_build) {
-    deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings" ]
+    deps += [
+      "//chrome/browser/ui/webui/new_tab_page/foo:foo_handler",
+      "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings",
+    ]
   }
 }
 
