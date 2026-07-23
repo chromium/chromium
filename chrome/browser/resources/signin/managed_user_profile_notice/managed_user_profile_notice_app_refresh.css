@@ -13,6 +13,10 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --color-button-background-prominent: var(--color-sys-primary);
+  --color-button-foreground-prominent: var(--color-sys-on-primary);
+  --color-button-foreground: var(--color-sys-primary);
+  --color-button-border: var(--color-sys-tonal-outline);
   color: var(--color-sys-on-surface);
   display: flex;
   flex-direction: column;
