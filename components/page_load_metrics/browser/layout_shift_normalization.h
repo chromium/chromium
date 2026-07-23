@@ -20,11 +20,12 @@ namespace page_load_metrics {
 class LayoutShiftNormalization {
  public:
   LayoutShiftNormalization();
-
-  LayoutShiftNormalization(const LayoutShiftNormalization&) = delete;
-  LayoutShiftNormalization& operator=(const LayoutShiftNormalization&) = delete;
-
+  LayoutShiftNormalization(const LayoutShiftNormalization&);
+  LayoutShiftNormalization(LayoutShiftNormalization&&);
+  LayoutShiftNormalization& operator=(const LayoutShiftNormalization&);
+  LayoutShiftNormalization& operator=(LayoutShiftNormalization&& other);
   ~LayoutShiftNormalization();
+
   const NormalizedCLSData& normalized_cls_data() const {
     return normalized_cls_data_;
   }

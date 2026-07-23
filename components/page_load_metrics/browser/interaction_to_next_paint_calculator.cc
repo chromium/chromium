@@ -12,6 +12,14 @@
 namespace page_load_metrics {
 
 InteractionToNextPaintCalculator::InteractionToNextPaintCalculator() = default;
+InteractionToNextPaintCalculator::InteractionToNextPaintCalculator(
+    const InteractionToNextPaintCalculator&) = default;
+InteractionToNextPaintCalculator::InteractionToNextPaintCalculator(
+    InteractionToNextPaintCalculator&&) = default;
+InteractionToNextPaintCalculator& InteractionToNextPaintCalculator::operator=(
+    const InteractionToNextPaintCalculator&) = default;
+InteractionToNextPaintCalculator& InteractionToNextPaintCalculator::operator=(
+    InteractionToNextPaintCalculator&&) = default;
 InteractionToNextPaintCalculator::~InteractionToNextPaintCalculator() = default;
 
 std::optional<InteractionToNextPaintCalculator::InteractionData>

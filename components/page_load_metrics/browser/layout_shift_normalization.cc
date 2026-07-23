@@ -9,6 +9,14 @@ constexpr auto NEW_SHIFT_BUFFER_WINDOW_DURATION = base::Seconds(5);
 constexpr auto MAX_SHIFT_BUFFER_SIZE = 300;
 
 LayoutShiftNormalization::LayoutShiftNormalization() = default;
+LayoutShiftNormalization::LayoutShiftNormalization(
+    const LayoutShiftNormalization&) = default;
+LayoutShiftNormalization::LayoutShiftNormalization(LayoutShiftNormalization&&) =
+    default;
+LayoutShiftNormalization& LayoutShiftNormalization::operator=(
+    const LayoutShiftNormalization&) = default;
+LayoutShiftNormalization& LayoutShiftNormalization::operator=(
+    LayoutShiftNormalization&&) = default;
 LayoutShiftNormalization::~LayoutShiftNormalization() = default;
 
 void LayoutShiftNormalization::AddNewLayoutShifts(
