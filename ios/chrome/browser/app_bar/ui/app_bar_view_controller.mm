@@ -91,16 +91,9 @@ UIImageSymbolConfiguration* AppBarSymbolConfiguration() {
                            scale:UIImageSymbolScaleMedium];
 }
 
-// Returns a default symbol with the common configuration.
-UIImage* DefaultAppBarSymbol(NSString* symbol_name) {
-  return DefaultSymbolWithConfiguration(symbol_name,
-                                        AppBarSymbolConfiguration());
-}
-
-// Returns a custom symbol with the common configuration.
-UIImage* CustomAppBarSymbol(NSString* symbol_name) {
-  return CustomSymbolWithConfiguration(symbol_name,
-                                       AppBarSymbolConfiguration());
+// Returns a symbol with the common configuration.
+UIImage* AppBarSymbol(Symbol symbol) {
+  return SymbolWithConfiguration(symbol, AppBarSymbolConfiguration());
 }
 
 // Returns the font size for the buttons.
@@ -812,16 +805,16 @@ UIColor* AssistantHighlightBackgroundColor() {
   switch (_assistantButtonState) {
     case AppBarAssistantButtonState::kAsk:
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-      image = CustomAppBarSymbol(kGeminiBrandedLogoSymbol);
+      image = AppBarSymbol(SymbolGeminiBrandedLogo);
 #else
-      image = DefaultAppBarSymbol(kGeminiNonBrandedLogoSymbol);
+      image = AppBarSymbol(SymbolGeminiNonBrandedLogo);
 #endif
       break;
     case AppBarAssistantButtonState::kAIM:
-      image = CustomAppBarSymbol(kMagnifyingglassSparkSymbol);
+      image = AppBarSymbol(SymbolMagnifyingglassSpark);
       break;
     case AppBarAssistantButtonState::kLens:
-      image = CustomAppBarSymbol(kCameraLensSymbol);
+      image = AppBarSymbol(SymbolCameraLens);
       break;
     case AppBarAssistantButtonState::kAccount:
       image =
@@ -829,13 +822,13 @@ UIColor* AssistantHighlightBackgroundColor() {
               ? [CircularImageFromImage(_assistantButtonAvatar,
                                         kButtonImageSize)
                     imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-              : DefaultAppBarSymbol(kPersonCropCircleSymbol);
+              : AppBarSymbol(SymbolPersonCropCircle);
       break;
   }
 
   UIButtonConfiguration* configuration = _assistantButton.configuration;
   configuration.title = title;
-  configuration.image = image ? image : CustomAppBarSymbol(kCameraLensSymbol);
+  configuration.image = image ? image : AppBarSymbol(SymbolCameraLens);
 
   [self animateAssistantButtonHighlight:_assistantButtonHighlighted];
 
@@ -899,7 +892,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 // Returns a new "New Tab" button.
 - (UIButton*)createOpenNewTabButton {
   NSString* title = [self openNewTabButtonTitleForCurrentState];
-  UIImage* image = DefaultAppBarSymbol(kPlusInCircleSymbol);
+  UIImage* image = AppBarSymbol(SymbolPlusInCircle);
   UIButton* button = [self buttonWithTitle:title image:image];
   button.accessibilityIdentifier = kAppBarNewTabButtonIdentifier;
 
@@ -1060,12 +1053,12 @@ UIColor* AssistantHighlightBackgroundColor() {
   // able to modify them as necessary.
   UIImageView* tabGridSymbolView = [[UIImageView alloc] init];
   tabGridSymbolView.translatesAutoresizingMaskIntoConstraints = NO;
-  tabGridSymbolView.image = DefaultAppBarSymbol(kAppSymbol);
+  tabGridSymbolView.image = AppBarSymbol(SymbolApp);
   _tabGridSymbolView = tabGridSymbolView;
 
   // Set up button.
   NSString* title = [self tabGridButtonTitleForCurrentState];
-  UIImage* image = DefaultAppBarSymbol(kAppSymbol);
+  UIImage* image = AppBarSymbol(SymbolApp);
   UIButton* button = [self buttonWithTitle:title image:image];
   button.accessibilityIdentifier = kAppBarTabGridButtonIdentifier;
   _tabGridButton = button;
@@ -1277,14 +1270,14 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Updates the Tab Grid button for the given Tab Grid showing state.
 - (void)updateTabGridButtonForTabGridVisibility {
-  NSString* symbolName;
+  Symbol symbol;
   BOOL shouldShowTabGroupSymbol = _isTabGroupVisible || _inTabGroup;
   if (shouldShowTabGroupSymbol) {
-    symbolName = _isTabGridVisible ? kSquareFilledOnSquareSymbol : kTabsSymbol;
+    symbol = _isTabGridVisible ? SymbolSquareFilledOnSquare : SymbolTabs;
   } else {
-    symbolName = _isTabGridVisible ? kAppFillSymbol : kAppSymbol;
+    symbol = _isTabGridVisible ? SymbolAppFill : SymbolApp;
   }
-  [_tabGridSymbolView setSymbolImage:DefaultAppBarSymbol(symbolName)
+  [_tabGridSymbolView setSymbolImage:AppBarSymbol(symbol)
                withContentTransition:[NSSymbolReplaceContentTransition
                                          replaceOffUpTransition]];
   _tabGridButton.accessibilityLabel = l10n_util::GetNSString(

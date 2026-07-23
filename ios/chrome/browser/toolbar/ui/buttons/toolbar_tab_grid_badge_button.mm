@@ -130,15 +130,14 @@ constexpr CGFloat kButtonImageSize = 23;
 #pragma mark - Private
 
 - (void)updateTabGridButtonAppearance {
-  NSString* symbolName = _inTabGroup ? kTabsSymbol : kAppSymbol;
+  Symbol symbol = _inTabGroup ? SymbolTabs : SymbolApp;
 
   // Point size configuration matching point size of standard symbols.
   UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
       configurationWithPointSize:kButtonImageSize
                           weight:UIImageSymbolWeightSemibold
                            scale:UIImageSymbolScaleMedium];
-  _tabGridSymbolView.image =
-      DefaultSymbolWithConfiguration(symbolName, symbolConfig);
+  _tabGridSymbolView.image = SymbolWithConfiguration(symbol, symbolConfig);
 
   if (_inTabGroup) {
     [NSLayoutConstraint
