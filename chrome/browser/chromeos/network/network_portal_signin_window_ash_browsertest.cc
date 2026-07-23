@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/chromeos/network/network_portal_signin_window.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "content/public/test/browser_test.h"
@@ -72,6 +75,57 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   Navigate(&params);
   EXPECT_EQ(params.browser, browser);
   EXPECT_EQ(params.tabstrip_index, -1);
+}
+
+class NetworkPortalSigninWindowAshGuestBrowserTest
+    : public MixinBasedInProcessBrowserTest {
+ protected:
+  ash::GuestSessionMixin guest_session_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshGuestBrowserTest,
+                       NavigateFromCaptivePortalSigninWindow) {
+  // In a Guest session the active user profile is itself off the record and is
+  // used directly as the captive portal signin profile.
+  ASSERT_TRUE(ProfileManager::GetActiveUserProfile()->IsOffTheRecord());
+
+  content::CreateAndLoadWebContentsObserver web_contents_observer;
+
+  auto* portal_signin_window = NetworkPortalSigninWindow::Get();
+  portal_signin_window->Show(
+      GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl()));
+  BrowserWindowInterface* browser =
+      portal_signin_window->GetBrowserForTesting();
+  ASSERT_TRUE(browser);
+
+  web_contents_observer.Wait();
+
+  content::WebContents* web_contents =
+      portal_signin_window->GetWebContentsForTesting();
+  ASSERT_TRUE(web_contents);
+  captive_portal::CaptivePortalTabHelper* helper =
+      captive_portal::CaptivePortalTabHelper::FromWebContents(web_contents);
+  ASSERT_TRUE(helper);
+  EXPECT_TRUE(helper->is_captive_portal_window());
+
+  // Navigate to a new tab from the captive portal signin window. The contents
+  // should be opened in the same tab even though the signin window shares its
+  // profile with the Guest browsing session.
+  NavigateParams params(browser, GURL("http://www.google.com"),
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+  EXPECT_EQ(params.browser, browser);
+  EXPECT_EQ(params.tabstrip_index, -1);
+
+  // Same, but with an explicit source WebContents (e.g. `window.open`).
+  NavigateParams source_params(browser, GURL("http://www.google.com"),
+                               ui::PageTransition::PAGE_TRANSITION_LINK);
+  source_params.source_contents = web_contents;
+  source_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&source_params);
+  EXPECT_EQ(source_params.browser, browser);
+  EXPECT_EQ(source_params.tabstrip_index, -1);
 }
 
 }  // namespace chromeos

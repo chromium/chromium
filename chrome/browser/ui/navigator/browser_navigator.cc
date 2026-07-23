@@ -150,6 +150,38 @@ bool IncognitoModeForced(const Profile* profile) {
          policy::IncognitoModeAvailability::kForced;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Returns true if the navigation request originated from a captive portal
+// sign-in window. In non-Guest sessions, this is identified by checking if the
+// initiating profile has a CaptivePortal OTRProfileID. In Guest sessions, where
+// the primary OTR profile is reused, this checks the CaptivePortalTabHelper on
+// the source WebContents.
+bool ShouldForceCaptivePortalSigninIntoCurrentTab(const NavigateParams& params,
+                                                  Browser* source_browser) {
+  if (params.initiating_profile->IsOffTheRecord() &&
+      params.initiating_profile->GetOTRProfileID().IsCaptivePortal()) {
+    return true;
+  }
+#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+  // In Guest mode the captive portal signin window uses the active profile
+  // rather than a dedicated captive portal OTR profile, so also check the
+  // source WebContents.
+  content::WebContents* source_contents = params.source_contents;
+  if (!source_contents && source_browser) {
+    source_contents = source_browser->tab_strip_model()->GetActiveWebContents();
+  }
+  if (source_contents) {
+    auto* helper = captive_portal::CaptivePortalTabHelper::FromWebContents(
+        source_contents);
+    if (helper && helper->is_captive_portal_window()) {
+      return true;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Change some of the navigation parameters based on the particular URL.
 // Returns true on success. Otherwise, if changing params leads the browser
 // into an erroneous state, returns false.
@@ -546,10 +578,9 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
   DCHECK(params->initiating_profile);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (params->initiating_profile->IsOffTheRecord() &&
-      params->initiating_profile->GetOTRProfileID().IsCaptivePortal() &&
-      params->disposition != WindowOpenDisposition::NEW_POPUP &&
+  if (params->disposition != WindowOpenDisposition::NEW_POPUP &&
       params->disposition != WindowOpenDisposition::CURRENT_TAB &&
+      ShouldForceCaptivePortalSigninIntoCurrentTab(*params, source_browser) &&
       !IncognitoModeForced(params->initiating_profile)) {
     // Navigation outside of the current tab or the initial popup window from a
     // captive portal signin window should be prevented.
