@@ -20,6 +20,7 @@ include_rules = [
   "+ios/chrome/browser/https_upgrades/model",
   "+ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h",
   "+ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h",
+  "+ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h",
   "+ios/chrome/browser/intents/model",
   "+ios/chrome/browser/lens/ui_bundled",
   "+ios/chrome/browser/location_bar",

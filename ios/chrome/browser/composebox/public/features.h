@@ -111,4 +111,10 @@ BASE_DECLARE_FEATURE(kComposeboxPhysicalKeyboardReturnKeys);
 // Returns whether the physical keyboard Return key behaviors are enabled.
 bool IsComposeboxPhysicalKeyboardReturnKeysEnabled();
 
+// Used to enable rich APC extraction when attaching tabs in Aim.
+BASE_DECLARE_FEATURE(kComposeboxAimRichAPCExtraction);
+
+// Returns whether rich APC extraction is enabled when attaching tabs in Aim.
+bool IsComposeboxAimRichAPCExtractionEnabled();
+
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_PUBLIC_FEATURES_H_

@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_browser_agent.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -1023,8 +1024,17 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     return;
   }
 
+  bool use_apc_v2 = IsComposeboxAimRichAPCExtractionEnabled();
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetGraftCrossOriginFrameContent(use_apc_v2)
+          .SetUseRichExtraction(use_apc_v2)
+          .SetExtractPaidContent(use_apc_v2)
+          .Build();
+
   PageContextWrapper* pageContextWrapper = [[PageContextWrapper alloc]
         initWithWebState:webState
+                  config:config
       completionCallback:base::BindOnce(^(
                              PageContextWrapperCallbackResponse response) {
         if (response.has_value()) {
