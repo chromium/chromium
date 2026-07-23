@@ -8,6 +8,8 @@
 #include <dawn/wire/WireClient.h>
 
 #include <memory>
+#include <optional>
+#include <span>
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
@@ -34,6 +36,8 @@ class DawnClientSerializer : public dawn::wire::CommandSerializer {
   // dawn::wire::CommandSerializer implementation
   size_t GetMaximumAllocationSize() const final;
   void* GetCmdSpace(size_t size) final;
+  std::optional<std::span<volatile std::byte>> GetCommandSpace(
+      size_t size) final;
 #if DCHECK_IS_ON()
   void OnSerializeError() final;
 #endif

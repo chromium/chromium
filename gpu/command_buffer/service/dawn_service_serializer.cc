@@ -15,6 +15,7 @@ namespace gpu::webgpu {
 
 namespace {
 
+constexpr size_t kWireAlignment = 8u;
 constexpr size_t kMaxWireBufferSize =
     std::min(static_cast<size_t>(IPC::mojom::kChannelMaximumMessageSize),
              static_cast<size_t>(1024 * 1024));
@@ -27,7 +28,8 @@ static_assert(kDawnReturnCmdsOffset < kMaxWireBufferSize, "");
 }  // anonymous namespace
 
 DawnServiceSerializer::CommandBuffer::CommandBuffer(size_t size)
-    : buffer(size), put_offset(kDawnReturnCmdsOffset) {
+    : buffer(base::AlignedUninit<std::byte>(size, kWireAlignment)),
+      put_offset(kDawnReturnCmdsOffset) {
   // We prepopulate the message with the header and keep it between flushes so
   // we never need to write it again.
   cmds::DawnReturnCommandsInfoHeader* header =
@@ -81,15 +83,23 @@ bool DawnServiceSerializer::SetWorkerPending(bool pending) {
 }
 
 void* DawnServiceSerializer::GetCmdSpace(size_t size) {
+  if (auto result = GetCommandSpace(size)) {
+    return const_cast<std::byte*>(result->data());
+  }
+  return nullptr;
+}
+
+std::optional<std::span<volatile std::byte>>
+DawnServiceSerializer::GetCommandSpace(size_t size) {
   if (gpu_main_thread_runner_->BelongsToCurrentThread()) {
-    return GetCmdSpaceMain(size);
+    return GetCommandSpaceMain(size);
   } else {
-    return GetCmdSpaceWorker(size);
+    return GetCommandSpaceWorker(size);
   }
 }
 
-void* DawnServiceSerializer::GetCmdSpace(CommandBuffer& cmd_buffer,
-                                         size_t size) {
+std::optional<std::span<volatile std::byte>>
+DawnServiceSerializer::GetCommandSpace(CommandBuffer& cmd_buffer, size_t size) {
   // Note: Dawn will never call this function with |size| >
   // GetMaximumAllocationSize().
   DCHECK_LE(cmd_buffer.put_offset, kMaxWireBufferSize);
@@ -103,34 +113,36 @@ void* DawnServiceSerializer::GetCmdSpace(CommandBuffer& cmd_buffer,
 
   uint32_t next_offset = cmd_buffer.put_offset + static_cast<uint32_t>(size);
   if (next_offset > cmd_buffer.buffer.size()) {
-    return nullptr;
+    return std::nullopt;
   }
 
-  uint8_t* ptr = &cmd_buffer.buffer[cmd_buffer.put_offset];
+  auto space = cmd_buffer.buffer.subspan(cmd_buffer.put_offset, size);
   cmd_buffer.put_offset = next_offset;
-  return ptr;
+  return std::span<std::byte>(space.data(), space.size());
 }
 
-void* DawnServiceSerializer::GetCmdSpaceMain(size_t size) {
+std::optional<std::span<volatile std::byte>>
+DawnServiceSerializer::GetCommandSpaceMain(size_t size) {
   DCHECK(gpu_main_thread_runner_->BelongsToCurrentThread());
 
-  void* ptr = GetCmdSpace(main_cmds_, size);
-  if (ptr == nullptr) {
+  auto span = GetCommandSpace(main_cmds_, size);
+  if (!span) {
     FlushMain();
-    ptr = GetCmdSpace(main_cmds_, size);
+    span = GetCommandSpace(main_cmds_, size);
   }
 
-  CHECK(ptr);
-  return ptr;
+  CHECK(span);
+  return span;
 }
 
-void* DawnServiceSerializer::GetCmdSpaceWorker(size_t size) {
+std::optional<std::span<volatile std::byte>>
+DawnServiceSerializer::GetCommandSpaceWorker(size_t size) {
   DCHECK(!gpu_main_thread_runner_->BelongsToCurrentThread());
 
-  void* ptr = nullptr;
+  std::optional<std::span<volatile std::byte>> span;
   {
     base::AutoLock guard(worker_lock_);
-    while ((ptr = GetCmdSpace(worker_cmds_, size)) == nullptr) {
+    while (!(span = GetCommandSpace(worker_cmds_, size))) {
       // When a thread requests for more space, we can assume that it has
       // completed recording any previous space it requested. So if we run out
       // of space and need to flush, we can decrement the number of threads
@@ -152,8 +164,8 @@ void* DawnServiceSerializer::GetCmdSpaceWorker(size_t size) {
   }
   worker_cv_.Signal();
 
-  CHECK(ptr);
-  return ptr;
+  CHECK(span);
+  return span;
 }
 
 void DawnServiceSerializer::Flush(CommandBuffer& cmd_buffer) {
@@ -178,7 +190,7 @@ void DawnServiceSerializer::Flush(CommandBuffer& cmd_buffer) {
   }
 
   client_->HandleReturnData(
-      base::span(cmd_buffer.buffer).first(cmd_buffer.put_offset));
+      base::as_bytes(cmd_buffer.buffer.first(cmd_buffer.put_offset)));
   cmd_buffer.put_offset = kDawnReturnCmdsOffset;
 }
 

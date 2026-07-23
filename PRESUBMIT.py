@@ -1007,8 +1007,16 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # Needed to implement Dawn wire interfaces.
             r'gpu/command_buffer/client/dawn_client_memory_transfer_service\.cc',
             r'gpu/command_buffer/client/dawn_client_memory_transfer_service\.h',
+            r'gpu/command_buffer/client/dawn_client_serializer\.cc',
+            r'gpu/command_buffer/client/dawn_client_serializer\.h',
+            r'gpu/command_buffer/client/dawn_wire_client\.cc',
             r'gpu/command_buffer/service/dawn_service_memory_transfer_service\.cc',
             r'gpu/command_buffer/service/dawn_service_memory_transfer_service\.h',
+            r'gpu/command_buffer/service/dawn_service_serializer\.cc',
+            r'gpu/command_buffer/service/dawn_service_serializer\.h',
+            r'gpu/command_buffer/service/dawn_wire_server\.cc',
+            r'third_party/blink/renderer/platform/graphics/gpu/dawn_command_serializers\.cc',
+            r'third_party/blink/renderer/platform/graphics/gpu/dawn_command_serializers\.h',
 
             # Needed to implement and use Dawn caching interfaces.
             r'gpu/command_buffer/service/dawn_caching_interface\.cc',

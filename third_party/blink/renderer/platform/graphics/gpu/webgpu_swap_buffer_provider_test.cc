@@ -18,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/dawn_command_serializers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_native_test_support.h"
@@ -158,40 +159,6 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
   wgpu::DawnTextureInternalUsageDescriptor texture_internal_usage_;
 };
 
-class WireSerializer : public dawn::wire::CommandSerializer {
- public:
-  size_t GetMaximumAllocationSize() const override {
-    return (buf_.size() * sizeof(decltype(buf_)::value_type));
-  }
-
-  void SetHandler(dawn::wire::CommandHandler* handler) { handler_ = handler; }
-
-  void* GetCmdSpace(size_t size) override {
-    if (size > (buf_.size() * sizeof(decltype(buf_)::value_type))) {
-      return nullptr;
-    }
-    if ((buf_.size() * sizeof(decltype(buf_)::value_type)) - size < offset_) {
-      if (!Flush()) {
-        return nullptr;
-      }
-    }
-    char* result = &buf_[offset_];
-    offset_ += size;
-    return result;
-  }
-
-  bool Flush() override {
-    bool success = handler_->HandleCommands(buf_.data(), offset_) != nullptr;
-    offset_ = 0;
-    return success;
-  }
-
- private:
-  size_t offset_ = 0;
-  std::array<char, 1024 * 1024> buf_;
-  raw_ptr<dawn::wire::CommandHandler> handler_;
-};
-
 }  // anonymous namespace
 
 class WebGPUSwapBufferProviderTest : public testing::Test {
@@ -262,7 +229,11 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
         gfx::HDRMetadata(), kTopLeft_GrSurfaceOrigin);
   }
 
-  void TearDown() override { Platform::UnsetMainThreadTaskRunnerForTesting(); }
+  void TearDown() override {
+    c2s_serializer_.SetHandler(nullptr);
+    s2c_serializer_.SetHandler(nullptr);
+    Platform::UnsetMainThreadTaskRunnerForTesting();
+  }
 
   gpu::webgpu::ReservedTexture ReserveTextureImpl(
       WGPUDevice device,
@@ -279,8 +250,8 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  WireSerializer c2s_serializer_;
-  WireSerializer s2c_serializer_;
+  DawnTestingCommandSerializer c2s_serializer_;
+  DawnTestingCommandSerializer s2c_serializer_;
   dawn::wire::WireClient wire_client_{{.serializer = &c2s_serializer_}};
   dawn::wire::WireServer wire_server_{{.procs = &GetDawnNativeProcs(),
                                        .serializer = &s2c_serializer_,

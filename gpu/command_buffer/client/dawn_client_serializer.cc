@@ -42,7 +42,8 @@ void DawnClientSerializer::OnSerializeError() {
 }
 #endif
 
-void* DawnClientSerializer::GetCmdSpace(size_t size) {
+std::optional<std::span<volatile std::byte>>
+DawnClientSerializer::GetCommandSpace(size_t size) {
   // Note: Dawn will never call this function with |size| >
   // GetMaximumAllocationSize().
   DCHECK_LE(size, GetMaximumAllocationSize());
@@ -57,16 +58,15 @@ void* DawnClientSerializer::GetCmdSpace(size_t size) {
   if (buffer_.valid() && !overflows_remaining_space) [[likely]] {
     // If the buffer is valid and has sufficient space, return the
     // pointer and increment the offset.
-    uint8_t* ptr = static_cast<uint8_t*>(buffer_.address());
-    UNSAFE_TODO(ptr += put_offset_);
-
+    auto space = buffer_.as_byte_span().subspan(put_offset_, size);
     put_offset_ += static_cast<uint32_t>(size);
-    return ptr;
+    return std::span<volatile std::byte>(
+        reinterpret_cast<std::byte*>(space.data()), space.size());
   }
 
   if (!transfer_buffer_) {
     // The serializer hit a fatal error and was disconnected.
-    return nullptr;
+    return std::nullopt;
   }
 
   // Otherwise, flush and reset the command stream.
@@ -75,18 +75,28 @@ void* DawnClientSerializer::GetCmdSpace(size_t size) {
   uint32_t allocation_size =
       std::max(buffer_initial_size_, static_cast<uint32_t>(size));
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
-               "DawnClientSerializer::GetCmdSpace", "bytes", allocation_size);
+               "DawnClientSerializer::GetCommandSpace", "bytes",
+               allocation_size);
   buffer_.Reset(allocation_size);
 
   if (!buffer_.valid() || buffer_.size() < size) {
     DLOG(ERROR) << "Dawn wire transfer buffer allocation failed";
     Disconnect();
     client_->OnGpuControlLostContextMaybeReentrant();
-    return nullptr;
+    return std::nullopt;
   }
 
   put_offset_ = size;
-  return buffer_.address();
+  auto space = buffer_.as_byte_span().first(size);
+  return std::span<volatile std::byte>(
+      reinterpret_cast<std::byte*>(space.data()), space.size());
+}
+
+void* DawnClientSerializer::GetCmdSpace(size_t size) {
+  if (auto result = GetCommandSpace(size)) {
+    return const_cast<std::byte*>(result->data());
+  }
+  return nullptr;
 }
 
 void DawnClientSerializer::Commit() {
