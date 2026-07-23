@@ -232,4 +232,5 @@ found in the LICENSE file.
     <dimen name="ai_chip_corner_radius">36dp</dimen>
     <dimen name="ai_chip_vertical_inset">6dp</dimen>
     <dimen name="ai_chip_horizontal_inset">2dp</dimen>
+    <dimen name="location_bar_desktop_popover_margin_end">7dp</dimen>
 </resources>

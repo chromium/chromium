@@ -553,6 +553,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
                     OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
                             getContext(), mBrandedColorScheme));
             mGlifBorderDrawable.setCornerRadius(mOmniboxSuggestionDropdownRoundCornerRadius);
+            updateLayoutAndBackground();
         }
     }
 
@@ -650,6 +651,14 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         }
 
         adjustBackgroundForSuggestions();
+        // TODO(https://crbug.com/537862653): Move this into the OmniboxResourceProvider.
+        if (mLayoutMode == FuseboxLayoutMode.SUGGESTIONS_POPOVER) {
+            layoutParams.setMarginEnd(
+                    resources.getDimensionPixelSize(
+                            R.dimen.location_bar_desktop_popover_margin_end));
+        } else {
+            layoutParams.setMarginEnd(0);
+        }
         setLayoutParams(layoutParams);
         mHolder.setLayoutParams(parentParams);
     }

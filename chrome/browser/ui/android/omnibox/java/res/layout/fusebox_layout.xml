@@ -84,7 +84,6 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ButtonCompat
         style="@style/AiModeChip"
         android:id="@+id/fusebox_activation_chip"
-        android:layout_marginEnd="4dp"
         android:visibility="gone"
         android:foreground="@drawable/activation_chip_focus_ring"
         app:verticalInset="8dp"
