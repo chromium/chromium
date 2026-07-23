@@ -9705,6 +9705,112 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(rwhi_a->IsContentRenderingTimeoutRunning());
 }
 
+// Tests that paint holding is not used when an opener-created popup that is
+// still on its initial empty document navigates cross-origin without user
+// activation. The popup's initial empty document inherits the opener's origin,
+// so the opener can write content into it; that content should not remain on
+// screen as paint-holding fallback once the omnibox shows the new cross-origin
+// URL.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    NoPaintHoldingForCrossOriginNavigationFromOpenerCreatedInitialDocument) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Navigate the opener to a.com.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Open a popup. Its initial empty document inherits a.com's origin and can
+  // be modified by the opener.
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(
+      shell(), "window.w = window.open(); w.document.body.innerHTML = 'hi';"));
+  Shell* popup = new_shell_observer.GetShell();
+  WebContentsImpl* popup_contents =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(popup_contents));
+
+  RenderFrameHostImpl* popup_rfh = popup_contents->GetPrimaryMainFrame();
+  EXPECT_TRUE(popup_rfh->frame_tree_node()->is_on_initial_empty_document());
+  EXPECT_FALSE(popup_rfh->GetLastCommittedOrigin().opaque());
+  EXPECT_FALSE(popup_rfh->HasStickyUserActivation());
+
+  // Navigate the popup cross-site from the opener, as a real page would.
+  TestNavigationObserver nav_observer(popup_contents);
+  EXPECT_TRUE(ExecJs(shell(), JsReplace("window.w.location = $1;", url_b),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  nav_observer.Wait();
+  EXPECT_TRUE(WaitForLoadStop(popup_contents));
+  EXPECT_EQ(url_b, popup_contents->GetLastCommittedURL());
+
+  // Paint holding should not be used for this cross-origin, non-activated
+  // navigation, even though it started from the initial empty document. The
+  // content rendering timeout is used here as a proxy for paint holding.
+  RenderWidgetHostImpl* popup_rwhi =
+      popup_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  EXPECT_FALSE(popup_rwhi->IsContentRenderingTimeoutRunning());
+}
+
+// Tests that paint holding is not used when an opener-created popup that is
+// still on its initial empty document navigates cross-origin without user
+// activation. Similar to the test above, but checks the case where the opener
+// has an opaque origin.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    NoPaintHoldingForCrossOriginNavigationFromOpaqueOpenerCreatedInitialDocument) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Navigate the opener to a.com.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Create a data: URL iframe to give the attacker an opaque origin.
+  TestNavigationObserver data_nav_observer(shell()->web_contents());
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    let f = document.createElement('iframe');
+    f.src = 'data:text/html,<script>window.w = window.open(); ' +
+            'w.document.body.innerHTML = "hi";</script>';
+    document.body.appendChild(f);
+  )"));
+  data_nav_observer.Wait();
+
+  RenderFrameHostImpl* data_rfh = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0));
+  EXPECT_TRUE(data_rfh->GetLastCommittedOrigin().opaque());
+
+  // Wait for the popup to be created and load.
+  Shell* popup = new_shell_observer.GetShell();
+  WebContentsImpl* popup_contents =
+      static_cast<WebContentsImpl*>(popup->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(popup_contents));
+
+  RenderFrameHostImpl* popup_rfh = popup_contents->GetPrimaryMainFrame();
+  EXPECT_TRUE(popup_rfh->frame_tree_node()->is_on_initial_empty_document());
+  EXPECT_TRUE(popup_rfh->GetLastCommittedOrigin().opaque());
+  EXPECT_TRUE(data_rfh->GetLastCommittedOrigin()
+                  .GetTupleOrPrecursorTupleIfOpaque()
+                  .IsValid());
+  EXPECT_EQ(
+      data_rfh->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque(),
+      popup_rfh->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque());
+  EXPECT_FALSE(popup_rfh->HasStickyUserActivation());
+
+  // Navigate the popup cross-site from the opener, as a real page would.
+  TestNavigationObserver nav_observer(popup_contents);
+  EXPECT_TRUE(ExecJs(data_rfh, JsReplace("window.w.location = $1;", url_b),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  nav_observer.Wait();
+  EXPECT_TRUE(WaitForLoadStop(popup_contents));
+  EXPECT_EQ(url_b, popup_contents->GetLastCommittedURL());
+
+  // Paint holding should not be used for this cross-origin, non-activated
+  // navigation.
+  RenderWidgetHostImpl* popup_rwhi =
+      popup_contents->GetPrimaryMainFrame()->GetRenderWidgetHost();
+  EXPECT_FALSE(popup_rwhi->IsContentRenderingTimeoutRunning());
+}
+
 namespace {
 
 class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
