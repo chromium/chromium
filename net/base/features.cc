@@ -831,7 +831,13 @@ BASE_FEATURE_PARAM(size_t,
 
 BASE_FEATURE(kTryQuicByDefault, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCloseQuicSessionsOnPreFreeze, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCloseQuicSessionsOnPreFreeze,
+#if BUILDFLAG(CRONET_BUILD)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE_PARAM(std::string,
                    kQuicOptions,

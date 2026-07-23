@@ -363,6 +363,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable HappyEyeballsV2 for WebView for now.
   // DISABLED_TEMPORARY: crbug.com/529948671
   aw_feature_overrides.DisableFeature(net::features::kHappyEyeballsV2);
+
+  // DISABLED_TEMPORARY: crbug.com/515084572
+  aw_feature_overrides.DisableFeature(
+      net::features::kCloseQuicSessionsOnPreFreeze);
 }
 
 void AwFieldTrials::EnableRuntimeMutableFeatures(
