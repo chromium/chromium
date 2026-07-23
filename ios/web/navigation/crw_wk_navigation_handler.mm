@@ -1193,10 +1193,25 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 - (void)webView:(WKWebView*)webView
      navigationAction:(WKNavigationAction*)navigationAction
     didBecomeDownload:(WKDownload*)WKDownload {
-  // As Chromium never return WKNavigationResponsePolicyDownload
-  // when deciding the policy for an action, WebKit should never
-  // invoke this delegate method.
-  NOTREACHED();
+  // Send navigation callback if the download occurs in the main frame.
+  if (navigationAction.targetFrame.mainFrame) {
+    const GURL actionURL = net::GURLWithNSURL(navigationAction.request.URL);
+    web::NavigationContextImpl* context =
+        [self contextForPendingMainFrameNavigationWithURL:actionURL];
+    if (context) {
+      context->SetIsDownload(true);
+      context->ReleaseItem();
+      self.webStateImpl->OnNavigationFinished(context);
+    }
+  }
+
+  // Since the navigation became a download, it will never commit as a webpage.
+  // Discard any pending navigation items to prevent a stale loading state.
+  self.navigationManagerImpl->DiscardNonCommittedItems();
+
+  [_nativeTaskBridges
+      addObject:[[DownloadNativeTaskBridge alloc] initWithDownload:WKDownload
+                                                          delegate:self]];
 }
 
 - (void)webView:(WKWebView*)webView
@@ -1731,6 +1746,15 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   if (policyDecision.ShouldCancelNavigation()) {
     decisionHandler(WKNavigationActionPolicyCancel);
+    return;
+  }
+
+  // Check the scheme directly on NSURL to avoid constructing a full GURL for
+  // potentially large data: URLs.
+  if (action.shouldPerformDownload &&
+      [action.request.URL.scheme caseInsensitiveCompare:@"data"] ==
+          NSOrderedSame) {
+    decisionHandler(WKNavigationActionPolicyDownload);
     return;
   }
 
