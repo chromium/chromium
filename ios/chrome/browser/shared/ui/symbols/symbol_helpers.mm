@@ -55,7 +55,7 @@ UIImage* DefaultCloseButtonForToolbar() {
       configurationWithPointSize:kCloseSymbolSize
                           weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
-  return DefaultSymbolWithConfiguration(kXMarkSymbol, configuration);
+  return SymbolWithConfiguration(SymbolXMark, configuration);
 }
 
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,

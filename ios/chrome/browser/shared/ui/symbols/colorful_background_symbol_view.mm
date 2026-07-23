@@ -52,16 +52,12 @@ const CGFloat kSymbolSize = 18;
   self.layer.borderColor = [borderColor CGColor];
 }
 
-- (void)setSymbolName:(NSString*)symbolName systemSymbol:(BOOL)systemSymbol {
-  if (systemSymbol) {
-    _symbolView.image = DefaultSymbolWithPointSize(symbolName, kSymbolSize);
-  } else {
-    _symbolView.image = CustomSymbolWithPointSize(symbolName, kSymbolSize);
-  }
+- (void)setSymbol:(Symbol)symbol {
+  _symbolView.image = SymbolWithPointSize(symbol, kSymbolSize);
 }
 
-- (void)setSymbol:(UIImage*)symbol {
-  _symbolView.image = symbol;
+- (void)setSymbolImage:(UIImage*)symbolImage {
+  _symbolView.image = symbolImage;
 }
 
 - (UIColor*)symbolTintColor {

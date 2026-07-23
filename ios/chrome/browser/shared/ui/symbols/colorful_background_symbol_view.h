@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+
 // A view used to display a symbol with a colorful background.
 @interface ColorfulBackgroundSymbolView : UIView
 
@@ -22,15 +24,13 @@
 // make it white).
 @property(nonatomic, strong) UIColor* symbolTintColor;
 
-// Sets the symbol to the symbol named `symbolName`, `systemSymbol` is used to
-// check if it is a symbol provided by the system or not. When using this
-// method, the default size is used.
-- (void)setSymbolName:(NSString*)symbolName systemSymbol:(BOOL)systemSymbol;
+// Sets the symbol using the Symbol enum.
+- (void)setSymbol:(Symbol)symbol;
 
-// Sets the symbol.
+// Sets the symbol image.
 // @discussion
-// Use this setter when your symbol needs to be of a custom size.
-- (void)setSymbol:(UIImage*)symbol;
+// Use this setter when your symbol needs to be of a custom size or image.
+- (void)setSymbolImage:(UIImage*)symbolImage;
 
 // Resets all the properties of the view, making it ready to be used again.
 - (void)resetView;

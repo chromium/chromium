@@ -105,7 +105,7 @@ const CGFloat kSymbolInsetMultiplier = 0.7;
     }
     case OmniboxIconTypeFavicon: {
       // Set fallback icon
-      [_colorfulView setSymbol:omniboxIcon.iconImage];
+      [_colorfulView setSymbolImage:omniboxIcon.iconImage];
 
       // Load favicon.
       GURL pageURL = omniboxIcon.imageURL.gurl;
@@ -116,12 +116,12 @@ const CGFloat kSymbolInsetMultiplier = 0.7;
                                      pageURL != weakOmniboxIcon.imageURL.gurl) {
                                    return;
                                  }
-                                 [weakColorfulView setSymbol:image];
+                                 [weakColorfulView setSymbolImage:image];
                                }];
       break;
     }
     case OmniboxIconTypeSuggestionIcon:
-      [_colorfulView setSymbol:omniboxIcon.iconImage];
+      [_colorfulView setSymbolImage:omniboxIcon.iconImage];
       break;
   }
   [UIView performWithoutAnimation:^{

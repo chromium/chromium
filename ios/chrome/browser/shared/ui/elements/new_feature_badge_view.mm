@@ -26,7 +26,7 @@
     self.layoutMargins = UIEdgeInsetsZero;
 
     _badge = [[UIImageView alloc]
-        initWithImage:DefaultSymbolWithPointSize(kSealFillSymbol, badgeSize)];
+        initWithImage:SymbolWithPointSize(SymbolSealFill, badgeSize)];
     _badge.contentMode = UIViewContentModeScaleAspectFit;
     _badge.translatesAutoresizingMaskIntoConstraints = NO;
     _badge.tintColor = [UIColor colorNamed:kBlue600Color];
