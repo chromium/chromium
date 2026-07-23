@@ -859,6 +859,16 @@ bool GlicEnabling::IsEnabledForProfile(Profile* profile) {
 }
 
 // static
+bool GlicEnabling::IsEnabledForFirstRunProfile(
+    Profile* profile,
+    std::string_view permanent_country,
+    std::string_view session_country,
+    const AccountInfo& account_info) {
+  // TODO(b/535205872): to be implemented.
+  return false;
+}
+
+// static
 bool GlicEnabling::WasPreviouslyNotAllowed(Profile* profile) {
   return profile &&
          profile->GetPrefs()->GetBoolean(prefs::kGlicPreviouslyNotAllowed);

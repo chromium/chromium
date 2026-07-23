@@ -148,8 +148,7 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
   // Returns whether the account capability permits using Glic features that are
   // available only to adult users.
-  static bool CanUseAdultFeatures(
-      const AccountCapabilities& capabilities);
+  static bool CanUseAdultFeatures(const AccountCapabilities& capabilities);
 
   // Returns whether the OS version is supported.
   static bool IsOsVersionSupported();
@@ -185,6 +184,16 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // This is a convenience method for code outside of //chrome/browser/glic.
   // Code inside should use instance method IsAllowed() instead.
   static bool IsEnabledForProfile(Profile* profile);
+
+  // Evaluates whether the GiC opt-in should be shown during the First Run
+  // Experience. Unlike `IsEnabledForProfile`, this method does not rely on
+  // the standard country determination methods, nor does it query
+  // `IdentityManager` directly. The caller is responsible for resolving the
+  // country data and account capabilities and providing them as arguments.
+  static bool IsEnabledForFirstRunProfile(Profile* profile,
+                                          std::string_view permanent_country,
+                                          std::string_view session_country,
+                                          const AccountInfo& account_info);
 
   // Returns true if the user was previously determined to be ineligible for
   // Glic.
