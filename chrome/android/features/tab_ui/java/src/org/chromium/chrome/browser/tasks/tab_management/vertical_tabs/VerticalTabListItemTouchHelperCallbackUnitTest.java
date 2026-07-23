@@ -28,7 +28,9 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroupOverlay;
 
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -76,10 +78,14 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private RecyclerView mRecyclerView;
+    @Mock private LinearLayoutManager mLinearLayoutManager;
+    @Mock private GridLayoutManager mGridLayoutManager;
     @Mock private ViewGroupOverlay mViewGroupOverlay;
     @Mock private ItemTouchHelper2 mItemTouchHelper;
+
     @Mock
     private TabGridItemLongPressOrchestrator.OnLongPressTabItemEventListener mOnLongPressListener;
+
     @Mock private TabGridItemLongPressOrchestrator mOrchestrator;
     @Mock private VerticalTabListItemTouchHelperCallback.OnDragOutListener mOnDragOutListener;
     @Mock private Canvas mCanvas;
@@ -162,9 +168,14 @@ public class VerticalTabListItemTouchHelperCallbackUnitTest {
     @Test
     @SmallTest
     public void testGetMovementFlags_PinnedTab() {
-        // Pinned tabs can move UP, DOWN, LEFT, and RIGHT.
-        mPropertyModel.set(TabProperties.IS_PINNED, true);
+        when(mViewHolder.getItemViewType()).thenReturn(TabProperties.UiType.PINNED_TAB);
 
+        // Pinned tab placeholders in the main vertical list (LinearLayoutManager) return 0.
+        when(mRecyclerView.getLayoutManager()).thenReturn(mLinearLayoutManager);
+        assertEquals(0, mCallback.getMovementFlags(mRecyclerView, mViewHolder));
+
+        // Pinned tab cards in the top strip (GridLayoutManager) return movement flags.
+        when(mRecyclerView.getLayoutManager()).thenReturn(mGridLayoutManager);
         int flags = mCallback.getMovementFlags(mRecyclerView, mViewHolder);
         int dragFlags =
                 ItemTouchHelper.UP

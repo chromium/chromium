@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -114,6 +115,13 @@ public class VerticalTabListItemTouchHelperCallback extends TabListItemTouchHelp
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         if (!hasTabPropertiesModel(viewHolder)) return 0;
+        // Pinned tab hidden placeholders in the main vertical list (LinearLayoutManager) are
+        // non-draggable.
+        // Pinned tab cards in the top strip (GridLayoutManager) remain draggable in 2D.
+        if (viewHolder.getItemViewType() == TabProperties.UiType.PINNED_TAB
+                && !(recyclerView.getLayoutManager() instanceof GridLayoutManager)) {
+            return 0;
+        }
 
         // All tabs visually move vertically unless pinned, but we universally enable
         // horizontal flags so that ItemTouchHelper provides us with horizontal cursor tracking.
