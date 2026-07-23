@@ -7174,27 +7174,6 @@
             ]
         }
     ],
-    "ContextualCueingDynamicCues": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "UseDynamicCues": "true"
-                    },
-                    "enable_features": [
-                        "ContextualCueing"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextualCueingV2": [
         {
             "platforms": [
@@ -7207,11 +7186,11 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "ContextualCueingV2EnablePrivateInsightsLogging": "true",
                         "ContextualCueingV2UsePrivateAi": "true"
                     },
                     "enable_features": [
                         "ContextualCueingV2",
-                        "ContextualCueingV2EnablePrivateInsightsLogging",
                         "GlicContextualCueingV2AutoSubmit"
                     ]
                 }
@@ -18021,7 +18000,7 @@
                         "PassageEmbedderMinRequiredRamMb ": "4096"
                     },
                     "enable_features": [
-                        "OnDeviceCategoryClassifer",
+                        "OnDeviceCategoryClassifier",
                         "PassageEmbedder"
                     ]
                 }
