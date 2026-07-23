@@ -224,6 +224,11 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
                           serverID:(NSString*)serverID {
+  // If the bottom sheet migration is enabled, the UI will be dismissed after
+  // `didRequestDismissal` is called, so we don't need to do any work here.
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    return;
+  }
   [self dismissAndRecordMetrics];
 }
 
