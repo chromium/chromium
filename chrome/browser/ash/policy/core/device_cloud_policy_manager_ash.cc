@@ -196,6 +196,8 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
     std::unique_ptr<CloudPolicyClient> client_to_connect,
     ash::InstallAttributes* install_attributes) {
   CHECK(!service());
+  CHECK(local_state_);
+  CHECK(shared_url_loader_factory_);
 
   // TODO(crbug.com/404133022): Inject NetworkQualityTracker to this class.
   // Since NetworkQualityTracker is created after DeviceCommandsFactoryAsh, it
@@ -234,7 +236,6 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   core()->TrackRefreshDelayPref(local_state_,
                                 ash::prefs::kDevicePolicyRefreshRate);
 
-  CHECK(shared_url_loader_factory_);
   external_data_manager_->Connect(shared_url_loader_factory_);
 
   enrollment_certificate_uploader_ =
@@ -243,7 +244,6 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   enrollment_id_upload_manager_ =
       std::make_unique<ash::attestation::EnrollmentIdUploadManager>(
           client(), enrollment_certificate_uploader_.get());
-  CHECK(local_state_);
   lookup_key_uploader_ = std::make_unique<LookupKeyUploader>(
       device_store(), local_state_, enrollment_certificate_uploader_.get());
   euicc_status_uploader_ =
@@ -262,6 +262,7 @@ void DeviceCloudPolicyManagerAsh::StartConnection(
   // Start remote commands services now that we have setup everything they need.
   core()->StartRemoteCommandsService(
       std::make_unique<DeviceCommandsFactoryAsh>(
+          local_state_, shared_url_loader_factory_,
           machine_certificate_uploader_.get(), *crd_delegate_),
       PolicyInvalidationScope::kDevice);
 
