@@ -702,6 +702,7 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
       PageContextWrapperConfigBuilder()
           .SetUseRichExtraction(useRichExtraction)
           .SetUseRichExtractionWithActionable(actionableMode)
+          .SetIncludeSameSiteOnly(actionableMode)
           .Build();
 
   __weak __typeof(self) weakSelf = self;
