@@ -1312,7 +1312,7 @@ BASE_FEATURE(kOnDeviceSpeechRecognition, base::FEATURE_DISABLED_BY_DEFAULT);
 // Gates syncing of the first batch of visual accessibility settings so the
 // rollout can be staged and rolled back independently if issues surface.
 BASE_FEATURE(kOsSyncAccessibilitySettingsBatch1,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Gates syncing of the second batch of accessibility settings (reduced
 // animations and caption styling) so the rollout can proceed in small,
@@ -1323,7 +1323,7 @@ BASE_FEATURE(kOsSyncAccessibilitySettingsBatch2,
 // Gates syncing of the third batch of accessibility settings (screen + docked
 // magnifiers and select-to-speak toggles) so rollout can proceed incrementally.
 BASE_FEATURE(kOsSyncAccessibilitySettingsBatch3,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether the OneDrive upload flow should immediately prompt the user to
 // re-authenticate without first showing a notification.

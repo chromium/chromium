@@ -49,7 +49,9 @@ TEST_F(AccessibilitySyncPrefsTest, NoBatchesEnabledReturnsEmpty) {
 TEST_F(AccessibilitySyncPrefsTest, OnlyEnabledBatchesReturned) {
   {  // Batch 1.
     scoped_feature_list_.InitWithFeatures(
-        {features::kOsSyncAccessibilitySettingsBatch1}, {});
+        {features::kOsSyncAccessibilitySettingsBatch1},
+        {features::kOsSyncAccessibilitySettingsBatch2,
+         features::kOsSyncAccessibilitySettingsBatch3});
     auto prefs = GetAccessibilityPrefBatchesWithSyncEnabled();
     EXPECT_FALSE(prefs.empty());
   }
@@ -57,7 +59,9 @@ TEST_F(AccessibilitySyncPrefsTest, OnlyEnabledBatchesReturned) {
   {  // Batch 2.
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kOsSyncAccessibilitySettingsBatch2}, {});
+        {features::kOsSyncAccessibilitySettingsBatch2},
+        {features::kOsSyncAccessibilitySettingsBatch1,
+         features::kOsSyncAccessibilitySettingsBatch3});
     auto prefs = GetAccessibilityPrefBatchesWithSyncEnabled();
     EXPECT_FALSE(prefs.empty());
   }
@@ -65,7 +69,9 @@ TEST_F(AccessibilitySyncPrefsTest, OnlyEnabledBatchesReturned) {
   {  // Batch 3.
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kOsSyncAccessibilitySettingsBatch3}, {});
+        {features::kOsSyncAccessibilitySettingsBatch3},
+        {features::kOsSyncAccessibilitySettingsBatch1,
+         features::kOsSyncAccessibilitySettingsBatch2});
     auto prefs = GetAccessibilityPrefBatchesWithSyncEnabled();
     EXPECT_FALSE(prefs.empty());
   }
