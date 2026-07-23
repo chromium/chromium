@@ -54,7 +54,6 @@
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillAddressUserPerception[] =
     "autofill-address-users-perception";
-constexpr char kHatsSurveyTriggerAutofillAiFilling[] = "autofill-ai-filling";
 constexpr char kHatsSurveyTriggerAutofillAiSavePrompt[] =
     "autofill-ai-walletable-entity-save-prompt";
 constexpr char kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion[] =
@@ -204,6 +203,7 @@ constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
     "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
+constexpr char kHatsSurveyTriggerAutofillAiFilling[] = "autofill-ai-filling";
 constexpr char kHatsSurveyTriggerPermissionsPrompt[] = "permissions-prompt";
 constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =
     "omnibox-on-focus-happiness";
@@ -484,14 +484,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "Manually filled to an unknown type", "Total corrected",
           "Total filled", "Total unfilled", "Total manually filled",
           "Total number of fields"});
-
-  survey_configs.emplace_back(
-      &::autofill::features::kAutofillAiFillingSurvey,
-      kHatsSurveyTriggerAutofillAiFilling,
-      /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"User accepted suggestion"},
-      std::vector<std::string>{"Entity type", "Triggering field types",
-                               "Saved entities"});
 
   survey_configs.emplace_back(
       &::autofill::features::kAutofillAiSavePromptSurvey,
@@ -888,6 +880,14 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{}, signin_string_psd_fields);
 
 #endif  // #if !BUILDFLAG(IS_ANDROID)
+
+  survey_configs.emplace_back(
+      &::autofill::features::kAutofillAiFillingSurvey,
+      kHatsSurveyTriggerAutofillAiFilling,
+      /*presupplied_trigger_id=*/std::nullopt,
+      std::vector<std::string>{"User accepted suggestion"},
+      std::vector<std::string>{"Entity type", "Triggering field types",
+                               "Saved entities"});
 
   survey_configs.emplace_back(
       &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::

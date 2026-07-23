@@ -238,6 +238,18 @@ AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
       source == AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
 }
 
+// Returns a string representation of `saved_entities` (comma separated). Used
+// to include in product data to hats surveys.
+std::string GetStringRepresentatioOfSavedEntitiesTypes(
+    const base::flat_set<EntityTypeName>& saved_entities) {
+  return base::JoinString(
+      base::ToVector(saved_entities,
+                     [](EntityTypeName name) {
+                       return std::string(EntityType(name).name_as_string());
+                     }),
+      ",");
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 const base::Feature& GetFeature(AutofillClient::IphFeature iph_feature) {
   switch (iph_feature) {
@@ -253,18 +265,6 @@ ui::ElementIdentifier GetElementId(AutofillClient::IphFeature iph_feature) {
       return PopupViewViews::kAutofillAiOptInIphElementId;
   }
   NOTREACHED();
-}
-
-// Returns a string representation of `saved_entities` (comma separated). Used
-// to include in product data to hats surveys.
-std::string GetStringRepresentatioOfSavedEntitiesTypes(
-    const base::flat_set<EntityTypeName>& saved_entities) {
-  return base::JoinString(
-      base::ToVector(saved_entities,
-                     [](EntityTypeName name) {
-                       return std::string(EntityType(name).name_as_string());
-                     }),
-      ",");
 }
 
 bool CanTriggerAutofillAiSavePromptSurveyForEntityType(EntityType type) {
@@ -1002,7 +1002,6 @@ void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
     EntityType entity_type,
     const base::flat_set<EntityTypeName>& saved_entities,
     const FieldTypeSet& triggering_field_types) {
-#if !BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* hats_service =
@@ -1016,7 +1015,6 @@ void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
        {"Triggering field types", FieldTypeSetToString(triggering_field_types)},
        {"Saved entities",
         GetStringRepresentatioOfSavedEntitiesTypes(saved_entities)}});
-#endif
 }
 
 void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
