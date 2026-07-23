@@ -89,6 +89,7 @@ suite('NewTabPageActionChipsTest', () => {
     windowTimestampEnd: number;
     prefersReducedMotion: boolean;
     disablementContextMenuEnabled: boolean;
+    ntpSmallActionChipsEnabled: boolean;
   }
 
   async function initializeChips(
@@ -99,6 +100,7 @@ suite('NewTabPageActionChipsTest', () => {
       windowTimestampEnd: Date.now().valueOf() + 1,
       prefersReducedMotion: false,
       disablementContextMenuEnabled: true,
+      ntpSmallActionChipsEnabled: false,
     };
     const options = {...defaultOptions, ...providedOptions};
     const actionChips: ActionChip[] = options.actionChips.map(
@@ -121,6 +123,7 @@ suite('NewTabPageActionChipsTest', () => {
       addTabUploadDelayOnActionChipClick: true,
       ntpNextDisablementContextMenuEnabled:
           options.disablementContextMenuEnabled,
+      ntpSmallActionChipsEnabled: options.ntpSmallActionChipsEnabled,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     if (options.prefersReducedMotion) {
@@ -620,7 +623,7 @@ suite('NewTabPageActionChipsTest', () => {
         });
 
     test(
-        'Returns empty string when both suggestion and subtitle are empty',
+        'Does not render subtitle when both suggestion and subtitle are empty',
         async () => {
           loadTimeData.overrideValues({
             ntpNextShowSimplificationUIEnabled: true,
@@ -642,9 +645,7 @@ suite('NewTabPageActionChipsTest', () => {
               chips.shadowRoot.querySelector<HTMLButtonElement>('button');
           assertTrue(!!chip);
           const bodyElement = chip.querySelector('.chip-body');
-          assertTrue(!!bodyElement);
-          const body = bodyElement.textContent?.trim();
-          assertEquals('', body);
+          assertEquals(null, bodyElement);
         });
 
     test('should dismiss a chip when remove button is clicked', async () => {
@@ -846,6 +847,69 @@ suite('NewTabPageActionChipsTest', () => {
               chips.shadowRoot.querySelector<HTMLButtonElement>('.action-chip');
           assertTrue(!!chip);
           assertEquals('Example Tab A11y Subtitle', chip.getAttribute('title'));
+        });
+  });
+
+  suite('SmallActionChips', () => {
+    test('renders small chips attribute when enabled', async () => {
+      await initializeChips({
+        ntpSmallActionChipsEnabled: true,
+      });
+      assertTrue(chips.hasAttribute('small-chips-enabled'));
+    });
+
+    test('does not render small chips attribute when disabled', async () => {
+      await initializeChips({
+        ntpSmallActionChipsEnabled: false,
+      });
+      assertFalse(chips.hasAttribute('small-chips-enabled'));
+    });
+
+    test('renders subtitle span when chip has secondary text', async () => {
+      await initializeChips({
+        ntpSmallActionChipsEnabled: true,
+        actionChips: [{
+          suggestTemplateInfo: {
+            typeIcon: IconType.kFavicon,
+            primaryText: {text: 'Example Tab', a11yText: null},
+            secondaryText: {text: 'Subtitle for recent tab', a11yText: null},
+            preselectedTool: ToolMode.kUnspecified,
+            preferredInventory: null,
+          },
+          suggestion: 'Suggestion for recent tab',
+          tab: null,
+        }],
+      });
+      const chip =
+          chips.shadowRoot.querySelector<HTMLButtonElement>('.action-chip');
+      assertTrue(!!chip);
+      const bodyElement = chip.querySelector('.chip-body');
+      assertTrue(!!bodyElement);
+      assertEquals('Subtitle for recent tab', bodyElement.textContent?.trim());
+    });
+
+    test(
+        'does not render subtitle span when chip has no secondary text',
+        async () => {
+          await initializeChips({
+            ntpSmallActionChipsEnabled: true,
+            actionChips: [{
+              suggestTemplateInfo: {
+                typeIcon: IconType.kFavicon,
+                primaryText: {text: 'Example Tab', a11yText: null},
+                secondaryText: null,
+                preselectedTool: ToolMode.kUnspecified,
+                preferredInventory: null,
+              },
+              suggestion: 'Suggestion for recent tab',
+              tab: null,
+            }],
+          });
+          const chip =
+              chips.shadowRoot.querySelector<HTMLButtonElement>('.action-chip');
+          assertTrue(!!chip);
+          const bodyElement = chip.querySelector('.chip-body');
+          assertEquals(null, bodyElement);
         });
   });
 });

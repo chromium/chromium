@@ -803,6 +803,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean("addTabUploadDelayOnActionChipClick",
                      add_tab_upload_delay_on_action_chip_click);
   source->AddBoolean("actionChipsEnabled", show_action_chips);
+  source->AddBoolean(
+      "ntpSmallActionChipsEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall));
 
   // User education browser promos.
   int browser_promo_limit = 0;

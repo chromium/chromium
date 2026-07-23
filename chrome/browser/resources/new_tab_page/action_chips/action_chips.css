@@ -91,9 +91,47 @@
   width: 240px;
 }
 
+:host([small-chips-enabled]) .action-chip:not(:has(.chip-body)) {
+  box-sizing: border-box;
+  gap: 6px;
+  height: 40px;
+  max-height: 40px;
+  min-height: 40px;
+  padding: 8px 16px 8px 12px;
+  width: fit-content;
+  max-width: 208px;
+}
+
+:host([small-chips-enabled])
+    .action-chip:not(:has(.chip-body))
+    .action-chip-icon-container,
+:host([small-chips-enabled])
+    .action-chip:not(:has(.chip-body))
+    .action-chip-text-container {
+  align-self: center;
+}
+
+:host([small-chips-enabled])
+    .action-chip:not(:has(.chip-body))
+    .action-chip-icon-container {
+  margin-top: 0;
+}
+
+:host([small-chips-enabled])
+    .action-chip:not(:has(.chip-body))
+    .action-chip-text-container {
+  padding: 0;
+}
+
+:host([small-chips-enabled])
+    .action-chip:not(:has(.chip-body))
+    .chip-title {
+  font-weight: 400;
+  max-width: 150px;
+}
+
 .chip-button-wrapper {
-  max-height: 56px;
-  min-height: 56px;
+  height: fit-content;
 }
 
 .action-chip:hover,
