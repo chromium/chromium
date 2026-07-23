@@ -9,6 +9,7 @@
 #include <iosfwd>
 #include <optional>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -140,18 +141,39 @@ class BASE_I18N_EXPORT LanguageTag {
   //   LanguageTagConverter::GetInstance().FromString("en-US-u-ca-gregory");
   //   auto ext = locale->GetExtension(bcp47_extensions::unicode());
   //   if (ext) {
-  //     std::string_view val = ext->SubtagsString(); // "ca-gregory"
+  //     CHECK_EQ(ext->SubtagsString(), "ca-gregory");
   //   }
-  template <typename T>
-    requires(bcp47_extensions::ExtensionTrait<T>)
-  std::optional<typename T::type> GetExtension(T traits) const {
-    std::string_view extension = GetExtensionStringInternal(traits.key);
+  std::optional<UnicodeExtension> GetExtension(
+      bcp47_extensions::Traits<'u'> traits) const;
+
+  std::optional<PrivateUseSubtags> GetExtension(
+      bcp47_extensions::Traits<'x'> traits) const;
+
+  template <char extid>
+    requires(extid != 'u' && extid != 'x')
+  std::optional<Extension> GetExtension(
+      bcp47_extensions::Traits<extid> traits) const {
+    std::string_view extension = GetExtensionStringInternal(extid);
     if (extension.empty()) {
       return std::nullopt;
     }
 
     return traits.Factory(base::PassKey<LanguageTag>(), extension);
   }
+
+  // Returns a new `LanguageTag` with the given `extension` set (language tags
+  // are immutable). If an extension with the same singleton already exists, it
+  // is replaced. If the extension is empty, the current `LanguageTag` is
+  // returned unchanged.
+  //
+  // Example:
+  //   std::optional<UnicodeExtension> u_ext =
+  //     tag.GetExtension(bcp47_extensions::unicode());
+  //   u_ext->SetKeyword("ca", "gregory");
+  //   LanguageTag mutated = tag.WithExtension(*u_ext);
+  LanguageTag WithExtension(const UnicodeExtension& extension) const;
+  LanguageTag WithExtension(const PrivateUseSubtags& extension) const;
+  LanguageTag WithExtension(const Extension& extension) const;
 
  private:
   friend class LanguageTagConverter;
@@ -168,13 +190,19 @@ class BASE_I18N_EXPORT LanguageTag {
   LanguageTag();
 
   std::string_view GetExtensionStringInternal(char key) const;
+  LanguageTag WithExtensionStringInternal(char key,
+                                          std::string_view subtags) const;
   // This constructor is intended for internal use by `LanguageTagConverter`.
   // Do not call this directly.
   explicit LanguageTag(ImmutableStringType tag);
   // Constexpr Constructor that expects the span of string-views and constructs
   // tha ImmutableString on its own.
   constexpr explicit LanguageTag(base::span<const std::string_view> parts)
-      : tag_(i18n_internal::ImmutableString::ForceStackString{}, parts) {}
+      : tag_(std::is_constant_evaluated()
+                 ? i18n_internal::ImmutableString(
+                       i18n_internal::ImmutableString::ForceStackString{},
+                       parts)
+                 : i18n_internal::ImmutableString(parts)) {}
 
   // The BCP47 language tag, e.g. "pt-BR".
   // Supports language, script, region, variants and extensions.

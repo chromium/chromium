@@ -687,6 +687,72 @@ TEST(LanguageTagTest, GetParentWithPrivateUseSubtags) {
   EXPECT_THAT(lt.GetParentTag(), OptionalToString("en-US"));
 }
 
+TEST(LanguageTagTest, ExtensionMutation) {
+  // 1. GetExtension (Unicode) - returning std::nullopt when not present, and
+  // WithExtension.
+  {
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US"));
+    std::optional<UnicodeExtension> u_ext =
+        lc.GetExtension(bcp47_extensions::unicode());
+    EXPECT_FALSE(u_ext.has_value());
+
+    std::optional<UnicodeExtension> new_u_ext =
+        UnicodeExtension::FromString("u-ca-gregory");
+    ASSERT_TRUE(new_u_ext.has_value());
+    LanguageTag mutated = lc.WithExtension(*new_u_ext);
+    EXPECT_EQ(mutated.tag_string(), "en-US-u-ca-gregory");
+  }
+
+  // 2. GetExtension (Unicode) - modifying existing.
+  {
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US-u-ca-gregory"));
+    std::optional<UnicodeExtension> u_ext =
+        lc.GetExtension(bcp47_extensions::unicode());
+    ASSERT_TRUE(u_ext.has_value());
+    EXPECT_THAT(u_ext->GetKeywordValue("ca"), Optional(Eq("gregory")));
+    EXPECT_TRUE(u_ext->SetKeyword("ca", "buddhist"));
+    LanguageTag mutated = lc.WithExtension(*u_ext);
+    EXPECT_EQ(mutated.tag_string(), "en-US-u-ca-buddhist");
+  }
+
+  // 3. PrivateUseSubtags mutation.
+  {
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US"));
+    std::optional<PrivateUseSubtags> x_ext =
+        lc.GetExtension(bcp47_extensions::priv());
+    EXPECT_FALSE(x_ext.has_value());
+
+    std::optional<PrivateUseSubtags> new_x_ext =
+        PrivateUseSubtags::FromString("x-private");
+    ASSERT_TRUE(new_x_ext.has_value());
+    EXPECT_TRUE(new_x_ext->AddSubtag("stuff"));
+    LanguageTag mutated = lc.WithExtension(*new_x_ext);
+    EXPECT_EQ(mutated.tag_string(), "en-US-x-private-stuff");
+  }
+
+  // 4. Generic Extension mutation.
+  {
+    ASSERT_OK_AND_ASSIGN(
+        LanguageTag lc,
+        LanguageTagConverter::GetInstance().FromString("en-US"));
+    std::optional<Extension> a_ext =
+        lc.GetExtension(bcp47_extensions::ext<'a'>());
+    EXPECT_FALSE(a_ext.has_value());
+
+    std::optional<Extension> new_a_ext = Extension::FromString("a-myext");
+    ASSERT_TRUE(new_a_ext.has_value());
+    EXPECT_TRUE(new_a_ext->AddSubtag("other"));
+    LanguageTag mutated = lc.WithExtension(*new_a_ext);
+    EXPECT_EQ(mutated.tag_string(), "en-US-a-myext-other");
+  }
+}
+
 struct LanguageTestData {
   std::string_view tag;
   std::string_view name;

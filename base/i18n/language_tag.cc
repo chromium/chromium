@@ -14,6 +14,7 @@
 #include "base/i18n/internal/legacy_icu_converter.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 
 namespace base::i18n {
@@ -93,6 +94,32 @@ std::string LanguageTag::ToLegacyICUFormat() const {
   return legacy_code;
 }
 
+LanguageTag LanguageTag::WithExtensionStringInternal(
+    char key,
+    std::string_view subtags) const {
+  std::optional<i18n_internal::ParsedBcp47Tag> parsed =
+      i18n_internal::ParseBcp47Tag(tag_.AsString());
+  if (!parsed) {
+    return *this;
+  }
+
+  for (std::pair<char, std::vector<std::string_view>>& extension :
+       parsed->extensions) {
+    if (extension.first == key) {
+      extension.second = base::SplitStringPiece(
+          subtags, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      return LanguageTag(i18n_internal::GetBcp47TagPieces(*parsed));
+    }
+  }
+
+  parsed->extensions.emplace_back(
+      key, base::SplitStringPiece(subtags, "-", base::KEEP_WHITESPACE,
+                                  base::SPLIT_WANT_ALL));
+  // Canonicalization applied to have all the extensions sorted by singleton.
+  std::ranges::sort(parsed->extensions);
+  return LanguageTag(i18n_internal::GetBcp47TagPieces(*parsed));
+}
+
 LanguageTag LanguageTag::WithLanguageSubtagOnly() const {
   CHECK(language_subtag().size() >= 2);
   return LanguageTag(ImmutableStringType({language_subtag()}));
@@ -104,6 +131,43 @@ LanguageTag::LanguageTag(ImmutableStringType tag) : tag_(std::move(tag)) {
 
 std::string_view LanguageTag::GetExtensionStringInternal(char key) const {
   return GetExtensionString(tag_.AsString(), key);
+}
+
+std::optional<UnicodeExtension> LanguageTag::GetExtension(
+    bcp47_extensions::Traits<'u'> traits) const {
+  std::string_view extension = GetExtensionStringInternal('u');
+  if (extension.empty()) {
+    return std::nullopt;
+  }
+
+  return traits.Factory(base::PassKey<LanguageTag>(), extension);
+}
+
+std::optional<PrivateUseSubtags> LanguageTag::GetExtension(
+    bcp47_extensions::Traits<'x'> traits) const {
+  std::string_view extension = GetExtensionStringInternal('x');
+  if (extension.empty()) {
+    return std::nullopt;
+  }
+
+  return traits.Factory(base::PassKey<LanguageTag>(), extension);
+}
+
+LanguageTag LanguageTag::WithExtension(
+    const UnicodeExtension& extension) const {
+  return WithExtensionStringInternal(extension.singleton(),
+                                     extension.SubtagsString());
+}
+
+LanguageTag LanguageTag::WithExtension(
+    const PrivateUseSubtags& extension) const {
+  return WithExtensionStringInternal(extension.singleton(),
+                                     extension.SubtagsString());
+}
+
+LanguageTag LanguageTag::WithExtension(const Extension& extension) const {
+  return WithExtensionStringInternal(extension.singleton(),
+                                     extension.SubtagsString());
 }
 
 std::ostream& operator<<(std::ostream& os, const LanguageTag& lt) {
