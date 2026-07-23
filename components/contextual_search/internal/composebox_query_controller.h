@@ -142,6 +142,17 @@ class ComposeboxQueryController
   static std::optional<std::string> MimeTypeStringFromFileInfo(
       const contextual_search::FileInfo& file_info);
 
+  static constexpr int kMaxC2paPixels = 3000000;
+
+  static bool HasC2paMetadata(base::span<const uint8_t> bytes);
+
+  // Computes whether the image qualifies for C2PA bypass based on feature
+  // flags, dimensions, and metadata. Returns an ImageData proto if successful.
+  static std::optional<lens::ImageData> MaybeCreateC2paBypassImageData(
+      base::span<const uint8_t> original_image_bytes,
+      int width,
+      int height);
+
   uint16_t get_num_context_uploading() {
     return static_cast<uint16_t>(pending_context_uploads_.size());
   }
@@ -456,14 +467,17 @@ class ComposeboxQueryController
 
   // Handler for when the image from an image file upload is decoded. Creates
   // the request body proto and calls the callback with the request.
-  void ProcessDecodedImageAndContinue(lens::LensOverlayRequestId request_id,
-                                      const lens::ImageEncodingOptions& options,
-                                      RequestBodyProtoCreatedCallback callback,
-                                      std::optional<GURL> page_url,
-                                      std::optional<std::string> page_title,
-                                      std::optional<std::string> file_name,
-                                      UploadImageType image_type,
-                                      const SkBitmap& bitmap);
+  void ProcessDecodedImageAndContinue(
+      lens::LensOverlayRequestId request_id,
+      const lens::ImageEncodingOptions& options,
+      RequestBodyProtoCreatedCallback callback,
+      std::optional<GURL> page_url,
+      std::optional<std::string> page_title,
+      std::optional<std::string> file_name,
+      UploadImageType image_type,
+      scoped_refptr<base::RefCountedData<std::vector<uint8_t>>>
+          original_image_data,
+      const SkBitmap& bitmap);
 
   // Creates the request body protos for the file and viewport upload requests
   // and calls the callbacks with the request.

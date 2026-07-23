@@ -82,6 +82,10 @@ BASE_DECLARE_FEATURE(kLensOverlayOmniboxEntryPoint);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayUploadChunking);
 
+// Enables bypassing image compression for C2PA uploads in the Composebox.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensBypassCompressionForC2pa);
+
 // Enables a new feedback entrypoint in the Lens side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchSidePanelNewFeedback);

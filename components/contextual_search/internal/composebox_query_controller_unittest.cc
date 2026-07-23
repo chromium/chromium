@@ -1600,6 +1600,100 @@ TEST_F(ComposeboxQueryControllerTest,
             "test_image.jpg");
 }
 
+#if !BUILDFLAG(IS_IOS)
+TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paBypass) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeature(
+      lens::features::kLensBypassCompressionForC2pa);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+
+  // Use CreateJPGBytes helper
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
+  std::string c2pa_str = "urn:c2pa:";
+  image_bytes.insert(image_bytes.end(), c2pa_str.begin(), c2pa_str.end());
+
+  input_data->context_input->push_back(
+      lens::ContextualInput(image_bytes, lens::MimeType::kImage));
+  input_data->file_name = "test_image.jpg";
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  // Validate the file upload request payload has the exact same bytes due to
+  // bypass.
+  std::string payload_bytes = controller()
+                                  .last_sent_file_upload_request()
+                                  ->objects_request()
+                                  .image_data()
+                                  .payload()
+                                  .image_bytes();
+  EXPECT_EQ(payload_bytes.size(), image_bytes.size());
+}
+
+TEST_F(ComposeboxQueryControllerTest, UploadImageRequestC2paFlagDisabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(
+      lens::features::kLensBypassCompressionForC2pa);
+
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kImage;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+
+  // Use CreateJPGBytes helper
+  std::vector<uint8_t> image_bytes = CreateJPGBytes(100, 100);
+  std::string c2pa_str = "urn:c2pa:";
+  image_bytes.insert(image_bytes.end(), c2pa_str.begin(), c2pa_str.end());
+
+  input_data->context_input->push_back(
+      lens::ContextualInput(image_bytes, lens::MimeType::kImage));
+  input_data->file_name = "test_image.jpg";
+
+  lens::ImageEncodingOptions image_options{.max_size = 1000000,
+                                           .max_height = 1000,
+                                           .max_width = 1000,
+                                           .compression_quality = 30};
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   image_options);
+
+  WaitForClusterInfo();
+  WaitForFileUpload(file_token, lens::MimeType::kImage);
+
+  // Validate the file upload request payload was downscaled (bytes size should
+  // be different).
+  std::string payload_bytes = controller()
+                                  .last_sent_file_upload_request()
+                                  ->objects_request()
+                                  .image_data()
+                                  .payload()
+                                  .image_bytes();
+  EXPECT_NE(payload_bytes.size(), image_bytes.size());
+}
+#endif
+
 TEST_F(ComposeboxQueryControllerTest, UploadDriveFileRequestSuccess) {
   // Act: Start the session.
   controller().InitializeIfNeeded();

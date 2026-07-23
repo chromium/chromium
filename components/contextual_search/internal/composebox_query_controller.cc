@@ -145,6 +145,9 @@ ComposeboxQueryController::CreateClientToAimRequestInfo::
 
 namespace {
 
+constexpr size_t kMaxC2paSearchBytes = 256 * 1024;
+constexpr std::string_view kC2paMarker("urn:c2pa:");
+
 // Returns true if the file_info represents an unresolved URL upload.
 bool IsUnresolvedUrlUpload(const contextual_search::FileInfo& file_info) {
   return file_info.input_data &&
@@ -392,6 +395,34 @@ std::string ImageTypeToString(
 }
 
 }  // namespace
+
+bool ComposeboxQueryController::HasC2paMetadata(
+    base::span<const uint8_t> bytes) {
+  std::string_view bytes_to_search(reinterpret_cast<const char*>(bytes.data()),
+                                   std::min(bytes.size(), kMaxC2paSearchBytes));
+  return bytes_to_search.find(kC2paMarker) != std::string_view::npos;
+}
+
+std::optional<lens::ImageData>
+ComposeboxQueryController::MaybeCreateC2paBypassImageData(
+    base::span<const uint8_t> original_image_bytes,
+    int width,
+    int height) {
+  if (original_image_bytes.empty() ||
+      !base::FeatureList::IsEnabled(
+          lens::features::kLensBypassCompressionForC2pa) ||
+      width * height > kMaxC2paPixels ||
+      !HasC2paMetadata(original_image_bytes)) {
+    return std::nullopt;
+  }
+
+  lens::ImageData image_data_proto;
+  image_data_proto.mutable_image_metadata()->set_width(width);
+  image_data_proto.mutable_image_metadata()->set_height(height);
+  image_data_proto.mutable_payload()->mutable_image_bytes()->assign(
+      original_image_bytes.begin(), original_image_bytes.end());
+  return image_data_proto;
+}
 
 class ComposeboxQueryController::ChunkUploadDelegate
     : public lens::LensUploadChunker::Delegate {
@@ -1943,6 +1974,8 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
     std::optional<std::string> page_title,
     std::optional<std::string> file_name,
     UploadImageType image_type,
+    scoped_refptr<base::RefCountedData<std::vector<uint8_t>>>
+        original_image_data,
     const SkBitmap& bitmap) {
 #if !BUILDFLAG(IS_IOS)
   scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
@@ -1980,6 +2013,21 @@ void ComposeboxQueryController::ProcessDecodedImageAndContinue(
   // destroyed before it is used, make a copy of the bitmap.
   SkBitmap bitmap_copy = bitmap;
 
+  // If the image fits within the 3MP max dimension, and the bypass compression
+  // feature is enabled, check if the raw bytes contain C2PA metadata. If they
+  // do, skip downscaling and encoding.
+  if (original_image_data) {
+    if (std::optional<lens::ImageData> image_data_proto =
+            MaybeCreateC2paBypassImageData(original_image_data->data,
+                                           bitmap.width(), bitmap.height())) {
+      CreateFileUploadRequestProtoWithImageDataAndContinue(
+          request_id, CreateClientContext(), ref_counted_logs,
+          std::move(callback), page_url, page_title, file_name, image_type,
+          std::move(*image_data_proto));
+      return;
+    }
+  }
+
   // Downscaling and encoding is done on a background thread to avoid blocking
   // the main thread.
   create_request_task_runner_->PostTaskAndReplyWithResult(
@@ -2005,15 +2053,19 @@ void ComposeboxQueryController::CreateImageUploadRequest(
     RequestBodyProtoCreatedCallback callback) {
 #if !BUILDFLAG(IS_IOS)
   CHECK(image_options.has_value());
+
+  auto refcounted_image_data =
+      base::MakeRefCounted<base::RefCountedData<std::vector<uint8_t>>>(
+          std::move(image_data));
   data_decoder::DecodeImageIsolated(
-      image_data, data_decoder::mojom::ImageCodec::kDefault,
+      refcounted_image_data->data, data_decoder::mojom::ImageCodec::kDefault,
       /*shrink_to_fit=*/false,
       /*max_size_in_bytes=*/std::numeric_limits<int64_t>::max(),
       /*desired_image_frame_size=*/gfx::Size(),
       base::BindOnce(&ComposeboxQueryController::ProcessDecodedImageAndContinue,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      image_options.value(), std::move(callback), page_url,
-                     page_title, file_name, image_type));
+                     page_title, file_name, image_type, refcounted_image_data));
 #endif  // !BUILDFLAG(IS_IOS)
 }
 
@@ -2074,6 +2126,7 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                     request_index))),
         contextual_input_data->page_url, contextual_input_data->page_title,
         /*file_name=*/std::nullopt, UploadImageType::kViewport,
+        /*original_image_data=*/nullptr,
         // Pass ownership of the viewport screenshot to the
         // callback.
         std::move(*contextual_input_data->viewport_screenshot));
