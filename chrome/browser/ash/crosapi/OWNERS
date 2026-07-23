@@ -1,6 +1,0 @@
-file://chromeos/LACROS_OWNERS
-
-per-file browser_manager*.*=andreaorru@chromium.org
-
-per-file *_type_converter*.*=set noparent
-per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS

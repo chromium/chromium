@@ -67,7 +67,6 @@
 #include "chrome/browser/ash/camera/camera_general_survey_handler.h"
 #include "chrome/browser/ash/certs/system_token_cert_db_initializer.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crostini/crostini_unsupported_action_notifier.h"
 #include "chrome/browser/ash/dbus/arc_crosh_service_provider.h"
 #include "chrome/browser/ash/dbus/arc_tracing_service_provider.h"
@@ -1122,11 +1121,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // loading the default profile).
   keyboard::InitializeKeyboardResources();
 
-  // Always construct BrowserManager, even if the lacros flag is disabled, so
-  // it can do cleanup work if needed. Initialized in PreProfileInit because the
-  // profile-keyed service AppService can call into it.
-  browser_manager_ = std::make_unique<crosapi::BrowserManager>();
-
   magic_boost_controller_ = std::make_unique<ash::MagicBoostControllerImpl>();
 
   chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
@@ -1831,10 +1825,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   token_handle_store_factory_.reset();
 
   magic_boost_controller_.reset();
-
-  // BrowserManager needs to outlive the Profile, which
-  // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().
-  browser_manager_.reset();
 
   g_browser_process->platform_part()->ShutdownAshProxyMonitor();
 

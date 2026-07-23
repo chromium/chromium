@@ -47,7 +47,6 @@ static_library("main_parts") {
     "//chrome/browser/ash/camera",
     "//chrome/browser/ash/certs",
     "//chrome/browser/ash/child_accounts/parent_access_code",
-    "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/dbus",
     "//chrome/browser/ash/dbus/vm",

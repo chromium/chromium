@@ -43,10 +43,6 @@ class ExternalLoader;
 
 }  // namespace chromeos
 
-namespace crosapi {
-class BrowserManager;
-}  // namespace crosapi
-
 namespace crostini {
 class CrostiniUnsupportedActionNotifier;
 }  // namespace crostini
@@ -235,8 +231,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<ShortcutMappingPrefService> shortcut_mapping_pref_service_;
   std::unique_ptr<ChromeKeyboardControllerClient>
       chrome_keyboard_controller_client_;
-
-  std::unique_ptr<crosapi::BrowserManager> browser_manager_;
 
   std::unique_ptr<VideoConferenceAppServiceClient> vc_app_service_client_;
   std::unique_ptr<VideoConferenceAshFeatureClient> vc_ash_feature_client_;
