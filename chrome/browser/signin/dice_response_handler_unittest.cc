@@ -187,13 +187,13 @@ class DiceResponseHandlerTest : public testing::Test,
     signin_error_controller_.Shutdown();
   }
 
-  DiceResponseParams MakeDiceParams(
+  DiceResponseParams MakeMultiSigninDiceParams(
       DiceAction action,
-      int account_count = 1,
+      int account_count,
+      signin::Tribool primary_is_connected,
       bool eligible_for_token_binding = true,
       bool mtls_token_binding = false,
-      int initiator_index = 0,
-      signin::Tribool primary_is_connected = signin::Tribool::kTrue) {
+      int initiator_index = 0) {
     DiceResponseParams dice_params;
     DiceResponseParams::AccountInfo account_info =
         GetDiceResponseParamsAccountInfo(kEmail);
@@ -241,6 +241,16 @@ class DiceResponseHandlerTest : public testing::Test,
         NOTREACHED();
     }
     return dice_params;
+  }
+
+  DiceResponseParams MakeDiceParams(DiceAction action,
+                                    bool eligible_for_token_binding = true,
+                                    bool mtls_token_binding = false) {
+    return MakeMultiSigninDiceParams(
+        action, /*account_count=*/1,
+        /*primary_is_connected=*/signin::Tribool::kUnknown,
+        eligible_for_token_binding, mtls_token_binding,
+        /*initiator_index=*/0);
   }
 
   sync_preferences::TestingPrefServiceSyncable& pref_service() {
@@ -407,8 +417,9 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(DiceResponseHandlerParamTest, Signin_PrimaryConnected) {
   const size_t account_count = GetAccountCount();
   const int initiator_index = 0;
-  DiceResponseParams dice_params =
-      MakeDiceParams(DiceAction::SIGNIN, account_count);
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, account_count,
+      /*primary_is_connected=*/signin::Tribool::kTrue);
 
   std::vector<CoreAccountId> account_ids;
   for (const auto& account : dice_params.signin_info()->accounts()) {
@@ -491,9 +502,11 @@ TEST_P(DiceResponseHandlerParamTest, Signin_PrimaryNotConnected_Success) {
   }
   const int initiator_index =
       1;  // Use non-zero index to test that initiator doesn't have to be first.
-  DiceResponseParams dice_params = MakeDiceParams(
-      DiceAction::SIGNIN, account_count, /*eligible_for_token_binding=*/true,
-      /*mtls_token_binding=*/false, initiator_index, signin::Tribool::kFalse);
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, account_count,
+      /*primary_is_connected=*/signin::Tribool::kFalse,
+      /*eligible_for_token_binding=*/true,
+      /*mtls_token_binding=*/false, initiator_index);
 
   std::vector<CoreAccountId> account_ids;
   for (const auto& account : dice_params.signin_info()->accounts()) {
@@ -552,9 +565,11 @@ TEST_P(DiceResponseHandlerParamTest,
                     "sequential behavior.";
   }
   const int initiator_index = 1;  // Use non-zero index.
-  DiceResponseParams dice_params = MakeDiceParams(
-      DiceAction::SIGNIN, account_count, /*eligible_for_token_binding=*/true,
-      /*mtls_token_binding=*/false, initiator_index, signin::Tribool::kFalse);
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, account_count,
+      /*primary_is_connected=*/signin::Tribool::kFalse,
+      /*eligible_for_token_binding=*/true,
+      /*mtls_token_binding=*/false, initiator_index);
 
   std::vector<CoreAccountId> account_ids;
   for (const auto& account : dice_params.signin_info()->accounts()) {
@@ -595,9 +610,11 @@ TEST_P(DiceResponseHandlerParamTest,
         << "This test requires at least 2 accounts to verify partial failure.";
   }
   const int initiator_index = 1;  // Use non-zero index.
-  DiceResponseParams dice_params = MakeDiceParams(
-      DiceAction::SIGNIN, account_count, /*eligible_for_token_binding=*/true,
-      /*mtls_token_binding=*/false, initiator_index, signin::Tribool::kFalse);
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, account_count,
+      /*primary_is_connected=*/signin::Tribool::kFalse,
+      /*eligible_for_token_binding=*/true,
+      /*mtls_token_binding=*/false, initiator_index);
 
   std::vector<CoreAccountId> account_ids;
   for (const auto& account : dice_params.signin_info()->accounts()) {
@@ -667,9 +684,11 @@ TEST_P(DiceResponseHandlerParamTest,
 
   const size_t account_count = GetAccountCount();
   const int initiator_index = 0;
-  DiceResponseParams dice_params = MakeDiceParams(
-      DiceAction::SIGNIN, account_count, /*eligible_for_token_binding=*/true,
-      /*mtls_token_binding=*/true, initiator_index);
+  DiceResponseParams dice_params =
+      MakeMultiSigninDiceParams(DiceAction::SIGNIN, account_count,
+                                /*primary_is_connected=*/signin::Tribool::kTrue,
+                                /*eligible_for_token_binding=*/true,
+                                /*mtls_token_binding=*/true, initiator_index);
 
   std::vector<CoreAccountId> account_ids;
   for (const auto& account : dice_params.signin_info()->accounts()) {
@@ -716,8 +735,9 @@ TEST_P(DiceResponseHandlerParamTest,
 TEST_P(DiceResponseHandlerParamTest, SigninWithBoundToken_PrimaryConnected) {
   const size_t account_count = GetAccountCount();
   EnableTokenBindingRegistration();
-  DiceResponseParams dice_params =
-      MakeDiceParams(DiceAction::SIGNIN, account_count);
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, account_count,
+      /*primary_is_connected=*/signin::Tribool::kTrue);
 
   std::vector<CoreAccountId> account_ids;
   std::vector<std::string> authorization_codes;
@@ -1239,7 +1259,7 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
   // Check HandleTokenExchangeSuccess parameters.
   EXPECT_EQ(token_exchange_account_id_, account_id_2);
   EXPECT_TRUE(token_exchange_is_new_account_);
-  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kTrue);
+  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kUnknown);
   EXPECT_EQ(1, reconcilor_blocked_count_);
   EXPECT_EQ(0, reconcilor_unblocked_count_);
   // Check that the AccountInfo::is_under_advanced_protection is set.
@@ -1255,8 +1275,9 @@ TEST_F(DiceResponseHandlerTest, CheckSigninAfterOutageInDice) {
 
 TEST_P(DiceResponseHandlerParamTest, Reauth) {
   const size_t account_count = GetAccountCount();
-  DiceResponseParams dice_params =
-      MakeDiceParams(DiceAction::SIGNIN, account_count);
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, account_count,
+      /*primary_is_connected=*/signin::Tribool::kTrue);
   const auto* initiator_account = dice_params.signin_info()->GetInitiator();
 
   // Only the primary (initiator) account should exist and have error.
@@ -1329,8 +1350,9 @@ TEST_P(DiceResponseHandlerParamTest, Reauth) {
 TEST_P(DiceResponseHandlerParamTest, SigninFailure) {
   const size_t account_count = GetAccountCount();
   const int initiator_index = 0;
-  DiceResponseParams dice_params =
-      MakeDiceParams(DiceAction::SIGNIN, account_count);
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, account_count,
+      /*primary_is_connected=*/signin::Tribool::kTrue);
 
   std::vector<CoreAccountId> account_ids;
   std::vector<std::string> emails;
@@ -1379,9 +1401,11 @@ TEST_F(DiceResponseHandlerTest,
        MultipleAccounts_InitiatorFails_SecondarySucceeds) {
   const int account_count = 2;
   const int initiator_index = 0;
-  DiceResponseParams dice_params = MakeDiceParams(
-      DiceAction::SIGNIN, account_count, /*eligible_for_token_binding=*/true,
-      /*mtls_token_binding=*/false, initiator_index);
+  DiceResponseParams dice_params =
+      MakeMultiSigninDiceParams(DiceAction::SIGNIN, account_count,
+                                /*primary_is_connected=*/signin::Tribool::kTrue,
+                                /*eligible_for_token_binding=*/true,
+                                /*mtls_token_binding=*/false, initiator_index);
 
   auto* signin_info = dice_params.signin_info();
   CoreAccountId initiator_account_id;
@@ -1440,9 +1464,11 @@ TEST_F(DiceResponseHandlerTest,
        MultipleAccounts_InitiatorSucceeds_SecondaryFails) {
   const int account_count = 2;
   const int initiator_index = 0;
-  DiceResponseParams dice_params = MakeDiceParams(
-      DiceAction::SIGNIN, account_count, /*eligible_for_token_binding=*/true,
-      /*mtls_token_binding=*/false, initiator_index);
+  DiceResponseParams dice_params =
+      MakeMultiSigninDiceParams(DiceAction::SIGNIN, account_count,
+                                /*primary_is_connected=*/signin::Tribool::kTrue,
+                                /*eligible_for_token_binding=*/true,
+                                /*mtls_token_binding=*/false, initiator_index);
 
   auto* signin_info = dice_params.signin_info();
   CoreAccountId initiator_account_id;
@@ -1497,8 +1523,9 @@ TEST_F(DiceResponseHandlerTest,
 // Checks that timeout of one fetcher doesn't prevent others from succeeding.
 TEST_F(DiceResponseHandlerTest, MultipleAccounts_PartialTimeout) {
   const int account_count = 2;
-  DiceResponseParams dice_params =
-      MakeDiceParams(DiceAction::SIGNIN, account_count);
+  DiceResponseParams dice_params = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, account_count,
+      /*primary_is_connected=*/signin::Tribool::kTrue);
 
   auto* signin_info = dice_params.signin_info();
   std::vector<CoreAccountId> account_ids;
@@ -1565,7 +1592,8 @@ TEST_F(DiceResponseHandlerTest, MultipleAccounts_NoAuthCode_Mixed) {
 
   signin::DiceResponseParams::SigninInfo::LinkedAccountsMetadata metadata;
   metadata.initiator_id = account_info1.gaia_id;
-  metadata.primary_is_connected = signin::Tribool::kTrue;
+  metadata.primary_is_connected =
+      /*primary_is_connected=*/signin::Tribool::kFalse;
   signin_info->set_linked_accounts_metadata(std::move(metadata));
 
   CoreAccountId account_id1 = identity_manager()->PickAccountIdForAccount(
@@ -1603,7 +1631,7 @@ TEST_F(DiceResponseHandlerTest, MultipleAccounts_NoAuthCode_Mixed) {
 
   EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id1));
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id2));
-  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kTrue);
+  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kFalse);
 
   // Reconcilor should still be blocked because of Account 2!
   EXPECT_EQ(1, reconcilor_blocked_count_);
@@ -1731,10 +1759,11 @@ TEST_F(DiceResponseHandlerTest,
   const int initiator_index = 0;
   // Create multi-account params in initiator-first mode (primary not
   // connected).
-  DiceResponseParams dice_params_1 = MakeDiceParams(
-      DiceAction::SIGNIN, account_count, /*eligible_for_token_binding=*/true,
-      /*mtls_token_binding=*/false, initiator_index,
-      /*primary_is_connected=*/signin::Tribool::kFalse);
+  DiceResponseParams dice_params_1 = MakeMultiSigninDiceParams(
+      DiceAction::SIGNIN, account_count,
+      /*primary_is_connected=*/signin::Tribool::kFalse,
+      /*eligible_for_token_binding=*/true,
+      /*mtls_token_binding=*/false, initiator_index);
 
   auto* signin_info_1 = dice_params_1.signin_info();
   const auto& accounts_1 = signin_info_1->accounts();
@@ -1761,7 +1790,7 @@ TEST_F(DiceResponseHandlerTest,
   ASSERT_THAT(consumer_init_1, testing::NotNull());
 
   // Start a second concurrent sign-in request for ONLY the initiator account.
-  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN, 1);
+  DiceResponseParams dice_params_2 = MakeDiceParams(DiceAction::SIGNIN);
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params_2),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -1871,7 +1900,7 @@ TEST_F(DiceResponseHandlerTest,
   // Check HandleTokenExchangeSuccess parameters.
   EXPECT_EQ(token_exchange_account_id_, account_id);
   EXPECT_TRUE(token_exchange_is_new_account_);
-  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kTrue);
+  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kUnknown);
   // Check that delegate was not called to enable sync.
   EXPECT_TRUE(complete_profile_signin_account_info_.IsEmpty());
 
@@ -1919,7 +1948,7 @@ TEST_F(DiceResponseHandlerTest,
   // Check HandleTokenExchangeSuccess parameters.
   EXPECT_EQ(token_exchange_account_id_, account_id);
   EXPECT_TRUE(token_exchange_is_new_account_);
-  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kTrue);
+  EXPECT_EQ(token_exchange_primary_is_connected_, signin::Tribool::kUnknown);
   // Check that delegate was called to enable sync.
   EXPECT_EQ(gaia_id, complete_profile_signin_account_info_.gaia);
   EXPECT_EQ(email, complete_profile_signin_account_info_.email);
@@ -2206,9 +2235,11 @@ TEST_F(DiceResponseHandlerTest,
        MultipleAccounts_TokenFetchTimeoutFiresSessionComplete) {
   const int account_count = 2;
   const int initiator_index = 0;
-  DiceResponseParams dice_params = MakeDiceParams(
-      DiceAction::SIGNIN, account_count, /*eligible_for_token_binding=*/true,
-      /*mtls_token_binding=*/false, initiator_index);
+  DiceResponseParams dice_params =
+      MakeMultiSigninDiceParams(DiceAction::SIGNIN, account_count,
+                                /*primary_is_connected=*/signin::Tribool::kTrue,
+                                /*eligible_for_token_binding=*/true,
+                                /*mtls_token_binding=*/false, initiator_index);
 
   auto* signin_info = dice_params.signin_info();
   CoreAccountId initiator_account_id;
