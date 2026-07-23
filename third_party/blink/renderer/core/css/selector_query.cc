@@ -805,7 +805,9 @@ void SelectorQuery::BuildCompounds(const CSSSelector* first_selector) {
       case CSSSelector::kPseudoClass:
         if (current->GetPseudoType() == CSSSelector::kPseudoNthChild &&
             !current->SelectorList() && current->NthAValue() == 0 &&
-            !current_compound.nth_child) {
+            current->NthBValue() > 0 && !current_compound.nth_child) {
+          // b == 0 collides with the "no :nth-child()" sentinel (see
+          // Compound::nth_child); only b > 0 is safe on the fast path.
           // TODO(sesse): Consider supporting aN + b, not just b.
           current_compound.nth_child = current->NthBValue();
         } else if (current->GetPseudoType() == CSSSelector::kPseudoFirstChild &&
