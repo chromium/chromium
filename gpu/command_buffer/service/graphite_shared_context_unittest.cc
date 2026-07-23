@@ -33,14 +33,14 @@ class MockGpuProcessShmCount : public GpuProcessShmCount {
   MOCK_METHOD(void, Decrement, (), (override));
 };
 
-class MockBackendFlushCallback {
+class MockDelegate : public GraphiteSharedContext::Delegate {
  public:
-  MOCK_METHOD(void, Flush, ());
-};
-
-class MockMarkContextLostCallback {
- public:
-  MOCK_METHOD(void, MarkContextLost, (error::ContextLostReason reason));
+  MOCK_METHOD(void, FlushBackend, (), (override));
+  MOCK_METHOD(void,
+              MarkContextLost,
+              (error::ContextLostReason reason),
+              (override));
+  MOCK_METHOD(bool, IsContextLost, (), (const, override));
 };
 
 // Test fixture for GraphiteSharedContext with thread safety enabled.
@@ -109,15 +109,11 @@ class GraphiteSharedContextTest : public testing::TestWithParam<bool> {
         skgpu::graphite::ContextFactory::MakeDawn(backend_context,
                                                   context_options),
         &use_shader_cache_shm_count_, is_thread_safe(), kMaxPendingRecordings,
-        base::BindRepeating(&MockBackendFlushCallback::Flush,
-                            base::Unretained(&backend_flush_callback_)),
-        base::BindRepeating(&MockMarkContextLostCallback::MarkContextLost,
-                            base::Unretained(&mark_context_lost_callback_)));
+        &delegate_);
   }
 
   MockGpuProcessShmCount use_shader_cache_shm_count_;
-  NiceMock<MockBackendFlushCallback> backend_flush_callback_;
-  NiceMock<MockMarkContextLostCallback> mark_context_lost_callback_;
+  NiceMock<MockDelegate> delegate_;
   std::unique_ptr<GraphiteSharedContext> graphite_shared_context_;
   std::unique_ptr<base::Thread> secondary_thread_;
 };
@@ -227,7 +223,7 @@ TEST_P(GraphiteSharedContextTest, OutOfOrderRecording) {
   graphite_shared_context_->insertRecording(info);
 
   info.fRecording = recording1.get();
-  EXPECT_CALL(mark_context_lost_callback_, MarkContextLost(testing::_)).Times(1);
+  EXPECT_CALL(delegate_, MarkContextLost(testing::_)).Times(1);
   EXPECT_FALSE(graphite_shared_context_->insertRecording(info));
 }
 
@@ -260,7 +256,7 @@ TEST_P(GraphiteSharedContextTest, LowPendingRecordings) {
   EXPECT_TRUE(recorder);
 
   // No flush is expected if the number of pending recordings is low.
-  EXPECT_CALL(backend_flush_callback_, Flush()).Times(0);
+  EXPECT_CALL(delegate_, FlushBackend()).Times(0);
 
   for (size_t i = 0; i < kMaxPendingRecordings - 1; ++i) {
     auto recording = recorder->snap();
@@ -278,7 +274,7 @@ TEST_P(GraphiteSharedContextTest, MaxPendingRecordings) {
   EXPECT_TRUE(recorder);
 
   // Expect a flush when the number of pending recordings reaches the max.
-  EXPECT_CALL(backend_flush_callback_, Flush()).Times(1);
+  EXPECT_CALL(delegate_, FlushBackend()).Times(1);
 
   for (size_t i = 0; i < kMaxPendingRecordings; ++i) {
     auto recording = recorder->snap();

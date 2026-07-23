@@ -681,6 +681,10 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
     return false;
   }
 
+  if (!context.finished && graphite_shared_context->IsContextLost()) {
+    return false;
+  }
+
   CHECK(context.finished);
   if (!context.async_result) {
     return false;

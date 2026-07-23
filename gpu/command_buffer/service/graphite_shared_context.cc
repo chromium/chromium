@@ -245,13 +245,11 @@ GraphiteSharedContext::GraphiteSharedContext(
     GpuProcessShmCount* use_shader_cache_shm_count,
     bool is_thread_safe,
     size_t max_pending_recordings,
-    FlushCallback backend_flush_callback,
-    MarkContextLostCallback mark_context_lost_callback)
+    Delegate* delegate)
     : graphite_context_(std::move(graphite_context)),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
       max_pending_recordings_(max_pending_recordings),
-      backend_flush_callback_(std::move(backend_flush_callback)),
-      mark_context_lost_callback_(std::move(mark_context_lost_callback)) {
+      delegate_(delegate) {
   DCHECK(graphite_context_);
   if (is_thread_safe) {
     lock_.emplace();
@@ -259,6 +257,13 @@ GraphiteSharedContext::GraphiteSharedContext(
 }
 
 GraphiteSharedContext::~GraphiteSharedContext() = default;
+
+bool GraphiteSharedContext::IsContextLost() const {
+  if (delegate_) {
+    return delegate_->IsContextLost();
+  }
+  return false;
+}
 
 skgpu::BackendApi GraphiteSharedContext::backend() const {
   AutoLock auto_lock(this);
@@ -349,10 +354,10 @@ bool GraphiteSharedContext::InsertRecordingImpl(
     CHECK(simulating_insert_failure);
   } else if (insert_status ==
              skgpu::graphite::InsertStatus::kOutOfOrderRecording) {
-    if (mark_context_lost_callback_) {
+    if (delegate_) {
       // TODO(crbug.com/478211694): assume the reason of out of order is OOM for
       // now.
-      mark_context_lost_callback_.Run(error::kOutOfMemory);
+      delegate_->MarkContextLost(error::kOutOfMemory);
     }
   }
 
@@ -411,8 +416,8 @@ void GraphiteSharedContext::SubmitAndFlushBackendImpl(
     const skgpu::graphite::SubmitInfo& submit_info) {
   CHECK(SubmitImpl(submit_info));
 
-  if (backend_flush_callback_) {
-    backend_flush_callback_.Run();
+  if (delegate_) {
+    delegate_->FlushBackend();
   }
 }
 
