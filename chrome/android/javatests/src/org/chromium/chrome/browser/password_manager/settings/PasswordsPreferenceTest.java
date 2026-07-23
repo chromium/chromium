@@ -18,12 +18,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
@@ -51,18 +54,18 @@ import java.io.IOException;
         reason =
                 "The tests can't be batched because the functionality under test is set up during"
                         + " Chrome start up.")
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
-
-    // TODO (crbug.com/513493349): Remove this feature flag and update tests.
-    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
-})
+@DisableFeatures({ChromeFeatureList.SETTINGS_MULTI_COLUMN})
 public class PasswordsPreferenceTest {
     private static final int RENDER_TEST_REVISION = 2;
 
     @ClassRule
     public static SettingsActivityTestRule<MainSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(MainSettings.class);
+
+    @ClassRule
+    public static SettingsActivityTestRule<AutofillAndPasswordsFragment>
+            mAutofillSettingsActivityTestRule =
+                    new SettingsActivityTestRule<>(AutofillAndPasswordsFragment.class);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -89,6 +92,7 @@ public class PasswordsPreferenceTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testPasswordManagerAvailableNoSubtitle() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
@@ -105,6 +109,7 @@ public class PasswordsPreferenceTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testPwmStoppedWorkingSubtitle() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
         when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
@@ -122,6 +127,7 @@ public class PasswordsPreferenceTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testSomePasswordsNotAccessibleSubtitle() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         File fakeCsv = File.createTempFile("passwords", null, null);
@@ -141,6 +147,7 @@ public class PasswordsPreferenceTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_AUTO})
+    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testSomePasswordsNotAccessibleSubtitleNotDisplayedOnAuto() throws IOException {
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
         File fakeCsv = File.createTempFile("passwords", null, null);
@@ -155,5 +162,77 @@ public class PasswordsPreferenceTest {
                 passwordsPref.prefViewElement.value(),
                 "passwords_preference_pwds_not_accessible_auto");
         TransitAsserts.assertFinalDestination(page);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testPasswordManagerAvailableNoSubtitle_savedInfoEnabled() throws IOException {
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
+        when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
+                .thenReturn("random/file/path");
+
+        SettingsStation<AutofillAndPasswordsFragment> autofillAndPasswordsPage =
+                startAutofillAndPasswordsSettings();
+
+        PreferenceFacility passwordsPref =
+                autofillAndPasswordsPage.scrollToPref("autofill_and_passwords_gpm");
+
+        mRenderTestRule.render(
+                passwordsPref.prefViewElement.value(),
+                "passwords_preference_no_subtitle_saved_info");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testPwmStoppedWorkingSubtitle_savedInfoEnabled() throws IOException {
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(false);
+        when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
+                .thenReturn("random/file/path");
+
+        SettingsStation<AutofillAndPasswordsFragment> autofillAndPasswordsPage =
+                startAutofillAndPasswordsSettings();
+
+        PreferenceFacility passwordsPref =
+                autofillAndPasswordsPage.scrollToPref("autofill_and_passwords_gpm");
+
+        mRenderTestRule.render(
+                passwordsPref.prefViewElement.value(),
+                "passwords_preference_gpm_stopped_working_saved_info");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
+    public void testSomePasswordsNotAccessibleSubtitle_savedInfoEnabled() throws IOException {
+        when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(true)).thenReturn(true);
+        File fakeCsv = File.createTempFile("passwords", null, null);
+        fakeCsv.deleteOnExit();
+        when(mLoginDbDeprecationUtilBridgeJniMock.getAutoExportCsvFilePath(any()))
+                .thenReturn(fakeCsv.getAbsolutePath());
+
+        SettingsStation<AutofillAndPasswordsFragment> autofillAndPasswordsPage =
+                startAutofillAndPasswordsSettings();
+
+        PreferenceFacility passwordsPref =
+                autofillAndPasswordsPage.scrollToPref("autofill_and_passwords_gpm");
+
+        mRenderTestRule.render(
+                passwordsPref.prefViewElement.value(),
+                "passwords_preference_pwds_not_accessible_saved_info");
+    }
+
+    private SettingsStation<AutofillAndPasswordsFragment> startAutofillAndPasswordsSettings() {
+        EntryPointSentinelStation sentinel = new EntryPointSentinelStation();
+        sentinel.setAsEntryPoint();
+
+        SettingsStation<AutofillAndPasswordsFragment> entryPageStation =
+                new SettingsStation<>(AutofillAndPasswordsFragment.class);
+        return sentinel.runTo(mAutofillSettingsActivityTestRule::startSettingsActivity)
+                .arriveAt(entryPageStation);
     }
 }
