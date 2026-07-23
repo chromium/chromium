@@ -115,16 +115,16 @@ void ContextHubService::ClearTabGroupChatHistory() {
 
 void ContextHubService::SaveTab(
     const GURL& url,
-    const std::string& tab_title,
-    const std::string& page_text,
+    std::string_view tab_title,
+    std::string_view page_text,
     MemoryBank::OperationCompleteCallback callback) {
   memory_bank_->SaveTab(url, tab_title, page_text, std::move(callback));
 }
 
 void ContextHubService::SaveTextSelection(
     const GURL& url,
-    const std::string& tab_title,
-    const std::string& selected_text,
+    std::string_view tab_title,
+    std::string_view selected_text,
     MemoryBank::OperationCompleteCallback callback) {
   memory_bank_->SaveTextSelection(url, tab_title, selected_text,
                                   std::move(callback));

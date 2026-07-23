@@ -4,6 +4,7 @@
 
 #include "chrome/browser/context_hub/memory_bank/database_memory_bank.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -23,18 +24,18 @@ DatabaseMemoryBank::DatabaseMemoryBank(ContextHubBackend& context_hub_backend)
 DatabaseMemoryBank::~DatabaseMemoryBank() = default;
 
 void DatabaseMemoryBank::SaveTab(const GURL& url,
-                                 const std::string& tab_title,
-                                 const std::string& page_text,
+                                 std::string_view tab_title,
+                                 std::string_view page_text,
                                  OperationCompleteCallback callback) {
   MemoryBankEntry entry;
   entry.type = MemoryBankType::kTab;
   entry.timestamp = base::Time::Now();
   entry.url = url;
-  entry.tab_title = tab_title;
+  entry.tab_title = std::string(tab_title);
   // TODO(crbug.com/530253460): Reconsider whether we should save an entry if
   // page_text is empty.
   if (!page_text.empty()) {
-    entry.selected_text = page_text;
+    entry.selected_text = std::string(page_text);
   }
 
   // TODO(crbug.com/534780677): Use the return value of
@@ -44,16 +45,16 @@ void DatabaseMemoryBank::SaveTab(const GURL& url,
 }
 
 void DatabaseMemoryBank::SaveTextSelection(const GURL& url,
-                                           const std::string& tab_title,
-                                           const std::string& selected_text,
+                                           std::string_view tab_title,
+                                           std::string_view selected_text,
                                            OperationCompleteCallback callback) {
   MemoryBankEntry entry;
   entry.type = MemoryBankType::kTextSelection;
   entry.timestamp = base::Time::Now();
   entry.url = url;
-  entry.tab_title = tab_title;
+  entry.tab_title = std::string(tab_title);
   if (!selected_text.empty()) {
-    entry.selected_text = selected_text;
+    entry.selected_text = std::string(selected_text);
   }
 
   context_hub_backend_->AddOrUpdateMemoryBankEntry(

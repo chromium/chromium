@@ -94,13 +94,13 @@ class ContextHubService : public KeyedService {
   // backend.
   // Saves a tab to the memory bank.
   void SaveTab(const GURL& url,
-               const std::string& tab_title,
-               const std::string& page_text,
+               std::string_view tab_title,
+               std::string_view page_text,
                MemoryBank::OperationCompleteCallback callback);
   // Saves a text selection to the memory bank.
   void SaveTextSelection(const GURL& url,
-                         const std::string& tab_title,
-                         const std::string& selected_text,
+                         std::string_view tab_title,
+                         std::string_view selected_text,
                          MemoryBank::OperationCompleteCallback callback);
   // Deletes an entry from the memory bank.
   void DeleteEntries(base::span<const int64_t> ids,

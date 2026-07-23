@@ -9,8 +9,10 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
+
 namespace context_hub {
+
+struct MemoryBankEntry;
 
 // Interface for ContextHub central database storage.
 // Provides data access for all ContextHub tables/stores.
