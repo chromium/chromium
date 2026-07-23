@@ -137,9 +137,7 @@ class FetchManifestAndInstallCommand
   void OnInstallFinalizedMaybeReparentTab(const webapps::AppId& app_id,
                                           webapps::InstallResultCode code);
 
-  void OnInstallCompleted(const webapps::AppId& app_id,
-                          webapps::InstallResultCode code);
-  void MeasureUserInstalledAppHistogram(webapps::InstallResultCode code);
+  void MeasureUserInstalledAppHistograms(webapps::InstallResultCode code);
 
   // Start downloading screenshots if the manifest has them, so that the
   // detailed install dialog can show them.

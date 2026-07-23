@@ -332,11 +332,9 @@ void FetchManifestAndInstallCommand::WebContentsDestroyed() {
 
 void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code,
                                            const base::Location& location) {
-  GetMutableDebugValue().Set("result_code", base::ToString(code));
-  webapps::InstallableMetrics::TrackInstallResult(false, install_surface_);
   Observe(nullptr);
-  MeasureUserInstalledAppHistogram(code);
-  CompleteAndSelfDestruct(CommandResult::kFailure, webapps::AppId(), code,
+  MeasureUserInstalledAppHistograms(code);
+  CompleteAndSelfDestruct(CommandResult::kSuccess, webapps::AppId(), code,
                           location);
 }
 
@@ -738,24 +736,15 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
         .Run(true, std::move(reparent_closure));
   }
 
-  OnInstallCompleted(app_id, code);
+  MeasureUserInstalledAppHistograms(code);
+  CompleteAndSelfDestruct(CommandResult::kSuccess, app_id, code);
 }
 
-void FetchManifestAndInstallCommand::OnInstallCompleted(
-    const webapps::AppId& app_id,
+void FetchManifestAndInstallCommand::MeasureUserInstalledAppHistograms(
     webapps::InstallResultCode code) {
   GetMutableDebugValue().Set("result_code", base::ToString(code));
-
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code),
                                                   install_surface_);
-  MeasureUserInstalledAppHistogram(code);
-  CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
-                                                   : CommandResult::kFailure,
-                          app_id, code);
-}
-
-void FetchManifestAndInstallCommand::MeasureUserInstalledAppHistogram(
-    webapps::InstallResultCode code) {
   if (!web_app_info_) {
     RecordInstallMetrics(InstallCommand::kFetchManifestAndInstall,
                          WebAppType::kUnknown, code, install_surface_);
