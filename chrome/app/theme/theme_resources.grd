@@ -71,6 +71,10 @@
         <structure type="chrome_scaled_image" name="IDR_BACK_H" file="common/browser_back_hover.png" />
         <structure type="chrome_scaled_image" name="IDR_BACK_P" file="common/browser_back_pressed.png" />
       </if>
+      <if expr="_google_chrome">
+        <structure type="chrome_scaled_image" name="IDR_BEST_OF_GOOGLE_ON_IOS" file="google_chrome/best_of_google_on_ios.png" />
+        <structure type="chrome_scaled_image" name="IDR_BEST_OF_GOOGLE_ON_IOS_DARK" file="google_chrome/best_of_google_on_ios_dark.png" />
+      </if>
       <structure type="chrome_scaled_image" name="IDR_BIOMETRIC_AUTHENTICATION_PROMPT_LIGHT" file="common/biometric_password_auth_light.png" />
       <structure type="chrome_scaled_image" name="IDR_BIOMETRIC_AUTHENTICATION_PROMPT_DARK" file="common/biometric_password_auth_dark.png" />
       <structure type="chrome_scaled_image" name="IDR_BIOMETRIC_AUTHENTICATION_CONFIRMATION_PROMPT_LIGHT" file="common/biometric_password_success_light.png" />
@@ -299,6 +303,10 @@
             <structure type="chrome_scaled_image" name="IDR_DICTATION_ONBOARDING_BANNER" file="common/dictation_onboarding_banner.png" />
             <structure type="chrome_scaled_image" name="IDR_DICTATION_ONBOARDING_BANNER_DARK" file="common/dictation_onboarding_banner_dark.png" />
           </else>
+        </if>
+        <if expr="_google_chrome">
+          <structure type="chrome_scaled_image" name="IDR_SAFETY_ON_IOS" file="google_chrome/safety_on_ios.png" />
+          <structure type="chrome_scaled_image" name="IDR_SAFETY_ON_IOS_DARK" file="google_chrome/safety_on_ios_dark.png" />
         </if>
         <structure type="chrome_scaled_image" name="IDR_SAFETY_TIP_ILLUSTRATION_DARK" file="common/safety_tip_illustration_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_SAFETY_TIP_ILLUSTRATION_LIGHT" file="common/safety_tip_illustration_light.png" />
