@@ -186,6 +186,13 @@ public class SharedStatics {
     public void clearClientCertPreferences(Runnable onCleared) {
         if (shouldPost()) {
             mAwInit.getRunQueue().addTask(() -> clearClientCertPreferences(onCleared));
+            // Unfortunately, our CTS test waits on the `onCleared` callback to fire, which wouldn't
+            // happen if we don't start up Chromium. We fix it by just triggering async
+            // startup here. It's very unlikely that this method is what triggers WebView startup
+            // in the wild, so not deferring startup here shouldn't really hurt much.
+            // See crbug/533032033 for more details.
+            mAwInit.postChromiumStartupIfNeeded(
+                    WebViewChromiumAwInit.CallSite.STATIC_CLEAR_CLIENT_CERT_PREFERENCES);
             return;
         }
         mAwInit.triggerAndWaitForChromiumStarted(
