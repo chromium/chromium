@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_picker_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
@@ -607,6 +608,28 @@ bool GeminiBrowserAgent::IsGeminiAvailableForActiveWebState() const {
       browser_->GetWebStateList()->GetActiveWebState();
   GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
   return tab_helper && tab_helper->IsGeminiAvailableForWebState();
+}
+
+bool GeminiBrowserAgent::IsFloatyVisible() const {
+  if (!is_floaty_invoked_) {
+    return false;
+  }
+
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  if (!active_web_state) {
+    return false;
+  }
+
+  bool is_web_state_visible = active_web_state->IsVisible();
+  if (!is_web_state_visible && !IsChromeNextIaEnabled()) {
+    return false;
+  }
+
+  ProfileIOS* profile = browser_->GetProfile();
+  return gemini::IsGeminiAvailable(gemini::EntryPoint::Unknown, profile,
+                                   active_web_state)
+      .enabled;
 }
 
 bool GeminiBrowserAgent::IsInGeminiLiveMode() const {

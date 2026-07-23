@@ -2586,39 +2586,20 @@ inline LayoutStateScenePassKey PassKey() {
 
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(_regularBrowser.get());
-  GeminiService* geminiService =
-      GeminiServiceFactory::GetForProfile(self.profile);
   GeminiTabHelper* geminiTabHelper =
       GeminiTabHelper::FromWebState(activeWebState);
-  if (!geminiBrowserAgent || !geminiTabHelper || !geminiService) {
+  if (!geminiBrowserAgent || !geminiTabHelper) {
     return;
   }
 
-  // Don't show the floaty if the page is ineligible or the active WebState
-  // isn't visible.
-  // TODO(crbug.com/476145805): Move WebState related checks to tab helper.
-  bool isWebStateVisible = activeWebState->IsVisible();
-  if (!isWebStateVisible && !IsChromeNextIaEnabled()) {
+  bool isFloatyVisible = geminiBrowserAgent->IsFloatyVisible();
+  if (!isFloatyVisible) {
     geminiTabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
     geminiBrowserAgent->HideFloatyIfInvoked(
         animated, gemini::FloatyUpdateSource::IneligibleSite);
-    return;
+  } else {
+    geminiBrowserAgent->ShowFloatyIfInvoked(animated, source);
   }
-
-  bool eligibleSite = gemini::IsGeminiAvailable(gemini::EntryPoint::Unknown,
-                                                self.profile, activeWebState)
-                          .enabled;
-  if (!eligibleSite) {
-    // Reset presented sources before hiding the floaty due to an ineligible
-    // site.
-    geminiTabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
-    gemini::FloatyUpdateSource hideSource =
-        gemini::FloatyUpdateSource::IneligibleSite;
-    geminiBrowserAgent->HideFloatyIfInvoked(animated, hideSource);
-    return;
-  }
-
-  geminiBrowserAgent->ShowFloatyIfInvoked(animated, source);
 }
 
 #pragma mark - Helper methods for Gemini entry flow

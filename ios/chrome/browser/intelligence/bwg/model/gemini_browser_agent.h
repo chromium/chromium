@@ -100,6 +100,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns true if Gemini is available for the active web state.
   bool IsGeminiAvailableForActiveWebState() const;
 
+  // Returns true if the floaty is currently visible.
+  bool IsFloatyVisible() const;
+
   // Returns true if Gemini Live mode is currently active.
   bool IsInGeminiLiveMode() const;
 

@@ -103,6 +103,7 @@ source_set("browser_agent") {
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/bwg/coordinator:container_mediator",
     "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/intelligence/bwg/utils:availability",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/bwg/utils:feature_availability",
     "//ios/chrome/browser/intelligence/bwg/utils:prefs",
