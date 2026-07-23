@@ -2583,6 +2583,9 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
 
     /******************************************************************
      * BEGIN: External drag support
+     *
+     * Unit tests for this section are located in:
+     * //ui/android/junit/src/org/chromium/ui/recyclerview/widget/ItemTouchHelper2UnitTest.java
      ******************************************************************/
 
     /** Allows to handle long press events externally. */
