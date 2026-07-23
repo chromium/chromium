@@ -12,6 +12,7 @@ source_set("ntp_customization") {
     "ntp_android_background_service_factory.h",
     "ntp_android_custom_background_service.h",
     "ntp_android_custom_background_service_factory.h",
+    "ntp_android_theme_sync_bridge.h",
     "ntp_synced_theme_bridge.h",
     "ntp_theme_collection_bridge.h",
   ]
@@ -19,6 +20,7 @@ source_set("ntp_customization") {
     "ntp_android_background_service_factory.cc",
     "ntp_android_custom_background_service.cc",
     "ntp_android_custom_background_service_factory.cc",
+    "ntp_android_theme_sync_bridge.cc",
     "ntp_synced_theme_bridge.cc",
     "ntp_theme_collection_bridge.cc",
   ]
@@ -29,10 +31,13 @@ source_set("ntp_customization") {
   ]
   deps = [
     ":jni_headers",
+    "//build:android_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//ui/webui:buildflags",
     "//chrome/common:constants",
     "//components/application_locale_storage",
+    "//components/sync",
     "//content/public/browser",
     "//url",
   ]
@@ -437,7 +442,12 @@ robolectric_library("junit") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ntp_android_custom_background_service_unittest.cc" ]
+  sources = [
+    "ntp_android_custom_background_service_unittest.cc",
+  ]
+  if (!is_desktop_android) {
+    sources += [ "ntp_android_theme_sync_bridge_unittest.cc" ]
+  }
   deps = [
     ":ntp_customization",
     "//base",
@@ -446,6 +456,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/application_locale_storage",
     "//components/prefs:test_support",
+    "//components/sync:test_support",
     "//testing/gtest",
   ]
 }
