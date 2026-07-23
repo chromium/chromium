@@ -3821,6 +3821,15 @@
       ]
     },
     {
+      "id": 484,
+      "cr_bugs": [529867799],
+      "description": "Pack large row length separately when packing into a pixel pack buffer to work around Mali driver bug.",
+      "gl_vendor": "ARM.*",
+      "features": [
+        "pack_large_row_length_separately_pack_buffer"
+      ]
+    },
+    {
       "id": 486,
       "cr_bugs": [534903095],
       "description": "Changing BASE_LEVEL of NPOT immutable texture triggers driver bug on PowerVR GPUs.",
