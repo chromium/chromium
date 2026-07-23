@@ -853,7 +853,7 @@ targets.legacy_matrix_compound_suite(
         "litert_lm_advanced_main_legacy_tests_cpu_suite": None,
         # TODO(b:484388901): Enable GPU backend testing when the issue is fixed.
         # "litert_lm_advanced_main_legacy_tests_gpu_suite": None,
-        "chrome_ai_wpt_tests_litert_suite": None,
+        "chrome_ai_wpt_tests_manifest_suite": None,
     },
 )
 
