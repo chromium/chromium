@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/extension_icon_image.h"
 
 class BrowserWindowInterface;
@@ -46,8 +45,7 @@ class Extension;
 // these two panel types.
 class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
                                       public SidePanelService::Observer,
-                                      public SidePanelEntryObserver,
-                                      public ExtensionHostObserver {
+                                      public SidePanelEntryObserver {
  public:
   explicit ExtensionSidePanelCoordinator(Profile* profile,
                                          BrowserWindowInterface* browser,
@@ -79,8 +77,7 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   void OnOpened();
 
   // Dispatches the onClosed event when the panel is closed or its WebContents
-  // is destroyed. The event is only dispatched if the onOpened event was
-  // dispatched prior.
+  // is destroyed.
   void OnClosed();
 
   SidePanelEntry::Key GetEntryKey() const;
@@ -97,10 +94,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   // ExtensionViewViews::Observer
   void OnViewDestroying() override;
-
-  // ExtensionHostObserver:
-  void OnExtensionHostDestroyed(ExtensionHost* host) override;
-  void OnExtensionHostDidStopFirstLoad(const ExtensionHost* host) override;
 
   // Creates and registers the SidePanelEntry for this extension, and observes
   // the entry.
@@ -175,9 +168,6 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Track whether the side panel is currently active for this entry.
   bool is_panel_active_ = false;
 
-  // Track whether the onOpened event has been dispatched.
-  bool on_opened_dispatched_ = false;
-
   // The ID of the browser window in which the panel is shown.
   std::optional<int> window_id_;
 
@@ -187,15 +177,12 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
-  // Scoped observations for UI and extension backend components.
   base::ScopedObservation<ExtensionViewViews, ExtensionViewViews::Observer>
       scoped_view_observation_{this};
   base::ScopedObservation<SidePanelService, SidePanelService::Observer>
       scoped_service_observation_{this};
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver>
       scoped_entry_observation_{this};
-  base::ScopedObservation<ExtensionHost, ExtensionHostObserver>
-      scoped_host_observation_{this};
 
   // Must be the last member.
   base::WeakPtrFactory<ExtensionSidePanelCoordinator> weak_factory_{this};
