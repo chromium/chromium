@@ -10,10 +10,11 @@
 
 #include "base/component_export.h"
 #include "base/files/file.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
-#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
+#include "media/webrtc/ml_model_handle.h"
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
@@ -41,7 +42,7 @@ COMPONENT_EXPORT(MEDIA_WEBRTC)
 std::pair<webrtc::scoped_refptr<webrtc::AudioProcessing>, base::TimeDelta>
 CreateWebRtcAudioProcessingModule(
     const AudioProcessingSettings& settings,
-    const tflite::FlatBufferModel* residual_echo_estimator_model);
+    scoped_refptr<media::MlModelHandle> residual_echo_estimator_model);
 
 // Starts the echo cancellation dump in
 // |audio_processing|. |worker_queue| must be kept alive until either

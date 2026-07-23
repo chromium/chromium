@@ -253,9 +253,7 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
 
   auto [webrtc_audio_processing, added_aec_delay] =
       media::CreateWebRtcAudioProcessingModule(
-          settings, neural_residual_echo_estimator_model
-                        ? &neural_residual_echo_estimator_model->Get()
-                        : nullptr);
+          settings, neural_residual_echo_estimator_model);
 
   return std::make_unique<AudioProcessor>(
       std::move(deliver_processed_audio_callback), std::move(log_callback),

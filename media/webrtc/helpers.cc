@@ -19,6 +19,8 @@
 #include "third_party/webrtc/api/audio/builtin_audio_processing_builder.h"
 #include "third_party/webrtc/api/audio/echo_canceller3_config.h"
 #include "third_party/webrtc/api/audio/neural_residual_echo_estimator_creator.h"
+#include "third_party/webrtc/api/audio/tflite_model_handle.h"
+#include "third_party/webrtc/api/make_ref_counted.h"
 #include "third_party/webrtc/modules/audio_processing/aec_dump/aec_dump_factory.h"
 #include "third_party/webrtc_overrides/environment.h"
 
@@ -28,6 +30,19 @@
 
 namespace media {
 namespace {
+
+class ChromeTfliteModelHandle : public webrtc::TfliteModelHandle {
+ public:
+  explicit ChromeTfliteModelHandle(scoped_refptr<media::MlModelHandle> handle)
+      : handle_(std::move(handle)) {
+    DCHECK(handle_);
+  }
+
+  const tflite::FlatBufferModel& Get() const override { return handle_->Get(); }
+
+ private:
+  const scoped_refptr<media::MlModelHandle> handle_;
+};
 
 using Agc1Mode = webrtc::AudioProcessing::Config::GainController1::Mode;
 
@@ -130,11 +145,12 @@ void StopEchoCancellationDump(webrtc::AudioProcessing* audio_processing) {
 std::pair<webrtc::scoped_refptr<webrtc::AudioProcessing>, base::TimeDelta>
 CreateWebRtcAudioProcessingModule(
     const AudioProcessingSettings& settings,
-    const tflite::FlatBufferModel* residual_echo_estimator_model) {
+    scoped_refptr<media::MlModelHandle> residual_echo_estimator_model) {
   if (!settings.NeedWebrtcAudioProcessing()) {
     return {nullptr, base::TimeDelta()};
   }
 
+  webrtc::Environment env = WebRtcEnvironment();
   webrtc::AudioProcessing::Config apm_config;
   apm_config.pipeline.capture_downmix_method =
       kWebRtcApmDownmixMethodParam.Get();
@@ -153,9 +169,18 @@ CreateWebRtcAudioProcessingModule(
   // TODO(crbug.com/450466837): Investigate if this build guard can be avoided.
 #if !BUILDFLAG(IS_FUCHSIA)
   if (residual_echo_estimator_model) {
-    optimization_guide::TFLiteOpResolver op_resolver;
-    echo_estimator = webrtc::CreateNeuralResidualEchoEstimator(
-        residual_echo_estimator_model, &op_resolver);
+    if (base::FeatureList::IsEnabled(
+            features::kWebRtcNeuralResidualEchoEstimationAsyncInit)) {
+      echo_estimator = webrtc::CreateNeuralResidualEchoEstimatorAsync(
+          env,
+          webrtc::make_ref_counted<ChromeTfliteModelHandle>(
+              std::move(residual_echo_estimator_model)),
+          std::make_unique<optimization_guide::TFLiteOpResolver>());
+    } else {
+      optimization_guide::TFLiteOpResolver op_resolver;
+      echo_estimator = webrtc::CreateNeuralResidualEchoEstimator(
+          &residual_echo_estimator_model->Get(), &op_resolver);
+    }
     if (!echo_estimator) {
       LOG(ERROR) << "Failed to initialize neural residual echo estimator.";
     }
@@ -183,6 +208,6 @@ CreateWebRtcAudioProcessingModule(
 #endif  // BUILDFLAG(SYSTEM_LOOPBACK_AS_AEC_REFERENCE)
 
   apm_builder.SetNeuralResidualEchoEstimator(std::move(echo_estimator));
-  return {apm_builder.Build(WebRtcEnvironment()), added_delay};
+  return {apm_builder.Build(env), added_delay};
 }
 }  // namespace media

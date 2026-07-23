@@ -68,6 +68,11 @@ BASE_FEATURE(kWebRtcAV1HWEncode,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
+// When enabled, neural residual echo estimation (ML-REE) is initialized on a
+// background thread in order to reduce latency impact on getUserMedia calls.
+BASE_FEATURE(kWebRtcNeuralResidualEchoEstimationAsyncInit,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsOpenH264SoftwareEncoderEnabledForWebRTC() {
 // TODO(crbug.com/355256378): OpenH264 for encoding and FFmpeg for H264 decoding
 // should be detangled such that software decoding can be enabled without
