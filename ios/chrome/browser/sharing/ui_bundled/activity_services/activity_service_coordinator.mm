@@ -416,11 +416,11 @@ constexpr CGFloat kAppIconPointSize = 80;
 
 - (NSItemProvider*)appIconProvider {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  UIImage* image = MakeSymbolMulticolor(CustomSymbolWithPointSize(
-      kMulticolorChromeballSymbol, kAppIconPointSize));
+  UIImage* image = MakeSymbolMulticolor(
+      SymbolWithPointSize(SymbolMulticolorChromeball, kAppIconPointSize));
 #else
-  UIImage* image = DefaultSymbolTemplateWithPointSize(kDefaultBrowserSymbol,
-                                                      kAppIconPointSize);
+  UIImage* image =
+      SymbolTemplateWithPointSize(SymbolDefaultBrowser, kAppIconPointSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   return [[NSItemProvider alloc] initWithObject:image];
 }

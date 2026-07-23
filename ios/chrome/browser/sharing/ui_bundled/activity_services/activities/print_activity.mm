@@ -64,7 +64,7 @@ NSString* const kPrintActivityType = @"com.google.chrome.printActivity";
 }
 
 - (UIImage*)activityImage {
-  return DefaultSymbolWithPointSize(kPrinterSymbol, kSymbolActionPointSize);
+  return SymbolWithPointSize(SymbolPrinter, kSymbolActionPointSize);
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

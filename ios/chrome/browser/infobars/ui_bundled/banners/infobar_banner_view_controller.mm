@@ -640,8 +640,8 @@ const CGFloat kButtonMaxWidthMultiplier = 0.40;
 - (ExtendedTouchTargetButton*)createOpenModalButton {
   ExtendedTouchTargetButton* modalButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
-  UIImage* gearImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol,
-                                                  kInfobarSymbolPointSize);
+  UIImage* gearImage =
+      SymbolWithPointSize(SymbolSettingsFilled, kInfobarSymbolPointSize);
   [modalButton setImage:gearImage forState:UIControlStateNormal];
   modalButton.tintColor = [UIColor colorNamed:kTextSecondaryColor];
   modalButton.hidden = !self.presentsModal;

@@ -48,7 +48,7 @@ NSString* const kGenerateQrCodeActivityType =
 }
 
 - (UIImage*)activityImage {
-  return DefaultSymbolWithPointSize(kQRCodeSymbol, kSymbolActionPointSize);
+  return SymbolWithPointSize(SymbolQRCode, kSymbolActionPointSize);
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

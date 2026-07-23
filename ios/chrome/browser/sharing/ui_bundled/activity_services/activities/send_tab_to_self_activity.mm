@@ -51,7 +51,7 @@ NSString* const kSendTabToSelfActivityType =
 }
 
 - (UIImage*)activityImage {
-  return CustomSymbolWithPointSize(kRecentTabsSymbol, kSymbolActionPointSize);
+  return SymbolWithPointSize(SymbolRecentTabs, kSymbolActionPointSize);
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

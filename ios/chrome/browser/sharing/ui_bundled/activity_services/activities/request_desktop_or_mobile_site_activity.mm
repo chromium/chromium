@@ -60,11 +60,10 @@ NSString* const kRequestDesktopOrMobileSiteActivityType =
 }
 
 - (UIImage*)activityImage {
-  NSString* symbolName = self.userAgent == web::UserAgentType::MOBILE
-                             ? kDesktopSymbol
-                             : kIPhoneSymbol;
+  Symbol symbol = self.userAgent == web::UserAgentType::MOBILE ? SymbolDesktop
+                                                               : SymbolIPhone;
   return MakeSymbolMonochrome(
-      DefaultSymbolWithPointSize(symbolName, kSymbolActionPointSize));
+      SymbolWithPointSize(symbol, kSymbolActionPointSize));
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

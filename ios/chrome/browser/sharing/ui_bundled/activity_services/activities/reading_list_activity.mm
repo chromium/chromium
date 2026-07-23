@@ -54,8 +54,7 @@ NSString* const kReadingListActivityType =
 }
 
 - (UIImage*)activityImage {
-  return DefaultSymbolWithPointSize(kReadLaterActionSymbol,
-                                    kSymbolActionPointSize);
+  return SymbolWithPointSize(SymbolReadLaterAction, kSymbolActionPointSize);
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

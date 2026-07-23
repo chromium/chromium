@@ -99,8 +99,8 @@ constexpr CGFloat kButtonStackVerticalMargin = 9;
                            action:@selector(dismissInfobarModal)];
   cancelButton.accessibilityIdentifier = kInfobarModalCancelButton;
 
-  UIImage* gearImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol,
-                                                  kInfobarSymbolPointSize);
+  UIImage* gearImage =
+      SymbolWithPointSize(SymbolSettingsFilled, kInfobarSymbolPointSize);
   UIBarButtonItem* settingsButton = [[UIBarButtonItem alloc]
       initWithImage:gearImage
               style:UIBarButtonItemStylePlain

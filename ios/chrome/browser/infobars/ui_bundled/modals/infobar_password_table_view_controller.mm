@@ -129,7 +129,7 @@ const CGFloat kSymbolSize = 15;
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_PASSWORD);
   self.passwordItem.textFieldValue = self.maskedPassword;
   self.passwordItem.identifyingIcon =
-      DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
+      SymbolWithPointSize(SymbolShowAction, kSymbolSize);
   self.passwordItem.identifyingIconEnabled = YES;
   self.passwordItem.hideIcon = YES;
   self.passwordItem.identifyingIconAccessibilityLabel = l10n_util::GetNSString(
@@ -261,7 +261,7 @@ const CGFloat kSymbolSize = 15;
   self.passwordMasked = !self.passwordMasked;
   if (self.passwordMasked) {
     self.passwordItem.identifyingIcon =
-        DefaultSymbolWithPointSize(kShowActionSymbol, kSymbolSize);
+        SymbolWithPointSize(SymbolShowAction, kSymbolSize);
     self.passwordItem.textFieldValue = self.maskedPassword;
     self.passwordItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(
@@ -270,7 +270,7 @@ const CGFloat kSymbolSize = 15;
         recordModalEvent:MobileMessagesPasswordsModalEvent::MaskedPassword];
   } else {
     self.passwordItem.identifyingIcon =
-        DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolSize);
+        SymbolWithPointSize(SymbolHideAction, kSymbolSize);
     self.passwordItem.textFieldValue = self.unmaskedPassword;
     self.passwordItem.identifyingIconAccessibilityLabel =
         l10n_util::GetNSString(

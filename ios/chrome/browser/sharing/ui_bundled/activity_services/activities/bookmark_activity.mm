@@ -74,9 +74,8 @@ NSString* const kBookmarkActivityType = @"com.google.chrome.bookmarkActivity";
 }
 
 - (UIImage*)activityImage {
-  NSString* symbolName =
-      self.bookmarked ? kEditActionSymbol : kAddBookmarkActionSymbol;
-  return DefaultSymbolWithPointSize(symbolName, kSymbolActionPointSize);
+  Symbol symbol = self.bookmarked ? SymbolEditAction : SymbolAddBookmarkAction;
+  return SymbolWithPointSize(symbol, kSymbolActionPointSize);
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {

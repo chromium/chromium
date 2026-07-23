@@ -18,8 +18,7 @@ namespace {
 
 // The image used for password related badges.
 UIImage* GetPasswordImage() {
-  return CustomSymbolTemplateWithPointSize(kPasswordSymbol,
-                                           kInfobarSymbolPointSize);
+  return SymbolTemplateWithPointSize(SymbolPassword, kInfobarSymbolPointSize);
 }
 
 // The menu element for `badgeType` shown in the overflow menu when the overflow
@@ -48,33 +47,30 @@ UIAction* GetOverflowMenuElementForBadgeType(
       action_identifier = kBadgeButtonSaveAddressProfileActionIdentifier;
       title =
           l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
-      image =
-          CustomSymbolWithPointSize(kLocationSymbol, kInfobarSymbolPointSize);
+      image = SymbolWithPointSize(SymbolLocation, kInfobarSymbolPointSize);
       break;
     case kBadgeTypeSaveCard:
       action_identifier = kBadgeButtonSaveCardActionIdentifier;
       title = l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
-      image = DefaultSymbolWithPointSize(kCreditCardSymbol,
-                                         kInfobarSymbolPointSize);
+      image = SymbolWithPointSize(SymbolCreditCard, kInfobarSymbolPointSize);
       break;
     case kBadgeTypeTranslate:
       action_identifier = kBadgeButtonTranslateActionIdentifier;
       title = l10n_util::GetNSString(IDS_IOS_TRANSLATE_INFOBAR_MODAL_TITLE);
-      image =
-          CustomSymbolWithPointSize(kTranslateSymbol, kInfobarSymbolPointSize);
+      image = SymbolWithPointSize(SymbolTranslate, kInfobarSymbolPointSize);
       break;
     case kBadgeTypePermissionsCamera:
       action_identifier = kBadgeButtonPermissionsActionIdentifier;
       title = l10n_util::GetNSString(
           IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE);
-      image = CustomSymbolWithPointSize(kCameraSymbol, kInfobarSymbolPointSize);
+      image = SymbolWithPointSize(SymbolCamera, kInfobarSymbolPointSize);
       break;
     case kBadgeTypePermissionsMicrophone:
       action_identifier = kBadgeButtonPermissionsActionIdentifier;
       title = l10n_util::GetNSString(
           IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE);
-      image = DefaultSymbolTemplateWithPointSize(kMicrophoneSymbol,
-                                                 kInfobarSymbolPointSize);
+      image = SymbolTemplateWithPointSize(SymbolMicrophone,
+                                          kInfobarSymbolPointSize);
       break;
     case kBadgeTypeReaderMode:
       NOTREACHED() << "Reader Mode badge should not be in overflow menu";
