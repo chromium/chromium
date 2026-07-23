@@ -123,9 +123,10 @@ class CC_EXPORT TaskGraphWorkQueue {
 
   static bool HasReadyToRunTasksInNamespace(
       const TaskNamespace* task_namespace) {
-    return !std::ranges::all_of(task_namespace->ready_to_run_tasks,
-                                &PrioritizedTask::Vector::empty,
-                                &TaskNamespace::ReadyTasks::value_type::second);
+    return !std::ranges::all_of(
+        task_namespace->ready_to_run_tasks,
+        [](const auto& v) { return v.empty(); },
+        &TaskNamespace::ReadyTasks::value_type::second);
   }
 
   static bool HasTasksBlockedOnExternalDependencyInNamespace(

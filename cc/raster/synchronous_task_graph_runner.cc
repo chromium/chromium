@@ -86,8 +86,7 @@ bool SynchronousTaskGraphRunner::RunTask() {
   // treats categories as an additional priority.
   const auto& ready_to_run_namespaces = work_queue_.ready_to_run_namespaces();
   auto found = std::ranges::find_if_not(
-      ready_to_run_namespaces,
-      &TaskGraphWorkQueue::TaskNamespace::Vector::empty,
+      ready_to_run_namespaces, [](const auto& v) { return v.empty(); },
       &TaskGraphWorkQueue::ReadyNamespaces::value_type::second);
 
   if (found == ready_to_run_namespaces.cend()) {
