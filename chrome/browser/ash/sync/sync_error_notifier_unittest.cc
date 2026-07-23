@@ -58,7 +58,9 @@ class SyncErrorNotifierTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    // Explicitly destroy the notifier to ensure it doesn't outlive the profile.
     error_notifier_->Shutdown();
+    error_notifier_.reset();
 
     BrowserWithTestWindowTest::TearDown();
   }
