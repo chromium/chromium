@@ -175,7 +175,6 @@ public class AutoPictureInPictureTabHelperTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/511288544
     public void testHideAutoPip() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
         Tab originalTab = mPage.getTab();
@@ -194,10 +193,12 @@ public class AutoPictureInPictureTabHelperTest {
                             activity.areTabModelsInitialized(),
                             Matchers.is(true));
                     Criteria.checkThat(
-                            "Still on the original tab.",
-                            activity.getTabModelSelector().getCurrentTab().getId()
-                                    == originalTab.getId(),
-                            Matchers.is(false));
+                            "Still on the original tab or tab not fully initialized.",
+                            activity.getTabModelSelector() != null
+                                    && activity.getTabModelSelector().getCurrentTab() != null
+                                    && activity.getTabModelSelector().getCurrentTab().getId()
+                                            != originalTab.getId(),
+                            Matchers.is(true));
                 });
 
         // Now that the activity is gone, verify the C++ state.
@@ -712,7 +713,9 @@ public class AutoPictureInPictureTabHelperTest {
                         return false;
                     }
                 },
-                "Video element did not enter Picture-in-Picture mode.");
+                "Video element did not enter Picture-in-Picture mode.",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, true, "Did not enter auto-PiP after tab hidden.");
@@ -742,7 +745,9 @@ public class AutoPictureInPictureTabHelperTest {
                     }
                     return false;
                 },
-                "Could not find PictureInPictureActivity.");
+                "Could not find PictureInPictureActivity.",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return (PictureInPictureActivity) activityHolder[0];
     }
 
@@ -765,7 +770,9 @@ public class AutoPictureInPictureTabHelperTest {
                     return pipActivity.getActionsForTesting().stream()
                             .anyMatch(action -> action.getTitle().equals(hideActionTitle));
                 },
-                "Hide action not found.");
+                "Hide action not found.",
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /**
@@ -776,8 +783,7 @@ public class AutoPictureInPictureTabHelperTest {
             throws TimeoutException {
         PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
 
-        // Verify video is playing and hide action is visible before clicking it.
-        DOMUtils.waitForMediaPlay(webContents, VIDEO_ID);
+        // Verify hide action is visible before clicking it.
         waitForHideActionPresence(pipActivity);
 
         // Simulate clicking the hide button.

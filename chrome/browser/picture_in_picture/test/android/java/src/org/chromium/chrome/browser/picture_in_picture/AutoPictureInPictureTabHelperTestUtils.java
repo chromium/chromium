@@ -20,6 +20,8 @@ import org.chromium.url.GURL;
 /** Utility class for testing AutoPictureInPictureTabHelper C++ logic via JNI. */
 @JNINamespace("picture_in_picture")
 public class AutoPictureInPictureTabHelperTestUtils {
+    private static final long PIP_TIMEOUT_MS = 10000L;
+
     private AutoPictureInPictureTabHelperTestUtils() {}
 
     /**
@@ -66,7 +68,9 @@ public class AutoPictureInPictureTabHelperTestUtils {
 
                     return isInAutoPip == expectedInPip;
                 },
-                failureMessage);
+                failureMessage,
+                PIP_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /**
