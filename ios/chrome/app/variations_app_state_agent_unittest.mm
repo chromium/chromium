@@ -394,11 +394,10 @@ TEST_F(VariationsAppStateAgentTest, LaunchScreenDisplaysIfSeedIsNotFetched) {
   // -rootViewController (as the VariationsAppStateAgent will install some
   // sub-views).
   ScopedKeyWindow scoped_key_window;
-  scene_state.scene = scoped_key_window.GetScene();
-  UIWindow* window = scene_state.window;
-  ASSERT_NE(window, nil);
+  UIWindow* window = scoped_key_window.Get();
+  scene_state.window = window;
 
-  window.rootViewController = [[UIViewController alloc] init];
+  ASSERT_NE(window.rootViewController, nil);
   ASSERT_NSNE(window.rootViewController.view.accessibilityIdentifier,
               first_run::kLaunchScreenAccessibilityIdentifier);
 
@@ -409,6 +408,7 @@ TEST_F(VariationsAppStateAgentTest, LaunchScreenDisplaysIfSeedIsNotFetched) {
   TransitionAgentToStage(agent, AppInitStage::kVariationsSeed);
   [agent sceneState:scene_state
       transitionedToActivationLevel:SceneActivationLevelForegroundInactive];
+
   EXPECT_NSEQ(window.rootViewController.view.accessibilityIdentifier,
               first_run::kLaunchScreenAccessibilityIdentifier);
 }
