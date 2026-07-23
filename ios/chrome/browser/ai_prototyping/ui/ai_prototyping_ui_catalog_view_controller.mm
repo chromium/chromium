@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_actor_tool_chip_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_worklog_compact_view_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_worklog_item_showcase_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -53,7 +54,13 @@ NSString* const kUICatalogCellIdentifier = @"UICatalogCell";
   worklogItem.viewControllerClass =
       [AIPrototypingWorklogItemShowcaseViewController class];
 
-  _items = @[ chipsItem, worklogItem ];
+  AIPrototypingUICatalogItem* compactWorklogItem =
+      [[AIPrototypingUICatalogItem alloc] init];
+  compactWorklogItem.title = @"Compact Worklog";
+  compactWorklogItem.viewControllerClass =
+      [AIPrototypingWorklogCompactViewController class];
+
+  _items = @[ chipsItem, worklogItem, compactWorklogItem ];
 }
 
 #pragma mark - UITableViewDataSource
