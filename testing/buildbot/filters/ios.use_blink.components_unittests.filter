@@ -172,6 +172,11 @@
 -SharedPasswordControllerTest.ReturnsSuggestionsIfAvailable
 -SharedPasswordControllerTest.SuggestsGeneratedPassword
 -SharedPasswordControllerTest.TriggerPasswordGeneration
+-SharedPasswordControllerTest.FillField
+-SharedPasswordControllerTest.ReturnsPasskeyAndPasswordSuggestionsWhenAvailable
+-SharedPasswordControllerTest.ScrollAndCheckViewAreaVisible
+-SharedPasswordControllerTest.SelectPasskeySuggestion
+-SharedPasswordControllerTest.SelectPasswordSuggestionWithAutoSubmission
 
 # TODO(crbug.com/40945948): Test currently fails on iOS blink.
 -SecurityStateUtilsTest.GetMaliciousContentStatus
