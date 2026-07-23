@@ -603,6 +603,7 @@ void GpuChannelMessageFilter::CopyToGpuMemoryBufferAsync(
          CopyToGpuMemoryBufferAsyncCallback callback) {
         if (!channel) {
           std::move(callback).Run(false);
+          return;
         }
         channel->shared_image_stub()->CopyToGpuMemoryBufferAsync(
             mailbox, std::move(callback));
