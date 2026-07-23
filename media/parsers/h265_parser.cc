@@ -1471,11 +1471,18 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
   if (prior_shdr && !shdr->first_slice_segment_in_pic_flag) {
     // Validate the fields that must match between slice headers for the same
     // picture.
+    // 7.4.2.2: All coded slice segment NAL units of an access unit shall have
+    // the same value of nal_unit_type.
+    EQ_OR_RETURN(shdr, prior_shdr, nal_unit_type);
     EQ_OR_RETURN(shdr, prior_shdr, slice_pic_parameter_set_id);
     EQ_OR_RETURN(shdr, prior_shdr, pic_output_flag);
     EQ_OR_RETURN(shdr, prior_shdr, no_output_of_prior_pics_flag);
     EQ_OR_RETURN(shdr, prior_shdr, slice_pic_order_cnt_lsb);
     EQ_OR_RETURN(shdr, prior_shdr, short_term_ref_pic_set_sps_flag);
+    // 7.4.7.1: all syntax elements for short-term reference picture set
+    // derivation shall have the same values for all coded slice segment
+    // NAL units of a codec picture.
+    EQ_OR_RETURN(shdr, prior_shdr, st_ref_pic_set);
 
     // All the other fields we need to compare are contiguous, so compare them
     // as one memory range.
