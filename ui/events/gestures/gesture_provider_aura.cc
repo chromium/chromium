@@ -29,16 +29,17 @@ constexpr bool kDoubleTapPlatformSupport = false;
 GestureProviderAura::GestureProviderAura(GestureConsumer* consumer,
                                          GestureProviderAuraClient* client)
     : client_(client),
-      filtered_gesture_provider_(
+      filtered_gesture_provider_(base::MakeRefCounted<FilteredGestureProvider>(
           GetGestureProviderConfig(GestureProviderConfigType::CURRENT_PLATFORM),
-          this),
+          this)),
       handling_event_(false),
       gesture_consumer_(consumer) {
-  filtered_gesture_provider_.SetDoubleTapSupportForPlatformEnabled(
+  filtered_gesture_provider_->SetDoubleTapSupportForPlatformEnabled(
       kDoubleTapPlatformSupport);
 }
 
 GestureProviderAura::~GestureProviderAura() {
+  filtered_gesture_provider_->Shutdown();
   client_->OnGestureProviderAuraWillBeDestroyed(this);
 }
 
@@ -46,7 +47,13 @@ bool GestureProviderAura::OnTouchEvent(TouchEvent* event) {
   if (!pointer_state_.OnTouch(*event))
     return false;
 
-  auto result = filtered_gesture_provider_.OnTouchEvent(pointer_state_);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  scoped_refptr<FilteredGestureProvider> gesture_provider(
+      filtered_gesture_provider_);
+  auto result = gesture_provider->OnTouchEvent(pointer_state_);
+  if (!weak_this) {
+    return false;
+  }
   pointer_state_.CleanupRemovedTouchPoints(*event);
 
   if (!result.succeeded)
@@ -62,18 +69,22 @@ void GestureProviderAura::OnTouchEventAck(
     bool is_source_touch_event_set_blocking) {
   DCHECK(pending_gestures_.empty());
   DCHECK(!handling_event_);
-  base::AutoReset<bool> handling_event(&handling_event_, true);
-  filtered_gesture_provider_.OnTouchEventAck(
-      unique_touch_event_id, event_consumed,
-      is_source_touch_event_set_blocking);
+  handling_event_ = true;
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  scoped_refptr<FilteredGestureProvider> gesture_provider(
+      filtered_gesture_provider_);
+  gesture_provider->OnTouchEventAck(unique_touch_event_id, event_consumed,
+                                    is_source_touch_event_set_blocking);
+  if (weak_this) {
+    handling_event_ = false;
+  }
 }
 
 void GestureProviderAura::ResetGestureHandlingState() {
-  filtered_gesture_provider_.ResetGestureHandlingState();
+  filtered_gesture_provider_->ResetGestureHandlingState();
 }
-
 void GestureProviderAura::SendSynthesizedEndEvents() {
-  filtered_gesture_provider_.SendSynthesizedEndEvents();
+  filtered_gesture_provider_->SendSynthesizedEndEvents();
 }
 
 void GestureProviderAura::OnGestureEvent(const GestureEventData& gesture) {
@@ -95,7 +106,7 @@ bool GestureProviderAura::RequiresDoubleTapGestureEvents() const {
 }
 
 void GestureProviderAura::OnUnconfirmedTapConvertedToTap() {
-  filtered_gesture_provider_.OnUnconfirmedTapConvertedToTap();
+  filtered_gesture_provider_->OnUnconfirmedTapConvertedToTap();
 }
 
 std::vector<std::unique_ptr<GestureEvent>>
@@ -116,6 +127,10 @@ void GestureProviderAura::OnTouchEnter(const ui::TouchEvent& event) {
   OnTouchEvent(touch_event.get());
   OnTouchEventAck(touch_event->unique_event_id(), true /* event_consumed */,
                   false /* is_source_touch_event_set_blocking */);
+}
+
+base::WeakPtr<GestureProviderAura> GestureProviderAura::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ui

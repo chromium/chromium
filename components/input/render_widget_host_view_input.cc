@@ -371,4 +371,9 @@ bool RenderWidgetHostViewInput::TransformPointToTargetCoordSpace(
   return true;
 }
 
+scoped_refptr<ui::FilteredGestureProvider>
+RenderWidgetHostViewInput::GetGestureProvider() {
+  return nullptr;
+}
+
 }  // namespace input

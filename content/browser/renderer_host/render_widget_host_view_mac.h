@@ -14,6 +14,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -677,7 +678,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
 
   // Provides gesture synthesis given a stream of touch events and touch event
   // acks. This is for generating gesture events from injected touch events.
-  ui::FilteredGestureProvider gesture_provider_;
+  scoped_refptr<ui::FilteredGestureProvider> gesture_provider_;
 
   // Used to ensure that a consistent RenderWidgetHost is targeted throughout
   // the duration of a keyboard event.

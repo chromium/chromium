@@ -212,9 +212,10 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
       is_loading_(false),
       popup_parent_host_view_(nullptr),
       popup_child_host_view_(nullptr),
-      gesture_provider_(ui::GetGestureProviderConfig(
-                            ui::GestureProviderConfigType::CURRENT_PLATFORM),
-                        this),
+      gesture_provider_(base::MakeRefCounted<ui::FilteredGestureProvider>(
+          ui::GetGestureProviderConfig(
+              ui::GestureProviderConfigType::CURRENT_PLATFORM),
+          this)),
       accessibility_focus_overrider_(this),
       ns_view_id_(remote_cocoa::GetNewNSViewId()),
       weak_factory_(this) {
@@ -266,6 +267,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
 }
 
 RenderWidgetHostViewMac::~RenderWidgetHostViewMac() {
+  gesture_provider_->Shutdown();
   if (popup_parent_host_view_) {
     DCHECK(!popup_parent_host_view_->popup_child_host_view_ ||
            popup_parent_host_view_->popup_child_host_view_ == this);
@@ -679,11 +681,11 @@ input::CursorManager* RenderWidgetHostViewMac::GetCursorManager() {
 void RenderWidgetHostViewMac::OnOldViewDidNavigatePreCommit() {
   CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
   browser_compositor_->DidNavigateMainFramePreCommit();
-  gesture_provider_.ResetDetection();
+  gesture_provider_->ResetDetection();
 }
 
 void RenderWidgetHostViewMac::OnNewViewDidNavigatePostCommit() {
-  gesture_provider_.ResetDetection();
+  gesture_provider_->ResetDetection();
 }
 
 void RenderWidgetHostViewMac::DidEnterBackForwardCache() {
@@ -1140,7 +1142,7 @@ void RenderWidgetHostViewMac::EnsureSurfaceSynchronizedForWebTest() {
 
 ui::FilteredGestureProvider*
 RenderWidgetHostViewMac::GetFilteredGestureProviderForTesting() {
-  return &gesture_provider_;
+  return gesture_provider_.get();
 }
 
 void RenderWidgetHostViewMac::OnDidUpdateVisualPropertiesComplete(
@@ -1447,7 +1449,7 @@ void RenderWidgetHostViewMac::ResetFallbackToFirstNavigationSurface() {
 }
 
 void RenderWidgetHostViewMac::OnUnconfirmedTapConvertedToTap() {
-  gesture_provider_.OnUnconfirmedTapConvertedToTap();
+  gesture_provider_->OnUnconfirmedTapConvertedToTap();
 }
 
 bool RenderWidgetHostViewMac::RequestRepaintOnNewSurface() {
@@ -1581,9 +1583,14 @@ void RenderWidgetHostViewMac::ProcessAckedTouchEvent(
     blink::mojom::InputEventResultState ack_result) {
   const bool event_consumed =
       ack_result == blink::mojom::InputEventResultState::kConsumed;
-  gesture_provider_.OnTouchEventAck(
+  auto weak_this = weak_factory_.GetWeakPtr();
+  scoped_refptr<ui::FilteredGestureProvider> protector(gesture_provider_);
+  protector->OnTouchEventAck(
       touch.event.unique_touch_event_id, event_consumed,
       input::InputEventResultStateIsSetBlocking(ack_result));
+  if (!weak_this) {
+    return;
+  }
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       host()->delegate() && host()->delegate()->GetInputEventRouter()) {
     host()
@@ -1652,8 +1659,13 @@ void RenderWidgetHostViewMac::SendTouchpadZoomEvent(
 void RenderWidgetHostViewMac::InjectTouchEvent(
     const WebTouchEvent& event,
     const ui::LatencyInfo& latency_info) {
+  auto weak_this = weak_factory_.GetWeakPtr();
+  scoped_refptr<ui::FilteredGestureProvider> protector(gesture_provider_);
   ui::FilteredGestureProvider::TouchHandlingResult result =
-      gesture_provider_.OnTouchEvent(MotionEventWeb(event));
+      protector->OnTouchEvent(MotionEventWeb(event));
+  if (!weak_this) {
+    return;
+  }
   if (!result.succeeded)
     return;
 
@@ -2009,8 +2021,13 @@ void RenderWidgetHostViewMac::RouteOrProcessMouseEvent(
 void RenderWidgetHostViewMac::RouteOrProcessTouchEvent(
     const blink::WebTouchEvent& const_web_event) {
   blink::WebTouchEvent web_event = const_web_event;
+  auto weak_this = weak_factory_.GetWeakPtr();
+  scoped_refptr<ui::FilteredGestureProvider> protector(gesture_provider_);
   ui::FilteredGestureProvider::TouchHandlingResult result =
-      gesture_provider_.OnTouchEvent(MotionEventWeb(web_event));
+      protector->OnTouchEvent(MotionEventWeb(web_event));
+  if (!weak_this) {
+    return;
+  }
   if (!result.succeeded)
     return;
 

@@ -503,7 +503,7 @@ TEST_F(RenderWidgetHostViewAndroidTest,
   MockInputTransferHandler* handler = new MockInputTransferHandler();
   rwhva->SetInputTransferHandlerForTesting(handler);
 
-  auto& gesture_provider = rwhva->GetGestureProvider();
+  auto gesture_provider = rwhva->GetGestureProvider();
 
   gfx::Point point(/*x=*/100, /*y=*/100);
   ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0, 0);
@@ -536,13 +536,13 @@ TEST_F(RenderWidgetHostViewAndroidTest,
       /*pointer1=*/nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(true));
-  EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
+  EXPECT_EQ(gesture_provider->GetCurrentDownEvent(), nullptr);
   rwhva->OnTouchEvent(*touch_down);
-  EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
+  EXPECT_EQ(gesture_provider->GetCurrentDownEvent(), nullptr);
 
   EXPECT_CALL(*handler, OnTouchEventImpl(_, _)).WillOnce(Return(false));
   rwhva->OnTouchEvent(*touch_down);
-  EXPECT_NE(gesture_provider.GetCurrentDownEvent(), nullptr);
+  EXPECT_NE(gesture_provider->GetCurrentDownEvent(), nullptr);
 }
 
 TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
@@ -589,14 +589,14 @@ TEST_F(RenderWidgetHostViewAndroidTest, ResetGestureDetectionGeneratesCancel) {
       /*is_latest_event_time_resampled=*/false);
   rwhva->OnTouchEvent(*touch_down);
 
-  auto& gesture_provider = rwhva->GetGestureProvider();
-  EXPECT_NE(gesture_provider.GetCurrentDownEvent(), nullptr);
+  auto gesture_provider = rwhva->GetGestureProvider();
+  EXPECT_NE(gesture_provider->GetCurrentDownEvent(), nullptr);
 
   rwhva->ResetGestureDetection();
 
   // The current down should have been reset as a result of processing cancel
   // generated from `ResetGestureDetection` call.
-  EXPECT_EQ(gesture_provider.GetCurrentDownEvent(), nullptr);
+  EXPECT_EQ(gesture_provider->GetCurrentDownEvent(), nullptr);
 
   MockRenderWidgetHost* mock_widget =
       static_cast<MockRenderWidgetHost*>(rwhva->host());

@@ -27,6 +27,11 @@ FilteredGestureProvider::FilteredGestureProvider(
 
 FilteredGestureProvider::~FilteredGestureProvider() = default;
 
+void FilteredGestureProvider::Shutdown() {
+  client_ = nullptr;
+  gesture_filter_.Shutdown();
+}
+
 void FilteredGestureProvider::UpdateConfig(
     const GestureProvider::Config& config) {
   gesture_provider_ = std::make_unique<ui::GestureProvider>(config, this);
@@ -128,12 +133,14 @@ void FilteredGestureProvider::OnGestureEvent(const GestureEventData& event) {
 }
 
 bool FilteredGestureProvider::RequiresDoubleTapGestureEvents() const {
-  return client_->RequiresDoubleTapGestureEvents();
+  return client_ ? client_->RequiresDoubleTapGestureEvents() : false;
 }
 
 void FilteredGestureProvider::ForwardGestureEvent(
     const GestureEventData& event) {
-  client_->OnGestureEvent(event);
+  if (client_) {
+    client_->OnGestureEvent(event);
+  }
 }
 
 }  // namespace ui

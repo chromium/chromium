@@ -81,7 +81,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportAndroid
 
   // AndroidInputHelper::Delegate implementation.
   void SendGestureEvent(const blink::WebGestureEvent& event) override;
-  ui::FilteredGestureProvider& GetGestureProvider() override;
+  scoped_refptr<ui::FilteredGestureProvider> GetGestureProvider() override;
 
   base::WeakPtr<RenderInputRouterSupportAndroid> GetWeakPtr();
 
@@ -90,7 +90,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportAndroid
 
   // Provides gesture synthesis given a stream of touch events (derived from
   // Android MotionEvent's) and touch event acks.
-  ui::FilteredGestureProvider gesture_provider_;
+  scoped_refptr<ui::FilteredGestureProvider> gesture_provider_;
 
   // FrameSinkManager owns InputManager which in turn owns
   // RenderInputRouterSupportAndroid. GpuServiceImpl is destroyed only after

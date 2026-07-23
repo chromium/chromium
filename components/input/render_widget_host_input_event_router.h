@@ -165,6 +165,8 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
   // creates a touch emulator.
   TouchEmulator* GetTouchEmulator(bool create_if_necessary);
 
+  base::WeakPtr<RenderWidgetHostInputEventRouter> GetWeakPtr();
+
   float last_device_scale_factor() { return last_device_scale_factor_; }
 
   // Returns the RenderWidgetHostViewInput inside the |root_view| at |point|

@@ -12,6 +12,7 @@
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/gesture_detection/filtered_gesture_provider.h"
 
 namespace input {
 
@@ -57,20 +58,20 @@ bool AndroidInputHelper::ShouldRouteEvents() const {
 }
 
 void AndroidInputHelper::ResetGestureDetection() {
-  ui::FilteredGestureProvider& gesture_provider =
-      delegate_->GetGestureProvider();
+  scoped_refptr<ui::FilteredGestureProvider> gesture_provider =
+      view_->GetGestureProvider();
 
   const ui::MotionEvent* current_down_event =
-      gesture_provider.GetCurrentDownEvent();
+      gesture_provider->GetCurrentDownEvent();
   if (!current_down_event) {
     // A hard reset ensures prevention of any timer-based events that might fire
     // after a touch sequence has ended.
-    gesture_provider.ResetDetection();
+    gesture_provider->ResetDetection();
     return;
   }
 
   const ui::MotionEvent* last_event =
-      gesture_provider.GetLastEventWithoutHistory();
+      gesture_provider->GetLastEventWithoutHistory();
   CHECK(last_event);
 
   std::unique_ptr<ui::MotionEvent> cancel_event;
@@ -82,7 +83,7 @@ void AndroidInputHelper::ResetGestureDetection() {
   } else {
     cancel_event = last_event->Cancel();
   }
-  if (gesture_provider.OnTouchEvent(*cancel_event).succeeded) {
+  if (gesture_provider->OnTouchEvent(*cancel_event).succeeded) {
     blink::WebTouchEvent web_event = ui::CreateWebTouchEventFromMotionEvent(
         *cancel_event, false /* may_cause_scrolling */, false /* hovering */);
     RouteOrForwardTouchEvent(web_event);
@@ -127,12 +128,18 @@ void AndroidInputHelper::ProcessAckedTouchEvent(
   // blocking to the Renderer.
   const bool was_touch_blocked =
       ui::WebInputEventTraits::ShouldBlockEventStream(touch.event);
-  delegate_->GetGestureProvider().OnTouchEventAck(
+  auto weak_this = weak_factory_.GetWeakPtr();
+  scoped_refptr<ui::FilteredGestureProvider> gesture_provider =
+      view_->GetGestureProvider();
+  gesture_provider->OnTouchEventAck(
       touch.event.unique_touch_event_id, event_consumed,
       is_source_touch_event_set_non_blocking,
       was_touch_blocked
           ? std::make_optional(touch.event.GetEventLatencyMetadata())
           : std::nullopt);
+  if (!weak_this) {
+    return;
+  }
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       view_->GetViewRenderInputRouter()->delegate() &&
       view_->GetViewRenderInputRouter()->delegate()->GetInputEventRouter()) {

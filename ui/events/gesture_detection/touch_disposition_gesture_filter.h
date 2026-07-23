@@ -73,6 +73,8 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
                        const std::optional<EventLatencyMetadata>&
                            event_latency_metadata = std::nullopt);
 
+  void Shutdown();
+
   // Whether there are any active gesture sequences still queued in the filter.
   bool IsEmpty() const;
 

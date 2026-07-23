@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/input/render_input_router.h"
@@ -27,6 +28,7 @@ class WebMouseWheelEvent;
 
 namespace ui {
 class Cursor;
+class FilteredGestureProvider;
 class LatencyInfo;
 }  // namespace ui
 
@@ -204,6 +206,8 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   virtual void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result);
+
+  virtual scoped_refptr<ui::FilteredGestureProvider> GetGestureProvider();
 
   virtual void SetLastPointerType(ui::EventPointerType last_pointer_type) {}
 

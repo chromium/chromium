@@ -89,6 +89,9 @@ TouchEmulatorImpl::~TouchEmulatorImpl() {
   // We cannot cleanup properly in destructor, as we need roundtrip to the
   // renderer for ack. Instead, the owner should call Disable, and only
   // destroy this object when renderer is dead.
+  if (gesture_provider_) {
+    gesture_provider_->Shutdown();
+  }
 }
 
 void TouchEmulatorImpl::ResetState() {
@@ -110,7 +113,10 @@ void TouchEmulatorImpl::Enable(Mode mode,
       mode_ != mode) {
     mode_ = mode;
     gesture_provider_config_type_ = config_type;
-    gesture_provider_ = std::make_unique<ui::FilteredGestureProvider>(
+    if (gesture_provider_) {
+      gesture_provider_->Shutdown();
+    }
+    gesture_provider_ = base::MakeRefCounted<ui::FilteredGestureProvider>(
         GetEmulatorGestureProviderConfig(config_type, mode), this);
     gesture_provider_->SetDoubleTapSupportForPageEnabled(double_tap_enabled_);
     // TODO(dgozman): Use synthetic secondary touch to support multi-touch.
@@ -127,11 +133,18 @@ void TouchEmulatorImpl::Disable() {
 
   mode_ = Mode::kEmulatingTouchFromMouse;
   CancelTouch();
-  gesture_provider_.reset();
+  if (gesture_provider_) {
+    gesture_provider_->Shutdown();
+    gesture_provider_ = nullptr;
+  }
   base::queue<base::OnceClosure> empty;
   injected_touch_completion_callbacks_.swap(empty);
   client_->SetCursor(ui::mojom::CursorType::kPointer);
   ResetState();
+}
+
+base::WeakPtr<input::TouchEmulator> TouchEmulatorImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void TouchEmulatorImpl::SetDeviceScaleFactor(float device_scale_factor) {
@@ -287,27 +300,31 @@ bool TouchEmulatorImpl::HandleEmulatedTouchEvent(
     blink::WebTouchEvent event,
     input::RenderWidgetHostViewInput* target_view) {
   DCHECK(gesture_provider_);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  scoped_refptr<ui::FilteredGestureProvider> gesture_provider(
+      gesture_provider_);
   event.unique_touch_event_id = ui::GetNextTouchEventId();
-  auto result = gesture_provider_->OnTouchEvent(MotionEventWeb(event));
-  if (!result.succeeded)
+  auto result = gesture_provider->OnTouchEvent(MotionEventWeb(event));
+  if (!result.succeeded || !weak_this) {
     return true;
+  }
 
   const bool event_consumed = true;
   const bool is_source_touch_event_set_blocking = false;
   // Block emulated event when emulated native stream is active.
   if (native_stream_active_sequence_count_) {
-    gesture_provider_->OnTouchEventAck(event.unique_touch_event_id,
-                                       event_consumed,
-                                       is_source_touch_event_set_blocking);
+    gesture_provider->OnTouchEventAck(event.unique_touch_event_id,
+                                      event_consumed,
+                                      is_source_touch_event_set_blocking);
     return true;
   }
 
   bool is_sequence_start = event.IsTouchSequenceStart();
   // Do not allow middle-sequence event to pass through, if start was blocked.
   if (!emulated_stream_active_sequence_count_ && !is_sequence_start) {
-    gesture_provider_->OnTouchEventAck(event.unique_touch_event_id,
-                                       event_consumed,
-                                       is_source_touch_event_set_blocking);
+    gesture_provider->OnTouchEventAck(event.unique_touch_event_id,
+                                      event_consumed,
+                                      is_source_touch_event_set_blocking);
     return true;
   }
 
@@ -333,9 +350,15 @@ bool TouchEmulatorImpl::HandleTouchEventAck(
     const bool event_consumed =
         ack_result == blink::mojom::InputEventResultState::kConsumed;
     if (gesture_provider_) {
-      gesture_provider_->OnTouchEventAck(
+      auto weak_this = weak_ptr_factory_.GetWeakPtr();
+      scoped_refptr<ui::FilteredGestureProvider> gesture_provider(
+          gesture_provider_);
+      gesture_provider->OnTouchEventAck(
           event.unique_touch_event_id, event_consumed,
           input::InputEventResultStateIsSetBlocking(ack_result));
+      if (!weak_this) {
+        return true;
+      }
     }
     if (pending_taps_count_ == taps_count_before)
       OnInjectedTouchCompleted();
@@ -463,8 +486,10 @@ void TouchEmulatorImpl::InjectTouchEvent(
   DCHECK(IsEnabled() && mode_ == Mode::kInjectingTouchEvents);
   touch_event_ = event;
   injected_touch_completion_callbacks_.push(std::move(callback));
-  if (HandleEmulatedTouchEvent(touch_event_, target_view))
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  if (HandleEmulatedTouchEvent(touch_event_, target_view) && weak_this) {
     OnInjectedTouchCompleted();
+  }
 }
 
 void TouchEmulatorImpl::OnInjectedTouchCompleted() {

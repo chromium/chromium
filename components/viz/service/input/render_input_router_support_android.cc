@@ -12,7 +12,9 @@
 
 namespace viz {
 
-RenderInputRouterSupportAndroid::~RenderInputRouterSupportAndroid() = default;
+RenderInputRouterSupportAndroid::~RenderInputRouterSupportAndroid() {
+  gesture_provider_->Shutdown();
+}
 
 RenderInputRouterSupportAndroid::RenderInputRouterSupportAndroid(
     input::RenderInputRouter* rir,
@@ -20,10 +22,11 @@ RenderInputRouterSupportAndroid::RenderInputRouterSupportAndroid(
     const FrameSinkId& frame_sink_id,
     GpuServiceImpl* gpu_service)
     : RenderInputRouterSupportBase(rir, delegate, frame_sink_id),
-      gesture_provider_(ui::GetGestureProviderConfig(
-                            ui::GestureProviderConfigType::CURRENT_PLATFORM,
-                            base::SingleThreadTaskRunner::GetCurrentDefault()),
-                        this),
+      gesture_provider_(base::MakeRefCounted<ui::FilteredGestureProvider>(
+          ui::GetGestureProviderConfig(
+              ui::GestureProviderConfigType::CURRENT_PLATFORM,
+              base::SingleThreadTaskRunner::GetCurrentDefault()),
+          this)),
       gpu_service_(gpu_service) {
   CHECK(gpu_service_);
   input_helper_ = std::make_unique<input::AndroidInputHelper>(this, this);
@@ -39,8 +42,15 @@ bool RenderInputRouterSupportAndroid::OnTouchEvent(
         event, /*processing_time=*/base::TimeTicks::Now());
   }
 
+  auto weak_this = GetWeakPtr();
+  // Keep the gesture provider alive during event dispatch as it can trigger
+  // synchronous view destruction.
+  scoped_refptr<ui::FilteredGestureProvider> protector(gesture_provider_);
   ui::FilteredGestureProvider::TouchHandlingResult result =
-      gesture_provider_.OnTouchEvent(event);
+      protector->OnTouchEvent(event);
+  if (!weak_this) {
+    return false;
+  }
   if (!result.succeeded) {
     return false;
   }
@@ -76,7 +86,7 @@ bool RenderInputRouterSupportAndroid::IsRenderInputRouterSupportChildFrame()
 
 void RenderInputRouterSupportAndroid::NotifySiteIsMobileOptimized(
     bool is_mobile_optimized) {
-  gesture_provider_.SetDoubleTapSupportForPageEnabled(!is_mobile_optimized);
+  gesture_provider_->SetDoubleTapSupportForPageEnabled(!is_mobile_optimized);
 }
 
 void RenderInputRouterSupportAndroid::OnGestureEvent(
@@ -95,7 +105,7 @@ void RenderInputRouterSupportAndroid::SendGestureEvent(
   input_helper_->RouteOrForwardGestureEvent(event);
 }
 
-ui::FilteredGestureProvider&
+scoped_refptr<ui::FilteredGestureProvider>
 RenderInputRouterSupportAndroid::GetGestureProvider() {
   return gesture_provider_;
 }

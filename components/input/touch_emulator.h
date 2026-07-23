@@ -6,6 +6,7 @@
 #define COMPONENTS_INPUT_TOUCH_EMULATOR_H_
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -18,6 +19,8 @@ class RenderWidgetHostViewInput;
 // Emulates touch input. See TouchEmulator::Mode for more details.
 class COMPONENT_EXPORT(INPUT) TouchEmulator : public ui::GestureProviderClient {
  public:
+  virtual base::WeakPtr<TouchEmulator> GetWeakPtr() = 0;
+
   enum class Mode {
     // Emulator will consume incoming mouse events and transform them
     // into touches and gestures.

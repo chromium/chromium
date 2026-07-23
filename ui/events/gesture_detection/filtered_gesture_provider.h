@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/gesture_detection/gesture_provider.h"
 #include "ui/events/gesture_detection/touch_disposition_gesture_filter.h"
@@ -19,7 +20,8 @@ namespace ui {
 // Provides filtered gesture detection and dispatch given a sequence of touch
 // events and touch event acks.
 class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
-    : public ui::TouchDispositionGestureFilterClient,
+    : public base::RefCounted<FilteredGestureProvider>,
+      public ui::TouchDispositionGestureFilterClient,
       public ui::GestureProviderClient {
  public:
   // |client| will be offered all gestures detected by the |gesture_provider_|
@@ -30,7 +32,7 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
   FilteredGestureProvider(const FilteredGestureProvider&) = delete;
   FilteredGestureProvider& operator=(const FilteredGestureProvider&) = delete;
 
-  ~FilteredGestureProvider() final;
+  void Shutdown();
 
   void UpdateConfig(const GestureProvider::Config& config);
 
@@ -76,6 +78,9 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
   GestureDetector* GetGestureDetectorForTesting();
 
  private:
+  friend class base::RefCounted<FilteredGestureProvider>;
+  ~FilteredGestureProvider() override;
+
   // GestureProviderClient implementation.
   void OnGestureEvent(const ui::GestureEventData& event) override;
   bool RequiresDoubleTapGestureEvents() const override;
@@ -83,7 +88,7 @@ class GESTURE_DETECTION_EXPORT FilteredGestureProvider final
   // TouchDispositionGestureFilterClient implementation.
   void ForwardGestureEvent(const ui::GestureEventData& event) override;
 
-  const raw_ptr<GestureProviderClient> client_;
+  raw_ptr<GestureProviderClient> client_;
 
   std::unique_ptr<ui::GestureProvider> gesture_provider_;
   ui::TouchDispositionGestureFilter gesture_filter_;

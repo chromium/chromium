@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/events_export.h"
 #include "ui/events/gesture_detection/filtered_gesture_provider.h"
@@ -50,7 +51,7 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
   }
 
   FilteredGestureProvider& filtered_gesture_provider() {
-    return filtered_gesture_provider_;
+    return *filtered_gesture_provider_;
   }
 
   bool OnTouchEvent(TouchEvent* event);
@@ -71,16 +72,20 @@ class EVENTS_EXPORT GestureProviderAura : public GestureProviderClient {
   bool RequiresDoubleTapGestureEvents() const override;
   void OnUnconfirmedTapConvertedToTap();
 
+  base::WeakPtr<GestureProviderAura> GetWeakPtr();
+
  private:
   raw_ptr<GestureProviderAuraClient> client_;
   MotionEventAura pointer_state_;
-  FilteredGestureProvider filtered_gesture_provider_;
+  scoped_refptr<FilteredGestureProvider> filtered_gesture_provider_;
 
   bool handling_event_;
   std::vector<std::unique_ptr<GestureEvent>> pending_gestures_;
 
   // The |gesture_consumer_| owns this provider.
   raw_ptr<GestureConsumer> gesture_consumer_;
+
+  base::WeakPtrFactory<GestureProviderAura> weak_ptr_factory_{this};
 };
 
 }  // namespace ui

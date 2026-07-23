@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_INPUT_ANDROID_INPUT_HELPER_H_
 #define COMPONENTS_INPUT_ANDROID_INPUT_HELPER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "ui/events/android/motion_event_android.h"
-#include "ui/events/gesture_detection/filtered_gesture_provider.h"
 
 namespace input {
 
@@ -19,7 +19,6 @@ class COMPONENT_EXPORT(INPUT) AndroidInputHelper {
    public:
     virtual ~Delegate() = default;
     virtual void SendGestureEvent(const blink::WebGestureEvent& event) = 0;
-    virtual ui::FilteredGestureProvider& GetGestureProvider() = 0;
   };
 
   explicit AndroidInputHelper(RenderWidgetHostViewInput* view,
@@ -57,6 +56,8 @@ class COMPONENT_EXPORT(INPUT) AndroidInputHelper {
   raw_ref<RenderWidgetHostViewInput> view_;
   // |delegate_| is supposed to outlive |this|.
   raw_ref<Delegate> delegate_;
+
+  base::WeakPtrFactory<AndroidInputHelper> weak_factory_{this};
 };
 
 }  // namespace input

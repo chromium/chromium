@@ -353,9 +353,12 @@ GestureRecognizer::Gestures GestureRecognizerImpl::AckTouchEvent(
   } else {
     gesture_provider = GetGestureProviderForConsumer(consumer);
   }
+  base::WeakPtr<GestureProviderAura> weak_provider =
+      gesture_provider->GetWeakPtr();
   gesture_provider->OnTouchEventAck(unique_event_id, result != ER_UNHANDLED,
                                     is_source_touch_event_set_blocking);
-  return gesture_provider->GetAndResetPendingGestures();
+  return weak_provider ? weak_provider->GetAndResetPendingGestures()
+                       : Gestures();
 }
 
 void GestureRecognizerImpl::CancelActiveTouchesExceptImpl(

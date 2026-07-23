@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/ios_buildflags.h"
@@ -270,7 +271,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
 
   // Provides gesture synthesis given a stream of touch events and touch event
   // acks. This is for generating gesture events from injected touch events.
-  ui::FilteredGestureProvider gesture_provider_;
+  scoped_refptr<ui::FilteredGestureProvider> gesture_provider_;
   bool is_first_responder_ = false;
   bool is_getting_focus_ = false;
   bool is_visible_ = false;
