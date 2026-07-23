@@ -360,6 +360,7 @@ MediaFoundationVideoEncodeAccelerator::
     ~MediaFoundationVideoEncodeAccelerator() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pending_input_queue_.clear();
 }
 
 void MediaFoundationVideoEncodeAccelerator::InitializeForTesting(
