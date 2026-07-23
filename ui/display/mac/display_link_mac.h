@@ -150,6 +150,8 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   static void RecordDisplayLinkCreation(bool success);
 };
 
+DISPLAY_EXPORT bool SkipPostTaskForCallbacks();
+
 }  // namespace ui
 
 #endif  // UI_DISPLAY_MAC_DISPLAY_LINK_MAC_H_

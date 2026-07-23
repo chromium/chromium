@@ -390,8 +390,7 @@ std::unique_ptr<VSyncCallbackMac> CVDisplayLinkMac::RegisterCallback(
   TRACE_EVENT("gpu", "CVDisplayLinkMac::RegisterCallback");
 
   // Check if this is in the fallback path for CADisplayLink
-  bool post_callback_to_ctor_thread =
-      !DisplayLinkMac::SupportsDisplayLinkMacInBrowser();
+  bool post_callback_to_ctor_thread = !SkipPostTaskForCallbacks();
 
   // Make add the new callback. Register first before calling
   // EnsureDisplayLinkRunning() to ensure the callback function is available.

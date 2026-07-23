@@ -20,6 +20,11 @@ namespace ui {
 // For testing only. Create CADisplayLink in the GPU process.
 BASE_FEATURE(kCADisplayLinkInGpu, base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool SkipPostTaskForCallbacks() {
+  return base::FeatureList::IsEnabled(
+      display::features::kSkipPostTaskForCallbacks);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DisplayLinkMac
 

@@ -42,7 +42,11 @@ BASE_FEATURE(kCtmColorManagement, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDrmColorSpaceDefaultIsRec709, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kCADisplayLinkInBrowser, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSkipPostTaskForCallbacks, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // TODO(gildekel): A temporary flag to control whether EDID-based (vs.
 // port-based) display IDs are generated per display. Remove once the migration
