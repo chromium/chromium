@@ -144,7 +144,7 @@ class PermissionRequestManagerTest : public content::RenderViewHostTestHarness {
     task_environment()->RunUntilIdle();
   }
 
-  void Closing() {
+  void Dismiss() {
     manager_->Dismiss(/*prompt_options=*/std::monostate());
     task_environment()->RunUntilIdle();
   }
@@ -841,7 +841,7 @@ TEST_F(PermissionRequestManagerTest, MainFrameNoRequestIFrameRequest) {
   WaitForFrameLoad();
 
   EXPECT_TRUE(prompt_factory_->is_visible());
-  Closing();
+  Dismiss();
   EXPECT_TRUE(iframe_request_same_domain_state.finished);
 }
 
@@ -861,7 +861,7 @@ TEST_F(PermissionRequestManagerTest, MainFrameAndIFrameRequestSameDomain) {
 
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_EQ(1, prompt_factory_->request_count());
-  Closing();
+  Dismiss();
   if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(iframe_request_same_domain_state.finished);
     EXPECT_FALSE(request1_state.finished);
@@ -874,7 +874,7 @@ TEST_F(PermissionRequestManagerTest, MainFrameAndIFrameRequestSameDomain) {
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_EQ(1, prompt_factory_->request_count());
 
-  Closing();
+  Dismiss();
   EXPECT_FALSE(prompt_factory_->is_visible());
   if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(request1_state.finished);
@@ -898,7 +898,7 @@ TEST_F(PermissionRequestManagerTest, MainFrameAndIFrameRequestOtherDomain) {
   WaitForBubbleToBeShown();
 
   EXPECT_TRUE(prompt_factory_->is_visible());
-  Closing();
+  Dismiss();
   if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(iframe_request_other_domain_state.finished);
     EXPECT_FALSE(request1_state.finished);
@@ -908,7 +908,7 @@ TEST_F(PermissionRequestManagerTest, MainFrameAndIFrameRequestOtherDomain) {
   }
 
   EXPECT_TRUE(prompt_factory_->is_visible());
-  Closing();
+  Dismiss();
   EXPECT_TRUE(iframe_request_other_domain_state.finished);
   if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(request1_state.finished);
@@ -933,7 +933,7 @@ TEST_F(PermissionRequestManagerTest, IFrameRequestWhenMainRequestVisible) {
                     iframe_request_other_domain_state.GetWeakPtr()));
   WaitForFrameLoad();
   ASSERT_EQ(prompt_factory_->request_count(), 1);
-  Closing();
+  Dismiss();
   if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(iframe_request_other_domain_state.finished);
     EXPECT_FALSE(request1_state.finished);
@@ -944,7 +944,7 @@ TEST_F(PermissionRequestManagerTest, IFrameRequestWhenMainRequestVisible) {
 
   EXPECT_TRUE(prompt_factory_->is_visible());
   ASSERT_EQ(prompt_factory_->request_count(), 1);
-  Closing();
+  Dismiss();
   EXPECT_TRUE(iframe_request_other_domain_state.finished);
   if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(request1_state.finished);
@@ -969,7 +969,7 @@ TEST_F(PermissionRequestManagerTest,
       CreateRequest(iframe_request_other_domain_,
                     iframe_request_other_domain_state.GetWeakPtr()));
   WaitForFrameLoad();
-  Closing();
+  Dismiss();
   if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(iframe_request_other_domain_state.finished);
     EXPECT_FALSE(request1_state.finished);
@@ -979,7 +979,7 @@ TEST_F(PermissionRequestManagerTest,
   }
 
   EXPECT_TRUE(prompt_factory_->is_visible());
-  Closing();
+  Dismiss();
   if (PermissionUtil::DoesPlatformSupportChip()) {
     EXPECT_TRUE(request1_state.finished);
   } else {
@@ -2250,7 +2250,7 @@ TEST_F(PermissionRequestManagerTest, ReentrantPermissionRequestCancelled) {
 
   EXPECT_TRUE(prompt_factory_->is_visible());
   EXPECT_EQ(prompt_factory_->request_count(), 1);
-  Closing();
+  Dismiss();
   EXPECT_TRUE(request1_state.cancelled);
   EXPECT_FALSE(request_mic_state.cancelled);
   WaitForBubbleToBeShown();
