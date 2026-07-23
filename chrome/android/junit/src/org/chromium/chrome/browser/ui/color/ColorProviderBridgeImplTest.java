@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.color;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -18,13 +19,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.color.AndroidColorRole;
 import org.chromium.ui.util.ColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.WEB_UI_NTP_ANDROID_THEMING)
 public class ColorProviderBridgeImplTest {
 
     private TestActivity mActivity;
@@ -61,10 +67,17 @@ public class ColorProviderBridgeImplTest {
     }
 
     @Test
-    public void testGetThemeColors_NullContext() {
+    public void testGetThemeColors_NullContext_FallbackToActivity() {
         ColorProviderBridgeImpl bridge = new ColorProviderBridgeImpl();
         long[] result = bridge.getThemeColors(null);
-        assertEquals("Null context must yield empty array.", 0, result.length);
+        assertEquals(
+                "Null context must fallback to activity and return color array.",
+                AndroidColorRole.MAX_VALUE + 1,
+                result.length);
+        assertNotEquals(
+                "Primary color should be resolved via Activity fallback.",
+                ColorUtils.INVALID_COLOR,
+                result[AndroidColorRole.PRIMARY]);
     }
 
     @Test
@@ -89,5 +102,23 @@ public class ColorProviderBridgeImplTest {
                 "Non-Material context must fallback cleanly to sentinel.",
                 ColorUtils.INVALID_COLOR,
                 result[AndroidColorRole.PRIMARY]);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testGetThemeColors_NullContext_NoActivity_AssertsAndReturnsEmptyArray() {
+        mActivity.finish();
+        ApplicationStatus.destroyForJUnitTests();
+        assertNull(ApplicationStatus.getLastTrackedFocusedActivity());
+
+        ColorProviderBridgeImpl bridge = new ColorProviderBridgeImpl();
+        bridge.getThemeColors(null);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.WEB_UI_NTP_ANDROID_THEMING)
+    public void testGetThemeColors_FlagDisabled_ReturnsEmptyArray() {
+        ColorProviderBridgeImpl bridge = new ColorProviderBridgeImpl();
+        long[] result = bridge.getThemeColors(mActivity);
+        assertEquals("Should return empty array when flag is disabled.", 0, result.length);
     }
 }

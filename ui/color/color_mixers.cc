@@ -15,12 +15,19 @@
 #include "ui/color/ui_color_mixer.h"
 #include "ui/native_theme/features/native_theme_features.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/color/android/sys_color_mixer_android.h"
+#endif
+
 namespace ui {
 
 void AddColorMixers(ColorProvider* provider, const ColorProviderKey& key) {
   AddRefColorMixer(provider, key);
   // TODO(tluk): Determine the correct place to insert the sys color mixer.
   AddSysColorMixer(provider, key);
+#if BUILDFLAG(IS_ANDROID)
+  AddSysColorMixerAndroid(provider, key);
+#endif
   AddCoreDefaultColorMixer(provider, key);
   AddNativeCoreColorMixer(provider, key);
   AddUiColorMixer(provider, key);

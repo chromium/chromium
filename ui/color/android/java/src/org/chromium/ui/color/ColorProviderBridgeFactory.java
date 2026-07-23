@@ -26,7 +26,7 @@ public class ColorProviderBridgeFactory {
     }
 
     @CalledByNative
-    public static long[] getThemeColors(Context context) {
+    public static long[] getThemeColors(@Nullable Context context) {
         if (sInstance == null) {
             return new long[0];
         }

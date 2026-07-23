@@ -35,10 +35,6 @@ std::optional<SkColor> JavaColorToOptionalSkColor(int64_t java_color) {
 // static
 std::vector<std::optional<SkColor>> ColorProviderBridge::GetThemeColors(
     const base::android::JavaRef<jobject>& context) {
-  if (!context) {
-    return {};
-  }
-
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jlongArray> j_colors =
       Java_ColorProviderBridgeFactory_getThemeColors(env, context);

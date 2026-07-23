@@ -364,6 +364,7 @@ java_group("ui_java") {
   deps = [
     ":ui_full_java",
     ":ui_utils_java",
+    "//ui/color:ui_color_android_java",
   ]
 }
 
@@ -680,6 +681,7 @@ android_library("ui_no_recycler_view_java") {
     "//ui/base:select_file_dialog_jni_headers_java",
     "//ui/base/cursor/mojom:cursor_type_java",
     "//ui/base/ime/mojom:mojom_java",
+    "//ui/color:ui_color_android_java",
     "//ui/gl:gl_jni_headers_java",
     "//url:gurl_java",
   ]

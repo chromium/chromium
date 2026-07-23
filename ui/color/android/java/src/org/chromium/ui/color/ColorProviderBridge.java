@@ -7,6 +7,7 @@ package org.chromium.ui.color;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Interface for resolving Material3 theme dynamic colors. Implemented in chrome/android where
@@ -14,5 +15,5 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public interface ColorProviderBridge {
-    long[] getThemeColors(Context context);
+    long[] getThemeColors(@Nullable Context context);
 }

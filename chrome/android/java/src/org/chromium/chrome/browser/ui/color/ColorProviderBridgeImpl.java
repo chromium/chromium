@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.ui.color;
 import android.content.Context;
 import android.util.TypedValue;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.color.AndroidColorRole;
 import org.chromium.ui.color.ColorProviderBridge;
 import org.chromium.ui.util.ColorUtils;
@@ -22,6 +25,8 @@ public class ColorProviderBridgeImpl implements ColorProviderBridge {
 
     private static final int[] COLOR_ATTRS = new int[AndroidColorRole.MAX_VALUE + 1];
 
+    // TODO(crbug.com/537488418, crbug.com/537488598): Add missing color mappings and move
+    // mapping under ui/color.
     // LINT.IfChange(AndroidColorRoleAttrs)
     static {
         COLOR_ATTRS[AndroidColorRole.PRIMARY] = R.attr.colorPrimary;
@@ -55,10 +60,26 @@ public class ColorProviderBridgeImpl implements ColorProviderBridge {
 
     // LINT.ThenChange(//ui/color/android/android_color_roles.h:AndroidColorRole)
 
+    /**
+     * Returns a list of theme colors from the Material theme via the Android theme attributes. In
+     * case the context is null it will return an empty array to avoid using the wrong colors.
+     *
+     * @param context The context to use for resolving theme colors.
+     * @return An array of theme colors corresponding to the AndroidColorRole enum values mapped
+     *     above.
+     */
     @Override
-    public long[] getThemeColors(Context context) {
-        if (context == null) {
+    public long[] getThemeColors(@Nullable Context context) {
+        if (!ChromeFeatureList.sWebUiNtpAndroidTheming.isEnabled()) {
             return new long[0];
+        }
+
+        if (context == null) {
+            context = ApplicationStatus.getLastTrackedFocusedActivity();
+            if (context == null) {
+                assert false : "Could not resolve theme colors due to null context";
+                return new long[0];
+            }
         }
 
         int numColors = AndroidColorRole.MAX_VALUE + 1;

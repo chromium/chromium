@@ -207,6 +207,11 @@ component("mixers") {
       "win/native_color_mixers_win.h",
     ]
     deps += [ ":accent_color_observer" ]
+  } else if (is_android) {
+    sources += [
+      "android/sys_color_mixer_android.cc",
+      "android/sys_color_mixer_android.h",
+    ]
   }
 }
 
