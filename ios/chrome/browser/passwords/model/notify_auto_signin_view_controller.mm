@@ -120,7 +120,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
   // Load the placeholder user's avatar.
   UIImage* placeholderAvatar =
-      DefaultSymbolWithPointSize(kPersonCropCircleSymbol, kAvatarSymbolSize);
+      SymbolWithPointSize(SymbolPersonCropCircle, kAvatarSymbolSize);
   // View containing user's avatar.
   self.avatarView = [[UIImageView alloc] initWithImage:placeholderAvatar];
   self.avatarView.translatesAutoresizingMaskIntoConstraints = NO;
