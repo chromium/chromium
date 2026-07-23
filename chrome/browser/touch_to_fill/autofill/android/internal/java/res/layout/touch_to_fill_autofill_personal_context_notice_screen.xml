@@ -12,13 +12,13 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:paddingStart="24dp"
     android:paddingEnd="24dp"
-    android:paddingTop="16dp"
+    android:paddingTop="24dp"
     android:paddingBottom="24dp">
 
     <ImageView
         android:id="@+id/notice_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp"
         android:importantForAccessibility="no"
@@ -28,16 +28,16 @@ found in the LICENSE file.
         android:id="@+id/notice_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:text="@string/autofill_personal_context_notice_title"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
     <TextView
         android:id="@+id/notice_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         android:gravity="center"
         android:text="@string/autofill_personal_context_notice_description"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
@@ -47,7 +47,7 @@ found in the LICENSE file.
         style="@style/FilledButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="10dp"
         android:text="@string/autofill_personal_context_notice_ok_button" />
 
     <TextView
