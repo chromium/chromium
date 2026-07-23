@@ -10,6 +10,7 @@ assert(toolkit_views)
 source_set("omnibox_everywhere") {
   sources = [
     "omnibox_everywhere_controller.cc",
+    "omnibox_everywhere_prefs.cc",
     "omnibox_everywhere_ui_manager.cc",
     "omnibox_everywhere_ui_manager.h",
     "omnibox_everywhere_widget_delegate.cc",
@@ -17,6 +18,7 @@ source_set("omnibox_everywhere") {
   ]
   public = [
     "omnibox_everywhere_controller.h",
+    "omnibox_everywhere_prefs.h",
     "omnibox_everywhere_ui_manager.h",
   ]
   friend = [
@@ -32,6 +34,7 @@ source_set("omnibox_everywhere") {
     "//chrome/browser/ui/webui/omnibox_everywhere",
     "//chrome/browser/ui/webui/omnibox_popup",
     "//components/omnibox/common:features",
+    "//components/prefs",
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/gfx",
     "//ui/views",

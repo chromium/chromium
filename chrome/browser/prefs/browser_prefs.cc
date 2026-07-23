@@ -318,6 +318,7 @@
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
+#include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
@@ -1443,6 +1444,9 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   metrics::TabStatsTracker::RegisterPrefs(registry);
   network_time::NetworkTimeTracker::RegisterPrefs(registry);
   omnibox::RegisterLocalStatePrefs(registry);
+#if !BUILDFLAG(IS_ANDROID)
+  omnibox_everywhere::prefs::RegisterLocalStatePrefs(registry);
+#endif
   optimization_guide::prefs::RegisterLocalStatePrefs(registry);
   optimization_guide::model_execution::prefs::RegisterLocalStatePrefs(registry);
   password_manager::PasswordManager::RegisterLocalPrefs(registry);

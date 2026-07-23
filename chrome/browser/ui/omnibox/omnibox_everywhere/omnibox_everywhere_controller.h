@@ -8,7 +8,9 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
+#include "components/prefs/pref_member.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -29,7 +31,8 @@ class OmniboxEverywhereController
  public:
   explicit OmniboxEverywhereController(
       OmniboxEverywhereUIManager::ContentsWrapperFactory
-          contents_wrapper_factory = {});
+          contents_wrapper_factory = {},
+      ui::GlobalAcceleratorListener* listener = nullptr);
   OmniboxEverywhereController(const OmniboxEverywhereController&) = delete;
   OmniboxEverywhereController& operator=(const OmniboxEverywhereController&) =
       delete;
@@ -64,7 +67,13 @@ class OmniboxEverywhereController
   // TODO(crbug.com/527183107): Implement a better profile selection heuristic.
   Profile* GetTargetProfile();
 
+  // Registers or unregisters the global hotkey accelerator according to feature
+  // flag and preference settings.
+  void UpdateHotkeyRegistration();
+
+  BooleanPrefMember hotkey_pref_member_;
   std::unique_ptr<OmniboxEverywhereUIManager> ui_manager_;
+  raw_ptr<ui::GlobalAcceleratorListener> listener_ = nullptr;
 };
 
 }  // namespace omnibox_everywhere
