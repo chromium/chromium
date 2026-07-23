@@ -16,6 +16,15 @@
 
 namespace policy {
 
+// Logged to UMA - keep in sync with enums.xml.
+enum class DeviceManagementAndCBCMState {
+  kNeither = 0,
+  kDeviceManagementOnly = 1,
+  kCBCMOnly = 2,
+  kBoth = 3,
+  kMaxValue = kBoth,
+};
+
 // Implementation of BrowserDMTokenStorage delegate for Windows.
 class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
  public:
@@ -23,6 +32,8 @@ class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
   BrowserDMTokenStorageWin(const BrowserDMTokenStorageWin&) = delete;
   BrowserDMTokenStorageWin& operator=(const BrowserDMTokenStorageWin&) = delete;
   ~BrowserDMTokenStorageWin() override;
+
+  void OnTokenInitialized() override;
 
  private:
   // override BrowserDMTokenStorage::Delegate
@@ -38,6 +49,8 @@ class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
       const std::string& client_id) override;
   scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() override;
 
+  bool umas_collected_ = false;
+
   scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
 
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest, InitClientId);
@@ -48,6 +61,10 @@ class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest, InitDMToken);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest,
                            InitDMTokenFromBrowserLocation);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest,
+                           CollectMetricsNotManaged);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest,
+                           CollectMetricsCBCMOnly);
 };
 
 }  // namespace policy

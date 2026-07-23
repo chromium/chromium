@@ -22,14 +22,17 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/enterprise_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/util_constants.h"
@@ -41,6 +44,21 @@
 
 namespace policy {
 namespace {
+
+DeviceManagementAndCBCMState GetDeviceManagementAndCBCMState(
+    bool is_device_managed,
+    bool is_cbcm_available) {
+  if (is_device_managed && is_cbcm_available) {
+    return DeviceManagementAndCBCMState::kBoth;
+  }
+  if (is_device_managed) {
+    return DeviceManagementAndCBCMState::kDeviceManagementOnly;
+  }
+  if (is_cbcm_available) {
+    return DeviceManagementAndCBCMState::kCBCMOnly;
+  }
+  return DeviceManagementAndCBCMState::kNeither;
+}
 
 bool StoreDMTokenInRegistry(const std::string& token) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -158,6 +176,27 @@ std::string BrowserDMTokenStorageWin::InitDMToken() {
 
   DVLOG(1) << "Failed to get DMToken from Registry.";
   return std::string();
+}
+
+void BrowserDMTokenStorageWin::OnTokenInitialized() {
+  if (umas_collected_) {
+    return;
+  }
+  umas_collected_ = true;
+
+  const bool is_cbcm_available =
+      !InitEnrollmentToken().empty() || !InitDMToken().empty();
+
+  base::UmaHistogramEnumeration(
+      "EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM",
+      GetDeviceManagementAndCBCMState(base::IsManagedOrEnterpriseDevice(),
+                                      is_cbcm_available));
+
+  base::UmaHistogramEnumeration(
+      "EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM2",
+      GetDeviceManagementAndCBCMState(
+          base::IsManagedDevice() || base::win::IsDeviceJoinedToAzureAD(),
+          is_cbcm_available));
 }
 
 bool BrowserDMTokenStorageWin::InitEnrollmentErrorOption() {

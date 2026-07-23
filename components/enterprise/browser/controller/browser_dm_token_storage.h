@@ -62,6 +62,8 @@ class BrowserDMTokenStorage {
     virtual StoreTask DeleteDMTokenTask(const std::string& client_id) = 0;
     // Gets the specific task runner that should be used by |SaveDMToken|.
     virtual scoped_refptr<base::TaskRunner> SaveDMTokenTaskRunner() = 0;
+    // Function called at the end of `InitIfNeeded()`.
+    virtual void OnTokenInitialized() {}
   };
 
   // Returns the global singleton object. Must be called from the UI thread. The

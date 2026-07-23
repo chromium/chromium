@@ -5071,6 +5071,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM"
+    enum="DeviceManagementAndCBCMState" expires_after="2026-12-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>noahrose@google.com</owner>
+  <summary>
+    Records the 4-state combination of whether the machine is managed or part of
+    an enterprise (in a domain or via MDM) and whether CBCM is available or
+    enrolled. Recorded on Windows when CBCM tokens are loaded from Registry.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM2"
+    enum="DeviceManagementAndCBCMState" expires_after="2026-12-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>noahrose@google.com</owner>
+  <summary>
+    Records the 4-state combination of whether the machine is managed or part of
+    an enterprise (in a domain or via MDM with strict Azure AD join check) and
+    whether CBCM is available or enrolled. Recorded on Windows when CBCM tokens
+    are loaded from Registry.Recorded on Windows when CBCM tokens are loaded
+    from Registry.Recorded on Windows when CBCM tokens are loaded from Registry.
+  </summary>
+</histogram>
+
 <histogram name="EnterpriseCheck.IsRunningOnManagedProfileDuration" units="ms"
     expires_after="2026-12-06">
   <owner>nafisabedin@google.com</owner>

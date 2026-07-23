@@ -170,6 +170,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="all device identifiers are missing"/>
 </enum>
 
+<enum name="DeviceManagementAndCBCMState">
+  <int value="0" label="Neither Device Managed nor CBCM available"/>
+  <int value="1" label="Device Managed only (no CBCM)"/>
+  <int value="2" label="CBCM available only (not Device Managed)"/>
+  <int value="3" label="Both Device Managed and CBCM available"/>
+</enum>
+
 <enum name="DeviceSettingsStatus2">
   <int value="0" label="STORE_SUCCESS"/>
   <int value="1" label="STORE_KEY_UNAVAILABLE"/>

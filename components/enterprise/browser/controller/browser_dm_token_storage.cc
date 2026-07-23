@@ -176,20 +176,24 @@ void BrowserDMTokenStorage::InitIfNeeded() {
   // actually read it.
   if (!ChromeBrowserCloudManagementController::IsEnabled()) {
     dm_token_ = CreateEmptyToken();
+    delegate_->OnTokenInitialized();
     return;
   }
 
   // Only supported in official builds.
   client_id_ = delegate_->InitClientId();
   DVLOG(1) << "Client ID = " << client_id_;
-  if (client_id_.empty())
+  if (client_id_.empty()) {
+    delegate_->OnTokenInitialized();
     return;
+  }
 
   // checks if client ID is greater than 64 characters
   if (client_id_.length() > 64) {
     SYSLOG(ERROR) << "Chrome browser cloud management client ID should"
                      "not be greater than 64 characters long.";
     client_id_.clear();
+    delegate_->OnTokenInitialized();
     return;
   }
 
@@ -201,6 +205,7 @@ void BrowserDMTokenStorage::InitIfNeeded() {
         << "Chrome browser cloud management client ID should not"
            " contain a space, new line, or any nonprintable character.";
     client_id_.clear();
+    delegate_->OnTokenInitialized();
     return;
   }
 
@@ -221,6 +226,8 @@ void BrowserDMTokenStorage::InitIfNeeded() {
 
   should_display_error_message_on_failure_ =
       delegate_->InitEnrollmentErrorOption();
+
+  delegate_->OnTokenInitialized();
 }
 
 void BrowserDMTokenStorage::SaveDMToken(const std::string& token) {

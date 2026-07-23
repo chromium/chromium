@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/install_util.h"
@@ -126,6 +127,35 @@ TEST_F(BrowserDMTokenStorageWinTest, InitDMTokenFromBrowserLocation) {
   ASSERT_TRUE(SetDMToken(kDMToken2, InstallUtil::BrowserLocation(true)));
   BrowserDMTokenStorageWin storage;
   EXPECT_EQ(std::string(kDMToken2), storage.InitDMToken());
+}
+
+TEST_F(BrowserDMTokenStorageWinTest, CollectMetricsNotManaged) {
+  ASSERT_TRUE(SetMachineGuid(kClientId1));
+  base::HistogramTester histogram_tester;
+  BrowserDMTokenStorageWin storage;
+  storage.OnTokenInitialized();
+
+  histogram_tester.ExpectBucketCount(
+      "EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM",
+      DeviceManagementAndCBCMState::kNeither, 1);
+  histogram_tester.ExpectBucketCount(
+      "EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM2",
+      DeviceManagementAndCBCMState::kNeither, 1);
+}
+
+TEST_F(BrowserDMTokenStorageWinTest, CollectMetricsCBCMOnly) {
+  ASSERT_TRUE(SetMachineGuid(kClientId1));
+  ASSERT_TRUE(SetDMToken(kDMToken1, InstallUtil::BrowserLocation(false)));
+  base::HistogramTester histogram_tester;
+  BrowserDMTokenStorageWin storage;
+  storage.OnTokenInitialized();
+
+  histogram_tester.ExpectBucketCount(
+      "EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM",
+      DeviceManagementAndCBCMState::kCBCMOnly, 1);
+  histogram_tester.ExpectBucketCount(
+      "EnterpriseCheck.IsManagedOrEnterpriseDeviceAndCBCM2",
+      DeviceManagementAndCBCMState::kCBCMOnly, 1);
 }
 
 }  // namespace policy
