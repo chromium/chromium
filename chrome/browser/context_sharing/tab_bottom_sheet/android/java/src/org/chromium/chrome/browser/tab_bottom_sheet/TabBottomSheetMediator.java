@@ -93,6 +93,19 @@ public class TabBottomSheetMediator extends GestureStateListener {
         mLastIsBetweenDefaultAndFullHeight = isBetweenDefaultAndFullHeight;
     }
 
+    /**
+     * Updates the height of the resizing placeholder inside the sheet.
+     *
+     * @param visibleHeight The visible height in pixels.
+     */
+    public void updatePlaceholderHeight(float visibleHeight) {
+        WebViewResizingHelper helper =
+                mModel.get(TabBottomSheetProperties.WEB_VIEW_RESIZING_HELPER);
+        if (helper != null && mResizeLock != null) {
+            helper.updatePlaceholderHeight((int) visibleHeight);
+        }
+    }
+
     /** Updates the state used for resizing the sheet. */
     public void setToFlexibleHeight() {
         WebViewResizingHelper helper =

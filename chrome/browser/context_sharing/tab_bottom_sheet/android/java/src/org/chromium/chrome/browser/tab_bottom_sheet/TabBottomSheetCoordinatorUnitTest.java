@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -55,6 +56,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
@@ -194,6 +196,8 @@ public class TabBottomSheetCoordinatorUnitTest {
                 .when(mMockDecorView)
                 .getWindowVisibleDisplayFrame(any(Rect.class));
 
+        setupMockContentProvider();
+
         mCoordinator =
                 new TabBottomSheetCoordinator(
                         mContext,
@@ -202,7 +206,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                         mMockTouchEventProvider,
                         mCoBrowseViews,
                         mMockSheetEventsCallback,
-                        () -> {});
+                        CallbackUtils.emptyRunnable());
 
         mCoordinatorModel = mCoordinator.getModelForTesting();
     }
@@ -886,25 +890,7 @@ public class TabBottomSheetCoordinatorUnitTest {
     @Test
     public void testMetrics_Glic_CurrentStateAndTransitions() {
         // Re-create coordinator with GLIC client type
-        mCoBrowseViews =
-                new CoBrowseViews(
-                        mView,
-                        TabBottomSheetClientType.GLIC,
-                        CoBrowseContainerType.BOTTOM_SHEET,
-                        mMockWebUi,
-                        null,
-                        0,
-                        mMockContentProvider,
-                        null);
-        mCoordinator =
-                new TabBottomSheetCoordinator(
-                        mContext,
-                        mWindowAndroid,
-                        mMockBottomSheetController,
-                        mMockTouchEventProvider,
-                        mCoBrowseViews,
-                        mMockSheetEventsCallback,
-                        () -> {});
+        recreateCoordinatorWithClientType(TabBottomSheetClientType.GLIC);
 
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -957,25 +943,7 @@ public class TabBottomSheetCoordinatorUnitTest {
     @Test
     public void testMetrics_ContextualTasks_CurrentStateAndTransitions() {
         // Re-create coordinator with CONTEXTUAL_TASKS client type
-        mCoBrowseViews =
-                new CoBrowseViews(
-                        mView,
-                        TabBottomSheetClientType.CONTEXTUAL_TASKS,
-                        CoBrowseContainerType.BOTTOM_SHEET,
-                        mMockWebUi,
-                        null,
-                        0,
-                        mMockContentProvider,
-                        null);
-        mCoordinator =
-                new TabBottomSheetCoordinator(
-                        mContext,
-                        mWindowAndroid,
-                        mMockBottomSheetController,
-                        mMockTouchEventProvider,
-                        mCoBrowseViews,
-                        mMockSheetEventsCallback,
-                        () -> {});
+        recreateCoordinatorWithClientType(TabBottomSheetClientType.CONTEXTUAL_TASKS);
 
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -1130,5 +1098,48 @@ public class TabBottomSheetCoordinatorUnitTest {
         assertNotNull(content);
         assertTrue(content.handleBackPress());
         assertTrue(backPressedCalled[0]);
+    }
+
+    private void setupMockContentProvider() {
+        doAnswer(
+                        invocation -> {
+                            return new TestTabBottomSheetContent(
+                                    invocation.getArgument(0),
+                                    invocation.getArgument(1),
+                                    invocation.getArgument(2),
+                                    invocation.getArgument(3),
+                                    invocation.getArgument(4),
+                                    invocation.getArgument(5));
+                        })
+                .when(mMockContentProvider)
+                .createContent(
+                        any(View.class),
+                        anyFloat(),
+                        anyInt(),
+                        anyInt(),
+                        anyInt(),
+                        any(Runnable.class));
+    }
+
+    private void recreateCoordinatorWithClientType(@TabBottomSheetClientType int clientType) {
+        mCoBrowseViews =
+                new CoBrowseViews(
+                        mView,
+                        clientType,
+                        CoBrowseContainerType.BOTTOM_SHEET,
+                        mMockWebUi,
+                        null,
+                        0,
+                        mMockContentProvider,
+                        null);
+        mCoordinator =
+                new TabBottomSheetCoordinator(
+                        mContext,
+                        mWindowAndroid,
+                        mMockBottomSheetController,
+                        mMockTouchEventProvider,
+                        mCoBrowseViews,
+                        mMockSheetEventsCallback,
+                        CallbackUtils.emptyRunnable());
     }
 }

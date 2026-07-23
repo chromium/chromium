@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
@@ -59,10 +60,9 @@ public class WebViewResizingHelperUnitTest {
     @Mock private ThinWebView mMockThinWebView;
     @Mock private WebContents mMockWebContents;
     @Mock private WindowAndroid mMockWindowAndroid;
+    @Mock private InsetObserver mMockInsetObserver;
     @Mock private Window mMockWindow;
     @Mock private View mMockDecorView;
-    @Mock private InsetObserver mMockInsetObserver;
-
     @Captor private ArgumentCaptor<WindowInsetsAnimationListener> mAnimationListenerCaptor;
 
     private Context mContext;
@@ -190,6 +190,7 @@ public class WebViewResizingHelperUnitTest {
         verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
 
         // Case 3: width == mWebContents.getWidth() && height == mWebContents.getHeight()
+        // Use ViewUtils.dpToPx for conversion to match the logic in updateBounds
         when(mMockWebContents.getWidth()).thenReturn(ViewUtils.pxToDp(mContext, 100));
         when(mMockWebContents.getHeight()).thenReturn(ViewUtils.pxToDp(mContext, 200));
         container.measure(
@@ -376,6 +377,18 @@ public class WebViewResizingHelperUnitTest {
         int expectedHeight = 1000;
 
         verify(mMockWebContents).setSize(expectedWidth, expectedHeight);
+    }
+
+    @Test
+    public void testUpdatePlaceholderHeight() {
+        mHelper.updatePlaceholderHeight(150);
+
+        FrameLayout resizingContainer = (FrameLayout) mHelper.getResizingContainer();
+        View placeholder = resizingContainer.getChildAt(0);
+        assertNotNull(placeholder);
+        assertEquals(150, placeholder.getLayoutParams().height);
+        View content = placeholder.findViewById(R.id.tab_bottom_sheet_resizing_content);
+        assertNotNull(content);
     }
 
     @Test

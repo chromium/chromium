@@ -86,6 +86,7 @@ public class TabBottomSheetCoordinator {
     private final WindowAndroid mWindowAndroid;
     private final RoundedCornerOutlineProvider mOutlineProvider;
     private final Runnable mOnBackPressed;
+    private final @Px int mWebUiTopMargin;
 
     private @Nullable SheetEventsCallback mSheetEventsCallback;
     private @Nullable TabBottomSheetContent mSheetContent;
@@ -134,6 +135,9 @@ public class TabBottomSheetCoordinator {
         mCoBrowseViews = coBrowseViews;
         mSheetEventsCallback = sheetEventsCallback;
         mOnBackPressed = onBackPressed;
+        mWebUiTopMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_web_ui_top_margin);
 
         mGestureListener = buildGestureListener();
         mGestureDetector = new GestureDetector(mContext, mGestureListener);
@@ -462,6 +466,9 @@ public class TabBottomSheetCoordinator {
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
                 if (mBottomSheetController.getSheetState() == SheetState.SCROLLING) {
                     mMediator.onSheetOffsetChanged(offsetPx, isPastHalfAndLessThanFull(offsetPx));
+                    if (canResizeWebView()) {
+                        mMediator.updatePlaceholderHeight(offsetPx - mWebUiTopMargin);
+                    }
                 }
             }
 
