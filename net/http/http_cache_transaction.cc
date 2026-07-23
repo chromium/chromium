@@ -2816,6 +2816,7 @@ void HttpCache::Transaction::SetRequest(const NetLogWithSource& net_log) {
   external_validation_.reset();
   range_requested_ = false;
   partial_.reset();
+  done_headers_create_new_entry_ = false;
   // SetRequest() runs on transaction restarts via DoHeadersPhaseCannotProceed.
   // That state is reachable from DoCacheDispatchValidation (line 1850) when
   // the entry vanishes mid-flow — and crucially, that's *after* decompressor_
@@ -3831,6 +3832,7 @@ int HttpCache::Transaction::OnCacheReadError(int result, bool restart) {
   if (restart) {
     DCHECK(!reading_);
     DCHECK(!network_trans_.get());
+    done_headers_create_new_entry_ = false;
 
     // Since we are going to add this to a new entry, not recording histograms
     // or setting mode to NONE at this point by invoking the wrapper
