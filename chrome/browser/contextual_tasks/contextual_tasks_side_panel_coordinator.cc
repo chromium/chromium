@@ -559,7 +559,7 @@ void ContextualTasksSidePanelCoordinator::OnTaskChanged(
     content::WebContents* web_contents,
     base::Uuid new_task_id) {
   content::WebContents* target_web_contents = web_contents;
-  if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
     target_web_contents = GetActiveWebContents();
   }
 
@@ -940,7 +940,7 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
   if (auto* ui_service = GetUiService()) {
     ui_service->SetInitialEntryPointForTask(task_id, entry_point);
     GURL url;
-    if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+    if (IsContextualTasksSidePanelRearchitectureEnabled()) {
       url = ui_service->GetInitialUrlForTask(task_id).value_or(
           GURL("about:blank"));
     } else {
@@ -948,7 +948,7 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
     }
     std::unique_ptr<content::WebContents> wc =
         CreateWebContents(browser_window_, url);
-    if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+    if (IsContextualTasksSidePanelRearchitectureEnabled()) {
       UpdateContextualSearchWebContentsHelperForTask(
           contextual_search_service_, browser_window_,
           contextual_tasks_service_, this, wc.get(), task_id);

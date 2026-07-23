@@ -28,7 +28,7 @@ ContextualTasksWebView::ContextualTasksWebView(
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksSidePanelWebViewElementId);
 
-  if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
     views::BoxLayout* layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical));

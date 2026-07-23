@@ -1196,10 +1196,8 @@ bool ContextualTasksUiService::HandleNavigation(
     const std::optional<content::GlobalRenderFrameHostToken>&
         initiator_frame_token,
     const blink::mojom::WindowFeatures& window_features) {
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksRearchitecture) ||
-      base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksSidePanelRearchitecture)) {
+  if (contextual_tasks::IsContextualTasksRearchitectureEnabled() ||
+      contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
     return false;
   }
   return HandleNavigationImpl(
@@ -2619,14 +2617,14 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   // initial pull request via GetUrlForTask.
   if (helper->task_id().has_value() &&
       IsTaskWaitingForUrl(helper->task_id().value())) {
-    if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+    if (IsContextualTasksSidePanelRearchitectureEnabled()) {
       LoadUrlInSidePanel(panel_contents, url);
     }
     OnInitialThreadUrlAvailable(helper->task_id().value(), url);
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
     if (ShouldReloadZeroState(url, this)) {
       // TODO(crbug.com/537842795): Understand if this flow is possible in the
       // rearchitecture and handle accordingly. For now, just load the URL.
@@ -2655,7 +2653,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
       return;
     }
 
-    if (base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture)) {
+    if (IsContextualTasksSidePanelRearchitectureEnabled()) {
       panel_contents->GetController().LoadURL(url, content::Referrer(),
                                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                               std::string());

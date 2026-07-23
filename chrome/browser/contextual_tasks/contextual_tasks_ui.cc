@@ -656,8 +656,7 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
                GetContextualTasksLensSearchTooltipSessionImpressionCap());
   dict.Set("askGCoBrowseEnabled", omnibox::kAskGCoBrowse.Get());
   dict.Set("contextualTasksSidePanelRearchitectureEnabled",
-           base::FeatureList::IsEnabled(
-               contextual_tasks::kContextualTasksSidePanelRearchitecture));
+           contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled());
 
   dict.Set("isLensSearchbox", true);
   dict.Set("forceHideEllipsis",

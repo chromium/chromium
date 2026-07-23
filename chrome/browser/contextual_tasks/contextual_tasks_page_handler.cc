@@ -984,8 +984,7 @@ void ContextualTasksPageHandler::MaybeTriggerPinningPromo() {
 }
 
 void ContextualTasksPageHandler::ShowPageInfoBubble() {
-  if (!base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksSidePanelRearchitecture)) {
+  if (!contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
     return;
   }
 }

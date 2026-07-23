@@ -803,6 +803,14 @@ bool GetIsWebpageApcComparisonEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksWebpageApcComparison);
 }
 
+bool IsContextualTasksRearchitectureEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksRearchitecture);
+}
+
+bool IsContextualTasksSidePanelRearchitectureEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture);
+}
+
 bool IsContextualTasksUIEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSidePanel) ||
          base::FeatureList::IsEnabled(kContextualTasks);

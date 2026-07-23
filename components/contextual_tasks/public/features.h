@@ -454,6 +454,9 @@ extern int GetContextualTasksNumSessionsBeforeRequestPinPromo();
 // Returns whether the webpage APC comparison is enabled.
 extern bool GetIsWebpageApcComparisonEnabled();
 
+extern bool IsContextualTasksRearchitectureEnabled();
+extern bool IsContextualTasksSidePanelRearchitectureEnabled();
+
 namespace flag_descriptions {
 
 extern const char kContextualTasksPrivateApiNoAnimationName[];
