@@ -1857,10 +1857,10 @@ BASE_FEATURE_PARAM(bool,
 // out of process.  Has no effect when kCanvasOopRasterization is disabled.
 BASE_FEATURE(kPath2DPaintCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(mcnee): Required for merge safety to M151. Default enable and remove
-// after this release.
+// TODO(mcnee): Required for merge safety to M151. Default enabled in M152.
+// Remove in M153. See https://crbug.com/525856380
 BASE_FEATURE(kPopulateDOMNodeIdInFocusedNodeDetails,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDedicatedWorkerAblationStudyEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
