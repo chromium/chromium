@@ -29,8 +29,6 @@
   BOOL _shutdown;
 }
 
-@synthesize window = _window;
-
 - (instancetype)initWithProfile:(ProfileIOS*)profile {
   if ((self = [super init])) {
     DCHECK(profile);

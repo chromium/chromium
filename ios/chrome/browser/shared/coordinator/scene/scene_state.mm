@@ -125,6 +125,10 @@
 #pragma mark - Setters & Getters.
 
 - (UIWindow*)window {
+  if (_window) {
+    return _window;
+  }
+
   UIWindow* mainWindow = nil;
   for (UIWindow* window in self.scene.windows) {
     if ([window isKindOfClass:[ChromeOverlayWindow class]]) {

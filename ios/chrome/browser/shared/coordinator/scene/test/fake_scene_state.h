@@ -20,11 +20,6 @@ class ProfileIOS;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Window for the associated scene, if any.
-// This is redeclared relative to FakeScene.window, except this is now readwrite
-// and backed by an instance variable.
-@property(nonatomic, weak, readwrite) UIWindow* window;
-
 // Updates the current BrowserProvider. Must be either -mainBrowserProvider
 // or -incognitoBrowserProvider from -browserProviderInterface.
 - (void)setCurrentBrowserProvider:(id<BrowserProvider>)browserProvider;

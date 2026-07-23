@@ -78,7 +78,7 @@ struct SceneStateOptions;
 @property(nonatomic, assign) WindowActivityOrigin currentOrigin;
 
 // Window for the associated scene, if any.
-@property(nonatomic, readonly) UIWindow* window;
+@property(nonatomic, weak) UIWindow* window;
 
 // The scene object backing this scene state. It's in a 1-to-1 relationship and
 // the window scene owns this object (indirectly through scene delegate).
