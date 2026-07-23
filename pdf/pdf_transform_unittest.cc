@@ -117,18 +117,18 @@ TEST(PdfTransformTest, CalculateMediaBoxAndCropBox) {
   ExpectDefaultLandscapeBox(crop_box);
 
   // Assume crop box is missing.
-  constexpr PdfRect kExpctedBox(0, 0, 42, 420);
-  media_box = kExpctedBox;
+  constexpr PdfRect kExpectedBox(0, 0, 42, 420);
+  media_box = kExpectedBox;
   InitializeBoxToInvalidValues(&crop_box);
   CalculateMediaBoxAndCropBox(false, true, false, &media_box, &crop_box);
-  ExpectBoxesAreEqual(kExpctedBox, media_box);
-  ExpectBoxesAreEqual(kExpctedBox, crop_box);
+  ExpectBoxesAreEqual(kExpectedBox, media_box);
+  ExpectBoxesAreEqual(kExpectedBox, crop_box);
 
   // Assume media box is missing.
   InitializeBoxToInvalidValues(&media_box);
   CalculateMediaBoxAndCropBox(false, false, true, &media_box, &crop_box);
-  ExpectBoxesAreEqual(kExpctedBox, media_box);
-  ExpectBoxesAreEqual(kExpctedBox, crop_box);
+  ExpectBoxesAreEqual(kExpectedBox, media_box);
+  ExpectBoxesAreEqual(kExpectedBox, crop_box);
 }
 
 TEST(PdfTransformTest, CalculateClipBoxBoundary) {
