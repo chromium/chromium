@@ -297,8 +297,8 @@ public class MlKitAiCoreSessionBackendImplTest {
 
         InputPiece[] inputPieces = new InputPiece[] {createTextInputPiece("Hello")};
         GenerateOptions options = new GenerateOptions();
-        // maxOutputTokens > 256 throws IllegalArgumentException in MLKit API
-        options.maxOutputTokens = 1000;
+        // maxOutputTokens > 4096 throws IllegalArgumentException in MLKit API
+        options.maxOutputTokens = 20000;
 
         backend.generate(options, inputPieces, responder);
 
