@@ -14,10 +14,10 @@ TEST(EwalletTest, VerifyAllFields) {
                   u"ewallet_name", u"account_display_name",
                   {u"supported_payment_link_uri_1"}, /*is_fido_enrolled=*/true);
 
-  EXPECT_EQ(100, ewallet.payment_instrument().instrument_id());
-  EXPECT_EQ(u"ewallet_name", ewallet.ewallet_name());
-  EXPECT_EQ(u"account_display_name", ewallet.account_display_name());
-  EXPECT_EQ(u"nickname", ewallet.payment_instrument().nickname());
+  EXPECT_EQ(ewallet.payment_instrument().instrument_id(), 100);
+  EXPECT_EQ(ewallet.ewallet_name(), u"ewallet_name");
+  EXPECT_EQ(ewallet.account_display_name(), u"account_display_name");
+  EXPECT_EQ(ewallet.payment_instrument().nickname(), u"nickname");
   EXPECT_TRUE(ewallet.supported_payment_link_uris().contains(
       u"supported_payment_link_uri_1"));
   EXPECT_EQ(GURL("http://www.example.com"),
