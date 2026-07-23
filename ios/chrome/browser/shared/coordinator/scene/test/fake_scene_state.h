@@ -15,13 +15,8 @@ class ProfileIOS;
 // and connect them to be accessible via the BrowserProviderInterface.
 @interface FakeSceneState : SceneState
 
-// Designated initializer.
-- (instancetype)initWithProfile:(ProfileIOS*)profile
-                 sceneSessionID:(std::string)sceneSessionID
-    NS_DESIGNATED_INITIALIZER;
-
-// Convenience initializer that uses default values for `sceneSessionID`.
-- (instancetype)initWithProfile:(ProfileIOS*)profile;
+// Designated initializer. The `profile` must not be null.
+- (instancetype)initWithProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
