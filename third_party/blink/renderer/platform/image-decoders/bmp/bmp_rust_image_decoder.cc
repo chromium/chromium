@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "third_party/skia/experimental/rust_bmp/decoder/SkBmpRustDecoder.h"
+#include "third_party/skia/include/codec/SkBmpRustDecoder.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkStream.h"
 
