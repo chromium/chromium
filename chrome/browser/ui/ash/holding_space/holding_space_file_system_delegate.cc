@@ -33,6 +33,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -186,6 +187,14 @@ void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
 void HoldingSpaceFileSystemDelegate::OnFilesChanged(
     const std::vector<drivefs::mojom::FileChange>& changes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Validate all changes before applying any of them.
+  for (const auto& change : changes) {
+    if (change.path.ReferencesParent()) {
+      mojo::ReportBadMessage("File paths must be canonicalized");
+      return;
+    }
+  }
 
   // When a file is moved, a `kDelete` change will be followed by a `kCreate`
   // change with the same `stable_id` in the same set of `changes`. In some

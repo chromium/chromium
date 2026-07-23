@@ -622,6 +622,52 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   WaitForItemRemovalById(item_id);
 }
 
+// Verifies that DriveFs file changes referencing paths outside of the Drive
+// mount point are ignored.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
+                       IgnoreDriveFsFileChangeReferencingParent) {
+  // Verify holding space service exists.
+  HoldingSpaceKeyedService* const holding_space_service =
+      HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(
+          browser()->GetProfile());
+  ASSERT_TRUE(holding_space_service);
+
+  // Verify holding space model exists.
+  const auto* holding_space_model = holding_space_service->model_for_testing();
+  ASSERT_TRUE(holding_space_model);
+
+  // Add an item to holding space.
+  const base::FilePath src = GetPredefinedTestFile(/*index=*/0);
+  auto* item = AddHoldingSpaceItem(browser()->GetProfile(), src);
+  const std::string item_id = item->id();
+
+  // Verify the item exists in the model.
+  ASSERT_TRUE(holding_space_model->GetItem(item_id));
+  ASSERT_EQ(item->file().file_path, src);
+
+  // Prep a batch of `changes` to indicate that `src` has moved to a location
+  // that references parent directories. Note the consistent `stable_id` to link
+  // the `kDelete` with the `kCreate` change.
+  std::vector<drivefs::mojom::FileChangePtr> changes;
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kDelete,
+      ConvertAbsoluteFilePathToDrivePath(browser()->GetProfile(), src),
+      /*stable_id=*/1));
+  changes.push_back(CreateDriveFsChange(
+      drivefs::mojom::FileChange::Type::kCreate,
+      base::FilePath("/root/../../outside.txt"), /*stable_id=*/1));
+
+  // Simulate the `changes` being sent from the server.
+  drivefs_delegate()->OnFilesChanged(std::move(changes));
+  drivefs_delegate().FlushForTesting();
+
+  // Because the `kCreate` change references parent directories, the entire
+  // batch of changes should be ignored.
+  auto* updated_item = holding_space_model->GetItem(item_id);
+  ASSERT_TRUE(updated_item);
+  EXPECT_EQ(updated_item->file().file_path, src);
+}
+
 // Verifies that drive files pinned to holding space are pinned for offline use.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
                        PinningDriveFilesOfflineAccess) {
