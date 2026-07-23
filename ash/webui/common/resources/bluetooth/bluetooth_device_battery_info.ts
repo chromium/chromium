@@ -49,8 +49,8 @@ export class BluetoothDeviceBatteryInfoElement extends PolymerElement {
     };
   }
 
-  device: BluetoothDeviceProperties;
-  private showMultipleBatteries_: boolean;
+  declare device: BluetoothDeviceProperties;
+  declare private showMultipleBatteries_: boolean;
 
   private computeShowMultipleBatteries_(device: BluetoothDeviceProperties): boolean {
     return hasAnyDetailedBatteryInfo(device);

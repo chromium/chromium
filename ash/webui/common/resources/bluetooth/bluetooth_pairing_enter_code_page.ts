@@ -69,11 +69,11 @@ export class SettingsBluetoothPairingEnterCodeElement extends
     };
   }
 
-  deviceName: string;
-  code: string;
-  numKeysEntered: number;
-  private buttonBarState_: ButtonBarState;
-  private keys_: string[];
+  declare deviceName: string;
+  declare code: string;
+  declare numKeysEntered: number;
+  declare private buttonBarState_: ButtonBarState;
+  declare private keys_: string[];
 
   override focus(): void {
     super.focus();

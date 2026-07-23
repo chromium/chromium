@@ -194,20 +194,20 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
     };
   }
 
-  delegate: CellularSetupDelegate;
-  header: string;
-  forwardButtonLabel: string;
-  private state_: string;
-  private selectedEsimPageName_: string;
-  private hasConsentedForDiscovery_: boolean;
-  private shouldSkipDiscovery_: boolean;
-  private showError_: boolean;
-  private pendingProfileProperties_: ESimProfileProperties[];
-  private selectedProfileProperties_: ESimProfileProperties|null;
-  private activationCode_: string;
-  private confirmationCode_: string;
-  private hasHadActiveCellularNetwork_: boolean;
-  private isActivationCodeFromQrCode_: boolean;
+  declare delegate: CellularSetupDelegate;
+  declare header: string;
+  declare forwardButtonLabel: string;
+  declare private state_: string;
+  declare private selectedEsimPageName_: string;
+  declare private hasConsentedForDiscovery_: boolean;
+  declare private shouldSkipDiscovery_: boolean;
+  declare private showError_: boolean;
+  declare private pendingProfileProperties_: ESimProfileProperties[];
+  declare private selectedProfileProperties_: ESimProfileProperties|null;
+  declare private activationCode_: string;
+  declare private confirmationCode_: string;
+  declare private hasHadActiveCellularNetwork_: boolean;
+  declare private isActivationCodeFromQrCode_: boolean;
 
   /**
    * Provides an interface to the ESimManager Mojo service.

@@ -215,19 +215,19 @@ export class PinKeyboardElement extends PinKeyboardElementBase {
     };
   }
 
-  enablePassword: boolean;
-  allowNonDigit: boolean;
-  hasError: boolean;
-  disabled: boolean;
-  passwordElement: HTMLElement|undefined;
-  value: string;
-  enablePlaceholder: boolean;
-  enableVisibilityIcon: boolean;
+  declare enablePassword: boolean;
+  declare allowNonDigit: boolean;
+  declare hasError: boolean;
+  declare disabled: boolean;
+  declare passwordElement: HTMLElement|undefined;
+  declare value: string;
+  declare enablePlaceholder: boolean;
+  declare enableVisibilityIcon: boolean;
 
-  private repeatBackspaceIntervalId_: number;
-  private startAutoBackspaceId_: number;
-  private focused_: boolean;
-  private isPinVisible_: boolean;
+  declare private repeatBackspaceIntervalId_: number;
+  declare private startAutoBackspaceId_: number;
+  declare private focused_: boolean;
+  declare private isPinVisible_: boolean;
 
   override ready(): void {
     super.ready();

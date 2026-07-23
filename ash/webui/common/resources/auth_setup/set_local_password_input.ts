@@ -134,15 +134,15 @@ export class SetLocalPasswordInputElement extends
     };
   }
 
-  value: string|null;
-  locale: string;
-  authToken: string|undefined|null;
+  declare value: string|null;
+  declare locale: string;
+  declare authToken: string|undefined|null;
 
-  private firstInputValidity_: null|FirstInputValidity;
-  private confirmInputValidity_: null|ConfirmInputValidity;
-  private isFirstPasswordVisible_: boolean;
-  private isConfirmPasswordVisible_: boolean;
-  private localAuthFactorsComplexity_: LocalAuthFactorsComplexity;
+  declare private firstInputValidity_: null|FirstInputValidity;
+  declare private confirmInputValidity_: null|ConfirmInputValidity;
+  declare private isFirstPasswordVisible_: boolean;
+  declare private isConfirmPasswordVisible_: boolean;
+  declare private localAuthFactorsComplexity_: LocalAuthFactorsComplexity;
 
   constructor() {
     super();

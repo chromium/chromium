@@ -37,7 +37,7 @@ export class SettingsBluetoothSpinnerPageElement extends PolymerElement {
     };
   }
 
-  private buttonBarState_: ButtonBarState;
+  declare private buttonBarState_: ButtonBarState;
 }
 
 declare global {

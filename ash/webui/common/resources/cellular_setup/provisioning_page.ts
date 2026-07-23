@@ -80,11 +80,11 @@ export class ProvisioningPageElement extends ProvisioningPageElementBase {
     };
   }
 
-  delegate: CellularSetupDelegate;
-  showError: boolean;
-  cellularMetadata: CellularMetadata|null;
-  private hasCarrierPortalLoaded_: boolean;
-  private carrierName_: string;
+  declare delegate: CellularSetupDelegate;
+  declare showError: boolean;
+  declare cellularMetadata: CellularMetadata|null;
+  declare private hasCarrierPortalLoaded_: boolean;
+  declare private carrierName_: string;
 
   private getPageTitle_(): string|null {
     if (!this.delegate.shouldShowPageTitle()) {

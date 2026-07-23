@@ -144,13 +144,13 @@ export class FingerprintProgressElement extends PolymerElement {
     };
   }
 
-  circleRadius: number;
-  autoplay: boolean;
-  dynamic: boolean;
-  progressCircleFillColor: string;
-  progressCircleBackgroundColor: string;
-  private scale: number;
-  private isComplete: boolean;
+  declare circleRadius: number;
+  declare autoplay: boolean;
+  declare dynamic: boolean;
+  declare progressCircleFillColor: string;
+  declare progressCircleBackgroundColor: string;
+  declare private scale: number;
+  declare private isComplete: boolean;
 
   // Animation ID for the fingerprint progress circle.
   private progressAnimationIntervalId: number|undefined = undefined;

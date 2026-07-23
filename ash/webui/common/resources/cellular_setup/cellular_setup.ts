@@ -97,14 +97,14 @@ export class CellularSetupElement extends PolymerElement {
     };
   }
 
-  delegate: CellularSetupDelegate;
-  flowPsimBanner: string;
-  flowHeader: string;
-  currentPageName: CellularSetupPageName|null;
-  private selectedFlow_: CellularSetupPageName|null;
-  private buttonState_: ButtonBarState;
-  private currentPage_: PsimFlowUiElement|EsimFlowUiElement;
-  private forwardButtonLabel_: string;
+  declare delegate: CellularSetupDelegate;
+  declare flowPsimBanner: string;
+  declare flowHeader: string;
+  declare currentPageName: CellularSetupPageName|null;
+  declare private selectedFlow_: CellularSetupPageName|null;
+  declare private buttonState_: ButtonBarState;
+  declare private currentPage_: PsimFlowUiElement|EsimFlowUiElement;
+  declare private forwardButtonLabel_: string;
 
   override connectedCallback() {
     super.connectedCallback();

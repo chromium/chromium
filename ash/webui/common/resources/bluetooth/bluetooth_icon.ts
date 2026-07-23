@@ -34,7 +34,7 @@ export class SettingsBluetoothIconElement extends PolymerElement {
     };
   }
 
-  device: BluetoothDeviceProperties;
+  declare device: BluetoothDeviceProperties;
 
   private getIcon_(): string {
     if (!this.device) {

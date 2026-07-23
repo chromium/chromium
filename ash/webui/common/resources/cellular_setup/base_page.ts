@@ -43,9 +43,9 @@ export class BasePageElement extends PolymerElement {
     };
   }
 
-  override title: string;
-  message: string;
-  messageIcon: string;
+  declare title: string;
+  declare message: string;
+  declare messageIcon: string;
 
   private getTitle_(): string {
     return this.title;

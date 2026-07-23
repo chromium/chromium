@@ -102,11 +102,11 @@ export class BluetoothBatteryIconPercentageElement extends
     };
   }
 
-  device: BluetoothDeviceProperties;
-  batteryType: BatteryType;
-  isTypeLabeled: boolean;
-  private isLowBattery_: boolean;
-  private isMultipleBattery_: boolean;
+  declare device: BluetoothDeviceProperties;
+  declare batteryType: BatteryType;
+  declare isTypeLabeled: boolean;
+  declare private isLowBattery_: boolean;
+  declare private isMultipleBattery_: boolean;
 
   private computeIsLowBattery_(device: BluetoothDeviceProperties,
       batteryType: BatteryType): boolean {

@@ -50,8 +50,8 @@ export class ButtonBarElement extends ButtonBarElementBase {
     };
   }
 
-  buttonState: ButtonBarState;
-  forwardButtonLabel: string|undefined;
+  declare buttonState: ButtonBarState;
+  declare forwardButtonLabel: string|undefined;
 
   private isButtonHidden_(buttonName: Button): boolean {
     const state = this.getButtonBarState_(buttonName);

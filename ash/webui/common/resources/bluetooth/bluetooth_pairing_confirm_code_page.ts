@@ -49,8 +49,8 @@ export class SettingsBluetoothPairingConfirmCodePageElement extends
     };
   }
 
-  code: string;
-  private buttonBarState_: ButtonBarState;
+  declare code: string;
+  declare private buttonBarState_: ButtonBarState;
 
   private onPairClicked_(event: Event): void {
     event.stopPropagation();

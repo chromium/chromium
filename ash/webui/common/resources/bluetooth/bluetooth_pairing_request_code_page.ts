@@ -73,10 +73,10 @@ export class SettingsBluetoothRequestCodePageElement extends
     };
   }
 
-  device: BluetoothDeviceProperties|null;
-  authType: PairingAuthType|null;
-  private buttonBarState_: ButtonBarState;
-  private pinCode_: string;
+  declare device: BluetoothDeviceProperties|null;
+  declare authType: PairingAuthType|null;
+  declare private buttonBarState_: ButtonBarState;
+  declare private pinCode_: string;
 
   override connectedCallback(): void {
     super.connectedCallback();

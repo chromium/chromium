@@ -92,14 +92,14 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
     };
   }
 
-  devices: BluetoothDeviceProperties[];
-  failedPairingDeviceId: string;
-  devicePendingPairing: BluetoothDeviceProperties|null;
-  isBluetoothEnabled: boolean;
-  shouldOmitLinks: boolean;
-  private buttonBarState_: ButtonBarState;
-  private lastFocused_?: HTMLElement;
-  private listBlurred_: boolean;
+  declare devices: BluetoothDeviceProperties[];
+  declare failedPairingDeviceId: string;
+  declare devicePendingPairing: BluetoothDeviceProperties|null;
+  declare isBluetoothEnabled: boolean;
+  declare shouldOmitLinks: boolean;
+  declare private buttonBarState_: ButtonBarState;
+  declare private lastFocused_?: HTMLElement;
+  declare private listBlurred_: boolean;
   private lastSelectedDevice_: BluetoothDeviceProperties | null;
 
   constructor() {

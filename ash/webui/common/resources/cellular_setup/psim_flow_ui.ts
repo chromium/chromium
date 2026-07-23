@@ -179,16 +179,16 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
     };
   }
 
-  delegate: CellularSetupDelegate;
-  nameOfCarrierPendingSetup: string;
-  forwardButtonLabel: string;
-  private state_: PsimUiState;
-  private selectedPsimPageName_: PsimPageName;
-  private selectedPage_:
+  declare delegate: CellularSetupDelegate;
+  declare nameOfCarrierPendingSetup: string;
+  declare forwardButtonLabel: string;
+  declare private state_: PsimUiState;
+  declare private selectedPsimPageName_: PsimPageName;
+  declare private selectedPage_:
       SetupLoadingPageElement|ProvisioningPageElement|FinalPageElement;
-  private showError_: boolean;
-  private cellularMetadata_: CellularMetadata|null;
-  private startActivationAttempts_: number;
+  declare private showError_: boolean;
+  declare private cellularMetadata_: CellularMetadata|null;
+  declare private startActivationAttempts_: number;
 
   /**
    * Provides an interface to the CellularSetup Mojo service.

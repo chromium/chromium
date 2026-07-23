@@ -43,9 +43,9 @@ export class ConfirmationCodePageElement extends
     };
   }
 
-  profileProperties?: ESimProfileProperties;
-  confirmationCode: string;
-  showError: boolean;
+  declare profileProperties?: ESimProfileProperties;
+  declare confirmationCode: string;
+  declare showError: boolean;
 
   private onKeyDown_(e: KeyboardEvent): void {
     if (e.key === 'Enter') {

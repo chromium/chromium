@@ -49,9 +49,9 @@ export class ProfileDiscoveryListItemElement extends PolymerElement {
     };
   }
 
-  profileProperties: ESimProfileProperties|null;
-  selected: boolean;
-  private isDarkModeActive_: boolean;
+  declare profileProperties: ESimProfileProperties|null;
+  declare selected: boolean;
+  declare private isDarkModeActive_: boolean;
 
   private getProfileName_(): string {
     if (!this.profileProperties) {

@@ -53,9 +53,9 @@ export class SetupLoadingPageElement extends PolymerElement {
     };
   }
 
-  loadingMessage: string;
-  loadingTitle: string|null;
-  isSimDetectError: boolean;
+  declare loadingMessage: string;
+  declare loadingTitle: string|null;
+  declare isSimDetectError: boolean;
 }
 
 declare global {

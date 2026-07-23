@@ -40,7 +40,7 @@ export class ProfileDiscoveryConsentPageElement extends
     };
   }
 
-  shouldSkipDiscovery: boolean;
+  declare shouldSkipDiscovery: boolean;
 
   private shouldSkipDiscoveryClicked_(e: CustomEvent): void {
     // A place holder href with the value "#" is used to have a compliant link.

@@ -122,8 +122,8 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
     };
   }
 
-  private networks_: Network[];
-  private typeExpanded_: boolean[];
+  declare private networks_: Network[];
+  declare private typeExpanded_: boolean[];
   private trafficCountersAdapter_: TrafficCountersAdapter;
 
   constructor() {

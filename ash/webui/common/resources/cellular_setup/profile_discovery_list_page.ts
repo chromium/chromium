@@ -54,9 +54,9 @@ export class ProfileDiscoveryListPageElement extends
     };
   }
 
-  pendingProfileProperties: ESimProfileProperties[];
-  selectedProfileProperties: ESimProfileProperties|null;
-  private isDeviceCarrierLocked_: boolean;
+  declare pendingProfileProperties: ESimProfileProperties[];
+  declare selectedProfileProperties: ESimProfileProperties|null;
+  declare private isDeviceCarrierLocked_: boolean;
 
   attemptToFocusOnFirstProfile(): boolean {
     if (!this.pendingProfileProperties ||

@@ -70,9 +70,9 @@ export class SettingsBluetoothBasePageElement extends
     };
   }
 
-  buttonBarState: ButtonBarState;
-  showScanProgress: boolean;
-  focusDefault: boolean;
+  declare buttonBarState: ButtonBarState;
+  declare showScanProgress: boolean;
+  declare focusDefault: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

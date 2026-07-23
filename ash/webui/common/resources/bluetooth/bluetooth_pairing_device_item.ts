@@ -72,12 +72,12 @@ export class SettingsBluetoothPairingDeviceItemElement extends
     };
   }
 
-  device: BluetoothDeviceProperties;
-  deviceItemState: DeviceItemState;
-  itemIndex: number;
-  listSize: number;
-  private secondaryLabel_: string;
-  private pairingFailed_: boolean;
+  declare device: BluetoothDeviceProperties;
+  declare deviceItemState: DeviceItemState;
+  declare itemIndex: number;
+  declare listSize: number;
+  declare private secondaryLabel_: string;
+  declare private pairingFailed_: boolean;
 
   override focus(): void {
     // Prevent scroll stops iron list from trying to bring this element to view,

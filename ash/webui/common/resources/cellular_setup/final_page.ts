@@ -41,10 +41,10 @@ export class FinalPageElement extends FinalPageElementBase {
     };
   }
 
-  delegate: CellularSetupDelegate;
-  showError: boolean;
-  message: string;
-  errorMessage: string;
+  declare delegate: CellularSetupDelegate;
+  declare showError: boolean;
+  declare message: string;
+  declare errorMessage: string;
 
   private getTitle_(showError: boolean): string|null {
     if (this.delegate.shouldShowPageTitle()) {

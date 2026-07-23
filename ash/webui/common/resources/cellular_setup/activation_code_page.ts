@@ -176,17 +176,17 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
     };
   }
 
-  activationCode: string;
-  showError: boolean;
-  isFromQrCode: boolean;
-  showNoProfilesFound: boolean;
-  private state_: PageState;
-  private cameraCount_: number;
-  private qrCodeDetector_: BarcodeDetector|null = null;
-  private expanded_: boolean;
-  private qrCodeCameraA11yString_: string;
-  private isDeviceCarrierLocked_: boolean;
-  private isActivationCodeInvalidFormat_: boolean;
+  declare activationCode: string;
+  declare showError: boolean;
+  declare isFromQrCode: boolean;
+  declare showNoProfilesFound: boolean;
+  declare private state_: PageState;
+  declare private cameraCount_: number;
+  declare private qrCodeDetector_: BarcodeDetector|null;
+  declare private expanded_: boolean;
+  declare private qrCodeCameraA11yString_: string;
+  declare private isDeviceCarrierLocked_: boolean;
+  declare private isActivationCodeInvalidFormat_: boolean;
   private networkConfig_: CrosNetworkConfigInterface|null = null;
   private mediaDevices_: MediaDevices|null = null;
   private stream_: MediaStream|null = null;
@@ -203,6 +203,7 @@ export class ActivationCodePageElement extends ActivationCodePageElementBase {
 
   constructor() {
     super();
+    this.qrCodeDetector_ = null;
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();

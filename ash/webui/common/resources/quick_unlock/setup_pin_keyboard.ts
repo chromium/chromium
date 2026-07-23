@@ -226,23 +226,23 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     };
   }
 
-  authToken: string|undefined;
-  enableSubmit: boolean;
-  isConfirmStep: boolean;
-  useRecoveryModeApi: boolean;
-  quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
-  enablePlaceholder: boolean;
-  enableVisibilityIcon: boolean;
+  declare authToken: string|undefined;
+  declare enableSubmit: boolean;
+  declare isConfirmStep: boolean;
+  declare useRecoveryModeApi: boolean;
+  declare quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
+  declare enablePlaceholder: boolean;
+  declare enableVisibilityIcon: boolean;
 
-  private pinKeyboardValue_: string;
-  private initialPin_: string;
-  private problemMessageId_: MessageType|'';
-  private problemMessageParameters_: string;
-  private complexityRequirementId_: MessageType|'';
-  private problemClass_: ProblemType|''|undefined;
-  private pinHasPassedMinimumLength_: boolean;
-  private isSetPinCallPending_: boolean;
-  private localAuthFactorsComplexity_: LocalAuthFactorsComplexity|undefined;
+  declare private pinKeyboardValue_: string;
+  declare private initialPin_: string;
+  declare private problemMessageId_: MessageType|'';
+  declare private problemMessageParameters_: string;
+  declare private complexityRequirementId_: MessageType|'';
+  declare private problemClass_: ProblemType|''|undefined;
+  declare private pinHasPassedMinimumLength_: boolean;
+  declare private isSetPinCallPending_: boolean;
+  declare private localAuthFactorsComplexity_: LocalAuthFactorsComplexity|undefined;
   private credentialRequirements_: CredentialRequirements|undefined;
 
   override focus(): void {
