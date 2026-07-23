@@ -1254,10 +1254,6 @@ constexpr inline auto CtnExperimental = base::RawPtrTraits::kMayDangle;
 constexpr inline auto UnprotectedInRelease =
     base::RawPtrTraits::kIsUnprotectedInRelease;
 
-// Deprecated: use `UnprotectedInRelease`.
-constexpr inline auto kUnprotectedInRelease =
-    base::RawPtrTraits::kIsUnprotectedInRelease;
-
 // Public verson used in callbacks arguments when it is known that they might
 // receive dangling pointers. In any other cases, please
 // use one of:
