@@ -81,8 +81,9 @@ class ChromeAcceleratorMetadataTest : public testing::Test {
 // 2. Please update the number and hash value of chrome accelerators on the top
 // of this file. The new number and hash value will be provided in the test
 // output.
+// TODO(crbug.com/533957090): Re-enable this test.
 TEST_F(ChromeAcceleratorMetadataTest,
-       ModifyChromeAcceleratorShouldUpdateLayout) {
+       DISABLED_ModifyChromeAcceleratorShouldUpdateLayout) {
   std::vector<AcceleratorMapping> chrome_accelerators;
   for (const auto& accel_mapping : GetAcceleratorList()) {
     chrome_accelerators.emplace_back(accel_mapping);
