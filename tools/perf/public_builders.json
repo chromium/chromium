@@ -17,6 +17,7 @@
     "android-pixel9-pro-xl-perf",
     "android-pixel10-perf",
     "android-pixel10_webview-perf",
+    "android-pixel10_webview-perf-pgo",
     "linux-builder-perf",
     "linux-falcon-rak-5070-perf",
     "linux-perf",

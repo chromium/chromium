@@ -116,6 +116,17 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
     },
+    'android-pixel10_webview-perf-pgo': {
+        'jetstream2': {
+            'JetStream2': 5,
+        },
+        'speedometer2': {
+            'Speedometer2': 20,
+        },
+        'speedometer3': {
+            'Speedometer3': 20,
+        },
+    },
     'linux-perf': {
         'jetstream2.crossbench': 10,
         'motionmark1.3.crossbench': 10,
