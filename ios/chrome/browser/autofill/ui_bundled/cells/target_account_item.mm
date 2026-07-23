@@ -75,12 +75,12 @@ const CGFloat kAccountCellSpacing = 7;
   googlePayBadge.translatesAutoresizingMaskIntoConstraints = NO;
   googlePayBadge.contentMode = UIViewContentModeScaleAspectFit;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  NSString* symbol = base::FeatureList::IsEnabled(
-                         autofill::features::kAutofillEnableGradientGoogleLogos)
-                         ? kGooglePayV2Symbol
-                         : kGooglePaySymbol;
-  googlePayBadge.image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(symbol, kAccountCellBadgeSize));
+  Symbol symbol = base::FeatureList::IsEnabled(
+                      autofill::features::kAutofillEnableGradientGoogleLogos)
+                      ? SymbolGooglePayV2
+                      : SymbolGooglePay;
+  googlePayBadge.image =
+      MakeSymbolMulticolor(SymbolWithPointSize(symbol, kAccountCellBadgeSize));
 #else
   googlePayBadge.image = NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 #endif

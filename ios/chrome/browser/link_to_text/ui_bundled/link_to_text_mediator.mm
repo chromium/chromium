@@ -146,8 +146,8 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   NSString* linkToTextId = @"chromecommand.linktotext";
   UIAction* action = [UIAction
       actionWithTitle:title
-                image:DefaultSymbolWithPointSize(kHighlighterSymbol,
-                                                 kSymbolActionPointSize)
+                image:SymbolWithPointSize(SymbolHighlighter,
+                                          kSymbolActionPointSize)
            identifier:linkToTextId
               handler:^(UIAction* a) {
                 [weakSelf

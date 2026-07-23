@@ -177,12 +177,12 @@ const CGFloat kGooglePayBadgeHeight = 16;
 // UIUserInterfaceStyle (light/dark mode).
 - (UIImage*)googlePayBadgeImage {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  NSString* symbol = base::FeatureList::IsEnabled(
-                         autofill::features::kAutofillEnableGradientGoogleLogos)
-                         ? kGooglePayV2Symbol
-                         : kGooglePaySymbol;
+  Symbol symbol = base::FeatureList::IsEnabled(
+                      autofill::features::kAutofillEnableGradientGoogleLogos)
+                      ? SymbolGooglePayV2
+                      : SymbolGooglePay;
   return MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(symbol, kGooglePayBadgeHeight));
+      SymbolWithPointSize(symbol, kGooglePayBadgeHeight));
 #else
   return NativeImage(IDR_AUTOFILL_GOOGLE_PAY);
 #endif

@@ -57,9 +57,9 @@ constexpr NSString* kBrandingButtonAXId = @"kBrandingButtonAXId";
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logo = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
+      SymbolWithPointSize(SymbolMulticolorChromeball, kLogoSize));
 #else
-  UIImage* logo = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
+  UIImage* logo = SymbolWithPointSize(SymbolChromeProduct, kLogoSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   [button setImage:logo forState:UIControlStateNormal];
