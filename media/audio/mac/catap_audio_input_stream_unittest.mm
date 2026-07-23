@@ -455,6 +455,13 @@ class CatapAudioInputStreamTest : public base::MultiProcessTest {
   CatapAudioInputStreamTest() = default;
   ~CatapAudioInputStreamTest() override = default;
 
+  void SyncWithTaskRunner() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   API_AVAILABLE(macos(14.2))
   void CreateStream(bool with_permissions = true,
                     const std::string& device_id =
@@ -938,6 +945,7 @@ TEST_F(CatapAudioInputStreamTest, UpdateStreamOnNewAudioID) {
     // No change when audio devices for other processes are removed.
     fake_catap_api()->process_audio_devices = {};
     fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    SyncWithTaskRunner();
     EXPECT_EQ([fake_catap_api()->last_tap_description processes].count, 0U);
     EXPECT_EQ(fake_catap_api()->set_tap_description_count,
               expected_set_tap_description_count);
@@ -945,6 +953,7 @@ TEST_F(CatapAudioInputStreamTest, UpdateStreamOnNewAudioID) {
     // Check if new AudioDeviceID are added to the tap list.
     fake_catap_api()->process_audio_devices = {kProcessFirstDeviceId};
     fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    SyncWithTaskRunner();
     std::set<AudioObjectID> device_ids_to_include = {kProcessFirstDeviceId};
     EXPECT_TRUE(VerifyAudioObjectIDsMatch(
         device_ids_to_include,
@@ -957,6 +966,7 @@ TEST_F(CatapAudioInputStreamTest, UpdateStreamOnNewAudioID) {
     fake_catap_api()->process_audio_devices = {kProcessFirstDeviceId,
                                                kOtherProcessDeviceId};
     fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    SyncWithTaskRunner();
     EXPECT_TRUE(VerifyAudioObjectIDsMatch(
         device_ids_to_include,
         [fake_catap_api()->last_tap_description processes]));
@@ -967,6 +977,7 @@ TEST_F(CatapAudioInputStreamTest, UpdateStreamOnNewAudioID) {
     fake_catap_api()->process_audio_devices = {
         kProcessFirstDeviceId, kProcessSecondDeviceId, kOtherProcessDeviceId};
     fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    SyncWithTaskRunner();
     device_ids_to_include = {kProcessFirstDeviceId, kProcessSecondDeviceId};
     EXPECT_TRUE(VerifyAudioObjectIDsMatch(
         device_ids_to_include,
@@ -979,6 +990,7 @@ TEST_F(CatapAudioInputStreamTest, UpdateStreamOnNewAudioID) {
     fake_catap_api()->process_audio_devices = {kProcessFirstDeviceId,
                                                kOtherProcessDeviceId};
     fake_catap_api()->property_listener_block(1, &kProcessObjectListAddress);
+    SyncWithTaskRunner();
     device_ids_to_include = {kProcessFirstDeviceId};
     EXPECT_TRUE(VerifyAudioObjectIDsMatch(
         device_ids_to_include,
@@ -1028,6 +1040,7 @@ TEST_F(CatapAudioInputStreamTest, ErrorIfDeviceIsAliveChanges) {
 
     EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
     fake_catap_api()->property_listener_block(1, &kDeviceIsAliveAddress);
+    SyncWithTaskRunner();
     EXPECT_EQ(fake_callback_.on_error_call_count(), 1);
   }
 }
@@ -1042,6 +1055,7 @@ TEST_F(CatapAudioInputStreamTest, NoErrorIfDefaultOutputDeviceChanges) {
     EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
     fake_catap_api()->property_listener_block(
         1, &kDefaultOutputDevicePropertyAddress);
+    SyncWithTaskRunner();
     EXPECT_EQ(fake_callback_.on_error_call_count(), 0);
   }
 }
@@ -1172,6 +1186,7 @@ TEST_F(CatapAudioInputStreamTest, ReopensOnDeviceChangeForOpenStream) {
     // Check if catap was recreated on default device change.
     fake_catap_api()->property_listener_block(
         1, &kDefaultOutputDevicePropertyAddress);
+    SyncWithTaskRunner();
     ++expected_create_aggregate_device_count;
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
               expected_create_aggregate_device_count);
@@ -1199,6 +1214,7 @@ TEST_F(CatapAudioInputStreamTest, RestartsOnDeviceChangeForStartedStream) {
     // Check if catap was recreated on default device change.
     fake_catap_api()->property_listener_block(
         1, &kDefaultOutputDevicePropertyAddress);
+    SyncWithTaskRunner();
     ++expected_create_aggregate_device_count;
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
               expected_create_aggregate_device_count);
@@ -1221,12 +1237,14 @@ TEST_F(CatapAudioInputStreamTest, ReopensOnSamplerateChange) {
 
     // No change on sample rate notifications if sample rate haven't changed.
     fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
+    SyncWithTaskRunner();
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
               expected_create_aggregate_device_count);
 
     // Check if catap was recreated on real sampe rate change.
     fake_catap_api()->last_set_sample_rate = 16000;
     fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
+    SyncWithTaskRunner();
     ++expected_create_aggregate_device_count;
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
               expected_create_aggregate_device_count);
@@ -1255,6 +1273,7 @@ TEST_F(CatapAudioInputStreamTest,
         kSampleRateAddress, kDefaultOutputDevicePropertyAddress};
 
     fake_catap_api()->property_listener_block(2, addresses);
+    SyncWithTaskRunner();
 
     // The first address should trigger a restart (destroy and recreate).
     // If the early return is successful, the second address is ignored,
@@ -1288,6 +1307,7 @@ TEST_F(CatapAudioInputStreamTest,
         kDefaultOutputDevicePropertyAddress, kSampleRateAddress};
 
     fake_catap_api()->property_listener_block(2, addresses);
+    SyncWithTaskRunner();
 
     // The first address should trigger a restart (destroy and recreate).
     // If the early return is successful, the second address is ignored,
@@ -1308,6 +1328,7 @@ TEST_F(CatapAudioInputStreamTest, RestartFailingForStartedStream) {
     fake_catap_api()->should_fail_create_aggregate_device = true;
     fake_catap_api()->property_listener_block(
         1, &kDefaultOutputDevicePropertyAddress);
+    SyncWithTaskRunner();
 
     // Failed restart should trigger an OnError() call.
     EXPECT_EQ(fake_callback_.on_error_call_count(), 1);
@@ -1358,6 +1379,7 @@ TEST_F(CatapAudioInputStreamTest, ReopensStreamSeveralTimes) {
     // Check if catap was recreated on default device change.
     fake_catap_api()->property_listener_block(
         1, &kDefaultOutputDevicePropertyAddress);
+    SyncWithTaskRunner();
     ++expected_create_aggregate_device_count;
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
               expected_create_aggregate_device_count);
@@ -1367,18 +1389,21 @@ TEST_F(CatapAudioInputStreamTest, ReopensStreamSeveralTimes) {
     // Check if catap was recreated on default device change after Start().
     fake_catap_api()->property_listener_block(
         1, &kDefaultOutputDevicePropertyAddress);
+    SyncWithTaskRunner();
     ++expected_create_aggregate_device_count;
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
               expected_create_aggregate_device_count);
 
     // No change on sample rate notifications if sample rate haven't changed.
     fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
+    SyncWithTaskRunner();
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
               expected_create_aggregate_device_count);
 
     // Check if catap was recreated on real sampe rate change.
     fake_catap_api()->last_set_sample_rate = 16000;
     fake_catap_api()->property_listener_block(1, &kSampleRateAddress);
+    SyncWithTaskRunner();
     ++expected_create_aggregate_device_count;
     EXPECT_EQ(fake_catap_api()->create_aggregate_device_count,
               expected_create_aggregate_device_count);
