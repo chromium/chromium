@@ -97,6 +97,7 @@ BASE_DECLARE_FEATURE(kWebViewTestNonembeddedLowEntropySource);
 BASE_DECLARE_FEATURE(kWebViewUnreducedProductVersion);
 BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime);
 BASE_DECLARE_FEATURE(kWebViewVizDirectCompositorThreadIpcFrameSinkManager);
+BASE_DECLARE_FEATURE(kWebViewWarmupNetworkService);
 BASE_DECLARE_FEATURE(kWebViewWebPerformanceMetricsReporting);
 // Don't add new features to the end! Insert them in alphabetical order to
 // reduce conflicts.

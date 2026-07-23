@@ -38,6 +38,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -425,6 +426,8 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
     return;
   }
 
+  TRACE_EVENT0("loading", "NetworkService::Initialize");
+
   initialized_ = true;
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
@@ -729,6 +732,7 @@ void NetworkService::SetSSLKeyLogFile(base::File file) {
 void NetworkService::CreateNetworkContext(
     mojo::PendingReceiver<mojom::NetworkContext> receiver,
     mojom::NetworkContextParamsPtr params) {
+  TRACE_EVENT0("loading", "NetworkService::CreateNetworkContext");
   if (time_to_first_context_timer_) {
     base::UmaHistogramMediumTimes(
         "NetworkService.TimeToFirstCreateNetworkContext",

@@ -69,6 +69,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/synthetic_trial_syncer.h"
@@ -422,6 +423,19 @@ int AwBrowserMainParts::PreMainMessageLoopRun() {
 
   Java_AwInterfaceRegistrar_registerMojoInterfaces(
       base::android::AttachCurrentThread());
+
+  // The global NetworkService instance (network::NetworkService) is profile
+  // agnostic and operates asynchronously on a dedicated IO/Network thread.
+  // Unlike initializing a full StoragePartition or NetworkContext, invoking
+  // content::GetNetworkService() does not touch profile storage paths, SQLite
+  // cookie databases, or app quota limits. Eagerly warming up the service here
+  // during native browser process startup spins up the background thread and
+  // IPC pipelines ahead of time, eliminating thread spin-up latency on the
+  // critical path of the first navigation or socket preconnect API call.
+  if (base::FeatureList::IsEnabled(features::kWebViewWarmupNetworkService)) {
+    TRACE_EVENT0("startup", "AwBrowserMainParts::WarmupNetworkService");
+    content::GetNetworkService();
+  }
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }

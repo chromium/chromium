@@ -261,6 +261,7 @@ static NetworkServiceClient* g_client = nullptr;
 
 void CreateInProcessNetworkServiceOnThread(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
+  TRACE_EVENT0("loading", "CreateInProcessNetworkServiceOnThread");
   g_in_process_instance = new network::NetworkService(
       nullptr /* registry */, std::move(receiver),
       true /* delay_initialization_until_set_client */);

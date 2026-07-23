@@ -397,6 +397,10 @@ BASE_FEATURE(kWebViewUseMetricsUploadServiceOnlySdkRuntime,
 BASE_FEATURE(kWebViewVizDirectCompositorThreadIpcFrameSinkManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, eagerly warms up the Network Service during early native
+// browser process startup in WebView.
+BASE_FEATURE(kWebViewWarmupNetworkService, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for reporting web performance metrics.
 BASE_FEATURE(kWebViewWebPerformanceMetricsReporting,
              base::FEATURE_ENABLED_BY_DEFAULT);
