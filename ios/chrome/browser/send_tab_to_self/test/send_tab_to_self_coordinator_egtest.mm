@@ -994,10 +994,18 @@ void DismissSnackbar() {
   [ChromeEarlGreyUI openTabGrid];
 
   // Verify that the label is now gone.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
-                                          grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(labelText),
+                                            grey_sufficientlyVisible(), nil)]
+        assertWithMatcher:grey_notNil()
+                    error:&error];
+    return (error != nil);
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForActionTimeout, condition),
+             @"Timeout waiting for Send Tab To Self label to disappear");
 }
 
 // Tests that when a shared tab is auto-opened, the activation tracking survives
