@@ -1701,7 +1701,13 @@ PageActionIconView* ToolbarView::GetPageActionIconView(
 
 page_actions::PageActionViewInterface* ToolbarView::GetPageActionViewInterface(
     actions::ActionId action_id) {
-  // TODO: crbug.com/501449027 -- implement for WebUI location bar.
+  if (features::IsWebUILocationBarEnabled()) {
+    if (toolbar_webview_ && !location_bar_view_) {
+      return toolbar_webview_->GetLocationBar()->GetPageActionViewInterface(
+          action_id);
+    }
+    return nullptr;
+  }
   page_actions::PageActionPropertiesProvider provider;
   if (!provider.Contains(action_id)) {
     return nullptr;

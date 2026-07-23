@@ -25,9 +25,13 @@ class WebContents;
 namespace actions {
 class ActionItem;
 }
+class BrowserWindowInterface;
 class WebUIToolbarControlDelegate;
 
 namespace page_actions {
+class PageActionModelInterface;
+class PageActionViewInterface;
+class WebUIPageActionView;
 
 // WebUIPageActionControl bridges the page actions backend (managed by
 // PageActionController) to the WebUI toolbar. It manages a set of delegates
@@ -52,6 +56,10 @@ class WebUIPageActionControl {
   // Returns the current state of all visible page actions for WebUI.
   std::vector<toolbar_ui_api::mojom::PageActionStatePtr> GetPageActionStates();
 
+  // Returns the PageActionViewInterface for the given action id.
+  PageActionViewInterface* GetPageActionViewInterface(
+      actions::ActionId action_id);
+
   // Handles a click on a page action from WebUI.
   void OnPageActionClick(
       toolbar_ui_api::mojom::PageActionId action_id,
@@ -64,6 +72,13 @@ class WebUIPageActionControl {
       toolbar_ui_api::mojom::PageActionId action_id,
       toolbar_ui_api::mojom::ToolbarUIService::
           OnPageActionChipShowingChangedCallback callback);
+
+  // Helpers accessed by WebUIPageActionView:
+  BrowserWindowInterface* GetBrowser();
+  const page_actions::PageActionModelInterface* GetObservedModel(
+      actions::ActionId action_id) const;
+  page_actions::PageActionController* GetController(
+      actions::ActionId action_id);
 
  private:
   // The internal implementation of PageActionController::Delegate and
@@ -96,6 +111,7 @@ class WebUIPageActionControl {
 
   std::map<actions::ActionId, std::unique_ptr<WebUIPageActionDelegate>>
       delegates_;
+  std::map<actions::ActionId, std::unique_ptr<WebUIPageActionView>> views_;
 };
 
 }  // namespace page_actions

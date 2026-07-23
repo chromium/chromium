@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_util.h"
+#include "chrome/browser/ui/views/page_action/webui_page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "components/tabs/public/tab_interface.h"
@@ -87,6 +88,13 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   toolbar_ui_api::mojom::PageActionStatePtr GetState() const;
   void NotifyClick(PageActionTrigger trigger);
   void NotifyChipShowingChanged();
+
+  const page_actions::PageActionModelInterface* GetObservedModel() const {
+    return observation_.IsObserving() ? observation_.GetSource() : nullptr;
+  }
+  page_actions::PageActionController* GetController() const {
+    return controller_;
+  }
 
  private:
   const actions::ActionId action_id_;
@@ -240,6 +248,8 @@ WebUIPageActionControl::WebUIPageActionControl(
     if (action_item) {
       delegates_[action_id] = std::make_unique<WebUIPageActionDelegate>(
           action_id, *action_item, *this);
+      views_[action_id] =
+          std::make_unique<WebUIPageActionView>(action_id, *this);
     }
   }
 }
@@ -248,6 +258,37 @@ WebUIPageActionControl::~WebUIPageActionControl() = default;
 
 void WebUIPageActionControl::Init(WebUIToolbarControlDelegate* webui_delegate) {
   webui_delegate_ = webui_delegate;
+}
+
+PageActionViewInterface* WebUIPageActionControl::GetPageActionViewInterface(
+    actions::ActionId action_id) {
+  auto it = views_.find(action_id);
+  if (it != views_.end()) {
+    return it->second.get();
+  }
+  return nullptr;
+}
+
+BrowserWindowInterface* WebUIPageActionControl::GetBrowser() {
+  return webui_delegate_ ? webui_delegate_->GetBrowser() : nullptr;
+}
+
+const page_actions::PageActionModelInterface*
+WebUIPageActionControl::GetObservedModel(actions::ActionId action_id) const {
+  auto it = delegates_.find(action_id);
+  if (it != delegates_.end()) {
+    return it->second->GetObservedModel();
+  }
+  return nullptr;
+}
+
+page_actions::PageActionController* WebUIPageActionControl::GetController(
+    actions::ActionId action_id) {
+  auto it = delegates_.find(action_id);
+  if (it != delegates_.end()) {
+    return it->second->GetController();
+  }
+  return nullptr;
 }
 
 void WebUIPageActionControl::UpdateController(

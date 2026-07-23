@@ -19,6 +19,8 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
+#include "chrome/browser/ui/views/page_action/webui_page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
@@ -298,6 +300,43 @@ TEST_F(WebUIPageActionControlTest, TabDestroyedBeforeControl) {
   control_->UpdateController(web_contents());
   tab_features_.reset();
   control_.reset();
+}
+
+TEST_F(WebUIPageActionControlTest, GetPageActionViewInterfaceAndMethods) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  ASSERT_TRUE(tab);
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  ASSERT_TRUE(controller);
+
+  actions::ActionId target_action_id = kActionAiMode;
+
+  page_actions::PageActionViewInterface* view_interface =
+      control_->GetPageActionViewInterface(target_action_id);
+  ASSERT_TRUE(view_interface);
+
+  EXPECT_DEATH(view_interface->GetIconLabelBubbleViewNotMigrated(), "");
+
+  controller->OverrideTooltip(target_action_id, u"Test Tooltip");
+  controller->OverrideAccessibleName(target_action_id, u"Test Accessible Name");
+
+  EXPECT_EQ(view_interface->GetTooltipText(), u"Test Tooltip");
+  EXPECT_EQ(view_interface->GetAccessibleName(), u"Test Accessible Name");
+
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .Times(testing::AtLeast(1));
+  view_interface->SetVisible(true);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(states.size(), 1u);
+
+  EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+      .Times(testing::AtLeast(1));
+  view_interface->SetVisible(false);
+  EXPECT_TRUE(control_->GetPageActionStates().empty());
 }
 
 }  // namespace

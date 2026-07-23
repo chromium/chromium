@@ -26,6 +26,7 @@ source_set("page_action") {
     "page_action_view_params.h",
     "page_action_view_util.h",
     "webui_page_action_control.h",
+    "webui_page_action_view.h",
   ]
 
   public_deps = [
@@ -71,6 +72,7 @@ source_set("impl") {
     "page_action_view.cc",
     "page_action_view_util.cc",
     "webui_page_action_control.cc",
+    "webui_page_action_view.cc",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -86,6 +88,7 @@ source_set("impl") {
     "//chrome/browser/themes",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/page_action:page_action_impl",
     "//chrome/browser/ui/search",

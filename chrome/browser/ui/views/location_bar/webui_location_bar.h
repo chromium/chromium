@@ -141,6 +141,11 @@ class WebUILocationBar : public LocationBar,
     return page_action_control_;
   }
 
+  page_actions::PageActionViewInterface* GetPageActionViewInterface(
+      actions::ActionId action_id) {
+    return page_action_control_.GetPageActionViewInterface(action_id);
+  }
+
   // ContentSettingImageViewDelegate:
   bool ShouldHideContentSettingImage() override;
   content::WebContents* GetContentSettingWebContents() override;
