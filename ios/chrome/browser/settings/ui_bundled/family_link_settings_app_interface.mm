@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/supervised_user/model/family_link_settings_service_factory.h"
+#import "ios/chrome/browser/supervised_user/model/list_family_members_service_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_error_container.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
@@ -176,6 +177,11 @@ bool IsShowingInterstitialForState(web::WebState* web_state) {
     }
   }
   return count;
+}
+
++ (BOOL)isListFamilyMembersServiceCreated {
+  return ListFamilyMembersServiceFactory::GetForProfileIfExists(
+             chrome_test_util::GetOriginalProfile()) != nullptr;
 }
 
 @end

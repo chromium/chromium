@@ -27,18 +27,18 @@ class ListFamilyMembersServiceFactoryTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
 };
 
-// Tests that ListFamilyMembersServiceFactory creates
-// ListFamilyMembersService.
-TEST_F(ListFamilyMembersServiceFactoryTest, CreateService) {
+// Tests that ListFamilyMembersServiceFactory does not create
+// ListFamilyMembersService by default in unit tests.
+TEST_F(ListFamilyMembersServiceFactoryTest, NoServiceByDefaultInTests) {
   supervised_user::ListFamilyMembersService* service =
       ListFamilyMembersServiceFactory::GetForProfile(GetRegularProfile());
-  EXPECT_TRUE(service);
+  EXPECT_FALSE(service);
 }
 
-// Tests that ListFamilyMembersServiceFactory retuns null
+// Tests that ListFamilyMembersServiceFactory returns null
 // with an off-the-record ProfileIOS.
 TEST_F(ListFamilyMembersServiceFactoryTest,
-       ReturnsNullOnOffTheRecordBrowserState) {
+       ReturnsNullOnOffTheRecordProfile) {
   ProfileIOS* otr_profile = GetOffTheRecordProfile();
   ASSERT_TRUE(otr_profile);
   supervised_user::ListFamilyMembersService* service =

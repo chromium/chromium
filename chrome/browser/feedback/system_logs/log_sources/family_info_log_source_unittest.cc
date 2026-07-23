@@ -46,7 +46,7 @@ class FamilyInfoLogSourceTest : public ::testing::Test {
     supervised_user::RegisterProfilePrefs(pref_service_.registry());
     test_list_family_members_service_ =
         std::make_unique<supervised_user::ListFamilyMembersService>(
-            identity_test_env_.identity_manager(),
+            *identity_test_env_.identity_manager(),
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
             pref_service_);
@@ -117,8 +117,6 @@ TEST_F(FamilyInfoLogSourceTest,
 
   identity_test_env_.UpdateAccountInfoForAccount(
       WithFamilyInfoFetching(primary_account));
-
-  test_list_family_members_service_->Init();
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Max());
   SimulateResponseForPendingRequest();

@@ -49,6 +49,9 @@
 // web states.
 + (NSInteger)countSupervisedUserIntersitialsForExistingWebStates;
 
+// Returns YES if ListFamilyMembersService is instantiated for the profile.
++ (BOOL)isListFamilyMembersServiceCreated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_FAMILY_LINK_SETTINGS_APP_INTERFACE_H_

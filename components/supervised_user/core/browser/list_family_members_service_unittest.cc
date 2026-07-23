@@ -9,7 +9,6 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -38,19 +37,19 @@ AccountInfo& WithFamilyInfoFetching(AccountInfo& account_info) {
 }
 
 class ListFamilyMembersServiceTest : public ::testing::Test {
- public:
+ protected:
   void SetUp() override {
     RegisterProfilePrefs(pref_service_.registry());
-    test_list_family_members_service_ =
-        std::make_unique<ListFamilyMembersService>(
-            identity_test_env_.identity_manager(),
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &test_url_loader_factory_),
-            pref_service_);
-  }
-  void TearDown() override { test_list_family_members_service_->Shutdown(); }
+    under_test_ = std::make_unique<ListFamilyMembersService>(
+        *identity_test_env_.identity_manager(),
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_),
+        pref_service_);
 
- protected:
+  }
+
+  void TearDown() override { under_test_->Shutdown(); }
+
   void SimulateErrorResponseForPendingRequest() {
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         kListMembersRequestPath, /*content=*/"", net::HTTP_BAD_REQUEST);
@@ -75,7 +74,7 @@ class ListFamilyMembersServiceTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<ListFamilyMembersService> test_list_family_members_service_;
+  std::unique_ptr<ListFamilyMembersService> under_test_;
   TestingPrefServiceSimple pref_service_;
 };
 
@@ -85,7 +84,6 @@ TEST_F(ListFamilyMembersServiceTest, FamilyFlowsFromFetcherToPreferences) {
       "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
   identity_test_env_.UpdateAccountInfoForAccount(
       WithFamilyInfoFetching(primary_account));
-  test_list_family_members_service_->Init();
 
   // Perform the sequence of obtaining an access token, simulating response and
   // verifying the result.
@@ -106,7 +104,6 @@ TEST_F(ListFamilyMembersServiceTest, FamilyRolePrefReflectsAccountCapability) {
   AccountCapabilitiesTestMutator mutator(&primary_account);
   identity_test_env_.UpdateAccountInfoForAccount(
       WithFamilyInfoFetching(primary_account));
-  test_list_family_members_service_->Init();
 
   // Perform the sequence of obtaining an access token, simulating response and
   // verifying the result.
@@ -130,7 +127,6 @@ TEST_F(ListFamilyMembersServiceTest,
   AccountCapabilitiesTestMutator mutator(&primary_account);
   identity_test_env_.UpdateAccountInfoForAccount(
       WithFamilyInfoFetching(primary_account));
-  test_list_family_members_service_->Init();
 
   // Perform the sequence of obtaining an access token, simulating response and
   // verifying the result.
@@ -162,7 +158,6 @@ TEST_F(ListFamilyMembersServiceTest, IneligibleAccountForFamilyFetch) {
   // Test the `fetcher_`.
   AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
       "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
-  test_list_family_members_service_->Init();
 
   // No requests made for ineligible account.
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
@@ -172,7 +167,6 @@ TEST_F(ListFamilyMembersServiceTest, AccountEligibilityUpdated) {
   // Test the `fetcher_`.
   AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
       "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
-  test_list_family_members_service_->Init();
 
   // No requests made for ineligible account.
   ASSERT_EQ(0, test_url_loader_factory_.NumPending());
@@ -200,7 +194,6 @@ TEST_F(ListFamilyMembersServiceTest, AccountEligibilityUpdated) {
 TEST_F(ListFamilyMembersServiceTest,
        ListFamilyFetcherOnMakingSupervisedUserAccountPrimary) {
   const std::string child_email = "username@gmail.com";
-  test_list_family_members_service_->Init();
 
   // Make non-primary account available. No requests are triggered for this
   // account.
@@ -240,7 +233,6 @@ TEST_F(ListFamilyMembersServiceTest,
   AccountCapabilitiesTestMutator mutator(&primary_account);
   identity_test_env_.UpdateAccountInfoForAccount(
       WithFamilyInfoFetching(primary_account));
-  test_list_family_members_service_->Init();
 
   // Perform the sequence of obtaining an access token, simulating response and
   // verifying the result.
@@ -260,7 +252,6 @@ TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherClearsResponseOnSignout) {
       "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
   identity_test_env_.UpdateAccountInfoForAccount(
       WithFamilyInfoFetching(primary_account));
-  test_list_family_members_service_->Init();
 
   // Perform the sequence of obtaining an access token, simulating response
   // and verifying the result.
@@ -287,7 +278,6 @@ TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherResetsPrefOnSignout) {
       "username_hoh@gmail.com", signin::ConsentLevel::kSignin);
   identity_test_env_.UpdateAccountInfoForAccount(
       WithFamilyInfoFetching(primary_account));
-  test_list_family_members_service_->Init();
 
   // Perform the sequence of obtaining an access token, simulating response and
   // verifying the result.

@@ -45,7 +45,7 @@ class ListFamilyMembersService : public KeyedService,
  public:
   ListFamilyMembersService() = delete;
   ListFamilyMembersService(
-      signin::IdentityManager* identity_manager,
+      signin::IdentityManager& identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService& user_prefs);
   ~ListFamilyMembersService() override;
@@ -53,8 +53,6 @@ class ListFamilyMembersService : public KeyedService,
   // Not copyable.
   ListFamilyMembersService(const ListFamilyMembersService&) = delete;
   ListFamilyMembersService& operator=(const ListFamilyMembersService&) = delete;
-
-  void Init();
 
   // KeyedService:
   void Shutdown() override;
@@ -81,7 +79,7 @@ class ListFamilyMembersService : public KeyedService,
       const kidsmanagement::ListMembersResponse& list_members_response);
 
   // Dependencies.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ref<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const raw_ref<PrefService> user_prefs_;
 

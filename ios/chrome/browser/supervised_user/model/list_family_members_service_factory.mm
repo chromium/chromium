@@ -19,6 +19,14 @@ ListFamilyMembersServiceFactory::GetForProfile(ProfileIOS* profile) {
 }
 
 // static
+supervised_user::ListFamilyMembersService*
+ListFamilyMembersServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
+  return GetInstance()
+      ->GetServiceForProfileAs<supervised_user::ListFamilyMembersService>(
+          profile, /*create=*/false);
+}
+
+// static
 ListFamilyMembersServiceFactory*
 ListFamilyMembersServiceFactory::GetInstance() {
   static base::NoDestructor<ListFamilyMembersServiceFactory> instance;
@@ -26,14 +34,26 @@ ListFamilyMembersServiceFactory::GetInstance() {
 }
 
 ListFamilyMembersServiceFactory::ListFamilyMembersServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ListFamilyMembersService") {
+    : ProfileKeyedServiceFactoryIOS(
+          "ListFamilyMembersService",
+          ServiceCreation::kCreateWithProfile,
+          // Note: this is a leaf service that is not automatically created in
+          // tests that use TestProfileIOS (i.e. unit tests). It is however
+          // created integration tests that bootstrap a real profile.
+          TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
 ListFamilyMembersServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    // Match lifecycle of the identity manager. No identity means no family.
+    return nullptr;
+  }
   return std::make_unique<supervised_user::ListFamilyMembersService>(
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetSharedURLLoaderFactory(), CHECK_DEREF(profile->GetPrefs()));
+      CHECK_DEREF(identity_manager), profile->GetSharedURLLoaderFactory(),
+      CHECK_DEREF(profile->GetPrefs()));
 }

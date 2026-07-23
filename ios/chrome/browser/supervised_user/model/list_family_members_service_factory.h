@@ -17,6 +17,8 @@ class ListFamilyMembersServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static supervised_user::ListFamilyMembersService* GetForProfile(
       ProfileIOS* profile);
+  static supervised_user::ListFamilyMembersService* GetForProfileIfExists(
+      ProfileIOS* profile);
 
   static ListFamilyMembersServiceFactory* GetInstance();
 

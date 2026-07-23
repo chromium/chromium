@@ -909,4 +909,16 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
+// Tests that ListFamilyMembersService is successfully instantiated and
+// bootstrapped upon supervised user sign-in.
+- (void)testSupervisedUserListFamilyMembersServiceCreated {
+  [self signInSupervisedUser];
+
+  // Verify that the service is created and active in the app main queue.
+  GREYAssertTrue(
+      [FamilyLinkSettingsAppInterface isListFamilyMembersServiceCreated],
+      @"ListFamilyMembersService should be instantiated for the signed-in "
+      @"profile.");
+}
+
 @end

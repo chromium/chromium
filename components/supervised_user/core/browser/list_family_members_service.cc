@@ -13,11 +13,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -43,18 +43,13 @@ base::TimeDelta NextUpdate(const ProtoFetcherStatus& status) {
 }  // namespace
 
 ListFamilyMembersService::ListFamilyMembersService(
-    signin::IdentityManager* identity_manager,
+    signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService& user_prefs)
     : identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
-      user_prefs_(user_prefs) {}
-
-ListFamilyMembersService::~ListFamilyMembersService() = default;
-
-
-void ListFamilyMembersService::Init() {
-  identity_manager_observer_.Observe(identity_manager_);
+      user_prefs_(user_prefs) {
+  identity_manager_observer_.Observe(&identity_manager);
   AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
@@ -62,6 +57,8 @@ void ListFamilyMembersService::Init() {
     OnExtendedAccountInfoUpdated(primary_account_info);
   }
 }
+
+ListFamilyMembersService::~ListFamilyMembersService() = default;
 
 void ListFamilyMembersService::Shutdown() {
   identity_manager_observer_.Reset();

@@ -560,13 +560,12 @@ void ProfileManagerIOSImpl::DoFinalInitForServices(ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IdentityManagerFactory::GetForProfile(profile)->OnNetworkInitialized();
 
-  // Those services needs to be explicitly initialized and can't simply be
-  // marked as created with the profile as 1. they depend on initialisation
+  // This service needs to be explicitly initialized and can't simply be
+  // marked as created with the profile as 1. it depends on initialisation
   // performed in ProfileIOSImpl (thus can't work with TestProfileIOS), and
-  // 2. code do not expect them to be null (thus tests cannot be configured
+  // 2. code do not expect it to be null (thus tests cannot be configured
   // to have a null instance).
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
-  ListFamilyMembersServiceFactory::GetForProfile(profile)->Init();
 }
 
 void ProfileManagerIOSImpl::OnProfileDeletionComplete(
