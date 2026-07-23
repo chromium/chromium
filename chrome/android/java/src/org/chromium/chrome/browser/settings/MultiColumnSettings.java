@@ -200,14 +200,14 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
             Fragment fragment, boolean addToBackStack, @Nullable String tag) {
         if (!isAdded()) {
             Intent intent = new Intent();
-            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragment.getClass().getName());
+            intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, fragment.getClass().getName());
             if (fragment.getArguments() != null) {
                 intent.putExtra(
-                        SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, fragment.getArguments());
+                        SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_ARGUMENTS, fragment.getArguments());
             }
-            intent.putExtra(SettingsActivity.EXTRA_ADD_TO_BACK_STACK, addToBackStack);
+            intent.putExtra(SettingsIntentUtil.EXTRA_ADD_TO_BACK_STACK, addToBackStack);
             if (tag != null) {
-                intent.putExtra(SettingsActivity.EXTRA_FRAGMENT_TAG, tag);
+                intent.putExtra(SettingsIntentUtil.EXTRA_FRAGMENT_TAG, tag);
             }
             setPendingFragmentIntent(intent);
             return;
@@ -352,14 +352,14 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat
 
         // The logic here should be conceptually consistent with
         // SettingsActivity.instantiateMainFragment.
-        String fragmentName = intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT);
+        String fragmentName = intent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT);
         if (fragmentName == null) {
             return null;
         }
-        Bundle arguments = intent.getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS);
+        Bundle arguments = intent.getBundleExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_ARGUMENTS);
         boolean addToBackStack =
-                intent.getBooleanExtra(SettingsActivity.EXTRA_ADD_TO_BACK_STACK, false);
-        String tag = intent.getStringExtra(SettingsActivity.EXTRA_FRAGMENT_TAG);
+                intent.getBooleanExtra(SettingsIntentUtil.EXTRA_ADD_TO_BACK_STACK, false);
+        String tag = intent.getStringExtra(SettingsIntentUtil.EXTRA_FRAGMENT_TAG);
         return new FragmentData(
                 Fragment.instantiate(requireActivity(), fragmentName, arguments),
                 addToBackStack,

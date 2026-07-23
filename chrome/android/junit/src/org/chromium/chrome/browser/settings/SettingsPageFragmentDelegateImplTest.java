@@ -383,7 +383,7 @@ public class SettingsPageFragmentDelegateImplTest {
         indexData.addEntry(id2, entry2);
 
         Intent intent = new Intent();
-        intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, child2);
+        intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, child2);
         when(mActivity.getIntent()).thenReturn(intent);
         when(mActivity.getSavedInstanceState()).thenReturn(null);
 

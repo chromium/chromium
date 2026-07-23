@@ -54,7 +54,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
-import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -448,7 +448,8 @@ public class SyncErrorMessageTest {
         onViewWaiting(allOf(withText("Enter"), isDisplayed())).perform(click());
         intended(
                 IntentMatchers.hasExtra(
-                        SettingsActivity.EXTRA_SHOW_FRAGMENT, ManageSyncSettings.class.getName()));
+                        SettingsIntentUtil.EXTRA_SHOW_FRAGMENT,
+                        ManageSyncSettings.class.getName()));
         Intents.release();
 
         histogramWatcher.assertExpected();

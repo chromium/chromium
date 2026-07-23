@@ -222,8 +222,9 @@ public class SettingsPageFragmentDelegateImpl
                     SettingsBreadcrumbUtil.getInitialBreadcrumbPath(
                             /* context= */ mActivity,
                             assertNonNull(mProfile),
-                            intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
-                            intent.getBundleExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS));
+                            intent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT),
+                            intent.getBundleExtra(
+                                    SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_ARGUMENTS));
         } else {
             mInitialBreadcrumbPath =
                     SettingsBreadcrumbUtil.getInitialBreadcrumbPath(savedInstanceState);

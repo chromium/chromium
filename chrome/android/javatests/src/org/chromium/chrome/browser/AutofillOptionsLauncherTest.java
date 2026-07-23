@@ -27,6 +27,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /** Tests for the {@link AutofillOptionsLauncher}. */
@@ -53,7 +54,7 @@ public class AutofillOptionsLauncherTest {
                 allOf(
                         hasComponent(SettingsActivity.class.getName()),
                         hasExtra(
-                                SettingsActivity.EXTRA_SHOW_FRAGMENT,
+                                SettingsIntentUtil.EXTRA_SHOW_FRAGMENT,
                                 AutofillOptionsFragment.class.getName())));
     }
 

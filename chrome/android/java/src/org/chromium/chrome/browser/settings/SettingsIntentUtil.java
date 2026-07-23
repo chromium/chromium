@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -21,6 +23,14 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 @NullMarked
 public class SettingsIntentUtil {
     private static final String TAG = "SettingsIntentUtil";
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
+
+    public static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
+    public static final String EXTRA_SHOW_FRAGMENT_STANDALONE = "show_fragment_standalone";
+    public static final String EXTRA_ADD_TO_BACK_STACK = "add_to_back_stack";
+    public static final String EXTRA_FRAGMENT_TAG = "fragment_tag";
 
     private SettingsIntentUtil() {}
 
@@ -87,7 +97,7 @@ public class SettingsIntentUtil {
         } else {
             intent.setClass(context, SettingsActivity.class);
             if (isStandaloneFragment) {
-                intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_STANDALONE, true);
+                intent.putExtra(EXTRA_SHOW_FRAGMENT_STANDALONE, true);
             } else if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
                 // Note that this intent will be delivered to an existing settings activity (if it
                 // exists) even if it is hosting a standalone fragment. In this case, the activity
@@ -101,14 +111,14 @@ public class SettingsIntentUtil {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         }
         if (fragmentName != null) {
-            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT, fragmentName);
+            intent.putExtra(EXTRA_SHOW_FRAGMENT, fragmentName);
         }
         if (fragmentArgs != null) {
-            intent.putExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS, fragmentArgs);
+            intent.putExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS, fragmentArgs);
         }
         if (addToBackStack) {
-            intent.putExtra(SettingsActivity.EXTRA_ADD_TO_BACK_STACK, addToBackStack);
-            if (tag != null) intent.putExtra(SettingsActivity.EXTRA_FRAGMENT_TAG, tag);
+            intent.putExtra(EXTRA_ADD_TO_BACK_STACK, addToBackStack);
+            if (tag != null) intent.putExtra(EXTRA_FRAGMENT_TAG, tag);
         }
         return intent;
     }

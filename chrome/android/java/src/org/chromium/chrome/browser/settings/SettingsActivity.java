@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.settings;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.settings.SettingsIntentUtil.EXTRA_SHOW_FRAGMENT;
+import static org.chromium.chrome.browser.settings.SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_ARGUMENTS;
+import static org.chromium.chrome.browser.settings.SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_STANDALONE;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -126,16 +129,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     // Key used to store activity start time in the Bundle to have it survive activity re-creation.
     private static final String KEY_START_TIME = "start_time";
-
-    // TODO(crbug.com/521895796): Move constants to a utility file, perhaps SettingsIntentUtil, as
-    // they are used by both settings in an activity and settings in a tab.
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
-
-    static final String EXTRA_SHOW_FRAGMENT_ARGUMENTS = "show_fragment_args";
-    static final String EXTRA_SHOW_FRAGMENT_STANDALONE = "show_fragment_standalone";
-    static final String EXTRA_ADD_TO_BACK_STACK = "add_to_back_stack";
-    static final String EXTRA_FRAGMENT_TAG = "fragment_tag";
 
     /** The current instance of SettingsActivity in the resumed state, if any. */
     private static @Nullable SettingsActivity sResumedInstance;

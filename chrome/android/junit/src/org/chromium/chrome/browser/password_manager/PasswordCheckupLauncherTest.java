@@ -36,7 +36,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
-import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
@@ -174,7 +174,7 @@ public class PasswordCheckupLauncherTest {
 
         Intent intent = mIntentCaptor.getValue();
         assertThat(
-                intent.getExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
+                intent.getExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT),
                 is(SafetyCheckSettingsFragment.class.getName()));
     }
 
@@ -189,7 +189,7 @@ public class PasswordCheckupLauncherTest {
 
         Intent intent = mIntentCaptor.getValue();
         assertThat(
-                intent.getExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
+                intent.getExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT),
                 is(SafetyHubFragment.class.getName()));
     }
 }

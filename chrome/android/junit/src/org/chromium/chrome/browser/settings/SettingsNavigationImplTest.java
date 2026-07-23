@@ -86,7 +86,7 @@ public class SettingsNavigationImplTest {
                         SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS,
                         /* fragmentArgs= */ null);
         assertEquals(
-                intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
+                intent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT),
                 FinancialAccountsManagementFragment.class.getName());
     }
 
@@ -98,7 +98,7 @@ public class SettingsNavigationImplTest {
                         SettingsNavigation.SettingsFragment.NON_CARD_PAYMENT_METHODS,
                         /* fragmentArgs= */ null);
         assertEquals(
-                intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT),
+                intent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT),
                 NonCardPaymentMethodsManagementFragment.class.getName());
     }
 
@@ -115,7 +115,7 @@ public class SettingsNavigationImplTest {
         assertEquals(ChromeLauncherActivity.class.getName(), intent.getComponent().getClassName());
         assertEquals(
                 FakeEmbeddableSettingsFragment.class.getName(),
-                intent.getStringExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT));
+                intent.getStringExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT));
     }
 
     @Test
@@ -128,7 +128,8 @@ public class SettingsNavigationImplTest {
                         mContext, FirstFakeSettingsFragment.class);
 
         assertEquals(SettingsActivity.class.getName(), intent.getComponent().getClassName());
-        assertTrue(intent.getBooleanExtra(SettingsActivity.EXTRA_SHOW_FRAGMENT_STANDALONE, false));
+        assertTrue(
+                intent.getBooleanExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT_STANDALONE, false));
     }
 
     @Test
