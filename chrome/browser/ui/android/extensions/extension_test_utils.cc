@@ -88,7 +88,10 @@ static void JNI_ExtensionTestUtils_SetExtensionActionVisible(
     Profile* profile,
     const std::string& extension_id,
     bool visible) {
-  ToolbarActionsModel::Get(profile)->SetActionVisibility(extension_id, visible);
+  auto* toolbar_model = ToolbarActionsModel::Get(profile);
+  if (toolbar_model->IsActionPinned(extension_id) != visible) {
+    toolbar_model->SetActionVisibility(extension_id, visible);
+  }
 }
 
 static std::vector<ToolbarActionsModel::ActionId>

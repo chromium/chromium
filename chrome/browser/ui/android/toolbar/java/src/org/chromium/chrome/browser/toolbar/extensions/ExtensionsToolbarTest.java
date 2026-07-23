@@ -351,6 +351,7 @@ public class ExtensionsToolbarTest {
     public void testPinnedExtensionContextMenuIcon() throws IOException {
         String extensionName = "Test Extension";
         String extensionId = loadBasicExtension("extension", extensionName, "Test Action");
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, false);
 
         // Open the extensions menu.
         ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).perform(click());
@@ -761,6 +762,7 @@ public class ExtensionsToolbarTest {
     @LargeTest
     public void testPinAndUnpinExtensionVisibility() throws IOException {
         String extensionId = loadBasicExtension("extension1", "Test Extension", "Test Action");
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, extensionId, false);
 
         // Verify the extension is not visible on the toolbar initially.
         onView(isRoot())
