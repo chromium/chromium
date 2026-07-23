@@ -1881,4 +1881,49 @@ TEST_F(ContentAnalysisDelegateDeleteTest, DoesNotRunCallbackIfAlreadyRun) {
   EXPECT_EQ(1, callback_count);
 }
 
+using ContentAnalysisDelegateUpdateFinalResultTest = BaseTest;
+
+class MinimalTestContentAnalysisDelegate : public ContentAnalysisDelegate {
+ public:
+  MinimalTestContentAnalysisDelegate(content::WebContents* web_contents,
+                                     Data data)
+      : ContentAnalysisDelegate(
+            web_contents,
+            std::move(data),
+            base::BindOnce([](const Data& data, Result& result) {}),
+            DeepScanAccessPoint::PASTE) {}
+};
+
+TEST_F(ContentAnalysisDelegateUpdateFinalResultTest, Precedence) {
+  ContentAnalysisDelegate::Data data;
+  data.url = GURL("https://example.com");
+
+  // Create a minimal delegate just to call UpdateFinalResult on it.
+  auto delegate = std::make_unique<MinimalTestContentAnalysisDelegate>(
+      contents(), std::move(data));
+
+  // Initial state should be SUCCESS.
+  EXPECT_EQ(FinalContentAnalysisResult::SUCCESS, delegate->final_result_);
+
+  // Overriding SUCCESS with KEPT_IN_MANAGED_CHROME should work.
+  delegate->UpdateFinalResult(
+      FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME, "dlp", {});
+  EXPECT_EQ(FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME,
+            delegate->final_result_);
+
+  // Overriding KEPT_IN_MANAGED_CHROME with FAILURE should work.
+  delegate->UpdateFinalResult(FinalContentAnalysisResult::FAILURE, "dlp", {});
+  EXPECT_EQ(FinalContentAnalysisResult::FAILURE, delegate->final_result_);
+
+  // Attempting to override FAILURE with WARNING should NOT work.
+  delegate->UpdateFinalResult(FinalContentAnalysisResult::WARNING, "dlp", {});
+  EXPECT_EQ(FinalContentAnalysisResult::FAILURE, delegate->final_result_);
+
+  // Attempting to override FAILURE with KEPT_IN_MANAGED_CHROME should
+  // NOT work.
+  delegate->UpdateFinalResult(
+      FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME, "dlp", {});
+  EXPECT_EQ(FinalContentAnalysisResult::FAILURE, delegate->final_result_);
+}
+
 }  // namespace enterprise_connectors

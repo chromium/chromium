@@ -581,6 +581,10 @@ void ContentAnalysisDelegate::TextRequestCallback(RequestHandlerResult result) {
   std::fill(result_.text_results.begin(), result_.text_results.end(),
             text_request_result_.complies);
 
+  result_.is_kept_in_managed_chrome |=
+      text_request_result_.final_result ==
+      FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME;
+
   UpdateFinalResult(text_request_result_.final_result, text_request_result_.tag,
                     text_request_result_.custom_rule_message);
 
@@ -599,6 +603,10 @@ void ContentAnalysisDelegate::ImageRequestCallback(
 
   DVLOG(1) << __func__ << ": image result=" << image_request_result_.complies;
   result_.image_result = image_request_result_.complies;
+
+  result_.is_kept_in_managed_chrome |=
+      image_request_result_.final_result ==
+      FinalContentAnalysisResult::KEPT_IN_MANAGED_CHROME;
 
   UpdateFinalResult(image_request_result_.final_result,
                     image_request_result_.tag,

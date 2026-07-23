@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
@@ -114,6 +115,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
     // can be printed, and a value of false means it shouldn't be allowed to
     // print.
     bool page_result;
+
+    // Whether the content is kept in managed Chrome for the copy access point.
+    // This is only used for the copy access point and it means the content is
+    // not allowed to be copied outside of managed Chrome.
+    bool is_kept_in_managed_chrome = false;
   };
 
   // Callback used with CreateForWebContents() that informs caller of verdict
@@ -293,6 +299,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   virtual bool CancelDialog();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ContentAnalysisDelegateUpdateFinalResultTest, Precedence);
   // Enum representing the data uploading status.
   enum class UploadDataStatus {
     kNoLocalClientFound = 0,
