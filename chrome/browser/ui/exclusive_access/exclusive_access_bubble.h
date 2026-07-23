@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_H_
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
@@ -48,18 +49,28 @@ class ExclusiveAccessBubble {
   // Reset the timeout for user input before we auto-show again.
   void Snooze();
 
+  // Indicate that the bubble must show immediately on next user interaction,
+  // regardless of timeouts.
+  void SetMustShowOnNextInteraction();
+
   // Cached content and traits for this bubble.
   ExclusiveAccessBubbleParams params_;
-
-  // Hides the bubble after it has been displayed for a short time.
-  base::RetainingOneShotTimer hide_timeout_;
-
-  // Bubble re-shows on user input are suppressed until this time elapses.
-  base::TimeTicks snooze_until_;
 
  private:
   friend class ExclusiveAccessTest;
   friend class ExclusiveAccessBubbleViewsTest;
+  FRIEND_TEST_ALL_PREFIXES(ExclusiveAccessBubbleTest, ShowAndStartTimers);
+  FRIEND_TEST_ALL_PREFIXES(ExclusiveAccessBubbleTest,
+                           StartHideTimerRestartsTimer);
+
+  // Bubble re-shows on user input are suppressed until this time elapses.
+  base::TimeTicks snooze_until_;
+
+  // Hides the bubble after it has been displayed for a short time.
+  base::RetainingOneShotTimer hide_timeout_;
+
+  // Flag indicating that the bubble must show on the next user interaction.
+  bool must_show_next_interaction_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_BUBBLE_H_

@@ -143,7 +143,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
                                   ->fullscreen_controller()
                                   ->exclusive_access_tab();
   if (entering_tab_fullscreen && tab && !tab->HasRecentInteraction()) {
-    snooze_until_ = base::TimeTicks::Min();
+    SetMustShowOnNextInteraction();
   }
 }
 
@@ -214,7 +214,7 @@ void ExclusiveAccessBubbleViews::Update(
                                   ->fullscreen_controller()
                                   ->exclusive_access_tab();
   if (entering_tab_fullscreen && tab && !tab->HasRecentInteraction()) {
-    snooze_until_ = base::TimeTicks::Min();
+    SetMustShowOnNextInteraction();
   }
 }
 
@@ -397,7 +397,6 @@ void ExclusiveAccessBubbleViews::Hide() {
   // This function is guarded by the `ExclusiveAccessBubble::hide_timeout_`
   // timer, so the bubble has been displayed for at least
   // `ExclusiveAccessBubble::kShowTime`.
-  DCHECK(!hide_timeout_.IsRunning());
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kTimeout);
   presentation_cb_.Reset();
 

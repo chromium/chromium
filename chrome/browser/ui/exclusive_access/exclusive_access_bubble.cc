@@ -19,7 +19,8 @@ ExclusiveAccessBubble::~ExclusiveAccessBubble() = default;
 
 void ExclusiveAccessBubble::OnUserInput() {
   // Re-show the bubble if no user input occurred during the snooze period.
-  if (base::TimeTicks::Now() > snooze_until_) {
+  if (must_show_next_interaction_ || base::TimeTicks::Now() > snooze_until_) {
+    must_show_next_interaction_ = false;
     ShowAndStartTimers();
   }
 
@@ -39,4 +40,8 @@ void ExclusiveAccessBubble::StartHideTimer() {
 void ExclusiveAccessBubble::Snooze() {
   // Restart the snooze period; to only re-show after a period of inactivity.
   snooze_until_ = base::TimeTicks::Now() + kSnoozeTime;
+}
+
+void ExclusiveAccessBubble::SetMustShowOnNextInteraction() {
+  must_show_next_interaction_ = true;
 }
