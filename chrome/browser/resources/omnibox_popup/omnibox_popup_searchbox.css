@@ -255,7 +255,7 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 #composeButton::part(glow-container) {
   height: 24px;
-  margin-inline-end: 4px;
+  margin-inline-end: 2px;
   top: 0;
 }
 
@@ -266,12 +266,46 @@ cr-searchbox-dropdown::part(dropdown-content) {
   font-size: 13px;
   font-weight: 500;
   padding-inline-end: 12.5px;
-  padding-inline-start: 7px;
+  padding-inline-start: 8px;
+}
+
+#composeButton[dynamic]::part(compose-button) {
+  padding-inline-end: 10.5px;
+}
+
+:host([searchbox-dynamic-color-scheme_]) #composeButton::part(compose-button) {
+  background-color: var(--color-omnibox-results-background-hovered);
 }
 
 #composeButton::part(compose-icon) {
-  height: 16px;
-  width: 16px;
+  height: 15px;
+  inset-inline-start: 6px;
+  max-width: 15px;
+}
+
+#composeButton[dynamic][has-user-input]::part(compose-icon) {
+  max-width: 0;
+}
+
+#composeButton::part(label) {
+  margin-inline-start: 1px;
+}
+
+#composeButton[dynamic]::part(label) {
+  margin-inline-start: 18px;
+}
+
+#composeButton[dynamic][has-user-input]::part(label) {
+  transform: translateX(-16px);
+}
+
+#composeButton::part(arrow-icon) {
+  height: 15px;
+  max-width: 15px;
+}
+
+#composeButton[dynamic][has-user-input]::part(arrow-icon) {
+  inset-inline-end: 7px;
 }
 
 #composeButton::part(hoverBackground) {

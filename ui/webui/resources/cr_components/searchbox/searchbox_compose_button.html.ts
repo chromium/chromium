@@ -44,8 +44,10 @@ export function getHtml(this: SearchboxComposeButtonElement) {
                mask-image: url(${this.composeIcon_});">
     </div>
     <span id="label" part="label">${this.i18n('searchboxComposeButtonText')}</span>
-    <img id="arrowIcon" slot="suffix-icon" class="arrow-icon" part="arrow-icon"
-        src="${this.arrowIcon_}">
+    <div id="arrowIcon" slot="suffix-icon" class="arrow-icon" part="arrow-icon"
+        style="-webkit-mask-image: url(${this.arrowIcon_});
+               mask-image: url(${this.arrowIcon_});">
+    </div>
   </cr-button>
 </div>
 <!--_html_template_end_-->`;

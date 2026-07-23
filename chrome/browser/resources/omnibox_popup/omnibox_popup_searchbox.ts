@@ -106,6 +106,16 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
+      searchboxDynamicColorScheme_: {
+        type: Boolean,
+        reflect: true,
+      },
+      hasUserInput_: {
+        type: Boolean,
+      },
+      searchboxDynamicAnimation_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -129,6 +139,11 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('omniboxPopupDebugEnabled');
   protected accessor composeButtonEnabled: boolean =
       loadTimeData.getBoolean('searchboxShowComposeEntrypoint');
+  protected accessor searchboxDynamicColorScheme_: boolean =
+      loadTimeData.getBoolean('searchboxDynamicColorScheme');
+  protected accessor searchboxDynamicAnimation_: boolean =
+      loadTimeData.getBoolean('searchboxDynamicAnimation');
+  protected accessor hasUserInput_: boolean = false;
 
   private eventTracker_ = new EventTracker();
   private searchboxPageHandler_: SearchboxPageHandlerInterface;
@@ -457,6 +472,7 @@ export class OmniboxPopupSearchboxElement extends
   private onSetInputState_(state: OmniboxInputState) {
     this.$.input.setInputText(state.text);
     this.userInputInProgress_ = state.userInputInProgress;
+    this.hasUserInput_ = !!state.text.trim();
     this.currentSequenceNum_ = state.sequenceNumber;
     this.fullUrl_ = state.fullUrl;
     this.lastQueriedInput = state.text;
@@ -573,6 +589,7 @@ export class OmniboxPopupSearchboxElement extends
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
     this.userInputInProgress_ = true;
+    this.hasUserInput_ = !!e.detail.value.trim();
     if (!e.detail.value.trim()) {
       // Notify the backend when the user clears all input (`onInputCleared`) so
       // it knows the draft was manually cleared and can revert empty drafts on

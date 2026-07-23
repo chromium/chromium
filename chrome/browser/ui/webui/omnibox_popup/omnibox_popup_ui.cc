@@ -107,6 +107,10 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean("ntpRealboxNextEnabled", false);
   source->AddBoolean("searchboxShowComposeEntrypoint",
                      omnibox::IsAimPopupEnabled(profile_));
+  source->AddBoolean("searchboxDynamicColorScheme",
+                     omnibox::kWebUIOmniboxDynamicColorScheme.Get());
+  source->AddBoolean("searchboxDynamicAnimation",
+                     omnibox::kWebUIOmniboxDynamicAnimation.Get());
   source->AddBoolean("omniboxShowContextButtonSuggestionLabel",
                      omnibox::kContextButtonShowSuggestionLabel.Get());
   source->AddBoolean(
