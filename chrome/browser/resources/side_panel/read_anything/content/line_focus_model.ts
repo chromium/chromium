@@ -5,7 +5,6 @@ import {assert} from '//resources/js/assert.js';
 
 import type {LineFocusMoveMode} from './line_focus_move_mode.js';
 import type {LineFocusStyleMode} from './line_focus_style_mode.js';
-import {LineFocusStyle} from './read_anything_types.js';
 
 export class LineFocusModel {
   // The min y position allowed for the line focus element.
@@ -34,10 +33,6 @@ export class LineFocusModel {
   private currentStyleMode_?: LineFocusStyleMode;
   private currentMoveMode_?: LineFocusMoveMode;
 
-  // The last line focus mode that was used when it was on. Used for toggling on
-  // line focus with the last used line focus mode.
-  private lastEnabledLineFocusStyle_: LineFocusStyle =
-      LineFocusStyle.defaultValue();
 
   // Whether a line focus session is currently active.
   private isSessionActive_: boolean = false;
@@ -118,14 +113,6 @@ export class LineFocusModel {
 
   setCurrentMoveMode(moveMode: LineFocusMoveMode): void {
     this.currentMoveMode_ = moveMode;
-  }
-
-  getLastEnabledLineFocusStyle(): LineFocusStyle {
-    return this.lastEnabledLineFocusStyle_;
-  }
-
-  setLastEnabledLineFocusStyle(style: LineFocusStyle): void {
-    this.lastEnabledLineFocusStyle_ = style;
   }
 
   isSessionActive(): boolean {

@@ -109,6 +109,7 @@ suite('LineFocusController', () => {
 
   test('isEnabled is true for line', () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    lineFocusController.toggle(true, defaultContainer, defaultHeight);
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
     assertTrue(lineFocusController.isEnabled());
@@ -116,6 +117,7 @@ suite('LineFocusController', () => {
 
   test('isEnabled is true for window', () => {
     chrome.readingMode.isLineFocusEnabled = true;
+    lineFocusController.toggle(true, defaultContainer, defaultHeight);
     lineFocusController.onStyleChange(
         LineFocusStyle.LARGE_WINDOW, defaultContainer, defaultHeight);
     assertTrue(lineFocusController.isEnabled());
@@ -123,19 +125,16 @@ suite('LineFocusController', () => {
 
   test('isEnabled is false for off', () => {
     chrome.readingMode.isLineFocusEnabled = true;
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
+    lineFocusController.toggle(true, defaultContainer, defaultHeight);
 
-    lineFocusController.onStyleChange(
-        LineFocusStyle.OFF, defaultContainer, defaultHeight);
+    lineFocusController.toggle(false, defaultContainer, defaultHeight);
 
     assertFalse(lineFocusController.isEnabled());
   });
 
   test('isEnabled is false with flag disabled', () => {
     chrome.readingMode.isLineFocusEnabled = false;
-    lineFocusController.onStyleChange(
-        LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
+    lineFocusController.toggle(true, defaultContainer, defaultHeight);
     assertFalse(lineFocusController.isEnabled());
   });
 
@@ -162,10 +161,12 @@ suite('LineFocusController', () => {
         lineFocusController.getCurrentLineFocusMovement() ===
             LineFocusMovement.STATIC);
 
+    lineFocusController.toggle(false, defaultContainer, defaultHeight);
     lineFocusController.onStyleChange(
-        LineFocusStyle.OFF, defaultContainer, defaultHeight);
+        LineFocusStyle.SMALL_WINDOW, defaultContainer, defaultHeight);
     assertEquals(
-        LineFocusStyle.OFF, lineFocusController.getCurrentLineFocusStyle());
+        LineFocusStyle.SMALL_WINDOW,
+        lineFocusController.getCurrentLineFocusStyle());
     assertEquals(
         isStatic,
         lineFocusController.getCurrentLineFocusMovement() ===
@@ -189,8 +190,7 @@ suite('LineFocusController', () => {
         chrome.readingMode.lineFocusLargeCursorWindow,
         chrome.readingMode.lastNonDisabledLineFocus);
 
-    lineFocusController.onStyleChange(
-        LineFocusStyle.OFF, defaultContainer, defaultHeight);
+    lineFocusController.toggle(false, defaultContainer, defaultHeight);
     assertEquals(
         chrome.readingMode.lineFocusLargeCursorWindow,
         chrome.readingMode.lastNonDisabledLineFocus);
@@ -234,13 +234,13 @@ suite('LineFocusController', () => {
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
     assertEquals(
-        chrome.readingMode.lineFocusMediumCursorWindow,
+        chrome.readingMode.lineFocusOff,
         chrome.readingMode.lastNonDisabledLineFocus);
 
     lineFocusController.onMovementChange(
         LineFocusMovement.STATIC, defaultContainer, defaultHeight);
     assertEquals(
-        chrome.readingMode.lineFocusMediumStaticWindow,
+        chrome.readingMode.lineFocusOff,
         chrome.readingMode.lastNonDisabledLineFocus);
   });
 
@@ -262,8 +262,10 @@ suite('LineFocusController', () => {
   });
 
   test('onMovementChange to cursor updates position', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
+    lineFocusController.toggle(true, defaultContainer, defaultHeight);
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
 
@@ -271,6 +273,8 @@ suite('LineFocusController', () => {
   });
 
   test('onMovementChange to static sets it in the middle', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    lineFocusController.toggle(true, defaultContainer, defaultHeight);
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
     lineFocusController.onStyleChange(
@@ -283,7 +287,9 @@ suite('LineFocusController', () => {
   });
 
   test('onStyleChange to window updates position and height', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
     const container = createShortContainer();
+    lineFocusController.toggle(true, defaultContainer, defaultHeight);
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, defaultContainer, defaultHeight);
 
@@ -361,14 +367,7 @@ suite('LineFocusController', () => {
         LineFocusMovement.STATIC,
         lineFocusController.getCurrentLineFocusMovement());
 
-    lineFocusController.restoreFromPrefs(
-        chrome.readingMode.lineFocusOff, /*isOn=*/ true, defaultContainer,
-        defaultHeight);
-    assertEquals(
-        LineFocusStyle.OFF, lineFocusController.getCurrentLineFocusStyle());
-    assertEquals(
-        LineFocusMovement.STATIC,
-        lineFocusController.getCurrentLineFocusMovement());
+
 
     lineFocusController.restoreFromPrefs(
         chrome.readingMode.lineFocusCursorLine, /*isOn=*/ true,
@@ -388,8 +387,10 @@ suite('LineFocusController', () => {
         chrome.readingMode.lineFocusCursorLine, /*isOn=*/ false,
         defaultContainer, defaultHeight);
 
+    assertFalse(lineFocusController.isEnabled());
     assertEquals(
-        LineFocusStyle.OFF, lineFocusController.getCurrentLineFocusStyle());
+        LineFocusStyle.UNDERLINE,
+        lineFocusController.getCurrentLineFocusStyle());
     assertEquals(
         LineFocusMovement.CURSOR,
         lineFocusController.getCurrentLineFocusMovement());
@@ -438,6 +439,7 @@ suite('LineFocusController', () => {
     scroller.appendChild(header);
     scroller.appendChild(container);
     document.body.appendChild(scroller);
+    lineFocusController.toggle(true, container, height);
     lineFocusController.onMovementChange(
         LineFocusMovement.STATIC, container, height);
     lineFocusController.onStyleChange(
@@ -456,52 +458,7 @@ suite('LineFocusController', () => {
     assertLT(startingTop, model.getTop());
   });
 
-  test('toggle while on disables line focus', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = createShortContainer();
-    lineFocusController.onStyleChange(
-        LineFocusStyle.MEDIUM_WINDOW, container, defaultHeight);
-
-    lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
-
-    assertTrue(lineFocusModesChanged);
-    assertEquals(
-        LineFocusType.NONE, lineFocusController.getCurrentLineFocusType());
-  });
-
-  test('first toggle while off enables default line focus', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = createShortContainer();
-    lineFocusController.onStyleChange(
-        LineFocusStyle.OFF, container, defaultHeight);
-
-    lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
-
-    assertTrue(lineFocusModesChanged);
-    assertEquals(
-        LineFocusStyle.defaultValue(),
-        lineFocusController.getCurrentLineFocusStyle());
-  });
-
-  test('toggle while off enables previously used line focus', () => {
-    chrome.readingMode.isLineFocusEnabled = true;
-    const container = createShortContainer();
-    const previousMode = LineFocusStyle.LARGE_WINDOW;
-    // If the default value changes, this test needs to change in order to test
-    // the non-default value.
-    assertNotEquals(LineFocusStyle.defaultValue(), previousMode);
-    lineFocusController.onStyleChange(previousMode, container, defaultHeight);
-    lineFocusController.onStyleChange(
-        LineFocusStyle.OFF, container, defaultHeight);
-
-    lineFocusController.onKeyDown(toggleKey(), container, defaultHeight);
-
-    assertTrue(lineFocusModesChanged);
-    assertEquals(
-        previousMode.type, lineFocusController.getCurrentLineFocusType());
-  });
-
-  test('toggle is logged', async () => {
+  test('keyboard toggle is logged', async () => {
     chrome.readingMode.isLineFocusEnabled = true;
     const container = createShortContainer();
     lineFocusController.onStyleChange(
@@ -579,9 +536,10 @@ suite('LineFocusController', () => {
   });
 
   test('onAllMenusClose notifies listeners', () => {
+    chrome.readingMode.isLineFocusEnabled = true;
+    lineFocusController.toggle(true, defaultContainer, defaultHeight);
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
-    chrome.readingMode.isLineFocusEnabled = true;
     lineFocusMoved = false;
 
     lineFocusController.onAllMenusClose();
@@ -630,8 +588,7 @@ suite('LineFocusController', () => {
       'onKeyDown arrows does not consume event with line focus disabled',
       () => {
         const container = createLongContainer();
-        lineFocusController.onStyleChange(
-            LineFocusStyle.OFF, container, defaultHeight);
+        lineFocusController.toggle(false, container, defaultHeight);
         lineFocusController.onMovementChange(
             LineFocusMovement.CURSOR, container, defaultHeight);
         chrome.readingMode.isLineFocusEnabled = true;
@@ -644,4 +601,82 @@ suite('LineFocusController', () => {
 
         assertFalse(lineFocusMoved);
       });
+
+  suite('toggle', () => {
+    setup(() => {
+      chrome.readingMode.isLineFocusEnabled = true;
+    });
+
+    test('first (true) enables line focus', () => {
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+
+      assertTrue(lineFocusController.isEnabled());
+      assertTrue(lineFocusModesChanged);
+      assertNotEquals(
+          LineFocusType.NONE, lineFocusController.getCurrentLineFocusType());
+    });
+
+    test('second (true) enables previously used line focus', () => {
+      const previousMode = LineFocusStyle.LARGE_WINDOW;
+      // If the default value changes, this test needs to change in order to
+      // test the non-default value.
+      assertNotEquals(LineFocusStyle.defaultValue(), previousMode);
+      lineFocusController.onStyleChange(
+          previousMode, defaultContainer, defaultHeight);
+      lineFocusController.toggle(false, defaultContainer, defaultHeight);
+
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+
+      assertTrue(lineFocusModesChanged);
+      assertEquals(
+          previousMode.type, lineFocusController.getCurrentLineFocusType());
+    });
+
+    test('(false) disables line focus', () => {
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+      lineFocusModesChanged = false;
+
+      lineFocusController.toggle(false, defaultContainer, defaultHeight);
+
+      assertFalse(lineFocusController.isEnabled());
+      assertTrue(lineFocusModesChanged);
+      assertEquals(
+          LineFocusType.NONE, lineFocusController.getCurrentLineFocusType());
+      assertEquals(1, metrics.getCallCount('recordLineFocusSession'));
+    });
+
+    test('(false) preserves custom style', () => {
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+      lineFocusController.onStyleChange(
+          LineFocusStyle.UNDERLINE, defaultContainer, defaultHeight);
+      assertEquals(
+          LineFocusStyle.UNDERLINE,
+          lineFocusController.getCurrentLineFocusStyle());
+
+      lineFocusController.toggle(false, defaultContainer, defaultHeight);
+
+      assertFalse(lineFocusController.isEnabled());
+      assertEquals(
+          LineFocusStyle.UNDERLINE,
+          lineFocusController.getCurrentLineFocusStyle());
+    });
+
+    test('does nothing if already in target state', () => {
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+      lineFocusModesChanged = false;
+
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+
+      assertFalse(lineFocusModesChanged);
+    });
+
+    test('does nothing if flag is disabled', () => {
+      chrome.readingMode.isLineFocusEnabled = false;
+
+      lineFocusController.toggle(true, defaultContainer, defaultHeight);
+
+      assertFalse(lineFocusController.isEnabled());
+      assertFalse(lineFocusModesChanged);
+    });
+  });
 });

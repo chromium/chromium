@@ -111,10 +111,9 @@ export class AppStyleUpdater {
     }
   }
 
-  setLineFocusStyle(type?: LineFocusType) {
+  setLineFocusStyle(type: LineFocusType) {
     this.setToolbarIconColorForLineFocus_(type);
-    if (type === undefined || !chrome.readingMode.isLineFocusEnabled ||
-        type === LineFocusType.NONE) {
+    if (!chrome.readingMode.isLineFocusEnabled || type === LineFocusType.NONE) {
       this.setStyle_('--line-focus-display', 'none');
       return;
     }
@@ -133,7 +132,7 @@ export class AppStyleUpdater {
     this.setStyle_('--line-focus-display', 'block');
   }
 
-  private setToolbarIconColorForLineFocus_(type?: LineFocusType) {
+  private setToolbarIconColorForLineFocus_(type: LineFocusType) {
     if (!chrome.readingMode.isLineFocusEnabled) {
       return;
     }

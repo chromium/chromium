@@ -31,9 +31,6 @@ export interface MoveModeDelegate {
   // Notifies that the content panel needs a scroll buffer to allow for
   // centering focus.
   notifyScrollBuffer(needsBuffer: boolean): void;
-
-  // Notifies that a line focus session has ended.
-  onSessionEnd(): void;
 }
 
 // Base class for line focus movement strategies.
@@ -186,7 +183,6 @@ export abstract class LineFocusMoveMode {
   // Common setup logic for when a movement mode that enables line focus is
   // activated.
   protected setupEnabledMode(container: HTMLElement, height: number): void {
-    this.model_.setLastEnabledLineFocusStyle(this.styleMode_.getStyle());
     if (!this.model_.isSessionActive()) {
       chrome.readingMode.startLineFocusSession();
       this.model_.setSessionActive(true);
@@ -434,9 +430,6 @@ export class LineFocusNoneMoveMode extends LineFocusMoveMode {
   }
 
   onActivated(_container: HTMLElement, _height: number): void {
-    if (this.model_.isSessionActive()) {
-      this.delegate_.onSessionEnd();
-    }
     this.model_.reset();
     this.updateScrollBuffer();
   }

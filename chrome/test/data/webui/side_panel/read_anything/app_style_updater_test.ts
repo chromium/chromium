@@ -72,7 +72,7 @@ suite('AppStyleUpdater', () => {
   test('setLineFocusStyle with no line focus hides view', () => {
     chrome.readingMode.isLineFocusEnabled = true;
 
-    updater.setLineFocusStyle();
+    updater.setLineFocusStyle(LineFocusType.NONE);
 
     assertEquals('none', app.style.getPropertyValue('--line-focus-display'));
     assertEquals('', app.style.getPropertyValue('--line-focus-shadow'));
