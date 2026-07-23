@@ -62,6 +62,7 @@
           "appcache": {
             "type": "boolean",
             "optional": true,
+            "deprecated": "Support for appcache has been removed. This data type will be ignored.",
             "description": "Websites' appcaches."
           },
           "cache": {
@@ -135,6 +136,7 @@
           "webSQL": {
             "type": "boolean",
             "optional": true,
+            "deprecated": "Support for WebSQL has been removed. This data type will be ignored.",
             "description": "Websites' WebSQL data."
           }
         }
@@ -193,6 +195,7 @@
       },
       {
         "name": "removeAppcache",
+        "deprecated": "Support for appcache has been removed. This function has no effect.",
         "description": "Clears websites' appcache data.",
         "type": "function",
         "parameters": [
@@ -416,6 +419,7 @@
       },
       {
         "name": "removeWebSQL",
+        "deprecated": "Support for WebSQL has been removed. This function has no effect.",
         "description": "Clears websites' WebSQL data.",
         "type": "function",
         "parameters": [
