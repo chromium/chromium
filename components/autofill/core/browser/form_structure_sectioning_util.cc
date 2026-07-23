@@ -90,8 +90,9 @@ void AssignCreditCardSections(
                    FieldTypeGroup::kCreditCard) &&
                !field->section();
       });
-  if (first_cc_field == fields.end())
+  if (first_cc_field == fields.end()) {
     return;
+  }
   Section cc_section =
       Section::FromFieldIdentifier(**first_cc_field, frame_token_ids);
   for (const auto& field : fields) {
@@ -109,8 +110,9 @@ void AssignAutocompleteSections(
       Section autocomplete_section = Section::FromAutocomplete(
           {.section = field->parsed_autocomplete()->section,
            .mode = field->parsed_autocomplete()->mode});
-      if (autocomplete_section)
+      if (autocomplete_section) {
         field->set_section(autocomplete_section);
+      }
     }
   }
 }
@@ -118,8 +120,9 @@ void AssignAutocompleteSections(
 void AssignFieldIdentifierSections(
     base::span<const std::unique_ptr<AutofillField>> section,
     base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
-  if (section.empty())
+  if (section.empty()) {
     return;
+  }
   Section s = Section::FromFieldIdentifier(**section.begin(), frame_token_ids);
   for (const auto& field : section) {
     if (!field->section() && IsSectionable(*field)) {
@@ -185,8 +188,9 @@ base::span<const std::unique_ptr<AutofillField>>::iterator FindEndOfNextSection(
   const AutofillField* prev_field = nullptr;
   for (auto it = begin; it != end; it++) {
     const AutofillField& field = **it;
-    if (!IsSectionable(field))
+    if (!IsSectionable(field)) {
       continue;
+    }
     if (prev_field &&
         !BelongsToCurrentSection(seen_types, field, *prev_field)) {
       return it;
@@ -205,8 +209,9 @@ void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
   // It is important to reset the sections before running sectioning again for
   // consistent cache updates (see AutofillManager::UpdateFormCache() for more
   // details).
-  for (const auto& field : fields)
+  for (const auto& field : fields) {
     field->set_section(Section());
+  }
 
   // Create a unique identifier based on the field for the section.
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
