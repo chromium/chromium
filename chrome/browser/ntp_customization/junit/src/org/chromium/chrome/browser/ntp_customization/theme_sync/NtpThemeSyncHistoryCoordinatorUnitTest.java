@@ -36,6 +36,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
@@ -251,6 +252,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         /* ntpBackgroundColorLight= */ Color.WHITE,
                         /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Save another remote history which is duplicate of local.
         NtpBackgroundDataCustomizedColor remoteDuplicateColor =
@@ -262,6 +264,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         /* ntpBackgroundColorLight= */ Color.WHITE,
                         /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteDuplicateColor);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor);
 
@@ -299,6 +302,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         /* ntpBackgroundColorLight= */ Color.WHITE,
                         /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mCoordinator.prepareToShow();
 
@@ -381,6 +385,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         /* ntpBackgroundColorLight= */ Color.WHITE,
                         /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor1);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor1);
 
@@ -424,6 +429,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         /* ntpBackgroundColorLight= */ Color.WHITE,
                         /* ntpBackgroundColorDark= */ Color.BLACK);
         mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor2);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor2);
 

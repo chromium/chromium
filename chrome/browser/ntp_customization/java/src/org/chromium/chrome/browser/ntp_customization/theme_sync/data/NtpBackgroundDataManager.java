@@ -11,6 +11,8 @@ import org.json.JSONException;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
@@ -36,7 +38,6 @@ public class NtpBackgroundDataManager {
 
     /**
      * Saves the NTP's background types from cross device sync to the shared preference.
-     * TODO(https://crbug.com/488439751): Saves the sync data in a background thread.
      *
      * @param backgroundDataGroup The group of background data to save.
      */
@@ -53,6 +54,12 @@ public class NtpBackgroundDataManager {
      * @param backgroundData The background data to save.
      */
     public void saveRemoteSyncDataToSharedPreference(NtpBackgroundDataBase backgroundData) {
+        PostTask.postTask(
+                TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                () -> saveRemoteSyncDataToSharedPreferenceImpl(backgroundData));
+    }
+
+    private void saveRemoteSyncDataToSharedPreferenceImpl(NtpBackgroundDataBase backgroundData) {
         try {
             @PlatformType int platformType = backgroundData.getPlatformType();
             NtpBackgroundDataGroup currentGroup =
