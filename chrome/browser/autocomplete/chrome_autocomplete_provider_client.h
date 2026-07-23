@@ -75,6 +75,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   TemplateURLService* GetTemplateURLService() override;
   const TemplateURLService* GetTemplateURLService() const override;
   GeolocationHeaderService* GetGeolocationHeaderService() const override;
+  void ResetGeolocationPermissionToAsk(const GURL& url) const override;
   DocumentSuggestionsService* GetDocumentSuggestionsService() const override;
   RemoteSuggestionsService* GetRemoteSuggestionsService(
       bool create_if_necessary) const override;

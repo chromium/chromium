@@ -1075,7 +1075,7 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
 }
 
 TEST_F(GeolocationHeaderServiceInlineLocationTest,
-       RecordInlineLocationSuggestionClicked_DsePermissionAsk) {
+       MaybeRecordInlineLocationSuggestionClicked_DsePermissionAsk) {
   std::unique_ptr<GeolocationHeaderService> service = CreateService();
   GURL url(kGoogleUrl);
   SetDefaultSearchProviderUrl(url.spec());
@@ -1088,7 +1088,7 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
   // Normal non-inline location suggestion match -> should not log.
   AutocompleteMatch match(nullptr, 0, false,
                           AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-  service->RecordInlineLocationSuggestionClicked(match);
+  service->MaybeRecordInlineLocationSuggestionClicked(match);
   histograms.ExpectTotalCount("Omnibox.InlineLocationSuggestion.Ask.Clicked",
                               0);
   histograms.ExpectTotalCount(
@@ -1099,7 +1099,7 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
                                  AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   inline_match.subtypes.insert(omnibox::SUBTYPE_LOCATION_SUGGEST_TRIGGER);
   inline_match.extra_headers[kXGeoHeader] = "dummy";
-  service->RecordInlineLocationSuggestionClicked(inline_match);
+  service->MaybeRecordInlineLocationSuggestionClicked(inline_match);
   histograms.ExpectUniqueSample("Omnibox.InlineLocationSuggestion.Ask.Clicked",
                                 true, 1);
   histograms.ExpectTotalCount(
@@ -1109,7 +1109,7 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
   AutocompleteMatch parent_match(nullptr, 0, false,
                                  AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   parent_match.subtypes.insert(omnibox::SUBTYPE_LOCATION_SUGGEST_TRIGGER);
-  service->RecordInlineLocationSuggestionClicked(parent_match);
+  service->MaybeRecordInlineLocationSuggestionClicked(parent_match);
   histograms.ExpectUniqueSample("Omnibox.InlineLocationSuggestion.Ask.Clicked",
                                 true, 1);
   histograms.ExpectUniqueSample(
@@ -1117,7 +1117,7 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
 }
 
 TEST_F(GeolocationHeaderServiceInlineLocationTest,
-       RecordInlineLocationSuggestionClicked_DsePermissionDenied) {
+       MaybeRecordInlineLocationSuggestionClicked_DsePermissionDenied) {
   std::unique_ptr<GeolocationHeaderService> service = CreateService();
   GURL url(kGoogleUrl);
   SetDefaultSearchProviderUrl(url.spec());
@@ -1132,7 +1132,7 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
                                  AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   inline_match.subtypes.insert(omnibox::SUBTYPE_LOCATION_SUGGEST_TRIGGER);
   inline_match.extra_headers[kXGeoHeader] = "dummy";
-  service->RecordInlineLocationSuggestionClicked(inline_match);
+  service->MaybeRecordInlineLocationSuggestionClicked(inline_match);
   histograms.ExpectUniqueSample("Omnibox.InlineLocationSuggestion.Deny.Clicked",
                                 true, 1);
   histograms.ExpectTotalCount(
@@ -1142,7 +1142,7 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
   AutocompleteMatch parent_match(nullptr, 0, false,
                                  AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   parent_match.subtypes.insert(omnibox::SUBTYPE_LOCATION_SUGGEST_TRIGGER);
-  service->RecordInlineLocationSuggestionClicked(parent_match);
+  service->MaybeRecordInlineLocationSuggestionClicked(parent_match);
   histograms.ExpectUniqueSample("Omnibox.InlineLocationSuggestion.Deny.Clicked",
                                 true, 1);
   histograms.ExpectUniqueSample(
@@ -1150,7 +1150,7 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
 }
 
 TEST_F(GeolocationHeaderServiceInlineLocationTest,
-       RecordInlineLocationSuggestionClicked_DsePermissionAllowed) {
+       MaybeRecordInlineLocationSuggestionClicked_DsePermissionAllowed) {
   std::unique_ptr<GeolocationHeaderService> service = CreateService();
   GURL url(kGoogleUrl);
   SetDefaultSearchProviderUrl(url.spec());
@@ -1164,12 +1164,12 @@ TEST_F(GeolocationHeaderServiceInlineLocationTest,
                                  AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   inline_match.subtypes.insert(omnibox::SUBTYPE_LOCATION_SUGGEST_TRIGGER);
   inline_match.extra_headers[kXGeoHeader] = "dummy";
-  service->RecordInlineLocationSuggestionClicked(inline_match);
+  service->MaybeRecordInlineLocationSuggestionClicked(inline_match);
 
   AutocompleteMatch parent_match(nullptr, 0, false,
                                  AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   parent_match.subtypes.insert(omnibox::SUBTYPE_LOCATION_SUGGEST_TRIGGER);
-  service->RecordInlineLocationSuggestionClicked(parent_match);
+  service->MaybeRecordInlineLocationSuggestionClicked(parent_match);
 
   histograms.ExpectTotalCount("Omnibox.InlineLocationSuggestion.Ask.Clicked",
                               0);

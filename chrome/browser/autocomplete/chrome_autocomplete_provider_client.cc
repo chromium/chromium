@@ -94,6 +94,7 @@
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -102,6 +103,7 @@
 #include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -330,6 +332,13 @@ ChromeAutocompleteProviderClient::GetTemplateURLService() const {
 GeolocationHeaderService*
 ChromeAutocompleteProviderClient::GetGeolocationHeaderService() const {
   return GeolocationHeaderServiceFactory::GetForProfile(profile_);
+}
+
+void ChromeAutocompleteProviderClient::ResetGeolocationPermissionToAsk(
+    const GURL& url) const {
+  if (auto* delegate = profile_->GetPermissionControllerDelegate()) {
+    delegate->ResetPermission(blink::PermissionType::GEOLOCATION, url, url);
+  }
 }
 
 DocumentSuggestionsService*

@@ -468,11 +468,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
     predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
         ->OnOmniboxOpenedUrl(log);
   }
-  if (auto* geolocation_header_service =
-          autocomplete_controller_->autocomplete_provider_client()
-              ->GetGeolocationHeaderService()) {
-    geolocation_header_service->RecordInlineLocationSuggestionClicked(match);
-  }
+  autocomplete_controller_->MaybeProcessInlineLocationSuggestionMatch(match);
 }
 
 bool AutocompleteControllerAndroid::OnSuggestionTouchDown(

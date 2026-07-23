@@ -82,6 +82,15 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   FakeAutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const override;
 
+  void ResetGeolocationPermissionToAsk(const GURL& url) const override;
+
+  GURL last_reset_geolocation_url() const {
+    return last_reset_geolocation_url_;
+  }
+  int reset_geolocation_call_count() const {
+    return reset_geolocation_call_count_;
+  }
+
   // Test-only setters
   void set_bookmark_model(std::unique_ptr<bookmarks::BookmarkModel> model) {
     bookmark_model_ = std::move(model);
@@ -137,6 +146,9 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 
   std::unique_ptr<FakeOnDeviceTailModelService> on_device_tail_model_service_;
   std::unique_ptr<FakeAutocompleteScoringModelService> scoring_model_service_;
+
+  mutable GURL last_reset_geolocation_url_;
+  mutable int reset_geolocation_call_count_ = 0;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_CLIENT_H_

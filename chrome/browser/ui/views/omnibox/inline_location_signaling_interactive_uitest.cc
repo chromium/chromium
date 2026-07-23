@@ -37,6 +37,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
@@ -47,6 +48,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/unified_consent/pref_names.h"
+#include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -55,6 +57,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -384,6 +387,23 @@ IN_PROC_BROWSER_TEST_P(InlineLocationSignalingE2EInteractiveUiTest,
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
                                               false, false, false));
   navigation_observer.Wait();
+
+  // Verify site permission reset: if the initial permission was DENY and the
+  // inline location signaling row was clicked, permission should be reset to
+  // ASK.
+  if (site_perm == CONTENT_SETTING_BLOCK && suggestion_found &&
+      !GetParam().test_parent_click) {
+    auto descriptor = blink::mojom::PermissionDescriptor::New(
+        blink::mojom::PermissionName::GEOLOCATION, nullptr);
+    blink::mojom::PermissionStatus current_status =
+        browser()
+            ->GetProfile()
+            ->GetPermissionControllerDelegate()
+            ->GetPermissionStatus(
+                descriptor, test_server_->GetURL(kExternalEngineHost, "/"),
+                test_server_->GetURL(kExternalEngineHost, "/"));
+    EXPECT_EQ(blink::mojom::PermissionStatus::ASK, current_status);
+  }
 
   // Verify navigation telemetry.
   histogram_tester.ExpectUniqueSample(

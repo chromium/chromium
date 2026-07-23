@@ -3408,3 +3408,18 @@ TEST_F(AutocompleteControllerTest, PersistsExperimentStatsV2InSession) {
   EXPECT_EQ(12345, stats.experiment_stats_v2(0).type_int());
   EXPECT_EQ("dummy,stat", stats.experiment_stats_v2(0).string_value());
 }
+
+TEST_F(AutocompleteControllerTest,
+       MaybeProcessInlineLocationSuggestionMatch_ResetsPermission) {
+  AutocompleteMatch match(nullptr, 1100, false,
+                          AutocompleteMatchType::SEARCH_SUGGEST);
+  match.subtypes.insert(omnibox::SUBTYPE_LOCATION_SUGGEST_TRIGGER);
+  match.extra_headers[kXGeoHeader] = "w test";
+  match.destination_url = GURL("https://www.google.com/search?q=coffee");
+
+  controller_.MaybeProcessInlineLocationSuggestionMatch(match);
+
+  EXPECT_EQ(1, provider_client()->reset_geolocation_call_count());
+  EXPECT_EQ(match.destination_url,
+            provider_client()->last_reset_geolocation_url());
+}

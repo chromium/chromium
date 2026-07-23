@@ -140,3 +140,9 @@ AimEligibilityService*
 FakeAutocompleteProviderClient::GetAimEligibilityService() const {
   return mock_aim_eligibility_service_.get();
 }
+
+void FakeAutocompleteProviderClient::ResetGeolocationPermissionToAsk(
+    const GURL& url) const {
+  last_reset_geolocation_url_ = url;
+  reset_geolocation_call_count_++;
+}

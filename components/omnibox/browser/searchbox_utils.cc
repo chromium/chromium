@@ -261,7 +261,8 @@ void OpenMatch(
   if (auto* geolocation_header_service =
           autocomplete_controller->autocomplete_provider_client()
               ->GetGeolocationHeaderService()) {
-    geolocation_header_service->RecordInlineLocationSuggestionClicked(match);
+    geolocation_header_service->MaybeRecordInlineLocationSuggestionClicked(
+        match);
   }
 #endif  // !BUILDFLAG(IS_IOS)
 

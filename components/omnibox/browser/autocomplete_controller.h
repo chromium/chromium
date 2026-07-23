@@ -244,6 +244,10 @@ class AutocompleteController : public AutocompleteProviderListener,
       base::TimeDelta query_formulation_time,
       AutocompleteMatch* match) const;
 
+  // Processes inline location suggestion side-effects when a match is selected.
+  virtual void MaybeProcessInlineLocationSuggestionMatch(
+      const AutocompleteMatch& match);
+
   void UpdateSearchTermsArgsWithAdditionalSearchboxStats(
       base::TimeDelta query_formulation_time,
       TemplateURLRef::SearchTermsArgs& search_terms_args) const;

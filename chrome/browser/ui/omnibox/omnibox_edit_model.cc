@@ -2840,11 +2840,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   controller_->client()->OnURLOpenedFromOmnibox(&log);
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
 
-  if (auto* geolocation_header_service = autocomplete_controller()
-                                             ->autocomplete_provider_client()
-                                             ->GetGeolocationHeaderService()) {
-    geolocation_header_service->RecordInlineLocationSuggestionClicked(match);
-  }
+  autocomplete_controller()->MaybeProcessInlineLocationSuggestionMatch(match);
 
   TemplateURLService* template_url_service =
       controller_->client()->GetTemplateURLService();

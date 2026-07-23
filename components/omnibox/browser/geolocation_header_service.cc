@@ -383,7 +383,7 @@ bool GeolocationHeaderService::IsUrlEligibleForLocationHeader(
   return is_google_dse && is_dse_origin && google_util::IsGoogleSearchUrl(url);
 }
 
-void GeolocationHeaderService::RecordInlineLocationSuggestionClicked(
+void GeolocationHeaderService::MaybeRecordInlineLocationSuggestionClicked(
     const AutocompleteMatch& match) const {
   if (!match.subtypes.contains(omnibox::SUBTYPE_LOCATION_SUGGEST_TRIGGER)) {
     return;

@@ -125,7 +125,7 @@ class GeolocationHeaderService : public KeyedService {
   void RecordInlineLocationSuggestionShown(
       OmniboxInlineLocationSuggestionShown shown_state,
       size_t match_index) const;
-  void RecordInlineLocationSuggestionClicked(
+  void MaybeRecordInlineLocationSuggestionClicked(
       const AutocompleteMatch& match) const;
 
   // Returns true if the given URL is eligible for the X-Geo header.

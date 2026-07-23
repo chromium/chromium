@@ -214,6 +214,10 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   // be expensive so this method should only be called once per input session.
   virtual void StartServiceWorker(const GURL& destination_url) {}
 
+  // Resets the DSE geolocation permission status to ASK if it is currently
+  // DENY.
+  virtual void ResetGeolocationPermissionToAsk(const GURL& url) const {}
+
   // Called after creation of |keyword_provider| to allow the client to
   // configure the provider if desired.
   virtual void ConfigureKeywordProvider(KeywordProvider* keyword_provider) {}
