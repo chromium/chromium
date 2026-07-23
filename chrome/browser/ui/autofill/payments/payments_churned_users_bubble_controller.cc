@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #if !BUILDFLAG(IS_ANDROID)
@@ -27,8 +28,9 @@ PaymentsChurnedUsersBubbleController::PaymentsChurnedUsersBubbleController(
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
 }
 
-PaymentsChurnedUsersBubbleController::~PaymentsChurnedUsersBubbleController() =
-    default;
+PaymentsChurnedUsersBubbleController::~PaymentsChurnedUsersBubbleController() {
+  HideBubble(/*initiated_by_bubble_manager=*/false);
+}
 
 // static
 PaymentsChurnedUsersBubbleController*
@@ -38,26 +40,16 @@ PaymentsChurnedUsersBubbleController::From(tabs::TabInterface& tab_interface) {
 
 void PaymentsChurnedUsersBubbleController::Show(
     base::OnceClosure accept_callback,
-    base::OnceClosure cancel_callback) {
+    base::OnceClosure cancel_callback,
+    base::OnceClosure closed_callback) {
   if (bubble_view() || !MaySetUpBubble()) {
     return;
   }
   is_reshow_ = false;
   accept_callback_ = std::move(accept_callback);
   cancel_callback_ = std::move(cancel_callback);
+  closed_callback_ = std::move(closed_callback);
   QueueOrShowBubble();
-}
-
-void PaymentsChurnedUsersBubbleController::OnBubbleAccepted() {
-  if (accept_callback_) {
-    std::move(accept_callback_).Run();
-  }
-}
-
-void PaymentsChurnedUsersBubbleController::OnBubbleCancelled() {
-  if (cancel_callback_) {
-    std::move(cancel_callback_).Run();
-  }
 }
 
 void PaymentsChurnedUsersBubbleController::ReshowBubble() {
@@ -68,10 +60,30 @@ void PaymentsChurnedUsersBubbleController::ReshowBubble() {
   QueueOrShowBubble(/*force_show=*/true);
 }
 
-void PaymentsChurnedUsersBubbleController::OnBubbleDiscarded() {}
-void PaymentsChurnedUsersBubbleController::OnBubbleClosed() {
+void PaymentsChurnedUsersBubbleController::OnBubbleDiscarded() {
+  if (closed_callback_) {
+    std::move(closed_callback_).Run();
+  }
+}
+
+void PaymentsChurnedUsersBubbleController::OnBubbleClosed(
+    PaymentsUiClosedReason closed_reason) {
   ResetBubbleViewAndInformBubbleManager();
   UpdatePageActionIcon();
+
+  if (closed_reason == PaymentsUiClosedReason::kAccepted) {
+    if (accept_callback_) {
+      std::move(accept_callback_).Run();
+    }
+  } else if (closed_reason == PaymentsUiClosedReason::kCancelled) {
+    if (cancel_callback_) {
+      std::move(cancel_callback_).Run();
+    }
+  } else {
+    if (closed_callback_) {
+      std::move(closed_callback_).Run();
+    }
+  }
 }
 
 bool PaymentsChurnedUsersBubbleController::CanBeReshown() const {

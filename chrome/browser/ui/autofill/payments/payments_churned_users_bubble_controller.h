@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace tabs {
@@ -36,15 +37,14 @@ class PaymentsChurnedUsersBubbleController
       tabs::TabInterface& tab_interface);
 
   void Show(base::OnceClosure accept_callback,
-            base::OnceClosure cancel_callback);
+            base::OnceClosure cancel_callback,
+            base::OnceClosure closed_callback);
   void ReshowBubble();
-  void OnBubbleAccepted();
-  void OnBubbleCancelled();
+  void OnBubbleClosed(PaymentsUiClosedReason closed_reason);
   AutofillBubbleBase* GetBubbleViewForTesting() { return bubble_view(); }
 
   // AutofillBubbleControllerBase:
   void OnBubbleDiscarded() override;
-  void OnBubbleClosed();
   bool CanBeReshown() const override;
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
@@ -66,6 +66,7 @@ class PaymentsChurnedUsersBubbleController
 
   base::OnceClosure accept_callback_;
   base::OnceClosure cancel_callback_;
+  base::OnceClosure closed_callback_;
 
   base::WeakPtrFactory<PaymentsChurnedUsersBubbleController> weak_ptr_factory_{
       this};

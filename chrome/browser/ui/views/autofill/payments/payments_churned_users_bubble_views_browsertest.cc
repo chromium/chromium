@@ -41,7 +41,8 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
   ~PaymentsChurnedUsersBubbleViewsBrowserTest() override = default;
 
   void ShowBubble(base::OnceClosure accept_callback = base::DoNothing(),
-                  base::OnceClosure cancel_callback = base::DoNothing()) {
+                  base::OnceClosure cancel_callback = base::DoNothing(),
+                  base::OnceClosure closed_callback = base::DoNothing()) {
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://new-tab-page")));
     autofill::ChromeAutofillClient* autofill_client =
@@ -49,7 +50,8 @@ class PaymentsChurnedUsersBubbleViewsBrowserTest
             browser()->tab_strip_model()->GetActiveWebContents());
     ASSERT_TRUE(autofill_client);
     autofill_client->GetPaymentsAutofillClient()->ShowPaymentsChurnedUsersUI(
-        std::move(accept_callback), std::move(cancel_callback));
+        std::move(accept_callback), std::move(cancel_callback),
+        std::move(closed_callback));
   }
 
   bool IsIconVisible() {
@@ -119,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest, ShowBubble) {
 IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        AcceptCallbackTriggered) {
   base::test::TestFuture<void> accept_future;
-  ShowBubble(accept_future.GetCallback(), base::DoNothing());
+  ShowBubble(accept_future.GetCallback(), base::DoNothing(), base::DoNothing());
 
   PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
   ASSERT_TRUE(bubble_view);
@@ -131,13 +133,26 @@ IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
 IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
                        CancelCallbackTriggered) {
   base::test::TestFuture<void> cancel_future;
-  ShowBubble(base::DoNothing(), cancel_future.GetCallback());
+  ShowBubble(base::DoNothing(), cancel_future.GetCallback(), base::DoNothing());
 
   PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
   ASSERT_TRUE(bubble_view);
   bubble_view->CancelDialog();
 
   EXPECT_TRUE(cancel_future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentsChurnedUsersBubbleViewsBrowserTest,
+                       ClosedCallbackTriggered) {
+  base::test::TestFuture<void> closed_future;
+  ShowBubble(base::DoNothing(), base::DoNothing(), closed_future.GetCallback());
+
+  PaymentsChurnedUsersBubbleView* bubble_view = GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+  bubble_view->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kLostFocus);
+
+  EXPECT_TRUE(closed_future.Wait());
 }
 
 // TODO(crbug.com/529904307): Disabled due to flakey test.

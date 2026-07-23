@@ -843,7 +843,8 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // on.
   // TODO(crbug.com/524740910): Rename to ShowPaymentsChurnedUsersUi().
   virtual void ShowPaymentsChurnedUsersUI(base::OnceClosure accept_callback,
-                                          base::OnceClosure cancel_callback) {}
+                                          base::OnceClosure cancel_callback,
+                                          base::OnceClosure closed_callback) {}
 };
 
 }  // namespace payments

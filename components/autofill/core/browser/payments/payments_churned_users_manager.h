@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/strike_databases/payments/payments_churned_users_strike_database.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 
 namespace autofill::payments {
 
@@ -31,8 +32,7 @@ class PaymentsChurnedUsersManager : public AutofillManager::Observer {
                               bool small_forms_were_parsed) override;
 
  private:
-  void OnUiAccepted();
-  void OnUiCancelled();
+  void OnUiClosed(PaymentsUiClosedReason closed_reason);
 
   // The associated AutofillClient.
   const raw_ref<AutofillClient> client_;

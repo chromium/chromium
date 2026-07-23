@@ -74,27 +74,37 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
     if (payments::PaymentsAutofillClient* payments_client =
             client_->GetPaymentsAutofillClient()) {
       payments_client->ShowPaymentsChurnedUsersUI(
-          base::BindOnce(&PaymentsChurnedUsersManager::OnUiAccepted,
-                         weak_factory_.GetWeakPtr()),
-          base::BindOnce(&PaymentsChurnedUsersManager::OnUiCancelled,
-                         weak_factory_.GetWeakPtr()));
+          base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                         weak_factory_.GetWeakPtr(),
+                         PaymentsUiClosedReason::kAccepted),
+          base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                         weak_factory_.GetWeakPtr(),
+                         PaymentsUiClosedReason::kCancelled),
+          base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                         weak_factory_.GetWeakPtr(),
+                         PaymentsUiClosedReason::kUnknown));
     }
   }
 }
 
-void PaymentsChurnedUsersManager::OnUiAccepted() {
-  if (PrefService* prefs = client_->GetPrefs()) {
-    prefs->SetBoolean(prefs::kAutofillCreditCardEnabled, true);
-  }
+void PaymentsChurnedUsersManager::OnUiClosed(
+    PaymentsUiClosedReason closed_reason) {
+  if (closed_reason == PaymentsUiClosedReason::kAccepted) {
+    if (PrefService* prefs = client_->GetPrefs()) {
+      prefs->SetBoolean(prefs::kAutofillCreditCardEnabled, true);
+    }
 
-  if (strike_database_) {
-    strike_database_->ClearStrikes();
-  }
-}
-
-void PaymentsChurnedUsersManager::OnUiCancelled() {
-  if (strike_database_) {
-    strike_database_->AddStrikes(strike_database_->GetMaxStrikesLimit());
+    if (strike_database_) {
+      strike_database_->ClearStrikes();
+    }
+  } else if (closed_reason == PaymentsUiClosedReason::kCancelled) {
+    if (strike_database_) {
+      strike_database_->AddStrikes(strike_database_->GetMaxStrikesLimit());
+    }
+  } else {
+    if (strike_database_) {
+      strike_database_->AddStrike();
+    }
   }
 }
 
