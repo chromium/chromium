@@ -237,12 +237,7 @@ void ReadAnythingEntryPointController::InvokePageAction(
       context.GetProperty(kSidePanelOpenTriggerKey);
 
   ReadAnythingOpenTrigger open_trigger;
-  if (side_panel_trigger ==
-          static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton) ||
-      side_panel_trigger ==
-          static_cast<int>(SidePanelOpenTrigger::kOverflowMenu)) {
-    open_trigger = ReadAnythingOpenTrigger::kPinnedSidePanelEntryToolbarButton;
-  } else if (IsTriggeredByOmnibox(context)) {
+  if (IsTriggeredByOmnibox(context)) {
     open_trigger = ReadAnythingOpenTrigger::kOmniboxChip;
     // Reset the ignored count for the omnibox entrypoint because it was used.
     bwi->GetProfile()->GetPrefs()->SetInteger(
@@ -252,7 +247,13 @@ void ReadAnythingEntryPointController::InvokePageAction(
         feature_engagement::kIPHReadingModePageActionLabelFeature,
         FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   } else {
-    return;
+    std::optional<ReadAnythingOpenTrigger> mapped_trigger =
+        SidePanelToReadAnythingOpenTrigger(
+            static_cast<SidePanelOpenTrigger>(side_panel_trigger));
+    if (!mapped_trigger.has_value()) {
+      return;
+    }
+    open_trigger = mapped_trigger.value();
   }
 
   ToggleUI(bwi, open_trigger);

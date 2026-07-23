@@ -96,7 +96,9 @@ SidePanelToReadAnythingOpenTrigger(SidePanelOpenTrigger trigger) {
       return ReadAnythingOpenTrigger::kReadAnythingContextMenu;
     case SidePanelOpenTrigger::kReadAnythingNavigationThrottle:
       return ReadAnythingOpenTrigger::kReadAnythingNavigationThrottle;
+    case SidePanelOpenTrigger::kToolbarButton:
     case SidePanelOpenTrigger::kPinnedEntryToolbarButton:
+    case SidePanelOpenTrigger::kOverflowMenu:
       return ReadAnythingOpenTrigger::kPinnedSidePanelEntryToolbarButton;
     case SidePanelOpenTrigger::kReadAnythingOmniboxChip:
       return ReadAnythingOpenTrigger::kOmniboxChip;

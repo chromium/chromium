@@ -294,8 +294,11 @@ class PinnedSidePanelInteractiveTest : public InteractiveFeaturePromoTest {
         PinnedToolbarActionsModel::Get(browser()->GetProfile());
     actions_model->UpdatePinnedState(kActionShowChromeLabs, false);
     actions_model->UpdatePinnedState(kActionTabSearch, false);
-    views::test::WaitForAnimatingLayoutManager(
+    auto* const layout_manager = views::test::GetAnimatingLayoutManager(
         GetPinnedToolbarActionsContainer());
+    if (layout_manager && layout_manager->is_animating()) {
+      views::test::WaitForAnimatingLayoutManager(layout_manager);
+    }
   }
 
   auto OpenBookmarksSidePanel() {
@@ -397,7 +400,8 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
                        OpenReadingModeSidePanel) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
-  auto* const registry = SidePanelRegistry::From(browser());
+  auto* const registry =
+      SidePanelRegistry::From(browser()->GetActiveTabInterface());
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything),
@@ -523,13 +527,18 @@ IN_PROC_BROWSER_TEST_F(
     MAYBE_PinnedToolbarButtonsHighlightWhileSidePanelVisible) {
   // Replace the contents of the ReadingMode side panel with an empty view so it
   // loads faster.
-  auto* const registry = SidePanelRegistry::From(browser());
+  auto* const registry =
+      SidePanelRegistry::From(browser()->GetActiveTabInterface());
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntryKey(SidePanelEntry::Id::kReadAnything),
       base::BindRepeating(
           [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
       /*default_content_width_callback=*/base::NullCallback()));
+
+  SidePanelUI* const side_panel_ui =
+      browser()->browser_window_features()->side_panel_ui();
+  side_panel_ui->SetNoDelaysForTesting(true);
 
   PinnedToolbarActionsModel* const actions_model =
       PinnedToolbarActionsModel::Get(browser()->GetProfile());
