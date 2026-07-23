@@ -585,6 +585,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
   if (self.feedWrapperViewController) {
     [self removeObjectFromViewHierarchy:self.feedWrapperViewController];
+    self.feedWrapperViewController = nil;
   }
   for (id obj in self.objectsAboveFeed) {
     [self removeObjectFromViewHierarchy:obj];
@@ -1355,16 +1356,21 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     // Otherwise, anchor the header to the module below it.
     NSInteger headerIndex =
         [self.objectsAboveFeed indexOfObject:self.headerView];
-    UIView* viewBelowHeader =
-        [self viewForAboveFeedObject:[self.objectsAboveFeed
-                                         objectAtIndex:(headerIndex + 1)]];
-    self.fakeOmniboxConstraints = @[
-      [viewBelowHeader.topAnchor
-          constraintEqualToAnchor:self.headerView.bottomAnchor
-                         constant:self.quickActionsVisible
-                                      ? kQuickActionSpacingTop
-                                      : kSpaceBetweenModules],
-    ];
+    if (headerIndex == NSNotFound ||
+        headerIndex + 1 >= (NSInteger)self.objectsAboveFeed.count) {
+      self.fakeOmniboxConstraints = @[];
+    } else {
+      UIView* viewBelowHeader =
+          [self viewForAboveFeedObject:[self.objectsAboveFeed
+                                           objectAtIndex:(headerIndex + 1)]];
+      self.fakeOmniboxConstraints = @[
+        [viewBelowHeader.topAnchor
+            constraintEqualToAnchor:self.headerView.bottomAnchor
+                           constant:self.quickActionsVisible
+                                        ? kQuickActionSpacingTop
+                                        : kSpaceBetweenModules],
+      ];
+    }
   }
   [NSLayoutConstraint activateConstraints:self.fakeOmniboxConstraints];
 }
@@ -1616,19 +1622,21 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     // header, anchor to the module above it.
     NSUInteger headerIndex =
         [self.objectsAboveFeed indexOfObject:self.headerView];
-    for (NSUInteger index = startIndex; index > headerIndex + 1; --index) {
-      BOOL isQuickActions =
-          _quickActionsViewController == self.objectsAboveFeed[index - 1];
-      UIView* view = [self viewForAboveFeedObject:self.objectsAboveFeed[index]];
-      UIView* viewAbove =
-          [self viewForAboveFeedObject:self.objectsAboveFeed[index - 1]];
+    if (headerIndex != NSNotFound && startIndex < self.objectsAboveFeed.count) {
+      for (NSUInteger index = startIndex; index > headerIndex + 1; --index) {
+        BOOL isQuickActions =
+            _quickActionsViewController == self.objectsAboveFeed[index - 1];
+        UIView* view = [self viewForAboveFeedObject:self.objectsAboveFeed[index]];
+        UIView* viewAbove =
+            [self viewForAboveFeedObject:self.objectsAboveFeed[index - 1]];
 
-      CGFloat spacingToUse =
-          isQuickActions ? kQuickActionSpacingBottom : kSpaceBetweenModules;
-      [NSLayoutConstraint activateConstraints:@[
-        [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
-                                       constant:spacingToUse],
-      ]];
+        CGFloat spacingToUse =
+            isQuickActions ? kQuickActionSpacingBottom : kSpaceBetweenModules;
+        [NSLayoutConstraint activateConstraints:@[
+          [view.topAnchor constraintEqualToAnchor:viewAbove.bottomAnchor
+                                         constant:spacingToUse],
+        ]];
+      }
     }
   }
 
