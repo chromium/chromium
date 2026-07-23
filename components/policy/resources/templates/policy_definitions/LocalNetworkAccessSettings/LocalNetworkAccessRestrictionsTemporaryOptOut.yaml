@@ -19,7 +19,7 @@ desc: |-
   See https://wicg.github.io/local-network-access/ for <ph
   name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
 
-  This enterprise policy is temporary, and will be removed after M152.
+  This enterprise policy is temporary, and will be removed after M156.
 
   Long term, the policy <ph
   name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME">LocalNetworkAccessAllowedForUrls</ph>
