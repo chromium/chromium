@@ -74,8 +74,17 @@ suite('NewTabPageActionChipsTest', () => {
     },
   ];
 
+  // A helper type to make suggestTemplateInfo.clickAction optional for test
+  // definitions.
+  type TestActionChip = Omit<ActionChip, 'suggestTemplateInfo'>&{
+    suggestTemplateInfo:
+        Omit<ActionChip['suggestTemplateInfo'], 'clickAction'>& {
+          clickAction?: ActionChip['suggestTemplateInfo']['clickAction'],
+        },
+  };
+
   interface InitializeChipsOptions {
-    actionChips: ActionChip[];
+    actionChips: TestActionChip[];
     windowTimestampStart: number;
     windowTimestampEnd: number;
     prefersReducedMotion: boolean;
@@ -92,8 +101,16 @@ suite('NewTabPageActionChipsTest', () => {
       disablementContextMenuEnabled: true,
     };
     const options = {...defaultOptions, ...providedOptions};
+    const actionChips: ActionChip[] = options.actionChips.map(
+        chip => ({
+          ...chip,
+          suggestTemplateInfo: {
+            ...chip.suggestTemplateInfo,
+            clickAction: chip.suggestTemplateInfo.clickAction ?? null,
+          },
+        }));
     handler.setResultMapperFor('startActionChipsRetrieval', () => {
-      pageRemote.onActionChipsChanged(options.actionChips);
+      pageRemote.onActionChipsChanged(actionChips);
       pageRemote.$.flushForTesting();
     });
 

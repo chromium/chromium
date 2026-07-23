@@ -37,6 +37,17 @@ enum IconType {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
 
+// LINT.IfChange(ClickAction)
+enum ClickAction {
+  kClickActionUnspecified = 0,
+  kClickActionPopulateRealboxWithQuery = 1,
+  kClickActionOpenComposeboxWithQuery = 2,
+  kClickActionOpenComposeboxWithHint = 3,
+  kClickActionOpenComposeboxWithAnimatedPlusButton = 4,
+};
+
+// LINT.ThenChange(//third_party/omnibox_proto/suggest_template_info.proto:ClickActionOverride)
+
 // This enum is mapped to third_party/omnibox_proto/tool_mode.proto.
 enum ToolMode {
   kUnspecified = 0,
@@ -66,6 +77,7 @@ struct SuggestTemplateInfo {
   FormattedString? secondary_text;
   ToolMode? preselected_tool;
   searchbox.mojom.SuggestInventory? preferred_inventory;
+  ClickAction? click_action;
 };
 
 // The information representing a single action chip.
