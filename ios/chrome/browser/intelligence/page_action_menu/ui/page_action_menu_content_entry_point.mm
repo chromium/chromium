@@ -55,7 +55,7 @@ const CGFloat kIconSize = 20;
 + (instancetype)geminiEnterprise {
   NSString* text = l10n_util::GetNSString(
       IDS_IOS_AI_HUB_GEMINI_UNAVAILABLE_ENTERPRISE_LABEL);
-  UIImage* icon = [CustomSymbolWithPointSize(kEnterpriseSymbol, kIconSize)
+  UIImage* icon = [SymbolWithPointSize(SymbolEnterprise, kIconSize)
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   return [[ContentEntryPointUnavailabilityItem alloc]
           initWithText:text
@@ -67,7 +67,7 @@ const CGFloat kIconSize = 20;
 + (instancetype)lensEnterprise {
   NSString* text =
       l10n_util::GetNSString(IDS_IOS_AI_HUB_LENS_UNAVAILABLE_ENTERPRISE_LABEL);
-  UIImage* icon = [CustomSymbolWithPointSize(kEnterpriseSymbol, kIconSize)
+  UIImage* icon = [SymbolWithPointSize(SymbolEnterprise, kIconSize)
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   return [[ContentEntryPointUnavailabilityItem alloc]
           initWithText:text

@@ -399,8 +399,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
         initWithFeatureType:PageActionMenuTranslate
                       title:l10n_util::GetNSString(
                                 IDS_IOS_AI_HUB_TRANSLATE_LABEL)
-                       icon:CustomSymbolTemplateWithPointSize(
-                                kTranslateSymbol, kFeatureRowIconSize)
+                       icon:SymbolTemplateWithPointSize(SymbolTranslate,
+                                                        kFeatureRowIconSize)
                  actionType:PageActionMenuButtonAction];
     translateFeature.subtitle = [self translateLanguagePair];
     translateFeature.actionType = PageActionMenuSettingsAction;
@@ -418,8 +418,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
         initWithFeatureType:PageActionMenuPopupBlocker
                       title:l10n_util::GetNSString(
                                 IDS_IOS_AI_HUB_POPUP_BLOCKER_LABEL)
-                       icon:CustomSymbolWithPointSize(kPopupBadgeMinusSymbol,
-                                                      kFeatureRowIconSize)
+                       icon:SymbolWithPointSize(SymbolPopupBadgeMinus,
+                                                kFeatureRowIconSize)
                  actionType:PageActionMenuButtonAction];
 
     NSInteger blockedCount = [self blockedPopupCount];
@@ -441,8 +441,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
         initWithFeatureType:PageActionMenuCameraPermission
                       title:l10n_util::GetNSString(
                                 IDS_IOS_AI_HUB_CAMERA_PERMISSION_LABEL)
-                       icon:CustomSymbolWithPointSize(kCameraFillSymbol,
-                                                      kFeatureRowIconSize)
+                       icon:SymbolWithPointSize(SymbolCameraFill,
+                                                kFeatureRowIconSize)
                  actionType:PageActionMenuToggleAction];
     web::PermissionState state =
         _webState->GetStateForPermission(web::PermissionCamera);
@@ -458,8 +458,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
         initWithFeatureType:PageActionMenuMicrophonePermission
                       title:l10n_util::GetNSString(
                                 IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_LABEL)
-                       icon:DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
-                                                       kFeatureRowIconSize)
+                       icon:SymbolWithPointSize(SymbolMicrophoneFill,
+                                                kFeatureRowIconSize)
                  actionType:PageActionMenuToggleAction];
     web::PermissionState state =
         _webState->GetStateForPermission(web::PermissionMicrophone);
@@ -474,8 +474,8 @@ bool SigninIsPossible(AuthenticationService* auth_service) {
         initWithFeatureType:PageActionMenuPriceTracking
                       title:l10n_util::GetNSString(
                                 IDS_IOS_AI_HUB_PRICE_TRACKING_LABEL)
-                       icon:CustomSymbolWithPointSize(kDownTrendSymbol,
-                                                      kFeatureRowIconSize)
+                       icon:SymbolWithPointSize(SymbolDownTrend,
+                                                kFeatureRowIconSize)
                  actionType:PageActionMenuButtonAction];
     BOOL isSubscribed = NO;
     ContextualPanelTabHelper* tabHelper =

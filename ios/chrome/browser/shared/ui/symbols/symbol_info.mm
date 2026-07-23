@@ -48,7 +48,7 @@ SymbolInfo InfoForSymbol(Symbol symbol) {
       return {@"page_insights", SymbolType::kCustom};
 #else
     case SymbolGeminiNonBrandedLogo:
-      return {@"sparkle", SymbolType::kCustom};
+      return {@"sparkle", SymbolType::kSystem};
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
       // Custom symbols.

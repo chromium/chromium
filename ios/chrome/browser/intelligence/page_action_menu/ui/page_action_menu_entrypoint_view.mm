@@ -205,30 +205,30 @@ NSTimeInterval kAnimationDuration = 0.3;
 - (void)setEntrypointIconWithScale:(CGFloat)scale {
   if (IsDirectBWGEntryPoint()) {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-    [self setImage:CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol,
-                                             kIconPointSize * scale)
+    [self setImage:SymbolWithPointSize(SymbolGeminiBrandedLogo,
+                                       kIconPointSize * scale)
           forState:UIControlStateNormal];
 #else
-    [self setImage:DefaultSymbolWithPointSize(kGeminiNonBrandedLogoSymbol,
-                                              kIconPointSize * scale)
+    [self setImage:SymbolWithPointSize(SymbolGeminiNonBrandedLogo,
+                                       kIconPointSize * scale)
           forState:UIControlStateNormal];
 #endif
   } else {
     PageActionMenuIconVariations pageActionMenuIcon = GetPageActionMenuIcon();
     switch (pageActionMenuIcon) {
       case PageActionMenuIconVariations::kDefault:
-        [self setImage:CustomSymbolWithPointSize(kTextSparkSymbol,
-                                                 kIconPointSize * scale)
+        [self setImage:SymbolWithPointSize(SymbolTextSpark,
+                                           kIconPointSize * scale)
               forState:UIControlStateNormal];
         break;
       case PageActionMenuIconVariations::kSparkles1:
-        [self setImage:DefaultSymbolWithPointSize(kSparklesSymbol,
-                                                  kIconPointSize * scale)
-              forState:UIControlStateNormal];
+        [self
+            setImage:SymbolWithPointSize(SymbolSparkles, kIconPointSize * scale)
+            forState:UIControlStateNormal];
         break;
       case PageActionMenuIconVariations::kSparkles2:
-        [self setImage:DefaultSymbolWithPointSize(kSparkles2Symbol,
-                                                  kIconPointSize * scale)
+        [self setImage:SymbolWithPointSize(SymbolSparkles2,
+                                           kIconPointSize * scale)
               forState:UIControlStateNormal];
         break;
     }
