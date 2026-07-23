@@ -65,7 +65,6 @@
 namespace feed {
 namespace {
 constexpr size_t kMaxRecentFeedNavigations = 10;
-constexpr base::TimeDelta kFeedCloseRefreshDelay = base::Minutes(30);
 
 void UpdateDebugStreamData(
     const UploadActionsTask::Result& upload_actions_result,
@@ -1589,7 +1588,7 @@ void FeedStream::ScheduleFeedCloseRefresh(const StreamType& type) {
 
   last_refresh_scheduled_on_interaction_time_ = now;
 
-  base::TimeDelta delay = kFeedCloseRefreshDelay;
+  base::TimeDelta delay = kFeedCloseRefreshDelay.Get();
   RequestSchedule schedule;
   schedule.anchor_time = base::Time::Now();
   schedule.refresh_offsets = {delay, delay * 2, delay * 3};
