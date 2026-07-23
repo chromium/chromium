@@ -87,36 +87,34 @@ Our team strongly prefers small, easily reviewable CLs (Changelists).
     one large CL or if they prefer you to manage a chain of smaller, focused CLs
     to make the work easier to review later.
 
-## Automated Sub-Agent Review
+## Automated Review via MAGI Protocol
 
 Before finalizing any task or uploading a CL in `//remoting`, you **MUST**
-trigger an automated self-review to catch common CRD-specific errors.
-*   **Pre-checks:** Before invoking the generalist sub-agent, you MUST run the
-  following
-    commands and gather their output to include in the prompt below:
-    1.  `git cl presubmit -u --force` (Linting and presubmit checks).
-    2.  `gn check {OUT_DIR} //remoting/*` (Headers and dependencies).
-*   **Action:** Invoke the `generalist` sub-agent using the `invoke_agent` tool.
-*   **Prompt:** Use the following exact prompt template:
-    > "You are a senior Chrome Remote Desktop reviewer. Review the following
-    > changes [include diff or describe changes]. I have also run the presubmit
-    > and gn check commands. Here is their output: [include output].
-    > Your MOST IMPORTANT task is to identify any unintended changes, logical
-    > mistakes, or typos. After verifying the core correctness, specifically check
-    > for:
-    > 1. Memory safety in high-privilege processes, particularly preventing
-    >    Use-After-Free (UAF) errors.
-    > 2. Platform-specific logic bugs or missing `#if BUILDFLAG(...)` guards.
-    > 3. Adherence to the 'Small CLs' mandate. Suggest a reasonable split point
-    >    if the CL is large and a split point is apparent.
-    > 4. Consider all directives in remoting/GEMINI.md and ensure the CL adheres
-    >    to them. [include contents of remoting/GEMINI.md]
-    >
-    > IMPORTANT: You are the reviewing sub-agent. Do NOT trigger any further
-    > sub-agent reviews."
-*   **Feedback Loop:** If the sub-agent identifies issues, you must address them
-    and re-run the relevant validation steps before considering the task
-    complete.
+invoke the `magi-mode` skill (defined in `//agents/skills/magi-mode/SKILL.md`)
+to run a multi-agent verification loop.
+
+*   **Execution:** Activate the `magi-mode` skill. The protocol handles review
+    and verification via its specialized sub-agents.
+*   **Domain-Specific Review Criteria:** When initiating the review, you MUST
+    instruct the MAGI agents to include the following `//remoting`-specific
+    review criteria in their checklist/context:
+    1.  **Memory safety in high-privilege processes:** Check for potential
+        Use-After-Free (UAF) and out-of-bounds errors, especially in host
+        components running as `SYSTEM` or `root`.
+    2.  **Platform-specific logic bugs:** Ensure proper use of
+        `#if BUILDFLAG(...)` guards and correct platform suffix compilation.
+    3.  **Adherence to the 'Small CLs' mandate:** Verify the change size is
+        minimal and focused. Suggest split points if the CL is large.
+    4.  **GEMINI.md compliance:** Confirm all changes adhere strictly to the
+        rules defined in `//remoting/GEMINI.md`.
+*   **Path Selection:** The protocol automatically selects `FAST_PATH` for
+    low-ambiguity tasks or `RIGOR_PATH` for complex, high-stakes, or
+    security-sensitive changes.
+*   **Checks Integrated:** The verification loop automatically runs and
+    integrates the required repository checks, including presubmits
+    (`git cl presubmit -u --force`), dependency checks
+    (`gn check {OUT_DIR} //remoting/*`), and unit tests
+    (`remoting_unittests`).
 
 ## Workflow Efficiency (Optimizing for Wall-Clock Time)
 
@@ -125,13 +123,11 @@ just the fastest individual command execution. Every shell command requires
 human approval via the CLI, which causes expensive context switches for the
 developer.
 
-*   **MAGI Protocol:** For highly complex, high-stakes, or ambiguous
-  architectural
-    problems, suggest invoking the `magi-mode` skill. This triggers a
-    multi-agent debate to explore security, performance, and maintainability
-    trade-offs before implementation. It features an iterative "Rumination
-    Cycle" with dynamic topology routing (Star to Roundtable) and human
-    escalation for deadlocks.
+*   **MAGI Design Debates:** For highly complex, high-stakes, or ambiguous
+    architectural problems, invoke the `magi-mode` skill *before* starting
+    implementation. This triggers a multi-agent scoping debate (Stage 1 & 2)
+    to explore security, performance, and maintainability trade-offs and
+    establish design consensus.
 *   **Batch Commands:** Combine related shell commands using `&&` whenever
     logical. For example, instead of running a build and then asking to run a
     test, combine them:
