@@ -250,7 +250,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="ExtensionInstall.IsExtensionAllowed.Result"
-    enum="IsExtensionAllowedResult" expires_after="2026-06-05">
+    enum="IsExtensionAllowedResult" expires_after="2027-06-17">
   <owner>ydago@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
