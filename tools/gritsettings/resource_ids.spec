@@ -1347,9 +1347,13 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [7385],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/components/notebooks/internals/webui/resources/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [7390],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/components/ntp_tiles/webui/resources/resources.grd": {
     "META": {"sizes": {"includes": [5]}},
-    "includes": [7390],
+    "includes": [7395],
   },
   "<(SHARED_INTERMEDIATE_DIR)/components/optimization_guide/optimization_guide_internals/resources/resources.grd": {
     "META": {"sizes": {"includes": [10]}},

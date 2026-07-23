@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/grit/notebooks_internals_resources.h",
+  "+components/grit/notebooks_internals_resources_map.h",
+  "+content/public/browser",
+  "+ui/webui",
+]

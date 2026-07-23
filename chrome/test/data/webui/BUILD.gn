@@ -30,6 +30,7 @@ source_set("browser_tests") {
     "flags/flags_browsertest.cc",
     "js/js_browsertest.cc",
     "location_internals/location_internals_browsertest.cc",
+    "notebooks_internals/notebooks_internals_browsertest.cc",
     "sync_internals/sync_internals_browsertest.cc",
     "usb_internals/usb_internals_browsertest.cc",
   ]
@@ -45,6 +46,7 @@ source_set("browser_tests") {
     "//components/commerce/core:commerce_constants",
     "//components/contextual_tasks/public",
     "//components/metrics_services_manager",
+    "//components/notebooks/public",
     "//components/ukm",
     "//components/ukm:ukm_test_helper",
     "//components/webui/chrome_urls/",
@@ -605,6 +607,7 @@ generate_grd("build_grd") {
     "flags:build_grdp",
     "js:build_grdp",
     "location_internals:build_grdp",
+    "notebooks_internals:build_grdp",
     "sync_internals:build_grdp",
     "usb_internals:build_grdp",
   ]
@@ -615,6 +618,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/chrome_urls/resources.grdp",
     "$target_gen_dir/commerce_internals/resources.grdp",
     "$target_gen_dir/contextual_tasks/resources.grdp",
+    "$target_gen_dir/notebooks_internals/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/flags/resources.grdp",
     "$target_gen_dir/js/resources.grdp",

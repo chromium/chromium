@@ -117,8 +117,7 @@ bool IsSystemWebUIHost(std::string_view host) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Add hosts here to be included in chrome://chrome-urls (about:about).
-// These hosts will also be suggested by BuiltinProvider.
+// Add hosts here to be suggested by BuiltinProvider.
 base::span<const base::cstring_view> ChromeURLHosts() {
   static constexpr auto kChromeURLHosts = std::to_array<base::cstring_view>({
       kChromeUIAboutHost,

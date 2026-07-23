@@ -122,6 +122,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://newtab-footer",
       "chrome://new-tab-page-third-party",
       "chrome://newtab",
+      "chrome://notebooks-internals",
       "chrome://ntp-tiles-internals",
       "chrome://omnibox",
       "chrome://on-device-internals",
