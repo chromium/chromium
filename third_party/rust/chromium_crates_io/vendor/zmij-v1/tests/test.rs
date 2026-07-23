@@ -26,6 +26,7 @@ mod dtoa_test {
         assert_eq!(dtoa(1.2e-322), "1.2e-322");
         assert_eq!(dtoa(1.24e-322), "1.24e-322");
         assert_eq!(dtoa(1.234e-320), "1.234e-320");
+        assert_eq!(dtoa(2.2250738585072004e-308), "2.2250738585072004e-308");
     }
 
     #[test]
@@ -88,9 +89,24 @@ mod dtoa_test {
     }
 
     #[test]
-    fn null_terminated() {
-        assert_eq!(dtoa(9.061488e15), "9061488000000000.0");
-        assert_eq!(dtoa(f64::NAN.copysign(1.0)), "NaN");
+    fn boundary_cases() {
+        assert_eq!(dtoa(1.3588129002659584e-245), "1.3588129002659584e-245");
+        assert_eq!(dtoa(2.9802322387695312e-08), "2.9802322387695312e-8");
+        assert_eq!(dtoa(5.960464477539063e-08), "5.960464477539063e-8");
+        assert_eq!(dtoa(1.3076622631878654e+65), "1.3076622631878654e+65");
+        assert_eq!(dtoa(9.03725590277404e+159), "9.03725590277404e+159");
+        assert_eq!(dtoa(9.03725590277404e+160), "9.03725590277404e+160");
+        assert_eq!(dtoa(9.03725590277404e+161), "9.03725590277404e+161");
+        assert_eq!(dtoa(9.03725590277404e+162), "9.03725590277404e+162");
+        assert_eq!(dtoa(5.960464477539062e-07), "5.960464477539062e-7");
+    }
+
+    #[test]
+    fn fixed_with_zeros() {
+        assert_eq!(dtoa(43210.0), "43210.0");
+        assert_eq!(dtoa(43210.1), "43210.1");
+        assert_eq!(dtoa(10000.0), "10000.0");
+        assert_eq!(dtoa(-5942736479622170.0), "-5942736479622170.0");
     }
 
     #[test]
@@ -101,6 +117,13 @@ mod dtoa_test {
 
 mod ftoa_test {
     use super::ftoa;
+
+    #[test]
+    fn fixed_with_zeros() {
+        assert_eq!(ftoa(43210.0), "43210.0");
+        assert_eq!(ftoa(43210.1), "43210.1");
+        assert_eq!(ftoa(10000.0), "10000.0");
+    }
 
     #[test]
     fn normal() {

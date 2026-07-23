@@ -10,12 +10,19 @@ fn main() {
 
     if rustc >= 80 {
         println!("cargo:rustc-check-cfg=cfg(exhaustive)");
+        println!("cargo:rustc-check-cfg=cfg(opt_level, values(\"s\"))");
         println!("cargo:rustc-check-cfg=cfg(zmij_no_select_unpredictable)");
     }
 
     if rustc < 88 {
         // https://doc.rust-lang.org/std/hint/fn.select_unpredictable.html
         println!("cargo:rustc-cfg=zmij_no_select_unpredictable");
+    }
+
+    if let Some(opt_level) = env::var_os("OPT_LEVEL") {
+        if opt_level == "s" || opt_level == "z" {
+            println!("cargo:rustc-cfg=opt_level=\"s\"");
+        }
     }
 }
 

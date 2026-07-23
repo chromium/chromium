@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.71"
 name = "zmij"
-version = "1.0.21"
+version = "1.0.23"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 exclude = ["*.png"]
@@ -22,7 +22,7 @@ autobins = false
 autoexamples = false
 autotests = false
 autobenches = false
-description = "A double-to-string conversion algorithm based on Schubfach and yy"
+description = "A double-to-string conversion algorithm based on Schubfach and xjb"
 documentation = "https://docs.rs/zmij"
 readme = "README.md"
 keywords = ["float"]
@@ -68,7 +68,7 @@ version = "0.1.36"
 optional = true
 
 [dev-dependencies.num-bigint]
-version = "0.4"
+version = "0.5"
 
 [dev-dependencies.num-integer]
 version = "0.1"

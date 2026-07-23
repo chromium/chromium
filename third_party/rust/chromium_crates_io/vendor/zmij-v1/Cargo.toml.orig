@@ -1,9 +1,9 @@
 [package]
 name = "zmij"
-version = "1.0.21"
+version = "1.0.23"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
-description = "A double-to-string conversion algorithm based on Schubfach and yy"
+description = "A double-to-string conversion algorithm based on Schubfach and xjb"
 documentation = "https://docs.rs/zmij"
 edition = "2021"
 exclude = ["*.png"]
@@ -16,7 +16,7 @@ rust-version = "1.71"
 no-panic = { version = "0.1.36", optional = true }
 
 [dev-dependencies]
-num-bigint = "0.4"
+num-bigint = "0.5"
 num_cpus = "1.8"
 num-integer = "0.1"
 opt-level = "1"

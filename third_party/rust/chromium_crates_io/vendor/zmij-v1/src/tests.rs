@@ -3,12 +3,14 @@ use core::mem;
 use num_bigint::BigUint as Uint;
 
 const _: () = {
-    let static_data =
-        mem::size_of_val(&crate::POW10_SIGNIFICANDS) + mem::size_of_val(&crate::DIGITS2);
-    if crate::Pow10SignificandsTable::COMPRESS {
+    let static_data = mem::size_of_val(&crate::STATIC_DATA.pow10_significands)
+        + mem::size_of_val(&crate::STATIC_DATA.exp_shifts)
+        + mem::size_of_val(&crate::STATIC_DATA.exp_strings)
+        + mem::size_of_val(&crate::DIGITS2);
+    if cfg!(opt_level = "s") {
         assert!(static_data == 200);
     } else {
-        assert!(static_data == 10120); // 9.9K
+        assert!(static_data == 17232); // 16.8K
     }
 };
 
@@ -25,19 +27,6 @@ fn utilities() {
     assert_eq!(crate::count_trailing_nonzeros(0x00090000_09000000), 7);
     assert_eq!(crate::count_trailing_nonzeros(0x01000000_00000000), 8);
     assert_eq!(crate::count_trailing_nonzeros(0x09000000_00000000), 8);
-}
-
-#[test]
-fn umulhi_inexact_to_odd() {
-    let pow10 = crate::POW10_SIGNIFICANDS.get(-292);
-    assert_eq!(
-        crate::umulhi_inexact_to_odd(pow10.hi, pow10.lo, 0x1234567890abcdefu64 << 1),
-        0x24554a3ce60a45f5,
-    );
-    assert_eq!(
-        crate::umulhi_inexact_to_odd(pow10.hi, pow10.lo, 0x1234567890abce16u64 << 1),
-        0x24554a3ce60a4643,
-    );
 }
 
 #[test]
@@ -65,9 +54,11 @@ fn pow10() {
         };
         let hi = u64::try_from(&result >> 64).unwrap();
         let lo = u64::try_from(result & (Uint::from(2_u8).pow(64) - Uint::from(1_u8))).unwrap();
-        if !crate::Pow10SignificandsTable::COMPRESS {
+        if !crate::Pow10SignificandTable::COMPRESS {
             assert_eq!(
-                crate::POW10_SIGNIFICANDS.get(DEC_EXP_MIN + i as i32),
+                crate::STATIC_DATA
+                    .pow10_significands
+                    .get(DEC_EXP_MIN + i as i32),
                 crate::uint128 { hi, lo },
             );
         }

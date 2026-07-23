@@ -36,7 +36,7 @@ fn test_exhaustive() {
                     continue;
                 }
                 let zmij = zmij_buffer.format_finite(f);
-                assert_eq!(Ok(f), zmij.parse());
+                assert_eq!(Ok(f), zmij.parse(), "{zmij:?}");
                 let ryu = ryu_buffer.format_finite(f);
                 let matches = if ryu.contains('e') && !ryu.contains("e-") {
                     ryu.split_once('e') == zmij.split_once("e+")

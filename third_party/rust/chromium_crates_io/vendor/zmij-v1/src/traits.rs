@@ -44,40 +44,12 @@ pub trait UInt:
     + Display
 {
     type Signed: Ord;
-    fn wrapping_sub(self, other: Self) -> Self;
-    fn truncate(big: u64) -> Self;
-    fn enlarge(small: u32) -> Self;
-    fn to_signed(self) -> Self::Signed;
 }
 
 impl UInt for u32 {
     type Signed = i32;
-    fn wrapping_sub(self, other: Self) -> Self {
-        self.wrapping_sub(other)
-    }
-    fn truncate(big: u64) -> Self {
-        big as u32
-    }
-    fn enlarge(small: u32) -> Self {
-        small
-    }
-    fn to_signed(self) -> Self::Signed {
-        self as i32
-    }
 }
 
 impl UInt for u64 {
     type Signed = i64;
-    fn wrapping_sub(self, other: Self) -> Self {
-        self.wrapping_sub(other)
-    }
-    fn truncate(big: u64) -> Self {
-        big
-    }
-    fn enlarge(small: u32) -> Self {
-        u64::from(small)
-    }
-    fn to_signed(self) -> Self::Signed {
-        self as i64
-    }
 }
