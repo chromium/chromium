@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -22,9 +23,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for {@link ContextualSearchSettingsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@DisableIf.Device(DeviceFormFactor.DESKTOP) // explicitly not supported.
 public class ContextualSearchSettingsFragmentTest {
     @Rule
     public SettingsActivityTestRule<ContextualSearchSettingsFragment> mSettingsActivityTestRule =

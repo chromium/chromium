@@ -1432,6 +1432,10 @@ public class RootUiCoordinator
     }
 
     protected boolean isContextualSearchEnabled() {
+        // Caution: this cannot return anything else. A lot of code implicitly assumes the
+        // mContextualSearchManager is always available.
+        // Only special cases can currently override this value - ones where no logic ever
+        // calls `assumeNonNull` on `mContextualSearchManagerSupplier`.
         return true;
     }
 

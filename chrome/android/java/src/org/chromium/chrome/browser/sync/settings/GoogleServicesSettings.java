@@ -47,6 +47,7 @@ import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -299,7 +300,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
     }
 
     private static boolean shouldShowContextualSearch() {
-        return ContextualSearchFieldTrial.isEnabled();
+        return ContextualSearchFieldTrial.isEnabled() && !OmniboxCapabilities.isDesktopPlatform();
     }
 
     private static boolean shouldShowPriceTrackingAnnotations(Profile profile) {
