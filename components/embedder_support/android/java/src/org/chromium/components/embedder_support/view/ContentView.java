@@ -534,7 +534,9 @@ public class ContentView extends FrameLayout
         }
         EventForwarder forwarder = getEventForwarder();
         boolean consumed = forwarder != null ? forwarder.onHoverEvent(event) : false;
-        if (!AccessibilityState.isTouchExplorationEnabled()) super.onHoverEvent(event);
+        if (!consumed && !AccessibilityState.isTouchExplorationEnabled()) {
+            super.onHoverEvent(event);
+        }
         return consumed;
     }
 

@@ -127,7 +127,7 @@ public class EventForwarderTest {
                 new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
         MotionEvent hoverEvent =
                 MotionEventTestUtils.getTrackpadEvent(MotionEvent.ACTION_HOVER_MOVE, 0);
-        eventForwarder.onHoverEvent(hoverEvent);
+        Assert.assertTrue(eventForwarder.onHoverEvent(hoverEvent));
         verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, hoverEvent, eventForwarder, 1);
         eventForwarder.destroy();
     }
@@ -901,6 +901,55 @@ public class EventForwarderTest {
                         any(MotionEvent.class),
                         anyLong(),
                         eq(MotionEvent.ACTION_HOVER_ENTER),
+                        anyInt(),
+                        anyInt());
+
+        eventForwarder.destroy();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testHoverExitCancelledByTrackpadScroll() {
+        EventForwarder eventForwarder =
+                new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true, false);
+
+        // 1. Enter hover
+        MotionEvent enterEvent =
+                MotionEventTestUtils.getTrackpadEvent(MotionEvent.ACTION_HOVER_ENTER, 0);
+        Assert.assertTrue(eventForwarder.onHoverEvent(enterEvent));
+
+        // 2. Exit hover
+        MotionEvent exitEvent =
+                MotionEventTestUtils.getTrackpadEvent(MotionEvent.ACTION_HOVER_EXIT, 0);
+        Assert.assertTrue(eventForwarder.onHoverEvent(exitEvent));
+
+        // 3. Trackpad scroll down (before delay)
+        MotionEvent scrollDownEvent =
+                spy(
+                        MotionEvent.obtain(
+                                0,
+                                0,
+                                MotionEvent.ACTION_DOWN,
+                                /* x= */ 10,
+                                /* y= */ 20,
+                                /* metaState= */ 0));
+        scrollDownEvent.setSource(InputDevice.SOURCE_MOUSE);
+        doReturn(MotionEvent.CLASSIFICATION_TWO_FINGER_SWIPE)
+                .when(scrollDownEvent)
+                .getClassification();
+
+        eventForwarder.onTouchEvent(scrollDownEvent);
+
+        // 4. Wait for delay (50ms)
+        ShadowLooper.idleMainLooper(50, java.util.concurrent.TimeUnit.MILLISECONDS);
+
+        // Exit should NEVER be sent.
+        verify(mNativeMock, never())
+                .onMouseEvent(
+                        anyLong(),
+                        any(MotionEvent.class),
+                        anyLong(),
+                        eq(MotionEvent.ACTION_HOVER_EXIT),
                         anyInt(),
                         anyInt());
 
