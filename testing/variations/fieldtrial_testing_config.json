@@ -13560,6 +13560,21 @@
             ]
         }
     ],
+    "HeliosMultiTabContext": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiMultiTabContext"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosScreenContextMigration": [
         {
             "platforms": [
