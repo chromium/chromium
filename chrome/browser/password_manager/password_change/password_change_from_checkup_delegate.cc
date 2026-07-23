@@ -571,10 +571,7 @@ void PasswordChangeFromCheckupDelegate::InvokeVerificationFlow(
   if (glic_instance_ && glic_instance_->conversation_id()) {
     conversation_id = *glic_instance_->conversation_id();
   }
-  glic::Target target =
-      conversation_id.empty()
-          ? glic::Target(*tab_interface, glic::NewConversation())
-          : glic::Target(*tab_interface, glic::ConversationId(conversation_id));
+  glic::Target target = glic::Target(*tab_interface, glic::NewConversation());
   glic::GlicInvokeOptions options(
       std::move(target), glic::mojom::InvocationSource::kPasswordChange);
   options.prompts.push_back(std::move(post_submission_prompt));
