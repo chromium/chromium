@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/tab_drag_api/desktop_tab_drag_impl/tab_drag_session_input_adapter_impl.h"
 
 #include "mojo/public/mojom/base/error.mojom.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/native_ui_types.h"
@@ -36,7 +37,7 @@ void TabDragSessionInputAdapterImpl::OnEvent(const ui::Event& event) {
   if (!callback_) {
     return;
   }
-
+  gfx::Point screen_point = display::Screen::Get()->GetCursorScreenPoint();
   switch (event.type()) {
     case ui::EventType::kKeyPressed:
       if (event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE) {
@@ -44,13 +45,11 @@ void TabDragSessionInputAdapterImpl::OnEvent(const ui::Event& event) {
       }
       break;
     case ui::EventType::kMouseReleased:
-      callback_.Run({TabDragInputEvent::Type::kDropped,
-                     event.AsMouseEvent()->root_location()});
+      callback_.Run({TabDragInputEvent::Type::kDropped, screen_point});
       break;
     case ui::EventType::kMouseMoved:
     case ui::EventType::kMouseDragged:
-      callback_.Run({TabDragInputEvent::Type::kMoved,
-                     event.AsMouseEvent()->root_location()});
+      callback_.Run({TabDragInputEvent::Type::kMoved, screen_point});
       break;
     case ui::EventType::kMouseCaptureChanged:
       callback_.Run({TabDragInputEvent::Type::kCaptureChanged});

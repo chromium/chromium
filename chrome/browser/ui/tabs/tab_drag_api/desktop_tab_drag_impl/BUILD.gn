@@ -26,6 +26,7 @@ source_set("desktop_tab_drag_impl") {
     "//components/browser_apis/tab_strip/types",
     "//components/tabs:impl",
     "//ui/base",
+    "//ui/display",
     "//ui/events",
     "//ui/views",
   ]
