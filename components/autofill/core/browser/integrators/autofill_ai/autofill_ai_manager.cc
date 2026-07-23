@@ -308,9 +308,7 @@ void AutofillAiManager::OnAutofillAiSuggestionsShown(
       !it->second.entity_type_accepted) {
     user_suggestion_interactions_per_form_.Put(
         {form.global_id(),
-         {.suggested_entity_types =
-              DenseSet<EntityType>(entities_suggested, &EntityInstance::type),
-          .entity_type_accepted = std::nullopt,
+         {.entity_type_accepted = std::nullopt,
           .accepted_entity_record_type = std::nullopt,
           .autofill_ai_field_types = field.Type().GetAutofillAiTypes()}});
   }

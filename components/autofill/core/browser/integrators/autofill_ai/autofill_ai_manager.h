@@ -119,9 +119,6 @@ class AutofillAiManager
  private:
   friend class AutofillAiManagerTestApi;
   struct UserSuggestionInteractionDetails {
-    // Upon clicking a field, stores the different entity types used to
-    // generate the suggestions shown.
-    DenseSet<EntityType> suggested_entity_types;
     std::optional<EntityType> entity_type_accepted;
     std::optional<EntityInstance::RecordType> accepted_entity_record_type;
     // The types of the field where the suggestion was shown or accepted.
