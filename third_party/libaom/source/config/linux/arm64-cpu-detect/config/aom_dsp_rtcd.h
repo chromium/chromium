@@ -57,6 +57,9 @@ void aom_blend_a64_vmask_c(uint8_t *dst, uint32_t dst_stride, const uint8_t *src
 void aom_blend_a64_vmask_neon(uint8_t *dst, uint32_t dst_stride, const uint8_t *src0, uint32_t src0_stride, const uint8_t *src1, uint32_t src1_stride, const uint8_t *mask, int w, int h);
 #define aom_blend_a64_vmask aom_blend_a64_vmask_neon
 
+int64_t aom_calc_variance_stat_c(const uint8_t *src, int stride, int bw, int bh);
+#define aom_calc_variance_stat aom_calc_variance_stat_c
+
 void aom_comp_avg_pred_c(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride);
 void aom_comp_avg_pred_neon(uint8_t *comp_pred, const uint8_t *pred, int width, int height, const uint8_t *ref, int ref_stride);
 #define aom_comp_avg_pred aom_comp_avg_pred_neon
@@ -406,6 +409,9 @@ void aom_hadamard_lp_8x8_neon(const int16_t *src_diff, ptrdiff_t src_stride, int
 void aom_hadamard_lp_8x8_dual_c(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff);
 void aom_hadamard_lp_8x8_dual_neon(const int16_t *src_diff, ptrdiff_t src_stride, int16_t *coeff);
 #define aom_hadamard_lp_8x8_dual aom_hadamard_lp_8x8_dual_neon
+
+int64_t aom_highbd_calc_variance_stat_c(const uint16_t *src, int stride, int bw, int bh);
+#define aom_highbd_calc_variance_stat aom_highbd_calc_variance_stat_c
 
 void aom_ifft16x16_float_c(const float *input, float *temp, float *output);
 #define aom_ifft16x16_float aom_ifft16x16_float_c
