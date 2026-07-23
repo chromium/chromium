@@ -171,6 +171,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Called by OmniboxAutofillDelegate after the Omnibox Autofill chip is shown.
   void OnOmniboxAutofillChipShown();
+  // Called by OmniboxAutofillDelegate after the Omnibox Autofill chip is
+  // clicked.
+  void OnOmniboxAutofillChipClicked();
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   std::optional<CreditCard> GetFilledCreditCardForTesting();
@@ -281,6 +284,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the Omnibox Autofill chip has already been logged as shown and
   // should not be logged again.
   bool has_logged_omnibox_autofill_chip_shown_ = false;
+  // If true, the Omnibox Autofill chip has already been logged as clicked and
+  // should not be logged again.
+  bool has_logged_omnibox_autofill_chip_clicked_ = false;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // If true, one of the cards in the suggestions fetched is externally-saved.
   bool suggestion_contains_externally_saved_card_ = false;

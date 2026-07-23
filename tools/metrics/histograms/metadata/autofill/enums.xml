@@ -5565,6 +5565,8 @@ Called by update_autofill_enums.py.-->
 <enum name="OmniboxAutofillEvents">
   <int value="0" label="Chip shown"/>
   <int value="1" label="Chip shown (once per page load)"/>
+  <int value="2" label="Chip clicked"/>
+  <int value="3" label="Chip clicked (once per page load)"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h:OmniboxAutofillEvents) -->

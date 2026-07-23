@@ -66,7 +66,9 @@ enum class OmniboxAutofillShowChipDecisionPart1 {
 enum class OmniboxAutofillEvents {
   kChipShown = 0,
   kChipShownOnce = 1,
-  kMaxValue = kChipShownOnce,
+  kChipClicked = 2,
+  kChipClickedOnce = 3,
+  kMaxValue = kChipClickedOnce,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:OmniboxAutofillEvents)
 

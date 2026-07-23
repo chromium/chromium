@@ -2185,6 +2185,23 @@ TEST_F(CreditCardFormEventLoggerTest, OnOmniboxAutofillChipShown) {
                                      OmniboxAutofillEvents::kChipShownOnce, 1);
 }
 
+TEST_F(CreditCardFormEventLoggerTest, OnOmniboxAutofillChipClicked) {
+  base::HistogramTester histogram_tester;
+
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnOmniboxAutofillChipClicked();
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnOmniboxAutofillChipClicked();
+
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kChipClicked, 2);
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kChipClickedOnce,
+                                     1);
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace autofill::autofill_metrics

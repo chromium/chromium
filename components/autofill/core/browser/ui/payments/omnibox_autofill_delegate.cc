@@ -350,6 +350,8 @@ void OmniboxAutofillDelegate::OnSuggestionsShown(
       suggestions, parent_suggestion_metadata, trigger_form_global_id_,
       trigger_field_global_id_,
       AutofillExternalDelegate::UpdateSuggestionsCallback());
+
+  manager->GetCreditCardFormEventLogger().OnOmniboxAutofillChipClicked();
 }
 
 void OmniboxAutofillDelegate::OnSuggestionsHidden(
