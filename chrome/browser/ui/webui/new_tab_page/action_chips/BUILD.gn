@@ -22,6 +22,8 @@ source_set("action_chips") {
   sources = [
     "action_chips_generator.cc",
     "action_chips_generator.h",
+    "action_chips_handler.cc",
+    "action_chips_handler.h",
     "action_chips_metrics.cc",
     "action_chips_metrics.h",
     "remote_suggestions_service_simple.cc",
@@ -29,7 +31,13 @@ source_set("action_chips") {
     "tab_id_generator.cc",
     "tab_id_generator.h",
   ]
-  public_deps = [ ":mojo_bindings" ]
+  public_deps = [
+    ":mojo_bindings",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/webui:webui_util",
+    "//components/prefs",
+    "//content/public/browser",
+  ]
   deps = [
     "//base",
     "//chrome/app:generated_resources",
@@ -41,11 +49,12 @@ source_set("action_chips") {
     "//chrome/browser/profiles",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/common",
+    "//components/contextual_search:public",
+    "//components/feature_engagement/public",
     "//components/search",
     "//components/sessions",
     "//components/tabs:public",
-    "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
     "//third_party/abseil-cpp:absl",
@@ -53,7 +62,10 @@ source_set("action_chips") {
     "//url",
   ]
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+    deps += [
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/user_education",
+    ]
   }
 }
 

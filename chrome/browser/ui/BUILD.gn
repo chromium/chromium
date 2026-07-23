@@ -1395,10 +1395,6 @@ static_library("ui") {
   }
 
   if (!is_android || enable_webui_ntp) {
-    sources += [
-      "webui/new_tab_page/action_chips/action_chips_handler.cc",
-      "webui/new_tab_page/action_chips/action_chips_handler.h",
-    ]
     deps += [
       "//chrome/browser/contextual_search",
       "//chrome/browser/desktop_to_mobile_promos:utils",
@@ -2327,8 +2323,7 @@ static_library("ui") {
       "//chrome/browser/ui/search:impl",
 
       # new_tab_page and new_tab_page:impl files include headers from
-      # //chrome/browser/ui:ui that haven't been extracted yet (e.g.
-      # action_chips_handler.h).
+      # //chrome/browser/ui:ui that haven't been extracted yet.
       "//chrome/browser/ui/webui/new_tab_page",
       "//chrome/browser/ui/webui/new_tab_page:impl",
     ]
@@ -3448,12 +3443,18 @@ static_library("ui") {
       "profiles/batch_upload_ui_delegate.h",
       "views/profiles/batch_upload_dialog_view.cc",
       "views/profiles/batch_upload_dialog_view.h",
-      "webui/signin/batch_upload_handler.cc",
-      "webui/signin/batch_upload_handler.h",
-      "webui/signin/batch_upload_ui.cc",
-      "webui/signin/batch_upload_ui.h",
     ]
-    deps += [ "webui/signin/batch_upload:mojo_bindings" ]
+    deps += [
+      "webui/signin:batch_upload",
+      "webui/signin/batch_upload:mojo_bindings",
+    ]
+
+    if (is_chromeos) {
+      # batch_upload includes headers from //chrome/browser/ui (e.g.
+      # browser.h) that can't be split out yet.
+      allow_circular_includes_from +=
+          [ "//chrome/browser/ui/webui/signin:batch_upload" ]
+    }
   }
 
   if (is_win || is_mac || is_chromeos) {

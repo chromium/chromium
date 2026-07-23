@@ -469,7 +469,7 @@ if (!is_chromeos) {
   }
 }
 
-if (enable_dice_support) {
+if (enable_dice_support || is_chromeos) {
   source_set("batch_upload") {
     sources = [
       "batch_upload_handler.cc",

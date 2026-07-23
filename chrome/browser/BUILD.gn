@@ -1371,7 +1371,7 @@ source_set("core") {
     deps += [ "//chrome/browser/ui/webui/discards" ]
   }
 
-  if (enable_dice_support) {
+  if (enable_dice_support || is_chromeos) {
     deps += [ "//chrome/browser/ui/webui/signin:batch_upload" ]
   }
 
