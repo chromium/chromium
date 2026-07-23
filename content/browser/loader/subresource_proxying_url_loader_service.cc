@@ -88,23 +88,20 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
 
   if (!PrefetchURLLoaderServiceContext::IsPrefetchRequest(
           resource_request_in) &&
-      !resource_request_in.browsing_topics &&
-      !resource_request_in.ad_auction_headers) {
+      !resource_request_in.browsing_topics) {
     loader_factory_receivers_.ReportBadMessage(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): it's not "
-        "a prefetch or browsing_topics or ad_auction_headers request.");
+        "a prefetch or browsing_topics request.");
     return;
   }
 
   if (PrefetchURLLoaderServiceContext::IsPrefetchRequest(resource_request_in) &&
-      (resource_request_in.browsing_topics ||
-       resource_request_in.ad_auction_headers)) {
+      resource_request_in.browsing_topics) {
     loader_factory_receivers_.ReportBadMessage(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): prefetch "
-        "cannot be set at the same time with browsing_topics or "
-        "ad_auction_headers.");
+        "cannot be set at the same time with browsing_topics.");
     return;
   }
 
@@ -114,14 +111,6 @@ void SubresourceProxyingURLLoaderService::CreateLoaderAndStart(
         "Unexpected `resource_request_in` in "
         "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): "
         "browsing_topics is set when Topics API is disabled.");
-    return;
-  }
-
-  if (resource_request_in.ad_auction_headers) {
-    loader_factory_receivers_.ReportBadMessage(
-        "Unexpected `resource_request_in` in "
-        "SubresourceProxyingURLLoaderService::CreateLoaderAndStart(): "
-        "ad_auction_headers is set when InterestGroupStorage is disabled.");
     return;
   }
 
