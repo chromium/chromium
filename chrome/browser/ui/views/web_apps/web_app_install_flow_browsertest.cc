@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -146,6 +147,7 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, SimpleInstallFlow) {
+  base::UserActionTester action_tester;
   const GURL app_url =
       embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
   ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
@@ -169,9 +171,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, SimpleInstallFlow) {
 
   const webapps::AppId app_id = install_observer.Wait();
   EXPECT_EQ(FindAppWithUrlInScope(app_url), app_id);
+  EXPECT_EQ(1, action_tester.GetActionCount("WebAppSimpleDialogAccepted"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DetailedInstallFlow) {
+  base::UserActionTester action_tester;
   // Detailed install flow is triggered when screenshots are available.
   GURL app_url = embedded_https_test_server().GetURL(
       "/banners/"
@@ -198,9 +202,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DetailedInstallFlow) {
 
   const webapps::AppId app_id = install_observer.Wait();
   EXPECT_EQ(FindAppWithUrlInScope(app_url), app_id);
+  EXPECT_EQ(1, action_tester.GetActionCount("WebAppDetailedDialogAccepted"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DiyInstallFlow) {
+  base::UserActionTester action_tester;
   // Navigate to a page that is not installable.
   GURL app_url = embedded_https_test_server().GetURL(
       "/banners/no_manifest_test_page.html");
@@ -222,6 +228,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DiyInstallFlow) {
 
   const webapps::AppId app_id = install_observer.Wait();
   EXPECT_EQ(FindAppWithUrlInScope(app_url), app_id);
+  EXPECT_EQ(1, action_tester.GetActionCount("WebAppDiyDialogAccepted"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
@@ -266,6 +273,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
                        DropOffStepLoggedOnCancelAtIntro) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester action_tester;
   const GURL app_url =
       embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
   ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
@@ -292,11 +300,13 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.InstallFlow.DropOffStep"),
       base::BucketsAre(base::Bucket(InstallDialogStep::kInstallDialog, 1)));
+  EXPECT_EQ(1, action_tester.GetActionCount("WebAppSimpleDialogCancelled"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
                        DropOffStepLoggedOnCancelAtSuccess) {
   base::HistogramTester histogram_tester;
+  base::UserActionTester action_tester;
   const GURL app_url =
       embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
   ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
@@ -326,6 +336,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest,
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.InstallFlow.DropOffStep"),
       base::BucketsAre(base::Bucket(InstallDialogStep::kSuccessful, 1)));
+  EXPECT_EQ(1, action_tester.GetActionCount("WebAppSimpleDialogClosed"));
 }
 
 #if BUILDFLAG(IS_WIN)

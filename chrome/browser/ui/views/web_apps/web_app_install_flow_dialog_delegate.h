@@ -150,7 +150,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
 
   void MeasureMetricsOnDialogClose(bool was_closed_by_user_action);
   void MeasureAcceptUserActionsForInstallDialog();
-  void MeasureCancelUserActionsForInstallDialog();
+  void MeasureCloseUserActionsForInstallDialog();
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
   webapps::AppId app_id_;

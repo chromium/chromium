@@ -55275,7 +55275,36 @@ should be able to be added at any place in this file.
   <description>The user set a web app to open in an app window.</description>
 </action>
 
+<action name="WebAppDetailedDialogAccepted">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user accepted an installation of a web app in the detailed installation
+    dialog (with screenshots, etc).
+  </description>
+</action>
+
+<action name="WebAppDetailedDialogCancelled">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user explicitly declined the installation of a web app from the detailed
+    installation dialog.
+  </description>
+</action>
+
+<action name="WebAppDetailedDialogClosed">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user closed the detailed installation dialog for a web app.
+  </description>
+</action>
+
 <action name="WebAppDetailedInstallAccepted">
+  <obsolete>
+    Deprecated as of 07/2026. Replaced by WebAppDetailedDialogAccepted.
+  </obsolete>
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <description>
@@ -55285,6 +55314,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WebAppDetailedInstallCancelled">
+  <obsolete>
+    Deprecated as of 07/2026. Replaced by WebAppDetailedDialogCancelled and
+    WebAppDetailedDialogClosed.
+  </obsolete>
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <description>
@@ -55302,7 +55335,45 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAppDialogOpenedApp">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user clicked the &quot;Open tab in app&quot; button to open the newly
+    installed app from the success dialog.
+  </description>
+</action>
+
+<action name="WebAppDiyDialogAccepted">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user accepted an installation of a web app in the DIY installation
+    dialog.
+  </description>
+</action>
+
+<action name="WebAppDiyDialogCancelled">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user explicitly cancelled or declined the installation of a web app from
+    the DIY installation dialog.
+  </description>
+</action>
+
+<action name="WebAppDiyDialogClosed">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user closed the DIY installation dialog for a web app.
+  </description>
+</action>
+
 <action name="WebAppDiyInstallAccepted">
+  <obsolete>
+    Deprecated as of 07/2026. Replaced by WebAppDiyDialogAccepted.
+  </obsolete>
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <description>
@@ -55312,6 +55383,10 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WebAppDiyInstallCancelled">
+  <obsolete>
+    Deprecated as of 07/2026. Replaced by WebAppDiyDialogCancelled and
+    WebAppDiyDialogClosed.
+  </obsolete>
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <description>
@@ -55330,6 +55405,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WebAppInstallAccepted">
+  <obsolete>
+    Deprecated as of 07/2026. Replaced by WebAppSimpleDialogAccepted.
+  </obsolete>
   <owner>dmurph@gchromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <description>
@@ -55338,6 +55416,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="WebAppInstallCancelled">
+  <obsolete>
+    Deprecated as of 07/2026. Replaced by WebAppSimpleDialogCancelled,
+    WebAppSimpleDialogClosed, WebAppDetailedDialogCancelled,
+    WebAppDetailedDialogClosed, WebAppDiyDialogCancelled, and
+    WebAppDiyDialogClosed.
+  </obsolete>
   <owner>dmurph@gchromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <description>
@@ -55399,6 +55483,31 @@ should be able to be added at any place in this file.
     Shortcut added to the homescreen with a valid Manifest. This action will be
     recorded in addition to AppShortcut, AppShortcutApple and Bookmark actions
     to keep a trend of whether the webapp also add meta tags.
+  </description>
+</action>
+
+<action name="WebAppSimpleDialogAccepted">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user accepted an installation of a web app in the installation dialog.
+  </description>
+</action>
+
+<action name="WebAppSimpleDialogCancelled">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user explicitly cancelled or declined the installation of a web app from
+    the simple installation dialog.
+  </description>
+</action>
+
+<action name="WebAppSimpleDialogClosed">
+  <owner>ksukh@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user closed the simple installation dialog for a web app.
   </description>
 </action>
 
