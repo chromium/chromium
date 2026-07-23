@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
@@ -122,8 +123,8 @@ export class TopToolbarElement extends TopToolbarElementBase {
   protected accessor contextualTasksEnableSpatialModelToolbarLayout_: boolean =
       loadTimeData.getBoolean('contextualTasksEnableSpatialModelToolbarLayout');
   protected accessor contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow_:
-      boolean = loadTimeData.getBoolean(
-          'contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow');
+          boolean = loadTimeData.getBoolean(
+              'contextualTasksEnableSpatialModelToolbarLayoutNewThreadInOverflow');
   accessor hideOverflowMenuButton_: boolean =
       this.hideOverflowMenuOnAiPageEnabled_ && this.isAiPage;
   protected accessor isPinned: boolean =

@@ -12,23 +12,48 @@ import type {TopToolbarElement} from './top_toolbar.js';
 export function getHtml(this: TopToolbarElement) {
   return html`<!--_html_template_start_-->
 <div id="top-row" data-element-id="kContextualTasksWebUIToolbarElementId">
-<if expr="_google_chrome">
-    <img src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
-        class="top-toolbar-logo ${
-            this.isSidePanelRearchitectureEnabled_ ? 'clickable' : ''}"
+<div class="top-toolbar-logo-container">
+  ${this.isSidePanelRearchitectureEnabled_ ? html`
+    <cr-button class="top-toolbar-logo-button clickable"
         @click="${this.onLogoClick_}">
-</if>
-<if expr="not _google_chrome">
-    <img class="top-toolbar-logo chrome-logo-light ${
-        this.isSidePanelRearchitectureEnabled_ ? 'clickable' : ''}"
-        src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
-        @click="${this.onLogoClick_}"
-        alt="Chrome Logo">
-    <img class="top-toolbar-logo chrome-logo-dark ${
-        this.isSidePanelRearchitectureEnabled_ ? 'clickable' : ''}"
-        src="chrome://resources/images/chrome_logo_dark.svg" alt="Chrome Logo"
-        @click="${this.onLogoClick_}">
-</if>
+      <if expr="_google_chrome">
+        <img src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
+            class="top-toolbar-logo"
+            alt=""
+            aria-hidden="true">
+      </if>
+      <if expr="not _google_chrome">
+        <img class="top-toolbar-logo chrome-logo-light"
+            src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
+            alt=""
+            aria-hidden="true">
+        <img class="top-toolbar-logo chrome-logo-dark"
+            src="chrome://resources/images/chrome_logo_dark.svg"
+            alt=""
+            aria-hidden="true">
+      </if>
+    </cr-button>
+  ` : html`
+    <div class="top-toolbar-logo-button">
+      <if expr="_google_chrome">
+        <img src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
+            class="top-toolbar-logo"
+            alt=""
+            aria-hidden="true">
+      </if>
+      <if expr="not _google_chrome">
+        <img class="top-toolbar-logo chrome-logo-light"
+            src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
+            alt=""
+            aria-hidden="true">
+        <img class="top-toolbar-logo chrome-logo-dark"
+            src="chrome://resources/images/chrome_logo_dark.svg"
+            alt=""
+            aria-hidden="true">
+      </if>
+    </div>
+  `}
+</div>
   <div class="top-toolbar-title">
     ${this.title}
   </div>

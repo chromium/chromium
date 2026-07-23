@@ -14,8 +14,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 import {assertHTMLElement} from './contextual_tasks_test_utils.js';
+import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 suite('TopToolbarTest', () => {
   let topToolbar: TopToolbarElement;
@@ -33,8 +33,9 @@ suite('TopToolbarTest', () => {
     });
   });
 
-  (loadTimeData.getBoolean('isSmallDeviceFormFactor') ? suite.skip : suite)(
-      'Expand button enabled', () => {
+  (loadTimeData.getBoolean('isSmallDeviceFormFactor') ?
+       suite.skip :
+       suite)('Expand button enabled', () => {
     setup(() => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -332,8 +333,8 @@ suite('TopToolbarTest', () => {
     });
 
     test('logo click does not trigger page info when flag disabled', () => {
-      const logo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
-          '.top-toolbar-logo');
+      const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
+          '.top-toolbar-logo-button');
       assertHTMLElement(logo);
       assertFalse(logo.classList.contains('clickable'));
 
@@ -350,12 +351,47 @@ suite('TopToolbarTest', () => {
       document.body.appendChild(topToolbar);
       await microtasksFinished();
 
-      const logo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
-          '.top-toolbar-logo');
+      const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
+          '.top-toolbar-logo-button');
       assertHTMLElement(logo);
       assertTrue(logo.classList.contains('clickable'));
 
       logo.click();
+      await proxy.handler.whenCalled('showPageInfoBubble');
+    });
+
+    test('logo enter key triggers page info when flag enabled', async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        contextualTasksSidePanelRearchitectureEnabled: true,
+      });
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+
+      const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
+          '.top-toolbar-logo-button');
+      assertHTMLElement(logo);
+
+      logo.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+      await proxy.handler.whenCalled('showPageInfoBubble');
+    });
+
+    test('logo space key triggers page info when flag enabled', async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        contextualTasksSidePanelRearchitectureEnabled: true,
+      });
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+      await microtasksFinished();
+
+      const logo = topToolbar.shadowRoot.querySelector<HTMLElement>(
+          '.top-toolbar-logo-button');
+      assertHTMLElement(logo);
+
+      logo.dispatchEvent(new KeyboardEvent('keydown', {key: ' '}));
+      logo.dispatchEvent(new KeyboardEvent('keyup', {key: ' '}));
       await proxy.handler.whenCalled('showPageInfoBubble');
     });
   });
@@ -455,32 +491,32 @@ suite('TopToolbarTest', () => {
       assertFalse(moreButton.hidden);
     });
 
-    (isPhone ? test.skip :
-               test)('handles open in new tab click in menu', async () => {
-      topToolbar.enableOpenInNewTabButton = true;
-      await microtasksFinished();
+    (isPhone ? test.skip : test)(
+        'handles open in new tab click in menu', async () => {
+          topToolbar.enableOpenInNewTabButton = true;
+          await microtasksFinished();
 
-      const overflowMenuButton =
-          topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
-              '#overflowMenuButton');
-      assertTrue(!!overflowMenuButton);
-      overflowMenuButton.click();
-      await microtasksFinished();
+          const overflowMenuButton =
+              topToolbar.shadowRoot.querySelector<CrIconButtonElement>(
+                  '#overflowMenuButton');
+          assertTrue(!!overflowMenuButton);
+          overflowMenuButton.click();
+          await microtasksFinished();
 
-      const menu = topToolbar.$.overflowMenu.get();
-      assertTrue(menu.shadowRoot.querySelector('cr-action-menu')!.open);
+          const menu = topToolbar.$.overflowMenu.get();
+          assertTrue(menu.shadowRoot.querySelector('cr-action-menu')!.open);
 
-      const buttons = menu.shadowRoot.querySelectorAll('button');
-      const openInNewTabButton = buttons[0];
-      assertTrue(!!openInNewTabButton);
-      assertFalse(openInNewTabButton.disabled);
-      openInNewTabButton.click();
-      await proxy.handler.whenCalled('moveTaskUiToNewTab');
+          const buttons = menu.shadowRoot.querySelectorAll('button');
+          const openInNewTabButton = buttons[0];
+          assertTrue(!!openInNewTabButton);
+          assertFalse(openInNewTabButton.disabled);
+          openInNewTabButton.click();
+          await proxy.handler.whenCalled('moveTaskUiToNewTab');
 
-      topToolbar.enableOpenInNewTabButton = false;
-      await microtasksFinished();
-      assertTrue(openInNewTabButton.disabled);
-    });
+          topToolbar.enableOpenInNewTabButton = false;
+          await microtasksFinished();
+          assertTrue(openInNewTabButton.disabled);
+        });
 
     test('handles my activity click', async () => {
       const overflowMenuButton =
@@ -561,8 +597,9 @@ suite('TopToolbarTest', () => {
         });
   });
 
-  (loadTimeData.getBoolean('isSmallDeviceFormFactor') ? suite.skip : suite)(
-      'Menu for lens flows only', () => {
+  (loadTimeData.getBoolean('isSmallDeviceFormFactor') ?
+       suite.skip :
+       suite)('Menu for lens flows only', () => {
     setup(() => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
