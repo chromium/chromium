@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/directory_service_client.h"
 #include "remoting/base/oauth_token_info.h"
@@ -128,10 +129,19 @@ void RemotingClient::OnGetManagedChromeOsHostRetrieved(
     return;
   }
 
+  bool send_protobuf_in_initiate = false;
+  if (chrome_os_host_->has_host_version()) {
+    base::Version host_version(chrome_os_host_->host_version());
+    send_protobuf_in_initiate =
+        host_version.IsValid() && host_version >= base::Version("153");
+  }
+
   CLIENT_LOG << "Initializing signaling...";
-  signal_strategy_ = std::make_unique<FtlSignalStrategy>(
+  auto ftl_signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<PassthroughOAuthTokenGetter>(oauth_token_info_),
       url_loader_factory_, std::make_unique<FtlClientUuidDeviceIdProvider>());
+  ftl_signal_strategy->SetSendProtobufInInitiate(send_protobuf_in_initiate);
+  signal_strategy_ = std::move(ftl_signal_strategy);
   signal_strategy_->AddListener(this);
   signal_strategy_->Connect();
 }

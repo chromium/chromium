@@ -78,6 +78,7 @@ class FtlSignalStrategy::Core {
   bool SendReply(JingleMessageReply&& message);
   void AddFtlListener(FtlListener* listener);
   void RemoveFtlListener(FtlListener* listener);
+  void SetSendProtobufInInitiate(bool send);
   bool SendFtlMessage(const SignalingAddress& destination_address,
                       ftl::ChromotingMessage&& message);
   void OnMessageReceived(const SignalingAddress& sender_address,
@@ -124,6 +125,7 @@ class FtlSignalStrategy::Core {
 
   Error error_ = OK;
   bool is_sign_in_error_ = false;
+  bool send_protobuf_in_initiate_ = false;
 
   base::ObserverList<Listener, true> listeners_;
   base::ObserverList<FtlListener, true> ftl_listeners_;
@@ -253,6 +255,11 @@ void FtlSignalStrategy::Core::AddFtlListener(FtlListener* listener) {
 void FtlSignalStrategy::Core::RemoveFtlListener(FtlListener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ftl_listeners_.RemoveObserver(listener);
+}
+
+void FtlSignalStrategy::Core::SetSendProtobufInInitiate(bool send) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  send_protobuf_in_initiate_ = send;
 }
 
 bool FtlSignalStrategy::Core::SendMessage(JingleMessage&& message) {
@@ -684,12 +691,10 @@ bool FtlSignalStrategy::Core::IsSessionPending(const std::string& sid) const {
 SignalingFormat FtlSignalStrategy::Core::GetFormatForMessage(
     const JingleMessage& message) {
   // For outbound session-initiate, we determine if we want to start
-  // negotiation. Currently defaulted to XML-only until client changes are
-  // ready.
-  // TODO: crbug.com/504910955 - Switch to SignalingFormat::BOTH to enable
-  // Protobuf signaling negotiation once the client-side changes are ready.
+  // negotiation. Gated by send_protobuf_in_initiate_.
   if (message.action() == JingleMessage::ActionType::kSessionInitiate) {
-    return SignalingFormat::XML;
+    return send_protobuf_in_initiate_ ? SignalingFormat::BOTH
+                                      : SignalingFormat::XML;
   }
   // For other messages, use the negotiated format for the session.
   auto it = session_formats_.Get(message.sid);
@@ -699,12 +704,12 @@ SignalingFormat FtlSignalStrategy::Core::GetFormatForMessage(
 
   if (IsSessionPending(message.sid)) {
     // If the session is pending negotiation, we don't know the format yet.
-    // Default to XML for now.
-    // TODO: crbug.com/504910955 - Switch to SignalingFormat::BOTH when we
-    // enable BOTH in the client, to match what we sent in session-initiate.
+    // Return BOTH if we initiated with BOTH, otherwise XML.
     VLOG(1) << "Session " << message.sid
-            << " is pending negotiation. Defaulting to XML.";
-    return SignalingFormat::XML;
+            << " is pending negotiation. Defaulting to "
+            << (send_protobuf_in_initiate_ ? "BOTH" : "XML");
+    return send_protobuf_in_initiate_ ? SignalingFormat::BOTH
+                                      : SignalingFormat::XML;
   }
 
   LOG(WARNING) << "No signaling format negotiated for session " << message.sid
@@ -793,6 +798,10 @@ void FtlSignalStrategy::AddFtlListener(FtlListener* listener) {
 
 void FtlSignalStrategy::RemoveFtlListener(FtlListener* listener) {
   core_->RemoveFtlListener(listener);
+}
+
+void FtlSignalStrategy::SetSendProtobufInInitiate(bool send) {
+  core_->SetSendProtobufInInitiate(send);
 }
 
 bool FtlSignalStrategy::SendMessage(JingleMessage&& message) {
