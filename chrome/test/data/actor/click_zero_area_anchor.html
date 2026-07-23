@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { margin: 0; }
+    .fragment {
+      position: absolute;
+      top: 50px;
+      width: 80px;
+      height: 40px;
+      background: green;
+    }
+    #fragment { left: 50px; }
+    #second-fragment { left: 180px; }
+  </style>
+</head>
+<body>
+  <a id="target" href="#activated">
+    <span id="fragment" class="fragment">Activate</span>
+    <span id="second-fragment" class="fragment">Again</span>
+  </a>
+  <script>
+    window.click_count = 0;
+    window.last_click_target_id = '';
+    target.addEventListener('click', event => {
+      ++window.click_count;
+      window.last_click_target_id = event.target.id;
+    });
+  </script>
+</body>
+</html>

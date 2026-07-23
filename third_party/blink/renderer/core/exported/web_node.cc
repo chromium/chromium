@@ -157,6 +157,23 @@ WebNode WebNode::ParentInFlatTree() const {
   return WebNode(FlatTreeTraversal::Parent(*private_));
 }
 
+WebNode WebNode::NextInFlatTree(const WebNode& stay_within) const {
+  if (private_.IsNull() || stay_within.private_.IsNull()) {
+    return WebNode();
+  }
+  return WebNode(
+      FlatTreeTraversal::Next(*private_, stay_within.private_.Get()));
+}
+
+WebNode WebNode::NextSkippingChildrenInFlatTree(
+    const WebNode& stay_within) const {
+  if (private_.IsNull() || stay_within.private_.IsNull()) {
+    return WebNode();
+  }
+  return WebNode(FlatTreeTraversal::NextSkippingChildren(
+      *private_, stay_within.private_.Get()));
+}
+
 bool WebNode::IsInUserAgentShadowRoot() const {
   return private_->IsInUserAgentShadowRoot();
 }

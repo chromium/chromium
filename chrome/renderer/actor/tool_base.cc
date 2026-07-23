@@ -80,6 +80,74 @@ WebElement GetElementOrNearestElementAncestor(WebNode node) {
   return node.DynamicTo<WebElement>();
 }
 
+bool HasEmptyClientRects(WebElement& element) {
+  // ClientRectsInWidget() reports this element's own CSS client rects. A
+  // structural zero-area wrapper can have none even when its descendants are
+  // visible, so descendants are checked separately below.
+  for (const gfx::Rect& rect : element.ClientRectsInWidget()) {
+    if (!rect.IsEmpty()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::optional<gfx::PointF> FindClickPointOnDescendantOfZeroAreaTarget(
+    WebWidget& target_widget,
+    const WebNode& target_node,
+    const gfx::Rect& allowed_click_bounds) {
+  WebElement target_element = target_node.DynamicTo<WebElement>();
+  if (target_element.IsNull()) {
+    return std::nullopt;
+  }
+
+  // This exception is only for structural wrappers with no client area of
+  // their own. A clipped or offscreen positive-area element must continue
+  // through the normal interaction-point path.
+  if (!HasEmptyClientRects(target_element)) {
+    return std::nullopt;
+  }
+
+  // Find a current visible descendant point inside the target's observed
+  // visible bounds whose live hit-test result remains in the target's flat
+  // tree.
+  const gfx::Rect viewport(target_widget.VisibleViewportSize());
+  WebNode descendant = target_node.NextInFlatTree(target_node);
+  while (!descendant.IsNull()) {
+    WebElement element = descendant.DynamicTo<WebElement>();
+    if (element.IsNull()) {
+      descendant = descendant.NextInFlatTree(target_node);
+      continue;
+    }
+    bool has_visible_geometry = false;
+    for (const gfx::Rect& rect : element.ClientRectsInWidget()) {
+      gfx::Rect visible_rect = rect;
+      visible_rect.Intersect(viewport);
+      if (visible_rect.IsEmpty()) {
+        continue;
+      }
+      has_visible_geometry = true;
+      const gfx::Point candidate = visible_rect.CenterPoint();
+      // The click must remain within the target bounds from the last APC
+      // snapshot.
+      if (!allowed_click_bounds.Contains(candidate)) {
+        continue;
+      }
+      WebNode live_hit = target_widget.HitTestResultAt(gfx::PointF(candidate))
+                             .GetNodeOrPseudoNode();
+      if (!live_hit.IsNull() && target_node.ContainsViaFlatTree(&live_hit)) {
+        return gfx::PointF(candidate);
+      }
+    }
+    // Once an element supplies visible geometry, do not search deeper in that
+    // branch. This keeps the search on the nearest rendered descendants.
+    descendant = has_visible_geometry
+                     ? descendant.NextSkippingChildrenInFlatTree(target_node)
+                     : descendant.NextInFlatTree(target_node);
+  }
+  return std::nullopt;
+}
+
 enum class WebElementAuthorBarrierReason {
   kNone = 0,
   kInert,
@@ -340,7 +408,25 @@ ToolBase::ResolveResult ToolBase::ResolveTarget(
     node_interaction_point = InteractionPointFromWebNode(frame_widget, node);
   }
 
-  if (!node_interaction_point.has_value()) {
+  if (!node_interaction_point &&
+      base::FeatureList::IsEnabled(
+          features::kGlicActorDomIdClicksOnZeroAreaTargets) &&
+      observed_target_ &&
+      observed_target_->node_attribute->dom_node_id ==
+          target.get_dom_node_id() &&
+      observed_target_->node_attribute->geometry) {
+    // Restrict fallback clicks to bounds observed for this target in the last
+    // APC snapshot.
+    const gfx::Rect& allowed_click_bounds =
+        observed_target_->node_attribute->geometry->visible_bounding_box;
+    WebWidget* target_widget = popup_handle
+                                   ? static_cast<WebWidget*>(popup)
+                                   : static_cast<WebWidget*>(frame_widget);
+    node_interaction_point = FindClickPointOnDescendantOfZeroAreaTarget(
+        *target_widget, node, allowed_click_bounds);
+  }
+
+  if (!node_interaction_point) {
     return base::unexpected(
         MakeResult(mojom::ActionResultCode::kElementOffscreen,
                    /*requires_page_stabilization=*/false,

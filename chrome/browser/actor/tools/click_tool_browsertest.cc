@@ -25,6 +25,7 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -56,6 +57,38 @@ constexpr char kTargetCenterHitElementIdScript[] = R"JS(
   const y = target_rect.top + target_rect.height / 2;
   document.elementFromPoint(x, y).id;
 )JS";
+
+mojom::ToolInvocationPtr MakeZeroAreaNormalClickInvocation(
+    TaskId task_id,
+    int target_id,
+    mojom::ToolTargetPtr target,
+    float device_scale_factor) {
+  auto observed_target = mojom::ObservedToolTarget::New();
+  observed_target->node_attribute =
+      blink::mojom::AIPageContentAttributes::New();
+  observed_target->node_attribute->dom_node_id = target_id;
+  observed_target->node_attribute->geometry =
+      blink::mojom::AIPageContentGeometry::New();
+  auto& geometry = *observed_target->node_attribute->geometry;
+  // Actor validation receives the repaired unioned bounds in widget pixels.
+  // Current descendant client rects, not APC fragment boxes, provide the live
+  // click point.
+  const gfx::Rect observed_bounds = gfx::ScaleToEnclosingRect(
+      gfx::Rect(50, 50, 210, 40), device_scale_factor);
+  geometry.outer_bounding_box = observed_bounds;
+  geometry.visible_bounding_box = observed_bounds;
+
+  auto click = mojom::ClickAction::New();
+  click->type = mojom::ClickType::kLeft;
+  click->count = mojom::ClickCount::kSingle;
+
+  auto invocation = mojom::ToolInvocation::New();
+  invocation->task_id = task_id;
+  invocation->action = mojom::ToolAction::NewClick(std::move(click));
+  invocation->target = std::move(target);
+  invocation->observed_target = std::move(observed_target);
+  return invocation;
+}
 
 // This observer detects when WebContents receives notification of a user
 // gesture having occurred, following a user input event targeted to
@@ -968,6 +1001,33 @@ class ActorClickToolValidationBrowserTest : public ActorClickToolBrowserTest {
   base::test::ScopedFeatureList validation_feature_list_;
 };
 
+class ActorClickToolZeroAreaDomIdClicksBrowserTest
+    : public ActorClickToolBrowserTest {
+ public:
+  ActorClickToolZeroAreaDomIdClicksBrowserTest() {
+    validation_feature_list_.InitWithFeatures(
+        {features::kGlicActorToctouValidation,
+         features::kGlicActorDomIdClicksOnZeroAreaTargets},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList validation_feature_list_;
+};
+
+class ActorClickToolZeroAreaDomIdClicksDisabledBrowserTest
+    : public ActorClickToolBrowserTest {
+ public:
+  ActorClickToolZeroAreaDomIdClicksDisabledBrowserTest() {
+    validation_feature_list_.InitWithFeatures(
+        {features::kGlicActorToctouValidation},
+        {features::kGlicActorDomIdClicksOnZeroAreaTargets});
+  }
+
+ private:
+  base::test::ScopedFeatureList validation_feature_list_;
+};
+
 class ActorClickToolOccludedDirectActivationDisabledBrowserTest
     : public ActorClickToolBrowserTest {
  public:
@@ -1453,6 +1513,133 @@ IN_PROC_BROWSER_TEST_F(ActorClickToolValidationBrowserTest,
     // target once the server has chosen this action.
     ExpectDirectActivationClicksTarget();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ActorClickToolZeroAreaDomIdClicksBrowserTest,
+                       ClickTool_DomIdClickUsesVisibleDescendant) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/click_zero_area_anchor.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> target_id = GetDOMNodeId(*main_frame(), "#target");
+  ASSERT_TRUE(target_id);
+  // The anchor has no box of its own; its children provide the visible
+  // geometry.
+  ASSERT_EQ(0, EvalJs(web_contents(), "target.getBoundingClientRect().width"));
+  ASSERT_EQ(0, EvalJs(web_contents(), "target.getBoundingClientRect().height"));
+
+  // A DOM-ID click should use the first visible descendant as its interaction
+  // point.
+  auto invocation = MakeZeroAreaNormalClickInvocation(
+      actor_task().id(), target_id.value(),
+      mojom::ToolTarget::NewDomNodeId(target_id.value()),
+      web_contents()->GetRenderWidgetHostView()->GetDeviceScaleFactor());
+
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  main_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+      &chrome_render_frame);
+
+  TestFuture<mojom::InitializeToolResultPtr> initialize_future;
+  chrome_render_frame->InitializeTool(std::move(invocation),
+                                      initialize_future.GetCallback());
+  mojom::InitializeToolResultPtr initialize_result = initialize_future.Take();
+  ASSERT_TRUE(initialize_result->is_success_point())
+      << ToDebugString(*initialize_result->get_error_result());
+
+  TestFuture<mojom::ActionResultPtr> execute_future;
+  chrome_render_frame->ExecuteTool(actor_task().id(),
+                                   execute_future.GetCallback());
+  EXPECT_TRUE(IsOk(*execute_future.Get()));
+  EXPECT_EQ(1, EvalJs(web_contents(), "click_count"));
+  EXPECT_EQ("fragment", EvalJs(web_contents(), "last_click_target_id"));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorClickToolZeroAreaDomIdClicksBrowserTest,
+                       ClickTool_DomIdClickUsesVisibleShadowDescendant) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/click_zero_area_anchor.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(ExecJs(web_contents(), R"JS(
+    window.shadow_click_count = 0;
+    const host = document.createElement('span');
+    host.style.display = 'contents';
+    const shadow_root = host.attachShadow({mode: 'open'});
+    shadow_root.innerHTML = `
+      <style>
+        #shadow-fragment {
+          position: absolute;
+          left: 50px;
+          top: 50px;
+          width: 80px;
+          height: 40px;
+        }
+      </style>
+      <span id="shadow-fragment">Activate</span>`;
+    shadow_root.querySelector('#shadow-fragment').addEventListener(
+        'click', () => ++window.shadow_click_count);
+    target.replaceChildren(host);
+  )JS"));
+
+  std::optional<int> target_id = GetDOMNodeId(*main_frame(), "#target");
+  ASSERT_TRUE(target_id);
+  ASSERT_EQ(0, EvalJs(web_contents(), "target.getBoundingClientRect().width"));
+  ASSERT_EQ(0, EvalJs(web_contents(), "target.getBoundingClientRect().height"));
+
+  auto invocation = MakeZeroAreaNormalClickInvocation(
+      actor_task().id(), target_id.value(),
+      mojom::ToolTarget::NewDomNodeId(target_id.value()),
+      web_contents()->GetRenderWidgetHostView()->GetDeviceScaleFactor());
+
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  main_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+      &chrome_render_frame);
+
+  TestFuture<mojom::InitializeToolResultPtr> initialize_future;
+  chrome_render_frame->InitializeTool(std::move(invocation),
+                                      initialize_future.GetCallback());
+  mojom::InitializeToolResultPtr initialize_result = initialize_future.Take();
+  ASSERT_TRUE(initialize_result->is_success_point())
+      << ToDebugString(*initialize_result->get_error_result());
+
+  TestFuture<mojom::ActionResultPtr> execute_future;
+  chrome_render_frame->ExecuteTool(actor_task().id(),
+                                   execute_future.GetCallback());
+  EXPECT_TRUE(IsOk(*execute_future.Get()));
+  EXPECT_EQ(1, EvalJs(web_contents(), "shadow_click_count"));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorClickToolZeroAreaDomIdClicksDisabledBrowserTest,
+                       ClickTool_DomIdClickFailsWhenFeatureDisabled) {
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/click_zero_area_anchor.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> target_id = GetDOMNodeId(*main_frame(), "#target");
+  ASSERT_TRUE(target_id);
+  // Keep the same zero-area precondition as the enabled-feature test.
+  ASSERT_EQ(0, EvalJs(web_contents(), "target.getBoundingClientRect().width"));
+  ASSERT_EQ(0, EvalJs(web_contents(), "target.getBoundingClientRect().height"));
+
+  auto invocation = MakeZeroAreaNormalClickInvocation(
+      actor_task().id(), target_id.value(),
+      mojom::ToolTarget::NewDomNodeId(target_id.value()),
+      web_contents()->GetRenderWidgetHostView()->GetDeviceScaleFactor());
+
+  mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame> chrome_render_frame;
+  main_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+      &chrome_render_frame);
+
+  // The disabled gate should reject the target during initialization, before
+  // any click is dispatched.
+  TestFuture<mojom::InitializeToolResultPtr> initialize_future;
+  chrome_render_frame->InitializeTool(std::move(invocation),
+                                      initialize_future.GetCallback());
+  mojom::InitializeToolResultPtr initialize_result = initialize_future.Take();
+  ASSERT_TRUE(initialize_result->is_error_result());
+  EXPECT_EQ(mojom::ActionResultCode::kElementOffscreen,
+            initialize_result->get_error_result()->code);
+  EXPECT_EQ(0, EvalJs(web_contents(), "click_count"));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorClickToolValidationBrowserTest,
