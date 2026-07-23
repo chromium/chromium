@@ -293,6 +293,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, an Omnibox Autofill suggestion has already been logged as accepted
   // and should not be logged again.
   bool has_logged_omnibox_autofill_suggestion_accepted_ = false;
+  // If true, the metrics for a form filled from Omnibox Autofill were already
+  // logged and should not be logged again.
+  bool has_logged_form_filled_from_omnibox_autofill_ = false;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // If true, one of the cards in the suggestions fetched is externally-saved.
   bool suggestion_contains_externally_saved_card_ = false;

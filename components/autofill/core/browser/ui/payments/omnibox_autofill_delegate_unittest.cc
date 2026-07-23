@@ -19,6 +19,8 @@
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
+#include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
+#include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -95,6 +97,16 @@ class OmniboxAutofillDelegateTest
         .test_payments_data_manager()
         .AddCreditCard(test::GetMaskedServerCard());
 
+    payments_autofill_client().set_payments_network_interface(
+        std::make_unique<payments::TestPaymentsNetworkInterface>(
+            autofill_client().GetURLLoaderFactory(),
+            autofill_client().GetIdentityManager(),
+            &autofill_client().GetPersonalDataManager()));
+    payments_autofill_client().set_multiple_request_payments_network_interface(
+        std::make_unique<payments::MockMultipleRequestPaymentsNetworkInterface>(
+            autofill_client().GetURLLoaderFactory(),
+            *autofill_client().GetIdentityManager()));
+
     CreateAutofillDriver();
     autofill_driver().SetParent(nullptr);
     autofill_driver().SetIsEmbedded(false);
@@ -110,6 +122,15 @@ class OmniboxAutofillDelegateTest
     autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
                                    /*removed_forms=*/{},
                                    AutofillManagerTestApi::pass_key());
+  }
+
+  void AutofillForm(const FormData& form, const CreditCard& credit_card) {
+    // Filling should trigger on the "Card Number" field located at index 1.
+    autofill_manager().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form.global_id(),
+        form.fields()[1].global_id(), &credit_card,
+        AutofillTriggerSource::kOmniboxAutofill,
+        /*blocked_fields=*/{});
   }
 
   FormData CreateTestCreditCardFormData() {
@@ -1010,6 +1031,28 @@ TEST_F(OmniboxAutofillDelegateTest,
   histogram_tester.ExpectBucketCount(
       "Autofill.OmniboxAutofill.Events",
       OmniboxAutofillEvents::kSuggestionAcceptedOnce, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest, FormFilled_LogOmniboxAutofillEventMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Add local credit card.
+  CreditCard local_card = test::GetCreditCard();
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddCreditCard(local_card);
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  // Fill the form synchronously using the local card.
+  AutofillForm(form, local_card);
+
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kFormFilled, 1);
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kFormFilledOnce, 1);
 }
 
 }  // namespace

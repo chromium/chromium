@@ -419,6 +419,15 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     save_and_fill_manager->LogCreditCardFormFilled();
     return;
   }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (trigger_source_ == AutofillTriggerSource::kOmniboxAutofill) {
+    if (!has_logged_form_filled_from_omnibox_autofill_) {
+      LogOmniboxAutofillEvents(OmniboxAutofillEvents::kFormFilledOnce);
+      has_logged_form_filled_from_omnibox_autofill_ = true;
+    }
+    LogOmniboxAutofillEvents(OmniboxAutofillEvents::kFormFilled);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   latest_filled_card_was_masked_server_card_ = false;
   latest_filled_card_was_card_info_retrieval_enrolled_ = false;
