@@ -6941,6 +6941,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.TabGroupCollapsed" enum="Boolean"
+    expires_after="2027-07-22">
+  <owner>agazal@google.com</owner>
+  <owner>jinsukkim@chromium.org</owner>
+  <summary>
+    Recorded when the user clicks on the tab group header to collapse or expand
+    it in Vertical Tabs. True if the user is collapsing a group and false if a
+    user is expanding it.
+  </summary>
+</histogram>
+
 <histogram name="Android.Wallet.BoardingPass.Detected" enum="BooleanDetected"
     expires_after="2024-12-31">
   <owner>hanfeng@google.com</owner>

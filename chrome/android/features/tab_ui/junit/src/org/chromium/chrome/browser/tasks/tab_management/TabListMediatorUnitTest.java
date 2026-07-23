@@ -109,6 +109,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.ActorOverlayState;
@@ -6612,5 +6613,41 @@ public class TabListMediatorUnitTest {
                                         .build()),
                         /* allowDialog= */ eq(true),
                         any());
+    }
+
+    @Test
+    public void testToggleTabGroupExpansion_LogsHistogramVertical() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.VERTICAL);
+
+        List<Tab> tabs = List.of(mTab1);
+        createTabGroup(tabs, TAB_GROUP_ID);
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        // Mock tab model collapse state.
+        doReturn(false).when(mTabModel).getTabGroupCollapsed(TAB_GROUP_ID);
+
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.TabGroupCollapsed", true);
+
+        // Toggle expansion (from expanded (false) to collapsed (true)).
+        mMediator.toggleTabGroupExpansion(TAB1_ID);
+
+        verify(mTabModel).setTabGroupCollapsed(TAB_GROUP_ID, true, false);
+
+        histogramWatcher.assertExpected();
+
+        // Test expand.
+        doReturn(true).when(mTabModel).getTabGroupCollapsed(TAB_GROUP_ID);
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.VerticalTabs.TabGroupCollapsed", false);
+
+        // Toggle expansion (from collapsed (true) to expanded (false)).
+        mMediator.toggleTabGroupExpansion(TAB1_ID);
+
+        verify(mTabModel).setTabGroupCollapsed(TAB_GROUP_ID, false, false);
+
+        histogramWatcher.assertExpected();
     }
 }

@@ -1750,6 +1750,11 @@ public class TabListMediator implements TabListNotificationHandler {
         boolean newCollapsedState = !isCollapsed;
 
         tabModel.setTabGroupCollapsed(tabGroupId, newCollapsedState, /* animate= */ false);
+
+        if (mMode == TabListMode.VERTICAL) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.VerticalTabs.TabGroupCollapsed", newCollapsedState);
+        }
     }
 
     void postHiding() {
