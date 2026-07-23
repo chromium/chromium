@@ -413,6 +413,11 @@ class LocationBarMediator
                 .addSyncObserverAndPostIfNonNull(
                         mCallbackController.makeCancelable(this::onFuseboxStateChanged));
         mFuseboxCoordinator
+                .getFuseboxLayoutModeSupplier()
+                .addSyncObserverAndPostIfNonNull(
+                        mCallbackController.makeCancelable(
+                                mLocationBarLayout::setFuseboxLayoutMode));
+        mFuseboxCoordinator
                 .getHasAttachmentsSupplier()
                 .addSyncObserver(
                         mCallbackController.makeCancelable(
@@ -1638,10 +1643,6 @@ class LocationBarMediator
      */
     @VisibleForTesting
     /* package */ void handleUrlFocusAnimation(boolean hasFocus) {
-        @FuseboxLayoutMode
-        int layoutMode = mFuseboxCoordinator.getFuseboxLayoutModeSupplier().get();
-        mLocationBarLayout.setFuseboxLayoutMode(layoutMode);
-
         if (hasFocus) {
             mUrlFocusedWithoutAnimations = false;
         }

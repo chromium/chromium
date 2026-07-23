@@ -2830,6 +2830,12 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testFuseboxLayoutMode_PropagatedOnInitialization() {
+        mFuseboxLayoutModeSupplier.set(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+        verify(mLocationBarLayout).setFuseboxLayoutMode(FuseboxLayoutMode.SUGGESTIONS_POPOVER);
+    }
+
+    @Test
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
     public void testUpdateButtonVisibility_ImageGenMode_noQuery_showMic() {
         mMediator.onFinishNativeInitialization();
