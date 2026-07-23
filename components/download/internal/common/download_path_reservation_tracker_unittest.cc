@@ -314,6 +314,47 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingFiles) {
   EXPECT_FALSE(IsPathInUse(path1));
 }
 
+// As above, but checks for existing files that differ only by case.
+TEST_F(DownloadPathReservationTrackerTest, CaseConflictingFiles) {
+  std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
+
+  base::FilePath path(
+      GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")));
+  base::FilePath target_path(
+      GetPathInDownloadsDirectory(FILE_PATH_LITERAL("FOO.txt")));
+  base::FilePath path1(
+      GetPathInDownloadsDirectory(FILE_PATH_LITERAL("FOO (1).txt")));
+  bool use_download_collection = false;
+#if BUILDFLAG(IS_ANDROID)
+  if (DownloadCollectionBridge::ShouldPublishDownload(path)) {
+    use_download_collection = true;
+    DownloadCollectionBridge::AddExistingFileNameForTesting(path.BaseName());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  if (!use_download_collection) {
+    // Create a file at |path|, and a .crdownload file at |path1|.
+    ASSERT_TRUE(base::WriteFile(path, ""));
+    ASSERT_TRUE(base::WriteFile(
+        base::FilePath(path1.value() + FILE_PATH_LITERAL(".crdownload")), ""));
+  }
+
+  ASSERT_TRUE(IsPathInUse(path));
+
+  // Whether this counts as a conflict depends on whether the filesystem is
+  // actually case-sensitive.
+  CreateReservation(
+      item.get(), target_path, DownloadPathReservationTracker::UNIQUIFY,
+      IsPathInUse(target_path) ? PathValidationResult::SUCCESS_RESOLVED_CONFLICT
+                               : PathValidationResult::SUCCESS,
+      IsPathInUse(target_path) ? path1 : target_path);
+
+  SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
+  item.reset();
+  RunUntilIdle();
+  EXPECT_TRUE(IsPathInUse(path));
+  EXPECT_FALSE(IsPathInUse(path1));
+}
+
 // If there are conflicting files on the file system, an overwriting reservation
 // should succeed without altering the target path.
 TEST_F(DownloadPathReservationTrackerTest, ConflictingFiles_Overwrite) {
@@ -335,6 +376,38 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingFiles_Overwrite) {
 
   CreateReservation(item.get(), path, DownloadPathReservationTracker::OVERWRITE,
                     PathValidationResult::SUCCESS, path);
+
+  SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
+  item.reset();
+  RunUntilIdle();
+}
+
+// As above, but checks for existing files that differ only by case. On a
+// case-sensitive filesystem this is redundant, since the files won't actually
+// conflict, but it's easier to run the test everywhere than to check the
+// filesystem type.
+TEST_F(DownloadPathReservationTrackerTest, CaseConflictingFiles_Overwrite) {
+  std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
+  base::FilePath path(
+      GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")));
+  base::FilePath target_path(
+      GetPathInDownloadsDirectory(FILE_PATH_LITERAL("FOO.txt")));
+  bool use_download_collection = false;
+#if BUILDFLAG(IS_ANDROID)
+  if (DownloadCollectionBridge::ShouldPublishDownload(path)) {
+    use_download_collection = true;
+    DownloadCollectionBridge::AddExistingFileNameForTesting(path.BaseName());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  if (!use_download_collection) {
+    // Create a file at |path|.
+    ASSERT_TRUE(base::WriteFile(path, ""));
+  }
+  ASSERT_TRUE(IsPathInUse(path));
+
+  CreateReservation(item.get(), target_path,
+                    DownloadPathReservationTracker::OVERWRITE,
+                    PathValidationResult::SUCCESS, target_path);
 
   SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
   item.reset();
@@ -363,6 +436,37 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictWithSource) {
 
   CreateReservation(item.get(), path, DownloadPathReservationTracker::UNIQUIFY,
                     PathValidationResult::SAME_AS_SOURCE, path);
+
+  SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
+  item.reset();
+  RunUntilIdle();
+}
+
+// As above, but check for a file:// URL that differs only by case. This should
+// be flagged on all file systems, even case-sensitive ones, for safety.
+TEST_F(DownloadPathReservationTrackerTest, CaseConflictWithSource) {
+  std::unique_ptr<MockDownloadItem> item = CreateDownloadItem(1);
+  base::FilePath path(
+      GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")));
+  base::FilePath target_path(
+      GetPathInDownloadsDirectory(FILE_PATH_LITERAL("FOO.txt")));
+  bool use_download_collection = false;
+#if BUILDFLAG(IS_ANDROID)
+  if (DownloadCollectionBridge::ShouldPublishDownload(path)) {
+    use_download_collection = true;
+    DownloadCollectionBridge::AddExistingFileNameForTesting(path.BaseName());
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+  if (!use_download_collection) {
+    ASSERT_TRUE(base::WriteFile(path, ""));
+  }
+  ASSERT_TRUE(IsPathInUse(path));
+  EXPECT_CALL(*item, GetURL())
+      .WillRepeatedly(ReturnRefOfCopy(net::FilePathToFileURL(path)));
+
+  CreateReservation(item.get(), target_path,
+                    DownloadPathReservationTracker::UNIQUIFY,
+                    PathValidationResult::SAME_AS_SOURCE, target_path);
 
   SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
   item.reset();

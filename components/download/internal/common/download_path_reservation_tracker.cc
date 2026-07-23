@@ -103,8 +103,9 @@ bool IsPathReservedInternal(const base::FilePath& path, ReservationKey item) {
        iter != g_reservation_map->end(); ++iter) {
     if ((!item || iter->first != item) &&
         base::FilePath::CompareEqualIgnoreCase(iter->second.value(),
-                                               path.value()))
+                                               path.value())) {
       return true;
+    }
   }
   return false;
 }
@@ -324,8 +325,10 @@ PathValidationResult ValidatePathAndResolveConflicts(
   // onto another file that differs only by case is not enough of a legitimate
   // edge case to justify determining the case sensitivity of the underlying
   // filesystem.
-  if (*target_path == info.source_path)
+  if (base::FilePath::CompareEqualIgnoreCase(target_path->value(),
+                                             info.source_path.value())) {
     return PathValidationResult::SAME_AS_SOURCE;
+  }
 
   if (!IsPathInUse(*target_path))
     return PathValidationResult::SUCCESS;
@@ -369,7 +372,11 @@ PathValidationResult CreateReservation(const CreateReservationInfo& info,
   if (DownloadCollectionBridge::ShouldPublishDownload(target_path)) {
     PathValidationResult result = PathValidationResult::SUCCESS;
     // Disallow downloading a file onto itself. Assume that downloading a file
-    if (target_path == info.source_path) {
+    // onto another file that differs only by case is not enough of a legitimate
+    // edge case to justify determining the case sensitivity of the underlying
+    // filesystem.
+    if (base::FilePath::CompareEqualIgnoreCase(target_path.value(),
+                                               info.source_path.value())) {
       result = PathValidationResult::SAME_AS_SOURCE;
     } else if (IsPathInUse(target_path)) {
       // If the download is written to a content URI, put file name in the
