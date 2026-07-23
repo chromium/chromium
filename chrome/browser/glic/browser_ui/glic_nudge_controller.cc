@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -21,7 +22,8 @@ GlicNudgeController::~GlicNudgeController() = default;
 // static
 std::unique_ptr<GlicNudgeController> GlicNudgeController::CreateFor(
     BrowserWindowInterface* browser) {
-  return std::make_unique<GlicNudgeControllerImpl>(browser);
+  return std::make_unique<GlicNudgeControllerImpl>(
+      browser, GlicSplitButtonController::From(browser));
 }
 
 // static

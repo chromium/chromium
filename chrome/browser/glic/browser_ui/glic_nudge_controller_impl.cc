@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller_impl.h"
 
+#include "base/functional/bind.h"
+#include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -19,8 +21,10 @@
 namespace glic {
 
 GlicNudgeControllerImpl::GlicNudgeControllerImpl(
-    BrowserWindowInterface* browser_window_interface)
+    BrowserWindowInterface* browser_window_interface,
+    GlicSplitButtonController* split_button_controller)
     : browser_window_interface_(browser_window_interface),
+      split_button_controller_(split_button_controller),
       scoped_unowned_user_data_(
           browser_window_interface->GetUnownedUserDataHost(),
           *this) {
@@ -31,14 +35,16 @@ GlicNudgeControllerImpl::GlicNudgeControllerImpl(
 
 GlicNudgeControllerImpl::~GlicNudgeControllerImpl() = default;
 
+// TODO(crbug.com/511309088): Remove and have callers do this directly on the
+// split button controller.
 void GlicNudgeControllerImpl::SetHorizontalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
-  horizontal_tabs_delegate_ = delegate;
+  split_button_controller_->SetHorizontalTabsDelegate(delegate);
 }
 
 void GlicNudgeControllerImpl::SetVerticalTabsDelegate(
     GlicSplitButtonDelegate* delegate) {
-  vertical_tabs_delegate_ = delegate;
+  split_button_controller_->SetVerticalTabsDelegate(delegate);
 }
 
 std::optional<std::string> GlicNudgeControllerImpl::GetPromptSuggestion() {
@@ -79,17 +85,18 @@ void GlicNudgeControllerImpl::UpdateNudgeLabel(
     return;
   }
 
-  GlicSplitButtonDelegate* delegate = GetActiveDelegate();
-
   if (activity &&
       (activity == glic::GlicNudgeActivity::
                        kNudgeIgnoredOpenedContextualTasksSidePanel ||
        activity == glic::GlicNudgeActivity::
-                       kNudgeIgnoredOmniboxContextMenuInteraction) &&
-      delegate && delegate->GetIsShowingGlicNudge()) {
-    delegate->OnHideGlicNudgeUI();
+                       kNudgeIgnoredOmniboxContextMenuInteraction)) {
+    split_button_controller_->CallOnBoth(
+        base::BindRepeating([](GlicSplitButtonDelegate& delegate) {
+          if (delegate.GetIsShowingGlicNudge()) {
+            delegate.OnHideGlicNudgeUI();
+          }
+        }));
     OnNudgeActivity(*activity);
-    return;
   }
 
   nudge_activity_callback_ = callback;
@@ -104,13 +111,15 @@ void GlicNudgeControllerImpl::UpdateNudgeLabel(
   PrefService* const pref_service =
       browser_window_interface_->GetProfile()->GetPrefs();
   if (pref_service->GetBoolean(glic::prefs::kGlicPinnedToTabstrip)) {
-    if (delegate) {
-      if (nudge_label.empty()) {
-        delegate->OnHideGlicNudgeUI();
-      } else {
-        delegate->OnTriggerGlicNudgeUI(NudgeParams(nudge_label));
-      }
-    }
+    split_button_controller_->CallOnBoth(base::BindRepeating(
+        [](const std::string& nudge_label, GlicSplitButtonDelegate& delegate) {
+          if (nudge_label.empty()) {
+            delegate.OnHideGlicNudgeUI();
+          } else {
+            delegate.OnTriggerGlicNudgeUI(NudgeParams(nudge_label));
+          }
+        },
+        nudge_label));
   }
 
   if (nudge_label.empty()) {
@@ -170,30 +179,18 @@ void GlicNudgeControllerImpl::OnActiveTabChanged(TabListInterface& tab_list,
   if (!nudged_tab_handle_.Get() || tab == nudged_tab_handle_.Get()) {
     return;
   }
-  GlicSplitButtonDelegate* delegate = GetActiveDelegate();
-  if (delegate && delegate->GetIsShowingGlicNudge()) {
-    delegate->OnHideGlicNudgeUI();
-    OnNudgeActivity(glic::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
-  }
+
+  split_button_controller_->CallOnBoth(
+      base::BindRepeating([](GlicSplitButtonDelegate& delegate) {
+        if (delegate.GetIsShowingGlicNudge()) {
+          delegate.OnHideGlicNudgeUI();
+        }
+      }));
+  OnNudgeActivity(glic::GlicNudgeActivity::kNudgeIgnoredActiveTabChanged);
 }
 
 void GlicNudgeControllerImpl::OnTabListDestroyed(TabListInterface& tab_list) {
   tab_list_observation_.Reset();
-}
-
-GlicSplitButtonDelegate* GlicNudgeControllerImpl::GetActiveDelegate() {
-#if BUILDFLAG(IS_ANDROID)
-  return horizontal_tabs_delegate_;
-#else
-  auto* vertical_tab_strip_state_controller =
-      tabs::VerticalTabStripStateController::From(browser_window_interface_);
-
-  return vertical_tab_strip_state_controller &&
-                 vertical_tab_strip_state_controller
-                     ->ShouldDisplayVerticalTabs()
-             ? vertical_tabs_delegate_
-             : horizontal_tabs_delegate_;
-#endif
 }
 
 TabListInterface* GlicNudgeControllerImpl::GetTabList() {

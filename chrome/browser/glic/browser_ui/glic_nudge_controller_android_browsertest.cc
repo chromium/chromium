@@ -31,6 +31,8 @@ class MockGlicNudgeDelegate : public GlicSplitButtonDelegate {
 
   bool GetIsShowingGlicNudge() override { return is_showing_glic_nudge_; }
 
+  bool IsGlicAdded() override { return true; }
+
   const std::optional<NudgeParams>& last_nudge_params() const {
     return last_nudge_params_;
   }

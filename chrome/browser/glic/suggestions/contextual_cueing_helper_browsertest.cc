@@ -61,6 +61,7 @@ class FakeGlicNudgeDelegate : public glic::GlicSplitButtonDelegate {
     last_nudge_label_ = "";
   }
   bool GetIsShowingGlicNudge() override { return is_showing_nudge_; }
+  bool IsGlicAdded() override { return true; }
   void WaitUntilValidNudge() { future_.Get(); }
   void ResetFuture() { future_.Clear(); }
   std::string last_nudge_label_;
