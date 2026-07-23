@@ -372,14 +372,13 @@ void PrintPreviewDialogController::RenderProcessGone(
 
 void PrintPreviewDialogController::WebContentsDestroyed(WebContents* contents) {
   WebContents* preview_dialog = GetPrintPreviewForContents(contents);
-  if (!preview_dialog) {
-    NOTREACHED();
-  }
+  CHECK(preview_dialog);
 
-  if (contents == preview_dialog)
+  if (contents == preview_dialog) {
     RemovePreviewDialog(contents);
-  else
+  } else {
     RemoveInitiator(contents);
+  }
 }
 
 void PrintPreviewDialogController::DidFinishNavigation(
@@ -391,14 +390,13 @@ void PrintPreviewDialogController::DidFinishNavigation(
   }
 
   WebContents* preview_dialog = GetPrintPreviewForContents(contents);
-  if (!preview_dialog) {
-    NOTREACHED();
-  }
+  CHECK(preview_dialog);
 
-  if (contents != preview_dialog)
+  if (contents != preview_dialog) {
     OnInitiatorNavigated(contents, navigation_handle);
-  else
+  } else {
     OnPreviewDialogNavigated(contents, navigation_handle);
+  }
 }
 
 void PrintPreviewDialogController::OnInitiatorNavigated(
