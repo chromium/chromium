@@ -75,10 +75,10 @@ export class AppVerifyPinDialogElement extends AppVerifyPinDialogElementBase {
   }
 
   private enableSubmit_: boolean;
-  private isVerificationPending_: boolean;
+  declare private isVerificationPending_: boolean;
   private mojoInterfaceProvider_: AppParentalControlsHandlerInterface;
-  private pinValue_: string;
-  private showError_: boolean;
+  declare private pinValue_: string;
+  declare private showError_: boolean;
 
   constructor() {
     super();

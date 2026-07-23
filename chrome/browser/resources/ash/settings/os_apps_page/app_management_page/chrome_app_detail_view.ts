@@ -41,8 +41,8 @@ export class AppManagementChromeAppDetailViewElement extends
     };
   }
 
-  private app_: App;
-  private messages_: ExtensionAppPermissionMessage[];
+  declare private app_: App;
+  declare private messages_: ExtensionAppPermissionMessage[];
 
   override connectedCallback(): void {
     super.connectedCallback();

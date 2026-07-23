@@ -107,12 +107,12 @@ export class AppManagementArcDetailViewElement extends
 
   // Public API: Bidirectional data flow.
   /** Passed down to children. Do not access without using PrefsMixin. */
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
-  private app_: App;
-  private apps_: AppMap;
-  private permissionDefinitions_: PermissionDefinition[];
-  private hasReadOnlyPermissions_: boolean;
+  declare private app_: App;
+  declare private apps_: AppMap;
+  declare private permissionDefinitions_: PermissionDefinition[];
+  declare private hasReadOnlyPermissions_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

@@ -29,8 +29,8 @@ export class AppManagementMorePermissionsItemElement extends PolymerElement {
     };
   }
 
-  app: App;
-  morePermissionsLabel: string;
+  declare app: App;
+  declare morePermissionsLabel: string;
 
   override ready(): void {
     super.ready();

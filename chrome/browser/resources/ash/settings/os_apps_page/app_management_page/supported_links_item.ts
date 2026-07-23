@@ -96,15 +96,15 @@ export class AppManagementSupportedLinksItemElement extends
     ];
   }
 
-  app: App;
-  apps: AppMap;
-  override hidden: boolean;
-  private disabled_: boolean;
-  private overlappingAppsWarning_: string;
-  private overlappingAppIds_: string[];
-  private showOverlappingAppsDialog_: boolean;
-  private showOverlappingAppsWarning_: boolean;
-  private showSupportedLinksDialog_: boolean;
+  declare app: App;
+  declare apps: AppMap;
+  declare hidden: boolean;
+  declare private disabled_: boolean;
+  declare private overlappingAppsWarning_: string;
+  declare private overlappingAppIds_: string[];
+  declare private showOverlappingAppsDialog_: boolean;
+  declare private showOverlappingAppsWarning_: boolean;
+  declare private showSupportedLinksDialog_: boolean;
 
   /**
    * The supported links item is not available when an app has no supported

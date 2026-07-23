@@ -76,8 +76,8 @@ export class SettingsAndroidAppsSubpageElement extends
     };
   }
 
-  androidAppsInfo: AndroidAppsInfo;
-  isArcVmManageUsbAvailable: boolean;
+  declare androidAppsInfo: AndroidAppsInfo;
+  declare isArcVmManageUsbAvailable: boolean;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -85,8 +85,8 @@ export class SettingsAndroidAppsSubpageElement extends
     Setting.kRemovePlayStore,
   ]);
 
-  private dialogBody_: string;
-  private playStoreEnabled_: boolean;
+  declare private dialogBody_: string;
+  declare private playStoreEnabled_: boolean;
 
   constructor() {
     super();

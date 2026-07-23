@@ -81,14 +81,20 @@ export class AppManagementAppDetailsItem extends
     };
   }
 
-  app: App;
-  private appId_: string;
-  private apps_: Record<string, App>;
-  private subAppToParentAppId_: Record<string, string>;
-  private updateState_: UpdateState;
-  private availableUpdateVersion_: string;
-  private hasOpenWindows_: boolean = false;
-  private showUpdateFoundDialog_: boolean = false;
+  constructor() {
+    super();
+    this.hasOpenWindows_ = false;
+    this.showUpdateFoundDialog_ = false;
+  }
+
+  declare app: App;
+  declare private appId_: string;
+  declare private apps_: Record<string, App>;
+  declare private subAppToParentAppId_: Record<string, string>;
+  declare private updateState_: UpdateState;
+  declare private availableUpdateVersion_: string;
+  declare private hasOpenWindows_: boolean;
+  declare private showUpdateFoundDialog_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

@@ -30,7 +30,7 @@ export class AppManagementAppContentDialogElement extends
       app: Object,
     };
   }
-  app: App;
+  declare app: App;
 
   override ready(): void {
     super.ready();

@@ -46,8 +46,8 @@ export class AppManagementBorealisDetailViewElement extends
     };
   }
 
-  prefs: PrefsState;
-  private app_: App;
+  declare prefs: PrefsState;
+  declare private app_: App;
 
   override connectedCallback(): void {
     super.connectedCallback();

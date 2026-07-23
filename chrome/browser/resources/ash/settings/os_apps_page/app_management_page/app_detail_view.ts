@@ -66,11 +66,11 @@ export class AppManagementAppDetailViewElement extends
 
   // Public API: Bidirectional data flow.
   /** Passed down to children. Do not access without using PrefsMixin. */
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
-  private app_: App;
-  private apps_: AppMap;
-  private selectedAppId_: string;
+  declare private app_: App;
+  declare private apps_: AppMap;
+  declare private selectedAppId_: string;
 
   override connectedCallback(): void {
     super.connectedCallback();

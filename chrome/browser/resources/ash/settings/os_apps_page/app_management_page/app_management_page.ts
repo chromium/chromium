@@ -24,7 +24,7 @@ export class SettingsAppManagementPageElement extends PolymerElement {
     };
   }
 
-  searchTerm: string;
+  declare searchTerm: string;
 }
 
 declare global {

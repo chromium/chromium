@@ -27,7 +27,7 @@ export class BlockAppItemElement extends PolymerElement {
     };
   }
 
-  app: App;
+  declare app: App;
   private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
 
   constructor() {

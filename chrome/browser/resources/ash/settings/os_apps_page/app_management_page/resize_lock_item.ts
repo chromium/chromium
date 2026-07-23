@@ -39,8 +39,8 @@ export class AppManagementResizeLockItemElement extends PolymerElement {
     };
   }
 
-  app: App;
-  override hidden: boolean;
+  declare app: App;
+  declare hidden: boolean;
 
   override ready(): void {
     super.ready();

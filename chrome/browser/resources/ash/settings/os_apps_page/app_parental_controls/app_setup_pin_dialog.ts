@@ -54,8 +54,8 @@ export class AppSetupPinDialogElement extends AppSetupPinDialogElementBase {
     };
   }
 
-  private enableSubmit_: boolean;
-  private isConfirmStep_: boolean;
+  declare private enableSubmit_: boolean;
+  declare private isConfirmStep_: boolean;
 
   override ready(): void {
     super.ready();

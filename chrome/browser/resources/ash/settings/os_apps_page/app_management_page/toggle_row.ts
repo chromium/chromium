@@ -35,12 +35,12 @@ export class AppManagementToggleRowElement extends PolymerElement {
     };
   }
 
-  icon: string;
-  label: string;
-  managed: boolean;
-  disabled: boolean;
-  value: boolean;
-  description: string;
+  declare icon: string;
+  declare label: string;
+  declare managed: boolean;
+  declare disabled: boolean;
+  declare value: boolean;
+  declare description: string;
 
   override ready(): void {
     super.ready();

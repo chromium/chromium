@@ -47,9 +47,9 @@ export class AppManagementFileHandlingItemElement extends
     };
   }
 
-  app: App;
-  override hidden: boolean;
-  showOverflowDialog: boolean;
+  declare app: App;
+  declare hidden: boolean;
+  declare showOverflowDialog: boolean;
 
   override ready(): void {
     super.ready();

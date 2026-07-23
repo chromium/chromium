@@ -46,15 +46,20 @@ export class AppManagementAppLanguageItemElement extends
     };
   }
 
+  constructor() {
+    super();
+    this.app = undefined;
+  }
+
   // Public API: Bidirectional data flow.
   /** Passed down to children. Do not access without using PrefsMixin. */
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
-  app?: App = undefined;
+  declare app?: App;
   // Polymer-overridden property to hide this component.
-  override hidden: boolean;
+  declare hidden: boolean;
 
-  private showSelectLanguageDialog_: boolean;
+  declare private showSelectLanguageDialog_: boolean;
 
   private onClick_(): void {
     this.showSelectLanguageDialog_ = true;

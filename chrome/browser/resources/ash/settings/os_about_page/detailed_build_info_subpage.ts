@@ -136,19 +136,19 @@ export class SettingsDetailedBuildInfoSubpageElement extends
     Setting.kCopyDetailedBuildInfo,
   ]);
 
-  private versionInfo_: VersionInfo;
-  private channelInfo_: ChannelInfo;
-  private currentlyOnChannelText_: string;
-  private showChannelSwitcherDialog_: boolean;
-  private canChangeChannel_: boolean;
-  private isManagedAutoUpdateEnabled_: boolean;
-  private showConsumerAutoUpdateToggleDialog_: boolean;
-  private eolMessageWithMonthAndYear: string;
-  private shouldHideEolInfo_: boolean;
-  private isManaged_: boolean;
-  private isConsumerAutoUpdateTogglingAllowed_: boolean;
-  private showConsumerAutoUpdateToggle_: boolean;
-  private showManagedAutoUpdateToggle_: boolean;
+  declare private versionInfo_: VersionInfo;
+  declare private channelInfo_: ChannelInfo;
+  declare private currentlyOnChannelText_: string;
+  declare private showChannelSwitcherDialog_: boolean;
+  declare private canChangeChannel_: boolean;
+  declare private isManagedAutoUpdateEnabled_: boolean;
+  declare private showConsumerAutoUpdateToggleDialog_: boolean;
+  declare private eolMessageWithMonthAndYear: string;
+  declare private shouldHideEolInfo_: boolean;
+  declare private isManaged_: boolean;
+  declare private isConsumerAutoUpdateTogglingAllowed_: boolean;
+  declare private showConsumerAutoUpdateToggle_: boolean;
+  declare private showManagedAutoUpdateToggle_: boolean;
 
   private aboutPageBrowserProxy_: AboutPageBrowserProxy;
 

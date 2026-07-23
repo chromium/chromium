@@ -54,9 +54,9 @@ export class AppManagementMainViewElement extends
     };
   }
 
-  searchTerm: string;
-  private appList_: App[];
-  private apps_: AppMap|undefined;
+  declare searchTerm: string;
+  declare private appList_: App[];
+  declare private apps_: AppMap|undefined;
 
   override connectedCallback(): void {
     super.connectedCallback();

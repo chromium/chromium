@@ -51,10 +51,10 @@ class SettingsUpdateWarningDialogElement extends
     };
   }
 
-  updateInfo?: AboutPageUpdateInfo;
+  declare updateInfo?: AboutPageUpdateInfo;
 
   private browserProxy_: AboutPageBrowserProxy;
-  private warningMessage_: string;
+  declare private warningMessage_: string;
 
   constructor() {
     super();

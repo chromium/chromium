@@ -75,10 +75,10 @@ export class SettingsChannelSwitcherDialogElement extends PolymerElement {
     };
   }
 
-  private browserChannelEnum_: typeof BrowserChannel;
-  private currentChannel_: BrowserChannel;
-  private targetChannel_: BrowserChannel;
-  private shouldShowButtons_: {
+  declare private browserChannelEnum_: typeof BrowserChannel;
+  declare private currentChannel_: BrowserChannel;
+  declare private targetChannel_: BrowserChannel;
+  declare private shouldShowButtons_: {
     changeChannel: boolean,
     changeChannelAndPowerwash: boolean,
   }|null;

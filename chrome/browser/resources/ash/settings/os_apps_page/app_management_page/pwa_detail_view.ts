@@ -49,9 +49,9 @@ export class AppManagementPwaDetailViewElement extends
     };
   }
 
-  prefs: PrefsState;
-  private app_: App;
-  private apps_: AppMap;
+  declare prefs: PrefsState;
+  declare private app_: App;
+  declare private apps_: AppMap;
 
   override connectedCallback(): void {
     super.connectedCallback();

@@ -86,11 +86,11 @@ export class AppManagementDomSwitchElement extends PolymerElement {
     };
   }
 
-  route: string|null;
-  private instance_: TemplateInstanceBase|null;
-  private children_: Record<string, Element>;
+  declare route: string|null;
+  declare private instance_: TemplateInstanceBase|null;
+  declare private children_: Record<string, Element>;
   private firstRenderForTesting_: PromiseResolver<void>;
-  private selectedChild_: Element|null;
+  declare private selectedChild_: Element|null;
 
   constructor() {
     super();

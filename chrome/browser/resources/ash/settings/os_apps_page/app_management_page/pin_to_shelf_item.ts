@@ -43,9 +43,9 @@ export class AppManagementPinToShelfItemElement extends PolymerElement {
     };
   }
 
-  app: App;
-  disabled: boolean;
-  override hidden: boolean;
+  declare app: App;
+  declare disabled: boolean;
+  declare hidden: boolean;
 
   override ready(): void {
     super.ready();

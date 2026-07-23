@@ -46,9 +46,9 @@ export class AppManagementSupportedLinksOverlappingAppsDialogElement extends
     };
   }
 
-  app: App;
-  overlappingAppIds: string[];
-  apps: AppMap;
+  declare app: App;
+  declare overlappingAppIds: string[];
+  declare apps: AppMap;
 
   private getBodyText_(apps: AppMap): string {
     const appNames: string[] = this.overlappingAppIds.map(appId => {

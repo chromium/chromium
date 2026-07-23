@@ -44,8 +44,8 @@ export class AppNotificationRowElement extends PolymerElement {
     };
   }
 
-  app: App;
-  private checked_: boolean;
+  declare app: App;
+  declare private checked_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface =
       getAppNotificationProvider();
 

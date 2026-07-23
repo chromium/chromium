@@ -52,11 +52,11 @@ export class SettingsAppNotificationsManagerSubpage extends PolymerElement {
     };
   }
 
-  searchTerm: string;
-  private appList_: App[];
+  declare searchTerm: string;
+  declare private appList_: App[];
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver|
       null;
-  private filteredAppList_: App[];
+  declare private filteredAppList_: App[];
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
 
   constructor() {

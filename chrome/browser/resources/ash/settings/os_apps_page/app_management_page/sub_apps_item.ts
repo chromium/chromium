@@ -40,9 +40,9 @@ export class AppManagementSubAppsItemElement extends
     };
   }
 
-  parentApp: App;
-  override hidden: boolean;
-  subApps: App[];
+  declare parentApp: App;
+  declare hidden: boolean;
+  declare subApps: App[];
 
   override connectedCallback(): void {
     super.connectedCallback();

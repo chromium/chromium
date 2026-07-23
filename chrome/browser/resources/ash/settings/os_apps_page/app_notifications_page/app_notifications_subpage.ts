@@ -76,7 +76,7 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     };
   }
 
-  prefs: PrefsState;
+  declare prefs: PrefsState;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([
@@ -84,12 +84,12 @@ export class AppNotificationsSubpage extends AppNotificationsSubpageBase {
     Setting.kAppBadgingOnOff,
   ]);
 
-  private appList_: App[];
+  declare private appList_: App[];
   private appNotificationsObserverReceiver_: AppNotificationsObserverReceiver|
       null;
-  private isDndEnabled_: boolean;
+  declare private isDndEnabled_: boolean;
   private mojoInterfaceProvider_: AppNotificationsHandlerInterface;
-  private virtualDndPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private virtualDndPref_: chrome.settingsPrivate.PrefObject<boolean>;
 
   constructor() {
     super();

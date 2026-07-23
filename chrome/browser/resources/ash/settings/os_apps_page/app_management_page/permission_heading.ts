@@ -40,10 +40,10 @@ export class AppManagementPermissionHeadingElement extends
     };
   }
 
-  app: App;
-  private hasSubApps_: boolean;
-  private parentApp_: App|null;
-  private isSubApp_: boolean;
+  declare app: App;
+  declare private hasSubApps_: boolean;
+  declare private parentApp_: App|null;
+  declare private isSubApp_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();

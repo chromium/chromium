@@ -31,9 +31,9 @@ export class AppManagementUninstallButtonElement extends PolymerElement {
     };
   }
 
-  app: App;
-  uninstallLabel: string;
-  policyLabel: string;
+  declare app: App;
+  declare uninstallLabel: string;
+  declare policyLabel: string;
 
   /**
    * Returns true if the button should be disabled due to app install type.

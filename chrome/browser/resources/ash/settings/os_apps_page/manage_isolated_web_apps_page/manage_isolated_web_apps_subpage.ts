@@ -56,8 +56,8 @@ export class ManageIsolatedWebAppsSubpageElement extends
     };
   }
 
-  prefs: PrefsState;
-  private syntheticIwaPref_: chrome.settingsPrivate.PrefObject|undefined;
+  declare prefs: PrefsState;
+  declare private syntheticIwaPref_: chrome.settingsPrivate.PrefObject|undefined;
 
   /**
    * Generates a pref object for the toggle button. If the profile policy is

@@ -76,13 +76,13 @@ export class AppManagementReadOnlyPermissionItemElement extends
     };
   }
 
-  app: App;
-  permissionLabel: string;
-  permissionType: PermissionTypeIndex;
-  icon: string;
-  private available_: boolean;
-  private sensorAvailable_: boolean;
-  private showAllowSensorAccessDialog_: boolean;
+  declare app: App;
+  declare permissionLabel: string;
+  declare permissionType: PermissionTypeIndex;
+  declare icon: string;
+  declare private available_: boolean;
+  declare private sensorAvailable_: boolean;
+  declare private showAllowSensorAccessDialog_: boolean;
 
   override ready(): void {
     super.ready();

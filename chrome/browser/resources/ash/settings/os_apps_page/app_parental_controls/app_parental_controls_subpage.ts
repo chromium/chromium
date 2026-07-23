@@ -48,15 +48,16 @@ export class SettingsAppParentalControlsSubpageElement extends
     };
   }
 
-  searchTerm: string;
-  private appList_: App[] = [];
-  private isVerified: boolean;
-  private filteredAppList_: App[];
+  declare searchTerm: string;
+  declare private appList_: App[];
+  declare private isVerified: boolean;
+  declare private filteredAppList_: App[];
   private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
   private observerReceiver: AppParentalControlsObserverReceiver|null;
 
   constructor() {
     super();
+    this.appList_ = [];
     this.mojoInterfaceProvider = getAppParentalControlsProvider();
     this.observerReceiver = null;
   }

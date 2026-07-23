@@ -106,14 +106,14 @@ export class AppSetupPinKeyboardElement extends AppSetupPinKeyboardElementBase {
     };
   }
 
-  override ariaLabel: string;
-  enableSubmit: boolean;
-  isConfirmStep: boolean;
+  declare ariaLabel: string;
+  declare enableSubmit: boolean;
+  declare isConfirmStep: boolean;
 
-  private initialPin_: string;
-  private isSetPinCallPending_: boolean;
+  declare private initialPin_: string;
+  declare private isSetPinCallPending_: boolean;
   private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
-  private pinKeyboardValue_: string;
+  declare private pinKeyboardValue_: string;
   private problemMessage_: string;
 
   constructor() {
