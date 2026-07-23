@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -67,7 +68,7 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
            ? AutocompleteProvider::TYPE_RECENTLY_CLOSED_TABS
            : 0) |
       AutocompleteProvider::TYPE_CONTEXTUAL_SEARCH |
-#else
+#elif !BUILDFLAG(IS_DESKTOP_ANDROID)
       AutocompleteProvider::TYPE_CLIPBOARD |
       AutocompleteProvider::TYPE_MOST_VISITED_SITES |
 #endif
