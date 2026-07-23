@@ -36,20 +36,20 @@ NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
 UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type) {
   switch (type) {
     case NTPCollectionShortcutTypeBookmark:
-      return DefaultSymbolTemplateWithPointSize(
-          kBookmarksSymbol, kSymbolContentSuggestionsPointSize);
+      return SymbolTemplateWithPointSize(SymbolBookmarks,
+                                         kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeReadingList:
-      return CustomSymbolTemplateWithPointSize(
-          kReadingListSymbol, kSymbolContentSuggestionsPointSize);
+      return SymbolTemplateWithPointSize(SymbolReadingList,
+                                         kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeRecentTabs:
-      return CustomSymbolTemplateWithPointSize(
-          kRecentTabsSymbol, kSymbolContentSuggestionsPointSize);
+      return SymbolTemplateWithPointSize(SymbolRecentTabs,
+                                         kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeHistory:
-      return DefaultSymbolTemplateWithPointSize(
-          kHistorySymbol, kSymbolContentSuggestionsPointSize);
+      return SymbolTemplateWithPointSize(SymbolHistory,
+                                         kSymbolContentSuggestionsPointSize);
     case NTPCollectionShortcutTypeWhatsNew:
-      return DefaultSymbolTemplateWithPointSize(
-          kCheckmarkSealSymbol, kSymbolContentSuggestionsPointSize);
+      return SymbolTemplateWithPointSize(SymbolCheckmarkSeal,
+                                         kSymbolContentSuggestionsPointSize);
   }
 }
 
@@ -72,6 +72,6 @@ NSString* TitleForMostVisitedTilePlusButton() {
 }
 
 UIImage* SymbolForMostVisitedTilePlusButton() {
-  return DefaultSymbolTemplateWithPointSize(kPlusSymbol,
-                                            kSymbolContentSuggestionsPointSize);
+  return SymbolTemplateWithPointSize(SymbolPlus,
+                                     kSymbolContentSuggestionsPointSize);
 }

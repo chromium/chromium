@@ -181,7 +181,7 @@ UIView* BubbleArrowViewWithDirection(BubbleArrowDirection arrowDirection) {
 // Returns a close button for BubbleView.
 UIButton* BubbleCloseButton() {
   UIImage* buttonImage =
-      DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolBubblePointSize);
+      SymbolWithPointSize(SymbolXMark, kSymbolBubblePointSize);
   // Computes the paddings to position the button's image. The button is
   // bigger than the image for accessibility purposes.
   const CGFloat closeButtonBottomPadding = kCloseButtonSize -
@@ -280,8 +280,8 @@ UIStackView* PageControl(BubblePageControlPage page,
         [UIImageSymbolConfiguration
             configurationWithPointSize:kPageControlPageSymbolPointSize];
     UIImageView* circleImageView = [[UIImageView alloc]
-        initWithImage:DefaultSymbolWithConfiguration(kCircleBadgeFill,
-                                                     symbolConfiguration)];
+        initWithImage:SymbolWithConfiguration(SymbolCircleBadgeFill,
+                                              symbolConfiguration)];
     BOOL shouldBeHighlighted = i == page - 1;
     UIColor* baseCircleColor = [UIColor colorNamed:kSolidButtonTextColor];
     circleImageView.tintColor =

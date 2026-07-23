@@ -67,8 +67,7 @@ UIImageView* CheckmarkIcon() {
 
   config = [config configurationByApplyingConfiguration:colorConfig];
 
-  UIImage* image =
-      DefaultSymbolWithConfiguration(kCheckmarkCircleFillSymbol, config);
+  UIImage* image = SymbolWithConfiguration(SymbolCheckmarkCircleFill, config);
 
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
 

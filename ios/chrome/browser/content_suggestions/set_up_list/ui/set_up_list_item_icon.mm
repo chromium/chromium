@@ -42,7 +42,7 @@ CGFloat IconSize(BOOL compact_layout) {
 
 // Returns a UIImageView for the given SF Symbol, and with a color named
 // `colorName`.
-UIImageView* IconForSymbol(NSString* symbol,
+UIImageView* IconForSymbol(Symbol symbol,
                            BOOL compact_layout,
                            NSArray<UIColor*>* color_palette = nil) {
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
@@ -52,7 +52,7 @@ UIImageView* IconForSymbol(NSString* symbol,
         configurationWithPaletteColors:color_palette];
     config = [config configurationByApplyingConfiguration:colorConfig];
   }
-  UIImage* image = DefaultSymbolWithConfiguration(symbol, config);
+  UIImage* image = SymbolWithConfiguration(symbol, config);
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
@@ -80,7 +80,7 @@ UIView* IconInSquareContainer(UIImageView* icon, NSString* color) {
 UIImageView* DefaultBrowserIcon(BOOL compact_layout) {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* image = MakeSymbolMulticolor(
-      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kSymbolPointSize));
+      SymbolWithPointSize(SymbolMulticolorChromeball, kSymbolPointSize));
   UIImageView* icon = [[UIImageView alloc] initWithImage:image];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
@@ -89,7 +89,7 @@ UIImageView* DefaultBrowserIcon(BOOL compact_layout) {
   ]];
   return icon;
 #else
-  return IconForSymbol(kDefaultBrowserSymbol, compact_layout);
+  return IconForSymbol(SymbolDefaultBrowser, compact_layout);
 #endif
 }
 
@@ -97,10 +97,10 @@ UIImageView* DefaultBrowserIcon(BOOL compact_layout) {
 // circle. The circle's color will be the color named `circleColorName`.
 // Note: this was necessary because there was no symbol exactly matching
 // what was needed for the Autofill icon.
-UIImageView* IconInCircle(NSString* symbol,
+UIImageView* IconInCircle(Symbol symbol,
                           BOOL compact_layout,
                           NSString* circle_color_name) {
-  UIImageView* circle_view = IconForSymbol(kCircleFillSymbol, compact_layout);
+  UIImageView* circle_view = IconForSymbol(SymbolCircleFill, compact_layout);
   circle_view.tintColor = [UIColor colorNamed:circle_color_name];
   UIImageConfiguration* compactImageConfiguration = [UIImageSymbolConfiguration
       configurationWithPointSize:kSymbolPointSize
@@ -108,8 +108,8 @@ UIImageView* IconInCircle(NSString* symbol,
                            scale:UIImageSymbolScaleSmall];
   UIImage* symbol_image =
       compact_layout
-          ? DefaultSymbolWithConfiguration(symbol, compactImageConfiguration)
-          : DefaultSymbolWithPointSize(symbol, kSymbolPointSize);
+          ? SymbolWithConfiguration(symbol, compactImageConfiguration)
+          : SymbolWithPointSize(symbol, kSymbolPointSize);
   CHECK(symbol_image);
 
   UIImageView* symbol_view = [[UIImageView alloc] initWithImage:symbol_image];
@@ -120,9 +120,7 @@ UIImageView* IconInCircle(NSString* symbol,
   return circle_view;
 }
 
-UIView* IconInSquare(NSString* symbol,
-                     BOOL compact_layout,
-                     NSString* color_name) {
+UIView* IconInSquare(Symbol symbol, BOOL compact_layout, NSString* color_name) {
   UIImageConfiguration* compactImageConfiguration = [UIImageSymbolConfiguration
       configurationWithPointSize:kSymbolPointSize
                           weight:UIImageSymbolWeightLight
@@ -133,8 +131,8 @@ UIView* IconInSquare(NSString* symbol,
   square_view.backgroundColor = [UIColor colorNamed:color_name];
   UIImage* symbol_image =
       compact_layout
-          ? DefaultSymbolWithConfiguration(symbol, compactImageConfiguration)
-          : DefaultSymbolWithPointSize(symbol, kSymbolPointSize);
+          ? SymbolWithConfiguration(symbol, compactImageConfiguration)
+          : SymbolWithPointSize(symbol, kSymbolPointSize);
   CHECK(symbol_image);
 
   UIImageView* symbol_view = [[UIImageView alloc] initWithImage:symbol_image];
@@ -232,7 +230,7 @@ UIView* IconInSquare(NSString* symbol,
   self.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
   _typeIcon = [self createTypeIcon];
   _checkmark = IconForSymbol(
-      kCheckmarkCircleFillSymbol, _compactLayout,
+      SymbolCheckmarkCircleFill, _compactLayout,
       @[ [UIColor whiteColor], [UIColor colorNamed:kBlue500Color] ]);
   _sparkle = [self createSparkle];
   [self addSubview:_typeIcon];
@@ -260,28 +258,27 @@ UIView* IconInSquare(NSString* symbol,
     }
     case SetUpListItemType::kAutofill: {
       return _inSquare
-                 ? IconInSquare(kEllipsisRectangleSymbol, NO, kBlue500Color)
-                 : IconInCircle(kEllipsisRectangleSymbol, _compactLayout,
+                 ? IconInSquare(SymbolEllipsisRectangle, NO, kBlue500Color)
+                 : IconInCircle(SymbolEllipsisRectangle, _compactLayout,
                                 kBlue500Color);
     }
     case SetUpListItemType::kNotifications: {
-      return _inSquare ? IconInSquare(kBellBadgeSymbol, NO, kPink500Color)
-                       : IconInCircle(kBellBadgeSymbol, _compactLayout,
-                                      kPink500Color);
+      return _inSquare
+                 ? IconInSquare(SymbolBellBadge, NO, kPink500Color)
+                 : IconInCircle(SymbolBellBadge, _compactLayout, kPink500Color);
     }
     case SetUpListItemType::kAllSet: {
       return IconForSymbol(
-          kCheckmarkSealFillSymbol, _compactLayout,
+          SymbolCheckmarkSealFill, _compactLayout,
           @[ [UIColor whiteColor], [UIColor colorNamed:kBlue500Color] ]);
     }
     case SetUpListItemType::kSafariImport:
-      return _inSquare
-                 ? IconInSquare(kSaveImageActionSymbol, NO, kGreen500Color)
-                 : IconInCircle(kSaveImageActionSymbol, _compactLayout,
-                                kGreen500Color);
+      return _inSquare ? IconInSquare(SymbolSaveImageAction, NO, kGreen500Color)
+                       : IconInCircle(SymbolSaveImageAction, _compactLayout,
+                                      kGreen500Color);
     case SetUpListItemType::kBackgroundCustomization:
-      return _inSquare ? IconInSquare(kEditActionSymbol, NO, kPurple500Color)
-                       : IconInCircle(kEditActionSymbol, _compactLayout,
+      return _inSquare ? IconInSquare(SymbolEditAction, NO, kPurple500Color)
+                       : IconInCircle(SymbolEditAction, _compactLayout,
                                       kPurple500Color);
   }
 }

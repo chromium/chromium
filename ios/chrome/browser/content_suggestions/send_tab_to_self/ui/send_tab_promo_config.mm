@@ -45,7 +45,7 @@ NSString* const kSendTabPromoViewID = @"kSendTabPromoViewID";
 #pragma mark - StandaloneModuleViewConfig
 
 - (UIImage*)fallbackSymbolImage {
-  return DefaultSymbolWithPointSize(kIPhoneAndArrowForwardSymbol, kSymbolSize);
+  return SymbolWithPointSize(SymbolIPhoneAndArrowForward, kSymbolSize);
 }
 
 - (NSString*)titleText {

@@ -211,13 +211,13 @@ NSString* GetContextMenuHideDescriptionForType(
 
   NSString* title =
       GetContextMenuHideDescriptionForType(self.type, self.config);
-  UIAction* hideAction = [UIAction
-      actionWithTitle:title
-                image:DefaultSymbolWithPointSize(kHideActionSymbol, 18)
-           identifier:title
-              handler:^(UIAction* action) {
-                weakSelf.shouldHide = YES;
-              }];
+  UIAction* hideAction =
+      [UIAction actionWithTitle:title
+                          image:SymbolWithPointSize(SymbolHideAction, 18)
+                     identifier:title
+                        handler:^(UIAction* action) {
+                          weakSelf.shouldHide = YES;
+                        }];
 
   hideAction.attributes = UIMenuElementAttributesDestructive;
 
@@ -227,15 +227,15 @@ NSString* GetContextMenuHideDescriptionForType(
 /// Returns the menu action to show the card customization settings.
 - (UIAction*)customizeCardAction {
   __weak __typeof(self) weakSelf = self;
-  UIAction* customizeCardAction = [UIAction
-      actionWithTitle:
-          l10n_util::GetNSString(
-              IDS_IOS_MAGIC_STACK_CONTEXT_MENU_CUSTOMIZE_CARDS_TITLE)
-                image:DefaultSymbolWithPointSize(kSliderHorizontalSymbol, 18)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf.delegate customizeCardsWasTapped];
-              }];
+  UIAction* customizeCardAction =
+      [UIAction actionWithTitle:
+                    l10n_util::GetNSString(
+                        IDS_IOS_MAGIC_STACK_CONTEXT_MENU_CUSTOMIZE_CARDS_TITLE)
+                          image:SymbolWithPointSize(SymbolSliderHorizontal, 18)
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf.delegate customizeCardsWasTapped];
+                        }];
   return customizeCardAction;
 }
 
@@ -250,7 +250,7 @@ NSString* GetContextMenuHideDescriptionForType(
   __weak __typeof(self) weakSelf = self;
 
   NSString* title;
-  NSString* symbol;
+  Symbol symbol;
 
   int featureTitle = [self pushNotificationTitleMessageId:moduleType];
 
@@ -258,17 +258,17 @@ NSString* GetContextMenuHideDescriptionForType(
     title = l10n_util::GetNSStringF(
         IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM_OFF,
         l10n_util::GetStringUTF16(featureTitle));
-    symbol = kBellSlashSymbol;
+    symbol = SymbolBellSlash;
   } else {
     title =
         l10n_util::GetNSStringF(IDS_IOS_TIPS_NOTIFICATIONS_CONTEXT_MENU_ITEM,
                                 l10n_util::GetStringUTF16(featureTitle));
-    symbol = kBellSymbol;
+    symbol = SymbolBell;
   }
 
   return [UIAction
       actionWithTitle:title
-                image:DefaultSymbolWithPointSize(symbol, 18)
+                image:SymbolWithPointSize(symbol, 18)
            identifier:nil
               handler:^(UIAction* action) {
                 if (optedIn) {

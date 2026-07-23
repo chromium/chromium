@@ -77,8 +77,8 @@
 
   buttonConfiguration.background.cornerRadius = kMagicStackEditButtonWidth / 2;
 
-  buttonConfiguration.image = DefaultSymbolTemplateWithPointSize(
-      kSliderHorizontalSymbol, kMagicStackEditButtonIconPointSize);
+  buttonConfiguration.image = SymbolTemplateWithPointSize(
+      SymbolSliderHorizontal, kMagicStackEditButtonIconPointSize);
 
   if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
     UIVisualEffect* blurEffect =

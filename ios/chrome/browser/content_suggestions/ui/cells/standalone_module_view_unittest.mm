@@ -31,7 +31,7 @@ StandaloneModuleView* GetConfiguredStandaloneModuleView() {
   config.titleText = kStandaloneModuleViewTitleText;
   config.bodyText = kStandaloneModuleViewBodyText;
   config.buttonText = kStandaloneModuleViewButtonText;
-  config.fallbackSymbolImage = CustomSymbolWithPointSize(kDownTrendSymbol, 10);
+  config.fallbackSymbolImage = SymbolWithPointSize(SymbolDownTrend, 10);
   [view configureView:config];
   return view;
 }

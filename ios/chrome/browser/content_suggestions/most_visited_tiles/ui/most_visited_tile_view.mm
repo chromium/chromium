@@ -252,7 +252,7 @@
                       scale:UIImageSymbolScaleSmall];
   NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
   UIImage* originalSymbolImage =
-      DefaultSymbolWithConfiguration(kPinSymbol, symbolConfig);
+      SymbolWithConfiguration(SymbolPin, symbolConfig);
   attachment.image = [originalSymbolImage
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   NSAttributedString* symbolString =

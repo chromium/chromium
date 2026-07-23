@@ -361,11 +361,10 @@ NSString* const kDataImportCredentialConflictResolutionSection =
       !(_shouldUnmaskPasswordAtIndex[identifier.index].boolValue);
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
-  NSString* symbol_name =
-      forUnmaskAction ? kShowActionSymbol : kHideActionSymbol;
-  UIImage* buttonImage = DefaultSymbolWithConfiguration(  // Store the image
-      symbol_name, [UIImageSymbolConfiguration
-                       configurationWithWeight:UIImageSymbolWeightMedium]);
+  Symbol symbol = forUnmaskAction ? SymbolShowAction : SymbolHideAction;
+  UIImage* buttonImage = SymbolWithConfiguration(
+      symbol, [UIImageSymbolConfiguration
+                  configurationWithWeight:UIImageSymbolWeightMedium]);
   configuration.image = buttonImage;
   configuration.contentInsets = NSDirectionalEdgeInsetsZero;
   __weak __typeof(self) weakSelf = self;
