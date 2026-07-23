@@ -13,11 +13,8 @@
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-namespace views {
-class BoxLayoutView;
-}
-
 class SigninQRCodeInfoBarDelegate;
+class SigninQRCodeView;
 
 // A native C++ Views InfoBar that displays a dynamic QR code during sign-in,
 // allowing users to sign in with a passkey from their mobile device.
@@ -46,7 +43,7 @@ class SigninQRCodeInfoBar : public InfoBarView,
  private:
   void OnQrCodeReady(std::string_view qr_string);
 
-  raw_ptr<views::BoxLayoutView> qr_container_ = nullptr;
+  raw_ptr<SigninQRCodeView> qr_code_view_ = nullptr;
 
   base::ScopedObservation<SigninQRCodeModel, SigninQRCodeModel::Observer>
       model_observation_{this};

@@ -47,6 +47,7 @@ source_set("signin") {
       "signin_qrcode_infobar.h",
       "signin_qrcode_infobar_delegate.h",
       "signin_qrcode_model.h",
+      "signin_qrcode_view.h",
     ]
     public_deps += [
       "//chrome/browser/signin",
@@ -116,6 +117,7 @@ source_set("impl") {
       "signin_qrcode_infobar.cc",
       "signin_qrcode_infobar_delegate.cc",
       "signin_qrcode_model.cc",
+      "signin_qrcode_view.cc",
     ]
 
     deps += [
@@ -126,7 +128,7 @@ source_set("impl") {
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views/controls",
       "//chrome/browser/ui/views/infobars",
-      "//chrome/browser/ui/views/webauthn:webauthn",
+      "//chrome/browser/ui/views/webauthn",
       "//chrome/browser/ui/web_applications",
       "//components/infobars/content",
       "//components/pref_registry",
