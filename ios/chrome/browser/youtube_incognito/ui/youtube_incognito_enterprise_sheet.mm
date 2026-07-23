@@ -78,7 +78,7 @@ CGFloat const kIconSize = 32;
   iconContainerView.backgroundColor = [UIColor colorNamed:kGrey400Color];
 
   UIImageView* icon = [[UIImageView alloc]
-      initWithImage:CustomSymbolWithPointSize(kEnterpriseSymbol, kIconSize)];
+      initWithImage:SymbolWithPointSize(SymbolEnterprise, kIconSize)];
   icon.translatesAutoresizingMaskIntoConstraints = NO;
   icon.tintColor = [UIColor colorNamed:kSolidWhiteColor];
   [iconContainerView addSubview:icon];

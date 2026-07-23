@@ -512,8 +512,8 @@ UIButton* GetButtonForAction(AlertAction* action) {
     _spinner.translatesAutoresizingMaskIntoConstraints = NO;
 
     _checkmark = [[UIImageView alloc] init];
-    _checkmark.image = DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
-                                                  kConfirmationSymbolPointSize);
+    _checkmark.image = SymbolWithPointSize(SymbolCheckmarkCircleFill,
+                                           kConfirmationSymbolPointSize);
     _checkmark.tintColor = [UIColor systemGreenColor];
     _checkmark.translatesAutoresizingMaskIntoConstraints = NO;
 

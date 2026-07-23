@@ -193,7 +193,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 
   UIButton* closeButton = [UIButton buttonWithType:UIButtonTypeCustom];
   UIImage* closeIcon =
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonIconSize);
+      SymbolWithPointSize(SymbolXMarkCircleFill, kCloseButtonIconSize);
   [closeButton
       setImage:SymbolWithPalette(closeIcon,
                                  @[
@@ -270,8 +270,8 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   UIButton* button = [[UIButton alloc] init];
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
-  UIImage* reportAnIssueIcon = DefaultSymbolWithPointSize(
-      kExclamationMarkBubbleSymbol, kReportAnIssueIconSize);
+  UIImage* reportAnIssueIcon =
+      SymbolWithPointSize(SymbolExclamationMarkBubble, kReportAnIssueIconSize);
   [buttonConfiguration setImage:reportAnIssueIcon];
   buttonConfiguration.imagePadding = kReportAnIssueButtonPadding;
   buttonConfiguration.attributedTitle = [self
@@ -322,7 +322,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   unitTypeTitleButton.configuration = buttonConfiguration;
 
   UIImage* titleIcon =
-      DefaultSymbolWithPointSize(kChevronDownCircleFill, kTitleIconSize);
+      SymbolWithPointSize(SymbolChevronDownCircleFill, kTitleIconSize);
   [unitTypeTitleButton
       setImage:SymbolWithPalette(titleIcon,
                                  @[

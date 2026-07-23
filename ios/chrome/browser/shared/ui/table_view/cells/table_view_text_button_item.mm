@@ -102,8 +102,8 @@ const CGFloat kSymbolConfirmationCheckmarkPointSize = 22;
   }
 
   if (self.showsCheckmark) {
-    buttonConfiguration.image = DefaultSymbolWithPointSize(
-        kCheckmarkCircleFillSymbol, kSymbolConfirmationCheckmarkPointSize);
+    buttonConfiguration.image = SymbolWithPointSize(
+        SymbolCheckmarkCircleFill, kSymbolConfirmationCheckmarkPointSize);
 
     buttonConfiguration.imageColorTransformer = ^UIColor*(UIColor* color) {
       return [UIColor colorNamed:kBlue700Color];

@@ -140,7 +140,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewDetailIconItem* symbolItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
   symbolItem.text = @"Detail Icon using custom background";
-  symbolItem.iconImage = DefaultSymbolWithPointSize(kSettingsFilledSymbol, 18);
+  symbolItem.iconImage = SymbolWithPointSize(SymbolSettingsFilled, 18);
   symbolItem.iconBackgroundColor = UIColorFromRGB(0xFBBC04);
   symbolItem.iconTintColor = UIColor.whiteColor;
   [model addItem:symbolItem toSectionWithIdentifier:SectionIdentifierText];
@@ -150,8 +150,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithType:ItemTypeTableViewWithBlueDot];
   tableViewBlueDotItem.badgeType = BadgeType::kNotificationDot;
   tableViewBlueDotItem.text = @"I have a blue dot badge!";
-  tableViewBlueDotItem.iconImage =
-      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+  tableViewBlueDotItem.iconImage = SettingsRootSymbol(SymbolDefaultBrowser);
   [model addItem:tableViewBlueDotItem
       toSectionWithIdentifier:SectionIdentifierText];
 
@@ -160,8 +159,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           initWithType:ItemTypeTableViewWithBlueDot];
   tableViewNewBadgeItem.badgeType = BadgeType::kNew;
   tableViewNewBadgeItem.text = @"I have a new badge!";
-  tableViewNewBadgeItem.iconImage =
-      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+  tableViewNewBadgeItem.iconImage = SettingsRootSymbol(SymbolDefaultBrowser);
   [model addItem:tableViewNewBadgeItem
       toSectionWithIdentifier:SectionIdentifierText];
 
@@ -181,7 +179,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textImageItem.title = @"Image Item with History Image";
   textImageItem.detailText = @"and with a very very very long subtitle.";
   textImageItem.image =
-      DefaultSymbolWithPointSize(kHistorySymbol, kSymbolActionPointSize);
+      SymbolWithPointSize(SymbolHistory, kSymbolActionPointSize);
   [model addItem:textImageItem toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewImageItem* textImageItem2 =
@@ -266,14 +264,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewDetailIconItem* detailIconItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
   detailIconItem.text = @"Detail Icon Item Cell";
-  detailIconItem.iconImage = DefaultSettingsRootSymbol(kDiscoverSymbol);
+  detailIconItem.iconImage = SettingsRootSymbol(SymbolDiscover);
   detailIconItem.detailText = @"Short";
   [model addItem:detailIconItem toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewDetailIconItem* detailIconItemVerticalTextLayout =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypeTextSettingsDetail];
   detailIconItemVerticalTextLayout.iconImage =
-      DefaultSettingsRootSymbol(kDiscoverSymbol);
+      SettingsRootSymbol(SymbolDiscover);
   detailIconItemVerticalTextLayout.text = @"Detail Icon Item Cell";
   detailIconItemVerticalTextLayout.detailText = @"Short subtitle";
   detailIconItemVerticalTextLayout.textLayoutConstraintAxis =
@@ -325,7 +323,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textEditItemBothIcons.fieldNameLabelText = @"Edit Text Item";
   textEditItemBothIcons.textFieldValue = @" with edit and custom icons";
   textEditItemBothIcons.identifyingIcon =
-      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
+      SymbolTemplateWithPointSize(SymbolCheckmarkCircleFill, 13);
   textEditItemBothIcons.textFieldEnabled = YES;
   [model addItem:textEditItemBothIcons
       toSectionWithIdentifier:SectionIdentifierText];
@@ -335,7 +333,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textEditItemIconButton.fieldNameLabelText = @"Edit Text Item";
   textEditItemIconButton.textFieldValue = @" icon is a button.";
   textEditItemIconButton.identifyingIcon =
-      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
+      SymbolTemplateWithPointSize(SymbolCheckmarkCircleFill, 13);
   textEditItemIconButton.identifyingIconEnabled = YES;
   textEditItemIconButton.textFieldEnabled = NO;
   [model addItem:textEditItemIconButton
@@ -481,7 +479,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   tableViewInfoButtonItemWithLeadingImage.text = @"Info button item";
   tableViewInfoButtonItemWithLeadingImage.statusText = @"Status";
   tableViewInfoButtonItemWithLeadingImage.iconImage =
-      DefaultSettingsRootSymbol(kDiscoverSymbol);
+      SettingsRootSymbol(SymbolDiscover);
   tableViewInfoButtonItemWithLeadingImage.target = self;
   tableViewInfoButtonItemWithLeadingImage.selector =
       @selector(didTapManagedUIInfoButton:);
@@ -494,8 +492,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   imageDetailTextItem.text = @"This is an error description about sync";
   imageDetailTextItem.detailText =
       @"This is more detail about the sync error description";
-  imageDetailTextItem.image = DefaultSymbolTemplateWithPointSize(
-      kInfoCircleSymbol, kSymbolActionPointSize);
+  imageDetailTextItem.image =
+      SymbolTemplateWithPointSize(SymbolInfoCircle, kSymbolActionPointSize);
   [model addItem:imageDetailTextItem
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -519,7 +517,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkFinished.enabled = YES;
   checkFinished.indicatorHidden = YES;
   checkFinished.trailingImage =
-      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
+      SymbolTemplateWithPointSize(SymbolCheckmarkCircleFill, 13);
   [model addItem:checkFinished
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -530,12 +528,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       @"This is very long description of check item. Another line of "
       @"description.";
   checkFinishedWithLeadingImage.leadingIcon =
-      DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
-                                         kSymbolActionPointSize);
+      SymbolTemplateWithPointSize(SymbolInfoCircle, kSymbolActionPointSize);
   checkFinishedWithLeadingImage.enabled = YES;
   checkFinishedWithLeadingImage.indicatorHidden = YES;
   checkFinishedWithLeadingImage.trailingImage =
-      DefaultSymbolTemplateWithPointSize(kCheckmarkCircleFillSymbol, 13);
+      SymbolTemplateWithPointSize(SymbolCheckmarkCircleFill, 13);
   [model addItem:checkFinishedWithLeadingImage
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -556,8 +553,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       @"This is very long description of check item. Another line of "
       @"description.";
   checkDisabledWithLeadingImage.leadingIcon =
-      DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol,
-                                         kSymbolActionPointSize);
+      SymbolTemplateWithPointSize(SymbolInfoCircle, kSymbolActionPointSize);
   checkDisabledWithLeadingImage.enabled = NO;
   [model addItem:checkDisabledWithLeadingImage
       toSectionWithIdentifier:SectionIdentifierSettings];

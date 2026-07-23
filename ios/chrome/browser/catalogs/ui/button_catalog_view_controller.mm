@@ -98,7 +98,7 @@ UILabel* CreateLabel(NSString* text) {
         [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
     [customButton setTitle:@"Custom" forState:UIControlStateNormal];
     UIButtonConfiguration* config = customButton.configuration;
-    config.image = DefaultSymbolWithPointSize(kPhotoSymbol, 17);
+    config.image = SymbolWithPointSize(SymbolPhoto, 17);
     customButton.configuration = config;
     customButton.primaryButtonImage = PrimaryButtonImageCustom;
     [stackView addArrangedSubview:customButton];

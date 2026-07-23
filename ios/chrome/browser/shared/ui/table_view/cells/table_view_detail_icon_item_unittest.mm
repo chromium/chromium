@@ -30,7 +30,7 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
   item.text = text;
   item.detailText = detail_text;
   item.iconImage =
-      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize);
+      SymbolWithPointSize(SymbolMagnifyingglass, kTestIconPointSize);
   item.iconTintColor = UIColor.whiteColor;
   item.iconBackgroundColor = UIColor.blackColor;
   item.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
@@ -58,9 +58,8 @@ TEST_F(TableViewDetailIconItemTest, ItemProperties) {
           leading_config);
 
   // Check image-based property.
-  EXPECT_NSEQ(
-      DefaultSymbolWithPointSize(kMagnifyingglassSymbol, kTestIconPointSize),
-      symbol_config.symbolImage);
+  EXPECT_NSEQ(SymbolWithPointSize(SymbolMagnifyingglass, kTestIconPointSize),
+              symbol_config.symbolImage);
   EXPECT_EQ(UIColor.whiteColor, symbol_config.symbolTintColor);
   EXPECT_EQ(UIColor.blackColor, symbol_config.symbolBackgroundColor);
 }

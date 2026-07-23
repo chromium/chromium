@@ -458,12 +458,12 @@ const CGFloat kSymbolSize = 15;
 
 // Returns the edit icon image.
 - (UIImage*)editImage {
-  return DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolSize);
+  return SymbolWithPointSize(SymbolEditAction, kSymbolSize);
 }
 
 // Returns the error icon image.
 - (UIImage*)errorImage {
-  return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
+  return SymbolWithPointSize(SymbolErrorCircleFill, kSymbolSize);
 }
 
 // Updates the view's accessiblity properties when the device's

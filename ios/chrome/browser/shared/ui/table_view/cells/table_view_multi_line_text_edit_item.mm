@@ -77,7 +77,7 @@ const CGFloat kSymbolSize = 15;
 
 // Returns the error icon image.
 - (UIImage*)errorImage {
-  return DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kSymbolSize);
+  return SymbolWithPointSize(SymbolErrorCircleFill, kSymbolSize);
 }
 
 @end

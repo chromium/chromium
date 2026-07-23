@@ -28,8 +28,8 @@ TEST_F(TableViewItemTest, ConfigureCellPortsAccessibilityProperties) {
 
 TEST_F(TableViewItemTest, ConfigureCellAccessoryViewProperties) {
   UIImageView* expectedImage = [[UIImageView alloc]
-      initWithImage:DefaultSymbolTemplateWithPointSize(
-                        kChevronForwardSymbol, kSymbolAccessoryPointSize)];
+      initWithImage:SymbolTemplateWithPointSize(SymbolChevronForward,
+                                                kSymbolAccessoryPointSize)];
   TableViewItem* item = [[TableViewItem alloc] initWithType:0];
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   item.accessoryView = expectedImage;

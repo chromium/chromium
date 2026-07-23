@@ -38,7 +38,7 @@ const CGFloat kContentViewHeightAnchorOffset = 5;
         NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
 
     UIImage* chevronUpDownDefault =
-        DefaultSymbolWithPointSize(kChevronUpDown, kUnitMenuButtonIconSize);
+        SymbolWithPointSize(SymbolChevronUpDown, kUnitMenuButtonIconSize);
     UIColor* chevronUpDownColor = [UIColor colorNamed:kTextTertiaryColor];
     UIImage* chevronUpDown = [chevronUpDownDefault
         imageByApplyingSymbolConfiguration:

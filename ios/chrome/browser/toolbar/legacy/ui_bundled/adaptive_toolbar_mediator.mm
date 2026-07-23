@@ -497,7 +497,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
                                                        ->GetVirtualURL()]) {
       title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
       image = SymbolWithPalette(
-          CustomSymbolWithPointSize(kIncognitoSymbol, kInfobarSymbolPointSize),
+          SymbolWithPointSize(SymbolIncognito, kInfobarSymbolPointSize),
           @[ UIColor.whiteColor ]);
     } else {
       title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
@@ -505,7 +505,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
       if (!gfxImage.IsEmpty()) {
         image = gfxImage.ToUIImage();
       } else {
-        image = DefaultSymbolWithPointSize(kDocSymbol, kInfobarSymbolPointSize);
+        image = SymbolWithPointSize(SymbolDoc, kInfobarSymbolPointSize);
       }
     }
 

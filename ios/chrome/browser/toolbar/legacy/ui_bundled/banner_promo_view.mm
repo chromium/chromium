@@ -56,7 +56,7 @@ UIImage* CloseButtonImage(BOOL highlighted) {
   }
 
   return SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonIconSize),
+      SymbolWithPointSize(SymbolXMarkCircleFill, kCloseButtonIconSize),
       palette);
 }
 
@@ -135,10 +135,9 @@ UIButton* CloseButton(void (^handler)(UIAction*)) {
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     UIImage* logo = MakeSymbolMulticolor(
-        CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoPointSize));
+        SymbolWithPointSize(SymbolMulticolorChromeball, kLogoPointSize));
 #else
-    UIImage* logo =
-        CustomSymbolWithPointSize(kChromeProductSymbol, kLogoPointSize);
+    UIImage* logo = SymbolWithPointSize(SymbolChromeProduct, kLogoPointSize);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     UIImageView* logoImageView = [[UIImageView alloc] initWithImage:logo];
     logoImageView.translatesAutoresizingMaskIntoConstraints = NO;

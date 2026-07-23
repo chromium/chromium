@@ -84,7 +84,7 @@ const NSInteger kDefaultNumberOfLines = 1;
       break;
     }
     case BadgeType::kNotificationDot: {
-      UIImage* dot = [DefaultSymbolWithPointSize(kCircleFillSymbol, kDotSize)
+      UIImage* dot = [SymbolWithPointSize(SymbolCircleFill, kDotSize)
           imageWithTintColor:[UIColor colorNamed:kBlueColor]];
 
       contentConfiguration.attributedTitle =

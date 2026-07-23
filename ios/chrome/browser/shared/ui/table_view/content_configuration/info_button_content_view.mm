@@ -32,7 +32,7 @@ const CGFloat kButtonSize = 27;
     UIButtonConfiguration* buttonConfig =
         [UIButtonConfiguration plainButtonConfiguration];
     buttonConfig.image =
-        DefaultSymbolTemplateWithPointSize(kInfoCircleSymbol, kInfoSymbolSize);
+        SymbolTemplateWithPointSize(SymbolInfoCircle, kInfoSymbolSize);
     buttonConfig.contentInsets = NSDirectionalEdgeInsetsZero;
     _infoButton = [UIButton buttonWithType:UIButtonTypeSystem];
     _infoButton.configuration = buttonConfig;
