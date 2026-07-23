@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.glic;
 
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 
@@ -21,5 +23,8 @@ public final class GlicUiUtils {
         placeholder.setText(R.string.glic_inactive_view_card_text);
         placeholder.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 0, R.drawable.ic_spark_filled_24dp, 0, 0);
+        placeholder.setDrawableTintColor(
+                AppCompatResources.getColorStateList(
+                        placeholder.getContext(), R.color.default_icon_color_tint_list));
     }
 }
