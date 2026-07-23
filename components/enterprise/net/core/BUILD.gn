@@ -24,6 +24,7 @@ static_library("core") {
       "enterprise_proxy_service.h",
       "provisioning_domain_client.h",
       "provisioning_domain_fetcher.h",
+      "proxy_provisioning_domain_manager.h",
       "types.h",
       "utils.h",
     ]
@@ -32,6 +33,7 @@ static_library("core") {
       "enterprise_proxy_service.cc",
       "provisioning_domain_client.cc",
       "provisioning_domain_fetcher.cc",
+      "proxy_provisioning_domain_manager.cc",
       "types.cc",
       "utils.cc",
     ]
@@ -55,6 +57,7 @@ source_set("unit_tests") {
       "enterprise_proxy_service_unittest.cc",
       "provisioning_domain_client_unittest.cc",
       "provisioning_domain_fetcher_unittest.cc",
+      "proxy_provisioning_domain_manager_unittest.cc",
       "utils_unittest.cc",
     ]
     deps += [

@@ -64,6 +64,16 @@ const ProvisioningDomainProxyConfig::ProxyEndpoint* FindMatchingProxyEndpoint(
     const GURL& destination_url,
     const net::ProxyChain& proxy_chain);
 
+// Serializes a ProvisioningDomainConfig struct into a base::DictValue
+// representation.
+base::DictValue ProvisioningDomainConfigToDict(
+    const ProvisioningDomainConfig& policy_config);
+
+// Serializes a ProvisioningDomainProxyConfig struct into a base::DictValue
+// representation.
+base::DictValue ProvisioningDomainProxyConfigToDict(
+    const ProvisioningDomainProxyConfig& proxy_config);
+
 }  // namespace enterprise_net
 
 #endif  // COMPONENTS_ENTERPRISE_NET_CORE_UTILS_H_

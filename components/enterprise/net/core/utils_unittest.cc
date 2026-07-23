@@ -455,5 +455,80 @@ TEST(FindMatchingProxyEndpointTest, FindsFirstMatchingEndpoint) {
   EXPECT_EQ(nullptr, non_matching);
 }
 
+TEST(ProvisioningDomainConfigToDictTest, SerializesConfigToDict) {
+  ProvisioningDomainConfig policy;
+  policy.pvd_id = "example.pvd.com";
+  policy.auth_config = ProxyAuthConfig{AuthType::kProfileBearerToken,
+                                       AuthScope::kCloudSecureGateway};
+  policy.extra_headers = {ProxyExtraHeader("x-custom-key", "custom-value")};
+
+  base::DictValue dict = ProvisioningDomainConfigToDict(policy);
+  EXPECT_EQ("example.pvd.com", *dict.FindString("pvd_id"));
+  ASSERT_NE(nullptr, dict.FindDict("auth_config"));
+  EXPECT_EQ("profile_bearer_token",
+            *dict.FindDict("auth_config")->FindString("type"));
+  EXPECT_EQ("cloud_secure_gateway",
+            *dict.FindDict("auth_config")->FindString("scope"));
+  ASSERT_NE(nullptr, dict.FindList("extra_headers"));
+  EXPECT_EQ(1u, dict.FindList("extra_headers")->size());
+}
+
+TEST(ProvisioningDomainProxyConfigToDictTest, ParseAndSerializeRoundtrip) {
+  std::optional<ProvisioningDomainProxyConfig> config =
+      ParseProvisioningDomainConfig(GetValidPvdJsonResponse());
+  ASSERT_TRUE(config.has_value());
+
+  base::DictValue dict = ProvisioningDomainProxyConfigToDict(*config);
+  EXPECT_EQ("api.example.com", *dict.FindString("pvd_id"));
+  EXPECT_EQ("RefreshNeeded", *dict.FindString("state"));
+
+  const base::ListValue* proxies = dict.FindList("proxies");
+  ASSERT_NE(nullptr, proxies);
+  EXPECT_EQ(3u, proxies->size());
+
+  // Verify detailed values of proxy endpoint "test-proxy-1".
+  const base::DictValue* proxy1_dict = nullptr;
+  for (const auto& entry : *proxies) {
+    if (entry.is_dict() && entry.GetDict().FindString("identifier") &&
+        *entry.GetDict().FindString("identifier") == kTestProxyIdentity1) {
+      proxy1_dict = &entry.GetDict();
+      break;
+    }
+  }
+  ASSERT_NE(nullptr, proxy1_dict);
+  EXPECT_EQ(kTestProxyIdentity1, *proxy1_dict->FindString("identifier"));
+  EXPECT_EQ("[https://proxy1.example.com:443]",
+            *proxy1_dict->FindString("proxy_chain"));
+
+  const base::DictValue* auth_dict = proxy1_dict->FindDict("auth");
+  ASSERT_NE(nullptr, auth_dict);
+  EXPECT_EQ("profile_bearer_token", *auth_dict->FindString("type"));
+  EXPECT_EQ("cloud_secure_gateway", *auth_dict->FindString("scope"));
+
+  const base::ListValue* headers = proxy1_dict->FindList("extra_headers");
+  ASSERT_NE(nullptr, headers);
+  EXPECT_EQ(2u, headers->size());
+  EXPECT_EQ("x-chrome-custom", *(*headers)[0].GetDict().FindString("key"));
+  EXPECT_EQ("custom-value", *(*headers)[0].GetDict().FindString("value"));
+  EXPECT_EQ("constant", *(*headers)[0].GetDict().FindString("type"));
+
+  // Verify detailed values of proxy-match routing rules.
+  const base::ListValue* rules = dict.FindList("proxy-match");
+  ASSERT_NE(nullptr, rules);
+  EXPECT_EQ(4u, rules->size());
+
+  const base::DictValue& rule0 = (*rules)[0].GetDict();
+  const base::ListValue* rule0_proxies = rule0.FindList("proxies");
+  ASSERT_NE(nullptr, rule0_proxies);
+  EXPECT_EQ(1u, rule0_proxies->size());
+  EXPECT_EQ(kTestProxyIdentity1, (*rule0_proxies)[0].GetString());
+
+  const base::ListValue* rule0_matchers =
+      rule0.FindList("destination_matchers");
+  ASSERT_NE(nullptr, rule0_matchers);
+  EXPECT_EQ(1u, rule0_matchers->size());
+  EXPECT_EQ("test.domain.com:443", (*rule0_matchers)[0].GetString());
+}
+
 }  // namespace
 }  // namespace enterprise_net

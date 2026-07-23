@@ -18,6 +18,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/http/http_util.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -57,6 +58,68 @@ constexpr char kAcceptLanguagePlaceholder[] = "${accept_language}";
 constexpr char kAuthNone[] = "none";
 constexpr char kAuthTypeProfileBearerToken[] = "profile_bearer_token";
 constexpr char kAuthScopeCloudSecureGateway[] = "cloud_secure_gateway";
+
+std::string AuthTypeToString(AuthType type) {
+  switch (type) {
+    case AuthType::kNone:
+      return kAuthNone;
+    case AuthType::kProfileBearerToken:
+      return kAuthTypeProfileBearerToken;
+  }
+}
+
+std::string AuthScopeToString(AuthScope scope) {
+  switch (scope) {
+    case AuthScope::kNone:
+      return kAuthNone;
+    case AuthScope::kCloudSecureGateway:
+      return kAuthScopeCloudSecureGateway;
+  }
+}
+
+std::string StateToString(ProvisioningDomainProxyConfig::State state) {
+  switch (state) {
+    case ProvisioningDomainProxyConfig::State::kRefreshNeeded:
+      return "RefreshNeeded";
+    case ProvisioningDomainProxyConfig::State::kFetching:
+      return "Fetching";
+    case ProvisioningDomainProxyConfig::State::kValid:
+      return "Valid";
+    case ProvisioningDomainProxyConfig::State::kFailedTransient:
+      return "FailedTransient";
+    case ProvisioningDomainProxyConfig::State::kFailedPermanent:
+      return "FailedPermanent";
+  }
+}
+
+std::string HeaderTypeToString(ProxyExtraHeader::HeaderType type) {
+  switch (type) {
+    case ProxyExtraHeader::HeaderType::kConstant:
+      return "constant";
+    case ProxyExtraHeader::HeaderType::kVariable:
+      return "variable";
+  }
+}
+
+base::ListValue ExtraHeadersToList(
+    const std::vector<ProxyExtraHeader>& extra_headers) {
+  base::ListValue list;
+  for (const auto& header : extra_headers) {
+    base::DictValue dict;
+    dict.Set(kKeyKey, header.key);
+    dict.Set(kValueKey, header.value);
+    dict.Set(kTypeKey, HeaderTypeToString(header.type));
+    list.Append(std::move(dict));
+  }
+  return list;
+}
+
+base::DictValue AuthConfigToDict(const ProxyAuthConfig& auth) {
+  base::DictValue dict;
+  dict.Set(kTypeKey, AuthTypeToString(auth.type));
+  dict.Set(kScopeKey, AuthScopeToString(auth.scope));
+  return dict;
+}
 
 struct PlaceholderReplacement {
   std::string_view placeholder;
@@ -427,6 +490,65 @@ const ProvisioningDomainProxyConfig::ProxyEndpoint* FindMatchingProxyEndpoint(
     }
   }
   return nullptr;
+}
+
+base::DictValue ProvisioningDomainConfigToDict(
+    const ProvisioningDomainConfig& policy_config) {
+  base::DictValue dict;
+  dict.Set(kPvdIdKey, policy_config.pvd_id);
+  if (policy_config.auth_config.has_value()) {
+    dict.Set(kAuthConfigKey, AuthConfigToDict(*policy_config.auth_config));
+  }
+  if (!policy_config.extra_headers.empty()) {
+    dict.Set(kExtraHeadersKey, ExtraHeadersToList(policy_config.extra_headers));
+  }
+  return dict;
+}
+
+base::DictValue ProvisioningDomainProxyConfigToDict(
+    const ProvisioningDomainProxyConfig& proxy_config) {
+  base::DictValue dict;
+  dict.Set(kPvdIdKey, proxy_config.pvd_id);
+  dict.Set("state", StateToString(proxy_config.state));
+  if (!proxy_config.expires.is_null()) {
+    dict.Set(kExpiresKey, net::HttpUtil::TimeFormatHTTP(proxy_config.expires));
+  }
+
+  base::ListValue endpoints_list;
+  for (const auto& [id, endpoint] : proxy_config.proxy_endpoints) {
+    base::DictValue endpoint_dict;
+    endpoint_dict.Set(kIdentifierKey, id);
+    endpoint_dict.Set("proxy_chain", endpoint.proxy_chain.ToDebugString());
+    if (endpoint.auth.has_value()) {
+      endpoint_dict.Set(kAuthKey, AuthConfigToDict(*endpoint.auth));
+    }
+    if (!endpoint.extra_headers.empty()) {
+      endpoint_dict.Set(kExtraHeadersKey,
+                        ExtraHeadersToList(endpoint.extra_headers));
+    }
+    endpoints_list.Append(std::move(endpoint_dict));
+  }
+  dict.Set(kProxiesKey, std::move(endpoints_list));
+
+  base::ListValue rules_list;
+  for (const auto& rule : proxy_config.routing_rules) {
+    base::DictValue rule_dict;
+    base::ListValue proxies_list;
+    for (const auto& proxy_id : rule.proxies) {
+      proxies_list.Append(proxy_id);
+    }
+    rule_dict.Set(kProxiesKey, std::move(proxies_list));
+
+    base::ListValue matchers_list;
+    for (const auto& matcher_rule : rule.destination_matchers.rules()) {
+      matchers_list.Append(matcher_rule->ToString());
+    }
+    rule_dict.Set("destination_matchers", std::move(matchers_list));
+    rules_list.Append(std::move(rule_dict));
+  }
+  dict.Set(kProxyMatchKey, std::move(rules_list));
+
+  return dict;
 }
 
 }  // namespace enterprise_net
