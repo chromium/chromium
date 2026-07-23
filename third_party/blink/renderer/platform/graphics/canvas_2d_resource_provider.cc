@@ -522,19 +522,13 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
   return cached_snapshot_;
 }
 
-std::optional<cc::PaintRecord> Canvas2DResourceProvider::Flush(
-    bool preserve_recording) {
-  CHECK(Recorder().HasReleasableDrawOps());
-
+void Canvas2DResourceProvider::Flush(cc::PaintRecord recording,
+                                     bool preserve_recording) {
   clear_frame_ = false;
-  cc::PaintRecord recording;
-  recording = Recorder().ReleaseMainRecording();
   RasterRecord(recording);
 
   last_recording_ =
       preserve_recording ? std::optional(recording) : std::nullopt;
-
-  return recording;
 }
 
 void Canvas2DResourceProvider::ReleaseImageProviderImages() {

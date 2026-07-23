@@ -735,7 +735,7 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     Canvas2DResourceProvider* shared_image_provider,
     Canvas2DBitmapProvider* bitmap_provider,
     FlushReason reason) {
-  const MemoryManagedPaintRecorder* recorder = nullptr;
+  MemoryManagedPaintRecorder* recorder = nullptr;
   if (shared_image_provider) {
     recorder = &shared_image_provider->Recorder();
   } else if (bitmap_provider) {
@@ -745,7 +745,7 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     return std::nullopt;
   }
 
-  std::optional<cc::PaintRecord> recording;
+  cc::PaintRecord recording = recorder->ReleaseMainRecording();
   bool want_to_print = (Host() && Host()->IsPrinting()) ||
                        reason == FlushReason::kPrinting ||
                        reason == FlushReason::kCanvasPushFrameWhilePrinting;
@@ -756,19 +756,15 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
                             *shared_image_provider);
     bool preserve_recording =
         want_to_print && shared_image_provider->clear_frame();
-    recording = shared_image_provider->Flush(preserve_recording);
-    if (recording) {
-      shared_image_provider->ReleaseImageProviderImages();
-    }
+    shared_image_provider->Flush(recording, preserve_recording);
+    shared_image_provider->ReleaseImageProviderImages();
   } else if (bitmap_provider) {
     ScopedRasterTimer timer(nullptr, *bitmap_provider);
     bool preserve_recording = want_to_print && bitmap_provider->clear_frame();
-    recording = bitmap_provider->Flush(preserve_recording);
-    if (recording) {
-      bitmap_provider->ReleaseImageProviderImages();
-    }
+    bitmap_provider->Flush(recording, preserve_recording);
+    bitmap_provider->ReleaseImageProviderImages();
   }
-  if (recording && Host()) {
+  if (Host()) {
     Host()->DidFlush();
   }
   return recording;

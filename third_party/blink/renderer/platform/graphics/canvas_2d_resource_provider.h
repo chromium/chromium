@@ -232,7 +232,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   bool IsValid() const;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
-  std::optional<cc::PaintRecord> Flush(bool preserve_recording);
+  void Flush(cc::PaintRecord recording, bool preserve_recording);
   void ReleaseImageProviderImages();
   const std::optional<cc::PaintRecord>& LastRecording();
   void ClearLastRecording() { last_recording_ = std::nullopt; }
