@@ -27,6 +27,7 @@ const CGFloat kBarricadeTapeHeight = 6.0;
 constexpr CGFloat kInputPlateMargin = 16.0f;
 constexpr CGFloat kTitleVerticalMargin = 12.0;
 constexpr CGFloat kHeaderCenteringVerticalMargin = 16.0;
+constexpr CGFloat kThresholdForHistoryDismissal = 0.001;
 constexpr CGFloat kThresholdForClosedState = 0.12;
 constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
@@ -61,6 +62,8 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   __weak UIPanGestureRecognizer* _panGestureInInputPlate;
   // Whether the input plate should stay hidden.
   BOOL _inputPlateForceHidden;
+  // The title of the current thread.
+  NSString* _threadTitle;
 }
 
 @synthesize delegate = _delegate;
@@ -142,8 +145,10 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
         (kThresholdForCompleteVisibility - kThresholdForClosedState);
   }
 
-  if (percentage <= kThresholdForCompleteVisibility) {
-    [self hideHistoryAnimated];
+  if (percentage <= kThresholdForHistoryDismissal &&
+      _state == AssistantAIMState::kHistory) {
+    [self setAssistantAIMState:_previousState];
+    [self hideHistory];
   }
 
   // This ensures the header end up centered in the collapsed state.
@@ -347,6 +352,9 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
       _webStateView.hidden = NO;
       _historyViewController.view.hidden = YES;
       [_headerView setMode:AssistantAIMState::kThread];
+      if (_threadTitle) {
+        [_headerView setTitle:_threadTitle];
+      }
       self.view.backgroundColor = [UIColor clearColor];
       break;
     case AssistantAIMState::kHistory:
@@ -389,7 +397,10 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 }
 
 - (void)setHeaderTitle:(NSString*)title {
-  [_headerView setTitle:title];
+  _threadTitle = [title copy];
+  if (_state != AssistantAIMState::kHistory) {
+    [_headerView setTitle:title];
+  }
 }
 
 - (void)setInputPlateForceHidden:(BOOL)hidden {
@@ -488,29 +499,6 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   return fabs(translation.y) <= 3 * fabs(translation.x);
 }
 
-// Performs the animation logic to hide the history view.
-- (void)animateHistoryHide {
-  [_headerView setMode:AssistantAIMState::kThread];
-  _historyViewController.view.alpha = 0;
-  self.view.backgroundColor = [UIColor clearColor];
-  [self.view layoutIfNeeded];
-}
-
-// Hides the history view with animation.
-- (void)hideHistoryAnimated {
-  if (!_historyViewController) {
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:0.3
-      animations:^{
-        [weakSelf animateHistoryHide];
-      }
-      completion:^(BOOL) {
-        [weakSelf hideHistory];
-      }];
-}
 
 // Hides the history view.
 - (void)hideHistory {
