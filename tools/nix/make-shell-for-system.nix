@@ -132,14 +132,17 @@ in
       ## (see <https://github.com/clangd/chrome-remote-index>)
       (stdenv.mkDerivation rec {
         pname = "clangd";
-        version = "18.1.3";
+        version = "snapshot_20260614";
         src = pkgs.fetchzip {
           url = "https://github.com/clangd/clangd/releases/download/${version}/${pname}-linux-${version}.zip";
-          hash = "sha256-6d1P510uHtXJ8fOyi2OZFyILDS8XgK6vsWFewKFVvq4=";
+          hash = "sha256-Z5nGskIb4LNXm24SMZP4l5FazGsWV1ESAUmFmxzqVHE=";
         };
         # autoPatchelfHook lets you run clangd (and your editor) outside this
         # nix-shell
         nativeBuildInputs = [ autoPatchelfHook ];
+        buildInputs = [
+          gcc-unwrapped.lib # libstdc++.so.6, libgcc_s.so.1
+        ];
         installPhase = ''
           mkdir -p $out
           mv bin $out
