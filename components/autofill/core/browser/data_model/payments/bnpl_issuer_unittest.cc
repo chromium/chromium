@@ -79,7 +79,7 @@ TEST(BnplIssuerTest, GetEligiblePriceRangeForCurrency_WithRangeInUsd) {
   const base::optional_ref<const BnplIssuer::EligiblePriceRange> usd_range =
       issuer.GetEligiblePriceRangeForCurrency("USD");
   ASSERT_TRUE(usd_range.has_value());
-  EXPECT_EQ("USD", usd_range.value().currency);
+  EXPECT_EQ(usd_range.value().currency, "USD");
   EXPECT_EQ(issuer.eligible_price_ranges()[0].price_upper_bound,
             usd_range.value().price_upper_bound);
   EXPECT_EQ(issuer.eligible_price_ranges()[0].price_lower_bound,
