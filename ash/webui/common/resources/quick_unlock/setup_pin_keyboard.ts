@@ -360,6 +360,16 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
    * Includes a safeguard to drop stale callbacks if the user's input changes.
    */
   private quickUnlockPrivateCheckCredential_(pin: string): void {
+    // Don't make calls to the backend for an empty PIN. This avoids checks
+    // during the loading stage when the API might not be fully ready for such
+    // requests.
+    if (!pin) {
+      this.onQuickUnlockPrivateCheckCredential_({
+        errors: [CredentialProblem.TOO_SHORT],
+        warnings: [],
+      });
+      return;
+    }
     this.quickUnlockPrivate.checkCredential(
         QuickUnlockMode.PIN, pin, (credentialCheck) => {
           // If the current input no longer matches the one we sent to the
