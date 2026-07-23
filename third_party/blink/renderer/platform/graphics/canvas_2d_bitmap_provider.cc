@@ -202,9 +202,7 @@ scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
 
 std::optional<cc::PaintRecord> Canvas2DBitmapProvider::Flush(
     bool preserve_recording) {
-  if (!Recorder().HasReleasableDrawOps()) {
-    return std::nullopt;
-  }
+  CHECK(Recorder().HasReleasableDrawOps());
   ScopedRasterTimer timer(nullptr, *this, false);
 
   clear_frame_ = false;

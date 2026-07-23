@@ -524,9 +524,7 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
 
 std::optional<cc::PaintRecord> Canvas2DResourceProvider::Flush(
     bool preserve_recording) {
-  if (!Recorder().HasReleasableDrawOps()) {
-    return std::nullopt;
-  }
+  CHECK(Recorder().HasReleasableDrawOps());
 
   clear_frame_ = false;
   cc::PaintRecord recording;
