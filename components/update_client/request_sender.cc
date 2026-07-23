@@ -20,10 +20,12 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/client_update_protocol/features.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_client_metrics.h"
 #include "components/update_client/utils.h"
 #include "url/gurl.h"
 
@@ -289,9 +291,13 @@ void RequestSender::SendInternalComplete(
     }
 
     CHECK(use_signing_);
-    if (signer_.ValidateResponse(
-            response_body,
-            SelectCupServerProof(response_cup_server_proof, response_etag))) {
+    const base::TimeTicks start_time = base::TimeTicks::Now();
+    const bool valid = signer_.ValidateResponse(
+        response_body,
+        SelectCupServerProof(response_cup_server_proof, response_etag));
+    metrics::RecordCupValidationResult(valid);
+    metrics::RecordCupValidationTime(base::TimeTicks::Now() - start_time);
+    if (valid) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(TakeRequestSenderCallback(), 0,
                                     response_body, retry_after_sec));

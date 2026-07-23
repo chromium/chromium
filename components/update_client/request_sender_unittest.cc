@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/client_update_protocol/features.h"
@@ -258,6 +259,7 @@ TEST_P(RequestSenderTest, RequestSendFailedNoUrls) {
 
 // Tests that a CUP request fails if the response is not signed.
 TEST_P(RequestSenderTest, RequestSendCupError) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
       std::make_unique<PartialMatch>("test"),
       GetTestFilePath("updatecheck_reply_1.json")));
@@ -278,6 +280,10 @@ TEST_P(RequestSenderTest, RequestSendCupError) {
   EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
   EXPECT_EQ(-10000, error_);
   EXPECT_TRUE(response_.empty());
+
+  histogram_tester.ExpectUniqueSample("UpdateClient.CupValidationResult", false,
+                                      1);
+  histogram_tester.ExpectTotalCount("UpdateClient.CupValidationTime", 1);
 }
 
 TEST_P(RequestSenderTest, RetryAfterSecClamped) {
