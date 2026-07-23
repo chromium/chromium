@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
@@ -106,6 +107,20 @@ GURL GetExtensionsPageUrl(const ExtensionId& extension_id);
 // bindings.
 bool IsMojoJsEnabledForExtension(const ExtensionId& extension_id,
                                  content::BrowserContext* context);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Represents the type of settings override configured by the extension.
+// DSE = Default Search Engine.
+// NTP = New Tab Page.
+enum class DseNtpOverrideType {
+  kNone = 0,
+  kDse = 1,
+  kNtp = 2,
+  kBoth = 3,
+};
+
+DseNtpOverrideType GetDseNtpOverrideType(const Extension& extension);
+#endif
 
 }  // namespace util
 }  // namespace extensions

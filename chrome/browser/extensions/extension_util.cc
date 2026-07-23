@@ -45,6 +45,11 @@
 #include "extensions/common/switches.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
@@ -380,5 +385,41 @@ bool IsMojoJsEnabledForExtension(const ExtensionId& extension_id,
           extension_id);
   return extension && Manifest::IsComponentLocation(extension->location());
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+DseNtpOverrideType GetDseNtpOverrideType(const Extension& extension) {
+  enum Flags {
+    kNone = 0,
+    kDse = 1 << 0,
+    kNtp = 1 << 1,
+  };
+
+  int mask = kNone;
+
+  const SettingsOverrides* settings_overrides =
+      SettingsOverrides::Get(&extension);
+  if (settings_overrides && settings_overrides->search_engine.has_value() &&
+      settings_overrides->search_engine->is_default) {
+    mask |= kDse;
+  }
+
+  const URLOverrides::URLOverrideMap& url_overrides =
+      URLOverrides::GetChromeURLOverrides(&extension);
+  if (url_overrides.contains("newtab")) {
+    mask |= kNtp;
+  }
+
+  switch (mask) {
+    case kDse:
+      return DseNtpOverrideType::kDse;
+    case kNtp:
+      return DseNtpOverrideType::kNtp;
+    case kDse | kNtp:
+      return DseNtpOverrideType::kBoth;
+    default:
+      return DseNtpOverrideType::kNone;
+  }
+}
+#endif
 
 } // namespace extensions::util

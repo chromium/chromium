@@ -5094,6 +5094,35 @@ This is emitted for two scenarios when a worker may be unregistered:
   </token>
 </histogram>
 
+<histogram name="Extensions.{OverrideType}.{TrustLevel}.{InstallMode}"
+    enum="PolicyExtensionStatus" expires_after="2027-07-20">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Reports the status (Enabled or Disabled) of policy-installed extensions that
+    perform a {OverrideType} on {TrustLevel} devices where the extension is
+    {InstallMode}.
+
+    Logged once at startup during ExtensionService initialization.
+
+    Note: This is only recorded on Windows and Mac. This is only emitted for
+    regular user profiles, and is skipped for guest and incognito profiles.
+  </summary>
+  <token key="OverrideType">
+    <variant name="BothOverride" summary="both DSE and NTP override"/>
+    <variant name="DseOverride" summary="Default Search Engine override"/>
+    <variant name="NtpOverride" summary="New Tab Page override"/>
+  </token>
+  <token key="TrustLevel">
+    <variant name="HighTrust" summary="high trust management environment"/>
+    <variant name="LowTrust" summary="low trust management environment"/>
+  </token>
+  <token key="InstallMode">
+    <variant name="Forced" summary="forced"/>
+    <variant name="Recommended" summary="recommended"/>
+  </token>
+</histogram>
+
 <histogram name="GuestView.GuestViewCreated" enum="GuestViewType"
     expires_after="2026-12-16">
   <owner>mcnee@chromium.org</owner>

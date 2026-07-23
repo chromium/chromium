@@ -23499,6 +23499,15 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Highest"/>
 </enum>
 
+<!-- LINT.IfChange(PolicyExtensionStatus) -->
+
+<enum name="PolicyExtensionStatus">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h:PolicyExtensionStatus) -->
+
 <enum name="PopularOSErrno">
   <summary>
     Popular errno values. See the descriptions on &quot;*/*/*&quot; labels for

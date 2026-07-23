@@ -238,6 +238,8 @@ class ExtensionService : public ExtensionServiceInterface,
   void ProfileMarkedForPermanentDeletionForTest() {
     OnProfileMarkedForPermanentDeletion(profile_);
   }
+
+  void OnInstalledExtensionsLoadedForTest() { OnInstalledExtensionsLoaded(); }
 #endif
 
   // Load Extension Flags.

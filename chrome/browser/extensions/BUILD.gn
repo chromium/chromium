@@ -741,6 +741,13 @@ source_set("extensions") {
     ]
   }
 
+  if (is_win || is_mac) {
+    sources += [
+      "policy_dse_ntp_override_metrics_reporter.cc",
+      "policy_dse_ntp_override_metrics_reporter.h",
+    ]
+  }
+
   if (enable_extensions) {
     sources += [
       # TODO(crbug.com/40245282): Ideally, no API implementations would be
@@ -2200,6 +2207,10 @@ source_set("unit_tests") {
 
     if (is_win) {
       sources += [ "external_registry_loader_win_unittest.cc" ]
+    }
+
+    if (is_win || is_mac) {
+      sources += [ "policy_dse_ntp_override_metrics_reporter_unittest.cc" ]
     }
 
     if (is_win || is_mac || is_linux) {

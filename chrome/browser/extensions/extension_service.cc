@@ -119,6 +119,10 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/extensions/install_limiter.h"
@@ -963,6 +967,10 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
         service->OnBlocklistUpdated();
       },
       AsExtensionServiceWeakPtr()));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  PolicyDseNtpOverrideMetricsReporter::ReportMetrics(profile_);
+#endif
 }
 
 void ExtensionService::OnDeveloperModePrefChanged() {
