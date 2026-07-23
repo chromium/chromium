@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/functional/callback_forward.h"
-#include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -18,156 +17,48 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
-#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 struct DOMPaintTimingInfo;
 class LargestContentfulPaintManager;
-class Image;
 class LayoutObject;
+class MediaTiming;
 class PaintTimingDetector;
 class PropertyTreeStateOrAlias;
 class StyleImage;
 
-// |ImageRecordsManager| is the manager of all of the images that Largest
-// Image Paint cares about. Note that an image does not necessarily correspond
-// to a node; it can also be one of the background images attached to a node.
-// |ImageRecordsManager| encapsulates the logic of |ImageRecord| handling,
-// providing interface for the external world to handle it in the language of
-// Node, LayoutObject, etc.
-class CORE_EXPORT ImageRecordsManager {
-  DISALLOW_NEW();
-
- public:
-  friend class ImagePaintTimingDetector;
-  friend class ImagePaintTimingDetectorTest;
-
-  ImageRecordsManager(const ImageRecordsManager&) = delete;
-  ImageRecordsManager& operator=(const ImageRecordsManager&) = delete;
-
-  void Trace(Visitor* visitor) const;
-
- private:
-  explicit ImageRecordsManager(Document*);
-
-  ImageRecord* LargestImage() const;
-
-  inline ImageRecord* RemoveRecord(MediaRecordIdHash record_id_hash) {
-    recorded_images_.erase(record_id_hash);
-    image_finished_times_.erase(record_id_hash);
-    auto it = pending_images_.find(record_id_hash);
-    if (it != pending_images_.end()) {
-      ImageRecord* record = it->value;
-      pending_images_.erase(it);
-      // Leave out |images_queued_for_paint_time_| intentionally because the
-      // null record can be removed in
-      // |AssignPaintTimeToRegisteredQueuedRecords|.
-      return record;
-    }
-    return nullptr;
-  }
-
-  inline void RecordImage(MediaRecordIdHash record_id_hash) {
-    recorded_images_.insert(record_id_hash);
-  }
-
-  bool IsRecordedImage(MediaRecordIdHash record_id_hash) const {
-    return recorded_images_.Contains(record_id_hash);
-  }
-
-  void NotifyImageFinished(MediaRecordIdHash record_id_hash) {
-    // TODO(npm): Ideally NotifyImageFinished() would only be called when the
-    // record has not yet been inserted in |image_finished_times_| but that's
-    // not currently the case. If we plumb some information from
-    // MediaTiming we may be able to ensure that this call does not
-    // require the Contains() check, which would save time.
-    if (!image_finished_times_.Contains(record_id_hash)) {
-      image_finished_times_.insert(record_id_hash, base::TimeTicks::Now());
-    }
-  }
-
-  inline ImageRecord* GetPendingImage(MediaRecordIdHash record_id_hash) {
-    auto it = pending_images_.find(record_id_hash);
-    return it == pending_images_.end() ? nullptr : it->value.Get();
-  }
-  bool OnFirstAnimatedFramePainted(MediaRecordIdHash,
-                                   uint32_t current_frame_index);
-  void OnImageLoaded(MediaRecordIdHash,
-                     uint32_t current_frame_index,
-                     const StyleImage*);
-
-  // Marks first image paint and reports the image as an LCP candidate.
-  void ReportLargestIgnoredImage(ImageRecord*, uint32_t current_frame_index);
-
-  void AssignPaintTimeToRegisteredQueuedRecords(
-      uint32_t last_queued_frame_index,
-      const base::TimeTicks&,
-      const DOMPaintTimingInfo&,
-      HeapVector<Member<ImageRecord>>& settled_records);
-
-  void AddPendingImage(ImageRecord* record) {
-    pending_images_.insert(record->Hash(), record);
-  }
-
-  void ClearImagesQueuedForPaintTime();
-
-  inline void QueueToMeasurePaintTime(ImageRecord* record,
-                                      uint32_t current_frame_index) {
-    CHECK(record);
-    record->SetFrameIndex(current_frame_index);
-    images_queued_for_paint_time_.push_back(record);
-  }
-
-  void OnImageLoadedInternal(ImageRecord*, uint32_t current_frame_index);
-
-  // MediaRecordId for images for which we have seen a first paint. A
-  // MediaRecordId is added to this set regardless of whether the image could be
-  // an LCP candidate.
-  HashSet<MediaRecordIdHash> recorded_images_;
-
-  // Map of MediaRecordId to ImageRecord for images for which the first paint
-  // has been seen but which do not have the paint time set yet. This may
-  // contain only images which are potential LCP candidates.
-  HeapHashMap<MediaRecordIdHash, Member<ImageRecord>> pending_images_;
-
-  // |ImageRecord|s waiting for paint time are stored in this map
-  // until they get a presentation time.
-  HeapDeque<Member<ImageRecord>> images_queued_for_paint_time_;
-
-  // Map containing timestamps of when LayoutObject::ImageNotifyFinished is
-  // first called.
-  HashMap<MediaRecordIdHash, base::TimeTicks> image_finished_times_;
-
-  Member<Document> document_;
-};
-
-// ImagePaintTimingDetector contains Largest Image Paint.
+// `ImagePaintTimingDetector` tracks contentful paints of image contents within
+// the viewport and provides timing information to clients, implementing the
+// image portion of Paint Timing (https://w3c.github.io/paint-timing/). This
+// supports Largest Contentful Paint (LCP) and Interaction Contentful Paint
+// (ICP).
 //
-// Largest Image Paint timing measures when the largest image element within
-// viewport finishes painting. Specifically, it:
-// 1. Tracks all images' first invalidation, recording their visual size, if
-// this image is within viewport.
-// 2. When an image finishes loading, record its paint time.
-// 3. At the end of each frame, if new images are added and loaded, the
-// algorithm will start an analysis.
+// For image tracking, there are three phases:
+//   1. When an image is first painted with a known size, an `ImageRecord` is
+//   created. Paint tracking is initialized in this phase, or the image is
+//   ignored if it is not needed by any clients.
 //
-// In the analysis:
-// 3.1 Largest Image Paint finds the largest image by the first visual size. If
-// it has finished loading, reports a candidate result as its first paint time
-// since loaded.
+//   2. When an image finishes loading** and is painted again, the `ImageRecord`
+//   is queued for presentation time, meaning its paint and presentation times
+//   will be set when `PaintTiming` receives the presentation feedback for the
+//   current frame.
 //
-// For all these candidate results, Telemetry picks the lastly reported
-// Largest Image Paint candidate as its final result.
+//   3. When presentation feedback is received, the paint and presentation times
+//   are set for the relevant `ImageRecord`s and `PaintTiming` clients process
+//   the list of presented images, e.g. emitting LCP or ICP candidates and
+//   updating metrics.
+//
+// **Animated images currently have a two-phase completion: metrics are updated
+// when the first animated frame is complete, but LCP and ICP candidates are not
+// emitted until the image finishes loading. This will be simplified when
+// ReportFirstFrameTimeAsRenderTime ships.  See crbug.com/449779010.
 //
 // See also:
 // https://docs.google.com/document/d/1DRVd4a2VU8-yyWftgOparZF-sf16daf0vfbsHuz2rws/edit#heading=h.1k2rnrs6mdmt
@@ -176,30 +67,33 @@ class CORE_EXPORT ImagePaintTimingDetector final
  public:
   explicit ImagePaintTimingDetector(PaintTimingDetector*);
 
-  // Record an image paint. This method covers both img and background image. In
-  // the case of a normal img, the last parameter will be nullptr. This
-  // parameter is needed only for the purposes of plumbing the correct loadTime
-  // value to the ImageRecord. The method returns true if the image is a
-  // candidate for LargestContentfulPaint. That is, if the image is larger
-  // on screen than the current best candidate.
+  // Records an image paint for <img> tags, background images, <video> poster
+  // images, and first video frames. The `StyleImage` will be nullptr unless
+  // there is a background image. Returns true if the image is a candidate for
+  // Largest Contentful Paint, i.e. if the image is larger on screen than the
+  // current LCP candidate.
   bool RecordImage(const LayoutObject&,
                    const gfx::Size& intrinsic_size,
                    const MediaTiming&,
                    const PropertyTreeStateOrAlias& current_paint_properties,
                    const StyleImage*,
                    const gfx::Rect& image_border);
-  void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
-  void NotifyImageRemoved(const LayoutObject&, const MediaTiming*);
-  // After the method being called, the detector stops to recording new entries.
-  // We manually clean up the |images_queued_for_paint_time_| since those may be
-  // used in the presentation callbacks, and we do not want any new paint times
-  // to be assigned after this method is called. Essentially, this class should
-  // do nothing after this method is called, and is now just waiting to be
-  // GarbageCollected.
-  void StopRecordEntries();
 
-  void ReportPresentationTime(uint32_t last_queued_frame_index,
-                              base::TimeTicks);
+  // Notifies the detector that an image has finished loading. Sets the
+  // image-finished time if it's not already set.
+  void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
+
+  // Notifies the detector that an image was removed. Removes the image data
+  // from the relevant collections and notifies clients of the removal if the
+  // image is pending.
+  void NotifyImageRemoved(const LayoutObject&, const MediaTiming*);
+
+  // Clears `images_queued_for_paint_time_` when hard LCP is stopped due to
+  // input.
+  //
+  // TODO(crbug.com/503691215, crbug.com/454082773): This should be removed and
+  // the decision should be left up to individual clients.
+  void StopRecordEntries();
 
   OptionalPaintTimingDetectorCallback<ImageRecord> TakePaintTimingCallback();
 
@@ -226,6 +120,32 @@ class CORE_EXPORT ImagePaintTimingDetector final
 
   LargestContentfulPaintManager* GetLargestContentfulPaintManager() const;
 
+  // Removes the image data associated with the `MediaRecordIdHash` from all
+  // collections.
+  ImageRecord* RemoveRecord(MediaRecordIdHash);
+
+  inline ImageRecord* GetPendingImage(MediaRecordIdHash record_id_hash) {
+    auto it = pending_images_.find(record_id_hash);
+    return it == pending_images_.end() ? nullptr : it->value.Get();
+  }
+
+  void OnFirstAnimatedFramePainted(MediaRecordIdHash);
+
+  void OnImageLoaded(ImageRecord*, const StyleImage*);
+
+  void AssignPaintTimeToRegisteredQueuedRecords(
+      uint32_t last_queued_frame_index,
+      const base::TimeTicks&,
+      const DOMPaintTimingInfo&,
+      HeapVector<Member<ImageRecord>>& settled_records);
+
+  inline void QueueToMeasurePaintTime(ImageRecord* record) {
+    CHECK(record);
+    record->SetFrameIndex(frame_index_);
+    images_queued_for_paint_time_.push_back(record);
+    added_entry_in_latest_frame_ = true;
+  }
+
   // Used to decide which frame a record belongs to, monotonically increasing.
   uint32_t frame_index_ = 1;
   bool added_entry_in_latest_frame_ = false;
@@ -235,8 +155,25 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // when needed. 0 means that the size has not been computed.
   std::optional<uint64_t> viewport_size_;
 
-  ImageRecordsManager records_manager_;
   Member<PaintTimingDetector> paint_timing_detector_;
+
+  // MediaRecordId for images for which we have seen a first paint. A
+  // MediaRecordId is added to this set regardless of whether the image could be
+  // an LCP candidate.
+  HashSet<MediaRecordIdHash> recorded_images_;
+
+  // Map of MediaRecordId to ImageRecord for images for which the first paint
+  // has been seen but which do not have the paint time set yet. This may
+  // contain only images which are potential LCP candidates.
+  HeapHashMap<MediaRecordIdHash, Member<ImageRecord>> pending_images_;
+
+  // |ImageRecord|s waiting for paint time are stored in this map
+  // until they get a presentation time.
+  HeapDeque<Member<ImageRecord>> images_queued_for_paint_time_;
+
+  // Map containing timestamps of when LayoutObject::ImageNotifyFinished is
+  // first called.
+  HashMap<MediaRecordIdHash, base::TimeTicks> image_finished_times_;
 };
 
 }  // namespace blink

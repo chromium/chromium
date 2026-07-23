@@ -216,6 +216,7 @@ void LargestContentfulPaintManager::MaybeUpdateLargestIgnoredImage(
   // TODO(crbug.com/503691215): Can we use the actual image load time here
   // rather instead? It's not clear why this inconsistency exists.
   record->SetLoadTime(base::TimeTicks::Now());
+  record->MarkLoaded();
 
   InitializePaintTracking(record);
 

@@ -6,6 +6,7 @@
 
 #include <cstddef>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "cc/layers/heads_up_display_layer.h"
 #include "cc/layers/layer.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/loader/fetch/media_timing.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -41,8 +43,7 @@ namespace blink {
 
 ImagePaintTimingDetector::ImagePaintTimingDetector(
     PaintTimingDetector* detector)
-    : records_manager_(detector->GetPaintTiming().GetDocument()),
-      paint_timing_detector_(detector) {}
+    : paint_timing_detector_(detector) {}
 
 void ImagePaintTimingDetector::SendRectsToHud() {
   LocalFrameView* frame_view =
@@ -63,7 +64,7 @@ void ImagePaintTimingDetector::SendRectsToHud() {
 
   bool is_recording_lcp = !!GetLargestContentfulPaintManager();
 
-  for (const auto& record : records_manager_.images_queued_for_paint_time_) {
+  for (const auto& record : images_queued_for_paint_time_) {
     if (record->FrameIndex() == frame_index_) {
       cc::WebVitalMetricType type;
 
@@ -98,7 +99,7 @@ ImagePaintTimingDetector::TakePaintTimingCallback() {
          const DOMPaintTimingInfo& paint_timing_info,
          HeapVector<Member<ImageRecord>>& settled_records) {
         if (self) {
-          self->records_manager_.AssignPaintTimeToRegisteredQueuedRecords(
+          self->AssignPaintTimeToRegisteredQueuedRecords(
               frame_index, presentation_timestamp, paint_timing_info,
               settled_records);
         }
@@ -109,8 +110,8 @@ ImagePaintTimingDetector::TakePaintTimingCallback() {
 void ImagePaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const MediaTiming* media_timing) {
-  ImageRecord* record = records_manager_.RemoveRecord(
-      MediaRecordId::GenerateHash(&object, media_timing));
+  ImageRecord* record =
+      RemoveRecord(MediaRecordId::GenerateHash(&object, media_timing));
   if (auto* manager = GetLargestContentfulPaintManager()) {
     // Notify `manager` even if record is null so it can update the largest
     // ignored image, if needed.
@@ -124,10 +125,10 @@ void ImagePaintTimingDetector::NotifyImageRemoved(
 void ImagePaintTimingDetector::StopRecordEntries() {
   // Clear the records queued for presentation callback to ensure no new updates
   // occur.
-  records_manager_.ClearImagesQueuedForPaintTime();
+  images_queued_for_paint_time_.clear();
 }
 
-void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
+void ImagePaintTimingDetector::AssignPaintTimeToRegisteredQueuedRecords(
     uint32_t last_queued_frame_index,
     const base::TimeTicks& presentation_timestamp,
     const DOMPaintTimingInfo& paint_timing_info,
@@ -187,8 +188,8 @@ void ImagePaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(
   // attributed to the relevant interaction. See also crbug.com/330202431.
   MediaRecordId record_id(&object, /*media=*/nullptr);
   MediaRecordIdHash record_id_hash = record_id.GetHash();
-  if (records_manager_.IsRecordedImage(record_id_hash)) {
-    records_manager_.RemoveRecord(record_id_hash);
+  if (recorded_images_.Contains(record_id_hash)) {
+    RemoveRecord(record_id_hash);
   }
 }
 
@@ -231,11 +232,11 @@ bool ImagePaintTimingDetector::RecordImage(
   // the image hasn't been "finalized" yet, i.e. the image wasn't sufficiently
   // loaded the last time it was painted or the presentation time callback for
   // the first paint after being sufficiently loaded is still pending.
-  ImageRecord* record = records_manager_.GetPendingImage(record_id_hash);
+  ImageRecord* record = GetPendingImage(record_id_hash);
 
   // If the image was already processed and has either finished loading or
   // wasn't previously needed, there's nothing to do.
-  if (!record && records_manager_.IsRecordedImage(record_id_hash)) {
+  if (!record && recorded_images_.Contains(record_id_hash)) {
     return false;
   }
 
@@ -295,7 +296,7 @@ bool ImagePaintTimingDetector::RecordImage(
 
     // Mark the image as recorded regardless of if this is needed for any
     // PaintTiming clients so the image isn't reconsidered as a candidate.
-    records_manager_.RecordImage(record_id_hash);
+    recorded_images_.insert(record_id_hash);
 
     if (!record->IsNeededForInteractionContentfulPaint() &&
         !record->IsNeededForLargestContentfulPaint()) {
@@ -303,7 +304,7 @@ bool ImagePaintTimingDetector::RecordImage(
     }
     // Finally, we have at least one client that wants to track paints for this
     // image, so set up future tracking.
-    records_manager_.AddPendingImage(record);
+    pending_images_.insert(record->Hash(), record);
   }
 
   CHECK(record);
@@ -314,9 +315,7 @@ bool ImagePaintTimingDetector::RecordImage(
   // The stored value may or may not be exposed as the `renderTime` depending on
   // flags.
   if (media_timing.IsPaintedFirstFrame()) {
-    added_entry_in_latest_frame_ |=
-        records_manager_.OnFirstAnimatedFramePainted(record_id_hash,
-                                                     frame_index_);
+    OnFirstAnimatedFramePainted(record_id_hash);
   }
 
   // TODO(crbug.com/372929290): This next check will pass when <video> content
@@ -324,8 +323,8 @@ bool ImagePaintTimingDetector::RecordImage(
   // should likely have been handled in the if block for `IsPaintedFirstFrame`,
   // above.
   if (!record->IsLoaded() && media_timing.IsSufficientContentLoadedForPaint()) {
-    records_manager_.OnImageLoaded(record_id_hash, frame_index_, style_image);
-    added_entry_in_latest_frame_ = true;
+    OnImageLoaded(record, style_image);
+    CHECK(added_entry_in_latest_frame_);
 
     if (SoftNavigationContext* context = record->GetSoftNavigationContext()) {
       context->AddPaintedArea(record);
@@ -338,26 +337,40 @@ bool ImagePaintTimingDetector::RecordImage(
 void ImagePaintTimingDetector::NotifyImageFinished(
     const LayoutObject& object,
     const MediaTiming* media_timing) {
-  records_manager_.NotifyImageFinished(
-      MediaRecordId::GenerateHash(&object, media_timing));
-}
-
-void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
-  if (auto* manager = GetLargestContentfulPaintManager()) {
-    if (ImageRecord* record = manager->TakeLargestIgnoredImage()) {
-      CHECK(record->HasLoadTime());
-      records_manager_.ReportLargestIgnoredImage(record, frame_index_);
-      added_entry_in_latest_frame_ = true;
-    }
+  auto hash(MediaRecordId::GenerateHash(&object, media_timing));
+  // TODO(npm): Ideally NotifyImageFinished() would only be called when the
+  // record has not yet been inserted in |image_finished_times_| but that's not
+  // currently the case. If we plumb some information from MediaTiming we may be
+  // able to ensure that this call does not require the Contains() check, which
+  // would save time.
+  if (!image_finished_times_.Contains(hash)) {
+    image_finished_times_.insert(hash, base::TimeTicks::Now());
   }
 }
 
-ImageRecordsManager::ImageRecordsManager(Document* document)
-    : document_(document) {}
+void ImagePaintTimingDetector::ReportLargestIgnoredImage() {
+  auto* lcp_manager = GetLargestContentfulPaintManager();
+  if (!lcp_manager) {
+    return;
+  }
+  ImageRecord* record = lcp_manager->TakeLargestIgnoredImage();
+  if (!record) {
+    return;
+  }
 
-bool ImageRecordsManager::OnFirstAnimatedFramePainted(
-    MediaRecordIdHash record_id_hash,
-    uint32_t current_frame_index) {
+  // Trigger FCP if it's not already set.
+  paint_timing_detector_->GetPaintTiming().MarkFirstImagePaint();
+
+  recorded_images_.insert(record->Hash());
+  pending_images_.insert(record->Hash(), record);
+
+  CHECK(record->HasLoadTime());
+  CHECK(record->IsLoaded());
+  QueueToMeasurePaintTime(record);
+}
+
+void ImagePaintTimingDetector::OnFirstAnimatedFramePainted(
+    MediaRecordIdHash record_id_hash) {
   ImageRecord* record = GetPendingImage(record_id_hash);
   DCHECK(record);
   if (record->GetMediaTiming() &&
@@ -371,8 +384,10 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
       base::TimeTicks paint_time = record->FirstAnimatedFrameTime();
       // TODO(crbug.com/383568320): this timestamp it not specified, and it's
       // not clear how it should be coarsened.
+      LocalDOMWindow* window =
+          paint_timing_detector_->GetPaintTiming().GetDocument()->domWindow();
       DOMHighResTimeStamp dom_timestamp =
-          DOMWindowPerformance::performance(*document_->domWindow())
+          DOMWindowPerformance::performance(CHECK_DEREF(window))
               ->MonotonicTimeToDOMHighResTimeStamp(paint_time);
       record->SetPaintTime(paint_time,
                            DOMPaintTimingInfo{dom_timestamp, dom_timestamp});
@@ -381,62 +396,47 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
     // Otherwise, this is an animated image, and so we should wait for the
     // presentation callback to fire to set the first frame presentation time.
     record->SetIsFirstAnimatedFramePaintTimingQueued(true);
-    QueueToMeasurePaintTime(record, current_frame_index);
-    return true;
+    QueueToMeasurePaintTime(record);
   }
-  return false;
 }
 
-void ImageRecordsManager::OnImageLoaded(MediaRecordIdHash record_id_hash,
-                                        uint32_t current_frame_index,
-                                        const StyleImage* style_image) {
-  ImageRecord* record = GetPendingImage(record_id_hash);
-  DCHECK(record);
+void ImagePaintTimingDetector::OnImageLoaded(ImageRecord* record,
+                                             const StyleImage* style_image) {
   if (!style_image) {
-    auto it = image_finished_times_.find(record_id_hash);
+    auto it = image_finished_times_.find(record->Hash());
     if (it != image_finished_times_.end()) {
       record->SetLoadTime(it->value);
-      DCHECK(record->HasLoadTime());
+      CHECK(record->HasLoadTime());
     }
   } else {
-    CHECK(document_->domWindow());
-    record->SetLoadTime(ImageElementTiming::From(*document_->domWindow())
+    LocalDOMWindow* window =
+        paint_timing_detector_->GetPaintTiming().GetDocument()->domWindow();
+    record->SetLoadTime(ImageElementTiming::From(CHECK_DEREF(window))
                             .GetBackgroundImageLoadTime(style_image));
   }
-  OnImageLoadedInternal(record, current_frame_index);
-}
-
-void ImageRecordsManager::ReportLargestIgnoredImage(
-    ImageRecord* record,
-    uint32_t current_frame_index) {
-  // Trigger FCP if it's not already set.
-  PaintTiming::From(*document_.Get()).MarkFirstImagePaint();
-
-  recorded_images_.insert(record->Hash());
-  AddPendingImage(record);
-  OnImageLoadedInternal(record, current_frame_index);
-}
-
-void ImageRecordsManager::OnImageLoadedInternal(ImageRecord* record,
-                                                uint32_t current_frame_index) {
-  CHECK(record);
   record->MarkLoaded();
-  QueueToMeasurePaintTime(record, current_frame_index);
+  QueueToMeasurePaintTime(record);
 }
 
-void ImageRecordsManager::ClearImagesQueuedForPaintTime() {
-  images_queued_for_paint_time_.clear();
-}
-
-void ImageRecordsManager::Trace(Visitor* visitor) const {
-  visitor->Trace(document_);
-  visitor->Trace(pending_images_);
-  visitor->Trace(images_queued_for_paint_time_);
+ImageRecord* ImagePaintTimingDetector::RemoveRecord(
+    MediaRecordIdHash record_id_hash) {
+  recorded_images_.erase(record_id_hash);
+  image_finished_times_.erase(record_id_hash);
+  auto it = pending_images_.find(record_id_hash);
+  if (it != pending_images_.end()) {
+    ImageRecord* record = it->value;
+    pending_images_.erase(it);
+    // Leave out `images_queued_for_paint_time_` intentionally because the null
+    // record can be removed in `AssignPaintTimeToRegisteredQueuedRecords`.
+    return record;
+  }
+  return nullptr;
 }
 
 void ImagePaintTimingDetector::Trace(Visitor* visitor) const {
-  visitor->Trace(records_manager_);
   visitor->Trace(paint_timing_detector_);
+  visitor->Trace(pending_images_);
+  visitor->Trace(images_queued_for_paint_time_);
 }
 
 LargestContentfulPaintManager*

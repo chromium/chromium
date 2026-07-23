@@ -146,22 +146,22 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   size_t CountImageRecords() {
     return GetPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        .records_manager_.recorded_images_.size();
+        .recorded_images_.size();
   }
 
   size_t ContainerTotalSize() {
     size_t result = GetPaintTimingDetector()
                         .GetImagePaintTimingDetector()
-                        .records_manager_.recorded_images_.size() +
+                        .recorded_images_.size() +
                     GetPaintTimingDetector()
                         .GetImagePaintTimingDetector()
-                        .records_manager_.pending_images_.size() +
+                        .pending_images_.size() +
                     GetPaintTimingDetector()
                         .GetImagePaintTimingDetector()
-                        .records_manager_.images_queued_for_paint_time_.size() +
+                        .images_queued_for_paint_time_.size() +
                     GetPaintTimingDetector()
                         .GetImagePaintTimingDetector()
-                        .records_manager_.image_finished_times_.size();
+                        .image_finished_times_.size();
 
     return result;
   }
@@ -169,7 +169,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
   size_t CountChildFrameRecords() {
     return GetChildPaintTimingDetector()
         .GetImagePaintTimingDetector()
-        .records_manager_.recorded_images_.size();
+        .recorded_images_.size();
   }
 
   base::TimeTicks LargestPaintTime() {
