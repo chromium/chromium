@@ -178,4 +178,123 @@ TEST_F(DevicePostureProviderImplTest, DeferUpdatesWhileHiddenEmulation) {
             blink::mojom::DevicePostureType::kContinuous);
 }
 
+TEST_F(DevicePostureProviderImplTest, ReturnFallbackWhileHiddenFirstBind) {
+  MockDevicePostureClient client;
+
+  // Start HIDDEN.
+  test_web_contents()->WasHidden();
+
+  // Emulate platform state as Folded (while hidden).
+  provider()->OverrideDevicePostureForEmulation(
+      blink::mojom::DevicePostureType::kFolded);
+
+  // Bind new client while hidden.
+  base::test::TestFuture<blink::mojom::DevicePostureType> posture_future;
+  blink::mojom::DevicePostureProvider* posture_provider = provider();
+  EXPECT_CALL(client, OnPostureChanged(_)).Times(0);
+  posture_provider->AddListenerAndGetCurrentPosture(
+      client.BindAndGetRemote(), posture_future.GetCallback());
+
+  // It should return the FALLBACK (kContinuous) because
+  // last_dispatched_posture_ was nullopt.
+  EXPECT_EQ(posture_future.Get(), blink::mojom::DevicePostureType::kContinuous);
+  client.Flush();
+
+  // Show the web contents. It should dispatch the REAL state (kFolded).
+  base::test::TestFuture<blink::mojom::DevicePostureType> change_future;
+  EXPECT_CALL(client, OnPostureChanged(_))
+      .WillOnce(base::test::InvokeFuture(change_future));
+  test_web_contents()->WasShown();
+  EXPECT_EQ(change_future.Take(), blink::mojom::DevicePostureType::kFolded);
+}
+
+TEST_F(DevicePostureProviderImplTest, ReturnFallbackWhileHiddenSubsequentBind) {
+  MockDevicePostureClient client1;
+  MockDevicePostureClient client2;
+
+  // Initially visible.
+  test_web_contents()->WasShown();
+
+  // Add first listener.
+  base::test::TestFuture<blink::mojom::DevicePostureType> posture_future_1;
+  blink::mojom::DevicePostureProvider* posture_provider = provider();
+  posture_provider->AddListenerAndGetCurrentPosture(
+      client1.BindAndGetRemote(), posture_future_1.GetCallback());
+  EXPECT_EQ(posture_future_1.Get(),
+            blink::mojom::DevicePostureType::kContinuous);
+
+  // Change to Folded while VISIBLE.
+  base::test::TestFuture<blink::mojom::DevicePostureType> change_future_1;
+  EXPECT_CALL(client1, OnPostureChanged(_))
+      .WillOnce(base::test::InvokeFuture(change_future_1));
+  provider()->OverrideDevicePostureForEmulation(
+      blink::mojom::DevicePostureType::kFolded);
+  EXPECT_EQ(change_future_1.Take(), blink::mojom::DevicePostureType::kFolded);
+
+  // Go HIDDEN.
+  test_web_contents()->WasHidden();
+
+  // Change to Continuous while HIDDEN.
+  EXPECT_CALL(client1, OnPostureChanged(_)).Times(0);
+  provider()->OverrideDevicePostureForEmulation(
+      blink::mojom::DevicePostureType::kContinuous);
+  client1.Flush();
+
+  // Bind SECOND listener while hidden.
+  base::test::TestFuture<blink::mojom::DevicePostureType> posture_future_2;
+  EXPECT_CALL(client2, OnPostureChanged(_)).Times(0);
+  posture_provider->AddListenerAndGetCurrentPosture(
+      client2.BindAndGetRemote(), posture_future_2.GetCallback());
+
+  // It should return the LAST DISPATCHED state (kFolded), NOT the live state
+  // (kContinuous).
+  EXPECT_EQ(posture_future_2.Get(), blink::mojom::DevicePostureType::kFolded);
+  client2.Flush();
+
+  // Show the web contents. It should dispatch the REAL state (kContinuous) to
+  // BOTH.
+  base::test::TestFuture<blink::mojom::DevicePostureType> change_future_2_1;
+  base::test::TestFuture<blink::mojom::DevicePostureType> change_future_2_2;
+  EXPECT_CALL(client1, OnPostureChanged(_))
+      .WillOnce(base::test::InvokeFuture(change_future_2_1));
+  EXPECT_CALL(client2, OnPostureChanged(_))
+      .WillOnce(base::test::InvokeFuture(change_future_2_2));
+
+  test_web_contents()->WasShown();
+
+  EXPECT_EQ(change_future_2_1.Take(),
+            blink::mojom::DevicePostureType::kContinuous);
+  EXPECT_EQ(change_future_2_2.Take(),
+            blink::mojom::DevicePostureType::kContinuous);
+}
+
+TEST_F(DevicePostureProviderImplTest, SkipUpdateOnShowIfUnchanged) {
+  MockDevicePostureClient client;
+
+  // Start HIDDEN.
+  test_web_contents()->WasHidden();
+
+  // Emulate platform state as Continuous (while hidden).
+  provider()->OverrideDevicePostureForEmulation(
+      blink::mojom::DevicePostureType::kContinuous);
+
+  // Bind new client while hidden.
+  base::test::TestFuture<blink::mojom::DevicePostureType> posture_future;
+  blink::mojom::DevicePostureProvider* posture_provider = provider();
+  EXPECT_CALL(client, OnPostureChanged(_)).Times(0);
+  posture_provider->AddListenerAndGetCurrentPosture(
+      client.BindAndGetRemote(), posture_future.GetCallback());
+
+  // It should return the FALLBACK (kContinuous).
+  EXPECT_EQ(posture_future.Get(), blink::mojom::DevicePostureType::kContinuous);
+  client.Flush();
+
+  // Show the web contents. It should NOT dispatch an update because the
+  // dispatched initial state (kContinuous) matches the REAL state
+  // (kContinuous).
+  EXPECT_CALL(client, OnPostureChanged(_)).Times(0);
+  test_web_contents()->WasShown();
+  client.Flush();
+}
+
 }  // namespace content

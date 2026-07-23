@@ -57,9 +57,15 @@ void DevicePostureProviderImpl::AddListenerAndGetCurrentPosture(
     platform_provider_->AddObserver(this);
   }
   posture_clients_.Add(std::move(client));
-  blink::mojom::DevicePostureType posture = GetCurrentPosture();
-  std::move(callback).Run(posture);
+  blink::mojom::DevicePostureType posture;
+  if (web_contents()->GetVisibility() == Visibility::VISIBLE) {
+    posture = GetCurrentPosture();
+  } else {
+    posture = last_dispatched_posture_.value_or(
+        blink::mojom::DevicePostureType::kContinuous);
+  }
   last_dispatched_posture_ = posture;
+  std::move(callback).Run(posture);
 }
 
 void DevicePostureProviderImpl::OverrideDevicePostureForEmulation(
