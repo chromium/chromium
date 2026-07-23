@@ -440,10 +440,6 @@ class PaintOpHelper {
 
   static std::string ToString(const SkData& data) { return "<SkData>"; }
 
-  static std::string ToString(const ThreadsafePath& path) {
-    return ToString(static_cast<const SkPath&>(path));
-  }
-
   static std::string ToString(const SkPath& path) {
     // TODO(vmpstr): SkPath has a dump function which we can use here?
     return "<SkPath>";

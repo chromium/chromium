@@ -147,6 +147,8 @@ SK_API void SkLog_FileLine(const char* file,
 
 #define SK_GRAPHITE_USE_LEGACY_RRECT_CLIP_SHADER
 
+#define SK_DISABLE_LEGACY_UPDATEBOUNDSCACHE
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
