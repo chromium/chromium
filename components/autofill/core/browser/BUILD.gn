@@ -1300,6 +1300,7 @@ static_library("test_support") {
     "foundations/test_autofill_driver.h",
     "foundations/test_autofill_driver_factory.cc",
     "foundations/test_autofill_driver_factory.h",
+    "foundations/test_autofill_manager.h",
     "foundations/test_autofill_manager_waiter.cc",
     "foundations/test_autofill_manager_waiter.h",
     "foundations/test_browser_autofill_manager.cc",

@@ -5,119 +5,34 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_TEST_BROWSER_AUTOFILL_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_TEST_BROWSER_AUTOFILL_MANAGER_H_
 
-#include <memory>
-#include <optional>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "base/run_loop.h"
-#include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
-#include "components/autofill/core/browser/filling/test_form_filler.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
-#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
-#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_ai_card_recommendation_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_bnpl_manager.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 
 class MockBnplManager;
 class AutofillDriver;
-class TestPersonalDataManager;
 
-class TestBrowserAutofillManager : public BrowserAutofillManager {
+class TestBrowserAutofillManager
+    : public TestAutofillManagerTemplate<BrowserAutofillManager> {
  public:
   explicit TestBrowserAutofillManager(AutofillDriver* driver);
-
   TestBrowserAutofillManager(const TestBrowserAutofillManager&) = delete;
   TestBrowserAutofillManager& operator=(const TestBrowserAutofillManager&) =
       delete;
-
   ~TestBrowserAutofillManager() override;
 
-  // AutofillManager overrides.
-  // The overrides ensure that the thread is blocked until the form has been
-  // parsed.
-  void OnLanguageDetermined(
-      const translate::LanguageDetectionDetails& details) override;
-  void OnFormsSeen(std::vector<FormData> updated_forms,
-                   std::vector<FormGlobalId> removed_forms,
-                   RendererEventPassKey pass_key) override;
-  void OnCaretMovedInFormField(const FormData& form,
-                               const FieldGlobalId& field_id,
-                               const gfx::Rect& caret_bounds,
-                               RendererEventPassKey pass_key) override;
-  void OnTextFieldValueChanged(const FormData& form,
-                               const FieldGlobalId& field_id,
-                               const base::TimeTicks timestamp,
-                               RendererEventPassKey pass_key) override;
-  void OnDidEndTextFieldEditing(RendererEventPassKey pass_key) override;
-  void OnTextFieldDidScroll(const FormData& form,
-                            const FieldGlobalId& field_id,
-                            RendererEventPassKey pass_key) override;
-  void OnSelectControlSelectionChanged(const FormData& form,
-                                       const FieldGlobalId& field_id,
-                                       RendererEventPassKey pass_key) override;
-  void OnSelectFieldOptionsDidChange(const FormData& form,
-                                     const FieldGlobalId& field_id,
-                                     RendererEventPassKey pass_key) override;
-  void OnAskForValuesToFill(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const gfx::Rect& caret_bounds,
-      AutofillSuggestionTriggerSource trigger_source,
-      std::optional<PasswordSuggestionRequest> password_request,
-      RendererEventPassKey pass_key) override;
-  void OnFocusOnFormField(const FormData& form,
-                          const FieldGlobalId& field_id,
-                          RendererEventPassKey pass_key) override;
-  void OnDidAutofillForm(const FormData& form,
-                         RendererEventPassKey pass_key) override;
-  void OnJavaScriptChangedAutofilledValue(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      const std::u16string& old_value,
-      RendererEventPassKey pass_key) override;
-  void OnFormSubmitted(const FormData& form,
-                       const mojom::SubmissionSource source,
-                       RendererEventPassKey pass_key) override;
-
-  // BrowserAutofillManager overrides.
+  // BrowserAutofillManager:
   const gfx::Image& GetCardImage(const CreditCard& credit_card) override;
   testing::NiceMock<MockBnplManager>* GetPaymentsBnplManager() override;
   testing::NiceMock<MockAiCardRecommendationManager>&
   GetAiCardRecommendationManager() override;
-
-  // Unique to TestBrowserAutofillManager:
-
-  void AddSeenForm(const FormData& form,
-                   const std::vector<FieldType>& field_types) {
-    AddSeenForm(form, /*heuristic_types=*/field_types,
-                /*server_types=*/field_types);
-  }
-
-  void AddSeenForm(const FormData& form,
-                   const std::vector<FieldType>& heuristic_types,
-                   const std::vector<FieldType>& server_types);
-
-  void AddSeenForm(
-      const FormData& form,
-      const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
-          heuristic_types,
-      const std::vector<FieldType>& server_types);
-
-  const std::string& GetSubmittedFormSignature();
-
-  // Helper to skip irrelevant params.
-  void OnAskForValuesToFillTest(
-      const FormData& form,
-      const FieldGlobalId& field_id,
-      AutofillSuggestionTriggerSource trigger_source =
-          AutofillSuggestionTriggerSource::kTextFieldValueChanged,
-      std::optional<PasswordSuggestionRequest> password_request = std::nullopt);
 
  private:
   const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
@@ -125,8 +40,6 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   testing::NiceMock<MockBnplManager> mock_bnpl_manager_{this};
   testing::NiceMock<MockAiCardRecommendationManager>
       mock_ai_card_recommendation_manager_{this};
-
-  TestAutofillManagerWaiter waiter_{*this};
 };
 
 }  // namespace autofill
