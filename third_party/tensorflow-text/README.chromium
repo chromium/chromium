@@ -1,10 +1,10 @@
 Name: TensorFlow Text
 Short Name: tensorflow-text
 URL: https://github.com/tensorflow/text.git
-Version: 32dc812e814c98873068fea87b4eecc2e2babed8
-Revision: 32dc812e814c98873068fea87b4eecc2e2babed8
+Version: N/A
+Revision: 17c38bf014810b80abbb7c13ff1c2ac3cd9f710f
 Update Mechanism: Manual
-Date: 2025-05-07
+Date: 2026-07-21
 License: Apache-2.0
 License File: LICENSE
 Security Critical: Yes
