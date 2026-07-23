@@ -17,6 +17,10 @@
 #include "components/themes/cross_device/cross_device_theme_sync_bridge.h"
 #include "components/themes/cross_device/theme_translation.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/sync/cross_device_theme_tracker_android.h"
+#endif
+
 namespace {
 
 template <typename RemoteSpecifics, typename LocalSpecifics>
@@ -97,9 +101,14 @@ CrossDeviceThemeTrackerFactory::BuildServiceInstanceForBrowserContext(
       DataTypeStoreServiceFactory::GetForProfile(profile);
   version_info::Channel channel = chrome::GetChannel();
 
+#if BUILDFLAG(IS_ANDROID)
+  auto tracker = std::make_unique<themes::CrossDeviceThemeTrackerAndroid>(
+      device_info_tracker);
+#else
   auto tracker =
       std::make_unique<themes::CrossDeviceThemeTracker<LocalThemeSpecifics>>(
           device_info_tracker);
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Construct Desktop bridge.
