@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest,
   EXPECT_FALSE(model->ShouldRunAnimation(web_contents));
 
   // The animation has run for the current WebContents, but not for any other.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   WebContents::CreateParams create_params(profile);
   std::unique_ptr<WebContents> other_web_contents =
       WebContents::Create(create_params);

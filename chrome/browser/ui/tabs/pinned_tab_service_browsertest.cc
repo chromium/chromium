@@ -26,7 +26,7 @@ using PinnedTabServiceBrowserTest = InProcessBrowserTest;
 // Makes sure pinned tabs are updated when tabstrip is empty.
 // http://crbug.com/40519327
 IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   GURL url("https://www.google.com");
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   ui_test_utils::NavigateToURL(&params);
@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, TabStripEmpty) {
 }
 
 IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, CloseWindow) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   EXPECT_TRUE(PinnedTabServiceFactory::GetForProfile(profile));
   EXPECT_TRUE(profile->GetPrefs());
 
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, CloseWindow) {
 
 // Makes sure closing a popup triggers writing pinned tabs.
 IN_PROC_BROWSER_TEST_F(PinnedTabServiceBrowserTest, Popup) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   EXPECT_TRUE(PinnedTabServiceFactory::GetForProfile(profile));
   EXPECT_TRUE(profile->GetPrefs());
 

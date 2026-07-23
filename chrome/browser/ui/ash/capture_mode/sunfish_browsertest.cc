@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, BrowserPolicy) {
   EXPECT_TRUE(delegate->IsSearchAllowedByPolicy());
   EXPECT_TRUE(CanShowSunfishUi());
 
-  browser()->profile()->GetPrefs()->SetInteger(
+  browser()->GetProfile()->GetPrefs()->SetInteger(
       lens::prefs::kLensOverlaySettings,
       static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kDisabled));
   EXPECT_FALSE(delegate->IsSearchAllowedByPolicy());

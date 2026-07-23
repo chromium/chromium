@@ -1038,7 +1038,7 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
 
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 2u);
   Browser* browser2 = ui_test_utils::OpenNewEmptyWindowAndWaitUntilActivated(
-      app_browser->profile());
+      app_browser->GetProfile());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 3u);
 
   TabStripModel* model2 = browser2->tab_strip_model();
@@ -2759,7 +2759,7 @@ class WebAppBrowserTest_NoDestroyProfile : public WebAppBrowserTest {
 
 // Check that no web app is launched during shutdown.
 IN_PROC_BROWSER_TEST_P(WebAppBrowserTest_NoDestroyProfile, Shutdown) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
   apps::AppLaunchParams params(

@@ -104,7 +104,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
   // 3) Hosted apps.
   Browser::CreateParams browser_create_params(
       Browser::CreateParams::CreateForApp("Test", true /* trusted_source */,
-                                          gfx::Rect(), browser()->profile(),
+                                          gfx::Rect(), browser()->GetProfile(),
                                           true));
 
   Browser* app_host_browser = Browser::Create(browser_create_params);

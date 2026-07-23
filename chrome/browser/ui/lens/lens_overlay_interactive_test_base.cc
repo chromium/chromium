@@ -131,7 +131,7 @@ void LensOverlayInteractiveTestBase::SetUpOnMainThread() {
   embedded_test_server()->StartAcceptingConnections();
 
   // Permits sharing the page screenshot by default.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
   prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
 }
@@ -141,7 +141,7 @@ void LensOverlayInteractiveTestBase::TearDownOnMainThread() {
   InteractiveFeaturePromoTest::TearDownOnMainThread();
 
   // Disallow sharing the page screenshot by default.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
 }
 

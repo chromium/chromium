@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   urls.push_back(embedded_test_server()->GetURL("/title1.html"));
   urls.push_back(embedded_test_server()->GetURL("/title2.html"));
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Avoid showing the What's New page.
   PrefService* pref_service = g_browser_process->local_state();

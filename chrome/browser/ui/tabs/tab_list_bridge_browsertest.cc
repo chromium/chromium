@@ -658,9 +658,10 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, HighlightTabs) {
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
                        ContainsTabGroupWhenTabGroupsNotSupported) {
   // App windows don't allow tab groups.
-  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-      "some app", /*trusted_source=*/false, gfx::Rect(), browser()->profile(),
-      /*user_gesture=*/true);
+  Browser::CreateParams params =
+      Browser::CreateParams::CreateForApp("some app", /*trusted_source=*/false,
+                                          gfx::Rect(), browser()->GetProfile(),
+                                          /*user_gesture=*/true);
   // params.window = window2.release();
   Browser* browser2 = Browser::Create(params);
   ui_test_utils::DeprecatedFakeActivateBrowser(browser2);
@@ -1247,7 +1248,7 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, Observer_OnTabMoved) {
 
 IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, IsTabListEditable) {
   // Use two tab lists, which means two browsers.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   Browser* browser1 = browser();
   Browser* browser2 = CreateBrowser(profile);
 

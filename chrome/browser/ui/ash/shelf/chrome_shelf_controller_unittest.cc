@@ -1677,7 +1677,7 @@ TEST_F(ChromeShelfControllerTest, DefaultShelfPrefValues) {
 
   // Verify shelf prefs are initialized to default values if they're not set
   // either locally nor in sync data.
-  PrefService* const prefs = browser()->profile()->GetPrefs();
+  PrefService* const prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_EQ(ash::ShelfAlignment::kBottom,
             ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
   EXPECT_EQ(ash::ShelfAutoHideBehavior::kNever,
@@ -1716,7 +1716,7 @@ TEST_F(ChromeShelfControllerTest, ShelfPrefsInitializedFromSyncData) {
   // received.
   InitShelfController();
 
-  PrefService* const prefs = browser()->profile()->GetPrefs();
+  PrefService* const prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_EQ(ash::ShelfAlignment::kLeft,
             ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
   EXPECT_EQ(ash::ShelfAutoHideBehavior::kAlways,
@@ -1746,7 +1746,7 @@ TEST_F(ChromeShelfControllerTest,
   // before initial synced prefs have been received.
   InitShelfController();
 
-  PrefService* const prefs = browser()->profile()->GetPrefs();
+  PrefService* const prefs = browser()->GetProfile()->GetPrefs();
   EXPECT_EQ(ash::ShelfAlignment::kBottom,
             ash::GetShelfAlignmentPref(prefs, GetPrimaryDisplayId()));
   EXPECT_EQ(ash::ShelfAutoHideBehavior::kNever,
@@ -1786,7 +1786,7 @@ TEST_F(ChromeShelfControllerTest,
 
 TEST_F(ChromeShelfControllerTest, SyncedShelfPrefsDontOverrideLocalPref) {
   // Initialize shelf prefs before shelf controller gets initialized.
-  PrefService* const prefs = browser()->profile()->GetPrefs();
+  PrefService* const prefs = browser()->GetProfile()->GetPrefs();
   ash::SetShelfAlignmentPref(prefs, GetPrimaryDisplayId(),
                              ash::ShelfAlignment::kLeft);
   ash::SetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplayId(),

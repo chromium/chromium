@@ -243,5 +243,5 @@ content::EvalJsResult SandboxedWebUiAppTestBase::EvalJsInAppFrame(
 void SandboxedWebUiAppTestBase::SetUpOnMainThread() {
   injector_ = std::make_unique<TestCodeInjector>(this);
   MojoWebUIBrowserTest::SetUpOnMainThread();
-  webui::CreateAndAddUntrustedWebUITestDataSource(browser()->profile());
+  webui::CreateAndAddUntrustedWebUITestDataSource(browser()->GetProfile());
 }

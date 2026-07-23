@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuth) {
       SimulateNetworkServiceCrash();
       // Flush the network interface to make sure it notices the crash.
       browser()
-          ->profile()
+          ->GetProfile()
           ->GetDefaultStoragePartition()
           ->FlushNetworkInterfaceForTesting();
     }
@@ -1591,7 +1591,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
 
   base::RunLoop run_loop;
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time(), nullptr,
@@ -1640,14 +1640,14 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
                        GloballyScopeHTTPAuthCacheEnabled) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kGloballyScopeHTTPAuthCacheEnabled, true);
   // This is not technically necessary, since the SetAuthFor() call below uses
   // the same pipe that the pref change uses, making sure the change is applied
   // before the network process receives credentials, but seems safest to flush
   // the NetworkContext pipe explicitly.
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->FlushNetworkInterfaceForTesting();
 
@@ -1671,7 +1671,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTestThirdPartyCookiesUnblocked,
 
   base::RunLoop run_loop;
   browser()
-      ->profile()
+      ->GetProfile()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time(), nullptr,
@@ -1949,7 +1949,7 @@ IN_PROC_BROWSER_TEST_P(LoginPromptBrowserTest, TestBasicAuthDisabled) {
       SimulateNetworkServiceCrash();
       // Flush the network interface to make sure it notices the crash.
       browser()
-          ->profile()
+          ->GetProfile()
           ->GetDefaultStoragePartition()
           ->FlushNetworkInterfaceForTesting();
     }

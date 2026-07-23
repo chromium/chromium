@@ -52,7 +52,7 @@ constexpr char kForceMigratedHistogram[] = "Signin.DiceMigration.ForceMigrated";
 class DiceMigrationServiceForcedMigrationInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
-  Profile* GetProfile() { return browser()->profile(); }
+  Profile* GetProfile() { return browser()->GetProfile(); }
 
   DiceMigrationService* GetDiceMigrationService() {
     DiceMigrationService* service =

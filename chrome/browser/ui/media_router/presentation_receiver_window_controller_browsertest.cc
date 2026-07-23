@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   ReceiverWindowDestroyer destroyer;
   auto receiver_window =
       PresentationReceiverWindowController::CreateFromOriginalProfile(
-          browser()->profile(), gfx::Rect(100, 100),
+          browser()->GetProfile(), gfx::Rect(100, 100),
           base::BindOnce(&ReceiverWindowDestroyer::OnTerminate,
                          base::Unretained(&destroyer)),
           GetNoopTitleChangeCallback());
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   ReceiverWindowDestroyer destroyer;
   auto receiver_window =
       PresentationReceiverWindowController::CreateFromOriginalProfile(
-          browser()->profile(), target_display.bounds(),
+          browser()->GetProfile(), target_display.bounds(),
           base::BindOnce(&ReceiverWindowDestroyer::OnTerminate,
                          base::Unretained(&destroyer)),
           GetNoopTitleChangeCallback());
@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   ReceiverWindowDestroyer destroyer;
   auto receiver_window =
       PresentationReceiverWindowController::CreateFromOriginalProfile(
-          browser()->profile(), gfx::Rect(100, 100),
+          browser()->GetProfile(), gfx::Rect(100, 100),
           base::BindOnce(&ReceiverWindowDestroyer::OnTerminate,
                          base::Unretained(&destroyer)),
           GetNoopTitleChangeCallback());
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   ReceiverWindowDestroyer destroyer;
   auto receiver_window =
       PresentationReceiverWindowController::CreateFromOriginalProfile(
-          browser()->profile(), gfx::Rect(100, 100),
+          browser()->GetProfile(), gfx::Rect(100, 100),
           base::BindOnce(&ReceiverWindowDestroyer::OnTerminate,
                          base::Unretained(&destroyer)),
           GetNoopTitleChangeCallback());
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   FakeControllerConnection controller_connection;
   auto controller_ptr = controller_connection.Bind();
   media_router::LocalPresentationManagerFactory::GetOrCreateForBrowserContext(
-      browser()->profile())
+      browser()->GetProfile())
       ->RegisterLocalPresentationController(
           blink::mojom::PresentationInfo(presentation_url, kPresentationId),
           content::GlobalRenderFrameHostId(0, 0), std::move(controller_ptr),
@@ -383,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverNavigationBrowserTest,
   base::RunLoop terminate_loop;
   auto receiver_window =
       PresentationReceiverWindowController::CreateFromOriginalProfile(
-          browser()->profile(), gfx::Rect(100, 100),
+          browser()->GetProfile(), gfx::Rect(100, 100),
           terminate_loop.QuitClosure(), GetNoopTitleChangeCallback());
   CommittedUrlRecorder recorder(receiver_window->web_contents());
   receiver_window->Start(kPresentationId, start_url);
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverNavigationBrowserTest,
   //    should not be hijacked or routed to target.
   FakeControllerConnection controller_connection;
   media_router::LocalPresentationManagerFactory::GetOrCreateForBrowserContext(
-      browser()->profile())
+      browser()->GetProfile())
       ->RegisterLocalPresentationController(
           blink::mojom::PresentationInfo(start_url, kPresentationId),
           content::GlobalRenderFrameHostId(0, 0), controller_connection.Bind(),
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(PresentationReceiverWindowControllerBrowserTest,
   ReceiverWindowDestroyer destroyer;
   auto receiver_window =
       PresentationReceiverWindowController::CreateFromOriginalProfile(
-          browser()->profile(), gfx::Rect(100, 100),
+          browser()->GetProfile(), gfx::Rect(100, 100),
           base::BindOnce(&ReceiverWindowDestroyer::OnTerminate,
                          base::Unretained(&destroyer)),
           GetNoopTitleChangeCallback());

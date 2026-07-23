@@ -67,7 +67,7 @@ void FirstRunServiceBrowserTestBase::SetUpOnMainThread() {
 }
 
 Profile* FirstRunServiceBrowserTestBase::profile() const {
-  return browser()->profile();
+  return browser()->GetProfile();
 }
 
 FirstRunService* FirstRunServiceBrowserTestBase::fre_service() const {

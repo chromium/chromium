@@ -1027,7 +1027,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   Init();
   DisableSync();
   // Ensure the policy is explicitly false to start with.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSavingBrowserHistoryDisabled, false);
 
   TabRestoreServiceFactory::GetForProfile(browser()->GetProfile());
@@ -1068,7 +1068,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   }
 
   // Enable the policy mid-session.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSavingBrowserHistoryDisabled, true);
 
   // The model delegate should have been notified of menu structure changes.
@@ -1083,7 +1083,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   VerifyModel(model, kDataDisabled);
 
   // Disable the policy again mid-session.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSavingBrowserHistoryDisabled, false);
 
   // Expect recently closed tabs to remain empty since they were wiped when

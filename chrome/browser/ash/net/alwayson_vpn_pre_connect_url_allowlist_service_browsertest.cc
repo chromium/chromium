@@ -247,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(AlwaysOnVpnPreConnectUrlAllowlistServiceTest,
 
   PolicyBlocklistService* blocklist_service =
       AshPolicyBlocklistServiceFactory::GetForBrowserContext(
-          browser()->profile());
+          browser()->GetProfile());
   ASSERT_TRUE(blocklist_service);
 
   // External URLs should be blocked.

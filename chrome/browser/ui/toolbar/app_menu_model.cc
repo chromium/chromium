@@ -969,7 +969,7 @@ void SaveAndShareSubMenuModel::BuildSendTabToSelfSubmenu(
 
   SetIsNewFeatureAt(GetItemCount() - 1,
                     UserEducationService::MaybeShowNewBadge(
-                        browser->profile(),
+                        browser->GetProfile(),
                         send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2));
 }
 
@@ -1380,7 +1380,7 @@ void AppMenuModel::ExecuteCommand(int command_id, int event_flags) {
   }
 
   if (command_id == IDC_VIEW_PASSWORDS) {
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         password_manager::prefs::kPasswordsPrefWithNewLabelUsed, true);
   }
 

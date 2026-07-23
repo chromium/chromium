@@ -26,7 +26,7 @@ class LensPermissionBubbleInteractiveUiTest : public InteractiveBrowserTest {
 
   auto* GetDialog() { return controller_->dialog_widget_for_testing(); }
 
-  auto* GetPrefService() { return browser()->profile()->GetPrefs(); }
+  auto* GetPrefService() { return browser()->GetProfile()->GetPrefs(); }
 
   void SetUp() override {
     feature_list_.InitWithFeatures(

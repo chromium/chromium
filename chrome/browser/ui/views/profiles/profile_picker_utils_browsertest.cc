@@ -21,12 +21,12 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerUtilsBrowserTest, OpenLearnMorePopup) {
   blink::mojom::WindowFeatures window_features;
 
   auto contents = content::WebContents::Create(
-      content::WebContents::CreateParams(browser()->profile()));
+      content::WebContents::CreateParams(browser()->GetProfile()));
   content::WebContents* raw_contents = contents.get();
 
   ui_test_utils::BrowserCreatedObserver observer;
 
-  OpenLearnMorePopup(browser()->profile(), std::move(contents),
+  OpenLearnMorePopup(browser()->GetProfile(), std::move(contents),
                      /*target_url=*/GURL(url::kAboutBlankURL), window_features);
 
   Browser* popup_browser = observer.Wait();
@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerUtilsBrowserTest, OpenLearnMorePopup) {
 
   EXPECT_NE(popup_browser, browser());
   EXPECT_TRUE(popup_browser->is_type_popup());
-  EXPECT_EQ(popup_browser->profile(), browser()->profile());
+  EXPECT_EQ(popup_browser->GetProfile(), browser()->GetProfile());
   EXPECT_EQ(popup_browser->tab_strip_model()->GetActiveWebContents(),
             raw_contents);
 }

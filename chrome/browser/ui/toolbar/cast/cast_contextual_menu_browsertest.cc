@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(CastContextualMenuBrowserTest, ToggleMediaRemotingItem) {
   }
   EXPECT_NE(remoting_index, -1);
 
-  PrefService* pref_service = browser()->profile()->GetPrefs();
+  PrefService* pref_service = browser()->GetProfile()->GetPrefs();
   pref_service->SetBoolean(
       media_router::prefs::kMediaRouterMediaRemotingEnabled, false);
   EXPECT_FALSE(model.IsItemCheckedAt(remoting_index));

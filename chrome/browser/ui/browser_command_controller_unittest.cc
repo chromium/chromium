@@ -203,7 +203,7 @@ TEST_F(BrowserWithTestWindowTest, IncognitoCommands) {
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_IMPORT_SETTINGS));
   EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_PERFORMANCE));
 
-  TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
+  TestingProfile* testprofile = browser()->GetProfile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
   testprofile->SetGuestSession(true);
   chrome::BrowserCommandController ::
@@ -370,7 +370,7 @@ void FullscreenTestBrowserWindow::ExitFullscreen() {
 }
 
 Profile* FullscreenTestBrowserWindow::GetProfile() {
-  return test_browser_->GetBrowser()->profile();
+  return test_browser_->GetBrowser()->GetProfile();
 }
 
 content::WebContents*
@@ -498,7 +498,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
   }
 
   // Guest Profiles disallow some options.
-  TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
+  TestingProfile* testprofile = browser()->GetProfile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
   testprofile->SetGuestSession(true);
 
@@ -511,7 +511,7 @@ TEST_F(BrowserCommandControllerFullscreenTest,
 // the order of entering fullscreen and forced incognito modes. See
 // http://crbug.com/40507396.
 TEST_F(BrowserWithTestWindowTest, OptionsConsistency) {
-  TestingProfile* profile = browser()->profile()->AsTestingProfile();
+  TestingProfile* profile = browser()->GetProfile()->AsTestingProfile();
   // Setup guest session.
   profile->SetGuestSession(true);
   // Setup forced incognito mode.
@@ -793,7 +793,7 @@ TEST_F(CreateShortcutBrowserCommandControllerTest, DisabledForOTRProfile) {
 }
 
 TEST_F(CreateShortcutBrowserCommandControllerTest, DisabledForGuestProfile) {
-  TestingProfile* test_profile = browser()->profile()->AsTestingProfile();
+  TestingProfile* test_profile = browser()->GetProfile()->AsTestingProfile();
   EXPECT_TRUE(test_profile);
   test_profile->SetGuestSession(true);
 
@@ -801,7 +801,7 @@ TEST_F(CreateShortcutBrowserCommandControllerTest, DisabledForGuestProfile) {
 }
 
 TEST_F(CreateShortcutBrowserCommandControllerTest, DisabledForSystemProfile) {
-  TestingProfile* test_profile = browser()->profile()->AsTestingProfile();
+  TestingProfile* test_profile = browser()->GetProfile()->AsTestingProfile();
   EXPECT_TRUE(test_profile);
 
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CREATE_SHORTCUT));

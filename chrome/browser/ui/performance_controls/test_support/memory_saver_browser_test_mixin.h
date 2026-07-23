@@ -111,7 +111,7 @@ class MemorySaverBrowserTestMixin : public T {
     for (auto pattern : patterns) {
       exclusion_map.Set(pattern, base::TimeToValue(base::Time::Now()));
     }
-    T::browser()->profile()->GetPrefs()->SetDict(
+    T::browser()->GetProfile()->GetPrefs()->SetDict(
         performance_manager::user_tuning::prefs::
             kTabDiscardingExceptionsWithTime,
         std::move(exclusion_map));

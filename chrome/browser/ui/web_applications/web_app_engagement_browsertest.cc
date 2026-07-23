@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   // The app should open as a window.
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+      {browser()->GetProfile(), StartupProfileMode::kBrowserWindow}, {}));
   app_loaded_observer.Wait();
 
   BrowserWindowInterface* const app_browser =
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   // The app should open as a window.
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+      {browser()->GetProfile(), StartupProfileMode::kBrowserWindow}, {}));
   app_loaded_observer.Wait();
 
   BrowserWindowInterface* const app_browser =
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_CommandLineTab) {
   // The app should open as a tab.
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+      {browser()->GetProfile(), StartupProfileMode::kBrowserWindow}, {}));
   app_loaded_observer.Wait();
 
 #if BUILDFLAG(IS_WIN)

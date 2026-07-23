@@ -1336,7 +1336,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_AppIdSwitch) {
   web_app::startup::SetStartupDoneCallbackForTesting(launch_done.GetCallback());
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
-      {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+      {browser()->GetProfile(), StartupProfileMode::kBrowserWindow}, {}));
 
   ASSERT_TRUE(launch_done.Wait());
   Browser* app_browser = browser_created_observer.Wait();
@@ -1617,10 +1617,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMaximized) {
                             true),
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->GetProfile(), true),
       Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
-                                          browser()->profile(), true),
+                                          browser()->GetProfile(), true),
       Browser::CreateParams::CreateForDevTools(browser()->GetProfile()),
       Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                               browser()->profile(), true),
+                                               browser()->GetProfile(), true),
       Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
                             browser()->GetProfile(), true),
   });
@@ -1638,10 +1638,10 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, StartMinimized) {
                             true),
       Browser::CreateParams(Browser::TYPE_POPUP, browser()->GetProfile(), true),
       Browser::CreateParams::CreateForApp("app_name", true, gfx::Rect(),
-                                          browser()->profile(), true),
+                                          browser()->GetProfile(), true),
       Browser::CreateParams::CreateForDevTools(browser()->GetProfile()),
       Browser::CreateParams::CreateForAppPopup("app_name", true, gfx::Rect(),
-                                               browser()->profile(), true),
+                                               browser()->GetProfile(), true),
       Browser::CreateParams(Browser::TYPE_PICTURE_IN_PICTURE,
                             browser()->GetProfile(), true),
   });
@@ -2313,7 +2313,7 @@ class RunInBackgroundTest : public BrowserTest {
 IN_PROC_BROWSER_TEST_F(RunInBackgroundTest, RunInBackgroundBasicTest) {
   // Close the browser window, then open a new one - the browser should keep
   // running.
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -2614,8 +2614,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
   // to navigate away from the page, which causes the WebContents to end up in
   // an inconsistent state. (is_loaded = true, last_commited_url=ntp,
   // visible_url=title1.html)
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kWebKitJavascriptEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kWebKitJavascriptEnabled, false);
   ASSERT_TRUE(embedded_test_server()->Start());
   // Create an HTTPS server for cross-site transition.
   net::EmbeddedTestServer https_test_server(
@@ -2778,7 +2778,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ChangeDisplayMode) {
   CheckDisplayModeMQ(u"browser",
                      browser()->tab_strip_model()->GetActiveWebContents());
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   Browser* app_browser = CreateBrowserForApp("blah", profile);
   auto* app_contents = app_browser->tab_strip_model()->GetActiveWebContents();
   CheckDisplayModeMQ(u"standalone", app_contents);
@@ -2853,7 +2853,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     // Creates an untrusted app window and asserts that the eventual height
     // doesn't change.
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-        "app-name", false, gfx::Rect(0, 0, 100, 122), browser()->profile(),
+        "app-name", false, gfx::Rect(0, 0, 100, 122), browser()->GetProfile(),
         true);
     Browser* browser = Browser::Create(params);
     gfx::Rect bounds = browser->GetWindow()->GetBounds();
@@ -2869,7 +2869,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     // Creates a trusted app window and asserts that the eventual height
     // doesn't change.
     Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-        "app-name", true, gfx::Rect(0, 0, 100, 122), browser()->profile(),
+        "app-name", true, gfx::Rect(0, 0, 100, 122), browser()->GetProfile(),
         true);
     Browser* browser = Browser::Create(params);
     gfx::Rect bounds = browser->GetWindow()->GetBounds();
@@ -3416,7 +3416,7 @@ class GuestSessionBrowserTest : public BrowserTest {
 IN_PROC_BROWSER_TEST_F(GuestSessionBrowserTest, CreateGuestSessionBrowser) {
   // Creating a guest session browser should succeed and the instantiated
   // browser should be using an OTR profile.
-  Profile* guest_profile = guest_browser()->profile();
+  Profile* guest_profile = guest_browser()->GetProfile();
   EXPECT_TRUE(guest_browser());
   EXPECT_TRUE(guest_profile->IsGuestSession());
   EXPECT_TRUE(guest_profile->IsOffTheRecord());

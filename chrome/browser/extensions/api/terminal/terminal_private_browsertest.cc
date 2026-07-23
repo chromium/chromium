@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest,
                        SetPrefsRestrictedToTerminal) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   ASSERT_TRUE(
       prefs->GetDict(guest_os::prefs::kGuestOsTerminalSettings).empty());
 

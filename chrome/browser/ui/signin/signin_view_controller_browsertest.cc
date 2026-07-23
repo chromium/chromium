@@ -1026,7 +1026,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerSignInBanner, EndToEndFlow) {
   // 1. Open the sign-in page, which triggers the tab helper and starts the
   // flow.
   signin_ui_util::SignInFromSingleAccountPromo(
-      browser()->profile(), CoreAccountInfo(),
+      browser()->GetProfile(), CoreAccountInfo(),
       signin_metrics::AccessPoint::kPasswordBubble);
 
   content::WebContents* sign_in_tab =

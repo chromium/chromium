@@ -57,7 +57,7 @@ class WebAppShelfBrowserTest : public InProcessBrowserTest {
     app_browser->GetWindow()->Close();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {

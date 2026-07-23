@@ -697,11 +697,11 @@ std::vector<StatusBubble*> Browser::GetStatusBubblesForTesting() {
 }
 
 Profile* Browser::GetProfile() {
-  return profile();
+  return profile_;
 }
 
 const Profile* Browser::GetProfile() const {
-  return profile();
+  return profile_;
 }
 
 bool Browser::IsDeleteScheduled() const {
@@ -811,7 +811,7 @@ void Browser::SynchronouslyDestroyBrowser() {
   // TODO(crbug.com/413168662): Eliminate the need for BrowserCloseManager to
   // call this directly, instead allow Browsers to be destroyed by their owning
   // BrowserManagerService at shutdown.
-  BrowserManagerServiceFactory::GetForProfile(profile())->DeleteBrowser(this);
+  BrowserManagerServiceFactory::GetForProfile(profile_)->DeleteBrowser(this);
   // `this` is no longer valid from this point forward.
 }
 
@@ -1276,7 +1276,7 @@ void Browser::OnWindowDidShow() {
 
   // Show any pending global error bubble.
   GlobalErrorService* service =
-      GlobalErrorServiceFactory::GetForProfile(profile());
+      GlobalErrorServiceFactory::GetForProfile(profile_);
   GlobalError* error = service->GetFirstGlobalErrorWithBubbleView();
   if (error) {
     error->ShowBubbleView(this);

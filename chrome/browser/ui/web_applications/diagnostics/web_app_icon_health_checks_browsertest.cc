@@ -39,7 +39,7 @@ class WebAppIconHealthChecksBrowserTest : public WebAppBrowserTestBase {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   ScopedRegistryUpdate CreateUpdateScope() {
     return WebAppProvider::GetForTest(profile())

@@ -709,7 +709,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     embedded_test_server()->StartAcceptingConnections();
 
     // Permits sharing the page screenshot by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
     prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
 
@@ -724,7 +724,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDownOnMainThread();
 
     // Disallow sharing the page screenshot by default.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
     prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, false);
 
@@ -1013,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Allow sharing the page screenshot but not other page content.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
   prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, false);
   ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
@@ -1079,7 +1079,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Allow sharing the page screenshot but not other page content.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
   prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, false);
   ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
@@ -1144,7 +1144,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Allow sharing the page screenshot but not other page content.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
   prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, false);
   ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
@@ -5343,7 +5343,7 @@ class LensOverlayControllerBrowserPDFTest
 
     // Permits sharing the page screenshot by default. This disables the
     // permission dialog.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
     prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
   }
@@ -8528,7 +8528,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Disallow sharing the page screenshot.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
   prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, false);
   ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
@@ -8593,7 +8593,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   ASSERT_EQ(controller->state(), State::kOff);
 
   // Disallow sharing the page screenshot.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
   ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
 
@@ -9100,7 +9100,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerSideBySideBrowserTest,
   EXPECT_TRUE(rounded_corners.upper_left() == 0);
 
   // Change side panel to be left aligned.
-  browser()->profile()->GetPrefs()->SetBoolean(
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, false);
 
   // Expect overlay view's top left corner to be rounded.
@@ -9846,9 +9846,9 @@ class LensOverlayControllerNonBlockingPrivacyNoticeForImageSearchBrowserTest
 
   void SetUpOnMainThread() override {
     LensOverlayControllerBrowserTest::SetUpOnMainThread();
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         lens::prefs::kLensSharingPageScreenshotEnabled, false);
-    browser()->profile()->GetPrefs()->SetBoolean(
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
         lens::prefs::kLensSharingPageContentEnabled, false);
   }
 };

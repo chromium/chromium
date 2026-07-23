@@ -54,7 +54,7 @@ class WebAppRelaunchNotificationBrowserTest
     notification_observation_.Reset();
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   auto GetAllNotifications() {
     base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;

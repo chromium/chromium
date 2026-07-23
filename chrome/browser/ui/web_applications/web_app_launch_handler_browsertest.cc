@@ -57,7 +57,7 @@ class WebAppLaunchHandlerBrowserTest : public WebAppBrowserTestBase {
   }
 
  protected:
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   webapps::AppId InstallTestWebApp(const char* test_file_path,
                                    bool await_metric = true) {

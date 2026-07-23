@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
 // restored as minimized.
 IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
                        SessionRestoreMinimizedWindow) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Enable session restore and minimize the current window.
   SessionStartupPref pref(SessionStartupPref::LAST);

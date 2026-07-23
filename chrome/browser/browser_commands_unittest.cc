@@ -148,7 +148,7 @@ TEST_F(BrowserCommandsTest, CycleToMruTab) {
 TEST_F(BrowserCommandsTest, DirectionalTabSelectionIgnoresMru) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kCtrlTabMru);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
 
   GURL about_blank(url::kAboutBlankURL);
 

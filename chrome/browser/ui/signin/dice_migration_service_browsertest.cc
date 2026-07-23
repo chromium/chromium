@@ -73,7 +73,7 @@ class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
     timer.FireNow();
   }
 
-  Profile* GetProfile() { return browser()->profile(); }
+  Profile* GetProfile() { return browser()->GetProfile(); }
 
   PrefService* GetPrefs() { return GetProfile()->GetPrefs(); }
 

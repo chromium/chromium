@@ -39,13 +39,14 @@ class ExistingWindowSubMenuModelTest : public InProcessBrowserTest {
  public:
   ExistingWindowSubMenuModelTest() = default;
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
  protected:
   Browser* CreateTestBrowser(bool incognito, bool popup) {
-    Profile* profile = incognito ? browser()->profile()->GetPrimaryOTRProfile(
-                                       /*create_if_needed=*/true)
-                                 : browser()->profile();
+    Profile* profile = incognito
+                           ? browser()->GetProfile()->GetPrimaryOTRProfile(
+                                 /*create_if_needed=*/true)
+                           : browser()->GetProfile();
     Browser::Type type = popup ? Browser::TYPE_POPUP : Browser::TYPE_NORMAL;
 
     Browser* browser =

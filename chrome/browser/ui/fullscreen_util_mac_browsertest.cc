@@ -90,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenUtilMacTest, IsInContentFullscreen) {
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenUtilMacTest, AlwaysShowToolbar) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   bool original_always_show = prefs->GetBoolean(prefs::kShowFullscreenToolbar);
 
   prefs->SetBoolean(prefs::kShowFullscreenToolbar, false);

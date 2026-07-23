@@ -154,7 +154,7 @@ class ListenerDeferredTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList features_;
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
   tab_groups::SavedTabGroupModel* saved_tab_group_model() {
     tab_groups::TabGroupSyncService* service =
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile());

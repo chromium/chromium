@@ -85,7 +85,7 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
   }
 
  protected:
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
  private:

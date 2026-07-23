@@ -1725,7 +1725,7 @@ class NoStatePrefetchBrowserTestWithEsbBlockV8
   void SetUpOnMainThread() override {
     NoStatePrefetchBrowserTest::SetUpOnMainThread();
     safe_browsing::SetSafeBrowsingState(
-        current_browser()->profile()->GetPrefs(),
+        current_browser()->GetProfile()->GetPrefs(),
         safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   }
 

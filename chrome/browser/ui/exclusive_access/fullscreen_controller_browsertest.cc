@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
 #if BUILDFLAG(IS_MAC)
   // First, set the preference to true so we expect to see the top view in
   // fullscreen mode.
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kShowFullscreenToolbar, true);
 #endif
 

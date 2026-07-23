@@ -36,7 +36,7 @@ class DiceMigrationServicePixelBrowserTest : public InteractiveBrowserTest {
     return DiceMigrationServiceFactory::GetForProfileIfExists(GetProfile());
   }
 
-  Profile* GetProfile() { return browser()->profile(); }
+  Profile* GetProfile() { return browser()->GetProfile(); }
 
   signin::IdentityManager* GetIdentityManager() {
     return IdentityManagerFactory::GetForProfile(GetProfile());

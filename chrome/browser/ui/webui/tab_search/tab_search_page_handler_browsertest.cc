@@ -200,9 +200,10 @@ class TabSearchPageHandlerTest : public InProcessBrowserTest {
 #endif
 
     browser2_ = CreateBrowserForTest(profile1(), Browser::TYPE_NORMAL);
-    browser3_ = CreateBrowserForTest(
-        browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-        Browser::TYPE_NORMAL);
+    browser3_ =
+        CreateBrowserForTest(browser()->GetProfile()->GetPrimaryOTRProfile(
+                                 /*create_if_needed=*/true),
+                             Browser::TYPE_NORMAL);
 #if !BUILDFLAG(IS_CHROMEOS)
     browser4_ = CreateBrowserForTest(profile2_, Browser::TYPE_NORMAL);
 #endif
@@ -592,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchPageHandlerTest, MediaTabsTest) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   LOG(INFO) << "MediaTabsTest: browser profile matches handler profile: "
-            << (browser()->profile() == profile1());
+            << (browser()->GetProfile() == profile1());
   LOG(INFO) << "MediaTabsTest: browser type: "
             << static_cast<int>(browser()->GetType());
   LOG(INFO) << "MediaTabsTest: has committed entry: "

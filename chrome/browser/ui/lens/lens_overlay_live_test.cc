@@ -132,7 +132,7 @@ class LensOverlayLiveTest : public base::test::WithFeatureOverride,
 
     // Permits sharing the page screenshot by default. This disables the
     // permission dialog.
-    PrefService* prefs = browser()->profile()->GetPrefs();
+    PrefService* prefs = browser()->GetProfile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
 
     // Set the default timeout for our run loops.

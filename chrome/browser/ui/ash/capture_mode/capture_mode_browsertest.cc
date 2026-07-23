@@ -887,7 +887,7 @@ class CaptureModeProjectorBrowserTests : public CaptureModeCameraBrowserTests {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     CaptureModeCameraBrowserTests::SetUpOnMainThread();
-    auto* profile = browser()->profile();
+    auto* profile = browser()->GetProfile();
     ash::SystemWebAppManager::GetForTest(profile)
         ->InstallSystemAppsForTesting();
 

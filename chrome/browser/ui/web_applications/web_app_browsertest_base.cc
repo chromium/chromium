@@ -361,7 +361,7 @@ void WebAppBrowserTestBase::SetUpCommandLine(base::CommandLine* command_line) {
 
 void WebAppBrowserTestBase::PreRunTestOnMainThread() {
   WebAppBrowserTestBaseParent::PreRunTestOnMainThread();
-  browser_profile_ = browser()->profile()->GetWeakPtr();
+  browser_profile_ = browser()->GetProfile()->GetWeakPtr();
 }
 
 void WebAppBrowserTestBase::SetUpOnMainThread() {

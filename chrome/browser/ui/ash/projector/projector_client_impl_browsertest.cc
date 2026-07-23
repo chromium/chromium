@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlsValid) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
   const size_t starting_browser_count =
       GlobalBrowserCollection::GetInstance()->GetSize();
 
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   // Launch the app for the first time.
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, SendFilesToProjectorApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DriveUnmountedAndRemounted) {
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest,
                        HandleAccountReauthOpensReauthDialog) {
   base::HistogramTester histogram_tester;
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   test::ScopedFakeAccountManagerDialog fake_account_manager_dialog(profile);
 
   ProjectorAppClient::Get()->HandleAccountReauth(kReauthEmail);
@@ -409,7 +409,7 @@ class ProjectorClientManagedTest
 
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
                        OpenProjectorAppWithoutPolicy) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
 
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
                        PRE_DisableThenEnablePolicy) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   // By the time the test runs, SystemWebAppManager already marked the app as
   // disabled because the policy is not set. This PRE step, sets the policy so
   // that the app is correctly enabled when the actual test runs.
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
 
 // Prevents a regression to b/230779397.
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
-  auto* profile = browser()->profile();
+  auto* profile = browser()->GetProfile();
   SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   ui_test_utils::BrowserCreatedObserver browser_created_observer;

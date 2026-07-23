@@ -43,7 +43,7 @@ class BubbleSignInPromoDelegateTest : public InProcessBrowserTest {
   BubbleSignInPromoDelegateTest& operator=(
       const BubbleSignInPromoDelegateTest&) = delete;
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   signin::IdentityManager* identity_manager() {
     return IdentityManagerFactory::GetForProfile(profile());

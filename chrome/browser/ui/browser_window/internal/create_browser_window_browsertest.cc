@@ -23,7 +23,7 @@ IN_PROC_BROWSER_TEST_F(CreateBrowserWindowBrowserTest, CreateNewBrowserWindow) {
 
   ASSERT_TRUE(new_browser);
   ASSERT_NE(new_browser, browser());
-  EXPECT_EQ(new_browser->GetProfile(), browser()->profile());
+  EXPECT_EQ(new_browser->GetProfile(), browser()->GetProfile());
   EXPECT_EQ(BrowserWindowInterface::TYPE_NORMAL, new_browser->GetType());
 }
 
@@ -39,6 +39,6 @@ IN_PROC_BROWSER_TEST_F(CreateBrowserWindowBrowserTest,
 
   ASSERT_TRUE(new_browser);
   ASSERT_NE(new_browser, browser());
-  EXPECT_EQ(new_browser->GetProfile(), browser()->profile());
+  EXPECT_EQ(new_browser->GetProfile(), browser()->GetProfile());
   EXPECT_EQ(BrowserWindowInterface::TYPE_NORMAL, new_browser->GetType());
 }

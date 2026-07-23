@@ -58,7 +58,7 @@
 class TabMenuModelBrowserTest : public MenuModelTest,
                                 public InProcessBrowserTest {
  public:
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   void ActivateSwapWithSplitSubmenuCommand(
       int tab_index,

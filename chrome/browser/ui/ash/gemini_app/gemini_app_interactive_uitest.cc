@@ -309,7 +309,7 @@ class GeminiAppInteractiveUiTestBase
     // Wait for installation of both system and external web apps. The Gemini
     // app is an external app and this test suite will verify its adjacency to
     // system web apps.
-    Profile* const profile = browser()->profile();
+    Profile* const profile = browser()->GetProfile();
     ash::SystemWebAppManager::GetForTest(profile)
         ->InstallSystemAppsForTesting();
     web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(

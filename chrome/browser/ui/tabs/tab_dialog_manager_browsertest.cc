@@ -316,8 +316,8 @@ IN_PROC_BROWSER_TEST_F(TabDialogManagerBrowserTest,
           [&]() { return widget->GetClientAreaBoundsInScreen().size(); },
           kInitialSize, "Verify initial size"),
       Do([=, this]() {
-        browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
-                                                     true);
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            prefs::kPinSplitTabButton, true);
       }),
       WaitForShow(kToolbarSplitTabsToolbarButtonElementId),
       PressButton(kToolbarSplitTabsToolbarButtonElementId),

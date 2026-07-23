@@ -243,7 +243,7 @@ void WebAppNavigationBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");
   // By default, all SSL cert checks are valid. Can be overridden in tests.
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-  profile_ = browser()->profile();
+  profile_ = browser()->GetProfile();
 }
 
 void WebAppNavigationBrowserTest::TearDownOnMainThread() {

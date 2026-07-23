@@ -62,7 +62,7 @@ gfx::Rect FindBarOwnerWebUIBrowser::GetFindBarClippingBox() {
 }
 
 bool FindBarOwnerWebUIBrowser::IsOffTheRecord() const {
-  return window_->browser()->profile()->IsOffTheRecord();
+  return window_->browser()->GetProfile()->IsOffTheRecord();
 }
 
 views::Widget* FindBarOwnerWebUIBrowser::GetWidgetForAnchoring() {

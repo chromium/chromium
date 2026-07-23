@@ -339,7 +339,7 @@ TEST_F(AppMenuModelTest, GlicItem) {
 }
 
 TEST_F(AppMenuModelTest, DoNotShowShareSubMenuItem) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = browser()->GetProfile()->GetPrefs();
 #if !BUILDFLAG(IS_CHROMEOS)
   prefs->SetBoolean(prefs::kDesktopSharingHubEnabled, false);
 #endif
@@ -581,16 +581,16 @@ bool DoesHelpMenuHaveCommand(const AppMenuModel& model, int command_id) {
 }
 
 TEST_F(AppMenuModelTest, Feedback_UserFeedbackAllowedPolicy) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  true);
   {
     AppMenuModel model(this, browser());
     model.Init();
     EXPECT_TRUE(DoesHelpMenuHaveCommand(model, IDC_FEEDBACK));
   }
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  false);
   {
     AppMenuModel model(this, browser());
     model.Init();
@@ -608,8 +608,8 @@ class AppMenuReportUnsafeSiteTest : public base::test::WithFeatureOverride,
 
 TEST_P(AppMenuReportUnsafeSiteTest,
        ReportUnsafeSite_UserFeedbackAllowedPolicy) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  true);
   {
     AppMenuModel model(this, browser());
     model.Init();
@@ -617,8 +617,8 @@ TEST_P(AppMenuReportUnsafeSiteTest,
               DoesHelpMenuHaveCommand(model, IDC_REPORT_UNSAFE_SITE));
   }
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  false);
   {
     AppMenuModel model(this, browser());
     model.Init();
@@ -627,10 +627,10 @@ TEST_P(AppMenuReportUnsafeSiteTest,
 }
 
 TEST_P(AppMenuReportUnsafeSiteTest, ReportUnsafeSite_SafeBrowsingDisabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
-                                               true);
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                               true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
+                                                  true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                  true);
   {
     AppMenuModel model(this, browser());
     model.Init();
@@ -638,8 +638,8 @@ TEST_P(AppMenuReportUnsafeSiteTest, ReportUnsafeSite_SafeBrowsingDisabled) {
               DoesHelpMenuHaveCommand(model, IDC_REPORT_UNSAFE_SITE));
   }
 
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                               false);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                                  false);
   {
     AppMenuModel model(this, browser());
     model.Init();

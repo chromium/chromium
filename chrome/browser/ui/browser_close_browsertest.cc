@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseTest, NonLastIncognito) {
 
 // Non-last regular window => no warning.
 IN_PROC_BROWSER_TEST_F(BrowserCloseTest, NonLastRegular) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   CreateBrowser(profile);
   MockDownloadCount(profile, 1);
 

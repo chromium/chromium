@@ -109,7 +109,7 @@ class AppBrowserControllerBrowserTestCrOs : public InProcessBrowserTest {
  protected:
   Profile* profile() {
     if (!profile_) {
-      profile_ = browser()->profile();
+      profile_ = browser()->GetProfile();
     }
     return profile_;
   }

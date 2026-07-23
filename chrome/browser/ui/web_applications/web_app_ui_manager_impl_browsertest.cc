@@ -45,7 +45,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
         WebAppProvider::GetForTest(profile()));
   }
 
-  Profile* profile() { return browser()->profile(); }
+  Profile* profile() { return browser()->GetProfile(); }
 
   webapps::AppId InstallWebApp(const GURL& start_url) {
     auto web_app_info =

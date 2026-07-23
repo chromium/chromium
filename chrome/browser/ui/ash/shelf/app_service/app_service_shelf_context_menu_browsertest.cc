@@ -129,7 +129,7 @@ class AppServiceShelfContextMenuWebAppBrowserTest
 
 IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
                        WindowCommandCheckedForMinimalUi) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   base::UserActionTester user_action_tester;
 
   auto web_app_install_info =
@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
     GTEST_SKIP();
   }
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   base::UserActionTester user_action_tester;
 
   auto web_app_install_info =
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
   if (IsShortstandEnabled()) {
     GTEST_SKIP();
   }
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   base::UserActionTester user_action_tester;
 
   auto web_app_install_info =
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_P(AppServiceShelfContextMenuWebAppBrowserTest,
     GTEST_SKIP();
   }
 
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   auto web_app_install_info =
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
           GURL("https://example.org"));
@@ -297,7 +297,7 @@ class AppServiceShelfContextMenuTabbedWebAppBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuTabbedWebAppBrowserTest,
                        SetOpenInWindow) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   base::UserActionTester user_action_tester;
 
   auto web_app_install_info =
@@ -344,7 +344,7 @@ class AppServiceShelfContextMenuNonTabbedWebAppBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuNonTabbedWebAppBrowserTest,
                        SetOpenInWindow) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   base::UserActionTester user_action_tester;
 
   auto web_app_install_info =

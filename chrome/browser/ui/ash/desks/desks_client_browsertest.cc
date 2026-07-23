@@ -920,7 +920,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
 // existing instance of the system web app to the current desk.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemAppExisting) {
   ASSERT_TRUE(DesksClient::Get());
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Create the settings app, which is a system web app.
   CreateSettingsSystemWebApp(profile);
@@ -1212,7 +1212,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, PreventBrowserSessionRestoreTest) {
 
   // Enable session service.
   SessionStartupPref pref(SessionStartupPref::LAST);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   SessionStartupPref::SetStartupPref(profile, pref);
 
   const int expected_tab_count = 2;
@@ -1487,7 +1487,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, GetDeskTemplateJson) {
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kTemplate);
 
   std::string template_json =
-      GetTemplateJson(desk_template->uuid(), browser()->profile());
+      GetTemplateJson(desk_template->uuid(), browser()->GetProfile());
 
   // content of the conversion is tested in:
   // components/desks_storage/core/desk_template_conversion_unittest.cc in this
@@ -1858,7 +1858,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 // Tests that launching a template that contains a system web app will move the
 // existing instance of the system web app to the current desk.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
 
   // Create the settings and help apps, which are system web apps.
   CreateSettingsSystemWebApp(profile);
@@ -2348,7 +2348,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   // Do not exit from test or delete the Profile* when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
-  Profile* profile = browser()->profile();
+  Profile* profile = browser()->GetProfile();
   ScopedProfileKeepAlive profile_keep_alive(
       profile, ProfileKeepAliveOrigin::kBrowserWindow);
 

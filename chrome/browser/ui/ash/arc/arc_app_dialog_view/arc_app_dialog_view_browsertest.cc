@@ -50,7 +50,7 @@ class ArcAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    profile_ = browser()->profile();
+    profile_ = browser()->GetProfile();
 
     arc::SetArcPlayStoreEnabledForProfile(profile_, true);
 
