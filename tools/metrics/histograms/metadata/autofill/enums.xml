@@ -5571,6 +5571,7 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Suggestion accepted (once per page load)"/>
   <int value="6" label="Form filled"/>
   <int value="7" label="Form filled (once per page load)"/>
+  <int value="8" label="Form submitted (once per page load)"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h:OmniboxAutofillEvents) -->

@@ -133,6 +133,12 @@ class OmniboxAutofillDelegateTest
         /*blocked_fields=*/{});
   }
 
+  void FormSubmitted(const FormData& form) {
+    autofill_manager().OnFormSubmitted(form,
+                                       mojom::SubmissionSource::FORM_SUBMISSION,
+                                       AutofillManagerTestApi::pass_key());
+  }
+
   FormData CreateTestCreditCardFormData() {
     FormData form;
     AppendTestCreditCardFormData(&form);
@@ -1053,6 +1059,41 @@ TEST_F(OmniboxAutofillDelegateTest, FormFilled_LogOmniboxAutofillEventMetrics) {
                                      OmniboxAutofillEvents::kFormFilled, 1);
   histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
                                      OmniboxAutofillEvents::kFormFilledOnce, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       FormSubmitted_LogOmniboxAutofillEventMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Add local credit card.
+  CreditCard local_card = test::GetCreditCard();
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddCreditCard(local_card);
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  OmniboxAutofillDelegate* delegate =
+      payments_autofill_client().GetOmniboxAutofillDelegate();
+  ASSERT_TRUE(delegate);
+
+  // Simulate showing suggestions. This marks form as interacted, which is a
+  // prerequisite for logging submission metrics.
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry)};
+  delegate->OnSuggestionsShown(suggestions, std::nullopt);
+
+  // Fill the form synchronously using the local card.
+  AutofillForm(form, local_card);
+
+  // Submit the form.
+  FormSubmitted(form);
+
+  histogram_tester.ExpectBucketCount("Autofill.OmniboxAutofill.Events",
+                                     OmniboxAutofillEvents::kFormSubmittedOnce,
+                                     1);
 }
 
 }  // namespace

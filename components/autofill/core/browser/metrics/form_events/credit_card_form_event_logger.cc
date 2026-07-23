@@ -790,6 +790,12 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     save_and_fill_manager->LogCreditCardFormSubmitted();
     return;
   }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (trigger_source_ == AutofillTriggerSource::kOmniboxAutofill &&
+      has_logged_form_filled_from_omnibox_autofill_) {
+    LogOmniboxAutofillEvents(OmniboxAutofillEvents::kFormSubmittedOnce);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   if (!has_logged_form_filling_suggestion_filled_) {
     Log(FORM_EVENT_NO_SUGGESTION_SUBMITTED_ONCE, form);
