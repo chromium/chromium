@@ -27,6 +27,7 @@ from gpu_tests.util import screenshot_utils
 SCROLLBAR_WIDTH = 10
 
 DEFAULT_SCREENSHOT_TIMEOUT = 5
+ASAN_SCREENSHOT_MULTIPLIER = 4
 SLOW_SCREENSHOT_MULTIPLIER = 4
 
 MAX_FLAKY_OUTPUT_TEST_TRIES = 3
@@ -252,7 +253,9 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     # parallel jobs. Aim for 2x the timeout with 4 jobs.
     multiplier = 1 + (self.child.jobs - 1) / 3.0
     if self._IsSlowTest():
-      multiplier = SLOW_SCREENSHOT_MULTIPLIER
+      multiplier *= SLOW_SCREENSHOT_MULTIPLIER
+    if self._is_asan:
+      multiplier *= ASAN_SCREENSHOT_MULTIPLIER
     return DEFAULT_SCREENSHOT_TIMEOUT * multiplier
 
   @classmethod
