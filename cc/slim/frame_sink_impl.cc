@@ -175,9 +175,6 @@ void FrameSinkImpl::UploadUIResource(cc::UIResourceId resource_id,
     case cc::UIResourceBitmap::RGBA8:
       format = viz::PlatformColor::BestSupportedTextureFormat(caps);
       break;
-    case cc::UIResourceBitmap::ALPHA_8:
-      format = viz::SinglePlaneFormat::kALPHA_8;
-      break;
     case cc::UIResourceBitmap::ETC1:
       format = viz::SinglePlaneFormat::kETC1;
       break;

@@ -25,7 +25,6 @@ class CC_EXPORT UIResourceBitmap {
  public:
   enum UIResourceFormat {
     RGBA8,
-    ALPHA_8,
     ETC1
   };
 

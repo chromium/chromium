@@ -5575,9 +5575,6 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     case UIResourceBitmap::RGBA8:
       format = raster_caps_.ui_rgba_format;
       break;
-    case UIResourceBitmap::ALPHA_8:
-      format = viz::SinglePlaneFormat::kALPHA_8;
-      break;
     case UIResourceBitmap::ETC1:
       format = viz::SinglePlaneFormat::kETC1;
       break;
