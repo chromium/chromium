@@ -85,9 +85,9 @@ TableViewDetailIconItem* DetailItemWithType(
 // Returns the branded version of the Google Services symbol.
 UIImage* GetBrandedGoogleServicesSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return CustomSettingsRootMulticolorSymbol(kGoogleIconSymbol);
+  return SettingsRootMulticolorSymbol(SymbolGoogleIcon);
 #else
-  return DefaultSettingsRootSymbol(kGearshape2Symbol);
+  return SettingsRootSymbol(SymbolGearshape2);
 #endif
 }
 
@@ -141,7 +141,7 @@ TableViewDetailIconItem* PasswordsItem(BOOL enabled) {
 
   return DetailItemWithType(SettingsItemTypePasswords, passwordsSectionTitle,
                             PasswordsItemDetailText(enabled),
-                            CustomSettingsRootSymbol(kPasswordSymbol),
+                            SettingsRootSymbol(SymbolPassword),
                             kSettingsPasswordsCellId);
 }
 
@@ -152,7 +152,7 @@ TableViewDetailIconItem* AutofillCreditCardItem(BOOL enabled) {
 
   return DetailItemWithType(SettingsItemTypeAutofillCreditCard, title,
                             AutofillCreditCardItemDetailText(enabled),
-                            DefaultSettingsRootSymbol(kCreditCardSymbol),
+                            SettingsRootSymbol(SymbolCreditCard),
                             kSettingsPaymentMethodsCellId);
 }
 
@@ -163,8 +163,8 @@ TableViewDetailIconItem* AutofillProfileItem(BOOL enabled) {
                                  : IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
 
   UIImage* symbol = IsYourSavedInfoSettingsPageIosEnabled()
-                        ? DefaultSettingsRootSymbol(kEnvelopeSymbol)
-                        : CustomSettingsRootSymbol(kLocationSymbol);
+                        ? SettingsRootSymbol(SymbolEnvelope)
+                        : SettingsRootSymbol(SymbolLocation);
 
   return DetailItemWithType(SettingsItemTypeAutofillProfile, title,
                             AutofillProfileItemDetailText(enabled), symbol,
@@ -173,30 +173,30 @@ TableViewDetailIconItem* AutofillProfileItem(BOOL enabled) {
 
 TableViewDetailIconItem* IdentityDocsItem(BOOL enabled) {
   NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_IDENTITY_DOCS_TITLE);
-  return DetailItemWithType(
-      SettingsItemTypeIdentityDocs, title, IdentityDocsItemDetailText(enabled),
-      DefaultSettingsRootSymbol(kPersonTextRectangleSymbol),
-      kSettingsIdentityDocsCellId);
+  return DetailItemWithType(SettingsItemTypeIdentityDocs, title,
+                            IdentityDocsItemDetailText(enabled),
+                            SettingsRootSymbol(SymbolPersonTextRectangle),
+                            kSettingsIdentityDocsCellId);
 }
 
 TableViewDetailIconItem* TravelInfoItem(BOOL enabled) {
   NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_TRAVEL_TITLE);
   return DetailItemWithType(
       SettingsItemTypeTravelInfo, title, TravelInfoItemDetailText(enabled),
-      DefaultSettingsRootSymbol(kSuitcaseSymbol), kSettingsTravelInfoCellId);
+      SettingsRootSymbol(SymbolSuitcase), kSettingsTravelInfoCellId);
 }
 
 TableViewDetailIconItem* ShoppingInfoItem(BOOL enabled) {
   NSString* title = l10n_util::GetNSString(IDS_AUTOFILL_SHOPPING_TITLE);
   return DetailItemWithType(
       SettingsItemTypeShoppingInfo, title, ShoppingInfoItemDetailText(enabled),
-      DefaultSettingsRootSymbol(kCartSymbol), kSettingsShoppingInfoCellId);
+      SettingsRootSymbol(SymbolCart), kSettingsShoppingInfoCellId);
 }
 
 TableViewDetailIconItem* AutofillSettingsItem() {
   NSString* title = l10n_util::GetNSString(IDS_IOS_SETTINGS_AUTOFILL_SETTINGS);
   return DetailItemWithType(SettingsItemTypeAutofillSettings, title, nil,
-                            DefaultSettingsRootSymbol(kSettingsSymbol),
+                            SettingsRootSymbol(SymbolSettings),
                             kSettingsAutofillSettingsCellId);
 }
 
@@ -238,8 +238,8 @@ TableViewDetailIconItem* EnhancedAutofillCanFillDifficultFieldsItem(
     NSInteger itemType) {
   return EnhancedAutofillDetailItem(
       itemType, IDS_SETTINGS_AUTOFILL_AI_WHEN_ON_CAN_FILL_DIFFICULT_FIELDS,
-      CustomSymbolWithPointSize(kTextAnalysisSymbol,
-                                kSettingsRootSymbolImagePointSize));
+      SymbolWithPointSize(SymbolTextAnalysis,
+                          kSettingsRootSymbolImagePointSize));
 }
 
 TableViewHeaderFooterItem* EnhancedAutofillThingsToConsiderSectionHeader(
@@ -261,8 +261,7 @@ TableViewDetailIconItem* EnhancedAutofillEnterpriseManagedLoggingDisabledItem(
     NSInteger itemType) {
   return EnhancedAutofillDetailItem(
       itemType, IDS_SETTINGS_AUTOFILL_AI_ENTERPRISE_LOGGING_MANAGED_DISABLED,
-      CustomSymbolWithPointSize(kEnterpriseSymbol,
-                                kSettingsRootSymbolImagePointSize));
+      SymbolWithPointSize(SymbolEnterprise, kSettingsRootSymbolImagePointSize));
 }
 
 TableViewSwitchItem* AutofillVerificationSwitchItem(NSInteger itemType,
