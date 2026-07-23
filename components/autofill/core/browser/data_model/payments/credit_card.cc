@@ -718,6 +718,9 @@ bool CreditCard::UpdateFromImportedCard(const CreditCard& imported_card,
     expiration_month_ = imported_card.expiration_month_;
     expiration_year_ = imported_card.expiration_year_;
   }
+  if (may_update_expired_fields && !imported_card.cvc_.empty()) {
+    cvc_ = imported_card.cvc_;
+  }
   return true;
 }
 

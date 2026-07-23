@@ -1538,6 +1538,70 @@ TEST(CreditCardTest,
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR), u"2017");
 }
 
+// Tests that UpdateFromImportedCard() updates the CVC of a card that has no CVC
+// yet.
+TEST(CreditCardTest, UpdateFromImportedCard_UpdateEmptyCvc) {
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
+                          "09", "2017", "1", u"");
+  CreditCard a = original_card;
+
+  // The new card has a different name, expiration date, and CVC.
+  CreditCard b = a;
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  b.set_cvc(u"123");
+
+  // |a| should be updated with the information from |b|.
+  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"123", a.cvc());
+}
+
+// Tests that UpdateFromImportedCard() updates the CVC of a card that has a
+// different CVC.
+TEST(CreditCardTest, UpdateFromImportedCard_UpdateExistingCvc) {
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
+                          "09", "2017", "1", u"123");
+  CreditCard a = original_card;
+
+  // The new card has a different name, expiration date, and CVC.
+  CreditCard b = a;
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  b.set_cvc(u"456");
+
+  // |a| should be updated with the information from |b|.
+  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"456", a.cvc());
+}
+
+TEST(CreditCardTest, UpdateFromImportedCard_VerifiedCardNotUpdatedWithCvc) {
+  CreditCard original_card(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  test::SetCreditCardInfo(&original_card, "John Dillinger", "123456789012",
+                          "09", "2017", "1", u"123");
+  CreditCard a = original_card;
+  a.set_is_user_confirmed(true);
+
+  // New card is from empty origin and has a different CVC.
+  // |a| is a verified original card and should not be updated.
+  CreditCard b = a;
+  b.set_is_user_confirmed(false);
+  b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  b.set_cvc(u"789");
+
+  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(a.is_user_confirmed());
+  EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
+  EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
+  EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  EXPECT_EQ(u"123", a.cvc());
+}
+
 TEST(CreditCardTest, IsValidCardNumberAndExpiryDate) {
   CreditCard card;
   // Invalid because expired

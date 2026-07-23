@@ -610,14 +610,14 @@ TEST_F(PaymentsFormDataImporterTest,
   // The local card is returned after an update.
   EXPECT_TRUE(extracted_credit_card2);
   // Verify the local card from PDM is equal to the
-  // `extracted_credit_card2` for card_number and expiration date but not for
-  // the CVC.
+  // `extracted_credit_card2` for card_number, expiration date, and CVC (since
+  // it is silently updated!).
   const CreditCard local_saved_credit_card =
       *payments_data_manager().GetLocalCreditCards()[0];
   EXPECT_TRUE(extracted_credit_card2->HasSameNumberAs(local_saved_credit_card));
   EXPECT_TRUE(
       extracted_credit_card2->HasSameExpirationDateAs(local_saved_credit_card));
-  EXPECT_NE(extracted_credit_card2->cvc(), local_saved_credit_card.cvc());
+  EXPECT_EQ(extracted_credit_card2->cvc(), local_saved_credit_card.cvc());
   EXPECT_EQ(extracted_credit_card2->cvc(), u"123");
 }
 
