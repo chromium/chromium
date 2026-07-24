@@ -34,6 +34,7 @@ import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
@@ -103,6 +104,7 @@ public class PasswordGenerationIntegrationTest {
 
     @Before
     public void setUp() throws InterruptedException {
+        ChromeWindow.setKeyboardVisibilityDelegateFactory(FakeKeyboard::new);
         CoreAccountInfo account = mSyncTestRule.setUpAccountAndSignInForTesting();
         PasswordManagerTestHelper.setAccountForPasswordStore(account.getEmail());
         ManualFillingTestHelper.disableServerPredictions();
@@ -129,6 +131,7 @@ public class PasswordGenerationIntegrationTest {
     @After
     public void tearDown() {
         mHelper.clear();
+        ChromeWindow.resetKeyboardVisibilityDelegateFactory();
     }
 
     // TODO(crbug.com/386734610): enable for autos.

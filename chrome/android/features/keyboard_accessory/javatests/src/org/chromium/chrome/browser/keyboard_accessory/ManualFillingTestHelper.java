@@ -52,6 +52,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -64,6 +65,8 @@ import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillProfile;
@@ -74,6 +77,7 @@ import org.chromium.content_public.browser.test.util.TestInputMethodManagerWrapp
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.DropdownPopupWindowInterface;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -87,7 +91,7 @@ public class ManualFillingTestHelper {
     private static final String SUBMIT_NODE_ID = "input_submit_button";
     private static final String NO_COMPLETION_FIELD_ID = "field_without_completion";
 
-    private final FreshCtaTransitTestRule mActivityTestRule;
+    private final BaseCtaTransitTestRule mActivityTestRule;
     private final AtomicReference<WebContents> mWebContentsRef = new AtomicReference<>();
     private TestInputMethodManagerWrapper mInputMethodManagerWrapper;
 
@@ -95,11 +99,14 @@ public class ManualFillingTestHelper {
 
     private RecyclerView mKeyboardAccessoryBarItems;
 
-    public FakeKeyboard getKeyboard() {
-        return (FakeKeyboard) mActivityTestRule.getKeyboardDelegate();
+    public @Nullable FakeKeyboard getKeyboard() {
+        if (mActivityTestRule.getKeyboardDelegate() instanceof FakeKeyboard fakeKeyboard) {
+            return fakeKeyboard;
+        }
+        return null;
     }
 
-    public ManualFillingTestHelper(FreshCtaTransitTestRule activityTestRule) {
+    public ManualFillingTestHelper(BaseCtaTransitTestRule activityTestRule) {
         mActivityTestRule = activityTestRule;
     }
 
@@ -126,11 +133,17 @@ public class ManualFillingTestHelper {
             boolean isRtl,
             boolean waitForNode,
             ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate) {
-        assert mActivityTestRule.getActivity() == null;
         getOrCreateTestServer();
         ChromeWindow.setKeyboardVisibilityDelegateFactory(keyboardDelegate);
 
-        WebPageStation page = mActivityTestRule.startOnUrl(mEmbeddedTestServer.getURL(url));
+        WebPageStation page;
+        if (mActivityTestRule instanceof AutoResetCtaTransitTestRule autoResetCtaTransitTestRule) {
+            page = autoResetCtaTransitTestRule.startOnWebPage(mEmbeddedTestServer.getURL(url));
+        } else if (mActivityTestRule instanceof FreshCtaTransitTestRule freshCtaTransitTestRule) {
+            page = freshCtaTransitTestRule.startOnUrl(mEmbeddedTestServer.getURL(url));
+        } else {
+            throw new IllegalArgumentException("Unsupported rule: " + mActivityTestRule.getClass());
+        }
 
         setRtlForTesting(isRtl);
         updateWebContentsDependentState();
@@ -160,8 +173,34 @@ public class ManualFillingTestHelper {
                 });
     }
 
+    private @Nullable View getContentView() {
+        Activity activity = mActivityTestRule.getActivity();
+        if (activity == null) return null;
+        View view = activity.getCurrentFocus();
+        if (view != null) return view;
+        if (activity.getWindow() != null) {
+            return activity.getWindow().getDecorView();
+        }
+        return null;
+    }
+
     public void clear() {
-        ChromeWindow.resetKeyboardVisibilityDelegateFactory();
+        if (mActivityTestRule.getActivity() != null) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        View view = getContentView();
+                        if (view == null) return;
+                        KeyboardVisibilityDelegate keyboard =
+                                mActivityTestRule.getKeyboardDelegate();
+                        if (keyboard instanceof ChromeKeyboardVisibilityDelegate chromeKeyboard) {
+                            if (chromeKeyboard.isSoftKeyboardShowing(view)) {
+                                chromeKeyboard.hideSoftKeyboardOnly(view);
+                            }
+                        } else if (keyboard != null && keyboard.isKeyboardShowing(view)) {
+                            keyboard.hideKeyboard(view);
+                        }
+                    });
+        }
     }
 
     // --------------------------------------
@@ -200,12 +239,20 @@ public class ManualFillingTestHelper {
                 });
 
         ChromeKeyboardVisibilityDelegate keyboard;
-        if (useFakeKeyboard) {
+        if (useFakeKeyboard && getKeyboard() != null) {
             keyboard = getKeyboard();
+        } else if (mActivityTestRule.getKeyboardDelegate()
+                instanceof ChromeKeyboardVisibilityDelegate chromeKeyboard) {
+            keyboard = chromeKeyboard;
         } else {
-            keyboard = (ChromeKeyboardVisibilityDelegate) mActivityTestRule.getKeyboardDelegate();
+            keyboard = null;
         }
-        keyboard.showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
+        if (keyboard != null) {
+            View view = getContentView();
+            if (view != null) {
+                keyboard.showKeyboard(view);
+            }
+        }
     }
 
     public String getPasswordText() throws TimeoutException {
@@ -229,7 +276,13 @@ public class ManualFillingTestHelper {
     public void clickNodeAndShowKeyboard(String node, long focusedFieldId, int focusedFieldType)
             throws TimeoutException {
         clickNode(node, focusedFieldId, focusedFieldType);
-        getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
+        View view = getContentView();
+        if (view != null) {
+            KeyboardVisibilityDelegate keyboard = mActivityTestRule.getKeyboardDelegate();
+            if (keyboard != null) {
+                keyboard.showKeyboard(view);
+            }
+        }
     }
 
     public void clickNode(String node, long focusedFieldId, int focusedFieldType)
@@ -248,7 +301,14 @@ public class ManualFillingTestHelper {
      */
     public void clickSubmit() throws TimeoutException {
         DOMUtils.clickNode(mWebContentsRef.get(), SUBMIT_NODE_ID);
-        getKeyboard().hideSoftKeyboardOnly(null);
+        View view = getContentView();
+        if (view == null) return;
+        KeyboardVisibilityDelegate keyboard = mActivityTestRule.getKeyboardDelegate();
+        if (keyboard instanceof ChromeKeyboardVisibilityDelegate chromeKeyboard) {
+            chromeKeyboard.hideSoftKeyboardOnly(view);
+        } else if (keyboard != null) {
+            keyboard.hideKeyboard(view);
+        }
     }
 
     // ---------------------------------
@@ -258,8 +318,13 @@ public class ManualFillingTestHelper {
     public void waitForKeyboardToDisappear() {
         pollUiThread(
                 () -> {
-                    Activity activity = mActivityTestRule.getActivity();
-                    return !getKeyboard().isSoftKeyboardShowing(activity.getCurrentFocus());
+                    View view = getContentView();
+                    if (view == null) return true;
+                    KeyboardVisibilityDelegate keyboard = mActivityTestRule.getKeyboardDelegate();
+                    if (keyboard instanceof ChromeKeyboardVisibilityDelegate chromeKeyboard) {
+                        return !chromeKeyboard.isSoftKeyboardShowing(view);
+                    }
+                    return keyboard != null && !keyboard.isKeyboardShowing(view);
                 });
     }
 
