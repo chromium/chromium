@@ -110,17 +110,17 @@ export class RealtimeCpuChartElement extends RealtimeCpuChartElementBase {
     };
   }
 
-  user: number;
-  system: number;
-  private numDataPoints: number;
-  private dataRefreshPerSecond: number;
-  private framesPerSecond: number;
-  private frameDuration: number;
-  private width: number;
-  private height: number;
-  private padding: ChartPadding;
-  private graphWidth: number;
-  private graphHeight: number;
+  declare user: number;
+  declare system: number;
+  declare private numDataPoints: number;
+  declare private dataRefreshPerSecond: number;
+  declare private framesPerSecond: number;
+  declare private frameDuration: number;
+  declare private width: number;
+  declare private height: number;
+  declare private padding: ChartPadding;
+  declare private graphWidth: number;
+  declare private graphHeight: number;
   // Helper function to map range of x coordinates to graph width.
   private xAxisScaleFn: d3.ScaleLinear<number, number> = d3.scaleLinear();
   // Helper function to map range of y coordinates to graph height.

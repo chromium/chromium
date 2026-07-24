@@ -40,7 +40,7 @@ export class CellularInfoElement extends CellularInfoElementBase {
     };
   }
 
-  network: Network;
+  declare network: Network;
 
   /**
    * Get correct display text for known cellular network technology.

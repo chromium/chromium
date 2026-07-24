@@ -43,8 +43,8 @@ export class OverviewCardElement extends PolymerElement {
     };
   }
 
-  private systemInfo: SystemInfo;
-  private deviceInfo: string;
+  declare private systemInfo: SystemInfo;
+  declare private deviceInfo: string;
   private systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
 

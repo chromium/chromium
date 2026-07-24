@@ -56,9 +56,9 @@ export class TextBadgeElement extends PolymerElement {
     };
   }
 
-  badgeType: BadgeType;
-  value: string;
-  override hidden: boolean;
+  declare badgeType: BadgeType;
+  declare value: string;
+  declare hidden: boolean;
 }
 
 declare global {

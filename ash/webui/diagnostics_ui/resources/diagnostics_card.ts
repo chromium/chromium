@@ -42,8 +42,8 @@ export class DiagnosticsCardElement extends PolymerElement {
     };
   }
 
-  hideDataPoints: boolean;
-  isNetworkingCard: boolean;
+  declare hideDataPoints: boolean;
+  declare isNetworkingCard: boolean;
 
   protected getTopSectionClassName(): string {
     return `top-section${this.isNetworkingCard ? '-networking' : ''}`;

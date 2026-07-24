@@ -232,7 +232,7 @@ export class DiagnosticsNetworkIconElement extends DiagnosticsNetworkIconBase {
     };
   }
 
-  network: Network;
+  declare network: Network;
 
   protected computeNetworkState(): NetworkIconNetworkState|null {
     // Block should only be entered when element is being initialized.

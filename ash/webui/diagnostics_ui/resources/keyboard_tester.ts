@@ -242,20 +242,20 @@ export class KeyboardTesterElement extends KeyboardTesterElementBase {
     this.boardName = systemInfo.boardName;
   }
 
-  keyboard: KeyboardInfo;
-  isLoggedIn: boolean;
-  protected diagramTopRightKey: DiagramTopRightKey|null;
-  private lostFocusToastLingerMs: number;
-  private shouldDisplayDiagram: boolean;
-  private diagramMechanicalLayout: DiagramMechanicalLayout|null;
-  private diagramPhysicalLayout: DiagramPhysicalLayout|null;
-  private showNumberPad: boolean;
-  private showAssistantKey: boolean;
+  declare keyboard: KeyboardInfo;
+  declare isLoggedIn: boolean;
+  declare protected diagramTopRightKey: DiagramTopRightKey|null;
+  declare private lostFocusToastLingerMs: number;
+  declare private shouldDisplayDiagram: boolean;
+  declare private diagramMechanicalLayout: DiagramMechanicalLayout|null;
+  declare private diagramPhysicalLayout: DiagramPhysicalLayout|null;
+  declare private showNumberPad: boolean;
+  declare private showAssistantKey: boolean;
   private boardName: string = '';
-  private topRowKeys: KeyboardDiagramTopRowKey[];
-  private bottomLeftLayout: string;
-  private bottomRightLayout: string;
-  private numberPadLayout: string;
+  declare private topRowKeys: KeyboardDiagramTopRowKey[];
+  declare private bottomLeftLayout: string;
+  declare private bottomRightLayout: string;
+  declare private numberPadLayout: string;
   private receiver: KeyboardObserverReceiver|null = null;
   private inputDataProvider: InputDataProviderInterface =
       getInputDataProvider();

@@ -96,12 +96,20 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     };
   }
 
-  update: FirmwareUpdate|null = null;
-  installationProgress: InstallationProgress;
-  private isInitiallyInflight = false;
-  private lastDeviceRequestId: DeviceRequestId|null = null;
-  private updateIsDone: boolean;
-  dialogContent = initialDialogContent;
+  constructor() {
+    super();
+    this.update = null;
+    this.isInitiallyInflight = false;
+    this.lastDeviceRequestId = null;
+    this.dialogContent = initialDialogContent;
+  }
+
+  declare update: FirmwareUpdate|null;
+  declare installationProgress: InstallationProgress;
+  declare private isInitiallyInflight: boolean;
+  declare private lastDeviceRequestId: DeviceRequestId|null;
+  declare private updateIsDone: boolean;
+  declare dialogContent: DialogContent;
   private updateProvider = getUpdateProvider();
   private installController: InstallControllerRemote|null = null;
   private updateProgressObserverReceiver: UpdateProgressObserverReceiver|null =

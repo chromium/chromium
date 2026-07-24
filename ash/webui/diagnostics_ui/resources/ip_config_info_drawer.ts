@@ -67,12 +67,12 @@ export class IpConfigInfoDrawerElement extends IpConfigInfoDrawerElementBase {
     };
   }
 
-  network: Network;
-  protected expanded: boolean;
-  protected gateway: string;
-  protected nameServers: string;
-  protected subnetMask: string;
-  protected nameServersHeader: string;
+  declare network: Network;
+  declare protected expanded: boolean;
+  declare protected gateway: string;
+  declare protected nameServers: string;
+  declare protected subnetMask: string;
+  declare protected nameServersHeader: string;
   private browserProxy: DiagnosticsBrowserProxyImpl =
       DiagnosticsBrowserProxyImpl.getInstance();
 

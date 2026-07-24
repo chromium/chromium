@@ -153,14 +153,14 @@ export class RoutineResultEntryElement extends PolymerElement {
     };
   }
 
-  item: RoutineGroup|ResultStatusItem;
-  hideVerticalLines: boolean;
-  usingRoutineGroups: boolean;
-  protected badgeType: BadgeType;
-  protected badgeText: string;
-  protected testCompleted: boolean;
-  private announcedText: string;
-  private routineType: string;
+  declare item: RoutineGroup|ResultStatusItem;
+  declare hideVerticalLines: boolean;
+  declare usingRoutineGroups: boolean;
+  declare protected badgeType: BadgeType;
+  declare protected badgeText: string;
+  declare protected testCompleted: boolean;
+  declare private announcedText: string;
+  declare private routineType: string;
 
 
   static get observers(): string[] {

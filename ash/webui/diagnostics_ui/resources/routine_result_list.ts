@@ -71,11 +71,11 @@ export class RoutineResultListElement extends PolymerElement {
     };
   }
 
-  override hidden: boolean;
-  hideVerticalLines: boolean;
-  usingRoutineGroups: boolean;
-  ignoreRoutineStatusUpdates: boolean;
-  private results: ResultsType;
+  declare hidden: boolean;
+  declare hideVerticalLines: boolean;
+  declare usingRoutineGroups: boolean;
+  declare ignoreRoutineStatusUpdates: boolean;
+  declare private results: ResultsType;
 
   /**
    * Resets the list and creates a new list with all routines in the unstarted

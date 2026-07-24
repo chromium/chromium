@@ -61,11 +61,11 @@ export class DataPointElement extends PolymerElement {
     };
   }
 
-  header: string;
-  value: string;
-  tooltipText: string;
-  warningState: boolean;
-  orientation: string;
+  declare header: string;
+  declare value: string;
+  declare tooltipText: string;
+  declare warningState: boolean;
+  declare orientation: string;
 
   protected getValueClass(): string {
     return this.warningState ? 'value text-red' : 'value';

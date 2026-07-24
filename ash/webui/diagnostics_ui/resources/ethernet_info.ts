@@ -49,9 +49,9 @@ export class EthernetInfoElement extends EthernetInfoElementBase {
     };
   }
 
-  network: Network;
-  protected authentication: string;
-  protected ipAddress: string;
+  declare network: Network;
+  declare protected authentication: string;
+  declare protected ipAddress: string;
 
   protected computeAuthentication(): string {
     if (this.network?.typeProperties?.ethernet) {

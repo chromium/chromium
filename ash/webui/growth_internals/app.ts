@@ -36,11 +36,13 @@ export class GrowthInternalsAppElement extends PolymerElement {
 
   private browserProxy_: BrowserProxy|null = null;
   private logs_: string[] = [];
-  private filteredLogs_: string[] = [];
-  private campaignId_ = '0';
+  declare private filteredLogs_: string[];
+  declare private campaignId_: string;
 
   constructor() {
     super();
+    this.filteredLogs_ = [];
+    this.campaignId_ = '0';
     this.browserProxy_ = BrowserProxy.getInstance();
   }
 

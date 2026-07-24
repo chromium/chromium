@@ -46,18 +46,19 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
   }
 
   /** The status of sending the report. */
-  sendReportStatus: SendReportStatus|null;
+  declare sendReportStatus: SendReportStatus|null;
   /**
    * Whether this is the first action taken by the user after sending
    * feedback.
    */
   isFirstAction = true;
   /** Whether the user has logged in (not on oobe or on the login screen). */
-  isUserLoggedIn = false;
+  declare isUserLoggedIn: boolean;
   private feedbackServiceProvider: FeedbackServiceProviderInterface;
 
   constructor() {
     super();
+    this.isUserLoggedIn = false;
 
     this.feedbackServiceProvider = getFeedbackServiceProvider();
   }

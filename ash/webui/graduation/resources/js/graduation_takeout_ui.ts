@@ -121,10 +121,10 @@ export class GraduationTakeoutUi extends PolymerElement {
     };
   }
 
-  private showLoadingScreen: boolean;
+  declare private showLoadingScreen: boolean;
   authStatus: AuthStatus = AuthStatus.IN_PROGRESS;
   isWebviewLoading: boolean = false;
-  takeoutFlowCompleted: boolean;
+  declare takeoutFlowCompleted: boolean;
   private webview: chrome.webviewTag.WebView;
   private webviewReloadHelper: WebviewReloadHelper;
   private startTransferUrl: string;

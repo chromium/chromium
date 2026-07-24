@@ -57,9 +57,9 @@ export class WifiInfoElement extends WifiInfoElementBase {
     };
   }
 
-  network: Network;
-  protected security: string;
-  protected signalStrength: string;
+  declare network: Network;
+  declare protected security: string;
+  declare protected signalStrength: string;
 
   /**
    * Builds channel text based frequency conversion. If value of frequency is

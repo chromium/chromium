@@ -58,7 +58,7 @@ export class FileAttachmentElement extends FileAttachmentElementBase {
   protected selectedImageUrl: string;
 
   /**  True when there is a file selected. */
-  protected hasSelectedAFile: boolean;
+  declare protected hasSelectedAFile: boolean;
 
   private feedbackServiceProvider: FeedbackServiceProviderInterface;
 

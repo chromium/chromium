@@ -49,8 +49,8 @@ export class UpdateCardElement extends UpdateCardElementBase {
     };
   }
 
-  update: FirmwareUpdate;
-  disabled: boolean;
+  declare update: FirmwareUpdate;
+  declare disabled: boolean;
 
   protected isCriticalUpdate(): boolean {
     return this.update.priority === UpdatePriority.kCritical;

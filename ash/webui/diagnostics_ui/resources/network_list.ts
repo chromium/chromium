@@ -76,11 +76,11 @@ export class NetworkListElement extends NetworkListElementBase {
     };
   }
 
-  testSuiteStatus: TestSuiteStatus;
-  isActive: boolean;
-  protected isLoggedIn: boolean;
-  private otherNetworkGuids: string[];
-  private activeGuid: string;
+  declare testSuiteStatus: TestSuiteStatus;
+  declare isActive: boolean;
+  declare protected isLoggedIn: boolean;
+  declare private otherNetworkGuids: string[];
+  declare private activeGuid: string;
   private browserProxy: DiagnosticsBrowserProxy =
       DiagnosticsBrowserProxyImpl.getInstance();
   private networkHealthProvider: NetworkHealthProviderInterface =

@@ -96,10 +96,10 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
     };
   }
 
-  protected bannerMessage: string;
-  protected isLoggedIn: boolean;
-  private saveSessionLogEnabled: boolean;
-  private toastText: string;
+  declare protected bannerMessage: string;
+  declare protected isLoggedIn: boolean;
+  declare private saveSessionLogEnabled: boolean;
+  declare private toastText: string;
   private browserProxy: DiagnosticsBrowserProxyImpl =
       DiagnosticsBrowserProxyImpl.getInstance();
   private inputDataProvider: InputDataProviderInterface =

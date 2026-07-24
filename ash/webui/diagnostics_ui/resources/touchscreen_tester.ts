@@ -64,7 +64,7 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
     };
   }
 
-  protected touchscreenIdUnderTesting: number;
+  declare protected touchscreenIdUnderTesting: number;
 
   // Drawing provider.
   private drawingProvider: CanvasDrawingProvider;

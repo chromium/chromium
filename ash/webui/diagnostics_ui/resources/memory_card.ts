@@ -64,10 +64,10 @@ export class MemoryCardElement extends MemoryCardElementBase {
     };
   }
 
-  testSuiteStatus: TestSuiteStatus;
-  isActive: boolean;
-  private routines: RoutineType[];
-  private memoryUsage: MemoryUsage;
+  declare testSuiteStatus: TestSuiteStatus;
+  declare isActive: boolean;
+  declare private routines: RoutineType[];
+  declare private memoryUsage: MemoryUsage;
   private systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
   private memoryUsageObserverReceiver: MemoryUsageObserverReceiver|null = null;

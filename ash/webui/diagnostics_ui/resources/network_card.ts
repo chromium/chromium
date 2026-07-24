@@ -115,18 +115,18 @@ export class NetworkCardElement extends NetworkCardElementBase {
     };
   }
 
-  guid: string;
-  network: Network;
-  protected showNetworkDataPoints: boolean;
-  protected showTroubleshootingCard: boolean;
-  protected macAddress: string;
-  protected unableToObtainIpAddress: boolean;
-  protected troubleshootingInfo: TroubleshootingInfo;
-  protected isMissingNameServers: boolean;
-  private networkType: string;
-  private networkState: string;
-  private timerId: number;
-  private timeoutInMs: number;
+  declare guid: string;
+  declare network: Network;
+  declare protected showNetworkDataPoints: boolean;
+  declare protected showTroubleshootingCard: boolean;
+  declare protected macAddress: string;
+  declare protected unableToObtainIpAddress: boolean;
+  declare protected troubleshootingInfo: TroubleshootingInfo;
+  declare protected isMissingNameServers: boolean;
+  declare private networkType: string;
+  declare private networkState: string;
+  declare private timerId: number;
+  declare private timeoutInMs: number;
   private networkHealthProvider: NetworkHealthProviderInterface =
       getNetworkHealthProvider();
   private networkStateObserverReceiver: NetworkStateObserverReceiver|null =

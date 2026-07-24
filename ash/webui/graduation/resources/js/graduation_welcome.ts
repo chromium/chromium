@@ -38,8 +38,8 @@ export class GraduationWelcome extends PolymerElement {
     };
   }
 
-  private profileEmail: string;
-  private profilePhotoUrl: string;
+  declare private profileEmail: string;
+  declare private profilePhotoUrl: string;
 
   override ready() {
     super.ready();

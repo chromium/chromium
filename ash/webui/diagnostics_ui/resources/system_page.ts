@@ -90,13 +90,13 @@ export class SystemPageElement extends SystemPageElementBase {
     };
   }
 
-  testSuiteStatus: TestSuiteStatus;
-  isActive: boolean;
-  protected systemInfoReceived: boolean;
-  protected saveSessionLogEnabled: boolean;
-  private showBatteryStatusCard: boolean;
-  private toastText: string;
-  private isLoggedIn: boolean;
+  declare testSuiteStatus: TestSuiteStatus;
+  declare isActive: boolean;
+  declare protected systemInfoReceived: boolean;
+  declare protected saveSessionLogEnabled: boolean;
+  declare private showBatteryStatusCard: boolean;
+  declare private toastText: string;
+  declare private isLoggedIn: boolean;
   private systemDataProvider: SystemDataProviderInterface =
       getSystemDataProvider();
   private browserProxy: DiagnosticsBrowserProxyImpl =

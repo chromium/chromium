@@ -54,8 +54,8 @@ export class PeripheralUpdateListElement extends PeripheralUpdateListElementBase
     };
   }
 
-  protected firmwareUpdates: FirmwareUpdate[];
-  protected hasCheckedInitialInflightProgress: boolean;
+  declare protected firmwareUpdates: FirmwareUpdate[];
+  declare protected hasCheckedInitialInflightProgress: boolean;
   private updateProvider = getUpdateProvider();
   protected updateListObserverReceiver: UpdateObserverReceiver;
 

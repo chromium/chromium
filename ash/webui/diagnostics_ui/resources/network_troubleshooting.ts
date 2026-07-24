@@ -34,8 +34,13 @@ export class NetworkTroubleshootingElement extends
     };
   }
 
-  troubleshootingInfo: TroubleshootingInfo;
-  protected isLoggedIn: boolean = loadTimeData.getBoolean('isLoggedIn');
+  constructor() {
+    super();
+    this.isLoggedIn = loadTimeData.getBoolean('isLoggedIn');
+  }
+
+  declare troubleshootingInfo: TroubleshootingInfo;
+  declare protected isLoggedIn: boolean;
 
   protected onLinkTextClicked(): void {
     window.open(this.troubleshootingInfo.url);

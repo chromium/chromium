@@ -53,11 +53,12 @@ export class HelpContentElement extends HelpContentElementBase {
     };
   }
 
-  searchResult: SearchResult;
-  private isOnline = navigator.onLine;
+  declare searchResult: SearchResult;
+  declare private isOnline: boolean;
 
   constructor() {
     super();
+    this.isOnline = navigator.onLine;
     this.searchResult = {
       contentList: [],
       isQueryEmpty: true,

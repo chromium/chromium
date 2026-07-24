@@ -50,8 +50,13 @@ export class FirmwareConfirmationDialogElement extends
     };
   }
 
-  update: FirmwareUpdate;
-  open: boolean = false;
+  constructor() {
+    super();
+    this.open = false;
+  }
+
+  declare update: FirmwareUpdate;
+  declare open: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

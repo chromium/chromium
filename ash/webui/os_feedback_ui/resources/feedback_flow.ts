@@ -160,10 +160,10 @@ export class FeedbackFlowElement extends PolymerElement {
   }
 
   /**  The id of an element on the page that is currently shown. */
-  protected currentState: FeedbackFlowState = FeedbackFlowState.SEARCH;
+  declare protected currentState: FeedbackFlowState;
 
   /**  The feedback context. */
-  protected feedbackContext: FeedbackContext|null;
+  declare protected feedbackContext: FeedbackContext|null;
 
   /**  Whether to show the bluetooth Logs checkbox in share data page. */
   shouldShowBluetoothCheckbox: boolean = false;
@@ -221,6 +221,7 @@ export class FeedbackFlowElement extends PolymerElement {
 
   constructor() {
     super();
+    this.currentState = FeedbackFlowState.SEARCH;
     this.dialogArgs = chrome.getVariableValue('dialogArguments');
     this.feedbackServiceProvider = getFeedbackServiceProvider();
   }

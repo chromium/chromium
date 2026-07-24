@@ -39,7 +39,7 @@ export class NetworkInfoElement extends PolymerElement {
     };
   }
 
-  network: Network;
+  declare network: Network;
 
   protected isWifiNetwork(): boolean {
     return this.network.type === NetworkType.kWiFi;

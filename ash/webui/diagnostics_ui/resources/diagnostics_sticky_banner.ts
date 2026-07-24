@@ -50,9 +50,9 @@ export class DiagnosticsStickyBannerElement extends PolymerElement {
     };
   }
 
-  bannerMessage: string;
-  protected scrollingClass: string;
-  private scrollTimerId: number;
+  declare bannerMessage: string;
+  declare protected scrollingClass: string;
+  declare private scrollTimerId: number;
 
   override connectedCallback(): void {
     super.connectedCallback();

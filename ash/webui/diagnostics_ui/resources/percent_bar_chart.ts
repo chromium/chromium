@@ -47,9 +47,9 @@ export class PercentBarChartElement extends PolymerElement {
     };
   }
 
-  header: string;
-  value: number;
-  max: number;
+  declare header: string;
+  declare value: number;
+  declare max: number;
 
   /**
    * Get adjusted value clamped to max value. paper-progress breaks for a while
