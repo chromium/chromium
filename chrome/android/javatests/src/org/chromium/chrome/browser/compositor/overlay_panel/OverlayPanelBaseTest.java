@@ -37,12 +37,15 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlay_panel.OverlayPanel.StateChangeReason;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,6 +53,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -604,5 +608,55 @@ public class OverlayPanelBaseTest {
         float midHeight = (peekHeight + maxedHeight) / 2.f;
         mExpandPanel.setClampedPanelHeight(midHeight);
         Assert.assertEquals(midHeight, mExpandPanel.getHeight(), MathUtils.EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testBasePageBrightness_Phone() {
+        mExpandPanel.setPanelHeight(mExpandPanel.getPanelHeightFromState(PanelState.PEEKED));
+        Assert.assertEquals(1.0f, mExpandPanel.getBasePageBrightness(), MathUtils.EPSILON);
+
+        mExpandPanel.setPanelHeight(mExpandPanel.getPanelHeightFromState(PanelState.EXPANDED));
+        Assert.assertEquals(0.7f, mExpandPanel.getBasePageBrightness(), MathUtils.EPSILON);
+
+        mExpandPanel.setPanelHeight(mExpandPanel.getPanelHeightFromState(PanelState.MAXIMIZED));
+        Assert.assertEquals(0.4f, mExpandPanel.getBasePageBrightness(), MathUtils.EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_PANEL_CLOSE_BUTTON_ON_TABLETS)
+    public void testBasePageBrightness_Tablet() {
+        mExpandPanel.setPanelHeight(mExpandPanel.getPanelHeightFromState(PanelState.PEEKED));
+        Assert.assertEquals(1.0f, mExpandPanel.getBasePageBrightness(), MathUtils.EPSILON);
+
+        mExpandPanel.setPanelHeight(mExpandPanel.getPanelHeightFromState(PanelState.EXPANDED));
+        Assert.assertEquals(1.0f, mExpandPanel.getBasePageBrightness(), MathUtils.EPSILON);
+
+        mExpandPanel.setPanelHeight(mExpandPanel.getPanelHeightFromState(PanelState.MAXIMIZED));
+        Assert.assertEquals(1.0f, mExpandPanel.getBasePageBrightness(), MathUtils.EPSILON);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Features.DisableFeatures(ChromeFeatureList.CONTEXTUAL_PANEL_CLOSE_BUTTON_ON_TABLETS)
+    public void testBasePageBrightness_Tablet_disableCloseButtonFeature() {
+        mExpandPanel.setPanelHeight(mExpandPanel.getPanelHeightFromState(PanelState.PEEKED));
+        Assert.assertEquals(1.0f, mExpandPanel.getBasePageBrightness(), MathUtils.EPSILON);
+
+        mExpandPanel.setPanelHeight(mExpandPanel.getPanelHeightFromState(PanelState.EXPANDED));
+        Assert.assertEquals(0.7f, mExpandPanel.getBasePageBrightness(), MathUtils.EPSILON);
+
+        mExpandPanel.setPanelHeight(mExpandPanel.getPanelHeightFromState(PanelState.MAXIMIZED));
+        Assert.assertEquals(0.4f, mExpandPanel.getBasePageBrightness(), MathUtils.EPSILON);
     }
 }
