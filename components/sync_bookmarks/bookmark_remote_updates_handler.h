@@ -47,13 +47,9 @@ class BookmarkRemoteUpdatesHandler {
 
   // Returns the tracked entity that should be affected by a remote change, or
   // null if there is none (e.g. indicating a remote creation).
-  // |should_ignore_update| must not be null and it can be marked as true if the
-  // function reports that the update should not be processed further (e.g. it
-  // is invalid).
   static SyncedBookmarkTrackerEntity* DetermineLocalTrackedEntityToUpdate(
       SyncedBookmarkTracker* bookmark_tracker,
-      const syncer::EntityData& update_entity,
-      bool* should_ignore_update);
+      const syncer::EntityData& update_entity);
 
   // Public for testing.
   static std::vector<const syncer::UpdateResponseData*>

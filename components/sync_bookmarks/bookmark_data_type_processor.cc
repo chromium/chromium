@@ -894,14 +894,10 @@ void BookmarkDataTypeProcessor::ApplyFullUpdateAsIncrementalUpdate(
     syncer::UpdateResponseDataList updates) {
   absl::flat_hash_set<const SyncedBookmarkTrackerEntity*> updated_entities;
   for (const syncer::UpdateResponseData& update : updates) {
-    bool should_ignore_update = false;
     const SyncedBookmarkTrackerEntity* tracked_entity =
         BookmarkRemoteUpdatesHandler::DetermineLocalTrackedEntityToUpdate(
-            bookmark_tracker_.get(), update.entity, &should_ignore_update);
+            bookmark_tracker_.get(), update.entity);
     if (tracked_entity) {
-      // If the update is invalid and should be ignored, there should be no
-      // `tracked_entity`.
-      CHECK(!should_ignore_update);
       updated_entities.insert(tracked_entity);
     }
   }
@@ -967,21 +963,8 @@ void BookmarkDataTypeProcessor::OverrideAllServerMetadataToForceApplyUpdates(
   CHECK(bookmark_tracker_);
 
   for (const auto& update : updates) {
-    syncer::ClientTagHash client_tag_hash =
+    const syncer::ClientTagHash client_tag_hash =
         GetOrInferClientTagHashInUpdate(update.entity);
-    if (client_tag_hash.value().empty()) {
-      // It must be a permanent node.
-      std::string server_tag = update.entity.server_defined_unique_tag;
-      if (!server_tag.empty()) {
-        base::Uuid uuid =
-            GetPermanentFolderUuidForServerDefinedUniqueTag(server_tag);
-        if (uuid.is_valid()) {
-          client_tag_hash = syncer::ClientTagHash::FromUnhashed(
-              syncer::BOOKMARKS, uuid.AsLowercaseString());
-        }
-      }
-    }
-
     if (client_tag_hash.value().empty()) {
       continue;
     }

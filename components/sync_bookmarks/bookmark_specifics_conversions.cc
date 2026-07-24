@@ -629,6 +629,14 @@ syncer::ClientTagHash GetOrInferClientTagHashInUpdate(
                                         update_entity.originator_client_item_id)
             .AsLowercaseString());
   }
+  if (!update_entity.server_defined_unique_tag.empty()) {
+    const base::Uuid uuid = GetPermanentFolderUuidForServerDefinedUniqueTag(
+        update_entity.server_defined_unique_tag);
+    if (uuid.is_valid()) {
+      return syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
+                                                 uuid.AsLowercaseString());
+    }
+  }
   return syncer::ClientTagHash();
 }
 

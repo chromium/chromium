@@ -52,7 +52,7 @@ base::Uuid TryGetParentGuidFromTracker(
   DCHECK(!update.entity.specifics.bookmark().has_parent_guid());
 
   const SyncedBookmarkTrackerEntity* const tracked_parent =
-      tracker->GetEntityForSyncId(update.entity.legacy_parent_id);
+      tracker->GetEntityForSyncIdExhaustively(update.entity.legacy_parent_id);
   if (!tracked_parent) {
     // Parent not known by tracker.
     return base::Uuid();
@@ -158,28 +158,26 @@ std::optional<ParentGuidInfo> GetParentGuidInfo(
     return ParentGuidInfo{base::Uuid(), ParentGuidSource::kMissing};
   }
 
-  // If a tracker is available, i.e. initial sync already done, it may know
-  // parent's GUID already.
-  base::Uuid newly_resolved_uuid;
+  // First check if the parent is included in the full list of updates,
+  // represented here by |sync_id_to_guid_map_in_updates|. This is fast (O(1))
+  // and covers initial sync (where |tracker| is empty) as well as batches that
+  // create both parent and child.
+  base::Uuid newly_resolved_uuid = base::Uuid::ParseLowercase(
+      sync_id_to_guid_map_in_updates->GetGuidForSyncId(
+          update.entity.legacy_parent_id));
+  if (newly_resolved_uuid.is_valid()) {
+    return ParentGuidInfo{std::move(newly_resolved_uuid),
+                          ParentGuidSource::kFallbackFoundInUpdates};
+  }
+
+  // Otherwise, if a tracker is available (i.e. initial sync already done),
+  // check if it knows the parent's GUID.
   if (tracker) {
     newly_resolved_uuid = TryGetParentGuidFromTracker(tracker, update);
     if (newly_resolved_uuid.is_valid()) {
       return ParentGuidInfo{std::move(newly_resolved_uuid),
                             ParentGuidSource::kFallbackFoundInTracker};
     }
-  }
-
-  // Otherwise, fall back to checking if the parent is included in the full list
-  // of updates, represented here by |sync_id_to_guid_map_in_updates|. This
-  // codepath is most crucial for initial sync, where |tracker| is empty, but is
-  // also useful for non-initial sync, if the same incoming batch creates both
-  // parent and child, none of which would be known by |tracker|.
-  newly_resolved_uuid = base::Uuid::ParseLowercase(
-      sync_id_to_guid_map_in_updates->GetGuidForSyncId(
-          update.entity.legacy_parent_id));
-  if (newly_resolved_uuid.is_valid()) {
-    return ParentGuidInfo{std::move(newly_resolved_uuid),
-                          ParentGuidSource::kFallbackFoundInUpdates};
   }
 
   // At this point the parent's GUID couldn't be determined, but actually

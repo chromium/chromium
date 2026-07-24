@@ -155,7 +155,8 @@ class BookmarkModelMerger {
   // remote updates are lacking a client tag hash. If so, it migrates the entity
   // by issuing a deletion and a creation, using a new random GUID.
   void MigrateBookmarksInSubtreeWithoutClientTagHash(
-      const RemoteTreeNode& remote_node);
+      const RemoteTreeNode& remote_node,
+      const bookmarks::BookmarkNode* local_node);
 
   // Updates |local_node| to hold same UUID and semantics as its |remote_node|
   // match. The input nodes are two equivalent local and remote bookmarks that

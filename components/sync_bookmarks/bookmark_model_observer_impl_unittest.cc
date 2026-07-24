@@ -751,26 +751,28 @@ TEST_P(BookmarkModelObserverImplTest,
 
   // folder2, bookmark2, and bookmark3 should be marked deleted.
   EXPECT_TRUE(bookmark_tracker()
-                  ->GetEntityForSyncId(folder2_entity_id)
+                  ->GetEntityForSyncIdExhaustively(folder2_entity_id)
                   ->metadata()
                   .is_deleted());
   EXPECT_TRUE(bookmark_tracker()
-                  ->GetEntityForSyncId(bookmark2_entity_id)
+                  ->GetEntityForSyncIdExhaustively(bookmark2_entity_id)
                   ->metadata()
                   .is_deleted());
   EXPECT_TRUE(bookmark_tracker()
-                  ->GetEntityForSyncId(bookmark3_entity_id)
+                  ->GetEntityForSyncIdExhaustively(bookmark3_entity_id)
                   ->metadata()
                   .is_deleted());
 
   // folder2, bookmark2, and bookmark3 should be in the local changes to be
   // committed and folder2 deletion should be the last one (after all children
   // deletions).
-  EXPECT_THAT(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(),
-      ElementsAre(bookmark_tracker()->GetEntityForSyncId(bookmark2_entity_id),
-                  bookmark_tracker()->GetEntityForSyncId(bookmark3_entity_id),
-                  bookmark_tracker()->GetEntityForSyncId(folder2_entity_id)));
+  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(),
+              ElementsAre(bookmark_tracker()->GetEntityForSyncIdExhaustively(
+                              bookmark2_entity_id),
+                          bookmark_tracker()->GetEntityForSyncIdExhaustively(
+                              bookmark3_entity_id),
+                          bookmark_tracker()->GetEntityForSyncIdExhaustively(
+                              folder2_entity_id)));
 
   // folder1 and bookmark1 are still tracked.
   EXPECT_TRUE(bookmark_tracker()->GetEntityForBookmarkNode(folder1_node));

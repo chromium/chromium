@@ -266,13 +266,8 @@ void BookmarkRemoteUpdatesHandler::Process(
     DCHECK(!IsPermanentNodeUpdate(update_entity));
     DCHECK(update_entity.is_deleted() || IsValidUpdate(update_entity));
 
-    bool should_ignore_update = false;
     SyncedBookmarkTrackerEntity* tracked_entity =
-        DetermineLocalTrackedEntityToUpdate(bookmark_tracker_, update_entity,
-                                            &should_ignore_update);
-    if (should_ignore_update) {
-      continue;
-    }
+        DetermineLocalTrackedEntityToUpdate(bookmark_tracker_, update_entity);
 
     // Filter out permanent nodes once again (in case the server tag wasn't
     // populated and yet the entity ID points to a permanent node). This case
@@ -320,8 +315,7 @@ void BookmarkRemoteUpdatesHandler::Process(
     // response. This also may happen due to duplicate UUIDs. In this case it's
     // better to update to the latest server ID.
     if (tracked_entity) {
-      bookmark_tracker_->UpdateSyncIdIfNeeded(tracked_entity,
-                                              /*sync_id=*/update_entity.id);
+      bookmark_tracker_->UpdateServerId(tracked_entity, update_entity.id);
     }
 
     if (tracked_entity && tracked_entity->IsUnsynced()) {
@@ -344,12 +338,8 @@ void BookmarkRemoteUpdatesHandler::Process(
         // the encryption.
         continue;
       }
-      DCHECK_EQ(tracked_entity,
-                bookmark_tracker_->GetEntityForSyncId(update_entity.id));
     } else {
       ProcessUpdate(*update, tracked_entity);
-      DCHECK_EQ(tracked_entity,
-                bookmark_tracker_->GetEntityForSyncId(update_entity.id));
     }
 
     // If the received entity has out of date encryption, we schedule another
@@ -499,59 +489,21 @@ BookmarkRemoteUpdatesHandler::ReorderValidUpdates(
 SyncedBookmarkTrackerEntity*
 BookmarkRemoteUpdatesHandler::DetermineLocalTrackedEntityToUpdate(
     SyncedBookmarkTracker* bookmark_tracker,
-    const syncer::EntityData& update_entity,
-    bool* should_ignore_update) {
-  *should_ignore_update = false;
-
-  // If there's nothing other than a server ID to issue a lookup, just do that
-  // and return immediately. This is the case for permanent nodes and possibly
-  // tombstones (at least the LoopbackServer only sets the server ID).
-  if (update_entity.originator_client_item_id.empty() &&
-      update_entity.client_tag_hash.value().empty()) {
-    return bookmark_tracker->GetEntityForSyncId(update_entity.id);
-  }
-
-  // Parse the client tag hash in the update or infer it from the originator
-  // information (all of which are immutable properties of a sync entity).
+    const syncer::EntityData& update_entity) {
   const syncer::ClientTagHash client_tag_hash_in_update =
       GetOrInferClientTagHashInUpdate(update_entity);
 
-  SyncedBookmarkTrackerEntity* const tracked_entity_by_client_tag =
-      bookmark_tracker->GetEntityForClientTagHash(client_tag_hash_in_update);
-  SyncedBookmarkTrackerEntity* const tracked_entity_by_sync_id =
-      bookmark_tracker->GetEntityForSyncId(update_entity.id);
-
-  // The most common scenario is that both lookups, client-tag-based and
-  // server-ID-based, refer to the same tracked entity or both lookups fail. In
-  // that case there's nothing to reconcile and the function can return
-  // trivially.
-  if (tracked_entity_by_client_tag == tracked_entity_by_sync_id) {
-    return tracked_entity_by_client_tag;
+  if (!client_tag_hash_in_update.value().empty()) {
+    return bookmark_tracker->GetEntityForClientTagHash(
+        client_tag_hash_in_update);
   }
 
-  // Client-tags (UUIDs) are known at all times and immutable (as opposed to
-  // server IDs which get a temp value for local creations), so they cannot have
-  // changed.
-  if (tracked_entity_by_sync_id &&
-      tracked_entity_by_sync_id->GetClientTagHash() !=
-          client_tag_hash_in_update) {
-    // The client tag has changed for an already-tracked entity, which is a
-    // protocol violation. This should be practically unreachable, but guard
-    // against misbehaving servers.
-    DLOG(ERROR) << "Ignoring remote bookmark update with protocol violation: "
-                   "UUID must be immutable";
-    LogProblematicBookmark(
-        RemoteBookmarkUpdateError::kGuidChangedForTrackedServerId);
-    *should_ignore_update = true;
-    return nullptr;
+  // Fallback only for legacy tombstones/deletions lacking a client tag hash.
+  if (update_entity.is_deleted()) {
+    return bookmark_tracker->GetEntityForSyncIdExhaustively(update_entity.id);
   }
 
-  // At this point |tracked_entity_by_client_tag| must be non-null because
-  // otherwise one of the two codepaths above would have returned early.
-  DCHECK(tracked_entity_by_client_tag);
-  DCHECK(!tracked_entity_by_sync_id);
-
-  return tracked_entity_by_client_tag;
+  return nullptr;
 }
 
 SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessCreate(
@@ -596,8 +548,6 @@ void BookmarkRemoteUpdatesHandler::ProcessUpdate(
   DCHECK(tracked_entity);
   DCHECK(tracked_entity->bookmark_node());
   DCHECK(!tracked_entity->bookmark_node()->is_permanent_node());
-  DCHECK_EQ(tracked_entity,
-            bookmark_tracker_->GetEntityForSyncId(update_entity.id));
   // Must not be a deletion.
   DCHECK(!update_entity.is_deleted());
   DCHECK(!IsPermanentNodeUpdate(update_entity));
@@ -644,9 +594,6 @@ void BookmarkRemoteUpdatesHandler::ProcessDelete(
     SyncedBookmarkTrackerEntity* tracked_entity) {
   DCHECK(update_entity.is_deleted());
 
-  DCHECK_EQ(tracked_entity,
-            bookmark_tracker_->GetEntityForSyncId(update_entity.id));
-
   // Handle corner cases first.
   if (tracked_entity == nullptr) {
     // Process deletion only if the entity is still tracked. It could have
@@ -678,8 +625,6 @@ SyncedBookmarkTrackerEntity* BookmarkRemoteUpdatesHandler::ProcessConflict(
 
   // Can only conflict with existing nodes.
   DCHECK(tracked_entity);
-  DCHECK_EQ(tracked_entity,
-            bookmark_tracker_->GetEntityForSyncId(update_entity.id));
   DCHECK(!tracked_entity->bookmark_node() ||
          !tracked_entity->bookmark_node()->is_permanent_node());
   DCHECK(!IsPermanentNodeUpdate(update_entity));

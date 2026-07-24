@@ -236,13 +236,13 @@ void AssertState(const BookmarkDataTypeProcessor* processor,
 
   for (BookmarkInfo bookmark : bookmarks) {
     const SyncedBookmarkTrackerEntity* entity =
-        tracker->GetEntityForSyncId(bookmark.server_id);
+        tracker->GetEntityForSyncIdExhaustively(bookmark.server_id);
     ASSERT_THAT(entity, NotNull());
     const bookmarks::BookmarkNode* node = entity->bookmark_node();
     ASSERT_THAT(node->GetTitle(), Eq(ASCIIToUTF16(bookmark.title)));
     ASSERT_THAT(node->url(), Eq(GURL(bookmark.url)));
     const SyncedBookmarkTrackerEntity* parent_entity =
-        tracker->GetEntityForSyncId(bookmark.parent_id);
+        tracker->GetEntityForSyncIdExhaustively(bookmark.parent_id);
     ASSERT_THAT(node->parent(), Eq(parent_entity->bookmark_node()));
   }
 }
@@ -781,7 +781,8 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldApplyGcDirectiveWithLocalDeletion) {
 
   // The tombstone should be removed from tracker because it is also deleted on
   // the server (not present in updates during GC directive).
-  EXPECT_EQ(processor()->GetTrackerForTest()->GetEntityForSyncId(server_id),
+  EXPECT_EQ(processor()->GetTrackerForTest()->GetEntityForSyncIdExhaustively(
+                server_id),
             nullptr);
 }
 
@@ -1212,8 +1213,9 @@ TEST_F(BookmarkDataTypeProcessorTest,
                                 /*gc_directive=*/std::nullopt);
 
   // The bookmarks shouldn't be marked for committing.
-  ASSERT_THAT(tracker->GetEntityForSyncId(kNodeId), NotNull());
-  EXPECT_THAT(tracker->GetEntityForSyncId(kNodeId)->IsUnsynced(), Eq(false));
+  ASSERT_THAT(tracker->GetEntityForSyncIdExhaustively(kNodeId), NotNull());
+  EXPECT_THAT(tracker->GetEntityForSyncIdExhaustively(kNodeId)->IsUnsynced(),
+              Eq(false));
 }
 
 // Verifies that the processor doesn't crash if sync is stopped before receiving
@@ -1398,7 +1400,8 @@ TEST_F(BookmarkDataTypeProcessorTest, ShouldReuploadLegacyBookmarksOnStart) {
 
   ASSERT_TRUE(processor()->IsTrackingMetadata());
   const SyncedBookmarkTrackerEntity* entity =
-      processor()->GetTrackerForTest()->GetEntityForSyncId(server_id);
+      processor()->GetTrackerForTest()->GetEntityForSyncIdExhaustively(
+          server_id);
   ASSERT_THAT(entity, NotNull());
 
   // Entity should be synced before until first update is received.

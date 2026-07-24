@@ -107,8 +107,8 @@ base::Uuid GetPermanentFolderUuidForServerDefinedUniqueTag(
     const std::string& server_defined_unique_tag);
 
 // Returns the client tag hash for the given remote update. It parses the
-// client tag hash in the update or infers it from the originator information.
-// It does NOT handle permanent nodes (returns empty ClientTagHash for them).
+// client tag hash in the update or infers it from originator information or
+// permanent node server-defined unique tags.
 syncer::ClientTagHash GetOrInferClientTagHashInUpdate(
     const syncer::EntityData& update_entity);
 

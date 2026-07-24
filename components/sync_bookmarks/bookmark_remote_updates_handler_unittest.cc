@@ -571,7 +571,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   base::HistogramTester histogram_tester;
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
-  EXPECT_THAT(tracker()->GetEntityForSyncId(updates[0].entity.id), IsNull());
+  EXPECT_THAT(tracker()->GetEntityForSyncIdExhaustively(updates[0].entity.id),
+              IsNull());
 
   histogram_tester.ExpectBucketCount(
       "Sync.ProblematicServerSideBookmarks",
@@ -614,7 +615,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
-       ShouldIgnoreMisbehavingServerWithRemoteGuidUpdate) {
+       ShouldTreatRemoteGuidUpdateFromMisbehavingServerAsNewCreation) {
   const std::string kTitle = "title";
   const base::Uuid kOldGuid = base::Uuid::GenerateRandomV4();
   const base::Uuid kNewGuid = base::Uuid::GenerateRandomV4();
@@ -635,9 +636,12 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   ASSERT_THAT(tracker()->GetEntityForUuid(kOldGuid), NotNull());
   ASSERT_THAT(tracker()->GetEntityForUuid(kNewGuid), IsNull());
 
-  // Push an update for the same entity with a new GUID. Note that this is a
-  // protocol violation, because |originator_client_item_id| cannot have changed
-  // for a given server ID.
+  // Push an update for the same server ID, but with a new GUID. Note that this
+  // is a protocol violation because GUIDs (client tags) are immutable in Sync.
+  // There is no strict protocol requirement on how the client must handle this
+  // violation. With client-tag-based entity lookups, this test documents the
+  // current behavior: the update for kNewGuid is processed as a new creation,
+  // leaving the original entity for kOldGuid intact.
   updates.clear();
   updates.push_back(CreateUpdateResponseData(
       /*guid=*/kNewGuid,
@@ -647,29 +651,23 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
       /*unique_position=*/RandomUniquePosition()));
   updates[0].entity.id = GetFakeServerIdFromGUID(kOldGuid);
 
-  base::HistogramTester histogram_tester;
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
 
+  // Both the original bookmark (kOldGuid) and the newly created bookmark
+  // (kNewGuid) exist.
   EXPECT_THAT(tracker()->GetEntityForUuid(kOldGuid), NotNull());
-  EXPECT_THAT(tracker()->GetEntityForUuid(kNewGuid), IsNull());
+  EXPECT_THAT(tracker()->GetEntityForUuid(kNewGuid), NotNull());
 
-  // The GUID should not have been updated.
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model()->bookmark_bar_node();
-  ASSERT_THAT(bookmark_bar_node->children().size(), Eq(1u));
-  EXPECT_THAT(bookmark_bar_node->children().front()->uuid(), Eq(kOldGuid));
-
-  histogram_tester.ExpectBucketCount(
-      "Sync.ProblematicServerSideBookmarks",
-      /*sample=*/
-      ExpectedRemoteBookmarkUpdateError::kGuidChangedForTrackedServerId,
-      /*expected_count=*/1);
+  EXPECT_THAT(bookmark_bar_node->children().size(), Eq(2u));
 }
 
 TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
        ShouldIgnoreMisbehavingServerWithPermanentNodeUpdateWithoutServerTag) {
-  ASSERT_THAT(tracker()->GetEntityForSyncId(kBookmarkBarId), NotNull());
+  ASSERT_THAT(tracker()->GetEntityForSyncIdExhaustively(kBookmarkBarId),
+              NotNull());
 
   // Push an update for a permanent entity, but without a unique server tag.
   syncer::UpdateResponseDataList updates;
@@ -1138,8 +1136,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   const SyncedBookmarkTrackerEntity* entity = tracker()->AddLocalCreation(
       node, /*sync_id=*/kOriginatorClientItemId, kModificationTime, specifics);
 
-  ASSERT_THAT(tracker()->GetEntityForSyncId(kOriginatorClientItemId),
-              Eq(entity));
+  ASSERT_THAT(
+      tracker()->GetEntityForSyncIdExhaustively(kOriginatorClientItemId),
+      Eq(entity));
 
   // Now receive an update with the actual server id.
   syncer::UpdateResponseDataList updates;
@@ -1163,8 +1162,10 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
 
   // The sync id in the tracker should have been updated.
-  EXPECT_THAT(tracker()->GetEntityForSyncId(kOriginatorClientItemId), IsNull());
-  EXPECT_THAT(tracker()->GetEntityForSyncId(kSyncId), Eq(entity));
+  EXPECT_THAT(
+      tracker()->GetEntityForSyncIdExhaustively(kOriginatorClientItemId),
+      IsNull());
+  EXPECT_THAT(tracker()->GetEntityForSyncIdExhaustively(kSyncId), Eq(entity));
   EXPECT_THAT(entity->metadata().server_id(), Eq(kSyncId));
   EXPECT_THAT(entity->bookmark_node(), Eq(node));
 }
@@ -1202,7 +1203,7 @@ TEST_F(
   const SyncedBookmarkTrackerEntity* entity = tracker()->AddLocalCreation(
       node, /*sync_id=*/kSyncId, kModificationTime, specifics);
 
-  ASSERT_THAT(tracker()->GetEntityForSyncId(kSyncId), Eq(entity));
+  ASSERT_THAT(tracker()->GetEntityForSyncIdExhaustively(kSyncId), Eq(entity));
 
   // Now receive an update with the actual server id.
   syncer::UpdateResponseDataList updates;
@@ -1229,9 +1230,10 @@ TEST_F(
                              /*got_new_encryption_requirements=*/false);
 
   // The sync id in the tracker should have been updated.
-  EXPECT_THAT(tracker()->GetEntityForSyncId(kBookmarkGuid.AsLowercaseString()),
+  EXPECT_THAT(tracker()->GetEntityForSyncIdExhaustively(
+                  kBookmarkGuid.AsLowercaseString()),
               IsNull());
-  EXPECT_THAT(tracker()->GetEntityForSyncId(kSyncId), Eq(entity));
+  EXPECT_THAT(tracker()->GetEntityForSyncIdExhaustively(kSyncId), Eq(entity));
   EXPECT_THAT(entity->metadata().server_id(), Eq(kSyncId));
   EXPECT_THAT(entity->bookmark_node(), Eq(node));
 }
@@ -1329,8 +1331,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   EXPECT_THAT(tracker()->GetEntityForUuid(kGuid)->IsUnsynced(), Eq(true));
   // Permanent nodes shouldn't be committed. They are only created on the server
   // and synced down.
-  EXPECT_THAT(tracker()->GetEntityForSyncId(kBookmarkBarId)->IsUnsynced(),
-              Eq(false));
+  EXPECT_THAT(
+      tracker()->GetEntityForSyncIdExhaustively(kBookmarkBarId)->IsUnsynced(),
+      Eq(false));
 }
 
 TEST_F(
@@ -2048,7 +2051,7 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
   updates_handler()->Process(updates,
                              /*got_new_encryption_requirements=*/false);
   ASSERT_THAT(tracker()->TrackedEntitiesCountForTest(), Eq(4U));
-  ASSERT_THAT(tracker()->GetEntityForSyncId(kServerId1), NotNull());
+  ASSERT_THAT(tracker()->GetEntityForSyncIdExhaustively(kServerId1), NotNull());
   updates.clear();
 
   // Create two updates having the same GUID, one is a tombstone for the old
@@ -2068,9 +2071,9 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
                              /*got_new_encryption_requirements=*/false);
 
   EXPECT_THAT(tracker()->TrackedEntitiesCountForTest(), Eq(4U));
-  EXPECT_THAT(tracker()->GetEntityForSyncId(kServerId1), IsNull());
+  EXPECT_THAT(tracker()->GetEntityForSyncIdExhaustively(kServerId1), IsNull());
   const SyncedBookmarkTrackerEntity* entity =
-      tracker()->GetEntityForSyncId(kServerId2);
+      tracker()->GetEntityForSyncIdExhaustively(kServerId2);
   EXPECT_THAT(entity, NotNull());
   EXPECT_THAT(entity->bookmark_node(), NotNull());
   EXPECT_THAT(entity->bookmark_node()->uuid(), Eq(kGuid));

@@ -575,7 +575,12 @@ void BookmarkModelMerger::Merge() {
   if (base::FeatureList::IsEnabled(
           switches::kSyncMigrateBookmarksWithoutClientTagHash)) {
     for (const auto& [server_defined_unique_tag, root] : remote_forest_) {
-      MigrateBookmarksInSubtreeWithoutClientTagHash(root);
+      const bookmarks::BookmarkNode* permanent_folder =
+          GetPermanentFolderForServerDefinedUniqueTag(
+              bookmark_model_, server_defined_unique_tag);
+      if (permanent_folder) {
+        MigrateBookmarksInSubtreeWithoutClientTagHash(root, permanent_folder);
+      }
     }
   }
 
@@ -726,17 +731,28 @@ BookmarkModelMerger::FindGuidMatchesOrReassignLocal(
 }
 
 void BookmarkModelMerger::MigrateBookmarksInSubtreeWithoutClientTagHash(
-    const RemoteTreeNode& remote_node) {
+    const RemoteTreeNode& remote_node,
+    const bookmarks::BookmarkNode* local_node) {
+  CHECK(local_node);
+  CHECK_LE(remote_node.children().size(), local_node->children().size());
+
   // Recursively iterate children first for simplicity, as the order doesn't
   // matter.
-  for (const RemoteTreeNode& child : remote_node.children()) {
-    MigrateBookmarksInSubtreeWithoutClientTagHash(child);
+  for (size_t i = 0; i < remote_node.children().size(); ++i) {
+    const RemoteTreeNode& child_remote = remote_node.children()[i];
+    CHECK_LT(i, local_node->children().size());
+    const bookmarks::BookmarkNode* child_local =
+        local_node->children()[i].get();
+    MigrateBookmarksInSubtreeWithoutClientTagHash(child_remote, child_local);
   }
 
   // Nothing to do for permanent folders.
   if (!remote_node.entity().server_defined_unique_tag.empty()) {
     return;
   }
+
+  CHECK_EQ(remote_node.entity().specifics.bookmark().guid(),
+           local_node->uuid().AsLowercaseString());
 
   // Nothing to do if this entity already uses a client tag hash.
   if (!remote_node.entity().client_tag_hash.value().empty()) {
@@ -747,36 +763,36 @@ void BookmarkModelMerger::MigrateBookmarksInSubtreeWithoutClientTagHash(
   CHECK(!remote_node.entity().originator_cache_guid.empty() ||
         !remote_node.entity().originator_client_item_id.empty());
 
-  SyncedBookmarkTrackerEntity* old_entity =
-      bookmark_tracker_->GetEntityForSyncId(remote_node.entity().id);
+  const SyncedBookmarkTrackerEntity* old_entity =
+      bookmark_tracker_->GetEntityForBookmarkNode(local_node);
   CHECK(old_entity);
-  CHECK(old_entity->bookmark_node());
 
   const base::Time creation_time =
       syncer::ProtoTimeToTime(old_entity->metadata().creation_time());
   const syncer::UniquePosition pos = syncer::UniquePosition::FromProto(
       old_entity->metadata().unique_position());
 
-  const bookmarks::BookmarkNode* node = old_entity->bookmark_node();
   bookmark_tracker_->MarkDeleted(old_entity, FROM_HERE);
 
   // TODO(crbug.com/376641665): Consider generating new UUIDs deterministically
   // rather than randomly to guard against concurrent clients or interrupted
   // migrations.
   const base::Uuid new_guid = base::Uuid::GenerateRandomV4();
-  node = ReplaceBookmarkNodeUuid(node, new_guid, bookmark_model_);
+  local_node = ReplaceBookmarkNodeUuid(local_node, new_guid, bookmark_model_);
 
   const sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, bookmark_model_, pos.ToProto(), /*force_favicon_load=*/true);
+      local_node, bookmark_model_, pos.ToProto(), /*force_favicon_load=*/true);
 
-  bookmark_tracker_->AddLocalCreation(
-      node, /*sync_id=*/new_guid.AsLowercaseString(), creation_time, specifics);
+  bookmark_tracker_->AddLocalCreation(local_node,
+                                      /*sync_id=*/new_guid.AsLowercaseString(),
+                                      creation_time, specifics);
 
   // Make sure all direct children are marked for commit, because their parent
   // changed.
-  for (const RemoteTreeNode& child : remote_node.children()) {
+  for (const std::unique_ptr<bookmarks::BookmarkNode>& child :
+       local_node->children()) {
     SyncedBookmarkTrackerEntity* child_entity =
-        bookmark_tracker_->GetEntityForSyncId(child.entity().id);
+        bookmark_tracker_->GetEntityForBookmarkNode(child.get());
     CHECK(child_entity);
     child_entity->IncrementSequenceNumber();
   }
