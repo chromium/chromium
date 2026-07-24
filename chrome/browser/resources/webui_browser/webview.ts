@@ -4,6 +4,7 @@
 
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory, GuestHandlerRemote} from './browser.mojom-webui.js';
@@ -118,6 +119,17 @@ export class TabWebviewElement extends WebviewElement {
       }
     } else {
       this.classList.remove('active');
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Focus the content element when guestId is set and the tab is active.
+    if (this.classList.contains('active') && changedProperties.has('guestId')) {
+      const content = this.shadowRoot.querySelector<HTMLElement>('.content');
+      if (content) {
+        content.focus();
+      }
     }
   }
 

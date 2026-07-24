@@ -259,6 +259,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
   }
 
   protected onTabActivated_(event: CustomEvent<TabActivated>) {
+    // TODO(crbug.com/537801193): store and restore focus on tab switch.
     this.$.contentRegion.activateTab(event.detail.id);
     this.updateUrlForActiveTab_(event.detail);
     this.refreshLayout();

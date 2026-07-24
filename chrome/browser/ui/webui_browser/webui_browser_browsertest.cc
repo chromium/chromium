@@ -574,3 +574,29 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
   // from the render process.
   CloseBrowserSynchronously(new_browser);
 }
+
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, NewTabGetsFocus) {
+  auto* window = WebUIBrowserWindow::FromBrowser(browser());
+  ASSERT_TRUE(window);
+
+  content::WebContents* ui_web_contents =
+      window->GetWebUIBrowserUI()->web_ui()->GetWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(ui_web_contents));
+
+  // Open a new tab (e.g. simulating the new tab action or dragging a new tab).
+  GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
+  EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  content::WebContents* second_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(second_tab);
+
+  // The newly created active tab should get focus.
+  EXPECT_TRUE(base::test::RunUntil([second_tab]() {
+    return second_tab->GetRenderWidgetHostView() &&
+           second_tab->GetRenderWidgetHostView()->HasFocus();
+  }));
+}
+
