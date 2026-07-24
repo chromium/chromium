@@ -28,9 +28,6 @@ constexpr size_t kJsAutofillMaxFieldsChanged = 10;
 // same JS autofill event.
 constexpr base::TimeDelta kJsAutofillMaxTimeGap = base::Milliseconds(200);
 
-// The maximum number of logs we store before evicting the oldest.
-constexpr size_t kMaxStoredJsLogs = 100;
-
 bool IsPossibleAnchorElement(blink::WebFormControlElement element) {
   // A JS-autofill picker would usually be anchored on a text-like input or
   // textarea element. We exclude select elements to avoid false positives
@@ -82,43 +79,26 @@ void JavaScriptAutofillTracker::OnJavaScriptChangedValue(
   // In order to add a log record to `js_logs_`, the following conditions must
   // be satisfied:
 
-  // (1) The frame must have transient user activation.
-  blink::WebDocument document = web_frame_->GetDocument();
-  if (!document || !web_frame_->HasTransientUserActivation()) {
+  // (1) A mousedown event must have started the timer not earlier than
+  // `kMaxTimeGap` milliseconds ago.
+  if (!timer_.IsRunning()) {
     return;
   }
 
-  // (2) The frame should have a non-null and autofillable focused element.
-  blink::WebFormControlElement focused_element =
-      document.FocusedElement().DynamicTo<blink::WebFormControlElement>();
-  if (!focused_element || !form_util::IsAutofillableElement(focused_element)) {
-    return;
-  }
-
-  // (3) The element whose value was set by JS should also be autofillable.
+  // (2) The element whose value was set by JS should be autofillable.
   if (!form_util::IsAutofillableElement(element)) {
     return;
   }
 
-  // (4) `js_logs_` must still have less than `kMaxStoredJsLogs` records.
-  if (js_logs_.size() >= kMaxStoredJsLogs) {
+  // (3) `js_logs_` must still have less than `kJsAutofillMaxFieldsChanged`
+  // records.
+  if (js_logs_.size() >= kJsAutofillMaxFieldsChanged) {
     return;
   }
 
   js_logs_.push_back(JsChangeRecord{
       .modified_field_id = form_util::GetFieldRendererId(element),
-      .focused_field_id = form_util::GetFieldRendererId(focused_element),
-      .timestamp = base::TimeTicks::Now(),
   });
-
-  if (!timer_.IsRunning()) {
-    timer_.Start(
-        FROM_HERE, kJsAutofillMaxTimeGap,
-        base::BindOnce(&JavaScriptAutofillTracker::DetectJavaScriptAutofill,
-                       // Safe because `timer_` is owned by `this`. Destructing
-                       // it cancels the task.
-                       base::Unretained(this)));
-  }
 }
 
 void JavaScriptAutofillTracker::Reset() {
@@ -144,27 +124,46 @@ void JavaScriptAutofillTracker::HandleMousedown() {
     return;
   }
 
-  // TODO(crbug.com/529775544): Implement mousedown handling.
+  // (3) The timer isn't already running.
+  if (timer_.IsRunning()) {
+    return;
+  }
+
+  // This should not be needed in theory, but if for some reason logs exist in
+  // the list BEFORE starting a timer run, they should not be included in the
+  // final analysis done by `DetectJavaScriptAutofill()`.
+  js_logs_.clear();
+
+  timer_.Start(
+      FROM_HERE, kJsAutofillMaxTimeGap,
+      base::BindOnce(&JavaScriptAutofillTracker::DetectJavaScriptAutofill,
+                     // Safe because `timer_` is owned by `this`. Destructing
+                     // it cancels the task.
+                     base::Unretained(this),
+                     form_util::GetFieldRendererId(focused_element)));
 }
 
-void JavaScriptAutofillTracker::DetectJavaScriptAutofill() {
+void JavaScriptAutofillTracker::DetectJavaScriptAutofill(
+    FieldRendererId trigger_element_id) {
   std::vector<JsChangeRecord> logs = std::move(js_logs_);
   js_logs_.clear();
-  CHECK(!logs.empty());
-
-  blink::WebFormControlElement first_focused_field =
-      form_util::GetFormControlByRendererId(logs.front().focused_field_id);
-  if (!first_focused_field) {
+  if (logs.empty()) {
     return;
   }
 
-  if (!IsPossibleAnchorElement(first_focused_field)) {
+  blink::WebFormControlElement trigger_element =
+      form_util::GetFormControlByRendererId(trigger_element_id);
+  if (!trigger_element) {
     return;
   }
 
-  blink::WebFormElement target_form =
-      first_focused_field.GetOwningFormForAutofill();
-  std::erase_if(logs, [&](const JsChangeRecord& record) {
+  if (!IsPossibleAnchorElement(trigger_element)) {
+    return;
+  }
+
+  std::erase_if(logs, [target_form =
+                           trigger_element.GetOwningFormForAutofill()](
+                          const JsChangeRecord& record) {
     blink::WebFormControlElement element =
         form_util::GetFormControlByRendererId(record.modified_field_id);
     return !element || element.GetOwningFormForAutofill() != target_form;
@@ -175,11 +174,11 @@ void JavaScriptAutofillTracker::DetectJavaScriptAutofill() {
                                          &JsChangeRecord::modified_field_id);
 
   if (unique_fields.size() < kJsAutofillMinFieldsChanged ||
-      unique_fields.size() > kJsAutofillMaxFieldsChanged) {
+      unique_fields.size() >= kJsAutofillMaxFieldsChanged) {
     return;
   }
 
-  callback_.Run(first_focused_field, base::ToVector(unique_fields));
+  callback_.Run(trigger_element, base::ToVector(unique_fields));
 }
 
 }  // namespace autofill

@@ -55,15 +55,15 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   js_set_value("text_1", "js_val_1");
   EXPECT_TRUE(logs.empty());
 
-  // 2. JS change with user activation -> should log.
+  // 2. JS change with user activation and mousedown -> should log.
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
   Focus("text_1");
+  SimulateElementClickAndWait("text_1");
   js_set_value("text_1", "js_val_2");
 
   ASSERT_EQ(logs.size(), 1u);
   EXPECT_EQ(logs[0].modified_field_id, form_util::GetFieldRendererId(text1));
-  EXPECT_EQ(logs[0].focused_field_id, form_util::GetFieldRendererId(text1));
 
   // Clear logs by waiting for timer.
   task_environment_.FastForwardBy(base::Milliseconds(200));
@@ -81,6 +81,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   Focus("text_1");
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
+  SimulateElementClickAndWait("text_1");
   js_set_value("button_id", "js_val_button");
   EXPECT_TRUE(logs.empty());
 
@@ -88,6 +89,7 @@ TEST_F(JavaScriptAutofillTrackerTest, JavaScriptChangedValueLogging) {
   Focus("text_1");
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
+  SimulateElementClickAndWait("text_1");
   js_set_value("text_1", "js_val_3");  // Same value (set in step 3).
 
   ASSERT_EQ(logs.size(), 1u);
@@ -122,8 +124,9 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
   GetMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
 
-  // Focus a field in form_1.
+  // Focus and click a field in form_1.
   Focus("text_1_1");
+  SimulateElementClickAndWait("text_1_1");
 
   // Modify 3 fields in form_2.
   js_set_value("text_2_1", "val_1");
@@ -140,12 +143,13 @@ TEST_F(JavaScriptAutofillTrackerTest, IgnoreCrossFormModifications) {
   EXPECT_TRUE(logs.empty());
   testing::Mock::VerifyAndClearExpectations(&autofill_driver());
 
-  // Focus a field in form_2 and modify the same fields in form_2.
+  // Focus and click a field in form_2 and modify the same fields in form_2.
   // Now that the focused field belongs to the same form as the modified fields,
   // DidDetectJavaScriptAutofill() should be called.
   EXPECT_CALL(autofill_driver(), DidDetectJavaScriptAutofill).Times(1);
 
   Focus("text_2_1");
+  SimulateElementClickAndWait("text_2_1");
   js_set_value("text_2_1", "val_1_new");
   js_set_value("text_2_2", "val_2_new");
   js_set_value("text_2_3", "val_3_new");

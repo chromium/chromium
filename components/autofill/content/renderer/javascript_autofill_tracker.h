@@ -29,10 +29,6 @@ class JavaScriptAutofillTracker {
   struct JsChangeRecord {
     // The ID of the field whose value was modified by JS.
     FieldRendererId modified_field_id;
-    // The ID of the field that was focused when the modification occurred.
-    FieldRendererId focused_field_id;
-    // The time when the modification was recorded.
-    base::TimeTicks timestamp;
   };
 
   // Callback signature invoked when a JS-autofill event is detected.
@@ -61,8 +57,9 @@ class JavaScriptAutofillTracker {
   friend class JavaScriptAutofillTrackerTestApi;
 
   // Analyzes the recorded changes in `js_logs_` to determine if they constitute
-  // a JavaScript autofill event. If so, invokes `callback_`.
-  void DetectJavaScriptAutofill();
+  // a JavaScript autofill event anchored on `trigger_element_id`. If so,
+  // invokes `callback_`.
+  void DetectJavaScriptAutofill(FieldRendererId trigger_element_id);
 
   // The owning frame.
   const raw_ref<blink::WebLocalFrame> web_frame_;
