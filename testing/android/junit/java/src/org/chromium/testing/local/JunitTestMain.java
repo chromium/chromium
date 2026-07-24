@@ -37,8 +37,12 @@ public final class JunitTestMain {
     private static final int CLASS_SUFFIX_LEN = ".class".length();
     private static final Pattern COLON = Pattern.compile(":");
     private static final Pattern FORWARD_SLASH = Pattern.compile("/");
-    // Strip SDK suffix, as well as parameterized tests suffix ([xx], and __*).
-    private static final Pattern PARAMETERIZED_SUFFIX_REGEX = Pattern.compile("(\\[.*?\\]$|__.*)");
+    // Matches bracketed parameter suffixes (e.g. [29]) or double-underscore variant suffixes (e.g.
+    // __v1)
+    // without requiring an end-of-string anchor, so all items in colon-separated filter strings are
+    // matched.
+    static final Pattern PARAMETERIZED_SUFFIX_REGEX =
+            Pattern.compile("(\\[[^\\]]*\\]|__[^:\\-\\s]+)");
 
     private JunitTestMain() {}
 

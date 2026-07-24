@@ -177,4 +177,22 @@ public class GtestFilterTest {
                         Description.createTestDescription(
                                 OtherTestClass.class, "otherTestMethod")));
     }
+
+    @Test
+    public void testParameterizedSuffixRegex() {
+        String filter =
+                "org.class.Test1#testA[29]:org.class.Test2#testB[29]:org.class.Test3#testC[36]";
+        String stripped =
+                JunitTestMain.PARAMETERIZED_SUFFIX_REGEX
+                        .matcher(filter)
+                        .replaceAll("*")
+                        .replaceAll("#", ".");
+        Assert.assertEquals(
+                "org.class.Test1.testA*:org.class.Test2.testB*:org.class.Test3.testC*", stripped);
+
+        String variantFilter = "org.class.Test1.testA__v1:org.class.Test2.testB__v2";
+        String variantStripped =
+                JunitTestMain.PARAMETERIZED_SUFFIX_REGEX.matcher(variantFilter).replaceAll("*");
+        Assert.assertEquals("org.class.Test1.testA*:org.class.Test2.testB*", variantStripped);
+    }
 }
