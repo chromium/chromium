@@ -1198,13 +1198,21 @@ void RenderFrameHostManager::DidChangeOpener(
     if (opener_rfhi) {
       // Ignore this message if |opener_rfhi| is inactive (e.g., in BFCache or
       // pending deletion), or if the FrameTreeNode's current RenderFrameHost
-      // is in a different BrowsingInstance, as it would be incorrect to
-      // establish an opener relationship in those cases.
+      // is in a different BrowsingInstance from the new opener, as it would be
+      // incorrect to establish an opener relationship in those cases.
+      //
+      // Note that `IsInactiveAndDisallowActivation` may return false for
+      // speculative and pending commit RFHs (while killing their renderer
+      // process), because this case is unexpected except for compromised
+      // renderers. As a result, also confirm that opener_rfhi is the current
+      // frame of its FTN, to catch speculative and pending commit cases.
       if (opener_rfhi->IsInactiveAndDisallowActivation(
               DisallowActivationReasonId::kDidChangeOpener) ||
+          opener_rfhi != opener_rfhi->frame_tree_node()->current_frame_host() ||
           !render_frame_host_->GetSiteInstance()
                ->group()
-               ->IsRelatedSiteInstanceGroup(source_site_instance_group)) {
+               ->IsRelatedSiteInstanceGroup(
+                   opener_rfhi->GetSiteInstance()->group())) {
         return;
       }
       opener = opener_rfhi->frame_tree_node();
