@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -35,6 +36,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/email_verifier.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/page_type.h"
@@ -70,6 +72,7 @@
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "third_party/blink/public/mojom/webid/email_verification_request.mojom.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -78,6 +81,7 @@ namespace content {
 
 namespace {
 
+using blink::mojom::EmailVerificationRequestResult;
 using blink::mojom::FederatedRequestResult;
 using ::testing::AnyOf;
 using ::testing::Contains;
@@ -91,7 +95,7 @@ constexpr char kSameOriginAllowlistedPage[] = "/response_origin.html";
 constexpr char kCrossOriginAllowlistedPage[] =
     "/response_and_cross_origin.html";
 
-// These variables are for FedCM API tests.
+// These variables are for FedCM API and Email Verification Protocol tests.
 constexpr char kFedCmScript[] = R"(navigator.credentials.get({
   identity: {
     providers: [{
@@ -120,6 +124,10 @@ constexpr char kLoginPath[] = "/login";
 constexpr char kAccountPath[] = "/accounts";
 constexpr char kClientMetadataPath[] = "/client_metadata";
 constexpr char kDisconnectPath[] = "/disconnect";
+constexpr char kEmailVerificationWellKnownPath[] =
+    "/.well-known/email-verification";
+constexpr char kJwksPath[] = "/jwks";
+constexpr char kDnsPath[] = "/dns";
 constexpr char kAccountID[] = "1234";
 constexpr char kImageBytes[] = "01010101001010101010101010101";
 constexpr char kConfigFileStr[] = "config file";
@@ -138,6 +146,14 @@ Matcher<WebContentsConsoleObserver::Message> HasConsoleMessage(
 bool IsPrerender2FallbackPrefetchSpecRulesEnabled() {
   return base::FeatureList::IsEnabled(
       features::kPrerender2FallbackPrefetchSpecRules);
+}
+
+bool MatchesNetworkRequest(const std::string& expected_url,
+                           const std::string& expected_method,
+                           const base::DictValue& params) {
+  const std::string* url = params.FindStringByDottedPath("request.url");
+  const std::string* method = params.FindStringByDottedPath("request.method");
+  return url && *url == expected_url && method && *method == expected_method;
 }
 
 struct ResponseEntry {
@@ -224,6 +240,13 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
              prefetch_container->GetLoadState() == load_state &&
              prefetch_container->GetPrefetchStatus() == prefetch_status;
     });
+  }
+
+  void ExpectRequestsSucceeded(URLLoaderMonitor& monitor,
+                               const std::vector<GURL>& urls) {
+    for (const GURL& url : urls) {
+      EXPECT_EQ(monitor.WaitForRequestCompletion(url).error_code, net::OK);
+    }
   }
 
  protected:
@@ -3834,13 +3857,6 @@ class ConnectionAllowlistFedCmTest : public ConnectionAllowlistTest,
     return observer;
   }
 
-  void ExpectRequestsSucceeded(URLLoaderMonitor& monitor,
-                               const std::vector<GURL>& urls) {
-    for (const GURL& url : urls) {
-      EXPECT_EQ(monitor.WaitForRequestCompletion(url).error_code, net::OK);
-    }
-  }
-
  private:
   base::test::ScopedFeatureList fedcm_feature_list_{
       features::kFedCmPreservePortsForTesting};
@@ -4943,6 +4959,695 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistFedCmLightweightModeTest,
 
   // The request for cached account picture should be blocked.
   EXPECT_FALSE(monitor.GetRequestInfo(AvatarURL()).has_value());
+}
+
+class EmailVerificationTestContentBrowserClient
+    : public webid::WebIdTestContentBrowserClient {
+ public:
+  EmailVerificationTestContentBrowserClient() = default;
+  ~EmailVerificationTestContentBrowserClient() override = default;
+
+  // This allows DNS lookups to the embedded test server.
+  std::string GetDnsTxtResolverUrlPrefix() override {
+    return dns_txt_resolver_url_prefix_;
+  }
+
+  void SetDnsTxtResolverUrlPrefix(std::string prefix) {
+    dns_txt_resolver_url_prefix_ = std::move(prefix);
+  }
+
+ private:
+  std::string dns_txt_resolver_url_prefix_;
+};
+
+// Tests for the connection allowlist checks applied to network requests made by
+// the Email Verification Protocol (EVP) API.
+//
+// The EVP API can make the following network requests:
+// - DNS query.
+// - Email verification well-known file (".well-known/email-verification").
+// - ID token request ("issuance_endpoint").
+// - JWKS URI fetch ("jwks_uri").
+// - WebID well-known file ("/.well-known/web-identity").
+// - Accounts endpoint ("/accounts").
+//
+// For each request, the tests verify the request is allowed when the URL
+// matches the connection allowlist URL patterns, otherwise the request is
+// blocked.
+// For redirect, one test case is added for verifying the redirect is either
+// allowed or blocked, depending on the value of connection allowlist's redirect
+// directive.
+class ConnectionAllowlistEmailVerificationTest
+    : public ConnectionAllowlistTest,
+      public TestDevToolsProtocolClient {
+ public:
+  ConnectionAllowlistEmailVerificationTest() {
+    email_verification_feature_list_.InitWithFeatures(
+        {features::kEmailVerificationProtocol,
+         features::kFedCmPreservePortsForTesting},
+        {});
+  }
+  ~ConnectionAllowlistEmailVerificationTest() override = default;
+
+  void SetUpOnMainThread() override {
+    ConnectionAllowlistTest::SetUpOnMainThread();
+
+    test_browser_client_ =
+        std::make_unique<EmailVerificationTestContentBrowserClient>();
+  }
+
+  void RegisterEmailVerificationResponses() {
+    ASSERT_TRUE(embedded_https_test_server().Start());
+
+    test_browser_client_->SetDnsTxtResolverUrlPrefix(
+        embedded_https_test_server()
+            .GetURL(kIdpHost, std::string(kDnsPath) + "?name=")
+            .spec());
+
+    RegisterResponse(
+        kDnsPath,
+        ResponseEntry(absl::StrFormat(R"(
+          {
+            "Status": 0,
+            "Answer": [
+              {
+                "type": 16,
+                "data": "iss=b.test:%d"
+              }
+            ]
+          })",
+                                      embedded_https_test_server().port()),
+                      {{"Content-Type", "application/json"}}));
+
+    RegisterResponse(
+        kEmailVerificationWellKnownPath,
+        ResponseEntry(absl::StrFormat(R"(
+          {
+            "issuance_endpoint": "%s",
+            "jwks_uri": "%s",
+            "signing_alg_values_supported": [
+              "RS256"
+            ]
+          })",
+                                      TokenURL().spec(), JwksURL().spec()),
+                      {{"Content-Type", "application/json"}}));
+
+    RegisterResponse(
+        kWellKnownPath,
+        ResponseEntry(
+            R"({"accounts_endpoint": "/accounts","login_url": "/login"})",
+            {{"Content-Type", "application/json"}}));
+
+    RegisterResponse(
+        kAccountPath,
+        ResponseEntry(
+            R"({"accounts": [{"id": "1234","email": "jane@example.com"}]})",
+            {{"Content-Type", "application/json"}}));
+    RegisterResponse(
+        kTokenPath,
+        ResponseEntry(
+            R"({"issuance_token": "e30.e30.sig~","token": "e30.e30.sig~"})",
+            {{"Content-Type", "application/json"}}));
+
+    RegisterResponse(kJwksPath,
+                     ResponseEntry(R"({"keys": []})",
+                                   {{"Content-Type", "application/json"}}));
+  }
+
+  GURL MainURL() const {
+    return embedded_https_test_server().GetURL("a.test",
+                                               kSameOriginAllowlistedPage);
+  }
+
+  GURL DnsURL() const {
+    return embedded_https_test_server().GetURL(
+        kIdpHost,
+        std::string(kDnsPath) + "?name=_email-verification.example.com");
+  }
+
+  GURL EmailVerificationWellKnownURL() const {
+    return embedded_https_test_server().GetURL(kIdpHost,
+                                               kEmailVerificationWellKnownPath);
+  }
+
+  GURL WebIdentityWellKnownURL() const {
+    return embedded_https_test_server().GetURL(kIdpHost, kWellKnownPath);
+  }
+
+  GURL AccountsURL() const {
+    return embedded_https_test_server().GetURL(kIdpHost, kAccountPath);
+  }
+
+  GURL TokenURL() const {
+    return embedded_https_test_server().GetURL(kIdpHost, kTokenPath);
+  }
+
+  // The JWKS (JSON Web Key Set) URI (`jwks_uri`) endpoint (`/jwks`) returns
+  // the public keys of the email verification issuer, which are used to verify
+  // the signature of the issued Email Verification Token during
+  // `EmailVerifier::Verify()`.
+  GURL JwksURL() const {
+    return embedded_https_test_server().GetURL(kIdpHost, kJwksPath);
+  }
+
+  void RegisterConnectionAllowlistResponse(std::string_view allowlist) {
+    RegisterResponse(
+        kSameOriginAllowlistedPage,
+        ResponseEntry("<html><body>Hello</body></html>",
+                      {{"Connection-Allowlist", std::string(allowlist)}}));
+  }
+
+  std::optional<webid::EmailVerifier::Result> RunCheckIfVerifiable(
+      const std::string& email = "jane@example.com") {
+    base::test::TestFuture<std::optional<webid::EmailVerifier::Result>> future;
+    webid::EmailVerifier::GetOrCreateForFrame(
+        shell()->web_contents()->GetPrimaryMainFrame())
+        ->CheckIfVerifiable(email, future.GetCallback());
+    return future.Get();
+  }
+
+  std::optional<std::string> RunVerify(
+      const webid::EmailVerifier::Result& result,
+      const std::string& nonce = "test_nonce") {
+    base::test::TestFuture<std::optional<std::string>> future;
+    webid::EmailVerifier::GetOrCreateForFrame(
+        shell()->web_contents()->GetPrimaryMainFrame())
+        ->Verify(result, nonce, future.GetCallback());
+    return future.Get();
+  }
+
+  // Returns the request URLs that are expected once `RunCheckIfVerifiable` is
+  // run.
+  std::vector<GURL> GetCheckIfVerifiableURLs() const {
+    return {DnsURL(), EmailVerificationWellKnownURL(),
+            WebIdentityWellKnownURL(), AccountsURL()};
+  }
+
+  // Returns the request URLs that are expected for the entire Email
+  // Verification flow.
+  std::vector<GURL> GetAllRequestURLs() const {
+    return {DnsURL(),
+            EmailVerificationWellKnownURL(),
+            WebIdentityWellKnownURL(),
+            AccountsURL(),
+            TokenURL(),
+            JwksURL()};
+  }
+
+  static std::set<GURL> ToSet(const std::vector<GURL>& urls) {
+    return {urls.begin(), urls.end()};
+  }
+
+ private:
+  base::test::ScopedFeatureList email_verification_feature_list_;
+  std::unique_ptr<EmailVerificationTestContentBrowserClient>
+      test_browser_client_;
+};
+
+// Email Verification Protocol API's requests during `CheckIfVerifiable` (dns,
+// .well-known/email-verification, .well-known/web-identity, and accounts) are
+// allowed by the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       CheckIfVerifiableAllowed) {
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/dns*"
+                 "*://b.test:*/.well-known/email-verification"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  URLLoaderMonitor monitor(ToSet(GetCheckIfVerifiableURLs()));
+  base::HistogramTester histogram_tester;
+
+  // `RunCheckIfVerifiable()` checks if the email address is verifiable, which
+  // initiates requests to the above 4 URLs.
+  auto result = RunCheckIfVerifiable();
+  EXPECT_TRUE(result.has_value());
+
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.IsVerifiable",
+                                      EmailVerificationRequestResult::kSuccess,
+                                      1);
+
+  // All 4 URLs are allowed by the connection allowlist.
+  ExpectRequestsSucceeded(monitor, GetCheckIfVerifiableURLs());
+}
+
+// Email Verification Protocol API's fetch of the DNS record is blocked by the
+// connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       DnsRequestBlocked) {
+  // Allow all required request URLs except the DNS endpoint.
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/.well-known/email-verification"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  URLLoaderMonitor monitor(ToSet(GetCheckIfVerifiableURLs()));
+  base::HistogramTester histogram_tester;
+
+  // `RunCheckIfVerifiable()` checks if the email address is verifiable, which
+  // initiates requests to the above 4 URLs. It fails because the DNS request
+  // URL is not allowed by the connection allowlist.
+  EXPECT_FALSE(RunCheckIfVerifiable().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.IsVerifiable",
+      EmailVerificationRequestResult::kDnsFetchFailed, 1);
+  EXPECT_FALSE(monitor.GetRequestInfo(DnsURL()).has_value());
+
+  // The DNS request is blocked, so no subsequent requests should be made.
+  EXPECT_FALSE(
+      monitor.GetRequestInfo(EmailVerificationWellKnownURL()).has_value());
+  EXPECT_FALSE(monitor.GetRequestInfo(WebIdentityWellKnownURL()).has_value());
+  EXPECT_FALSE(monitor.GetRequestInfo(AccountsURL()).has_value());
+}
+
+// Email Verification Protocol API's fetch of the DNS record is redirected,
+// and redirects are allowed by the connection allowlist (`redirects=allow`).
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       DnsRequestRedirectAllowed) {
+  net::test_server::ControllableHttpResponse controllable_response(
+      &embedded_https_test_server(), kDnsPath, /*relative_url_is_prefix=*/true);
+
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/dns*"
+                 "*://b.test:*/another/dns*"
+                 "*://b.test:*/.well-known/email-verification"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+               );redirects=allow
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+
+  // Unregister the default response to `kDnsPath` registered by
+  // `RegisterEmailVerificationResponses()`. This is because this test requires
+  // a response that redirects the request, which uses the
+  // `ControllableHttpResponse`.
+  UnregisterResponse(kDnsPath);
+  RegisterResponse(
+      "/another/dns",
+      ResponseEntry(absl::StrFormat(R"(
+                    {
+                      "Status": 0,
+                      "Answer": [
+                      {
+                        "type": 16,
+                        "data": "iss=b.test:%d"
+                      }
+                    ]
+                  })",
+                                    embedded_https_test_server().port()),
+                    {{"Content-Type", "application/json"}}));
+
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  GURL target_url =
+      embedded_https_test_server().GetURL(kIdpHost, "/another/dns");
+  URLLoaderMonitor monitor(ToSet(GetCheckIfVerifiableURLs()));
+
+  // Check if the email address is verifiable, which initiates requests to the
+  // above 4 URLs.
+  base::test::TestFuture<std::optional<webid::EmailVerifier::Result>> future;
+  webid::EmailVerifier::GetOrCreateForFrame(
+      shell()->web_contents()->GetPrimaryMainFrame())
+      ->CheckIfVerifiable("jane@example.com", future.GetCallback());
+
+  // Redirect the request from `kDnsPath` to "/another/dns".
+  controllable_response.WaitForRequest();
+  controllable_response.Send(
+      "HTTP/1.1 302 Found\r\nLocation: " + target_url.spec() + "\r\n\r\n");
+  controllable_response.Done();
+
+  // All 4 URLs are allowed by the connection allowlist, including the DNS
+  // request which has been redirected.
+  EXPECT_TRUE(future.Get().has_value());
+
+  ExpectRequestsSucceeded(monitor, GetCheckIfVerifiableURLs());
+}
+
+// Email Verification Protocol API's fetch of the DNS record is redirected,
+// but redirects are blocked by the connection allowlist (`redirects=block`).
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       DnsRequestRedirectBlocked) {
+  net::test_server::ControllableHttpResponse controllable_response(
+      &embedded_https_test_server(), kDnsPath, /*relative_url_is_prefix=*/true);
+
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/dns*"
+                 "*://b.test:*/another/dns*"
+                 "*://b.test:*/.well-known/email-verification"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+               );redirects=block
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+
+  // Unregister the default response to `kDnsPath` registered by
+  // `RegisterEmailVerificationResponses()`. This is because this test requires
+  // a response that redirects the request, which uses the
+  // `ControllableHttpResponse`.
+  UnregisterResponse(kDnsPath);
+  RegisterResponse(
+      "/another/dns",
+      ResponseEntry(absl::StrFormat(R"(
+                    {
+                      "Status": 0,
+                      "Answer": [
+                      {
+                        "type": 16,
+                        "data": "iss=b.test:%d"
+                      }
+                    ]
+                  })",
+                                    embedded_https_test_server().port()),
+                    {{"Content-Type", "application/json"}}));
+
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  GURL target_url =
+      embedded_https_test_server().GetURL(kIdpHost, "/another/dns");
+  URLLoaderMonitor monitor(ToSet(GetCheckIfVerifiableURLs()));
+
+  base::test::TestFuture<std::optional<webid::EmailVerifier::Result>> future;
+  base::HistogramTester histogram_tester;
+  webid::EmailVerifier::GetOrCreateForFrame(
+      shell()->web_contents()->GetPrimaryMainFrame())
+      ->CheckIfVerifiable("jane@example.com", future.GetCallback());
+
+  // Redirect the request from `kDnsPath` to "/another/dns".
+  controllable_response.WaitForRequest();
+  controllable_response.Send(
+      "HTTP/1.1 302 Found\r\nLocation: " + target_url.spec() + "\r\n\r\n");
+  controllable_response.Done();
+
+  // The redirect is blocked by the connection allowlist.
+  EXPECT_FALSE(future.Get().has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.IsVerifiable",
+      EmailVerificationRequestResult::kDnsFetchFailed, 1);
+
+  EXPECT_EQ(monitor.WaitForRequestCompletion(DnsURL()).error_code,
+            net::ERR_FAILED);
+
+  // The DNS request is blocked, so no subsequent requests should be made.
+  EXPECT_FALSE(
+      monitor.GetRequestInfo(EmailVerificationWellKnownURL()).has_value());
+  EXPECT_FALSE(monitor.GetRequestInfo(WebIdentityWellKnownURL()).has_value());
+  EXPECT_FALSE(monitor.GetRequestInfo(AccountsURL()).has_value());
+}
+
+// Email Verification Protocol API's fetch of the email verification well-known
+// file is blocked by the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       EmailVerificationWellKnownBlocked) {
+  // Allow all required request URLs except the email verification well-known
+  // endpoint.
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/dns*"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  AttachToWebContents(shell()->web_contents());
+  SendCommandSync("Network.enable");
+
+  URLLoaderMonitor monitor(ToSet(GetCheckIfVerifiableURLs()));
+  base::HistogramTester histogram_tester;
+
+  auto result = RunCheckIfVerifiable();
+  EXPECT_FALSE(result.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.IsVerifiable",
+      EmailVerificationRequestResult::kEmailVerificationWellKnownNoResponse, 1);
+
+  // Verify that DevTools received Network.requestWillBeSent for the blocked
+  // email verification well-known request and that its method is "GET".
+  base::DictValue notification = WaitForMatchingNotification(
+      "Network.requestWillBeSent",
+      base::BindRepeating(&MatchesNetworkRequest,
+                          EmailVerificationWellKnownURL().spec(), "GET"));
+  EXPECT_FALSE(notification.empty());
+
+  DetachProtocolClient();
+
+  // Verify the initial DNS request (`DnsURL()`) and the WebID well-known and
+  // accounts requests (`WebIdentityWellKnownURL()` and `AccountsURL()`)
+  // completed successfully.
+  ExpectRequestsSucceeded(monitor,
+                          {DnsURL(), WebIdentityWellKnownURL(), AccountsURL()});
+
+  // The email verification well-known request is blocked.
+  EXPECT_FALSE(
+      monitor.GetRequestInfo(EmailVerificationWellKnownURL()).has_value());
+}
+
+// Email Verification Protocol API's fetch of the WebID well-known file is
+// blocked by the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       WebIdentityWellKnownBlocked) {
+  // Allow all required request URLs except the WebID well-known endpoint.
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/dns*"
+                 "*://b.test:*/.well-known/email-verification"
+                 "*://b.test:*/accounts"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  URLLoaderMonitor monitor(ToSet(GetCheckIfVerifiableURLs()));
+  base::HistogramTester histogram_tester;
+
+  auto result = RunCheckIfVerifiable();
+  EXPECT_FALSE(result.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.IsVerifiable",
+      EmailVerificationRequestResult::kWellKnownNoResponse, 1);
+
+  // Verify the initial DNS request (`DnsURL()`) and email verification
+  // well-known request (`EmailVerificationWellKnownURL()`) completed
+  // successfully.
+  ExpectRequestsSucceeded(monitor, {DnsURL(), EmailVerificationWellKnownURL()});
+
+  // The WebID well-known request is blocked, so the accounts endpoint should
+  // not be requested.
+  EXPECT_FALSE(monitor.GetRequestInfo(WebIdentityWellKnownURL()).has_value());
+  EXPECT_FALSE(monitor.GetRequestInfo(AccountsURL()).has_value());
+}
+
+// Email Verification Protocol API's fetch of the accounts endpoint is blocked
+// by the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       AccountsRequestBlocked) {
+  // Allow all required request URLs except the accounts endpoint.
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/dns*"
+                 "*://b.test:*/.well-known/email-verification"
+                 "*://b.test:*/.well-known/web-identity"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  URLLoaderMonitor monitor(ToSet(GetCheckIfVerifiableURLs()));
+  base::HistogramTester histogram_tester;
+
+  auto result = RunCheckIfVerifiable();
+  EXPECT_FALSE(result.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.IsVerifiable",
+      EmailVerificationRequestResult::kAccountsNoResponse, 1);
+
+  // Verify the initial DNS request (`DnsURL()`), the well-known requests
+  // (`EmailVerificationWellKnownURL()` and `WebIdentityWellKnownURL()`)
+  // completed successfully.
+  ExpectRequestsSucceeded(monitor, {DnsURL(), EmailVerificationWellKnownURL(),
+                                    WebIdentityWellKnownURL()});
+
+  // The accounts request is blocked because it is not allowed by the connection
+  // allowlist.
+  EXPECT_FALSE(monitor.GetRequestInfo(AccountsURL()).has_value());
+}
+
+// Email Verification Protocol API's requests during `Verify`
+// (`issuance_endpoint` and `jwks_uri`) are allowed by the connection allowlist.
+// Note this requires the requests in the preceding `CheckIfVerifiable` (dns,
+// .well-known/email-verification, .well-known/web-identity, and accounts) also
+// being allowed.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       VerifyAllowed) {
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/dns*"
+                 "*://b.test:*/.well-known/email-verification"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+                 "*://b.test:*/token"
+                 "*://b.test:*/jwks"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  URLLoaderMonitor monitor(ToSet(GetAllRequestURLs()));
+  base::HistogramTester histogram_tester;
+
+  // `RunCheckIfVerifiable()` checks if the email address is verifiable, which
+  // initiates requests to dns, .well-known/email-verification,
+  // .well-known/web-identity, and accounts. All 4 are allowed by the connection
+  // allowlist.
+  auto result = RunCheckIfVerifiable();
+  ASSERT_TRUE(result.has_value());
+
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.IsVerifiable",
+                                      EmailVerificationRequestResult::kSuccess,
+                                      1);
+
+  ExpectRequestsSucceeded(monitor, GetCheckIfVerifiableURLs());
+  auto verify_result = RunVerify(result.value());
+  // `verify_result` is `std::nullopt` because the test server returns a dummy
+  // "e30.e30.sig~" string that does not verify as a valid SD-JWT. The network
+  // requests to `TokenURL()` and `JwksURL()` are verified below to complete
+  // successfully (`net::OK`), proving they were allowed by the allowlist.
+  EXPECT_FALSE(verify_result.has_value());
+
+  ExpectRequestsSucceeded(monitor, {TokenURL(), JwksURL()});
+}
+
+// Email Verification Protocol API's fetch of the ID token (`issuance_endpoint`)
+// is blocked by the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       TokenRequestBlocked) {
+  // Allow all required request URLs except the ID token endpoint (`/token`).
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/dns*"
+                 "*://b.test:*/.well-known/email-verification"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+                 "*://b.test:*/jwks"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  AttachToWebContents(shell()->web_contents());
+  SendCommandSync("Network.enable");
+
+  URLLoaderMonitor monitor(ToSet(GetAllRequestURLs()));
+
+  // `RunCheckIfVerifiable()` checks if the email address is verifiable, which
+  // initiates requests to dns, .well-known/email-verification,
+  // .well-known/web-identity, and accounts. All 4 are allowed by the connection
+  // allowlist.
+  auto result = RunCheckIfVerifiable();
+  ASSERT_TRUE(result.has_value());
+
+  ExpectRequestsSucceeded(monitor, GetCheckIfVerifiableURLs());
+
+  base::HistogramTester histogram_tester;
+
+  auto verify_result = RunVerify(result.value());
+  EXPECT_FALSE(verify_result.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Verify",
+      EmailVerificationRequestResult::kTokenNoResponse, 1);
+
+  // Verify that DevTools received Network.requestWillBeSent for the blocked
+  // token request and that its method is "POST".
+  base::DictValue notification = WaitForMatchingNotification(
+      "Network.requestWillBeSent",
+      base::BindRepeating(&MatchesNetworkRequest, TokenURL().spec(), "POST"));
+  EXPECT_FALSE(notification.empty());
+
+  DetachProtocolClient();
+
+  // The JWKS request is allowed.
+  ExpectRequestsSucceeded(monitor, {JwksURL()});
+
+  // The token request is blocked.
+  EXPECT_FALSE(monitor.GetRequestInfo(TokenURL()).has_value());
+}
+
+// Email Verification Protocol API's fetch of the JWKS URI (`jwks_uri`) is
+// blocked by the connection allowlist.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistEmailVerificationTest,
+                       JwksRequestBlocked) {
+  // Allow all required request URLs except the JWKS endpoint (`/jwks`).
+  RegisterConnectionAllowlistResponse(R"(
+               (
+                 response-origin
+                 "*://b.test:*/dns*"
+                 "*://b.test:*/.well-known/email-verification"
+                 "*://b.test:*/.well-known/web-identity"
+                 "*://b.test:*/accounts"
+                 "*://b.test:*/token"
+               )
+             )");
+
+  ASSERT_NO_FATAL_FAILURE(RegisterEmailVerificationResponses());
+  EXPECT_TRUE(NavigateToURL(shell(), MainURL()));
+
+  URLLoaderMonitor monitor(ToSet(GetAllRequestURLs()));
+
+  // `RunCheckIfVerifiable()` checks if the email address is verifiable, which
+  // initiates requests to dns, .well-known/email-verification,
+  // .well-known/web-identity, and accounts. All 4 are allowed by the connection
+  // allowlist.
+  auto result = RunCheckIfVerifiable();
+  ASSERT_TRUE(result.has_value());
+
+  ExpectRequestsSucceeded(monitor, GetCheckIfVerifiableURLs());
+
+  base::HistogramTester histogram_tester;
+  auto verify_result = RunVerify(result.value());
+  EXPECT_FALSE(verify_result.has_value());
+  // For Jwks failures, they share the same error code: `kJwksHttpNotFound`,
+  // whether due to the connection allowlist, an HTTP 404 error, or an invalid
+  // JSON.
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Verify",
+      EmailVerificationRequestResult::kJwksHttpNotFound, 1);
+
+  // The token request is allowed.
+  ExpectRequestsSucceeded(monitor, {TokenURL()});
+
+  // The JWKS request is blocked.
+  EXPECT_FALSE(monitor.GetRequestInfo(JwksURL()).has_value());
 }
 
 }  // namespace

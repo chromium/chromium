@@ -212,10 +212,7 @@ void NetworkRequestManager::DownloadUrl(
         frame_tree_node_id_, *resource_request, url_encoded_post_data);
   }
 
-  // TODO(crbug.com/447954811): Remove the check on `destination_` to apply the
-  // connection allowlist check to Email Verification Protocol as well.
-  if (destination_ == network::mojom::RequestDestination::kWebIdentity &&
-      !content::FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
+  if (!content::FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
           render_frame_host, resource_request->url,
           /*is_redirect=*/false)) {
     // The request URL is not allowed by the initiator frame's connection
@@ -366,32 +363,24 @@ NetworkRequestManager::CreateUncredentialedResourceRequest(
                                         relying_party_origin_.Serialize());
     DCHECK(!follow_redirects);
   }
-  if (follow_redirects) {
-    if (destination_ == network::mojom::RequestDestination::kWebIdentity &&
-        !content::FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
-            initiator_document_.AsRenderFrameHostIfValid(),
-            resource_request->url,
-            /*is_redirect=*/true)) {
-      // Only follow redirects if the initiator frame's connection allowlist
-      // allows redirects. Otherwise, set the `redirect_mode` to `kError` so
-      // that redirects will not be followed.
-      // TODO(crbug.com/447954811): Remove the check on `destination_` to apply
-      // the connection allowlist redirect check to Email Verification Protocol
-      // as well.
-      // TODO(crbug.com/482728970): The connection allowlist check on redirect
-      // for `NetworkRequestManager` is implemented in a different way compared
-      // with the usual approach used for most other network requests. Instead
-      // of checking the connection allowlist's redirect directive when the
-      // redirect takes place, `NetworkRequestManager` decides whether the
-      // resource request follows the redirect during request initiation. This
-      // is because the request will use the URLLoaderFactory associated with
-      // the browser process, which makes it difficult to retrieve the
-      // connection allowlist during the redirect. For connection allowlists
-      // reporting, special handling may be required.
-      resource_request->redirect_mode = network::mojom::RedirectMode::kError;
-    } else {
-      resource_request->redirect_mode = network::mojom::RedirectMode::kFollow;
-    }
+  if (follow_redirects &&
+      content::FrameConnectionAllowlistAllowsRequestAndReportIfNeeded(
+          initiator_document_.AsRenderFrameHostIfValid(), resource_request->url,
+          /*is_redirect=*/true)) {
+    // Only follow redirects if the initiator frame's connection allowlist
+    // allows redirects. Otherwise, set the `redirect_mode` to `kError` so that
+    // redirects will not be followed.
+    // TODO(crbug.com/482728970): The connection allowlist check on redirect for
+    // `NetworkRequestManager` is implemented in a different way compared with
+    // the usual approach used for most other network requests. Instead of
+    // checking the connection allowlists redirect directive when the redirect
+    // takes place, `NetworkRequestManager` decides whether the resource request
+    // follows the redirect during request initiation. This is because the
+    // request will use the URLLoaderFactory associated with the browser
+    // process, which makes it difficult to retrieve the connection allowlist
+    // during the redirect. For connection allowlists reporting, special
+    // handling may be required.
+    resource_request->redirect_mode = network::mojom::RedirectMode::kFollow;
   } else {
     resource_request->redirect_mode = network::mojom::RedirectMode::kError;
   }
