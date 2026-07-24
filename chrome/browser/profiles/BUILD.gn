@@ -1196,3 +1196,32 @@ source_set("test_support") {
     deps += [ "//chromeos/ash/components/browser_context_helper" ]
   }
 }
+
+source_set("profile_test_util") {
+  testonly = true
+
+  sources = [
+    "profile_test_util.cc",
+    "profile_test_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  # The identity_manager and gtest includes are guarded by !is_android in the
+  # source, but gn check does not evaluate the #if, so the deps are declared
+  # unconditionally (matching how //chrome/test:test_support provided them).
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile_manager",
+    "//components/signin/public/identity_manager",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/login/login_state" ]
+  }
+}
