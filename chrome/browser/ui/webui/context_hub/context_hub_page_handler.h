@@ -51,7 +51,12 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler {
   void GetTabs(GetTabsCallback callback) override;
   void RetrieveAndGroupTabs(const std::string& user_command,
                             RetrieveAndGroupTabsCallback callback) override;
+  void GetExistingTabGroupsAndChats(
+      GetExistingTabGroupsAndChatsCallback callback) override;
   void SwitchToTab(int32_t tab_id) override;
+  void ClearTabGroups(ClearTabGroupsCallback callback) override;
+  void ClearTabGroupChatHistory(
+      ClearTabGroupChatHistoryCallback callback) override;
 
  private:
   void OnAutoTodosGenerated(

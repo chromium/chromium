@@ -261,7 +261,7 @@ void ContextHubPageHandler::RetrieveAndGroupTabs(
   context_hub::ContextHubService* service =
       ContextHubServiceFactory::GetForProfile(profile_);
   if (!service || !tab_provider_) {
-    std::move(callback).Run({}, {});
+    std::move(callback).Run({}, {}, /*llm_response=*/nullptr);
     return;
   }
 
@@ -279,14 +279,33 @@ void ContextHubPageHandler::RetrieveAndGroupTabs(
               mojo_groups.push_back(std::move(mojo_group));
             }
 
+            // TODO(crbug.com/535675010): Add LLM Response.
             std::move(callback).Run(std::move(mojo_groups),
-                                    ToMojoTabs(ungrouped_tabs));
+                                    ToMojoTabs(ungrouped_tabs),
+                                    /*llm_response=*/nullptr);
           },
           std::move(callback)));
+}
+
+void ContextHubPageHandler::GetExistingTabGroupsAndChats(
+    GetExistingTabGroupsAndChatsCallback callback) {
+  // Unimplemented.
+  std::move(callback).Run({}, {}, {});
 }
 
 void ContextHubPageHandler::SwitchToTab(int32_t tab_id) {
   if (tab_provider_) {
     tab_provider_->SwitchToTab(web_contents_, tab_id);
   }
+}
+
+void ContextHubPageHandler::ClearTabGroups(ClearTabGroupsCallback callback) {
+  // Unimplemented.
+  std::move(callback).Run();
+}
+
+void ContextHubPageHandler::ClearTabGroupChatHistory(
+    ClearTabGroupChatHistoryCallback callback) {
+  // Unimplemented.
+  std::move(callback).Run();
 }

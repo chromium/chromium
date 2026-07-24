@@ -370,17 +370,19 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_NoTabs) {
       .WillOnce(testing::Return(std::vector<content::WebContents*>{}));
 
   base::test::TestFuture<std::vector<browser::context_hub::mojom::TabGroupPtr>,
-                         std::vector<browser::context_hub::mojom::TabInfoPtr>>
+                         std::vector<browser::context_hub::mojom::TabInfoPtr>,
+                         browser::context_hub::mojom::ChatMessagePtr>
       future;
   handler_->RetrieveAndGroupTabs(
       "",
-      future
-          .GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
-                       std::vector<browser::context_hub::mojom::TabInfoPtr>>());
+      future.GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
+                         std::vector<browser::context_hub::mojom::TabInfoPtr>,
+                         browser::context_hub::mojom::ChatMessagePtr>());
 
-  auto [groups, ungrouped_tabs] = future.Take();
+  auto [groups, ungrouped_tabs, llm_response] = future.Take();
   EXPECT_TRUE(groups.empty());
   EXPECT_TRUE(ungrouped_tabs.empty());
+  EXPECT_FALSE(llm_response);
 }
 
 TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
@@ -443,15 +445,16 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
       });
 
   base::test::TestFuture<std::vector<browser::context_hub::mojom::TabGroupPtr>,
-                         std::vector<browser::context_hub::mojom::TabInfoPtr>>
+                         std::vector<browser::context_hub::mojom::TabInfoPtr>,
+                         browser::context_hub::mojom::ChatMessagePtr>
       future;
   handler_->RetrieveAndGroupTabs(
       "test command",
-      future
-          .GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
-                       std::vector<browser::context_hub::mojom::TabInfoPtr>>());
+      future.GetCallback<std::vector<browser::context_hub::mojom::TabGroupPtr>,
+                         std::vector<browser::context_hub::mojom::TabInfoPtr>,
+                         browser::context_hub::mojom::ChatMessagePtr>());
 
-  auto [groups, ungrouped_tabs] = future.Take();
+  auto [groups, ungrouped_tabs, llm_response] = future.Take();
   EXPECT_EQ(groups.size(), 2u);
   size_t total_tabs = ungrouped_tabs.size();
   for (const auto& group : groups) {
@@ -459,6 +462,7 @@ TEST_F(ContextHubPageHandlerTest, RetrieveAndGroupTabs_WithTabs) {
     EXPECT_GE(group->tabs.size(), 2u);
   }
   EXPECT_EQ(total_tabs, 5u);
+  EXPECT_FALSE(llm_response);
 }
 #endif
 

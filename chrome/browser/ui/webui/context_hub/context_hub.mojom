@@ -67,6 +67,16 @@ struct TabGroup {
   array<TabInfo> tabs;
 };
 
+enum ChatRole {
+  kUser,
+  kAssistant,
+};
+
+struct ChatMessage {
+  ChatRole role;
+  string content;
+};
+
 // Factory used by the WebUI page (caller) to create a PageHandler in the
 // browser process (callee) for the Context Hub page.
 interface PageHandlerFactory {
@@ -95,9 +105,25 @@ interface PageHandler {
   // Retrieves and groups related open tabs based on the user command.
   // User command is inputted via WebUI textbox.
   [RuntimeFeature=kAutoTabGroups]
-  RetrieveAndGroupTabs(string user_command)
-      => (array<TabGroup> groups, array<TabInfo> ungrouped_tabs);
+  RetrieveAndGroupTabs(string user_command) => (array<TabGroup> groups,
+                                                array<TabInfo> ungrouped_tabs,
+                                                ChatMessage? llm_response);
+
+  // Returns stored tab groups and chat history from the cache along with
+  // ungrouped tabs. Used on page start up.
+  [RuntimeFeature=kAutoTabGroups]
+  GetExistingTabGroupsAndChats() => (array<TabGroup> groups,
+                                     array<TabInfo> ungrouped_tabs,
+                                     array<ChatMessage> history);
 
   // Switches to the specified tab.
   SwitchToTab(int32 tab_id);
+
+  // Clears stored tab groups.
+  [RuntimeFeature=kAutoTabGroups]
+  ClearTabGroups() => ();
+
+  // Clears stored tab group chat history.
+  [RuntimeFeature=kAutoTabGroups]
+  ClearTabGroupChatHistory() => ();
 };
