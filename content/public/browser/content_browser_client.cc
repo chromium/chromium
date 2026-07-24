@@ -675,21 +675,6 @@ bool ContentBrowserClient::IsSharedStorageSelectURLAllowed(
   return false;
 }
 
-bool ContentBrowserClient::IsPrivateAggregationAllowed(
-    content::BrowserContext* browser_context,
-    const url::Origin& top_frame_origin,
-    const url::Origin& reporting_origin,
-    bool* out_block_is_site_setting_specific) {
-  return true;
-}
-
-bool ContentBrowserClient::IsPrivateAggregationDebugModeAllowed(
-    content::BrowserContext* browser_context,
-    const url::Origin& top_frame_origin,
-    const url::Origin& reporting_origin) {
-  return true;
-}
-
 bool ContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,

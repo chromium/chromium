@@ -1115,25 +1115,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific);
 
-  // Allows the embedder to control if Private Aggregation API operations can
-  // happen in a given context.
-  //
-  // If non-null, the embedder can use `out_block_is_site_setting_specific` to
-  // relay whether or not a failure to be allowed is due to a site-specific
-  // reason.
-  virtual bool IsPrivateAggregationAllowed(
-      content::BrowserContext* browser_context,
-      const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin,
-      bool* out_block_is_site_setting_specific);
-
-  // Allows the embedder to control if Private Aggregation API debug mode
-  // operations can happen in a given context.
-  virtual bool IsPrivateAggregationDebugModeAllowed(
-      content::BrowserContext* browser_context,
-      const url::Origin& top_frame_origin,
-      const url::Origin& reporting_origin);
-
   // Returns whether cookies should be allowed for requests to `url`, fetched
   // from contexts whose storage is keyed on `storage_key`.
   // The `web_contents` parameter should be `nullptr` for requests coming from

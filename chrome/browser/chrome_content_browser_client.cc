@@ -3699,33 +3699,6 @@ bool ChromeContentBrowserClient::IsSharedStorageSelectURLAllowed(
       out_block_is_site_setting_specific);
 }
 
-bool ChromeContentBrowserClient::IsPrivateAggregationAllowed(
-    content::BrowserContext* browser_context,
-    const url::Origin& top_frame_origin,
-    const url::Origin& reporting_origin,
-    bool* out_block_is_site_setting_specific) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
-  DCHECK(privacy_sandbox_settings);
-
-  return privacy_sandbox_settings->IsPrivateAggregationAllowed(
-      top_frame_origin, reporting_origin, out_block_is_site_setting_specific);
-}
-
-bool ChromeContentBrowserClient::IsPrivateAggregationDebugModeAllowed(
-    content::BrowserContext* browser_context,
-    const url::Origin& top_frame_origin,
-    const url::Origin& reporting_origin) {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  auto* privacy_sandbox_settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
-  DCHECK(privacy_sandbox_settings);
-
-  return privacy_sandbox_settings->IsPrivateAggregationDebugModeAllowed(
-      top_frame_origin, reporting_origin);
-}
-
 bool ChromeContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
