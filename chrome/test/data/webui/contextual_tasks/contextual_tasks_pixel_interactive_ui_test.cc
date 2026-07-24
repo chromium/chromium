@@ -2,6 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Base class for Contextual Tasks pixel tests.
+// These tests are intended to be used to verify subtle visual appearance
+// differences that are hard to verify via Mocha tests.  Note, the
+// screenshots are only setup to be captured on win-rel, and should be skipped
+// on other platforms via `SetOnIncompatibleAction()` step.
+
+// To debug locally, you can run the test via:
+// `out/Default/interactive_ui_tests
+// --gtest_filter="*<TEST_NAME>*" --test-launcher-interactive`. The
+// `--test-launcher-interactive` flag will pause the test at the very end, after
+// the screenshot would've been taken, allowing you to inspect the UI and debug.
+//
+// To generate an actual screenshot locally, you can run the test with
+// `out/Default/interactive_ui_tests
+// --gtest_filter="*<TEST_NAME>*" --browser-ui-tests-verify-pixels
+// --enable-pixel-output-in-tests --test-launcher-retry-limit=0
+// --ui-test-action-timeout=100000
+// --skia-gold-local-png-write-directory="/tmp/pixel_test_output"
+// --bypass-skia-gold-functionality`. The PNG of the screenshot will be saved to
+// the `/tmp/pixel_test_output` directory.
+
+// Additionally, for the pixel tests to be run on try bots, there name must
+// follow the pattern `ContextualTasks*PixelTest*`. If not, the test needs to
+// manually be added to `testing/buildbot/filters/pixel_tests.filter`.
+
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -432,12 +457,7 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Screenshots DISABLED_Screenshots
-#else
-#define MAYBE_Screenshots Screenshots
-#endif
-IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, MAYBE_Screenshots) {
+IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, Screenshots) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DeepQuery app = {"contextual-tasks-app"};
   DeepQuery toolbar = app + "top-toolbar";
@@ -475,11 +495,11 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksToolbarPixelTest, MAYBE_Screenshots) {
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, menu, "ContextualTasksToolbarMenu",
-                              /*baseline_cl=*/"7519825")),
+                              /*baseline_cl=*/"7620222")),
          Else(WaitForWebContentsPainted(kActiveTab),
               SetOnIncompatibleAction(
                   OnIncompatibleAction::kIgnoreAndContinue,
                   "Screenshots not captured on this platform."),
               ScreenshotWebUi(kActiveTab, toolbar, "ContextualTasksToolbar",
-                              /*baseline_cl=*/"7519825"))));
+                              /*baseline_cl=*/"7620222"))));
 }
