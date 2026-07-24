@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../../../fast/forms/resources/picker-common.js"></script>
+
+<input id="color" type="color" alpha
+       value="color(srgb 0.2 0.4 0.6 / 0.5)">
+
+<script>
+promise_test(async t => {
+  const color = document.querySelector('#color');
+  let inputEventCount = 0;
+  color.addEventListener('input', () => ++inputEventCount);
+
+  await openPicker(color);
+  t.add_cleanup(() => internals.endColorChooser(color));
+
+  const popup = internals.pagePopupWindow;
+  const alphaSlider = popup.document.querySelector('#alphaSlider');
+  assert_not_equals(alphaSlider, null,
+                    'The picker should show an alpha slider');
+  assert_equals(alphaSlider.value, '50',
+                'The slider should reflect the initial alpha');
+  assert_equals(popup.document.querySelector('label[for="alphaSlider"]').textContent,
+                'Alpha channel',
+                'The alpha slider should have a visible label');
+  const alphaValue = popup.document.querySelector('#alphaValue');
+  assert_equals(alphaValue.value, '50',
+                'The alpha field should reflect the initial alpha');
+  assert_equals(alphaValue.min, '0',
+                'The alpha field should have a minimum of zero');
+  assert_equals(alphaValue.max, '100',
+                'The alpha field should have a maximum of one hundred');
+  assert_equals(alphaValue.getAttribute('aria-label'), 'Alpha channel',
+                'The alpha field should have an accessible label');
+  assert_equals(alphaValue.getAttribute('aria-valuetext'), '50%',
+                'The alpha field should expose its percentage to accessibility');
+  const hexValue = popup.document.querySelector('#hexValueContainer');
+  assert_equals(hexValue.value, '#33669980',
+                'The hex field should include the initial alpha');
+
+  alphaValue.value = '101';
+  alphaValue.dispatchEvent(new popup.Event('input', {bubbles: true}));
+  assert_equals(alphaSlider.value, '50',
+                'The alpha field should reject values above 100');
+  assert_equals(inputEventCount, 0);
+  alphaValue.dispatchEvent(new popup.Event('blur'));
+  assert_equals(alphaValue.value, '50',
+                'An invalid alpha field should reset on blur');
+
+  alphaValue.value = '25';
+  alphaValue.dispatchEvent(new popup.Event('input', {bubbles: true}));
+
+  assert_equals(color.value, 'color(srgb 0.2 0.4 0.6 / 0.25)');
+  assert_equals(alphaSlider.value, '25',
+                'The slider should follow edits to the alpha field');
+  assert_equals(hexValue.value, '#33669940',
+                'The hex field should follow edits to the alpha field');
+  assert_equals(inputEventCount, 1);
+
+  alphaSlider.value = '75';
+  alphaSlider.dispatchEvent(new popup.Event('input', {bubbles: true}));
+
+  assert_equals(alphaValue.value, '75',
+                'The alpha field should follow changes to the slider');
+  assert_equals(hexValue.value, '#336699bf',
+                'The hex field should follow changes to the slider');
+  assert_equals(color.value, 'color(srgb 0.2 0.4 0.6 / 0.75)');
+  assert_equals(inputEventCount, 2);
+
+  const redInput = popup.document.querySelector('#rValueContainer');
+  redInput.value = '64';
+  redInput.dispatchEvent(new popup.Event('input', {bubbles: true}));
+
+  assert_true(color.value.endsWith(' / 0.75)'),
+              'Editing a color channel should preserve alpha');
+  assert_equals(hexValue.value, '#406699bf',
+                'Editing a color channel should preserve hex alpha');
+  assert_equals(inputEventCount, 3);
+
+  hexValue.value = '#33669940';
+  hexValue.dispatchEvent(new popup.Event('input', {bubbles: true}));
+
+  assert_equals(hexValue.value, '#33669940');
+  assert_equals(alphaValue.value, '25',
+                'The alpha field should follow eight-digit hex edits');
+  assert_equals(alphaSlider.value, '25',
+                'The slider should follow eight-digit hex edits');
+  assert_approx_equals(
+      popup.document.querySelector('color-picker').selectedColor.alphaValue,
+      64 / 255, Number.EPSILON,
+      'The last two hex digits should set the alpha channel');
+  assert_equals(inputEventCount, 4);
+}, 'Color picker: the alpha attribute enables alpha selection');
+
+promise_test(async t => {
+  const opaqueColor = document.createElement('input');
+  opaqueColor.type = 'color';
+  document.body.append(opaqueColor);
+  await openPicker(opaqueColor);
+  t.add_cleanup(() => internals.endColorChooser(opaqueColor));
+  assert_equals(internals.pagePopupWindow.document.querySelector('#alphaSlider'),
+                null, 'The picker should omit alpha when the attribute is absent');
+  assert_equals(internals.pagePopupWindow.document.querySelector('#alphaValue'),
+                null,
+                'The picker should omit the alpha field when the attribute is absent');
+  assert_equals(
+      internals.pagePopupWindow.document.querySelector('#hexValueContainer')
+          .value,
+      '#000000', 'The picker should omit hex alpha when the attribute is absent');
+}, 'Color picker: alpha controls are omitted without the alpha attribute');
+</script>

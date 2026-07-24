@@ -8,12 +8,26 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
 
 namespace blink {
 namespace test {
+
+TEST_F(AccessibilityTest, ColorValueSupportsCSSColorSyntax) {
+  ScopedInputTypeColorEnhancementsForTest color_enhancements(true);
+  SetBodyInnerHTML(R"HTML(
+      <input id="color" type="color" alpha
+             value="color(srgb 0.2 0.4 0.6 / 0.5)">
+  )HTML");
+
+  const AXObject* ax_color = GetAXObjectByElementId("color");
+  ASSERT_NE(nullptr, ax_color);
+  ASSERT_EQ(ax::mojom::Role::kColorWell, ax_color->RoleValue());
+  EXPECT_EQ(Color::FromRGBA(51, 102, 153, 128).Rgb(), ax_color->ColorValue());
+}
 
 TEST_F(AccessibilityTest, TextOffsetInFormattingContextWithLayoutReplaced) {
   SetBodyInnerHTML(R"HTML(

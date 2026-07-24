@@ -406,6 +406,10 @@ Color ColorInputType::CurrentColor() {
   return ValueAsColor();
 }
 
+bool ColorInputType::ShouldShowAlpha() const {
+  return HasAlphaComponent();
+}
+
 bool ColorInputType::ShouldShowSuggestions() const {
   return GetElement().FastHasAttribute(html_names::kListAttr);
 }
