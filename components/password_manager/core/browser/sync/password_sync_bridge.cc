@@ -1014,12 +1014,6 @@ bool PasswordSyncBridge::SyncMetadataCacheContainsSupportedFields(
   return false;
 }
 
-// static
-std::string PasswordSyncBridge::ComputeClientTagForTesting(
-    const sync_pb::PasswordSpecificsData& password_data) {
-  return ComputeClientTag(password_data);
-}
-
 std::optional<syncer::ModelError> PasswordSyncBridge::ReadCredentialsOrCleanup(
     PrimaryKeyToPasswordSpecificsDataMap* key_to_local_specifics_map) {
   FormRetrievalResult read_result =

@@ -81,9 +81,6 @@ class PasswordSyncBridge : public syncer::DataTypeSyncBridge {
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override;
 
-  static std::string ComputeClientTagForTesting(
-      const sync_pb::PasswordSpecificsData& password_data);
-
  private:
   // On MacOS or Linux it may happen that some passwords cannot be decrypted due
   // to modification of encryption key in Keychain or Keyring
