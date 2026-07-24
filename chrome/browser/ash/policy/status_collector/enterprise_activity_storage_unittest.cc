@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -24,16 +25,18 @@ using ::testing::UnorderedElementsAre;
 
 namespace em = ::enterprise_management;
 
-const char kPrefName[] = "pref-name";
+constexpr char kPrefName[] = "pref-name";
 
 }  // namespace
 
 class EnterpriseActivityStorageTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    local_state_.registry()->RegisterDictionaryPref(kPrefName);
+    TestingPrefServiceSimple* local_state =
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+    local_state->registry()->RegisterDictionaryPref(kPrefName);
     storage_ =
-        std::make_unique<EnterpriseActivityStorage>(&local_state_, kPrefName);
+        std::make_unique<EnterpriseActivityStorage>(local_state, kPrefName);
   }
 
   static testing::Matcher<em::TimePeriod> EqActivity(
@@ -61,7 +64,6 @@ class EnterpriseActivityStorageTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<EnterpriseActivityStorage> storage_;
 };
 

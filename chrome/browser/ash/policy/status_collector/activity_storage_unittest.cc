@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -14,23 +15,27 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace policy {
+
+namespace {
+
 using ::testing::AllOf;
 using ::testing::Property;
 using ::testing::UnorderedElementsAre;
 
-namespace em = enterprise_management;
+namespace em = ::enterprise_management;
 
-namespace {
 constexpr char kPrefName[] = "pref-name";
-}  // namespace
 
-namespace policy {
+}  // namespace
 
 class ActivityStorageTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    local_state_.registry()->RegisterDictionaryPref(kPrefName);
-    storage_ = std::make_unique<ActivityStorage>(&local_state_, kPrefName,
+    TestingPrefServiceSimple* local_state =
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
+    local_state->registry()->RegisterDictionaryPref(kPrefName);
+    storage_ = std::make_unique<ActivityStorage>(local_state, kPrefName,
                                                  base::Days(0));
   }
 
@@ -59,7 +64,6 @@ class ActivityStorageTest : public ::testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingPrefServiceSimple local_state_;
   std::unique_ptr<ActivityStorage> storage_;
 };
 

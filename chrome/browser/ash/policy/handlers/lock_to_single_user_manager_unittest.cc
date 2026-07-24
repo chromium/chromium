@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -37,7 +38,6 @@
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
@@ -46,7 +46,6 @@
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -96,8 +95,8 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
         arc_dlc_installer_.get());
 
     arc_service_manager_->set_browser_context(profile());
-    arc::prefs::RegisterLocalStatePrefs(local_state_.registry());
-    arc::StabilityMetricsManager::Initialize(&local_state_);
+    arc::StabilityMetricsManager::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
     arc::ArcMetricsService::GetForBrowserContextForTesting(profile());
   }
 
@@ -240,7 +239,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   // Required for initialization.
   ash::SessionTerminationManager termination_manager_;
   std::unique_ptr<LockToSingleUserManager> lock_to_single_user_manager_;
-  TestingPrefServiceSimple local_state_;
 };
 
 TEST_F(LockToSingleUserManagerTest, ArcSessionLockTest) {
