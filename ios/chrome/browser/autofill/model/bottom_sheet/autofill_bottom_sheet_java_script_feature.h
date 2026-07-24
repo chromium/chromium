@@ -7,6 +7,8 @@
 
 #import <set>
 
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
@@ -36,7 +38,10 @@ class AutofillBottomSheetJavaScriptFeature : public web::JavaScriptFeature {
   // if needed. Does the same job as calling DetachListeners() with `refocus`
   // set to true. The last element is reset after focusing, meaning that
   // refocusing multiple times will be no op until a new sheet is presented.
-  void RefocusElementIfNeeded(web::WebFrame* frame);
+  // `callback` is invoked once JavaScript DOM refocusing finishes in
+  // WebProcess.
+  void RefocusElementIfNeeded(web::WebFrame* frame,
+                              base::OnceClosure callback = base::DoNothing());
 
  private:
   friend class base::NoDestructor<AutofillBottomSheetJavaScriptFeature>;

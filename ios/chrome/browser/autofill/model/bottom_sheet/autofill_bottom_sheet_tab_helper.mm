@@ -43,6 +43,7 @@
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 
 namespace {
 
@@ -519,12 +520,29 @@ void AutofillBottomSheetTabHelper::RefocusElementIfNeeded(
       AutofillBottomSheetJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state_);
   web::WebFrame* frame = webFramesManager->GetFrameWithId(frame_id);
+  // Fall back to the main frame if the target frame has detached or navigated.
+  if (!frame) {
+    frame = webFramesManager->GetMainWebFrame();
+  }
   if (!frame) {
     return;
   }
 
+  // On iOS 27+, WebKit defers `ElementDidFocus` IPC messages to the next
+  // frame/rendering update in WebProcess. Calling `becomeFirstResponder` on
+  // `WebViewProxy` synchronously before JavaScript finishes `element.focus()`
+  // executes while `WKWebView` still believes no input element is focused.
+  // By passing a completion callback to `RefocusElementIfNeeded`, native code
+  // waits for JavaScript to set DOM focus and WebKit to flush `ElementDidFocus`
+  // IPC to the UIProcess before making `WebViewProxy` the first responder.
   AutofillBottomSheetJavaScriptFeature::GetInstance()->RefocusElementIfNeeded(
-      frame);
+      frame, base::BindOnce(
+                 [](base::WeakPtr<web::WebState> weak_web_state) {
+                   if (weak_web_state && weak_web_state->GetWebViewProxy()) {
+                     [weak_web_state->GetWebViewProxy() becomeFirstResponder];
+                   }
+                 },
+                 web_state_->GetWeakPtr()));
 }
 
 // WebStateObserver

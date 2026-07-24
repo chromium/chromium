@@ -138,8 +138,9 @@ class AutofillBottomSheetTabHelper
   // sheet on all frames.
   void DetachPaymentsListenersForAllFrames(bool refocus);
 
-  // Refocuses on the last field that triggered a bottom sheet, which can be a
-  // login field or any other field associated with a bottom sheet.
+  // Refocuses on the last field that triggered a bottom sheet (which can be a
+  // login field or any other field associated with a bottom sheet) and restores
+  // first responder focus to the web view once JavaScript refocusing completes.
   void RefocusElementIfNeeded(const std::string& frame_id);
 
   // WebStateObserver:

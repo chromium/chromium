@@ -140,6 +140,8 @@ constexpr char kUmaActionPrefix[] =
 }
 
 - (void)stop {
+  // Dismiss the view controller if -stop is called directly without
+  // going through -dismissWithRefocus:.
   [self.viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -179,6 +181,29 @@ constexpr char kUmaActionPrefix[] =
 - (void)dismissWithRefocus:(BOOL)refocus {
   [self handleDecision:NO];
   [self incrementDismissCount];
+
+  UIViewController* presentingViewController =
+      self.viewController.presentingViewController;
+
+  // Dismiss the bottom sheet view controller first before refocusing.
+  // Note: When tapping "Use Keyboard", this dismissal executes prior to -stop.
+  // UIKit does not allow WKWebView to become the first responder or present
+  // the software keyboard while a modal view controller is actively presented
+  // on top of it.
+  __weak PasswordSuggestionCoordinator* weakSelf = self;
+  void (^completionBlock)(void) = ^{
+    [weakSelf finishDismissalWithRefocus:refocus];
+  };
+
+  if (presentingViewController) {
+    [presentingViewController dismissViewControllerAnimated:YES
+                                                 completion:completionBlock];
+  } else {
+    completionBlock();
+  }
+}
+
+- (void)finishDismissalWithRefocus:(BOOL)refocus {
   if (refocus) {
     [self refocusIfNeeded];
   }
@@ -369,10 +394,10 @@ constexpr char kUmaActionPrefix[] =
   }
 
   if (AutofillBottomSheetTabHelper* tabHelper =
-          AutofillBottomSheetTabHelper::FromWebState(webState);
-      tabHelper && _frame) {
+          AutofillBottomSheetTabHelper::FromWebState(webState)) {
     [self recordAction:"Refocus"];
-    tabHelper->RefocusElementIfNeeded(_frame->GetFrameId());
+    std::string frameId = _frame ? _frame->GetFrameId() : "";
+    tabHelper->RefocusElementIfNeeded(frameId);
   }
 }
 
