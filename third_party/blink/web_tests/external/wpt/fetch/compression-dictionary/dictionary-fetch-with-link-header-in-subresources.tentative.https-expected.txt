@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Link rel=compression-dictionary headers on <img> subresource do not trigger any fetch request.
+  assert_false: dictionary not fetched from image subresource. expected false got true
+[FAIL] Link rel=compression-dictionary headers on <script> subresource do not trigger any fetch request.
+  assert_false: dictionary not fetched from script subresource. expected false got true
+[FAIL] Link rel=compression-dictionary headers on <link rel="stylesheet"> subresource do not trigger any fetch request.
+  assert_false: dictionary not fetched from stylesheet subresource. expected false got true
+[FAIL] Link rel=compression-dictionary headers on FontFace subresource do not trigger any fetch request.
+  assert_false: dictionary not fetched from font subresource. expected false got true
+Harness: the test ran to completion.
+
