@@ -12,11 +12,13 @@
 #include <optional>
 #include <sstream>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -993,6 +995,49 @@ gfx::Rect ScreenWin::DIPToScreenRectInWindow(gfx::NativeWindow window,
 
 void ScreenWin::UpdateFromDisplayInfos(
     const std::vector<internal::DisplayInfo>& display_infos) {
+  // This method may be called reentrantly, because some observers of display
+  // changes may cause Windows messages to get processed. If it is called
+  // reentrantly, `is_updating_displays_` will be true, and the code remembers
+  // the new/ `display_infos` in pending_display_infos_, and notifies the
+  // observers once the stack is unwound, i.e., `is_updating_displays_` is
+  // false.
+  if (is_updating_displays_) {
+    // Only newest DisplayInfo's should be applied, so the previous
+    // `pending_display_infos_`, if any, can be safely discarded.
+    pending_display_infos_ = display_infos;
+    return;
+  }
+
+  base::AutoReset<bool> auto_reset(&is_updating_displays_, true);
+  pending_display_infos_.reset();
+
+  UpdateFromDisplayInfosImpl(display_infos);
+  constexpr int kMaxCount = 3;
+  int count = 0;
+  while (pending_display_infos_.has_value() && count < kMaxCount) {
+    const bool is_different = (display_infos != *pending_display_infos_);
+    base::UmaHistogramBoolean("Windows.ScreenWin.ReentrantDisplayInfoChanged",
+                              is_different);
+    if (is_different) {
+      // This call, and the one above, can  lead to reentrant calls to this
+      // function.
+      UpdateFromDisplayInfosImpl(
+          std::exchange(pending_display_infos_, std::nullopt).value());
+      ++count;
+    } else {
+      pending_display_infos_.reset();
+    }
+  }
+  if (pending_display_infos_.has_value()) {
+    // If this code is hit, it would be because the level of reentrancy is > 3,
+    // which is highly unlikely if not impossible.
+    base::debug::DumpWithoutCrashing();
+    pending_display_infos_.reset();
+  }
+}
+
+void ScreenWin::UpdateFromDisplayInfosImpl(
+    const std::vector<internal::DisplayInfo>& display_infos) {
   std::vector<Display> old_displays = std::move(displays_);
 
   // Retrieve the primary monitor info here, instead of later below. This is a
@@ -1043,8 +1088,8 @@ void ScreenWin::UpdateFromDisplayInfos(
 
   const std::optional<MONITORINFOEX> primary_monitor_info =
       MonitorInfoFromHMONITOR(primary_monitor_);
-  // Primary monitor, if it exists, has 0,0 origin. Guard the CHECK with kill switch
-  // in case this caused the problem in the field.
+  // Primary monitor, if it exists, has 0,0 origin. Guard the CHECK with kill
+  // switch in case this caused the problem in the field.
   if (primary_monitor_info &&
       base::FeatureList::IsEnabled(features::kSkipEmptyDisplayHotplugEvent)) {
     CHECK(gfx::Rect(primary_monitor_info->rcMonitor).origin().IsOrigin());

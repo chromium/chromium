@@ -509,6 +509,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.ScreenWin.ReentrantDisplayInfoChanged" enum="Boolean"
+    expires_after="2027-07-01">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>ui-dev@chromium.org</owner>
+  <summary>
+    Recorded when a re-entrant call to update display information occurs on
+    Windows (e.g. during display change notifications). Records true if the
+    re-entrant display information vector differs from the initial pass, and
+    false if the display information is unchanged.
+  </summary>
+</histogram>
+
 <histogram name="Windows.SetWindowsHookEx.Result" enum="WinGetLastError"
     expires_after="2027-06-01">
   <owner>jackmil@google.com</owner>

@@ -312,6 +312,11 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // called with initialize set to false.
   bool PerProcessDPIAwarenessDisabledForTesting() const;
 
+  // Updates information about current monitor configuration,
+  // e.g.,  `screen_win_displays_`, `displays_`, and the primary monitor.
+  void UpdateFromDisplayInfosImpl(
+      const std::vector<internal::DisplayInfo>& display_infos);
+
   // Helper implementing the DisplayObserver handling.
   DisplayChangeNotifier change_notifier_;
 
@@ -344,6 +349,9 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // screen_win_displays_ needs to be updated. This should be updated when
   // screen_win_displays_ is updated.
   HMONITOR primary_monitor_ = nullptr;
+
+  bool is_updating_displays_ = false;
+  std::optional<std::vector<internal::DisplayInfo>> pending_display_infos_;
 };
 
 // Returns a ScreenWin instance. If one does not exist, creates a fallback

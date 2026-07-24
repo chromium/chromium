@@ -20,11 +20,13 @@
 #include "base/features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/optional_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
+#include "ui/display/display_observer.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/screen.h"
 #include "ui/display/win/display_info.h"
@@ -41,6 +43,9 @@ namespace {
 
 class TestScreenWin : public ScreenWin {
  public:
+  using ScreenWin::UpdateAllDisplaysAndNotify;
+  using ScreenWin::UpdateFromDisplayInfos;
+
   TestScreenWin(const std::vector<internal::DisplayInfo>& display_infos,
                 const base::flat_map<HMONITOR, MONITORINFOEX>& hmonitor_map,
                 const base::flat_map<HWND, gfx::Rect>& hwnd_map)
@@ -4120,6 +4125,105 @@ TEST_P(ScreenWinTestWithTextScaleMultiplier, GetScaleFactors) {
   EXPECT_EQ(1.25, GetScreenWin()->GetScaleFactorForHWND(GetFakeHwnd()));
   EXPECT_EQ(1.25, GetScreen()->GetAllDisplays()[0].device_scale_factor());
   EXPECT_EQ(2.0, GetScreen()->GetAllDisplays()[0].text_scale_multiplier());
+}
+
+namespace {
+
+class ReentrantScreenWinObserver : public DisplayObserver {
+ public:
+  ReentrantScreenWinObserver(
+      TestScreenWin* screen_win,
+      const std::vector<internal::DisplayInfo>& reentrant_display_infos)
+      : screen_win_(screen_win),
+        reentrant_display_infos_(reentrant_display_infos) {}
+
+  void OnDisplayMetricsChanged(const Display& display,
+                               uint32_t metrics) override {
+    called_count_++;
+    if (!reentered_) {
+      reentered_ = true;
+      // Trigger a re-entrant update while in the middle of notification pass.
+      screen_win_->UpdateFromDisplayInfos(reentrant_display_infos_);
+    }
+  }
+
+  int called_count() const { return called_count_; }
+
+ private:
+  const raw_ptr<TestScreenWin> screen_win_;
+  std::vector<internal::DisplayInfo> reentrant_display_infos_;
+  int called_count_ = 0;
+  bool reentered_ = false;
+};
+
+}  // namespace
+
+TEST_P(ScreenWinTestSingleDisplay1x, ReentrantUpdateAllDisplaysAndNotify) {
+  base::HistogramTester histogram_tester;
+  TestScreenWin* test_screen_win = static_cast<TestScreenWin*>(GetScreenWin());
+
+  MONITORINFOEX initial_monitor_info = win::test::CreateMonitorInfo(
+      gfx::Rect(0, 0, 1600, 1200), gfx::Rect(0, 0, 1600, 1100), L"primary");
+  MONITORINFOEX reentrant_monitor_info = win::test::CreateMonitorInfo(
+      gfx::Rect(0, 0, 1920, 1200), gfx::Rect(0, 0, 1920, 1100), L"primary");
+  std::optional<HMONITOR> cached_hmonitor;
+  if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
+    cached_hmonitor = reinterpret_cast<HMONITOR>(1);
+  }
+
+  internal::DisplayInfo initial_info(
+      cached_hmonitor, initial_monitor_info, 1.0f, 1.0f,
+      Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
+      gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
+  internal::DisplayInfo reentrant_info(
+      cached_hmonitor, reentrant_monitor_info, 1.0f, 1.0f,
+      Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
+      gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
+
+  ReentrantScreenWinObserver observer(test_screen_win, {reentrant_info});
+  GetScreen()->AddObserver(&observer);
+
+  // Trigger initial update via UpdateFromDisplayInfos.
+  test_screen_win->UpdateFromDisplayInfos({initial_info});
+
+  // Because reentrant_info != initial_info, the second pass runs.
+  EXPECT_EQ(2, observer.called_count());
+  histogram_tester.ExpectUniqueSample(
+      "Windows.ScreenWin.ReentrantDisplayInfoChanged", true, 1);
+
+  GetScreen()->RemoveObserver(&observer);
+}
+
+TEST_P(ScreenWinTestSingleDisplay1x,
+       ReentrantUpdateAllDisplaysAndNotify_UnchangedSkipped) {
+  base::HistogramTester histogram_tester;
+  TestScreenWin* test_screen_win = static_cast<TestScreenWin*>(GetScreenWin());
+
+  MONITORINFOEX initial_monitor_info = win::test::CreateMonitorInfo(
+      gfx::Rect(0, 0, 1600, 1200), gfx::Rect(0, 0, 1600, 1100), L"primary");
+  std::optional<HMONITOR> cached_hmonitor;
+  if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
+    cached_hmonitor = reinterpret_cast<HMONITOR>(1);
+  }
+
+  internal::DisplayInfo initial_info(
+      cached_hmonitor, initial_monitor_info, 1.0f, 1.0f,
+      Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
+      gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
+
+  // Reentrant call uses identical display info.
+  ReentrantScreenWinObserver observer(test_screen_win, {initial_info});
+  GetScreen()->AddObserver(&observer);
+
+  test_screen_win->UpdateFromDisplayInfos({initial_info});
+
+  // Because reentrant info == initial_info, the second notification pass is
+  // skipped.
+  EXPECT_EQ(1, observer.called_count());
+  histogram_tester.ExpectUniqueSample(
+      "Windows.ScreenWin.ReentrantDisplayInfoChanged", false, 1);
+
+  GetScreen()->RemoveObserver(&observer);
 }
 
 }  // namespace win
