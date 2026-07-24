@@ -424,6 +424,15 @@ namespace upgrade_util {
 bool RelaunchChromeBrowserImpl(const base::CommandLine& command_line) {
   TRACE_EVENT0("startup", "upgrade_util::RelaunchChromeBrowserImpl");
 
+  if (command_line.HasSwitch(switches::kIsolated)) {
+    // Isolated browser does not fully support relaunch, so rather than try and
+    // launch a browser which will shortly be killed by the job object
+    // termination in the parent stub process, simply don't launch any new
+    // browser to avoid polluting metrics with abnormal terminations.
+    // TODO(crbug.com/490449890): Fix this issue by solving isolated relaunch.
+    return true;
+  }
+
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
     NOTREACHED();
