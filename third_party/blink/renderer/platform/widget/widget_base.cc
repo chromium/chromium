@@ -1482,7 +1482,11 @@ void WidgetBase::UpdateCompositionInfo(bool immediate_request) {
 
 void WidgetBase::ForceTextInputStateUpdate() {
 #if BUILDFLAG(IS_ANDROID)
+  base::WeakPtr<WidgetBase> weak_this = weak_ptr_factory_.GetWeakPtr();
   UpdateSelectionBounds();
+  if (!weak_this) {
+    return;
+  }
   UpdateTextInputStateInternal(false, true /* reply_to_request */);
 #endif
 }
@@ -1776,10 +1780,14 @@ void WidgetBase::OnImeEventGuardFinish(ImeEventGuard* guard) {
   // ime event.
   UpdateSelectionBounds();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  if (guard->show_virtual_keyboard())
+  if (!guard->IsValid()) {
+    return;
+  }
+  if (guard->show_virtual_keyboard()) {
     ShowVirtualKeyboard();
-  else
+  } else {
     UpdateTextInputState();
+  }
 #endif
 }
 
