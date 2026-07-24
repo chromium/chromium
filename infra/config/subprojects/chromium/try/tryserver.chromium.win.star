@@ -656,9 +656,6 @@ gpu.try_.optional_tests_builder(
     alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     cq_settings = try_.cq_settings(
-        # TODO(crbug.com/535541754): Make non-experimental once the trybot
-        # is confirmed to function properly.
-        experiment_percentage = 100,
         location_filters = gpu.try_.optional_trybot_location_filters.WINDOWS,
     ),
     # default is 6 in _gpu_optional_tests_builder()
