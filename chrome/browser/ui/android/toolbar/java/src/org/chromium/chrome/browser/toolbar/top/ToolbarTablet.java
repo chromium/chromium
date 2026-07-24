@@ -111,6 +111,9 @@ public class ToolbarTablet extends ToolbarLayout {
     private @Nullable ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
     private @Nullable ImageButton mGlicActionChip;
     private @Nullable View mGlicDivider;
+    private boolean mShouldShowGlicButton;
+    private boolean mHasSpaceToShowGlicButton = true;
+    private View.@Nullable OnClickListener mGlicClickListener;
 
     private final @Nullable ToolbarWidthConsumer[] mToolbarWidthConsumers =
             new ToolbarWidthConsumer[ToolbarComponentId.COUNT];
@@ -524,11 +527,22 @@ public class ToolbarTablet extends ToolbarLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         assert !mIsDestroyed;
 
-        int width = MeasureSpec.getSize(widthMeasureSpec);
+        // The inner layout R.id.toolbar_tablet_layout is the actual container of the buttons.
+        // It could have a side margin when the toolbar is overlapped with the system toolbar
+        // (such as with Vertical Tabs enabled). Take it into account for the initial width.
+        int width =
+                Math.max(0, MeasureSpec.getSize(widthMeasureSpec) - getControlContainerMargin());
         allocateAvailableToolbarWidth(
                 mToolbarWidthConsumers, width, widthMeasureSpec, heightMeasureSpec);
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    private int getControlContainerMargin() {
+        View toolbarTabletLayout = findViewById(R.id.toolbar_tablet_layout);
+        if (toolbarTabletLayout == null) return 0;
+        var lp = (MarginLayoutParams) toolbarTabletLayout.getLayoutParams();
+        return lp != null ? lp.leftMargin + lp.rightMargin : 0;
     }
 
     @Override
@@ -539,8 +553,9 @@ public class ToolbarTablet extends ToolbarLayout {
 
         // Re-allocate width to account for a change in a width consumer's visibility.
         int unspecifiedSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        int width = Math.max(0, getWidth() - getControlContainerMargin());
         allocateAvailableToolbarWidth(
-                mToolbarWidthConsumers, getWidth(), unspecifiedSpec, unspecifiedSpec);
+                mToolbarWidthConsumers, width, unspecifiedSpec, unspecifiedSpec);
     }
 
     /**
@@ -659,11 +674,47 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     /**
-     * Set {@link ToolbarWidthConsumer} for Glic button pinned on the tab strip but moved to the
-     * toolbar when the tab strip becomes hidden.
+     * Ensure {@link ToolbarWidthConsumer} for Glic button pinned on the tab strip (moved to the
+     * toolbar when the tab strip becomes hidden) is installed.
      */
-    public void setGlicToolbarWidthConsumer(ToolbarWidthConsumer consumer) {
-        mToolbarWidthConsumers[ToolbarComponentId.GLIC_PINNED_MOVED] = consumer;
+    public void ensureGlicToolbarWidthConsumer() {
+        var widthConsumer = mToolbarWidthConsumers[ToolbarComponentId.GLIC_PINNED_MOVED];
+        if (widthConsumer != null) return;
+
+        mToolbarWidthConsumers[ToolbarComponentId.GLIC_PINNED_MOVED] =
+                new ToolbarWidthConsumer() {
+                    @Override
+                    public boolean isVisible() {
+                        return mGlicActionChip != null
+                                && mGlicActionChip.getVisibility() == View.VISIBLE;
+                    }
+
+                    @Override
+                    public boolean hasSpaceToShow() {
+                        return mHasSpaceToShowGlicButton;
+                    }
+
+                    @Override
+                    public int updateVisibility(int availableWidth) {
+                        if (!mShouldShowGlicButton) {
+                            mHasSpaceToShowGlicButton = false;
+                            updateGlicActionChipVisibilityInternal();
+                            return 0;
+                        }
+
+                        int width =
+                                getResources().getDimensionPixelSize(R.dimen.min_touch_target_size);
+                        mHasSpaceToShowGlicButton = availableWidth >= width;
+                        updateGlicActionChipVisibilityInternal();
+                        return Math.min(width, availableWidth);
+                    }
+
+                    @Override
+                    public int updateVisibilityWithAnimation(
+                            int availableWidth, Collection<Animator> animators) {
+                        return updateVisibility(availableWidth);
+                    }
+                };
     }
 
     /**
@@ -673,15 +724,22 @@ public class ToolbarTablet extends ToolbarLayout {
      * @param clickListener Callback to invoke when the Glic action button is clicked.
      */
     public void setGlicActionChipVisibility(boolean visible, OnClickListener clickListener) {
+        mShouldShowGlicButton = visible;
+        mGlicClickListener = clickListener;
+        updateGlicActionChipVisibilityInternal();
+    }
+
+    private void updateGlicActionChipVisibilityInternal() {
+        boolean show = mShouldShowGlicButton && mHasSpaceToShowGlicButton;
         if (mGlicDivider == null) {
             mGlicDivider = assumeNonNull(findViewById(R.id.glic_divider));
         }
-        mGlicDivider.setVisibility(visible ? VISIBLE : GONE);
-        if (visible) {
+        mGlicDivider.setVisibility(show ? VISIBLE : GONE);
+        if (show) {
             ViewStub glicActionChipStub = findViewById(R.id.glic_action_chip_stub);
             if (mGlicActionChip == null && glicActionChipStub != null) {
                 mGlicActionChip = (ImageButton) glicActionChipStub.inflate();
-                mGlicActionChip.setOnClickListener(clickListener);
+                mGlicActionChip.setOnClickListener(mGlicClickListener);
                 mGlicActionChip.setImageResource(R.drawable.ic_spark_24dp);
                 mGlicActionChip.setContentDescription(
                         getContext().getString(R.string.glic_tab_strip_button_tooltip));
@@ -977,6 +1035,18 @@ public class ToolbarTablet extends ToolbarLayout {
     void ensureOptionalButtonWidthConsumerForTesting() {
         mToolbarWidthConsumers[ToolbarComponentId.ADAPTIVE_BUTTON] =
                 new OptionalButtonToolbarWidthConsumer();
+    }
+
+    ToolbarWidthConsumer getOptionalButtonWidthConsumerForTesting() {
+        return assumeNonNull(mToolbarWidthConsumers[ToolbarComponentId.ADAPTIVE_BUTTON]);
+    }
+
+    @Nullable View getGlicActionChipForTesting() {
+        return mGlicActionChip;
+    }
+
+    @Nullable ToolbarWidthConsumer getGlicWidthConsumerForTesting() {
+        return mToolbarWidthConsumers[ToolbarComponentId.GLIC_PINNED_MOVED];
     }
 
     void setTabStackButtonCoordinatorForTesting(ToggleTabStackButtonCoordinator coordinator) {
