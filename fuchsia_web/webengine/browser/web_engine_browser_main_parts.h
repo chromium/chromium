@@ -142,12 +142,12 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
   // Browsing contexts for the connected clients. There is at most one
   // fuchsia.web.Context binding, and any number of fuchsia.web.FrameHost
   // bindings.
+  std::unique_ptr<WebEngineDevToolsController> devtools_controller_;
+
   fidl::BindingSet<fuchsia::web::Context, std::unique_ptr<ContextImpl>>
       context_bindings_;
   fidl::BindingSet<fuchsia::web::FrameHost, std::unique_ptr<FrameHostImpl>>
       frame_host_bindings_;
-
-  std::unique_ptr<WebEngineDevToolsController> devtools_controller_;
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)
   std::unique_ptr<fuchsia_legacymetrics::LegacyMetricsClient>
