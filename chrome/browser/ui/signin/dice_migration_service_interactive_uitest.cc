@@ -29,12 +29,13 @@ constexpr char kTestEmail[] = "test@gmail.com";
 
 constexpr char kToastTriggerToShowHistogram[] = "Toast.TriggeredToShow";
 constexpr char kToastDismissedHistogram[] = "Toast.DiceUserMigrated.Dismissed";
-// TODO(crbug.com/506054344): Since the only usage of this variable on Mac
-// is a disabled test, guard it so it would compile
-#if !BUILDFLAG(IS_MAC)
+// TODO(crbug.com/506054344, crbug.com/538010159): Since the only usage of this
+// variable is in a disabled test, guard it so it would compile.
+#if !(BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)))
 constexpr char kToastActionButtonUserAction[] =
     "Toast.ActionButtonClicked.DiceUserMigrated";
-#endif  // !BUILDFLAG(IS_MAC)
+#endif  // !(BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) &&
+        // defined(ADDRESS_SANITIZER)))
 constexpr char kToastCloseButtonUserAction[] =
     "Toast.CloseButtonClicked.DiceUserMigrated";
 constexpr char kForceMigratedHistogram[] = "Signin.DiceMigration.ForceMigrated";
@@ -108,7 +109,8 @@ class DiceMigrationServiceForcedMigrationInteractiveUiTest
 
 // TODO(https://crbug.com/506054344): Disabled on Mac due to excessive
 // flakiness.
-#if !BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/538010159): Disabled on Windows ASAN.
+#if !(BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)))
 DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
                       ToastActionButton) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
@@ -138,7 +140,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
   EXPECT_EQ(user_action_tester_.GetActionCount(kToastActionButtonUserAction),
             1);
 }
-#endif  // !BUILDFLAG(IS_MAC)
+#endif  // !(BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) &&
+        // defined(ADDRESS_SANITIZER)))
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceForcedMigrationInteractiveUiTest,
                       ToastCloseButton) {
