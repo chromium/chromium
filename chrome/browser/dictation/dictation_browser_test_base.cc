@@ -63,15 +63,15 @@ ListenerStreamProvider* DictationBrowserTestBase::attached_stream() {
 }
 
 void DictationBrowserTestBase::StartSession(
-    const content::GlobalDOMNodeId& target_id) {
+    const TargetDetails& target_details) {
   tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
   CHECK(tab);
-  dictation_service().StartSession(*tab, target_id,
+  dictation_service().StartSession(*tab, target_details,
                                    DictationSessionEntryPoint::kContextMenu);
 }
 
 void DictationBrowserTestBase::StartSession() {
-  StartSession(DefaultInPageTargetId(web_contents()));
+  StartSession(DefaultInPageTarget(web_contents()));
 }
 
 }  // namespace dictation

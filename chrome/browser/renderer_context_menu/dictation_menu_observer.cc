@@ -15,6 +15,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -28,7 +29,9 @@ DictationMenuObserver::~DictationMenuObserver() = default;
 void DictationMenuObserver::InitMenu(const content::ContextMenuParams& params) {
   // Note that `field_renderer_id` is `DOMNodeIdType` within blink. Its value
   // is only meaningful within the renderer that generated it.
-  target_element_dom_id_ = params.form_field_dom_node_id;
+  target_details_.target_id = params.form_field_dom_node_id;
+  target_details_.richly_editable =
+      params.edit_flags & blink::ContextMenuDataEditFlags::kCanEditRichly;
 
   DictationKeyedService* service = GetDictationService();
   if (service && service->ShouldShowContextMenuItem()) {
@@ -57,7 +60,7 @@ void DictationMenuObserver::ExecuteCommand(int command_id) {
 
   DictationKeyedService* service = GetDictationService();
   if (service) {
-    service->ContextMenuHandler(target_element_dom_id_);
+    service->ContextMenuHandler(target_details_);
   }
 }
 

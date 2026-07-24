@@ -96,7 +96,7 @@ class DictationSessionUiImplBrowserTest
   auto StartDictationStream(DictationStreamStartTrigger trigger) {
     return Do([this, trigger]() {
       dictation_service().session_controller()->StartDictationStream(
-          DefaultInPageTargetId(web_contents()), trigger);
+          DefaultInPageTarget(web_contents()), trigger);
     });
   }
 

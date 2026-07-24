@@ -55,7 +55,7 @@ DictationInteractiveBrowserTestBase::StartSession() {
         tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
         CHECK(tab);
         dictation_service().StartSession(
-            *tab, DefaultInPageTargetId(web_contents()),
+            *tab, DefaultInPageTarget(web_contents()),
             DictationSessionEntryPoint::kContextMenu);
         if (dictation_service().session_controller()) {
           last_started_provider_ = static_cast<ListenerStreamProvider*>(

@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FOCUSED_NODE_DETAILS_H_
 #define CONTENT_PUBLIC_BROWSER_FOCUSED_NODE_DETAILS_H_
 
+#include "content/public/browser/editable_level.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -12,7 +13,7 @@
 namespace content {
 
 struct FocusedNodeDetails {
-  bool is_editable_node;
+  EditableLevel editable_level = EditableLevel::kNotEditable;
   gfx::Rect node_bounds_in_screen;
   blink::mojom::FocusType focus_type;
   GlobalDOMNodeId global_dom_node_id;

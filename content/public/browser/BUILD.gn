@@ -176,6 +176,7 @@ source_set("browser_sources") {
     "download_manager_delegate.h",
     "download_request_utils.h",
     "download_utils.h",
+    "editable_level.h",
     "error_navigation_trigger.h",
     "eye_dropper.h",
     "eye_dropper_listener.h",

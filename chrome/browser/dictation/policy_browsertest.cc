@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServicePolicyTest,
       chrome_test_utils::GetActiveWebContents(this);
   tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
   ASSERT_TRUE(tab);
-  service->StartSession(*tab, DefaultInPageTargetId(web_contents),
+  service->StartSession(*tab, DefaultInPageTarget(web_contents),
                         DictationSessionEntryPoint::kContextMenu);
   ASSERT_NE(service->session_controller(), nullptr);
 

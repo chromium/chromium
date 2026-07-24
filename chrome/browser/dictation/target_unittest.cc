@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,7 +57,7 @@ class DictationTargetTest : public ChromeRenderViewHostTestHarness {
   content::FocusedNodeDetails MakeFocusChange(int dom_node_id) {
     content::FocusedNodeDetails details;
     details.focus_type = blink::mojom::FocusType::kMouse;
-    details.is_editable_node = true;
+    details.editable_level = content::EditableLevel::kPlaintextEditable;
     details.global_dom_node_id = MockTargetInMainFrame(dom_node_id);
     return details;
   }
@@ -64,7 +65,7 @@ class DictationTargetTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(DictationTargetTest, ComposeThenCommit) {
   content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
-  TestTarget target(target_id);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
 
   EXPECT_EQ(target.last_sent_composition(), u"");
   EXPECT_EQ(target.last_sent_commit(), u"");
@@ -84,7 +85,7 @@ TEST_F(DictationTargetTest, ComposeThenCommit) {
 
 TEST_F(DictationTargetTest, FocusChangeDuringComposition) {
   content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
-  TestTarget target(target_id);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
 
   target.SetComposition(u"A", true);
   EXPECT_EQ(target.last_sent_composition(), u"A");
@@ -106,7 +107,7 @@ TEST_F(DictationTargetTest, FocusChangeDuringComposition) {
 
 TEST_F(DictationTargetTest, FocusChangeBeforeComposition) {
   content::GlobalDOMNodeId target_id = MockTargetInMainFrame(1);
-  TestTarget target(target_id);
+  TestTarget target(TargetDetails(target_id, /*richly_editable=*/false));
 
   // If we haven't started composing yet, focus changes don't disrupt our
   // ability to compose later.

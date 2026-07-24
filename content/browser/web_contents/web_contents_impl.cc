@@ -10823,7 +10823,7 @@ void WebContentsImpl::OnFocusedElementChangedInFrame(
 
   GlobalDOMNodeId global_dom_node_id{frame->GetWeakDocumentPtr(),
                                      editable_dom_node_id};
-  FocusedNodeDetails details = {frame->has_focused_editable_element(),
+  FocusedNodeDetails details = {frame->focused_editable_level(),
                                 bounds_in_screen, focus_type,
                                 global_dom_node_id};
   BrowserAccessibilityStateImpl::GetInstance()->OnFocusChangedInPage(details);

@@ -24,14 +24,15 @@
 
 namespace dictation {
 
-content::GlobalDOMNodeId EmptyTargetId() {
-  return content::GlobalDOMNodeId();
+TargetDetails EmptyTarget() {
+  return TargetDetails(content::GlobalDOMNodeId(), /*richly_editable=*/false);
 }
 
-content::GlobalDOMNodeId DefaultInPageTargetId(
-    content::WebContents* web_contents) {
-  return content::GlobalDOMNodeId{
-      web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr()};
+TargetDetails DefaultInPageTarget(content::WebContents* web_contents) {
+  return TargetDetails(
+      content::GlobalDOMNodeId{
+          web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr()},
+      /*richly_editable=*/false);
 }
 
 base::test::ScopedFeatureList CreateEnablingFeatureList() {

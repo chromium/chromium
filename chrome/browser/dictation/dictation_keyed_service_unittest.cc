@@ -45,13 +45,13 @@ TEST_F(DictationKeyedServiceTest, EndSessionDoesNotCrash) {
 
 TEST_F(DictationKeyedServiceTest, StartSessionWithNullTarget) {
   ASSERT_EQ(service_->session_controller(), nullptr);
-  service_->StartSession(tab_, EmptyTargetId(),
+  service_->StartSession(tab_, EmptyTarget(),
                          DictationSessionEntryPoint::kContextMenu);
   EXPECT_NE(service_->session_controller(), nullptr);
 }
 
 TEST_F(DictationKeyedServiceTest, EndSessionRemovesController) {
-  service_->StartSession(tab_, EmptyTargetId(),
+  service_->StartSession(tab_, EmptyTarget(),
                          DictationSessionEntryPoint::kContextMenu);
   ASSERT_NE(service_->session_controller(), nullptr);
   service_->EndSession();
@@ -66,7 +66,7 @@ TEST_F(DictationKeyedServiceTest,
   histogram_tester.ExpectUniqueSample(kIsEnabledOnProfileInitHistogramName,
                                       true, 1);
 
-  service->StartSession(tab_, EmptyTargetId(),
+  service->StartSession(tab_, EmptyTarget(),
                         DictationSessionEntryPoint::kContextMenu);
   histogram_tester.ExpectUniqueSample(kSessionStartSourceHistogramName,
                                       DictationSessionEntryPoint::kContextMenu,
@@ -80,7 +80,7 @@ TEST_F(DictationKeyedServiceTest, RecordsMetricsForStartButton) {
   base::HistogramTester histogram_tester;
 
   auto service = std::make_unique<MockDictationKeyedService>(&profile_);
-  service->StartSession(tab_, EmptyTargetId(),
+  service->StartSession(tab_, EmptyTarget(),
                         DictationSessionEntryPoint::kContextMenu);
   histogram_tester.ExpectBucketCount(kStreamStartTriggerHistogramName,
                                      DictationStreamStartTrigger::kSessionStart,

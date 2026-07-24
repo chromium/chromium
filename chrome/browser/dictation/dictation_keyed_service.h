@@ -16,6 +16,7 @@
 #include "chrome/browser/dictation/onboarding_manager.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/session_controller_delegate.h"
+#include "chrome/browser/dictation/target.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/global_dom_node_id.h"
@@ -62,22 +63,22 @@ class DictationKeyedService : public KeyedService,
   // progress.
   //
   // The new session will immediately start up a stream using the given
-  // target_id.
+  // target_details.
   //
-  // If `target_id` has a null DOMNodeId, the focused element in the specified
-  // Document is used.
-  // TODO(b/531049588): Update tests to always provide a valid target_id, remove
+  // If `target_details` has a null DOMNodeId, the focused element in the
+  // specified Document is used.
+  // TODO(b/531049588): Update tests to always provide a valid target, remove
   // the "focused element" semantic, and CHECK that the provided target is
   // always non-null.
   void StartSession(tabs::TabInterface& tab,
-                    const content::GlobalDOMNodeId& target_id,
+                    const TargetDetails& target_details,
                     DictationSessionEntryPoint entry_point);
 
   // Returns true if there is no active session.
   bool ShouldShowContextMenuItem() const;
 
   // Handles the context menu item click.
-  void ContextMenuHandler(const content::GlobalDOMNodeId& target_id);
+  void ContextMenuHandler(const TargetDetails& target_details);
 
   // Returns null when no session is in progress.
   SessionController* session_controller() {
@@ -108,11 +109,11 @@ class DictationKeyedService : public KeyedService,
 
   struct SessionState {
     SessionState(SessionControllerDelegate& delegate,
-                 const content::GlobalDOMNodeId& target_id);
+                 const TargetDetails& target_details);
     ~SessionState();
 
     SessionController controller_;
-    content::GlobalDOMNodeId target_id_;
+    TargetDetails target_details_;
   };
   std::optional<SessionState> session_;
 };

@@ -37,6 +37,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1263,7 +1264,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTestWithEnforceFocusDisabled,
                        "document.body.appendChild(input);"
                        "input.focus();"));
     const FocusedNodeDetails& details = watcher.Wait();
-    EXPECT_TRUE(details.is_editable_node);
+    EXPECT_NE(details.editable_level, content::EditableLevel::kNotEditable);
   }
 
   // 2. Create fenced frame and add two inputs.
@@ -1286,7 +1287,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTestWithEnforceFocusDisabled,
     ASSERT_TRUE(ExecJs(fenced_frame_rfh.get(),
                        "document.getElementById('fenced_input1').focus();"));
     const FocusedNodeDetails& details = watcher.Wait();
-    EXPECT_TRUE(details.is_editable_node);
+    EXPECT_NE(details.editable_level, content::EditableLevel::kNotEditable);
   }
 
   // 4. Focus primary main frame input WITH user gesture.
@@ -1298,7 +1299,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTestWithEnforceFocusDisabled,
                        "document.body.appendChild(input);"
                        "input.focus();"));
     const FocusedNodeDetails& details = watcher.Wait();
-    EXPECT_TRUE(details.is_editable_node);
+    EXPECT_NE(details.editable_level, content::EditableLevel::kNotEditable);
   }
 
   // Clear user activation on the fenced frame to ensure it doesn't have

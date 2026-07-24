@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/dictation/target.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "content/public/browser/global_dom_node_id.h"
 
@@ -34,7 +35,7 @@ class DictationMenuObserver : public RenderViewContextMenuObserver {
   // raw_ref as the observer cannot outlive the context menu.
   base::raw_ref<RenderViewContextMenuProxy> proxy_;
   std::u16string selection_text_;
-  content::GlobalDOMNodeId target_element_dom_id_;
+  TargetDetails target_details_;
 };
 
 }  // namespace dictation

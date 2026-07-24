@@ -31,6 +31,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -163,6 +164,33 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
   ASSERT_NE(provider->GetTarget(), nullptr);
   EXPECT_EQ(provider->GetTarget()->global_dom_node_id().target_element_dom_id,
             blink::DOMNodeIdType(123));
+  EXPECT_FALSE(provider->GetTarget()->richly_editable());
+}
+
+IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
+                       ExecuteContextMenuCommandRichlyEditable) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
+  params.edit_flags = blink::ContextMenuDataEditFlags::kCanEditRichly;
+  params.form_field_dom_node_id = content::GlobalDOMNodeId(
+      web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
+      blink::DOMNodeIdType(123));
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.Init();
+
+  ASSERT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_DICTATION));
+  ASSERT_TRUE(menu.IsItemEnabled(IDC_CONTENT_CONTEXT_DICTATION));
+
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_DICTATION, 0);
+
+  ASSERT_NE(session_controller(), nullptr);
+  StreamProvider* provider = session_controller()->attached_stream_provider();
+  ASSERT_NE(provider, nullptr);
+  ASSERT_NE(provider->GetTarget(), nullptr);
+  EXPECT_EQ(provider->GetTarget()->global_dom_node_id().target_element_dom_id,
+            blink::DOMNodeIdType(123));
+  EXPECT_TRUE(provider->GetTarget()->richly_editable());
 }
 
 // TODO(crbug.com/502587072): Add tests which have the test extension simulate
@@ -279,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
   // Start a second stream while the first is finalizing. The controller should
   // immediately enter kStreamInitializing.
-  controller->StartDictationStream(DefaultInPageTargetId(web_contents()),
+  controller->StartDictationStream(DefaultInPageTarget(web_contents()),
                                    DictationStreamStartTrigger::kSessionStart);
   EXPECT_EQ(controller->GetState(), SessionState::kStreamInitializing);
 
@@ -379,9 +407,9 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
       content::GetDOMNodeId(*web_contents()->GetPrimaryMainFrame(), "#text_id");
   ASSERT_TRUE(dom_node_id.has_value());
 
-  StartSession(content::GlobalDOMNodeId{
+  StartSession(TargetDetails(content::GlobalDOMNodeId{
       web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
-      blink::DOMNodeIdType(dom_node_id.value())});
+      blink::DOMNodeIdType(dom_node_id.value())}));
 
   SessionController* controller = session_controller();
   ListenerStreamProvider* provider = static_cast<ListenerStreamProvider*>(
@@ -439,9 +467,9 @@ IN_PROC_BROWSER_TEST_F(DictationKeyedServiceBrowserTest,
 
   // Start a new session and stream, commit some text, and stop.
   {
-    StartSession(content::GlobalDOMNodeId{
+    StartSession(TargetDetails(content::GlobalDOMNodeId{
         web_contents()->GetPrimaryMainFrame()->GetWeakDocumentPtr(),
-        blink::DOMNodeIdType(dom_node_id.value())});
+        blink::DOMNodeIdType(dom_node_id.value())}));
 
     ASSERT_TRUE(attached_stream());
     auto stream_id = attached_stream()->stream_id_for_testing();
@@ -534,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(DictationGlicBrowserTest, BasicStreamFunctions) {
 
   tabs::TabInterface* tab = chrome_test_utils::GetActiveTab(this);
   CHECK(tab);
-  dictation_service().StartSession(*tab, target_id,
+  dictation_service().StartSession(*tab, TargetDetails(target_id),
                                    DictationSessionEntryPoint::kContextMenu);
 
   SessionController* controller = dictation_service().session_controller();

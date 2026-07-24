@@ -19,6 +19,7 @@
 #include "chrome/common/url_constants.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/security_state/content/security_state_tab_helper.h"
+#include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -237,7 +238,8 @@ class TopControlsSlideTabObserver
     // Even if a non-editable node gets focused, if top-chrome is fully shown,
     // we should also update the browser controls state constraints so that
     // top-chrome is able to be hidden again.
-    if (details.is_editable_node || shown_ratio_ == 1.f) {
+    if (details.editable_level != content::EditableLevel::kNotEditable ||
+        shown_ratio_ == 1.f) {
       UpdateBrowserControlsStateShown(/*animate=*/true);
     }
   }

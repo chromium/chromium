@@ -24,7 +24,7 @@ OnboardingManager::~OnboardingManager() = default;
 
 bool OnboardingManager::ShowOnboardingIfNeeded(
     tabs::TabInterface& tab,
-    const content::GlobalDOMNodeId& target_id,
+    const TargetDetails& target_details,
     DictationSessionEntryPoint entry_point) {
   if (pref_service_->GetBoolean(prefs::kPrefDictationOnboardingCompleted)) {
     return false;
@@ -35,14 +35,14 @@ bool OnboardingManager::ShowOnboardingIfNeeded(
   if (dialog_controller_) {
     dialog_controller_.reset();
     pending_tab_.reset();
-    pending_target_id_.reset();
+    pending_target_details_.reset();
     pending_entry_point_.reset();
   }
 
   // TODO(bokan): I think we can extract this from the dialog_controller_ rather
   // than explicitly holding a weak ptr here.
   pending_tab_ = tab.GetWeakPtr();
-  pending_target_id_ = target_id;
+  pending_target_details_ = target_details;
   pending_entry_point_ = entry_point;
 
   dialog_controller_ = std::make_unique<OnboardingDialogController>(tab);
@@ -55,7 +55,7 @@ bool OnboardingManager::ShowOnboardingIfNeeded(
   if (!dialog_controller_->IsShowing()) {
     dialog_controller_.reset();
     pending_tab_.reset();
-    pending_target_id_.reset();
+    pending_target_details_.reset();
     pending_entry_point_.reset();
     // TODO(b/527240600): Fails closed but this should report an error somehow.
   }
@@ -70,14 +70,14 @@ void OnboardingManager::OnOnboardingCompleted() {
 void OnboardingManager::OnDialogClosed() {
   if (pref_service_->GetBoolean(prefs::kPrefDictationOnboardingCompleted)) {
     if (pending_tab_) {
-      CHECK(pending_target_id_);
+      CHECK(pending_target_details_);
       CHECK(pending_entry_point_);
-      service_->StartSession(*pending_tab_, *pending_target_id_,
+      service_->StartSession(*pending_tab_, *pending_target_details_,
                              *pending_entry_point_);
     }
   }
   pending_tab_.reset();
-  pending_target_id_.reset();
+  pending_target_details_.reset();
   pending_entry_point_.reset();
   dialog_controller_.reset();
 }

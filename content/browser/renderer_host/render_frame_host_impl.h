@@ -87,6 +87,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/editable_level.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/global_request_id.h"
@@ -1743,12 +1744,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void ClearFocusedElement();
 
+  EditableLevel focused_editable_level() const {
+    return focused_editable_level_;
+  }
+
   bool has_focused_editable_element() const {
-    return has_focused_editable_element_;
+    return focused_editable_level_ != EditableLevel::kNotEditable;
   }
 
   bool has_focused_richly_editable_element() const {
-    return has_focused_richly_editable_element_;
+    return focused_editable_level_ == EditableLevel::kRichlyEditable;
   }
 
   // Binds a DevToolsAgent interface for debugging.
@@ -5036,12 +5041,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // navigation requests should be queued.
   bool waiting_for_init_;
 
-  // If true then this frame's document has a focused element which is editable.
-  bool has_focused_editable_element_ = false;
-
-  // If true then this frame's document has a focused element which is richly
-  // editable.
-  bool has_focused_richly_editable_element_ = false;
+  // The editability level of the focused element in this frame's document.
+  EditableLevel focused_editable_level_ = EditableLevel::kNotEditable;
 
   std::unique_ptr<PendingNavigation> pending_navigate_;
 

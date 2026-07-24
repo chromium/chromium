@@ -83,8 +83,8 @@ DictationKeyedService* DictationKeyedService::Get(
 
 DictationKeyedService::SessionState::SessionState(
     SessionControllerDelegate& delegate,
-    const content::GlobalDOMNodeId& target_id)
-    : controller_(delegate), target_id_(target_id) {}
+    const TargetDetails& target_details)
+    : controller_(delegate), target_details_(target_details) {}
 
 DictationKeyedService::SessionState::~SessionState() = default;
 
@@ -120,7 +120,8 @@ std::unique_ptr<StreamProvider> DictationKeyedService::CreateStreamProvider(
 std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
     SessionController& controller) const {
   CHECK(session_);
-  tabs::TabInterface* tab = GetTabFromTargetId(session_->target_id_);
+  tabs::TabInterface* tab =
+      GetTabFromTargetId(session_->target_details_.target_id);
 
   // We must have a tab since this is called synchronously from session
   // creation.
@@ -131,24 +132,25 @@ std::unique_ptr<SessionUi> DictationKeyedService::CreateUi(
 
 void DictationKeyedService::StartSession(
     tabs::TabInterface& tab,
-    const content::GlobalDOMNodeId& target_id,
+    const TargetDetails& target_details,
     DictationSessionEntryPoint entry_point) {
   CHECK(IsEnabled());
   CHECK(!session_);
 
-  if (onboarding_manager_.ShowOnboardingIfNeeded(tab, target_id, entry_point)) {
+  if (onboarding_manager_.ShowOnboardingIfNeeded(tab, target_details,
+                                                 entry_point)) {
     // If onboarding is shown, it will call StartSession again if needed.
     return;
   }
 
   RecordDictationSessionStartSource(entry_point);
 
-  session_.emplace(*this, target_id);
+  session_.emplace(*this, target_details);
 
   session_->controller_.Initialize();
 
   session_->controller_.StartDictationStream(
-      target_id, DictationStreamStartTrigger::kSessionStart);
+      target_details, DictationStreamStartTrigger::kSessionStart);
 }
 
 void DictationKeyedService::EndSession() {
@@ -163,18 +165,18 @@ bool DictationKeyedService::ShouldShowContextMenuItem() const {
 }
 
 void DictationKeyedService::ContextMenuHandler(
-    const content::GlobalDOMNodeId& target_id) {
+    const TargetDetails& target_details) {
   // Policy could have changed to disabled while the context menu was open.
   if (!IsEnabled()) {
     return;
   }
 
-  tabs::TabInterface* tab = GetTabFromTargetId(target_id);
+  tabs::TabInterface* tab = GetTabFromTargetId(target_details.target_id);
   if (!tab) {
     return;
   }
 
-  StartSession(*tab, target_id, DictationSessionEntryPoint::kContextMenu);
+  StartSession(*tab, target_details, DictationSessionEntryPoint::kContextMenu);
 }
 
 bool DictationKeyedService::IsEnabled() const {

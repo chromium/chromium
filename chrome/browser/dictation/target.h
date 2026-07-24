@@ -19,11 +19,30 @@ class RenderWidgetHost;
 
 namespace dictation {
 
+// Details about an element used to construct a `Target`.
+struct TargetDetails {
+  TargetDetails();
+  TargetDetails(const content::GlobalDOMNodeId& target_id,
+                bool richly_editable);
+
+  // Additional constructor for testing.
+  explicit TargetDetails(const content::GlobalDOMNodeId& target_id);
+
+  TargetDetails(const TargetDetails&);
+  TargetDetails& operator=(const TargetDetails&);
+  TargetDetails(TargetDetails&&);
+  TargetDetails& operator=(TargetDetails&&);
+  ~TargetDetails();
+
+  content::GlobalDOMNodeId target_id;
+  bool richly_editable = false;
+};
+
 // Represents a dictation target into which transcriptions will be written.
 class Target {
  public:
   Target();
-  explicit Target(const content::GlobalDOMNodeId& target_id);
+  explicit Target(const TargetDetails& target_details);
   virtual ~Target();
 
   // Returns the RenderFrameHost associated with this target, or nullptr if it
@@ -31,8 +50,10 @@ class Target {
   content::RenderFrameHost* GetRenderFrameHost() const;
 
   const content::GlobalDOMNodeId& global_dom_node_id() const {
-    return target_id_;
+    return target_details_.target_id;
   }
+
+  bool richly_editable() const { return target_details_.richly_editable; }
 
   // Called when focus changes in the page.
   void OnFocusChanged(const content::FocusedNodeDetails& details);
@@ -52,7 +73,7 @@ class Target {
  private:
   content::RenderWidgetHost* GetRenderWidgetHost() const;
 
-  content::GlobalDOMNodeId target_id_;
+  TargetDetails target_details_;
   std::u16string last_sent_composition_;
   bool has_lost_focus_during_composition_ = false;
 };

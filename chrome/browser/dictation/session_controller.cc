@@ -20,6 +20,7 @@
 #include "chrome/browser/dictation/session_ui.h"
 #include "chrome/browser/dictation/stream_provider.h"
 #include "chrome/browser/dictation/target.h"
+#include "content/public/browser/editable_level.h"
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/global_dom_node_id.h"
 #include "content/public/browser/global_routing_id.h"
@@ -63,9 +64,9 @@ void SessionController::Initialize() {
 }
 
 void SessionController::StartDictationStream(
-    const content::GlobalDOMNodeId& target_id,
+    const TargetDetails& target_details,
     DictationStreamStartTrigger trigger) {
-  VT_LOG() << "Starting DictationStream on target " << target_id;
+  VT_LOG() << "Starting DictationStream on target " << target_details.target_id;
   // TODO(b/525856380): Add support for "swapping in" a new stream. That is,
   // end the current stream and start a new one without entering the
   // finalization state which could flash states the UI.
@@ -75,16 +76,17 @@ void SessionController::StartDictationStream(
   CHECK(!attached_stream_provider_);
 
   Observe(content::WebContents::FromRenderFrameHost(
-      target_id.document.AsRenderFrameHostIfValid()));
+      target_details.target_id.document.AsRenderFrameHostIfValid()));
 
   RecordDictationStreamStartTrigger(trigger);
 
   std::unique_ptr<StreamProvider> stream_provider =
       delegate_->CreateStreamProvider(*this);
-  stream_provider->BindToTargetAndConnect(std::make_unique<Target>(target_id));
+  stream_provider->BindToTargetAndConnect(
+      std::make_unique<Target>(target_details));
   attached_stream_provider_ = std::move(stream_provider);
 
-  last_used_target_id_ = target_id;
+  last_used_target_details_ = target_details;
 
   MoveToState(SessionState::kStreamInitializing);
 }
@@ -109,7 +111,7 @@ void SessionController::OnFocusChangedInPage(
     EndDictationStream();
   }
 
-  if (!details.is_editable_node ||
+  if (details.editable_level == content::EditableLevel::kNotEditable ||
       !details.global_dom_node_id.document.AsRenderFrameHostIfValid()) {
     return;
   }
@@ -134,8 +136,11 @@ void SessionController::OnFocusChangedInPage(
       });
 
   if (!is_finalizing_for_same_element && !is_shutting_down_) {
-    StartDictationStream(newly_focused_target_id,
-                         DictationStreamStartTrigger::kFocusChange);
+    StartDictationStream(
+        TargetDetails(
+            newly_focused_target_id,
+            details.editable_level == content::EditableLevel::kRichlyEditable),
+        DictationStreamStartTrigger::kFocusChange);
   }
 }
 
@@ -189,9 +194,9 @@ void SessionController::UiRequestStartStream() {
 
   // A stream is always started when the session is created using an explicit
   // target. Starting from UI can only happen after that.
-  CHECK(last_used_target_id_.has_value());
+  CHECK(last_used_target_details_.has_value());
 
-  StartDictationStream(*last_used_target_id_,
+  StartDictationStream(*last_used_target_details_,
                        DictationStreamStartTrigger::kStartButton);
 }
 

@@ -12,10 +12,22 @@
 
 namespace dictation {
 
+TargetDetails::TargetDetails() = default;
+TargetDetails::TargetDetails(const content::GlobalDOMNodeId& target_id,
+                             bool richly_editable)
+    : target_id(target_id), richly_editable(richly_editable) {}
+TargetDetails::TargetDetails(const content::GlobalDOMNodeId& target_id)
+    : target_id(target_id) {}
+TargetDetails::TargetDetails(const TargetDetails&) = default;
+TargetDetails& TargetDetails::operator=(const TargetDetails&) = default;
+TargetDetails::TargetDetails(TargetDetails&&) = default;
+TargetDetails& TargetDetails::operator=(TargetDetails&&) = default;
+TargetDetails::~TargetDetails() = default;
+
 Target::Target() = default;
 
-Target::Target(const content::GlobalDOMNodeId& target_id)
-    : target_id_(target_id) {}
+Target::Target(const TargetDetails& target_details)
+    : target_details_(target_details) {}
 
 Target::~Target() = default;
 
@@ -24,14 +36,14 @@ void Target::OnFocusChanged(const content::FocusedNodeDetails& details) {
   if (!last_sent_composition_.empty() &&
       (!rfh ||
        rfh != details.global_dom_node_id.document.AsRenderFrameHostIfValid() ||
-       target_id_.target_element_dom_id !=
+       global_dom_node_id().target_element_dom_id !=
            details.global_dom_node_id.target_element_dom_id)) {
     has_lost_focus_during_composition_ = true;
   }
 }
 
 content::RenderFrameHost* Target::GetRenderFrameHost() const {
-  return target_id_.document.AsRenderFrameHostIfValid();
+  return global_dom_node_id().document.AsRenderFrameHostIfValid();
 }
 
 content::RenderWidgetHost* Target::GetRenderWidgetHost() const {
@@ -50,6 +62,9 @@ void Target::SetComposition(const std::u16string& text, bool is_final) {
     // commit the final text when the stream completes.
     return;
   }
+
+  // TODO(crbug.com/537833858): Fallback to pasting if a `richly_editable()`
+  // target would need multi-line insertion.
 
   // Specify an ImeTextSpan for the entire text to make it look like a user
   // typing without a visual difference for the composition.
@@ -89,13 +104,13 @@ void Target::SetExternallySourcedComposition(
     const std::u16string& text,
     const std::vector<ui::ImeTextSpan>& spans) {
   if (content::RenderWidgetHost* rwh = GetRenderWidgetHost()) {
-    rwh->SetExternallySourcedComposition(text, spans, target_id_);
+    rwh->SetExternallySourcedComposition(text, spans, global_dom_node_id());
   }
 }
 
 void Target::CommitExternallySourcedComposition(const std::u16string& text) {
   if (content::RenderWidgetHost* rwh = GetRenderWidgetHost()) {
-    rwh->CommitExternallySourcedComposition(text, target_id_);
+    rwh->CommitExternallySourcedComposition(text, global_dom_node_id());
   }
 }
 

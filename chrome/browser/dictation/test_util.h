@@ -36,16 +36,21 @@ namespace dictation {
 inline constexpr std::string_view kDictationTestExtensionId =
     "dfihfgggpgemecjdjahibncmmjlfjggp";
 
-// A target ID that doesn't point to anything. Used only in unit tests where the
+// A target that doesn't point to anything. Used only in unit tests where the
 // target isn't actually used.
 // TODO(b/531049588): Do not use in new tests.
-content::GlobalDOMNodeId EmptyTargetId();
+TargetDetails EmptyTarget();
+inline TargetDetails EmptyTargetId() {
+  return EmptyTarget();
+}
 
 // Returns a target that points to the default element in the page. Currently
 // this will be the focused element in the primary main frame.
 // TODO(b/531049588): Do not use in new tests.
-content::GlobalDOMNodeId DefaultInPageTargetId(
-    content::WebContents* web_contents);
+TargetDetails DefaultInPageTarget(content::WebContents* web_contents);
+inline TargetDetails DefaultInPageTargetId(content::WebContents* web_contents) {
+  return DefaultInPageTarget(web_contents);
+}
 
 // Returns a ScopedFeatureList that enables Dictation with common params for
 // testing.
