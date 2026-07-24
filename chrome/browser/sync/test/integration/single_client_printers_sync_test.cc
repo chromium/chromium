@@ -11,6 +11,7 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 using printers_helper::AddPrinter;
 using printers_helper::CreateTestPrinterSpecifics;
@@ -21,6 +22,7 @@ using printers_helper::GetVerifierPrinterCount;
 using printers_helper::GetVerifierPrinterStore;
 using printers_helper::ProfileContainsSamePrintersAsVerifier;
 using printers_helper::RemovePrinter;
+using printers_helper::ServerPrinterMatchChecker;
 
 namespace {
 
@@ -72,24 +74,19 @@ INSTANTIATE_TEST_SUITE_P(
 // Verify that printers aren't added with a sync call.
 IN_PROC_BROWSER_TEST_P(SingleClientPrintersSyncTest, NoPrinters) {
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  EXPECT_TRUE(ProfileContainsSamePrintersAsVerifier(0));
+  EXPECT_EQ(0, GetPrinterCount(0));
 }
 
-// Verify syncing doesn't randomly remove a printer.
 IN_PROC_BROWSER_TEST_P(SingleClientPrintersSyncTest, SingleNewPrinter) {
   ASSERT_TRUE(SetupSync());
 
-  ASSERT_EQ(0, GetVerifierPrinterCount());
-
   AddPrinter(GetPrinterStore(0), printers_helper::CreateTestPrinter(0));
-  AddPrinter(GetVerifierPrinterStore(), printers_helper::CreateTestPrinter(0));
-  ASSERT_EQ(1, GetPrinterCount(0));
-  ASSERT_EQ(1, GetVerifierPrinterCount());
+  EXPECT_EQ(1, GetPrinterCount(0));
 
-  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-  EXPECT_EQ(1, GetVerifierPrinterCount());
-  EXPECT_TRUE(ProfileContainsSamePrintersAsVerifier(0));
+  EXPECT_TRUE(ServerPrinterMatchChecker(
+                  testing::ElementsAre(printers_helper::MatchesPrinter(
+                      printers_helper::CreateTestPrinter(0))))
+                  .Wait());
 }
 
 // Verify editing a printer doesn't add it.

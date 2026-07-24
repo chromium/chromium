@@ -180,4 +180,33 @@ PrintersMatchChecker::PrintersMatchChecker()
 
 PrintersMatchChecker::~PrintersMatchChecker() = default;
 
+ServerPrinterMatchChecker::ServerPrinterMatchChecker(const Matcher& matcher)
+    : matcher_(matcher) {}
+
+ServerPrinterMatchChecker::~ServerPrinterMatchChecker() = default;
+
+void ServerPrinterMatchChecker::OnCommit(
+    syncer::DataTypeSet committed_data_types) {
+  if (committed_data_types.Has(syncer::PRINTERS)) {
+    CheckExitCondition();
+  }
+}
+
+bool ServerPrinterMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for server printer specifics to match... ";
+
+  std::vector<sync_pb::PrinterSpecifics> entities;
+  for (const sync_pb::SyncEntity& entity :
+       fake_server()->GetSyncEntitiesByDataType(syncer::PRINTERS)) {
+    entities.push_back(entity.specifics().printer());
+  }
+
+  testing::StringMatchResultListener result_listener;
+  const bool matches =
+      testing::ExplainMatchResult(matcher_, entities, &result_listener);
+  *os << result_listener.str();
+
+  return matches;
+}
+
 }  // namespace printers_helper

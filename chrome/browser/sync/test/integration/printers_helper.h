@@ -11,14 +11,13 @@
 
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "components/sync/protocol/printer_specifics.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {
 class BrowserContext;
-}
-
-namespace sync_pb {
-class PrinterSpecifics;
 }
 
 namespace printers_helper {
@@ -82,6 +81,33 @@ class PrintersMatchChecker : public AwaitMatchStatusChangeChecker {
 
   ~PrintersMatchChecker() override;
 };
+
+// A waiter that blocks until the fake server has printer specifics matching
+// `matcher`.
+class ServerPrinterMatchChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  using Matcher = testing::Matcher<std::vector<sync_pb::PrinterSpecifics>>;
+
+  explicit ServerPrinterMatchChecker(const Matcher& matcher);
+  ~ServerPrinterMatchChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+  // FakeServer::Observer implementation.
+  void OnCommit(syncer::DataTypeSet committed_data_types) override;
+
+ private:
+  const Matcher matcher_;
+};
+
+// Matcher to check if sync_pb::PrinterSpecifics matches a chromeos::Printer.
+MATCHER_P(MatchesPrinter, expected_printer, "") {
+  return arg.id() == expected_printer.id() &&
+         arg.description() == expected_printer.description() &&
+         arg.uri() == expected_printer.uri().GetNormalized();
+}
 
 }  // namespace printers_helper
 
