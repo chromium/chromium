@@ -25,6 +25,8 @@ class FakeTerminalSession : public TerminalSession {
   static void ResetStaticState();
 
   static void SetNextStartFail(bool fail);
+  static void SetPersistentTerminalIds(std::vector<int32_t> ids);
+  static std::vector<int32_t> GetPersistentIds();
 
   FakeTerminalSession(TerminalSessionManager::OutputCallback output_cb,
                       TerminalSessionManager::ExitCallback exit_cb,
@@ -36,6 +38,7 @@ class FakeTerminalSession : public TerminalSession {
   void Write(const std::string& data) override;
   void Resize(uint32_t width, uint32_t height) override;
   void Terminate() override;
+  void Detach() override;
 
   int32_t id() const { return id_; }
   const std::vector<std::string>& inputs() const { return inputs_; }
@@ -44,6 +47,7 @@ class FakeTerminalSession : public TerminalSession {
   }
   bool is_started() const { return is_started_; }
   bool is_terminated() const { return is_terminated_; }
+  bool is_detached() const { return is_detached_; }
 
   void TriggerOutput(const std::string& data);
   void TriggerExit();
@@ -59,6 +63,7 @@ class FakeTerminalSession : public TerminalSession {
   std::vector<std::pair<uint32_t, uint32_t>> resizes_;
   bool is_started_ = false;
   bool is_terminated_ = false;
+  bool is_detached_ = false;
 
   base::WeakPtrFactory<FakeTerminalSession> weak_factory_{this};
 };

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "remoting/host/terminal_session_manager.h"
 
@@ -23,6 +24,10 @@ class TerminalSession {
       TerminalSessionManager::ExitCallback exit_cb,
       int32_t id);
 
+  // Returns the IDs of all currently persistent terminal sessions.
+  // Must be called on a thread that allows blocking.
+  static std::vector<int32_t> GetPersistentTerminalIds();
+
   virtual bool Start() = 0;
 
   // Write terminal input.
@@ -33,6 +38,10 @@ class TerminalSession {
 
   // Terminate matching subprocess and destroy descriptors.
   virtual void Terminate() = 0;
+
+  // Detaches from the terminal session without destroying the underlying
+  // persistent session.
+  virtual void Detach() = 0;
 };
 
 }  // namespace remoting

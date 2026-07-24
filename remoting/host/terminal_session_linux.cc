@@ -5,15 +5,19 @@
 #include "remoting/host/terminal_session.h"
 
 #include <fcntl.h>
-// #include <limits.h>
+#include <limits.h>
+#include <memory>
 #include <stdlib.h>
+#include <string_view>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
 
-#include "base/command_line.h"
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file_descriptor_watcher_posix.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -23,15 +27,60 @@
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
+#include "remoting/base/logging.h"
 #include "remoting/host/terminal_session_manager.h"
 
 namespace remoting {
 
 namespace {
+
+constexpr std::string_view kTmux2Path = "/usr/bin/tmx2";
+constexpr std::string_view kTmuxPath = "/usr/bin/tmux";
+constexpr std::string_view kTmuxSessionPrefix = "chrome-remote-desktop-";
+constexpr std::string_view kTmuxSocketName = "chrome-remote-desktop";
+
+std::string GetTmuxSessionName(int32_t id) {
+  return base::StrCat({kTmuxSessionPrefix, base::NumberToString(id)});
+}
+
+base::FilePath FindTmuxOrTmx2Path() {
+  // Prefer tmx2 over tmux. It is impossible to have tmx2 installed without
+  // tmux also being installed.
+  base::FilePath tmx2_path(kTmux2Path);
+  if (base::PathExists(tmx2_path)) {
+    return tmx2_path;
+  }
+
+  base::FilePath tmx_path(kTmuxPath);
+  if (base::PathExists(tmx_path)) {
+    return tmx_path;
+  }
+  return base::FilePath();
+}
+
+void KillTmuxSession(int32_t id) {
+  base::FilePath path = FindTmuxOrTmx2Path();
+  if (!path.empty()) {
+    std::vector<std::string> tmux_args = {
+        path.value(), "-L", std::string(kTmuxSocketName),
+        "kill-session", "-t", GetTmuxSessionName(id)};
+    base::Process process =
+        base::LaunchProcess(tmux_args, base::LaunchOptions());
+    if (process.IsValid()) {
+      base::EnsureProcessTerminated(std::move(process));
+    }
+  }
+}
+
+void TerminateProcessInBackground(base::Process process) {
+  process.Terminate(0, false);
+  base::EnsureProcessTerminated(std::move(process));
+}
 
 // PreExecDelegate to set up the PTY session in the child process. It creates
 // a new session leader and attaches the process to the PTY.
@@ -46,6 +95,35 @@ class TerminalPreExecDelegate : public base::LaunchOptions::PreExecDelegate {
   }
 };
 
+base::Process LaunchShellProcess(int32_t id, base::ScopedFD subsidiary_fd) {
+  base::FilePath tmux_path = FindTmuxOrTmx2Path();
+  // If tmux is not available, then we cannot launch the terminal session.
+  if (tmux_path.empty()) {
+    LOG(ERROR)
+        << "tmux / tmx2 binary not found. Cannot launch terminal session.";
+    return base::Process();
+  }
+
+  std::vector<std::string> tmux_cmd = {
+    tmux_path.value(),
+    "-L", std::string(kTmuxSocketName),
+    "new-session", "-A", "-s", GetTmuxSessionName(id), ";",
+    "set-option", "set-titles", "on", ";",
+    "set-option", "set-titles-string", "#T"
+  };
+
+  base::LaunchOptions options;
+  options.fds_to_remap.emplace_back(subsidiary_fd.get(), STDIN_FILENO);
+  options.fds_to_remap.emplace_back(subsidiary_fd.get(), STDOUT_FILENO);
+  options.fds_to_remap.emplace_back(subsidiary_fd.get(), STDERR_FILENO);
+
+  TerminalPreExecDelegate delegate;
+  options.pre_exec_delegate = &delegate;
+  options.environment["TERM"] = "xterm-256color";
+
+  return base::LaunchProcess(tmux_cmd, options);
+}
+
 class TerminalSessionLinux : public TerminalSession {
  public:
   TerminalSessionLinux(TerminalSessionManager::OutputCallback output_cb,
@@ -58,7 +136,7 @@ class TerminalSessionLinux : public TerminalSession {
             {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {}
 
-  ~TerminalSessionLinux() override { Terminate(); }
+  ~TerminalSessionLinux() override { CleanupLocalSession(); }
 
   // Start the terminal session. This will start a new PTY session and launch a
   // bash process in the subsidiary end of the PTY.
@@ -99,27 +177,52 @@ class TerminalSessionLinux : public TerminalSession {
       tcsetattr(subsidiary_fd.get(), TCSANOW, &ios);
     }
 
-    base::CommandLine cmd(base::FilePath("/bin/bash"));
-    base::LaunchOptions options;
-    options.fds_to_remap.emplace_back(subsidiary_fd.get(), STDIN_FILENO);
-    options.fds_to_remap.emplace_back(subsidiary_fd.get(), STDOUT_FILENO);
-    options.fds_to_remap.emplace_back(subsidiary_fd.get(), STDERR_FILENO);
-
-    TerminalPreExecDelegate delegate;
-    options.pre_exec_delegate = &delegate;
-    options.environment["TERM"] = "xterm-256color";
-
-    base::Process process = base::LaunchProcess(cmd, options);
-    if (!process.IsValid()) {
-      LOG(ERROR) << "Failed to launch terminal shell process";
-      return false;
-    }
-
     pty_fd_ = std::move(pty_fd);
-    process_ = std::move(process);
 
-    WatchOutput();
+    writer_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&LaunchShellProcess, id_, std::move(subsidiary_fd)),
+        base::BindOnce(
+            [](base::WeakPtr<TerminalSessionLinux> weak_this,
+               scoped_refptr<base::SequencedTaskRunner> writer_task_runner,
+               base::Process process) {
+              if (weak_this) {
+                weak_this->OnProcessLaunched(std::move(process));
+              } else if (process.IsValid()) {
+                writer_task_runner->PostTask(
+                    FROM_HERE, base::BindOnce(&TerminateProcessInBackground,
+                                              std::move(process)));
+              }
+            },
+            weak_factory_.GetWeakPtr(), writer_task_runner_));
     return true;
+  }
+
+  void OnProcessLaunched(base::Process process) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!process.IsValid()) {
+      LOG(ERROR) << "Failed to launch terminal shell process asynchronously";
+      CleanupLocalSession();
+      if (exit_callback_) {
+        std::move(exit_callback_).Run(id_);
+      }
+      return;
+    }
+    // If the session was detached or terminated before the process was
+    // launched, terminate the process and return.
+    if (detached_ || terminated_) {
+      if (writer_task_runner_) {
+        writer_task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&TerminateProcessInBackground,
+                                      std::move(process)));
+      }
+      return;
+    }
+    // process_ will never be valid here since it's only set by
+    // OnProcessLaunched(), which is only called once by Start().
+    CHECK(!process_.IsValid());
+    process_ = std::move(process);
+    WatchOutput();
   }
 
   static void WriteToPtyManager(int fd, std::string payload) {
@@ -169,12 +272,39 @@ class TerminalSessionLinux : public TerminalSession {
   }
 
   // Terminates the terminal session and stops the output watcher.
+  // Called when the user specifically closes a terminal session.
   void Terminate() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (terminated_) {
+      return;
+    }
+    terminated_ = true;
+    if (writer_task_runner_) {
+      writer_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&KillTmuxSession, id_));
+    }
+    CleanupLocalSession();
+  }
+
+  // Detaches from the terminal session destroying the terminal emulator process
+  // but leaving the tmux server session intact to allow for reconnection.
+  void Detach() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CleanupLocalSession();
+  }
+
+ private:
+  void CleanupLocalSession() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (detached_) {
+      return;
+    }
+    detached_ = true;
     output_watcher_.reset();
-    if (process_.IsValid()) {
-      process_.Terminate(0, false);
-      base::EnsureProcessTerminated(std::move(process_));
+    if (process_.IsValid() && writer_task_runner_) {
+      writer_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&TerminateProcessInBackground,
+                                    std::move(process_)));
     }
     if (pty_fd_.is_valid() && writer_task_runner_) {
       // Post the destruction of pty_fd_ to the writer task runner
@@ -185,7 +315,6 @@ class TerminalSessionLinux : public TerminalSession {
     }
   }
 
- private:
   // Watches the PTY manager file descriptor for readable data.
   void WatchOutput() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -222,7 +351,7 @@ class TerminalSessionLinux : public TerminalSession {
       if (bytes_read < 0) {
         PLOG(ERROR) << "read from PTY manager failed";
       } else {
-        LOG(INFO) << "PTY manager reached EOF - normal exit";
+        HOST_LOG << "PTY manager reached EOF - normal exit";
       }
       output_watcher_.reset();
       if (exit_callback_) {
@@ -239,7 +368,8 @@ class TerminalSessionLinux : public TerminalSession {
   TerminalSessionManager::ExitCallback exit_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
   int32_t id_;
-
+  bool detached_ = false;
+  bool terminated_ = false;
   scoped_refptr<base::SequencedTaskRunner> writer_task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -256,6 +386,38 @@ std::unique_ptr<TerminalSession> TerminalSession::Create(
     int32_t id) {
   return std::make_unique<TerminalSessionLinux>(std::move(output_cb),
                                                 std::move(exit_cb), id);
+}
+
+// static
+std::vector<int32_t> TerminalSession::GetPersistentTerminalIds() {
+  // This is a blocking call (uses PathExists and GetAppOutput).
+  base::FilePath tmux_path = FindTmuxOrTmx2Path();
+  if (tmux_path.empty()) {
+    return {};
+  }
+
+  std::string output;
+  std::vector<std::string> args = {
+      tmux_path.value(), "-L", std::string(kTmuxSocketName),
+      "list-sessions",   "-F", "#{session_name}"};
+  if (!base::GetAppOutput(args, &output)) {
+    return {};
+  }
+
+  std::vector<std::string_view> lines = base::SplitStringPiece(
+      output, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  std::vector<int32_t> restored_ids;
+  for (std::string_view line : lines) {
+    if (line.starts_with(kTmuxSessionPrefix)) {
+      std::string_view id_str = line.substr(kTmuxSessionPrefix.size());
+      int32_t id;
+      if (base::StringToInt(id_str, &id)) {
+        restored_ids.push_back(id);
+      }
+    }
+  }
+  return restored_ids;
 }
 
 }  // namespace remoting

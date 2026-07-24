@@ -24,6 +24,11 @@ std::vector<int32_t>& GetTerminatedSessionIdList() {
   static base::NoDestructor<std::vector<int32_t>> terminated_session_id_list;
   return *terminated_session_id_list;
 }
+
+std::vector<int32_t>& GetPersistentSessionIdList() {
+  static base::NoDestructor<std::vector<int32_t>> persistent_session_id_list;
+  return *persistent_session_id_list;
+}
 }  // namespace
 
 // static
@@ -56,11 +61,27 @@ void FakeTerminalSession::ResetTerminatedIds() {
 void FakeTerminalSession::ResetStaticState() {
   next_start_fail_ = false;
   ResetTerminatedIds();
+  GetPersistentSessionIdList().clear();
 }
 
 // static
 void FakeTerminalSession::SetNextStartFail(bool fail) {
   next_start_fail_ = fail;
+}
+
+// static
+void FakeTerminalSession::SetPersistentTerminalIds(std::vector<int32_t> ids) {
+  GetPersistentSessionIdList() = std::move(ids);
+}
+
+// static
+std::vector<int32_t> FakeTerminalSession::GetPersistentIds() {
+  return GetPersistentSessionIdList();
+}
+
+// static
+std::vector<int32_t> TerminalSession::GetPersistentTerminalIds() {
+  return FakeTerminalSession::GetPersistentIds();
 }
 
 // static
@@ -106,8 +127,13 @@ void FakeTerminalSession::Terminate() {
   if (is_terminated_) {
     return;
   }
+  is_detached_ = true;
   is_terminated_ = true;
   GetTerminatedSessionIdList().push_back(id_);
+}
+
+void FakeTerminalSession::Detach() {
+  is_detached_ = true;
 }
 
 void FakeTerminalSession::TriggerOutput(const std::string& data) {
