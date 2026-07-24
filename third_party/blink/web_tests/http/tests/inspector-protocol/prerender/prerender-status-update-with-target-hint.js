@@ -3,7 +3,7 @@
       `Test that prerender navigations receives the status updates`);
 
   const childTargetManager =
-      new TestRunner.ChildTargetManager(testRunner, tabTargetSession);
+      testRunner.createChildTargetManagerFor(tabTargetSession);
   await childTargetManager.startAutoAttach();
   const session = childTargetManager.findAttachedSessionPrimaryMainFrame();
   const dp = session.protocol;

@@ -45,7 +45,7 @@
 
   // Create a new session and create a hidden target via it.
   const newBrowserSession =
-      new TestRunner.Session(testRunner, response.result.sessionId);
+      testRunner.createSessionFor(response.result.sessionId);
 
   testRunnerLog('Create hidden target');
   const {result: hiddenTarget} =
@@ -58,8 +58,8 @@
   const attachedToHiddenTargetEvent = await target.onceAttachedToTarget();
   testRunnerLog('Attached to the hidden target');
 
-  const hiddenSession = new TestRunner.Session(
-      testRunner, attachedToHiddenTargetEvent.params.sessionId);
+  const hiddenSession =
+      testRunner.createSessionFor(attachedToHiddenTargetEvent.params.sessionId);
 
   // Verify the hidden target's session is available.
   testRunnerLog(

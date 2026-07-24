@@ -10,7 +10,7 @@
       '../fetch/resources/fetch-test.js');
   const { result: { sessionId } } =
       await testRunner.browserP().Target.attachToBrowserTarget({});
-  const { protocol: bp } = new TestRunner.Session(testRunner, sessionId);
+  const {protocol: bp} = testRunner.createSessionFor(sessionId);
   const fetcher = new FetchHelper(testRunner, bp);
 
   await fetcher.enable();

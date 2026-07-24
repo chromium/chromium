@@ -8,7 +8,7 @@
   browserTarget.onAttachedToTarget(async event => {
     if (event.params.targetInfo.type === 'page' &&
         event.params.targetInfo.url.includes('empty.html')) {
-      const s = new TestRunner.Session(testRunner, event.params.sessionId);
+      const s = testRunner.createSessionFor(event.params.sessionId);
       s.protocol.Page.enable();
       loadPromises.push(s.protocol.Page.onceLoadEventFired());
     }

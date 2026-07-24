@@ -11,7 +11,7 @@
 
   const {sessionId} =
       (await testRunner.browserP().Target.attachToBrowserTarget({})).result;
-  const bp = (new TestRunner.Session(testRunner, sessionId)).protocol;
+  const bp = (testRunner.createSessionFor(sessionId)).protocol;
 
   const targetInfoResponse = await dp.Target.getTargetInfo();
   const initialTargetId =
@@ -65,7 +65,7 @@
   });
 
   const {sessionId: childSessionId} = await targetAttachedPromise;
-  const childSession = new TestRunner.Session(testRunner, childSessionId);
+  const childSession = testRunner.createSessionFor(childSessionId);
   const hasOpener = await childSession.evaluate('window.opener !== null');
   if (!hasOpener) {
     testRunner.log('PASS');

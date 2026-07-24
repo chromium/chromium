@@ -41,7 +41,7 @@
   }
   const allVersionsUpdated = Promise.all([waitWorkerUpdated(/scope1$/), waitWorkerUpdated(/scope2$/)]);
   const attachedToNewVersion = (await bp.Target.onceAttachedToTarget()).params;
-  const session2 = new TestRunner.Session(testRunner, attachedToNewVersion.sessionId);
+  const session2 = testRunner.createSessionFor(attachedToNewVersion.sessionId);
   const token1 = await session2.evaluate(`self.testToken = 41`);
   await session2.protocol.Runtime.runIfWaitingForDebugger();
   await dp.ServiceWorker.onceWorkerVersionUpdated(e => e.params.versions.find(v => /scope1$/.test(v.scriptURL) && v.runningStatus === 'running'));

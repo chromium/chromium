@@ -10,7 +10,7 @@
   /**
    * @param {!TestRunner} testRunner Host TestRunner instance.
    * @param {!Proxy} dp DevTools session protocol instance.
-   * @param {!Page} page TestRunner.Page instance.
+   * @param {!Page} page Page instance.
    */
   constructor(testRunner, dp) {
     this.testRunner_ = testRunner;

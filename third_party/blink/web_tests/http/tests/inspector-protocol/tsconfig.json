@@ -8,7 +8,9 @@
     "paths": {
       "test_runner": ["./resources/inspector-protocol-test.js"]
     },
-    "moduleResolution": "NodeNext"
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": true
   },
   "include": [
     "./"

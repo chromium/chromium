@@ -11,7 +11,7 @@
   const tracingHelper = new TracingHelper(testRunner, tabTargetSession);
 
   const childTargetManager =
-      new TestRunner.ChildTargetManager(testRunner, tabTargetSession);
+      testRunner.createChildTargetManagerFor(tabTargetSession);
   await childTargetManager.startAutoAttach();
   const primarySession =
       childTargetManager.findAttachedSessionPrimaryMainFrame();

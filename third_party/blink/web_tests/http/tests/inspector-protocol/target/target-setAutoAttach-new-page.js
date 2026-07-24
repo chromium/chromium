@@ -8,13 +8,14 @@
   const response = await target.attachToBrowserTarget();
 
   const newBrowserSession =
-      new TestRunner.Session(testRunner, response.result.sessionId);
+      testRunner.createSessionFor(response.result.sessionId);
   const newUrl = testRunner.url('../resources/test-page.html?newpage');
   newBrowserSession.protocol.Target.createTarget({url: newUrl});
   const attachedEvent = await target.onceAttachedToTarget();
   testRunner.log(attachedEvent, 'Attached to the new page: ');
 
-  const newSession = new TestRunner.Session(testRunner, attachedEvent.params.sessionId);
+  const newSession =
+      testRunner.createSessionFor(attachedEvent.params.sessionId);
   newSession.protocol.Inspector.onTargetReloadedAfterCrash(
       event => testRunner.log(event, 'FAIL: received spurious event '));
   await newSession.protocol.Runtime.runIfWaitingForDebugger();

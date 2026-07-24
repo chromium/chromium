@@ -6,7 +6,7 @@
   testRunner.log('Tests geolocation request does not crash headless.\n');
   const { result: { sessionId } } =
       await testRunner.browserP().Target.attachToBrowserTarget({});
-  const { protocol: bProtocol } = new TestRunner.Session(testRunner, sessionId);
+  const {protocol: bProtocol} = testRunner.createSessionFor(sessionId);
   const { result: { browserContextId } } =
       await bProtocol.Target.createBrowserContext();
   await bProtocol.Browser.grantPermissions({
@@ -22,8 +22,7 @@
     });
     const { result: { sessionId } } =
         await bProtocol.Target.attachToTarget({ targetId, flatten: true });
-    const { protocol: pProtocol } =
-        new TestRunner.Session(testRunner, sessionId);
+    const {protocol: pProtocol} = testRunner.createSessionFor(sessionId);
 
     // We need to load page off HTTPS, so use interception
     {

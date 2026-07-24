@@ -5,8 +5,7 @@
   const target = testRunner.browserP().Target;
   const response = await target.attachToBrowserTarget();
 
-  const browserSession =
-      new TestRunner.Session(testRunner, response.result.sessionId);
+  const browserSession = testRunner.createSessionFor(response.result.sessionId);
   const newUrl = 'http://cross-site.test:8080/inspector-protocol/resources/test-page.html';
   const {result} = await browserSession.protocol.Target.createTarget({
                      url: newUrl, forTab: true });

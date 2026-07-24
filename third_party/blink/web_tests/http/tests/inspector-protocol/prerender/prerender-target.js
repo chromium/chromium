@@ -9,7 +9,7 @@
   tp.Target.enable();
 
   const childTargetManager =
-      new TestRunner.ChildTargetManager(testRunner, tabTargetSession);
+      testRunner.createChildTargetManagerFor(tabTargetSession);
   await childTargetManager.startAutoAttach();
 
   // For the triggering page.

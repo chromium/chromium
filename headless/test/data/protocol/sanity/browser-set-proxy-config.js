@@ -6,7 +6,7 @@
   testRunner.log('Tests that headless session can configure proxy.\n');
   const { result: { sessionId } } =
       await testRunner.browserP().Target.attachToBrowserTarget({});
-  const { protocol: bProtocol } = new TestRunner.Session(testRunner, sessionId);
+  const {protocol: bProtocol} = testRunner.createSessionFor(sessionId);
 
   async function dumpWithProxyServer(targetUrl, proxyServer) {
     const { result: { browserContextId } } =
@@ -19,8 +19,7 @@
 
     const { result: { sessionId } } =
         await bProtocol.Target.attachToTarget({ targetId, flatten: true });
-    const { protocol: pProtocol } =
-        new TestRunner.Session(testRunner, sessionId);
+    const {protocol: pProtocol} = testRunner.createSessionFor(sessionId);
     await pProtocol.Page.enable({});
     await pProtocol.Page.navigate({ url: targetUrl });
     await pProtocol.Page.onceLoadEventFired();

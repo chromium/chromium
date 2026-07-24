@@ -14,7 +14,7 @@
 
   const response = await testRunner.browserP().Target.attachToBrowserTarget();
   const newBrowserSession =
-      new TestRunner.Session(testRunner, response.result.sessionId);
+      testRunner.createSessionFor(response.result.sessionId);
 
   newBrowserSession.protocol.Target.onAttachedToTarget((tabTargetParams) => {
     // Attached to tab target.

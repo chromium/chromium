@@ -36,7 +36,7 @@
         `Preload.prefetchStatusUpadted should be emitted for prefetch ahead of prerender`);
 
     const childTargetManager =
-        new TestRunner.ChildTargetManager(testRunner, tabTargetSession);
+        testRunner.createChildTargetManagerFor(tabTargetSession);
     await childTargetManager.startAutoAttach();
     const session = childTargetManager.findAttachedSessionPrimaryMainFrame();
     const dp = session.protocol;
@@ -106,7 +106,7 @@
         `pipelineId should differ if a prefetch is triggered and then a prerender is triggered`);
 
     const childTargetManager =
-        new TestRunner.ChildTargetManager(testRunner, tabTargetSession);
+        testRunner.createChildTargetManagerFor(tabTargetSession);
     await childTargetManager.startAutoAttach();
     const session = childTargetManager.findAttachedSessionPrimaryMainFrame();
     const dp = session.protocol;

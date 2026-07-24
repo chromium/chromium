@@ -14,7 +14,8 @@
   const frameId = attachedEvent.params.targetInfo.targetId;
   const worldName = 'testWorld';
 
-  const {protocol: dp} = new TestRunner.Session(testRunner, attachedEvent.params.sessionId);
+  const {protocol: dp} =
+      testRunner.createSessionFor(attachedEvent.params.sessionId);
   dp.Runtime.enable();
   dp.Page.enable();
   const worldPromise = dp.Page.createIsolatedWorld({frameId, worldName})

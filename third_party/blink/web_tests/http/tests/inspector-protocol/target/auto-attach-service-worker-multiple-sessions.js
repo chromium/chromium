@@ -5,12 +5,12 @@
   const swHelper = (await testRunner.loadScript('../service-worker/resources/service-worker-helper.js'))(dp, session);
 
   const attachedToPage = (await testRunner.browserP().Target.attachToTarget({targetId: page.targetId(), flatten: true})).result;
-  const session2 = new TestRunner.Session(testRunner, attachedToPage.sessionId);
+  const session2 = testRunner.createSessionFor(attachedToPage.sessionId);
   const dp2 = session2.protocol;
 
   dp.Target.onAttachedToTarget(event => {
     testRunner.log(`session 1 attached, waiting: ${event.params.waitingForDebugger}`);
-    const swSession = new TestRunner.Session(testRunner, event.params.sessionId);
+    const swSession = testRunner.createSessionFor(event.params.sessionId);
     swSession.protocol.Runtime.runIfWaitingForDebugger();
   })
   await dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
@@ -20,7 +20,7 @@
 
   const attachedToSW = (await dp2.Target.onceAttachedToTarget(event => event.params.targetInfo.type === "service_worker")).params;
   testRunner.log(`session 2 attached, waiting: ${attachedToSW.waitingForDebugger}`);
-  const swSession = new TestRunner.Session(testRunner, attachedToSW.sessionId);
+  const swSession = testRunner.createSessionFor(attachedToSW.sessionId);
   swSession.protocol.Runtime.runIfWaitingForDebugger();
   await workerReady;
   const href = await swSession.evaluate(`location.href`);

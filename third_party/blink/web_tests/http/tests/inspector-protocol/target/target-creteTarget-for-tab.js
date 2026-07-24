@@ -8,7 +8,7 @@
   const response = await target.attachToBrowserTarget();
 
   const newBrowserSession =
-      new TestRunner.Session(testRunner, response.result.sessionId);
+      testRunner.createSessionFor(response.result.sessionId);
   const newUrl = testRunner.url('../resources/test-page.html');
   const {result} = await newBrowserSession.protocol.Target.createTarget({
                      url: newUrl,

@@ -16,15 +16,28 @@
 /**
  * Typedefs short names.
  *
- * @typedef {import("devtools-protocol/types/protocol").Protocol} Protocol
- * @typedef {import("devtools-protocol/types/protocol-tests-proxy-api").ProtocolTestsProxyApi} ProtocolTestsProxyApi
+ * @typedef {import("devtools-protocol/types/protocol.d.ts").Protocol} Protocol
+ * @typedef {import("devtools-protocol/types/protocol-tests-proxy-api.d.ts").ProtocolTestsProxyApi.ProtocolApi}
+ * ProtocolApi
  */
 
 
 class TestRunner {
-  static get Page() { return Page; }
-  static get Session() { return Session; }
-  static get ChildTargetManager() { return ChildTargetManager; }
+  /**
+   * @param {string} sessionId
+   * @returns {Session}
+   */
+  createSessionFor(sessionId) {
+    return new Session(this, sessionId)
+  }
+
+  /**
+   * @param {string} sessionId
+   * @returns {ChildTargetManager}
+   */
+  createChildTargetManagerFor(sessionId) {
+    return new ChildTargetManager(this, sessionId)
+  }
 
   _dumpInspectorProtocolMessages = false;
   _protocolTimeout = 0;
@@ -37,7 +50,7 @@ class TestRunner {
     this._completeTest = completeTest;
     this._fetch = fetch;
     this._params = params;
-    this._browserSession = new TestRunner.Session(this, '');
+    this._browserSession = new Session(this, '');
   }
 
   static get stabilizeNames() {
@@ -101,8 +114,10 @@ class TestRunner {
 
   params(name) {
     if (name) {
-      return this._params instanceof URLSearchParams
-          ? this._params.get(name) : this._params[name];
+      if (this._params instanceof URLSearchParams) {
+        return this._params.get(name);
+      }
+      return this._params[name];
     }
 
     return this._params;
@@ -176,14 +191,11 @@ class TestRunner {
   }
 
   url(relative) {
-    if (
-      relative.startsWith('http://') ||
-      relative.startsWith('https://') ||
-      relative.startsWith('file://') ||
-      relative.startsWith('chrome://') ||
-      relative === 'about:blank'
-    )
+    if (relative.startsWith('http://') || relative.startsWith('https://') ||
+        relative.startsWith('file://') || relative.startsWith('chrome://') ||
+        relative === 'about:blank') {
       return relative;
+    }
     return this._targetBaseURL + relative;
   }
 
@@ -266,7 +278,7 @@ class TestRunner {
   async attachFullBrowserSession() {
     const bp = this._browserSession.protocol;
     const browserSessionId = (await bp.Target.attachToBrowserTarget()).result.sessionId;
-    return new TestRunner.Session(this, browserSessionId);
+    return new Session(this, browserSessionId);
   }
 
   async createPage(options) {
@@ -284,7 +296,7 @@ class TestRunner {
       params.browserContextId = browserContextId;
     }
     const targetId = (await browserProtocol.Target.createTarget(params)).result.targetId;
-    const page = new TestRunner.Page(this, targetId);
+    const page = new Page(this, targetId);
     let url = options.url || DevToolsHost.dummyPageURL;
     if (!url) {
       url = window.location.href;
@@ -348,7 +360,7 @@ class TestRunner {
           targetId: tabTargetId,
                                    flatten: true
                                  })).result.sessionId;
-      const tabTargetSession = new TestRunner.Session(this, tabTargetSessionId);
+      const tabTargetSession = new Session(this, tabTargetSessionId);
 
       return {tabTargetSession};
     } catch (e) {
@@ -390,6 +402,25 @@ class TestRunner {
                                           }:${location.columnNumber}`);
     }
   }
+
+  static wrapPromiseWithTimeout(promise, timeout, label) {
+    if (!timeout) {
+      return promise;
+    }
+    let timerId;
+    // For a clearer stack trace, creating the error first.
+    const error = new Error(`Timed out at ${label}`);
+    const timeoutPromise = new Promise(resolve => {
+      timerId = setTimeout(resolve, timeout);
+    });
+    return Promise.race([
+      promise.then(result => {
+        clearTimeout(timerId);
+        return result;
+      }),
+      timeoutPromise.then(() => Promise.reject(error))
+    ]);
+  };
 };
 
 class Page {
@@ -405,7 +436,7 @@ class Page {
   async createSession() {
     let dp = this._testRunner._browserSession.protocol;
     const sessionId = (await dp.Target.attachToTarget({targetId: this._targetId, flatten: true})).result.sessionId;
-    return new TestRunner.Session(this._testRunner, sessionId);
+    return new Session(this._testRunner, sessionId);
   }
 
   navigate(url) {
@@ -463,7 +494,7 @@ class Session {
   }
 
   createChild(sessionId) {
-    const session = new TestRunner.Session(this._testRunner, sessionId);
+    const session = new Session(this._testRunner, sessionId);
     session._parentSessionId = this._sessionId;
     return session;
   }
@@ -535,7 +566,7 @@ class Session {
   }
 
   /**
-   * @returns {ProtocolTestsProxyApi.ProtocolApi}
+   * @returns {ProtocolApi}
    */
   _setupProtocol() {
     return new Proxy({}, {
@@ -594,12 +625,12 @@ class Session {
 
 /**
  * Helper class to collect information of auto attached targets and
- * create `TestRunner.Session` from them.
+ * create `Session` from them.
  */
 class ChildTargetManager {
   /**
    * @param {TestRunner} testRunner
-   * @param {TestRunner.Session} session
+   * @param {Session} session
    */
   constructor(testRunner, session) {
     this._testRunner = testRunner;
@@ -625,7 +656,7 @@ class ChildTargetManager {
 
   /**
    * @param {function(Protocol.Target.TargetInfo): boolean} pred
-   * @returns {TestRunner.Session|null}
+   * @returns {Session|null}
    */
   findAttachedSession(pred) {
     const found =
@@ -634,7 +665,7 @@ class ChildTargetManager {
   }
 
   /**
-   * @returns {TestRunner.Session|null}
+   * @returns {Session|null}
    */
   findAttachedSessionPrimaryMainFrame() {
     return this.findAttachedSession(
@@ -643,7 +674,7 @@ class ChildTargetManager {
   }
 
   /**
-   * @returns {TestRunner.Session|null}
+   * @returns {Session|null}
    */
   findAttachedSessionPrerender() {
     return this.findAttachedSession(
@@ -849,23 +880,6 @@ window.addEventListener('unhandledrejection', e => {
   DevToolsAPI._completeTest();
 }, false);
 
-TestRunner.wrapPromiseWithTimeout = (promise, timeout, label) => {
-  if (!timeout)
-    return promise;
-  let timerId;
-  // For a clearer stack trace, creating the error first.
-  const error = new Error(`Timed out at ${label}`);
-  const timeoutPromise = new Promise(resolve => {
-    timerId = setTimeout(resolve, timeout);
-  });
-  return Promise.race([
-    promise.then(result => {
-      clearTimeout(timerId);
-      return result;
-    }),
-    timeoutPromise.then(() => Promise.reject(error))
-  ]);
-};
 
 if (self.exports !== undefined) {
   exports.TestRunner = TestRunner;

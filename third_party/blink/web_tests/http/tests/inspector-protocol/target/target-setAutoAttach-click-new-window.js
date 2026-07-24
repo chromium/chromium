@@ -17,7 +17,8 @@
     const attachedEvent = await attachedEventPromise;
     testRunner.log('Attached to new window');
 
-    const popupSession = new TestRunner.Session(testRunner, attachedEvent.params.sessionId);
+    const popupSession =
+        testRunner.createSessionFor(attachedEvent.params.sessionId);
     const dp = popupSession.protocol;
     await Promise.all([
       dp.Emulation.setUserAgentOverride({ userAgent: 'Overridden value' }),

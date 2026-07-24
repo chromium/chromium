@@ -10,8 +10,7 @@
   const tabTargetSessionId =
       (await bp.Target.attachToTarget({targetId: tabTargetId, flatten: true}))
           .result.sessionId;
-  const tabTargetSession =
-      new TestRunner.Session(testRunner, tabTargetSessionId);
+  const tabTargetSession = testRunner.createSessionFor(tabTargetSessionId);
   const tp = tabTargetSession.protocol;
 
   const events = [];

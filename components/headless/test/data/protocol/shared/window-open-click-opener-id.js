@@ -10,7 +10,7 @@
 
   const {sessionId} =
       (await testRunner.browserP().Target.attachToBrowserTarget({})).result;
-  const bp = (new TestRunner.Session(testRunner, sessionId)).protocol;
+  const bp = (testRunner.createSessionFor(sessionId)).protocol;
 
   const targetInfoResponse = await dp.Target.getTargetInfo();
   const initialTargetId =

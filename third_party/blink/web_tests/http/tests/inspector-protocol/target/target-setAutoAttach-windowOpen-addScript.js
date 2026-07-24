@@ -13,7 +13,8 @@
   const attachedEvent = await target.onceAttachedToTarget();
   testRunner.log('Attached to the popup window, waitingForDebugger=' + attachedEvent.params.waitingForDebugger);
 
-  const popupSession = new TestRunner.Session(testRunner, attachedEvent.params.sessionId);
+  const popupSession =
+      testRunner.createSessionFor(attachedEvent.params.sessionId);
   popupSession.protocol.Runtime.enable();
   popupSession.protocol.Page.addScriptToEvaluateOnNewDocument({ source: 'window.foo = 0;' });
   popupSession.protocol.Page.addScriptToEvaluateOnNewDocument({ source: 'window.foo += 42;' });

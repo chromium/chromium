@@ -16,7 +16,7 @@
         (await testRunner.browserP().Target.onceAttachedToTarget())
         .params.sessionId;
 
-  const session = new TestRunner.Session(testRunner, sessionId);
+  const session = testRunner.createSessionFor(sessionId);
 
   const browserContextId =
         (await session.protocol.Target.createBrowserContext()).browserContextId;

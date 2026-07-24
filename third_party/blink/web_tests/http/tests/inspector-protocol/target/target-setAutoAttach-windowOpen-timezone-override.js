@@ -19,7 +19,8 @@
   `);
   testRunner.log('Opened the window');
   const attachedEvent = await target.onceAttachedToTarget();
-  const popupSession = new TestRunner.Session(testRunner, attachedEvent.params.sessionId);
+  const popupSession =
+      testRunner.createSessionFor(attachedEvent.params.sessionId);
   popupSession.protocol.Page.enable();
   popupSession.protocol.Runtime.runIfWaitingForDebugger();
   await popupSession.protocol.Page.onceLoadEventFired();

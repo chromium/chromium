@@ -17,7 +17,8 @@
   const [swTarget, swAttachedEvent] = await Promise.all(swTargetPromises);
   const swTargetInfo = swTarget.params.targetInfo;
   testRunner.log(`Started and attached to ${swTargetInfo.type} target, waitingForDebugger=${swAttachedEvent.params.waitingForDebugger}`);
-  const swSession = new TestRunner.Session(testRunner, swAttachedEvent.params.sessionId);
+  const swSession =
+      testRunner.createSessionFor(swAttachedEvent.params.sessionId);
   testRunner.log('self.globalVar = ' + await swSession.evaluate('self.globalVar'));
   await Promise.all([
     swSession.protocol.Runtime.runIfWaitingForDebugger(),

@@ -8,7 +8,7 @@
   async function createSession() {
     const {result: {sessionId}} =
         await testRunner.browserP().Target.attachToBrowserTarget();
-    return new TestRunner.Session(testRunner, sessionId);
+    return testRunner.createSessionFor(sessionId);
   }
 
   async function dumpContextNumber() {

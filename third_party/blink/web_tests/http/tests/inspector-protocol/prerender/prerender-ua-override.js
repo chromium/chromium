@@ -3,7 +3,7 @@
       `Tests that prerender gets the UA override.`);
 
   const childTargetManager =
-      new TestRunner.ChildTargetManager(testRunner, tabTargetSession);
+      testRunner.createChildTargetManagerFor(tabTargetSession);
   await childTargetManager.startAutoAttach(
       {autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
   const session1 = childTargetManager.findAttachedSessionPrimaryMainFrame();

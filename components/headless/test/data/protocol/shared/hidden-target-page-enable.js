@@ -25,8 +25,8 @@
       await testRunner.browserP().Target.onceAttachedToTarget();
   testRunnerLog('Attached to the hidden target');
 
-  const hiddenSession = new TestRunner.Session(
-      testRunner, attachedToHiddenTargetEvent.params.sessionId);
+  const hiddenSession =
+      testRunner.createSessionFor(attachedToHiddenTargetEvent.params.sessionId);
 
   testRunnerLog('Enable page');
   testRunnerLog(await hiddenSession.protocol.Page.enable());

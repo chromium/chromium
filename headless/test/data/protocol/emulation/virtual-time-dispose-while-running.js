@@ -15,7 +15,7 @@
       target => target.url.endsWith('inspector-protocol-page.html'));
   const sessionId = (await bp.Target.attachToTarget({
       targetId: pageTarget.targetId, flatten: true})).result.sessionId;
-  const session2 = new TestRunner.Session(testRunner, sessionId);
+  const session2 = testRunner.createSessionFor(sessionId);
   const dp2 = session2.protocol;
 
   const FetchHelper = await testRunner.loadScriptAbsolute(

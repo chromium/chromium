@@ -34,7 +34,7 @@
   const frame1_attached = (await bp.Target.onceAttachedToTarget()).params;
   const frame1SessionId = frame1_attached.sessionId;
   const frame1TargetId = frame1_attached.targetInfo.targetId;
-  const frame1_session = new TestRunner.Session(testRunner, frame1SessionId);
+  const frame1_session = testRunner.createSessionFor(frame1SessionId);
 
   await page2_session.evaluateAsync(`(${createChildFrame})('https://devtools.oopif.test:8443/inspector-protocol/resources/iframe.html')`);
 
@@ -43,7 +43,7 @@
   frame1_session.evaluate(`(${createChildFrame})('http://inner-frame.test:8080/inspector-protocol/resources/iframe.html')`);
 
   const frame11SessionId = (await bp.Target.onceAttachedToTarget()).params.sessionId;
-  const frame11_dp = (new TestRunner.Session(testRunner, frame11SessionId)).protocol;
+  const frame11_dp = (testRunner.createSessionFor(frame11SessionId)).protocol;
   await frame11_dp.Runtime.runIfWaitingForDebugger();
 
   // Change waitForDebuggerOnStart for the tartget we already observe...
@@ -51,7 +51,7 @@
   // and assure it has the effect.
   page1_session.evaluate(`(${createChildFrame})('http://devtools.oopif.test:8080/inspector-protocol/resources/iframe.html?frame3')`);
   const frame3SessionId = (await bp.Target.onceAttachedToTarget()).params.sessionId;
-  const frame3_dp = (new TestRunner.Session(testRunner, frame3SessionId)).protocol;
+  const frame3_dp = (testRunner.createSessionFor(frame3SessionId)).protocol;
   frame3_dp.Runtime.runIfWaitingForDebugger();
 
   page1_session.evaluate(`document.body.textContent='';`);
