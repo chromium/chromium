@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "services/webnn/ort/environment.h"
@@ -18,6 +19,7 @@
 #include "services/webnn/public/cpp/ep_device_info.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/mojom/features.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_service_introspection.mojom.h"
 #include "services/webnn/webnn_switches.h"
@@ -190,6 +192,15 @@ ScopedOrtSessionOptions CreateBaseSessionOptions(
   // uint8 Cast nodes in some cases since WebNN doesn't support bool data type
   // but ONNX models may use bool type for some control flow. This optimization
   // can help eliminate unnecessary Cast operations in the chain for bool type.
+  //
+  // NOTE: CastChainElimination is a Level1 (ORT_ENABLE_BASIC) rewrite rule, and
+  // it is AND-gated by both this flag and the graph optimization level: ORT
+  // only registers it inside the Level1 rule set (see
+  // graph_transformer_utils.cc). So this flag is necessary but not sufficient -
+  // at ORT_DISABLE_ALL the Level1 rules are not registered and this elimination
+  // does NOT run even with the flag set. Since it runs pre-partition, the level
+  // must be >= BASIC for any EP (including compiling EPs) to receive a graph
+  // with the bool<->uint8 chains already folded.
   CHECK_STATUS(ort_api->AddSessionConfigEntry(
       session_options.get(),
       /*config_key=*/kOrtSessionOptionsEnableCastChainElimination,
@@ -272,10 +283,31 @@ SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
 scoped_refptr<SessionOptions> SessionOptions::Create(
     const EpDeviceInfo& target_device,
     scoped_refptr<Environment> env) {
+  // This overload is only used by the compiler process.
+  CHECK(base::FeatureList::IsEnabled(mojom::features::kWebNNCompilerProcess));
+
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
   ScopedOrtSessionOptions session_options =
       CreateBaseSessionOptions(target_device.ep_name);
+
+  // Consume the compiled model with graph optimizations disabled. In the
+  // offline-compile flow the GPU process loads a model that the sandboxed
+  // Compiler process already fully optimized (it runs at ORT_ENABLE_ALL, see
+  // compiler_context_impl_ort.cc), so re-optimizing here would be wasted work.
+  // More importantly, this is a security boundary: the high-privilege GPU
+  // process must not run graph transformation over attacker-influenced input,
+  // so all transformation is confined to the sandboxed Compiler process.
+  //
+  // This overload is also used by the Compiler process (CompileModel) and its
+  // EP warmup, where the level is ignored because
+  // CreateModelCompilationOptionsFromSessionOptions resets it; so setting it
+  // here effectively targets only the GPU-process dispatch session that
+  // consumes a precompiled model via CreateSessionFromArray. It overrides any
+  // --webnn-ort-graph-optimization-level switch applied in the base options,
+  // which is intended: the security boundary is not a debug-tunable knob.
+  CHECK_STATUS(ort_api->SetSessionGraphOptimizationLevel(session_options.get(),
+                                                         ORT_DISABLE_ALL));
 
   // Disable CPU EP fallback to ensure the session will be created on the
   // expected EP device.

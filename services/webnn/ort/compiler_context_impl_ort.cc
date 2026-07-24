@@ -134,6 +134,20 @@ CompilerContextImplOrt::CompileOnBackgroundThread(
     return BuildGraphError();
   }
 
+  // Run all graph optimizations (L1-L4) in this sandboxed Compiler process so
+  // the fully optimized graph is captured in the compiled output buffer. The
+  // GPU process consumes that buffer with ORT_DISABLE_ALL (see
+  // ort_session_options.cc), performing zero graph transformation on untrusted
+  // input. The level must be set on the compile options here, not on the
+  // session options: CreateModelCompilationOptionsFromSessionOptions forces the
+  // level back to Default (see model_compilation_options.cc), so any level on
+  // the session options is ignored on the compile path.
+  if (ORT_CALL_FAILED(
+          ort_compile_api->ModelCompilationOptions_SetGraphOptimizationLevel(
+              compile_options.get(), ORT_ENABLE_ALL))) {
+    return BuildGraphError();
+  }
+
   if (ORT_CALL_FAILED(ort_compile_api->ModelCompilationOptions_SetInputModel(
           compile_options.get(), model_info->model.get()))) {
     return BuildGraphError();
