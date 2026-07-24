@@ -182,6 +182,39 @@
         "next_stage"
       ]
     },
+    "RefactoringMeta": {
+      "type": "object",
+      "properties": {
+        "original_commit": {
+          "type": "string"
+        },
+        "file_mappings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "original_file": {
+                "type": "string"
+              },
+              "new_files": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "original_file",
+              "new_files"
+            ]
+          }
+        }
+      },
+      "required": [
+        "original_commit",
+        "file_mappings"
+      ]
+    },
     "ProjectSpec": {
       "type": "object",
       "properties": {
@@ -190,7 +223,8 @@
           "enum": [
             "IMPLEMENTATION",
             "REVIEW",
-            "AUDIT"
+            "AUDIT",
+            "REFACTORING"
           ]
         },
         "execution_path": {
@@ -259,6 +293,9 @@
         },
         "environment": {
           "$ref": "#/definitions/EnvironmentDef"
+        },
+        "refactoring_meta": {
+          "$ref": "#/definitions/RefactoringMeta"
         }
       },
       "required": [

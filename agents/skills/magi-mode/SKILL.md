@@ -35,8 +35,8 @@ specific task.
 - **Synthesis:** Writes the actual C++ code by combining technical requirements
   and adhering to constraints.
 - **The Scanners (Auditors):** Specialized technical mandates (Security,
-  Performance, Auditor, etc.) that perform rigorous, boolean-checklist-based
-  audits of the generated code.
+  Performance, Auditor, Refactoring Auditor, etc.) that perform rigorous,
+  boolean-checklist-based audits of the generated code.
 
 ## The Auxiliary Modules
 
@@ -52,6 +52,11 @@ To maintain focus and avoid context dilution, specialized tasks are delegated:
 
 3. **Release:** A terminal module invoked with a clean context to handle
    workspace hygiene, formatting, and final staging/upload of CLs.
+
+4. **Refactoring Reviewer (Subagent):** A specialized subagent invoked for
+   high-complexity refactoring tasks. It has the autonomy to write custom
+   comparison scripts and run tests to verify that no behavior or assertions are
+   lost.
 
 **TONE MANDATE (SIGNAL-TO-NOISE):** To eliminate conversational noise, conserve
 tokens, and maximize parsing stability, the Orchestrator MUST instruct ALL
@@ -117,8 +122,8 @@ are deterministic.*
 
 ## Workflow Stages
 
-The MAGI protocol runs through four distinct stages. To reduce LLM context
-size, detailed step-by-step rules for each stage are maintained in separate
+The MAGI protocol runs through four distinct stages. To reduce LLM context size,
+detailed step-by-step rules for each stage are maintained in separate
 references:
 
 1. **Stage 1: Specify & Investigate**: Scoping, environment grounding, and
@@ -127,13 +132,13 @@ references:
 2. **Stage 2: Generate**: Scaffold generation, test bounds (TDD), parallel
    implementations, and synthesis.
    - Reference: [stage2_generate.md](./references/stage2_generate.md)
-   - *TDD Mandate:* To enforce Test-Driven Development, stubbed tests MUST
-     fail by default using `ADD_FAILURE() << "NOT IMPLEMENTED"`.
+   - *TDD Mandate:* To enforce Test-Driven Development, stubbed tests MUST fail
+     by default using `ADD_FAILURE() << "NOT IMPLEMENTED"`.
 3. **Stage 3: Refine**: Multi-agent audits (checklist review), constraint
    consolidation, conflict resolution, and training.
    - Reference: [stage3_refine.md](./references/stage3_refine.md)
-4. **Stage 4: Release**: Final validation, workspace cleanup, formatting,
-   and CL deployment.
+4. **Stage 4: Release**: Final validation, workspace cleanup, formatting, and CL
+   deployment.
    - Reference: [stage4_release.md](./references/stage4_release.md)
 
 ### Specialized Modes

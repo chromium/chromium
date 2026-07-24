@@ -49,6 +49,9 @@
      `PREPARATION`.
    - `AUDIT`: For analyzing existing code for modernization or flaws. Sets
      `next_stage` to `PREPARATION`.
+   - `REFACTORING`: For restructuring existing code without changing behavior
+     (e.g., splitting files, extracting classes). Sets `next_stage` to
+     `PREPARATION`.
 4. **Context Resolution (The Stop-and-Verify Gate):** Scoping MUST verify that
    all external context (e.g., Buganizer links, documentation URLs) has been
    successfully retrieved and parsed. If any link returned a login prompt,
@@ -68,7 +71,10 @@
    - **Confirmation Details:** During the gate, Scoping MUST present the
      discovered `goal`, `target_files`, and **Build Parameters** (Debug/Release,
      reclient status, and `output_directory`) to the user for verification.
-6. **JSON Contract (`project.magi.json`):** See [EXAMPLES.md](../EXAMPLES.md) for
-   a full example. *Tooling Selection:* The combination of `repo_type`, `vcs`,
-   and `harness` in the `environment` block determines the exact build, test,
-   and upload commands used by the agents.
+6. **Refactoring Metadata:** If `task_type` is `REFACTORING`, Scoping MUST
+   populate `refactoring_meta` in `project.magi.json` with the `original_commit`
+   and `file_mappings` to trace code movement.
+7. **JSON Contract (`project.magi.json`):** See [EXAMPLES.md](../EXAMPLES.md)
+   for a full example. *Tooling Selection:* The combination of `repo_type`,
+   `vcs`, and `harness` in the `environment` block determines the exact build,
+   test, and upload commands used by the agents.

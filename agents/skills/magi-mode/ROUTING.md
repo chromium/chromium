@@ -24,6 +24,9 @@ Specialized experts who perform rigorous, boolean-checklist-based audits.
   `personas/core/performance.json`
 - **The Core Auditor:** Consistency with existing patterns and idioms. *Path:*
   `personas/core/auditor.json`
+- **The Refactoring Auditor:** Correctness and completeness during refactoring
+  (tests, assertions, comments). *Path:*
+  `personas/core/refactoring_auditor.json`
 - **The Test Expert:** Testability, edge-cases, framework usage. *Path:*
   `personas/auxiliary/test.json`
 - **The Concurrency Expert:** `base::PostTask` safety, preventing deadlocks.
