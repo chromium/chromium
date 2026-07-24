@@ -87,11 +87,11 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     };
   }
 
-  private options: SeaPenOption[]|null;
-  private selectedChip: ChipToken|null;
-  private selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>;
-  private chipsExpanded_: boolean;
-  private shouldShowExpandButton_: boolean;
+  declare private options: SeaPenOption[]|null;
+  declare private selectedChip: ChipToken|null;
+  declare private selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>;
+  declare private chipsExpanded_: boolean;
+  declare private shouldShowExpandButton_: boolean;
   private debouncer_: Debouncer;
   private onResized_: () => void = () => {
     this.debouncer_ =
@@ -99,7 +99,7 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
           this.calculateHiddenOptions_();
         });
   };
-  private ironSelectedOption_: HTMLElement;
+  declare private ironSelectedOption_: HTMLElement;
 
   override connectedCallback() {
     super.connectedCallback();

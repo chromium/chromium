@@ -149,22 +149,22 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   }
 
   // TODO(b/319719709) this should be SeaPenTemplateId.
-  templateId: string|null;
-  private autoplay_: boolean;
-  private seaPenTemplate_: SeaPenTemplate;
-  private seaPenQuery_: SeaPenQuery|null;
-  private selectedOptions_: Map<SeaPenTemplateChip, SeaPenOption>;
-  private templateTokens_: TemplateToken[];
-  private options_: SeaPenOption[]|null;
-  private selectedChip_: ChipToken|null;
-  private thumbnails_: SeaPenThumbnail[]|null;
-  private thumbnailsLoading_: boolean;
-  private searchButtonText_: string;
-  private searchButtonIcon_: string;
-  private isSelectingOptions: boolean;
+  declare templateId: string|null;
+  declare private autoplay_: boolean;
+  declare private seaPenTemplate_: SeaPenTemplate;
+  declare private seaPenQuery_: SeaPenQuery|null;
+  declare private selectedOptions_: Map<SeaPenTemplateChip, SeaPenOption>;
+  declare private templateTokens_: TemplateToken[];
+  declare private options_: SeaPenOption[]|null;
+  declare private selectedChip_: ChipToken|null;
+  declare private thumbnails_: SeaPenThumbnail[]|null;
+  declare private thumbnailsLoading_: boolean;
+  declare private searchButtonText_: string;
+  declare private searchButtonIcon_: string;
+  declare private isSelectingOptions: boolean;
   private containerOriginalHeight_: number;
   private resizeObserver_: ResizeObserver;
-  private seaPenUseExptTemplateEnabled_: boolean;
+  declare private seaPenUseExptTemplateEnabled_: boolean;
 
   static get observers() {
     return [

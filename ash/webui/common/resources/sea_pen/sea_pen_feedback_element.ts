@@ -38,9 +38,9 @@ export class SeaPenFeedbackElement extends WithSeaPenStore {
     };
   }
 
-  selectedFeedbackOption: FeedbackOption;
-  thumbnail: SeaPenThumbnail;
-  inheritTabIndex: number;
+  declare selectedFeedbackOption: FeedbackOption;
+  declare thumbnail: SeaPenThumbnail;
+  declare inheritTabIndex: number;
 
   private notifySelectedOptionChanged_(isThumbsUp: boolean) {
     this.dispatchEvent(new CustomEvent('selected-feedback-changed', {

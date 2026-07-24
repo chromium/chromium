@@ -106,15 +106,15 @@ export class SeaPenInputQueryElement extends WithSeaPenStore {
     };
   }
 
-  private autoplay_: boolean;
-  private maxTextLength_: number;
-  private textValue_: string;
-  private seaPenQuery_: SeaPenQuery|null;
-  private thumbnails_: SeaPenThumbnail[]|null;
-  private thumbnailsLoading_: boolean;
-  private searchButtonText_: string|null;
-  private searchButtonIcon_: string;
-  private shouldShowSuggestions_: boolean;
+  declare private autoplay_: boolean;
+  declare private maxTextLength_: number;
+  declare private textValue_: string;
+  declare private seaPenQuery_: SeaPenQuery|null;
+  declare private thumbnails_: SeaPenThumbnail[]|null;
+  declare private thumbnailsLoading_: boolean;
+  declare private searchButtonText_: string|null;
+  declare private searchButtonIcon_: string;
+  declare private shouldShowSuggestions_: boolean;
   private innerContainerOriginalHeight_: number;
   private resizeObserver_: ResizeObserver;
   private replacePromptListener_: (e: SeaPenSampleSelectedEvent|

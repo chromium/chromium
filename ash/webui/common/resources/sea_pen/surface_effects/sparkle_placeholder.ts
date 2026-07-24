@@ -54,9 +54,9 @@ export class SparklePlaceholderElement extends PolymerElement {
     };
   }
 
-  active: boolean;
-  isDarkModeActive: boolean;
-  index: number;
+  declare active: boolean;
+  declare isDarkModeActive: boolean;
+  declare index: number;
   sparkleImpl = new Sparkle();
 
   override connectedCallback() {

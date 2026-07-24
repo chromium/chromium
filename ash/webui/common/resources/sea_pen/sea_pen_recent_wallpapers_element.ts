@@ -93,15 +93,15 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     };
   }
 
-  private recentImages_: SeaPenImageId[]|null;
-  private recentImageData_:
+  declare private recentImages_: SeaPenImageId[]|null;
+  declare private recentImageData_:
       Record<SeaPenImageId, RecentSeaPenThumbnailData|null>;
-  private recentImageDataLoading_: Record<SeaPenImageId, boolean>;
-  private recentImagesToDisplay_: SeaPenImageId[];
-  private currentShowWallpaperInfoDialog_: number|null;
-  private currentSelected_: SeaPenImageId|null;
-  private pendingSelected_: SeaPenImageId|SeaPenThumbnail|null;
-  private isSeaPenTextInputEnabled_: boolean;
+  declare private recentImageDataLoading_: Record<SeaPenImageId, boolean>;
+  declare private recentImagesToDisplay_: SeaPenImageId[];
+  declare private currentShowWallpaperInfoDialog_: number|null;
+  declare private currentSelected_: SeaPenImageId|null;
+  declare private pendingSelected_: SeaPenImageId|SeaPenThumbnail|null;
+  declare private isSeaPenTextInputEnabled_: boolean;
 
   static get observers() {
     return ['onRecentImageLoaded_(recentImageData_, recentImageDataLoading_)'];

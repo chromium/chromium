@@ -42,8 +42,8 @@ export class SeaPenChipTextElement extends PolymerElement {
     };
   }
 
-  textAnimationEnabled: boolean;
-  chipText: string;
+  declare textAnimationEnabled: boolean;
+  declare chipText: string;
 
   // gets an array of <span> elements storing the letters of `chipElement`
   // innerHTML.

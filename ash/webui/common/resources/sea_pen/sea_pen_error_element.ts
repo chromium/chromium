@@ -45,9 +45,9 @@ export class SeaPenErrorElement extends SeaPenErrorElementBase {
     };
   }
 
-  thumbnailResponseStatusCode: MantaStatusCode;
-  private errorMessage_: TrustedHTML;
-  private errorIllo_: string;
+  declare thumbnailResponseStatusCode: MantaStatusCode;
+  declare private errorMessage_: TrustedHTML;
+  declare private errorIllo_: string;
 
   private getErrorMessage_(statusCode: MantaStatusCode): TrustedHTML {
     switch (statusCode) {

@@ -66,8 +66,8 @@ export class SeaPenSamplesElement extends SeaPenSamplesElementBase {
     };
   }
 
-  private isTabHidden: boolean;
-  private samples: SeaPenSamplePrompt[];
+  declare private isTabHidden: boolean;
+  declare private samples: SeaPenSamplePrompt[];
 
   override connectedCallback() {
     super.connectedCallback();

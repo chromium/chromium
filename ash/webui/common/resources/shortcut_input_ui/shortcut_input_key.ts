@@ -79,12 +79,17 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
     };
   }
 
-  key: string;
-  keyState: KeyInputState;
-  narrow: boolean;
-  highlighted: boolean;
-  hasIcon: boolean;
-  metaKey: MetaKey = MetaKey.kSearch;
+  constructor() {
+    super();
+    this.metaKey = MetaKey.kSearch;
+  }
+
+  declare key: string;
+  declare keyState: KeyInputState;
+  declare narrow: boolean;
+  declare highlighted: boolean;
+  declare hasIcon: boolean;
+  declare metaKey: MetaKey;
 
   override connectedCallback(): void {
     super.connectedCallback();

@@ -36,9 +36,9 @@ export class SeaPenToastElement extends WithSeaPenStore {
     };
   }
 
-  private error_: string|null;
-  private isLoading_: boolean;
-  private showError_: boolean;
+  declare private error_: string|null;
+  declare private isLoading_: boolean;
+  declare private showError_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

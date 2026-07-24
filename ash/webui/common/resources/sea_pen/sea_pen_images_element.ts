@@ -202,21 +202,21 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     };
   }
 
-  private templateId: SeaPenTemplateId|Query;
-  private thumbnails_: SeaPenThumbnail[]|null;
-  private thumbnailsLoading_: boolean;
-  private tiles_: Tile[];
-  private currentSelected_: SeaPenImageId|null;
-  private pendingSelected_: SeaPenImageId|SeaPenThumbnail|null;
-  private thumbnailResponseStatusCode_: MantaStatusCode|null;
-  private showError_: boolean;
+  declare private templateId: SeaPenTemplateId|Query;
+  declare private thumbnails_: SeaPenThumbnail[]|null;
+  declare private thumbnailsLoading_: boolean;
+  declare private tiles_: Tile[];
+  declare private currentSelected_: SeaPenImageId|null;
+  declare private pendingSelected_: SeaPenImageId|SeaPenThumbnail|null;
+  declare private thumbnailResponseStatusCode_: MantaStatusCode|null;
+  declare private showError_: boolean;
   private cameraFeed_: HTMLVideoElement|null;
-  private isSeaPenTextInputEnabled_: boolean;
-  private isManagedSeaPenFeedbackEnabled_: boolean;
-  private showHistory_: boolean;
-  private seaPenQuery_: SeaPenQuery|null;
-  private textQueryHistory_: TextQueryHistoryEntry[]|null;
-  private latestTextQuery_: string|null;
+  declare private isSeaPenTextInputEnabled_: boolean;
+  declare private isManagedSeaPenFeedbackEnabled_: boolean;
+  declare private showHistory_: boolean;
+  declare private seaPenQuery_: SeaPenQuery|null;
+  declare private textQueryHistory_: TextQueryHistoryEntry[]|null;
+  declare private latestTextQuery_: string|null;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -78,13 +78,13 @@ export class SeaPenRouterElement extends WithSeaPenStore {
     return instance;
   }
 
-  basePath: string;
-  private path_: string;
-  private query_: string;
-  private queryParams_: SeaPenQueryParams;
-  private relativePath_: string|null;
-  private showSeaPenIntroductionDialog_: boolean;
-  private showSeaPenFreeformIntroductionDialog_: boolean;
+  declare basePath: string;
+  declare private path_: string;
+  declare private query_: string;
+  declare private queryParams_: SeaPenQueryParams;
+  declare private relativePath_: string|null;
+  declare private showSeaPenIntroductionDialog_: boolean;
+  declare private showSeaPenFreeformIntroductionDialog_: boolean;
 
   override connectedCallback() {
     assert(isSeaPenEnabled(), 'sea pen must be enabled');

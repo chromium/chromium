@@ -68,11 +68,11 @@ export class SeaPenFreeformElement extends WithSeaPenStore {
     };
   }
 
-  samples: SeaPenSamplePrompt[];
-  private freeformTab_: FreeformTab;
-  private seaPenQuery_: SeaPenQuery|null;
-  private thumbnailResponseStatusCode_: MantaStatusCode|null;
-  private thumbnails_: SeaPenThumbnail[]|null;
+  declare samples: SeaPenSamplePrompt[];
+  declare private freeformTab_: FreeformTab;
+  declare private seaPenQuery_: SeaPenQuery|null;
+  declare private thumbnailResponseStatusCode_: MantaStatusCode|null;
+  declare private thumbnails_: SeaPenThumbnail[]|null;
 
   override ready() {
     super.ready();

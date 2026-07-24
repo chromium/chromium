@@ -45,9 +45,9 @@ export class SeaPenTemplatesElement extends WithSeaPenStore {
     };
   }
 
-  private seaPenTemplates_: SeaPenTemplate[];
-  private selected_: SeaPenTemplate;
-  private hoveredTemplate_: SeaPenTemplate|null;
+  declare private seaPenTemplates_: SeaPenTemplate[];
+  declare private selected_: SeaPenTemplate;
+  declare private hoveredTemplate_: SeaPenTemplate|null;
 
   private getAriaIndex_(i: number): number {
     return i + 1;

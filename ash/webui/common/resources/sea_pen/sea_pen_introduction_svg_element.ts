@@ -32,7 +32,7 @@ export class SeaPenIntroductionSvgElement extends PolymerElement {
     return getTemplate();
   }
 
-  private isPersonalizationApp_: boolean;
+  declare private isPersonalizationApp_: boolean;
 }
 
 customElements.define(

@@ -51,7 +51,7 @@ export class ConnectivityDiagnosticsElement extends
     };
   }
 
-  private showFeedbackBtn_: boolean;
+  declare private showFeedbackBtn_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
