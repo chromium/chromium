@@ -535,6 +535,15 @@ struct ReshapeParams {
   bool is_input_constant;
 };
 
+struct ReverseParams {
+  OperandDataType data_type;
+  uint32_t rank;
+  std::array<uint32_t, 8> input_dims;
+  uint32_t num_axes;
+  std::array<uint32_t, 8> axes;
+  bool is_input_constant;
+};
+
 struct ScatterElementsParams {
   OperandDataType input_data_type;
   OperandDataType indices_data_type;
@@ -1536,6 +1545,19 @@ auto AnyReshapeParams() {
       AnyTensorRankIncludeZero(),          // output_rank
       fuzztest::ArrayOf<8>(AnyDimSize()),  // output_dim_seeds
       fuzztest::Arbitrary<bool>()          // is_input_constant
+  );
+}
+
+auto AnyReverseParams() {
+  const auto& limits = GetContextPropertiesForTesting().data_type_limits;
+  return fuzztest::StructOf<ReverseParams>(
+      AnyOperandDataTypeFor(limits.reverse_input.data_types),
+      AnyTensorRankIncludeZero(),          // rank
+      fuzztest::ArrayOf<8>(AnyDimSize()),  // input_dims
+      fuzztest::InRange<uint32_t>(0, 8),   // num_axes
+      fuzztest::ArrayOf<8>(                // axes
+          fuzztest::InRange<uint32_t>(0, 7)),
+      fuzztest::Arbitrary<bool>()  // is_input_constant
   );
 }
 
@@ -3144,6 +3166,7 @@ class WebNNGraphImplFuzzerImpl
   void Reduce(ReduceParams params, uint8_t seed_for_data);
   void Resample2d(Resample2dParams params, uint8_t seed_for_data);
   void Reshape(ReshapeParams params, uint8_t seed_for_data);
+  void Reverse(ReverseParams params, uint8_t seed_for_data);
   void ScatterElements(ScatterElementsParams params, uint8_t seed_for_data);
   void ScatterND(ScatterNDParams params, uint8_t seed_for_data);
   void Slice(SliceParams params, uint8_t seed_for_data);
@@ -5009,6 +5032,54 @@ void WebNNGraphImplFuzzerImpl<BaseFixture>::Resample2d(Resample2dParams params,
   resample2d_attr.scales = resample2d_descs.scales;
   resample2d_attr.axes = resample2d_descs.axes;
   builder.BuildResample2d(input_id, output_id, resample2d_attr);
+
+  if (!builder.IsValidGraphForTesting(this->context_properties())) {
+    return;
+  }
+  BuildAndCompute(this->context_, std::move(remote), builder.TakeGraphInfo(),
+                  std::move(named_inputs));
+
+  GetGlobalFuzzEnvironment().GetWebNNTestEnvironment().RunUntilIdle();
+}
+
+template <typename BaseFixture>
+void WebNNGraphImplFuzzerImpl<BaseFixture>::Reverse(ReverseParams params,
+                                                    uint8_t seed_for_data) {
+  std::vector<uint32_t> input_dims(params.input_dims.begin(),
+                                   params.input_dims.begin() + params.rank);
+
+  // Limit `num_axes` and remove duplicate values, mapping each into the range
+  // [0, rank).
+  params.num_axes = std::min(params.num_axes, params.rank);
+  std::vector<uint32_t> axes;
+  for (uint32_t i = 0; i < params.num_axes; ++i) {
+    uint32_t axis = params.axes[i] % params.rank;
+    if (!std::ranges::contains(axes, axis)) {
+      axes.push_back(axis);
+    }
+  }
+
+  ASSIGN_OR_RETURN_VOID(auto input_desc, OperandDescriptor::Create(
+                                             this->context_properties(),
+                                             params.data_type, input_dims, ""));
+
+  ASSIGN_OR_RETURN_VOID(auto output_desc,
+                        ValidateReverseAndInferOutput(
+                            this->context_properties(), input_desc, axes, ""));
+
+  mojo::Remote<mojom::WebNNGraphBuilder> remote =
+      this->BindNewGraphBuilderRemote();
+  GraphInfoBuilder builder(remote);
+  base::flat_map<std::string, base::span<const uint8_t>> named_inputs;
+  std::vector<std::vector<uint8_t>> data_buffers;
+  OperandId input_id = BuildInputOrConstant(builder, params.is_input_constant,
+                                            "input", input_desc, seed_for_data,
+                                            data_buffers, named_inputs);
+
+  OperandId output_id = builder.BuildOutput("output", output_desc.shape(),
+                                            output_desc.data_type());
+
+  builder.BuildReverse(input_id, output_id, std::move(axes));
 
   if (!builder.IsValidGraphForTesting(this->context_properties())) {
     return;
@@ -7319,6 +7390,19 @@ WEBNN_FUZZ_TEST_F(
                          /*is_input_constant=*/false,
                      },
                      /*seed_for_data=*/1}}));
+
+WEBNN_FUZZ_TEST_F(Reverse,
+                  .WithDomains(AnyReverseParams(),
+                               fuzztest::Arbitrary<uint8_t>())
+                      .WithSeeds({{ReverseParams{
+                                       /*data_type=*/OperandDataType::kFloat32,
+                                       /*rank=*/4,
+                                       /*input_dims=*/{1, 3, 4, 4, 1, 1, 1, 1},
+                                       /*num_axes=*/2,
+                                       /*axes=*/{2, 3, 0, 0, 0, 0, 0, 0},
+                                       /*is_input_constant=*/false,
+                                   },
+                                   /*seed_for_data=*/1}}));
 
 WEBNN_FUZZ_TEST_F(
     ScatterElements,
