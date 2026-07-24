@@ -71,8 +71,6 @@ class Cup {
       int key_version,
       base::span<const uint8_t> public_key);
 
-  std::string GetKeyId(int key_version = -1) const;
-
   bool ParseETagHeader(std::string_view etag_header_value_in,
                        std::vector<uint8_t>* signature_out,
                        std::vector<uint8_t>* request_hash_out) const;

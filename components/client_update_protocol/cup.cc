@@ -35,9 +35,10 @@ class SigningStrategy {
 
   virtual ~SigningStrategy() = default;
 
-  std::string GetKeyId(int key_version = -1) const {
-    int version = key_version < 0 ? key_version_ : key_version;
-    return GetKeyIdForVersion(version);
+  std::string GetKeyId() const { return GetKeyIdForVersion(key_version_); }
+
+  std::string GetKeyIdForVersion(int version) const {
+    return GetKeyIdForVersionImpl(version);
   }
 
   bool HasValidSignatureLength(base::span<const uint8_t> signature) const {
@@ -51,7 +52,7 @@ class SigningStrategy {
   }
 
  private:
-  virtual std::string GetKeyIdForVersion(int version) const = 0;
+  virtual std::string GetKeyIdForVersionImpl(int version) const = 0;
   virtual crypto::sign::SignatureKind GetSignatureKind() const = 0;
   virtual bool HasValidSignatureLengthImpl(
       base::span<const uint8_t> signature) const = 0;
@@ -72,7 +73,7 @@ class EcdsaSigningStrategy : public SigningStrategy {
   using SigningStrategy::SigningStrategy;
 
  private:
-  std::string GetKeyIdForVersion(int version) const override {
+  std::string GetKeyIdForVersionImpl(int version) const override {
     return base::NumberToString(version);
   }
 
@@ -93,7 +94,7 @@ class Mldsa44SigningStrategy : public SigningStrategy {
   using SigningStrategy::SigningStrategy;
 
  private:
-  std::string GetKeyIdForVersion(int version) const override {
+  std::string GetKeyIdForVersionImpl(int version) const override {
     return absl::StrFormat("ML-DSA-44-%d", version);
   }
 
@@ -135,10 +136,6 @@ Cup::Cup(int key_version, base::span<const uint8_t> public_key)
 }
 
 Cup::~Cup() = default;
-
-std::string Cup::GetKeyId(int key_version) const {
-  return strategy_->GetKeyId(key_version);
-}
 
 bool Cup::ParseETagHeader(std::string_view etag_header_value_in,
                           std::vector<uint8_t>* signature_out,
@@ -190,8 +187,8 @@ bool Cup::ParseETagHeader(std::string_view etag_header_value_in,
 
 void Cup::OverrideNonceForTesting(int key_version, uint32_t nonce) {
   CHECK(!request_query_cup2key_.empty());
-  request_query_cup2key_ =
-      absl::StrFormat("%s:%u", GetKeyId(key_version), nonce);
+  request_query_cup2key_ = absl::StrFormat(
+      "%s:%u", strategy_->GetKeyIdForVersion(key_version), nonce);
 }
 
 std::string Cup::PrepareRequestParameters(std::string_view request_body) {
@@ -207,7 +204,8 @@ std::string Cup::PrepareRequestParameters(std::string_view request_body) {
   base::Base64UrlEncode(nonce, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &nonce_b64);
 
-  request_query_cup2key_ = absl::StrFormat("%s:%s", GetKeyId(), nonce_b64);
+  request_query_cup2key_ =
+      absl::StrFormat("%s:%s", strategy_->GetKeyId(), nonce_b64);
   request_hash_ = crypto::hash::Sha256(base::as_byte_span(request_body));
 
   return absl::StrFormat("cup2key=%s&cup2hreq=%s", request_query_cup2key_,
