@@ -60,6 +60,9 @@ BASE_DECLARE_FEATURE(kPaymentHandlerDialogUseInitiatorInUrlLoad);
 // before resolving a success payment response.
 BASE_DECLARE_FEATURE(kPaymentRequestMandatoryPaymentAppUi);
 
+// Used to control whether camera access is allowed in Payment Handler windows.
+BASE_DECLARE_FEATURE(kPaymentHandlerCameraAccess);
+
 }  // namespace features
 }  // namespace payments
 

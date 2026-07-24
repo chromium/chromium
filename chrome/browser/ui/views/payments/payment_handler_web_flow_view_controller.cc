@@ -12,6 +12,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -33,6 +35,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -185,6 +188,13 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   // Make the web view show up in the task manager.
   task_manager::WebContentsTags::CreateForTabContents(web_contents());
 
+  // Install a OneTimePermissionsTrackerHelper so that "Allow this time"
+  // permissions from nested pop-up windows persist through the lifetime of the
+  // Payment Handler window.
+  if (base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess)) {
+    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
+  }
+
   // Enable modal dialogs for web-based payment handlers.
   dialog_manager_delegate_.SetWebContents(web_contents());
   web_modal::WebContentsModalDialogManager::CreateForWebContents(
@@ -311,6 +321,44 @@ bool PaymentHandlerWebFlowViewController::HandleKeyboardEvent(
 void PaymentHandlerWebFlowViewController::CloseContents(
     content::WebContents* source) {
   // Do nothing.
+}
+
+void PaymentHandlerWebFlowViewController::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  // Currently we allow only video camera access (no audio), behind a
+  // default-disabled flag until we have appropriate UX to inform the user.
+  //
+  // Note that this check assumes that content::MediaStreamRequest will not add
+  // new 'types' in the future, as they will not be blocked by default. That
+  // would be very unlikely, and since this is flag guarded currently anyway
+  // this check suffices.
+  if (request.video_type !=
+          blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
+      request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE ||
+      !base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess)) {
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+        /*ui=*/nullptr);
+    return;
+  }
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), /*extension=*/nullptr);
+}
+
+bool PaymentHandlerWebFlowViewController::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& security_origin,
+    blink::mojom::MediaStreamType type) {
+  if (type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
+      !base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess)) {
+    return false;
+  }
+  return MediaCaptureDevicesDispatcher::GetInstance()
+      ->CheckMediaAccessPermission(render_frame_host, security_origin, type,
+                                   /*extension=*/nullptr);
 }
 
 void PaymentHandlerWebFlowViewController::DidFinishNavigation(
