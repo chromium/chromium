@@ -4,7 +4,7 @@
 //
 // META: --screen-info={label='1st'}{label='2nd'}
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(
       'Tests CDP Emulation.updateScreen() API bounds handling.');
 

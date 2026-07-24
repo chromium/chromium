@@ -4,7 +4,7 @@
 //
 // META: --screen-info={800x600 label=1st}
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank(
       'Tests CDP Emulation.addScreen() API with getScreenDetails().');
 

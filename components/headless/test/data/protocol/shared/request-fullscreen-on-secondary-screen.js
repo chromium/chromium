@@ -5,7 +5,7 @@
 // META: --screen-info={label='1st screen'}{600x800 label='2nd screen'}
 // META: --disable-popup-blocking
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank(
       'Tests element request fullscreen on a secondary screen.');
 

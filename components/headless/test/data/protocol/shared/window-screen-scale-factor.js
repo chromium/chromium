@@ -4,7 +4,7 @@
 //
 // META: --screen-info={devicePixelRatio=3.0}
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} =
       await testRunner.startBlank('Tests window screen scale factor.');
 

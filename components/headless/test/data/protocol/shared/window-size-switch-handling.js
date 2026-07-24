@@ -5,7 +5,7 @@
 // META: --screen-info={1600x1200}
 // META: --window-size=700,500
 //
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} =
       await testRunner.startBlank('Tests --window-size switch handling.');
 

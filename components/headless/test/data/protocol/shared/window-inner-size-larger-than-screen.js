@@ -4,7 +4,7 @@
 //
 // META: --screen-info={800x600}
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {page, session, dp} = await testRunner.startBlank(
       `Tests Browser.setContentsSize larger than the current screen.`);
 

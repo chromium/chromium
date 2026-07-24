@@ -5,7 +5,7 @@
 // META: --screen-info={workAreaLeft=100 workAreaRight=100 \
 // META:   workAreaTop=100 workAreaBottom=100 devicePixelRatio=2.0}
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} =
       await testRunner.startBlank('Tests scaled screen work area.');
 

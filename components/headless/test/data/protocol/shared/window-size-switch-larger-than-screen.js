@@ -5,7 +5,7 @@
 // META: --screen-info={800x600}
 // META: --window-size=1600,1200
 //
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} =
       await testRunner.startBlank('Tests --window-size larger than screen.');
 

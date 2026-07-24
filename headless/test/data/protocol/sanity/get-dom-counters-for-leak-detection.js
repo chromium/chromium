@@ -4,7 +4,7 @@
 //
 // META: --js-flags=--expose-gc
 //
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(
       'Tests getDOMCountersForLeakDetection output.');
 

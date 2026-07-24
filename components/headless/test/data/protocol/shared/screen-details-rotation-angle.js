@@ -4,7 +4,7 @@
 //
 // META: --screen-info={rotation=180}
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} =
       await testRunner.startBlank('Tests screen rotation angle.');
 

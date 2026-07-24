@@ -4,7 +4,7 @@
 //
 // META: --screen-info={label='#1'}{label='#2'}
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank(
       'Tests Target.createTarget() on a secondary screen.');
 

@@ -4,7 +4,7 @@
 //
 // META: --screen-info={label='#1'}{label='#2'}{0,600 label='#3'}{label='#4'}
 //
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank(
       'Tests window moving between multiple screens.');
 

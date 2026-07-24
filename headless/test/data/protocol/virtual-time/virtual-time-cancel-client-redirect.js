@@ -8,7 +8,7 @@ const html = `
       location.href = '/redirect';
     </script>`;
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startWithFrameControl(
       `Tests that virtual time isn't stalled by aborted client-side redirect.`);
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const resourcePath = 'protocol/sanity/resources/body.html';
   const port = window.location.port;
   const privilegedPageURL = `http://site1.test:${port}/${resourcePath}`;

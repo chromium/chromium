@@ -5,7 +5,7 @@
 // META: --screen-info={3200x2400 devicePixelRatio=2.0}
 // META: --window-size=800,600
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} = await testRunner.startBlank(
       `Tests scaled fullscreen browser window size.`);
 

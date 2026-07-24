@@ -4,7 +4,7 @@
 //
 // META: --disable-popup-blocking
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startBlank(
       'Tests that opener is NOT specified on a page opened via Shift+Click.');
 

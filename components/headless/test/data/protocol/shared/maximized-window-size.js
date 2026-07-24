@@ -4,7 +4,7 @@
 //
 // META: --screen-info={1600x1200}
 //
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {dp} =
       await testRunner.startBlank(`Tests maximized browser window size.`);
 

@@ -5,7 +5,7 @@
 // META: --screen-info={1600x1200}{1200x1600}
 // META: --window-size=800,600
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} =
       await testRunner.startBlank('Tests window zoom on a secondary screen.');
 

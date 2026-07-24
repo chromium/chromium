@@ -4,7 +4,7 @@
 //
 // META: --disable-popup-blocking
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session} =
       await testRunner.startBlank('Tests pop up window has window.opener.');
 

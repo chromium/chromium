@@ -6,7 +6,7 @@
 // --enable-unsafe-swiftshader.
 // META: --enable-unsafe-swiftshader
 
-(async function(testRunner) {
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session} = await testRunner.startBlank(
       'Tests that canvas.getContext("webgl") returns a valid context.');
 
