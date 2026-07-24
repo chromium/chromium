@@ -978,10 +978,19 @@ TEST_P(BookmarkModelObserverImplTest, ShouldNotIssueCommitUponFaviconLoad) {
   const uint32_t initial_favicon_hash =
       entity->metadata().bookmark_favicon_hash();
 
-  // Clear the specifics hash (as if the proto definition would have changed).
-  // This is needed because otherwise the commit is trivially optimized away
-  // (i.e. literally nothing changed).
-  bookmark_tracker()->ClearSpecificsHashForTest(entity);
+  // Simulate a remote update with a different title but matching favicon to
+  // change specifics_hash while keeping the entity synced. This demonstrates
+  // that MatchesFaviconHash() short-circuits before ProcessUpdate() is called.
+  syncer::UpdateResponseData update;
+  update.entity.id = entity->metadata().server_id();
+  update.response_version = entity->metadata().server_version() + 1;
+  update.entity.modification_time = base::Time::Now();
+  update.entity.specifics.mutable_bookmark()->set_full_title("different title");
+  scoped_refptr<base::RefCountedMemory> favicon_bytes =
+      CreateTestImage(kColor).As1xPNGBytes();
+  update.entity.specifics.mutable_bookmark()->set_favicon(
+      favicon_bytes->front(), favicon_bytes->size());
+  entity->RecordAcceptedRemoteUpdate(update);
 
   // Mimic the very same favicon being loaded again (similar to a startup
   // scenario). Note that OnFaviconsChanged() needs no icon URL to invalidate

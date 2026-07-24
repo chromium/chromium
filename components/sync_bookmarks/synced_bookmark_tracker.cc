@@ -39,13 +39,6 @@ namespace sync_bookmarks {
 
 namespace {
 
-void HashSpecifics(const sync_pb::EntitySpecifics& specifics,
-                   std::string* hash) {
-  DCHECK_GT(specifics.ByteSizeLong(), 0u);
-  *hash =
-      base::Base64Encode(base::SHA1HashString(specifics.SerializeAsString()));
-}
-
 // Returns a map from id to node for all nodes in |model|.
 std::unordered_map<int64_t, const bookmarks::BookmarkNode*>
 BuildIdToBookmarkNodeMap(const BookmarkModelView* model) {
@@ -199,14 +192,8 @@ SyncedBookmarkTrackerEntity* SyncedBookmarkTracker::AddInternal(
     const bookmarks::BookmarkNode* bookmark_node,
     const std::string& sync_id,
     int64_t server_version,
-    base::Time creation_time,
-    const sync_pb::EntitySpecifics& specifics) {
-  DCHECK_GT(specifics.ByteSizeLong(), 0u);
-  DCHECK(bookmark_node);
-  DCHECK(specifics.has_bookmark());
-  DCHECK(bookmark_node->is_permanent_node() ||
-         specifics.bookmark().has_unique_position());
-
+    base::Time creation_time) {
+  CHECK(bookmark_node);
   // Note that this gets computed for permanent nodes too.
   syncer::ClientTagHash client_tag_hash =
       GetClientTagHashFromUuid(bookmark_node->uuid());
@@ -219,11 +206,7 @@ SyncedBookmarkTrackerEntity* SyncedBookmarkTracker::AddInternal(
   metadata.set_modification_time(syncer::TimeToProtoTime(creation_time));
   metadata.set_sequence_number(0);
   metadata.set_acked_sequence_number(0);
-  *metadata.mutable_unique_position() = specifics.bookmark().unique_position();
   metadata.set_client_tag_hash(client_tag_hash.value());
-  HashSpecifics(specifics, metadata.mutable_specifics_hash());
-  metadata.set_bookmark_favicon_hash(
-      base::PersistentHash(specifics.bookmark().favicon()));
 
   std::unique_ptr<syncer::ProcessorEntityMetadata> entity_metadata =
       syncer::ProcessorEntityMetadata::FromProto(std::move(metadata));
@@ -244,12 +227,9 @@ SyncedBookmarkTrackerEntity* SyncedBookmarkTracker::AddLocalCreation(
     const std::string& sync_id,
     base::Time creation_time,
     const sync_pb::EntitySpecifics& specifics) {
-  SyncedBookmarkTrackerEntity* entity =
-      AddInternal(bookmark_node, sync_id, syncer::kUncommittedVersion,
-                  creation_time, specifics);
-  entity->IncrementSequenceNumber();
-  entity->MutableMetadata(SyncedBookmarkTrackerEntity::PassKey())
-      ->clear_base_specifics_hash();
+  SyncedBookmarkTrackerEntity* entity = AddInternal(
+      bookmark_node, sync_id, syncer::kUncommittedVersion, creation_time);
+  entity->RecordLocalUpdate(specifics, creation_time);
   return entity;
 }
 
@@ -260,8 +240,15 @@ SyncedBookmarkTrackerEntity* SyncedBookmarkTracker::AddRemote(
     base::Time creation_time,
     const sync_pb::EntitySpecifics& specifics) {
   CHECK_NE(server_version, syncer::kUncommittedVersion);
-  return AddInternal(bookmark_node, sync_id, server_version, creation_time,
-                     specifics);
+  SyncedBookmarkTrackerEntity* entity =
+      AddInternal(bookmark_node, sync_id, server_version, creation_time);
+  syncer::UpdateResponseData update;
+  update.entity.id = sync_id;
+  update.response_version = server_version;
+  update.entity.modification_time = creation_time;
+  update.entity.specifics = specifics;
+  entity->RecordAcceptedRemoteUpdate(update);
+  return entity;
 }
 
 SyncedBookmarkTrackerEntity* SyncedBookmarkTracker::AsMutableEntity(
@@ -762,13 +749,6 @@ size_t SyncedBookmarkTracker::TrackedUncommittedTombstonesCount() const {
 
 size_t SyncedBookmarkTracker::TrackedEntitiesCountForTest() const {
   return client_tag_hash_to_entities_map_.size();
-}
-
-void SyncedBookmarkTracker::ClearSpecificsHashForTest(
-    const SyncedBookmarkTrackerEntity* entity) {
-  AsMutableEntity(entity)
-      ->MutableMetadata(SyncedBookmarkTrackerEntity::PassKey())
-      ->clear_specifics_hash();
 }
 
 void SyncedBookmarkTracker::CheckAllNodesTracked(

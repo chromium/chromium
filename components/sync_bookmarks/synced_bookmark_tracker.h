@@ -174,9 +174,6 @@ class SyncedBookmarkTracker {
   // Returns number of tracked entities. Used only in test.
   size_t TrackedEntitiesCountForTest() const;
 
-  // Clears the specifics hash for `entity`, useful for testing.
-  void ClearSpecificsHashForTest(const SyncedBookmarkTrackerEntity* entity);
-
   // Checks whether all nodes in `bookmark_model` that *should* be tracked as
   // per IsNodeSyncable() are tracked.
   void CheckAllNodesTracked(const BookmarkModelView* bookmark_model) const;
@@ -240,8 +237,7 @@ class SyncedBookmarkTracker {
       const bookmarks::BookmarkNode* bookmark_node,
       const std::string& sync_id,
       int64_t server_version,
-      base::Time creation_time,
-      const sync_pb::EntitySpecifics& specifics);
+      base::Time creation_time);
 
   // Add entities to `this` tracker based on the content of `*model` and
   // `model_metadata`. Validates the integrity of `*model` and `model_metadata`

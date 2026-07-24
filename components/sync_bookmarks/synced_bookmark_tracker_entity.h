@@ -122,10 +122,6 @@ class SyncedBookmarkTrackerEntity {
     bookmark_node_ = bookmark_node;
   }
 
-  sync_pb::EntityMetadata* MutableMetadata(PassKey) {
-    return metadata_.mutable_proto();
-  }
-
   void RecordLocalDeletion(PassKey, const syncer::DeletionOrigin& origin);
 
   // Re-associates a placeholder tombstone with a real bookmark node (e.g. undo
