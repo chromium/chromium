@@ -702,7 +702,7 @@
     "includes": [4665],
   },
    "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webui_toolbar/resources.grd": {
-    "META": {"sizes": {"includes": [170]}},
+    "META": {"sizes": {"includes": [100]}},
     "includes": [4670],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/sandbox_internals/resources.grd": {
@@ -1794,7 +1794,7 @@
   },
 
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/webui_toolbar_shared/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
+    "META": {"sizes": {"includes": [100]}},
     "includes": [10140],
   },
 

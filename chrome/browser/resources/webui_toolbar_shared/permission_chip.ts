@@ -291,9 +291,7 @@ export class PermissionChipElement extends PermissionChipElementBase {
       default:
         break;
     }
-    return iconName ?
-        `url('chrome://webui-toolbar.top-chrome/rhs_icons/${iconName}.svg')` :
-        '';
+    return iconName ? `url('shared/rhs_icons/${iconName}.svg')` : '';
   }
 }
 

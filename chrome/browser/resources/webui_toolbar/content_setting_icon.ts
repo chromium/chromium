@@ -153,7 +153,7 @@ export class ContentSettingIconElement extends CrLitElement {
       default:
         assertNotReachedCase(iconType);
     }
-    return `url('rhs_icons/${iconName}.svg')`;
+    return `url('shared/rhs_icons/${iconName}.svg')`;
   }
 
   protected getAriaLabel_(): string {

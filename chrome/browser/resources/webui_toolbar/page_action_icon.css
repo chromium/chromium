@@ -16,25 +16,25 @@
 /* TODO: crbug.com/501449027 - migrate these to icons.html.ts and icon_table.cc.
  */
 .icon-password-manager {
-  --cr-icon-image: url(rhs_icons/password_manager.svg);
+  --cr-icon-image: url(shared/rhs_icons/password_manager.svg);
 }
 
 .icon-performance-speedometer {
-  --cr-icon-image: url(rhs_icons/performance_speedometer.svg);
+  --cr-icon-image: url(shared/rhs_icons/performance_speedometer.svg);
 }
 
 .icon-translate {
-  --cr-icon-image: url(rhs_icons/translate.svg);
+  --cr-icon-image: url(shared/rhs_icons/translate.svg);
 }
 
 .icon-bookmark {
-  --cr-icon-image: url(rhs_icons/star_chrome_refresh.svg);
+  --cr-icon-image: url(shared/rhs_icons/star_chrome_refresh.svg);
 }
 
 .icon-screen-record {
-  --cr-icon-image: url(rhs_icons/screen_record.svg);
+  --cr-icon-image: url(shared/rhs_icons/screen_record.svg);
 }
 
 .icon-placeholder {
-  --cr-icon-image: url(rhs_icons/insert_drive_file_outline.svg);
+  --cr-icon-image: url(shared/rhs_icons/insert_drive_file_outline.svg);
 }
