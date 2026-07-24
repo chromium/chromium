@@ -185,7 +185,7 @@ class FuseboxPopup {
         mRecentTabsContainer = contentView.findViewById(R.id.fusebox_recent_tabs_container);
 
         mAttachmentButtons =
-                List.of(mAddCurrentTab, mTabButton, mCameraButton, mGalleryButton, mFileButton);
+                List.of(mAddCurrentTab, mTabButton, mGalleryButton, mCameraButton, mFileButton);
 
         mDividers =
                 mRecentTabsDivider != null

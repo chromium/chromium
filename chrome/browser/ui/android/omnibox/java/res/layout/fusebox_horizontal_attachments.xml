@@ -25,11 +25,11 @@ found in the LICENSE file.
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_camera_button"/>
+        android:id="@+id/fusebox_pick_picture_button"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
-        android:id="@+id/fusebox_pick_picture_button"/>
+        android:id="@+id/fusebox_camera_button"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
