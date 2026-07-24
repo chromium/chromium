@@ -460,6 +460,12 @@ TEST_F(PersonalContextEligibilityServiceImplTest, EnterprisePolicyDisabled) {
 
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
+
+  histogram_tester().ExpectBucketCount(
+      "Autofill.PersonalContext.NonEligibilityReason",
+      PersonalContextNonEligibilityReason::
+          kFindAndFillWithGeminiSettingsDisabled,
+      1);
 }
 
 // Tests that observers are notified when the `FindAndFillWithGeminiSettings`

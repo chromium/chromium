@@ -163,8 +163,8 @@ SatisfiesPrefsRequirements(const PrefService* pref_service,
     MaybeOutputReason(
         debug_message,
         "Disallowed by FindAndFillWithGeminiSettings enterprise policy.");
-    // TODO(crbug.com/524157152): Add policy-related non-eligibility reason.
-    return std::pair{false, std::nullopt};
+    return std::pair{false, PersonalContextNonEligibilityReason::
+                                kFindAndFillWithGeminiSettingsDisabled};
   }
 
   return std::pair{true, std::nullopt};
