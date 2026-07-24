@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // This is a helper application for launch_application_unittest.mm. This
 // application records several events by writing them to a named pipe;
 // the unit tests then use this information to verify that this helper was
@@ -15,6 +10,8 @@
 // with .app replaced by .fifo.
 
 #import <Cocoa/Cocoa.h>
+
+#import "base/compiler_specific.h"
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 @end
@@ -117,9 +114,12 @@ __attribute__((visibility("default"))) int main(int argc, char** argv) {
   [NSApplication sharedApplication];
 
   NSMutableArray* command_line = [[NSMutableArray alloc] initWithCapacity:argc];
-  for (int i = 0; i < argc; ++i) {
-    [command_line addObject:[NSString stringWithUTF8String:argv[i]]];
-  }
+  // SAFETY: Standard C++ main contract.
+  UNSAFE_BUFFERS({
+    for (int i = 0; i < argc; ++i) {
+      [command_line addObject:[NSString stringWithUTF8String:argv[i]]];
+    }
+  });
 
   AppDelegate* delegate =
       [[AppDelegate alloc] initWithCommandLine:command_line];
