@@ -405,6 +405,9 @@ class CORE_EXPORT HTMLMediaElement
   void DidAudioOutputSinkChanged(const String& hashed_device_id);
 
   void SetCcLayerForTesting(cc::Layer* layer) { SetCcLayer(layer); }
+  void SetIsEncryptedForTesting(bool is_encrypted) {
+    is_encrypted_media_ = is_encrypted;
+  }
   void AddTrackForTesting(const media::MediaTrack& t) { AddTrack(t); }
   void SetTrackStateForTesting(const media::MediaTrack& t,
                                media::MediaTrack::State s) {
@@ -672,6 +675,7 @@ class CORE_EXPORT HTMLMediaElement
   void RecordAutoPictureInPictureInfo(
       const media::PictureInPictureEventsInfo::AutoPipInfo&
           auto_picture_in_picture_info) override;
+  void RequestSaveVideoFrame() override;
 
   void LoadTimerFired(TimerBase*);
   void ProgressEventTimerFired();
@@ -760,6 +764,7 @@ class CORE_EXPORT HTMLMediaElement
   void RequireOfficialPlaybackPositionUpdate() const;
 
   void UpdateControlsVisibility();
+  virtual void UpdateVideoFrameAvailability() {}
 
   TextTrackContainer& EnsureTextTrackContainer();
 

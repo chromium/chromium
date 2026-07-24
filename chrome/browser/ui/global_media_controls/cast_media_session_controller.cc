@@ -73,6 +73,7 @@ void CastMediaSessionController::Send(
     case media_session::mojom::MediaSessionAction::kPreviousSlide:
     case media_session::mojom::MediaSessionAction::kNextSlide:
     case media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture:
+    case media_session::mojom::MediaSessionAction::kSaveVideoFrame:
       NOTREACHED();
   }
 }

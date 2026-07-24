@@ -5187,7 +5187,13 @@ void HTMLMediaElement::DidMediaMetadataChange(
   video_codec_ = has_video ? std::make_optional(video_codec) : std::nullopt;
   audio_codec_ = has_audio ? std::make_optional(audio_codec) : std::nullopt;
 
+  bool is_encrypted_media_changed = is_encrypted_media_ != is_encrypted_media;
   is_encrypted_media_ = is_encrypted_media;
+
+  if (is_encrypted_media_changed) {
+    UpdateVideoFrameAvailability();
+  }
+
   OnRemotePlaybackMetadataChange();
 }
 
@@ -5393,6 +5399,8 @@ void HTMLMediaElement::RecordAutoPictureInPictureInfo(
         auto_picture_in_picture_info);
   }
 }
+
+void HTMLMediaElement::RequestSaveVideoFrame() {}
 
 bool HTMLMediaElement::MediaShouldBeOpaque() const {
   return !IsMediaDataCorsSameOrigin() && ready_state_ < kHaveMetadata &&

@@ -51,6 +51,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
   bool HasSufficientlyVisibleVideo(int player_id) const override;
+  bool IsVideoFrameAvailable(int player_id) const override;
   RenderFrameHost* render_frame_host() const override;
   bool HasAudio(int player_id) const override;
   bool HasVideo(int player_id) const override;
@@ -62,6 +63,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
       int player_id,
       const media::PictureInPictureEventsInfo::AutoPipInfo&
           auto_picture_in_picture_info) override;
+  void OnSaveVideoFrame(int player_id) override;
 
   void SetMediaContentType(media::MediaContentType media_content_type);
 
@@ -92,6 +94,13 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   void SetIsPictureInPictureAvailable(size_t player_id,
                                       bool is_picture_in_picture_available);
 
+  // Simulate video frame availability for |player_id|.
+  void SetIsVideoFrameAvailable(size_t player_id,
+                                bool is_video_frame_available);
+
+  // Simulate video status for |player_id|.
+  void SetHasVideo(size_t player_id, bool has_video);
+
   int received_suspend_calls() const;
   int received_resume_calls() const;
   int received_seek_forward_calls() const;
@@ -102,6 +111,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   int received_set_audio_sink_id_calls() const;
   int received_request_visibility_calls() const;
   int received_auto_picture_in_picture_info_changed_calls() const;
+  int received_save_video_frame_calls() const;
 
  private:
   // Internal representation of the players to keep track of their statuses.
@@ -123,6 +133,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
     media::PictureInPictureEventsInfo::AutoPipInfo
         auto_picture_in_picture_info_;
     bool is_picture_in_picture_available_ = false;
+    bool is_video_frame_available_ = false;
+    bool has_video_ = false;
   };
 
   // Basic representation of the players. The position in the vector is the
@@ -142,6 +154,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   int received_request_visibility_calls_ = 0;
   int received_auto_picture_in_picture_info_changed_calls_ = 0;
   std::optional<gfx::Size> last_enter_pip_min_size_;
+  int received_save_video_frame_calls_ = 0;
 
   media::MediaContentType media_content_type_;
 };

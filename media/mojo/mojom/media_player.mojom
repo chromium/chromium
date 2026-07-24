@@ -70,6 +70,9 @@ interface MediaPlayer {
   // information. This information helps identify why a request to enter
   // picture in picture automatically is denied/accepted.
   RecordAutoPictureInPictureInfo (AutoPipInfo auto_picture_in_picture_info);
+
+  // Request the media player to save the current video frame.
+  RequestSaveVideoFrame();
 };
 
 // Implemented by the MediaWebContentsObserver. The remote lives in the renderer
@@ -129,6 +132,9 @@ interface MediaPlayerObserver {
 
   // Notifies that the video visibility has changed.
   OnVideoVisibilityChanged(bool meets_visibility_threshold);
+
+  // Notifies the browser process of save video frame's availability.
+  OnVideoFrameAvailabilityChanged(bool available);
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser

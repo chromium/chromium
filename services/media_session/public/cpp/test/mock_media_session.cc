@@ -428,6 +428,8 @@ void MockMediaSession::ExitPictureInPicture() {
   NotifyObservers();
 }
 
+void MockMediaSession::SaveVideoFrame() {}
+
 void MockMediaSession::GetVisibility(GetVisibilityCallback callback) {
   std::move(callback).Run(false);
 }

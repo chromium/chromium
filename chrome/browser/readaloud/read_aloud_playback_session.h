@@ -57,6 +57,7 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
                         const std::string& raw_device_id) override {}
   void OnSetMute(int player_id, bool mute) override {}
   void OnRequestMediaRemoting(int player_id) override {}
+  void OnSaveVideoFrame(int player_id) override {}
   void OnRequestVisibility(int player_id,
                            RequestVisibilityCallback callback) override;
 
@@ -65,6 +66,7 @@ class ReadAloudPlaybackSession : public content::MediaSessionPlayerObserver,
       int player_id) const override;
 
   bool IsPictureInPictureAvailable(int player_id) const override;
+  bool IsVideoFrameAvailable(int player_id) const override;
   bool HasSufficientlyVisibleVideo(int player_id) const override;
   bool HasAudio(int player_id) const override;
   bool HasVideo(int player_id) const override;

@@ -30,6 +30,9 @@
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP" desc="The button to trigger media playback to exit pip mode.">
     Exit picture-in-picture
   </message>
+  <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SAVE_VIDEO_FRAME" desc="The button to save the current video frame.">
+    Save video frame
+  </message>
   <message name="IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_MUTE" desc="The button to trigger media playback to mute.">
     Mute
   </message>

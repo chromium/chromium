@@ -21570,6 +21570,7 @@ from previous Chrome versions.
   <int value="18" label="Previous slide"/>
   <int value="19" label="Next slide"/>
   <int value="20" label="Enter auto picture in picture"/>
+  <int value="21" label="Save video frame"/>
 </enum>
 
 <!-- LINT.ThenChange(//services/media_session/public/mojom/media_session.mojom:MediaSessionAction) -->

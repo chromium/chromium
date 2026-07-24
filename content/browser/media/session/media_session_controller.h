@@ -68,6 +68,7 @@ class CONTENT_EXPORT MediaSessionController
   void OnEnterPictureInPicture(
       int player_id,
       const std::optional<gfx::Size>& min_size) override;
+  void OnSaveVideoFrame(int player_id) override;
   void OnSetAudioSinkId(int player_id,
                         const std::string& raw_device_id) override;
   void OnSetMute(int player_id, bool mute) override;
@@ -79,6 +80,7 @@ class CONTENT_EXPORT MediaSessionController
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
+  bool IsVideoFrameAvailable(int player_id) const override;
   bool HasSufficientlyVisibleVideo(int player_id) const override;
   bool HasAudio(int player_id) const override;
   bool HasVideo(int player_id) const override;
@@ -123,6 +125,9 @@ class CONTENT_EXPORT MediaSessionController
   // Called when video visibility changes for the given media player.
   void OnVideoVisibilityChanged(bool meets_visibility_threshold);
 
+  // Called when video frame availability changes for the given media player.
+  void OnVideoFrameAvailabilityChanged(bool available);
+
  private:
   bool IsMediaSessionNeeded() const;
 
@@ -152,6 +157,7 @@ class CONTENT_EXPORT MediaSessionController
   bool has_audio_ = false;
   bool has_video_ = false;
   bool is_picture_in_picture_available_ = false;
+  bool is_video_frame_available_ = false;
   bool has_sufficiently_visible_video_ = false;
   std::string audio_output_sink_id_ =
       media::AudioDeviceDescription::kDefaultDeviceId;

@@ -47,6 +47,7 @@ class TestMediaPlayer final : public media::mojom::MediaPlayer {
   void RecordAutoPictureInPictureInfo(
       const media::PictureInPictureEventsInfo::AutoPipInfo&
           auto_picture_in_picture_info) override {}
+  void RequestSaveVideoFrame() override {}
 
  private:
   mojo::AssociatedReceiver<media::mojom::MediaPlayer> receiver_{this};

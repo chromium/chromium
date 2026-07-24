@@ -113,6 +113,10 @@ bool ReadAloudPlaybackSession::IsPictureInPictureAvailable(
   return false;
 }
 
+bool ReadAloudPlaybackSession::IsVideoFrameAvailable(int player_id) const {
+  return false;
+}
+
 bool ReadAloudPlaybackSession::HasSufficientlyVisibleVideo(
     int player_id) const {
   return false;

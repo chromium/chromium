@@ -200,6 +200,7 @@ class MODULES_EXPORT AudioContext final
   void RecordAutoPictureInPictureInfo(
       const media::PictureInPictureEventsInfo::AutoPipInfo&
           auto_picture_in_picture_info) override {}
+  void RequestSaveVideoFrame() override {}
 
   // BaseAudioContext override to enable UseCounter.
   // https://webaudio.github.io/web-audio-api/#BaseAudioContext

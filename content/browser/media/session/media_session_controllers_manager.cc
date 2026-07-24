@@ -163,6 +163,17 @@ void MediaSessionControllersManager::OnVideoVisibilityChanged(
   controller->OnVideoVisibilityChanged(meets_visibility_threshold);
 }
 
+void MediaSessionControllersManager::OnVideoFrameAvailabilityChanged(
+    const MediaPlayerId& id,
+    bool available) {
+  if (!IsMediaSessionEnabled()) {
+    return;
+  }
+
+  MediaSessionController* const controller = FindOrCreateController(id);
+  controller->OnVideoFrameAvailabilityChanged(available);
+}
+
 MediaSessionController* MediaSessionControllersManager::FindOrCreateController(
     const MediaPlayerId& id) {
   auto it = controllers_map_.find(id);

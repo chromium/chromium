@@ -151,6 +151,12 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       media_color_theme_.secondary_foreground_color_id);
   favicon_source->SetFlexForView(source_label_, 1);
 
+  // Create the save video frame button.
+  save_video_frame_button_ = CreateMediaActionButton(
+      source_row, static_cast<int>(MediaSessionAction::kSaveVideoFrame),
+      vector_icons::kVideoFrameSaveIcon,
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SAVE_VIDEO_FRAME);
+
   // Create the start casting button.
   start_casting_button_ = CreateMediaActionButton(
       source_row, kEmptyMediaActionButtonId,
@@ -621,6 +627,11 @@ void MediaItemUIUpdatedView::MediaActionButtonPressed(views::Button* button) {
           kMediaItemUIUpdatedViewActionHistogram,
           MediaItemUIUpdatedViewAction::kExitPictureInPicture);
       break;
+    case MediaSessionAction::kSaveVideoFrame:
+      base::UmaHistogramEnumeration(
+          kMediaItemUIUpdatedViewActionHistogram,
+          MediaItemUIUpdatedViewAction::kSaveVideoFrame);
+      break;
     default:
       NOTREACHED();
   }
@@ -652,8 +663,11 @@ void MediaItemUIUpdatedView::UpdateMediaActionButtonsVisibility() {
   for (views::Button* button : media_action_buttons_) {
     bool should_show = media_actions_.contains(
         static_cast<MediaSessionAction>(button->GetID()));
-    // Do not show the picture-in-picture button for a casting media item.
-    if (button == picture_in_picture_button_ && footer_view_) {
+    // Do not show the picture-in-picture button or the save video frame button
+    // for a casting media item.
+    if ((button == picture_in_picture_button_ ||
+         button == save_video_frame_button_) &&
+        footer_view_) {
       should_show = false;
     }
 

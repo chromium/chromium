@@ -58,6 +58,9 @@ class CONTENT_EXPORT MediaSessionPlayerObserver {
       int player_id,
       const std::optional<gfx::Size>& min_size) = 0;
 
+  // The given |player_id| has been requested to save the current video frame.
+  virtual void OnSaveVideoFrame(int player_id) = 0;
+
   // The given |player_id| has been requested to route audio output to the
   // specified audio device.
   virtual void OnSetAudioSinkId(int player_id,
@@ -89,6 +92,9 @@ class CONTENT_EXPORT MediaSessionPlayerObserver {
 
   // Returns if picture-in-picture is available for |player_id|.
   virtual bool IsPictureInPictureAvailable(int player_id) const = 0;
+
+  // Returns if a video frame is available for |player_id|.
+  virtual bool IsVideoFrameAvailable(int player_id) const = 0;
 
   // Returns if player's |player_id| video is sufficiently visible.
   virtual bool HasSufficientlyVisibleVideo(int player_id) const = 0;

@@ -398,6 +398,20 @@ void HTMLVideoElement::UpdatePictureInPictureAvailability() {
     observer->OnPictureInPictureAvailabilityChanged(SupportsPictureInPicture());
 }
 
+void HTMLVideoElement::UpdateVideoFrameAvailability() {
+  bool available = !IsEncrypted() && web_media_player_ &&
+                   HasAvailableVideoFrame() && HasReadableVideoFrame();
+
+  if (available == last_reported_video_frame_availability_) {
+    return;
+  }
+  last_reported_video_frame_availability_ = available;
+
+  for (auto& observer : GetMediaPlayerObserverRemoteSet()) {
+    observer->OnVideoFrameAvailabilityChanged(available);
+  }
+}
+
 // TODO(zqzhang): this callback could be used to hide native controls instead of
 // using a settings. See `HTMLMediaElement::onMediaControlsEnabledChange`.
 void HTMLVideoElement::SetPersistentState(bool persistent) {
@@ -770,6 +784,7 @@ void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
   }
 
   MaybeEnterImmersivePictureInPicture();
+  UpdateVideoFrameAvailability();
 }
 
 void HTMLVideoElement::EnterFullscreen() {
@@ -1223,6 +1238,8 @@ void HTMLVideoElement::OnWebMediaPlayerCleared() {
     vfc_requester->OnWebMediaPlayerCleared();
 
   UpdateVideoVisibilityTracker();
+
+  UpdateVideoFrameAvailability();
 }
 
 void HTMLVideoElement::RecordVideoOcclusionState(

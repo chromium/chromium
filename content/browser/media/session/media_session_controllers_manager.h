@@ -99,6 +99,9 @@ class CONTENT_EXPORT MediaSessionControllersManager {
   void OnVideoVisibilityChanged(const MediaPlayerId& id,
                                 bool meets_visibility_threshold);
 
+  // Called when video frame availability for the player |id| has changed.
+  void OnVideoFrameAvailabilityChanged(const MediaPlayerId& id, bool available);
+
  private:
   using ControllersMap =
       std::map<MediaPlayerId, std::unique_ptr<MediaSessionController>>;

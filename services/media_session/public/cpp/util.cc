@@ -61,6 +61,9 @@ void PerformMediaSessionAction(
     case mojom::MediaSessionAction::kEnterAutoPictureInPicture:
       media_controller_remote->EnterAutoPictureInPicture();
       break;
+    case mojom::MediaSessionAction::kSaveVideoFrame:
+      media_controller_remote->SaveVideoFrame();
+      break;
     case mojom::MediaSessionAction::kSkipAd:
       media_controller_remote->SkipAd();
       break;

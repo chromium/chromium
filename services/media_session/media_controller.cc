@@ -467,6 +467,14 @@ void MediaController::EnterAutoPictureInPicture() {
   }
 }
 
+void MediaController::SaveVideoFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (session_) {
+    session_->ipc()->SaveVideoFrame();
+  }
+}
+
 void MediaController::SetMediaSession(AudioFocusRequest* session) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

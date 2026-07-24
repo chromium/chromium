@@ -72,6 +72,7 @@ V8MediaSessionAction::Enum MojomActionToActionEnum(MediaSessionAction action) {
     case MediaSessionAction::kEnterAutoPictureInPicture:
     case MediaSessionAction::kSetMute:
     case MediaSessionAction::kRaise:
+    case MediaSessionAction::kSaveVideoFrame:
       NOTREACHED();
   }
   NOTREACHED();

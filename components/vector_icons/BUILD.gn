@@ -479,6 +479,7 @@ if (current_toolchain == default_toolchain) {
       "usb_off.icon",
       "usb_off_chrome_refresh_old.icon",
       "usb_old.icon",
+      "video_frame_save.icon",
       "video_library.icon",
       "video_library_old.icon",
       "videocam.icon",

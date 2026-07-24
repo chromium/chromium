@@ -165,6 +165,7 @@ class TestMediaPlayer : public media::mojom::MediaPlayer {
   void SuspendForFrameClosed() override {}
 
   void RequestMediaRemoting() override {}
+  void RequestSaveVideoFrame() override {}
 
   void RequestVisibility(
       RequestVisibilityCallback request_visibility_callback) override {

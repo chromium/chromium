@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 25
+// Next MinVersion: 26
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -41,6 +41,7 @@ enum MediaSessionAction {
   [MinVersion=18] kPreviousSlide,
   [MinVersion=18] kNextSlide,
   [MinVersion=19] kEnterAutoPictureInPicture,
+  [MinVersion=25] kSaveVideoFrame,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:MediaSessionAction)
 
@@ -413,4 +414,7 @@ interface MediaSession {
   // defined by |HTMLVideoElement| (kVisibilityThreshold). |HTMLVideoElement|
   // visibility is computed by the |MediaVideoVisibilityTracker|.
   [MinVersion=23] GetVisibility@27() => (bool has_sufficiently_visible_video);
+
+  // Save the current video frame.
+  [MinVersion=25] SaveVideoFrame@28();
 };

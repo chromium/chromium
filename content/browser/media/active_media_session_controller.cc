@@ -218,6 +218,7 @@ void ActiveMediaSessionController::PerformAction(MediaSessionAction action) {
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
     case MediaSessionAction::kEnterAutoPictureInPicture:
+    case MediaSessionAction::kSaveVideoFrame:
       NOTREACHED();
   }
 }
@@ -272,6 +273,7 @@ ActiveMediaSessionController::MediaSessionActionToKeyCode(
     case MediaSessionAction::kPreviousSlide:
     case MediaSessionAction::kNextSlide:
     case MediaSessionAction::kEnterAutoPictureInPicture:
+    case MediaSessionAction::kSaveVideoFrame:
       return std::nullopt;
   }
 }

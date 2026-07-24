@@ -323,6 +323,8 @@ void TestMediaController::RequestMediaRemoting() {
   ++request_media_remoting_count_;
 }
 
+void TestMediaController::SaveVideoFrame() {}
+
 void TestMediaController::SimulateMediaSessionInfoChanged(
     mojom::MediaSessionInfoPtr session_info) {
   for (auto& observer : observers_)

@@ -682,6 +682,12 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       ->OnVideoVisibilityChanged(media_player_id_, meets_visibility_threshold);
 }
 
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnVideoFrameAvailabilityChanged(bool available) {
+  media_web_contents_observer_->session_controllers_manager()
+      ->OnVideoFrameAvailabilityChanged(media_player_id_, available);
+}
+
 bool MediaWebContentsObserver::IsMediaPlayerRemoteAvailable(
     const MediaPlayerId& player_id) {
   return media_player_remotes_.contains(player_id);

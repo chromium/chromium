@@ -197,6 +197,9 @@ class MediaSession : public media_session::mojom::MediaSession {
   // visibility is computed by the |MediaVideoVisibilityTracker|.
   void GetVisibility(GetVisibilityCallback callback) override = 0;
 
+  // Save the current video frame.
+  void SaveVideoFrame() override = 0;
+
  protected:
   MediaSession() = default;
 };

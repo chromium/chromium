@@ -259,6 +259,7 @@ class CONTENT_EXPORT MediaWebContentsObserver
             remote_playback_metadata) override;
     void OnVideoVisibilityChanged(bool meets_visibility_threshold) override;
     void NotifyAudioStreamMonitorIfNeeded();
+    void OnVideoFrameAvailabilityChanged(bool available) override;
 
    private:
     PlayerInfo* GetPlayerInfo();

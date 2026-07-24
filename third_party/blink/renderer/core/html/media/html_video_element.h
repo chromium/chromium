@@ -155,6 +155,9 @@ class CORE_EXPORT HTMLVideoElement final
   void MediaRemotingStopped(int error_code) final;
   WebMediaPlayer::DisplayType GetDisplayType() const final;
   bool IsInAutoPIP() const final;
+
+  void UpdateVideoFrameAvailabilityForTest() { UpdateVideoFrameAvailability(); }
+
   void DidPlayerMediaPositionStateChange(double playback_rate,
                                          base::TimeDelta duration,
                                          base::TimeDelta position,
@@ -183,7 +186,7 @@ class CORE_EXPORT HTMLVideoElement final
   // HTMLMediaElement overrides.
   void OnCdmAttached(const media::CdmConfig& cdm_config) final;
 
-  void RequestSaveVideoFrame();
+  void RequestSaveVideoFrame() final;
 
   bool poster_deferred_for_lazy_load_for_tests() const {
     return poster_deferred_for_lazy_load_;
@@ -244,6 +247,7 @@ class CORE_EXPORT HTMLVideoElement final
   void DidChangeIsCanvasOrInCanvasSubtree(bool) override;
 
   void UpdatePictureInPictureAvailability();
+  void UpdateVideoFrameAvailability() override;
 
   void MaybeEnterImmersivePictureInPicture();
 
@@ -319,6 +323,9 @@ class CORE_EXPORT HTMLVideoElement final
   bool poster_deferred_for_lazy_load_ : 1 = false;
 
   bool has_received_first_frame_ : 1 = false;
+
+  // True if the last reported video frame availability was true.
+  bool last_reported_video_frame_availability_ : 1 = false;
 
   // Used to fulfill blink::Image requests (CreateImage(),
   // GetSourceImageForCanvas(), etc). Created on demand.

@@ -238,6 +238,8 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
     return MediaSessionImpl::Get(web_contents());
   }
 
+  void RemoveAllPlayers() { GetMediaSession()->RemoveAllPlayersForTest(); }
+
   // Returns the player ID.
   int StartNewPlayer() {
     int player_id;
@@ -752,6 +754,65 @@ TEST_F(MediaSessionImplTest, SessionInfoAudioSink) {
   player_observer_->SetAudioSinkId(player2, "2");
   info = media_session::test::GetMediaSessionInfoSync(GetMediaSession());
   EXPECT_FALSE(info->audio_sink_id.has_value());
+}
+
+TEST_F(MediaSessionImplTest, SessionActionsSaveVideoFrame) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kGlobalMediaControlsSaveVideoFrame);
+
+  RemoveAllPlayers();
+  int player = player_observer_->StartNewPlayer();
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *GetMediaSession());
+
+  // If there is only one player and it has a video frame available, then the
+  // session actions should contain kSaveVideoFrame.
+  player_observer_->SetIsVideoFrameAvailable(player, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+  mock_media_session_service().FlushForTesting();
+  EXPECT_TRUE(observer.actions().contains(MediaSessionAction::kSaveVideoFrame));
+
+  // If the player does not have a video frame available, then the session
+  // actions should not contain kSaveVideoFrame.
+  player_observer_->SetIsVideoFrameAvailable(player, false);
+  GetMediaSession()->OnVideoFrameAvailabilityChanged();
+  mock_media_session_service().FlushForTesting();
+  EXPECT_FALSE(
+      observer.actions().contains(MediaSessionAction::kSaveVideoFrame));
+
+  // If there are multiple players, then the session actions should not contain
+  // kSaveVideoFrame even if one of them has a video frame available.
+  player_observer_->SetIsVideoFrameAvailable(player, true);
+  GetMediaSession()->OnVideoFrameAvailabilityChanged();
+  mock_media_session_service().FlushForTesting();
+  EXPECT_TRUE(observer.actions().contains(MediaSessionAction::kSaveVideoFrame));
+
+  int player2 = player_observer_->StartNewPlayer();
+  GetMediaSession()->AddPlayer(player_observer_.get(), player2);
+  mock_media_session_service().FlushForTesting();
+  EXPECT_FALSE(
+      observer.actions().contains(MediaSessionAction::kSaveVideoFrame));
+}
+
+TEST_F(MediaSessionImplTest, SaveVideoFrameOnePlayer) {
+  RemoveAllPlayers();
+  int player = player_observer_->StartNewPlayer();
+  player_observer_->SetHasVideo(player, true);
+  player_observer_->SetIsVideoFrameAvailable(player, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player);
+
+  // If there is only one player, then SaveVideoFrame should be called.
+  GetMediaSession()->SaveVideoFrame();
+  EXPECT_EQ(1, player_observer_->received_save_video_frame_calls());
+
+  // If there are multiple players, then SaveVideoFrame should not be called.
+  int player2 = player_observer_->StartNewPlayer();
+  player_observer_->SetHasVideo(player2, true);
+  player_observer_->SetIsVideoFrameAvailable(player2, true);
+  GetMediaSession()->AddPlayer(player_observer_.get(), player2);
+  GetMediaSession()->SaveVideoFrame();
+  EXPECT_EQ(1, player_observer_->received_save_video_frame_calls());
 }
 
 TEST_F(MediaSessionImplTest, SessionInfoPresentation) {

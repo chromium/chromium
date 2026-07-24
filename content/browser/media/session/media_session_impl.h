@@ -294,6 +294,9 @@ class MediaSessionImpl : public MediaSession,
   // reaction to content being hidden).
   void EnterAutoPictureInPicture() override;
 
+  // Save the current video frame.
+  void SaveVideoFrame() override;
+
   // Routes the audio from this Media Session to the given output device. If
   // |id| is null, we will route to the default output device.
   // Players created after this setting has been set will also have their audio
@@ -358,6 +361,9 @@ class MediaSessionImpl : public MediaSession,
 
   // Called when any of the normal players video visibility changes.
   CONTENT_EXPORT void OnVideoVisibilityChanged();
+
+  // Called when any of the normal players video frame availability changes.
+  CONTENT_EXPORT void OnVideoFrameAvailabilityChanged();
 
   // Update the value of `remote_playback_metadata_`.
   CONTENT_EXPORT void SetRemotePlaybackMetadata(
@@ -516,6 +522,7 @@ class MediaSessionImpl : public MediaSession,
                      std::vector<media_session::MediaImage>& artwork);
 
   bool IsPictureInPictureAvailable() const;
+  bool IsVideoFrameAvailable() const;
 
   // Iterates over all |normal_players_| and returns true if any of the players'
   // videos is sufficiently visible, false otherwise.

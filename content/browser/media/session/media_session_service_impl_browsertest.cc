@@ -72,6 +72,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
       int player_id,
       const media::PictureInPictureEventsInfo::AutoPipInfo&
           auto_picture_in_picture_info) override {}
+  void OnSaveVideoFrame(int player_id) override {}
 
   std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
@@ -85,6 +86,8 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   bool HasSufficientlyVisibleVideo(int player_id) const override {
     return false;
   }
+
+  bool IsVideoFrameAvailable(int player_id) const override { return false; }
 
   bool HasAudio(int player_id) const override { return true; }
   bool HasVideo(int player_id) const override { return false; }

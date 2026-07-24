@@ -49,7 +49,8 @@ enum class MediaItemUIUpdatedViewAction {
   kCloseDeviceListForCasting = 10,
   kEnterPictureInPicture = 11,
   kExitPictureInPicture = 12,
-  kMaxValue = kExitPictureInPicture,
+  kSaveVideoFrame = 13,
+  kMaxValue = kSaveVideoFrame,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaItemUIUpdatedViewAction)
 
@@ -213,6 +214,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   raw_ptr<MediaProgressView> progress_view_ = nullptr;
   raw_ptr<MediaLiveStatusView> live_status_view_ = nullptr;
   std::vector<raw_ptr<MediaActionButton>> media_action_buttons_;
+  raw_ptr<MediaActionButton> save_video_frame_button_ = nullptr;
   raw_ptr<MediaActionButton> start_casting_button_ = nullptr;
   raw_ptr<MediaActionButton> picture_in_picture_button_ = nullptr;
   raw_ptr<MediaActionButton> play_pause_button_ = nullptr;

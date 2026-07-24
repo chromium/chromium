@@ -5,6 +5,7 @@
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_footer.h"
@@ -12,6 +13,7 @@
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
 #include "components/strings/grit/components_strings.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -91,6 +93,7 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
     actions_.insert(MediaSessionAction::kSeekBackward);
     actions_.insert(MediaSessionAction::kEnterPictureInPicture);
     actions_.insert(MediaSessionAction::kExitPictureInPicture);
+    actions_.insert(MediaSessionAction::kSaveVideoFrame);
     view_->UpdateWithMediaActions(actions_);
   }
 
@@ -229,6 +232,31 @@ TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaSessionInfoForPiPButton) {
   SimulateButtonClick(MediaSessionAction::kEnterPictureInPicture);
   ExpectActionHistogramCount(
       MediaItemUIUpdatedViewAction::kEnterPictureInPicture);
+}
+
+TEST_F(MediaItemUIUpdatedViewTest,
+       UpdateWithMediaActionsForSaveVideoFrameButton) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kGlobalMediaControlsSaveVideoFrame);
+
+  // Initially not visible.
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSaveVideoFrame));
+
+  // Enable the action.
+  base::flat_set<MediaSessionAction> actions;
+  actions.insert(MediaSessionAction::kSaveVideoFrame);
+  view()->UpdateWithMediaActions(actions);
+  EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSaveVideoFrame));
+
+  EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
+                          MediaSessionAction::kSaveVideoFrame));
+  SimulateButtonClick(MediaSessionAction::kSaveVideoFrame);
+  ExpectActionHistogramCount(MediaItemUIUpdatedViewAction::kSaveVideoFrame);
+
+  // Disable the action.
+  actions.erase(MediaSessionAction::kSaveVideoFrame);
+  view()->UpdateWithMediaActions(actions);
+  EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSaveVideoFrame));
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaMetadata) {
