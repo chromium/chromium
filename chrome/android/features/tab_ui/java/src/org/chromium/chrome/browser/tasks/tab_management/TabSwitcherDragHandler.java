@@ -48,7 +48,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
             return false;
         }
 
-        default boolean handleExternalDragEnd(float xPx, float yPx) {
+        default boolean handleExternalDragEnd(float xPx, float yPx, boolean isOSNewWindowDrop) {
             return false;
         }
 
@@ -65,7 +65,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
         }
 
         default boolean handleDrop(float xPx, float yPx) {
-            return false;
+            return true;
         }
 
         /**
@@ -268,12 +268,12 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 }
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
+                boolean isOSNewWindowDrop =
+                        dragEvent.getResult()
+                                && DragDropGlobalState.hasValue()
+                                && !DragDropGlobalState.didChromeHandleDrop();
                 // Restore items's visibility.
                 if (mDragSourceView != null) {
-                    boolean isOSNewWindowDrop =
-                            dragEvent.getResult()
-                                    && DragDropGlobalState.hasValue()
-                                    && !DragDropGlobalState.didChromeHandleDrop();
                     if (isOSNewWindowDrop) {
                         View draggedView = mDragSourceView;
                         // TODO(crbug.com/518307037): Use a TabModelObserver.
@@ -287,7 +287,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
                 }
                 res =
                         mDragHandlerDelegate.handleExternalDragEnd(
-                                dragEvent.getX(), dragEvent.getY());
+                                dragEvent.getX(), dragEvent.getY(), isOSNewWindowDrop);
                 break;
             case DragEvent.ACTION_DRAG_ENTERED:
                 res = mDragHandlerDelegate.handleDragEnter();

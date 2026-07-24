@@ -2588,6 +2588,8 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
      * //ui/android/junit/src/org/chromium/ui/recyclerview/widget/ItemTouchHelper2UnitTest.java
      ******************************************************************/
 
+    private static final long EXTERNAL_DROP_RESTORE_DELAY_MS = 1000L;
+
     /** Allows to handle long press events externally. */
     public interface LongPressHandler {
         boolean handleLongPress(MotionEvent motionEvent);
@@ -2598,6 +2600,23 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
     private float mExternalDragItemInitialAlpha = 1f;
     private boolean mIsExternalDragItemRecyclablePrevented;
     private LongPressHandler mExternalLongPressHandler;
+
+    @VisibleForTesting Runnable mDelayedExternalItemRestorationRunnable;
+
+    private final View.OnAttachStateChangeListener mDelayedExternalItemRestorationDetachListener =
+            new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {}
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    v.removeOnAttachStateChangeListener(this);
+                    if (mDelayedExternalItemRestorationRunnable != null) {
+                        v.removeCallbacks(mDelayedExternalItemRestorationRunnable);
+                        mDelayedExternalItemRestorationRunnable.run();
+                    }
+                }
+            };
 
     /**
      * Creates an ItemTouchHelper2 that will work with the given Callback. This is an extension of
@@ -2735,18 +2754,44 @@ public class ItemTouchHelper2 extends RecyclerView.ItemDecoration
         }
     }
 
-    /** Restores the dragged item's visibility back to VISIBLE. */
-    public void restoreExternalDragItemVisibility() {
+    /**
+     * Restores the dragged item's layout dimensions and sets visibility back to VISIBLE.
+     *
+     * @param isOSNewWindowDrop If true, delays the restoration by {@link
+     *     #EXTERNAL_DROP_RESTORE_DELAY_MS}. Required when the drag ended externally and the item
+     *     might be removed asynchronously. If the item is detached before the delay completes, it
+     *     is restored instantly to protect the RecyclerView pool.
+     */
+    public void restoreExternalDragItemVisibility(boolean isOSNewWindowDrop) {
         if (mExternalDragItem != null && mCollapsedItemState != null) {
             // Assert that we are restoring the dimensions to the exact view we saved them from.
             assert mCollapsedItemState.viewHolder == mExternalDragItem;
 
-            mExternalDragItem.itemView.setVisibility(View.VISIBLE);
-            ViewGroup.MarginLayoutParams params =
-                    (ViewGroup.MarginLayoutParams) mExternalDragItem.itemView.getLayoutParams();
-            mCollapsedItemState.restore(params);
-            mExternalDragItem.itemView.setLayoutParams(params);
+            final ViewHolder viewHolder = mExternalDragItem;
+            final CollapsedItemState collapsedState = mCollapsedItemState;
             mCollapsedItemState = null;
+
+            mDelayedExternalItemRestorationRunnable =
+                    () -> {
+                        viewHolder.itemView.removeOnAttachStateChangeListener(
+                                mDelayedExternalItemRestorationDetachListener);
+                        viewHolder.itemView.setVisibility(View.VISIBLE);
+                        ViewGroup.MarginLayoutParams params =
+                                (ViewGroup.MarginLayoutParams)
+                                        viewHolder.itemView.getLayoutParams();
+                        collapsedState.restore(params);
+                        viewHolder.itemView.setLayoutParams(params);
+                        mDelayedExternalItemRestorationRunnable = null;
+                    };
+
+            if (isOSNewWindowDrop) {
+                viewHolder.itemView.addOnAttachStateChangeListener(
+                        mDelayedExternalItemRestorationDetachListener);
+                viewHolder.itemView.postDelayed(
+                        mDelayedExternalItemRestorationRunnable, EXTERNAL_DROP_RESTORE_DELAY_MS);
+            } else {
+                mDelayedExternalItemRestorationRunnable.run();
+            }
         }
     }
 

@@ -478,7 +478,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     }
 
                     @Override
-                    public boolean handleExternalDragEnd(float xPx, float yPx) {
+                    public boolean handleExternalDragEnd(
+                            float xPx, float yPx, boolean isOSNewWindowDrop) {
                         if (!mAllowDetachingTabsToCreateNewWindows) return false;
                         for (DragObserver observer : mDragObserverList) {
                             observer.onDragEnd();

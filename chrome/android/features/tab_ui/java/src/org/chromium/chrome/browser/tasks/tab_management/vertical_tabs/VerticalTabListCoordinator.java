@@ -911,7 +911,7 @@ public class VerticalTabListCoordinator {
 
             @Override
             public boolean handleDragEnter() {
-                itemTouchHelper.restoreExternalDragItemVisibility();
+                itemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
                 return true;
             }
 
@@ -922,8 +922,9 @@ public class VerticalTabListCoordinator {
             }
 
             @Override
-            public boolean handleExternalDragEnd(float xPx, float yPx) {
-                itemTouchHelper.restoreExternalDragItemVisibility();
+            public boolean handleExternalDragEnd(
+                    float xPx, float yPx, boolean isOSNewWindowDrop) {
+                itemTouchHelper.restoreExternalDragItemVisibility(isOSNewWindowDrop);
                 itemTouchHelper.onExternalDragStop(/* recoverItem= */ false);
                 return true;
             }

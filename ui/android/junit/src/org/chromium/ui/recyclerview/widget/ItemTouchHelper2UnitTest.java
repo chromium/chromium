@@ -117,7 +117,7 @@ public class ItemTouchHelper2UnitTest {
         assertEquals(0, newParams.bottomMargin);
 
         // Restore visibility.
-        mItemTouchHelper.restoreExternalDragItemVisibility();
+        mItemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
 
         assertEquals("Item should be visible.", View.VISIBLE, mItemView.getVisibility());
         RecyclerView.LayoutParams restoredParams =
@@ -187,8 +187,57 @@ public class ItemTouchHelper2UnitTest {
 
         mItemTouchHelper.clearExternalDragItemVisibility();
 
-        mItemTouchHelper.restoreExternalDragItemVisibility();
+        mItemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
 
+        RecyclerView.LayoutParams restoredParams =
+                (RecyclerView.LayoutParams) mItemView.getLayoutParams();
+        assertEquals("Original width should be restored.", 100, restoredParams.width);
+    }
+
+    @Test
+    public void testExternalDrag_ClearRestoreClearRestore() {
+        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(100, 200);
+        mItemView.setLayoutParams(layoutParams);
+        mItemTouchHelper.setExternalDragItem(mViewHolder);
+        mItemTouchHelper.clearExternalDragItemVisibility();
+        mItemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
+        mItemTouchHelper.clearExternalDragItemVisibility();
+        mItemTouchHelper.restoreExternalDragItemVisibility(/* isOSNewWindowDrop= */ false);
+        assertEquals(100, mItemView.getLayoutParams().width);
+    }
+
+    @Test
+    public void testExternalDrag_OSNewWindowDrop_Detached_RestoresCleanState() {
+        RecyclerView.LayoutParams layoutParams = new RecyclerView.LayoutParams(100, 200);
+        mItemView.setLayoutParams(layoutParams);
+
+        mItemTouchHelper.setExternalDragItem(mViewHolder);
+        mItemTouchHelper.clearExternalDragItemVisibility();
+
+        // Mutate params physically simulating collapse.
+        RecyclerView.LayoutParams newParams =
+                (RecyclerView.LayoutParams) mItemView.getLayoutParams();
+        assertEquals(0, newParams.width);
+
+        // Call restore with true (OS new window drop).
+        mItemTouchHelper.restoreExternalDragItemVisibility(true);
+
+        // It should still be GONE because the restore is delayed.
+        assertEquals(
+                "Item should still be GONE because restoration is delayed.",
+                View.GONE,
+                mItemView.getVisibility());
+
+        // Simulate detachment (item successfully removed from adapter).
+        if (mItemTouchHelper.mDelayedExternalItemRestorationRunnable != null) {
+            mItemTouchHelper.mDelayedExternalItemRestorationRunnable.run();
+        }
+
+        // Visibility and dimensions should be instantly restored for the recycle pool.
+        assertEquals(
+                "Item should be VISIBLE instantly on detach.",
+                View.VISIBLE,
+                mItemView.getVisibility());
         RecyclerView.LayoutParams restoredParams =
                 (RecyclerView.LayoutParams) mItemView.getLayoutParams();
         assertEquals("Original width should be restored.", 100, restoredParams.width);
