@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 
-#include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -222,10 +221,8 @@ RuleVisibilityItems CSSGapDecorationUtils::ResolveRuleVisibilityItemsValue(
   // https://drafts.csswg.org/css-gaps-1/#visibility-rules.
   switch (container_type) {
     case GapGeometry::ContainerType::kGrid:
-      return RuleVisibilityItems::kAll;
     case GapGeometry::ContainerType::kGridLanes:
-      // Grid Lanes gap geometry is not paint-visible yet.
-      NOTREACHED();
+      return RuleVisibilityItems::kAll;
     case GapGeometry::ContainerType::kFlex:
     case GapGeometry::ContainerType::kMultiColumn:
       return RuleVisibilityItems::kBetween;

@@ -255,10 +255,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
           std::max(container_stacking_content_end,
                    container_stacking_content_start + stacking_axis_size_);
 
-      gap_geometry_ = gap_accumulator->FinalizeGapGeometry(
-          container_stacking_content_start, stacking_content_end);
-      // TODO(javiercon): Attach this geometry to the fragment after
-      // gap-decoration painting supports grid-lanes.
+      container_builder_.SetGapGeometry(gap_accumulator->FinalizeGapGeometry(
+          container_stacking_content_start, stacking_content_end));
     }
   }
 

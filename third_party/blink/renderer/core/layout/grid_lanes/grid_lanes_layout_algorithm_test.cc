@@ -120,10 +120,6 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     running_positions.SetAutoPlacementCursorForTesting(cursor);
   }
 
-  const GapGeometry* GapGeometryFor(const GridLanesLayoutAlgorithm& algorithm) {
-    return algorithm.gap_geometry_;
-  }
-
   const GridLayoutTrackCollection& TrackCollection() {
     const auto grid_axis_direction =
         GridLanesLayoutAlgorithmTest::grid_axis_direction_;
@@ -2684,7 +2680,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumn) {
   GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
   ASSERT_NE(gap_geometry, nullptr);
   EXPECT_EQ(gap_geometry->GetContainerType(),
             GapGeometry::ContainerType::kGridLanes);
@@ -2739,7 +2735,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRow) {
   GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
   ASSERT_NE(gap_geometry, nullptr);
   EXPECT_EQ(gap_geometry->GetMainDirection(), kForRows);
   EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(12));
@@ -2783,7 +2779,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryEmptyExplicitTracks) {
   GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
   ASSERT_NE(gap_geometry, nullptr);
   EXPECT_EQ(gap_geometry->MainGapCount(), 2u);
   EXPECT_EQ(gap_geometry->CrossGapCount(), 0u);
@@ -2819,7 +2815,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometrySingleTrack) {
   GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   algorithm.Layout();
 
-  EXPECT_EQ(GapGeometryFor(algorithm), nullptr);
+  EXPECT_EQ(algorithm.GetGapGeometry(), nullptr);
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRequiresGapRule) {
@@ -2849,7 +2845,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRequiresGapRule) {
   GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   algorithm.Layout();
 
-  EXPECT_EQ(GapGeometryFor(algorithm), nullptr);
+  EXPECT_EQ(algorithm.GetGapGeometry(), nullptr);
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryCollapsedAutoFitTracks) {
@@ -2890,7 +2886,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryCollapsedAutoFitTracks) {
   GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
   ASSERT_NE(gap_geometry, nullptr);
   ASSERT_EQ(gap_geometry->MainGapCount(), 4u);
   EXPECT_EQ(gap_geometry->CrossGapCount(), 0u);
@@ -2937,7 +2933,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryGridAxisAlignment) {
   GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
   ASSERT_NE(gap_geometry, nullptr);
   ASSERT_EQ(gap_geometry->MainGapCount(), 1u);
   EXPECT_EQ(gap_geometry->GetMainGaps()[0].GetGapOffset(), LayoutUnit(150));
@@ -2985,7 +2981,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryColumnStackingAxisOverflow) {
   GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
   ASSERT_NE(gap_geometry, nullptr);
   ASSERT_EQ(gap_geometry->MainGapCount(), 1u);
 
@@ -3032,7 +3028,7 @@ TEST_F(GridLanesLayoutAlgorithmTest, GapGeometryRowStackingAxisOverflow) {
   GridLanesLayoutAlgorithm algorithm({node, fragment_geometry, space});
   algorithm.Layout();
 
-  const GapGeometry* gap_geometry = GapGeometryFor(algorithm);
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
   ASSERT_NE(gap_geometry, nullptr);
   ASSERT_EQ(gap_geometry->MainGapCount(), 1u);
 
