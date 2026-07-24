@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -37,7 +36,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
-import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -127,7 +125,6 @@ class AutocompleteMediator
         implements OnSuggestionsReceivedListener,
                 OmniboxSuggestionsDropdown.GestureObserver,
                 OmniboxSuggestionsDropdownScrollListener,
-                WindowFocusChangedObserver,
                 PauseResumeWithNativeObserver,
                 FuseboxAttachmentChangeListener,
                 SuggestionHost {
@@ -207,7 +204,6 @@ class AutocompleteMediator
     private boolean mShouldPreventOmniboxAutocomplete;
     private long mLastActionUpTimestamp;
     private boolean mIgnoreOmniboxItemSelection = true;
-    private boolean mWindowFocused;
 
     // The number of touch down events sent to native during an omnibox session.
     private int mNumTouchDownEventForwardedInOmniboxSession;
@@ -268,8 +264,7 @@ class AutocompleteMediator
         OmniboxResourceProvider.invalidateDrawableCache();
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
-        Activity activity = windowAndroid.getActivity().get();
-        mWindowFocused = (activity != null && activity.hasWindowFocus());
+
         mDeferredIMEWindowInsetApplicationCallback = deferredIMEWindowInsetApplicationCallback;
         mUiOverrides = uiOverrides;
 
@@ -492,7 +487,9 @@ class AutocompleteMediator
         }
 
         setAutocompleteInput(session.getAutocompleteInput());
-        setAutocompleteController(session.getAutocompleteController());
+        setAutocompleteController(
+                session.getAutocompleteController(),
+                session.getAutocompleteInput().getAutocompleteState());
         mSessionState = session;
         setFuseboxAttachmentModelList(mSessionState.getFuseboxAttachmentModelList());
 
@@ -584,7 +581,7 @@ class AutocompleteMediator
         clearSuggestions();
 
         setAutocompleteInput(null);
-        setAutocompleteController(null);
+        setAutocompleteController(null, AutocompleteState.DISABLED);
 
         mSessionState = null;
         setFuseboxAttachmentModelList(null);
@@ -616,14 +613,15 @@ class AutocompleteMediator
         return omniboxAnimator;
     }
 
-    private void setAutocompleteController(@Nullable AutocompleteController controller) {
-        removeAutocompleteObservers();
+    private void setAutocompleteController(
+            @Nullable AutocompleteController controller, @AutocompleteState int state) {
+        onAutocompleteStateChanged(AutocompleteState.DISABLED);
         mAutocomplete = controller;
-        installAutocompleteObservers();
+        onAutocompleteStateChanged(state);
     }
 
     private void installAutocompleteObservers() {
-        if (mAutocomplete == null || !mWindowFocused) return;
+        if (mAutocomplete == null) return;
         mAutocomplete.addOnSuggestionsReceivedListener(this);
     }
 
@@ -1345,10 +1343,14 @@ class AutocompleteMediator
     }
 
     private void onAutocompleteStateChanged(@AutocompleteState int state) {
+        if (mAutocomplete == null) return;
+
         if (state == AutocompleteState.ENABLED) {
+            installAutocompleteObservers();
             onInputChanged();
-        } else if (state == AutocompleteState.STANDBY) {
+        } else {
             stopAutocomplete(AutocompleteStopReason.CLOBBERED);
+            removeAutocompleteObservers();
         }
     }
 
@@ -2064,36 +2066,6 @@ class AutocompleteMediator
 
         // Re-request ZPS in the event of new attachments being uploaded.
         onInputChanged();
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean windowIsFocused) {
-        mWindowFocused = windowIsFocused;
-        boolean showSuggestionsContainer = windowIsFocused;
-
-        if (isInInputSession()) {
-            // Always set the window activity focused property to true for hub search so that the
-            // dropdown container persists when search activity is dismissed.
-            // TODO(crbug.com/390011136): Find a better way to create a seamless animation when
-            // exiting hub search that dismisses the URL bar and suggestions list together.
-            showSuggestionsContainer |=
-                    mAutocompleteInput.getPageClassification()
-                            == PageClassification.ANDROID_HUB_VALUE;
-
-            if (windowIsFocused) {
-                installAutocompleteObservers();
-                onInputChanged();
-            } else {
-                stopAutocomplete(AutocompleteStopReason.CLOBBERED);
-                removeAutocompleteObservers();
-            }
-        }
-
-        // TODO(crbug.com/390011136): Find a better / more appropriate name for this property. It is
-        // a misnomer: this property doesn't reflect activity window focus, but the intent to show
-        // the suggestions list container.
-        mListPropertyModel.set(
-                SuggestionListProperties.ACTIVITY_WINDOW_FOCUSED, showSuggestionsContainer);
     }
 
     /**

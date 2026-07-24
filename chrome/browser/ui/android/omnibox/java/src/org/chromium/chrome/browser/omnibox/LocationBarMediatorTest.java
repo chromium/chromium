@@ -349,7 +349,9 @@ public class LocationBarMediatorTest {
         lenient().doReturn(mRootView).when(mLocationBarLayout).getRootView();
         lenient().doReturn(true).when(mLocationBarLayout).shouldClearTextOnFocus();
         lenient().doReturn(mRootView).when(mLocationBarTablet).getRootView();
-        lenient().doReturn(new WeakReference<>(null)).when(mWindowAndroid).getActivity();
+        Activity activity = mock(Activity.class);
+        lenient().doReturn(true).when(activity).hasWindowFocus();
+        lenient().doReturn(new WeakReference<>(activity)).when(mWindowAndroid).getActivity();
         OmniboxPrerenderJni.setInstanceForTesting(mPrerenderJni);
         PreloadPagesSettingsBridgeJni.setInstanceForTesting(mPreloadPagesSettingsJni);
         ContextualTasksUtilsJni.setInstanceForTesting(mContextualTasksUtilsJni);
@@ -4239,5 +4241,72 @@ public class LocationBarMediatorTest {
         assertEquals("w", mSessionState.getAutocompleteInput().getUserText());
         assertEquals("wikipedia.org", mSessionState.getAutocompleteInput().getPreviewText());
         assertTrue(mSessionState.getAutocompleteInput().hasPreviewText());
+    }
+
+    @Test
+    public void testOnWindowFocusChanged_losesFocus_standby() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.ENABLED);
+        mMediator.beginInput(input);
+        assertEquals(AutocompleteState.ENABLED, input.getAutocompleteState());
+
+        mMediator.onWindowFocusChanged(false);
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+    }
+
+    @Test
+    public void testOnWindowFocusChanged_losesFocus_noInput() {
+        mMediator.onWindowFocusChanged(false); // Shouldn't crash
+    }
+
+    @Test
+    public void testOnWindowFocusChanged_losesFocus_alreadyStandby() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.STANDBY);
+        mMediator.beginInput(input);
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+
+        mMediator.onWindowFocusChanged(false);
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
+    }
+
+    @Test
+    public void testOnWindowFocusChanged_losesFocus_disabled() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.DISABLED);
+        mMediator.beginInput(input);
+        assertEquals(AutocompleteState.DISABLED, input.getAutocompleteState());
+
+        mMediator.onWindowFocusChanged(false);
+        assertEquals(AutocompleteState.DISABLED, input.getAutocompleteState());
+    }
+
+    @Test
+    public void testBeginInput_unfocusedWindow_standby() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mSessionState.activate(mContext, mWebContents, mProfileSupplier, null);
+
+        // Simulate window losing focus before input begins.
+        mMediator.onWindowFocusChanged(false);
+
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setAutocompleteState(AutocompleteState.ENABLED);
+        mMediator.beginInput(input);
+
+        // Should be forced to STANDBY because window is not focused.
+        assertEquals(AutocompleteState.STANDBY, input.getAutocompleteState());
     }
 }
