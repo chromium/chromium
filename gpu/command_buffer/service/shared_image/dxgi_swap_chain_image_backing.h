@@ -8,7 +8,7 @@
 #include <windows.h>
 
 #include <d3d11.h>
-#include <dxgi1_2.h>
+#include <dxgi1_4.h>
 #include <wrl/client.h>
 
 #include <utility>
@@ -71,7 +71,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
       const Mailbox& mailbox,
       const SharedImageInfo& si_info,
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
+      Microsoft::WRL::ComPtr<IDXGISwapChain3> dxgi_swap_chain,
       int buffers_need_alpha_initialization_count);
 
   friend class DXGISwapChainOverlayImageRepresentation;
@@ -95,7 +95,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   std::optional<gfx::Rect> pending_swap_rect_;
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain_;
+  Microsoft::WRL::ComPtr<IDXGISwapChain3> dxgi_swap_chain_;
 
   // Holds a gles2::TexturePassthrough and corresponding egl image.
   scoped_refptr<D3DImageBacking::GLTextureHolder> gl_texture_holder_;

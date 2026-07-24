@@ -70,7 +70,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   enum class DCSupportLevel {
     // Direct composition is not supported.
     kNone,
-    // Support for presenting `IDXGISwapChain` and `IDCompositionSurface`.
+    // Support for presenting `IDXGISwapChain3` and `IDCompositionSurface`.
     kDCLayers,
     // Support for presenting `IDCompositionTexture`.
     kDCompTexture,

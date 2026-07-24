@@ -9,7 +9,7 @@
 
 #include <d3d11.h>
 #include <d3d12.h>
-#include <dxgi1_2.h>
+#include <dxgi1_4.h>
 #include <wrl/client.h>
 
 #include <memory>
@@ -76,7 +76,7 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       DawnContextProvider* dawn_context_provider = nullptr);
 
   // Clears the current back buffer to |color| on the immediate context.
-  static bool ClearBackBufferToColor(IDXGISwapChain1* swap_chain,
+  static bool ClearBackBufferToColor(IDXGISwapChain3* swap_chain,
                                      const SkColor4f& color);
 
   struct GPU_GLES2_EXPORT SwapChainBackings {
@@ -135,7 +135,7 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       bool is_thread_safe);
 
   bool CreateSwapChainInternal(
-      Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
+      Microsoft::WRL::ComPtr<IDXGISwapChain3>& swap_chain,
       Microsoft::WRL::ComPtr<ID3D11Texture2D>& back_buffer_texture,
       Microsoft::WRL::ComPtr<ID3D11Texture2D>& front_buffer_texture,
       viz::SharedImageFormat format,

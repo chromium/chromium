@@ -9,6 +9,7 @@
 
 #include <d3d11_1.h>
 #include <dcomp.h>
+#include <dxgi1_4.h>
 #include <wrl/client.h>
 
 #include "base/compiler_specific.h"
@@ -57,7 +58,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
       DCLayerOverlayParams& overlay,
       std::optional<OverlayPositionAdjustment>& overlay_position_adjustment);
 
-  const Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain() const {
+  const Microsoft::WRL::ComPtr<IDXGISwapChain3>& swap_chain() const {
     return swap_chain_;
   }
 
@@ -230,7 +231,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
       Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor,
       Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
           video_processor_enumerator,
-      Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3,
       Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1,
       const gfx::ColorSpace& input_color_space);
 
@@ -301,7 +301,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> dcomp_device_;
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
+  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain_;
 
   // Video processor output view created from swap chain back buffer.  Must be
   // cached for performance reasons.

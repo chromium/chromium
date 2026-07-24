@@ -1525,11 +1525,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
   bool driver_supports_vp_auto_hdr =
       video_processor_wrapper->GetDriverSupportsVpAutoHdr();
 
-  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
   Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1;
-  if (SUCCEEDED(swap_chain_.As(&swap_chain3)) &&
-      SUCCEEDED(video_context.As(&context1))) {
-    DCHECK(swap_chain3);
+  if (SUCCEEDED(video_context.As(&context1))) {
     DCHECK(context1);
     // Set input color space.
     context1->VideoProcessorSetStreamColorSpace1(
@@ -1547,7 +1544,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
     // Can fail with E_INVALIDARG if the swap chain does not support the
     // DXGI color space. We should still set the output color space as
     // best effort.
-    HRESULT hr = swap_chain3->SetColorSpace1(swap_dxgi_color_space);
+    HRESULT hr = swap_chain_->SetColorSpace1(swap_dxgi_color_space);
     if (FAILED(hr)) {
       DLOG(ERROR) << "SetColorSpace1 failed: "
                   << logging::SystemErrorCodeToString(hr);
@@ -1646,8 +1643,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
       if (FAILED(hr)) {
         if (use_vp_auto_hdr) {
           if (!RevertSwapChainToSDR(video_device, video_processor,
-                                    video_processor_enumerator, swap_chain3,
-                                    context1, src_color_space)) {
+                                    video_processor_enumerator, context1,
+                                    src_color_space)) {
             return false;
           }
 
@@ -1705,8 +1702,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
                       video_context.Get(), video_processor.Get(), false);
 
       if (!RevertSwapChainToSDR(video_device, video_processor,
-                                video_processor_enumerator, swap_chain3,
-                                context1, src_color_space)) {
+                                video_processor_enumerator, context1,
+                                src_color_space)) {
         return false;
       }
 
@@ -1821,13 +1818,15 @@ bool SwapChainPresenter::ReallocateSwapChain(
       "GPU.DirectComposition.SwapChainCreationResult3.";
   const std::string protected_video_type_string =
       ProtectedVideoTypeToString(protected_video_type);
+  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain;
 
   if (use_yuv_swap_chain) {
     TRACE_EVENT1("gpu", "SwapChainPresenter::ReallocateSwapChain::YUV",
                  "format", DxgiFormatToString(swap_chain_format));
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain1;
     hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
         d3d11_device_.Get(), swap_chain_handle.Get(), &desc, nullptr,
-        &swap_chain_);
+        &swap_chain1);
     failed_to_create_yuv_swapchain_ = FAILED(hr);
 
     base::UmaHistogramSparse(kSwapChainCreationResultByVideoTypeUmaPrefix +
@@ -1843,6 +1842,9 @@ bool SwapChainPresenter::ReallocateSwapChain(
       use_yuv_swap_chain = false;
       swap_chain_format = DXGI_FORMAT_B8G8R8A8_UNORM;
     } else {
+      // IDXGISwapChain3 is supported on all Windows versions >= 10. Windows 10
+      // which is the minimum Windows version Chromium supports.
+      CHECK_EQ(swap_chain1.As(&swap_chain), S_OK);
       DVLOG(2) << "Update visual's content (yuv). " << __func__ << "(" << this
                << ")";
     }
@@ -1866,9 +1868,10 @@ bool SwapChainPresenter::ReallocateSwapChain(
       desc.Flags |= DXGI_SWAP_CHAIN_FLAG_HW_PROTECTED;
     }
 
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain1;
     hr = media_factory->CreateSwapChainForCompositionSurfaceHandle(
         d3d11_device_.Get(), swap_chain_handle.Get(), &desc, nullptr,
-        &swap_chain_);
+        &swap_chain1);
 
     base::UmaHistogramSparse(kSwapChainCreationResultByVideoTypeUmaPrefix +
                                  protected_video_type_string,
@@ -1885,17 +1888,16 @@ bool SwapChainPresenter::ReallocateSwapChain(
       return false;
     }
 
+    CHECK_EQ(swap_chain1.As(&swap_chain), S_OK);
     DVLOG(2) << "Update visual's content. " << __func__ << "(" << this << ")";
   }
 
+  swap_chain_ = std::move(swap_chain);
   if (DXGIWaitableSwapChainEnabled()) {
-    Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
-    if (SUCCEEDED(swap_chain_.As(&swap_chain3))) {
-      hr = swap_chain3->SetMaximumFrameLatency(
-          GetDXGIWaitableSwapChainMaxQueuedFrames());
-      DCHECK(SUCCEEDED(hr)) << "SetMaximumFrameLatency failed: "
-                            << logging::SystemErrorCodeToString(hr);
-    }
+    hr = swap_chain_->SetMaximumFrameLatency(
+        GetDXGIWaitableSwapChainMaxQueuedFrames());
+    DCHECK(SUCCEEDED(hr)) << "SetMaximumFrameLatency failed: "
+                          << logging::SystemErrorCodeToString(hr);
   }
 
   LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
@@ -1966,11 +1968,10 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
     Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor,
     Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
         video_processor_enumerator,
-    Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3,
     Microsoft::WRL::ComPtr<ID3D11VideoContext1> context1,
     const gfx::ColorSpace& input_color_space) {
   if (!video_device || !video_processor || !video_processor_enumerator ||
-      !swap_chain3 || !context1) {
+      !context1) {
     return false;
   }
 
@@ -2010,7 +2011,7 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
                                             is_yuv_swapchain);
   context1->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
                                                output_dxgi_color_space);
-  hr = swap_chain3->SetColorSpace1(output_dxgi_color_space);
+  hr = swap_chain_->SetColorSpace1(output_dxgi_color_space);
   if (FAILED(hr)) {
     LOG(ERROR) << "SetColorSpace1 failed: "
                << logging::SystemErrorCodeToString(hr);

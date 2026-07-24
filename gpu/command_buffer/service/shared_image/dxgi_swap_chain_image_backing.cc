@@ -85,9 +85,9 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
     desc.Flags |= DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
   }
 
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain;
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain1;
   hr = dxgi_factory->CreateSwapChainForComposition(d3d11_device.Get(), &desc,
-                                                   nullptr, &dxgi_swap_chain);
+                                                   nullptr, &dxgi_swap_chain1);
 
   // If CreateSwapChainForComposition fails, we cannot draw to the
   // browser window. Return false after disabling Direct Composition support
@@ -99,21 +99,20 @@ std::unique_ptr<DXGISwapChainImageBacking> DXGISwapChainImageBacking::Create(
     return nullptr;
   }
 
+  Microsoft::WRL::ComPtr<IDXGISwapChain3> dxgi_swap_chain;
+  CHECK_EQ(dxgi_swap_chain1.As(&dxgi_swap_chain), S_OK);
   gl::LabelSwapChainAndBuffers(dxgi_swap_chain.Get(),
                                kDXGISwapChainImageBackingLabel);
 
-  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain_3;
-  if (SUCCEEDED(dxgi_swap_chain.As(&swap_chain_3))) {
-    hr = swap_chain_3->SetColorSpace1(
-        gfx::ColorSpaceWin::GetDXGIColorSpace(si_info.color_space));
-    DCHECK_EQ(hr, S_OK) << ", SetColorSpace1 failed: "
+  hr = dxgi_swap_chain->SetColorSpace1(
+      gfx::ColorSpaceWin::GetDXGIColorSpace(si_info.color_space));
+  DCHECK_EQ(hr, S_OK) << ", SetColorSpace1 failed: "
+                      << logging::SystemErrorCodeToString(hr);
+  if (gl::DXGIWaitableSwapChainEnabled()) {
+    hr = dxgi_swap_chain->SetMaximumFrameLatency(
+        gl::GetDXGIWaitableSwapChainMaxQueuedFrames());
+    DCHECK_EQ(hr, S_OK) << ", SetMaximumFrameLatency failed: "
                         << logging::SystemErrorCodeToString(hr);
-    if (gl::DXGIWaitableSwapChainEnabled()) {
-      hr = swap_chain_3->SetMaximumFrameLatency(
-          gl::GetDXGIWaitableSwapChainMaxQueuedFrames());
-      DCHECK_EQ(hr, S_OK) << ", SetMaximumFrameLatency failed: "
-                          << logging::SystemErrorCodeToString(hr);
-    }
   }
 
   // When |format| has no alpha (e.g. RGBX) but |internal_format| does, we wrap
@@ -133,7 +132,7 @@ DXGISwapChainImageBacking::DXGISwapChainImageBacking(
     const Mailbox& mailbox,
     const SharedImageInfo& si_info,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
+    Microsoft::WRL::ComPtr<IDXGISwapChain3> dxgi_swap_chain,
     int buffers_need_alpha_initialization_count)
     : ClearTrackingSharedImageBacking(
           mailbox,

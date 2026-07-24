@@ -10,7 +10,7 @@
 #include <d3d11.h>
 #include <d3d12.h>
 #include <dcomp.h>
-#include <dxgi1_2.h>
+#include <dxgi1_4.h>
 #include <wrl/client.h>
 
 #include <array>
@@ -90,7 +90,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
       gpu::SharedImageUsageSet usage,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture,
       Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+      Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain,
       const GLFormatCaps& gl_format_caps);
 
   D3DImageBacking(const D3DImageBacking&) = delete;
@@ -211,7 +211,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
 
   // Only for test use.
   bool HasStagingTextureForTesting() const;
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_for_testing() const {
+  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain_for_testing() const {
     return swap_chain_;
   }
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture_for_testing() const {
@@ -446,7 +446,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   const size_t array_slice_;
 
   // Swap chain corresponding to this backing.
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
+  Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain_;
 
   // True if using UpdateSubresource1() in UploadFromMemory() is allowed.
   const bool use_update_subresource1_;

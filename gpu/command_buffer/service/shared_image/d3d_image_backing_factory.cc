@@ -482,7 +482,7 @@ bool D3DImageBackingFactory::IsSwapChainSupported(
 }
 
 // static
-bool D3DImageBackingFactory::ClearBackBufferToColor(IDXGISwapChain1* swap_chain,
+bool D3DImageBackingFactory::ClearBackBufferToColor(IDXGISwapChain3* swap_chain,
                                                     const SkColor4f& color) {
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
   HRESULT hr = swap_chain->GetBuffer(0, IID_PPV_ARGS(&d3d11_texture));
@@ -496,7 +496,7 @@ bool D3DImageBackingFactory::ClearBackBufferToColor(IDXGISwapChain1* swap_chain,
 }
 
 bool D3DImageBackingFactory::CreateSwapChainInternal(
-    Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain,
+    Microsoft::WRL::ComPtr<IDXGISwapChain3>& swap_chain,
     Microsoft::WRL::ComPtr<ID3D11Texture2D>& back_buffer_texture,
     Microsoft::WRL::ComPtr<ID3D11Texture2D>& front_buffer_texture,
     viz::SharedImageFormat format,
@@ -545,24 +545,25 @@ bool D3DImageBackingFactory::CreateSwapChainInternal(
   desc.AlphaMode = format.HasAlpha() ? DXGI_ALPHA_MODE_PREMULTIPLIED
                                      : DXGI_ALPHA_MODE_IGNORE;
 
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain1;
   hr = dxgi_factory->CreateSwapChainForComposition(d3d11_device_.Get(), &desc,
-                                                   nullptr, &swap_chain);
+                                                   nullptr, &swap_chain1);
   if (FAILED(hr)) {
     LOG(ERROR) << "CreateSwapChainForComposition failed with error " << std::hex
                << hr;
     return false;
   }
 
+  // IDXGISwapChain3 is supported on all Windows versions >= 10. Windows 10
+  // which is the minimum Windows version Chromium supports.
+  CHECK_EQ(swap_chain1.As(&swap_chain), S_OK);
   gl::LabelSwapChainAndBuffers(swap_chain.Get(), kD3DImageBackingLabel);
 
   if (gl::DXGIWaitableSwapChainEnabled()) {
-    Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
-    if (SUCCEEDED(swap_chain.As(&swap_chain3))) {
-      hr = swap_chain3->SetMaximumFrameLatency(
-          gl::GetDXGIWaitableSwapChainMaxQueuedFrames());
-      DCHECK(SUCCEEDED(hr)) << "SetMaximumFrameLatency failed with error "
-                            << logging::SystemErrorCodeToString(hr);
-    }
+    hr = swap_chain->SetMaximumFrameLatency(
+        gl::GetDXGIWaitableSwapChainMaxQueuedFrames());
+    DCHECK(SUCCEEDED(hr)) << "SetMaximumFrameLatency failed with error "
+                          << logging::SystemErrorCodeToString(hr);
   }
 
   // Explicitly clear front and back buffers to ensure that there are no
@@ -607,7 +608,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   const auto size = si_info.size;
   const auto usage = si_info.usage;
   if (usage.Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
+    Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture;
     Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture;
     if (!CreateSwapChainInternal(swap_chain, back_buffer_texture,

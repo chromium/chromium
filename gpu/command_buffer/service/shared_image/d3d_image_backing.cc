@@ -551,7 +551,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffers(
     gpu::SharedImageUsageSet usage,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture,
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+    Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain,
     const GLFormatCaps& gl_format_caps) {
   DCHECK(format.is_single_plane());
   auto backing = base::WrapUnique(new D3DImageBacking(

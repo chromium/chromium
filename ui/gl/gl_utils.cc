@@ -142,12 +142,12 @@ unsigned int DirectCompositionRootSurfaceBufferCount() {
 
 // Labels swapchain buffers with the string name_prefix + _Buffer_ +
 // <buffer_number>
-void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
+void LabelSwapChainBuffers(IDXGISwapChain3* swap_chain,
                            const char* name_prefix) {
-  DXGI_SWAP_CHAIN_DESC desc;
-  HRESULT hr = swap_chain->GetDesc(&desc);
+  DXGI_SWAP_CHAIN_DESC1 desc;
+  HRESULT hr = swap_chain->GetDesc1(&desc);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to GetDesc from swap chain: "
+    DLOG(ERROR) << "Failed to GetDesc1 from swap chain: "
                 << logging::SystemErrorCodeToString(hr);
     return;
   }
@@ -171,7 +171,7 @@ void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
 
 // Labels swapchain with the name_prefix and its buffers with the string
 // name_prefix + _Buffer_ + <buffer_number>.
-void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
+void LabelSwapChainAndBuffers(IDXGISwapChain3* swap_chain,
                               const char* name_prefix) {
   SetDebugName(swap_chain, name_prefix);
   LabelSwapChainBuffers(swap_chain, name_prefix);
