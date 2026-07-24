@@ -82,6 +82,8 @@ class VideoLayout;
 // A PeerSessionImpl keeps a reference to a connection to a client, and
 // maintains per-client state.
 class PeerSessionImpl : public PeerSession,
+                        public protocol::HostStub,
+                        public protocol::ConnectionToClient::EventHandler,
                         public ClientSessionControl,
                         public ClientSessionEvents,
                         public CursorVisibilityNotifier::EventHandler,

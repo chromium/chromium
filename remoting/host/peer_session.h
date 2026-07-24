@@ -12,19 +12,21 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "remoting/base/source_location.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
-#include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/errors.h"
-#include "remoting/protocol/host_stub.h"
 
 namespace remoting {
+
+namespace protocol {
+class Transport;
+struct TransportRoute;
+}  // namespace protocol
 
 class SessionOptions;
 struct SessionPolicies;
 
 // A PeerSession keeps a reference to a connection to a client, and
 // maintains per-client state.
-class PeerSession : public protocol::HostStub,
-                    public protocol::ConnectionToClient::EventHandler {
+class PeerSession {
  public:
   // Callback interface for passing events to the ClientSession.
   class EventHandler {
@@ -47,7 +49,7 @@ class PeerSession : public protocol::HostStub,
     virtual ~EventHandler() = default;
   };
 
-  ~PeerSession() override = default;
+  virtual ~PeerSession() = default;
 
   // Starts the session with the specified policies and options.
   virtual void Start(const SessionPolicies& session_policies,

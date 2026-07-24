@@ -155,6 +155,7 @@ class ChromotingHostTest : public testing::Test {
         desktop_environment_factory_.get(),
         DesktopEnvironmentOptions::CreateDefault(), nullptr,
         std::vector<raw_ptr<HostExtension, VectorExperimental>>());
+    PeerSessionImpl* peer_session_impl = peer_session.get();
     client->set_peer_session_for_testing(std::move(peer_session));
     ClientSession* client_ptr = client.get();
 
@@ -173,7 +174,7 @@ class ChromotingHostTest : public testing::Test {
       }
       client_ptr->OnConnectionAuthenticated(nullptr);
       if (!reject) {
-        client_ptr->peer_session()->OnConnectionChannelsConnected();
+        peer_session_impl->OnConnectionChannelsConnected();
       }
     } else {
       PrepareForClientDisconnection(connection_index);
