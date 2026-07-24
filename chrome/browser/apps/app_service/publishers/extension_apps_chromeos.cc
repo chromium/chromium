@@ -62,7 +62,6 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/extensions/extension_metrics.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
