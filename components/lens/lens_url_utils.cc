@@ -60,7 +60,7 @@ inline constexpr char kInvocationSourceOmniboxContextualQuery[] = "obic";
 inline constexpr char kInvocationSourceCobrowseToolbarButton[] = "cct";
 inline constexpr char kInvocationSourceCobrowsePinnedToolbarButton[] = "ccpt";
 inline constexpr char kInvocationSourceContextualTasksComposeBox[] = "cntk";
-inline constexpr char kInvocationSourceNtpActionChips[] = "ac";
+inline constexpr char kInvocationSourceNtpActionChips[] = "ntpac";
 
 void AppendQueryParam(std::string* query_string,
                       const char name[],

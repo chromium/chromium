@@ -116,6 +116,6 @@ INSTANTIATE_TEST_SUITE_P(
             lens::LensOverlayInvocationSource::kCobrowsePinnedToolbarButton,
             "ccpt"},
         InvocationSourceParamTestCase{
-            lens::LensOverlayInvocationSource::kNtpActionChips, "ac"}));
+            lens::LensOverlayInvocationSource::kNtpActionChips, "ntpac"}));
 
 }  // namespace lens
