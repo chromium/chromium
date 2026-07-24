@@ -364,6 +364,40 @@ suite('ComposeboxMixinTest', () => {
         assertEquals(0, element.aimThreadRestoredTabs.length);
       });
 
+
+  test(
+      'refreshTabSuggestions() removes tab context if it was navigated',
+      async () => {
+        const tokenTab = 'test-token-tab' as unknown as UnguessableToken;
+        const selectedTabId = 100;
+        const mockTabFile = new ComposeboxFile(
+            tokenTab, 'Selected Tab', 'tab', InputType.kBrowserTab, {
+              isDeletable: true,
+              tabId: selectedTabId,
+              url: 'about:blank?original',
+            });
+
+        element.files = new Map([[tokenTab, mockTabFile]]);
+        element.addedTabsIds = new Map([[selectedTabId, tokenTab]]);
+
+        const freshTab = {
+          tabId: selectedTabId,
+          title: 'Selected Tab',
+          url: 'about:blank?navigated',
+          showInCurrentTabChip: false,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: 0n},
+        };
+        searchboxHandler.setResultFor(
+            'getRecentTabs', Promise.resolve({tabs: [freshTab]}));
+
+        await element.refreshTabSuggestions();
+
+        assertFalse(element.files.has(tokenTab));
+        assertFalse(element.addedTabsIds.has(selectedTabId));
+        assertEquals(1, searchboxHandler.getCallCount('deleteContext'));
+      });
+
   test('submitCleanup() clears active tab selections', async () => {
     const tokenTab = 'test-token-tab' as unknown as UnguessableToken;
     const selectedTabId = 100;

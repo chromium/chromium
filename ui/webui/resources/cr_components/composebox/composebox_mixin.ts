@@ -2411,15 +2411,19 @@ export const ComposeboxEmbedderMixin =
             const {tabs} = await this.getSearchboxHandler().getRecentTabs();
             this.recentTabId = tabs[0]?.tabId ?? null;
 
-            const openTabIds = new Set(tabs.map(t => t.tabId));
+            const openTabsMap = new Map(tabs.map(t => [t.tabId, t]));
+
             // Gather UUIDs in a temporary array to prevent modifying
             // `this.files` mid-iteration, since `deleteFile()` replaces the Map
             // reference.
             const uuidsToDelete: UnguessableToken[] = [];
 
             this.files.forEach((file, uuid) => {
-              if (file.tabId && !openTabIds.has(file.tabId)) {
-                uuidsToDelete.push(uuid);
+              if (file.tabId) {
+                const freshTab = openTabsMap.get(file.tabId);
+                if (!freshTab || (file.url && file.url !== freshTab.url)) {
+                  uuidsToDelete.push(uuid);
+                }
               }
             });
             uuidsToDelete.forEach(uuid => {
@@ -2427,19 +2431,18 @@ export const ComposeboxEmbedderMixin =
             });
 
             if (this.tabDeselectionEnabled) {
-              const openTabUrls = new Map(tabs.map(t => [t.tabId, t.url]));
               const closedOrNavigatedRestoredTabs =
                   this.aimThreadRestoredTabs.filter(tab => {
-                    const currentUrl = openTabUrls.get(tab.tabId);
-                    return !currentUrl || currentUrl !== tab.url;
+                    const currentTab = openTabsMap.get(tab.tabId);
+                    return !currentTab || currentTab.url !== tab.url;
                   });
               closedOrNavigatedRestoredTabs.forEach(tab => {
                 this.getSearchboxHandler().deleteTabContext(tab.tabId);
               });
               this.aimThreadRestoredTabs =
                   this.aimThreadRestoredTabs.filter(tab => {
-                    const currentUrl = openTabUrls.get(tab.tabId);
-                    return currentUrl && currentUrl === tab.url;
+                    const currentTab = openTabsMap.get(tab.tabId);
+                    return currentTab && currentTab.url === tab.url;
                   });
             }
 
