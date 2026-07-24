@@ -12,6 +12,7 @@
 
 #import <atomic>
 
+#import "base/apple/backup_util.h"
 #import "base/auto_reset.h"
 #import "base/debug/crash_logging.h"
 #import "base/feature_list.h"
@@ -112,6 +113,9 @@ void ProcessIntermediateDumps() {
 
   // Remove this after a few milestones.
   ClearMainThreadFreezeDetectorCache();
+
+  // Exclude the crash database from iCloud / local device backups.
+  base::apple::SetBackupExclusion(common::CrashpadDumpLocation());
 
   // Wait until after processing intermediate dumps to record last shutdown
   // type.
