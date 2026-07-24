@@ -48,7 +48,8 @@ bool IsVerticalOrientation(const TabCollectionNode* collection_node) {
 
 class TabStripView::TargetViewsTracker : public views::ViewObserver {
  public:
-  TargetViewsTracker() = default;
+  explicit TargetViewsTracker(TabStripOrientation orientation)
+      : orientation_(orientation) {}
   TargetViewsTracker(const TargetViewsTracker&) = delete;
   TargetViewsTracker& operator=(const TargetViewsTracker&) = delete;
   ~TargetViewsTracker() override = default;
@@ -61,10 +62,10 @@ class TabStripView::TargetViewsTracker : public views::ViewObserver {
     RemoveView(observed_view);
   }
   void OnViewBoundsChanged(views::View* observed_view) override {
-    CheckTrackedViewsHeight();
+    CheckTrackedViewsSize();
   }
   void OnViewPreferredSizeChanged(views::View* observed_view) override {
-    CheckTrackedViewsHeight();
+    CheckTrackedViewsSize();
   }
 
   void SetViews(views::View* primary_view,
@@ -92,7 +93,7 @@ class TabStripView::TargetViewsTracker : public views::ViewObserver {
     }
     observations_.RemoveObservation(view);
     if (!observations_.IsObservingAnySource()) {
-      on_reached_preferred_height_cb_.Reset();
+      on_reached_target_size_cb_.Reset();
     }
   }
 
@@ -112,47 +113,59 @@ class TabStripView::TargetViewsTracker : public views::ViewObserver {
     primary_view_ = nullptr;
     secondary_view_ = nullptr;
     observations_.RemoveAllObservations();
-    on_reached_preferred_height_cb_.Reset();
+    on_reached_target_size_cb_.Reset();
   }
 
   views::View* primary_view() const { return primary_view_; }
   views::View* secondary_view() const { return secondary_view_; }
   bool empty() const { return !observations_.IsObservingAnySource(); }
 
-  // Returns true if all tracked views are at their preferred height.
-  bool AreViewsAtPreferredHeight() const {
+  // Returns true if all tracked views are at their target size based on
+  // orientation.
+  bool AreViewsAtTargetSize() const {
     for (views::View* view : {primary_view_.get(), secondary_view_.get()}) {
-      if (view && view->height() != view->GetPreferredSize().height()) {
-        return false;
+      if (!view) {
+        continue;
+      }
+      if (orientation_ == TabStripOrientation::kVertical) {
+        if (view->height() != view->GetPreferredSize().height()) {
+          return false;
+        }
+      } else {
+        if (view->width() != GetTabStripViewTargetBounds(view).width()) {
+          return false;
+        }
       }
     }
     return true;
   }
 
-  void SetOnReachedPreferredHeightCallback(
-      base::OnceClosure on_reached_preferred_height_cb) {
-    on_reached_preferred_height_cb_ = std::move(on_reached_preferred_height_cb);
-    CheckTrackedViewsHeight();
+  void SetOnReachedTargetSizeCallback(
+      base::OnceClosure on_reached_target_size_cb) {
+    on_reached_target_size_cb_ = std::move(on_reached_target_size_cb);
+    CheckTrackedViewsSize();
   }
 
  private:
-  void CheckTrackedViewsHeight() {
-    if (observations_.IsObservingAnySource() && AreViewsAtPreferredHeight() &&
-        on_reached_preferred_height_cb_) {
-      std::move(on_reached_preferred_height_cb_).Run();
+  void CheckTrackedViewsSize() {
+    if (observations_.IsObservingAnySource() && AreViewsAtTargetSize() &&
+        on_reached_target_size_cb_) {
+      std::move(on_reached_target_size_cb_).Run();
     }
   }
 
+  const TabStripOrientation orientation_;
   raw_ptr<views::View> primary_view_ = nullptr;
   raw_ptr<views::View> secondary_view_ = nullptr;
-  base::OnceClosure on_reached_preferred_height_cb_;
+  base::OnceClosure on_reached_target_size_cb_;
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       observations_{this};
 };
 
 TabStripView::TabStripView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
-      target_views_tracker_(std::make_unique<TargetViewsTracker>()) {
+      target_views_tracker_(std::make_unique<TargetViewsTracker>(
+          collection_node->orientation())) {
   // Paint to a layer and mask to bounds to prevent tabs from overflowing and
   // drawing outside the window boundaries on Linux when the window is small.
   // This is configured here rather than a higher-level container so that drop
@@ -585,9 +598,9 @@ void TabStripView::EnsureViewsVisibleInViewportPostLayout(
     // (i.e. it was activated as it is being animated in). In such a case
     // disable overflow visuals to prevent jank that can occur if content view
     // bounds are changed in quick succession.
-    if (!target_views_tracker_->AreViewsAtPreferredHeight()) {
+    if (!target_views_tracker_->AreViewsAtTargetSize()) {
       DisableOverflowVisuals(scroll_view);
-      target_views_tracker_->SetOnReachedPreferredHeightCallback(
+      target_views_tracker_->SetOnReachedTargetSizeCallback(
           base::BindOnce(&TabStripView::EnsureViewsVisibleInViewportPostLayout,
                          base::Unretained(this), scroll_view));
     } else {
