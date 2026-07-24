@@ -346,6 +346,9 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided host is trusted for overrides.
   static bool IsTrustedHost(const std::string& host);
 
+  // Returns the host parameter from the URL if present and trusted.
+  static std::optional<std::string> GetHostFromUrl(const GURL& url);
+
   // Called when the Lens overlay is shown/hidden. No-op if the active UI is not
   // in the side panel since the Lens button is always hidden in a tab.
   virtual void OnLensOverlayStateChanged(
