@@ -28,6 +28,10 @@ class COMPONENT_EXPORT(X11) FutureImpl {
 
   void Sync(RawReply* raw_reply, std::unique_ptr<Error>* error);
 
+  // Similar to Sync(), but does not remove the response from the connection's
+  // queue or clear the response callback.
+  void Peek(RawReply* raw_reply, std::unique_ptr<Error>* error);
+
   void OnResponse(ResponseCallback callback);
 
   // Update an existing Request with a new handler.  |sequence| must
@@ -102,7 +106,8 @@ class Future : public FutureBase {
                   "to FutureBase");
   }
 
-  // Blocks until we receive the response from the server. Returns the response.
+  // Blocks until the response is received from the server. Returns the
+  // response, removing it from the request queue.
   Response<Reply> Sync() {
     if (!impl()) {
       return {nullptr, nullptr};
@@ -114,7 +119,29 @@ class Future : public FutureBase {
 
     std::unique_ptr<Reply> reply;
     if (raw_reply) {
-      auto buf = ReadBuffer(raw_reply);
+      ReadBuffer buf(raw_reply);
+      reply = detail::ReadReply<Reply>(&buf);
+    }
+
+    return {std::move(reply), std::move(error)};
+  }
+
+  // Blocks until the response is received from the server. Returns the response
+  // without taking it from the request queue or clearing the response callback.
+  // Unlike Sync(), this method does not remove the response from the request
+  // queue.
+  Response<Reply> Peek() {
+    if (!impl()) {
+      return {nullptr, nullptr};
+    }
+
+    RawReply raw_reply;
+    std::unique_ptr<Error> error;
+    impl()->Peek(&raw_reply, &error);
+
+    std::unique_ptr<Reply> reply;
+    if (raw_reply) {
+      ReadBuffer buf(raw_reply);
       reply = detail::ReadReply<Reply>(&buf);
     }
 
@@ -185,4 +212,4 @@ inline void Future<void>::OnResponse(Callback callback) {
 
 }  // namespace x11
 
-#endif  //  UI_GFX_X_FUTURE_H_
+#endif  // UI_GFX_X_FUTURE_H_

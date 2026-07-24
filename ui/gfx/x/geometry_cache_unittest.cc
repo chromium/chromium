@@ -101,8 +101,11 @@ TEST(GeometryCacheTest, BoundsChangedCallback) {
   EXPECT_FALSE(last_bounds.has_value());
   EXPECT_EQ(geometry_cache.GetBoundsPx(), bounds);
 
-  // `last_bounds` should have gotten set after the call to GetBoundsPx().
-  // Reset it for the next part of the test.
+  // Calling GetBoundsPx() should not trigger the callback synchronously.
+  EXPECT_FALSE(last_bounds.has_value());
+
+  // Dispatching responses/events will invoke the callback.
+  connection->DispatchAll();
   EXPECT_TRUE(last_bounds.has_value());
   last_bounds = std::nullopt;
 
@@ -176,9 +179,8 @@ TEST(GeometryCacheTest, DestroyInCallback) {
       connection, window.id(),
       base::BindRepeating(bounds_changed_callback, &geometry_cache));
 
-  // This will trigger the callback via DispatchNow() and then return.
-  // If there's a UAF, this should crash or trigger ASAN.
   geometry_cache->GetBoundsPx();
+  connection->DispatchAll();
 }
 
 TEST(GeometryCacheTest, DestroyInParentGeometryChangedCallback) {
