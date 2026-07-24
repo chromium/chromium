@@ -681,6 +681,31 @@ bool ShouldBlockAccessToPath(
   return true;
 }
 
+// Returns true if `child_path` is the same as or a descendant of
+// `parent_path`, ignoring case differences. Unlike
+// `base::FilePath::IsParent()`, this handles case-variant paths returned by
+// native pickers on case-insensitive filesystems.
+bool IsPathOrDescendantIgnoreCase(
+    const base::FilePath& parent_path,
+    const std::vector<base::FilePath::StringType>& parent_components,
+    const base::FilePath& child_path) {
+  // Fast path: Exact match or case-sensitive parent match.
+  if (child_path == parent_path || parent_path.IsParent(child_path)) {
+    return true;
+  }
+
+  const std::vector<base::FilePath::StringType> child_components =
+      child_path.GetComponents();
+  if (parent_components.empty() ||
+      parent_components.size() > child_components.size()) {
+    return false;
+  }
+
+  return std::equal(parent_components.begin(), parent_components.end(),
+                    child_components.begin(),
+                    base::FilePath::CompareEqualIgnoreCase);
+}
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void DoSafeBrowsingCheckOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
@@ -2689,8 +2714,11 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryRemoved(
     return;
   }
 
+  const std::vector<base::FilePath::StringType> removed_components =
+      path.path.GetComponents();
   auto is_path_or_descendant = [&](const base::FilePath& file_path) {
-    return file_path == path.path || path.path.IsParent(file_path);
+    return IsPathOrDescendantIgnoreCase(path.path, removed_components,
+                                        file_path);
   };
 
   bool updated = false;

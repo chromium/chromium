@@ -3771,6 +3771,78 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             PermissionStatus::ASK);
 }
 
+// Tests that calling NotifyEntryRemoved with a directory path also revokes
+// read permission grants for descendants whose stored path differs only in
+// case from the removed directory. Native file pickers on case-insensitive
+// filesystems can return such case-variant paths for the same on-disk entry.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       NotifyEntryRemoved_RecursiveDir_CaseInsensitiveDescendantDowngraded) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kFileSystemAccessRevokeReadOnRemove);
+  FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(PermissionAction::GRANTED);
+
+  // Set up a directory path and a child file path that differ only in the
+  // case of one component.
+  const auto dir_info = PathInfo(FILE_PATH_LITERAL("/foo/project"));
+  const auto file_info =
+      PathInfo(FILE_PATH_LITERAL("/foo/Project/config.json"));
+  const auto sibling_info =
+      PathInfo(FILE_PATH_LITERAL("/foo/projects/config.json"));
+
+  // Grant a standalone read permission for the case-variant child file.
+  auto file_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, file_info, HandleType::kFile, UserAction::kOpen);
+  ASSERT_EQ(file_read_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Grant a standalone read permission for an unrelated sibling whose path
+  // shares a case-insensitive prefix string but is not actually a descendant.
+  auto sibling_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, sibling_info, HandleType::kFile, UserAction::kOpen);
+  ASSERT_EQ(sibling_read_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Grant read and write permission to the directory.
+  auto dir_read_grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, dir_info, HandleType::kDirectory, UserAction::kOpen);
+  {
+    base::test::TestFuture<PermissionRequestOutcome> f;
+    dir_read_grant->RequestPermission(
+        frame_id(), UserActivationState::kNotRequired, f.GetCallback());
+    ASSERT_EQ(f.Get(), PermissionRequestOutcome::kUserGranted);
+  }
+  auto dir_write_grant = permission_context()->GetWritePermissionGrant(
+      kTestOrigin, dir_info, HandleType::kDirectory, UserAction::kOpen);
+  {
+    base::test::TestFuture<PermissionRequestOutcome> f;
+    dir_write_grant->RequestPermission(
+        frame_id(), UserActivationState::kNotRequired, f.GetCallback());
+    ASSERT_EQ(f.Get(), PermissionRequestOutcome::kUserGranted);
+  }
+  ASSERT_EQ(dir_read_grant->GetStatus(), PermissionStatus::GRANTED);
+  ASSERT_EQ(dir_write_grant->GetStatus(), PermissionStatus::GRANTED);
+
+  // Revoke permissions for the directory. This represents a recursive removal
+  // of the directory.
+  permission_context()->NotifyEntryRemoved(kTestOrigin, dir_info);
+
+  // Verify that the directory's own read permission is downgraded.
+  EXPECT_EQ(dir_read_grant->GetStatus(), PermissionStatus::DENIED);
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, dir_info.path));
+
+  // Verify that the case-variant descendant file's read permission is also
+  // downgraded.
+  EXPECT_EQ(file_read_grant->GetStatus(), PermissionStatus::DENIED);
+  EXPECT_TRUE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, file_info.path));
+
+  // Verify that the unrelated sibling is not affected.
+  EXPECT_EQ(sibling_read_grant->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_FALSE(permission_context()->IsPathInDowngradedReadPathsForTesting(
+      kTestOrigin, sibling_info.path));
+}
+
 // Tests that moving a file to a destination with a pre-existing permission
 // grant works correctly.
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
