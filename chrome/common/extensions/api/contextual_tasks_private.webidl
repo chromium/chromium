@@ -47,9 +47,7 @@ dictionary AimParams {
   // The search query.
   DOMString q;
 };
-// LINT.ThenChange(
-//   //chrome/browser/resources/contextual_tasks/extension/background.ts:AimParams
-// )
+// LINT.ThenChange(//chrome/browser/resources/contextual_tasks/extension/background.ts:AimParams,//chrome/browser/resources/contextual_tasks/extension/background.ts:AimParamsCall,//chrome/browser/extensions/api/contextual_tasks_private/contextual_tasks_private_api.cc:AimParamsCpp)
 
 
 dictionary LaunchPanelInNewTabDetails {

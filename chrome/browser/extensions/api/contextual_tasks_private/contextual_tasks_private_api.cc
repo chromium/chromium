@@ -55,6 +55,7 @@ GURL AppendAimUrlParams(
   GURL url = base_url;
   bool enabled = contextual_tasks::GetIsContextualTasksSearchQueryEnabled();
   std::optional<std::string> q_val = enabled ? aim_params.q : std::nullopt;
+  // LINT.IfChange(AimParamsCpp)
   const struct {
     const char* name;
     std::optional<std::string> value;
@@ -69,6 +70,7 @@ GURL AppendAimUrlParams(
       {"sxsrf", aim_params.sxsrf},
       {"ei", aim_params.ei},
   };
+  // LINT.ThenChange(//chrome/common/extensions/api/contextual_tasks_private.webidl:AimParams)
   for (const auto& param : kParams) {
     if (param.value && !param.value->empty()) {
       url = net::AppendQueryParameter(url, param.name, *param.value);

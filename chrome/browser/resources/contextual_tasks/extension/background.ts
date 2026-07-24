@@ -2,8 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// LINT.IfChange(AimParams)
+interface AimParams {
+  ntc?: string;
+  mstk?: string;
+  aioh?: string;
+  csuir?: string;
+  ved?: string;
+  cs?: string;
+  sxsrf?: string;
+  ei?: string;
+  q?: string;
+}
+// LINT.ThenChange(//chrome/common/extensions/api/contextual_tasks_private.webidl:AimParams)
+
+interface ExtensionMessage {
+  type?: string;
+  args?: {targetUrl?: string, aimParams?: AimParams};
+}
+
 chrome.runtime.onMessageExternal.addListener(
-    async (message: any, sender: chrome.runtime.MessageSender) => {
+    async (message: ExtensionMessage, sender: chrome.runtime.MessageSender) => {
       const urlMatchesAllowList = function(origin: string) {
         try {
           const url = new URL(origin);
@@ -43,7 +62,7 @@ chrome.runtime.onMessageExternal.addListener(
           throw new Error('Invalid targetUrl');
         }
         const aimParams = details.aimParams || {};
-        // LINT.IfChange(AimParams)
+        // LINT.IfChange(AimParamsCall)
         return await chrome.contextualTasksPrivate.launchPanelInNewTab({
           aimParams: {
             ntc: aimParams.ntc ?? '',
@@ -59,9 +78,7 @@ chrome.runtime.onMessageExternal.addListener(
           targetUrl: details.targetUrl,
           documentId: sender.documentId,
         });
-        // LINT.ThenChange(
-        //   //chrome/common/extensions/api/contextual_tasks_private.webidl:AimParams
-        // )
+        // LINT.ThenChange(//chrome/common/extensions/api/contextual_tasks_private.webidl:AimParams)
       }
 
       throw new Error(`Unhandled message: ${JSON.stringify(message)}`);
