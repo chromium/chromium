@@ -6366,6 +6366,7 @@ interface Navigator
     getter clipboard
     getter connection
     getter cookieEnabled
+    getter cpuPerformance
     getter credentials
     getter deprecatedRunAdAuctionEnforcesKAnonymity
     getter deviceMemory

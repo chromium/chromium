@@ -574256,10 +574256,10 @@
     ]
    },
    "cpu-performance": {
-    "cpu-performance.tentative.https.window.js": [
-     "6714ee19282deaada45740d425c9038a2df33c0d",
+    "cpu-performance.https.window.js": [
+     "9814bd7209175dcf2b1effc0723013cc137c9130",
      [
-      "cpu-performance/cpu-performance.tentative.https.window.html",
+      "cpu-performance/cpu-performance.https.window.html",
       {}
      ]
     ]

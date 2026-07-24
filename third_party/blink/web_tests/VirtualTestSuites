@@ -477,25 +477,6 @@
     "expires": "never"
   },
   {
-    "prefix": "cpu-performance",
-    "owners": [
-      "nikolaos@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/cpu-performance"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=CpuPerformance"
-    ],
-    "expires": "Sep 30, 2026"
-  },
-  {
     "prefix": "declarative-performance-observer",
     "owners": ["sisidovski@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Android"],
