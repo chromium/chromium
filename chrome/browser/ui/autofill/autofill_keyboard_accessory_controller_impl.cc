@@ -404,7 +404,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(
   }
 
   if (base::checked_cast<size_t>(index) >= suggestions_.size() ||
-      !IsAcceptableSuggestionType(suggestions_[index].type)) {
+      !suggestions_[index].IsAcceptable()) {
     // Prevents crashes from crbug.com/41195069. It seems that in rare cases or
     // races the suggestions_ and the user-selected index may be out of sync.
     // If the index points out of bounds, Chrome will crash. Prevent this by

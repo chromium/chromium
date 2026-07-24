@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -497,6 +498,13 @@ Suggestion& Suggestion::operator=(Suggestion&& other) = default;
 Suggestion::~Suggestion() = default;
 
 bool Suggestion::IsAcceptable() const {
+  using enum SuggestionType;
+  static constexpr auto kUnacceptableItemIds =
+      DenseSet({kSeparator, kInsecureContextPaymentDisabledMessage,
+                kMixedFormMessage, kTitle, kAtMemorySourceAttribution});
+  if (kUnacceptableItemIds.contains(type)) {
+    return false;
+  }
   switch (acceptability) {
     case Acceptability::kAcceptable:
       return true;

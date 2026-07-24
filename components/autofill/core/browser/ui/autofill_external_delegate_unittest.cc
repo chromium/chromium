@@ -2126,8 +2126,7 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateInvalidUniqueId) {
   // Ensure it doesn't try to preview the negative id.
   EXPECT_CALL(autofill_manager(), FillOrPreviewForm).Times(0);
   EXPECT_CALL(autofill_driver(), RendererShouldClearPreviewedForm);
-  const Suggestion suggestion{
-      SuggestionType::kInsecureContextPaymentDisabledMessage};
+  const Suggestion suggestion{SuggestionType::kManageAddress};
   external_delegate().DidSelectSuggestion(suggestion);
 
   // Ensure it doesn't try to fill the form in with the negative id.

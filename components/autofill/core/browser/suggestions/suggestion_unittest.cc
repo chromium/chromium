@@ -1,0 +1,42 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+namespace {
+
+TEST(SuggestionTest, IsAcceptable) {
+  // Acceptable suggestion types with default (kAcceptable) acceptability.
+  EXPECT_TRUE(Suggestion(SuggestionType::kAddressEntry).IsAcceptable());
+  EXPECT_TRUE(Suggestion(SuggestionType::kCreditCardEntry).IsAcceptable());
+  EXPECT_TRUE(Suggestion(SuggestionType::kIbanEntry).IsAcceptable());
+  EXPECT_TRUE(Suggestion(SuggestionType::kAutocompleteEntry).IsAcceptable());
+
+  // Unacceptable suggestion types return false regardless of acceptability.
+  EXPECT_FALSE(Suggestion(SuggestionType::kSeparator).IsAcceptable());
+  EXPECT_FALSE(Suggestion(SuggestionType::kTitle).IsAcceptable());
+  EXPECT_FALSE(Suggestion(SuggestionType::kMixedFormMessage).IsAcceptable());
+  EXPECT_FALSE(
+      Suggestion(SuggestionType::kInsecureContextPaymentDisabledMessage)
+          .IsAcceptable());
+  EXPECT_FALSE(
+      Suggestion(SuggestionType::kAtMemorySourceAttribution).IsAcceptable());
+
+  // Non-kAcceptable acceptability states return false for acceptable types.
+  using enum Suggestion::Acceptability;
+  Suggestion unacceptable_suggestion(SuggestionType::kAddressEntry);
+  unacceptable_suggestion.acceptability = kUnacceptable;
+  EXPECT_FALSE(unacceptable_suggestion.IsAcceptable());
+
+  Suggestion deactivated_suggestion(SuggestionType::kAddressEntry);
+  deactivated_suggestion.acceptability = kUnacceptableWithDeactivatedStyle;
+  EXPECT_FALSE(deactivated_suggestion.IsAcceptable());
+}
+
+}  // namespace
+}  // namespace autofill

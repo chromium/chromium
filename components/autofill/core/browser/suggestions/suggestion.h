@@ -683,10 +683,14 @@ struct Suggestion {
   FiltrationPolicy filtration_policy = FiltrationPolicy::kFilterable;
 
   // The acceptability of the suggestion, see the enum values doc for details.
+  // Note that even if `acceptability` is `kAcceptable`, some `SuggestionType`
+  // are still not acceptable. See `IsAcceptable()` for details.
   Acceptability acceptability = Acceptability::kAcceptable;
 
   // Returns whether the user is able to preview the suggestion by hovering on
-  // it or accept it by clicking on it.
+  // it or accept it by clicking on it. Checks both whether the suggestion type
+  // is acceptable (i.e. not a separator, title, etc.) and whether
+  // `acceptability == Acceptability::kAcceptable`.
   bool IsAcceptable() const;
 
   // Returns whether the user will see the suggestion in

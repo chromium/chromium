@@ -547,7 +547,6 @@ void AutofillPopupControllerImpl::AcceptSuggestion(
     int index,
     AutofillMetrics::SuggestionAcceptedMethod accept_method) {
   CHECK_LT(base::checked_cast<size_t>(index), GetSuggestions().size());
-  CHECK(IsAcceptableSuggestionType(GetSuggestions()[index].type));
 
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/40058217).
@@ -977,7 +976,6 @@ void AutofillPopupControllerImpl::KeyPressObserver::Reset() {
 
 void AutofillPopupControllerImpl::SelectSuggestion(int index) {
   CHECK_LT(base::checked_cast<size_t>(index), GetSuggestions().size());
-  CHECK(IsAcceptableSuggestionType(GetSuggestions()[index].type));
 
   if (IsPointerLocked(web_contents_.get())) {
     Hide(SuggestionHidingReason::kMouseLocked);
