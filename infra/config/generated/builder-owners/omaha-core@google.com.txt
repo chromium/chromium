@@ -10,6 +10,8 @@ ci/mac-updater-builder-rel
 ci/mac13-arm64-updater-tester-dbg
 ci/mac13-x64-updater-tester-rel
 ci/mac14-arm64-updater-tester-dbg
+ci/mac14-arm64-updater-tester-rel
+ci/mac14-x64-updater-tester-dbg
 ci/mac14-x64-updater-tester-rel
 ci/mac15-arm64-updater-tester-dbg
 ci/mac15-arm64-updater-tester-rel

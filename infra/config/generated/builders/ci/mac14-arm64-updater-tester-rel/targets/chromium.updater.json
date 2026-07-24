@@ -1,10 +1,5 @@
 {
-  "mac-updater-builder-dbg": {
-    "additional_compile_targets": [
-      "chrome/updater:all"
-    ]
-  },
-  "mac14-x64-updater-tester-dbg": {
+  "mac14-arm64-updater-tester-rel": {
     "gtest_tests": [
       {
         "merge": {
@@ -15,7 +10,7 @@
         "name": "updater_tests",
         "swarming": {
           "dimensions": {
-            "cpu": "x86-64",
+            "cpu": "arm64",
             "os": "Mac-14",
             "pool": "chromium.tests"
           },
